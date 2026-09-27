@@ -1,0 +1,152 @@
+name: memory federation full closure bootstrap
+
+on:
+  push:
+    branches:
+      - fix/memory-federation-full-closure-20260927
+    paths:
+      - ".github/workflows/memory-federation-full-closure-bootstrap.yml"
+      - "scripts/memory_federation_core_closure.py"
+      - "scripts/memory_federation_runtime_closure.py"
+      - "scripts/memory_federation_metadata_closure.py"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: memory-federation-full-closure-bootstrap
+  cancel-in-progress: true
+
+jobs:
+  generate-qualify-and-seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out closure branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: fix/memory-federation-full-closure-20260927
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Configure deterministic source integration
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Memory Federation Closure"
+          git config user.email "hepta-memory-federation-closure@users.noreply.github.com"
+          git fetch origin main
+          # The state generator has a stable seed commit. Replaying it makes the
+          # closure scripts idempotent across failed or repeated qualification runs.
+          git checkout 8e98b1afe490cdfc50e8e3702ede4baf5c12853b -- scripts/hepta-memory-federation-state.py
+
+      - name: Generate canonical, runtime, documentation, and metadata source
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_federation_core_closure.py
+          python3 scripts/memory_federation_runtime_closure.py
+          python3 scripts/memory_federation_metadata_closure.py
+          python3 -m py_compile \
+            scripts/hepta-memory-federation-state.py \
+            scripts/memory_federation_core_closure.py \
+            scripts/memory_federation_runtime_closure.py \
+            scripts/memory_federation_metadata_closure.py
+
+      - name: Format and precompile generated source
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server
+          cargo check -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server
+
+      - name: Commit exact source candidate
+        id: source
+        run: |
+          set -euo pipefail
+          git diff --check
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "memory.federation: close product runtime and authenticated wire source"
+            git push origin HEAD:fix/memory-federation-full-closure-20260927
+          fi
+          test -z "$(git status --porcelain)"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Generate current-state projection
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-memory-federation-state.py render
+          git diff --check
+          git add \
+            docs/modules/memory.federation/CURRENT_STATE.json \
+            docs/modules/memory.federation/IMPLEMENTATION_MAP.json \
+            qualification/memory-federation/FINAL_V2_VERIFICATION.md \
+            qualification/module-execution-dossiers/detail/memory.federation.md
+          git commit -m "memory.federation: project exact source current state"
+          git push origin HEAD:fix/memory-federation-full-closure-20260927
+          test -z "$(git status --porcelain)"
+
+      - name: Capture exact tested candidate
+        id: tested
+        run: |
+          set -euo pipefail
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Verify generated truth
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "${{ steps.tested.outputs.sha }}" \
+            --expected-tree "${{ steps.tested.outputs.tree }}"
+          python3 scripts/hepta-memory-federation-state.py verify
+
+      - name: Run exact candidate qualification
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server -- --check
+          cargo test -p codex-hepta-memory-federation --lib
+          cargo test -p codex-hepta-memory-federation --lib --features legacy-v1
+          cargo test -p codex-hepta-memory --lib cognitive_runtime_tests
+          cargo test -p codex-hepta-memory --lib cognitive_federation_tests
+          cargo test -p codex-hepta-memory-extension --lib cognitive::federation
+          cargo check -p codex-hepta-agentd -p codex-app-server
+          cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
+          cargo clippy -p codex-hepta-agentd --lib -- -D warnings
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Record immutable repository qualification receipt
+        env:
+          TESTED_SHA: ${{ steps.tested.outputs.sha }}
+          TESTED_TREE: ${{ steps.tested.outputs.tree }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$TESTED_TREE"
+          python3 scripts/hepta-memory-federation-state.py record-pass \
+            --tested-sha "$TESTED_SHA" \
+            --tested-tree "$TESTED_TREE" \
+            --run-id "$GITHUB_RUN_ID" \
+            --run-attempt "$GITHUB_RUN_ATTEMPT"
+          git diff --check
+          git add \
+            docs/modules/memory.federation/CURRENT_STATE.json \
+            docs/modules/memory.federation/IMPLEMENTATION_MAP.json \
+            qualification/memory-federation/FINAL_V2_VERIFICATION.md \
+            qualification/memory-federation/receipts \
+            qualification/module-execution-dossiers/detail/memory.federation.md
+          git commit -m "memory.federation: seal exact candidate qualification receipt"
+          git push origin HEAD:fix/memory-federation-full-closure-20260927
+          test -z "$(git status --porcelain)"
+
+      - name: Verify sealed head
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-memory-federation-state.py verify
+          git diff --check
+          test -z "$(git status --porcelain)"
