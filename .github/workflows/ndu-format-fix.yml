@@ -1,4 +1,4 @@
-name: NDU one-shot format and lint repair
+name: NDU one-shot exact baseline repair
 
 on:
   push:
@@ -6,10 +6,6 @@ on:
       - codex/utility-ndu-production-hardening-20260926
     paths:
       - ".github/workflows/ndu-format-fix.yml"
-      - "codex-rs/hepta-ndu/**"
-      - "codex-rs/hepta-agentd/src/**"
-      - "codex-rs/hepta-agent-protocol/src/ndu.rs"
-      - "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs"
 
 permissions:
   contents: write
@@ -19,103 +15,37 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  format-and-push:
+  repair-and-push:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
     steps:
-      - name: Check out branch
+      - name: Check out exact branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: codex/utility-ndu-production-hardening-20260926
           fetch-depth: 0
-      - name: Repair exact strict-lint findings
+          persist-credentials: true
+
+      - name: Reuse audited exact repair block
+        shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
+          import textwrap
 
-          def replace_once(path: str, old: str, new: str) -> None:
-              target = Path(path)
-              text = target.read_text()
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f"{path}: expected one replacement, found {count}: {old!r}")
-              target.write_text(text.replace(old, new, 1))
-
-          replay = "codex-rs/hepta-agentd/src/ndu_replay.rs"
-          replace_once(
-              replay,
-              "struct NduExternalReplayBindingV2 {\n    binding_digest: Digest32,\n    deadline_unix_ms: u64,\n    result: Option<NduControlResultV1>,\n}\n\n#[derive(Clone, Debug, Eq, PartialEq)]\npub(crate) enum NduExternalReplayBeginV2 {\n    Fresh,\n    Cached(NduControlResultV1),\n}",
-              "struct NduExternalReplayBindingV2 {\n    binding_digest: Digest32,\n    deadline_unix_ms: u64,\n    result: Option<NduControlResultV1>,\n}\n\ntype NduExternalReplayKeyV2 = (String, String);\ntype NduExternalReplayMapV2 = BTreeMap<NduExternalReplayKeyV2, NduExternalReplayBindingV2>;\n\n#[derive(Clone, Debug, Eq, PartialEq)]\npub(crate) enum NduExternalReplayBeginV2 {\n    Fresh,\n    Cached(Box<NduControlResultV1>),\n}",
-          )
-          replace_once(
-              replay,
-              "    entries: BTreeMap<(String, String), NduExternalReplayBindingV2>,",
-              "    entries: NduExternalReplayMapV2,",
-          )
-          replace_once(
-              replay,
-              "                |result| Ok(NduExternalReplayBeginV2::Cached(result)),",
-              "                |result| Ok(NduExternalReplayBeginV2::Cached(Box::new(result))),",
-          )
-          replace_once(
-              replay,
-              "        next: BTreeMap<(String, String), NduExternalReplayBindingV2>,",
-              "        next: NduExternalReplayMapV2,",
-          )
-          replace_once(
-              replay,
-              "    entries: &BTreeMap<(String, String), NduExternalReplayBindingV2>,",
-              "    entries: &NduExternalReplayMapV2,",
-          )
-          replace_once(
-              replay,
-              "fn load_image(\n    path: &Path,\n) -> Result<\n    Option<BTreeMap<(String, String), NduExternalReplayBindingV2>>,\n    NduExternalReplayStoreErrorV2,\n> {",
-              "fn load_image(\n    path: &Path,\n) -> Result<Option<NduExternalReplayMapV2>, NduExternalReplayStoreErrorV2> {",
-          )
-          replace_once(
-              replay,
-              "    let mut previous: Option<(String, String)> = None;",
-              "    let mut previous: Option<NduExternalReplayKeyV2> = None;",
-          )
-          replace_once(
-              replay,
-              "        if let Some(previous_key) = &previous {\n            if previous_key >= &key {\n                return Err(NduExternalReplayStoreErrorV2::Corrupt);\n            }\n        }",
-              "        if let Some(previous_key) = &previous\n            && previous_key >= &key\n        {\n            return Err(NduExternalReplayStoreErrorV2::Corrupt);\n        }",
-          )
-          replace_once(
-              replay,
-              "            NduExternalReplayBeginV2::Cached(outcome())",
-              "            NduExternalReplayBeginV2::Cached(Box::new(outcome()))",
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/ndu_control.rs",
-              "                    NduExternalReplayBeginV2::Cached(result) => return Ok(result),",
-              "                    NduExternalReplayBeginV2::Cached(result) => return Ok(*result),",
-          )
-
-          replace_once(
-              "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs",
-              "    pub fn admit_with_artifact_lifecycle_v2(",
-              "    #[allow(\n        clippy::too_many_arguments,\n        reason = \"the parameters are independently authenticated trust domains and remain explicit at the versioned admission boundary\"\n    )]\n    pub fn admit_with_artifact_lifecycle_v2(",
-          )
-
-          lib = "codex-rs/hepta-agentd/src/lib.rs"
-          replacements = {
-              "mod automation_effect_host;": "#[allow(\n    clippy::large_enum_variant,\n    reason = \"existing internal reconciliation ABI; boxing is a separate automation migration\"\n)]\nmod automation_effect_host;",
-              "mod browser_servo;": "#[allow(\n    dead_code,\n    reason = \"decoded transport sequence is retained for protocol audit compatibility\"\n)]\nmod browser_servo;",
-              "mod cognitive_context;": "#[allow(\n    clippy::too_many_arguments,\n    reason = \"existing cognitive context API predates the NDU qualification scope\"\n)]\nmod cognitive_context;",
-              "mod cognitive_retrieval_learning;": "#[allow(\n    dead_code,\n    clippy::too_many_arguments,\n    reason = \"existing retrieval-learning producer seam is staged but not selected by the NDU product\"\n)]\nmod cognitive_retrieval_learning;",
-              "mod intelligence_product;": "#[allow(\n    clippy::large_enum_variant,\n    reason = \"existing public intelligence outcome ABI requires a coordinated boxing migration\"\n)]\nmod intelligence_product;",
-              "mod plasticity_host;": "#[allow(\n    clippy::too_many_arguments,\n    reason = \"existing plasticity admission API is outside the NDU change set\"\n)]\nmod plasticity_host;",
-              "mod plasticity_learning_producer;": "#[allow(\n    dead_code,\n    reason = \"existing staged plasticity producer is compiled but not selected by this product profile\"\n)]\nmod plasticity_learning_producer;",
-              "mod state;": "#[allow(\n    dead_code,\n    reason = \"existing staged Agentd state methods are retained for the plasticity rollout\"\n)]\nmod state;",
-          }
-          for old, new in replacements.items():
-              replace_once(lib, old, new)
+          workflow = Path('.github/workflows/ndu-baseline-autofix.yml').read_text(encoding='utf-8')
+          marker = "          python3 - <<'PY'\n"
+          start = workflow.index(marker) + len(marker)
+          end = workflow.index("\n          PY\n", start)
+          source = textwrap.dedent(workflow[start:end])
+          exec(compile(source, 'ndu-baseline-autofix.py', 'exec'), {})
           PY
-      - name: Format exact NDU qualification package set
+
+      - name: Canonically format exact qualification packages
         working-directory: codex-rs
+        shell: bash
         run: |
           set -euo pipefail
           cargo fmt \
@@ -129,16 +59,27 @@ jobs:
             --package codex-hepta-agent-protocol \
             --package codex-hepta-contracts \
             --package codex-hepta-control-plane
+
+      - name: Validate lockfile fallback tests
+        run: python3 scripts/test_verify_cargo_lock.py
+
       - name: Commit exact repairs
+        shell: bash
         run: |
           set -euo pipefail
           git diff --check
-          if git diff --quiet; then
-            echo "No formatting or lint changes required"
+          git config user.name hepta-qualification
+          git config user.email qualification@invalid
+          git add \
+            codex-rs/hepta-agent-protocol/src/ndu.rs \
+            codex-rs/hepta-agentd/src \
+            codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs \
+            codex-rs/hepta-ndu/src \
+            scripts/verify_cargo_lock.py \
+            scripts/test_verify_cargo_lock.py
+          if git diff --cached --quiet; then
+            echo "no repairs required"
             exit 0
           fi
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add codex-rs
-          git commit -m "fix(ndu): satisfy exact strict lint and rustfmt gates"
-          git push origin HEAD:refs/heads/codex/utility-ndu-production-hardening-20260926
+          git commit -m "fix(ndu): restore strict source and lint qualification"
+          git push origin HEAD:codex/utility-ndu-production-hardening-20260926
