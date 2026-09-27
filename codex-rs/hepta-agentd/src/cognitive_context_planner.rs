@@ -39,18 +39,22 @@ pub(super) fn plan_authenticated_context(
         || bound_read_digest.to_string() != response.read_digest
         || !read.missing_ids().is_empty()
         || read.records().len() != response.items.len()
+        || response.items.iter().any(|item| item.content.len() > 24 * 1024)
     {
         return Err("context does not match the canonical selected read".to_string());
     }
-    let mut records = read.records().iter()
+    let mut records = read
+        .records()
+        .iter()
         .map(|record| (record.record_id.as_str(), record))
         .collect::<BTreeMap<_, _>>();
     if records.len() != read.records().len() {
         return Err("canonical selected read contains duplicate identities".to_string());
     }
     for item in &response.items {
-        let record = records.remove(item.memory_id.as_str())
-            .ok_or_else(|| "context item is not uniquely attested by the selected read".to_string())?;
+        let record = records.remove(item.memory_id.as_str()).ok_or_else(|| {
+            "context item is not uniquely attested by the selected read".to_string()
+        })?;
         let content = Digest32::of_bytes(item.content.as_bytes());
         if !record.is_live()
             || record.revision.get() != item.revision
@@ -64,7 +68,8 @@ pub(super) fn plan_authenticated_context(
         return Err("canonical read has undelivered record identities".to_string());
     }
     let bytes = serde_json::to_vec(response).map_err(|error| error.to_string())?;
-    let now = Instant::now().checked_duration_since(request_origin)
+    let now = Instant::now()
+        .checked_duration_since(request_origin)
         .ok_or_else(|| "monotonic context clock regressed".to_string())?;
     if now >= LEASE {
         return Err("canonical context read exceeded its monotonic lease".to_string());
@@ -79,8 +84,14 @@ pub(super) fn plan_authenticated_context(
         read_digest: bound_read_digest,
         verified_item_count: count,
         encoded_context: &bytes,
-        maximum_context_bytes: u32::try_from(maximum_context_bytes).map_err(|error| error.to_string())?,
+        maximum_context_bytes: u32::try_from(maximum_context_bytes)
+            .map_err(|error| error.to_string())?,
         observed_at_micros: now_micros,
         expires_at_micros: expiry,
-    }).map_err(|error| error.to_string())
+    })
+    .map_err(|error| error.to_string())
 }
+
+#[cfg(test)]
+#[path = "cognitive_context_planner_tests.rs"]
+mod tests;
