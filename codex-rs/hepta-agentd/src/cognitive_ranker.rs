@@ -267,6 +267,17 @@ impl PinnedCognitiveRanker {
         Ok(())
     }
 
+    /// Return the exact admitted policy only after current owner validation.
+    /// Receipt guards must not infer a policy identity from rank order alone.
+    pub(crate) fn current_policy_digest(
+        &self,
+        owner: &AgentId,
+        generation: u64,
+    ) -> Result<Digest32, String> {
+        self.require_identity(owner, generation)?;
+        self.with_current(|| Ok(self.policy_digest))
+    }
+
     fn with_current<T>(&self, consume: impl FnOnce() -> Result<T, String>) -> Result<T, String> {
         let mut cache = self
             .cache
