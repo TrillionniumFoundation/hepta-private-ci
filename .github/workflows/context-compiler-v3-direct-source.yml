@@ -1,0 +1,88 @@
+name: context-compiler-v3-direct-source
+
+on:
+  push:
+    branches:
+      - codex/context-compiler-full-closure-review-20260927
+
+permissions:
+  contents: write
+
+concurrency:
+  group: context-compiler-v3-direct-source
+  cancel-in-progress: false
+
+jobs:
+  materialize-and-verify:
+    if: ${{ contains(github.event.head_commit.message, '[materialize-v3]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup set profile minimal
+          rustup toolchain install 1.95.0 --component rustfmt --component clippy --target x86_64-unknown-linux-gnu
+          rustup default 1.95.0
+          rustc -Vv
+          cargo -V
+
+      - name: Materialize direct V3 source
+        run: |
+          set -euo pipefail
+          python3 scripts/apply_context_compiler_v3_source.py
+          python3 scripts/apply_context_compiler_v3_core.py
+
+      - name: Format workspace
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Refresh lockfile
+        working-directory: codex-rs
+        run: cargo update --workspace
+
+      - name: Focused tests
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-prompt-registry
+          -p codex-hepta-context-compiler
+          -p codex-hepta-intelligence
+          -p codex-extension-api
+          -p codex-core
+          -p codex-hepta-agentd
+          -p codex-hepta-prompt-extension
+
+      - name: Strict clippy
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked
+          -p codex-hepta-prompt-registry
+          -p codex-hepta-context-compiler
+          -p codex-hepta-intelligence
+          -p codex-extension-api
+          -p codex-core
+          -p codex-hepta-agentd
+          -p codex-hepta-prompt-extension
+          --all-targets --all-features -- -D warnings
+
+      - name: Commit direct source and remove migration machinery
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          rm scripts/apply_context_compiler_v3_source.py
+          rm scripts/apply_context_compiler_v3_core.py
+          rm .github/workflows/context-compiler-v3-direct-source.yml
+          git config user.name "hepta-closure-bot"
+          git config user.email "hepta-closure-bot@users.noreply.github.com"
+          git add --all
+          git diff --cached --check
+          git commit -m "feat(context.compiler): materialize registry-owned V3 source"
+          git push origin "HEAD:${BRANCH}"
