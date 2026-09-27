@@ -178,7 +178,8 @@ impl AgentdIntelligenceInvocationProviderV1 for AgentdIntelligenceInvocationRegi
                     record.snapshot.run_id
                 ))
             })?;
-        let invocation = factory(identity, record)?;
+        let mut invocation = factory(identity, record)?;
+        invocation.attach_runtime_metrics(Arc::clone(&self.metrics));
         invocation.validate(identity, record)?;
         Ok(invocation)
     }
