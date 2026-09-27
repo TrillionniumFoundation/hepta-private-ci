@@ -1,0 +1,39 @@
+name: Hepta memory retrieval maintenance
+
+on:
+  pull_request: {}
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-retrieval-maintenance-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  maintenance:
+    name: Memory retrieval maintenance tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Run qualification, SLO, archive and source-refresh regressions
+        run: >-
+          python3 -m unittest -v
+          scripts.tests.test_hepta_memory_retrieval_qualification
+          scripts.tests.test_hepta_memory_retrieval_slo
+          scripts.tests.test_hepta_memory_retrieval_archive
+          scripts.tests.test_hepta_memory_retrieval_refresh_map
+      - name: Preserve clean source
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
