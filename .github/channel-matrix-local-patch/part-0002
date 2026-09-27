@@ -1,0 +1,858 @@
+diff --git a/codex-rs/hepta-matrix-store/migrations/0011_matrix_legacy_hold_remediation.sql b/codex-rs/hepta-matrix-store/migrations/0011_matrix_legacy_hold_remediation.sql
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/hepta-matrix-store/migrations/0011_matrix_legacy_hold_remediation.sql
+@@ -0,0 +1,182 @@
++-- Remediate pre-canonicalization outbound attempts without replaying them.
++-- Migration 9 sealed their identity as legacy holds. This migration gives each
++-- hold a durable unresolved ledger row, closes any stale local claim, and parks
++-- the queue row. Only authenticated /sync evidence may later settle it.
++--
++-- The maximum signed SQLite integer is used as a non-runnable schedule marker;
++-- it is not a deadline or a claim that reconciliation completed.
++
++INSERT INTO matrix_dispatch_ledger (
++    stable_txn_id, operation_id, logical_outbox_id, room_id,
++    binding_revision, generation, payload_sha256,
++    authority_epoch, grant_id, grant_payload_sha256,
++    state, accepted_event_id, terminal_event_id,
++    transport_observation_sha256, send_observation_sha256,
++    redaction_observation_sha256, attempts, prepared_at_ms,
++    updated_at_ms, terminal_observed_at_ms
++)
++SELECT
++    message.stable_txn_id,
++    'matrix.send:' || message.stable_txn_id,
++    message.logical_outbox_id,
++    message.room_id,
++    message.binding_revision,
++    message.generation,
++    message.payload_sha256,
++    NULL,
++    NULL,
++    NULL,
++    CASE
++        WHEN message.state = 'sent' AND message.sent_event_id IS NOT NULL
++            THEN 'accepted'
++        ELSE 'indeterminate'
++    END,
++    CASE
++        WHEN message.state = 'sent' AND message.sent_event_id IS NOT NULL
++            THEN message.sent_event_id
++        ELSE NULL
++    END,
++    NULL,
++    NULL,
++    NULL,
++    NULL,
++    message.attempts,
++    message.created_at_ms,
++    message.updated_at_ms,
++    NULL
++FROM matrix_dispatch_legacy_content_holds AS hold
++JOIN outbox_messages AS message USING (stable_txn_id)
++LEFT JOIN matrix_dispatch_ledger AS dispatch USING (stable_txn_id)
++WHERE dispatch.stable_txn_id IS NULL;
++
++-- An intermediate binary may already have created an unresolved or failed
++-- ledger row before canonical pinning rejected the inherited item. Preserve
++-- every observation row, but reopen the logical result as unresolved because
++-- the sealed hold proves that an earlier attempt cannot be safely disproved.
++UPDATE matrix_dispatch_ledger
++SET
++    state = CASE
++        WHEN accepted_event_id IS NOT NULL
++          OR (
++            SELECT message.state = 'sent' AND message.sent_event_id IS NOT NULL
++            FROM outbox_messages AS message
++            WHERE message.stable_txn_id = matrix_dispatch_ledger.stable_txn_id
++          )
++            THEN 'accepted'
++        ELSE 'indeterminate'
++    END,
++    accepted_event_id = COALESCE(
++        accepted_event_id,
++        (
++            SELECT CASE
++                WHEN message.state = 'sent' AND message.sent_event_id IS NOT NULL
++                    THEN message.sent_event_id
++                ELSE NULL
++            END
++            FROM outbox_messages AS message
++            WHERE message.stable_txn_id = matrix_dispatch_ledger.stable_txn_id
++        )
++    ),
++    terminal_event_id = NULL,
++    attempts = (
++        SELECT message.attempts
++        FROM outbox_messages AS message
++        WHERE message.stable_txn_id = matrix_dispatch_ledger.stable_txn_id
++    ),
++    updated_at_ms = MAX(
++        updated_at_ms,
++        (
++            SELECT message.updated_at_ms
++            FROM outbox_messages AS message
++            WHERE message.stable_txn_id = matrix_dispatch_ledger.stable_txn_id
++        )
++    ),
++    terminal_observed_at_ms = NULL
++WHERE stable_txn_id IN (
++    SELECT hold.stable_txn_id
++    FROM matrix_dispatch_legacy_content_holds AS hold
++)
++AND state IN ('dispatched', 'accepted', 'indeterminate', 'failed');
++
++-- A stale claim from a pre-remediation process must not keep the startup
++-- invariant tied to an in-flight queue row. Claimed-only work is known not to
++-- have crossed the current final-use entry and expires. Any later phase is
++-- conservatively recorded as indeterminate.
++INSERT INTO matrix_dispatch_attempt_events (
++    stable_txn_id, attempt, lease_epoch, claim_token_sha256,
++    event_kind, failure_class, retry_after_ms, event_id,
++    detail_sha256, recorded_at_ms
++)
++SELECT
++    active.stable_txn_id,
++    active.attempt,
++    active.lease_epoch,
++    active.claim_token_sha256,
++    CASE WHEN active.phase = 'claimed' THEN 'expired' ELSE 'indeterminate' END,
++    CASE WHEN active.phase = 'claimed' THEN NULL ELSE 'response_lost' END,
++    NULL,
++    NULL,
++    NULL,
++    MAX(
++        CASE
++            WHEN active.phase = 'claimed' THEN active.lease_until_ms
++            ELSE message.updated_at_ms
++        END,
++        COALESCE(
++            (
++                SELECT MAX(event.recorded_at_ms)
++                FROM matrix_dispatch_attempt_events AS event
++                WHERE event.stable_txn_id = active.stable_txn_id
++                  AND event.attempt = active.attempt
++                  AND event.lease_epoch = active.lease_epoch
++                  AND event.claim_token_sha256 = active.claim_token_sha256
++            ),
++            active.claimed_at_ms
++        )
++    )
++FROM matrix_dispatch_active_claims AS active
++JOIN matrix_dispatch_legacy_content_holds AS hold USING (stable_txn_id)
++JOIN outbox_messages AS message USING (stable_txn_id)
++WHERE NOT EXISTS (
++    SELECT 1
++    FROM matrix_dispatch_attempt_events AS event
++    WHERE event.stable_txn_id = active.stable_txn_id
++      AND event.attempt = active.attempt
++      AND event.lease_epoch = active.lease_epoch
++      AND event.claim_token_sha256 = active.claim_token_sha256
++      AND event.event_kind = CASE
++          WHEN active.phase = 'claimed' THEN 'expired'
++          ELSE 'indeterminate'
++      END
++);
++
++DELETE FROM matrix_dispatch_active_claims
++WHERE stable_txn_id IN (
++    SELECT stable_txn_id FROM matrix_dispatch_legacy_content_holds
++);
++
++UPDATE outbox_messages
++SET
++    state = 'retry_scheduled',
++    next_attempt_at_ms = 9223372036854775807,
++    lease_until_ms = NULL
++WHERE stable_txn_id IN (
++    SELECT stable_txn_id FROM matrix_dispatch_legacy_content_holds
++)
++AND state IN ('pending', 'in_flight', 'retry_scheduled');
++
++CREATE TRIGGER matrix_dispatch_legacy_hold_no_reactivate
++BEFORE UPDATE OF state, next_attempt_at_ms, lease_until_ms ON outbox_messages
++WHEN EXISTS (
++        SELECT 1 FROM matrix_dispatch_legacy_content_holds AS hold
++        WHERE hold.stable_txn_id = NEW.stable_txn_id
++     )
++     AND NEW.state IN ('pending', 'in_flight', 'retry_scheduled')
++     AND NOT (
++        NEW.state = 'retry_scheduled'
++        AND NEW.next_attempt_at_ms = 9223372036854775807
++        AND NEW.lease_until_ms IS NULL
++     )
++BEGIN
++    SELECT RAISE(ABORT, 'legacy Matrix send remains held for authenticated reconciliation');
++END;
+diff --git a/scripts/tests/test_channel_matrix_legacy_remediation.py b/scripts/tests/test_channel_matrix_legacy_remediation.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/tests/test_channel_matrix_legacy_remediation.py
+@@ -0,0 +1,328 @@
++"""Migration-only legacy-hold remediation; no native or network claim."""
++from pathlib import Path
++import sqlite3
++import unittest
++
++SQL = (
++    Path(__file__).resolve().parents[2]
++    / "codex-rs/hepta-matrix-store/migrations/0011_matrix_legacy_hold_remediation.sql"
++).read_text()
++MAX_I64 = 9223372036854775807
++
++
++class LegacyHoldRemediationTests(unittest.TestCase):
++    def setUp(self):
++        self.db = sqlite3.connect(":memory:")
++        self.addCleanup(self.db.close)
++        self.db.execute("PRAGMA foreign_keys=ON")
++        self.db.executescript(
++            '''
++            CREATE TABLE outbox_messages(
++                stable_txn_id TEXT PRIMARY KEY,
++                logical_outbox_id TEXT NOT NULL,
++                room_id TEXT NOT NULL,
++                binding_revision INTEGER NOT NULL,
++                generation INTEGER NOT NULL,
++                payload_sha256 TEXT NOT NULL,
++                state TEXT NOT NULL,
++                attempts INTEGER NOT NULL,
++                next_attempt_at_ms INTEGER NOT NULL,
++                lease_until_ms INTEGER,
++                created_at_ms INTEGER NOT NULL,
++                updated_at_ms INTEGER NOT NULL,
++                sent_event_id TEXT
++            );
++            CREATE TABLE matrix_dispatch_legacy_content_holds(
++                stable_txn_id TEXT PRIMARY KEY,
++                inherited_attempts INTEGER NOT NULL
++            );
++            CREATE TABLE matrix_dispatch_content_bindings(
++                stable_txn_id TEXT PRIMARY KEY
++            );
++            CREATE TABLE matrix_dispatch_ledger(
++                stable_txn_id TEXT PRIMARY KEY,
++                operation_id TEXT UNIQUE NOT NULL,
++                logical_outbox_id TEXT NOT NULL,
++                room_id TEXT NOT NULL,
++                binding_revision INTEGER NOT NULL,
++                generation INTEGER NOT NULL,
++                payload_sha256 TEXT NOT NULL,
++                authority_epoch INTEGER,
++                grant_id TEXT,
++                grant_payload_sha256 TEXT,
++                state TEXT NOT NULL,
++                accepted_event_id TEXT,
++                terminal_event_id TEXT,
++                transport_observation_sha256 TEXT,
++                send_observation_sha256 TEXT,
++                redaction_observation_sha256 TEXT,
++                attempts INTEGER NOT NULL,
++                prepared_at_ms INTEGER NOT NULL,
++                updated_at_ms INTEGER NOT NULL,
++                terminal_observed_at_ms INTEGER
++            );
++            CREATE TABLE matrix_dispatch_attempt_claims(
++                stable_txn_id TEXT NOT NULL,
++                attempt INTEGER NOT NULL,
++                lease_epoch INTEGER NOT NULL,
++                claim_token_sha256 TEXT NOT NULL,
++                claimed_at_ms INTEGER NOT NULL,
++                lease_until_ms INTEGER NOT NULL,
++                PRIMARY KEY(stable_txn_id, attempt)
++            );
++            CREATE TABLE matrix_dispatch_active_claims(
++                stable_txn_id TEXT PRIMARY KEY,
++                attempt INTEGER NOT NULL,
++                lease_epoch INTEGER NOT NULL,
++                claim_token_sha256 TEXT NOT NULL,
++                phase TEXT NOT NULL,
++                claimed_at_ms INTEGER NOT NULL,
++                lease_until_ms INTEGER NOT NULL
++            );
++            CREATE TABLE matrix_dispatch_attempt_events(
++                event_seq INTEGER PRIMARY KEY AUTOINCREMENT,
++                stable_txn_id TEXT NOT NULL,
++                attempt INTEGER NOT NULL,
++                lease_epoch INTEGER NOT NULL,
++                claim_token_sha256 TEXT NOT NULL,
++                event_kind TEXT NOT NULL,
++                failure_class TEXT,
++                retry_after_ms INTEGER,
++                event_id TEXT,
++                detail_sha256 TEXT,
++                recorded_at_ms INTEGER NOT NULL
++            );
++            '''
++        )
++
++    def add_message(
++        self,
++        txn,
++        *,
++        state,
++        attempts,
++        sent_event_id=None,
++        updated_at_ms=20,
++        active_phase=None,
++    ):
++        token = (txn[0] if txn else "a") * 64
++        self.db.execute(
++            "INSERT INTO outbox_messages VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
++            (
++                txn,
++                f"logical-{txn}",
++                "!room:example.test",
++                1,
++                1,
++                "a" * 64,
++                state,
++                attempts,
++                5,
++                100 if state == "in_flight" else None,
++                1,
++                updated_at_ms,
++                sent_event_id,
++            ),
++        )
++        self.db.execute(
++            "INSERT INTO matrix_dispatch_legacy_content_holds VALUES (?,?)",
++            (txn, attempts),
++        )
++        if active_phase is not None:
++            self.db.execute(
++                "INSERT INTO matrix_dispatch_attempt_claims VALUES (?,?,?,?,?,?)",
++                (txn, attempts, attempts, token, 10, 100),
++            )
++            self.db.execute(
++                "INSERT INTO matrix_dispatch_active_claims VALUES (?,?,?,?,?,?,?)",
++                (txn, attempts, attempts, token, active_phase, 10, 100),
++            )
++            self.db.execute(
++                '''INSERT INTO matrix_dispatch_attempt_events(
++                       stable_txn_id, attempt, lease_epoch, claim_token_sha256,
++                       event_kind, failure_class, retry_after_ms, event_id,
++                       detail_sha256, recorded_at_ms
++                   ) VALUES (?,?,?,?, 'claimed', NULL, NULL, NULL, NULL, 10)''',
++                (txn, attempts, attempts, token),
++            )
++
++    def apply(self):
++        self.db.executescript(SQL)
++
++    def test_active_claims_are_closed_and_queue_rows_are_parked(self):
++        self.add_message(
++            "claimed",
++            state="in_flight",
++            attempts=2,
++            active_phase="claimed",
++        )
++        self.add_message(
++            "dispatching",
++            state="in_flight",
++            attempts=3,
++            active_phase="dispatching",
++        )
++        self.db.execute(
++            "INSERT INTO matrix_dispatch_ledger VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
++            (
++                "dispatching",
++                "matrix.send:dispatching",
++                "logical-dispatching",
++                "!room:example.test",
++                1,
++                1,
++                "a" * 64,
++                None,
++                None,
++                None,
++                "failed",
++                None,
++                None,
++                "b" * 64,
++                None,
++                None,
++                3,
++                1,
++                20,
++                20,
++            ),
++        )
++
++        self.apply()
++
++        self.assertEqual(
++            self.db.execute(
++                "SELECT stable_txn_id, state, next_attempt_at_ms, lease_until_ms "
++                "FROM outbox_messages ORDER BY stable_txn_id"
++            ).fetchall(),
++            [
++                ("claimed", "retry_scheduled", MAX_I64, None),
++                ("dispatching", "retry_scheduled", MAX_I64, None),
++            ],
++        )
++        self.assertEqual(
++            self.db.execute(
++                "SELECT stable_txn_id, state, attempts, terminal_observed_at_ms "
++                "FROM matrix_dispatch_ledger ORDER BY stable_txn_id"
++            ).fetchall(),
++            [
++                ("claimed", "indeterminate", 2, None),
++                ("dispatching", "indeterminate", 3, None),
++            ],
++        )
++        self.assertEqual(
++            self.db.execute(
++                "SELECT stable_txn_id, event_kind, failure_class "
++                "FROM matrix_dispatch_attempt_events "
++                "WHERE event_kind IN ('expired','indeterminate') "
++                "ORDER BY stable_txn_id"
++            ).fetchall(),
++            [
++                ("claimed", "expired", None),
++                ("dispatching", "indeterminate", "response_lost"),
++            ],
++        )
++        self.assertEqual(
++            self.db.execute(
++                "SELECT COUNT(*) FROM matrix_dispatch_active_claims"
++            ).fetchone(),
++            (0,),
++        )
++
++    def test_sent_legacy_row_becomes_accepted_not_confirmed(self):
++        self.add_message(
++            "sent",
++            state="sent",
++            attempts=1,
++            sent_event_id="$event:example.test",
++        )
++        self.apply()
++        self.assertEqual(
++            self.db.execute(
++                "SELECT state, accepted_event_id, terminal_event_id, "
++                "terminal_observed_at_ms FROM matrix_dispatch_ledger"
++            ).fetchone(),
++            ("accepted", "$event:example.test", None, None),
++        )
++
++    def test_terminal_remote_observation_is_not_reopened(self):
++        self.add_message(
++            "terminal",
++            state="sent",
++            attempts=1,
++            sent_event_id="$event:example.test",
++        )
++        self.db.execute(
++            "INSERT INTO matrix_dispatch_ledger VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
++            (
++                "terminal",
++                "matrix.send:terminal",
++                "logical-terminal",
++                "!room:example.test",
++                1,
++                1,
++                "a" * 64,
++                None,
++                None,
++                None,
++                "observed_unqualified",
++                "$event:example.test",
++                "$event:example.test",
++                None,
++                "b" * 64,
++                None,
++                1,
++                1,
++                20,
++                20,
++            ),
++        )
++        self.apply()
++        self.assertEqual(
++            self.db.execute(
++                "SELECT state, terminal_event_id, terminal_observed_at_ms "
++                "FROM matrix_dispatch_ledger"
++            ).fetchone(),
++            ("observed_unqualified", "$event:example.test", 20),
++        )
++
++    def test_hold_trigger_blocks_reactivation_but_allows_sync_settlement(self):
++        self.add_message("held", state="pending", attempts=1)
++        self.apply()
++        with self.assertRaises(sqlite3.IntegrityError):
++            self.db.execute(
++                "UPDATE outbox_messages SET state='in_flight', "
++                "next_attempt_at_ms=0, lease_until_ms=10 "
++                "WHERE stable_txn_id='held'"
++            )
++        self.db.execute(
++            "UPDATE outbox_messages SET state='sent', "
++            "sent_event_id='$event:example.test', lease_until_ms=NULL "
++            "WHERE stable_txn_id='held'"
++        )
++        self.assertEqual(
++            self.db.execute(
++                "SELECT state, sent_event_id FROM outbox_messages "
++                "WHERE stable_txn_id='held'"
++            ).fetchone(),
++            ("sent", "$event:example.test"),
++        )
++
++    def test_trigger_ddl_is_exactly_present(self):
++        self.add_message("held", state="pending", attempts=1)
++        self.apply()
++        statement = next(
++            part
++            for part in SQL.split("\n\n")
++            if part.startswith("CREATE TRIGGER matrix_dispatch_legacy_hold_no_reactivate")
++        )
++        actual = self.db.execute(
++            "SELECT sql FROM sqlite_schema "
++            "WHERE name='matrix_dispatch_legacy_hold_no_reactivate'"
++        ).fetchone()[0]
++        normalize = lambda value: " ".join(value.strip().rstrip(";").split())
++        self.assertEqual(normalize(actual), normalize(statement))
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/codex-rs/hepta-matrix-store/src/store.rs b/codex-rs/hepta-matrix-store/src/store.rs
+--- a/codex-rs/hepta-matrix-store/src/store.rs
++++ b/codex-rs/hepta-matrix-store/src/store.rs
+@@ -75,3 +75,4 @@
+     include_str!("../migrations/0009_matrix_legacy_content_holds.sql"),
+     include_str!("../migrations/0010_matrix_entered_use_proofs.sql"),
++    include_str!("../migrations/0011_matrix_legacy_hold_remediation.sql"),
+ ];
+@@ -3650,3 +3650,4 @@
+             ('matrix_dispatch_legacy_content_holds_no_update', 'trigger'),
+             ('matrix_dispatch_legacy_content_holds_no_delete', 'trigger'),
++            ('matrix_dispatch_legacy_hold_no_reactivate', 'trigger'),
+             ('matrix_dispatch_use_entries', 'table'),
+@@ -3700,3 +3700,3 @@
+-    if required_objects != 75 {
++    if required_objects != 76 {
+         return Err(MatrixDurableError::Corrupt);
+     }
+@@ -3971,7 +3971,24 @@
+         "SELECT COUNT(*)
+          FROM matrix_dispatch_legacy_content_holds AS hold
+          JOIN outbox_messages AS message USING (stable_txn_id)
++         JOIN matrix_dispatch_ledger AS dispatch USING (stable_txn_id)
+          LEFT JOIN matrix_dispatch_content_bindings AS content USING (stable_txn_id)
++         LEFT JOIN matrix_dispatch_active_claims AS active USING (stable_txn_id)
+          WHERE hold.inherited_attempts > message.attempts
+-            OR content.stable_txn_id IS NOT NULL",
++            OR dispatch.attempts != message.attempts
++            OR content.stable_txn_id IS NOT NULL
++            OR active.stable_txn_id IS NOT NULL
++            OR (
++                message.sent_event_id IS NOT NULL
++                AND dispatch.accepted_event_id IS NOT NULL
++                AND message.sent_event_id != dispatch.accepted_event_id
++            )
++            OR (
++                message.state IN ('pending', 'in_flight', 'retry_scheduled')
++                AND (
++                    message.state != 'retry_scheduled'
++                    OR message.next_attempt_at_ms != 9223372036854775807
++                    OR message.lease_until_ms IS NOT NULL
++                )
++            )",
+     )
+diff --git a/scripts/verify_channel_matrix_candidate.py b/scripts/verify_channel_matrix_candidate.py
+--- a/scripts/verify_channel_matrix_candidate.py
++++ b/scripts/verify_channel_matrix_candidate.py
+@@ -35 +35 @@
+-    "codex-rs/hepta-matrix-store/src/claim/store.rs": ("claim_outbox_fenced(", "record_outbox_authorized(", "record_outbox_dispatching(", "finish_outbox_indeterminate(", "matrix_dispatch_authority_witnesses", "matrix_dispatch_attempt_events"),
++    "codex-rs/hepta-matrix-store/src/claim/store.rs": ("claim_outbox_fenced(", "record_outbox_authorized(", "record_outbox_dispatching(", "record_outbox_entered_use(", "finish_outbox_indeterminate(", "matrix_dispatch_authority_witnesses", "matrix_dispatch_attempt_events", "matrix_dispatch_use_entries"),
+@@ -45,2 +45,4 @@
+     "codex-rs/hepta-matrix-store/migrations/0009_matrix_legacy_content_holds.sql": ("CREATE TABLE matrix_dispatch_legacy_content_holds", "message.attempts > 0", "matrix_dispatch_legacy_content_holds_no_insert", "matrix_dispatch_legacy_content_holds_no_delete"),
++    "codex-rs/hepta-matrix-store/migrations/0010_matrix_entered_use_proofs.sql": ("CREATE TABLE matrix_dispatch_use_entries", "matrix_dispatch_use_entries_no_update", "matrix_dispatch_succeeded_requires_entered_use"),
++    "codex-rs/hepta-matrix-store/migrations/0011_matrix_legacy_hold_remediation.sql": ("INSERT INTO matrix_dispatch_ledger", "9223372036854775807", "matrix_dispatch_legacy_hold_no_reactivate"),
+     "codex-rs/state/src/capability_random.rs": ("pub fn random_capability_bytes() -> [u8; 32]", "Uuid::new_v4()"),
+diff --git a/docs/modules/channel.matrix/TECHNICAL.md b/docs/modules/channel.matrix/TECHNICAL.md
+--- a/docs/modules/channel.matrix/TECHNICAL.md
++++ b/docs/modules/channel.matrix/TECHNICAL.md
+@@ -75,3 +75,3 @@
+-`MatrixDurableStore` owns one private per-Agent SQLite database. Migrations 1-5 own the existing room/inbox/outbox/sync/control surfaces. Migration 6 adds the immutable dispatch ledger, observations and authority claims. Migration 7 adds random-capability attempt claims, active claim phases, verified-use/revocation-head witnesses and append-only attempt events.
++`MatrixDurableStore` owns one private per-Agent SQLite database. Migrations 1-5 own the existing room/inbox/outbox/sync/control surfaces. Migration 6 adds the immutable dispatch ledger, observations and authority claims. Migration 7 adds random-capability attempt claims, active claim phases, verified-use/revocation-head witnesses and append-only attempt events. Migration 8 pins canonical Matrix content and scope, migration 9 seals inherited unpinned attempts, migration 10 persists the non-constructible entered-use proof, and migration 11 parks every legacy hold behind authenticated reconciliation while materializing its unresolved durable ledger state.
+ 
+-Operation ID, stable transaction ID and event IDs are independently unique. Logical identity columns are immutable; audit rows cannot be deleted. Store open validates migration history, schema objects, constraints, triggers, foreign keys and integrity before work.
++Operation ID, stable transaction ID and event IDs are independently unique. Logical identity columns are immutable; audit rows cannot be deleted. Store open validates migration history, exact table/index/view/trigger SQL, constraints, foreign keys, integrity and legacy-hold parking before work.
+@@ -92,3 +92,3 @@
+-Active-claim transitions require the exact transaction, attempt, lease epoch and capability digest. The dispatch ledger also uses attempt CAS. Physical send deadline is shorter than remaining lease. A clean shutdown releases only pre-entry claims; post-entry cancellation becomes an indeterminate effect.
++Active-claim transitions require the exact transaction, attempt, lease epoch and capability digest. The dispatch ledger also uses attempt CAS. Physical send deadline is shorter than remaining lease. A clean shutdown releases only pre-entry claims; post-entry cancellation becomes an indeterminate effect. Legacy holds are never reclaimed: migration 11 closes stale claims, parks the queue row at the non-runnable maximum schedule and permits only authenticated sync settlement.
+ 
+ Trusted `/sync` confirmation/redaction, dispatch terminal mutation, outbox settlement, change record and cursor advancement share one owner transaction.
+@@ -115,3 +115,3 @@
+-The final-use path binds subject, destination, homeserver, Matrix user/device/session, room, binding revision, plane generation, transaction, attempt and canonical payload. After the authority witness is durable, Matrixd records `dispatching`, refreshes authenticated revocations, consumes the exact verified-use token, and immediately polls the lazy transport future. No await or persistence intervenes.
++The final-use path binds subject, destination, homeserver, Matrix user/device/session, room, binding revision, plane generation, transaction, attempt and canonical payload. After the authority witness is durable, Matrixd records `dispatching`, refreshes authenticated revocations, consumes the exact verified-use token, durably binds the resulting non-constructible entered-use proof to the live claim/content/authority tuple, constructs the sealed permit, and then creates and polls the lazy transport future. The proof write occurs before any network effect; after the transport future exists, no unrelated persistence await precedes its first poll.
+ 
+ Credentials, session keys, raw grants/tokens, signing material, raw claim capabilities and message content are excluded from general logs and receipts. See [Security model](SECURITY_MODEL.md) for mandatory negative tests and residual external gates.
+@@ -155 +155 @@
+-- migration and store reopen/integrity tests
++- migration and store reopen/integrity tests, including legacy-hold park/reactivation guards
+diff --git a/docs/modules/channel.matrix/OPERATIONS_RUNBOOK.md b/docs/modules/channel.matrix/OPERATIONS_RUNBOOK.md
+--- a/docs/modules/channel.matrix/OPERATIONS_RUNBOOK.md
++++ b/docs/modules/channel.matrix/OPERATIONS_RUNBOOK.md
+@@ -5 +5 @@
+-Treat Matrix as ready only when the supervisor reports the exact companion healthy and matrixd reports: store/migrations 1-7 verified, final-use broker reachable, authenticated revocation feed current, Agentd connected, initial durable sync complete and continuous sync connected. Queue acceptance or process liveness alone is not readiness.
++Treat Matrix as ready only when the supervisor reports the exact companion healthy and matrixd reports: store/migrations 1-11 and their exact schema/invariants verified, final-use broker reachable, authenticated revocation feed current, Agentd connected, initial durable sync complete and continuous sync connected. Queue acceptance or process liveness alone is not readiness.
+@@ -46,4 +46,8 @@
+ 
+ Verify no live exact matrixd owns the process lease. For a proven pre-entry claim use the typed fenced release path; otherwise allow lease expiry and a higher attempt to replace it. Never disclose/reconstruct the raw claim capability, delete the active row manually or decrement attempts.
+ 
++### Legacy canonical-content hold
++
++Do not retry, rename or delete a transaction listed in the sealed legacy-hold snapshot. Migration 11 closes any stale local claim, creates or reopens the durable result as `accepted`/`indeterminate`, and parks active queue states at the non-runnable maximum schedule. Restore authenticated sync and reconcile the original transaction; only the normal sync-owner transaction may settle it. A large held set consumes unresolved capacity by design and requires retention/archival planning rather than evidence deletion.
++
+ ### Store corruption
+@@ -65 +65 @@
+-Roll back only to a binary compatible with migrations 1-7; otherwise roll forward. Keep matrixd and agentd as one paired release and verify both program digests.
++Roll back only to a binary compatible with migrations 1-11, including canonical pins, entered-use proofs and parked legacy holds; otherwise roll forward. Keep matrixd and agentd as one paired release and verify both program digests.
+diff --git a/docs/modules/channel.matrix/STORAGE_SCHEMA.md b/docs/modules/channel.matrix/STORAGE_SCHEMA.md
+--- a/docs/modules/channel.matrix/STORAGE_SCHEMA.md
++++ b/docs/modules/channel.matrix/STORAGE_SCHEMA.md
+@@ -8,3 +8,7 @@
+ - Dispatch truth: `0006_matrix_dispatch_ledger.sql`
+ - Random claim fencing and append-only attempt evidence: `0007_matrix_claim_fencing.sql`
++- Canonical content/scope pins: `0008_matrix_content_binding.sql`
++- Sealed inherited-attempt snapshot: `0009_matrix_legacy_content_holds.sql`
++- Entered-use proof binding: `0010_matrix_entered_use_proofs.sql`
++- Legacy hold parking and anti-reactivation fence: `0011_matrix_legacy_hold_remediation.sql`
+ - Writer: one exact per-Agent `hepta-matrixd` process generation
+@@ -35 +35,4 @@
+ | `matrix_dispatch_attempt_events` | complete append-only attempt lifecycle | event sequence |
++| `matrix_dispatch_content_bindings` | immutable canonical Matrix content/scope pin | stable transaction ID |
++| `matrix_dispatch_legacy_content_holds` | sealed inherited unpinned-attempt snapshot | stable transaction ID |
++| `matrix_dispatch_use_entries` | exact non-constructible final-use entry proof | transaction + attempt |
+@@ -70,3 +70,3 @@
+-The witness is immutable audit evidence, not reusable authority. The raw final-use token and raw claim capability never enter SQLite.
++The witness is immutable audit evidence, not reusable authority. Migration 10 separately persists the `EnteredUseToken` witness produced by the kernel after final expiry/revocation verification and binds it to the exact claim, signed request, canonical content and scope. Qualified success requires this entered-use row; caller-filled witness metadata cannot substitute. The raw final-use token and raw claim capability never enter SQLite.
+ 
+ ## 6. Attempt event history
+@@ -100,14 +100,17 @@
+ ## 8. Startup verification
+ 
+-Store open verifies at least:
++Store open verifies:
+ 
+ - owner identity, schema version and migration history;
+-- required tables, indexes, views and triggers from migrations 1-7;
+-- foreign-key and integrity checks;
+-- dispatch-state constraints and terminal-authority invariant;
++- exact normalized SQL for every dispatch/claim/content/use-proof/legacy object from migrations 6-11;
++- all 76 required tables, indexes, views and triggers;
++- `quick_check` and foreign-key checks;
++- dispatch-state, terminal-authority and entered-use invariants;
+ - immutable/delete-prevention triggers;
+ - uniqueness of operation, transaction, event, grant and claim-token identities;
+ - active-claim phase/lease consistency;
++- canonical content/use-entry consistency;
++- every legacy hold has a matching durable ledger, no active claim/content pin, and any active queue state is parked at the non-runnable maximum schedule;
+ - digest, generation, attempt and timestamp bounds.
+ 
+ A mismatch is corruption or unsupported schema, never silent projection rebuild.
+@@ -120 +120 @@
+-Dispatch identities, grants, witnesses, claim digests, observations and attempt events are audit evidence. Compaction requires authenticated archival and cannot delete unresolved or terminal lineage. A backup must preserve a consistent SQLite snapshot together with matching authority-frontier metadata. Restore qualification must prove revoked/redacted content, expired active claims and stale session/outbox state cannot resurrect or re-enter physical I/O.
++Dispatch identities, grants, witnesses, entered-use proofs, canonical pins, legacy holds, claim digests, observations and attempt events are audit evidence. Compaction requires authenticated archival and cannot delete unresolved or terminal lineage. Parked legacy holds intentionally consume unresolved capacity until authenticated reconciliation or separately governed archival; resetting their schedule, attempts or transaction ID is prohibited. A backup must preserve a consistent SQLite snapshot together with matching authority-frontier metadata. Restore qualification must prove revoked/redacted content, expired active claims and stale session/outbox state cannot resurrect or re-enter physical I/O.
+diff --git a/docs/modules/channel.matrix/FAILURE_AND_RECOVERY.md b/docs/modules/channel.matrix/FAILURE_AND_RECOVERY.md
+--- a/docs/modules/channel.matrix/FAILURE_AND_RECOVERY.md
++++ b/docs/modules/channel.matrix/FAILURE_AND_RECOVERY.md
+@@ -35,4 +35,5 @@
+-3. Matrixd obtains the process lock, verifies migrations 1-7 and final-use state, completes an initial durable sync, resumes exact threads and recovers pending inbox work.
++3. Matrixd obtains the process lock, verifies migrations 1-11, exact schema SQL and final-use/legacy-hold invariants, completes an initial durable sync, resumes exact threads and recovers pending inbox work.
+ 4. Expired active claims receive an append-only `expired` event before a later attempt mints a new capability.
+-5. Expired outbox leases are reclaimed with the same stable transaction and a higher attempt.
+-6. Accepted/indeterminate dispatches remain unresolved until authenticated sync supplies matching server evidence.
++5. Expired outbox leases are reclaimed with the same stable transaction and a higher attempt, except sealed legacy holds.
++6. Migration 11 closes stale legacy claims, records claimed-only work as expired and later phases as indeterminate, materializes the unresolved ledger, and parks the queue row at the non-runnable maximum schedule.
++7. Accepted/indeterminate dispatches remain unresolved until authenticated sync supplies matching server evidence.
+@@ -50 +50 @@
+-Binary rollback is allowed only when the predecessor understands every committed migration and durable record. Migrations 6-7 dispatch, claim, witness and attempt-event rows cannot be ignored by an older sender. Otherwise keep the current store owner and roll forward. Release rollback retains stable transaction identities, current redaction/revocation frontiers and unresolved effects.
++Binary rollback is allowed only when the predecessor understands every committed migration and durable record. Migrations 6-11 dispatch, claim, witness, canonical-content, entered-use, legacy-hold and remediation rows cannot be ignored by an older sender. Otherwise keep the current store owner and roll forward. Release rollback retains stable transaction identities, current redaction/revocation frontiers, parked legacy holds and unresolved effects.
+diff --git a/docs/modules/channel.matrix/QUALIFICATION_MATRIX.md b/docs/modules/channel.matrix/QUALIFICATION_MATRIX.md
+--- a/docs/modules/channel.matrix/QUALIFICATION_MATRIX.md
++++ b/docs/modules/channel.matrix/QUALIFICATION_MATRIX.md
+@@ -15 +15 @@
+-| MATRIX-Q07 | matrixd restart | transaction, claim history and verified authority lineage survive | source; genuine durable proof chain still a gate |
++| MATRIX-Q07 | matrixd restart | transaction, claim history and verified authority lineage survive | source; exact-head native execution required |
+@@ -28,2 +28,2 @@
+-| MATRIX-Q20 | pre-pin cancellation versus legacy unknown | new proven-pre-entry retry can first-pin; inherited unpinned attempts remain held | 6 isolated migration-9 tests passed; native reopen case remains source |
+-| MATRIX-Q21 | same-name schema weakening | content pin rejects altered table/trigger DDL | isolated SQLite test passed; full startup/native qualification still required |
++| MATRIX-Q20 | pre-pin cancellation versus legacy unknown | new proven-pre-entry retry can first-pin; inherited unpinned attempts are durably unresolved and parked for authenticated reconciliation | migration-9/11 isolated tests passed; exact-head native execution required |
++| MATRIX-Q21 | same-name schema weakening | content pin and store-open checks reject altered table/trigger DDL | source-complete exact schema validation; exact-head native execution required |
+@@ -34,3 +34,3 @@
+-`codex-rs/hepta-matrix-sdk/tests/durable_transport.rs`, `final_poll_regressions.rs` and `pending_poll_regressions.rs` retain sender/retry/fencing source cases. New `src/content_tests.rs` and `authority_tests.rs` cover the version-2 message binding. `codex-rs/hepta-matrix-store/tests/content_binding.rs` adds reopen, pre-pin cancel, semantic drift, stale claim, malformed digest and weakened-schema cases.
++`codex-rs/hepta-matrix-sdk/tests/durable_transport.rs`, `final_poll_regressions.rs` and `pending_poll_regressions.rs` retain sender/retry/fencing source cases. New `src/content_tests.rs` and `authority_tests.rs` cover the version-2 message binding. `codex-rs/hepta-matrix-store/tests/content_binding.rs` adds reopen, pre-pin cancel, semantic drift, stale claim, malformed digest and weakened-schema cases. `scripts/tests/test_channel_matrix_legacy_remediation.py` exercises migration-11 ledger materialization, stale-claim closure, queue parking and the anti-reactivation trigger.
+ 
+-`codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs` and `tests/fixtures/run-hermetic-synapse.sh` retain the pinned unencrypted target profile. It records image/version/source/runner identity; storing it is not a successful run. Supervisor fixtures remain the lifecycle/adoption source. Migration-7 histories, migration-8 pins and migration-9 holds are not an independent sender or an authorization issuer.
++`codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs` and `tests/fixtures/run-hermetic-synapse.sh` retain the pinned unencrypted target profile. It records image/version/source/runner identity; storing it is not a successful run. Supervisor fixtures remain the lifecycle/adoption source. Migration-7 histories, migration-8 pins, migration-9 holds, migration-10 entered-use rows and migration-11 parking are durable owner facts, not an independent sender or authorization issuer.
+@@ -74 +74 @@
+-For this increment, **27 isolated tests passed**: 13 migration-8 constraint tests, six migration-9 historical/new-work tests and eight temporary-Git verifier tests. The command is:
++Across the preceding content-boundary increment, **27 isolated tests passed**: 13 migration-8 constraint tests, six migration-9 historical/new-work tests and eight temporary-Git verifier tests. This remediation increment adds five narrow synthetic SQLite tests for migration 11; they passed in the authoring harness but do not replace exact-candidate CI. The discovery command is:
+@@ -95 +95 @@
+-No native source-completion, product-execution, deployment, independent-acceptance, activation or release claim is granted by this increment. Resolve the lockfile using the pinned resolver, not by dropping `--locked`. Complete the genuine kernel-proof/durable-authority/terminal-observation trust chain, whole-store startup checks, legacy item remediation and all applicable target profiles. A workflow file and local SQLite success cannot close those gates.
++No product-execution, deployment, independent-acceptance, activation or release claim is granted by this increment. Keep `--locked`; commit only the pinned resolver's scoped lockfile result. The source now contains the kernel entered-use proof, durable authority/content binding, exact whole-store startup validation and legacy-hold parking/reconciliation path, but those claims require passing exact-head and deterministic-merge native receipts. Real homeserver, encryption/rotation, restore/capacity and independent target profiles remain mandatory. A workflow file and local SQLite success cannot close those gates.
+diff --git a/docs/modules/channel.matrix/FINAL_CONTENT_BOUNDARY_V2.md b/docs/modules/channel.matrix/FINAL_CONTENT_BOUNDARY_V2.md
+--- a/docs/modules/channel.matrix/FINAL_CONTENT_BOUNDARY_V2.md
++++ b/docs/modules/channel.matrix/FINAL_CONTENT_BOUNDARY_V2.md
+@@ -130 +130,7 @@
+ Finally run the supported pinned unencrypted Synapse profile, encrypted-room rotation, ACK-loss/crash recovery, revocation-at-entry, redaction/restore and sustained-capacity scenarios with exact-candidate receipts. Independent operator/security acceptance, activation and release remain false. No enrollment, real production send, credential distribution, mainline merge or release is authorized by this source increment.
++
++## 9. Subsequent source closure
++
++Later commits supersede the source-gap statements above without changing their historical execution claims. Migration 10 now stores the non-constructible entered-use proof and makes qualified success/redaction depend on the exact claim, authority, content and proof tuple. Store open compares exact normalized SQL for the dispatch objects from migrations 6-11 and checks integrity, foreign keys, claims, content, use entries, terminal states and legacy holds.
++
++Migration 11 gives every sealed legacy hold a durable `accepted` or `indeterminate` ledger row, closes stale claims with append-only evidence, parks active queue rows at the maximum signed schedule and installs an anti-reactivation trigger. Only authenticated sync may settle the original transaction. The five narrow migration-11 tests passed in the authoring harness; exact-candidate Rust/CI and real homeserver qualification are still required.
+diff --git a/docs/modules/channel.matrix/CONTINUATION_VALIDATION.md b/docs/modules/channel.matrix/CONTINUATION_VALIDATION.md
+--- a/docs/modules/channel.matrix/CONTINUATION_VALIDATION.md
++++ b/docs/modules/channel.matrix/CONTINUATION_VALIDATION.md
+@@ -6,3 +6,6 @@
+ The nine existing module development documents remain the main specification.
+ This supplement records the continuation-poll behavior and command-receipt
+-format implemented in this increment.
++format implemented in this increment. Subsequent source commits additionally
++sealed the raw SDK entry, persisted the non-constructible entered-use proof,
++completed exact migrations 6-11 startup validation and parked sealed legacy
++holds; those source facts still require the exact-candidate receipts below.
+@@ -30,4 +30,6 @@
+ The kernel performs expiry validation at initial entry; transport duration is
+-bounded by the unchanged lease deadline. Stronger transport-specific entry,
+-canonical wire-content binding and sealed durable entry evidence still require
+-separate implementation/qualification; this increment does not claim them.
++bounded by the unchanged lease deadline. The current source now binds canonical
++Matrix content, persists the entered-use proof before any network effect and
++requires an opaque permit at the SDK facade. This remains a local adapter
++boundary rather than a network-wide atomic lock, and exact native/target
++qualification is still required.
+diff --git a/docs/modules/channel.matrix/IMPLEMENTATION_MAP.json b/docs/modules/channel.matrix/IMPLEMENTATION_MAP.json
+--- a/docs/modules/channel.matrix/IMPLEMENTATION_MAP.json
++++ b/docs/modules/channel.matrix/IMPLEMENTATION_MAP.json
+@@ -35 +35 @@
+-  "sourceMaturity": "native_durable_channel_runtime_authorized_dispatch_source_composed_unqualified",
++  "sourceMaturity": "native_durable_channel_runtime_entered_use_legacy_park_source_composed_unqualified",
+@@ -40,2 +40,2 @@
+-  "stateOwnerDisposition": "MatrixDurableStore owns ingress, sync frontier, outbox, dispatch ledger, fenced claims, witness metadata, attempt events, immutable canonical content/scope pins and the sealed legacy-content hold snapshot. No second sender or in-memory terminal ledger is introduced.",
+-  "terminalObserverDisposition": "The canonical sync reducer commits matching remote event observations; HTTP acceptance is not qualified terminality. Trusted-ingress and kernel-proof-to-durable-terminal provenance remain explicit verification and implementation gates.",
++  "stateOwnerDisposition": "MatrixDurableStore owns ingress, sync frontier, outbox, dispatch ledger, fenced claims, witness metadata, entered-use proofs, attempt events, immutable canonical content/scope pins and sealed/parked legacy-content holds. No second sender or in-memory terminal ledger is introduced.",
++  "terminalObserverDisposition": "The canonical sync reducer commits matching authenticated remote event observations; HTTP acceptance is not qualified terminality. The kernel entered-use proof is durably bound before transport, while trusted target-ingress and exact-candidate execution remain qualification gates.",
+@@ -75 +75 @@
+-      "sourceSemantics": "Wires fenced claims, immutable canonical plaintext content/scope pins, schema-v2 grant proposals and a non-constructible kernel-entry permit into the real SDK facade. Witness metadata alone is not a genuine kernel proof or terminal-success qualification.",
++      "sourceSemantics": "Wires fenced claims, immutable canonical plaintext content/scope pins, schema-v2 grant proposals, a non-constructible entered-use proof and a sealed SDK permit into the real transport facade. Witness metadata alone cannot qualify success; authenticated sync terminality must match the persisted proof chain.",
+@@ -105,8 +105,7 @@
+   "repositoryControlledGaps": [
+-    "Resolve the actual Cargo.lock/manifest mismatch using the pinned Cargo resolver; retain --locked verification and review the scoped lockfile diff.",
++    "Resolve and commit the scoped Cargo.lock result using the pinned resolver; retain --locked verification.",
+     "Compile, format, strictly lint and execute all new and inherited native fixtures on the final source-head and deterministic merge candidate.",
+-    "Close the genuine kernel proof -> durable authority record -> authenticated terminal observation chain; caller-filled witness metadata is not sufficient proof.",
+-    "Integrate complete startup schema/invariant checks for all dispatch, claim, content-pin and legacy-hold objects; critical pin-boundary DDL checks alone are not full startup qualification.",
+-    "Provide bounded item-level remediation for legacy holds and sustained retention/capacity; do not erase immutable pins or unresolved effects.",
++    "Execute the stored hermetic Synapse, ACK-loss/crash, revocation-entry and redaction scenarios with exact candidate receipts.",
++    "Provide authenticated archival/retention for sustained legacy-hold and unresolved-dispatch capacity without deleting evidence.",
+     "Qualify authenticated login/access-token and encryption-session transaction scope across rotation; configured session generation alone is not a rotation proof."
+   ],
+@@ -125,3 +125,3 @@
+-    "repositoryControlledDocumentationGapsClosed": false,
+-    "repositoryControlledMappingGapsClosed": false,
+-    "repositoryControlledSourceBoundaryGapsClosed": false,
++    "repositoryControlledDocumentationGapsClosed": true,
++    "repositoryControlledMappingGapsClosed": true,
++    "repositoryControlledSourceBoundaryGapsClosed": true,
+diff --git a/docs/modules/channel.matrix/SECURITY_MODEL.md b/docs/modules/channel.matrix/SECURITY_MODEL.md
+--- a/docs/modules/channel.matrix/SECURITY_MODEL.md
++++ b/docs/modules/channel.matrix/SECURITY_MODEL.md
+@@ -25,6 +25,8 @@
+ 3. persists witness and revocation-head digests under the exact claim;
+ 4. records dispatching;
+ 5. refreshes authenticated revocations;
+-6. consumes the exact-frontier token immediately before polling the lazy transport future.
++6. consumes the exact-frontier token;
++7. persists the resulting non-constructible entered-use proof against the claim, authority and canonical-content tuple;
++8. constructs the opaque SDK permit and creates/polls the lazy transport future without an intervening unrelated persistence await.
+ 
+-The raw 32-byte claim capability is process-private. Only its SHA-256 digest is durable. Every active-claim mutation is fenced by transaction, attempt, lease epoch and capability digest; the ledger additionally enforces monotonic attempt CAS.
++The raw 32-byte claim capability is process-private. Only its SHA-256 digest is durable. Every active-claim mutation is fenced by transaction, attempt, lease epoch and capability digest; the ledger additionally enforces monotonic attempt CAS. Qualified success or redaction requires the entered-use row, so caller-filled witness metadata cannot stand in for physical-entry proof.
+@@ -65 +65,2 @@
+-- redacted/revoked content cannot reappear after reconnect or restore.
++- redacted/revoked content cannot reappear after reconnect or restore;
++- sealed legacy holds cannot be reclaimed, rescheduled or assigned a new transaction identity.
+diff --git a/docs/modules/channel.matrix/STATE_MACHINE.md b/docs/modules/channel.matrix/STATE_MACHINE.md
+--- a/docs/modules/channel.matrix/STATE_MACHINE.md
++++ b/docs/modules/channel.matrix/STATE_MACHINE.md
+@@ -8,5 +8,6 @@
+ Prepared
+   -> Claimed(attempt, lease_epoch, opaque_claim_token)
+   -> Authorized(verified-use witness, revocation head)
+-  -> Dispatching(final revocation refresh, token consumed)
++  -> Dispatching(final revocation refresh)
++  -> EnteredUse(non-constructible durable proof, sealed SDK permit)
+   -> TransportAccepted
+@@ -25,3 +25,6 @@
+ | `matrix_dispatch_authority_witnesses` | exact final-use witness and revocation-head digests |
++| `matrix_dispatch_content_bindings` | canonical Matrix content and scope pin |
++| `matrix_dispatch_use_entries` | exact non-constructible entered-use proof |
++| `matrix_dispatch_legacy_content_holds` | sealed inherited unknown-effect identity |
+ | `matrix_dispatch_attempt_events` | append-only typed attempt history |
+ | `matrix_dispatch_observations` | transport, homeserver and redaction observations |
+@@ -55,2 +55,3 @@
+-| authorized | final persistence before I/O | dispatching | exact live token/lease, `dispatching` event |
+-| dispatching | SDK returns valid event ID | accepted | `transport_accepted` observation/event; not terminal success |
++| authorized | durable intent before final entry | dispatching | exact live token/lease, `dispatching` event |
++| dispatching | final revocation check and token entry | entered-use proof | immutable proof bound to claim, authority, scope and canonical content |
++| entered-use proof | sealed SDK permit polls transport | accepted/indeterminate/failed | typed physical-boundary observation; event ID is not terminal success |
+@@ -82,7 +82,9 @@
+ -> persist dispatching phase
+ -> refresh authenticated revocation frontier
+ -> enter verified use with exact token/binding
+--> poll lazy Matrix transport future
++-> persist the non-constructible entered-use proof under the live claim
++-> construct the opaque MatrixSendPermit
++-> create and poll the lazy Matrix transport future
+ ```
+ 
+-There is no `await`, persistence operation or mutable policy read between successful `enter_verified_use` and polling the transport future. The physical deadline is strictly shorter than the remaining lease.
++Entered-use proof persistence occurs before the transport future exists and therefore before any network effect. After the future is created, no unrelated persistence await precedes its first poll. The physical deadline is strictly shorter than the remaining lease.
+@@ -95,4 +95,5 @@
+ 3. Dispatching phase and event commit together before final revocation refresh.
+-4. Fenced outcome handling updates the outbox claim and append-only attempt history under the exact attempt/lease/token identity.
+-5. `/sync` reconciliation, terminal ledger mutation, outbox settlement, change record and sync checkpoint commit in one owner transaction.
+-6. Redaction, dispatch redaction and checkpoint advancement commit in one owner transaction.
++4. Entered-use proof commits under the exact claim/content/authority tuple before permit construction.
++5. Fenced outcome handling updates the outbox claim and append-only attempt history under the exact attempt/lease/token identity.
++6. `/sync` reconciliation, terminal ledger mutation, outbox settlement, change record and sync checkpoint commit in one owner transaction.
++7. Redaction, dispatch redaction and checkpoint advancement commit in one owner transaction.
+@@ -110,4 +110,5 @@
+ | after kernel nonce burn, before witness commit | nonce remains burned; no effect; retry uses a fresh grant |
+ | after witness, before dispatching | exact claim can only be canceled/revoked/expired or resumed under its lease |
+-| after dispatching, before transport poll | no effect if process dies before poll; recovery does not fabricate success |
++| after token entry, before proof commit | token remains consumed; no network effect; retry requires a fresh grant |
++| after proof commit, before transport poll | entered intent remains durable; no success is fabricated and reconciliation keeps the transaction unresolved |
+ | after adapter entry, before response | indeterminate; retain stable transaction |
+@@ -125 +125 @@
+-Unresolved dispatch rows are capped at 4,096. Claim batches are bounded to 1-256, attempts to 1-64, network deadlines by lease, and retry delays by policy. Matrix `Retry-After` is normalized, bounded and given deterministic per-transaction jitter. Exhausted unknown effects park for reconciliation rather than spin or become false failures.
++Unresolved dispatch rows are capped at 4,096. Claim batches are bounded to 1-256, attempts to 1-64, network deadlines by lease, and retry delays by policy. Matrix `Retry-After` is normalized, bounded and given deterministic per-transaction jitter. Exhausted unknown effects park for reconciliation rather than spin or become false failures. Sealed legacy holds are materialized as accepted/indeterminate, stale claims are closed, and active queue rows are permanently parked until authenticated sync settles the original transaction.
+diff --git a/docs/modules/channel.matrix/ARCHITECTURE.md b/docs/modules/channel.matrix/ARCHITECTURE.md
+--- a/docs/modules/channel.matrix/ARCHITECTURE.md
++++ b/docs/modules/channel.matrix/ARCHITECTURE.md
+@@ -20 +20 @@
+-The supervisor owns process lifecycle, release binding, process lease, restart budget and orphan adoption. `matrixd` owns local composition. The Matrix SDK owns homeserver transport/session mechanics. `MatrixDurableStore` owns Matrix ingress projection, sync cursor, room/thread binding, outbox, dispatch ledger, observations and authority-claim evidence. Agentd owns Agent execution state; Matrix code may call its registered boundary but never write Agentd state directly.
++The supervisor owns process lifecycle, release binding, process lease, restart budget and orphan adoption. `matrixd` owns local composition. The Matrix SDK owns homeserver transport/session mechanics. `MatrixDurableStore` owns Matrix ingress projection, sync cursor, room/thread binding, outbox, dispatch ledger, observations, canonical pins, entered-use proofs, sealed legacy holds and authority-claim evidence. Agentd owns Agent execution state; Matrix code may call its registered boundary but never write Agentd state directly.
+@@ -55,7 +55,9 @@
+-  -> derive canonical final-use request and payload/scope digests
++  -> derive and durably pin canonical final-use content/scope digests
+   -> obtain independently signed short-lived grant
+   -> kernel FinalUseAuthority validates signature and burns nonce
+   -> persist immutable authority claim for this transaction + attempt
+   -> refresh authenticated revocation frontier
+   -> exact-frontier enter_verified_use
+-  -> poll lazy Matrix transport future under deadline < claim lease
++  -> persist the non-constructible entered-use proof
++  -> construct the opaque SDK permit
++  -> create and poll the lazy Matrix transport future under deadline < claim lease
+@@ -85 +85 @@
+-- Authorized sender: `codex-rs/hepta-matrix-sdk/src/outbound.rs`
++- Authorized sender: `codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs`
