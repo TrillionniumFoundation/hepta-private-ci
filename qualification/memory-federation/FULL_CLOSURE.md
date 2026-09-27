@@ -13,7 +13,7 @@ This work package keeps four claims separate:
 
 ## In-process product closure
 
-The product runtime owns bounded streaming owner discovery, admitted-peer limits, discovery and revalidation concurrency, one global operation horizon, and per-owner budgets. Completed owner observations are preserved; unfinished or unavailable owners become typed failed coverage rather than disappearing or expanding fan-out.
+The product runtime owns bounded streaming owner discovery, admitted-peer limits, discovery and revalidation concurrency, and one global operation horizon. Each owner operation is bounded by that shared horizon; the current profile does not claim a separately configurable per-owner time budget. Completed owner observations are preserved; unfinished or unavailable owners become typed failed coverage rather than disappearing or expanding fan-out.
 
 Final revalidation groups exact owner/capability bindings and executes groups with bounded concurrency. Retrieval may degrade partially before proposal construction, with coverage recording omitted, unavailable, stale, and truncated sources. Once exact federated bytes have been prepared, the physical-send final-use guard is all-or-nothing: any stale or unavailable binding discards the whole prepared federated proposal instead of silently changing an already-approved payload.
 
@@ -30,7 +30,7 @@ The original V1 `observe` API is absent from the default crate surface and remai
 - HMAC-SHA-256 authentication over peer identities, credential generation, times, CSPRNG nonce, and canonical message digest;
 - bounded fail-closed replay protection;
 - authenticated chained frontier witnesses for generation/frontier/clock rollback detection;
-- an attempt registry and typed cancellation acknowledgement.
+- an attempt registry and typed cancellation acknowledgement whose observation times cannot predate attempt start or regress across repeated terminal/cancel observations.
 
 The crate is deliberately not a product workspace member or Agentd caller yet. Its separate manifest and qualification lane prove protocol behavior without activating a network service or widening the current in-process product claim.
 
@@ -43,7 +43,7 @@ The crate is deliberately not a product workspace member or Agentd caller yet. I
 - authenticated wire formatting, metadata resolution, schema/authentication/replay/frontier/cancellation tests, and strict Clippy;
 - clean tracked source after execution.
 
-The workflow uploads a self-digesting payload and a second envelope bound to GitHub's uploaded-artifact digest. A failure receipt is diagnostic evidence only and cannot set `productExecutionProved`.
+The workflow uploads a self-digesting payload and a second envelope bound to GitHub's uploaded-artifact digest. The payload verifier recomputes the exact checkout identity, mapped source manifest, command manifest, claim boundary, and referenced evidence hashes. The full-closure payload also retains and hashes the Cargo-resolved standalone wire lockfile so its dependency resolution can be reviewed and promoted into tracked source before locked qualification. A failure receipt is diagnostic evidence only and cannot set `productExecutionProved`.
 
 ## External cross-host gates
 
