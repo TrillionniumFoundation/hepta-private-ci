@@ -13,6 +13,9 @@ use super::NativeRunOutput;
 use super::NativeRunStatus;
 use super::Result;
 
+#[path = "native_reconciliation.rs"]
+mod reconciliation;
+
 /// Explicit local capacity policy; the first request pins the journal's limit.
 /// This limits admitted runs, not provider tokens, billing or device memory.
 pub struct NativeAdmission {

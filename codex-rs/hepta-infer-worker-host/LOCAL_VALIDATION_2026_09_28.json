@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.inference-worker.local-python-validation.v1",
+  "date": "2026-09-28",
+  "scope": "exact_python_file_blobs_only_not_full_candidate_qualification",
+  "repository_source_commit_containing_tested_blobs": "276130607dad24e73be4c51150bb77bbbc546446",
+  "tested_git_blobs": {
+    "scripts/hepta_inference_worker_qualification.py": "ef08156bc272bed6f60cee55400bbc34bfe89229",
+    "scripts/test_hepta_inference_worker_qualification.py": "99f492cf42aff0834b2af968550d45f525a2f210"
+  },
+  "command": [
+    "python", "-W", "error::ResourceWarning", "-m", "unittest", "discover",
+    "-s", "scripts", "-p", "test_hepta_inference_worker_qualification.py", "-v"
+  ],
+  "environment": {
+    "python": "3.13.5",
+    "operating_system": "Linux",
+    "machine": "x86_64"
+  },
+  "result": "passed",
+  "tests_run": 8,
+  "failures": 0,
+  "errors": 0,
+  "log_sha256": "fc66955ba7a46af466d5ae55bdb92cbca17e0cf09bc20770aee0a7e3fe8654e4",
+  "rust_compilation": "not_executed",
+  "rust_tests": "not_executed",
+  "rustfmt": "not_executed",
+  "clippy": "not_executed",
+  "macos": "not_executed",
+  "real_hardware": "not_executed",
+  "real_provider": "not_executed",
+  "product_composition": "not_executed",
+  "independent_acceptance": false,
+  "activation": false,
+  "release": false
+}

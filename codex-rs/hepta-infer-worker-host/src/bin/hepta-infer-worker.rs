@@ -28,14 +28,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut intelligence_context_digest = None;
     let mut intelligence_envelope_digest = None;
     let mut native_profile_selected = false;
+    let mut reconcile_only = false;
     let mut timeout_ms = 120_000_u64;
     let mut args = std::env::args().skip(1);
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--reconcile-only] [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch. --reconcile-only uses the original inputs to inspect an existing operation and never reserves or starts a new turn."
             );
             return Ok(());
+        }
+        if flag == "--reconcile-only" {
+            reconcile_only = true;
+            continue;
         }
         let value = args.next().ok_or("missing argument value")?;
         match flag.as_str() {
@@ -114,29 +119,49 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             return Err("all four --intelligence-* arguments must be supplied together".into());
         }
     };
-    let result = match intelligence {
-        Some(binding) => {
-            driver
-                .run_intelligence(
-                    &mut control,
-                    admission,
-                    prompt,
-                    context_query,
-                    binding,
-                    &cancellation,
-                )
-                .await
+    let result = if reconcile_only {
+        match driver
+            .reconcile_only(
+                &mut control,
+                &admission.request_id,
+                &prompt,
+                context_query,
+                intelligence.as_ref(),
+            )
+            .await
+        {
+            Ok(Some(output)) => Ok(output),
+            Ok(None) => Err(
+                "no terminal evidence is available; no new request was admitted or dispatched"
+                    .into(),
+            ),
+            Err(error) => Err(error),
         }
-        None => {
-            driver
-                .run(
-                    &mut control,
-                    admission,
-                    prompt,
-                    context_query,
-                    &cancellation,
-                )
-                .await
+    } else {
+        match intelligence {
+            Some(binding) => {
+                driver
+                    .run_intelligence(
+                        &mut control,
+                        admission,
+                        prompt,
+                        context_query,
+                        binding,
+                        &cancellation,
+                    )
+                    .await
+            }
+            None => {
+                driver
+                    .run(
+                        &mut control,
+                        admission,
+                        prompt,
+                        context_query,
+                        &cancellation,
+                    )
+                    .await
+            }
         }
     };
     signal_task.abort();
