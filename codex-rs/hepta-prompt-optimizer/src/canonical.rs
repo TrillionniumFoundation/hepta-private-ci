@@ -12,6 +12,8 @@ mod digest;
 mod verified;
 #[path = "canonical_solver.rs"]
 mod solver;
+#[path = "canonical_temporal.rs"]
+mod temporal;
 #[path = "canonical_runtime.rs"]
 mod runtime;
 #[path = "canonical_codec.rs"]
@@ -66,7 +68,7 @@ pub use solver::SelectedPromptPortfolioV1;
 pub use solver::VerifiedPromptExerciseDecisionV1;
 pub use solver::VerifiedPromptExerciseDecisionV1 as PromptExerciseDecisionV1;
 pub use solver::pair_utility_evidence_signing_payload_v1;
-pub use solver::select_portfolio_v1;
+pub use temporal::select_portfolio_v1;
 
 pub use verified::CanonicalPromptError;
 pub use verified::EnumeratedPromptCandidatesV1;

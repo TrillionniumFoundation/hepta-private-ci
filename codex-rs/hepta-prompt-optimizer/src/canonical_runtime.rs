@@ -101,6 +101,13 @@ pub fn build_canonical_prompt_plan_v1(
     registry: &PromptRegistry,
     inputs: CanonicalPromptPlanInputsV1,
 ) -> Result<CanonicalPromptPlanV1, CanonicalPromptError> {
+    validate_plan_time(inputs.enumeration.now_unix_ms, inputs.exercise.now_unix_ms)?;
+    if inputs.enumeration.state_digest != inputs.exercise.current_state_digest
+        || inputs.enumeration.generation_vector_digest != inputs.exercise.generation_vector_digest
+        || inputs.enumeration.model_tuple != inputs.exercise.model_tuple
+    {
+        return Err(CanonicalPromptError::EvidenceContextMismatch);
+    }
     let graph = &inputs.exercise.current_graph;
     let verifier = &inputs.exercise.current_verifier;
     let enumerated = verified::enumerate_factors_v1(registry, inputs.enumeration)?;
@@ -113,7 +120,9 @@ pub fn build_canonical_prompt_plan_v1(
         &inputs.pricing_policy,
         inputs.exercise.now_unix_ms,
     )?;
-    let portfolio = solver::select_portfolio_v1(
+    // Use the public canonical entrypoint, including graph-time admission.
+    // Calling the private solver here would bypass the future-support fence.
+    let portfolio = super::select_portfolio_v1(
         &priced,
         graph,
         inputs.pair_evidence,
@@ -128,4 +137,28 @@ pub fn build_canonical_prompt_plan_v1(
         portfolio,
         exercise,
     })
+}
+
+fn validate_plan_time(enumerated_at: u64, used_at: u64) -> Result<(), CanonicalPromptError> {
+    if enumerated_at == 0 || used_at == 0 || used_at < enumerated_at {
+        return Err(CanonicalPromptError::InvalidTime);
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn product_plan_rejects_time_reversal_and_zero_clocks() {
+        for (enumerated_at, used_at) in [(0, 1), (1, 0), (101, 100)] {
+            assert_eq!(
+                validate_plan_time(enumerated_at, used_at),
+                Err(CanonicalPromptError::InvalidTime)
+            );
+        }
+        assert_eq!(validate_plan_time(100, 100), Ok(()));
+        assert_eq!(validate_plan_time(100, 101), Ok(()));
+    }
 }

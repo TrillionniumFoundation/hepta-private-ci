@@ -26,6 +26,7 @@
       "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
       "codex-rs/hepta-prompt-optimizer/src/canonical_verified.rs",
       "codex-rs/hepta-prompt-optimizer/src/canonical_solver.rs",
+      "codex-rs/hepta-prompt-optimizer/src/canonical_temporal.rs",
       "codex-rs/hepta-prompt-optimizer/src/canonical_runtime.rs",
       "codex-rs/hepta-prompt-optimizer/src/canonical_codec.rs"
     ],
@@ -92,15 +93,21 @@
     {
       "operation": "select_portfolio_v1",
       "nativeSymbol": "canonical::select_portfolio_v1",
-      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical_solver.rs",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical_temporal.rs",
       "state": "source_implemented_product_source_composed",
       "authority": "none",
       "tests": [
         "prerequisite_bundle_can_select_negative_prerequisite_for_positive_bundle",
         "hard_conflict_cannot_be_outweighed_by_positive_numeric_utility",
-        "sealed_canonical_pipeline_reaches_exercise_with_exact_certificate"
+        "sealed_canonical_pipeline_reaches_exercise_with_exact_certificate",
+        "future_conflict_caps_validity_without_generation_drift",
+        "future_prerequisite_has_the_same_exclusive_time_fence",
+        "node_visibility_and_multiple_supports_use_earliest_transition",
+        "tombstones_and_past_boundaries_do_not_create_future_visibility",
+        "invalid_clock_and_unrepresentable_transition_fail_closed"
       ],
       "productCallers": [
+        "codex-rs/hepta-prompt-optimizer/src/canonical_runtime.rs::build_canonical_prompt_plan_v1",
         "codex-rs/hepta-agentd/src/bin/prompt_optimizer_product.rs::run_agentd_canonical_prompt_product_v1"
       ],
       "sourcePathExists": true,
@@ -115,7 +122,8 @@
       "tests": [
         "revocation_after_selection_rejects_exercise_at_delivery_boundary",
         "exercise_rejects_graph_and_trust_drift_with_typed_reasons",
-        "policy_context_mismatch_cannot_be_hidden_behind_a_digest"
+        "policy_context_mismatch_cannot_be_hidden_behind_a_digest",
+        "product_plan_rejects_time_reversal_and_zero_clocks"
       ],
       "productCallers": [
         "codex-rs/hepta-intelligence/src/prompt_pipeline.rs::compile_exercised_prompt_context_v1",

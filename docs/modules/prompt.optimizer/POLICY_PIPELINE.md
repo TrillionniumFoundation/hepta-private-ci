@@ -72,6 +72,34 @@ incumbent value, resource use and either a certificate/gap or
 `HeuristicNoCertificate`. Compatibility heuristics do not determine canonical
 capacity or semantics.
 
+### Graph visibility is time-dependent
+
+The public selector enters through `canonical_temporal.rs` before invoking the
+existing private solver. A graph digest freezes its facts, but does not freeze
+temporal visibility: a future conflict or prerequisite can become active in the
+same graph generation. Inspecting only currently returned relation edges misses
+that transition.
+
+Selection therefore caps the requested portfolio deadline at the earliest
+strictly future `valid_from_unix_seconds` or `valid_to_unix_seconds` of every
+non-tombstoned node/edge support in the immutable generation. Seconds convert to
+milliseconds with checked arithmetic. Invalid clocks and unrepresentable
+boundaries fail closed. The graph owner defines start-inclusive/end-exclusive
+visibility; a portfolio must be selected again at the transition itself.
+
+This conservative whole-generation fence can force reselection for an unrelated
+support change. It deliberately favors rejection over accepting a stale hard
+constraint. It neither invents missing-edge utility nor adds another solver.
+The existing solver can shorten the deadline further for evidence, realization
+and active relation expiry; it cannot extend the temporal cap. That final
+deadline is included in the portfolio receipt and audit digests.
+
+Native regression sources in `canonical_temporal.rs` cover a future conflict
+whose query result changes without a generation-digest change, future
+prerequisites, exact millisecond boundaries, node/multiple-support transitions,
+tombstones, past boundaries, invalid clocks and conversion overflow. These are
+test identities, not assertions that current CI has executed successfully.
+
 ## 6. Exercise and delivery revalidation
 
 `exercise_v1` revalidates the exact selected realization set against the current
@@ -101,7 +129,10 @@ prompt.registry owner snapshot
 
 A caller may not hand-construct an intermediate verified stage. Raw wire values
 must be revalidated into private verified type-state at every cross-crate
-boundary.
+boundary. `build_canonical_prompt_plan_v1` calls the same time-admitted public
+selector as other consumers. It rejects a use time before enumeration, zero
+clocks, and state/model/generation substitution between those stages. This is a
+single-plan chronology check, not a claim of a persistent monotonic host clock.
 
 ## 8. Claim boundary
 
