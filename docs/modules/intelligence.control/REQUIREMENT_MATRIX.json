@@ -1,0 +1,263 @@
+{
+  "schema": "hepta.intelligence-control-requirements.v1",
+  "schemaVersion": 1,
+  "module": "intelligence.control",
+  "claimBoundary": {
+    "sourceMappingOnly": true,
+    "executionMustComeFromExactCandidateWorkflow": true,
+    "qualificationOnlyCannotSatisfyProductRequirement": true
+  },
+  "requirements": [
+    {
+      "id": "INTEL-CANONICAL-CANDIDATE-CLOSURE",
+      "statement": "The selected action belongs to the canonical legal set, has non-zero propensity, and raw ordering or mutable support substitution cannot change the admitted identity.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/canonical.rs",
+          "symbol": "pub fn build_legal_candidates"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+          "symbol": "pub fn validate_canonical_outcome_v1"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+          "name": "raw_candidate_order_does_not_change_canonical_identity",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+          "name": "malicious_selected_candidate_outside_legal_set_is_rejected",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+          "name": "zero_propensity_selection_is_rejected",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+          "name": "malicious_selection_cannot_reach_context_or_evaluation",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+          "name": "candidate_permutations_produce_identical_public_outcomes",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+          "name": "boundary_rehashes_mutable_candidate_receipts",
+          "class": "product"
+        }
+      ]
+    },
+    {
+      "id": "INTEL-RUN-IDENTITY-AND-FENCE",
+      "statement": "The durable RunStart identity, Running generation, and objective fence are inherited exactly and forged generation/fence values fail before mutation.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+          "symbol": "pub fn objective_run_fence_digest_v1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/lane_b_bound.rs",
+          "symbol": "pub fn start_bound_run"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/lane_b_bound.rs",
+          "name": "running_generation_differs_from_spawn_and_is_admitted",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/lane_b_bound.rs",
+          "name": "forged_generation_or_fence_is_rejected_before_mutation",
+          "class": "product"
+        }
+      ]
+    },
+    {
+      "id": "INTEL-DURABLE-LEARNING-CURRENT-TIME",
+      "statement": "Persisted event time is historical data; every first application and replay revalidates evidence and principals at a fresh product-owned current time.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+          "symbol": "pub trait AgentdIntelligenceLearningClockV1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+          "symbol": "fn require_current_payload_window"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+          "name": "recovery_uses_current_time_not_persisted_admission_time",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+          "name": "governed_clock_is_injectable",
+          "class": "product"
+        }
+      ]
+    },
+    {
+      "id": "INTEL-DURABLE-LEARNING-EXACT-IDENTITY",
+      "statement": "Decision and Outcome operations, signed evidence, authenticated principals, controller identity, and destination observation retain exact immutable identity across restart.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+          "symbol": "fn expected_persisted_event"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+          "symbol": "pub async fn reconcile_unsettled"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+          "name": "operation_ids_are_kind_separated_and_stable",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+          "name": "evidence_payload_rejects_role_substitution",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+          "name": "persisted_evidence_binding_rejects_signed_identity_substitution",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+          "name": "persisted_principal_binding_rejects_key_and_credential_substitution",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+          "name": "exact_destination_observation_binds_controller_identity",
+          "class": "product"
+        }
+      ]
+    },
+    {
+      "id": "INTEL-RECOVERY-FAIRNESS",
+      "statement": "A permanent indeterminate prefix cannot consume every service iteration and starve newly prepared durable Decision/Outcome work.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+          "symbol": "fn split_learning_budget"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+          "name": "learning_runtime_policy_is_bounded",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+          "name": "reconciliation_cannot_consume_the_entire_multi_item_batch",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+          "name": "a_single_slot_alternates_recovery_and_new_work",
+          "class": "product"
+        }
+      ]
+    },
+    {
+      "id": "INTEL-WORKER-AND-RUN-OBSERVABILITY",
+      "statement": "Timed-out workers retain capacity until actual exit, stage failure classes remain distinct, and run-phase dwell is monotonic under idempotent replay.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+          "symbol": "pub(super) fn spawn_owner_work"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
+          "symbol": "pub struct AgentdIntelligenceTelemetryV1"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+          "name": "worker_timeout_is_visible_after_late_completion",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
+          "name": "stage_failure_classes_remain_separate",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
+          "name": "run_phase_dwell_accumulates_exact_transitions",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
+          "name": "same_phase_idempotent_replay_does_not_reset_dwell",
+          "class": "product"
+        }
+      ]
+    },
+    {
+      "id": "INTEL-PHYSICAL-NO-REDISPATCH",
+      "statement": "A possibly dispatched App Server turn is never automatically replayed; exact intelligence handoff fields are part of native admission identity.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+          "symbol": "pub async fn run_intelligence"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+          "name": "reopened_dispatch_and_completed_duplicate_never_connect_to_provider",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+          "name": "pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+          "name": "intelligence_handoff_is_committed_to_native_admission_identity",
+          "class": "product"
+        }
+      ]
+    }
+  ],
+  "requiredTestNames": [
+    "raw_candidate_order_does_not_change_canonical_identity",
+    "malicious_selected_candidate_outside_legal_set_is_rejected",
+    "zero_propensity_selection_is_rejected",
+    "running_generation_differs_from_spawn_and_is_admitted",
+    "forged_generation_or_fence_is_rejected_before_mutation",
+    "recovery_uses_current_time_not_persisted_admission_time",
+    "operation_ids_are_kind_separated_and_stable",
+    "evidence_payload_rejects_role_substitution",
+    "persisted_evidence_binding_rejects_signed_identity_substitution",
+    "persisted_principal_binding_rejects_key_and_credential_substitution",
+    "exact_destination_observation_binds_controller_identity",
+    "learning_runtime_policy_is_bounded",
+    "reconciliation_cannot_consume_the_entire_multi_item_batch",
+    "a_single_slot_alternates_recovery_and_new_work",
+    "worker_timeout_is_visible_after_late_completion",
+    "stage_failure_classes_remain_separate",
+    "run_phase_dwell_accumulates_exact_transitions",
+    "same_phase_idempotent_replay_does_not_reset_dwell",
+    "reopened_dispatch_and_completed_duplicate_never_connect_to_provider",
+    "intelligence_handoff_is_committed_to_native_admission_identity"
+  ]
+}
