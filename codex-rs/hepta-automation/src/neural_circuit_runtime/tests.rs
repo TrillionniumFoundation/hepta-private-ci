@@ -129,6 +129,33 @@ fn vertical_slice_records_choice_organ_wait_and_terminal_receipt() {
 }
 
 #[test]
+fn forged_event_digest_is_rejected_before_runtime_port_contact() {
+    let candidate = vertical_slice();
+    let mut ingress = event();
+    ingress.event_id = "event-tampered".to_string();
+    let mut decision = RouteTo {
+        next: "organ".to_string(),
+        feedbacks_remaining: 0,
+    };
+    let mut organ = ReadyOrgan;
+    let mut wait = ReadyWait;
+    let error = run_neural_circuit_v1(
+        &candidate,
+        &ingress,
+        &CircuitRuntimeProfileV1::default(),
+        &mut decision,
+        &mut organ,
+        &mut wait,
+        &NeverCancelled,
+    )
+    .expect_err("tampered ingress must fail closed");
+    assert!(matches!(
+        error,
+        NeuralCircuitRuntimeError::Invalid(message) if message.contains("event_digest")
+    ));
+}
+
+#[test]
 fn feedback_is_bounded_without_adding_a_graph_cycle() {
     let candidate = vertical_slice();
     let mut decision = RouteTo {
