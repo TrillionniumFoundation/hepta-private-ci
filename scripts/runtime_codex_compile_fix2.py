@@ -41,10 +41,10 @@ replace_once(
 ''',
 )
 
-# RemoteAppServerClient::shutdown consumes the client. The scoped execution
-# closure must retain it for pre-effect cleanup and all terminal observation.
-# Remove consuming shutdowns from the closure, then perform exactly one shutdown
-# after the closure has completed and the thread lifecycle has been reconciled.
+# RemoteAppServerClient::shutdown consumes the client. Keep it alive throughout
+# the scoped execution so every pre-effect error can use the lifecycle guard,
+# then perform one shutdown after reconciliation. Remove every one-line
+# consuming shutdown regardless of nesting depth.
 path = "codex-rs/hepta-infer-worker-host/src/native_app_server.rs"
 content = read(path)
 start_marker = "        let execution_result: Result<NativeRunOutput> = async {\n"
@@ -56,16 +56,16 @@ end = content.find(end_marker, start)
 if end < 0:
     raise SystemExit("native_app_server.rs: missing scoped execution tail")
 segment = content[start:end]
-shutdown = "            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;\n"
-shutdown_count = segment.count(shutdown)
+shutdown_statement = "let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;"
+lines = segment.splitlines(keepends=True)
+shutdown_count = sum(line.strip() == shutdown_statement for line in lines)
 if shutdown_count < 2:
     raise SystemExit(
         f"native_app_server.rs: expected multiple scoped shutdowns, found {shutdown_count}"
     )
-segment = segment.replace(shutdown, "")
+segment = "".join(line for line in lines if line.strip() != shutdown_statement)
 old_tail = '''        if execution_result.is_err() && !thread_lifecycle.effect_entered() {
             thread_lifecycle.close(&mut client, RPC_TIMEOUT).await;
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
         }
 '''
 new_tail = '''        if execution_result.is_err() && !thread_lifecycle.effect_entered() {
