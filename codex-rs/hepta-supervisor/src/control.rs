@@ -20,6 +20,10 @@ use crate::runtime::driver_error;
 #[path = "control_pending.rs"]
 pub(crate) mod pending;
 
+#[cfg(test)]
+#[path = "control_retry_tests.rs"]
+mod tests;
+
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn drain_slot(
         &mut self,
