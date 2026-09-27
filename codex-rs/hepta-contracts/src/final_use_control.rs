@@ -704,6 +704,13 @@ mod tests {
         SigningKey,
     );
 
+    fn test_nonce(label: &str) -> [u8; 32] {
+        let mut digest = Sha256::new();
+        digest.update(b"hepta.kernel.authority.final-use-control-test-nonce.v1\0");
+        digest.update(label.as_bytes());
+        digest.finalize().into()
+    }
+
     fn fixture() -> Result<ControlFixture, Box<dyn std::error::Error>> {
         let issuer = SigningKey::from_bytes(&[41; 32]);
         let approver = SigningKey::from_bytes(&[42; 32]);
@@ -714,7 +721,7 @@ mod tests {
             signer_id: "security-owner".into(),
             authority_epoch: 11,
             grant_id: "approved-use".into(),
-            nonce: [7; 32],
+            nonce: test_nonce("approved-use"),
             binding: FinalUseBinding {
                 subject_id: "agent-one".into(),
                 destination_id: "provider:heptabao".into(),
