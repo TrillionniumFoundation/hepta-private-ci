@@ -320,12 +320,12 @@ fn validate_delta_order(
                 delta.module_id.clone(),
             ));
         }
-        if let Some(previous) = previous {
-            if previous > &delta.module_id {
-                return Err(RuntimeTopologyContractErrorV1::InvalidDelta(
-                    delta.module_id.clone(),
-                ));
-            }
+        if let Some(previous) = previous
+            && previous > &delta.module_id
+        {
+            return Err(RuntimeTopologyContractErrorV1::InvalidDelta(
+                delta.module_id.clone(),
+            ));
         }
         previous = Some(&delta.module_id);
     }
@@ -346,12 +346,12 @@ fn validate_related_module_ids(
                 delta.module_id.clone(),
             ));
         }
-        if let Some(previous) = previous {
-            if previous > related {
-                return Err(RuntimeTopologyContractErrorV1::DuplicateRelatedModule(
-                    delta.module_id.clone(),
-                ));
-            }
+        if let Some(previous) = previous
+            && previous > related
+        {
+            return Err(RuntimeTopologyContractErrorV1::DuplicateRelatedModule(
+                delta.module_id.clone(),
+            ));
         }
         previous = Some(related);
     }
@@ -537,7 +537,7 @@ mod tests {
         ]);
         sorted.validate().expect("canonical order");
 
-        let mut reversed = sorted.clone();
+        let mut reversed = sorted;
         reversed.deltas.reverse();
         assert!(matches!(
             reversed.content_digest(),
