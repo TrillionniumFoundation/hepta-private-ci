@@ -18,7 +18,8 @@ impl HeptaEvidenceStore {
     /// generations must have an immutable acceptance for this exact enrolled
     /// store; an acceptance belonging to another store cannot satisfy the
     /// join. Keyset paging bounds memory and avoids one acceptance query per
-    /// evidence row.
+    /// evidence row. Accepted history cannot authorize a newer generation or
+    /// a different digest at the currently selected generation.
     pub async fn verify_production_qualification_provenance_bounded(
         &self,
         current_registry_generation: u64,
@@ -111,7 +112,7 @@ impl HeptaEvidenceStore {
                     .map_err(classify_sqlx_error)?;
 
                 let generation = generation_bytes
-                    .map(|bytes| {
+                    .map(|bytes| -> Result<u64, EvidenceError> {
                         let bytes: [u8; 8] = bytes.try_into().map_err(|_| {
                             EvidenceError::Corrupt(
                                 "qualification trust generation has invalid width".to_string(),
@@ -134,9 +135,11 @@ impl HeptaEvidenceStore {
                 };
                 let current = generation == current_registry_generation
                     && digest == *current_registry_sha256;
-                if !current && accepted_trust_seq.is_none() {
+                let accepted_prior = generation < current_registry_generation
+                    && accepted_trust_seq.is_some();
+                if !current && !accepted_prior {
                     return Err(EvidenceError::InvalidRecord(format!(
-                        "qualification evidence {evidence_id} references an unaccepted trust generation for store {store_id}"
+                        "qualification evidence {evidence_id} references an unaccepted trust generation or conflicts with the current registry for store {store_id}"
                     )));
                 }
 
