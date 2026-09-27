@@ -25,6 +25,8 @@ impl DurableInferenceControl {
     }
 
     /// Production settlement stores only a protected-output marker and metadata.
+    /// A non-terminal observation with no output has no data object to encrypt;
+    /// its absence is persisted explicitly rather than fabricating ciphertext.
     pub fn settle_native_authorized(
         &mut self,
         request_id: &str,
@@ -34,36 +36,41 @@ impl DurableInferenceControl {
         protected_output: Option<ProtectedOutput>,
     ) -> Result<NativeRunRecord, Error> {
         self.assert_native_plan_binding(request_id, plan, now_unix_ms)?;
-        let protected = match plan.output_policy().storage_mode {
-            OutputStorageMode::DigestOnly => ProtectedOutput::digest_only(
-                now_unix_ms,
-                plan.output_policy(),
-                output.output.as_bytes(),
-            )
-            .map_err(|_| Error::InvalidIdentity("native output policy"))?,
-            OutputStorageMode::ExternalEncrypted => protected_output
-                .ok_or(Error::InvalidIdentity("native encrypted output reference"))?,
+        let protected = if output.output.is_empty() && !output.terminal_observed {
+            None
+        } else {
+            let protected = match plan.output_policy().storage_mode {
+                OutputStorageMode::DigestOnly => ProtectedOutput::digest_only(
+                    now_unix_ms,
+                    plan.output_policy(),
+                    output.output.as_bytes(),
+                )
+                .map_err(|_| Error::InvalidIdentity("native output policy"))?,
+                OutputStorageMode::ExternalEncrypted => protected_output
+                    .ok_or(Error::InvalidIdentity("native encrypted output reference"))?,
+            };
+            if protected.output_digest
+                != sha256_hex(
+                    b"hepta.inference-control.output.v1\0",
+                    output.output.as_bytes(),
+                )
+                || protected.delete_after_unix_ms != plan.output_policy().delete_after_unix_ms
+                || protected.classification != plan.output_policy().classification
+                || protected.storage_mode != plan.output_policy().storage_mode
+            {
+                return Err(Error::AssignmentMismatch);
+            }
+            output.output = protected
+                .journal_marker()
+                .map_err(|_| Error::InvalidIdentity("native protected output"))?;
+            Some(protected)
         };
-        if protected.output_digest
-            != sha256_hex(
-                b"hepta.inference-control.output.v1\0",
-                output.output.as_bytes(),
-            )
-            || protected.delete_after_unix_ms != plan.output_policy().delete_after_unix_ms
-            || protected.classification != plan.output_policy().classification
-            || protected.storage_mode != plan.output_policy().storage_mode
-        {
-            return Err(Error::AssignmentMismatch);
-        }
-        output.output = protected
-            .journal_marker()
-            .map_err(|_| Error::InvalidIdentity("native protected output"))?;
         self.commit_native(
             request_id,
             Event::Observe {
                 request_id: request_id.to_string(),
                 output,
-                protected_output: Some(protected),
+                protected_output: protected,
             },
         )
     }
@@ -246,10 +253,7 @@ impl DurableInferenceControl {
             .as_millis()
             .try_into()
             .map_err(|_| Error::ArithmeticOverflow)?;
-        self.compact_native_journal_with_failpoint(
-            now_unix_ms,
-            &mut NoMaintenanceFailpoint,
-        )
+        self.compact_native_journal_with_failpoint(now_unix_ms, &mut NoMaintenanceFailpoint)
     }
 
     /// Deterministic maintenance entrypoint used by kill/fault qualification.
