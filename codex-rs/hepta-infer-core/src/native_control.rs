@@ -9,6 +9,7 @@ include!("native_control_v2_types.rs");
 include!("native_control_v2_control_a.rs");
 include!("native_control_v2_control_b.rs");
 include!("native_control_v2_control_c.rs");
+include!("native_control_v2_host.rs");
 include!("native_control_v2_journal.rs");
 include!("native_control_v2_helpers.rs");
 
