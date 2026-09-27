@@ -88,7 +88,7 @@ jobs:
   rust-diagnose:
     if: github.head_ref == 'codex/learning-operator-full-convergence-20260926' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 90
     env:
       CARGO_BUILD_JOBS: 2
       CARGO_PROFILE_DEV_DEBUG: 0
@@ -111,6 +111,13 @@ jobs:
           git rev-parse HEAD > "$RUNNER_TEMP/operator-rust/source-sha.txt"
           rustc --version --verbose > "$RUNNER_TEMP/operator-rust/toolchain.txt"
           cargo test --locked -p codex-hepta-bellman-operator -p codex-hepta-intelligence-eval 2>&1 | tee "$RUNNER_TEMP/operator-rust/tests.log"
+      - name: Exercise real evaluated Agentd read consumer
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd --lib cognitive_ranker::evaluated_tests -- --nocapture 2>&1 | tee "$RUNNER_TEMP/operator-rust/agentd-evaluated.log"
+          grep -Eq 'test result: ok\. [1-9][0-9]* passed; 0 failed' "$RUNNER_TEMP/operator-rust/agentd-evaluated.log"
       - name: Capture formatting corrections for explicit review only
         if: always()
         working-directory: codex-rs
@@ -118,10 +125,21 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/operator-rust"
-          cargo fmt -p codex-hepta-bellman-operator -p codex-hepta-intelligence-eval
+          cargo fmt -p codex-hepta-bellman-operator -p codex-hepta-intelligence-eval -p codex-hepta-agentd -p codex-hepta-learning-ledger
           git diff --binary > "$RUNNER_TEMP/operator-rust/format.patch"
-          cp "$(rustup which rustfmt)" "$RUNNER_TEMP/operator-rust/rustfmt"
           git diff --exit-code
+      - name: Preserve pinned formatter with its required runtime libraries
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/operator-rust/formatter"
+          mkdir -p "$root/bin" "$root/lib"
+          cp "$(rustup which rustfmt)" "$root/bin/rustfmt"
+          sysroot="$(rustc --print sysroot)"
+          find "$sysroot/lib" -maxdepth 1 -name '*.so*' -exec cp -L {} "$root/lib/" \;
+          tar -czf "$RUNNER_TEMP/operator-rust/formatter-toolchain.tar.gz" -C "$root" bin lib
+          rm -rf "$root"
       - name: Upload executable diagnostics (not a qualification receipt)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
