@@ -81,7 +81,9 @@ function verifyCapabilities() {
     '"focus"',
     '"scroll"',
     '"wait"',
-    "capability_not_connected",
+    'matches!(kind, "credential" | "upload" | "download")',
+    "typedAction capability is not connected",
+    "future capability crossed worker admission unexpectedly",
     "pageRevision",
   ]);
   assertContains("apps/hepta-browser/src/egress-broker.js", [
