@@ -18,6 +18,7 @@ mod cognitive_context;
 mod cognitive_ranker;
 mod cognitive_retrieval_context;
 mod cognitive_retrieval_learning;
+pub mod compaction_checkpoint_host;
 mod config;
 mod control;
 mod error;

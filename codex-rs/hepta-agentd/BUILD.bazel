@@ -112,6 +112,7 @@ workspace_root_test(
 # Caller evidence inspected by the Hepta contracts tests.
 exports_files(
     [
+        "src/compaction_checkpoint_host.rs",
         "src/config.rs",
         "src/config_tests.rs",
         "src/intuition_policy.rs",
