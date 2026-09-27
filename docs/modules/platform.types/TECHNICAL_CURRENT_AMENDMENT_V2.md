@@ -67,8 +67,9 @@ contracts:
 Before Serde deserialization, each codec enforces a 64 KiB raw-input limit and
 maximum nesting depth 16. Struct decoders reject duplicate, unknown and missing
 fields. Precision-sensitive i64/u64 values use canonical decimal strings with
-20-byte ceilings and native range checks. A decoded value is reconstructed
-through its native validated constructor; topology is returned only through
+20-byte ceilings and native range checks. Digest strings have explicit 64-byte
+schema ceilings. A decoded value is reconstructed through its native validated
+constructor; topology is returned only through
 `ValidatedRuntimeTopologyCandidateV1` after digest recomputation.
 
 JSON transport bytes are not semantic identity. Prompt V2, topology and all
@@ -82,8 +83,8 @@ Source composition now includes:
 - Codex/Agentd and Learning Ledger on the frozen Prompt V1 compatibility path;
 - Runtime Supervisor validated topology admission;
 - NDU registered numeric admission and owner-pinned V2 snapshot verification;
-- NDU random-stream admission bound to namespace, generator/version, episode,
-  decision and counter window;
+- NDU random-stream admission bound to the exact root-seed digest, namespace,
+  generator/version, episode, decision and counter window;
 - Runtime Supervisor external-system admission bound to system/class, host
   identity and exact authorization witness;
 - Runtime Supervisor sensor admission bound to sensor/class, hardware or
@@ -107,10 +108,17 @@ workflows. An earlier observation base cannot qualify later bytes.
 ## 7. Qualification and independent review
 
 Deep qualification keeps source-head and deterministic synthetic-merge
-candidates non-interchangeable. A receipt requires same-candidate truth,
-consumer, provenance, rustdoc, MSRV, native/clippy, pinned Miri, bounded
-coverage-guided fuzz and document-bundle success. Failure diagnostics never
-become qualification receipts.
+candidates non-interchangeable. Before either candidate may run the receipt
+pipeline, the compiled Rust catalog is checked against every executable schema
+for the exact top-level property set, required set, discriminator and closed
+nested-object posture. The schema report and hashes are retained as
+same-candidate artifacts.
+
+A deep receipt additionally requires same-candidate truth, consumer,
+provenance, rustdoc, MSRV, native/clippy, pinned Miri, bounded coverage-guided
+fuzz and document-bundle success. The product JSON fuzz target invokes all five
+registered decoders, while the raw HPTC target remains separate. Failure
+diagnostics never become qualification receipts.
 
 Merge governance is separate. The independent-review gate accepts only a formal
 approval bound to the exact current head from a repository owner, member or
@@ -121,8 +129,10 @@ latest decisive `CHANGES_REQUESTED` state reject.
 ## 8. Current completion boundary
 
 Current source implementation includes native contracts, all five strict product
-codecs, named manifest owners, owner-pinned registry verification, complete API
-and exact provenance generation, and candidate-bound qualification machinery.
+codecs, named manifest owners with root-seed/host/calibration identity binding,
+owner-pinned registry verification, complete API and exact provenance
+generation, exact catalog/schema parity, and candidate-bound qualification
+machinery.
 
 Completion is still withheld until retained exact-head and synthetic-merge
 receipts pass for the final candidate and an eligible independent approval is

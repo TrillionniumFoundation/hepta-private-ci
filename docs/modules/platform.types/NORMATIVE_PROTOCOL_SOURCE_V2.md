@@ -5,12 +5,16 @@ protocol surface is the typed Rust value
 `PLATFORM_TYPES_PROTOCOL_CATALOG_V2` in
 `codex-rs/hepta-types/src/protocol_catalog_v2.rs`.
 
-The exact-candidate qualification job compiles the Rust catalog, verifies that
-every referenced executable JSON Schema exists and contains every declared
-field, and emits two candidate-bound projections:
+The exact-candidate qualification job compiles the Rust catalog and verifies
+every referenced executable JSON Schema structurally. For each transport it
+requires the exact declared property set, exact required set, deterministic
+`kind` discriminator, a closed top-level object, and closed nested objects.
+Simple string occurrence is not accepted as schema evidence. The job emits
+three candidate-bound projections:
 
 - `protocol-catalog.json` for machine consumption;
-- `protocol-catalog.md` for reviewers.
+- `protocol-catalog.md` for reviewers;
+- `schema-catalog-report.json` with schema byte digests and parity outcomes.
 
 The projections are evidence artifacts, not separately editable normative
 sources. Public Rust API compatibility is independently derived from rustdoc
@@ -41,3 +45,12 @@ Semantic contract ownership remains in `platform.types`. Strict JSON transport
 and raw parser limits belong to `platform.wire`. Product-specific admission
 belongs to the consuming owner: NDU for deterministic random streams and the
 runtime supervisor for external-system and sensor calibration manifests.
+
+The NDU random-stream owner pins the exact root-seed digest in its policy and
+receipt in addition to namespace, generator/version, episode, decision and
+counter window. This prevents a syntactically valid manifest from substituting
+a different deterministic stream root under the same owner context.
+
+Coverage-guided product-wire qualification invokes all five strict decoders;
+its summary names the decoder set so Prompt/Topology-only fuzz execution cannot
+be mistaken for complete manifest transport coverage.
