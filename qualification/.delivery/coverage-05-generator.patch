@@ -1,0 +1,465 @@
+diff --git a/codex-rs/hepta-plasticity/src/generator_v3.rs b/codex-rs/hepta-plasticity/src/generator_v3.rs
+index c201c95..2a9c6c9 100644
+--- a/codex-rs/hepta-plasticity/src/generator_v3.rs
++++ b/codex-rs/hepta-plasticity/src/generator_v3.rs
+@@ -67,6 +67,77 @@ pub struct GeneratedParameterCandidateSetV3 {
+     pub generator_digest: Digest32,
+ }
+ 
++/// Why one parameter declared learnable by the control-engineering grammar did
++/// not enter the exact signal set consumed by deterministic generation.
++#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
++pub enum GeneratorCoverageGapReasonV1 {
++    MissingOwnerEvidence,
++    PolicyDisabled,
++    ProtectedSurface,
++    UnsupportedParameter,
++}
++
++impl GeneratorCoverageGapReasonV1 {
++    const fn tag(self) -> u8 {
++        match self {
++            Self::MissingOwnerEvidence => 0,
++            Self::PolicyDisabled => 1,
++            Self::ProtectedSurface => 2,
++            Self::UnsupportedParameter => 3,
++        }
++    }
++}
++
++#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
++pub struct GeneratorCoverageGapV1 {
++    pub parameter_id: StableId,
++    pub reason: GeneratorCoverageGapReasonV1,
++    /// Owner- or policy-produced evidence explaining why this parameter is absent.
++    pub evidence_digest: Digest32,
++}
++
++/// Explicit terminal meaning for a generator-complete no-change result.
++///
++/// Empty signal and empty scale profiles are deliberately distinct from a search
++/// that considered eligible signals and found no admissible trust-region update.
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub enum GeneratorCoverageTerminalV1 {
++    UpdateCandidates,
++    ZeroEligibleSignals,
++    PolicyDisabledUpdates,
++    NoAdmissibleUpdate,
++}
++
++impl GeneratorCoverageTerminalV1 {
++    pub const fn tag(self) -> u8 {
++        match self {
++            Self::UpdateCandidates => 0,
++            Self::ZeroEligibleSignals => 1,
++            Self::PolicyDisabledUpdates => 2,
++            Self::NoAdmissibleUpdate => 3,
++        }
++    }
++}
++
++/// Coverage proof for the exact bounded search profile consumed by V3.
++///
++/// `expected_parameter_set_digest` is reconstructed from the union of the actual
++/// signal identities and the explicitly explained gaps. A caller therefore cannot
++/// manufacture a no-change result by silently omitting a learnable parameter.
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct GeneratorCoverageReceiptV1 {
++    pub expected_parameter_set_digest: Digest32,
++    pub actual_signal_set_digest: Digest32,
++    pub gaps: Vec<GeneratorCoverageGapV1>,
++    pub scale_policy_digest: Digest32,
++    pub mutation_grammar_digest: Digest32,
++    pub selected_artifact_digest: Digest32,
++    pub window: ProposalWindowV2,
++    pub owner_frontier_digest: Digest32,
++    pub terminal: GeneratorCoverageTerminalV1,
++    pub coverage_digest: Digest32,
++}
++
+ #[derive(Clone, Debug, Eq, PartialEq)]
+ pub enum ParameterGeneratorErrorV3 {
+     EmptyDigest(&'static str),
+@@ -85,6 +156,15 @@ pub enum ParameterGeneratorErrorV3 {
+     Arithmetic,
+     CandidateIdentity,
+     GeneratorDigestMismatch,
++    EmptyExpectedParameterSet,
++    EmptyOwnerFrontier,
++    DuplicateExpectedParameter(String),
++    DuplicateCoverageGap(String),
++    CoverageGapEvidenceMissing(String),
++    UnexpectedCoverageGap(String),
++    MissingCoverageGap(String),
++    UnexpectedSignal(String),
++    CoverageDigestMismatch,
+ }
+ 
+ impl fmt::Display for ParameterGeneratorErrorV3 {
+@@ -203,6 +283,205 @@ pub fn parameter_generator_signing_payload_v3(
+     bytes
+ }
+ 
++pub fn build_generator_coverage_receipt_v1(
++    profile: &ParameterGeneratorProfileV3,
++    generated: &GeneratedParameterCandidateSetV3,
++    mut expected_parameters: Vec<StableId>,
++    mut gaps: Vec<GeneratorCoverageGapV1>,
++    owner_frontier_digest: Digest32,
++) -> Result<GeneratorCoverageReceiptV1, ParameterGeneratorErrorV3> {
++    verify_generated_parameter_candidates_v3(profile.clone(), generated)?;
++    if expected_parameters.is_empty() {
++        return Err(ParameterGeneratorErrorV3::EmptyExpectedParameterSet);
++    }
++    if owner_frontier_digest.is_zero() {
++        return Err(ParameterGeneratorErrorV3::EmptyOwnerFrontier);
++    }
++    expected_parameters.sort();
++    if let Some(duplicate) = expected_parameters
++        .windows(2)
++        .find(|pair| pair[0] == pair[1])
++        .map(|pair| pair[0].to_string())
++    {
++        return Err(ParameterGeneratorErrorV3::DuplicateExpectedParameter(
++            duplicate,
++        ));
++    }
++
++    let mut actual = profile
++        .signals
++        .iter()
++        .map(|signal| signal.parameter_id.clone())
++        .collect::<Vec<_>>();
++    actual.sort();
++    if let Some(unexpected) = actual
++        .iter()
++        .find(|parameter| expected_parameters.binary_search(parameter).is_err())
++    {
++        return Err(ParameterGeneratorErrorV3::UnexpectedSignal(
++            unexpected.to_string(),
++        ));
++    }
++
++    gaps.sort();
++    for gap in &gaps {
++        if gap.evidence_digest.is_zero() {
++            return Err(ParameterGeneratorErrorV3::CoverageGapEvidenceMissing(
++                gap.parameter_id.to_string(),
++            ));
++        }
++        if actual.binary_search(&gap.parameter_id).is_ok()
++            || expected_parameters.binary_search(&gap.parameter_id).is_err()
++        {
++            return Err(ParameterGeneratorErrorV3::UnexpectedCoverageGap(
++                gap.parameter_id.to_string(),
++            ));
++        }
++    }
++    if let Some(duplicate) = gaps
++        .windows(2)
++        .find(|pair| pair[0].parameter_id == pair[1].parameter_id)
++        .map(|pair| pair[0].parameter_id.to_string())
++    {
++        return Err(ParameterGeneratorErrorV3::DuplicateCoverageGap(
++            duplicate,
++        ));
++    }
++    for expected in &expected_parameters {
++        if actual.binary_search(expected).is_err()
++            && gaps
++                .binary_search_by(|gap| gap.parameter_id.cmp(expected))
++                .is_err()
++        {
++            return Err(ParameterGeneratorErrorV3::MissingCoverageGap(
++                expected.to_string(),
++            ));
++        }
++    }
++
++    let expected_parameter_set_digest = digest_parameter_ids(
++        b"hepta.plasticity.expected-parameter-set.v1\0",
++        &expected_parameters,
++    )?;
++    let actual_signal_set_digest = digest_parameter_ids(
++        b"hepta.plasticity.actual-signal-set.v1\0",
++        &actual,
++    )?;
++    let scale_policy_digest = digest_scale_policy(&profile.update_scales)?;
++    let has_update = generated
++        .candidates
++        .iter()
++        .any(|candidate| candidate.kind == ParameterCandidateKindV2::Update);
++    let terminal = if has_update {
++        GeneratorCoverageTerminalV1::UpdateCandidates
++    } else if profile.signals.is_empty() {
++        GeneratorCoverageTerminalV1::ZeroEligibleSignals
++    } else if profile.update_scales.is_empty() {
++        GeneratorCoverageTerminalV1::PolicyDisabledUpdates
++    } else {
++        GeneratorCoverageTerminalV1::NoAdmissibleUpdate
++    };
++    let mut receipt = GeneratorCoverageReceiptV1 {
++        expected_parameter_set_digest,
++        actual_signal_set_digest,
++        gaps,
++        scale_policy_digest,
++        mutation_grammar_digest: profile.mutation_policy.mutation_grammar_digest,
++        selected_artifact_digest: profile.selected_artifact_digest,
++        window: profile.window.clone(),
++        owner_frontier_digest,
++        terminal,
++        coverage_digest: Digest32::ZERO,
++    };
++    receipt.coverage_digest = digest_generator_coverage_receipt_v1(&receipt)?;
++    Ok(receipt)
++}
++
++pub fn verify_generator_coverage_receipt_v1(
++    profile: &ParameterGeneratorProfileV3,
++    generated: &GeneratedParameterCandidateSetV3,
++    receipt: &GeneratorCoverageReceiptV1,
++) -> Result<(), ParameterGeneratorErrorV3> {
++    let mut expected_parameters = profile
++        .signals
++        .iter()
++        .map(|signal| signal.parameter_id.clone())
++        .collect::<Vec<_>>();
++    expected_parameters.extend(receipt.gaps.iter().map(|gap| gap.parameter_id.clone()));
++    let expected = build_generator_coverage_receipt_v1(
++        profile,
++        generated,
++        expected_parameters,
++        receipt.gaps.clone(),
++        receipt.owner_frontier_digest,
++    )?;
++    if &expected != receipt {
++        return Err(ParameterGeneratorErrorV3::CoverageDigestMismatch);
++    }
++    Ok(())
++}
++
++/// Canonical bytes independently signed by the Observer that resolved the
++/// expected parameter set and owner frontier.
++pub fn generator_coverage_signing_payload_v1(
++    receipt: &GeneratorCoverageReceiptV1,
++) -> Vec<u8> {
++    let mut bytes = b"hepta.plasticity.generator-coverage.v1\0".to_vec();
++    bytes.extend_from_slice(receipt.coverage_digest.as_array());
++    bytes
++}
++
++fn digest_generator_coverage_receipt_v1(
++    receipt: &GeneratorCoverageReceiptV1,
++) -> Result<Digest32, ParameterGeneratorErrorV3> {
++    let mut bytes = b"hepta.plasticity.generator-coverage-receipt.v1\0".to_vec();
++    for digest in [
++        receipt.expected_parameter_set_digest,
++        receipt.actual_signal_set_digest,
++        receipt.scale_policy_digest,
++        receipt.mutation_grammar_digest,
++        receipt.selected_artifact_digest,
++    ] {
++        bytes.extend_from_slice(digest.as_array());
++    }
++    push_id(&mut bytes, &receipt.window.window_id)?;
++    bytes.extend_from_slice(receipt.window.window_digest.as_array());
++    bytes.extend_from_slice(receipt.owner_frontier_digest.as_array());
++    bytes.push(receipt.terminal.tag());
++    push_len(&mut bytes, receipt.gaps.len())?;
++    for gap in &receipt.gaps {
++        push_id(&mut bytes, &gap.parameter_id)?;
++        bytes.push(gap.reason.tag());
++        bytes.extend_from_slice(gap.evidence_digest.as_array());
++    }
++    Ok(Digest32::of_bytes(&bytes))
++}
++
++fn digest_parameter_ids(
++    domain: &[u8],
++    parameters: &[StableId],
++) -> Result<Digest32, ParameterGeneratorErrorV3> {
++    let mut bytes = domain.to_vec();
++    push_len(&mut bytes, parameters.len())?;
++    for parameter in parameters {
++        push_id(&mut bytes, parameter)?;
++    }
++    Ok(Digest32::of_bytes(&bytes))
++}
++
++fn digest_scale_policy(
++    scales: &[FixedQ32],
++) -> Result<Digest32, ParameterGeneratorErrorV3> {
++    let mut canonical = scales.to_vec();
++    canonical.sort();
++    let mut bytes = b"hepta.plasticity.scale-policy.v1\0".to_vec();
++    push_len(&mut bytes, canonical.len())?;
++    for scale in canonical {
++        bytes.extend_from_slice(&scale.raw().to_be_bytes());
++    }
++    Ok(Digest32::of_bytes(&bytes))
++}
++
+ fn validate_header(profile: &ParameterGeneratorProfileV3) -> Result<(), ParameterGeneratorErrorV3> {
+     if profile.selected_artifact_digest.is_zero() {
+         return Err(ParameterGeneratorErrorV3::EmptyDigest("selected artifact"));
+@@ -636,3 +915,160 @@ mod tests {
+         ));
+     }
+ }
++
++#[cfg(test)]
++mod coverage_tests {
++    use super::*;
++    use crate::ParameterMutationRuleV1;
++    use crate::ParameterMutationSurfaceV1;
++    use crate::build_parameter_mutation_policy_v1;
++
++    fn id(value: &str) -> StableId {
++        StableId::new(value).unwrap_or_else(|error| panic!("id {value}: {error}"))
++    }
++    fn digest(value: &[u8]) -> Digest32 {
++        Digest32::of_bytes(value)
++    }
++    fn profile_with(signals: Vec<ParameterPlasticitySignalV3>, scales: Vec<FixedQ32>) -> ParameterGeneratorProfileV3 {
++        let artifact = digest(b"coverage-artifact");
++        let window = ProposalWindowV2 {
++            window_id: id("window:coverage"),
++            window_digest: digest(b"coverage-window"),
++        };
++        let rules = ["parameter:a", "parameter:b"]
++            .into_iter()
++            .map(|parameter| ParameterMutationRuleV1 {
++                parameter_id: id(parameter),
++                layer_id: id("layer:coverage"),
++                surface: ParameterMutationSurfaceV1::LearnableParameter,
++                minimum_delta: FixedQ32::from_raw(-(1_i64 << 24)),
++                maximum_delta: FixedQ32::from_raw(1_i64 << 24),
++            })
++            .collect();
++        ParameterGeneratorProfileV3 {
++            selected_artifact_digest: artifact,
++            window: window.clone(),
++            norm_layers: vec![LayerNormDenominatorV2 {
++                layer_id: id("layer:coverage"),
++                baseline_squared_l2_raw_q64: 1_u128 << 64,
++            }],
++            mutation_policy: build_parameter_mutation_policy_v1(
++                id("policy:coverage"),
++                digest(b"grammar:coverage"),
++                artifact,
++                window,
++                rules,
++            )
++            .expect("policy"),
++            update_scales: scales,
++            signals,
++        }
++    }
++    fn signal(parameter: &str) -> ParameterPlasticitySignalV3 {
++        ParameterPlasticitySignalV3 {
++            layer_id: id("layer:coverage"),
++            parameter_id: id(parameter),
++            eligibility: FixedQ32::ONE,
++            modulator: FixedQ32::ONE,
++            learning_rate: FixedQ32::from_raw(1_i64 << 20),
++            lower_bound: FixedQ32::from_raw(-(1_i64 << 24)),
++            upper_bound: FixedQ32::from_raw(1_i64 << 24),
++            evidence_digest: digest(parameter.as_bytes()),
++        }
++    }
++    fn gap(parameter: &str, reason: GeneratorCoverageGapReasonV1) -> GeneratorCoverageGapV1 {
++        GeneratorCoverageGapV1 {
++            parameter_id: id(parameter),
++            reason,
++            evidence_digest: digest(format!("gap:{parameter}").as_bytes()),
++        }
++    }
++
++    #[test]
++    fn coverage_binds_expected_actual_gap_scale_grammar_and_frontier() {
++        let profile = profile_with(vec![signal("parameter:a")], vec![FixedQ32::ONE]);
++        let generated = generate_parameter_candidates_v3(profile.clone()).expect("generated");
++        let receipt = build_generator_coverage_receipt_v1(
++            &profile,
++            &generated,
++            vec![id("parameter:b"), id("parameter:a")],
++            vec![gap(
++                "parameter:b",
++                GeneratorCoverageGapReasonV1::MissingOwnerEvidence,
++            )],
++            digest(b"owner-frontier"),
++        )
++        .expect("coverage");
++        assert_eq!(receipt.terminal, GeneratorCoverageTerminalV1::UpdateCandidates);
++        verify_generator_coverage_receipt_v1(&profile, &generated, &receipt).expect("verify");
++
++        let mut changed = receipt.clone();
++        changed.owner_frontier_digest = digest(b"other-frontier");
++        assert_eq!(
++            verify_generator_coverage_receipt_v1(&profile, &generated, &changed),
++            Err(ParameterGeneratorErrorV3::CoverageDigestMismatch)
++        );
++    }
++
++    #[test]
++    fn coverage_distinguishes_empty_signal_empty_scale_and_filtered_search() {
++        let empty_signal = profile_with(Vec::new(), vec![FixedQ32::ONE]);
++        let generated = generate_parameter_candidates_v3(empty_signal.clone()).expect("generated");
++        let receipt = build_generator_coverage_receipt_v1(
++            &empty_signal,
++            &generated,
++            vec![id("parameter:a"), id("parameter:b")],
++            vec![
++                gap("parameter:a", GeneratorCoverageGapReasonV1::MissingOwnerEvidence),
++                gap("parameter:b", GeneratorCoverageGapReasonV1::MissingOwnerEvidence),
++            ],
++            digest(b"frontier"),
++        )
++        .expect("coverage");
++        assert_eq!(receipt.terminal, GeneratorCoverageTerminalV1::ZeroEligibleSignals);
++
++        let no_scales = profile_with(vec![signal("parameter:a")], Vec::new());
++        let generated = generate_parameter_candidates_v3(no_scales.clone()).expect("generated");
++        let receipt = build_generator_coverage_receipt_v1(
++            &no_scales,
++            &generated,
++            vec![id("parameter:a"), id("parameter:b")],
++            vec![gap("parameter:b", GeneratorCoverageGapReasonV1::PolicyDisabled)],
++            digest(b"frontier"),
++        )
++        .expect("coverage");
++        assert_eq!(receipt.terminal, GeneratorCoverageTerminalV1::PolicyDisabledUpdates);
++
++        let mut filtered_signal = signal("parameter:a");
++        filtered_signal.learning_rate = FixedQ32::ONE;
++        let filtered = profile_with(vec![filtered_signal], vec![FixedQ32::ONE]);
++        let generated = generate_parameter_candidates_v3(filtered.clone()).expect("generated");
++        let receipt = build_generator_coverage_receipt_v1(
++            &filtered,
++            &generated,
++            vec![id("parameter:a"), id("parameter:b")],
++            vec![gap("parameter:b", GeneratorCoverageGapReasonV1::PolicyDisabled)],
++            digest(b"frontier"),
++        )
++        .expect("coverage");
++        assert_eq!(receipt.terminal, GeneratorCoverageTerminalV1::NoAdmissibleUpdate);
++    }
++
++    #[test]
++    fn coverage_rejects_silent_parameter_omission_and_unexplained_gap() {
++        let profile = profile_with(vec![signal("parameter:a")], vec![FixedQ32::ONE]);
++        let generated = generate_parameter_candidates_v3(profile.clone()).expect("generated");
++        assert_eq!(
++            build_generator_coverage_receipt_v1(
++                &profile,
++                &generated,
++                vec![id("parameter:a"), id("parameter:b")],
++                Vec::new(),
++                digest(b"frontier"),
++            ),
++            Err(ParameterGeneratorErrorV3::MissingCoverageGap(
++                "parameter:b".to_string()
++            ))
++        );
++    }
++}
