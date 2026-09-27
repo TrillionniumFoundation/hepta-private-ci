@@ -160,6 +160,9 @@ impl<D: SemanticRetrievalDriver> InferenceWorker<D> {
     /// owner. A recovered unknown record returns reconcile-only without even
     /// loading/requiring a model. A completed record returns its original bytes.
     /// Neither is permission to consume an expired/revoked source or artifact.
+    /// Historical observations retain the original worker/grant identity even
+    /// after host replacement. An old Reserved record cannot be rebound to a
+    /// new worker, grant or generation through this entry point.
     ///
     /// This is a trusted composition port, not an authority issuer. The host
     /// supplies the verified principal and rechecks currentness at final use.
@@ -186,6 +189,27 @@ impl<D: SemanticRetrievalDriver> InferenceWorker<D> {
             return Err(Error::PayloadMismatch);
         }
         let id = call.authorization.request_id.clone();
+        let previous = control.semantic_record(&id).map_err(owner_error)?.cloned();
+        if let Some(record) = &previous {
+            // Compare caller-owned immutable semantics before exposing history.
+            // Current worker identity, capacity and grant are not the identity
+            // of a past execution. Rebuilding its admission would turn a valid
+            // post-restart lookup into a conflict or rewrite its provenance.
+            if record.admission.request_wire != wire
+                || record.admission.principal_id != principal_id
+                || record.admission.reservation_id != call.authorization.reservation_id
+                || record.admission.maximum_tokens != call.authorization.maximum_tokens
+            {
+                return Err(Error::PayloadMismatch);
+            }
+            if record.phase != SemanticPhaseV1::Reserved {
+                return if call.authorization.cancelled {
+                    control.cancel_semantic(&id).map_err(owner_error)
+                } else {
+                    Ok(record.clone())
+                };
+            }
+        }
         let admission = SemanticAdmissionV1 {
             request_wire: wire.clone(),
             principal_id: principal_id.to_string(),
@@ -196,8 +220,7 @@ impl<D: SemanticRetrievalDriver> InferenceWorker<D> {
             maximum_memory_bytes: self.grant.maximum_memory_bytes,
             authority_binding_digest: self.grant.semantic_digest.clone(),
         };
-        let exists = control.semantic_record(&id).map_err(owner_error)?.is_some();
-        if !exists {
+        if previous.is_none() {
             // A new cancellation still records a deterministic pre-dispatch
             // negative, but cannot bypass the normal profile/grant checks.
             let mut preflight = call.clone();
@@ -249,3 +272,7 @@ fn owner_error(error: codex_hepta_infer_core::durable_control::Error) -> Error {
     // The journal record, not this transport error, determines execution state.
     Error::DriverFailure(format!("durable semantic owner: {error}"))
 }
+
+#[cfg(test)]
+#[path = "semantic_worker_tests.rs"]
+mod tests;
