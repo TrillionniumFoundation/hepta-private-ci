@@ -91,10 +91,7 @@ pub(super) fn rebuild_transaction(
         let manifest = &request.admission.validated_manifest.manifest;
         transaction.record_payload_durable(manifest.bytes_digest, manifest.encoded_size_bytes)?;
     }
-    if phase_at_least(
-        checkpoint.phase,
-        ArtifactPublicationPhaseV1::RegistryDurable,
-    ) {
+    if phase_at_least(checkpoint.phase, ArtifactPublicationPhaseV1::RegistryDurable) {
         transaction.record_registry_durable(
             staged,
             checkpoint

@@ -17,6 +17,7 @@ use crate::ArtifactOwnerTrustV1;
 use crate::ArtifactPublicationError;
 use crate::ArtifactPublicationPhaseV1;
 use crate::ArtifactPublicationReceiptV1;
+#[cfg(test)]
 use crate::ArtifactPublicationTransactionV1;
 use crate::ArtifactRegistry;
 use crate::DatasetWithdrawalRegistry;

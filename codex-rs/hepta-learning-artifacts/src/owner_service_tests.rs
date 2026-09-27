@@ -363,3 +363,7 @@ fn uncertain_checkpoint_fences_unrelated_requests_and_current_reads() {
     ));
     assert_eq!(service.registry().snapshot().head_digest, predecessor);
 }
+
+#[cfg(unix)]
+#[path = "owner/service_crash_tests.rs"]
+mod process;
