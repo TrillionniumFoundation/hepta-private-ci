@@ -83,8 +83,16 @@ jobs:
         run: |
           set -euo pipefail
           rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
-          (cd codex-rs && cargo +1.95.0 fmt --all)
-          git add -- codex-rs/hepta-agentd/src/lib.rs codex-rs/hepta-agentd/src/production_writer_host.rs codex-rs/hepta-agentd/src/retrieval_delivery.rs codex-rs/hepta-agentd/src/retrieval_delivery_tests.rs codex-rs/hepta-memory/src/cognitive_proposition_writer.rs codex-rs/hepta-memory/src/production_writer.rs
+          files=(
+            codex-rs/hepta-agentd/src/lib.rs
+            codex-rs/hepta-agentd/src/production_writer_host.rs
+            codex-rs/hepta-agentd/src/retrieval_delivery.rs
+            codex-rs/hepta-agentd/src/retrieval_delivery_tests.rs
+            codex-rs/hepta-memory/src/cognitive_proposition_writer.rs
+            codex-rs/hepta-memory/src/production_writer.rs
+          )
+          rustfmt +1.95.0 --edition 2024 "${files[@]}"
+          git add -- "${files[@]}"
           test -z "$(git diff --name-only)"
           git diff --cached --check
           git config user.name github-actions[bot]
