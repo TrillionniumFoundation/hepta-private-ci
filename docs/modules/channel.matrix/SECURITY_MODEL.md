@@ -18,20 +18,23 @@ Matrixd never self-issues a grant, embeds the signing key, writes Agentd state, 
 
 ## 3. Send authorization
 
-A physical send requires exact binding of subject, destination, homeserver, Matrix user, device, session generation, room, binding revision, Matrix-plane generation, stable transaction, attempt and canonical payload digest. The grant is short-lived and single-use.
+A physical send requires exact binding of subject, destination, homeserver, Matrix user, device, session generation, room, binding revision, Matrix-plane generation, stable transaction, attempt and canonical payload digest. The grant is short-lived and single-use; its absolute expiry is persisted with the exact attempt and remains a live boundary after kernel entry.
 
 The owner:
 
 1. claims the outbox with a random opaque capability;
 2. obtains and kernel-claims an independently signed grant;
-3. persists witness and revocation-head digests under the exact claim;
+3. persists witness, absolute expiry and revocation-head digests under the exact claim;
 4. records dispatching;
-5. refreshes authenticated revocations;
+5. refreshes authenticated revocations and checks the grant/lease/cancel window;
 6. consumes the exact-frontier token;
 7. persists the resulting non-constructible entered-use proof against the claim, authority and canonical-content tuple;
-8. constructs the opaque SDK permit and creates/polls the lazy transport future without an intervening unrelated persistence await.
+8. rechecks expiry, revocation frontier, transport identity and canonical content after proof persistence and again at the end of every final preflight;
+9. constructs the opaque SDK permit and polls the lazy transport future only through that repeated gate, with no intervening unrelated persistence await.
 
 The raw 32-byte claim capability is process-private. Only its SHA-256 digest is durable. Every active-claim mutation is fenced by transaction, attempt, lease epoch and capability digest; the ledger additionally enforces monotonic attempt CAS. Qualified success or redaction requires the entered-use row, so caller-filled witness metadata cannot stand in for physical-entry proof.
+
+Kernel final-use entry is monotone. Once the nonce is consumed and the exact token enters, a proof-write timeout may mean the write committed while its acknowledgement was lost. Therefore proof-persistence failure, absolute expiry, revocation/frontier change, identity or payload drift, permit-construction failure, cancellation and lease expiry after kernel entry are all retained under the same transaction as an entered indeterminate result. They can never be downgraded to a pre-entry release.
 
 ## 4. Ingress threats
 
@@ -39,9 +42,9 @@ Controls cover malicious message text, event replay, duplicate sync pages, malfo
 
 ## 5. Egress threats
 
-Controls cover payload drift, transaction reuse across semantics, revoked grants, stale device/session, ACK loss, retry duplication, later rejection overwriting prior acceptance, stale lease holders, capability replay, second-writer observer state and forged terminal observations.
+Controls cover payload drift, transaction reuse across semantics, revoked or expired grants, stale device/session, expiry during revocation refresh, ACK loss, proof-write acknowledgement loss, retry duplication, later rejection overwriting prior acceptance, stale lease holders, capability replay, second-writer observer state and forged terminal observations.
 
-Mitigations are stable transaction IDs, immutable logical identity, random attempt capabilities, append-only events, exact final-use entry, typed uncertainty and sync-based terminality. `TransportAccepted` is not success; unknown post-entry outcomes are never converted to failure.
+Mitigations are stable transaction IDs, immutable logical identity, random attempt capabilities, append-only events, exact final-use entry, repeated last-moment expiry/frontier/identity/content checks, typed uncertainty and sync-based terminality. `TransportAccepted` is not success; unknown post-entry outcomes are never converted to failure.
 
 ## 6. Filesystem and process isolation
 
@@ -54,7 +57,9 @@ Logs and receipts retain typed IDs, error classes and digests. They exclude raw 
 ## 8. Mandatory negative tests
 
 - wrong signer, altered binding, scope or payload digest;
-- revoked, stale or expired grant at final entry;
+- revoked, stale or expired grant before final entry;
+- grant expiry or revocation after kernel entry but before adapter poll remains indeterminate and cannot release the claim as pre-entry;
+- proof-persistence acknowledgement loss remains the same entered transaction;
 - grant replay and cross-attempt reuse;
 - wrong/random claim capability, stale attempt or expired lease;
 - room/device/session/generation drift;
