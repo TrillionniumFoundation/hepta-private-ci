@@ -18,6 +18,9 @@ use crate::final_use::FinalUseError;
 use crate::final_use::FinalUseFrontier;
 use crate::final_use::FinalUseIssuerTrustKey;
 use crate::final_use::FinalUseRevocations;
+use crate::final_use_control::FinalUseControlError;
+use crate::final_use_control::FinalUseRevocationFeedVerifier;
+use crate::final_use_control::SignedFinalUseRevocationUpdate;
 use ed25519_dalek::VerifyingKey;
 use sha2::Digest;
 use sha2::Sha256;
@@ -227,6 +230,82 @@ impl ProductionAuthorityKeyCustodyEvidence {
     }
 }
 
+/// Opaque proof that one exact revocation head was authenticated by a
+/// pinned distributor key while the signed feed was fresh.
+///
+/// Fields are private so a caller cannot turn an arbitrary
+/// `FinalUseRevocations` value into production recovery authority.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct VerifiedFinalUseRevocationHead {
+    distributor_id: String,
+    trust_key_id: String,
+    head: FinalUseRevocations,
+    update_sha256: [u8; 32],
+    issued_at_unix_ms: u64,
+    expires_at_unix_ms: u64,
+}
+
+impl VerifiedFinalUseRevocationHead {
+    pub fn verify(
+        verifier: &FinalUseRevocationFeedVerifier,
+        signed: &SignedFinalUseRevocationUpdate,
+        now_unix_ms: u64,
+    ) -> Result<Self, FinalUseControlError> {
+        let trust_key_id = verifier.verify(signed, now_unix_ms)?.to_owned();
+        let signing_bytes = signed.update.signing_bytes()?;
+        let mut digest = Sha256::new();
+        digest.update(b"hepta.kernel.authority.revocation-update-digest.v1\0");
+        digest.update(signing_bytes);
+        Ok(Self {
+            distributor_id: signed.update.distributor_id.clone(),
+            trust_key_id,
+            head: signed.update.head.clone(),
+            update_sha256: digest.finalize().into(),
+            issued_at_unix_ms: signed.update.issued_at_unix_ms,
+            expires_at_unix_ms: signed.update.expires_at_unix_ms,
+        })
+    }
+
+    pub fn distributor_id(&self) -> &str {
+        &self.distributor_id
+    }
+
+    pub fn trust_key_id(&self) -> &str {
+        &self.trust_key_id
+    }
+
+    pub fn head(&self) -> &FinalUseRevocations {
+        &self.head
+    }
+
+    pub fn update_sha256(&self) -> [u8; 32] {
+        self.update_sha256
+    }
+
+    pub fn issued_at_unix_ms(&self) -> u64 {
+        self.issued_at_unix_ms
+    }
+
+    pub fn expires_at_unix_ms(&self) -> u64 {
+        self.expires_at_unix_ms
+    }
+
+    fn head_at(
+        &self,
+        now_unix_ms: u64,
+        maximum_uncertainty_ms: u64,
+    ) -> Result<FinalUseRevocations, FinalUseError> {
+        let definitely_live_after = self
+            .issued_at_unix_ms
+            .saturating_add(maximum_uncertainty_ms);
+        let possibly_expired_at = now_unix_ms.saturating_add(maximum_uncertainty_ms);
+        if now_unix_ms < definitely_live_after || possibly_expired_at >= self.expires_at_unix_ms {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        Ok(self.head.clone())
+    }
+}
+
 /// Complete production trust bundle. Construction and every privileged open
 /// revalidate the live clock, frontier and key-custody identities against the
 /// retained evidence. No component is optional and no local compatibility
@@ -390,7 +469,7 @@ pub fn open_production_final_use_authority<C, S, K>(
     directory: &Path,
     signer_id: String,
     issuer_keys: Vec<FinalUseIssuerTrustKey>,
-    head: FinalUseRevocations,
+    verified_head: &VerifiedFinalUseRevocationHead,
     bundle: &ProductionAuthorityTrustBundle<C, S, K, FinalUseFrontier>,
 ) -> Result<FinalUseAuthority, FinalUseError>
 where
@@ -399,6 +478,11 @@ where
     K: ProductionAuthorityKeyCustody,
 {
     validate_final_use_production_bundle(&issuer_keys, bundle)?;
+    let now_unix_ms = bundle
+        .clock
+        .now_unix_ms()
+        .map_err(|_| FinalUseError::InvalidTrust)?;
+    let head = verified_head.head_at(now_unix_ms, bundle.clock.maximum_uncertainty_ms())?;
     let clock: Arc<dyn AuthorityClock> = bundle.clock.clone();
     let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> =
         bundle.frontier_store.clone();
@@ -419,7 +503,7 @@ pub fn recover_production_final_use_authority<C, S, K>(
     directory: &Path,
     signer_id: String,
     issuer_keys: Vec<FinalUseIssuerTrustKey>,
-    head: FinalUseRevocations,
+    verified_head: &VerifiedFinalUseRevocationHead,
     bundle: &ProductionAuthorityTrustBundle<C, S, K, FinalUseFrontier>,
 ) -> Result<FinalUseAuthority, FinalUseError>
 where
@@ -428,6 +512,11 @@ where
     K: ProductionAuthorityKeyCustody,
 {
     validate_final_use_production_bundle(&issuer_keys, bundle)?;
+    let now_unix_ms = bundle
+        .clock
+        .now_unix_ms()
+        .map_err(|_| FinalUseError::InvalidTrust)?;
+    let head = verified_head.head_at(now_unix_ms, bundle.clock.maximum_uncertainty_ms())?;
     let clock: Arc<dyn AuthorityClock> = bundle.clock.clone();
     let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> =
         bundle.frontier_store.clone();
