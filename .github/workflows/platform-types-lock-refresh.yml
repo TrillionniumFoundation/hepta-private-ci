@@ -62,154 +62,10 @@ jobs:
             python3 "$repo_root/scripts/platform_types_api_compat_fixup.py"
             git -C "$repo_root" rm -- scripts/platform_types_api_compat_fixup.py
           fi
-
-          # Complete the additive V2 fixtures/codecs after restoring the frozen
-          # V1 API. Both rewrites are idempotent so the post-push bootstrap run
-          # verifies the committed tree instead of trying to migrate it again.
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-
-          def replace_once(text: str, old: str, new: str, label: str) -> str:
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f"{label}: expected one anchor, found {count}")
-              return text.replace(old, new, 1)
-
-          numeric_path = Path("codex-rs/hepta-types/src/numeric_registry_v2.rs")
-          numeric = numeric_path.read_text(encoding="utf-8")
-          if "minimum_raw: -(1_i64 << 24)," not in numeric:
-              pattern = re.compile(
-                  r"(?m)^(?P<indent>[ \t]*)let target = NumericSignalSchemaV1 \{\n"
-                  r"(?P=indent)    profile: NumericProfileV1::SignedQ24NearestTiesEven,\n"
-                  r"(?P=indent)    \.\.source\.schema\.clone\(\)\n"
-                  r"(?P=indent)\};$"
-              )
-              match = pattern.search(numeric)
-              if match is None:
-                  raise SystemExit("numeric registry V2 target fixture anchor missing")
-              indent = match.group("indent")
-              replacement = (
-                  f"{indent}let target = NumericSignalSchemaV1 {{\n"
-                  f"{indent}    profile: NumericProfileV1::SignedQ24NearestTiesEven,\n"
-                  f"{indent}    minimum_raw: -(1_i64 << 24),\n"
-                  f"{indent}    maximum_raw: 1_i64 << 24,\n"
-                  f"{indent}    ..source.schema.clone()\n"
-                  f"{indent}}};"
-              )
-              numeric, count = pattern.subn(replacement, numeric, count=1)
-              if count != 1:
-                  raise SystemExit(f"numeric registry V2 target fixture replacements: {count}")
-              numeric_path.write_text(numeric, encoding="utf-8")
-
-          wire_path = Path("codex-rs/hepta-wire/src/platform_types_json.rs")
-          wire = wire_path.read_text(encoding="utf-8")
-          if "fn deserialize_required_nullable" not in wire:
-              wire = replace_once(
-                  wire,
-                  '''#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-          #[serde(transparent)]
-          struct RequiredNullable<T>(Option<T>);
-
-          impl<'de, T> Deserialize<'de> for RequiredNullable<T>
-          where
-              T: Deserialize<'de>,
-          {
-              fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-              where
-                  D: Deserializer<'de>,
-              {
-                  Option::<T>::deserialize(deserializer).map(Self)
-              }
-          }
-''',
-                  '''fn deserialize_required_nullable<'de, D, T>(
-              deserializer: D,
-          ) -> Result<Option<T>, D::Error>
-          where
-              D: Deserializer<'de>,
-              T: Deserialize<'de>,
-          {
-              Option::<T>::deserialize(deserializer)
-          }
-''',
-                  "required nullable deserializer",
-              )
-              wire = replace_once(
-                  wire,
-                  '''    rejected_reason: RequiredNullable<String>,
-              observed_token_positions: RequiredNullable<Vec<u32>>,
-              truncation_observed: bool,
-              legacy_v1_digest: RequiredNullable<String>,
-''',
-                  '''    #[serde(deserialize_with = "deserialize_required_nullable")]
-              rejected_reason: Option<String>,
-              #[serde(deserialize_with = "deserialize_required_nullable")]
-              observed_token_positions: Option<Vec<u32>>,
-              truncation_observed: bool,
-              #[serde(deserialize_with = "deserialize_required_nullable")]
-              legacy_v1_digest: Option<String>,
-''',
-                  "required nullable prompt fields",
-              )
-              wire = replace_once(
-                  wire,
-                  '''    let rejected_reason = wire
-              .rejected_reason
-              .0
-              .map(|value| {
-''',
-                  '''    let rejected_reason = wire
-              .rejected_reason
-              .map(|value| {
-''',
-                  "rejected reason decode",
-              )
-              wire = replace_once(
-                  wire,
-                  '''    let legacy_v1_digest = wire
-              .legacy_v1_digest
-              .0
-              .map(|value| digest(&value, "legacy_v1_digest"))
-''',
-                  '''    let legacy_v1_digest = wire
-              .legacy_v1_digest
-              .map(|value| digest(&value, "legacy_v1_digest"))
-''',
-                  "legacy digest decode",
-              )
-              wire = replace_once(
-                  wire,
-                  "        wire.observed_token_positions.0,\n",
-                  "        wire.observed_token_positions,\n",
-                  "token positions decode",
-              )
-              wire = replace_once(
-                  wire,
-                  '''        rejected_reason: RequiredNullable(
-              value
-                  .rejected_reason()
-                  .map(|reason| reason.as_id().to_string()),
-          ),
-          observed_token_positions: RequiredNullable(
-              value.observed_token_positions().map(<[u32]>::to_vec),
-          ),
-          truncation_observed: value.truncation_observed(),
-          legacy_v1_digest: RequiredNullable(
-              value.legacy_v1_digest().map(|item| item.to_string()),
-          ),
-''',
-                  '''        rejected_reason: value
-              .rejected_reason()
-              .map(|reason| reason.as_id().to_string()),
-          observed_token_positions: value.observed_token_positions().map(<[u32]>::to_vec),
-          truncation_observed: value.truncation_observed(),
-          legacy_v1_digest: value.legacy_v1_digest().map(|item| item.to_string()),
-''',
-                  "prompt nullable encode",
-              )
-              wire_path.write_text(wire, encoding="utf-8")
-          PY
+          if [[ -f "$repo_root/scripts/platform_types_bootstrap_fixup.py" ]]; then
+            python3 "$repo_root/scripts/platform_types_bootstrap_fixup.py"
+            git -C "$repo_root" rm -- scripts/platform_types_bootstrap_fixup.py
+          fi
 
           cargo "+$PLATFORM_TYPES_MSRV" fmt \
             --manifest-path "$repo_root/codex-rs/Cargo.toml" \
@@ -221,7 +77,7 @@ jobs:
           unexpected="$(
             git -C "$repo_root" status --porcelain --untracked-files=no |
               cut -c4- |
-              grep -Ev '^(codex-rs/Cargo\.lock|codex-rs/hepta-types/src/numeric_conversion\.rs|codex-rs/hepta-types/src/numeric_registry_v2\.rs|codex-rs/hepta-types/src/numeric_conversion_tests\.rs|codex-rs/hepta-types/src/numeric_profile\.rs|codex-rs/hepta-types/src/topology\.rs|codex-rs/hepta-types/src/bin/platform-types-protocol-codegen\.rs|codex-rs/hepta-types/src/prompt_delivery_v2\.rs|codex-rs/hepta-types/src/protocol_catalog_v2\.rs|codex-rs/hepta-types/tests/manifest_protocol_consumer\.rs|codex-rs/hepta-wire/src/platform_types_json\.rs|codex-rs/hepta-ndu/src/numeric_admission\.rs|codex-rs/hepta-ndu/src/owner\.rs|codex-rs/hepta-ndu/src/owner_tests\.rs|codex-rs/hepta-ndu/src/random_stream_owner\.rs|scripts/platform_types_api_compat_fixup\.py)$' || true
+              grep -Ev '^(codex-rs/Cargo\.lock|codex-rs/hepta-types/src/numeric_conversion\.rs|codex-rs/hepta-types/src/numeric_registry_v2\.rs|codex-rs/hepta-types/src/numeric_conversion_tests\.rs|codex-rs/hepta-types/src/numeric_profile\.rs|codex-rs/hepta-types/src/topology\.rs|codex-rs/hepta-types/src/bin/platform-types-protocol-codegen\.rs|codex-rs/hepta-types/src/prompt_delivery_v2\.rs|codex-rs/hepta-types/src/protocol_catalog_v2\.rs|codex-rs/hepta-types/tests/manifest_protocol_consumer\.rs|codex-rs/hepta-wire/src/platform_types_json\.rs|codex-rs/hepta-ndu/src/numeric_admission\.rs|codex-rs/hepta-ndu/src/owner\.rs|codex-rs/hepta-ndu/src/owner_tests\.rs|codex-rs/hepta-ndu/src/random_stream_owner\.rs|scripts/platform_types_api_compat_fixup\.py|scripts/platform_types_bootstrap_fixup\.py)$' || true
           )"
           if [[ -n "$unexpected" ]]; then
             printf 'compatibility/lock convergence changed unexpected tracked paths:\n%s\n' "$unexpected" >&2
@@ -259,6 +115,7 @@ jobs:
             codex-rs/hepta-ndu/src/owner_tests.rs \
             codex-rs/hepta-ndu/src/random_stream_owner.rs \
             scripts/platform_types_api_compat_fixup.py \
+            scripts/platform_types_bootstrap_fixup.py \
             | tee "$evidence/diff-stat.txt"
           sha256sum \
             "$repo_root/codex-rs/Cargo.lock" \
@@ -299,7 +156,8 @@ jobs:
             codex-rs/hepta-ndu/src/owner.rs \
             codex-rs/hepta-ndu/src/owner_tests.rs \
             codex-rs/hepta-ndu/src/random_stream_owner.rs \
-            scripts/platform_types_api_compat_fixup.py
+            scripts/platform_types_api_compat_fixup.py \
+            scripts/platform_types_bootstrap_fixup.py
           git -C "$repo_root" commit -m "fix(platform.types): preserve V1 public API compatibility"
           git -C "$repo_root" push origin "HEAD:${HEAD_REF}"
 
