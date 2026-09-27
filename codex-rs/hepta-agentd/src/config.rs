@@ -564,9 +564,10 @@ impl AgentdConfig {
     }
 
     /// Attach the host-owned provider that derives seven-owner inputs for the
-    /// existing ObjectiveStart product ingress.  The provider is never
-    /// constructed from request bytes.
-    pub fn with_intelligence_invocation_provider(
+    /// existing ObjectiveStart product ingress. Request bytes cannot construct
+    /// this provider, and external callers cannot partially install it: the
+    /// public composition boundary is `AgentdCanonicalRuntimeBootstrapV1`.
+    pub(crate) fn with_intelligence_invocation_provider(
         mut self,
         provider: std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>,
     ) -> Result<Self, AgentdError> {
