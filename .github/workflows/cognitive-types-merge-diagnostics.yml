@@ -1,0 +1,42 @@
+name: cognitive-types-merge-diagnostics
+
+on:
+  push:
+    branches:
+      - codex/cognitive-types-full-closure-20260927
+    paths:
+      - .github/workflows/cognitive-types-merge-diagnostics.yml
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out integration branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/cognitive-types-full-closure-20260927
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Attempt merge and report conflicts
+        shell: bash
+        run: |
+          set -uo pipefail
+          git fetch origin chatgpt/cognitive-types-convergence-20260925
+          git merge --no-commit --no-ff origin/chatgpt/cognitive-types-convergence-20260925
+          status=$?
+          echo "merge_status=$status"
+          echo "--- unmerged files ---"
+          git diff --name-only --diff-filter=U || true
+          echo "--- status ---"
+          git status --short || true
+          echo "--- conflict excerpts ---"
+          while IFS= read -r file; do
+            test -n "$file" || continue
+            echo "===== $file ====="
+            grep -n -C 12 -E '^(<<<<<<<|=======|>>>>>>>)' "$file" || true
+          done < <(git diff --name-only --diff-filter=U)
+          exit "$status"
