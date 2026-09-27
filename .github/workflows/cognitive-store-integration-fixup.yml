@@ -1,4 +1,4 @@
-# Installed before this triggering push so GitHub can schedule the one-shot job.
+# One-shot convergence job. It removes itself after publishing the exact tree.
 name: Cognitive store integration fixup
 
 on:
@@ -9,77 +9,193 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: cognitive-store-total-closure-fixup
+  cancel-in-progress: true
+
 jobs:
   fixup:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: codex/cognitive-store-total-closure-20260927
           fetch-depth: 0
 
-      - name: Reconcile lockfile and deterministic fixtures
+      - name: Reconcile exact candidate inputs
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          from pathlib import Path
+          from __future__ import annotations
 
-          lock_path = Path('codex-rs/Cargo.lock')
-          lock = lock_path.read_text(encoding='utf-8')
+          import json
+          import subprocess
+          from pathlib import Path
+          from typing import Any
+
+          root = Path.cwd()
+
+          def git(*args: str) -> str:
+              return subprocess.check_output(["git", *args], text=True).strip()
+
+          # Cargo.lock: retain the convergence lock and add the Agentd Ed25519
+          # dependency introduced by the signed bootstrap host.
+          lock_path = root / "codex-rs/Cargo.lock"
+          lock = lock_path.read_text(encoding="utf-8")
           package_start = lock.index('[[package]]\nname = "codex-hepta-agentd"')
           package_end = lock.index('\n[[package]]', package_start + 1)
           package = lock[package_start:package_end]
           if ' "ed25519-dalek",\n' not in package:
               marker = ' "core_test_support",\n'
               if marker not in package:
-                  raise SystemExit('agentd lockfile insertion marker missing')
+                  raise SystemExit("agentd lockfile insertion marker missing")
               package = package.replace(marker, marker + ' "ed25519-dalek",\n', 1)
               lock = lock[:package_start] + package + lock[package_end:]
-          lock_path.write_text(lock, encoding='utf-8')
+          lock_path.write_text(lock, encoding="utf-8")
 
-          migration_path = Path('codex-rs/hepta-memory/src/cognitive_store_tests.rs')
-          migration = migration_path.read_text(encoding='utf-8')
+          # Migration 0015 is now part of the authoritative ledger.
+          migration_path = root / "codex-rs/hepta-memory/src/cognitive_store_tests.rs"
+          migration = migration_path.read_text(encoding="utf-8")
           old_versions = '"1,2,3,4,5,6,7,8,9,10,11,12,13,14"'
           new_versions = '"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"'
-          if migration.count(old_versions) != 1:
-              raise SystemExit('expected exactly one stale migration-ledger assertion')
-          migration_path.write_text(migration.replace(old_versions, new_versions, 1), encoding='utf-8')
+          if old_versions in migration:
+              migration = migration.replace(old_versions, new_versions, 1)
+          if new_versions not in migration:
+              raise SystemExit("migration-ledger assertion is not at schema 15")
+          migration_path.write_text(migration, encoding="utf-8")
 
-          compact_path = Path('codex-rs/hepta-memory/src/local_compact_executor_tests.rs')
-          compact = compact_path.read_text(encoding='utf-8')
+          # Give the expiry-specific fixture enough wall-clock headroom to open
+          # SQLite and append the corrupt row before intentionally expiring it.
+          compact_path = root / "codex-rs/hepta-memory/src/local_compact_executor_tests.rs"
+          compact = compact_path.read_text(encoding="utf-8")
           old_offset = 'let expiry_offset = if transition == "expire" { 1 } else { 3_600 };'
           new_offset = 'let expiry_offset = if transition == "expire" { 5 } else { 3_600 };'
           old_wait = 'for _ in 0..120 {'
           new_wait = 'for _ in 0..400 {'
-          if compact.count(old_offset) != 1 or compact.count(old_wait) != 1:
-              raise SystemExit('expected deterministic compact-expiry fixture markers')
-          compact = compact.replace(old_offset, new_offset, 1).replace(old_wait, new_wait, 1)
-          compact_path.write_text(compact, encoding='utf-8')
+          if old_offset in compact:
+              compact = compact.replace(old_offset, new_offset, 1)
+          if old_wait in compact:
+              compact = compact.replace(old_wait, new_wait, 1)
+          if new_offset not in compact or new_wait not in compact:
+              raise SystemExit("compact expiry fixture did not converge")
+          compact_path.write_text(compact, encoding="utf-8")
+
+          # Reconcile the machine map to the unique canonical write façade and
+          # add the closed-world module graph verifier.
+          map_path = root / "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json"
+          mapping: dict[str, Any] = json.loads(map_path.read_text(encoding="utf-8"))
+          callers = mapping.get("productCallers", [])
+          canonical = [
+              caller for caller in callers
+              if caller.get("sourcePath") == "codex-rs/hepta-agentd/src/production_writer_host.rs"
+              and caller.get("nativeSymbol") == "AgentdProductionWriterHost"
+          ]
+          if len(canonical) != 1 or len(callers) != 1:
+              raise SystemExit("implementation map must contain one Agentd product writer façade")
+          canonical[0]["state"] = "canonical_production_write_facade"
+
+          operations = mapping.get("operations", [])
+          inventory = {
+              "operation": "rust_module_inventory",
+              "designOperation": "closed_world_crate_root_reachability",
+              "nativeSymbol": "check-rust-module-inventory.py",
+              "sourcePath": "scripts/check-rust-module-inventory.py",
+              "state": "source_implemented_execution_pending",
+              "authority": "none",
+              "mappingClass": "architecture_verifier",
+              "delegatedCallees": [],
+              "tests": [],
+              "sourcePathExists": True,
+          }
+          matches = [row for row in operations if row.get("operation") == "rust_module_inventory"]
+          if matches:
+              matches[0].clear()
+              matches[0].update(inventory)
+          else:
+              operations.append(inventory)
+          mapping["operations"] = operations
+          mapping["sourceObjects"] = []
+          map_path.write_text(json.dumps(mapping, indent=2, sort_keys=False) + "\n", encoding="utf-8")
+
+          # Remove this bootstrap workflow from the final candidate before
+          # computing its exact tree.
+          fixup_path = root / ".github/workflows/cognitive-store-integration-fixup.yml"
+          fixup_path.unlink()
+
+          subprocess.run(
+              ["git", "add", "-A", "codex-rs/Cargo.lock",
+               "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+               "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+               "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json",
+               ".github/workflows/cognitive-store-integration-fixup.yml"],
+              check=True,
+          )
+
+          def mapped_path(value: Any) -> str | None:
+              if isinstance(value, str):
+                  path = value
+              elif isinstance(value, dict):
+                  path = value.get("path", value.get("sourcePath"))
+              else:
+                  return None
+              if not isinstance(path, str) or not path:
+                  return None
+              if ".rs::" in path:
+                  path = path.split(".rs::", 1)[0] + ".rs"
+              return path
+
+          paths: set[str] = set(mapping.get("resolvedRoots", []))
+          paths.add(mapping["technicalGuide"])
+          for caller in mapping.get("productCallers", []):
+              path = mapped_path(caller)
+              if path:
+                  paths.add(path)
+          for operation in mapping.get("operations", []):
+              path = mapped_path(operation.get("sourcePath"))
+              if path:
+                  paths.add(path)
+              for key in ("tests", "delegatedCallees"):
+                  for entry in operation.get(key, []):
+                      path = mapped_path(entry)
+                      if path:
+                          paths.add(path)
+
+          provisional_tree = git("write-tree")
+          missing = [path for path in sorted(paths) if not (root / path).exists()]
+          if missing:
+              raise SystemExit("mapped paths are missing: " + ", ".join(missing))
+          mapping["sourceObjects"] = [
+              {"path": path, "object": git("rev-parse", f"{provisional_tree}:{path}")}
+              for path in sorted(paths)
+          ]
+          map_path.write_text(json.dumps(mapping, indent=2, sort_keys=False) + "\n", encoding="utf-8")
+          subprocess.run(["git", "add", str(map_path)], check=True)
           PY
 
-      - name: Verify static convergence
+      - name: Commit exact convergence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Hepta Cognitive CI'
+          git config user.email 'hepta-cognitive-ci@users.noreply.github.com'
+          git diff --cached --check
+          git commit -m 'cognitive.store: finalize exact candidate evidence map'
+
+      - name: Verify committed candidate
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/check-rust-module-inventory.py codex-rs/hepta-cognitive-store/src
           python3 scripts/verify_cognitive_store_boundary.py
+          python3 scripts/cognitive_store_map_verify.py \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
           cd codex-rs
           cargo metadata --locked --format-version 1 --no-deps >/dev/null
 
-      - name: Commit exact fixups
+      - name: Publish finalized branch
         shell: bash
-        run: |
-          set -euo pipefail
-          rm .github/workflows/cognitive-store-integration-fixup.yml
-          git config user.name 'Hepta Cognitive CI'
-          git config user.email 'hepta-cognitive-ci@users.noreply.github.com'
-          git add codex-rs/Cargo.lock \
-            codex-rs/hepta-memory/src/cognitive_store_tests.rs \
-            codex-rs/hepta-memory/src/local_compact_executor_tests.rs \
-            .github/workflows/cognitive-store-integration-fixup.yml
-          git diff --cached --check
-          git commit -m 'test(cognitive-store): reconcile migration and lease fixtures'
-          git push origin HEAD:codex/cognitive-store-total-closure-20260927
+        run: git push origin HEAD:codex/cognitive-store-total-closure-20260927
