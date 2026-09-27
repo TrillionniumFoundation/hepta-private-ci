@@ -1,0 +1,98 @@
+name: intelligence.control source convergence
+
+on:
+  push:
+    branches:
+      - fix/intelligence-control-production-closure-20260926
+    paths:
+      - scripts/.hepta-intelligence-bootstrap/**
+      - scripts/hepta-intelligence-control-ssot.py
+      - scripts/hepta-intelligence-control-templates.b85
+      - codex-rs/hepta-intelligence/src/canonical_strict.rs
+      - codex-rs/hepta-agentd/src/intelligence_ingress.rs
+      - codex-rs/hepta-agentd/src/intelligence_outbox.rs
+      - codex-rs/hepta-agentd/src/intelligence_product_runner.rs
+      - .github/workflows/hepta-intelligence-control-converge.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intelligence-control-converge-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Materialize deterministic source generator
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! test -f scripts/hepta-intelligence-control-ssot.py || \
+             ! test -f scripts/hepta-intelligence-control-templates.b85; then
+            python3 - <<'PYBOOT'
+          import base64, json, pathlib, zlib
+          root = pathlib.Path('scripts/.hepta-intelligence-bootstrap')
+          parts = sorted(root.glob('part-*'))
+          if not parts:
+              raise SystemExit('missing intelligence.control bootstrap parts')
+          payload = ''.join(part.read_text(encoding='ascii').strip() for part in parts)
+          files = json.loads(zlib.decompress(base64.b85decode(payload.encode('ascii'))))
+          for name, content in files.items():
+              path = pathlib.Path(name)
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_text(content, encoding='utf-8')
+          PYBOOT
+          fi
+          chmod +x scripts/hepta-intelligence-control-ssot.py
+      - name: Ensure rustfmt is available
+        shell: bash
+        run: command -v rustfmt >/dev/null || rustup component add rustfmt
+      - name: Apply deterministic intelligence.control convergence
+        run: python3 scripts/hepta-intelligence-control-ssot.py --apply
+      - name: Format Rust source
+        working-directory: codex-rs
+        run: cargo fmt --all
+      - name: Verify generated projection and clean patch shape
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-intelligence-control-ssot.py --check
+          git diff --check
+      - name: Commit converged source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf scripts/.hepta-intelligence-bootstrap
+          git config user.name 'Hepta Intelligence CI'
+          git config user.email 'hepta-intelligence-ci@users.noreply.github.com'
+          git add -A \
+            scripts/.hepta-intelligence-bootstrap \
+            scripts/hepta-intelligence-control-ssot.py \
+            scripts/hepta-intelligence-control-templates.b85 \
+            codex-rs/hepta-intelligence/src/lib.rs \
+            codex-rs/hepta-intelligence/src/canonical_strict.rs \
+            codex-rs/hepta-agentd/src/lib.rs \
+            codex-rs/hepta-agentd/src/intelligence_ingress.rs \
+            codex-rs/hepta-agentd/src/intelligence_outbox.rs \
+            codex-rs/hepta-agentd/src/intelligence_product.rs \
+            codex-rs/hepta-agentd/src/intelligence_product_runner.rs \
+            codex-rs/hepta-agentd/src/objective_runtime.rs \
+            codex-rs/hepta-agentd/src/state.rs \
+            .github/workflows/hepta-intelligence-control.yml \
+            docs/modules/intelligence.control/STATUS.json \
+            docs/modules/intelligence.control/TECHNICAL.md \
+            docs/modules/intelligence.control/IMPLEMENTATION_MAP.json \
+            docs/modules/intelligence.control/TEST_TRACEABILITY.json
+          if git diff --cached --quiet; then
+            echo 'No convergence changes were required.'
+            exit 0
+          fi
+          git commit -m 'fix(intelligence): close canonical product source gaps'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
