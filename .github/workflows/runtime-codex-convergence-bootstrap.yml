@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   group: runtime-codex-convergence-bootstrap
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply-and-verify:
@@ -51,9 +51,12 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m py_compile scripts/runtime_codex_convergence.py
+          python3 -m py_compile scripts/runtime_codex_convergence_fix.py
           python3 scripts/runtime_codex_convergence.py
           test ! -e scripts/runtime_codex_convergence.py
           test ! -e .github/workflows/runtime-codex-convergence-bootstrap.yml
+          python3 scripts/runtime_codex_convergence_fix.py
+          test ! -e scripts/runtime_codex_convergence_fix.py
           git diff --check
 
       - name: Format owned Rust packages
@@ -101,12 +104,21 @@ jobs:
           cargo test --locked -p codex-hepta-agentd \
             --test runtime_codex_product_e2e -- --test-threads=1
 
-      - name: Run strict lint
+      - name: Measure repository product baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-runtime-codex-benchmark.py \
+            --iterations 3 \
+            --output .hepta-evidence/runtime-codex/performance.json \
+            -- bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-agentd --test runtime_codex_product_e2e -- --test-threads=1'
+
+      - name: Run strict owner lint
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo clippy --locked --all-targets \
+          cargo clippy --locked --all-targets --no-deps \
             -p codex-hepta-agent-protocol \
             -p codex-hepta-agentd \
             -p codex-hepta-infer-core \
@@ -114,7 +126,7 @@ jobs:
             -p codex-hepta-codex-adapter \
             -- -D warnings
 
-      - name: Verify generated source is stable
+      - name: Verify generated source and candidate receipt
         shell: bash
         run: |
           set -euo pipefail
@@ -125,16 +137,29 @@ jobs:
             --package codex-hepta-infer-worker-host \
             --package codex-hepta-codex-adapter -- --check
           git diff --check
+          cp .hepta-evidence/runtime-codex/performance.json "$RUNNER_TEMP/runtime-codex-performance.json"
+          rm -rf .hepta-evidence
+          git add -A
+          git diff --cached --check
+          CANDIDATE_TREE="$(git write-tree)"
+          CANDIDATE_COMMIT="$(printf '%s\n' 'runtime.codex verified bootstrap candidate' | \
+            git -c user.name=runtime-codex-bootstrap \
+              -c user.email=runtime-codex-bootstrap@users.noreply.github.com \
+              commit-tree "${CANDIDATE_TREE}" -p "$(git rev-parse HEAD)")"
+          mkdir -p .hepta-evidence/runtime-codex
+          cp "$RUNNER_TEMP/runtime-codex-performance.json" \
+            .hepta-evidence/runtime-codex/performance.json
           python3 -m py_compile scripts/hepta-runtime-codex-evidence.py
           python3 scripts/hepta-runtime-codex-evidence.py emit \
             --mode bootstrap \
             --source-sha "$(git rev-parse HEAD)" \
-            --candidate-sha "$(git rev-parse HEAD)" \
-            --candidate-tree "$(git write-tree)" \
+            --candidate-sha "${CANDIDATE_COMMIT}" \
+            --candidate-tree "${CANDIDATE_TREE}" \
             --output .hepta-evidence/runtime-codex/bootstrap.json
           python3 scripts/hepta-runtime-codex-evidence.py verify \
             .hepta-evidence/runtime-codex/bootstrap.json
           rm -rf .hepta-evidence
+          test "$(git write-tree)" = "${CANDIDATE_TREE}"
 
       - name: Commit verified implementation
         shell: bash
