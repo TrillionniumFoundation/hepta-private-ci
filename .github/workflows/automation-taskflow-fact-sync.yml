@@ -50,6 +50,8 @@ jobs:
             scripts/automation_taskflow_contract.py \
             scripts/test_automation_taskflow_contract.py
           git commit -m "docs(automation): bind schema-v1 provider identity compatibility"
+          printf 'AUTOMATION_FACT_SOURCE_SHA=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          printf 'AUTOMATION_FACT_SOURCE_TREE=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_ENV"
 
       - name: Rebind exact implementation map and verify drift contract
         shell: bash
@@ -69,8 +71,8 @@ jobs:
           git add docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json
           git commit -m "docs(automation): rebind exact schema-v19 implementation truth"
           python3 scripts/hepta-implementation-maps.py verify \
-            --expected-sha "$(git rev-parse HEAD)" \
-            --expected-tree "$(git rev-parse HEAD^{tree})"
+            --expected-sha "$AUTOMATION_FACT_SOURCE_SHA" \
+            --expected-tree "$AUTOMATION_FACT_SOURCE_TREE"
           test -z "$(git status --porcelain --untracked-files=no)"
 
       - name: Push exact synchronized branch
