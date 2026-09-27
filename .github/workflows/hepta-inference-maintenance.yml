@@ -32,7 +32,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git branch --show-current)" = 'codex/inference-control-v2-closure-20260927'
-          git show HEAD^:.github/workflows/hepta-inference-maintenance.yml > .github/workflows/hepta-inference-maintenance.yml
+          git show 9243d2f431d6b96772a77d8df264db799eb74db3:.github/workflows/hepta-inference-maintenance.yml > .github/workflows/hepta-inference-maintenance.yml
           base64 --decode .github/inference-control-final.patch.gz.b64 | gzip --decompress > "$RUNNER_TEMP/inference-control-final.patch"
           echo '62ed7d77cf25450eaf77f0ad23297569dff5d03a4ce8dc210077bdd93eb68705  '"$RUNNER_TEMP/inference-control-final.patch" | sha256sum --check --strict
           git apply --check "$RUNNER_TEMP/inference-control-final.patch"
@@ -53,7 +53,12 @@ jobs:
           git rm \
             .github/inference-control-final.patch.gz.b64 \
             .github/workflows/hepta-inference-one-shot-sync.yml
-          mapfile -t changed < <(git status --porcelain=v1 | sed -E 's/^.. //' | sort -u)
+          mapfile -t changed < <(
+            {
+              git diff --name-only --diff-filter=ACDMRTUXB HEAD
+              git ls-files --others --exclude-standard
+            } | sort -u
+          )
           test "${#changed[@]}" -gt 0
           for path in "${changed[@]}"; do
             case "$path" in
