@@ -40,6 +40,36 @@ jobs:
           toolchain: 1.95.0
           components: rustfmt, clippy
 
+      - name: Normalize reviewed bootstrap source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/apply-prompt-registry-operations.py")
+          text = path.read_text(encoding="utf-8")
+          replacements = {
+              "use std::fs::OpenOptions;\n": "#[cfg(unix)]\nuse std::fs::OpenOptions;\n",
+              "use std::io::Write;\n": "#[cfg(unix)]\nuse std::io::Write;\n",
+              "use std::time::SystemTime;\n": "#[cfg(unix)]\nuse std::time::SystemTime;\n",
+              "use std::time::UNIX_EPOCH;\n": "#[cfg(unix)]\nuse std::time::UNIX_EPOCH;\n",
+              '"codex-rs/hepta-prompt-registry/src/durable.rs::tests",': '"codex-rs/hepta-prompt-registry/src/durable.rs",',
+              '"codex-rs/hepta-prompt-registry/src/durable_maintenance.rs::tests",': '"codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",',
+              '"codex-rs/hepta-prompt-registry/src/lib_tests.rs::final_use"': '"codex-rs/hepta-prompt-registry/src/lib_tests.rs"',
+              '"codex-rs/hepta-prompt-registry/src/lib_tests.rs::relation"': '"codex-rs/hepta-prompt-registry/src/lib_tests.rs"',
+              '"codex-rs/hepta-prompt-registry/src/lib_tests.rs::admission"': '"codex-rs/hepta-prompt-registry/src/lib_tests.rs"',
+              '"codex-rs/hepta-prompt-registry/src/v2_tests.rs::delivery"': '"codex-rs/hepta-prompt-registry/src/v2_tests.rs"',
+              '"codex-rs/hepta-prompt-registry/src/v2_tests.rs::compatible"': '"codex-rs/hepta-prompt-registry/src/v2_tests.rs"',
+              '"codex-rs/hepta-prompt-registry/src/v2_tests.rs::dereference"': '"codex-rs/hepta-prompt-registry/src/v2_tests.rs"',
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f"missing reviewed bootstrap anchor: {old!r}")
+              text = text.replace(old, new)
+          path.write_text(text, encoding="utf-8")
+          PY
+
       - name: Apply bounded operational closure
         run: python3 scripts/apply-prompt-registry-operations.py
 
