@@ -81,6 +81,48 @@ jobs:
                   if old not in script:
                       raise SystemExit('missing matcher regex requiring hardening')
                   script = script.replace(old, new, 1)
+
+                  host_start = 'host = "codex-rs/hepta-agentd/src/evidence_host.rs"'
+                  product_start = '\n\nproduct = "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"'
+                  start_index = script.find(host_start)
+                  end_index = script.find(product_start, start_index)
+                  if start_index < 0 or end_index < 0:
+                      raise SystemExit('missing evidence_host patch section')
+                  structural_host_patch = r'''host = "codex-rs/hepta-agentd/src/evidence_host.rs"
+host_text = read(host)
+old_import = "use codex_hepta_evidence::EvidenceIssuerRoleV1;\n"
+new_import = (
+    "use codex_hepta_evidence::EvidenceIssuerRoleV1;\n"
+    "use codex_hepta_evidence::EvidenceVerificationProfileV1;\n"
+)
+if host_text.count(old_import) != 1:
+    raise SystemExit(f"{host}: expected one EvidenceIssuerRoleV1 import")
+host_text = host_text.replace(old_import, new_import, 1)
+verify_function = host_text.index("pub(crate) async fn verify(")
+verify_start = host_text.index("    let claim_class =", verify_function)
+trust_start = host_text.index("    let current_trust =", verify_start)
+new_verify_prelude = (
+    "    if request.verification_profile.is_empty()\n"
+    "        || request.verification_profile.len()\n"
+    "            > codex_hepta_agent_protocol::MAX_KERNEL_EVIDENCE_PROFILE_BYTES\n"
+    "    {\n"
+    "        return Err(invalid(\"invalid evidence verification profile length\"));\n"
+    "    }\n"
+    "    let profile = EvidenceVerificationProfileV1::parse(&request.verification_profile)\n"
+    "        .map_err(|error| invalid(&error))?;\n"
+)
+host_text = host_text[:verify_start] + new_verify_prelude + host_text[trust_start:]
+old_fields = (
+    "                candidate,\n"
+    "                claim_class,\n"
+    "                required_roles,\n"
+)
+new_fields = "                candidate,\n                profile,\n"
+if host_text.count(old_fields) != 1:
+    raise SystemExit(f"{host}: expected one legacy VerifyChainRequest field block")
+host_text = host_text.replace(old_fields, new_fields, 1)
+write(host, host_text)'''
+                  script = script[:start_index] + structural_host_patch + script[end_index:]
               print(f'::group::{stage}', flush=True)
               subprocess.run(['bash', '-lc', script], check=True)
               print('::endgroup::', flush=True)
