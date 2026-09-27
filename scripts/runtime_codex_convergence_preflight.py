@@ -153,6 +153,102 @@ replace_once(
 ''',
 )
 
+# Treat the ephemeral thread as a scoped resource. Every error before effect
+# entry attempts unsubscribe before shutdown; after effect entry it is retained
+# for same-operation reconciliation.
+replace_once(
+    "codex-rs/hepta-infer-worker-host/src/runtime_codex_thread.rs",
+    r'''    pub(crate) fn mark_effect_entered(&mut self) {
+        self.effect_entered = true;
+    }
+
+    pub(crate) async fn close(
+''',
+    r'''    pub(crate) fn mark_effect_entered(&mut self) {
+        self.effect_entered = true;
+    }
+
+    pub(crate) fn effect_entered(&self) -> bool {
+        self.effect_entered
+    }
+
+    pub(crate) async fn close(
+''',
+)
+replace_once(
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    r'''        if started.model != self.config.model {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("provider substituted the requested model".into());
+        }
+        let mut thread_lifecycle =
+            EphemeralThreadLifecycle::new(started.thread.id.clone());
+        execution_state.advance(RuntimeCodexPhase::ThreadPrepared)?;
+        // Recheck the actual generation after connecting and creating the
+''',
+    r'''        let mut thread_lifecycle =
+            EphemeralThreadLifecycle::new(started.thread.id.clone());
+        let execution_result: Result<NativeRunOutput> = async {
+            execution_state.advance(RuntimeCodexPhase::ThreadPrepared)?;
+            if started.model != self.config.model {
+                thread_lifecycle.close(&mut client, RPC_TIMEOUT).await;
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err("provider substituted the requested model".into());
+            }
+        // Recheck the actual generation after connecting and creating the
+''',
+)
+replace_once(
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    r'''        if cancellation.is_cancelled() {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("cancelled before model dispatch".into());
+        }
+        if let Some(binding) = intelligence {
+''',
+    r'''        if cancellation.is_cancelled() {
+            thread_lifecycle.close(&mut client, RPC_TIMEOUT).await;
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("cancelled before model dispatch".into());
+        }
+        if let Some(binding) = intelligence {
+''',
+)
+replace_once(
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    r'''            if Some(current_revision) != intelligence_revision {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err("intelligence handoff revision changed before dispatch".into());
+            }
+''',
+    r'''            if Some(current_revision) != intelligence_revision {
+                thread_lifecycle.close(&mut client, RPC_TIMEOUT).await;
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err("intelligence handoff revision changed before dispatch".into());
+            }
+''',
+)
+replace_once(
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    r'''        Ok(output)
+    }
+
+    async fn observe(
+''',
+    r'''        Ok(output)
+        }
+        .await;
+        if execution_result.is_err() && !thread_lifecycle.effect_entered() {
+            thread_lifecycle.close(&mut client, RPC_TIMEOUT).await;
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+        }
+        execution_result
+    }
+
+    async fn observe(
+''',
+)
+
 """
 if fix.count(marker) != 1:
     raise SystemExit(f"expected one fixer insertion marker, found {fix.count(marker)}")
