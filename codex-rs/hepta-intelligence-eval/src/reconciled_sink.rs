@@ -186,6 +186,18 @@ impl<S: ProductQualificationPublicationStoreV1> ReconciledProductQualificationSi
             Err(error) => Err(map_store_error(error)),
         }
     }
+
+    fn reconcile_conflict(
+        &mut self,
+        request: &ProductQualificationPublicationRequestV1,
+    ) -> Result<Digest32, ProductEvidenceSinkErrorV1> {
+        // A linearizable CAS conflict means another writer committed at this key
+        // after our load. Identical semantics are an idempotent success; a
+        // different request is rejected by `load_matching`. Seeing no record
+        // after a conflict violates the store contract, so remain indeterminate.
+        self.load_matching(request)?
+            .ok_or(ProductEvidenceSinkErrorV1::Indeterminate)
+    }
 }
 
 impl<S: ProductQualificationPublicationStoreV1> ProductQualificationEvidenceSinkV1
@@ -215,6 +227,11 @@ impl<S: ProductQualificationPublicationStoreV1> ProductQualificationEvidenceSink
                 validate_matching_record(&request, &record)?;
                 self.pending = None;
                 Ok(record.publication_digest)
+            }
+            Err(ProductQualificationPublicationStoreErrorV1::Conflict) => {
+                let publication = self.reconcile_conflict(&request)?;
+                self.pending = None;
+                Ok(publication)
             }
             Err(ProductQualificationPublicationStoreErrorV1::Indeterminate) => {
                 self.pending = Some(request);
@@ -288,6 +305,7 @@ mod tests {
     struct FaultStore {
         record: Option<ProductQualificationPublicationRecordV1>,
         accept_then_lose_ack: bool,
+        commit_then_conflict: bool,
     }
 
     impl ProductQualificationPublicationStoreV1 for FaultStore {
@@ -320,6 +338,9 @@ mod tests {
             if self.accept_then_lose_ack {
                 self.accept_then_lose_ack = false;
                 Err(ProductQualificationPublicationStoreErrorV1::Indeterminate)
+            } else if self.commit_then_conflict {
+                self.commit_then_conflict = false;
+                Err(ProductQualificationPublicationStoreErrorV1::Conflict)
             } else {
                 Ok(record)
             }
@@ -363,6 +384,20 @@ mod tests {
         assert_eq!(first, second);
         let store = sink.into_inner();
         assert!(store.record.is_some());
+    }
+
+    #[test]
+    fn concurrent_identical_commit_is_reconciled_as_idempotent_success() {
+        let store = FaultStore {
+            commit_then_conflict: true,
+            ..FaultStore::default()
+        };
+        let mut sink = ReconciledProductQualificationSinkV1::new(store);
+        let publication = sink
+            .persist(Digest32::of_bytes(b"concurrent-execution"), &decision())
+            .expect("identical concurrent commit reconciles");
+        assert_eq!(publication, Digest32::of_bytes(b"durable-publication"));
+        assert!(!sink.has_pending_reconciliation());
     }
 
     #[test]
