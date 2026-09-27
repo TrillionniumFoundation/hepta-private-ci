@@ -39,7 +39,30 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
     ) -> Result<EnteredSend, OutboxDispatchError> {
         let claimed_epoch = token.claimed_authority_epoch();
         let claimed_revision = token.claimed_revocation_revision();
-        self.preflight(claimed_epoch, claimed_revision, binding)?;
+        // The durable authority claim is the only source for the grant's
+        // absolute expiry after the kernel token becomes non-serializable.
+        // Re-read the exact attempt before entry so an expired or mismatched
+        // persisted claim cannot rely only on the outbox lease deadline.
+        let authority_claim = self
+            .store
+            .dispatch_authority_claim(&self.record.stable_txn_id, self.record.attempts)
+            .await
+            .map_err(store_error)?
+            .ok_or(OutboxDispatchError::Store)?;
+        if authority_claim.authority_epoch != claimed_epoch
+            || authority_claim.revocation_revision != claimed_revision
+            || authority_claim.attempt != self.record.attempts
+            || authority_claim.expires_at_ms <= authority_claim.claimed_at_ms
+        {
+            return Err(OutboxDispatchError::Authority);
+        }
+        let grant_expires_at_ms = authority_claim.expires_at_ms;
+        self.preflight(
+            claimed_epoch,
+            claimed_revision,
+            grant_expires_at_ms,
+            binding,
+        )?;
 
         let entered = self
             .authorizer
@@ -67,7 +90,12 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
         .await
         .map_err(|_| OutboxDispatchError::LeaseExpired)?
         .map_err(store_error)?;
-        self.preflight(claimed_epoch, claimed_revision, binding)?;
+        self.preflight(
+            claimed_epoch,
+            claimed_revision,
+            grant_expires_at_ms,
+            binding,
+        )?;
 
         let permit = MatrixSendPermit::new(
             Arc::clone(&proof),
@@ -76,7 +104,12 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
             self.record,
         )
         .map_err(|_| OutboxDispatchError::Authority)?;
-        self.preflight(claimed_epoch, claimed_revision, binding)?;
+        self.preflight(
+            claimed_epoch,
+            claimed_revision,
+            grant_expires_at_ms,
+            binding,
+        )?;
         let mut send = self.transport.send_authorized(self.record, permit);
 
         // Recheck every continuation poll: DNS, TLS and encryption may yield
@@ -85,7 +118,12 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
         // so every gate stop is returned as an indeterminate transport result.
         let gated = poll_fn(|context| {
             if self
-                .preflight(claimed_epoch, claimed_revision, binding)
+                .preflight(
+                    claimed_epoch,
+                    claimed_revision,
+                    grant_expires_at_ms,
+                    binding,
+                )
                 .is_err()
             {
                 return Poll::Ready(Err(OutboxDispatchError::Authority));
@@ -113,6 +151,7 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
         &self,
         claimed_epoch: u64,
         claimed_revision: u64,
+        grant_expires_at_ms: u64,
         binding: &FinalUseBinding,
     ) -> Result<(), OutboxDispatchError> {
         if self.cancel.is_cancelled() {
@@ -120,6 +159,9 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
         }
         if Instant::now() >= self.deadline {
             return Err(OutboxDispatchError::LeaseExpired);
+        }
+        if !grant_is_live(self.clock.now_ms()?, grant_expires_at_ms) {
+            return Err(OutboxDispatchError::Authority);
         }
         self.authorizer
             .refresh_revocations()
@@ -141,5 +183,21 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
             _ => return Err(OutboxDispatchError::Authority),
         }
         Ok(())
+    }
+}
+
+fn grant_is_live(now_ms: u64, expires_at_ms: u64) -> bool {
+    now_ms < expires_at_ms
+}
+
+#[cfg(test)]
+mod tests {
+    use super::grant_is_live;
+
+    #[test]
+    fn grant_expiry_is_a_closed_entry_boundary() {
+        assert!(grant_is_live(41, 42));
+        assert!(!grant_is_live(42, 42));
+        assert!(!grant_is_live(43, 42));
     }
 }
