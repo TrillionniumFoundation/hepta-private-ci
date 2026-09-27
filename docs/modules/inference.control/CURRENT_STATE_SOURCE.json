@@ -22,15 +22,20 @@
       "codex-rs/hepta-infer-worker-host",
       "codex-rs/hepta-inferd",
       ".github/workflows/hepta-inference-maintenance.yml",
-      "scripts/hepta-inference-control-current-state.py"
+      ".github/workflows/hepta-inference-x64-smoke.yml",
+      "scripts/hepta-inference-control-current-state.py",
+      "scripts/hepta-inference-control-ownership.py",
+      "docs/modules/inference.control/OPERATIONS.md",
+      "docs/modules/inference.control/SLO_ALERTS.json"
     ],
     "productionEffectOwner": "codex-hepta-infer-worker-host::native_app_server::AppServerModelDriver",
-    "durableWriterOwner": "codex-hepta-infer-core::durable_control::DurableInferenceControl"
+    "durableWriterOwner": "codex-hepta-infer-core::durable_control::DurableInferenceControl",
+    "actorPort": "codex-hepta-infer-worker-host::control_actor::NativeJournalWriterActor"
   },
   "status": {
-    "sourceImplementation": "implemented_pending_exact_head_qualification",
-    "productCallerState": "composed_exact_signed_plan_required",
-    "productionWriterState": "single_durable_owner_with_signed_recovery",
+    "sourceImplementation": "implemented_with_actor_port_pending_product_driver_migration_and_exact_head_qualification",
+    "productCallerState": "composed_exact_signed_plan_required_direct_writer_session",
+    "productionWriterState": "single_durable_owner_actor_available_direct_app_server_path_not_yet_migrated",
     "productionImplementation": false,
     "productExecutionProved": false,
     "targetHostQualification": false,
@@ -44,7 +49,9 @@
     "external effect requires a still-live exact execution binding and final-use grant",
     "indeterminate release requires a signed terminal receipt or revision-bound dual-control retirement",
     "the active journal never stores plaintext output on the exact-plan production path",
-    "checkpoint installation preserves one locked durable writer and verifies content-addressed history"
+    "checkpoint installation preserves one locked durable writer and verifies content-addressed history",
+    "post-effect recovery re-verifies historical execution identity and requires fresh rotated recovery authority",
+    "a pre-effect capability is consumed before the external effect and cannot be recreated after restart"
   ],
   "operations": [
     {
@@ -55,6 +62,16 @@
       "tests": [
         "four_independent_authorities_bind_one_exact_execution",
         "key_rotation_window_and_revocation_are_enforced"
+      ]
+    },
+    {
+      "operation": "post_lease_recovery_verification",
+      "state": "source_implemented",
+      "nativeSymbol": "verify_execution_plan_for_recovery",
+      "sourcePath": "codex-rs/hepta-infer-core/src/recovery_contracts.rs",
+      "tests": [
+        "fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry",
+        "fresh_rotated_dual_control_retirement_releases_after_lease_expiry"
       ]
     },
     {
@@ -87,19 +104,19 @@
     {
       "operation": "signed_terminal_usage_reconciliation",
       "state": "source_implemented",
-      "nativeSymbol": "DurableInferenceControl::reconcile_native",
-      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
+      "nativeSymbol": "DurableInferenceControl::reconcile_native_recovery",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs",
       "tests": [
-        "signed_reconciliation_releases_indeterminate_without_blind_replay"
+        "fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry"
       ]
     },
     {
       "operation": "dual_control_indeterminate_retirement",
       "state": "source_implemented",
-      "nativeSymbol": "DurableInferenceControl::retire_native_indeterminate",
-      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
+      "nativeSymbol": "DurableInferenceControl::retire_native_indeterminate_recovery",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs",
       "tests": [
-        "indeterminate_retirement_is_revision_bound_and_dual_controlled"
+        "fresh_rotated_dual_control_retirement_releases_after_lease_expiry"
       ]
     },
     {
@@ -115,12 +132,31 @@
       ]
     },
     {
+      "operation": "process_kill_and_torn_tail_recovery",
+      "state": "source_implemented",
+      "nativeSymbol": "sigkill_at_every_maintenance_boundary_recovers_one_complete_generation",
+      "sourcePath": "codex-rs/hepta-infer-core/tests/process_crash_recovery.rs",
+      "tests": [
+        "sigkill_at_every_maintenance_boundary_recovers_one_complete_generation",
+        "an_incomplete_torn_tail_is_rejected_instead_of_replayed_or_truncated"
+      ]
+    },
+    {
       "operation": "exact_plan_native_app_server_execution",
-      "state": "product_composed",
+      "state": "product_composed_direct_writer_session",
       "nativeSymbol": "AppServerModelDriver::run_authorized",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
       "tests": [
         "native App Server mock product matrix"
+      ]
+    },
+    {
+      "operation": "unique_writer_effect_reconciler_actor_boundary",
+      "state": "source_implemented_product_driver_migration_pending",
+      "nativeSymbol": "NativeJournalWriterActor",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/control_actor.rs",
+      "tests": [
+        "one_writer_owns_the_journal_and_effect_capability_is_one_shot"
       ]
     },
     {
@@ -133,6 +169,24 @@
       ]
     },
     {
+      "operation": "signed_operator_recovery_cli",
+      "state": "source_implemented",
+      "nativeSymbol": "verify_execution_plan_for_recovery",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-recovery.rs",
+      "tests": [
+        "recovery_after_expiry integration matrix"
+      ]
+    },
+    {
+      "operation": "bounded_maintenance_cli",
+      "state": "source_implemented",
+      "nativeSymbol": "compact_native_journal",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-maintenance.rs",
+      "tests": [
+        "checkpoint archive and metrics matrix"
+      ]
+    },
+    {
       "operation": "native_control_metrics",
       "state": "source_implemented",
       "nativeSymbol": "DurableInferenceControl::native_metrics",
@@ -140,17 +194,29 @@
       "tests": [
         "compaction_preserves_indeterminate_capacity_and_exact_state"
       ]
+    },
+    {
+      "operation": "operator_slo_alert_policy",
+      "state": "documentation_implemented_runtime_export_pending",
+      "nativeSymbol": "metricSource",
+      "sourcePath": "docs/modules/inference.control/SLO_ALERTS.json",
+      "tests": [
+        "current-state source path and generated-projection checks"
+      ]
     }
   ],
   "qualification": {
     "requiredWorkflow": ".github/workflows/hepta-inference-maintenance.yml",
+    "supplementalWorkflow": ".github/workflows/hepta-inference-x64-smoke.yml",
     "commands": [
       "cargo fmt --all -- --check",
       "cargo test -p codex-hepta-infer-core",
-      "cargo test -p codex-hepta-infer-worker-host",
+      "cargo test -p codex-hepta-infer-worker-host --all-targets --all-features",
       "cargo clippy -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets --all-features -- -D warnings",
       "cargo test -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --exact",
-      "python3 scripts/hepta-inference-control-current-state.py check"
+      "cargo test -p codex-hepta-infer-core --test process_crash_recovery -- --nocapture --test-threads=1",
+      "python3 scripts/hepta-inference-control-current-state.py check",
+      "python3 scripts/hepta-inference-control-ownership.py check"
     ],
     "requiredLanes": [
       "source-head",
@@ -159,10 +225,11 @@
     ]
   },
   "repositoryControlledGaps": [
+    "migrate the real App Server driver from a direct mutable writer session to NativeJournalWriterActor commands",
     "obtain green exact-source-head and deterministic base-merge receipts for the final commit",
-    "retain native-host kill, disk-fault, torn-write, vault and App Server command records as CI artifacts",
-    "publish operator reconciliation/retirement tooling and runbooks",
-    "register worker-host in every canonical repository ownership projection"
+    "retain native-host process-kill, disk-fault, torn-write, vault and App Server command records as CI artifacts",
+    "complete signed output-vault deletion confirmation rather than treating a maintenance receipt as deletion proof",
+    "export runtime metrics to the selected telemetry backend and qualify alert delivery"
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
