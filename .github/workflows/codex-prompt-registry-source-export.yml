@@ -15,15 +15,15 @@ concurrency:
 jobs:
   apply:
     if: ${{ !contains(github.event.head_commit.message, '[prompt-registry-apply]') }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
     steps:
       - name: Check out exact branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           persist-credentials: true
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Apply reviewed strict V4 storage patch
         shell: bash
