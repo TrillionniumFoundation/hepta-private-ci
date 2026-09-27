@@ -73,22 +73,33 @@ Queue submission is non-terminal. Missing replies are not absence proofs.
 
 ## 5. Capacity and fairness
 
-The default runtime policy budgets eight recovery items and sixteen new
-admissions per Agentd cycle. Provider contact remains serialized. Claims are
-ordered by scheduled age, then task and occurrence identity. A fresh clock is
-sampled per batch item. Unknown dispatch stops the batch and returns the next
-cycle to reconciliation.
+The default runtime policy budgets eight distinct recovery items and sixteen new
+admissions per Agentd cycle. Recovery snapshots its frontier once: unknown
+dispatches have priority and are ordered by oldest observation time; remaining
+admitted/running/indeterminate occurrences are ordered by oldest durable update
+time. Each selected row is contacted at most once in the cycle, so one
+in-progress turn cannot consume the whole recovery budget. New admission remains
+ordered by scheduled instant, task and occurrence identity. Provider contact is
+serialized and a fresh clock is sampled per admission item. Unknown dispatch
+stops the admission batch and returns the next cycle to reconciliation.
 
 Errors are classified as fence, fail-stop, retry, reconcile or isolate. Temporary
-pre-admission failure uses capped exponential backoff; corruption and fence
+pre-admission and recovery-transport failure uses independent capped exponential
+backoff budgets; a failed recovery cycle admits no new work. Corruption and fence
 violation stop admission; unknown result is never blind-retried.
 
 ## 6. Neural Circuit vertical slice
 
-Candidate v1 remains an acyclic bounded TaskFlow compilation. Runtime v1 binds an
-event, calls a DecisionCell, records exact route/feedback choices, invokes an
-admitted organ port, processes wait/join, enforces step/depth/cost/feedback
-budgets, observes cancellation and emits a terminal receipt.
+Candidate v1 remains an acyclic bounded TaskFlow compilation. Runtime v1 first
+recomputes the canonical event-ingress digest, then calls a DecisionCell, records
+exact route/feedback choices, invokes an admitted organ port, processes
+wait/join, enforces step/depth/cost/feedback budgets, observes cancellation and
+emits a terminal receipt.
+
+Every runtime trace binds the exact event digest, circuit digest and a canonical
+digest of the runtime profile (`max_steps`, `max_depth`, feedback limit and cost
+budget). Terminal, wait and effect-boundary receipts therefore cannot be
+relabeled as executions under different limits.
 
 Feedback is bounded inside the DecisionCell and does not mutate the persisted
 graph. Effect nodes emit a `CircuitEffectBoundaryV1` for the existing
@@ -113,7 +124,8 @@ The module defines a fail-closed manifest but does not claim distributed storage
 or consensus. A source must be draining and handoff-safe, with no leased or
 unknown provider result. The manifest binds checkpoint and external host-fence
 receipts and requires the target to observe schema 19 and exactly the next writer
-epoch.
+epoch. A deserialized manifest also revalidates the canonical owner Agent ID; a
+recomputed manifest digest cannot legitimize a malformed owner identity.
 
 ## 9. Verification commands
 
