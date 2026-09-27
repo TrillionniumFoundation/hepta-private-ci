@@ -1,0 +1,141 @@
+     "53a59efa865437f08e2bc84b6b44c133b53dc7f40f485ec1dc6200876d221fd1";
+ static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
++const MATRIX_DISPATCH_SCHEMA_SOURCES: &[&str] = &[
++    include_str!("../migrations/0006_matrix_dispatch_ledger.sql"),
++    include_str!("../migrations/0007_matrix_claim_fencing.sql"),
++    include_str!("../migrations/0008_matrix_content_binding.sql"),
++    include_str!("../migrations/0009_matrix_legacy_content_holds.sql"),
++    include_str!("../migrations/0010_matrix_entered_use_proofs.sql"),
++];
+ 
+ #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
+ pub enum MatrixDurableError {
+@@ -3606,6 +3614,92 @@ async fn verify_matrix_v2_schema(pool: &SqlitePool) -> Result<(), MatrixDurableE
+     Ok(())
+ }
+ 
++async fn verify_matrix_dispatch_schema(pool: &SqlitePool) -> Result<(), MatrixDurableError> {
++    let expected = matrix_dispatch_schema_objects()?;
++    for (name, (object_type, expected_sql)) in expected {
++        let row = sqlx::query("SELECT type, sql FROM sqlite_schema WHERE name = ?")
++            .bind(&name)
++            .fetch_optional(pool)
++            .await
++            .map_err(unavailable)?
++            .ok_or(MatrixDurableError::Corrupt)?;
++        let actual_type: String = row.try_get("type").map_err(unavailable)?;
++        let actual_sql: String = row.try_get("sql").map_err(unavailable)?;
++        if actual_type != object_type
++            || normalized_schema_sql(&actual_sql) != normalized_schema_sql(&expected_sql)
++        {
++            return Err(MatrixDurableError::Corrupt);
++        }
++    }
++    Ok(())
++}
++
++fn matrix_dispatch_schema_objects(
++) -> Result<BTreeMap<String, (String, String)>, MatrixDurableError> {
++    let mut objects = BTreeMap::new();
++    for source in MATRIX_DISPATCH_SCHEMA_SOURCES {
++        let mut statement = String::new();
++        let mut trigger = false;
++        for line in source.lines() {
++            let trimmed = line.trim();
++            if statement.is_empty() {
++                if !(trimmed.starts_with("CREATE TABLE ")
++                    || trimmed.starts_with("CREATE INDEX ")
++                    || trimmed.starts_with("CREATE UNIQUE INDEX ")
++                    || trimmed.starts_with("CREATE TRIGGER ")
++                    || trimmed.starts_with("CREATE VIEW "))
++                {
++                    continue;
++                }
++                trigger = trimmed.starts_with("CREATE TRIGGER ");
++            }
++            if !statement.is_empty() {
++                statement.push('\n');
++            }
++            statement.push_str(line);
++            let complete = if trigger {
++                trimmed == "END;"
++            } else {
++                trimmed.ends_with(';')
++            };
++            if !complete {
++                continue;
++            }
++            let words = statement.split_whitespace().collect::<Vec<_>>();
++            let (object_type, name_index) = match words.as_slice() {
++                ["CREATE", "UNIQUE", "INDEX", ..] => ("index", 3),
++                ["CREATE", "INDEX", ..] => ("index", 2),
++                ["CREATE", "TABLE", ..] => ("table", 2),
++                ["CREATE", "TRIGGER", ..] => ("trigger", 2),
++                ["CREATE", "VIEW", ..] => ("view", 2),
++                _ => return Err(MatrixDurableError::Corrupt),
++            };
++            let name = words
++                .get(name_index)
++                .ok_or(MatrixDurableError::Corrupt)?
++                .trim_matches('`')
++                .trim_matches('"')
++                .to_string();
++            objects.insert(name, (object_type.to_string(), statement.clone()));
++            statement.clear();
++            trigger = false;
++        }
++        if !statement.is_empty() {
++            return Err(MatrixDurableError::Corrupt);
++        }
++    }
++    Ok(objects)
++}
++
++fn normalized_schema_sql(value: &str) -> String {
++    value
++        .trim()
++        .trim_end_matches(';')
++        .split_whitespace()
++        .collect::<Vec<_>>()
++        .join(" ")
++}
++
+ async fn verify_store(
+     pool: &SqlitePool,
+     owner_agent_id: &AgentId,
+@@ -3666,7 +3760,35 @@ async fn verify_store(
+             ('matrix_dispatch_ledger_identity_immutable', 'trigger'),
+             ('matrix_dispatch_ledger_no_delete', 'trigger'),
+             ('matrix_dispatch_observations_no_update', 'trigger'),
+-            ('matrix_dispatch_observations_no_delete', 'trigger')
++            ('matrix_dispatch_observations_no_delete', 'trigger'),
++            ('matrix_dispatch_attempt_claims', 'table'),
++            ('matrix_dispatch_attempt_claims_by_token', 'index'),
++            ('matrix_dispatch_attempt_claims_no_update', 'trigger'),
++            ('matrix_dispatch_attempt_claims_no_delete', 'trigger'),
++            ('matrix_dispatch_active_claims', 'table'),
++            ('matrix_dispatch_active_claims_by_lease', 'index'),
++            ('matrix_dispatch_active_claim_identity_immutable', 'trigger'),
++            ('matrix_dispatch_authority_witnesses', 'table'),
++            ('matrix_dispatch_authority_witnesses_no_update', 'trigger'),
++            ('matrix_dispatch_authority_witnesses_no_delete', 'trigger'),
++            ('matrix_dispatch_attempt_events', 'table'),
++            ('matrix_dispatch_attempt_events_by_txn', 'index'),
++            ('matrix_dispatch_attempt_events_no_update', 'trigger'),
++            ('matrix_dispatch_attempt_events_no_delete', 'trigger'),
++            ('matrix_dispatch_attempt_confirmed', 'trigger'),
++            ('matrix_dispatch_attempt_redacted', 'trigger'),
++            ('matrix_dispatch_content_bindings', 'table'),
++            ('matrix_dispatch_content_bindings_no_update', 'trigger'),
++            ('matrix_dispatch_content_bindings_no_delete', 'trigger'),
++            ('matrix_dispatch_legacy_content_holds', 'table'),
++            ('matrix_dispatch_legacy_content_holds_no_insert', 'trigger'),
++            ('matrix_dispatch_legacy_content_holds_no_update', 'trigger'),
++            ('matrix_dispatch_legacy_content_holds_no_delete', 'trigger'),
++            ('matrix_dispatch_use_entries', 'table'),
++            ('matrix_dispatch_use_entries_by_witness', 'index'),
++            ('matrix_dispatch_use_entries_guard_insert', 'trigger'),
++            ('matrix_dispatch_use_entries_no_update', 'trigger'),
++            ('matrix_dispatch_use_entries_no_delete', 'trigger')
+          )
+          SELECT COUNT(*) FROM required
