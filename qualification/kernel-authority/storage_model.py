@@ -29,6 +29,7 @@ MAX_CAPABILITY_REVOCATIONS = 16_384
 MAX_RETIRED_AUTHORITY_LEASE_IDS = 16_384
 CHECKPOINT_INTERVAL = 128
 SHARD_COUNT = 16
+OPERATIONS = {"put", "dispatch", "revoke", "prune"}
 
 
 class ModelError(RuntimeError):
@@ -43,6 +44,21 @@ def canonical(value: Any) -> bytes:
 
 def sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
+
+
+def valid_sha256(value: Any, *, allow_zero: bool = False) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(character in "0123456789abcdef" for character in value)
+        and (allow_zero or value != "0" * 64)
+    )
+
+
+def require_nonnegative_int(value: Any, label: str) -> int:
+    if type(value) is not int or value < 0:
+        raise ModelError(f"{label} is invalid")
+    return value
 
 
 def fsync_directory(path: Path) -> None:
@@ -116,15 +132,9 @@ def validate_frontier(value: dict[str, Any]) -> tuple[int, str]:
         raise ModelError("external frontier fields drifted")
     if value["schema"] != FRONTIER_SCHEMA:
         raise ModelError("external frontier schema mismatch")
-    sequence = value["sequence"]
+    sequence = require_nonnegative_int(value["sequence"], "external frontier sequence")
     head = value["headRecordSha256"]
-    if type(sequence) is not int or sequence < 0:
-        raise ModelError("external frontier sequence is invalid")
-    if (
-        not isinstance(head, str)
-        or len(head) != 64
-        or any(character not in "0123456789abcdef" for character in head)
-    ):
+    if not valid_sha256(head, allow_zero=sequence == 0):
         raise ModelError("external frontier digest is invalid")
     if sequence == 0 and head != "0" * 64:
         raise ModelError("genesis frontier digest mismatch")
@@ -150,9 +160,24 @@ def recover(
     expected_manifest_fields = {"checkpointPath", "checkpointSha256", "generation"}
     if set(manifest) != expected_manifest_fields:
         raise ModelError("manifest fields drifted")
-    checkpoint_path = root / str(manifest["checkpointPath"])
+    checkpoint_name = manifest["checkpointPath"]
+    if (
+        not isinstance(checkpoint_name, str)
+        or not checkpoint_name
+        or Path(checkpoint_name).name != checkpoint_name
+        or not checkpoint_name.startswith("checkpoint-")
+        or not checkpoint_name.endswith(".json")
+    ):
+        raise ModelError("checkpoint path is invalid")
+    manifest_generation = require_nonnegative_int(
+        manifest["generation"], "manifest generation"
+    )
+    checkpoint_digest = manifest["checkpointSha256"]
+    if not valid_sha256(checkpoint_digest):
+        raise ModelError("checkpoint digest is invalid")
+    checkpoint_path = root / checkpoint_name
     checkpoint_bytes = checkpoint_path.read_bytes()
-    if sha256_bytes(checkpoint_bytes) != manifest["checkpointSha256"]:
+    if sha256_bytes(checkpoint_bytes) != checkpoint_digest:
         raise ModelError("checkpoint digest mismatch")
     state = read_json(checkpoint_path)
     if set(state) != {
@@ -162,11 +187,24 @@ def recover(
         "stateSha256",
     }:
         raise ModelError("checkpoint fields drifted")
-    if state["generation"] != manifest["generation"]:
+    checkpoint_generation = require_nonnegative_int(
+        state["generation"], "checkpoint generation"
+    )
+    if checkpoint_generation != manifest_generation:
         raise ModelError("checkpoint generation mismatch")
-    sequence = int(state["sequence"])
-    head = str(state["headRecordSha256"])
-    expected_state_digest = sha256_bytes(f"state:{sequence}:{head}".encode())
+    checkpoint_sequence = require_nonnegative_int(
+        state["sequence"], "checkpoint sequence"
+    )
+    checkpoint_head = state["headRecordSha256"]
+    if not valid_sha256(checkpoint_head, allow_zero=checkpoint_sequence == 0):
+        raise ModelError("checkpoint head digest is invalid")
+    if checkpoint_sequence == 0 and checkpoint_head != "0" * 64:
+        raise ModelError("genesis checkpoint head mismatch")
+    if checkpoint_sequence != 0 and checkpoint_head == "0" * 64:
+        raise ModelError("non-genesis checkpoint has a zero head")
+    expected_state_digest = sha256_bytes(
+        f"state:{checkpoint_sequence}:{checkpoint_head}".encode()
+    )
     if state["stateSha256"] != expected_state_digest:
         raise ModelError("checkpoint state digest mismatch")
 
@@ -176,6 +214,10 @@ def recover(
     if lines and not lines[-1].endswith(b"\n"):
         lines.pop()
         discarded_partial_tail = True
+
+    sequence = 0
+    head = "0" * 64
+    checkpoint_observed = checkpoint_sequence == 0 and checkpoint_head == head
     for index, line in enumerate(lines, start=1):
         try:
             envelope = json.loads(line)
@@ -194,11 +236,16 @@ def recover(
             "sequence",
         }:
             raise ModelError(f"journal payload {index} fields drifted")
-        record_sequence = int(record["sequence"])
-        if record_sequence <= sequence:
-            continue
-        if record_sequence != sequence + 1:
+        record_sequence = require_nonnegative_int(
+            record["sequence"], f"journal record {index} sequence"
+        )
+        if record_sequence == 0 or record_sequence != sequence + 1:
             raise ModelError("journal sequence gap")
+        operation = record["operation"]
+        if not isinstance(operation, str) or operation not in OPERATIONS:
+            raise ModelError(f"journal record {index} operation is invalid")
+        if not valid_sha256(record["payloadSha256"]):
+            raise ModelError(f"journal record {index} payload digest is invalid")
         if record["previousRecordSha256"] != head:
             raise ModelError("journal hash-chain mismatch")
         expected_digest = sha256_bytes(canonical(record))
@@ -206,6 +253,13 @@ def recover(
             raise ModelError("journal record digest mismatch")
         sequence = record_sequence
         head = expected_digest
+        if sequence == checkpoint_sequence:
+            if head != checkpoint_head:
+                raise ModelError("checkpoint does not bind the journal prefix")
+            checkpoint_observed = True
+
+    if checkpoint_sequence > sequence or not checkpoint_observed:
+        raise ModelError("checkpoint sequence is not represented by the committed journal")
 
     external_frontier_matched = trusted_frontier is not None
     if trusted_frontier is not None:
@@ -245,6 +299,30 @@ def build_model(
     return protected_frontier(operations, head), head
 
 
+def corrupt_committed_record(
+    source: Path,
+    destination: Path,
+    trusted_frontier: dict[str, Any],
+    *,
+    earliest: bool,
+) -> bool:
+    copy_model(source, destination)
+    journal_path = destination / "journal.jsonl"
+    journal = bytearray(journal_path.read_bytes())
+    marker = b'"payloadSha256":"'
+    pivot = journal.find(marker) if earliest else journal.rfind(marker)
+    if pivot < 0:
+        raise ModelError("cannot find committed record to corrupt")
+    value_index = pivot + len(marker)
+    journal[value_index] = ord("0") if journal[value_index] != ord("0") else ord("1")
+    journal_path.write_bytes(journal)
+    try:
+        recover(destination, trusted_frontier)
+    except ModelError:
+        return True
+    return False
+
+
 def corruption_drills(
     root: Path,
     rollback_snapshot: Path,
@@ -271,20 +349,21 @@ def corruption_drills(
         and torn_recovery["discardedPartialTail"] is True
     )
 
-    corrupted = root.parent / "corrupted-record"
-    copy_model(root, corrupted)
-    journal = bytearray((corrupted / "journal.jsonl").read_bytes())
-    pivot = journal.rfind(b'"payloadSha256":"')
-    if pivot < 0:
-        raise ModelError("cannot find committed record to corrupt")
-    value_index = pivot + len(b'"payloadSha256":"')
-    journal[value_index] = ord("0") if journal[value_index] != ord("0") else ord("1")
-    (corrupted / "journal.jsonl").write_bytes(journal)
-    committed_record_corruption_rejected = False
-    try:
-        recover(corrupted, trusted_frontier)
-    except ModelError:
-        committed_record_corruption_rejected = True
+    pre_checkpoint_corruption_rejected = corrupt_committed_record(
+        root,
+        root.parent / "corrupted-pre-checkpoint-record",
+        trusted_frontier,
+        earliest=True,
+    )
+    post_checkpoint_corruption_rejected = corrupt_committed_record(
+        root,
+        root.parent / "corrupted-post-checkpoint-record",
+        trusted_frontier,
+        earliest=False,
+    )
+    committed_record_corruption_rejected = (
+        pre_checkpoint_corruption_rejected and post_checkpoint_corruption_rejected
+    )
 
     corrupted_checkpoint = root.parent / "corrupted-checkpoint"
     copy_model(root, corrupted_checkpoint)
