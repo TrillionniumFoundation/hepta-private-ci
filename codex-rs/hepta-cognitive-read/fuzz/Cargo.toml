@@ -1,0 +1,27 @@
+[package]
+name = "codex-hepta-cognitive-read-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+codex-hepta-cognitive-read = { path = ".." }
+codex-hepta-cognitive-types = { path = "../../hepta-cognitive-types" }
+codex-hepta-types = { path = "../../hepta-types" }
+
+[[bin]]
+name = "read_ids"
+path = "fuzz_targets/read_ids.rs"
+test = false
+doc = false
+bench = false
+
+[profile.release]
+debug = 1
+
+[workspace]
+members = ["."]
