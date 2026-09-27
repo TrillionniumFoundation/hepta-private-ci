@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.context-local-component-execution.v1",
+  "component": "byte-bpe-algorithm-and-subprocess-abi",
+  "sourceBase": "879704f137f64fe4c6a0de401b407ca829c2eeea",
+  "testedScope": "exact listed files, NOT the complete Git checkout or Rust/product graph",
+  "startedAt": "2026-09-27T06:26:46.326001+00:00",
+  "finishedAt": "2026-09-27T06:26:49.657934+00:00",
+  "elapsedSeconds": 3.331728400999964,
+  "command": [
+    "/opt/pyvenv/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts/tests",
+    "-p",
+    "test_context_byte_bpe.py",
+    "-v"
+  ],
+  "exitCode": 0,
+  "testsExecuted": 21,
+  "referenceCorpusCases": 500,
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "regex": "2026.5.9",
+  "sourceFiles": [
+    {
+      "path": "scripts/context_tokenizer/byte_bpe.py",
+      "sha256": "900cf870218cd43f63a1982cdb6d5508a5fb9863f64cd61126b43a6ca1b669b5",
+      "gitBlobSha1": "e37f92befd7430c0ca6e62b70c2fde443d601c65"
+    },
+    {
+      "path": "scripts/context_tokenizer/requirements.txt",
+      "sha256": "96f2242c2271b6c015a6e2e422456e8546b6c5f0285d32f79de1e84c97e08d20",
+      "gitBlobSha1": "86ff43153669b866008e87f15f08db1ee25e0534"
+    },
+    {
+      "path": "scripts/tests/test_context_byte_bpe.py",
+      "sha256": "dba95075e4ba1c05a044cc1f98086d31df0d764e46411d1bf73cf2ae94942e2f",
+      "gitBlobSha1": "f517047f00dcce68c4bd97818e0bee63b87191dd"
+    }
+  ],
+  "logSha256": "79ab89f678691fc4c4953b4df8ba4aa1e84efaeffdb7d27d518815fa672ab79e",
+  "nativeExecution": false,
+  "providerGoldenQualification": false,
+  "independentAcceptance": false
+}
