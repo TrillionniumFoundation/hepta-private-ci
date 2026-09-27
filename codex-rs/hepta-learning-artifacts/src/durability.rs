@@ -3,7 +3,7 @@
 //! The immutable artifact encoders deliberately stop at a synchronized file.
 //! This module closes the next host boundary: final-component creation,
 //! directory-entry synchronization, atomic replacement where the target OS
-//! supplies the required semantics, and remove-plus-directory-sync.  It does
+//! supplies the required semantics, and remove-plus-directory-sync. It does
 //! not pretend that every filesystem or storage stack has equivalent power-loss
 //! behavior; unsupported targets fail closed.
 
@@ -14,6 +14,8 @@ use std::fs::File;
 use std::fs::OpenOptions;
 use std::io;
 use std::io::Write;
+#[cfg(unix)]
+use std::os::unix::fs::DirBuilderExt;
 #[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
 #[cfg(unix)]
@@ -53,7 +55,9 @@ impl fmt::Display for HostDurabilityError {
             Self::DirectorySyncUnsupported => {
                 formatter.write_str("target platform has no qualified directory sync primitive")
             }
-            Self::Indeterminate(error) => write!(formatter, "indeterminate durable mutation: {error}"),
+            Self::Indeterminate(error) => {
+                write!(formatter, "indeterminate durable mutation: {error}")
+            }
             Self::Io(error) => write!(formatter, "host durability I/O error: {error}"),
         }
     }
@@ -165,7 +169,10 @@ pub fn durable_replace_control_file_v1(
 
     #[cfg(unix)]
     {
-        let temporary = temporary_path(parent, path.file_name().ok_or(HostDurabilityError::InvalidPath)?);
+        let temporary = temporary_path(
+            parent,
+            path.file_name().ok_or(HostDurabilityError::InvalidPath)?,
+        );
         let result = (|| {
             let mut options = OpenOptions::new();
             options.write(true).create_new(true).mode(0o600);
@@ -245,9 +252,9 @@ pub fn provision_private_root_v1(path: impl AsRef<Path>) -> Result<PathBuf, Host
 
 fn validate_final_path(path: &Path) -> Result<(), HostDurabilityError> {
     if path.file_name().is_none()
-        || path.components().any(|component| {
-            matches!(component, Component::ParentDir | Component::CurDir)
-        })
+        || path
+            .components()
+            .any(|component| matches!(component, Component::ParentDir | Component::CurDir))
     {
         return Err(HostDurabilityError::InvalidPath);
     }
