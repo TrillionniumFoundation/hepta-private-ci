@@ -31,6 +31,9 @@ use crate::RuntimeComposition;
 mod control;
 
 pub(crate) struct AgentdState {
+    pub(crate) intelligence_execution:
+        std::sync::OnceLock<Arc<dyn crate::AgentdIntelligenceExecutionHostV1>>,
+
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
@@ -129,6 +132,7 @@ impl AgentdState {
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
+            intelligence_execution: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),
             evidence: std::sync::OnceLock::new(),
             automation_effect: std::sync::OnceLock::new(),
@@ -566,8 +570,43 @@ impl AgentdState {
             && runtime.app_server_ready
             && !runtime.fenced)
     }
+    pub(crate) async fn complete_canonical_intelligence(
+        &self,
+        admitted: crate::AgentdIntelligenceAdmittedOutcomeV1,
+    ) -> Result<&'static str, AgentdError> {
+        let Some(host) = self.intelligence_execution.get() else {
+            return Ok("canonical_ready");
+        };
+        let crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { prepared, .. } = &admitted else {
+            return Err(AgentdError::Invalid("non-selected execution".to_string()));
+        };
+        let run_id = prepared.run_snapshot().run_id;
+        if host.owner_generation() != self.current_generation()? {
+            return Err(AgentdError::GenerationFenced(
+                "execution host generation".to_string(),
+            ));
+        }
+        let completed = host.execute(admitted).await?;
+        if completed.run_id != run_id
+            || completed.observation_digest.is_zero()
+            || (completed.outcome_acknowledged && !completed.terminal_observed)
+        {
+            return Err(AgentdError::Protocol(
+                "execution summary binding".to_string(),
+            ));
+        }
+        Ok(if completed.outcome_acknowledged {
+            "canonical_executed"
+        } else {
+            "canonical_reconciliation_required"
+        })
+    }
+
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
-        self.intelligence_product.get().is_some() && self.intelligence_invocation.get().is_some()
+        self.intelligence_product
+            .get()
+            .is_some_and(|runner| runner.canonical_profile_ready())
+            && self.intelligence_invocation.get().is_some()
     }
 
     pub(crate) fn record_intelligence_run_receipt(
@@ -603,7 +642,16 @@ impl AgentdState {
             return Ok(None);
         };
 
-        let invocation = provider.build(&self.identity, record)?;
+        if !runner.canonical_profile_ready() {
+            return Err(AgentdError::Invalid(
+                "canonical intelligence runner has no independent authority rollback witness"
+                    .to_string(),
+            ));
+        }
+
+        let invocation = runner
+            .build_host_invocation(Arc::clone(provider), self.identity.clone(), record.clone())
+            .await?;
         invocation.validate(&self.identity, record)?;
 
         // Freeze only the small immutable composition while holding the run

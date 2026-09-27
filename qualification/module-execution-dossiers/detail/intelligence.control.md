@@ -130,3 +130,25 @@ parent-anchored no-follow file access, independently durable authority rollback
 floor, ledger-witness recovery, current native validation, physical process fault
 cuts, performance/quality baselines and independent acceptance. Source work does
 not grant activation, promotion, release or C1 longitudinal efficacy.
+
+
+## Product boundary source convergence
+
+The guarded canonical profile now optionally installs a daemon-owned completion
+interface at authenticated ObjectiveStart. Its concrete native embedding reuses
+DurableInferenceControl, the existing App Server driver and the sole learning
+host. It requires witnessed Decision acknowledgement before model send, derives
+physical bytes only from owner-constructed PreparedPromptDeliveryV1, and checks
+independent Outcome support against the observed run and provider terminal.
+A terminal native observation remains available when the Outcome path needs
+reconciliation; canonical_executed is episode closure, not task success.
+
+The effective current contracts are PRODUCT_CLOSURE.md and
+RESTART_RECONCILIATION.md in the module guide directory. Their source mechanisms
+supersede earlier statements that these adapters were wholly absent: private
+prompt-source lineage and regenerated serialization proof; bounded factory and
+learning I/O workers; parent-component no-follow reads; a separately retained
+manifest floor; exact LedgerWriter witness-prefix/last-record recovery. These
+are not proof of a deployed owner factory, a full physical ObjectiveStart E2E,
+write-side crash/root replacement, target-host performance or task efficacy.
+Qualification-only legacy writes are never used to supply the default product.

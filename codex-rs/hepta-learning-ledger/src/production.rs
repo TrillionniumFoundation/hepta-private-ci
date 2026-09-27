@@ -281,6 +281,46 @@ impl LedgerWriter {
         }
     }
 
+    /// Observe an exact already-committed event and finish its witness handoff.
+    /// This is not a write admission API: a missing event is never appended and
+    /// neither its payload nor its original ledger predecessor may be changed.
+    /// Historical authentication is preserved; a new grant/signature is not
+    /// needed just to acknowledge a fact which the destination already committed.
+    pub fn reconcile_exact_event_v1(
+        &mut self,
+        expected_predecessor: Digest32,
+        expected_event: &LedgerEvent,
+    ) -> Result<Option<AppendReceipt>, ProductionLedgerError> {
+        let core = self.backend.core()?;
+        let Some(record) = core.record_by_id(expected_event.record_id())? else {
+            return Ok(None);
+        };
+        if record.event != *expected_event
+            || record.predecessor_chain_digest != expected_predecessor
+        {
+            return Err(ProductionLedgerError::Binding(
+                "exact recovery event/predecessor",
+            ));
+        }
+        let receipt = AppendReceipt {
+            disposition: crate::AppendDisposition::IdempotentReplay,
+            sequence: record.sequence,
+            event_digest: record.event_digest,
+            chain_digest: record.chain_digest,
+        };
+        let witness = self.witness.frontier()?;
+        validate_witness_state(core.records(), self.backend.frontier()?, witness)?;
+        if receipt.sequence.get() <= witness.anchor.sequence {
+            // An older covered event remains observable even if a different
+            // last append is awaiting its witness. Do not replay that append.
+            return Ok(Some(receipt));
+        }
+        // commit permits only an exact idempotent last-record replay when the
+        // witness lags. It synchronizes the witness before returning success.
+        self.commit(expected_predecessor, expected_event.clone())
+            .map(Some)
+    }
+
     pub fn witness_frontier(&self) -> Result<LedgerWitnessFrontier, ProductionLedgerError> {
         self.witness.frontier().map_err(Into::into)
     }

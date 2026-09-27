@@ -31,11 +31,17 @@ impl PreparedAgentdIntelligenceRunV1 {
         {
             return Err(CanonicalIntelligenceError::SnapshotMismatch);
         }
-        let AdvisoryDecisionV1::Selected { candidate_id, propensity } = &decision.decision else {
+        let AdvisoryDecisionV1::Selected {
+            candidate_id,
+            propensity,
+        } = &decision.decision
+        else {
             return Err(CanonicalIntelligenceError::UnexpectedDecision);
         };
         if propensity.raw() == 0 || !self.candidate_ids().contains(candidate_id) {
-            return Err(CanonicalIntelligenceError::InvalidCandidateSet("selected canonical decision"));
+            return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+                "selected canonical decision",
+            ));
         }
         let mut bytes = b"hepta.intelligence.advisory-decision.v1\0".to_vec();
         push_id(&mut bytes, envelope.run_id.as_str())?;
@@ -45,7 +51,9 @@ impl PreparedAgentdIntelligenceRunV1 {
         push_id(&mut bytes, candidate_id.as_str())?;
         bytes.extend_from_slice(&propensity.raw().to_be_bytes());
         if Digest32::of_bytes(&bytes) != decision.decision_digest {
-            return Err(CanonicalIntelligenceError::InvalidCandidateSet("decision digest"));
+            return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+                "decision digest",
+            ));
         }
         let mut bytes = b"hepta.intelligence.context-boundary.v1\0".to_vec();
         push_id(&mut bytes, envelope.run_id.as_str())?;
@@ -70,7 +78,9 @@ impl PreparedAgentdIntelligenceRunV1 {
         if decision.intuition_receipt_digest.is_zero()
             || digests.iter().any(|value| value.is_zero())
         {
-            return Err(CanonicalIntelligenceError::EmptyDigest("prepared dependency"));
+            return Err(CanonicalIntelligenceError::EmptyDigest(
+                "prepared dependency",
+            ));
         }
         let mut bytes = b"hepta.intelligence.host-envelope.v1\0".to_vec();
         push_id(&mut bytes, envelope.run_id.as_str())?;
@@ -78,16 +88,32 @@ impl PreparedAgentdIntelligenceRunV1 {
             bytes.extend_from_slice(digest.as_array());
         }
         if Digest32::of_bytes(&bytes) != envelope.envelope_digest {
-            return Err(CanonicalIntelligenceError::InvalidCandidateSet("envelope digest"));
+            return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+                "envelope digest",
+            ));
         }
-        let request_digest: Digest32 = run.request_digest.parse()
+        let request_digest: Digest32 = run
+            .request_digest
+            .parse()
             .map_err(|_| CanonicalIntelligenceError::InvalidSnapshot("request digest"))?;
         let mut bytes = b"hepta.agentd.intelligence-dispatch-proposal.v1\0".to_vec();
         bytes.extend_from_slice(envelope.envelope_digest.as_array());
         bytes.extend_from_slice(snapshot.revocation_frontier_digest().as_array());
         bytes.extend_from_slice(request_digest.as_array());
         if Digest32::of_bytes(&bytes) != self.dispatch_proposal_digest {
-            return Err(CanonicalIntelligenceError::InvalidSnapshot("dispatch proposal digest"));
+            return Err(CanonicalIntelligenceError::InvalidSnapshot(
+                "dispatch proposal digest",
+            ));
+        }
+        if let Some(delivery) = self.prompt_delivery() {
+            let binding = super::super::prompt_binding::validate_prompt_delivery_v1(delivery)?;
+            if envelope.prompt_receipt_digest != binding.prompt_stage_digest
+                || envelope.context_receipt_digest != binding.context_attachment_digest
+            {
+                return Err(CanonicalIntelligenceError::InvalidSnapshot(
+                    "prompt delivery binding",
+                ));
+            }
         }
         Ok(())
     }

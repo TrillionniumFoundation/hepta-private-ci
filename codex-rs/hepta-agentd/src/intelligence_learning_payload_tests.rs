@@ -14,12 +14,11 @@ fn operation_ids_are_kind_separated_and_stable() {
     let snapshot = digest("snapshot");
     let decision = digest("decision");
     let physical = digest("physical");
-    let first = decision_operation_id(&run, "episode.one", snapshot, decision)
-        .expect("decision operation");
-    let second = decision_operation_id(&run, "episode.one", snapshot, decision)
-        .expect("decision operation");
-    let outcome = outcome_operation_id(&run, "outcome.one", physical)
-        .expect("outcome operation");
+    let first =
+        decision_operation_id(&run, "episode.one", snapshot, decision).expect("decision operation");
+    let second =
+        decision_operation_id(&run, "episode.one", snapshot, decision).expect("decision operation");
+    let outcome = outcome_operation_id(&run, "outcome.one", physical).expect("outcome operation");
     assert_eq!(first, second);
     assert_ne!(first, outcome);
 }
@@ -110,8 +109,10 @@ fn recovery_test_decision_payload() -> DecisionPayloadV1 {
                 .to_string(),
             candidate_count: 1,
             omitted_count_bound: 0,
-            canonical_order_digest: codex_hepta_learning_ledger::candidate_order_digest_v2(&candidates)
-                .to_string(),
+            canonical_order_digest: codex_hepta_learning_ledger::candidate_order_digest_v2(
+                &candidates,
+            )
+            .to_string(),
             complete_for_generator: true,
         },
         support_digest: digest("support").to_string(),
@@ -146,7 +147,9 @@ fn persisted_principal_binding_rejects_key_and_credential_substitution() {
     let evidence = recovery_test_evidence();
     let binding = recovery_test_binding(&evidence);
     let principal = recovery_test_principal();
-    binding.require_principal(&principal).expect("exact principal");
+    binding
+        .require_principal(&principal)
+        .expect("exact principal");
     let mut changed = principal.clone();
     changed.credential_chain_digest = digest("other-chain");
     assert!(binding.require_principal(&changed).is_err());
@@ -182,41 +185,43 @@ fn v2_payload_round_trip_preserves_event_time_predecessor_and_authentication() {
     };
     let bytes = serde_json::to_vec(&payload).expect("encode");
     let restored: PersistedLearningEnvelopeV1 = serde_json::from_slice(&bytes).expect("decode");
-    assert_eq!(bytes, serde_json::to_vec(&restored).expect("canonical reencode"));
-    assert_eq!(payload.payload.operation_id().expect("operation"), restored.payload.operation_id().expect("operation"));
-    assert_eq!(expected_persisted_event(&payload.payload).expect("event"), expected_persisted_event(&restored.payload).expect("event"));
+    assert_eq!(
+        bytes,
+        serde_json::to_vec(&restored).expect("canonical reencode")
+    );
+    assert_eq!(
+        payload.payload.operation_id().expect("operation"),
+        restored.payload.operation_id().expect("operation")
+    );
+    assert_eq!(
+        expected_persisted_event(&payload.payload).expect("event"),
+        expected_persisted_event(&restored.payload).expect("event")
+    );
     let LearningPayloadV1::Decision(restored) = restored.payload else {
         panic!("decision fixture");
     };
     assert_eq!(restored.now, 150);
-    assert_eq!(restored.expected_ledger_predecessor, digest("ledger-predecessor").to_string());
+    assert_eq!(
+        restored.expected_ledger_predecessor,
+        digest("ledger-predecessor").to_string()
+    );
 }
 
 #[test]
 fn historical_event_reconstruction_does_not_require_a_current_write_grant() {
     let payload = recovery_test_decision_payload();
-    let first = expected_persisted_event(&LearningPayloadV1::Decision(payload.clone())).expect("historical event");
+    let first = expected_persisted_event(&LearningPayloadV1::Decision(payload.clone()))
+        .expect("historical event");
     let mut later_metadata = payload;
     later_metadata.now = 1_000;
-    let second = expected_persisted_event(&LearningPayloadV1::Decision(later_metadata)).expect("same event");
+    let second =
+        expected_persisted_event(&LearningPayloadV1::Decision(later_metadata)).expect("same event");
     assert_eq!(first, second);
     // Reconstruction is not application. Only the live destination comparison
     // may acknowledge it; apply_decision separately checks the current clock.
 }
 
-#[test]
-fn destination_observation_requires_witness_coverage() {
-    let record_chain = digest("record-chain");
-    assert!(matches!(
-        require_witness_coverage(7, record_chain, 6, digest("older-witness")),
-        Err(ProductionLedgerError::WitnessLag)
-    ));
-    assert!(matches!(
-        require_witness_coverage(7, record_chain, 7, digest("substituted-chain")),
-        Err(ProductionLedgerError::WitnessLag)
-    ));
-    require_witness_coverage(7, record_chain, 7, record_chain)
-        .expect("exact witness");
-    require_witness_coverage(7, record_chain, 8, digest("later-witness"))
-        .expect("later witness transitively covers record");
-}
+// Witness-covered observation is exercised against the real owner backend by
+// hepta-learning-ledger::production::tests::
+// exact_destination_recovery_requires_event_predecessor_and_witness.
+// Do not duplicate the ledger's chain/witness algorithm in the composition host.

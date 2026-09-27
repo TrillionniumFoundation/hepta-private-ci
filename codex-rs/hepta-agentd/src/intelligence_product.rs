@@ -55,6 +55,7 @@ use codex_hepta_intelligence::CanonicalRunOutcomeV1;
 use codex_hepta_intelligence::CanonicalStageV1;
 use codex_hepta_intelligence::CurrentOwnerStateV1;
 use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
+use codex_hepta_intelligence::PreparedPromptDeliveryV1;
 use codex_hepta_intelligence::canonical_candidate_ids_v1;
 use codex_hepta_intelligence::prepare_intelligence_run;
 use codex_hepta_intelligence::validate_canonical_outcome_v1;
@@ -127,13 +128,19 @@ const MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES: u64 = 64 * 1024;
 struct FileBackedFreshnessOracleV1 {
     path: PathBuf,
     verifier: IntelligenceAuthorityVerifierV1,
+    rollback: Option<Arc<crate::IntelligenceAuthorityRollbackGuardV1>>,
     telemetry: Option<Arc<crate::AgentdIntelligenceTelemetryV1>>,
 }
 
 impl FileBackedFreshnessOracleV1 {
-    #[cfg(any(test, feature = "qualification-legacy-learning-write"))]
+    #[cfg(feature = "qualification-legacy-learning-write")]
     fn new(path: PathBuf, verifier: IntelligenceAuthorityVerifierV1) -> Self {
-        Self { path, verifier, telemetry: None }
+        Self {
+            path,
+            verifier,
+            rollback: None,
+            telemetry: None,
+        }
     }
 
     fn new_observed(
@@ -141,38 +148,34 @@ impl FileBackedFreshnessOracleV1 {
         verifier: IntelligenceAuthorityVerifierV1,
         telemetry: Arc<crate::AgentdIntelligenceTelemetryV1>,
     ) -> Self {
-        Self { path, verifier, telemetry: Some(telemetry) }
+        Self {
+            path,
+            verifier,
+            rollback: None,
+            telemetry: Some(telemetry),
+        }
     }
 
-    fn read(&self, requested: &StableId) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
-        use std::io::Read;
+    fn with_rollback(
+        mut self,
+        rollback: Option<Arc<crate::IntelligenceAuthorityRollbackGuardV1>>,
+    ) -> Self {
+        self.rollback = rollback;
+        self
+    }
 
+    fn read(
+        &self,
+        requested: &StableId,
+    ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
         let unavailable = || CanonicalIntelligenceError::FreshnessUnavailable(requested.clone());
-        let before = std::fs::symlink_metadata(&self.path).map_err(|_| unavailable())?;
-        if before.file_type().is_symlink() || !before.is_file() {
-            return Err(unavailable());
-        }
-        let mut handle = std::fs::File::open(&self.path).map_err(|_| unavailable())?;
-        let metadata = handle.metadata().map_err(|_| unavailable())?;
-        if !metadata.is_file() || metadata.len() == 0 || metadata.len() > MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES {
-            return Err(unavailable());
-        }
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::MetadataExt;
-            if before.dev() != metadata.dev() || before.ino() != metadata.ino()
-                || metadata.mode() & 0o022 != 0
-            {
-                return Err(unavailable());
-            }
-        }
-        let mut bytes = Vec::new();
-        Read::take(&mut handle, MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES + 1)
-            .read_to_end(&mut bytes).map_err(|_| unavailable())?;
-        if bytes.is_empty() || bytes.len() as u64 > MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES {
-            return Err(unavailable());
-        }
-        let file: IntelligenceAuthorityFileV1 = serde_json::from_slice(&bytes).map_err(|_| unavailable())?;
+        let bytes = crate::intelligence_files::read_bounded(
+            &self.path,
+            MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES as usize,
+        )
+        .map_err(|_| unavailable())?;
+        let file: IntelligenceAuthorityFileV1 =
+            serde_json::from_slice(&bytes).map_err(|_| unavailable())?;
         verify_authority_file(&file, &self.verifier, requested)?;
         if file.schema_version != 1 || file.authority_epoch == 0 || file.owners.len() != 7 {
             return Err(unavailable());
@@ -180,9 +183,47 @@ impl FileBackedFreshnessOracleV1 {
         if let Some(telemetry) = self.telemetry.as_ref() {
             telemetry.record_authority_manifest(file.authority_epoch);
         }
-        let frontier = Digest32::from_str(&file.revocation_frontier_digest).map_err(|_| unavailable())?;
+        let frontier =
+            Digest32::from_str(&file.revocation_frontier_digest).map_err(|_| unavailable())?;
         if frontier.is_zero() {
             return Err(unavailable());
+        }
+        // Validate the entire signed owner universe before advancing the floor.
+        // A malformed but signed future epoch must not poison healthy owners.
+        let expected: std::collections::BTreeSet<&str> = [
+            "objective.compiler",
+            "utility.ndu",
+            "neuron.runtime",
+            "prompt.optimizer",
+            "intuition.policy",
+            "context.compiler",
+            "learning.eval",
+        ]
+        .into_iter()
+        .collect();
+        let actual: std::collections::BTreeSet<&str> = file
+            .owners
+            .iter()
+            .map(|owner| owner.owner_id.as_str())
+            .collect();
+        if actual != expected {
+            return Err(unavailable());
+        }
+        for owner in &file.owners {
+            Generation::new(owner.generation).map_err(|_| unavailable())?;
+            let implementation =
+                Digest32::from_str(&owner.implementation_digest).map_err(|_| unavailable())?;
+            let key = Digest32::from_str(&owner.key_digest).map_err(|_| unavailable())?;
+            if implementation.is_zero() || key.is_zero() || owner.key_epoch == 0 {
+                return Err(unavailable());
+            }
+        }
+        if let Some(rollback) = self.rollback.as_ref() {
+            let manifest_digest =
+                intelligence_authority_manifest_digest_v1(&file).map_err(|_| unavailable())?;
+            rollback
+                .admit(file.authority_epoch, manifest_digest)
+                .map_err(|_| unavailable())?;
         }
         let mut seen = BTreeMap::new();
         for owner in file.owners {
@@ -193,21 +234,29 @@ impl FileBackedFreshnessOracleV1 {
         }
         let owner = seen.remove(requested).ok_or_else(unavailable)?;
         let generation = Generation::new(owner.generation).map_err(|_| unavailable())?;
-        let implementation_digest = Digest32::from_str(&owner.implementation_digest).map_err(|_| unavailable())?;
+        let implementation_digest =
+            Digest32::from_str(&owner.implementation_digest).map_err(|_| unavailable())?;
         let key_digest = Digest32::from_str(&owner.key_digest).map_err(|_| unavailable())?;
         if implementation_digest.is_zero() || key_digest.is_zero() || owner.key_epoch == 0 {
             return Err(unavailable());
         }
         Ok(CurrentOwnerStateV1 {
-            owner_id: requested.clone(), generation, implementation_digest, key_digest,
-            key_epoch: owner.key_epoch, authority_epoch: file.authority_epoch,
+            owner_id: requested.clone(),
+            generation,
+            implementation_digest,
+            key_digest,
+            key_epoch: owner.key_epoch,
+            authority_epoch: file.authority_epoch,
             revocation_frontier_digest: frontier,
         })
     }
 }
 
 impl CanonicalFreshnessOracleV1 for FileBackedFreshnessOracleV1 {
-    fn current(&mut self, owner_id: &StableId) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
+    fn current(
+        &mut self,
+        owner_id: &StableId,
+    ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
         self.read(owner_id)
     }
 }
@@ -225,6 +274,9 @@ pub struct AgentdIntelligenceOwnerInputsV1 {
     pub neural_tick: SparseTick,
     pub neural_previous: Option<SparseCheckpoint>,
     pub prompt_request: OptimizationRequest,
+    /// Exact owner-backed prompt/context delivery. Compatibility fixtures may
+    /// leave this absent, but physical product execution is fail-closed without it.
+    pub prompt_delivery: Option<PreparedPromptDeliveryV1>,
     pub intuition_request: CalibratedDecisionRequestV1,
     pub context_request: CompilationRequest,
     pub evaluation_request: EvaluationRequest,
@@ -233,6 +285,8 @@ pub struct AgentdIntelligenceOwnerInputsV1 {
 
 #[path = "intelligence_product_ports.rs"]
 mod owner_ports;
+#[path = "intelligence_prompt_binding.rs"]
+mod prompt_binding;
 use owner_ports::AgentdOwnerPortsV1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -243,17 +297,56 @@ pub struct PreparedAgentdIntelligenceRunV1 {
     candidate_ids: Vec<StableId>,
     run_snapshot: crate::AgentRunSnapshot,
     context_attachment: crate::AgentContextAttachment,
+    prompt_delivery: Option<PreparedPromptDeliveryV1>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AgentdIntelligencePhysicalPromptV1 {
+    pub payload: Vec<u8>,
+    pub payload_digest: Digest32,
+    pub attachment_digest: Digest32,
+    pub prompt_stage_digest: Digest32,
 }
 
 impl PreparedAgentdIntelligenceRunV1 {
     #[must_use]
-    pub fn run_snapshot(&self) -> crate::AgentRunSnapshot { self.run_snapshot.clone() }
+    pub fn run_snapshot(&self) -> crate::AgentRunSnapshot {
+        self.run_snapshot.clone()
+    }
     #[must_use]
-    pub fn context_attachment(&self) -> crate::AgentContextAttachment { self.context_attachment.clone() }
+    pub fn context_attachment(&self) -> crate::AgentContextAttachment {
+        self.context_attachment.clone()
+    }
     #[must_use]
-    pub fn canonical_snapshot(&self) -> CanonicalIntelligenceSnapshotV1 { self.snapshot.clone() }
+    pub fn canonical_snapshot(&self) -> CanonicalIntelligenceSnapshotV1 {
+        self.snapshot.clone()
+    }
     #[must_use]
-    pub fn candidate_ids(&self) -> &[StableId] { &self.candidate_ids }
+    pub fn candidate_ids(&self) -> &[StableId] {
+        &self.candidate_ids
+    }
+    #[must_use]
+    pub fn prompt_delivery(&self) -> Option<&PreparedPromptDeliveryV1> {
+        self.prompt_delivery.as_ref()
+    }
+    pub fn physical_prompt(
+        &self,
+    ) -> Result<AgentdIntelligencePhysicalPromptV1, CanonicalIntelligenceError> {
+        self.validate_integrity()?;
+        let delivery =
+            self.prompt_delivery
+                .as_ref()
+                .ok_or(CanonicalIntelligenceError::InvalidSnapshot(
+                    "owner-backed prompt delivery",
+                ))?;
+        let binding = prompt_binding::validate_prompt_delivery_v1(delivery)?;
+        Ok(AgentdIntelligencePhysicalPromptV1 {
+            payload: delivery.serialized_payload.clone(),
+            payload_digest: binding.payload_digest,
+            attachment_digest: binding.context_attachment_digest,
+            prompt_stage_digest: binding.prompt_stage_digest,
+        })
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -265,7 +358,10 @@ pub enum AgentdIntelligenceProductOutcomeV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AgentdIntelligenceAdmittedOutcomeV1 {
-    Ready { prepared: PreparedAgentdIntelligenceRunV1, run_receipt: crate::RunReceipt },
+    Ready {
+        prepared: PreparedAgentdIntelligenceRunV1,
+        run_receipt: crate::RunReceipt,
+    },
     Abstained,
     SlowPath,
 }
@@ -281,12 +377,15 @@ pub enum AgentdIntelligenceProductError {
     RunIdentityMismatch,
     Clock,
     InvalidAuthorityVerifier,
+    InvalidAuthorityRollback,
     InvalidWorkerPolicy,
     Run(crate::AgentRunError),
 }
 
 impl fmt::Display for AgentdIntelligenceProductError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result { write!(formatter, "{self:?}") }
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
 }
 impl StdError for AgentdIntelligenceProductError {}
 
@@ -296,6 +395,7 @@ pub struct AgentdIntelligenceProductRunnerV1 {
     worker_slots: Arc<tokio::sync::Semaphore>,
     authority_file: PathBuf,
     authority_verifier: IntelligenceAuthorityVerifierV1,
+    authority_rollback: Option<Arc<crate::IntelligenceAuthorityRollbackGuardV1>>,
     evaluation_trust: Option<Arc<codex_hepta_learning_ledger::ActivatedLearningTrustV1>>,
     telemetry: Arc<crate::AgentdIntelligenceTelemetryV1>,
     hard_timeout_process_exit_grace: Option<Duration>,
@@ -304,11 +404,29 @@ pub struct AgentdIntelligenceProductRunnerV1 {
 #[path = "intelligence_product_runner.rs"]
 mod runner;
 
-fn authority_signing_payload(file: &IntelligenceAuthorityFileV1) -> Result<Vec<u8>, serde_json::Error> {
+fn authority_signing_payload(
+    file: &IntelligenceAuthorityFileV1,
+) -> Result<Vec<u8>, serde_json::Error> {
     serde_json::to_vec(&(
-        "hepta.agentd.intelligence-authority.v1", file.schema_version, file.authority_epoch,
-        &file.revocation_frontier_digest, &file.owners, &file.signer_id,
+        "hepta.agentd.intelligence-authority.v1",
+        file.schema_version,
+        file.authority_epoch,
+        &file.revocation_frontier_digest,
+        &file.owners,
+        &file.signer_id,
     ))
+}
+
+/// Exact identity of one already signed authority manifest, including its
+/// signature bytes. The monotonic guard consumes this only after signature
+/// verification; the digest itself grants no authority.
+pub fn intelligence_authority_manifest_digest_v1(
+    file: &IntelligenceAuthorityFileV1,
+) -> Result<Digest32, serde_json::Error> {
+    let mut bytes = b"hepta.agentd.intelligence-authority-manifest.v1\0".to_vec();
+    bytes.extend_from_slice(&authority_signing_payload(file)?);
+    bytes.extend_from_slice(&file.signature);
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn verify_authority_file(
@@ -324,15 +442,22 @@ fn verify_authority_file(
     if key.is_weak() {
         return Err(unavailable());
     }
-    let signature_bytes: [u8; 64] = file.signature.as_slice().try_into().map_err(|_| unavailable())?;
+    let signature_bytes: [u8; 64] = file
+        .signature
+        .as_slice()
+        .try_into()
+        .map_err(|_| unavailable())?;
     let signature = Signature::from_bytes(&signature_bytes);
     let payload = authority_signing_payload(file).map_err(|_| unavailable())?;
-    key.verify_strict(&payload, &signature).map_err(|_| unavailable())
+    key.verify_strict(&payload, &signature)
+        .map_err(|_| unavailable())
 }
 
 fn wall_clock_ms() -> Result<u64, AgentdIntelligenceProductError> {
-    let millis = SystemTime::now().duration_since(UNIX_EPOCH)
-        .map_err(|_| AgentdIntelligenceProductError::Clock)?.as_millis();
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| AgentdIntelligenceProductError::Clock)?
+        .as_millis();
     u64::try_from(millis).map_err(|_| AgentdIntelligenceProductError::Clock)
 }
 
@@ -352,13 +477,15 @@ pub enum AgentdIntelligenceLedgerError {
     InvalidOutcome,
 }
 impl fmt::Display for AgentdIntelligenceLedgerError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result { write!(formatter, "{self:?}") }
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
 }
 impl StdError for AgentdIntelligenceLedgerError {}
 
 #[cfg(test)]
-#[path = "intelligence_product_tests.rs"]
-mod tests;
-#[cfg(test)]
 #[path = "intelligence_evaluation_tests.rs"]
 mod evaluation_tests;
+#[cfg(test)]
+#[path = "intelligence_product_tests.rs"]
+mod tests;

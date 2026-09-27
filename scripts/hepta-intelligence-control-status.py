@@ -54,6 +54,7 @@ REQUIRED_TESTS = {
     "explicit_hard_timeout_terminates_a_real_child_process",
     "actual_stage_outputs_fill_templates_but_reject_substitution",
     "utility_universe_rejects_foreign_and_missing_candidates",
+    "guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen",
 }
 REQUIRED_OPERATIONS = {
     "build_legal_candidates", "prepare_intelligence_run", "decide_boundary",
@@ -65,6 +66,8 @@ REQUIRED_OPERATIONS = {
 COMMANDS = {
     "fmt.json": ["cargo", "fmt", "--all", "--", "--check"],
     "intelligence-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-intelligence"],
+    "ledger-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-learning-ledger"],
+    "native-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-infer-worker-host", "--lib"],
     "operations-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-operations"],
     "agentd-default-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "--lib"],
     "agentd-qualification-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "--lib", "--features", "qualification-legacy-learning-write"],
@@ -75,6 +78,8 @@ PACKAGE_RECORDS = {
     "codex-hepta-intelligence": "intelligence-tests.json",
     "codex-hepta-agentd": "agentd-default-tests.json",
     "codex-hepta-operations": "operations-tests.json",
+    "codex-hepta-learning-ledger": "ledger-tests.json",
+    "codex-hepta-infer-worker-host": "native-tests.json",
 }
 FALSE_CLAIMS = (
     "defaultBinaryProfileComposed", "realProcessProviderE2E", "targetHostQualified",

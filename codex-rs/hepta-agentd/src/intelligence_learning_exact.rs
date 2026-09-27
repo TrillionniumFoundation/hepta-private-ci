@@ -23,13 +23,18 @@ impl AgentdIntelligenceLearningHostV1 {
         prepared: &PreparedAgentdIntelligenceRunV1,
         request: AgentdIntelligenceDecisionAppendV1,
     ) -> Result<AgentdIntelligenceLearningReceiptV1, AgentdIntelligenceLearningErrorV1> {
-        let payload = {
-            let writer = self
-                .writer
-                .lock()
-                .map_err(|_| AgentdIntelligenceLearningErrorV1::Poisoned)?;
-            LearningPayloadV1::Decision(decision_payload(&writer, prepared, request)?)
-        };
+        let frozen = prepared.clone();
+        let writer = Arc::clone(&self.writer);
+        let payload = self
+            .run_io(move || {
+                let writer = writer
+                    .lock()
+                    .map_err(|_| AgentdIntelligenceLearningErrorV1::Poisoned)?;
+                Ok(LearningPayloadV1::Decision(decision_payload(
+                    &writer, &frozen, request,
+                )?))
+            })
+            .await?;
         self.enqueue_and_dispatch_exact_v1(prepared, payload, None)
             .await
     }
@@ -44,13 +49,18 @@ impl AgentdIntelligenceLearningHostV1 {
         prepared: &PreparedAgentdIntelligenceRunV1,
         request: AgentdIntelligenceOutcomeAppendV1,
     ) -> Result<AgentdIntelligenceLearningReceiptV1, AgentdIntelligenceLearningErrorV1> {
-        let payload = {
-            let writer = self
-                .writer
-                .lock()
-                .map_err(|_| AgentdIntelligenceLearningErrorV1::Poisoned)?;
-            LearningPayloadV1::Outcome(outcome_payload(&writer, prepared, request)?)
-        };
+        let frozen = prepared.clone();
+        let writer = Arc::clone(&self.writer);
+        let payload = self
+            .run_io(move || {
+                let writer = writer
+                    .lock()
+                    .map_err(|_| AgentdIntelligenceLearningErrorV1::Poisoned)?;
+                Ok(LearningPayloadV1::Outcome(outcome_payload(
+                    &writer, &frozen, request,
+                )?))
+            })
+            .await?;
         let predecessor = decision_operation_id(
             &payload.run_id()?,
             payload.episode_id(),
@@ -86,7 +96,9 @@ impl AgentdIntelligenceLearningHostV1 {
         }
 
         let payload_digest = Digest32::of_bytes(&encoded);
-        persist_payload(&self.payload_root, payload_digest, &encoded)?;
+        let root = self.payload_root.clone();
+        self.run_io(move || persist_payload(&root, payload_digest, &encoded))
+            .await?;
         let scope_id = envelope.payload.run_id()?;
         let operation_id = envelope.payload.operation_id()?;
         let intent = DurableOperationIntentV1 {
@@ -99,24 +111,22 @@ impl AgentdIntelligenceLearningHostV1 {
         };
         self.operations.prepare_intent(&intent).await?;
 
-        let persisted = self.load_payload(payload_digest)?;
+        let persisted = self.load_payload(payload_digest).await?;
         validate_claim_payload(&intent, &persisted)?;
 
         // Destination-first observation makes retry safe even when the process
         // died after the ledger commit but before source acknowledgement.
-        let destination_observation = match self.writer.lock() {
-            Ok(writer) => observe_applied_payload(&writer, &persisted),
-            Err(_) => {
-                return Ok(AgentdIntelligenceLearningReceiptV1 {
-                    operation_id,
-                    disposition: AgentdIntelligenceLearningDispositionV1::Indeterminate,
-                    evidence_digest: Digest32::of_bytes(
-                        b"hepta.agentd.intelligence-learning.exact.writer-poisoned.v1",
-                    ),
-                    append: None,
-                });
-            }
-        };
+        let writer = Arc::clone(&self.writer);
+        let observed = persisted.clone();
+        let destination_observation = self
+            .run_io(move || {
+                let mut writer = writer
+                    .lock()
+                    .map_err(|_| AgentdIntelligenceLearningErrorV1::Poisoned)?;
+                Ok(observe_applied_payload(&mut writer, &observed))
+            })
+            .await?;
+
         match destination_observation {
             Ok(Some(receipt)) => {
                 return self
@@ -130,11 +140,7 @@ impl AgentdIntelligenceLearningHostV1 {
             Ok(None) => {}
             Err(error) => {
                 return self
-                    .settle_observation(
-                        &scope_id,
-                        &operation_id,
-                        classify_apply(Err(error)),
-                    )
+                    .settle_observation(&scope_id, &operation_id, classify_apply(Err(error)))
                     .await;
             }
         }
@@ -158,43 +164,25 @@ impl AgentdIntelligenceLearningHostV1 {
             return Ok(existing_exact_receipt(record));
         };
 
-        let signed = match self.grants.signed_grant(&claim.intent.final_use_binding()) {
+        let grants = Arc::clone(&self.grants);
+        let binding = claim.intent.final_use_binding();
+        let signed = match self
+            .run_io(move || grants.signed_grant(&binding).map_err(Into::into))
+            .await
+        {
             Ok(value) => value,
             Err(error) => {
                 self.operations
                     .defer_pre_dispatch_claim_v1(&claim, GRANT_RETRY_DELAY)
                     .await?;
-                return Err(AgentdIntelligenceLearningErrorV1::Agentd(error));
+                return Err(error);
             }
         };
         let authorized = self
             .operations
             .authorize_dispatch(&self.authority, &signed, &claim)
             .await?;
-        let observation = self
-            .operations
-            .execute_authorized(authorized, |_| {
-                let applied = match self.writer.lock() {
-                    Ok(mut writer) => classify_apply(apply_payload(&mut writer, &persisted)),
-                    Err(_) => unknown(b"exact-writer-poisoned"),
-                };
-                match &applied {
-                    ApplyObservation::Acknowledged(receipt) => DispatchEffect::Dispatched {
-                        value: applied.clone(),
-                        dispatch_digest: receipt.chain_digest,
-                        acknowledgement_digest: Some(receipt.chain_digest),
-                    },
-                    ApplyObservation::Rejected(digest)
-                    | ApplyObservation::Revoked(digest)
-                    | ApplyObservation::Indeterminate(digest) => {
-                        DispatchEffect::Indeterminate {
-                            value: applied.clone(),
-                            reason_digest: *digest,
-                        }
-                    }
-                }
-            })
-            .await?;
+        let observation = self.execute_ledger_operation(authorized, persisted).await?;
         self.settle_observation(&scope_id, &operation_id, observation)
             .await
     }

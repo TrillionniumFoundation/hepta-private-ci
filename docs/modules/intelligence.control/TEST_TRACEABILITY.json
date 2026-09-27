@@ -2,72 +2,459 @@
   "schema": "hepta.intelligence-control-test-traceability.v2",
   "schemaVersion": 2,
   "module": "intelligence.control",
-  "sourceIdentity": {"policy": "ci_exact_head_artifact_v2", "commit": "CI_EXACT_HEAD", "lane": "tracked", "executionStatus": "pending", "commitMustEqualCheckoutHead": true},
+  "sourceIdentity": {
+    "policy": "ci_exact_head_artifact_v2",
+    "commit": "CI_EXACT_HEAD",
+    "lane": "tracked",
+    "executionStatus": "pending",
+    "commitMustEqualCheckoutHead": true
+  },
   "mappingPolicy": "explicit_requirement_and_package_test_mapping_v1",
   "validatedAndProjectedBy": "scripts/hepta-intelligence-control-status.py",
   "coverageBoundary": "This is a focused requirement inventory, not every repository test. Full package commands remain mandatory. A mapped helper test does not prove a complete product boundary. Compiler-observed passes are added only to exact CI artifacts.",
   "canonicalFacade": "prepare_intelligence_run",
-  "namedProductRoute": "ObjectiveStart -> AgentdState::start_canonical_intelligence -> prepare_for_composition -> start_bound_run -> ContextAttached; automatic physical execution and learning publication are still unclosed",
+  "namedProductRoute": "ObjectiveStart -> guarded host factory -> prepare_for_composition -> ContextAttached -> optional NativeIntelligenceProductEmbeddingV1 -> witnessed Decision -> existing App Server -> physical terminal -> independent Outcome; source composition, not E2E evidence",
   "requirements": [
-    {"id": "canonical_candidates_and_outcomes", "tests": ["raw_candidate_order_does_not_change_canonical_identity", "malicious_selected_candidate_outside_legal_set_is_rejected", "zero_propensity_selection_is_rejected", "membership_gate_rejects_mutated_legal_support", "malicious_selection_cannot_reach_context_or_evaluation", "candidate_permutations_produce_identical_public_outcomes", "boundary_rehashes_mutable_candidate_receipts", "direct_boundary_rejects_out_of_set_and_zero_propensity", "final_gate_rehashes_every_envelope_dependency", "final_gate_rejects_positive_propensity_substitution"], "supportScope": "canonical pure API and fake-port adversarial integration; not authenticated physical product execution"},
-    {"id": "seven_owner_currentness", "tests": ["canonical_selected_path_has_first_class_ndu_and_all_seven_owners", "abstention_stops_before_context_and_evaluation", "owner_generation_change_between_call_and_publication_fails_closed", "key_rotation_and_wrong_owner_receipt_fail_closed"], "supportScope": "canonical oracle/port invariants; no authority-backup rollback proof"},
-    {"id": "generation_fence", "tests": ["running_generation_differs_from_spawn_and_is_admitted", "forged_generation_or_fence_is_rejected_before_mutation"], "supportScope": "composition-bound coordinator admission; not Supervisor process-restart E2E"},
-    {"id": "actual_owner_outputs", "tests": ["utility_universe_rejects_foreign_and_missing_candidates", "actual_stage_outputs_fill_templates_but_reject_substitution"], "supportScope": "utility universe and actual-result template binding helpers; full prompt/context realization remains open"},
-    {"id": "current_learning_time", "tests": ["replay_verification_uses_current_time_not_frozen_event_time", "learning_clock_rollback_is_not_normalized_into_old_time", "clock_failures_remain_indeterminate_and_expiry_is_quarantined"], "supportScope": "real signed-evidence verifier plus current-clock and classification unit tests; default-product crash/reopen still required"},
-    {"id": "exact_learning_identity", "tests": ["operation_ids_are_kind_separated_and_stable", "evidence_payload_rejects_role_substitution", "persisted_evidence_binding_rejects_signed_identity_substitution", "persisted_principal_binding_rejects_key_and_credential_substitution", "exact_destination_observation_binds_controller_identity", "v2_payload_round_trip_preserves_event_time_predecessor_and_authentication", "historical_event_reconstruction_does_not_require_a_current_write_grant"], "supportScope": "payload identity and historical event reconstruction; independent witness settlement is a separate open gate"},
-    {"id": "fair_recovery", "tests": ["learning_runtime_policy_is_bounded", "recovery_and_dispatch_each_receive_a_bounded_share", "single_slot_alternates_instead_of_starving_new_work", "unsettled_cursor_visits_poison_prefix_and_later_scopes", "unsettled_cursor_limits_and_destination_are_enforced", "unused_claim_deferral_preserves_identity_and_fences_old_claim", "post_dispatch_claim_cannot_be_deferred_for_reexecution"], "supportScope": "scheduler arithmetic plus real SQLite cursor/claim invariants; not end-to-end daemon fault scheduling"},
-    {"id": "independent_worker_supervision", "tests": ["completion_disarms_and_joins_watchdog", "independent_watchdog_observes_detached_work", "explicit_hard_timeout_terminates_a_real_child_process"], "supportScope": "real OS thread and child-process supervision; production Supervisor replacement-generation proof remains open"},
-    {"id": "bounded_telemetry", "tests": ["worker_timeout_is_visible_after_late_completion", "stage_failure_classes_remain_separate", "run_phase_dwell_accumulates_exact_transitions", "same_phase_idempotent_replay_does_not_reset_dwell"], "supportScope": "counter/state invariants; no target-host latency, RSS or quality claim"},
-    {"id": "learning_file_publication", "tests": ["immutable_payload_publication_is_idempotent_and_bounded"], "supportScope": "real local files and no-replace publication; parent-path replacement and crash cuts remain open"},
-    {"id": "legacy_learning_regression", "tests": ["real_owner_product_path_records_decision_outcome_and_reopens"], "supportScope": "explicit qualification-only legacy writer; cannot qualify default product learning"}
+    {
+      "id": "canonical_candidates_and_outcomes",
+      "tests": [
+        "raw_candidate_order_does_not_change_canonical_identity",
+        "malicious_selected_candidate_outside_legal_set_is_rejected",
+        "zero_propensity_selection_is_rejected",
+        "membership_gate_rejects_mutated_legal_support",
+        "malicious_selection_cannot_reach_context_or_evaluation",
+        "candidate_permutations_produce_identical_public_outcomes",
+        "boundary_rehashes_mutable_candidate_receipts",
+        "direct_boundary_rejects_out_of_set_and_zero_propensity",
+        "final_gate_rehashes_every_envelope_dependency",
+        "final_gate_rejects_positive_propensity_substitution"
+      ],
+      "supportScope": "canonical pure API and fake-port adversarial integration; not authenticated physical product execution"
+    },
+    {
+      "id": "seven_owner_currentness",
+      "tests": [
+        "canonical_selected_path_has_first_class_ndu_and_all_seven_owners",
+        "abstention_stops_before_context_and_evaluation",
+        "owner_generation_change_between_call_and_publication_fails_closed",
+        "key_rotation_and_wrong_owner_receipt_fail_closed"
+      ],
+      "supportScope": "canonical oracle/port invariants plus an independently retained signed-manifest rollback floor; target-host backup/restore qualification remains open"
+    },
+    {
+      "id": "generation_fence",
+      "tests": [
+        "running_generation_differs_from_spawn_and_is_admitted",
+        "forged_generation_or_fence_is_rejected_before_mutation"
+      ],
+      "supportScope": "composition-bound coordinator admission; not Supervisor process-restart E2E"
+    },
+    {
+      "id": "actual_owner_outputs",
+      "tests": [
+        "utility_universe_rejects_foreign_and_missing_candidates",
+        "actual_stage_outputs_fill_templates_but_reject_substitution",
+        "prompt_conditioned_state_rejects_either_stage_substitution"
+      ],
+      "supportScope": "actual-result input binding and privately retained prompt/context delivery with regenerated byte-level serialization proof; live producer quality is unproved"
+    },
+    {
+      "id": "current_learning_time",
+      "tests": [
+        "replay_verification_uses_current_time_not_frozen_event_time",
+        "learning_clock_rollback_is_not_normalized_into_old_time",
+        "clock_failures_remain_indeterminate_and_expiry_is_quarantined"
+      ],
+      "supportScope": "real signed-evidence verifier plus current-clock and classification unit tests; default-product crash/reopen still required"
+    },
+    {
+      "id": "exact_learning_identity",
+      "tests": [
+        "operation_ids_are_kind_separated_and_stable",
+        "evidence_payload_rejects_role_substitution",
+        "persisted_evidence_binding_rejects_signed_identity_substitution",
+        "persisted_principal_binding_rejects_key_and_credential_substitution",
+        "exact_destination_observation_binds_controller_identity",
+        "v2_payload_round_trip_preserves_event_time_predecessor_and_authentication",
+        "historical_event_reconstruction_does_not_require_a_current_write_grant",
+        "exact_destination_recovery_requires_event_predecessor_and_witness"
+      ],
+      "supportScope": "complete payload/event/predecessor matching plus real file-backed LedgerWriter witness-prefix/catch-up tests; full daemon crash cuts remain open"
+    },
+    {
+      "id": "fair_recovery",
+      "tests": [
+        "learning_runtime_policy_is_bounded",
+        "recovery_and_dispatch_each_receive_a_bounded_share",
+        "single_slot_alternates_instead_of_starving_new_work",
+        "unsettled_cursor_visits_poison_prefix_and_later_scopes",
+        "unsettled_cursor_limits_and_destination_are_enforced",
+        "unused_claim_deferral_preserves_identity_and_fences_old_claim",
+        "post_dispatch_claim_cannot_be_deferred_for_reexecution",
+        "exact_claim_freezes_the_adopted_intent_generation",
+        "exact_claim_recovers_only_an_unused_expired_lease"
+      ],
+      "supportScope": "scheduler arithmetic plus real SQLite cursor/claim invariants; not end-to-end daemon fault scheduling"
+    },
+    {
+      "id": "independent_worker_supervision",
+      "tests": [
+        "completion_disarms_and_joins_watchdog",
+        "independent_watchdog_observes_detached_work",
+        "explicit_hard_timeout_terminates_a_real_child_process"
+      ],
+      "supportScope": "real OS thread and child-process supervision; production Supervisor replacement-generation proof remains open"
+    },
+    {
+      "id": "bounded_telemetry",
+      "tests": [
+        "worker_timeout_is_visible_after_late_completion",
+        "stage_failure_classes_remain_separate",
+        "run_phase_dwell_accumulates_exact_transitions",
+        "same_phase_idempotent_replay_does_not_reset_dwell"
+      ],
+      "supportScope": "counter/state invariants; no target-host latency, RSS or quality claim"
+    },
+    {
+      "id": "learning_file_publication",
+      "tests": [
+        "immutable_payload_publication_is_idempotent_and_bounded",
+        "authority_read_rejects_parent_leaf_links_and_oversize"
+      ],
+      "supportScope": "real local files and no-replace publication; parent-path replacement and crash cuts remain open"
+    },
+    {
+      "id": "legacy_learning_regression",
+      "tests": [
+        "real_owner_product_path_records_decision_outcome_and_reopens"
+      ],
+      "supportScope": "explicit qualification-only legacy writer; cannot qualify default product learning"
+    },
+    {
+      "id": "authority_manifest_anti_rollback",
+      "tests": [
+        "guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen",
+        "rollback_lock_and_parent_links_fail_without_mutating_target"
+      ],
+      "supportScope": "separately retained, locked rollback floor using one anchored parent handle for read/lock/replace and fail-closed uncertain writes; target-host restore/crash qualification remains open"
+    }
   ],
   "ordinaryProductTests": [
-    {"name": "raw_candidate_order_does_not_change_canonical_identity", "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs", "package": "codex-hepta-intelligence", "executionStatus": "pending"},
-    {"name": "malicious_selected_candidate_outside_legal_set_is_rejected", "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs", "package": "codex-hepta-intelligence", "executionStatus": "pending"},
-    {"name": "zero_propensity_selection_is_rejected", "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs", "package": "codex-hepta-intelligence", "executionStatus": "pending"},
-    {"name": "membership_gate_rejects_mutated_legal_support", "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs", "package": "codex-hepta-intelligence", "executionStatus": "pending"},
-    {"name": "malicious_selection_cannot_reach_context_or_evaluation", "sourcePath": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs", "package": "codex-hepta-intelligence", "executionStatus": "pending"},
-    {"name": "candidate_permutations_produce_identical_public_outcomes", "sourcePath": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs", "package": "codex-hepta-intelligence", "executionStatus": "pending"},
-    {"name": "boundary_rehashes_mutable_candidate_receipts", "sourcePath": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs", "package": "codex-hepta-intelligence", "executionStatus": "pending"},
-    {"name": "direct_boundary_rejects_out_of_set_and_zero_propensity", "sourcePath": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs", "package": "codex-hepta-intelligence", "executionStatus": "pending"},
-    {"name": "final_gate_rehashes_every_envelope_dependency", "sourcePath": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs", "package": "codex-hepta-intelligence", "executionStatus": "pending"},
-    {"name": "final_gate_rejects_positive_propensity_substitution", "sourcePath": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs", "package": "codex-hepta-intelligence", "executionStatus": "pending"},
-    {"name": "canonical_selected_path_has_first_class_ndu_and_all_seven_owners", "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs", "package": "codex-hepta-intelligence", "executionStatus": "pending"},
-    {"name": "abstention_stops_before_context_and_evaluation", "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs", "package": "codex-hepta-intelligence", "executionStatus": "pending"},
-    {"name": "owner_generation_change_between_call_and_publication_fails_closed", "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs", "package": "codex-hepta-intelligence", "executionStatus": "pending"},
-    {"name": "key_rotation_and_wrong_owner_receipt_fail_closed", "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs", "package": "codex-hepta-intelligence", "executionStatus": "pending"},
-    {"name": "running_generation_differs_from_spawn_and_is_admitted", "sourcePath": "codex-rs/hepta-agentd/src/lane_b_bound.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "forged_generation_or_fence_is_rejected_before_mutation", "sourcePath": "codex-rs/hepta-agentd/src/lane_b_bound.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "utility_universe_rejects_foreign_and_missing_candidates", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_ports.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "actual_stage_outputs_fill_templates_but_reject_substitution", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_ports.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "replay_verification_uses_current_time_not_frozen_event_time", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_clock.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "learning_clock_rollback_is_not_normalized_into_old_time", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_clock.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "clock_failures_remain_indeterminate_and_expiry_is_quarantined", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "operation_ids_are_kind_separated_and_stable", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload_tests.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "evidence_payload_rejects_role_substitution", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload_tests.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "persisted_evidence_binding_rejects_signed_identity_substitution", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload_tests.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "persisted_principal_binding_rejects_key_and_credential_substitution", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload_tests.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "exact_destination_observation_binds_controller_identity", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload_tests.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "v2_payload_round_trip_preserves_event_time_predecessor_and_authentication", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload_tests.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "historical_event_reconstruction_does_not_require_a_current_write_grant", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload_tests.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "learning_runtime_policy_is_bounded", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "recovery_and_dispatch_each_receive_a_bounded_share", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "single_slot_alternates_instead_of_starving_new_work", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "unsettled_cursor_visits_poison_prefix_and_later_scopes", "sourcePath": "codex-rs/hepta-operations/src/reconciliation_cursor.rs", "package": "codex-hepta-operations", "executionStatus": "pending"},
-    {"name": "unsettled_cursor_limits_and_destination_are_enforced", "sourcePath": "codex-rs/hepta-operations/src/reconciliation_cursor.rs", "package": "codex-hepta-operations", "executionStatus": "pending"},
-    {"name": "unused_claim_deferral_preserves_identity_and_fences_old_claim", "sourcePath": "codex-rs/hepta-operations/src/pre_dispatch_defer.rs", "package": "codex-hepta-operations", "executionStatus": "pending"},
-    {"name": "post_dispatch_claim_cannot_be_deferred_for_reexecution", "sourcePath": "codex-rs/hepta-operations/src/pre_dispatch_defer.rs", "package": "codex-hepta-operations", "executionStatus": "pending"},
-    {"name": "completion_disarms_and_joins_watchdog", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_watchdog.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "independent_watchdog_observes_detached_work", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_watchdog.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "explicit_hard_timeout_terminates_a_real_child_process", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_watchdog.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "worker_timeout_is_visible_after_late_completion", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_observability.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "stage_failure_classes_remain_separate", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_observability.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "run_phase_dwell_accumulates_exact_transitions", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_observability.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "same_phase_idempotent_replay_does_not_reset_dwell", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_observability.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"},
-    {"name": "immutable_payload_publication_is_idempotent_and_bounded", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs", "package": "codex-hepta-agentd", "executionStatus": "pending"}
+    {
+      "name": "raw_candidate_order_does_not_change_canonical_identity",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "malicious_selected_candidate_outside_legal_set_is_rejected",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "zero_propensity_selection_is_rejected",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "membership_gate_rejects_mutated_legal_support",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "malicious_selection_cannot_reach_context_or_evaluation",
+      "sourcePath": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "candidate_permutations_produce_identical_public_outcomes",
+      "sourcePath": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "boundary_rehashes_mutable_candidate_receipts",
+      "sourcePath": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "direct_boundary_rejects_out_of_set_and_zero_propensity",
+      "sourcePath": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "final_gate_rehashes_every_envelope_dependency",
+      "sourcePath": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "final_gate_rejects_positive_propensity_substitution",
+      "sourcePath": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "canonical_selected_path_has_first_class_ndu_and_all_seven_owners",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "abstention_stops_before_context_and_evaluation",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "owner_generation_change_between_call_and_publication_fails_closed",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "key_rotation_and_wrong_owner_receipt_fail_closed",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "running_generation_differs_from_spawn_and_is_admitted",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_bound.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "forged_generation_or_fence_is_rejected_before_mutation",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_bound.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "utility_universe_rejects_foreign_and_missing_candidates",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_ports.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "actual_stage_outputs_fill_templates_but_reject_substitution",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_ports.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "replay_verification_uses_current_time_not_frozen_event_time",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_clock.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "learning_clock_rollback_is_not_normalized_into_old_time",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_clock.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "clock_failures_remain_indeterminate_and_expiry_is_quarantined",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "operation_ids_are_kind_separated_and_stable",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "evidence_payload_rejects_role_substitution",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "persisted_evidence_binding_rejects_signed_identity_substitution",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "persisted_principal_binding_rejects_key_and_credential_substitution",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "exact_destination_observation_binds_controller_identity",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "v2_payload_round_trip_preserves_event_time_predecessor_and_authentication",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "historical_event_reconstruction_does_not_require_a_current_write_grant",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "learning_runtime_policy_is_bounded",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "recovery_and_dispatch_each_receive_a_bounded_share",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "single_slot_alternates_instead_of_starving_new_work",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "unsettled_cursor_visits_poison_prefix_and_later_scopes",
+      "sourcePath": "codex-rs/hepta-operations/src/reconciliation_cursor.rs",
+      "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "unsettled_cursor_limits_and_destination_are_enforced",
+      "sourcePath": "codex-rs/hepta-operations/src/reconciliation_cursor.rs",
+      "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "unused_claim_deferral_preserves_identity_and_fences_old_claim",
+      "sourcePath": "codex-rs/hepta-operations/src/pre_dispatch_defer.rs",
+      "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "post_dispatch_claim_cannot_be_deferred_for_reexecution",
+      "sourcePath": "codex-rs/hepta-operations/src/pre_dispatch_defer.rs",
+      "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "completion_disarms_and_joins_watchdog",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_watchdog.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "independent_watchdog_observes_detached_work",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_watchdog.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "explicit_hard_timeout_terminates_a_real_child_process",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_watchdog.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "worker_timeout_is_visible_after_late_completion",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "stage_failure_classes_remain_separate",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "run_phase_dwell_accumulates_exact_transitions",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "same_phase_idempotent_replay_does_not_reset_dwell",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "immutable_payload_publication_is_idempotent_and_bounded",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "exact_destination_recovery_requires_event_predecessor_and_witness",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+      "package": "codex-hepta-learning-ledger",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "exact_claim_freezes_the_adopted_intent_generation",
+      "sourcePath": "codex-rs/hepta-operations/src/exact_claim.rs",
+      "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "exact_claim_recovers_only_an_unused_expired_lease",
+      "sourcePath": "codex-rs/hepta-operations/src/exact_claim.rs",
+      "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "authority_read_rejects_parent_leaf_links_and_oversize",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_files.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "prompt_conditioned_state_rejects_either_stage_substitution",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_prompt_binding.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "rollback_lock_and_parent_links_fail_without_mutating_target",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    }
   ],
   "qualificationOnlyTests": [
-    {"name": "real_owner_product_path_records_decision_outcome_and_reopens", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs", "package": "codex-hepta-agentd", "requiredFeature": "qualification-legacy-learning-write", "executionStatus": "pending"}
+    {
+      "name": "real_owner_product_path_records_decision_outcome_and_reopens",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "package": "codex-hepta-agentd",
+      "requiredFeature": "qualification-legacy-learning-write",
+      "executionStatus": "pending"
+    }
   ],
-  "claimBoundary": {"nativeExecutionProved": false, "realProcessProviderE2E": false, "targetHostQualified": false, "activation": false, "release": false}
+  "claimBoundary": {
+    "nativeExecutionProved": false,
+    "realProcessProviderE2E": false,
+    "targetHostQualified": false,
+    "activation": false,
+    "release": false
+  }
 }

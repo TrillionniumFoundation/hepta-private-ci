@@ -184,6 +184,24 @@ jobs:
           --output "$RUNNER_TEMP/intelligence-command-records/operations-tests.json"
           -- cargo test --locked -p codex-hepta-operations
 
+      - name: Test authenticated ledger and witness recovery
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/ledger-tests.json"
+          -- cargo test --locked -p codex-hepta-learning-ledger
+
+      - name: Test actual native execution owner
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/native-tests.json"
+          -- cargo test --locked -p codex-hepta-infer-worker-host --lib
+
       - name: Test Agentd default product profile
         working-directory: codex-rs
         env:

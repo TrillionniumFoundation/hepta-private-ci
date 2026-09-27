@@ -33,7 +33,11 @@ impl AgentdIntelligenceLearningRuntimeConfigV1 {
         max_batch: u32,
     ) -> Result<Self, AgentdError> {
         validate_runtime_policy(interval, max_batch)?;
-        Ok(Self { host, interval, max_batch })
+        Ok(Self {
+            host,
+            interval,
+            max_batch,
+        })
     }
 
     #[must_use]
@@ -147,7 +151,9 @@ pub(crate) async fn run_intelligence_learning_runtime_v1(
 }
 
 fn learning_error(error: AgentdIntelligenceLearningErrorV1) -> AgentdError {
-    AgentdError::Protocol(format!("intelligence learning reconciliation failed: {error}"))
+    AgentdError::Protocol(format!(
+        "intelligence learning reconciliation failed: {error}"
+    ))
 }
 
 #[cfg(test)]

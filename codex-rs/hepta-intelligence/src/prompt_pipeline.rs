@@ -147,6 +147,10 @@ impl PromptSerializationProofV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PreparedPromptDeliveryV1 {
+    // Retain the owner-produced compilation and exercised decision. Mutable
+    // compatibility DTO fields cannot manufacture a different valid delivery.
+    source: PreparedPromptContextV1,
+    admitted_exercise: PromptExerciseDecisionV1,
     pub exercise: PromptExerciseDecisionV1,
     pub serialization: ContextSerializationReceiptV2,
     pub serialized_context: SerializedContextV2,
@@ -154,6 +158,47 @@ pub struct PreparedPromptDeliveryV1 {
     pub materialization: PromptPayloadMaterializationV1,
     pub serialization_proof: PromptSerializationProofV1,
     pub serialized_payload: Vec<u8>,
+}
+
+impl PreparedPromptDeliveryV1 {
+    /// Revalidate the complete immutable owner lineage and the actual payload
+    /// occurrences, rather than trusting a caller-recomputed proof digest.
+    pub fn validate(&self) -> Result<(), PromptPipelineErrorV1> {
+        ensure_exercisable(self.exercise.decision)?;
+        if self.exercise != self.admitted_exercise
+            || self.materialization != self.source.materialization
+            || self.serialization != *self.serialized_context.receipt()
+            || self.serialized_payload != self.serialized_context.payload()
+        {
+            return Err(PromptPipelineErrorV1::PayloadMaterializationDrift);
+        }
+        self.attachment
+            .validate_for(
+                &self.source.compiled,
+                &self.serialized_context,
+                &self.source.model_profile,
+            )
+            .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
+        let exact = prove_prompt_serialization(
+            &self.source.compiled,
+            &self.materialization,
+            &self.serialized_payload,
+        )?;
+        if exact != self.serialization_proof {
+            return Err(PromptPipelineErrorV1::SerializationProofDrift);
+        }
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn objective_digest(&self) -> Digest32 {
+        self.source.compiled.receipt().objective_digest()
+    }
+
+    #[must_use]
+    pub fn generation_vector_digest(&self) -> Digest32 {
+        self.source.compiled.receipt().generation_vector_digest()
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -509,6 +554,8 @@ pub fn prepare_prompt_delivery_v1(
     )
     .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
     Ok(PreparedPromptDeliveryV1 {
+        source: prepared.clone(),
+        admitted_exercise: exercise.clone(),
         exercise,
         serialization,
         serialized_context,

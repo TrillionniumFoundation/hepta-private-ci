@@ -1,11 +1,11 @@
 //! One product composition over the existing Agentd, learning-ledger and App
 //! Server owners.
 //!
-//! This module does not introduce a second executor or fact store. It requires
-//! the exact Agentd-prepared run, durably acknowledges that run's Decision, uses
-//! the existing `AppServerModelDriver::run_intelligence` physical path, reads the
-//! terminal receipt back from the same Agentd lifecycle owner, and then durably
-//! acknowledges the matching Outcome.
+//! Physical prompt bytes are obtained only from the owner-backed prompt
+//! realization/context delivery frozen into the Agentd prepared run. The host
+//! durably acknowledges the exact Decision before model send, uses the sole
+//! App Server path, observes the same Agentd terminal run and then records the
+//! independently authenticated Outcome.
 
 use std::error::Error as StdError;
 use std::sync::Arc;
@@ -19,6 +19,7 @@ use codex_hepta_agentd::AgentdIntelligenceLearningDispositionV1;
 use codex_hepta_agentd::AgentdIntelligenceLearningHostV1;
 use codex_hepta_agentd::AgentdIntelligenceLearningReceiptV1;
 use codex_hepta_agentd::AgentdIntelligenceOutcomeAppendV1;
+use codex_hepta_agentd::AgentdIntelligencePhysicalPromptV1;
 use codex_hepta_agentd::PreparedAgentdIntelligenceRunV1;
 use codex_hepta_agentd::RunPhase;
 use codex_hepta_agentd::RunReceipt;
@@ -39,6 +40,9 @@ pub struct NativeIntelligenceProductReceiptV1 {
     pub decision: AgentdIntelligenceLearningReceiptV1,
     pub execution: NativeRunOutput,
     pub outcome: Option<AgentdIntelligenceLearningReceiptV1>,
+    /// The physical observation remains durable and visible even if learning
+    /// or the terminal-control RPC needs exact reconciliation.
+    pub reconciliation_required: bool,
 }
 
 pub struct NativeIntelligenceProductHostV1 {
@@ -61,30 +65,20 @@ impl NativeIntelligenceProductHostV1 {
         }
     }
 
-    /// Execute one canonical intelligence run without caller-assembled
-    /// intermediate dispatch state.
-    ///
-    /// `build_outcome` supplies the independently authenticated observer record
-    /// after the physical terminal state is known. It cannot alter the prepared
-    /// run, Agentd terminal receipt or durable native observation passed to it.
-    #[allow(clippy::too_many_arguments)]
-    pub async fn execute<F>(
+    pub async fn execute<F, Fut>(
         &self,
         control: &mut DurableInferenceControl,
         admission: NativeAdmission,
-        prompt: String,
-        context_query: Option<String>,
         admitted: AgentdIntelligenceAdmittedOutcomeV1,
         decision_request: AgentdIntelligenceDecisionAppendV1,
         cancellation: &CancellationToken,
         build_outcome: F,
     ) -> NativeIntelligenceProductResult<NativeIntelligenceProductReceiptV1>
     where
-        F: FnOnce(
-            &PreparedAgentdIntelligenceRunV1,
-            &RunReceipt,
-            &NativeRunOutput,
-        ) -> NativeIntelligenceProductResult<AgentdIntelligenceOutcomeAppendV1>,
+        F: FnOnce(&PreparedAgentdIntelligenceRunV1, &RunReceipt, &NativeRunOutput) -> Fut,
+        Fut: std::future::Future<
+                Output = NativeIntelligenceProductResult<AgentdIntelligenceOutcomeAppendV1>,
+            >,
     {
         let (prepared, attached) = match admitted {
             AgentdIntelligenceAdmittedOutcomeV1::Ready {
@@ -98,7 +92,13 @@ impl NativeIntelligenceProductHostV1 {
                 return Err("slow-path intelligence run requires a different product route".into());
             }
         };
-        let binding = binding_for_admitted_v1(&prepared, &attached, &prompt)?;
+        if admission.request_id != attached.run_id {
+            return Err("native admission identity differs from the canonical run".into());
+        }
+        let physical = prepared.physical_prompt()?;
+        let prompt = String::from_utf8(physical.payload.clone())
+            .map_err(|_| "owner-backed physical prompt is not UTF-8")?;
+        let binding = binding_for_admitted_v1(&prepared, &attached, &physical)?;
 
         let decision = self
             .learning
@@ -112,44 +112,55 @@ impl NativeIntelligenceProductHostV1 {
                 control,
                 admission,
                 prompt,
-                context_query,
+                None,
                 binding.clone(),
                 cancellation,
             )
             .await?;
-
         if !execution.terminal_observed {
             return Ok(NativeIntelligenceProductReceiptV1 {
                 decision,
                 execution,
                 outcome: None,
+                reconciliation_required: true,
             });
         }
-
-        let terminal = self
-            .agentd
-            .run_status(binding.run_id.clone())
-            .await?
-            .ok_or("Agentd terminal receipt disappeared after physical observation")?;
-        let terminal = local_terminal_receipt_v1(terminal)?;
-        let outcome_request = build_outcome(&prepared, &terminal, &execution)?;
-        let outcome = self
-            .learning
-            .record_outcome_after_terminal_v1(&prepared, outcome_request)
-            .await?;
-        require_acknowledged("Outcome", &outcome)?;
-
+        // Never discard a terminal provider observation merely because its
+        // acknowledgement/evidence producer or learning destination is absent.
+        let closure: NativeIntelligenceProductResult<AgentdIntelligenceLearningReceiptV1> = async {
+            let terminal = self
+                .agentd
+                .run_status(binding.run_id.clone())
+                .await?
+                .ok_or("Agentd terminal receipt unavailable")?;
+            let terminal = local_terminal_receipt_v1(terminal)?;
+            let request = build_outcome(&prepared, &terminal, &execution).await?;
+            if request.run_receipt != terminal
+                || request.provider_terminal_digest
+                    != native_provider_terminal_digest_v1(&execution)?
+            {
+                return Err("Outcome source substituted the observed physical terminal".into());
+            }
+            self.learning
+                .record_outcome_after_terminal_v1(&prepared, request)
+                .await
+                .map_err(Into::into)
+        }
+        .await;
+        let outcome: Option<AgentdIntelligenceLearningReceiptV1> = closure.ok();
+        let reconciliation_required = !outcome.as_ref().is_some_and(|receipt| {
+            receipt.disposition == AgentdIntelligenceLearningDispositionV1::Acknowledged
+                && receipt.append.is_some()
+        });
         Ok(NativeIntelligenceProductReceiptV1 {
             decision,
             execution,
-            outcome: Some(outcome),
+            outcome,
+            reconciliation_required,
         })
     }
 }
 
-/// Digest the exact durable provider observation used by an Outcome builder.
-/// The separately authenticated observer evidence remains mandatory in the
-/// learning request; this digest is not self-issued evaluation authority.
 pub fn native_provider_terminal_digest_v1(
     output: &NativeRunOutput,
 ) -> NativeIntelligenceProductResult<Digest32> {
@@ -164,28 +175,36 @@ pub fn native_provider_terminal_digest_v1(
 fn binding_for_admitted_v1(
     prepared: &PreparedAgentdIntelligenceRunV1,
     receipt: &RunReceipt,
-    prompt: &str,
+    physical: &AgentdIntelligencePhysicalPromptV1,
 ) -> NativeIntelligenceProductResult<NativeIntelligenceRunBinding> {
-    if prompt.is_empty() {
-        return Err("canonical physical prompt is empty".into());
-    }
     let attachment = prepared.context_attachment();
     if receipt.phase != RunPhase::ContextAttached
         || receipt.terminal_observed
         || receipt.run_id != attachment.run_id
+        || receipt.authority_epoch != attachment.authority_epoch
+        || receipt.generation != attachment.generation
+        || receipt.fence_digest != attachment.fence_digest
+        || receipt.deadline_ms != attachment.deadline_ms
         || receipt.context_digest.as_deref() != Some(attachment.context_digest.as_str())
         || receipt.compilation_receipt_digest.as_deref()
             != Some(attachment.compilation_receipt_digest.as_str())
         || attachment.compilation_receipt_digest != prepared.envelope.envelope_digest.to_string()
+        || attachment.context_digest != physical.attachment_digest.to_string()
+        || prepared.envelope.prompt_receipt_digest != physical.prompt_stage_digest
+        || prepared.envelope.context_receipt_digest != physical.attachment_digest
+        || Digest32::of_bytes(&physical.payload) != physical.payload_digest
     {
-        return Err("admitted intelligence run is not the exact ContextAttached envelope".into());
+        return Err(
+            "admitted intelligence run is not the exact owner-backed ContextAttached envelope"
+                .into(),
+        );
     }
     Ok(NativeIntelligenceRunBinding {
         run_id: receipt.run_id.clone(),
         expected_revision: receipt.revision,
         context_digest: attachment.context_digest,
         envelope_digest: prepared.envelope.envelope_digest.to_string(),
-        prompt_digest: Digest32::of_bytes(prompt.as_bytes()).to_string(),
+        prompt_digest: physical.payload_digest.to_string(),
     })
 }
 
@@ -218,7 +237,10 @@ fn local_terminal_receipt_v1(
         AgentRunPhase::Indeterminate => RunPhase::Indeterminate,
     };
     if !value.terminal_observed
-        || !matches!(phase, RunPhase::Cancelled | RunPhase::Succeeded | RunPhase::Failed)
+        || !matches!(
+            phase,
+            RunPhase::Cancelled | RunPhase::Succeeded | RunPhase::Failed
+        )
     {
         return Err("physical observation lacks a terminal Agentd receipt".into());
     }

@@ -7,7 +7,6 @@
 
 use std::panic::AssertUnwindSafe;
 use std::sync::Arc;
-use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::sync::mpsc;
@@ -268,11 +267,9 @@ impl AgentdIntelligenceInvocationPolicyV1 {
     fn validate(self) -> Result<(), AgentdError> {
         if !(MIN_INVOCATION_TIMEOUT..=MAX_INVOCATION_TIMEOUT).contains(&self.timeout)
             || !(1..=MAX_INVOCATION_FACTORY_CALLS).contains(&self.max_in_flight)
-            || self
-                .hard_timeout_process_exit_grace
-                .is_some_and(|grace| {
-                    !(MIN_INVOCATION_TIMEOUT..=MAX_INVOCATION_TIMEOUT).contains(&grace)
-                })
+            || self.hard_timeout_process_exit_grace.is_some_and(|grace| {
+                !(MIN_INVOCATION_TIMEOUT..=MAX_INVOCATION_TIMEOUT).contains(&grace)
+            })
         {
             return Err(AgentdError::Invalid(
                 "canonical intelligence invocation policy is outside bounded limits".to_string(),
@@ -356,31 +353,40 @@ impl<F> HostOwnedAgentdIntelligenceInvocationProviderV1<F> {
         }
     }
 
-    fn arm_hard_timeout_observer(&self, finished: Arc<AtomicBool>) -> Result<(), AgentdError> {
-        let Some(grace) = self.policy.hard_timeout_process_exit_grace else {
-            return Ok(());
-        };
-        let timeout = self.policy.timeout;
-        std::thread::Builder::new()
+    fn supervise_factory(&self, budget: Duration) -> Result<FactoryCompletion, AgentdError> {
+        let (complete, observed) = mpsc::sync_channel(1);
+        let grace = self.policy.hard_timeout_process_exit_grace;
+        let observer = std::thread::Builder::new()
             .name("agentd-intelligence-invocation-watchdog".to_string())
             .spawn(move || {
-                std::thread::sleep(timeout);
-                if finished.load(Ordering::Acquire) {
+                if observed.recv_timeout(budget).is_ok() {
                     return;
                 }
-                std::thread::sleep(grace);
-                if !finished.load(Ordering::Acquire) {
-                    // EX_SOFTWARE. Supervisor recovery establishes a fresh
-                    // generation; the old process cannot keep serving authority.
+                if let Some(grace) = grace
+                    && observed.recv_timeout(grace).is_err()
+                {
                     std::process::exit(70);
                 }
             })
-            .map(|_| ())
-            .map_err(|error| {
-                AgentdError::Protocol(format!(
-                    "canonical intelligence invocation watchdog failed to start: {error}"
-                ))
-            })
+            .map_err(|error| AgentdError::Protocol(format!("factory watchdog: {error}")))?;
+        Ok(FactoryCompletion {
+            complete,
+            observer: Some(observer),
+        })
+    }
+}
+
+struct FactoryCompletion {
+    complete: mpsc::SyncSender<()>,
+    observer: Option<std::thread::JoinHandle<()>>,
+}
+
+impl Drop for FactoryCompletion {
+    fn drop(&mut self) {
+        let _ = self.complete.send(());
+        if let Some(observer) = self.observer.take() {
+            let _ = observer.join();
+        }
     }
 }
 
@@ -405,14 +411,26 @@ where
         let factory = Arc::clone(&self.factory);
         let identity = identity.clone();
         let record = record.clone();
-        let finished = Arc::new(AtomicBool::new(false));
-        let worker_finished = Arc::clone(&finished);
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?
+            .as_millis();
+        let now =
+            u64::try_from(now).map_err(|_| AgentdError::Invalid("factory clock".to_string()))?;
+        let remaining = durable_identity
+            .deadline_ms
+            .checked_sub(now)
+            .filter(|value| *value != 0)
+            .ok_or_else(|| AgentdError::Protocol("factory run deadline elapsed".to_string()))?;
+        let budget = self.policy.timeout.min(Duration::from_millis(remaining));
+        let completion = self.supervise_factory(budget)?;
         let (sender, receiver) = mpsc::sync_channel(1);
 
         std::thread::Builder::new()
             .name("agentd-intelligence-invocation-factory".to_string())
             .spawn(move || {
                 let _permit = permit;
+                let _completion = completion;
                 let result = std::panic::catch_unwind(AssertUnwindSafe(|| {
                     let mut invocation = (factory)(&identity, &record)?;
                     invocation.inputs.run_identity = Some(durable_identity);
@@ -424,7 +442,6 @@ where
                         "canonical intelligence invocation factory panicked".to_string(),
                     ))
                 });
-                worker_finished.store(true, Ordering::Release);
                 let _ = sender.send(result);
             })
             .map_err(|error| {
@@ -432,9 +449,7 @@ where
                     "canonical intelligence invocation worker failed to start: {error}"
                 ))
             })?;
-        self.arm_hard_timeout_observer(Arc::clone(&finished))?;
-
-        match receiver.recv_timeout(self.policy.timeout) {
+        match receiver.recv_timeout(budget) {
             Ok(result) => result,
             Err(mpsc::RecvTimeoutError::Timeout) => Err(AgentdError::Protocol(
                 "canonical intelligence invocation factory timed out".to_string(),

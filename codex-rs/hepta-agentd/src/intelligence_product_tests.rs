@@ -663,6 +663,7 @@ fn fixture() -> Fixture {
             neural_tick,
             neural_previous: None,
             prompt_request,
+            prompt_delivery: None,
             intuition_request,
             context_request,
             evaluation_request,

@@ -97,11 +97,13 @@ must cover the canonical candidates, with only the owner's reserved `abstain`
 entry permitted additionally. Intuition may not mark an NDU-infeasible candidate
 as legal and unvetoed. These checks do not manufacture calibrated scores.
 
-**Remaining semantic edge:** prompt realization contents, roles, source
-permissions and the selected action must actually construct the context and
-physical request. Copying their receipt digests into a predecessor chain is not
-proof of that data flow. The present context adapter still takes a prepared
-owner request; full prompt-to-context materialization remains open.
+The physical canonical profile now consumes a privately source-bound
+`PreparedPromptDeliveryV1`, revalidates the actual serialization proof and
+retains the exact context attachment and payload. Prompt output and neural output
+jointly condition intuition; conflicting precomputed state fails. Physical send
+uses only `PreparedAgentdIntelligenceRunV1::physical_prompt`, not arbitrary prompt
+text. Compatibility preparation without this delivery cannot execute the physical
+product path. Live selected-action semantics and quality remain acceptance gates.
 
 ### Multiscale DecisionCell integration target
 
@@ -203,8 +205,10 @@ its first application merely because it was valid when enqueued.
 Recovery observes the exact destination event before requesting a new grant.
 A missing event can be applied only with fresh final-use authority, current
 verified evidence and the original immutable predecessor. Historical observation
-must also respect the independent ledger witness; witness catch-up remains an
-explicit acceptance gap, not a reason to report an uncertain append successful.
+is delegated to `LedgerWriter::reconcile_exact_event_v1`, which requires complete
+event and predecessor equality and the independent witness. It can repair only
+the exact already-committed last record; it never creates a missing event. Full
+daemon restart qualification is still separate.
 
 Stable keyset traversal prevents a timestamp-ordered poison prefix from owning
 every recovery page. Recovery and fresh dispatch receive separate bounded
@@ -447,6 +451,19 @@ files. Exact workflow projections may certify only their executed lane.
 
 ## 18. Product acceptance boundary
 
+The source now includes normal authenticated ObjectiveStart completion through
+`AgentdIntelligenceExecutionHostV1` and the existing-driver
+`NativeIntelligenceProductEmbeddingV1`. An authorized embedding installs it after
+the guarded runner/provider profile. Decision plus witness acknowledgement
+precedes model send; terminal Outcome support is checked against the observed run
+and physical output. Errors after a terminal observation preserve it for recovery.
+The default binary still supplies no owner factory, execution host or evidence.
+The effective source, setup and remaining evidence contract is
+[PRODUCT_CLOSURE.md](PRODUCT_CLOSURE.md), including Section 12.
+
+The following obligations describe live conformance/qualification, not absence
+of the source mechanisms just described.
+
 Remaining obligations are actual prompt/context/request materialization;
 authorized executable host factory; durable Decision and physical terminal
 Outcome wiring; complete factory/learning-I/O supervision; trusted no-follow
@@ -454,3 +471,23 @@ file access and rollback floor; witness-aware historical acknowledgement;
 process crash/recovery, current native checks, target-host performance, quality
 baselines and independent acceptance. Do not relabel these as external paperwork
 or infer their completion from the presence of an interface.
+
+### Independent authority-manifest rollback floor
+
+The configured canonical profile is fail-closed unless the runner carries an independently
+retained `IntelligenceAuthorityRollbackGuardV1`. The witness path must be canonical and outside
+both Agent home and run roots. Each signature-verified authority manifest is then checked against
+the durable maximum epoch and exact same-epoch digest before its owner bindings can satisfy a
+currentness read. Compatibility-only runner construction may omit the witness, but such a runner
+cannot be advertised or entered as `intelligence.canonical_v1`.
+
+### Blocking work and no-follow reads
+
+The invocation factory is inside an independent supervised worker lifetime.
+Learning file/grant/writer operations use bounded blocking workers whose slots
+remain owned until actual completion, even when the awaiting request disappears.
+Unix authority/sidecar reads walk no-follow parent handles and use a nonblocking
+leaf open plus same-handle regular-file, permissions, hard-link and byte checks.
+Non-Unix hosts require their own qualified handle implementation. Arbitrary
+learning I/O is not claimed to be forcibly terminable; host-root write-side
+replacement and complete crash/backup matrices remain explicit acceptance work.

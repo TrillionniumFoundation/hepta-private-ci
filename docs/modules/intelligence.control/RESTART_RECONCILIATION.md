@@ -51,10 +51,13 @@ For each visited unsettled operation, the live generation:
 9. records only an authoritative applied, rejected or quarantined result.
 
 The current source performs full event equality and destination-first recovery.
-**Independent witness catch-up is still an open acceptance requirement:** a
-ledger-present event with a lagging witness must not be treated as fully
-acknowledged merely because its event bytes match. This contract does not claim
-that the remaining witness reconciliation is implemented or qualified.
+**Witness-aware destination recovery:** Agentd delegates exact observation to
+`LedgerWriter::reconcile_exact_event_v1`. It compares the original predecessor
+and full authenticated event, then confirms witness coverage. A witnessed prefix
+is observable without advancing an unrelated later record. An unwitnessed last
+record is acknowledged only after the owner's existing exact replay repairs the
+witness. Missing events are never created by observation. The real-file owner
+test is not a substitute for the full default-daemon process-loss matrix.
 
 ## State and error distinctions
 
@@ -89,19 +92,22 @@ and after work and before individual new dispatches. Dependent Outcome
 operations still obey their Decision predecessor; fairness cannot bypass it.
 
 Cancellation is checked between calls and while waiting for the cadence.
-Synchronous learning file/grant/writer operations still need complete bounded
-owner supervision; no hard-interruption guarantee is made for them. The current
+Synchronous learning file/grant/writer operations run behind four actual-worker
+slots and a bounded receiver deadline; an in-process blocked call still cannot
+be killed safely, so no hard-interruption guarantee is made for them. The current
 service waits for the existing Running readiness gate, so drain-time/historical
 recovery availability remains a separate lifecycle acceptance question.
 
 ## Files and resource policy
 
 Payload reads check the opened regular-file metadata and cap bytes at 1 MiB.
-Publication uses a unique temporary name and no-replace hard-link installation.
-Existing bytes must compare exactly; payload/file and directory durability are
-separate cuts. Parent-anchored no-follow/nonblocking open, replacement races,
-orphan retention, disk-full/permission changes and backup rollback require
-additional tests. Do not claim those are closed by an inode comparison alone.
+Publication uses a unique temporary name and atomic no-replace rename through
+one opened parent-directory handle. It never creates a double-hard-link crash
+window or overwrites an existing payload. Existing bytes must compare exactly;
+payload/file and directory durability remain separate cuts. Parent-anchored
+no-follow/nonblocking reads and publication have source regressions. Complete
+process-loss, orphan-retention, disk-full and backup-rollback qualification
+remain mandatory; source tests are not target-host acceptance.
 
 The runtime configuration remains a 10 ms to one hour cadence and batch 1..256.
 It installs no implicit writer, trust root or grant provider in the ordinary CLI.
@@ -120,3 +126,13 @@ without a new write grant, expired first-application rejection, live grant
 revocation, durable unknown outcomes and no redispatch after lost physical ACK.
 Measure latency/RSS/backlog recovery and independently accept the chosen host.
 Exact package CI alone does not establish this product-level fault matrix.
+
+## Bounded I/O and physical completion
+
+The host performs payload/grant/writer work in a four-slot blocking boundary.
+Timeout or dropped requests retain the actual slot until the operation exits;
+unknown dispatch remains reconcile-only. Read-side paths walk no-follow handles
+and impose their byte limit on the opened object. The native embedding preserves
+the physical journal observation when terminal RPC, evidence production or
+Outcome publication fails; a terminal observation alone does not acknowledge
+learning closure. Current generation and exact operation identity remain required.

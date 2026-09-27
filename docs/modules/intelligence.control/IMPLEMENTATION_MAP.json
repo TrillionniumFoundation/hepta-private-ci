@@ -14,8 +14,15 @@
   "mappingPolicy": "reviewed_source_test_declarations_with_executed_projection_v1",
   "validatedAndProjectedBy": "scripts/hepta-intelligence-control-status.py",
   "technicalGuide": "docs/modules/intelligence.control/TECHNICAL.md",
-  "declaredRoots": ["codex-rs/hepta-intelligence"],
-  "integrationRoots": ["codex-rs/hepta-agentd", "codex-rs/hepta-operations", "codex-rs/hepta-learning-ledger", "codex-rs/hepta-infer-worker-host"],
+  "declaredRoots": [
+    "codex-rs/hepta-intelligence"
+  ],
+  "integrationRoots": [
+    "codex-rs/hepta-agentd",
+    "codex-rs/hepta-operations",
+    "codex-rs/hepta-learning-ledger",
+    "codex-rs/hepta-infer-worker-host"
+  ],
   "statusMatrix": {
     "documentationDepthClosed": false,
     "sourceImplementation": true,
@@ -41,58 +48,369 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false,
-    "allRequirementsClosed": false
+    "allRequirementsClosed": false,
+    "authorityManifestAntiRollbackPresent": true,
+    "physicalProductEmbeddingPresent": true,
+    "witnessAwareDestinationObservationPresent": true,
+    "noFollowBoundedReadsPresent": true,
+    "boundedLearningIoPresent": true
   },
   "sourceBindings": [
-    {"sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs", "symbols": ["pub fn build_legal_candidates", "pub fn prepare_intelligence_run", "pub fn decide_boundary", "pub fn assemble_context", "pub fn validate_current_snapshot"]},
-    {"sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs", "symbols": ["pub fn validate_canonical_outcome_v1", "pub fn validate_selected_candidate_v1", "envelope digest", "decision digest"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/intelligence_ingress.rs", "symbols": ["pub fn from_run_start", "objective_run_fence_digest_v1", "HostOwnedAgentdIntelligenceInvocationProviderV1"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/lane_b_bound.rs", "symbols": ["start_bound_run", "running_generation_differs_from_spawn_and_is_admitted"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/intelligence_product.rs", "symbols": ["IntelligenceAuthorityFileV1", "PreparedAgentdIntelligenceRunV1", "intelligence_product_ports.rs", "read_to_end", "verify_strict"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_ports.rs", "symbols": ["AgentdOwnerPortsV1", "validate_utility_universe", "bind_stage_digest", "feasible_candidates", "utility_output", "neural_output"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs", "symbols": ["prepare_for_composition", "spawn_owner_work_with_budget", "WorkerCompletionV1::supervise", "validate_canonical_outcome_v1", "request_digest: run_identity.request_digest.to_string()"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/intelligence_prepared_integrity.rs", "symbols": ["validate_integrity", "attachment.compilation_receipt_digest", "dispatch proposal digest"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_watchdog.rs", "symbols": ["WorkerCompletionV1", "wait_until_complete", "std::process::exit(70)", "observer.join()"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs", "symbols": ["append_intelligence_decision_v1", "append_intelligence_outcome_v1", "reconcile_unsettled", "unsettled_operation_page_v1", "defer_pre_dispatch_claim_v1", "intelligence_physical_terminal_binding_digest_v1"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload.rs", "symbols": ["VerifiedEvidenceBindingPayloadV1", "record.event == expected", "clock::verification_time(payload.now)", "writer.append_decision", "writer.append_outcome"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_clock.rs", "symbols": ["verification_time", "SystemTime::now", "CLOCK_BEHIND_EVENT"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs", "symbols": ["run_intelligence_learning_runtime_v1", "iteration_budget", "require_generation", "is_transient"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/intelligence_observability.rs", "symbols": ["AgentdIntelligenceTelemetryV1", "run_phase_dwell_snapshot", "late_worker_completions"]},
-    {"sourcePath": "codex-rs/hepta-operations/src/reconciliation_cursor.rs", "symbols": ["unsettled_operation_page_v1", "ORDER BY scope_id, operation_id"]},
-    {"sourcePath": "codex-rs/hepta-operations/src/pre_dispatch_defer.rs", "symbols": ["defer_pre_dispatch_claim_v1", "l.state = 'prepared'", "l.semantic_digest = ?"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/config.rs", "symbols": ["with_canonical_intelligence_profile", "HostOwnedAgentdIntelligenceInvocationProviderV1::new"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/state.rs", "symbols": ["start_canonical_intelligence", "provider.build", "start_bound_run"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/objective_runtime.rs", "symbols": ["start_canonical_intelligence", "canonical_ready"]},
-    {"sourcePath": "codex-rs/hepta-agentd/src/runtime.rs", "symbols": ["run_intelligence_learning_runtime_v1"]},
-    {"sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs", "symbols": ["run_intelligence", "NativeIntelligenceRunBinding"]}
+    {
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "symbols": [
+        "pub fn build_legal_candidates",
+        "pub fn prepare_intelligence_run",
+        "pub fn decide_boundary",
+        "pub fn assemble_context",
+        "pub fn validate_current_snapshot"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+      "symbols": [
+        "pub fn validate_canonical_outcome_v1",
+        "pub fn validate_selected_candidate_v1",
+        "envelope digest",
+        "decision digest"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+      "symbols": [
+        "pub fn from_run_start",
+        "objective_run_fence_digest_v1",
+        "HostOwnedAgentdIntelligenceInvocationProviderV1"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_bound.rs",
+      "symbols": [
+        "start_bound_run",
+        "running_generation_differs_from_spawn_and_is_admitted"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "symbols": [
+        "IntelligenceAuthorityFileV1",
+        "PreparedAgentdIntelligenceRunV1",
+        "intelligence_product_ports.rs",
+        "verify_strict"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_ports.rs",
+      "symbols": [
+        "AgentdOwnerPortsV1",
+        "validate_utility_universe",
+        "bind_stage_digest",
+        "feasible_candidates",
+        "utility_output",
+        "neural_output"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "symbols": [
+        "prepare_for_composition",
+        "spawn_owner_work_with_budget",
+        "WorkerCompletionV1::supervise",
+        "validate_canonical_outcome_v1",
+        "request_digest: run_identity.request_digest.to_string()"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_prepared_integrity.rs",
+      "symbols": [
+        "validate_integrity",
+        "attachment.compilation_receipt_digest",
+        "dispatch proposal digest"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_watchdog.rs",
+      "symbols": [
+        "WorkerCompletionV1",
+        "wait_until_complete",
+        "std::process::exit(70)",
+        "observer.join()"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+      "symbols": [
+        "append_intelligence_decision_v1",
+        "append_intelligence_outcome_v1",
+        "reconcile_unsettled",
+        "unsettled_operation_page_v1",
+        "defer_pre_dispatch_claim_v1",
+        "intelligence_physical_terminal_binding_digest_v1"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_payload.rs",
+      "symbols": [
+        "VerifiedEvidenceBindingPayloadV1",
+        "clock::verification_time(payload.now)",
+        "writer.append_decision",
+        "writer.append_outcome"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_clock.rs",
+      "symbols": [
+        "verification_time",
+        "SystemTime::now",
+        "CLOCK_BEHIND_EVENT"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+      "symbols": [
+        "run_intelligence_learning_runtime_v1",
+        "iteration_budget",
+        "require_generation",
+        "is_transient"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
+      "symbols": [
+        "AgentdIntelligenceTelemetryV1",
+        "run_phase_dwell_snapshot",
+        "late_worker_completions"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-operations/src/reconciliation_cursor.rs",
+      "symbols": [
+        "unsettled_operation_page_v1",
+        "ORDER BY scope_id, operation_id"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-operations/src/pre_dispatch_defer.rs",
+      "symbols": [
+        "defer_pre_dispatch_claim_v1",
+        "l.state = 'prepared'",
+        "l.semantic_digest = ?"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/config.rs",
+      "symbols": [
+        "with_canonical_intelligence_profile",
+        "HostOwnedAgentdIntelligenceInvocationProviderV1::new"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
+      "symbols": [
+        "start_canonical_intelligence",
+        "build_host_invocation",
+        "start_bound_run"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "symbols": [
+        "start_canonical_intelligence",
+        "complete_canonical_intelligence"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime.rs",
+      "symbols": [
+        "run_intelligence_learning_runtime_v1"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "symbols": [
+        "run_intelligence",
+        "NativeIntelligenceRunBinding"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
+      "symbols": [
+        "IntelligenceAuthorityRollbackGuardV1",
+        "SameEpochConflict",
+        "persist_record",
+        "parent-directory fsync"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_files.rs",
+      "symbols": [
+        "read_bounded",
+        "OFlags::NOFOLLOW",
+        "OFlags::NONBLOCK"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_io.rs",
+      "symbols": [
+        "run_io",
+        "execute_ledger_operation"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_execution.rs",
+      "symbols": [
+        "AgentdIntelligenceExecutionHostV1"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_prompt_binding.rs",
+      "symbols": [
+        "validate_prompt_delivery_v1"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_product.rs",
+      "symbols": [
+        "NativeIntelligenceProductHostV1",
+        "record_decision_before_dispatch_v1",
+        "reconciliation_required"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_embedding.rs",
+      "symbols": [
+        "NativeIntelligenceProductEmbeddingV1",
+        "NativeIntelligenceEvidenceSourceV1"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "symbols": [
+        "reconcile_exact_event_v1",
+        "predecessor_chain_digest"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+      "symbols": [
+        "pub fn validate(&self)",
+        "admitted_exercise"
+      ]
+    }
   ],
   "canonicalOperations": [
-    {"operation": "build_legal_candidates", "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs", "requirements": ["canonical_candidates_and_outcomes"]},
-    {"operation": "prepare_intelligence_run", "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs", "requirements": ["canonical_candidates_and_outcomes", "seven_owner_currentness"]},
-    {"operation": "decide_boundary", "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs", "requirements": ["canonical_candidates_and_outcomes"]},
-    {"operation": "assemble_context", "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs", "requirements": ["canonical_candidates_and_outcomes"]},
-    {"operation": "validate_current_snapshot", "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs", "requirements": ["seven_owner_currentness"]},
-    {"operation": "validate_canonical_outcome_v1", "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs", "requirements": ["canonical_candidates_and_outcomes"]},
-    {"operation": "AgentdIntelligenceRunIdentityV1::from_run_start", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_ingress.rs", "requirements": ["generation_fence"]},
-    {"operation": "AgentRunCoordinator::start_bound_run", "sourcePath": "codex-rs/hepta-agentd/src/lane_b_bound.rs", "requirements": ["generation_fence"]},
-    {"operation": "append_intelligence_decision_v1", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs", "requirements": ["current_learning_time", "exact_learning_identity", "learning_file_publication"]},
-    {"operation": "append_intelligence_outcome_v1", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs", "requirements": ["current_learning_time", "exact_learning_identity"]},
-    {"operation": "AgentdIntelligenceLearningHostV1::reconcile_unsettled", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs", "requirements": ["current_learning_time", "exact_learning_identity", "fair_recovery"]},
-    {"operation": "AgentdIntelligenceProductRunnerV1::prepare_for_composition", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs", "requirements": ["actual_owner_outputs", "independent_worker_supervision", "bounded_telemetry"]}
+    {
+      "operation": "build_legal_candidates",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "requirements": [
+        "canonical_candidates_and_outcomes"
+      ]
+    },
+    {
+      "operation": "prepare_intelligence_run",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "requirements": [
+        "canonical_candidates_and_outcomes",
+        "seven_owner_currentness"
+      ]
+    },
+    {
+      "operation": "decide_boundary",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "requirements": [
+        "canonical_candidates_and_outcomes"
+      ]
+    },
+    {
+      "operation": "assemble_context",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "requirements": [
+        "canonical_candidates_and_outcomes"
+      ]
+    },
+    {
+      "operation": "validate_current_snapshot",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "requirements": [
+        "seven_owner_currentness"
+      ]
+    },
+    {
+      "operation": "validate_canonical_outcome_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+      "requirements": [
+        "canonical_candidates_and_outcomes"
+      ]
+    },
+    {
+      "operation": "AgentdIntelligenceRunIdentityV1::from_run_start",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+      "requirements": [
+        "generation_fence"
+      ]
+    },
+    {
+      "operation": "AgentRunCoordinator::start_bound_run",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_bound.rs",
+      "requirements": [
+        "generation_fence"
+      ]
+    },
+    {
+      "operation": "append_intelligence_decision_v1",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+      "requirements": [
+        "current_learning_time",
+        "exact_learning_identity",
+        "learning_file_publication"
+      ]
+    },
+    {
+      "operation": "append_intelligence_outcome_v1",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+      "requirements": [
+        "current_learning_time",
+        "exact_learning_identity"
+      ]
+    },
+    {
+      "operation": "AgentdIntelligenceLearningHostV1::reconcile_unsettled",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+      "requirements": [
+        "current_learning_time",
+        "exact_learning_identity",
+        "fair_recovery"
+      ]
+    },
+    {
+      "operation": "AgentdIntelligenceProductRunnerV1::prepare_for_composition",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "requirements": [
+        "actual_owner_outputs",
+        "independent_worker_supervision",
+        "bounded_telemetry"
+      ]
+    },
+    {
+      "operation": "IntelligenceAuthorityRollbackGuardV1::admit",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
+      "requirements": [
+        "authority_manifest_anti_rollback"
+      ]
+    }
   ],
   "capabilityBoundary": {
     "capabilityId": "intelligence.canonical_v1",
     "advertisedOnlyWhenRunnerAndProviderPresent": true,
     "capabilityProfileDigestDomain": "hepta.agentd.intelligence-capability-profile.v2",
-    "defaultCliAdvertises": false
+    "defaultCliAdvertises": false,
+    "advertisedOnlyWhenRunnerProviderAndRollbackGuardPresent": true
   },
   "openAcceptanceGaps": [
-    "Actual prompt realization and selected-action semantics must construct context and the physical provider request.",
-    "The ordinary host still needs an authorized executable owner factory and Decision-before-dispatch plus terminal-Outcome wiring.",
-    "Factory work and synchronous learning I/O need a complete bounded owner lifetime outside request futures.",
-    "Authority manifest reads still need no-follow/nonblocking parent-anchored open and an independently maintained rollback floor.",
-    "Exact historical event observation must reconcile the independent ledger witness before acknowledging a pending append.",
-    "Current source-head and deterministic merge native formatting, tests, lint and mapping checks must actually execute.",
-    "Physical-provider process-crash cuts, target-host resource measurements, quality baselines and independent acceptance remain unproved."
+    "Qualify live authenticated owner/evidence sources and complete selected-action/context semantics; default CLI remains uncomposed.",
+    "Execute actual authenticated ObjectiveStart through native provider and signed terminal Outcome across all crash and ACK-loss cuts.",
+    "Qualify forced containment of hung learning I/O, Supervisor replacement and separately retained host-root backup/write-side replacement.",
+    "Execute all current source-head and synthetic-merge native/mapping/Bazel gates; no historical local result is a final SHA pass.",
+    "Measure target-host latency/RSS/saturation/recovery and independent task quality, then obtain independent acceptance."
   ]
 }

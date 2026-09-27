@@ -258,23 +258,21 @@ mod recovery_tests {
                 &original.operation_id,
                 &id("old"),
                 original.owner_generation,
-                Duration::from_secs(30),
+                Duration::from_millis(1),
             )
             .await
             .expect("claim")
             .expect("operation");
-        // Simulated process-loss cut before authorize_dispatch, without sleep.
-        sqlx::query("UPDATE cross_owner_outbox SET lease_until_ms = 1")
-            .execute(&store.pool)
-            .await
-            .expect("expire lease");
+        // Let a valid unused lease expire. Never rewrite immutable creation
+        // metadata or disable SQL constraints merely to simulate process loss.
+        tokio::time::sleep(Duration::from_millis(5)).await;
         let new = store
             .claim_operation(
                 &original.scope_id,
                 &original.operation_id,
                 &id("new"),
                 Generation::new(2).expect("generation"),
-                Duration::from_secs(30),
+                Duration::from_millis(1),
             )
             .await
             .expect("reclaim")
@@ -296,10 +294,7 @@ mod recovery_tests {
         .execute(&store.pool)
         .await
         .expect("possible dispatch cut");
-        sqlx::query("UPDATE cross_owner_outbox SET lease_until_ms = 1")
-            .execute(&store.pool)
-            .await
-            .expect("expire dispatched lease");
+        tokio::time::sleep(Duration::from_millis(5)).await;
         assert!(
             store
                 .claim_operation(
@@ -307,7 +302,7 @@ mod recovery_tests {
                     &original.operation_id,
                     &id("successor"),
                     Generation::new(3).expect("generation"),
-                    Duration::from_secs(30),
+                    Duration::from_millis(1),
                 )
                 .await
                 .expect("observe unresolved operation")

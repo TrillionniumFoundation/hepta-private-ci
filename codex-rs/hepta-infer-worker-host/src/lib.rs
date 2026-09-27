@@ -12,6 +12,7 @@ pub mod model_worker;
 
 pub mod final_use_authorizer;
 pub mod native_app_server;
+pub mod native_intelligence_product;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -267,3 +268,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+mod native_intelligence_embedding;
+pub use native_intelligence_embedding::NativeIntelligenceEvidenceSourceV1;
+pub use native_intelligence_embedding::NativeIntelligenceProductEmbeddingV1;

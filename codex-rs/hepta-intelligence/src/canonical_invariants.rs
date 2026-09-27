@@ -116,7 +116,9 @@ pub fn validate_canonical_outcome_v1(
             ),
         };
     if run_id != &request.run_id || decision.run_id != request.run_id {
-        return Err(CanonicalIntelligenceError::InvalidCandidateSet("run identity"));
+        return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+            "run identity",
+        ));
     }
     if snapshot_digest != request.snapshot.digest() {
         return Err(CanonicalIntelligenceError::SnapshotMismatch);
@@ -156,7 +158,9 @@ pub fn validate_canonical_outcome_v1(
         authority: decision.authority,
     };
     if &decide_boundary(&request.run_id, &legal, &intuition)? != decision {
-        return Err(CanonicalIntelligenceError::InvalidCandidateSet("decision digest"));
+        return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+            "decision digest",
+        ));
     }
     match (outcome, &decision.decision) {
         (CanonicalRunOutcomeV1::Abstained(_), AdvisoryDecisionV1::Abstained)
@@ -193,19 +197,23 @@ pub fn validate_canonical_outcome_v1(
                 trace_digest,
             ];
             if digests.iter().any(|value| value.is_zero()) {
-                return Err(CanonicalIntelligenceError::EmptyDigest("envelope dependency"));
+                return Err(CanonicalIntelligenceError::EmptyDigest(
+                    "envelope dependency",
+                ));
             }
             let mut bytes = b"hepta.intelligence.host-envelope.v1\0".to_vec();
             let raw = run_id.as_str().as_bytes();
-            let length = u32::try_from(raw.len())
-                .map_err(|_| CanonicalIntelligenceError::Arithmetic)?;
+            let length =
+                u32::try_from(raw.len()).map_err(|_| CanonicalIntelligenceError::Arithmetic)?;
             bytes.extend_from_slice(&length.to_be_bytes());
             bytes.extend_from_slice(raw);
             for digest in digests {
                 bytes.extend_from_slice(digest.as_array());
             }
             if Digest32::of_bytes(&bytes) != envelope.envelope_digest {
-                return Err(CanonicalIntelligenceError::InvalidCandidateSet("envelope digest"));
+                return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+                    "envelope digest",
+                ));
             }
             Ok(())
         }
@@ -268,7 +276,9 @@ mod tests {
         };
         assert_eq!(
             validate_selected_candidate_v1(&legal, &decision),
-            Err(CanonicalIntelligenceError::InvalidCandidateSet("selected candidate membership"))
+            Err(CanonicalIntelligenceError::InvalidCandidateSet(
+                "selected candidate membership"
+            ))
         );
     }
 
@@ -281,7 +291,9 @@ mod tests {
         };
         assert_eq!(
             validate_selected_candidate_v1(&legal, &decision),
-            Err(CanonicalIntelligenceError::InvalidCandidateSet("selected candidate propensity"))
+            Err(CanonicalIntelligenceError::InvalidCandidateSet(
+                "selected candidate propensity"
+            ))
         );
     }
 

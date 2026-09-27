@@ -100,9 +100,7 @@ impl AppServerModelDriver {
             if expected.is_zero()
                 || expected != codex_hepta_types::Digest32::of_bytes(prompt.as_bytes())
             {
-                return Err(
-                    "physical prompt bytes do not match the intelligence handoff".into(),
-                );
+                return Err("physical prompt bytes do not match the intelligence handoff".into());
             }
         }
         let request = NativeRequest {

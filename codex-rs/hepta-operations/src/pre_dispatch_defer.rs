@@ -22,9 +22,7 @@ impl DurableOperationStore {
         let delay = u64::try_from(retry_after.as_millis())
             .map_err(|_| DurableOperationError::Invalid("pre-dispatch retry delay"))?;
         if !(1..=3_600_000).contains(&delay) {
-            return Err(DurableOperationError::Invalid(
-                "pre-dispatch retry delay",
-            ));
+            return Err(DurableOperationError::Invalid("pre-dispatch retry delay"));
         }
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -38,8 +36,8 @@ impl DurableOperationStore {
         let next_fence = fence
             .checked_add(1)
             .ok_or(DurableOperationError::Capacity)?;
-        let expiry = i64::try_from(claim.expires_at_unix_ms)
-            .map_err(|_| DurableOperationError::Capacity)?;
+        let expiry =
+            i64::try_from(claim.expires_at_unix_ms).map_err(|_| DurableOperationError::Capacity)?;
         let generation = claim.owner_generation.get().to_be_bytes().to_vec();
         let mut tx = self
             .pool
@@ -177,11 +175,7 @@ mod tests {
         assert_eq!(record.state, DurableOperationState::Prepared);
         assert!(record.writer_fence > claim.fence);
         let outbox = store
-            .outbox_status(
-                &intent.destination,
-                &intent.scope_id,
-                &intent.operation_id,
-            )
+            .outbox_status(&intent.destination, &intent.scope_id, &intent.operation_id)
             .await
             .expect("outbox")
             .expect("outbox row");

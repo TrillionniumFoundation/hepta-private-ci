@@ -94,6 +94,8 @@ pub struct AgentdConfig {
     intelligence_invocation_provider:
         Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
     intelligence_learning_runtime: Option<crate::AgentdIntelligenceLearningRuntimeConfigV1>,
+    intelligence_execution_host:
+        Option<std::sync::Arc<dyn crate::AgentdIntelligenceExecutionHostV1>>,
 }
 
 impl AgentdConfig {
@@ -217,6 +219,7 @@ impl AgentdConfig {
             intelligence_product_runner: None,
             intelligence_invocation_provider: None,
             intelligence_learning_runtime: None,
+            intelligence_execution_host: None,
         })
     }
 
@@ -521,6 +524,13 @@ impl AgentdConfig {
         mut self,
         provider: std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>,
     ) -> Result<Self, AgentdError> {
+        let runner = self.intelligence_product_runner.as_ref().ok_or_else(|| {
+            AgentdError::Invalid(
+                "canonical intelligence invocation requires its guarded product runner first"
+                    .to_string(),
+            )
+        })?;
+        self.require_canonical_intelligence_runner(runner)?;
         if self.intelligence_invocation_provider.is_some() {
             return Err(AgentdError::Invalid(
                 "intelligence invocation provider already configured".to_string(),
@@ -561,6 +571,7 @@ impl AgentdConfig {
                 "canonical intelligence profile already or partially configured".to_string(),
             ));
         }
+        self.require_canonical_intelligence_runner(&runner)?;
         runner.telemetry().set_provider_configured(true);
         self.intelligence_product_runner = Some(runner);
         self.intelligence_invocation_provider = Some(std::sync::Arc::new(
@@ -583,6 +594,9 @@ impl AgentdConfig {
                 "intelligence learning runtime requires a complete canonical intelligence profile"
                     .to_string(),
             ));
+        }
+        if let Some(runner) = self.intelligence_product_runner.as_ref() {
+            self.require_canonical_intelligence_runner(runner)?;
         }
         if self.intelligence_learning_runtime.is_some() {
             return Err(AgentdError::Invalid(
@@ -610,6 +624,59 @@ impl AgentdConfig {
         &mut self,
     ) -> Option<crate::AgentdIntelligenceLearningRuntimeConfigV1> {
         self.intelligence_learning_runtime.take()
+    }
+
+    /// Connect the existing authenticated ObjectiveStart to a product embedding.
+    /// Installing source does not manufacture input, evidence or effect grants.
+    pub fn with_intelligence_execution_host(
+        mut self,
+        host: std::sync::Arc<dyn crate::AgentdIntelligenceExecutionHostV1>,
+    ) -> Result<Self, AgentdError> {
+        let runner = self.intelligence_product_runner.as_ref().ok_or_else(|| {
+            AgentdError::Invalid("execution requires canonical runner".to_string())
+        })?;
+        self.require_canonical_intelligence_runner(runner)?;
+        if self.intelligence_invocation_provider.is_none()
+            || self.intelligence_execution_host.is_some()
+            || Some(host.owner_generation()) != self.identity.spawn_generation.checked_add(1)
+        {
+            return Err(AgentdError::Invalid(
+                "execution profile/generation binding".to_string(),
+            ));
+        }
+        self.intelligence_execution_host = Some(host);
+        Ok(self)
+    }
+
+    pub(crate) fn intelligence_execution_host(
+        &self,
+    ) -> Option<std::sync::Arc<dyn crate::AgentdIntelligenceExecutionHostV1>> {
+        self.intelligence_execution_host.clone()
+    }
+
+    fn require_canonical_intelligence_runner(
+        &self,
+        runner: &crate::AgentdIntelligenceProductRunnerV1,
+    ) -> Result<(), AgentdError> {
+        if !runner.canonical_profile_ready() {
+            return Err(AgentdError::Invalid(
+                "canonical intelligence requires an independent authority rollback guard"
+                    .to_string(),
+            ));
+        }
+        let path = runner.authority_rollback_path().ok_or_else(|| {
+            AgentdError::Invalid(
+                "canonical intelligence rollback witness is unavailable".to_string(),
+            )
+        })?;
+        require_canonical(path, "intelligence authority rollback witness")?;
+        if path.starts_with(&self.identity.home_root) || path.starts_with(&self.identity.run_root) {
+            return Err(AgentdError::Invalid(
+                "intelligence authority rollback witness must be retained outside Agent home/run roots"
+                    .to_string(),
+            ));
+        }
+        Ok(())
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

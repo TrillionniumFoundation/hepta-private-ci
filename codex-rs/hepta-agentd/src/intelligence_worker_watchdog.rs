@@ -55,14 +55,19 @@ impl WorkerCompletionV1 {
                     std::process::exit(70);
                 }
             })?;
-        Ok(Self { completed, observer: Some(observer) })
+        Ok(Self {
+            completed,
+            observer: Some(observer),
+        })
     }
 }
 
 impl Drop for WorkerCompletionV1 {
     fn drop(&mut self) {
         let (state, ready) = &*self.completed;
-        let mut state = state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut state = state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         *state = true;
         ready.notify_all();
         drop(state);
@@ -74,7 +79,9 @@ impl Drop for WorkerCompletionV1 {
 
 fn wait_until_complete(completed: &(Mutex<bool>, Condvar), deadline: Instant) -> bool {
     let (state, ready) = completed;
-    let mut state = state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+    let mut state = state
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     loop {
         if *state {
             return true;
@@ -83,7 +90,8 @@ fn wait_until_complete(completed: &(Mutex<bool>, Condvar), deadline: Instant) ->
         if remaining.is_zero() {
             return false;
         }
-        let result = ready.wait_timeout(state, remaining)
+        let result = ready
+            .wait_timeout(state, remaining)
             .unwrap_or_else(std::sync::PoisonError::into_inner);
         state = result.0;
     }
@@ -98,8 +106,12 @@ mod tests {
         let telemetry = Arc::new(AgentdIntelligenceTelemetryV1::new(1));
         let flag = Arc::new(AtomicBool::new(false));
         let completion = WorkerCompletionV1::supervise(
-            Duration::from_secs(2), None, Arc::clone(&flag), Arc::clone(&telemetry),
-        ).expect("watchdog");
+            Duration::from_secs(2),
+            None,
+            Arc::clone(&flag),
+            Arc::clone(&telemetry),
+        )
+        .expect("watchdog");
         drop(completion);
         assert!(!flag.load(Ordering::Acquire));
         assert_eq!(telemetry.snapshot().request_timeouts, 0);
@@ -110,8 +122,12 @@ mod tests {
         let telemetry = Arc::new(AgentdIntelligenceTelemetryV1::new(1));
         let flag = Arc::new(AtomicBool::new(false));
         let completion = WorkerCompletionV1::supervise(
-            Duration::from_millis(10), None, Arc::clone(&flag), Arc::clone(&telemetry),
-        ).expect("watchdog");
+            Duration::from_millis(10),
+            None,
+            Arc::clone(&flag),
+            Arc::clone(&telemetry),
+        )
+        .expect("watchdog");
         let (release, wait) = std::sync::mpsc::channel();
         let worker = std::thread::spawn(move || {
             let _completion = completion;
@@ -134,12 +150,17 @@ mod tests {
         if std::env::var_os(CHILD).is_some() {
             let telemetry = Arc::new(AgentdIntelligenceTelemetryV1::new(1));
             let completion = WorkerCompletionV1::supervise(
-                Duration::from_millis(20), Some(Duration::from_millis(20)),
-                Arc::new(AtomicBool::new(false)), telemetry,
-            ).expect("watchdog");
+                Duration::from_millis(20),
+                Some(Duration::from_millis(20)),
+                Arc::new(AtomicBool::new(false)),
+                telemetry,
+            )
+            .expect("watchdog");
             let _detached = std::thread::spawn(move || {
                 let _completion = completion;
-                loop { std::thread::park(); }
+                loop {
+                    std::thread::park();
+                }
             });
             // No async runtime or live request future is needed to supervise.
             std::thread::sleep(Duration::from_secs(10));
@@ -153,7 +174,8 @@ mod tests {
         let mut child = std::process::Command::new(executable)
             .args(["--exact", &test_name, "--nocapture"])
             .env(CHILD, "1")
-            .spawn().expect("child process");
+            .spawn()
+            .expect("child process");
         let deadline = Instant::now() + Duration::from_secs(15);
         let status = loop {
             if let Some(status) = child.try_wait().expect("observe child") {

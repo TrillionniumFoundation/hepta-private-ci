@@ -297,8 +297,8 @@ impl ObjectiveRuntimeHost {
         let disposition = match record.disposition {
             RunStartObjectiveDispositionV1::Compiled => {
                 match agentd.start_canonical_intelligence(&record).await? {
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }) => {
-                        "canonical_ready"
+                    Some(admitted @ crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }) => {
+                        agentd.complete_canonical_intelligence(admitted).await?
                     }
                     Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained) => {
                         "canonical_abstained"

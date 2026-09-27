@@ -148,7 +148,10 @@ fn malicious_selection_cannot_reach_context_or_evaluation() {
     for (candidate, probability) in [("candidate.outside", 1), ("candidate.a", 0)] {
         let mut ports = Ports::selected(candidate, probability);
         let error = prepare_intelligence_run(request(), &mut ports, &mut Oracle).unwrap_err();
-        assert!(matches!(error, CanonicalIntelligenceError::InvalidCandidateSet(_)));
+        assert!(matches!(
+            error,
+            CanonicalIntelligenceError::InvalidCandidateSet(_)
+        ));
         assert_eq!(
             ports.calls,
             vec![
@@ -191,7 +194,9 @@ fn boundary_rehashes_mutable_candidate_receipts() {
     legal.candidates[0].support_digest = digest("substituted-support");
     assert_eq!(
         decide_boundary(&id("run.closure"), &legal, &intuition),
-        Err(CanonicalIntelligenceError::InvalidCandidateSet("digest mismatch"))
+        Err(CanonicalIntelligenceError::InvalidCandidateSet(
+            "digest mismatch"
+        ))
     );
 }
 

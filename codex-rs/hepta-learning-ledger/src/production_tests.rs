@@ -936,3 +936,101 @@ fn product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen() {
 
 #[path = "production_growth_tests.rs"]
 mod growth;
+
+#[test]
+fn exact_destination_recovery_requires_event_predecessor_and_witness() {
+    let fixture = Fixture::new();
+    let mut writer = fixture.writer();
+    let request = decision();
+    let evidence = sign(
+        writer.verifier(),
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        &decision_signing_payload_v2(&request).unwrap(),
+    );
+    let first = writer
+        .append_decision(Digest32::ZERO, request, &evidence, 50)
+        .unwrap();
+    let first_event = writer.records().unwrap()[0].event.clone();
+    let witness = writer.witness_frontier().unwrap();
+    let mut unknown = first_event.clone();
+    if let LedgerEvent::AuthenticatedDecisionV2(value) = &mut unknown {
+        value.record_id = id("not-applied");
+    }
+    assert_eq!(
+        writer
+            .reconcile_exact_event_v1(Digest32::ZERO, &unknown)
+            .unwrap(),
+        None
+    );
+    let mut forged = first_event.clone();
+    if let LedgerEvent::AuthenticatedDecisionV2(value) = &mut forged {
+        value.authentication_digest = digest("substituted-authentication");
+    }
+    assert!(
+        writer
+            .reconcile_exact_event_v1(Digest32::ZERO, &forged)
+            .is_err()
+    );
+    assert!(
+        writer
+            .reconcile_exact_event_v1(digest("wrong-predecessor"), &first_event)
+            .is_err()
+    );
+    assert_eq!(writer.witness_frontier().unwrap(), witness);
+
+    // A real ledger sync followed by process loss before witness advancement.
+    let mut pending_event = first_event.clone();
+    if let LedgerEvent::AuthenticatedDecisionV2(value) = &mut pending_event {
+        value.record_id = id("second-decision");
+        value.episode_id = id("second-episode");
+    }
+    let LedgerBackend::Durable(ledger) = &mut writer.backend else {
+        unreachable!()
+    };
+    let pending = ledger
+        .append(first.chain_digest, pending_event.clone())
+        .unwrap();
+    drop(writer);
+    let ledger = DurableLedger::recover(
+        fixture.file("ledger"),
+        binding(),
+        64,
+        LedgerRecovery::Unacknowledged,
+    )
+    .unwrap();
+    let witness_store = LedgerWitnessStore::recover(fixture.file("witness"), binding()).unwrap();
+    let directory = fixture.directory();
+    let mut recovered = LedgerWriter::from_durable(
+        ledger,
+        witness_store,
+        activated_trust(),
+        &directory,
+        &directory,
+    )
+    .unwrap();
+    assert_eq!(recovered.witness_frontier().unwrap(), witness);
+    let covered = recovered
+        .reconcile_exact_event_v1(Digest32::ZERO, &first_event)
+        .unwrap()
+        .unwrap();
+    assert_eq!(covered.chain_digest, first.chain_digest);
+    assert_eq!(recovered.witness_frontier().unwrap(), witness);
+    let reconciled = recovered
+        .reconcile_exact_event_v1(first.chain_digest, &pending_event)
+        .unwrap()
+        .unwrap();
+    assert_eq!(reconciled.chain_digest, pending.chain_digest);
+    assert_eq!(reconciled.disposition, AppendDisposition::IdempotentReplay);
+    assert_eq!(
+        recovered.witness_frontier().unwrap().anchor.chain_digest,
+        pending.chain_digest
+    );
+    assert_eq!(recovered.records().unwrap().len(), 2);
+    assert_eq!(
+        recovered
+            .reconcile_exact_event_v1(first.chain_digest, &pending_event)
+            .unwrap(),
+        Some(reconciled)
+    );
+}

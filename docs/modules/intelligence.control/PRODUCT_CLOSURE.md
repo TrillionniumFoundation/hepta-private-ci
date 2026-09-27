@@ -37,10 +37,15 @@ signed ObjectiveStart -> durable RunStart
 ```
 
 The ordinary CLI does not supply an authorized executable seven-owner factory.
-The current ObjectiveStart caller also does not itself join formal Decision
-publication, physical `run_intelligence` execution and terminal Outcome creation.
-Those are repository-controlled integration obligations, not a completed product
-loop inferred from two endpoint APIs.
+An embedding can now install `AgentdIntelligenceExecutionHostV1` with
+`with_intelligence_execution_host` after the guarded canonical profile. The
+normal authenticated ObjectiveStart invokes that host after ContextAttached.
+`NativeIntelligenceProductEmbeddingV1` is the concrete adapter over the existing
+native journal, App Server driver and learning host. It acknowledges the exact
+Decision (including its witness) before send, obtains the same run's physical
+terminal and asks existing independent evidence owners for the Outcome.
+The ordinary CLI installs none of these authority-bearing owner objects.
+Source wiring is not a real-process provider-E2E or activation receipt.
 
 An actual embedding must obtain every input and signed evaluation from its
 existing authorized owner. No sample implementation may invent live observations,
@@ -59,11 +64,16 @@ NDU-infeasible candidates cannot remain both legal and unvetoed in intuition.
 Owner errors pass through timing measurement before rejection, so failure
 latency is not silently omitted.
 
-Prompt portfolio receipt linkage is not yet prompt realization delivery.
-Authorized realization contents, roles, permissions and the selected action
-must still produce the actual context and physical request. This remains an
-explicit semantic gap; a linear receipt chain cannot establish an absent
-input dependency or justify fabricated content.
+The physical profile consumes owner-constructed `PreparedPromptDeliveryV1`.
+Its private source and admitted exercise bind materialization, serializer,
+model profile and context attachment. Validation regenerates the serialization
+proof from the actual byte payload, not just caller-supplied proof hashes.
+The prompt stage retains this output; intuition binds both neural and prompt
+state, and context uses that exact owner's attachment. Conflicting supplied
+state is rejected. `physical_prompt()` accepts only this retained owner lineage.
+Compatibility computation may omit delivery, but cannot then execute a physical
+canonical request. Live producer quality and complete selected-action semantics
+still require product conformance and independent task-quality measurements.
 
 ## 4. Mutable DTO and prepared-object boundaries
 
@@ -92,8 +102,13 @@ remains indeterminate rather than being normalized to an earlier valid instant.
 
 Exact destination observation precedes requesting new write authority. Historical
 observation is not active learning evidence or effect replay. Complete recovery
-also requires the independent ledger witness; catch-up/acknowledgement of a
-ledger-present but unwitnessed event remains an acceptance gap.
+also requires the independent ledger witness. `LedgerWriter::reconcile_exact_event_v1`
+compares the complete event and original predecessor using the owner's index.
+It acknowledges a witnessed prefix or repairs only the exact unwitnessed last
+record through the owner's existing idempotent commit path. It never appends a
+missing event. A real file-backed test covers missing/changed events, predecessor
+substitution, witnessed-prefix observation and last-record witness catch-up.
+Full daemon crash-cut qualification remains separate.
 
 ## 6. Physical terminal binding
 
@@ -118,8 +133,14 @@ configured grace; Supervisor replacement and durable recovery require separate
 real-process evidence.
 
 Cognition and final currentness reads share the remaining monotonic budget.
-Input factory work and synchronous learning grant/file/writer work are not yet
-covered by a complete independent lifetime; they must not be called fully bounded.
+Input factory work is inside the same supervised bounded-worker lifetime and
+uses the earlier of its host budget and durable deadline. Learning grant, payload
+and LedgerWriter work runs outside Tokio control threads with four actual-worker
+permits and a 30-second caller budget. A dropped or timed-out receiver cannot
+release the live worker's permit. Learning I/O timeout remains Indeterminate;
+this does not claim hard termination of an arbitrary filesystem or writer call.
+The concrete native embedding serializes its one existing execution journal and
+bounds independent evidence workers; Busy preserves the original run identity.
 
 Recovery walks stable `(scope_id, operation_id)` pages. It has a separate budget
 from ordinary dispatch; a one-slot profile alternates. Grant-provider failure
@@ -129,15 +150,16 @@ already-dispatching effects remain reconcile-only. See the
 
 ## 8. Files and currentness
 
-Sidecar reads verify the opened regular file and cap actual bytes; immutable
-publication uses no-replace hard-link installation. Signed authority manifests
-are read with an actual byte cap and strict Ed25519 verification. Unix reads
-compare opened device/inode and reject group/world-writable objects.
-
-These are not a complete parent-anchored no-follow/nonblocking open protocol.
-Nor does a valid signature prove that a restored old manifest is current.
-An independently maintained authority rollback floor, parent-directory identity,
-concurrent replacement tests and crash/orphan recovery still need qualification.
+Authority and sidecar reads walk every absolute-path component through
+no-follow directory handles. The leaf is opened no-follow and nonblocking before
+same-handle type, mode, link-count and byte-bound checks; parent/leaf symlinks,
+hard links and oversized inputs are rejected. Non-Unix profiles without this
+handle contract fail closed. Immutable payload publication remains no-replace.
+The entire seven-owner manifest is validated and strictly signature-verified
+before advancing the independently retained rollback floor. Signature alone
+is not currentness. Privileged replacement of the separately retained host root,
+write-side crash/orphan cleanup and target-host restore cuts remain acceptance
+requirements, not inferred from read-side unit tests.
 
 ## 9. Observability and exact qualification
 
@@ -161,10 +183,61 @@ self-merge or replace mandatory checks.
 
 ## 10. Acceptance still required
 
-Complete actual stage-to-context/request materialization and an authorized
-executable host; enforce Decision-before-dispatch and terminal Outcome/witness
-recovery; close factory/learning-I/O supervision and rollback-safe file access;
-execute current source/merge native checks and process crash cuts; measure
-latency, memory, recovery saturation and task quality against baselines; obtain
-independent security/semantic and operator acceptance. None is certified by
-source presence, a test function name or a queued workflow.
+Supply and qualify the real embedding's authenticated owner/evidence sources;
+execute the normal ObjectiveStart-to-provider-to-Outcome path, including every
+process-loss and acknowledgement boundary, on the exact candidate. Qualify
+Supervisor replacement, learning-I/O hard-failure containment, write-side root
+replacement/backup/orphan behavior, current source and merge native checks,
+latency/RSS/saturation and task-quality baselines. Independent semantic/security
+and operator acceptance remain separate. No missing observation is invented to
+satisfy these gates, and source/test presence is not execution evidence.
+
+## 11. Independent authority-manifest rollback floor
+
+The canonical runner now requires a host-owned `IntelligenceAuthorityRollbackGuardV1` before
+runner/provider composition can be advertised or executed. The witness is retained outside the
+Agent home and run roots, holds a single-process lock, and durably records the greatest admitted
+authority epoch together with the exact signed-manifest digest. Lower epochs and same-epoch byte
+substitution fail closed after reopen. Signature verification still occurs on every use; the
+rollback record grants no authority and cannot replace current owner, key, epoch, or revocation
+checks.
+
+This closes the repository-owned signed-backup replay primitive. Target-host backup separation,
+privileged host-root replacement, process-crash injection, independent security review,
+and activation remain separate evidence gates.
+
+## 12. Embedding assembly and outcome semantics
+
+The authorized application composes existing objects, in this order:
+
+```rust,ignore
+let config = config.with_canonical_intelligence_profile(runner, authorized_factory)?;
+let product = NativeIntelligenceProductHostV1::new(driver, agentd_client, learning_host);
+let completion = NativeIntelligenceProductEmbeddingV1::new(
+    product, existing_native_journal, independent_evidence_source,
+    running_generation, cancellation,
+)?;
+let config = config.with_intelligence_execution_host(Arc::new(completion))?;
+```
+
+`runner` already carries the independently supplied evaluation trust and separate
+rollback guard. `authorized_factory` reads the actual seven owners;
+`independent_evidence_source` supplies signed Decision/Outcome support from the
+existing evidence owners. This example does not create keys or synthetic facts.
+The existing Agentd startup then owns this configuration; the facade owns no
+new store, execution kernel or source of learning truth.
+
+`canonical_ready` means the prepared route has no execution host attached.
+`canonical_executed` means a real terminal observation and an acknowledged
+Outcome; it does not mean the task succeeded. A failed/interrupted terminal can
+also close an episode. `canonical_reconciliation_required` preserves uncertain
+execution or missing learning acknowledgement. Learning/evidence/RPC failure
+following terminal observation does not erase the native journal's observation
+or authorize a new run ID or another provider call.
+
+The rollback parent directory must be explicitly provisioned private by the host.
+The guard opens it without following any path component; lock creation, record
+reads, temporary creation and atomic record replacement all use that same open
+directory. Uncertain write/fsync failure fences the guard until reopen rather
+than reusing the old in-memory epoch. This does not make a full host backup an
+independent rollback witness or grant an Agent permission to reset the floor.
