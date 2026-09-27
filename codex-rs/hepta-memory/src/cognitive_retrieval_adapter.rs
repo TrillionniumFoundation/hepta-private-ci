@@ -35,16 +35,27 @@ pub fn execute_owner_observation(
     lease_expires_unix_ms: u64,
 ) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
     let mut execution = core::execute_owner_observation(
-        observation, cut, context, request_digest, acquired_at_unix_ms, lease_expires_unix_ms,
+        observation,
+        cut,
+        context,
+        request_digest,
+        acquired_at_unix_ms,
+        lease_expires_unix_ms,
     )?;
     // Reconstruct the exact bounded union using the same cue identity. This
     // deliberately favors one verifiable algorithm over an approximate score
     // shortcut. It may be fused with the core after differential qualification.
-    let authoritative = cut.bind_context(
-        context.generation_vector.clone(), acquired_at_unix_ms, lease_expires_unix_ms,
-    ).map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
+    let authoritative = cut
+        .bind_context(
+            context.generation_vector.clone(),
+            acquired_at_unix_ms,
+            lease_expires_unix_ms,
+        )
+        .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
     let generated = core::generated_input_from_owner_observation(
-        observation, authoritative.snapshot_key(), authoritative.snapshot(),
+        observation,
+        authoritative.snapshot_key(),
+        authoritative.snapshot(),
     )?;
     let mut cue_bytes = b"hepta.owner-retrieval-cue.v1".to_vec();
     cue_bytes.extend_from_slice(request_digest.as_array());
@@ -52,14 +63,23 @@ pub fn execute_owner_observation(
     let cue = compile_cue(
         StableId::new(format!("cue:{}", Digest32::of_bytes(&cue_bytes)))
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
-        context.objective_digest, context.approved_context_digest, request_digest,
-        authoritative.snapshot_key().clone(), context.cue_profile_digest,
-    ).map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+        context.objective_digest,
+        context.approved_context_digest,
+        request_digest,
+        authoritative.snapshot_key().clone(),
+        context.cue_profile_digest,
+    )
+    .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
     let union = build_candidate_union_from_generated(&cue, &context.retrieval_policy, &generated)
         .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
-    let admitted = union.union.entries.iter()
-        .filter(|entry| entry.weighted_score > FixedQ32::ZERO
-            && entry.weighted_score >= context.retrieval_policy.minimum_total_score)
+    let admitted = union
+        .union
+        .entries
+        .iter()
+        .filter(|entry| {
+            entry.weighted_score > FixedQ32::ZERO
+                && entry.weighted_score >= context.retrieval_policy.minimum_total_score
+        })
         .map(|entry| (entry.record.record_id.clone(), entry.record.revision))
         .collect::<BTreeSet<_>>();
     let conflicts = observation.admitted_proposition_conflicts(&admitted)?;
@@ -68,15 +88,23 @@ pub fn execute_owner_observation(
             || context.dynamics_policy.contradiction_forces_abstention)
     {
         let packet = &mut execution.recall.packet;
-        packet.disposition = RecallDispositionV1::Abstained(RecallAbstentionReasonV1::ContradictoryEvidence);
+        packet.disposition =
+            RecallDispositionV1::Abstained(RecallAbstentionReasonV1::ContradictoryEvidence);
         packet.selections.clear();
         packet.omitted_count = 0;
         packet.packet_digest = packet.compute_packet_digest();
         execution.recall.receipt_digest = execution.recall.compute_receipt_digest();
-        execution.recall.validate().map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
+        execution
+            .recall
+            .validate()
+            .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
         execution.assignment = observe_retrieval_assignment(
-            &cue, &context.retrieval_policy, &generated, &execution.recall,
-        ).map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
+            &cue,
+            &context.retrieval_policy,
+            &generated,
+            &execution.recall,
+        )
+        .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
     }
     Ok(execution)
 }

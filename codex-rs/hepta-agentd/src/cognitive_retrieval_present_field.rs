@@ -40,8 +40,8 @@ mod tests {
 
     #[test]
     fn values_stay_typed_and_duplicates_fail() {
-        let valid: Fields = serde_json::from_str(r#"{"count":0,"salt":"a"}"#)
-            .expect("typed present values");
+        let valid: Fields =
+            serde_json::from_str(r#"{"count":0,"salt":"a"}"#).expect("typed present values");
         assert_eq!(valid.count, Some(0));
         assert_eq!(valid.salt.as_deref(), Some("a"));
         for wire in [

@@ -1,10 +1,10 @@
 //! Source-owned, multi-proposition evidence; no text-derived polarity.
 
-use std::collections::BTreeMap;
-use std::collections::BTreeSet;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum OwnerPolarity {
@@ -28,8 +28,15 @@ pub(crate) struct OwnerProposition {
 
 impl OwnerProposition {
     pub(crate) fn validate(&self) -> Result<(), &'static str> {
-        if [self.subject, self.predicate, self.object, self.scope, self.source_support]
-            .iter().any(|digest| digest.is_zero())
+        if [
+            self.subject,
+            self.predicate,
+            self.object,
+            self.scope,
+            self.source_support,
+        ]
+        .iter()
+        .any(|digest| digest.is_zero())
         {
             return Err("proposition has an empty owner identity");
         }
@@ -56,7 +63,10 @@ impl OwnerProposition {
         bytes.extend_from_slice(&self.revision.get().to_be_bytes());
         bytes.extend_from_slice(&self.valid_from.to_be_bytes());
         match self.valid_to {
-            Some(end) => { bytes.push(1); bytes.extend_from_slice(&end.to_be_bytes()); }
+            Some(end) => {
+                bytes.push(1);
+                bytes.extend_from_slice(&end.to_be_bytes());
+            }
             None => bytes.push(0),
         }
         bytes.push(match self.polarity {
@@ -77,19 +87,32 @@ pub(crate) fn admitted_conflicts(
     admitted: &BTreeSet<(StableId, Revision)>,
     now: i64,
 ) -> Result<BTreeSet<Digest32>, &'static str> {
-    if claims.len() > 4096 { return Err("owner proposition observation exceeds 4096 claims"); }
+    if claims.len() > 4096 {
+        return Err("owner proposition observation exceeds 4096 claims");
+    }
     let mut polarities = BTreeMap::<Digest32, u8>::new();
     let mut evidence = BTreeSet::new();
     for claim in claims {
         claim.validate()?;
-        if !evidence.insert(claim.evidence_digest()) { return Err("duplicate owner proposition evidence"); }
+        if !evidence.insert(claim.evidence_digest()) {
+            return Err("duplicate owner proposition evidence");
+        }
         if !admitted.contains(&(claim.record_id.clone(), claim.revision))
-            || now < claim.valid_from || claim.valid_to.is_some_and(|end| now >= end)
-        { continue; }
-        let mask = match claim.polarity { OwnerPolarity::Affirmed => 1, OwnerPolarity::Denied => 2 };
+            || now < claim.valid_from
+            || claim.valid_to.is_some_and(|end| now >= end)
+        {
+            continue;
+        }
+        let mask = match claim.polarity {
+            OwnerPolarity::Affirmed => 1,
+            OwnerPolarity::Denied => 2,
+        };
         *polarities.entry(claim.proposition_digest()).or_default() |= mask;
     }
-    Ok(polarities.into_iter().filter_map(|(digest, mask)| (mask == 3).then_some(digest)).collect())
+    Ok(polarities
+        .into_iter()
+        .filter_map(|(digest, mask)| (mask == 3).then_some(digest))
+        .collect())
 }
 
 #[cfg(test)]
@@ -101,45 +124,94 @@ mod tests {
         OwnerProposition {
             record_id: StableId::new(format!("memory:{number}")).expect("id"),
             revision: Revision::new(1).expect("revision"),
-            subject: digest, predicate: digest, object: digest, scope: digest,
-            valid_from: 10, valid_to: Some(20), polarity,
+            subject: digest,
+            predicate: digest,
+            object: digest,
+            scope: digest,
+            valid_from: 10,
+            valid_to: Some(20),
+            polarity,
             source_support: Digest32::of_bytes(&[number]),
         }
     }
     fn admitted(claims: &[OwnerProposition]) -> BTreeSet<(StableId, Revision)> {
-        claims.iter().map(|claim| (claim.record_id.clone(), claim.revision)).collect()
+        claims
+            .iter()
+            .map(|claim| (claim.record_id.clone(), claim.revision))
+            .collect()
     }
     #[test]
     fn opposite_claims_conflict_only_inside_shared_interval() {
         let first = claim(1, OwnerPolarity::Affirmed);
         let mut second = claim(2, OwnerPolarity::Denied);
-        second.valid_from = 15; second.valid_to = Some(25);
-        let claims = vec![first, second]; let legal = admitted(&claims);
-        assert!(admitted_conflicts(&claims, &legal, 14).expect("before").is_empty());
-        assert_eq!(admitted_conflicts(&claims, &legal, 15).expect("overlap").len(), 1);
-        assert!(admitted_conflicts(&claims, &legal, 20).expect("half-open").is_empty());
+        second.valid_from = 15;
+        second.valid_to = Some(25);
+        let claims = vec![first, second];
+        let legal = admitted(&claims);
+        assert!(
+            admitted_conflicts(&claims, &legal, 14)
+                .expect("before")
+                .is_empty()
+        );
+        assert_eq!(
+            admitted_conflicts(&claims, &legal, 15)
+                .expect("overlap")
+                .len(),
+            1
+        );
+        assert!(
+            admitted_conflicts(&claims, &legal, 20)
+                .expect("half-open")
+                .is_empty()
+        );
     }
     #[test]
     fn wrong_revision_and_below_floor_do_not_poison_admission() {
-        let claims = vec![claim(1, OwnerPolarity::Affirmed), claim(2, OwnerPolarity::Denied)];
-        assert!(admitted_conflicts(&claims, &admitted(&claims[..1]), 15).expect("legal").is_empty());
+        let claims = vec![
+            claim(1, OwnerPolarity::Affirmed),
+            claim(2, OwnerPolarity::Denied),
+        ];
+        assert!(
+            admitted_conflicts(&claims, &admitted(&claims[..1]), 15)
+                .expect("legal")
+                .is_empty()
+        );
         let mut legal = admitted(&claims);
         legal.remove(&(claims[1].record_id.clone(), claims[1].revision));
-        legal.insert((claims[1].record_id.clone(), Revision::new(2).expect("revision")));
-        assert!(admitted_conflicts(&claims, &legal, 15).expect("revision").is_empty());
+        legal.insert((
+            claims[1].record_id.clone(),
+            Revision::new(2).expect("revision"),
+        ));
+        assert!(
+            admitted_conflicts(&claims, &legal, 15)
+                .expect("revision")
+                .is_empty()
+        );
     }
     #[test]
     fn scope_and_predicate_are_not_collapsed() {
-        let mut claims = vec![claim(1, OwnerPolarity::Affirmed), claim(2, OwnerPolarity::Denied)];
+        let mut claims = vec![
+            claim(1, OwnerPolarity::Affirmed),
+            claim(2, OwnerPolarity::Denied),
+        ];
         claims[1].scope = Digest32::of_bytes(b"other-scope");
-        assert!(admitted_conflicts(&claims, &admitted(&claims), 15).expect("scope").is_empty());
+        assert!(
+            admitted_conflicts(&claims, &admitted(&claims), 15)
+                .expect("scope")
+                .is_empty()
+        );
         claims[1].scope = claims[0].scope;
         claims[1].predicate = Digest32::of_bytes(b"other-predicate");
-        assert!(admitted_conflicts(&claims, &admitted(&claims), 15).expect("predicate").is_empty());
+        assert!(
+            admitted_conflicts(&claims, &admitted(&claims), 15)
+                .expect("predicate")
+                .is_empty()
+        );
     }
     #[test]
     fn malformed_and_duplicate_evidence_fail_before_filtering() {
-        let mut malformed = claim(1, OwnerPolarity::Affirmed); malformed.valid_to = Some(10);
+        let mut malformed = claim(1, OwnerPolarity::Affirmed);
+        malformed.valid_to = Some(10);
         assert!(admitted_conflicts(&[malformed], &BTreeSet::new(), 15).is_err());
         let first = claim(1, OwnerPolarity::Affirmed);
         assert!(admitted_conflicts(&[first.clone(), first], &BTreeSet::new(), 15).is_err());
