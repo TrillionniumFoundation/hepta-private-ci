@@ -1,0 +1,164 @@
+name: Hepta intelligence.control qualification
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - codex-rs/hepta-intelligence/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/hepta-infer-worker-host/**
+      - codex-rs/hepta-learning-ledger/**
+      - codex-rs/hepta-objective/**
+      - codex-rs/hepta-ndu/**
+      - codex-rs/hepta-neuron/**
+      - codex-rs/hepta-prompt-optimizer/**
+      - codex-rs/hepta-context-compiler/**
+      - docs/modules/intelligence.control/**
+      - qualification/module-execution-dossiers/detail/intelligence.control.md
+      - scripts/hepta_intelligence_control_status.py
+      - scripts/hepta_ci_candidate.py
+      - scripts/hepta_ci_v8.py
+      - .github/scripts/check_ci_results.py
+      - .github/workflows/hepta-intelligence-control.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-intelligence-control-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-truth:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify intelligence product source truth
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_intelligence_control_status.py check
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  exact-candidate:
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","merge-candidate"]' || '["source-head"]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      EXPECTED_SHA: ${{ matrix.lane == 'merge-candidate' && github.sha || github.event.pull_request.head.sha || github.sha }}
+      RUST_BACKTRACE: "1"
+      CARGO_BUILD_JOBS: "2"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact intelligence candidate
+        id: execution
+        env:
+          LANE: ${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          args=(--source "$SOURCE_SHA" --tested "$EXPECTED_SHA")
+          if [ "$LANE" = merge-candidate ]; then
+            expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            test "$(git rev-parse HEAD^{tree})" = "$expected_tree"
+            args+=(--base "$BASE_SHA" --lane base-merge)
+          else
+            args+=(--lane source-head)
+          fi
+          python3 scripts/hepta_ci_candidate.py "${args[@]}" --github-output "$GITHUB_OUTPUT"
+      - name: Verify source truth on exact candidate
+        if: steps.execution.outputs.run_native == 'true'
+        run: python3 scripts/hepta_intelligence_control_status.py check
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        if: steps.execution.outputs.run_native == 'true'
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve verified sandboxed V8 artifacts
+        if: steps.execution.outputs.run_native == 'true'
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Check owner formatting
+        if: steps.execution.outputs.run_native == 'true'
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path Cargo.toml \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd -- --check
+      - name: Exercise canonical facade, product route and durable recovery
+        if: steps.execution.outputs.run_native == 'true'
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          just test --locked --lib \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd \
+            --test-threads=1
+      - name: Strict intelligence lint
+        if: steps.execution.outputs.run_native == 'true'
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-intelligence --no-deps --all-targets -- -D warnings
+          cargo clippy --locked -p codex-hepta-agentd --no-deps --all-targets -- -D warnings
+      - name: Emit exact intelligence receipt
+        if: steps.execution.outputs.run_native == 'true'
+        env:
+          RECEIPT: ${{ runner.temp }}/intelligence-control-${{ matrix.lane }}.json
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_intelligence_control_status.py receipt --output "$RECEIPT"
+          test "$(jq -r .commit "$RECEIPT")" = "$EXPECTED_SHA"
+          test "$(jq -r .tree "$RECEIPT")" = "$(git rev-parse HEAD^{tree})"
+      - name: Retain exact intelligence receipt
+        if: steps.execution.outputs.run_native == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-control-${{ matrix.lane }}-${{ env.EXPECTED_SHA }}
+          path: ${{ runner.temp }}/intelligence-control-${{ matrix.lane }}.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Require unchanged exact candidate
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  qualification-result:
+    if: ${{ always() }}
+    needs: [source-truth, exact-candidate]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require every intelligence lane to succeed
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+          EXPECTED_NEEDS: '["source-truth","exact-candidate"]'
+        run: python3 .github/scripts/check_ci_results.py
