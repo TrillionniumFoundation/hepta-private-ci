@@ -661,10 +661,8 @@ impl AgentdState {
             .build_invocation(Arc::clone(provider), self.identity.clone(), record.clone())
             .await?;
         let now_ms = self.require_current_run_start(record)?;
-        let durable_snapshot =
-            crate::RunSnapshot::from_revalidated_run_start(record).map_err(run_error)?;
-        let remaining_ms = durable_snapshot
-            .deadline_ms
+        let durable_deadline_ms = record.admission.deadline_unix_micros.div_ceil(1_000);
+        let remaining_ms = durable_deadline_ms
             .min(record.authentication.expires_at_ms)
             .checked_sub(now_ms)
             .filter(|value| *value > 0)
