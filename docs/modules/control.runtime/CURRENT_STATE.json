@@ -1,0 +1,115 @@
+{
+  "schema": "hepta.control-runtime.current-state.v1",
+  "module": "control.runtime",
+  "authorityDelta": "none",
+  "reviewedBaseline": "a126987b84737dbc2ee2592442a314117bddb4a2",
+  "sourceIdentityPolicy": "Resolve the candidate commit, tree and tracked blob identities at qualification time. Historical IMPLEMENTATION_MAP.sourceBase is not the current candidate.",
+  "readOnlyProductCallerState": "source_composed_candidate",
+  "globalPlannerProductCallerState": "not_composed",
+  "productionWriterState": "not_composed",
+  "exactHeadQualification": "not_established",
+  "independentAcceptance": false,
+  "activation": false,
+  "release": false,
+  "components": [
+    {
+      "id": "planner",
+      "state": "source_implemented_candidate",
+      "sourcePaths": [
+        "codex-rs/hepta-control-plane/src/planner.rs",
+        "codex-rs/hepta-control-plane/src/planner_boundary.rs",
+        "codex-rs/hepta-control-plane/src/planner_ndu.rs"
+      ],
+      "testPaths": [
+        "codex-rs/hepta-control-plane/src/planner_tests.rs",
+        "codex-rs/hepta-control-plane/tests/planner_boundary.rs"
+      ],
+      "scope": "Guarded, bounded, deny-all planning. Extra owners and duplicate effect payloads reject. Freshness is checked at public finalization and grant-request boundaries."
+    },
+    {
+      "id": "read-only-agentd-caller",
+      "state": "source_composed_candidate",
+      "sourcePaths": [
+        "codex-rs/hepta-control-plane/src/planner_context.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context.rs",
+        "codex-rs/hepta-agentd/src/state_control.rs"
+      ],
+      "testPaths": [
+        "codex-rs/hepta-control-plane/src/planner_context_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs"
+      ],
+      "scope": "Existing measured-context read/abstain product callsite. New final-use lease is NOT yet wired to this caller."
+    },
+    {
+      "id": "request-final-use-lease",
+      "state": "source_implemented_not_composed",
+      "sourcePaths": ["codex-rs/hepta-control-plane/src/planner_lease.rs"],
+      "testPaths": ["codex-rs/hepta-control-plane/src/planner_lease.rs"],
+      "scope": "Host-retained monotonic lease binds owner, generation, request, query, retrieval policy, ranker, owner cut, read, context and plan receipt. Producer authentication remains the host's obligation."
+    },
+    {
+      "id": "planner-store",
+      "state": "source_implemented_not_composed",
+      "sourcePaths": ["codex-rs/hepta-control-plane/src/planner_store.rs"],
+      "testPaths": ["codex-rs/hepta-control-plane/tests/planner_store.rs"],
+      "scope": "Single-writer framed disk store with complete versioned decision bodies, file/directory sync, unknown-outcome fencing, anchor-bound reopen and rollback-resistant backup/restore. Production anchor and semantic owner codec are not selected."
+    },
+    {
+      "id": "legacy-journal-reference",
+      "state": "reference_implemented",
+      "sourcePaths": ["codex-rs/hepta-control-plane/src/planner_journal.rs"],
+      "testPaths": ["codex-rs/hepta-control-plane/src/planner_journal_tests.rs"],
+      "scope": "Historical digest-only in-memory journal and byte codec; not the new disk store and not a production writer."
+    },
+    {
+      "id": "organ-host",
+      "state": "read_only_reference_implemented",
+      "sourcePaths": ["codex-rs/hepta-control-plane/src/organ_runtime.rs"],
+      "testPaths": ["codex-rs/hepta-control-plane/src/organ_runtime_tests.rs"],
+      "scope": "Compiled-in, trusted, one-hop read-only handlers. Not a sandbox or durable fan-out delivery ledger."
+    },
+    {
+      "id": "runtime-registry",
+      "state": "source_implemented_candidate",
+      "sourcePaths": ["codex-rs/hepta-control-plane/src/module_runtime.rs"],
+      "testPaths": [],
+      "scope": "Runtime module registry is tracked separately from planning, persistence and organ dispatch."
+    },
+    {
+      "id": "embodiment-reference",
+      "state": "reference_implemented",
+      "sourcePaths": [
+        "codex-rs/hepta-control-plane/src/embodiment/cart.rs",
+        "codex-rs/hepta-control-plane/src/embodiment/io.rs",
+        "codex-rs/hepta-control-plane/src/embodiment/timing.rs"
+      ],
+      "testPaths": [
+        "codex-rs/hepta-control-plane/src/embodiment/cart_tests.rs",
+        "codex-rs/hepta-control-plane/src/embodiment/timing_tests.rs"
+      ],
+      "scope": "Synthetic cart and timing reference, not hardware or independent safety qualification."
+    }
+  ],
+  "qualification": {
+    "workflow": ".github/workflows/hepta-control-runtime.yml",
+    "matrix": {
+      "lane": ["source-head", "synthetic-merge"],
+      "check": ["tests", "lint", "named-host"]
+    },
+    "rule": "A source change invalidates previous candidate receipts. Queued, skipped, cancelled, failed and missing results are not success. Metadata verification is not Rust compilation or product execution.",
+    "nduRegressionRepair": "unresolved_source_log_mismatch",
+    "rustExecutionObserved": false,
+    "productExecutionObserved": false
+  },
+  "remainingGaps": [
+    "Resolve inconsistent historical NDU source/log evidence using a fresh exact-source execution; no NDU regression repair is claimed.",
+    "Wire the final-use lease into the authenticated Agentd owner, with bounded generation-scoped lease storage and no client-reconstructible authority.",
+    "Construct observations from canonical authenticated read receipts; remove the public self-reported verified count trust gap.",
+    "Integrate the production owner codec and an independently durable authenticated checkpoint anchor with PlannerStoreV1.",
+    "Implement logical compaction, retention and migration with retained identity/revocation frontiers. checkpoint_file is byte-preserving republishing, not logical compaction.",
+    "Qualify process termination, disk-full and sync failures; current torn-tail and uncertain-anchor tests are not subprocess crash receipts.",
+    "Complete the named global-planner consumer, independent current-state authority check, effect terminal receipt and reconciliation chain.",
+    "Specify and qualify partial fan-out retry/deduplication; no OrganHost delivery-ledger closure is claimed.",
+    "Complete target-host performance, overload, canary, rollback rehearsal and independent semantic acceptance."
+  ]
+}
