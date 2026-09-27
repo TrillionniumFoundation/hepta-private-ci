@@ -10,112 +10,11 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  repair:
-    if: ${{ !contains(github.event.head_commit.message, '[cognitive-store-repaired]') }}
-    runs-on: macos-15
-    timeout-minutes: 20
+  retired:
+    if: ${{ false }}
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: codex/cognitive-store-full-convergence-20260927
-          fetch-depth: 0
-          persist-credentials: true
-      - name: Bind exact candidate
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
-          git diff --quiet
-          git diff --cached --quiet
-          test -z "$(git status --porcelain --untracked-files=normal)"
-      - name: Repair read-only type and exact lockfile stanza
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          source = Path('codex-rs/hepta-cognitive-store/src/durable.rs')
-          text = source.read_text(encoding='utf-8')
-          stale = 'codex_hepta_memory::CognitiveRetrievalObservationV1'
-          current = 'codex_hepta_memory::RetrievalObservation'
-          if stale in text:
-              source.write_text(text.replace(stale, current), encoding='utf-8')
-          elif current not in text:
-              raise SystemExit('read-only retrieval observation return type is missing')
-
-          lock_path = Path('codex-rs/Cargo.lock')
-          lock = lock_path.read_text(encoding='utf-8')
-          marker = '[[package]]\nname = "codex-hepta-cognitive-store"'
-          start = lock.index(marker)
-          end = lock.find('\n[[package]]', start + len(marker))
-          end = len(lock) if end < 0 else end
-          block = lock[start:end]
-          dependency = ' "codex-hepta-contracts",\n'
-          if dependency not in block:
-              anchor = ' "codex-hepta-cognitive-types",\n'
-              if block.count(anchor) != 1:
-                  raise SystemExit('unexpected cognitive-store Cargo.lock dependency stanza')
-              block = block.replace(anchor, anchor + dependency, 1)
-              lock = lock[:start] + block + lock[end:]
-              lock_path.write_text(lock, encoding='utf-8')
-
-          diagnostic = Path('cognitive-store-macos-diagnostic.txt')
-          if diagnostic.exists():
-              diagnostic.unlink()
-
-          verified = lock_path.read_text(encoding='utf-8')
-          start = verified.index(marker)
-          end = verified.find('\n[[package]]', start + len(marker))
-          block = verified[start:] if end < 0 else verified[start:end]
-          if dependency not in block:
-              raise SystemExit('Cargo.lock cognitive-store stanza still lacks codex-hepta-contracts')
-          print(block)
-          PY
-          cd codex-rs
-          cargo fmt --package codex-hepta-cognitive-store --package codex-hepta-memory --package codex-hepta-agentd
-          cargo metadata --locked --format-version 1 --no-deps > /dev/null
-          cd ..
-          git diff --check
-      - name: Commit deterministic source repair
-        run: |
-          set -euo pipefail
-          git config user.name "Hepta Cognitive Store CI"
-          git config user.email "hepta-cognitive-ci@users.noreply.github.com"
-          git add codex-rs/Cargo.lock codex-rs/hepta-cognitive-store/src/durable.rs
-          git add -u cognitive-store-macos-diagnostic.txt || true
-          git diff --cached --check
-          if git diff --cached --quiet; then
-            echo 'source repair already exact'
-          else
-            git commit -m "fix(cognitive-store): synchronize lock and read-only retrieval type"
-          fi
-          git diff --check
-          git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=normal)"
-      - name: Rebind cognitive.store map
-        run: python3 scripts/hepta-implementation-maps.py migrate --module cognitive.store
-      - name: Commit exact implementation map
-        run: |
-          set -euo pipefail
-          git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
-          git diff --cached --check
-          if git diff --cached --quiet; then
-            git commit --allow-empty -m "docs(cognitive-store): confirm repaired source objects [cognitive-store-repaired]"
-          else
-            git commit -m "docs(cognitive-store): bind repaired source objects [cognitive-store-repaired]"
-          fi
-      - name: Verify repaired exact candidate
-        run: |
-          set -euo pipefail
-          python3 scripts/cognitive_store_architecture.py
-          python3 scripts/cognitive_store_map_verify.py \
-            --expected-sha "$(git rev-parse HEAD)" \
-            --expected-tree "$(git rev-parse HEAD^{tree})"
-          python3 tools/cognitive-store-host-bootstrap/test_bootstrap.py
-          git diff --check
-          git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=normal)"
-      - name: Push repaired candidate
-        run: git push origin HEAD:codex/cognitive-store-full-convergence-20260927
+      - run: echo 'Superseded by the bounded convergence repair; this self-mutating workflow is removed by the final repair commit.'
