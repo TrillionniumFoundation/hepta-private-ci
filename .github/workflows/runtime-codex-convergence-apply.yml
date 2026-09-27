@@ -7,6 +7,14 @@ on:
     paths:
       - scripts/runtime-codex-converge.py
       - .github/workflows/runtime-codex-convergence-apply.yml
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+    paths:
+      - scripts/runtime-codex-converge.py
+      - .github/workflows/runtime-codex-convergence-apply.yml
+      - codex-rs/hepta-agentd/**
   workflow_dispatch:
 
 permissions:
@@ -18,7 +26,9 @@ concurrency:
 
 jobs:
   apply:
-    if: github.actor != 'github-actions[bot]'
+    if: >-
+      github.actor != 'github-actions[bot]' &&
+      (github.event_name != 'pull_request' || github.head_ref == 'runtime-codex/convergence-v1')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
