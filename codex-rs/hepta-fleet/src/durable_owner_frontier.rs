@@ -10,15 +10,27 @@
 #[path = "durable_owner_core.rs"]
 mod core;
 
+#[path = "durable_owner_readonly.rs"]
+mod readonly;
+
+pub use readonly::FleetReadOnlyFenceV1;
+pub use readonly::FleetReadOnlySnapshotV1;
+pub use readonly::lock_fleet_snapshot;
+pub use readonly::read_fleet_snapshot;
+
 pub use core::DURABLE_FLEET_STATE_SCHEMA_VERSION;
 pub use core::DurableFleetError;
 pub use core::DurableFleetIssueReceiptV1;
 pub use core::DurableFleetMutationReceiptV1;
 pub use core::DurableFleetStateV1;
+pub use core::FleetExecutionContextV1;
+pub use core::FleetExecutionHoldV1;
+pub use core::FleetHostIncarnationV1;
 pub use core::FleetHostRecordV1;
 pub use core::FleetOperationKindV1;
 pub use core::FleetOperationReceiptV1;
 pub use core::FleetOperationalMetricsV1;
+pub use core::FleetQuiescenceProbe;
 pub use core::FleetResultCountersV1;
 pub use core::MAX_DURABLE_OPERATION_RECEIPTS;
 
@@ -117,6 +129,41 @@ impl DurableFleetOwner {
         let mut owner = Self { inner, root };
         owner.reconcile_latest_frontier("open")?;
         Ok(owner)
+    }
+
+    pub fn resolve_host_incarnation(
+        &mut self,
+        host_id: &str,
+        failure_domain_id: &str,
+        boot_identity: &str,
+        requested_generation: Option<u64>,
+    ) -> Result<FleetHostIncarnationV1, DurableFleetError> {
+        let result = self.inner.resolve_host_incarnation(
+            host_id,
+            failure_domain_id,
+            boot_identity,
+            requested_generation,
+        );
+        self.finish_mutation("resolve-host-incarnation", result)
+    }
+
+    pub fn prepare_execution(
+        &mut self,
+        effect_id: &str,
+        context: FleetExecutionContextV1,
+        witness: &crate::RevocationBoundGrantUseWitnessV1,
+    ) -> Result<FleetExecutionHoldV1, DurableFleetError> {
+        let result = self.inner.prepare_execution(effect_id, context, witness);
+        self.finish_mutation(effect_id, result)
+    }
+
+    pub fn reconcile_execution_group<P: FleetQuiescenceProbe>(
+        &mut self,
+        allocation_id: &str,
+        probe: &P,
+    ) -> Result<bool, DurableFleetError> {
+        let result = self.inner.reconcile_execution_group(allocation_id, probe);
+        self.finish_mutation("execution-quiescence", result)
     }
 
     pub fn state(&self) -> &DurableFleetStateV1 {
@@ -312,6 +359,16 @@ fn verify_descends_from_frontier(
 }
 
 fn load_retained_states(root: &Path) -> Result<Vec<DurableFleetStateV1>, DurableFleetError> {
+    let mut states = Vec::new();
+    visit_retained_states(root, |state| states.push(state))?;
+    Ok(states)
+}
+
+// One shared chain validator; inspection retains only the latest snapshot.
+fn visit_retained_states(
+    root: &Path,
+    mut visit: impl FnMut(DurableFleetStateV1),
+) -> Result<(), DurableFleetError> {
     let mut paths = Vec::new();
     for entry in std::fs::read_dir(root)? {
         let entry = entry?;
@@ -324,7 +381,7 @@ fn load_retained_states(root: &Path) -> Result<Vec<DurableFleetStateV1>, Durable
     }
     paths.sort_unstable_by_key(|(generation, _)| *generation);
 
-    let mut states: Vec<DurableFleetStateV1> = Vec::with_capacity(paths.len());
+    let mut previous: Option<(u64, String)> = None;
     for (generation, path) in paths {
         let metadata = std::fs::symlink_metadata(&path)?;
         if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
@@ -334,16 +391,16 @@ fn load_retained_states(root: &Path) -> Result<Vec<DurableFleetStateV1>, Durable
         if state.generation != generation || state.content_sha256 != state_digest(&state)? {
             return Err(DurableFleetError::CorruptState);
         }
-        if let Some(previous) = states.last() {
-            if state.generation != previous.generation.saturating_add(1)
-                || state.previous_state_sha256 != previous.content_sha256
-            {
-                return Err(DurableFleetError::CorruptState);
-            }
+        if let Some((generation, digest)) = &previous
+            && (generation.checked_add(1) != Some(state.generation)
+                || &state.previous_state_sha256 != digest)
+        {
+            return Err(DurableFleetError::CorruptState);
         }
-        states.push(state);
+        previous = Some((state.generation, state.content_sha256.clone()));
+        visit(state);
     }
-    Ok(states)
+    Ok(())
 }
 
 fn load_frontier(path: &Path) -> Result<Option<DurableFleetLatestFrontierV1>, DurableFleetError> {

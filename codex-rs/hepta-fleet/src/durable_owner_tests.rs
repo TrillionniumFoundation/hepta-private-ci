@@ -211,3 +211,5 @@ fn post_link_failure_is_indeterminate_and_recoverable_by_operation_id() {
         .expect("idempotent recovery");
     assert_eq!(duplicate.generation, 1);
 }
+
+include!("durable_owner_execution_tests.rs");

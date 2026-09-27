@@ -41,6 +41,15 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
+#[path = "durable_owner_execution.rs"]
+mod execution;
+#[path = "durable_owner_incarnation.rs"]
+mod incarnation;
+pub use execution::FleetExecutionContextV1;
+pub use execution::FleetExecutionHoldV1;
+pub use execution::FleetQuiescenceProbe;
+pub use incarnation::FleetHostIncarnationV1;
+
 pub const DURABLE_FLEET_STATE_SCHEMA_VERSION: u32 = 1;
 pub const MAX_DURABLE_OPERATION_RECEIPTS: usize = 16_384;
 const DURABLE_FLEET_DIRECTORY: &str = "fleet-allocation-v1";
@@ -84,6 +93,9 @@ pub enum FleetOperationKindV1 {
     Revoke,
     ExpiryReconciliation,
     RevocationSnapshot,
+    HostIncarnation,
+    ExecutionPrepared,
+    ExecutionQuiesced,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -105,9 +117,13 @@ pub struct DurableFleetStateV1 {
     pub generation: u64,
     pub previous_state_sha256: String,
     pub fleet_hosts: BTreeMap<String, FleetHostRecordV1>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub fleet_host_incarnations: BTreeMap<String, FleetHostIncarnationV1>,
     pub fleet_capacity_observations: BTreeMap<String, TrustedCapacityObservationV1>,
     pub fleet_grants: LeaseLedgerSnapshot,
     pub fleet_resource_totals: BTreeMap<String, ResourceVectorV1>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub fleet_execution_holds: BTreeMap<String, FleetExecutionHoldV1>,
     pub fleet_revocation_frontier: Option<FleetRevocationSnapshotV1>,
     pub workspace_reservations_sha256: String,
     pub fleet_operation_receipts: VecDeque<FleetOperationReceiptV1>,
@@ -504,6 +520,10 @@ impl DurableFleetOwner {
     pub fn metrics(&mut self) -> Result<FleetOperationalMetricsV1, DurableFleetError> {
         let _guard = OwnerLock::acquire(&self.root.join(DURABLE_FLEET_LOCK))?;
         self.reload()?;
+        self.snapshot_metrics()
+    }
+
+    fn snapshot_metrics(&self) -> Result<FleetOperationalMetricsV1, DurableFleetError> {
         let now_ms = self.clock.now_unix_ms()?;
         let ledger =
             LeaseLedger::from_snapshot(Arc::clone(&self.clock), self.state.fleet_grants.clone())?;
@@ -534,7 +554,7 @@ impl DurableFleetOwner {
             fleet_revoked_uncompacted_grants: usize_to_u64(
                 ledger_metrics.revoked_uncompacted_grants,
             )?,
-            fleet_reserved_resource: ledger_metrics.reserved_by_host,
+            fleet_reserved_resource: self.state.fleet_resource_totals.clone(),
             fleet_observed_capacity: observed_capacity,
             fleet_stale_hosts: usize_to_u64(stale_hosts)?,
             fleet_grant_issue_total: self.counters.issue,
@@ -601,6 +621,8 @@ impl DurableFleetOwner {
         mut candidate: DurableFleetStateV1,
         operation: FleetOperationReceiptV1,
     ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {
+        candidate.fleet_resource_totals = execution::reserved_totals(&candidate)?;
+        execution::require_capacity(&candidate)?;
         candidate.generation = next_generation(self.state.generation)?;
         candidate.previous_state_sha256 = self.state.content_sha256.clone();
         candidate.workspace_reservations_sha256 =
@@ -631,6 +653,25 @@ impl DurableFleetOwner {
     }
 }
 
+// Called only while the read-only facade holds an existing shared owner lock.
+// Constructing this in-memory view does not call the owner initializer/recovery.
+pub(super) fn inspect_validated_state(
+    state: DurableFleetStateV1,
+    supervisor_state_root: PathBuf,
+    clock: Arc<dyn FleetClock>,
+) -> Result<(DurableFleetStateV1, FleetOperationalMetricsV1), DurableFleetError> {
+    validate_state(&state, Arc::clone(&clock))?;
+    let view = DurableFleetOwner {
+        root: supervisor_state_root.join(DURABLE_FLEET_DIRECTORY),
+        supervisor_state_root,
+        clock,
+        state,
+        counters: RuntimeCounters::default(),
+    };
+    let metrics = view.snapshot_metrics()?;
+    Ok((view.state, metrics))
+}
+
 fn initial_state(workspace_reservations_sha256: String) -> DurableFleetStateV1 {
     let ledger = LeaseLedger::new();
     DurableFleetStateV1 {
@@ -638,9 +679,11 @@ fn initial_state(workspace_reservations_sha256: String) -> DurableFleetStateV1 {
         generation: 0,
         previous_state_sha256: state_anchor_digest(),
         fleet_hosts: BTreeMap::new(),
+        fleet_host_incarnations: BTreeMap::new(),
         fleet_capacity_observations: BTreeMap::new(),
         fleet_grants: ledger.snapshot(),
         fleet_resource_totals: BTreeMap::new(),
+        fleet_execution_holds: BTreeMap::new(),
         fleet_revocation_frontier: None,
         workspace_reservations_sha256,
         fleet_operation_receipts: VecDeque::new(),
@@ -663,6 +706,7 @@ fn validate_state(
     {
         return Err(DurableFleetError::CorruptState);
     }
+    incarnation::validate_incarnations(state)?;
     let mut operation_ids = BTreeSet::new();
     for receipt in &state.fleet_operation_receipts {
         validate_operation_id(&receipt.operation_id)?;
@@ -682,8 +726,9 @@ fn validate_state(
     if let Some(snapshot) = &state.fleet_revocation_frontier {
         snapshot.validate_shape()?;
     }
-    let ledger = LeaseLedger::from_snapshot(clock, state.fleet_grants.clone())?;
-    if ledger.metrics()?.reserved_by_host != state.fleet_resource_totals {
+    LeaseLedger::from_snapshot(clock, state.fleet_grants.clone())?;
+    execution::require_capacity(state)?;
+    if execution::reserved_totals(state)? != state.fleet_resource_totals {
         return Err(DurableFleetError::CorruptState);
     }
     if state.fleet_hosts.len() != state.fleet_capacity_observations.len()
@@ -1026,6 +1071,10 @@ pub enum DurableFleetError {
     InvalidPath,
     InvalidOperationId,
     InvalidAuthorityWitness,
+    InvalidHostIncarnation,
+    ExecutionContextMismatch,
+    ExecutionAlreadyPrepared,
+    ExecutionStillRunning,
     MissingState,
     CorruptState,
     ArithmeticOverflow,

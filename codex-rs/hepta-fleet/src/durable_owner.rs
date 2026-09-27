@@ -14,12 +14,20 @@ pub use frontier::DurableFleetError;
 pub use frontier::DurableFleetIssueReceiptV1;
 pub use frontier::DurableFleetMutationReceiptV1;
 pub use frontier::DurableFleetStateV1;
+pub use frontier::FleetExecutionContextV1;
+pub use frontier::FleetExecutionHoldV1;
+pub use frontier::FleetHostIncarnationV1;
 pub use frontier::FleetHostRecordV1;
 pub use frontier::FleetOperationKindV1;
 pub use frontier::FleetOperationReceiptV1;
 pub use frontier::FleetOperationalMetricsV1;
+pub use frontier::FleetQuiescenceProbe;
+pub use frontier::FleetReadOnlyFenceV1;
+pub use frontier::FleetReadOnlySnapshotV1;
 pub use frontier::FleetResultCountersV1;
 pub use frontier::MAX_DURABLE_OPERATION_RECEIPTS;
+pub use frontier::lock_fleet_snapshot;
+pub use frontier::read_fleet_snapshot;
 
 #[cfg(test)]
 pub(crate) use frontier::fail_next_commit_after_state_link;
@@ -65,6 +73,38 @@ impl DurableFleetOwner {
         let inner =
             frontier::DurableFleetOwner::open_supervisor_state_root(supervisor_state_root, clock)?;
         Ok(Self { inner })
+    }
+
+    pub fn resolve_host_incarnation(
+        &mut self,
+        host_id: &str,
+        failure_domain_id: &str,
+        boot_identity: &str,
+        requested_generation: Option<u64>,
+    ) -> Result<FleetHostIncarnationV1, DurableFleetError> {
+        self.inner.resolve_host_incarnation(
+            host_id,
+            failure_domain_id,
+            boot_identity,
+            requested_generation,
+        )
+    }
+
+    pub fn prepare_execution(
+        &mut self,
+        effect_id: &str,
+        context: FleetExecutionContextV1,
+        witness: &crate::RevocationBoundGrantUseWitnessV1,
+    ) -> Result<FleetExecutionHoldV1, DurableFleetError> {
+        self.inner.prepare_execution(effect_id, context, witness)
+    }
+
+    pub fn reconcile_execution_group<P: FleetQuiescenceProbe>(
+        &mut self,
+        allocation_id: &str,
+        probe: &P,
+    ) -> Result<bool, DurableFleetError> {
+        self.inner.reconcile_execution_group(allocation_id, probe)
     }
 
     pub fn state(&self) -> &DurableFleetStateV1 {

@@ -24,7 +24,7 @@ const WORKSPACE_RESERVATIONS_FILE: &str = "workspace-reservations-v1.json";
 const WORKSPACE_RESERVATIONS_SCHEMA_VERSION: u32 = 1;
 const MAX_WORKSPACE_RESERVATIONS: usize = 4_096;
 #[cfg(unix)]
-const OWNER_READ_WRITE_MODE: u32 = libc::S_IRUSR | libc::S_IWUSR;
+const OWNER_READ_WRITE_MODE: u32 = 0o600;
 static RESERVATION_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 pub(super) struct RegistryMutationGuard {
