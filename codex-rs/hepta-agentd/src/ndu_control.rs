@@ -39,7 +39,7 @@ impl AgentdNduOwnerHostV1 {
     ) -> Result<NduControlResultV1, AgentdNduOwnerErrorV1> {
         // Diagnostic observations do not claim a current authority view.
         // Keep them readable when the protected clock or store has failed.
-        if matches!(&request, NduControlRequestV1::MetricsV2) {
+        if matches!(&request, NduControlRequestV1::MetricsV2 {}) {
             live_guard()?;
             let owner = self.owner.try_lock().ok();
             return Ok(metrics_result_v2(self.spawn_generation, owner.as_deref()));
@@ -64,7 +64,7 @@ impl AgentdNduOwnerHostV1 {
                 }
                 NduControlRequestV1::Context
                 | NduControlRequestV1::MetricsV1
-                | NduControlRequestV1::MetricsV2
+                | NduControlRequestV1::MetricsV2 {}
                 | NduControlRequestV1::Selection { .. }
                 | NduControlRequestV1::Outcome { .. } => {}
             }
@@ -163,7 +163,7 @@ impl AgentdNduOwnerHostV1 {
         let head = owner.journal_head_digest()?;
         let result = match request {
             NduControlRequestV1::MetricsV1 => Ok(metrics_result()),
-            NduControlRequestV1::MetricsV2 => {
+            NduControlRequestV1::MetricsV2 {} => {
                 Ok(metrics_result_v2(self.spawn_generation, Some(&owner)))
             }
             NduControlRequestV1::Context => Ok(NduControlResultV1::Context {

@@ -80,13 +80,17 @@ def verify(root: Path) -> dict:
     return record
 
 
-def expected_commands(suite: str, sha: str, tree: str) -> dict:
+def trusted_runner():
     # The publisher executes its trusted workflow revision, never downloaded
     # candidate code. This imports only the checked-in qualification contract.
     spec = importlib.util.spec_from_file_location("ndu_evidence_runner", Path(__file__).with_name("hepta-ndu-qualification.py"))
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return {name: command for name, _, command in module.commands(suite, sha, tree)}
+    return module
+
+
+def expected_commands(suite: str, sha: str, tree: str) -> dict:
+    return {name: command for name, _, command in trusted_runner().commands(suite, sha, tree)}
 
 
 def canonical_command(command: list) -> list:
@@ -133,6 +137,17 @@ def aggregate(root: Path, source: str, base: str, merge: str) -> dict:
             mounted = receipt.get("mountedFilesystemReceipt") or {}
             if host.get("identityValidated") is not True or host.get("performancePassed") is not True or mounted.get("identityValidated") is not True:
                 raise ValueError("missing validated native host observations")
+            host_id = receipt.get("host")
+            if not isinstance(host_id, str) or not host_id or len(host_id) > 256:
+                raise ValueError("missing execution host identity")
+            # Re-read native bytes with trusted validation, including numerical
+            # SLO thresholds. A summary's true bits and a resealed digest are
+            # not a substitute for the observed full-envelope/fault records.
+            runner = trusted_runner()
+            actual_host = runner.validate_host_receipt(receipt_path.parent / "named-host.json", expected, receipt["sourceTree"], key[0], expected_host=host_id)
+            actual_mounted = runner.validate_mounted_receipt(receipt_path.parent / "mounted-filesystem/mounted-filesystem.json", expected, receipt["sourceTree"], key[0], expected_host=host_id)
+            if actual_host != host or actual_mounted != mounted:
+                raise ValueError("native evidence digest or observed result substitution")
         observed[key] = receipt
     if set(observed) != {(lane, suite) for lane in ("source-head", "synthetic-merge") for suite in SUITES}:
         raise ValueError("all twelve independently executed suites are required")

@@ -587,7 +587,7 @@ fn metrics_v2_reports_storage_health_and_does_not_block_on_owner() -> TestResult
     let fixture = fixture()?;
     let result = fixture
         .host
-        .control(NduControlRequestV1::MetricsV2, || Ok(()))?;
+        .control(NduControlRequestV1::MetricsV2 {}, || Ok(()))?;
     assert!(matches!(
         result,
         NduControlResultV1::MetricsV2 {
@@ -605,7 +605,7 @@ fn metrics_v2_reports_storage_health_and_does_not_block_on_owner() -> TestResult
         .map_err(|_| "poisoned test owner")?;
     let result = fixture
         .host
-        .control(NduControlRequestV1::MetricsV2, || Ok(()))?;
+        .control(NduControlRequestV1::MetricsV2 {}, || Ok(()))?;
     assert!(matches!(
         result,
         NduControlResultV1::MetricsV2 {
@@ -617,7 +617,7 @@ fn metrics_v2_reports_storage_health_and_does_not_block_on_owner() -> TestResult
     assert!(
         fixture
             .host
-            .control(NduControlRequestV1::MetricsV2, || Err(
+            .control(NduControlRequestV1::MetricsV2 {}, || Err(
                 AgentdNduOwnerErrorV1::NotReady
             ))
             .is_err()

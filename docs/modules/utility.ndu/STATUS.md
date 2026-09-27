@@ -54,7 +54,7 @@ The following remain separate gates and must stay false/not-established until ev
 - explicit future-schema migration policy (V1 is the initial on-disk schema and rejects unknown/corrupt images rather than silently migrating them);
 - production retention/deletion, encrypted off-host backup transport, restore drills, monitoring and independent anti-rollback/non-resurrection evidence;
 - independent semantic/convergence acceptance;
-- named-host capacity and recovery measurements;
+- named production-target capacity and recovery measurements (hosted CI receipts establish only their named CI host);
 - activation/canary/promotion/release authority;
 - production stochastic coefficient/profile admission and independent FBSDE/convergence qualification.
 
@@ -92,3 +92,8 @@ Do not classify a local filesystem fixture as production enrollment, an unrun
 AWS/OIDC workflow as successful external publication, lossless archive compression
 as V1 online compaction, or a governed-learning contract as a live learned policy.
 Unknown backup age and target-host acceptance remain explicit until observed.
+
+The A–D remediation and per-stage acceptance boundaries are recorded in
+`REMEDIATION_2026-09-28.md`. Aggregation independently revalidates the raw native
+receipts, including actual latency thresholds, even if summaries and checksums
+are rewritten. Only a successfully retained aggregate qualifies its exact source.

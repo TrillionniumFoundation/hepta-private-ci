@@ -6,7 +6,7 @@ exit code is retained and any failure rejects the suite. Output is outside the
 checkout; source must remain clean and bound to the same SHA/tree throughout.
 """
 
-from hepta_ndu_evidence import seal
+from hepta_ndu_evidence import bounded_read, seal
 
 import argparse
 import hashlib
@@ -235,14 +235,14 @@ def file_digest(path: Path) -> str:
     return digest.hexdigest()
 
 
-def validate_host_receipt(path: Path, sha: str, tree: str, lane: str) -> dict:
-    receipt = json.loads(path.read_text())
+def validate_host_receipt(path: Path, sha: str, tree: str, lane: str, *, expected_host: str | None = None) -> dict:
+    receipt = json.loads(bounded_read(path))
     expected = {
         "schema": "hepta.ndu.named-host-qualification.v3",
         "sourceSha": sha,
         "sourceTree": tree,
         "lane": lane,
-        "hostId": platform.node(),
+        "hostId": platform.node() if expected_host is None else expected_host,
     }
     if any(receipt.get(key) != value for key, value in expected.items()):
         raise ValueError("host receipt identity mismatch")
@@ -293,12 +293,12 @@ def validate_host_receipt(path: Path, sha: str, tree: str, lane: str) -> dict:
     }
 
 
-def validate_mounted_receipt(path: Path, sha: str, tree: str, lane: str) -> dict:
-    receipt = json.loads(path.read_text())
+def validate_mounted_receipt(path: Path, sha: str, tree: str, lane: str, *, expected_host: str | None = None) -> dict:
+    receipt = json.loads(bounded_read(path))
     expected = {
         "schema": "hepta.ndu.mounted-filesystem-qualification.v1",
         "sourceSha": sha, "sourceTree": tree, "lane": lane,
-        "host": platform.node(), "binaryUnchanged": True,
+        "host": platform.node() if expected_host is None else expected_host, "binaryUnchanged": True,
         "passed": True, "productionActivation": False,
     }
     if any(type(receipt.get(key)) is not type(value) or receipt.get(key) != value

@@ -50,7 +50,9 @@ pub struct NduMutationV1 {
 pub enum NduControlRequestV1 {
     Context,
     MetricsV1,
-    MetricsV2,
+    // An empty struct variant enforces deny_unknown_fields. A unit variant
+    // silently ignored extra JSON fields despite the enum-level attribute.
+    MetricsV2 {},
     Prepare {
         mutation: NduMutationV1,
         expected_head: [u8; 32],
@@ -102,7 +104,7 @@ impl NduControlRequestV1 {
             Self::ExternalAdmissionV2 { request, .. } => request.requires_mutation_admission(),
             Self::Context
             | Self::MetricsV1
-            | Self::MetricsV2
+            | Self::MetricsV2 {}
             | Self::Selection { .. }
             | Self::Outcome { .. } => false,
         }
@@ -240,7 +242,7 @@ fn canonical_ndu_control_request_digest_v2(
     match request {
         NduControlRequestV1::Context => bytes.push(0),
         NduControlRequestV1::MetricsV1 => bytes.push(5),
-        NduControlRequestV1::MetricsV2 => bytes.push(6),
+        NduControlRequestV1::MetricsV2 {} => bytes.push(6),
         NduControlRequestV1::Prepare {
             mutation,
             expected_head,
@@ -470,7 +472,7 @@ mod tests {
     fn metrics_versions_preserve_wire_and_do_not_collide() -> Result<(), Box<dyn std::error::Error>>
     {
         let v1 = NduControlRequestV1::MetricsV1;
-        let v2 = NduControlRequestV1::MetricsV2;
+        let v2 = NduControlRequestV1::MetricsV2 {};
         assert_eq!(serde_json::to_string(&v1)?, r#"{"operation":"metrics_v1"}"#);
         assert_eq!(serde_json::to_string(&v2)?, r#"{"operation":"metrics_v2"}"#);
         assert_eq!(
@@ -482,12 +484,14 @@ mod tests {
             v2.canonical_payload_digest_v2()?
         );
         assert!(!v2.requires_mutation_admission());
-        assert!(
-            serde_json::from_str::<NduControlRequestV1>(
-                r#"{"operation":"metrics_v2","authorize":true}"#
-            )
-            .is_err()
-        );
+        for malformed in [
+            r#"{"operation":"metrics_v2","authorize":true}"#,
+            r#"{"operation":"metrics_v2","grant":{}}"#,
+            r#"{"operation":"metrics_v2","request":{"operation":"context"}}"#,
+            r#"{"operation":"metrics_v2","operation":"context"}"#,
+        ] {
+            assert!(serde_json::from_str::<NduControlRequestV1>(malformed).is_err());
+        }
         Ok(())
     }
 

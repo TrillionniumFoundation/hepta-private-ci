@@ -25,8 +25,23 @@ class EvidenceTests(unittest.TestCase):
                 (root / "test.log").write_bytes(b"actual fixture log\n")
                 receipt = {"schema": "hepta.ndu.suite-receipt.v1", "lane": lane, "suite": suite, "sourceSha": "a" * 40 if lane == "source-head" else "c" * 40, "sourceTree": "d" * 40, "parents": ["b" * 40, "a" * 40], "passed": True, "sourceUnchanged": True, "commands": [{"name": "fixture", "exitCode": 0, "log": "test.log", "logSha256": evidence.digest(b"actual fixture log\n")}]}
                 receipt["commands"] = [{"name": name, "command": command, "exitCode": 0, "log": "test.log", "logSha256": evidence.digest(b"actual fixture log\n")} for name, command in evidence.expected_commands(suite, receipt["sourceSha"], receipt["sourceTree"]).items()]
-                receipt["hostReceipt"] = {"identityValidated": True, "performancePassed": True}
-                receipt["mountedFilesystemReceipt"] = {"identityValidated": True}
+                receipt["host"] = "fixture-host"
+                if suite == "host":
+                    native = {
+                        "schema": "hepta.ndu.named-host-qualification.v3", "sourceSha": receipt["sourceSha"], "sourceTree": receipt["sourceTree"], "lane": lane, "hostId": receipt["host"],
+                        "journal": {"recordCapacity": 4096, "liveProjectionCapacity": 2048, "ordinaryOverflowRejected": True, "fullEnvelopeRevocation": True, "restartRecovery": True},
+                        "hotPath": {"runs": 100, "candidates": 32, "organs": 8, "p50Micros": 100, "p95Micros": 200, "p99Micros": 300, "targetPass": True},
+                        "durability": dict.fromkeys(["restartReopen", "revocationNonResurrection", "backupRestore", "fullCapacityDiskRecovery", "oversizedImageBoundedReject"], True),
+                    }
+                    native["durability"]["oversizedSparseBytes"] = 1 << 40
+                    host_path = root / "named-host.json"; host_path.write_text(json.dumps(native))
+                    mounted = {"schema": "hepta.ndu.mounted-filesystem-qualification.v1", "sourceSha": receipt["sourceSha"], "sourceTree": receipt["sourceTree"], "lane": lane, "host": receipt["host"], "binaryUnchanged": True, "passed": True, "productionActivation": False, "binarySha256": "e" * 64,
+                        "cases": [{"fault": fault, "filesystem": "tmpfs", "observedErrno": errno, "passed": True, "cleanupPassed": True, "exitCode": 0, "phases": ["READY", "FAULT_OBSERVED", "RECOVERED"], "filledBytes": 4096} for fault, errno in [("enospc", 28), ("erofs", 30)]]}
+                    (root / "mounted-filesystem").mkdir()
+                    mounted_path = root / "mounted-filesystem/mounted-filesystem.json"; mounted_path.write_text(json.dumps(mounted))
+                    runner = evidence.trusted_runner()
+                    receipt["hostReceipt"] = runner.validate_host_receipt(host_path, receipt["sourceSha"], receipt["sourceTree"], lane, expected_host=receipt["host"])
+                    receipt["mountedFilesystemReceipt"] = runner.validate_mounted_receipt(mounted_path, receipt["sourceSha"], receipt["sourceTree"], lane, expected_host=receipt["host"])
                 (root / "suite-receipt.json").write_text(json.dumps(receipt))
                 evidence.seal(root)
 
@@ -65,6 +80,24 @@ class EvidenceTests(unittest.TestCase):
             with self.assertRaises(ValueError): evidence.aggregate(self.root, "a" * 40, "b" * 40, "c" * 40)
         (path / "suite-receipt.json").unlink()
         with self.assertRaises(ValueError): evidence.aggregate(self.root, "a" * 40, "b" * 40, "c" * 40)
+
+    def test_resealed_native_evidence_cannot_override_actual_observations(self):
+        self.twelve()
+        root = self.root / "source-head-host"
+        native_path = root / "named-host.json"
+        original = json.loads(native_path.read_text())
+        receipt_path = root / "suite-receipt.json"
+        receipt = json.loads(receipt_path.read_text())
+        for modification in ["slow", "foreign-host", "missing-recovery"]:
+            native = copy.deepcopy(original)
+            if modification == "slow": native["hotPath"]["p99Micros"] = 6000
+            elif modification == "foreign-host": native["hostId"] = "foreign"
+            else: native["durability"]["restartReopen"] = False
+            native_path.write_text(json.dumps(native))
+            receipt["hostReceipt"]["sha256"] = evidence.digest(native_path.read_bytes())
+            receipt_path.write_text(json.dumps(receipt))
+            (root / evidence.MANIFEST).unlink(); evidence.seal(root)
+            with self.assertRaises(ValueError): evidence.aggregate(self.root, "a" * 40, "b" * 40, "c" * 40)
 
     def test_archive_is_lossless_and_does_not_truncate_source(self):
         (self.root / "history").write_bytes(b"revocations-and-operation-identities" * 100)

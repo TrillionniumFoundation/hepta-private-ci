@@ -22,7 +22,10 @@ own eventual Git SHA: runtime receipts bind the final identities and the map
 binds the complete staged source-object inventory.
 
 Each retained suite directory contains a closed-world SHA-256 manifest. Download,
-verify and aggregate all twelve on the trusted producer workflow. Publish
+verify and aggregate all twelve on the trusted producer workflow. Reopen the
+raw named-host and mounted-filesystem records, including observed workloads,
+latency thresholds and recovery phases; do not trust summary flags or hashes
+alone. Publish
 `ndu-qualified-evidence-SOURCE_SHA` only after every suite actually passes.
 AWS/KMS/versioned readback is a separate manual protected-environment step; its
 receipt is not inferred from successful GitHub artifact upload.
