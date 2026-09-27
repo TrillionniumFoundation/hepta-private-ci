@@ -147,7 +147,7 @@ jobs:
             --package codex-hepta-learning-ledger \
             --package codex-hepta-intelligence \
             --package codex-hepta-agentd
-          HEPTA_OBJECTIVE_GOLDEN_OUTPUT="codex-rs/hepta-intelligence/tests/fixtures/objective_end_to_end_v1.txt" \
+          HEPTA_OBJECTIVE_GOLDEN_OUTPUT="${GITHUB_WORKSPACE}/codex-rs/hepta-intelligence/tests/fixtures/objective_end_to_end_v1.txt" \
             cargo test --manifest-path codex-rs/Cargo.toml --locked \
               -p codex-hepta-intelligence \
               update_objective_end_to_end_golden_vector_v1 -- \
