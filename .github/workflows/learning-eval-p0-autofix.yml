@@ -40,6 +40,7 @@ jobs:
           set -euo pipefail
           python3 scripts/apply-learning-eval-p0.py
           python3 scripts/apply-learning-eval-p1-p2.py
+          python3 scripts/apply-learning-eval-closure-fixes.py
 
       - name: Format touched Rust crates
         run: >-
