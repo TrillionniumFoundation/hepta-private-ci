@@ -1,201 +1,76 @@
 {
   "schema": "hepta.kernel-authority-current-state.v1",
   "schemaVersion": 1,
-  "module": "kernel.authority",
-  "generatedFrom": "docs/modules/kernel.authority/IMPLEMENTATION_MAP.json",
+  "generatedFrom": "qualification/kernel-authority/status_manifest.json",
+  "generatedBy": "qualification/kernel-authority/generate_status.py",
   "sourceBase": {
-    "commit": "fb3a6e73ed4cc7a8ab8c1d30cd0ee35f7452cc81",
-    "tree": "21240e20fc06efb5908af34cdb4b5d568518b9ee"
+    "commit": "d86979f779cabd851e4e29dc863a8204b28a2bae",
+    "tree": "775b6acfe4c7756b0b6f4e791b0200f14da15470"
   },
-  "current": {
+  "module": "kernel.authority",
+  "status": "source-hardened-repository-qualified-execution-pending",
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
+    "implementedOperationMappingComplete": true,
     "productionImplementation": false,
-    "productCallerState": "fleet-browser-agentd-and-bao-source-composed-candidate-pilots-defined-not-product-activated",
-    "productionWriterState": "authority-owner-and-agentd-effect-owner-source-implemented-not-activated",
-    "claimBoundary": {
-      "nativeSourceMappingComplete": true,
-      "sourceRootPresent": true,
-      "implementedOperationMappingComplete": true,
-      "productionImplementation": false,
-      "productExecutionProved": false,
-      "independentAcceptance": false,
-      "activation": false,
-      "release": false
-    }
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
   },
-  "operations": [
-    {
-      "operation": "authority_lease_registry",
-      "nativeSymbol": "AuthorityLeaseRegistry::put_lease",
-      "state": "source_implemented_owner_cas_retired_lineage_epoch_and_rollback_fencing_not_product_activated",
-      "sourcePath": "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "tests": [
-        "codex-rs/hepta-contracts/src/authority_lease.rs",
-        "codex-rs/hepta-fleet/src/authority_port.rs"
-      ]
-    },
-    {
-      "operation": "authority_dispatch_binding",
-      "nativeSymbol": "AuthorityLeaseVerifier::bind_dispatch",
-      "state": "source_implemented_one_shot_lock_scoped_final_dispatch_with_closed_product_callers",
-      "sourcePath": "codex-rs/hepta-contracts/src/authority_trust.rs",
-      "tests": [
-        "qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json",
-        "qa/b4-no-bypass/test_kernel_authority_extension_api.py",
-        "codex-rs/hepta-fleet/src/authority_port.rs"
-      ]
-    },
-    {
-      "operation": "final_use_authority",
-      "nativeSymbol": "FinalUseAuthority::with_verified_use",
-      "state": "source_implemented_nonce_claim_final_entry_durable_pending_revocation_v4_and_key_ring_recovery_not_product_activated",
-      "sourcePath": "codex-rs/hepta-contracts/src/final_use.rs",
-      "tests": [
-        "codex-rs/hepta-contracts/src/final_use_tests.rs",
-        "codex-rs/hepta-contracts/src/final_use_store_tests.rs",
-        "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
-        "codex-rs/hepta-contracts/tests/final_use_pending_recovery.rs"
-      ]
-    },
-    {
-      "operation": "final_use_control",
-      "nativeSymbol": "FinalUseRevocationConvergenceVerifier::verify",
-      "state": "source_implemented_independent_approval_signed_feed_and_receipt_bound_convergence_transport_external",
-      "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "tests": [
-        "codex-rs/hepta-contracts/src/final_use_control.rs",
-        "codex-rs/hepta-contracts/src/final_use_tests.rs"
-      ]
-    },
-    {
-      "operation": "production_trust_bundle",
-      "nativeSymbol": "ProductionAuthorityTrustBundle::new",
-      "state": "source_implemented_mandatory_clock_frontier_kms_custody_and_external_receipts_target_qualification_external",
-      "sourcePath": "codex-rs/hepta-contracts/src/authority_trust.rs",
-      "tests": [
-        "codex-rs/hepta-contracts/src/authority_trust_tests.rs",
-        "codex-rs/hepta-agentd/src/authority_trust_host.rs"
-      ]
-    },
-    {
-      "operation": "verified_use_witness",
-      "nativeSymbol": "VerifiedUseTokenWitnessV1::validate",
-      "state": "source_implemented_non_authorizing_entry_evidence_durably_consumed_by_taskflow_not_activated",
-      "sourcePath": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
-      "tests": [
-        "codex-rs/hepta-contracts/src/final_use_tests.rs",
-        "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
-        "codex-rs/hepta-automation/tests/authorized_effect.rs"
-      ]
-    },
-    {
-      "operation": "agentd_external_trust_host",
-      "nativeSymbol": "AgentdFinalUseTrustStore::open",
-      "state": "named_host_source_implemented_monotonic_floor_external_frontier_private_state_and_rollback_detection_not_attested",
-      "sourcePath": "codex-rs/hepta-agentd/src/authority_trust_host.rs",
-      "tests": [
-        "codex-rs/hepta-agentd/src/authority_trust_host.rs"
-      ]
-    },
-    {
-      "operation": "agentd_effect_owner",
-      "nativeSymbol": "AgentdAutomationEffectHost::execute",
-      "state": "source_implemented_exact_wire_dispatch_durable_attempt_witness_terminal_receipt_and_reconciliation_not_activated",
-      "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
-      "tests": [
-        "codex-rs/hepta-agentd/src/automation_effect_host.rs",
-        "codex-rs/hepta-automation/tests/authorized_effect.rs"
-      ]
-    },
-    {
-      "operation": "candidate_product_pilot",
-      "nativeSymbol": "pilot",
-      "state": "candidate_bound_fleet_browser_agentd_restart_revoke_rollback_rotation_and_pending_crash_matrix_process_pilot_defined_execution_pending",
-      "sourcePath": "qualification/kernel-authority/runtime_qualification.py",
-      "tests": [
-        "codex-rs/hepta-fleet/src/authority_port.rs",
-        "codex-rs/hepta-agentd/src/browser_servo.rs",
-        "codex-rs/hepta-agentd/src/automation_effect_host.rs",
-        "codex-rs/hepta-agentd/src/authority_trust_host.rs",
-        "codex-rs/hepta-contracts/src/final_use_tests.rs",
-        "codex-rs/hepta-contracts/tests/final_use_pending_recovery.rs"
-      ]
-    },
-    {
-      "operation": "performance_qualification",
-      "nativeSymbol": "qualification_benchmark_emits_machine_receipt",
-      "state": "qualification_measurement_defined_for_put_dispatch_revoke_contention_throughput_snapshot_and_reopen_no_production_slo",
-      "sourcePath": "codex-rs/hepta-contracts/tests/kernel_authority_benchmark.rs",
-      "tests": [
-        "qualification/kernel-authority/runtime_qualification.py"
-      ]
-    },
-    {
-      "operation": "storage_scaling_model",
-      "nativeSymbol": "main",
-      "state": "executable_reference_model_for_wal_checkpoint_corruption_recovery_sharding_and_capacity_not_runtime",
-      "sourcePath": "qualification/kernel-authority/storage_model.py",
-      "tests": [
-        "qualification/kernel-authority/runtime_qualification.py"
-      ]
-    }
-  ],
-  "productCallers": [
-    {
-      "id": "runtime.fleet.issue",
-      "nativeSymbol": "FleetAuthorityPort::issue_with_witness",
-      "sourcePath": "codex-rs/hepta-fleet/src/authority_port.rs",
-      "state": "source_composed_exact_mutation_binding_restart_and_dispatch_witness_not_product_activated",
-      "tests": [
-        "codex-rs/hepta-fleet/src/authority_port.rs"
-      ]
-    },
-    {
-      "id": "browser.servo.agentd",
-      "nativeSymbol": "BrowserServoPort::call",
-      "sourcePath": "codex-rs/hepta-agentd/src/browser_servo.rs",
-      "state": "source_composed_final_use_fence_around_exact_local_dispatch_not_product_activated",
-      "tests": [
-        "codex-rs/hepta-agentd/src/browser_servo.rs"
-      ]
-    },
-    {
-      "id": "automation.taskflow.agentd",
-      "nativeSymbol": "AgentdAutomationEffectHost::execute",
-      "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
-      "state": "source_composed_effect_owner_with_reconciliation_and_durable_receipts_not_product_activated",
-      "tests": [
-        "codex-rs/hepta-agentd/src/automation_effect_host.rs",
-        "codex-rs/hepta-automation/tests/authorized_effect.rs"
-      ]
-    },
-    {
-      "id": "secrets.heptabao.registered_host",
-      "nativeSymbol": "BaoFinalUseHost::consume_kv_v2",
-      "sourcePath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
-      "state": "registered_host_source_composed_no_deployed_process_selected",
-      "tests": [
-        "codex-rs/hepta-bao-adapter/tests/final_use_host.rs"
-      ]
-    }
-  ],
-  "remainingToTarget": {
-    "repositoryControlledGaps": [
-      "Obtain green required exact-head and deterministic synthetic-merge receipts for the current candidate SHA.",
-      "Keep the canonical B4 and extension API inventories exhaustive as authority APIs and product callers change.",
-      "Retain candidate identity, command, log digest and result in every product-pilot and performance receipt.",
-      "Keep production constructors mandatory and fail closed; compatibility clocks, local frontiers or evidence-only key claims must not satisfy them.",
-      "Do not replace the current authority spine with the WAL/checkpoint reference model without preserving linearization and anti-rollback proofs."
+  "productionTrustBundle": {
+    "sourceImplemented": true,
+    "mandatoryComponents": [
+      "production clock",
+      "rollback-independent CAS frontier",
+      "live KMS/HSM key custody",
+      "deployment and disaster-recovery receipts"
     ],
-    "externalEvidenceGates": [
-      "independently protected or attested time source and measured maximum uncertainty",
-      "rollback-independent linearizable frontier backend plus snapshot and disaster-recovery drill",
-      "KMS or HSM custody for issuer, approval and revocation roles with staged rotation and compromise-response receipts",
-      "deployed revocation fanout under normal delay partition restart and recovery scenarios",
-      "target-host filesystem mount backup identity and boot rollback-detection qualification",
-      "target-host p50 p95 p99 throughput lock-wait fsync snapshot and restart measurements with approved SLOs",
-      "verifier-only topology evidence and independent semantic review",
-      "operator acceptance canary promotion and release"
-    ]
-  }
+    "liveKeySetDigestBound": true,
+    "keyGenerationAndRevocationFloorBound": true,
+    "privateKeyExportRejected": true,
+    "targetDeploymentQualified": false
+  },
+  "productPilots": {
+    "fleet": "candidate-bound create-restart-dispatch-revoke process pilot defined with exact supporting-case claims; current candidate receipt pending",
+    "browserAgentd": "candidate-bound process pilot defined with exact supporting-case claims; current candidate receipt pending",
+    "restartRevocationRollbackRotation": "covered by named repository tests including durable pending and both frontier-first crash windows; target deployment drill external",
+    "deploymentActivationProved": false
+  },
+  "qualification": {
+    "exactHead": "workflow defined; current candidate receipt pending",
+    "syntheticMerge": "workflow defined; current candidate receipt pending",
+    "staleArtifactReuseRejected": true,
+    "differentShaReuseRejected": true,
+    "currentCandidateGreen": false
+  },
+  "performanceAndScale": {
+    "latencyPercentiles": "qualification benchmark emits min mean p50 p95 p99 max",
+    "throughputAndContention": "qualification benchmark defined",
+    "snapshotAndRestart": "qualification benchmark defined",
+    "walCheckpoint": "executable full-prefix reference model only",
+    "registrySharding": "deterministic reference model only",
+    "capacityLifetime": "bounded reserve projections defined",
+    "productionSloGranted": false
+  },
+  "repositoryControlledGaps": [
+    "Obtain green required exact-head and deterministic synthetic-merge receipts for the current candidate SHA.",
+    "Keep the canonical B4 and extension API inventories exhaustive as authority APIs and product callers change.",
+    "Retain candidate identity, command, log digest and result in every product-pilot and performance receipt.",
+    "Keep production constructors mandatory and fail closed; compatibility clocks, local frontiers or evidence-only key claims must not satisfy them.",
+    "Do not replace the current authority spine with the WAL/checkpoint reference model without preserving linearization and anti-rollback proofs."
+  ],
+  "externalEvidenceGates": [
+    "independently protected or attested time source and measured maximum uncertainty",
+    "rollback-independent linearizable frontier backend plus snapshot and disaster-recovery drill",
+    "KMS or HSM custody for issuer, approval and revocation roles with staged rotation and compromise-response receipts",
+    "deployed revocation fanout under normal delay partition restart and recovery scenarios",
+    "target-host filesystem mount backup identity and boot rollback-detection qualification",
+    "target-host p50 p95 p99 throughput lock-wait fsync snapshot and restart measurements with approved SLOs",
+    "verifier-only topology evidence and independent semantic review",
+    "operator acceptance canary promotion and release"
+  ],
+  "activationGranted": false,
+  "releaseGranted": false
 }

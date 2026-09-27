@@ -4,7 +4,7 @@
 
 Status: **source-hardened-repository-qualified-execution-pending**.
 
-Source anchor: `fb3a6e73ed4cc7a8ab8c1d30cd0ee35f7452cc81` / tree `21240e20fc06efb5908af34cdb4b5d568518b9ee`. Mapped source paths are proven unchanged from this anchor to the candidate.
+Source anchor: `d86979f779cabd851e4e29dc863a8204b28a2bae` / tree `775b6acfe4c7756b0b6f4e791b0200f14da15470`. Mapped source paths are proven unchanged from this anchor to the candidate.
 
 Repository source closure is implemented, but production implementation, product execution proof, independent acceptance, activation and release remain false. External trust and target-host evidence cannot be manufactured by repository tests.
 
@@ -20,9 +20,9 @@ Repository source closure is implemented, but production implementation, product
 | `verified_use_witness` | `VerifiedUseTokenWitnessV1::validate` | `codex-rs/hepta-contracts/src/verified_use_witness.rs` | source_implemented_non_authorizing_entry_evidence_durably_consumed_by_taskflow_not_activated |
 | `agentd_external_trust_host` | `AgentdFinalUseTrustStore::open` | `codex-rs/hepta-agentd/src/authority_trust_host.rs` | named_host_source_implemented_monotonic_floor_external_frontier_private_state_and_rollback_detection_not_attested |
 | `agentd_effect_owner` | `AgentdAutomationEffectHost::execute` | `codex-rs/hepta-agentd/src/automation_effect_host.rs` | source_implemented_exact_wire_dispatch_durable_attempt_witness_terminal_receipt_and_reconciliation_not_activated |
-| `candidate_product_pilot` | `pilot` | `qualification/kernel-authority/runtime_qualification.py` | candidate_bound_fleet_browser_agentd_restart_revoke_rollback_rotation_and_pending_crash_matrix_process_pilot_defined_execution_pending |
+| `candidate_product_pilot` | `pilot` | `qualification/kernel-authority/runtime_qualification.py` | candidate_bound_case_specific_fleet_browser_agentd_restart_revoke_rollback_rotation_and_pending_crash_matrix_process_pilot_defined_execution_pending |
 | `performance_qualification` | `qualification_benchmark_emits_machine_receipt` | `codex-rs/hepta-contracts/tests/kernel_authority_benchmark.rs` | qualification_measurement_defined_for_put_dispatch_revoke_contention_throughput_snapshot_and_reopen_no_production_slo |
-| `storage_scaling_model` | `main` | `qualification/kernel-authority/storage_model.py` | executable_reference_model_for_wal_checkpoint_corruption_recovery_sharding_and_capacity_not_runtime |
+| `storage_scaling_model` | `main` | `qualification/kernel-authority/storage_model.py` | executable_reference_model_for_full_prefix_wal_checkpoint_corruption_recovery_sharding_and_capacity_not_runtime |
 
 ## Product callers
 
