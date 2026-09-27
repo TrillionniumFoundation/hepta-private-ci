@@ -3,13 +3,14 @@ name: Runtime Codex Integration Audit
 on:
   push:
     branches: [codex/runtime-codex-integration-20260928]
+    paths: [.github/workflows/runtime-codex-integration-audit.yml]
 
 permissions:
   contents: read
 
 jobs:
   source-snapshot:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
