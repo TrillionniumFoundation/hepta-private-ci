@@ -17,7 +17,7 @@ diff --git a/codex-rs/hepta-matrixd/src/final_use.rs b/codex-rs/hepta-matrixd/sr
          }
          if head.authority_epoch < current.authority_epoch
              || (head.authority_epoch == current.authority_epoch
-@@ -391,6 +397,22 @@ mod tests {
+@@ -391,6 +397,23 @@ mod tests {
          Ok(())
      }
  
