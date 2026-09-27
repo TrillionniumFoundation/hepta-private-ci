@@ -50,8 +50,30 @@ jobs:
           from pathlib import Path
 
           source = Path(os.environ["PATCH_PATH"])
-          encoded = "".join(source.read_text(encoding="ascii").split())
-          compressed = base64.b64decode(encoded, validate=True)
+          raw = source.read_bytes()
+          encoded = b"".join(raw.split())
+          standard = frozenset(b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=")
+          urlsafe = frozenset(b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_=")
+          actual = frozenset(encoded)
+          if actual <= standard:
+              dialect = "standard"
+              compressed = base64.b64decode(encoded, validate=True)
+          elif actual <= urlsafe:
+              dialect = "urlsafe"
+              compressed = base64.b64decode(encoded, altchars=b"-_", validate=True)
+          else:
+              invalid = [
+                  (index, value)
+                  for index, value in enumerate(encoded)
+                  if value not in standard and value not in urlsafe
+              ]
+              details = ", ".join(
+                  f"offset={index}:0x{value:02x}" for index, value in invalid[:32]
+              )
+              raise SystemExit(
+                  "effect-broker transport contains bytes outside both strict base64 alphabets: "
+                  + details
+              )
           patch = gzip.decompress(compressed)
           if not patch:
               raise SystemExit("decoded effect-broker patch is empty")
@@ -60,9 +82,11 @@ jobs:
           digest = hashlib.sha256(patch).hexdigest()
           with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as handle:
               handle.write(f"sha256={digest}\n")
+              handle.write(f"dialect={dialect}\n")
           with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as handle:
               handle.write("### Commit-bound effect-broker patch\n\n")
               handle.write(f"Workflow input commit: `{os.environ['GITHUB_SHA']}`\n\n")
+              handle.write(f"Transport dialect: `{dialect}`\n\n")
               handle.write(f"Decoded patch SHA-256: `{digest}`\n")
           PY
       - name: Check and apply the audited patch
