@@ -42,6 +42,13 @@ def patch_state_sources() -> None:
             raise SystemExit("memory federation state source anchor drift")
         text = text.replace(anchor, additions, 1)
 
+    ancestry = '    git("merge-base", "--is-ancestor", source["commit"], "HEAD")\n'
+    object_identity = '    git("cat-file", "-e", f"{source[\'commit\']}^{{commit}}")\n'
+    if object_identity not in text:
+        if text.count(ancestry) != 1:
+            raise SystemExit("memory federation ancestry verifier anchor drift")
+        text = text.replace(ancestry, object_identity, 1)
+
     attestation_anchor = (
         '    row["currentState"] = "docs/modules/memory.federation/CURRENT_STATE.json"\n'
         '    row["latestQualificationReceipt"] = state.get("latestQualificationReceipt")\n'
