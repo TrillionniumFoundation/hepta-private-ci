@@ -1,0 +1,47 @@
+name: repair ui.native convergence materializer
+
+on:
+  push:
+    branches: [work/ui-native-integration-convergence-20260927]
+    paths:
+      - .github/workflows/hepta-ui-native-fix-materializer.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ui-native-fix-materializer-20260927
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/ui-native-integration-convergence-20260927
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Remove the accidental expression token from Python source
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('.github/workflows/hepta-ui-native-integration-converge.yml')
+          lines = path.read_text(encoding='utf-8').splitlines()
+          matches = [i for i, line in enumerate(lines) if 'text = text.replace("ui-native-remediation-' in line]
+          if len(matches) != 1:
+              raise SystemExit(f'expected one concurrency replacement line, found {len(matches)}')
+          lines[matches[0]] = '                  text = text.replace("ui-native-remediation-", "ui-native-convergence-", 1)'
+          path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          PY
+          git diff --check
+      - name: Publish repaired materializer and retire this fixer
+        run: |
+          set -euo pipefail
+          git config user.name ui-native-convergence
+          git config user.email ui-native-convergence@users.noreply.github.com
+          git rm .github/workflows/hepta-ui-native-fix-materializer.yml
+          git add .github/workflows/hepta-ui-native-integration-converge.yml
+          git commit -m 'fix(ci): make convergence materializer parseable'
+          git push origin HEAD:refs/heads/work/ui-native-integration-convergence-20260927
