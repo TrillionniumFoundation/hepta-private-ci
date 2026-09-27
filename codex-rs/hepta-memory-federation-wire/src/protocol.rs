@@ -380,17 +380,86 @@ impl AuthenticatedFederationFrameV1 {
     }
 }
 
+/// An authenticated frame whose MAC, directional credential, lifetime, receiver,
+/// and replay admission were all verified by [`AuthenticatedFederationFrameV1::verify`].
+///
+/// All fields are deliberately private. External callers can inspect them only
+/// through read-only accessors and therefore cannot construct a fake verified
+/// value or mutate an authenticated message after verification.
+///
+/// ```compile_fail
+/// use codex_hepta_memory_federation_wire::VerifiedFederationFrameV1;
+/// let mut verified: VerifiedFederationFrameV1 = todo!();
+/// verified.message = todo!();
+/// ```
+///
+/// ```compile_fail
+/// use codex_hepta_memory_federation_wire::VerifiedFederationFrameV1;
+/// let _ = VerifiedFederationFrameV1 {
+///     sender_peer_id: todo!(),
+///     receiver_peer_id: todo!(),
+///     key_id: todo!(),
+///     key_generation: 1,
+///     issued_unix_ms: 1,
+///     expires_unix_ms: 2,
+///     nonce: todo!(),
+///     message: todo!(),
+///     frame_digest: todo!(),
+/// };
+/// ```
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VerifiedFederationFrameV1 {
-    pub sender_peer_id: StableId,
-    pub receiver_peer_id: StableId,
-    pub key_id: StableId,
-    pub key_generation: u64,
-    pub issued_unix_ms: u64,
-    pub expires_unix_ms: u64,
-    pub nonce: FederationNonceV1,
-    pub message: FederationWireMessageV1,
-    pub frame_digest: Digest32,
+    sender_peer_id: StableId,
+    receiver_peer_id: StableId,
+    key_id: StableId,
+    key_generation: u64,
+    issued_unix_ms: u64,
+    expires_unix_ms: u64,
+    nonce: FederationNonceV1,
+    message: FederationWireMessageV1,
+    frame_digest: Digest32,
+}
+
+impl VerifiedFederationFrameV1 {
+    pub const fn sender_peer_id(&self) -> &StableId {
+        &self.sender_peer_id
+    }
+
+    pub const fn receiver_peer_id(&self) -> &StableId {
+        &self.receiver_peer_id
+    }
+
+    pub const fn key_id(&self) -> &StableId {
+        &self.key_id
+    }
+
+    pub const fn key_generation(&self) -> u64 {
+        self.key_generation
+    }
+
+    pub const fn issued_unix_ms(&self) -> u64 {
+        self.issued_unix_ms
+    }
+
+    pub const fn expires_unix_ms(&self) -> u64 {
+        self.expires_unix_ms
+    }
+
+    pub const fn nonce(&self) -> FederationNonceV1 {
+        self.nonce
+    }
+
+    pub const fn message(&self) -> &FederationWireMessageV1 {
+        &self.message
+    }
+
+    pub const fn frame_digest(&self) -> Digest32 {
+        self.frame_digest
+    }
+
+    pub fn into_message(self) -> FederationWireMessageV1 {
+        self.message
+    }
 }
 
 fn compute_mac(

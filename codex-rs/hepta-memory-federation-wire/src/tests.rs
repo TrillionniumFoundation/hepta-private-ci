@@ -76,9 +76,9 @@ fn registered_codec_round_trips_and_peer_verification_succeeds() {
     let verified = decoded
         .verify(&id("peer-b"), NOW + 1, &registry, &mut replay)
         .expect("verify");
-    assert_eq!(verified.sender_peer_id, id("peer-a"));
-    assert_eq!(verified.receiver_peer_id, id("peer-b"));
-    assert_eq!(verified.message, query());
+    assert_eq!(verified.sender_peer_id(), &id("peer-a"));
+    assert_eq!(verified.receiver_peer_id(), &id("peer-b"));
+    assert_eq!(verified.message(), &query());
 }
 
 #[test]
@@ -223,7 +223,7 @@ fn cancellation_ack_is_authenticated_and_schema_bound() {
     let verified = decoded
         .verify(&id("peer-a"), NOW + 1, &registry, &mut replay)
         .expect("verify");
-    assert_eq!(verified.message, ack);
+    assert_eq!(verified.message(), &ack);
 }
 
 #[test]
@@ -253,6 +253,88 @@ fn overload_fails_closed_without_evicting_unexpired_nonce() {
         Err(ReplayError::CapacityExhausted)
     ));
     assert_eq!(cache.len(), 1);
+}
+
+#[test]
+fn replay_cache_rejects_clock_regression_after_expiry_cleanup() {
+    let mut cache = ReplayCacheV1::new(4).expect("cache");
+    cache
+        .admit(
+            &id("peer-a"),
+            &id("peer-b"),
+            &id("key-a-b"),
+            1,
+            &[21; FEDERATION_NONCE_BYTES],
+            NOW + 10,
+            NOW,
+        )
+        .expect("first admission");
+    cache
+        .admit(
+            &id("peer-c"),
+            &id("peer-b"),
+            &id("key-c-b"),
+            1,
+            &[22; FEDERATION_NONCE_BYTES],
+            NOW + 1_000,
+            NOW + 20,
+        )
+        .expect("future admission purges expired nonce");
+    assert_eq!(cache.last_observed_unix_ms(), NOW + 20);
+    assert!(matches!(
+        cache.admit(
+            &id("peer-a"),
+            &id("peer-b"),
+            &id("key-a-b"),
+            1,
+            &[21; FEDERATION_NONCE_BYTES],
+            NOW + 10,
+            NOW + 5,
+        ),
+        Err(ReplayError::ClockRegression)
+    ));
+}
+
+#[test]
+fn one_directional_credential_cannot_exhaust_the_shared_replay_cache() {
+    let mut cache = ReplayCacheV1::with_limits(4, 2).expect("partitioned cache");
+    for byte in [31_u8, 32_u8] {
+        cache
+            .admit(
+                &id("peer-a"),
+                &id("peer-b"),
+                &id("key-a-b"),
+                1,
+                &[byte; FEDERATION_NONCE_BYTES],
+                NOW + 100,
+                NOW,
+            )
+            .expect("credential partition admission");
+    }
+    assert!(matches!(
+        cache.admit(
+            &id("peer-a"),
+            &id("peer-b"),
+            &id("key-a-b"),
+            1,
+            &[33; FEDERATION_NONCE_BYTES],
+            NOW + 100,
+            NOW,
+        ),
+        Err(ReplayError::CredentialCapacityExhausted)
+    ));
+    cache
+        .admit(
+            &id("peer-c"),
+            &id("peer-b"),
+            &id("key-c-b"),
+            1,
+            &[34; FEDERATION_NONCE_BYTES],
+            NOW + 100,
+            NOW,
+        )
+        .expect("independent credential keeps capacity");
+    assert_eq!(cache.len(), 3);
 }
 
 #[test]

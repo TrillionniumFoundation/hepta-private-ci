@@ -46,6 +46,7 @@ pub use protocol::FederationWireMessageV1;
 pub use protocol::MAX_AUTHENTICATED_FRAME_LIFETIME_MS;
 pub use protocol::VerifiedFederationFrameV1;
 pub use replay::MAX_FEDERATION_REPLAY_ENTRIES;
+pub use replay::MAX_FEDERATION_REPLAY_ENTRIES_PER_CREDENTIAL;
 pub use replay::ReplayCacheV1;
 pub use replay::ReplayError;
 
