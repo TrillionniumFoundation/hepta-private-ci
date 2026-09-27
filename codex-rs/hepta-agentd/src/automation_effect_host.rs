@@ -13,11 +13,17 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Duration;
 
+use codex_hepta_automation::AsyncAuthorizedEffectDriver;
+use codex_hepta_automation::AuthorizedEffectDriverError;
+use codex_hepta_automation::AuthorizedEffectFuture;
 use codex_hepta_automation::AuthorizedEffectIntent;
+use codex_hepta_automation::AuthorizedEffectOutcome;
 use codex_hepta_automation::AuthorizedEffectPending;
+use codex_hepta_automation::AuthorizedEffectProviderReceipt;
 use codex_hepta_automation::AuthorizedEffectRecovery;
 use codex_hepta_automation::AuthorizedEffectRecoveryResult;
 use codex_hepta_automation::AuthorizedProviderEffectLookup;
+use codex_hepta_automation::AuthorizedProviderEffectRequest;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::ProviderEffectTaskFlowDriver;
 use codex_hepta_automation::TaskFlowFence;
@@ -25,6 +31,12 @@ use codex_hepta_automation::TaskFlowStepObservation;
 use codex_hepta_automation::TaskFlowStepReceipt;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::ProviderEffectAck;
+use codex_hepta_contracts::ProviderEffectAckStatus;
+use codex_hepta_contracts::ProviderEffectAdapter;
+use codex_hepta_contracts::ProviderEffectIntent;
+use codex_hepta_contracts::ProviderEffectKey;
+use codex_hepta_contracts::ProviderEffectLookup;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_model_provider::HttpProviderEffectAdapter;
@@ -239,13 +251,16 @@ impl AgentdAutomationEffectHost {
         let binding = intent
             .final_use_binding()
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
-        let mut driver =
-            ProviderEffectTaskFlowDriver::new(self.destination_id.clone(), self.adapter.clone())
-                .map_err(|error| {
-                    AgentdError::Protocol(format!(
-                        "configure automation provider-effect bridge: {error}"
-                    ))
-                })?;
+        let mut driver = AgentdProviderEffectTaskFlowDriver::new(
+            self.destination_id.clone(),
+            self.provider_scope.clone(),
+            self.adapter.clone(),
+        )
+        .map_err(|error| {
+            AgentdError::Protocol(format!(
+                "configure automation provider-effect bridge: {error}"
+            ))
+        })?;
         store
             .execute_authorized_taskflow_effect_async(
                 &self.authority,
@@ -316,14 +331,17 @@ impl AgentdAutomationEffectHost {
             }
         }
 
-        let driver =
-            ProviderEffectTaskFlowDriver::new(self.destination_id.clone(), self.adapter.clone())
-                .map_err(|error| {
-                    AgentdError::Protocol(format!(
-                        "configure automation provider-effect lookup bridge: {error}"
-                    ))
-                })?;
-        match driver.lookup(&pending).await {
+        let driver = AgentdProviderEffectTaskFlowDriver::new(
+            self.destination_id.clone(),
+            self.provider_scope.clone(),
+            self.adapter.clone(),
+        )
+        .map_err(|error| {
+            AgentdError::Protocol(format!(
+                "configure automation provider-effect lookup bridge: {error}"
+            ))
+        })?;
+        match driver.lookup(&pending).await? {
             AuthorizedProviderEffectLookup::Observed(receipt) => {
                 match store
                     .recover_authorized_taskflow_effect(
@@ -465,6 +483,126 @@ impl AgentdAutomationEffectHost {
         )
         .map_err(|error| AgentdError::Protocol(format!("rebuild TaskFlow fence: {error}")))
     }
+}
+
+/// Agentd host schema v1 predates the generic TaskFlow provider-key profile.
+/// Keep its provider-visible identity byte-for-byte stable while delegating the
+/// physical dispatch to the shared `ProviderEffectTaskFlowDriver`. Changing
+/// this key on upgrade could turn an already-executed legacy effect into a
+/// false `NotFound` under a different key and permit a duplicate send.
+struct AgentdProviderEffectTaskFlowDriver {
+    provider_scope: String,
+    inner: ProviderEffectTaskFlowDriver<HttpProviderEffectAdapter>,
+}
+
+impl AgentdProviderEffectTaskFlowDriver {
+    fn new(
+        destination_id: String,
+        provider_scope: String,
+        adapter: HttpProviderEffectAdapter,
+    ) -> Result<Self, AuthorizedEffectDriverError> {
+        Ok(Self {
+            provider_scope,
+            inner: ProviderEffectTaskFlowDriver::new(destination_id, adapter)?,
+        })
+    }
+
+    async fn lookup(
+        &self,
+        pending: &AuthorizedEffectPending,
+    ) -> Result<AuthorizedProviderEffectLookup, AgentdError> {
+        let provider_intent = agentd_schema_v1_provider_intent(
+            &self.provider_scope,
+            &pending.run_id,
+            &pending.step_id,
+            &pending.payload_digest,
+        )
+        .map_err(|error| {
+            AgentdError::Invalid(format!("derive schema-v1 provider effect key: {error:?}"))
+        })?;
+        let lookup = self
+            .inner
+            .adapter()
+            .lookup_for_intent(&provider_intent)
+            .await;
+        agentd_schema_v1_provider_lookup(&provider_intent, lookup)
+    }
+}
+
+impl AsyncAuthorizedEffectDriver for AgentdProviderEffectTaskFlowDriver {
+    fn dispatch<'a>(
+        &'a mut self,
+        mut request: AuthorizedProviderEffectRequest<'a>,
+    ) -> AuthorizedEffectFuture<'a> {
+        let provider_intent = match agentd_schema_v1_provider_intent(
+            &self.provider_scope,
+            &request.intent.run_id,
+            &request.intent.step_id,
+            &request.intent.payload_digest,
+        ) {
+            Ok(provider_intent) => provider_intent,
+            Err(error) => return Box::pin(async move { Err(error) }),
+        };
+        request.provider_intent = provider_intent;
+        self.inner.dispatch(request)
+    }
+}
+
+fn agentd_schema_v1_provider_intent(
+    provider_scope: &str,
+    run_id: &str,
+    step_id: &str,
+    payload_digest: &Sha256Digest,
+) -> Result<ProviderEffectIntent, AuthorizedEffectDriverError> {
+    let key = ProviderEffectKey::for_operation(provider_scope, run_id, step_id)
+        .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
+    Ok(ProviderEffectIntent::new(key, payload_digest.clone()))
+}
+
+fn agentd_schema_v1_provider_lookup(
+    provider_intent: &ProviderEffectIntent,
+    lookup: ProviderEffectLookup,
+) -> Result<AuthorizedProviderEffectLookup, AgentdError> {
+    match lookup {
+        ProviderEffectLookup::Ack(ack) => {
+            ack.validate_for(provider_intent).map_err(|_| {
+                AgentdError::Protocol(
+                    "provider status acknowledgement mismatched the durable schema-v1 intent"
+                        .to_string(),
+                )
+            })?;
+            Ok(agentd_schema_v1_terminal_receipt(&ack).map_or(
+                AuthorizedProviderEffectLookup::Unresolved,
+                AuthorizedProviderEffectLookup::Observed,
+            ))
+        }
+        ProviderEffectLookup::NotFound | ProviderEffectLookup::Unknown => {
+            Ok(AuthorizedProviderEffectLookup::Unresolved)
+        }
+        ProviderEffectLookup::Conflict { .. } => Err(AgentdError::Protocol(
+            "provider reports a same-key payload conflict".to_string(),
+        )),
+    }
+}
+
+fn agentd_schema_v1_terminal_receipt(
+    ack: &ProviderEffectAck,
+) -> Option<AuthorizedEffectProviderReceipt> {
+    let outcome = match ack.status {
+        ProviderEffectAckStatus::Accepted => return None,
+        ProviderEffectAckStatus::Completed => AuthorizedEffectOutcome::Succeeded,
+        ProviderEffectAckStatus::Rejected => AuthorizedEffectOutcome::Failed,
+    };
+    let mut bytes = b"hepta.agentd.provider-effect.lookup.v1\0".to_vec();
+    if let Ok(encoded) = serde_json::to_vec(ack) {
+        bytes.extend_from_slice(&encoded);
+    } else {
+        bytes.extend_from_slice(b"serialization-unavailable");
+    }
+    Some(AuthorizedEffectProviderReceipt {
+        outcome,
+        receipt_digest: Sha256Digest::for_bytes(&bytes),
+    })
 }
 
 fn read_host_file(path: &Path) -> Result<AutomationEffectHostFileV1, AgentdError> {
@@ -803,8 +941,45 @@ mod tests {
         output
     }
 
+    #[test]
+    fn schema_v1_provider_key_and_not_found_semantics_survive_shared_driver_composition() {
+        let payload_digest = Sha256Digest::for_bytes(b"compatibility-payload");
+        let provider_intent = agentd_schema_v1_provider_intent(
+            "provider/fixture-v1",
+            "legacy-run",
+            "legacy-step",
+            &payload_digest,
+        )
+        .expect("schema-v1 provider intent");
+        let expected = ProviderEffectKey::for_operation(
+            "provider/fixture-v1",
+            "legacy-run",
+            "legacy-step",
+        )
+        .expect("legacy provider key");
+        let replacement = ProviderEffectKey::for_logical_effect(
+            "provider:fixture",
+            "taskflow:legacy-run:legacy-step",
+        )
+        .expect("new provider key profile");
+        assert_eq!(provider_intent.key, expected);
+        assert_ne!(provider_intent.key, replacement);
+        assert_eq!(
+            agentd_schema_v1_provider_lookup(&provider_intent, ProviderEffectLookup::NotFound)
+                .expect("NotFound remains quarantined"),
+            AuthorizedProviderEffectLookup::Unresolved
+        );
+        assert!(agentd_schema_v1_provider_lookup(
+            &provider_intent,
+            ProviderEffectLookup::Conflict {
+                observed_payload_sha256: Some(Sha256Digest::for_bytes(b"different-payload")),
+            },
+        )
+        .is_err());
+    }
+
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn host_dispatches_exact_wire_payload_once() {
+    async fn host_preserves_schema_v1_provider_key_and_dispatches_exact_wire_payload_once() {
         let fixture = Fixture::new().await;
         let now_ms = u64::try_from(
             SystemTime::now()
@@ -818,10 +993,12 @@ mod tests {
         prepare_effect(&fixture, now_ms, &intent).await;
 
         let server = MockServer::start().await;
-        let logical_effect_id = format!("taskflow:{}:{}", intent.run_id, intent.step_id);
-        let provider_key =
-            ProviderEffectKey::for_logical_effect(&intent.destination_id, &logical_effect_id)
-                .expect("provider key");
+        let provider_key = ProviderEffectKey::for_operation(
+            "provider/fixture-v1",
+            &intent.run_id,
+            &intent.step_id,
+        )
+        .expect("provider key");
         let provider_operation = Sha256Digest::for_bytes(b"provider-operation");
         let ack = serde_json::json!({
             "effect_key": provider_key.as_str(),
