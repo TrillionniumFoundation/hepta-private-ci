@@ -1,9 +1,10 @@
 name: channel.matrix bootstrap export
-# Temporary exact-head diagnostic revision 4; delete before final candidate.
 
 on:
   push:
     branches: [codex/channel-matrix-convergence-20260925]
+  pull_request:
+    branches: [main]
   workflow_dispatch: {}
 
 permissions:
