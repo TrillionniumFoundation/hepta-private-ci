@@ -1,0 +1,260 @@
+name: Cognitive read isolated convergence executor
+
+on:
+  push:
+    branches:
+      - work/cognitive-read-convergence-exec-20260927
+    paths:
+      - ".github/workflows/cognitive-read-exec.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-read-isolated-convergence
+  cancel-in-progress: true
+
+env:
+  RUST_MIN_STACK: "8388608"
+  PYTHONPATH: scripts
+  TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
+
+jobs:
+  converge:
+    name: Apply, qualify, and push sealed candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Check out isolated executor head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Prepare repository CI tools
+        uses: ./.github/actions/setup-ci
+
+      - name: Configure exact writer identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Cognitive Read Convergence'
+          git config user.email 'cognitive-read-convergence@users.noreply.github.com'
+          test "$(git rev-parse HEAD)" = '${{ github.sha }}'
+          git switch -C "$TARGET_BRANCH"
+          git show a16fa81bfec716037332ed30ab3c4e82d91c8636:.github/workflows/cognitive-read-qualification.yml \
+            > .github/workflows/cognitive-read-qualification.yml
+
+      - name: Assemble reviewed convergence helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .github/scripts/cognitive_read_converge.py.xz.b64.* \
+            | base64 --decode \
+            | xz --decompress > "$RUNNER_TEMP/cognitive_read_converge.py"
+          python3 -m py_compile "$RUNNER_TEMP/cognitive_read_converge.py"
+
+      - name: Apply source, contract, lock, and qualification closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/cognitive_read_converge.py" patch
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              if text.count(old) != 1:
+                  raise SystemExit(
+                      f"{path}: expected exactly one generated marker, found {text.count(old)}"
+                  )
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "codex-rs/hepta-cognitive-read/src/property_tests.rs",
+              "                        record_ids: candidate_ids,\n",
+              "                        record_ids: candidate_ids.clone(),\n",
+          )
+          replace_once(
+              "codex-rs/hepta-cognitive-read/src/golden_vectors.rs",
+              '            "{\\n",\n',
+              '            "{{\\n",\n',
+          )
+          replace_once(
+              "codex-rs/hepta-cognitive-read/src/golden_vectors.rs",
+              '            "}"\n        ),\n        EXPECTED_CANONICAL_HEX\n',
+              '            "}}"\n        ),\n        EXPECTED_CANONICAL_HEX\n',
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/cognitive_context.rs",
+              "        response.omitted_records = record_omissions(\n"
+              "            &mut omitted_records,\n"
+              "            cognitive_context_metrics::OmissionReason::Unclassified,\n"
+              "            expected_omitted - omitted_records,\n"
+              "        );\n",
+              "        let remaining_unclassified =\n"
+              "            expected_omitted.saturating_sub(omitted_records);\n"
+              "        response.omitted_records = record_omissions(\n"
+              "            &mut omitted_records,\n"
+              "            cognitive_context_metrics::OmissionReason::Unclassified,\n"
+              "            remaining_unclassified,\n"
+              "        );\n",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/cognitive_context.rs",
+              "    if !plan.read_allowed {\n"
+              "        let denied = response.items.len();\n"
+              "        response.items.clear();\n"
+              "        response.omitted_records = record_omissions(\n"
+              "            &mut omitted_records,\n"
+              "            cognitive_context_metrics::OmissionReason::PlanDenied,\n"
+              "            denied,\n"
+              "        )?;\n"
+              "    }\n",
+              "    if !plan.read_allowed {\n"
+              "        let denied = response.items.len();\n"
+              "        response.items.clear();\n"
+              "        response.omitted_records = record_omissions(\n"
+              "            &mut omitted_records,\n"
+              "            cognitive_context_metrics::OmissionReason::PlanDenied,\n"
+              "            denied,\n"
+              "        )?;\n"
+              "        let denied_read = read_selected_items(&cut, &response.items)?;\n"
+              "        response.snapshot_digest = denied_read.snapshot_digest().to_string();\n"
+              "        response.read_digest = bind_selected_read(\n"
+              "            &cut,\n"
+              "            &denied_read,\n"
+              "            response.omitted_records,\n"
+              "            expected_retrieval_context_digest,\n"
+              "        )\n"
+              "        .to_string();\n"
+              "    }\n",
+          )
+          for path in (
+              ".github/workflows/cognitive-read-qualification.yml",
+              "scripts/run-cognitive-read-qualification.sh",
+          ):
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              text = text.replace(
+                  "python3 -m unittest scripts/test_hepta_implementation_maps.py",
+                  "PYTHONPATH=scripts python3 -m unittest "
+                  "scripts/test_hepta_implementation_maps.py",
+              )
+              target.write_text(text, encoding="utf-8")
+          PY
+          python3 -m py_compile \
+            scripts/emit-cognitive-read-qualification.py \
+            scripts/verify-cognitive-read-constants.py \
+            scripts/verify-cognitive-read-map.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          cargo metadata --manifest-path codex-rs/Cargo.toml \
+            --format-version=1 --all-features \
+            --filter-platform x86_64-unknown-linux-gnu >/dev/null
+          cargo metadata --manifest-path codex-rs/Cargo.toml \
+            --format-version=1 --all-features \
+            --filter-platform aarch64-unknown-linux-gnu >/dev/null
+          rm -f codex-rs/hepta-cognitive-read/fuzz/Cargo.lock
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          git diff --check
+
+      - name: Commit exact source candidate
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          git diff --cached --quiet && { echo 'source convergence produced no changes' >&2; exit 1; }
+          git commit -m 'feat(cognitive.read): close bounded product and evidence contracts'
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Atomically rebind affected implementation maps
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/cognitive_read_converge.py" rebind-maps \
+            | tee "$RUNNER_TEMP/rebound-maps.json"
+          git diff --check
+          git add docs/modules
+          git diff --cached --quiet && { echo 'map convergence produced no changes' >&2; exit 1; }
+          git commit -m 'docs(cognitive.read): atomically rebind affected implementation maps'
+
+      - name: Verify source, maps, lock, lint, tests, and fuzz targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          exec > >(tee "$RUNNER_TEMP/cognitive-read-exec-verification.log") 2>&1
+          expected_sha="$(git rev-parse HEAD)"
+          python3 .github/scripts/verify_cargo_workspace_manifests.py
+          python3 scripts/verify-cognitive-read-constants.py
+          python3 scripts/verify-cognitive-read-map.py --expected-sha "$expected_sha"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$expected_sha" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          python3 -m unittest scripts/test_hepta_implementation_maps.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-cognitive-read \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            --all-targets
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-cognitive-read \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            --all-targets -- -D warnings
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-cognitive-read --lib
+          cargo check --manifest-path codex-rs/hepta-cognitive-read/fuzz/Cargo.toml \
+            --all-targets
+          rm -f codex-rs/hepta-cognitive-read/fuzz/Cargo.lock
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain isolated verification diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-read-isolated-verification-${{ github.sha }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/cognitive-read-exec-verification.log
+            ${{ runner.temp }}/rebound-maps.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Seal candidate and remove convergence bootstrap
+        id: seal
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f \
+            .github/scripts/cognitive_read_converge.py.xz.b64.* \
+            .github/workflows/cognitive-read-one-shot.yml \
+            .github/workflows/cognitive-read-exec.yml
+          git add -A
+          git commit -m 'ci(cognitive.read): retire convergence bootstrap'
+          python3 scripts/verify-cognitive-read-map.py --expected-sha "$(git rev-parse HEAD)"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain)"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Push sealed candidate to review branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:$TARGET_BRANCH"
+          {
+            echo '## cognitive.read isolated convergence'
+            echo
+            echo "- source commit: \`${{ steps.source.outputs.sha }}\`"
+            echo "- sealed commit: \`${{ steps.seal.outputs.sha }}\`"
+            echo "- sealed tree: \`${{ steps.seal.outputs.tree }}\`"
+            echo '- production implementation, product proof, activation, and release remain false.'
+          } >> "$GITHUB_STEP_SUMMARY"
