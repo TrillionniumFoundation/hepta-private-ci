@@ -78,7 +78,7 @@
     },
     {
       "capability": "signed_build_provenance",
-      "state": "not_implemented_external_gate"
+      "state": "implemented_main_sigstore_verified_target_gate"
     },
     {
       "capability": "linux_isolation",
@@ -94,7 +94,8 @@
     }
   ],
   "sourceObjects": {
-    "apps/hepta-browser/scripts/generate-source-registry.mjs": "0fd029893a2b63c19a539b10df44d5e0250f0683",
+    "apps/hepta-browser/scripts/generate-source-registry.mjs": "c175c0a70bd1bcf6493af73d3f979ddce32a8592",
+    "apps/hepta-browser/scripts/verify-deployment-evidence.py": "f4e5335a75dc28716d98699a3fa7728a289e9d0d",
     "apps/hepta-browser/src/action.js": "dc57104d79699c4f5538b9daefb0195e7d3248f9",
     "apps/hepta-browser/src/agentd-protocol.js": "1478d8ab3739f3332f515a57a8ff36d8d42443ce",
     "apps/hepta-browser/src/agentd-service-main.js": "1f5293b8a4eaf3b651f43a3c32ffcb15ab9233d1",
@@ -118,9 +119,9 @@
     "third_party/servo-patches/MANIFEST.json": "e2503eb8157e20a82691c429b14c42bf0a506fbe",
     ".github/workflows/blocking-ci.yml": "0939f35b398c2acb7a68d03c00fbf968165169c4",
     ".github/workflows/hepta-browser-agentd-composition.yml": "1c40224ebe9ad9dc06a758b08c1b7e1eb6d43dc5",
-    ".github/workflows/hepta-browser-servo-worker-dev.yml": "297d96870af526f52ba09d747f05cf7cd558b181",
-    ".github/workflows/hepta-browser-servo-independent-rebuild.yml": "9cb68a1cea7d48917d1f55f0ede135e434d067cb",
-    ".github/workflows/hepta-browser-servo-deployment-qualification.yml": "57fb0e72301b7771b9a7ea3cdb111c7a2c2cf080"
+    ".github/workflows/hepta-browser-servo-worker-dev.yml": "cfbb1d0581532def62ff5ee73902e7ca0c288fe8",
+    ".github/workflows/hepta-browser-servo-independent-rebuild.yml": "3907e64eae9d0960e5e00db401614e916b02119c",
+    ".github/workflows/hepta-browser-servo-deployment-qualification.yml": "c9ac0c8923a63af34c75f4c9fbbee316331ac63a"
   },
   "claimBoundary": {
     "sourceRegistryGenerated": true,
