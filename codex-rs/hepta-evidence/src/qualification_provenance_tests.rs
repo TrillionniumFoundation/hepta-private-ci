@@ -104,6 +104,8 @@ async fn accept_trust_generation(
     digest: &Sha256Digest,
 ) {
     let predecessor = (generation > 1).then(|| Sha256Digest::for_bytes(b"predecessor"));
+    let frontier_sha256 = Sha256Digest::for_bytes(b"frontier");
+    let backend_sha256 = Sha256Digest::for_bytes(b"backend");
     sqlx::query(
         "INSERT INTO evidence_trust_acceptance (
             store_id, agent_id, registry_generation, registry_sha256,
@@ -117,8 +119,8 @@ async fn accept_trust_generation(
     .bind(digest.as_str())
     .bind(predecessor.as_ref().map(Sha256Digest::as_str))
     .bind(generation.to_be_bytes().to_vec())
-    .bind(Sha256Digest::for_bytes(b"frontier").as_str())
-    .bind(Sha256Digest::for_bytes(b"backend").as_str())
+    .bind(frontier_sha256.as_str())
+    .bind(backend_sha256.as_str())
     .bind(1_u64.to_be_bytes().to_vec())
     .execute(&store.pool)
     .await
