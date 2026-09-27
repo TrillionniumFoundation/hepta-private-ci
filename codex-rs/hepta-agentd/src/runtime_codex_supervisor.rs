@@ -13,6 +13,7 @@ use tokio::task::JoinSet;
 use tokio::time::{MissedTickBehavior, interval};
 use tokio_util::sync::CancellationToken;
 
+use super::super::persistence::archive_terminal_operations;
 use super::super::{
     ProcessRuntimeCodexExecutorV1, RuntimeCodexExecutionInputV1, RuntimeCodexExecutorV1,
     RuntimeCodexOwnerV1,
@@ -30,6 +31,7 @@ const MAX_CONCURRENT_JOBS: usize = 256;
 const DEFAULT_RECOVERY_INTERVAL: Duration = Duration::from_secs(5);
 const MIN_RECOVERY_INTERVAL: Duration = Duration::from_millis(100);
 const MAX_RECOVERY_INTERVAL: Duration = Duration::from_secs(300);
+const ARCHIVE_BATCH: usize = 64;
 
 /// Host-owned derivation of the exact physical runtime.codex request. Request
 /// bytes cannot install or replace this provider.
@@ -350,6 +352,12 @@ impl ProcessRuntimeCodexExecutorV1 {
             .executor
             .reconcile_pending(owner.clone(), lifetime.child_token())
             .await?;
+        archive_terminal_operations(
+            installed.executor.journal_root(),
+            &owner,
+            installed.executor.worker_artifact_digest(),
+            ARCHIVE_BATCH,
+        )?;
         publish_recovery_status(&installed, &initial);
 
         let concurrency = Arc::new(Semaphore::new(installed.maximum_concurrent_jobs));
@@ -370,6 +378,14 @@ impl ProcessRuntimeCodexExecutorV1 {
                             if let Err(error) = outcome {
                                 break Err(error);
                             }
+                            if jobs.is_empty() {
+                                archive_terminal_operations(
+                                    installed.executor.journal_root(),
+                                    &owner,
+                                    installed.executor.worker_artifact_digest(),
+                                    ARCHIVE_BATCH,
+                                )?;
+                            }
                         }
                         Err(error) => {
                             break Err(AgentdError::Protocol(format!(
@@ -383,6 +399,14 @@ impl ProcessRuntimeCodexExecutorV1 {
                         .executor
                         .reconcile_pending(owner.clone(), lifetime.child_token())
                         .await?;
+                    if jobs.is_empty() {
+                        archive_terminal_operations(
+                            installed.executor.journal_root(),
+                            &owner,
+                            installed.executor.worker_artifact_digest(),
+                            ARCHIVE_BATCH,
+                        )?;
+                    }
                     publish_recovery_status(&installed, &report);
                 }
                 maybe_job = receiver.recv() => {
@@ -447,6 +471,12 @@ impl ProcessRuntimeCodexExecutorV1 {
                 }
             }
         }
+        archive_terminal_operations(
+            installed.executor.journal_root(),
+            &owner,
+            installed.executor.worker_artifact_digest(),
+            ARCHIVE_BATCH,
+        )?;
         result
     }
 }

@@ -95,9 +95,8 @@ fn input(prompt: &str) -> RuntimeCodexExecutionInputV1 {
 }
 
 #[cfg(unix)]
-#[tokio::test]
-async fn exact_duplicate_returns_the_frozen_receipt_without_a_second_process() {
-    let fixture = fixture(
+fn successful_fixture() -> Fixture {
+    fixture(
         r#"
 MODE=fresh
 for ARG in "$@"; do
@@ -111,7 +110,13 @@ else
 fi
 printf '%s\n' '__TERMINAL_JSON__'
 "#,
-    );
+    )
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn exact_duplicate_returns_the_frozen_receipt_without_a_second_process() {
+    let fixture = successful_fixture();
     let first = fixture
         .executor
         .execute(
@@ -136,6 +141,141 @@ printf '%s\n' '__TERMINAL_JSON__'
         .expect("duplicate receipt");
     assert!(duplicate.succeeded());
     assert!(duplicate.idempotent);
+    assert_eq!(std::fs::read(&fixture.counter).expect("counter"), b"x");
+    assert!(!fixture.resume_counter.exists());
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn archived_terminal_identity_returns_receipt_without_redispatch() {
+    let fixture = successful_fixture();
+    fixture
+        .executor
+        .execute(
+            fixture.owner.clone(),
+            input("hello"),
+            CancellationToken::new(),
+        )
+        .await
+        .expect("first execution");
+    let archived = persistence::archive_terminal_operations(
+        fixture.executor.journal_root(),
+        &fixture.owner,
+        fixture.executor.worker_artifact_digest(),
+        8,
+    )
+    .expect("archive terminal operation");
+    assert_eq!(archived, 1);
+    assert!(
+        persistence::list_operation_directories(fixture.executor.journal_root())
+            .expect("active operations")
+            .is_empty()
+    );
+
+    let duplicate = fixture
+        .executor
+        .execute(
+            fixture.owner.clone(),
+            input("hello"),
+            CancellationToken::new(),
+        )
+        .await
+        .expect("archived duplicate receipt");
+    assert!(duplicate.succeeded());
+    assert!(duplicate.idempotent);
+    assert_eq!(std::fs::read(&fixture.counter).expect("counter"), b"x");
+    assert!(!fixture.resume_counter.exists());
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn tampered_terminal_witness_fails_closed_without_redispatch() {
+    let fixture = successful_fixture();
+    fixture
+        .executor
+        .execute(
+            fixture.owner.clone(),
+            input("hello"),
+            CancellationToken::new(),
+        )
+        .await
+        .expect("first execution");
+    persistence::archive_terminal_operations(
+        fixture.executor.journal_root(),
+        &fixture.owner,
+        fixture.executor.worker_artifact_digest(),
+        8,
+    )
+    .expect("archive terminal operation");
+    let key = Digest32::of_bytes(b"run.fixture").to_string();
+    let witness = fixture
+        .executor
+        .journal_root()
+        .join(".terminal-witnesses")
+        .join(format!("{key}.json"));
+    std::fs::write(&witness, b"{}\n").expect("tamper witness");
+    std::fs::set_permissions(&witness, std::fs::Permissions::from_mode(0o600))
+        .expect("witness permissions");
+
+    let error = fixture
+        .executor
+        .execute(
+            fixture.owner.clone(),
+            input("hello"),
+            CancellationToken::new(),
+        )
+        .await
+        .expect_err("tampered witness must fail closed");
+    assert!(
+        error.to_string().contains("witness")
+            || error.to_string().contains("missing field")
+            || error.to_string().contains("unknown field"),
+        "{error}"
+    );
+    assert_eq!(std::fs::read(&fixture.counter).expect("counter"), b"x");
+    assert!(!fixture.resume_counter.exists());
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn witness_without_archive_blocks_identity_resurrection() {
+    let fixture = successful_fixture();
+    fixture
+        .executor
+        .execute(
+            fixture.owner.clone(),
+            input("hello"),
+            CancellationToken::new(),
+        )
+        .await
+        .expect("first execution");
+    persistence::archive_terminal_operations(
+        fixture.executor.journal_root(),
+        &fixture.owner,
+        fixture.executor.worker_artifact_digest(),
+        8,
+    )
+    .expect("archive terminal operation");
+    let key = Digest32::of_bytes(b"run.fixture").to_string();
+    std::fs::remove_dir_all(
+        fixture
+            .executor
+            .journal_root()
+            .join(".terminal-archive")
+            .join(key),
+    )
+    .expect("remove archive fixture");
+
+    let error = fixture
+        .executor
+        .execute(
+            fixture.owner.clone(),
+            input("hello"),
+            CancellationToken::new(),
+        )
+        .await
+        .expect_err("witness without archive must block redispatch");
+    assert!(error.to_string().contains("witness exists without"), "{error}");
     assert_eq!(std::fs::read(&fixture.counter).expect("counter"), b"x");
     assert!(!fixture.resume_counter.exists());
 }
@@ -168,6 +308,8 @@ printf '%s\n' '__TERMINAL_JSON__'
         .await
         .expect("reconcile");
     assert_eq!(report.scanned, 1);
+    assert_eq!(report.prepared_unfenced, 1);
+    assert_eq!(report.fenced_unresolved, 0);
     assert_eq!(report.unresolved, 1);
     assert!(!fixture.counter.exists());
 
