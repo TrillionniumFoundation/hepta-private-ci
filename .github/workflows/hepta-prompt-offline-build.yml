@@ -7,7 +7,7 @@ permissions:
   contents: read
 jobs:
   inputs:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 40
     env:
       CARGO_BUILD_JOBS: '2'
@@ -29,6 +29,12 @@ jobs:
           out="$RUNNER_TEMP/prompt-offline-inputs"
           mkdir -p "$out"
           git rev-parse HEAD HEAD^{tree} > "$out/identity.txt"
+          rustc -Vv > "$out/toolchain.txt"
+          cargo -V >> "$out/toolchain.txt"
+          rustfmt -V >> "$out/toolchain.txt"
+          # Never archive CARGO_HOME wholesale: it may contain credentials.
+          # The compiler sysroot contains public distribution files only.
+          tar -C "$(rustc --print sysroot)" -czf "$out/toolchain.tar.gz" bin lib libexec share/man share/doc/rust/licenses
           curl --fail --location --proto '=https' --tlsv1.2 https://get.nexte.st/0.9.103/linux -o "$out/nextest.tar.gz"
           curl --fail --location --proto '=https' --tlsv1.2 https://github.com/casey/just/releases/download/1.51.0/just-1.51.0-x86_64-unknown-linux-musl.tar.gz -o "$out/just.tar.gz"
           cargo_home="${CARGO_HOME:-$HOME/.cargo}"
@@ -38,7 +44,7 @@ jobs:
           done
           test "${#paths[@]}" -gt 0
           tar -C "$cargo_home" -czf "$out/dependencies.tar.gz" "${paths[@]}"
-          sha256sum "$out"/*.tar.gz > "$out/checksums.txt"
+          (cd "$out" && sha256sum ./*.tar.gz > checksums.txt)
           git diff --exit-code
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
