@@ -13,8 +13,13 @@ use codex_hepta_contracts::{FinalUseBinding, SignedFinalUseGrant};
 use serde::Deserialize;
 use serde_json::{Value, json};
 
+// These source modules are intentionally owned by the named persistent binary
+// instead of replacing the legacy Agentd Browser library port. Their internal
+// qualification helpers are exercised by this binary's test harness.
+#[allow(dead_code)]
 #[path = "../browser_revocation_feed.rs"]
 mod browser_revocation_feed;
+#[allow(dead_code)]
 #[path = "../browser_servo_persistent.rs"]
 mod browser_servo;
 
