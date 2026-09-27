@@ -305,7 +305,9 @@ impl FileNeuronFeatureExecutionStoreV1 {
         let request_digest = request_digest(request)?;
         if let Some(record) = self.records.get(&request.request_id) {
             return if record.request_digest == request_digest && record.request == *request {
-                Ok(NeuronFeatureAdmissionV1::Historical(Box::new(record.clone())))
+                Ok(NeuronFeatureAdmissionV1::Historical(Box::new(
+                    record.clone(),
+                )))
             } else {
                 Err(NeuronFeatureStoreError::Conflict)
             };
