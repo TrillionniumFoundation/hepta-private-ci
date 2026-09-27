@@ -1,0 +1,74 @@
+name: Unblock knowledge.graph convergence materializer
+
+on:
+  push:
+    branches: [work/product-convergence-20260923]
+    paths:
+      - '.github/workflows/hepta-kg-unblock-materializer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-kg-unblock-materializer
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  CANDIDATE_BRANCH: work/product-convergence-20260923
+
+jobs:
+  unblock:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.actor != 'github-actions[bot]' &&
+      github.ref == 'refs/heads/work/product-convergence-20260923'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+
+      - name: Repair stale post-phase-one anchor
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('scripts/hepta-kg-durable-writer-finalize.py')
+          source = path.read_text(encoding='utf-8')
+          old = '"The current durable writer deliberately performs one bounded complete-generation rebuild for each logical mutation; `apply_incremental_delta` remains the independent equivalence/reference path until measurements justify selecting it as the durable runtime algorithm.",'
+          new = '"The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md) specifies this module\'s algorithm and pilot ceilings. The kernel now bounds aggregate supports, canonical digest input bytes, query seeds and relation kinds, and offers a once-validated generation-bound adjacency index for localized multi-seed reads. After generation one, the durable candidate publishes through predecessor-bound `apply_incremental_delta`; every 64th generation must equal the independently assembled complete candidate byte-for-byte before the transaction may advance the selected pointer. The adapter still assembles the bounded complete physical source cut on ordinary writes to preserve the legacy physical output digest and reopen oracle. That remaining scan is explicit in benchmark receipts and must meet the target-host p95/p99, RSS and DB-growth budgets before production qualification.",'
+          if source.count(old) != 1:
+              raise SystemExit(f'stale durable anchor count={source.count(old)}')
+          path.write_text(source.replace(old, new, 1), encoding='utf-8')
+          PY
+          python3 -m py_compile scripts/hepta-kg-durable-writer-finalize.py
+          python3 scripts/test_hepta_kg_convergence_finalize.py -v
+          git diff --check
+
+      - name: Commit and publish exact bootstrap repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Hepta KG Convergence Bot'
+          git config user.email 'hepta-kg-convergence@users.noreply.github.com'
+          git rm .github/workflows/hepta-kg-unblock-materializer.yml
+          git add scripts/hepta-kg-durable-writer-finalize.py
+          git commit -s -m 'fix(knowledge.graph): rebind durable finalizer to phase-one docs'
+          test -z "$(git status --porcelain)"
+          git fetch origin "$CANDIDATE_BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_SHA"
+          git push origin "HEAD:$CANDIDATE_BRANCH"
