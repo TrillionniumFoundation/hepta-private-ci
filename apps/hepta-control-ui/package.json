@@ -7,40 +7,19 @@
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./src/index.d.ts",
-      "import": "./src/index.js"
-    },
-    "./control-client-core": {
-      "types": "./src/core.d.ts",
-      "import": "./src/core.js"
-    },
-    "./core": {
-      "types": "./src/core.d.ts",
-      "import": "./src/core.js"
-    },
-    "./browser": {
-      "types": "./src/browser.d.ts",
-      "import": "./src/browser-app.js"
-    },
-    "./transport/http": {
-      "types": "./src/http-transport.d.ts",
-      "import": "./src/http-transport.js"
-    }
+    ".": { "types": "./src/index.d.ts", "import": "./src/index.js" },
+    "./control-client-core": { "types": "./src/core.d.ts", "import": "./src/core.js" },
+    "./core": { "types": "./src/core.d.ts", "import": "./src/core.js" },
+    "./browser": { "types": "./src/browser.d.ts", "import": "./src/browser-app.js" },
+    "./transport/http": { "types": "./src/http-transport.d.ts", "import": "./src/http-transport.js" }
   },
-  "files": [
-    "src/",
-    "web/",
-    "README.md"
-  ],
-  "engines": {
-    "node": ">=22.0.0"
-  },
+  "files": ["src/", "web/", "README.md"],
+  "engines": { "node": ">=22.0.0" },
   "scripts": {
     "build": "node tools/build.mjs",
     "check": "npm run lint && npm test && npm run test:contract && npm run build",
     "lint": "node tools/lint.mjs",
-    "test": "node --test test/control.test.js test/canonical-profile.test.js test/runtime-client.test.js test/runtime-client-lifecycle.test.js test/browser-app-lifecycle.test.js test/http-transport.test.js test/session-provider.test.js",
+    "test": "node --test test/control.test.js test/canonical-profile.test.js test/runtime-client.test.js test/runtime-client-lifecycle.test.js test/browser-app-lifecycle.test.js test/http-transport.test.js test/session-provider.test.js test/recovery-safety.test.js test/runtime-recovery-integration.test.js",
     "test:contract": "node --test test/api-surface.test.js test/package-boundary.test.js",
     "test:e2e": "playwright test --config=playwright.config.mjs",
     "receipt": "node tools/write-receipt.mjs"
