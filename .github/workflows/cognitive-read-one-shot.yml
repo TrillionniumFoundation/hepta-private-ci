@@ -90,6 +90,21 @@ jobs:
               '            "}"\n        ),\n        EXPECTED_CANONICAL_HEX\n',
               '            "}}"\n        ),\n        EXPECTED_CANONICAL_HEX\n',
           )
+          replace_once(
+              "codex-rs/hepta-agentd/src/cognitive_context.rs",
+              "        response.omitted_records = record_omissions(\n"
+              "            &mut omitted_records,\n"
+              "            cognitive_context_metrics::OmissionReason::Unclassified,\n"
+              "            expected_omitted - omitted_records,\n"
+              "        );\n",
+              "        let remaining_unclassified =\n"
+              "            expected_omitted.saturating_sub(omitted_records);\n"
+              "        response.omitted_records = record_omissions(\n"
+              "            &mut omitted_records,\n"
+              "            cognitive_context_metrics::OmissionReason::Unclassified,\n"
+              "            remaining_unclassified,\n"
+              "        );\n",
+          )
 
           for path in (
               ".github/workflows/cognitive-read-qualification.yml",
