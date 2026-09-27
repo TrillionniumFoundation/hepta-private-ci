@@ -34,6 +34,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          out="$RUNNER_TEMP/channel-matrix-bootstrap"
+          mkdir -p "$out"
           patch_dir=.github/channel-matrix-local-patch
           if [ ! -d "$patch_dir" ]; then
             echo 'applied=false' >> "$GITHUB_OUTPUT"
@@ -41,28 +43,21 @@ jobs:
           fi
           cat "$patch_dir"/part-* > "$RUNNER_TEMP/channel-matrix-local.patch"
 
-          # Prefer exact index/worktree application. The reviewed patch records
-          # old blob identities, so the three-way fallback still fails closed
-          # on semantic drift rather than guessing around a conflict.
-          if git apply --check --index --whitespace=nowarn \
-              "$RUNNER_TEMP/channel-matrix-local.patch"; then
-            git apply --index --whitespace=nowarn \
-              "$RUNNER_TEMP/channel-matrix-local.patch"
-          elif git apply --reverse --check --whitespace=nowarn \
-              "$RUNNER_TEMP/channel-matrix-local.patch"; then
-            echo "reviewed patch is already present; removing staging payload"
-          else
-            git apply --3way --index --whitespace=nowarn \
-              "$RUNNER_TEMP/channel-matrix-local.patch"
+          # The patch was reviewed against this convergence branch, but several
+          # documentation hunks intentionally omit blob-index lines. BSD patch
+          # is therefore the correct materializer; semantic drift still fails
+          # closed through rejected hunks, diff checks and the source verifier.
+          if ! patch -p1 -N < "$RUNNER_TEMP/channel-matrix-local.patch" \
+              >"$out/patch-apply.log" 2>&1; then
+            cat "$out/patch-apply.log" >&2
+            find . -name '*.rej' -print -exec cat {} \; >&2 || true
+            exit 1
           fi
 
           git rm -r "$patch_dir"
-          (
-            cd codex-rs
-            cargo fmt --all
-          )
           git add -A
           git diff --cached --check
+          python3 scripts/verify_channel_matrix_candidate.py
           git config user.name 'channel.matrix convergence bot'
           git config user.email 'channel-matrix@users.noreply.github.com'
           git commit -m 'channel.matrix: materialize reviewed closure patch'
@@ -125,18 +120,23 @@ jobs:
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/channel-matrix-bootstrap"
-          test -d "$out"
+          mkdir -p "$out"
           git status --short > "$out/status.txt"
           git rev-parse HEAD > "$out/source-sha.txt"
           git rev-parse HEAD^{tree} > "$out/source-tree.txt"
+          for file in Cargo.lock.before Cargo.lock Cargo.lock.patch \
+              cargo-check.log cargo-test.log cargo-fmt.log python-tests.log \
+              check-status.txt patch-apply.log; do
+            test -e "$out/$file" || : > "$out/$file"
+          done
           tar --exclude=.git --exclude=target --exclude='*.zip' --exclude='*.tgz' \
             -czf "$out/workspace.tgz" .
           (
             cd "$out"
             shasum -a 256 Cargo.lock.before Cargo.lock Cargo.lock.patch \
               cargo-check.log cargo-test.log cargo-fmt.log python-tests.log \
-              check-status.txt source-sha.txt source-tree.txt status.txt \
-              workspace.tgz > SHA256SUMS
+              check-status.txt patch-apply.log source-sha.txt source-tree.txt \
+              status.txt workspace.tgz > SHA256SUMS
           )
 
       - name: Upload exact workspace, minimal lock and logs
@@ -174,7 +174,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(cat "$RUNNER_TEMP/channel-matrix-bootstrap/check-status.txt")"
+          status_file="$RUNNER_TEMP/channel-matrix-bootstrap/check-status.txt"
+          if [ ! -s "$status_file" ]; then
+            echo 'Scoped Matrix checks did not start' >&2
+            exit 1
+          fi
+          status="$(cat "$status_file")"
           if [ "$status" -ne 0 ]; then
             echo "Scoped Matrix checks failed with status $status" >&2
             exit "$status"
