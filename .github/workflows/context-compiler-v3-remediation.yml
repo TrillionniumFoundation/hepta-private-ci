@@ -1,0 +1,213 @@
+name: context-compiler-v3-remediation
+
+on:
+  push:
+    branches:
+      - codex/context-compiler-full-closure-review-20260927
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: context-compiler-v3-remediation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  materialize-verify-commit:
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[materialize-v3]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify branch identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "codex/context-compiler-full-closure-review-20260927"
+          test -z "$(git status --porcelain=v1)"
+          git rev-parse HEAD
+
+      - name: Install native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev pkg-config
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: clippy,rustfmt
+
+      - name: Install cargo-deny
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-deny@0.19.0
+
+      - name: Materialize direct V3 and recovery source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply_context_compiler_v3_source.py
+          python3 scripts/apply_context_compiler_current_closure.py
+          python3 scripts/apply_context_compiler_v3_interface_fix.py
+          python3 scripts/apply_context_compiler_v3_regressions.py
+          python3 scripts/apply_context_compiler_recovery_activation.py
+          python3 scripts/apply_context_compiler_recovery_cleanup.py
+          python3 scripts/apply_context_compiler_agentd_recovery_v2.py
+          python3 scripts/apply_context_compiler_recovery_tests.py
+          python3 scripts/apply_context_compiler_recovery_test_cleanup.py
+          python3 scripts/apply_context_compiler_qualification_closure.py
+
+      - name: Register property-test dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          workspace = Path('codex-rs/Cargo.toml')
+          text = workspace.read_text(encoding='utf-8')
+          if 'proptest = ' not in text:
+              anchor = 'pretty_assertions = "1.4.1"\n'
+              if anchor not in text:
+                  raise SystemExit('workspace dependency anchor drifted')
+              text = text.replace(anchor, anchor + 'proptest = "1.9.0"\n', 1)
+          workspace.write_text(text, encoding='utf-8')
+
+          crate = Path('codex-rs/hepta-context-compiler/Cargo.toml')
+          text = crate.read_text(encoding='utf-8')
+          if '[dev-dependencies]' not in text:
+              text = text.rstrip() + '\n\n[dev-dependencies]\nproptest = { workspace = true }\n'
+          elif 'proptest' not in text.split('[dev-dependencies]', 1)[1]:
+              text = text.replace(
+                  '[dev-dependencies]\n',
+                  '[dev-dependencies]\nproptest = { workspace = true }\n',
+                  1,
+              )
+          crate.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Format and resolve exact lockfile
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all
+          cargo metadata --format-version 1 > /dev/null
+
+      - name: Bind canonical state to formatted source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/refresh_context_compiler_current_state.py
+          python3 scripts/apply_context_compiler_recovery_state.py
+          python3 scripts/generate_context_compiler_module_docs.py --write
+          python3 scripts/generate_context_compiler_module_docs.py --check
+          python3 scripts/test_context_compiler_state.py
+          python3 scripts/test_context_compiler_candidate.py
+          python3 scripts/test_context_compiler_execution.py
+
+      - name: Verify default V3 product profile
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-context-compiler \
+            -p codex-hepta-intelligence \
+            -p codex-extension-api \
+            -p codex-core \
+            -p codex-hepta-agentd \
+            -p codex-hepta-prompt-extension
+
+      - name: Verify explicit legacy compatibility profile
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-intelligence --features legacy-prompt-context-v1
+          cargo test --locked -p codex-hepta-agentd --features legacy-prompt-context-v1
+
+      - name: Verify focused security and recovery regressions
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-api context_slot
+          cargo test --locked -p codex-hepta-intelligence prompt_product_v3
+          cargo test --locked -p codex-hepta-agentd registry_race_tests
+          cargo test --locked -p codex-hepta-agentd exact_context_delivery
+
+      - name: Strict lint across product and compatibility profiles
+        working-directory: codex-rs
+        shell: bash
+        run: >-
+          cargo clippy --locked
+          -p codex-hepta-prompt-registry
+          -p codex-hepta-context-compiler
+          -p codex-hepta-intelligence
+          -p codex-extension-api
+          -p codex-core
+          -p codex-api
+          -p codex-hepta-agentd
+          -p codex-hepta-prompt-extension
+          --all-targets --all-features -- -D warnings
+
+      - name: Verify dependency policy
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo deny --locked check bans licenses sources
+
+      - name: Verify direct-source diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -n "$(git status --porcelain=v1)"
+          test -f codex-rs/hepta-context-compiler/src/v2/recovery.rs
+          grep -Fq 'mod context_authority;' codex-rs/hepta-prompt-registry/src/lib.rs
+          grep -Fq 'mod prompt_product_v3;' codex-rs/hepta-intelligence/src/lib.rs
+          grep -Fq 'compile_and_stage_v3' codex-rs/hepta-agentd/src/prompt_runtime.rs
+          grep -Fq 'mod recovery;' codex-rs/hepta-context-compiler/src/v2.rs
+
+      - name: Retire one-shot machinery and push direct source
+        env:
+          BRANCH: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f \
+            scripts/apply_context_compiler_v3_source.py \
+            scripts/apply_context_compiler_v3_core.py \
+            scripts/apply_context_compiler_full_closure.py \
+            scripts/apply_context_compiler_hardening.py \
+            scripts/apply_context_compiler_current_closure.py \
+            scripts/apply_context_compiler_v3_interface_fix.py \
+            scripts/apply_context_compiler_v3_regressions.py \
+            scripts/apply_context_compiler_recovery_activation.py \
+            scripts/apply_context_compiler_recovery_cleanup.py \
+            scripts/apply_context_compiler_agentd_recovery.py \
+            scripts/apply_context_compiler_agentd_recovery_v2.py \
+            scripts/apply_context_compiler_recovery_tests.py \
+            scripts/apply_context_compiler_recovery_test_cleanup.py \
+            scripts/apply_context_compiler_qualification_closure.py \
+            scripts/apply_context_compiler_recovery_state.py \
+            scripts/refresh_context_compiler_current_state.py \
+            scripts/remediate_context_compiler_closure.py \
+            .github/context-compiler-materialize-v3.trigger \
+            .github/workflows/context-compiler-v3-remediation.yml
+          git config user.name "hepta-closure-bot"
+          git config user.email "hepta-closure-bot@users.noreply.github.com"
+          git add --all
+          git diff --cached --check
+          git commit -m "feat(context.compiler): materialize V3 recovery-bound provider path [context-source-fixed] [v3-materialized]"
+          git push origin "HEAD:${BRANCH}"
