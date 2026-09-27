@@ -28,9 +28,10 @@ are not separately editable protocol sources.
 The legacy exact-`pub use` inventory remains an ownership projection. Complete
 public API evidence is generated from rustdoc JSON for the base and candidate.
 The normalized snapshot covers public modules, types, methods, fields, enum
-variants and signatures. Existing-path removals or fingerprint changes fail;
-additive paths are reported without mutating every old item through the crate
-root.
+variants and signatures. Existing-path removals or semver-significant
+fingerprint changes fail; additive paths are reported without recursively
+mutating every existing caller or parent type merely because a new impl or
+method was added.
 
 ## Exact Git provenance
 
@@ -60,7 +61,8 @@ properties over the manifest protocols.
 A separate pinned `cargo-fuzz` lane runs actual libFuzzer instrumentation over:
 
 - arbitrary HPTC raw bytes through `canonical_validate_v1`;
-- arbitrary product JSON bytes through both Prompt V2 and Topology V1 decoders.
+- arbitrary product JSON bytes through the registered Prompt V2, Topology V1,
+  Random Stream, External System and Sensor Calibration decoders.
 
 The fuzz workspaces and corpora are created in candidate evidence directories so
 qualification does not mutate the repository. Runs are bounded and reproducible
@@ -68,10 +70,13 @@ as evidence; they are not described as exhaustive proof.
 
 ## Toolchain gates
 
-The crate declares Rust 1.95 as its minimum supported version. Deep
-qualification checks exact-candidate MSRV build/tests, current native tests and
-strict Clippy, and pinned `nightly-2026-09-20` Miri. The same pinned nightly is
-used for rustdoc JSON and libFuzzer unless explicitly reviewed and changed.
+The crate and workspace declare Rust **1.96** as their minimum supported version.
+The authoritative workspace lock currently contains dependencies whose declared
+MSRV is 1.96, so the lock, consumer matrix and package qualification intentionally
+use the same version. Deep qualification checks exact-candidate MSRV build/tests,
+current native tests and strict Clippy, and pinned `nightly-2026-09-20` Miri. The
+same pinned nightly is used for rustdoc JSON and libFuzzer unless explicitly
+reviewed and changed.
 
 ## Consumer and owner matrix
 
@@ -82,7 +87,8 @@ ledger paths, topology admission, the NDU random-stream owner, Supervisor
 external/sensor owners, and strict lint for types, wire and NDU.
 
 No failed command suppresses later diagnostics. Aggregate qualification remains
-failed if any command fails.
+failed if any command fails. The script invokes locked Cargo commands directly
+and does not rely on an ambient `just` installation.
 
 ## Exact-candidate document bundle
 
