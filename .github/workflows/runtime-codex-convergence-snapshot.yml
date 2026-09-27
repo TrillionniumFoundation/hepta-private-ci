@@ -1,0 +1,34 @@
+name: runtime.codex convergence snapshot
+on:
+  push:
+    branches: [work/runtime-codex-convergence-20260928]
+    paths: [.github/workflows/runtime-codex-convergence-snapshot.yml]
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Retain exact source and pending child stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/runtime-codex-source
+          git archive --format=tar HEAD | gzip > /tmp/runtime-codex-source/source.tar.gz
+          git fetch --no-tags origin 537950196b5d10258b9c9788a18ce6c7803575af
+          git archive --format=tar 537950196b5d10258b9c9788a18ce6c7803575af | gzip > /tmp/runtime-codex-source/stage4.tar.gz
+          git diff --binary b21add8523459a51af141bd151872181b20e9700 537950196b5d10258b9c9788a18ce6c7803575af > /tmp/runtime-codex-source/children.patch
+          git log -30 --format='%H %s' > /tmp/runtime-codex-source/history.txt
+          git rev-parse HEAD HEAD^{tree} > /tmp/runtime-codex-source/identity.txt
+          sha256sum /tmp/runtime-codex-source/* > /tmp/runtime-codex-source/SHA256SUMS
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: runtime-codex-source-snapshot
+          path: /tmp/runtime-codex-source/
+          retention-days: 7
+          if-no-files-found: error
