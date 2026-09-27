@@ -7,7 +7,7 @@ on:
 
 jobs:
   repair-test-and-publish:
-    runs-on: macos-15-xlarge
+    runs-on: macos-15
     timeout-minutes: 120
     permissions:
       contents: write
@@ -76,6 +76,6 @@ jobs:
           git config user.email 'runtime-codex-convergence-bot@users.noreply.github.com'
           git commit \
             -m 'runtime.codex: publish structured execution convergence' \
-            -m "Validated from exact source head ${SOURCE_HEAD} on macos-15-xlarge with Rust 1.95.0. Adds the server-owned irreversible effect-entry marker, local durable entry proof, exact owner reconciliation, typestate orchestration, monotonic deadline budget, bounded thread cleanup, signed quarantine verifier, executable crash-window matrix, and issuer process-instance binding." \
+            -m "Validated from exact source head ${SOURCE_HEAD} on macos-15 with Rust 1.95.0. Adds the server-owned irreversible effect-entry marker, local durable entry proof, exact owner reconciliation, typestate orchestration, monotonic deadline budget, bounded thread cleanup, signed quarantine verifier, executable crash-window matrix, and issuer process-instance binding." \
             -m 'This is repository source evidence only. Linux exact-head and synthetic-merge qualification, target-host identity, production key custody, trusted time/revocation, real-provider fault evidence, canary, promotion, and release remain separate gates.'
           git push origin HEAD:${GITHUB_REF_NAME}
