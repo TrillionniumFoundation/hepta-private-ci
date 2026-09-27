@@ -258,3 +258,7 @@ mod contract_tests;
 #[cfg(test)]
 #[path = "hardening_tests.rs"]
 mod hardening_tests;
+
+#[cfg(test)]
+#[path = "consumer_tests.rs"]
+mod consumer_tests;
