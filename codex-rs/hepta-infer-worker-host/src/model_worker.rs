@@ -38,6 +38,12 @@ pub use neuron::NeuronFeatureExecutionObservation;
 pub use neuron::NeuronFeatureRequest;
 pub use neuron::canonical_neuron_feature_payload_digest;
 
+#[path = "semantic_worker.rs"]
+mod semantic;
+pub use semantic::DriverSemanticRetrievalReplyV2;
+pub use semantic::SemanticRetrievalCallV2;
+pub use semantic::SemanticRetrievalDriver;
+
 /// Experimental driver contract. Implementations must enforce the admitted
 /// resident/KV/transient bounds before allocation. Returned measurements alone
 /// are not device attestation. Unload borrows a handle so failure cannot erase it.

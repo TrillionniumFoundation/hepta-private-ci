@@ -42,6 +42,33 @@ pub struct SemanticAdmissionV1 {
     pub authority_binding_digest: String,
 }
 
+/// Exact per-call resource identity for the modern experimental worker.
+/// This is a persisted bound, not device measurement or execution authority.
+/// Its new critical journal event is rejected by older readers; V1 bytes retain
+/// their old meaning. A changed resident/KV/transient split is a conflict even
+/// when the total remains equal.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SemanticResourceLimitsV2 {
+    pub model_id: String,
+    pub resident_bytes: u64,
+    pub kv_bytes: u64,
+    pub transient_bytes: u64,
+}
+
+impl SemanticResourceLimitsV2 {
+    pub fn total_bytes(&self) -> Result<u64, Error> {
+        validate_identity(&self.model_id, "semantic model")?;
+        if self.resident_bytes == 0 {
+            return Err(Error::InvalidTransition);
+        }
+        self.resident_bytes
+            .checked_add(self.kv_bytes)
+            .and_then(|bytes| bytes.checked_add(self.transient_bytes))
+            .ok_or(Error::ArithmeticOverflow)
+    }
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SemanticPhaseV1 {
@@ -64,6 +91,8 @@ pub struct SemanticCompletionV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SemanticRecordV1 {
     pub admission: SemanticAdmissionV1,
+    /// None identifies the legacy admission. It is not a zero-resource budget.
+    pub resource_limits: Option<SemanticResourceLimitsV2>,
     pub revision: u64,
     pub admitted_at_ms: u64,
     pub phase: SemanticPhaseV1,
@@ -118,6 +147,12 @@ pub(super) struct SemanticJournal {
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 enum Event {
+    ReserveResourcesV2 {
+        admission: SemanticAdmissionV1,
+        resource_limits: SemanticResourceLimitsV2,
+        maximum_in_flight: usize,
+        now_ms: u64,
+    },
     Reserve {
         admission: SemanticAdmissionV1,
         maximum_in_flight: usize,
@@ -164,8 +199,35 @@ impl DurableInferenceControl {
         admission: SemanticAdmissionV1,
         maximum_in_flight: usize,
     ) -> Result<SemanticRecordV1, Error> {
+        self.reserve_semantic_profile(now_ms, admission, maximum_in_flight, None)
+    }
+
+    /// Atomically persist the admission and exact resource tuple in the same
+    /// owner journal. Never retrofit resources onto a legacy or existing call.
+    pub fn reserve_semantic_with_resources(
+        &mut self,
+        now_ms: u64,
+        admission: SemanticAdmissionV1,
+        maximum_in_flight: usize,
+        resource_limits: SemanticResourceLimitsV2,
+    ) -> Result<SemanticRecordV1, Error> {
+        self.reserve_semantic_profile(now_ms, admission, maximum_in_flight, Some(resource_limits))
+    }
+
+    fn reserve_semantic_profile(
+        &mut self,
+        now_ms: u64,
+        admission: SemanticAdmissionV1,
+        maximum_in_flight: usize,
+        resource_limits: Option<SemanticResourceLimitsV2>,
+    ) -> Result<SemanticRecordV1, Error> {
         self.semantic_ready()?;
         let request = validate_admission(&admission)?;
+        if let Some(limits) = &resource_limits
+            && limits.total_bytes()? != admission.maximum_memory_bytes
+        {
+            return Err(Error::Conflict);
+        }
         if self
             .semantic
             .maximum_in_flight
@@ -176,7 +238,7 @@ impl DurableInferenceControl {
         if let Some(record) = self.semantic.records.get(&request.operation_id) {
             // Replay audit facts even after expiry; this never issues a new
             // dispatch or makes a revoked/expired result eligible for use.
-            return if record.admission == admission {
+            return if record.admission == admission && record.resource_limits == resource_limits {
                 Ok(record.clone())
             } else {
                 Err(Error::Conflict)
@@ -216,11 +278,20 @@ impl DurableInferenceControl {
         {
             return Err(Error::CapacityExceeded);
         }
-        self.commit_semantic(Event::Reserve {
-            admission,
-            maximum_in_flight,
-            now_ms,
-        })
+        let event = match resource_limits {
+            Some(resource_limits) => Event::ReserveResourcesV2 {
+                admission,
+                resource_limits,
+                maximum_in_flight,
+                now_ms,
+            },
+            None => Event::Reserve {
+                admission,
+                maximum_in_flight,
+                now_ms,
+            },
+        };
+        self.commit_semantic(event)
     }
 
     /// The only transition that permits a live caller to enter the driver.
@@ -348,12 +419,20 @@ impl SemanticJournal {
         event: &Event,
         primary: &BTreeMap<String, RequestRecord>,
     ) -> Result<Prepared, Error> {
-        if let Event::Reserve {
-            admission,
-            maximum_in_flight,
-            now_ms,
-        } = event
+        if let Event::Reserve { admission, maximum_in_flight, now_ms }
+            | Event::ReserveResourcesV2 { admission, maximum_in_flight, now_ms, .. } = event
         {
+            let resource_limits = match event {
+                Event::ReserveResourcesV2 { resource_limits, .. } => Some(resource_limits.clone()),
+                Event::Reserve { .. } => None,
+                Event::Fence { .. } | Event::Cancel { .. } | Event::Stop { .. }
+                | Event::Complete { .. } | Event::Acknowledge { .. } => return Err(Error::InvalidTransition),
+            };
+            if let Some(limits) = &resource_limits
+                && limits.total_bytes()? != admission.maximum_memory_bytes
+            {
+                return Err(Error::Conflict);
+            }
             let input = validate_admission(admission)?;
             if *now_ms >= input.deadline_ms {
                 return Err(Error::InvalidTime);
@@ -396,6 +475,7 @@ impl SemanticJournal {
             };
             let record = SemanticRecordV1 {
                 admission: admission.clone(),
+                resource_limits,
                 revision: 1,
                 admitted_at_ms: *now_ms,
                 phase: SemanticPhaseV1::Reserved,
@@ -420,7 +500,7 @@ impl SemanticJournal {
             ));
         }
         let id = match event {
-            Event::Reserve { .. } => return Err(Error::InvalidTransition),
+            Event::Reserve { .. } | Event::ReserveResourcesV2 { .. } => return Err(Error::InvalidTransition),
             Event::Fence { request_id, .. }
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
@@ -430,7 +510,7 @@ impl SemanticJournal {
         let old = self.records.get(id).ok_or(Error::RequestNotFound)?;
         let mut next = old.clone();
         match event {
-            Event::Reserve { .. } => return Err(Error::InvalidTransition),
+            Event::Reserve { .. } | Event::ReserveResourcesV2 { .. } => return Err(Error::InvalidTransition),
             Event::Fence {
                 expected_revision,
                 now_ms,
@@ -576,3 +656,7 @@ mod tests;
 #[cfg(test)]
 #[path = "semantic_owner_lock_tests.rs"]
 mod owner_lock_tests;
+
+#[cfg(test)]
+#[path = "semantic_resource_tests.rs"]
+mod resource_tests;
