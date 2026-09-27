@@ -182,9 +182,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Ok(RuntimeTickOutcome::Keep);
         }
         let registry_generation = self.record(agent_id)?.lifecycle.generation;
-        let mut companion_fault = None;
+        let needs_companion_fence = registry_generation != runtime.generation;
         if registry_generation != runtime.generation && !runtime.fenced {
-            companion_fault = self.kill_matrix_now(agent_id, slot).err();
             // Logical fencing is immediate. A failed signal is not an
             // acknowledged Killing phase and must remain retryable.
             runtime.fenced = true;
@@ -227,6 +226,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 now,
                 self.config.stop_grace,
             )
+        };
+        let companion_fault = if needs_companion_fence {
+            self.kill_matrix_now(agent_id, slot).err()
+        } else {
+            None
         };
         // Poll even when the signal failed: ESRCH on an already exited exact
         // child must not prevent durable exit/lease reconciliation. Conversely,

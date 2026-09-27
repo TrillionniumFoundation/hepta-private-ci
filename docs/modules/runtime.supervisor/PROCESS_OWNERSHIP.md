@@ -45,13 +45,33 @@ Starting generation after observing exit. It never overwrites a newer registry
 generation. Only after cleanup and the necessary transition succeed does the
 owner emit Exited and release the retained handle.
 
+## Matrix companion
+
+Matrix launch computes fallible deadlines before spawn, installs the acquired
+handle before publication, and retains a failed publication under a private
+same-owner Matrix lease-removal witness. A mismatched but exactly adopted
+companion is fenced and retained; a kill acknowledgement no longer deletes its
+lease or discards its handle. Current binding/release validation before adoption
+is still a separate recovery gap and is not relaxed by this change.
+
+Matrix fencing invalidates readiness before a signal is attempted. A failed kill
+remains retryable even if the main Agent later looks healthy. Fenced companions
+cannot regain readiness from a later probe. Polling still observes exit after a
+failed signal. After one exact exit, only durable cleanup is retried; a failed
+sync does not cause repeated signaling or polling. Normal missing leases reject;
+only a retained failed-publication witness allows initial absence. Changed,
+corrupt or reappearing leases do not authorize cleanup.
+
 ## Failure-domain separation
 
-Main tick failure still attempts companion containment and retains a bounded
-secondary fault instead of discarding it. A generation-fence companion error
-cannot prevent the subsequent main-process kill attempt. This change does not
-yet repair every explicit Kill or Matrix launch/adoption path; those remaining
-paths are listed below and must not be inferred complete from this main fix.
+Explicit Kill collects main and companion results independently. It attempts the
+main signal before entering the companion driver. Main registry/CAS failure
+fences the already-owned process and still attempts both terminations, while
+returning failure rather than claiming durable completion. Generation fencing
+also invalidates serving state before attempting main then companion signals.
+Main tick failure still advances companion containment and retains a bounded
+secondary fault. These synchronous operations do not establish per-Agent latency
+isolation or a deadline guarantee under stuck kernel/filesystem calls.
 
 ## Regression source
 
@@ -60,8 +80,12 @@ process-driver double: failed publication plus kill/probe failures, exact partia
 publication, foreign-lease rejection, and failed initial CAS/registry reads.
 `lease::removal::unpublished_tests` contains three filesystem tests: normal
 absence rejection, failed-sync/reappearance rejection, and same-owner unlink
-retry. These seven test sources have not been compiled or executed in the
-editing environment. They are not real-child or target-host fault receipts.
+retry. The existing Matrix tick fixture is extended by eight containment tests;
+four additional Matrix cleanup tests exercise the filesystem witness directly.
+All nineteen new ownership test functions use explicit process doubles or
+filesystem fixtures. None has been compiled or executed in the editing
+environment; none is a real-child or target-host receipt. They are separate from
+the five actual-process lifetime Rust test sources in `PROCESS_LIFETIME.md`.
 
 Run both library profiles and the product qualification, not just these slices:
 
@@ -69,17 +93,19 @@ Run both library profiles and the product qualification, not just these slices:
 cd codex-rs
 just test --locked -p codex-hepta-supervisor --lib recovery::launch_tests
 just test --locked -p codex-hepta-supervisor --lib lease::removal::unpublished_tests
+just test --locked -p codex-hepta-supervisor --lib matrix::tick::tests::containment
+just test --locked -p codex-hepta-supervisor --lib matrix::lease_removal::tests
 ```
 
 ## Still requiring implementation or qualification
 
-Matrix failed publication and mismatched adoption need the same retained-owner
-semantics. Explicit Kill must attempt main termination despite a companion
-error. Internal driver setup failures after OS spawn, pre-adoption hydration
-failure, daemon death before a recoverable lease, directory-inode replacement,
-durable Stop/Kill supersession, restart predecessor/replacement identity,
-cross-daemon deadlines and exit finalization remain separate gaps. This local
-launch witness does not close any of those cross-daemon requirements.
+Internal driver setup failures after OS spawn, pre-adoption hydration or
+binding failures, rejected/unproven adoption lease disposition, daemon death
+before a recoverable lease, directory-inode replacement, durable Stop/Kill
+supersession, restart predecessor/replacement identity, cross-daemon deadlines
+and exit finalization remain separate gaps. The local launch/cleanup witnesses
+do not close any cross-daemon requirement. Matrix stop retry/deadline semantics
+must also be qualified independently from the fenced hard-kill path.
 
 Current exact-head/source-merge Rust, formatting, strict lint and full product
 receipts remain mandatory. Named Linux/macOS artifact-bound fault/load runs,

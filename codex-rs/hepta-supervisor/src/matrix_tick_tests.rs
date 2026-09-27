@@ -377,3 +377,6 @@ fn deferred_companion_stop_retries_the_unacknowledged_signal() -> Result<()> {
     assert_eq!(fixture.companion.lock().expect("state").stops, 2);
     Ok(())
 }
+
+#[path = "matrix_containment_tests.rs"]
+mod containment;

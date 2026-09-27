@@ -9,6 +9,7 @@ use codex_hepta_fleet::AgentLifecycle;
 
 use crate::ManagedProcess;
 use crate::ProcessDriver;
+use crate::ProcessObservation;
 use crate::ProcessState;
 use crate::Supervisor;
 use crate::SupervisorError;
@@ -16,7 +17,7 @@ use crate::SupervisorEvent;
 use crate::SupervisorEventKind;
 use crate::lease::MATRIX_PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::MatrixProcessLease;
-use crate::lease::remove_matrix_lease;
+use super::MatrixProcessLeaseRemoval;
 use crate::runtime::AgentSlot;
 use crate::runtime::DeferredAgentActionKind;
 use crate::runtime::MatrixRuntimePhase;
@@ -37,22 +38,31 @@ impl<D: ProcessDriver> Supervisor<D> {
                     && matches!(agent.phase, crate::runtime::RuntimePhase::Running)
                     && agent.spawn_generation == runtime.attached_agent_generation
             });
-            if !exact_agent && !runtime.fenced {
-                runtime
-                    .process
-                    .kill()
-                    .map_err(|error| driver_error(agent_id, error))?;
-                runtime.phase = MatrixRuntimePhase::Killing;
+            let terminal = slot.matrix.observed_exit;
+            if terminal.is_none() && !exact_agent {
                 runtime.fenced = true;
-                slot.events.push(SupervisorEvent {
-                    generation: runtime.attached_agent_generation,
-                    kind: SupervisorEventKind::MatrixKillRequested,
-                });
             }
-            let observation = runtime
-                .process
-                .poll(self.config.driver_poll_batch)
-                .map_err(|error| driver_error(agent_id, error))?;
+            let control_result = if terminal.is_none()
+                && runtime.fenced
+                && !matches!(runtime.phase, MatrixRuntimePhase::Killing)
+            {
+                runtime.process.kill().map_err(|error| driver_error(agent_id, error)).map(|()| {
+                    runtime.phase = MatrixRuntimePhase::Killing;
+                    slot.events.push(SupervisorEvent {
+                        generation: runtime.attached_agent_generation,
+                        kind: SupervisorEventKind::MatrixKillRequested,
+                    });
+                })
+            } else {
+                Ok(())
+            };
+            // A failed kill cannot hide an observed exit. After that exact
+            // observation, neither signal nor probe is repeated during cleanup.
+            let observation = match terminal {
+                Some(exit) => ProcessObservation { state: ProcessState::Exited(exit), logs: Vec::new() },
+                None => runtime.process.poll(self.config.driver_poll_batch)
+                    .map_err(|error| driver_error(agent_id, error))?,
+            };
             for mut log in observation
                 .logs
                 .into_iter()
@@ -62,6 +72,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.logs.push(log);
             }
             if let ProcessState::Exited(exit) = observation.state {
+                slot.matrix.observed_exit = Some(exit);
                 let record = self.record(agent_id)?;
                 let lease = MatrixProcessLease {
                     schema_version: MATRIX_PROCESS_LEASE_SCHEMA_VERSION,
@@ -74,13 +85,21 @@ impl<D: ProcessDriver> Supervisor<D> {
                     plane_epoch: runtime.plane_epoch,
                     identity: runtime.identity.clone(),
                 };
-                remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;
+                let path = record.layout.matrixd_process_lease();
+                let removal = slot.matrix.exit_lease_removal.get_or_insert_with(|| {
+                    MatrixProcessLeaseRemoval::new(path, &lease)
+                });
+                removal.finish(path, &lease)?;
+                let was_fenced = runtime.fenced;
                 let generation = runtime.attached_agent_generation;
                 // Both exit and durable lease cleanup succeeded. Only now may
                 // the exact process handle leave the owning slot.
                 slot.matrix.runtime = None;
+                slot.matrix.observed_exit = None;
+                slot.matrix.exit_lease_removal = None;
                 slot.event(generation, SupervisorEventKind::MatrixExited(exit));
-                let should_restart = slot.deferred_agent_action.is_none()
+                let should_restart = !was_fenced
+                    && slot.deferred_agent_action.is_none()
                     && (slot.matrix.restart_after_exit || exact_agent);
                 slot.matrix.restart_after_exit = false;
                 if should_restart {
@@ -93,6 +112,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     );
                 }
             } else {
+                control_result?;
+                if runtime.fenced {
+                    return Ok(());
+                }
                 let ProcessState::Running { healthy, .. } = observation.state else {
                     unreachable!("Matrix exited state returned above")
                 };

@@ -14,6 +14,7 @@ use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::DeferredAgentActionKind;
 use crate::runtime::RuntimePhase;
+use crate::runtime::bounded_message;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
 
@@ -103,15 +104,51 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         slot.restart_pending = false;
         slot.deferred_agent_action = None;
-        self.kill_matrix_now(agent_id, slot)?;
-        self.prepare_termination(agent_id, slot)?;
-        let spawn_generation = active_runtime(agent_id, slot)?.spawn_generation;
-        pending::stage(
-            agent_id,
-            slot,
-            pending::PendingControl::Kill { spawn_generation },
-        )?;
-        pending::apply_to_slot(agent_id, slot, Instant::now(), self.config.stop_grace)
+        // Prepare only the main lifecycle here. Do not enter a potentially
+        // failing companion driver before attempting the main emergency signal.
+        let preparation = (|| {
+            let lifecycle = self.record(agent_id)?.lifecycle;
+            let generation = active_runtime(agent_id, slot)?.generation;
+            if generation != lifecycle.generation {
+                return Err(SupervisorError::GenerationFence {
+                    agent_id: agent_id.clone(), runtime: generation, registry: lifecycle.generation,
+                });
+            }
+            if lifecycle.lifecycle == AgentLifecycle::Running {
+                let next = self.registry.compare_and_transition(
+                    agent_id, generation, AgentLifecycle::Draining,
+                )?;
+                active_runtime(agent_id, slot)?.generation = next.generation;
+                slot.event(next.generation, SupervisorEventKind::Lifecycle(AgentLifecycle::Draining));
+            }
+            Ok(())
+        })();
+        let main = if preparation.is_err()
+            || slot.runtime.as_ref().is_some_and(|runtime| runtime.fenced)
+        {
+            // Storage/CAS failure cannot revoke ownership of the already
+            // acquired process. Fence it and attempt termination, but report
+            // the failed preparation rather than claiming durable completion.
+            slot.pending_control = None;
+            if let Some(runtime) = slot.runtime.as_mut() {
+                runtime.healthy = false;
+                runtime.fenced = true;
+            }
+            kill_retained_main(agent_id, slot)
+        } else {
+            let spawn_generation = active_runtime(agent_id, slot)?.spawn_generation;
+            pending::stage(agent_id, slot, pending::PendingControl::Kill { spawn_generation })
+                .and_then(|()| pending::apply_to_slot(
+                    agent_id, slot, Instant::now(), self.config.stop_grace,
+                ))
+        };
+        // Both outcomes are collected; neither an error nor a delayed companion
+        // call can prevent the main signal that was attempted above.
+        let companion = self.kill_matrix_now(agent_id, slot);
+        for fault in [main.as_ref().err(), companion.as_ref().err()].into_iter().flatten() {
+            slot.event(0, SupervisorEventKind::DriverFault(bounded_message(fault.to_string())));
+        }
+        preparation.and(main).and(companion)
     }
 
     pub(crate) fn restart_slot(
@@ -207,18 +244,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         if registry == runtime_generation {
             return Ok(());
         }
-        self.kill_matrix_now(agent_id, slot)?;
-        let runtime = slot
-            .runtime
-            .as_mut()
-            .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))?;
+        let runtime = active_runtime(agent_id, slot)?;
         runtime.healthy = false;
-        runtime
-            .process
-            .kill()
-            .map_err(|error| driver_error(agent_id, error))?;
         runtime.fenced = true;
-        runtime.phase = RuntimePhase::Killing;
         slot.pending_control = None;
         slot.event(
             runtime_generation,
@@ -227,6 +255,14 @@ impl<D: ProcessDriver> Supervisor<D> {
                 registry,
             },
         );
+        let main = kill_retained_main(agent_id, slot);
+        let companion = self.kill_matrix_now(agent_id, slot);
+        if let Err(fault) = &companion {
+            slot.event(runtime_generation,
+                SupervisorEventKind::DriverFault(bounded_message(fault.to_string())));
+        }
+        main?;
+        companion?;
         Err(SupervisorError::GenerationFence {
             agent_id: agent_id.clone(),
             runtime: runtime_generation,
@@ -242,4 +278,19 @@ fn active_runtime<'a, P>(
     slot.runtime
         .as_mut()
         .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))
+}
+
+fn kill_retained_main<P: ManagedProcess>(
+    agent_id: &AgentId,
+    slot: &mut AgentSlot<P>,
+) -> Result<(), SupervisorError> {
+    let runtime = active_runtime(agent_id, slot)?;
+    runtime.healthy = false;
+    if !matches!(runtime.phase, RuntimePhase::Killing) {
+        runtime.process.kill().map_err(|error| driver_error(agent_id, error))?;
+        runtime.phase = RuntimePhase::Killing;
+        let generation = runtime.generation;
+        slot.event(generation, SupervisorEventKind::KillRequested);
+    }
+    Ok(())
 }

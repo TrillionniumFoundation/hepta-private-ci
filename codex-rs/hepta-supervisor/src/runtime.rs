@@ -79,6 +79,8 @@ pub(crate) struct DeferredAgentAction {
 
 pub(crate) struct MatrixCompanionSlot<P> {
     pub runtime: Option<MatrixRuntime<P>>,
+    pub exit_lease_removal: Option<crate::matrix::MatrixProcessLeaseRemoval>,
+    pub observed_exit: Option<crate::ProcessExit>,
     pub configured: bool,
     pub degraded: bool,
     pub restart_attempt: u32,
@@ -95,6 +97,8 @@ impl<P> MatrixCompanionSlot<P> {
     fn new() -> Self {
         Self {
             runtime: None,
+            exit_lease_removal: None,
+            observed_exit: None,
             configured: false,
             degraded: false,
             restart_attempt: 0,
