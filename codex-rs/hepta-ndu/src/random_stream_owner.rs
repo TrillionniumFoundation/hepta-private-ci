@@ -220,14 +220,9 @@ mod tests {
     #[test]
     fn owner_binds_seed_policy_episode_decision_and_counter_window() {
         let seed = digest("root-seed");
-        let policy = NduRandomStreamPolicyV1::new(
-            "utility.ndu",
-            seed,
-            "chacha20-counter",
-            "1.0.0",
-            1_024,
-        )
-        .expect("policy");
+        let policy =
+            NduRandomStreamPolicyV1::new("utility.ndu", seed, "chacha20-counter", "1.0.0", 1_024)
+                .expect("policy");
         let manifest = RandomStreamManifestV1::new(
             id("manifest-1"),
             seed,
@@ -260,8 +255,7 @@ mod tests {
     fn owner_rejects_cross_decision_replay() {
         let seed = digest("seed");
         let policy =
-            NduRandomStreamPolicyV1::new("utility.ndu", seed, "generator", "1", 8)
-                .expect("policy");
+            NduRandomStreamPolicyV1::new("utility.ndu", seed, "generator", "1", 8).expect("policy");
         let manifest = RandomStreamManifestV1::new(
             id("manifest"),
             seed,
