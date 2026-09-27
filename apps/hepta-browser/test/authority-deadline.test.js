@@ -22,7 +22,7 @@ function witness(request) {
 }
 
 async function fixture({ authorize, clock = () => 1_000, expiresAtMs = 9_000,
-                         grantExpiresAtMs = 8_000, journal, timeout = 30 } = {}) {
+                         grantExpiresAtMs = 8_000, journal, timeout = 30, dispatch, reconcile } = {}) {
   const observed = { dispatches: 0, stops: 0 };
   const durable = journal ?? new MemoryBrowserOperationJournal();
   const driver = {
@@ -30,8 +30,13 @@ async function fixture({ authorize, clock = () => 1_000, expiresAtMs = 9_000,
     async observe() {
       return { pageGeneration: 1, documentDigest: D3, origin: "https://example.test" };
     },
-    async dispatch() { observed.dispatches++; return { terminalObserved: false }; },
-    async reconcile() { return { terminalObserved: false }; },
+    async dispatch(...args) {
+      observed.dispatches++;
+      return dispatch ? dispatch(...args) : { terminalObserved: false };
+    },
+    async reconcile(...args) {
+      return reconcile ? reconcile(...args) : { terminalObserved: false };
+    },
     async stop() { observed.stops++; return { stopped: true }; },
   };
   const host = new BrowserProfileHost({
@@ -199,5 +204,33 @@ test("normal authority and after-dispatch timeout retain existing operation sema
   assert.equal(first.terminalObserved, false);
   assert.equal(f.observed.dispatches, 1);
   assert.deepEqual(await f.host.navigateOrAct(f.operation), first);
+  assert.equal(f.observed.dispatches, 1);
+});
+
+test("a driver result after the original wall deadline stays unknown until fresh reconciliation", async () => {
+  let now = 1_000;
+  let reconciliations = 0;
+  const f = await fixture({ clock: () => now, timeout: 1_000,
+    dispatch() {
+      now = 7_000;
+      return { terminalObserved: true, status: "succeeded", outcomeDigest: D1 };
+    },
+    reconcile() {
+      reconciliations++;
+      return { terminalObserved: true, status: "succeeded", outcomeDigest: D1 };
+    },
+  });
+  const late = await f.host.navigateOrAct(f.operation);
+  assert.equal(late.status, "indeterminate");
+  assert.equal(late.terminalObserved, false);
+  assert.equal(f.observed.dispatches, 1);
+  const pending = await f.durable.getOperation(f.scope.profileId, f.scope.generation, f.operation.operationId);
+  assert.equal(pending.terminalObserved, false);
+  await assert.rejects(f.host.navigateOrAct(f.operation), /expired/);
+  assert.equal(f.observed.dispatches, 1);
+  const resolved = await f.host.reconcileOperation(f.operation);
+  assert.equal(resolved.status, "succeeded");
+  assert.equal(resolved.terminalObserved, true);
+  assert.equal(reconciliations, 1);
   assert.equal(f.observed.dispatches, 1);
 });

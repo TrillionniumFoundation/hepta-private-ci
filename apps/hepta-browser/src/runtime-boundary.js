@@ -13,6 +13,7 @@ export async function callWithDeadline({ call, payload, now, deadlineMs, timeout
   const timeoutMs = Math.min(timeoutCapMs, remaining);
   const monotonicEnd = performance.now() + timeoutMs;
   const controller = abortable ? new AbortController() : null;
+  let lastObservedAt = startedAt;
   let timer;
   const timeout = new Promise((_, reject) => {
     timer = setTimeout(() => {
@@ -23,10 +24,10 @@ export async function callWithDeadline({ call, payload, now, deadlineMs, timeout
     }, timeoutMs);
   });
   try {
-    return await Promise.race([
+    const result = await Promise.race([
       Promise.resolve().then(() => {
         const current = now();
-        if (!Number.isSafeInteger(current) || current < startedAt) {
+        if (!Number.isSafeInteger(current) || current < lastObservedAt) {
           throw new TypeError("browser call clock is invalid or regressed");
         }
         if (current >= deadlineMs || performance.now() >= monotonicEnd) {
@@ -34,10 +35,25 @@ export async function callWithDeadline({ call, payload, now, deadlineMs, timeout
           error.name = timeoutName === "browser driver" ? "BrowserDriverTimeoutError" : "BrowserAuthorityTimeoutError";
           throw error;
         }
+        lastObservedAt = current;
         return call(payload, controller ? { signal: controller.signal } : undefined);
       }),
       timeout,
     ]);
+    // Timers cannot preempt synchronous work or a chain of microtasks. A late
+    // resolved Promise must not win eligibility merely by beating the timer
+    // callback. The original deadline is never restarted at completion.
+    const completedAt = now();
+    if (!Number.isSafeInteger(completedAt) || completedAt < lastObservedAt) {
+      throw new TypeError("browser completion clock is invalid or regressed");
+    }
+    if (completedAt >= deadlineMs || performance.now() >= monotonicEnd) {
+      controller?.abort();
+      const error = new Error(`${timeoutName} deadline expired before completion`);
+      error.name = timeoutName === "browser driver" ? "BrowserDriverTimeoutError" : "BrowserAuthorityTimeoutError";
+      throw error;
+    }
+    return result;
   } finally {
     clearTimeout(timer);
   }

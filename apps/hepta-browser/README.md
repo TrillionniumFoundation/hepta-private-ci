@@ -25,6 +25,13 @@ its original monotonic entry budget, including a stalled event loop. The shorter
 profile, effect-grant and operation expiry bounds dispatch without rewriting the
 original request digest. Driver calls reject expired work at actual invocation;
 there is no one-millisecond grace period after a slow durable intent write.
+Completion rechecks the same wall deadline and original monotonic budget before
+publishing an eligible result, including synchronous stalls and microtask chains
+that delay timer callbacks. The clock cannot regress from actual driver entry.
+An over-deadline return does not prove that an entered effect failed or stopped:
+the host retains its operation as indeterminate for fresh reconciliation, with
+no redispatch. AbortSignal requests remain cancellation requests, not process
+termination or task-success evidence.
 
 After a dispatch may have crossed the worker boundary, exceptions and timeouts become `indeterminate`. They never delete the operation identity and never authorize redispatch. Reconciliation observes the original identity and is intentionally allowed after the original profile/effect deadline has expired; expiry prevents a new effect, not recovery of an old one.
 
