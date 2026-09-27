@@ -29,6 +29,12 @@ def replace_all(relative: str, old: str, new: str, expected: int) -> None:
 
 
 replace_exact(
+    "codex-rs/hepta-types/src/numeric_profile.rs",
+    "    Overflow,\n    RegistryAdmission,\n    CanonicalEncoding,\n",
+    "    Overflow,\n    CanonicalEncoding,\n",
+)
+
+replace_exact(
     "codex-rs/hepta-types/src/numeric_conversion.rs",
     '''/// Production-admission variant. Both native numeric-profile semantics and
 /// the shared normalization definition must be present in the exact immutable
@@ -119,7 +125,7 @@ pub fn rescale_signal_registered_receipt_v1(
     let (output, conversion) = rescale_signal(source, target)?;
     let registry_digest = registry
         .registry_digest()
-        .map_err(|_| NumericConversionError::RegistryAdmission)?;
+        .map_err(|_| NumericConversionError::CanonicalEncoding)?;
     let admission_digest = crate::numeric_conversion::registered_admission_digest(
         registry_digest,
         source.schema.normalization_digest,
