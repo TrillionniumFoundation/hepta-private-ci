@@ -28,6 +28,8 @@ on:
 
 permissions:
   contents: read
+  id-token: write
+  attestations: write
 
 concurrency:
   group: hepta-browser-servo-independent-rebuild-${{ github.event.pull_request.number || github.ref }}
@@ -127,6 +129,7 @@ jobs:
               'githubRunAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
               'committedLock': True,
               'independentEphemeralRunner': True,
+              'signedProvenanceRequiredForDeployment': True,
           }
           (root / 'independent-rebuild-receipt.json').write_text(
               json.dumps(receipt, sort_keys=True, separators=(',', ':')) + '\n',
@@ -135,6 +138,39 @@ jobs:
           PY
           sha256sum independent-evidence/independent-rebuild-receipt.json \
             | tee independent-evidence/independent-rebuild-receipt.json.sha256
+
+      - name: Sign independent worker build provenance
+        if: github.ref == 'refs/heads/main'
+        id: independent-provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        with:
+          subject-path: independent-evidence/hepta-servo-worker
+
+      - name: Preserve independent signed provenance
+        if: github.ref == 'refs/heads/main'
+        env:
+          PROVENANCE_BUNDLE: ${{ steps.independent-provenance.outputs.bundle-path }}
+          PROVENANCE_ID: ${{ steps.independent-provenance.outputs.attestation-id }}
+          PROVENANCE_URL: ${{ steps.independent-provenance.outputs.attestation-url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$PROVENANCE_BUNDLE"
+          cp "$PROVENANCE_BUNDLE" independent-evidence/build-provenance-attestation.jsonl
+          python3 - <<'PY'
+          import json, os, pathlib
+          summary = {
+              'schema': 'hepta.browser.servo-independent-attestation-summary.v1',
+              'sourceSha': os.environ['SOURCE_SHA'],
+              'signerWorkflow': 'TrillionniumFoundation/hepta-private-ci/.github/workflows/hepta-browser-servo-independent-rebuild.yml',
+              'provenanceAttestationId': os.environ['PROVENANCE_ID'],
+              'provenanceAttestationUrl': os.environ['PROVENANCE_URL'],
+          }
+          pathlib.Path('independent-evidence/attestation-summary.json').write_text(
+              json.dumps(summary, sort_keys=True, separators=(',', ':')) + '\n',
+              encoding='utf-8',
+          )
+          PY
 
       - name: Preserve independent rebuild
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
