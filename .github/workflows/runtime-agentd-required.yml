@@ -1,0 +1,210 @@
+name: Runtime Agentd required candidate
+
+on:
+  workflow_call:
+    inputs:
+      lane:
+        description: Exact candidate lane: source-head or base-merge.
+        required: true
+        type: string
+      candidate_sha:
+        description: Exact tested candidate commit.
+        required: true
+        type: string
+      source_sha:
+        description: Exact pull-request source commit.
+        required: true
+        type: string
+      base_sha:
+        description: Exact integration base commit.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-agentd-required-${{ inputs.lane }}-${{ inputs.candidate_sha }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_SHA: ${{ inputs.candidate_sha }}
+  CARGO_INCREMENTAL: "0"
+
+jobs:
+  contract:
+    name: runtime.agentd ${{ inputs.lane }} source contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Bind source-head or deterministic merge candidate
+        env:
+          LANE: ${{ inputs.lane }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          BASE_SHA: ${{ inputs.base_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          exact='^[0-9a-f]{40}$'
+          [[ "$EXPECTED_SHA" =~ $exact ]]
+          [[ "$SOURCE_SHA" =~ $exact ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          case "$LANE" in
+            source-head)
+              test "$EXPECTED_SHA" = "$SOURCE_SHA"
+              ;;
+            base-merge)
+              [[ "$BASE_SHA" =~ $exact ]]
+              expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+              test "$(git rev-parse HEAD^{tree})" = "$expected_tree"
+              ;;
+            *)
+              echo "unsupported runtime.agentd candidate lane: $LANE" >&2
+              exit 64
+              ;;
+          esac
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Verify source closure and adversarial verifier behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest -v scripts.tests.test_hepta_runtime_agentd_closure
+          python3 -B scripts/hepta_runtime_agentd_closure.py verify \
+            --root "$GITHUB_WORKSPACE" \
+            --expected-sha "$EXPECTED_SHA" \
+            --output "$RUNNER_TEMP/runtime-agentd-source-closure.json"
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta_agentd_trust_boundary.py
+          node scripts/architecture/ci-source-ownership.mjs
+
+      - name: Retain exact source-closure receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-agentd-source-closure-${{ inputs.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/runtime-agentd-source-closure.json
+          if-no-files-found: error
+          retention-days: 30
+
+  suite:
+    name: runtime.agentd ${{ inputs.lane }} / ${{ matrix.os }} / ${{ matrix.suite }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        suite: [owner-libraries, native-library, native-process, daemon-process, product-process, strict-clippy, read-only-profile]
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install repository Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal --component clippy
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: codex-rs
+          shared-key: runtime-agentd-required-v2
+
+      - name: Execute independent suite and freeze command/binary receipts
+        if: ${{ always() }}
+        env:
+          QUALIFICATION_OS: ${{ matrix.os }}
+          QUALIFICATION_SUITE: ${{ matrix.suite }}
+        shell: bash
+        run: |
+          python3 -B scripts/qualification/agentd_exact_head.py run \
+            --workspace "$GITHUB_WORKSPACE" \
+            --sha "$EXPECTED_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --attempt "$GITHUB_RUN_ATTEMPT" \
+            --os "$QUALIFICATION_OS" \
+            --suite "$QUALIFICATION_SUITE" \
+            --output "$RUNNER_TEMP/runtime-agentd-required-receipt"
+
+      - name: Upload evidence including failures
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-agentd-required-${{ inputs.lane }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.suite }}
+          path: ${{ runner.temp }}/runtime-agentd-required-receipt
+          if-no-files-found: error
+          retention-days: 30
+
+  qualification-result:
+    name: runtime.agentd ${{ inputs.lane }} required
+    if: ${{ always() }}
+    needs: [contract, suite]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download all independent suite receipts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: runtime-agentd-required-${{ inputs.lane }}-${{ github.run_id }}-${{ github.run_attempt }}-*
+          path: ${{ runner.temp }}/runtime-agentd-required-evidence
+
+      - name: Reject missing stale skipped failed or tampered suites
+        if: ${{ always() }}
+        env:
+          CONTRACT_RESULT: ${{ needs.contract.result }}
+          SUITE_RESULT: ${{ needs.suite.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B scripts/qualification/agentd_exact_head.py verify \
+            --sha "$EXPECTED_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --attempt "$GITHUB_RUN_ATTEMPT" \
+            --evidence "$RUNNER_TEMP/runtime-agentd-required-evidence" \
+            --output "$RUNNER_TEMP/runtime-agentd-required-result.json" \
+            --contract-result "$CONTRACT_RESULT" \
+            --suite-result "$SUITE_RESULT"
+          test "$CONTRACT_RESULT" = success
+          test "$SUITE_RESULT" = success
+
+      - name: Retain exact aggregate result
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-agentd-required-result-${{ inputs.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/runtime-agentd-required-result.json
+          if-no-files-found: error
+          retention-days: 30
