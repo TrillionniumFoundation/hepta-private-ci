@@ -2,10 +2,12 @@ use std::fmt;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Mutex;
-use std::sync::PoisonError;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_api::EncodedRequestBodyObserver;
 use codex_api::EncodedRequestTerminal;
+use codex_api::verify_responses_developer_context;
 use codex_hepta_types::Digest32;
 
 use crate::PromptRuntimeAttachmentV1;
@@ -106,15 +108,20 @@ impl PromptRuntimeExactAttemptV2 {
 enum ExactBodyPhase {
     Empty,
     Bound(PromptRuntimeExactAttemptV2),
+    Proving {
+        attempt: PromptRuntimeExactAttemptV2,
+        request_digest: Digest32,
+    },
     Proven {
         attempt: PromptRuntimeExactAttemptV2,
         request_digest: Digest32,
     },
+    Blocked,
 }
 
-/// Turn-local observer shared between prompt assembly, provider policy, and the
-/// canonical HTTP encoder. A body cannot be observed before an attempt is bound,
-/// and a proven physical attempt cannot be replayed without a terminal reset.
+/// The in-flight claim is made before the first await. Cancellation or host
+/// failure cannot roll it back: the owner may already have persisted pre-send.
+/// Indeterminate/abandoned observations never authorize another physical send.
 pub(crate) struct PromptRuntimeExactBodyObserver {
     host: PromptRuntimeHost,
     attachment: PromptRuntimeAttachmentV1,
@@ -141,40 +148,46 @@ impl PromptRuntimeExactBodyObserver {
                 "attempt model does not match the staged attachment",
             ));
         }
-        let mut phase = self.phase.lock().unwrap_or_else(PoisonError::into_inner);
+        let mut phase = self.phase.lock().map_err(|_| {
+            PromptRuntimeHostError::new("prompt_runtime_exact_state_poisoned", "reopen required")
+        })?;
         match &*phase {
             ExactBodyPhase::Empty => {
                 *phase = ExactBodyPhase::Bound(attempt);
                 Ok(())
             }
             ExactBodyPhase::Bound(existing) if existing == &attempt => Ok(()),
-            ExactBodyPhase::Bound(_) | ExactBodyPhase::Proven { .. } => {
-                Err(PromptRuntimeHostError::new(
-                    "prompt_runtime_exact_attempt_conflict",
-                    "another physical attempt remains unresolved",
-                ))
-            }
+            ExactBodyPhase::Bound(_)
+            | ExactBodyPhase::Proving { .. }
+            | ExactBodyPhase::Proven { .. }
+            | ExactBodyPhase::Blocked => Err(PromptRuntimeHostError::new(
+                "prompt_runtime_exact_attempt_conflict",
+                "another physical attempt remains unresolved",
+            )),
         }
     }
 
     pub(crate) fn cancel_attempt(&self, attempt: &PromptRuntimeExactAttemptV2) {
-        let mut phase = self.phase.lock().unwrap_or_else(PoisonError::into_inner);
-        if matches!(&*phase, ExactBodyPhase::Bound(existing) if existing == attempt) {
+        // Only an attempt which has not entered the owner callback can be
+        // cancelled locally. A poisoned or in-flight state stays fail-closed.
+        if let Ok(mut phase) = self.phase.lock()
+            && matches!(&*phase, ExactBodyPhase::Bound(existing) if existing == attempt)
+        {
             *phase = ExactBodyPhase::Empty;
         }
     }
 
-    fn bound_attempt(&self) -> Result<PromptRuntimeExactAttemptV2, String> {
-        let phase = self.phase.lock().unwrap_or_else(PoisonError::into_inner);
-        match &*phase {
-            ExactBodyPhase::Bound(attempt) => Ok(attempt.clone()),
-            ExactBodyPhase::Empty => {
-                Err("exact request body was observed before provider policy binding".to_owned())
-            }
-            ExactBodyPhase::Proven { .. } => {
-                Err("exact request body replayed for an unresolved physical attempt".to_owned())
-            }
-        }
+    fn begin_body(&self, request_digest: Digest32) -> Result<PromptRuntimeExactAttemptV2, String> {
+        let mut phase = self.phase.lock().map_err(|_| "context_state_poisoned")?;
+        let ExactBodyPhase::Bound(attempt) = &*phase else {
+            return Err("context_attempt_not_available".to_owned());
+        };
+        let attempt = attempt.clone();
+        *phase = ExactBodyPhase::Proving {
+            attempt: attempt.clone(),
+            request_digest,
+        };
+        Ok(attempt)
     }
 
     fn finish_body(
@@ -182,22 +195,47 @@ impl PromptRuntimeExactBodyObserver {
         attempt: &PromptRuntimeExactAttemptV2,
         request_digest: Digest32,
     ) -> Result<(), String> {
-        let mut phase = self.phase.lock().unwrap_or_else(PoisonError::into_inner);
+        let mut phase = self.phase.lock().map_err(|_| "context_state_poisoned")?;
         match &*phase {
-            ExactBodyPhase::Bound(existing) if existing == attempt => {
+            ExactBodyPhase::Proving {
+                attempt: existing,
+                request_digest: expected,
+            } if existing == attempt && *expected == request_digest => {
                 *phase = ExactBodyPhase::Proven {
                     attempt: attempt.clone(),
                     request_digest,
                 };
                 Ok(())
             }
-            _ => Err("exact request binding changed during final proof".to_owned()),
+            ExactBodyPhase::Empty
+            | ExactBodyPhase::Bound(_)
+            | ExactBodyPhase::Proving { .. }
+            | ExactBodyPhase::Proven { .. }
+            | ExactBodyPhase::Blocked => Err("context_proof_state_changed".to_owned()),
         }
     }
 
-    fn clear_terminal(&self) {
-        let mut phase = self.phase.lock().unwrap_or_else(PoisonError::into_inner);
-        *phase = ExactBodyPhase::Empty;
+    fn record_terminal(&self, terminal: EncodedRequestTerminal) -> Result<(), String> {
+        let mut phase = self.phase.lock().map_err(|_| "context_state_poisoned")?;
+        match terminal {
+            EncodedRequestTerminal::Indeterminate { .. }
+            | EncodedRequestTerminal::Abandoned { .. } => {
+                *phase = ExactBodyPhase::Blocked;
+                Ok(())
+            }
+            EncodedRequestTerminal::Completed { .. } | EncodedRequestTerminal::Rejected { .. } => {
+                match &*phase {
+                    ExactBodyPhase::Proven { .. } => {
+                        *phase = ExactBodyPhase::Empty;
+                        Ok(())
+                    }
+                    ExactBodyPhase::Empty => Ok(()),
+                    ExactBodyPhase::Bound(_)
+                    | ExactBodyPhase::Proving { .. }
+                    | ExactBodyPhase::Blocked => Err("context_terminal_requires_reconciliation".to_owned()),
+                }
+            }
+        }
     }
 }
 
@@ -213,14 +251,38 @@ impl fmt::Debug for PromptRuntimeExactBodyObserver {
     }
 }
 
+fn check_deadline(now_unix_ms: u64, deadline_ms: u64) -> Result<(), String> {
+    if now_unix_ms == 0 || deadline_ms == 0 || now_unix_ms >= deadline_ms {
+        return Err("context_attachment_expired".to_owned());
+    }
+    Ok(())
+}
+
+fn current_unix_ms() -> Result<u64, String> {
+    let duration = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| "context_clock_unavailable")?;
+    u64::try_from(duration.as_millis()).map_err(|_| "context_clock_unavailable".to_owned())
+}
+
 impl EncodedRequestBodyObserver for PromptRuntimeExactBodyObserver {
     fn observe_encoded_body<'a>(
         &'a self,
         body: &'a [u8],
     ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'a>> {
         Box::pin(async move {
-            let attempt = self.bound_attempt()?;
+            self.attachment.validate().map_err(|_| "context_attachment_invalid")?;
+            let [fragment] = self.attachment.developer_fragments.as_slice() else {
+                return Err("context_canonical_bundle_required".to_owned());
+            };
+            if fragment.content_digest != self.attachment.context_payload_digest {
+                return Err("context_canonical_bundle_mismatch".to_owned());
+            }
+            verify_responses_developer_context(body, &self.attachment.model, &fragment.text)
+                .map_err(str::to_owned)?;
+            check_deadline(current_unix_ms()?, self.attachment.deadline_ms)?;
             let request_digest = Digest32::of_bytes(body);
+            let attempt = self.begin_body(request_digest)?;
             let request = PromptRuntimeFinalRequestV2 {
                 attachment: self.attachment.clone(),
                 attempt: attempt.clone(),
@@ -229,18 +291,23 @@ impl EncodedRequestBodyObserver for PromptRuntimeExactBodyObserver {
             self.host
                 .observe_final_request(request)
                 .await
-                .map_err(|error| error.to_string())?;
+                .map_err(|_| "context_final_request_rejected".to_owned())?;
+            // Tokenization and durable I/O may have crossed the exclusive
+            // expiry boundary. Do not release the body in that case. The
+            // durable owner must reconcile any claim already recorded.
+            check_deadline(current_unix_ms()?, self.attachment.deadline_ms)?;
             self.finish_body(&attempt, request_digest)
         })
     }
 
     fn observe_terminal<'a>(
         &'a self,
-        _terminal: EncodedRequestTerminal,
+        terminal: EncodedRequestTerminal,
     ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'a>> {
-        Box::pin(async move {
-            self.clear_terminal();
-            Ok(())
-        })
+        Box::pin(async move { self.record_terminal(terminal) })
     }
 }
+
+#[cfg(test)]
+#[path = "exact_body_tests.rs"]
+mod tests;
