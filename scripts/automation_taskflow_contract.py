@@ -103,8 +103,18 @@ def verify(root: Path = ROOT) -> dict[str, Any]:
         "### 4.5 Design records and failure semantics",
         "AutomationCrossHostRecoveryManifestV1",
         "AgentdAutomationEffectHost",
+        "one slot is reserved for terminal observation",
+        "owner Agent read from the copied target store",
     ]:
         need(anchor in technical, f"technical guide is missing {anchor}")
+
+    slo = text(root, "docs/modules/automation.taskflow/SLO.md")
+    for marker in [
+        "Terminal-observation liveness",
+        "one terminal-observation slot is",
+        "failed recovery attempt admits no new work",
+    ]:
+        need(marker in slo, f"runtime SLO is missing {marker}")
 
     scheduler = text(root, "codex-rs/hepta-automation/src/scheduler.rs")
     for marker in [
@@ -129,6 +139,10 @@ def verify(root: Path = ROOT) -> dict[str, Any]:
         "FeedbackBudgetExhausted",
         "CircuitTerminalReceiptV1",
         "CircuitEffectBoundaryV1",
+        "event.validate()?",
+        "event_digest does not match the canonical event ingress",
+        "runtime_profile_digest",
+        "hepta.neural-circuit.runtime-profile.v1",
     ]:
         need(marker in circuit, f"Neural Circuit runtime is missing {marker}")
 
@@ -137,8 +151,29 @@ def verify(root: Path = ROOT) -> dict[str, Any]:
         "recovery_budget_per_cycle",
         "tick_batch(&policy, unix_time_ms)",
         "classify_automation_error",
+        "reconcile_batch(",
+        "recovery_transient_budget",
     ]:
         need(marker in agentd, f"Agentd scheduling loop is missing {marker}")
+
+    recovery = text(root, "codex-rs/hepta-agentd/src/automation_recovery.rs")
+    for marker in [
+        "fn recovery_slot_allocation(",
+        "uncertain_candidates",
+        "pending_candidates",
+        "limit - 1",
+        "recovery_slots_reserve_terminal_progress_under_unknown_pressure",
+    ]:
+        need(marker in recovery, f"bounded recovery fairness is missing {marker}")
+
+    cross_host = text(root, "codex-rs/hepta-automation/src/cross_host_recovery.rs")
+    for marker in [
+        "observed_owner_agent_id: &AgentId",
+        "observed_owner_agent_id.as_str() != self.owner_agent_id",
+        "target_owner_drift_is_fenced",
+        "AgentId::parse(&self.owner_agent_id)",
+    ]:
+        need(marker in cross_host, f"cross-host owner binding is missing {marker}")
 
     effect_host = text(root, "codex-rs/hepta-agentd/src/automation_effect_host.rs")
     for marker in [
@@ -271,6 +306,10 @@ def verify(root: Path = ROOT) -> dict[str, Any]:
         "migrationVersions": observed_versions,
         "documentationFiles": len(documentation),
         "repositoryControlledClosure": True,
+        "boundedRecoveryFairnessVerified": True,
+        "canonicalCircuitIngressVerified": True,
+        "runtimeProfileReceiptBindingVerified": True,
+        "crossHostOwnerBindingVerified": True,
         "selectedHostVerifierPresent": True,
         "independentAcceptanceVerifierPresent": True,
         "externalReleaseGatesRemainFalse": True,
