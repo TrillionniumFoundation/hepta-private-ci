@@ -6,7 +6,15 @@
 
 #[path = "compat_legacy.rs"]
 mod legacy;
-pub use legacy::*;
+pub use legacy::CandidateDecision;
+pub use legacy::CandidateDisposition;
+pub use legacy::Error;
+pub use legacy::OptimizationRequest;
+pub use legacy::PromptCandidate;
+pub use legacy::PromptPortfolioReceipt;
+pub use legacy::optimize;
+pub(crate) use legacy::canonical_factor_pair;
+pub(crate) use legacy::optimize_with_factor_graph_constraints;
 
 #[path = "graph.rs"]
 pub mod graph;
