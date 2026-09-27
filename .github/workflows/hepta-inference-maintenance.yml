@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - work/architecture-scalability-convergence-20260918
+      - codex/inference-control-v2-closure-20260927
     paths:
       - 'codex-rs/hepta-infer-core/**'
       - 'codex-rs/hepta-infer-worker-host/**'
@@ -13,12 +13,19 @@ on:
       - 'codex-rs/Cargo.lock'
       - 'codex-rs/rust-toolchain*'
       - 'docs/modules/inference.control/**'
+      - 'docs/modules/MODULES.json'
+      - 'docs/modules/CARGO_BINDINGS.json'
+      - 'docs/modules/SOURCE_BINDINGS.json'
+      - 'docs/delivery/PATH_OWNERSHIP.json'
       - 'qualification/module-execution-dossiers/detail/inference.control*'
       - 'scripts/hepta-inference-control-current-state.py'
+      - 'scripts/hepta-inference-control-ownership.py'
       - 'scripts/hepta-inference-control-actor-migrate.py'
+      - 'scripts/hepta-inference-control-classify.py'
       - 'scripts/hepta-implementation-maps.py'
       - 'scripts/hepta_ci_candidate.py'
       - 'scripts/hepta_ci_exec.py'
+      - 'scripts/test_hepta_ci_exec*.py'
       - '.github/workflows/hepta-inference-maintenance.yml'
   pull_request:
     paths:
@@ -29,12 +36,19 @@ on:
       - 'codex-rs/Cargo.lock'
       - 'codex-rs/rust-toolchain*'
       - 'docs/modules/inference.control/**'
+      - 'docs/modules/MODULES.json'
+      - 'docs/modules/CARGO_BINDINGS.json'
+      - 'docs/modules/SOURCE_BINDINGS.json'
+      - 'docs/delivery/PATH_OWNERSHIP.json'
       - 'qualification/module-execution-dossiers/detail/inference.control*'
       - 'scripts/hepta-inference-control-current-state.py'
+      - 'scripts/hepta-inference-control-ownership.py'
       - 'scripts/hepta-inference-control-actor-migrate.py'
+      - 'scripts/hepta-inference-control-classify.py'
       - 'scripts/hepta-implementation-maps.py'
       - 'scripts/hepta_ci_candidate.py'
       - 'scripts/hepta_ci_exec.py'
+      - 'scripts/test_hepta_ci_exec*.py'
       - '.github/workflows/hepta-inference-maintenance.yml'
   workflow_dispatch:
 
@@ -59,11 +73,15 @@ jobs:
   owner-regression:
     name: Inference control qualification (${{ matrix.lane }})
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 50
+    timeout-minutes: 55
     strategy:
       fail-fast: false
       matrix:
         lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    env:
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      RECORDS_DIR: ${{ runner.temp }}/hepta-inference-records/${{ matrix.lane }}
+      SETUP_MARKER: ${{ runner.temp }}/hepta-inference-records/${{ matrix.lane }}/setup.json
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -71,10 +89,46 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Bind checkout and initialize lane evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          mkdir -p "$RECORDS_DIR/commands" "$RECORDS_DIR/evidence"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          marker = Path(os.environ["SETUP_MARKER"])
+          marker.write_text(json.dumps({
+              "schema": "hepta.inference-control-lane-setup.v1",
+              "lane": os.environ["HEPTA_CI_LANE"],
+              "sourceSha": os.environ["SOURCE_SHA"],
+              "checkoutBound": True,
+              "toolchainReady": False,
+          }, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          printf 'TESTED_SHA=%s\n' "$SOURCE_SHA" >> "$GITHUB_ENV"
+
       - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
         with:
           toolchain: '1.95.0'
           components: rustfmt, clippy
+
+      - name: Mark exact toolchain ready
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          marker = Path(os.environ["SETUP_MARKER"])
+          value = json.loads(marker.read_text(encoding="utf-8"))
+          value["toolchainReady"] = True
+          marker.write_text(json.dumps(value, sort_keys=True) + "\n", encoding="utf-8")
+          PY
 
       - name: Verify GitHub prospective merge identity
         if: matrix.lane == 'base-merge'
@@ -109,10 +163,9 @@ jobs:
           author-email: hepta-inference-ci@users.noreply.github.com
           message: Synthetic inference.control merge
 
-      - name: Bind tested identity and retain reproducible input
+      - name: Bind tested identity and reproducible source input
         env:
           CANDIDATE: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
-          LANE: ${{ matrix.lane }}
         shell: bash
         run: |
           set -euo pipefail
@@ -120,19 +173,15 @@ jobs:
           git diff --quiet
           git diff --cached --quiet
           candidate_tree="$(git rev-parse HEAD^{tree})"
-          printf 'TESTED_SHA=%s\nHEPTA_CI_LANE=%s\nCANDIDATE_TREE=%s\n' \
-            "$CANDIDATE" "$LANE" "$candidate_tree" >> "$GITHUB_ENV"
-          records="$RUNNER_TEMP/hepta-inference-records/$LANE"
-          mkdir -p "$records/commands" "$records/evidence"
-          printf 'RECORDS_DIR=%s\n' "$records" >> "$GITHUB_ENV"
+          printf 'TESTED_SHA=%s\nCANDIDATE_TREE=%s\n' "$CANDIDATE" "$candidate_tree" >> "$GITHUB_ENV"
           printf 'source=%s\nbase=%s\ntested=%s\ntree=%s\nlane=%s\ngithub_merge=%s\ngithub_merge_tree=%s\n' \
-            "$SOURCE_SHA" "$BASE_SHA" "$CANDIDATE" "$candidate_tree" "$LANE" \
+            "$SOURCE_SHA" "$BASE_SHA" "$CANDIDATE" "$candidate_tree" "$HEPTA_CI_LANE" \
             "${GITHUB_PROSPECTIVE_MERGE_SHA:-}" "${GITHUB_PROSPECTIVE_MERGE_TREE:-}" \
-            > "$records/identity.txt"
-          git archive --format=tar "$CANDIDATE" | gzip -1 > "$records/source-input.tar.gz"
-          rustc --version --verbose > "$records/toolchain.txt"
-          cargo --version >> "$records/toolchain.txt"
-          cargo fmt --version >> "$records/toolchain.txt"
+            > "$RECORDS_DIR/identity.txt"
+          git archive --format=tar "$CANDIDATE" | gzip -1 > "$RECORDS_DIR/source-input.tar.gz"
+          rustc --version --verbose > "$RECORDS_DIR/toolchain.txt"
+          cargo --version >> "$RECORDS_DIR/toolchain.txt"
+          cargo fmt --version >> "$RECORDS_DIR/toolchain.txt"
 
       - name: Validate exact candidate plan
         shell: bash
@@ -154,6 +203,14 @@ jobs:
             --output "$RECORDS_DIR/commands/01-current-state.json" \
             -- python3 scripts/hepta-inference-control-current-state.py check
 
+      - name: Verify formal ownership projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECORDS_DIR/commands/01a-ownership.json" \
+            -- python3 scripts/hepta-inference-control-ownership.py check
+
       - name: Verify unique-writer product migration
         shell: bash
         run: |
@@ -170,7 +227,7 @@ jobs:
             --output "$RECORDS_DIR/commands/02-implementation-maps.json" \
             -- python3 scripts/hepta-implementation-maps.py verify
 
-      - name: Verify actual execution-record and scope regressions
+      - name: Verify execution-record and repository-control regressions
         shell: bash
         run: |
           set -euo pipefail
@@ -185,7 +242,7 @@ jobs:
               scripts.tests.test_hepta_ci_scope \
               scripts.tests.test_hepta_repository_controls
 
-      - name: Verify pinned Cargo.lock
+      - name: Verify pinned dependency graph
         shell: bash
         run: |
           set -euo pipefail
@@ -228,7 +285,7 @@ jobs:
               -p codex-hepta-infer-core post_compaction_multi_generation_curve \
               -- --ignored --nocapture --test-threads=1
 
-      - name: Check owner formatting without modifying tested source
+      - name: Check owner formatting without mutation
         shell: bash
         run: |
           set -euo pipefail
@@ -258,12 +315,42 @@ jobs:
             --source-sha "$SOURCE_SHA" \
             --tested-sha "$TESTED_SHA" \
             --base-sha "$BASE_SHA" \
-            --candidate-tree "$CANDIDATE_TREE" \
+            --candidate-tree "${CANDIDATE_TREE:-$(git rev-parse HEAD^{tree})}" \
             --check-run-url "$CHECK_RUN_URL" \
             "${args[@]}" \
             --output "$RECORDS_DIR/evidence/receipt.json"
 
-      - name: Retain formatting suggestion separately from tested checkout
+      - name: Classify source failure versus invalid infrastructure
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=(
+            00-candidate.json
+            01-current-state.json
+            01a-ownership.json
+            01b-actor-migration.json
+            02-implementation-maps.json
+            03-runner.json
+            04-controls-scope.json
+            05-cargo-metadata.json
+            06-tests.json
+            07-clippy.json
+            08-maintenance-scale.json
+            09-format.json
+          )
+          args=()
+          for name in "${expected[@]}"; do args+=(--expected "$name"); done
+          python3 scripts/hepta-inference-control-classify.py \
+            --records-dir "$RECORDS_DIR/commands" \
+            --setup-marker "$SETUP_MARKER" \
+            --output "$RECORDS_DIR/evidence/classification.json" \
+            --lane "$HEPTA_CI_LANE" \
+            --source-sha "$SOURCE_SHA" \
+            --tested-sha "$TESTED_SHA" \
+            "${args[@]}"
+
+      - name: Retain formatting proposal separately
         if: failure()
         shell: bash
         run: |
@@ -284,7 +371,7 @@ jobs:
           git diff --exit-code
           git diff --cached --exit-code
 
-      - name: Retain command evidence and source input
+      - name: Retain lane evidence and exact source input
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -293,10 +380,21 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Require passing lane classification
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -e '.classification == "passed"' "$RECORDS_DIR/evidence/classification.json" >/dev/null
+
   native-host:
     name: Inference native-host qualification
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 50
+    timeout-minutes: 55
+    env:
+      HEPTA_CI_LANE: native-host
+      RECORDS_DIR: ${{ runner.temp }}/hepta-inference-records/native-host
+      SETUP_MARKER: ${{ runner.temp }}/hepta-inference-records/native-host/setup.json
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -304,10 +402,46 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Bind checkout and initialize native-host evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          mkdir -p "$RECORDS_DIR/commands" "$RECORDS_DIR/evidence"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          marker = Path(os.environ["SETUP_MARKER"])
+          marker.write_text(json.dumps({
+              "schema": "hepta.inference-control-lane-setup.v1",
+              "lane": "native-host",
+              "sourceSha": os.environ["SOURCE_SHA"],
+              "checkoutBound": True,
+              "toolchainReady": False,
+          }, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          printf 'TESTED_SHA=%s\n' "$SOURCE_SHA" >> "$GITHUB_ENV"
+
       - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
         with:
           toolchain: '1.95.0'
           components: rustfmt, clippy
+
+      - name: Mark exact toolchain ready
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          marker = Path(os.environ["SETUP_MARKER"])
+          value = json.loads(marker.read_text(encoding="utf-8"))
+          value["toolchainReady"] = True
+          marker.write_text(json.dumps(value, sort_keys=True) + "\n", encoding="utf-8")
+          PY
 
       - name: Bind native-host tested identity
         shell: bash
@@ -315,21 +449,23 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           candidate_tree="$(git rev-parse HEAD^{tree})"
-          records="$RUNNER_TEMP/hepta-inference-records/native-host"
-          mkdir -p "$records/commands" "$records/evidence"
-          printf 'TESTED_SHA=%s\nCANDIDATE_TREE=%s\nRECORDS_DIR=%s\n' \
-            "$SOURCE_SHA" "$candidate_tree" "$records" >> "$GITHUB_ENV"
-          git archive --format=tar "$SOURCE_SHA" | gzip -1 > "$records/source-input.tar.gz"
-          rustc --version --verbose > "$records/toolchain.txt"
-          cargo --version >> "$records/toolchain.txt"
+          printf 'CANDIDATE_TREE=%s\n' "$candidate_tree" >> "$GITHUB_ENV"
+          printf 'source=%s\nbase=%s\ntested=%s\ntree=%s\nlane=native-host\n' \
+            "$SOURCE_SHA" "$BASE_SHA" "$SOURCE_SHA" "$candidate_tree" > "$RECORDS_DIR/identity.txt"
+          git archive --format=tar "$SOURCE_SHA" | gzip -1 > "$RECORDS_DIR/source-input.tar.gz"
+          rustc --version --verbose > "$RECORDS_DIR/toolchain.txt"
+          cargo --version >> "$RECORDS_DIR/toolchain.txt"
 
-      - name: Verify current state and owner mappings
+      - name: Verify current state, ownership and maps
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py \
             --output "$RECORDS_DIR/commands/00-current-state.json" \
             -- python3 scripts/hepta-inference-control-current-state.py check
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECORDS_DIR/commands/00a-ownership.json" \
+            -- python3 scripts/hepta-inference-control-ownership.py check
           python3 scripts/hepta_ci_exec.py \
             --output "$RECORDS_DIR/commands/00b-actor-migration.json" \
             -- python3 scripts/hepta-inference-control-actor-migrate.py check
@@ -347,7 +483,7 @@ jobs:
             -- cargo test --locked --manifest-path codex-rs/Cargo.toml \
               -p codex-hepta-infer-worker-host --all-targets --all-features
 
-      - name: Run durable crash fault and tamper matrix
+      - name: Run durable failpoint and checkpoint-tamper matrix
         shell: bash
         run: |
           set -euo pipefail
@@ -365,16 +501,44 @@ jobs:
               -p codex-hepta-infer-core checkpoint_tampering_is_rejected_on_reopen \
               -- --nocapture --test-threads=1
 
-      - name: Strict native-host lint
+      - name: Run process-kill and torn-tail recovery matrix
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py \
-            --output "$RECORDS_DIR/commands/05-clippy.json" \
+            --output "$RECORDS_DIR/commands/05-process-crash.json" \
+            --minimum-tests 1 \
+            -- cargo test --locked --manifest-path codex-rs/Cargo.toml \
+              -p codex-hepta-infer-core --test process_crash_recovery \
+              -- --nocapture --test-threads=1
+
+      - name: Run expired-lease reconciliation matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECORDS_DIR/commands/06-expired-recovery.json" \
+            --minimum-tests 1 \
+            -- cargo test --locked --manifest-path codex-rs/Cargo.toml \
+              -p codex-hepta-infer-core --test recovery_after_expiry \
+              -- --nocapture --test-threads=1
+
+      - name: Strict native-host lint and formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECORDS_DIR/commands/07-clippy.json" \
             -- cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
               -p codex-hepta-infer-core \
               -p codex-hepta-infer-worker-host \
               --all-targets --all-features -- -D warnings
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECORDS_DIR/commands/08-format.json" \
+            -- cargo fmt --manifest-path codex-rs/Cargo.toml \
+              --package codex-hepta-infer-core \
+              --package codex-hepta-infer-worker-host \
+              -- --check
 
       - name: Emit native-host evidence receipt
         if: always()
@@ -386,18 +550,45 @@ jobs:
           mapfile -t records < <(find "$RECORDS_DIR/commands" -maxdepth 1 -type f -name '*.json' -print | sort)
           test "${#records[@]}" -gt 0
           args=()
-          for record in "${records[@]}"; do
-            args+=(--command-record "$record")
-          done
+          for record in "${records[@]}"; do args+=(--command-record "$record"); done
           python3 scripts/hepta-inference-control-current-state.py evidence \
             --lane native-host \
             --source-sha "$SOURCE_SHA" \
             --tested-sha "$TESTED_SHA" \
             --base-sha "$BASE_SHA" \
-            --candidate-tree "$CANDIDATE_TREE" \
+            --candidate-tree "${CANDIDATE_TREE:-$(git rev-parse HEAD^{tree})}" \
             --check-run-url "$CHECK_RUN_URL" \
             "${args[@]}" \
             --output "$RECORDS_DIR/evidence/receipt.json"
+
+      - name: Classify native-host source failure versus invalid infrastructure
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=(
+            00-current-state.json
+            00a-ownership.json
+            00b-actor-migration.json
+            01-implementation-maps.json
+            02-native-host.json
+            03-durable-faults.json
+            04-checkpoint-tamper.json
+            05-process-crash.json
+            06-expired-recovery.json
+            07-clippy.json
+            08-format.json
+          )
+          args=()
+          for name in "${expected[@]}"; do args+=(--expected "$name"); done
+          python3 scripts/hepta-inference-control-classify.py \
+            --records-dir "$RECORDS_DIR/commands" \
+            --setup-marker "$SETUP_MARKER" \
+            --output "$RECORDS_DIR/evidence/classification.json" \
+            --lane native-host \
+            --source-sha "$SOURCE_SHA" \
+            --tested-sha "$TESTED_SHA" \
+            "${args[@]}"
 
       - name: Verify native-host source remains unchanged
         if: always()
@@ -416,6 +607,13 @@ jobs:
           path: ${{ env.RECORDS_DIR }}/*
           if-no-files-found: error
           retention-days: 30
+
+      - name: Require passing native-host classification
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -e '.classification == "passed"' "$RECORDS_DIR/evidence/classification.json" >/dev/null
 
   inference-control-required:
     name: Inference control required
