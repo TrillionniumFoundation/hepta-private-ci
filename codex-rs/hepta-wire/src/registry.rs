@@ -369,7 +369,7 @@ fn snapshot_digest(policies: &BTreeMap<StableId, SchemaPolicy>) -> Digest32 {
         encoded.extend_from_slice(&descriptor.min_version().as_u16().to_be_bytes());
         encoded.extend_from_slice(&descriptor.max_version().as_u16().to_be_bytes());
         encoded.extend_from_slice(&(descriptor.max_payload_bytes() as u64).to_be_bytes());
-        encoded.extend_from_slice(policy.schema_revision().as_bytes());
+        encoded.extend_from_slice(policy.schema_revision().as_array());
         encoded.extend_from_slice(&policy.generation_policy().minimum().to_be_bytes());
         put_raw(&mut encoded, policy.canonicalization_profile().id().as_bytes());
         encoded.extend_from_slice(&policy.required_capabilities().bits().to_be_bytes());
