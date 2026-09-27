@@ -35,6 +35,7 @@ fn cancellation_ack_fences_late_terminal_and_is_idempotent() {
         .observe_cancel(&request, 1_101)
         .expect("idempotent cancellation");
     assert_eq!(repeated.disposition, first.disposition);
+    assert_eq!(repeated.observed_unix_ms, first.observed_unix_ms);
     assert!(registry.is_cancelled(&query_id, query_digest));
     assert_eq!(
         registry.observe_terminal(&query_id, query_digest, terminal_digest, 1_102),
@@ -113,7 +114,7 @@ fn unknown_conflicting_and_overload_states_fail_closed() {
     assert_eq!(
         registry.observe_cancel(
             &FederationCancelMessageV1 {
-                query_id,
+                query_id: query_id.clone(),
                 query_binding_digest: query_digest,
                 cancellation_id: id("cancel-b"),
                 reason: FederationCancellationReasonV1::CallerCancelled,
@@ -122,4 +123,51 @@ fn unknown_conflicting_and_overload_states_fail_closed() {
         ),
         Err(AttemptRegistryError::ConflictingCancellation)
     );
+    assert_eq!(
+        registry.observe_cancel(
+            &FederationCancelMessageV1 {
+                query_id,
+                query_binding_digest: query_digest,
+                cancellation_id: id("cancel-a"),
+                reason: FederationCancellationReasonV1::AuthorityRevoked,
+            },
+            1_102,
+        ),
+        Err(AttemptRegistryError::ConflictingCancellation)
+    );
+}
+
+#[test]
+fn attempt_observation_clock_cannot_regress() {
+    let query_id = id("query-clock");
+    let query_digest = Digest32::of_bytes(b"query-clock-binding");
+    let terminal_digest = Digest32::of_bytes(b"terminal-clock");
+    let cancel = FederationCancelMessageV1 {
+        query_id: query_id.clone(),
+        query_binding_digest: query_digest,
+        cancellation_id: id("cancel-clock"),
+        reason: FederationCancellationReasonV1::CallerCancelled,
+    };
+    let mut registry = FederationAttemptRegistryV1::new(4).expect("registry");
+    assert_eq!(
+        registry.begin(&query_id, query_digest, 10_000, 0),
+        Err(AttemptRegistryError::ZeroObservationTime)
+    );
+    registry
+        .begin(&query_id, query_digest, 10_000, 1_000)
+        .expect("begin");
+    assert_eq!(
+        registry.observe_terminal(&query_id, query_digest, terminal_digest, 999),
+        Err(AttemptRegistryError::ClockRegression)
+    );
+    assert_eq!(
+        registry.observe_cancel(&cancel, 999),
+        Err(AttemptRegistryError::ClockRegression)
+    );
+    let first = registry.observe_cancel(&cancel, 1_100).expect("first cancel");
+    assert_eq!(
+        registry.observe_cancel(&cancel, 1_099),
+        Err(AttemptRegistryError::ClockRegression)
+    );
+    assert_eq!(first.observed_unix_ms, 1_100);
 }
