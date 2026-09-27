@@ -1,6 +1,9 @@
 //! Independent deterministic candidate evaluation. Eligibility is not promotion.
 #![forbid(unsafe_code)]
 
+#[cfg(test)]
+extern crate self as tempfile;
+
 #[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -18,6 +21,10 @@ mod fenced_holdout_file;
 mod holdout_journal;
 mod ndu_convergence;
 mod ndu_well_posedness;
+#[cfg(test)]
+mod test_tempfile;
+#[cfg(test)]
+pub(crate) use test_tempfile::NamedTempFile;
 pub use attempt_journal::InMemoryProductEvaluationAttemptJournalV1;
 pub use attempt_journal::LockedFileProductEvaluationAttemptJournalV1;
 pub use attempt_journal::ProductEvaluationAttemptJournalErrorV1;
