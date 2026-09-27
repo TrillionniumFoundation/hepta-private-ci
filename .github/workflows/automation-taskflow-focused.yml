@@ -25,6 +25,8 @@ on:
       - .github/workflows/automation-taskflow-focused.yml
       - .github/workflows/automation-taskflow-selected-host.yml
       - .github/workflows/automation-taskflow-independent-acceptance.yml
+      - .github/workflows/automation-taskflow-format-bootstrap.yml
+      - .github/workflows/automation-taskflow-map-rebind-final.yml
       - .github/workflows/blocking-ci.yml
   push:
     branches: [main]
@@ -51,6 +53,8 @@ on:
       - .github/workflows/automation-taskflow-focused.yml
       - .github/workflows/automation-taskflow-selected-host.yml
       - .github/workflows/automation-taskflow-independent-acceptance.yml
+      - .github/workflows/automation-taskflow-format-bootstrap.yml
+      - .github/workflows/automation-taskflow-map-rebind-final.yml
       - .github/workflows/blocking-ci.yml
   workflow_call:
   workflow_dispatch:
