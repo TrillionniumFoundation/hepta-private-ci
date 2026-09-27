@@ -38,8 +38,16 @@ def _state() -> dict[str, Any]:
         raise StatusError("capability-state schema mismatch")
     if state.get("schemaVersion") != 1 or state.get("module") != "memory.federation":
         raise StatusError("capability-state identity mismatch")
-    if not isinstance(state.get("capabilities"), dict):
+    capabilities = state.get("capabilities")
+    if not isinstance(capabilities, dict):
         raise StatusError("capability-state capabilities must be an object")
+    if capabilities.get("logicalCapacityProbe") != "source_candidate_retained_metrics_pending_execution":
+        raise StatusError("logical capacity probe state drift")
+    execution = state.get("execution")
+    if not isinstance(execution, dict):
+        raise StatusError("capability-state execution must be an object")
+    if execution.get("successfulReceiptsRequireCapacityMetrics") is not True:
+        raise StatusError("successful receipts must require retained capacity metrics")
     claims = state.get("claims")
     if not isinstance(claims, dict) or any(type(value) is not bool for value in claims.values()):
         raise StatusError("capability-state claims must be boolean")
@@ -151,6 +159,20 @@ def _verify_wire_map(state: dict[str, Any]) -> None:
             raise StatusError(f"wire-map claim drift: {map_field}")
     if row.get("externalGates") != state.get("externalGates"):
         raise StatusError("wire-map external gates drift")
+    qualification = row.get("qualification")
+    if not isinstance(qualification, dict):
+        raise StatusError("wire-map qualification is missing")
+    if qualification.get("capacityMetricsRequiredForSuccess") is not True:
+        raise StatusError("wire-map capacity metrics are not required for success")
+    operations = row.get("operations")
+    if not isinstance(operations, list) or not any(
+        operation.get("name") == "measure_logical_host_capacity_and_recovery"
+        and operation.get("source")
+        == "codex-rs/hepta-memory-federation-wire/src/bin/memory_federation_capacity_probe.rs"
+        for operation in operations
+        if isinstance(operation, dict)
+    ):
+        raise StatusError("wire-map capacity probe operation is missing")
 
 
 def verify() -> int:
@@ -169,12 +191,21 @@ def verify() -> int:
         "verify_memory_federation_status.py verify",
         "memory_federation_execution_guard.py capture",
         "memory_federation_execution_guard.py verify",
+        "memory_federation_capacity_probe",
+        "memory-federation-capacity.json",
     ):
         if marker not in qualification:
             raise StatusError(f"qualification script is missing {marker}")
     attestation = (ROOT / state["attestationScript"]).read_text(encoding="utf-8")
-    if "capability-state.json" not in attestation or "capabilityStateSha256" not in attestation:
-        raise StatusError("qualification attestation does not bind capability state")
+    for marker in (
+        "capability-state.json",
+        "capabilityStateSha256",
+        "capacity-metrics.json",
+        "capacityMetricsSha256",
+        "successful qualification is missing capacity metrics",
+    ):
+        if marker not in attestation:
+            raise StatusError(f"qualification attestation is missing {marker}")
     print(json.dumps({"status": "PASS_MEMORY_FEDERATION_STATUS", "module": state["module"]}))
     return 0
 

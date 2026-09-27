@@ -5,14 +5,15 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 # Qualification is read-only and pinned twice: before any compiler/test command
-# and after the complete matrix.  The implementation-map check deliberately
-# reuses the canonical strict verifier while narrowing its registry view to this
-# module, so unrelated module provenance cannot contaminate this module receipt.
+# and after the complete matrix. The implementation-map check reuses the
+# canonical strict verifier while narrowing its registry view to this module.
 CANDIDATE_SHA="$(git rev-parse HEAD)"
 CANDIDATE_TREE="$(git rev-parse HEAD^{tree})"
 GUARD_DIR="$(mktemp -d "${RUNNER_TEMP:-/tmp}/memory-federation-guard.XXXXXX")"
 GUARD_STATE="$GUARD_DIR/execution-guard.json"
+CAPACITY_METRICS="${RUNNER_TEMP:-/tmp}/memory-federation-capacity.json"
 trap 'rm -rf "$GUARD_DIR"' EXIT
+rm -f "$CAPACITY_METRICS"
 
 python3 -m py_compile \
   scripts/memory_federation_attestation.py \
@@ -54,15 +55,17 @@ cargo clippy \
 cargo clippy -p codex-hepta-memory-federation --all-targets --features legacy-v1 -- -D warnings
 cargo clippy -p codex-hepta-agentd --lib -- -D warnings
 
-# Cross-host V1 remains a separately qualified protocol/host candidate.  These
-# commands prove its source and contracts without silently activating a network
-# service.  Doctests enforce that VerifiedFederationFrameV1 cannot be
-# constructed or mutated outside the successful verification path.
+# The cross-host crate is qualified independently without activating a network
+# service. Doctests enforce the private verified-frame type boundary. The probe
+# emits retained logical-host diagnostics; it is not a real-host SLO claim.
 WIRE_MANIFEST="$ROOT/codex-rs/hepta-memory-federation-wire/Cargo.toml"
 cargo fmt --manifest-path "$WIRE_MANIFEST" -- --check
 cargo metadata --manifest-path "$WIRE_MANIFEST" --format-version 1 --no-deps > /dev/null
 cargo test --manifest-path "$WIRE_MANIFEST" --lib
 cargo test --manifest-path "$WIRE_MANIFEST" --doc
+cargo run --manifest-path "$WIRE_MANIFEST" \
+  --bin memory_federation_capacity_probe -- "$CAPACITY_METRICS"
+test -s "$CAPACITY_METRICS"
 cargo clippy --manifest-path "$WIRE_MANIFEST" --all-targets -- -D warnings
 
 cd "$ROOT"

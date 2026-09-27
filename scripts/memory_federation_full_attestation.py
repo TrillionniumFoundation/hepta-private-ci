@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Extend the V2 qualification receipt with wire and canonical status evidence."""
+"""Extend the V2 receipt with wire, status and logical-capacity evidence."""
 
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import shutil
+import sys
 
 import memory_federation_attestation as base
 
@@ -19,10 +21,6 @@ base.QUALIFIED_PATHS = (
     "scripts/run_memory_federation_qualification.sh",
 )
 
-# This is the executable command contract, in the same order as the read-only
-# qualification script.  The execution guard hashes this tuple before and after
-# the matrix, so changing either the source or the declared commands invalidates
-# the run rather than silently inheriting an earlier receipt.
 base.COMMANDS = (
     "python3 -m py_compile scripts/memory_federation_attestation.py "
     "scripts/memory_federation_full_attestation.py "
@@ -52,6 +50,8 @@ base.COMMANDS = (
     "--format-version 1 --no-deps",
     "cargo test --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --lib",
     "cargo test --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --doc",
+    "cargo run --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml "
+    "--bin memory_federation_capacity_probe -- <capacity-metrics.json>",
     "cargo clippy --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml "
     "--all-targets -- -D warnings",
     "git diff --check",
@@ -60,25 +60,20 @@ base.COMMANDS = (
     "--state <guard-state> --expected-sha <tested-sha> --expected-tree <tested-tree>",
 )
 
-_WIRE_LOCK = pathlib.Path("codex-rs/hepta-memory-federation-wire/Cargo.lock")
-_CAPABILITY_STATE = pathlib.Path("docs/modules/memory.federation/CAPABILITY_STATE.json")
-_ORIGINAL_EMIT_PAYLOAD = base.emit_payload
-_ORIGINAL_VERIFY_PAYLOAD = base._verify_payload
+ROOT_STATE = pathlib.Path("docs/modules/memory.federation/CAPABILITY_STATE.json")
+WIRE_LOCK = pathlib.Path("codex-rs/hepta-memory-federation-wire/Cargo.lock")
+METRICS_NAME = "memory-federation-capacity.json"
+ORIGINAL_EMIT = base.emit_payload
+ORIGINAL_VERIFY = base._verify_payload
 
 
-def _require_capability_state(value) -> dict:
-    if not isinstance(value, dict):
-        raise base.AttestationError("capability state must be a JSON object")
-    if (
-        value.get("schema") != "hepta.memory-federation.capability-state.v1"
-        or value.get("schemaVersion") != 1
-        or value.get("module") != "memory.federation"
-    ):
-        raise base.AttestationError("capability state identity mismatch")
+def require_state(value):
+    if not isinstance(value, dict) or value.get("schema") != "hepta.memory-federation.capability-state.v1":
+        raise base.AttestationError("capability-state identity mismatch")
     claims = value.get("claims")
     if not isinstance(claims, dict):
         raise base.AttestationError("capability-state claims are missing")
-    for field in (
+    for name in (
         "productionImplementation",
         "productExecutionProved",
         "independentAcceptance",
@@ -86,85 +81,161 @@ def _require_capability_state(value) -> dict:
         "promotion",
         "release",
     ):
-        if claims.get(field) is not False:
-            raise base.AttestationError(
-                f"capability-state claim {field} must remain false in a qualification payload"
-            )
+        if claims.get(name) is not False:
+            raise base.AttestationError(f"qualification cannot promote {name}")
     return value
 
 
-def _emit_payload_with_full_evidence(args):
-    result = _ORIGINAL_EMIT_PAYLOAD(args)
+def require_metrics(value):
+    if (
+        not isinstance(value, dict)
+        or value.get("schema") != "hepta.memory-federation.capacity-probe.v1"
+        or value.get("profile") != "logical-host-candidate-not-production-slo"
+    ):
+        raise base.AttestationError("capacity-metrics identity mismatch")
+    integers = (
+        "peerCount",
+        "liveReplayEntries",
+        "liveFillNanos",
+        "livePartitionRejections",
+        "liveCleanupRemoved",
+        "liveCleanupNanos",
+        "durableReplayEntries",
+        "durableReplayPartitionRejections",
+        "durableAttemptEntries",
+        "durableAttemptPartitionRejections",
+        "cancellationCount",
+        "cancellationTotalNanos",
+        "cancellationAverageNanos",
+        "snapshotBytes",
+        "snapshotEncodeNanos",
+        "restoreNanos",
+    )
+    if any(type(value.get(name)) is not int or value[name] < 0 for name in integers):
+        raise base.AttestationError("capacity-metrics integer field is invalid")
+    if not (
+        value["peerCount"] > 0
+        and value["liveReplayEntries"] > 0
+        and value["durableReplayEntries"] > 0
+        and value["durableAttemptEntries"] > 0
+        and value["cancellationCount"] == value["durableAttemptEntries"]
+        and value["liveCleanupRemoved"] == value["liveReplayEntries"]
+        and value["livePartitionRejections"] == value["peerCount"]
+        and value["durableReplayPartitionRejections"] == value["peerCount"]
+        and value["durableAttemptPartitionRejections"] == value["peerCount"]
+        and value["snapshotBytes"] > 0
+    ):
+        raise base.AttestationError("capacity-metrics invariant mismatch")
+    return value
+
+
+def copy_evidence(output, source, target, path_key, digest_key, evidence, validator=None):
+    target_path = output / target
+    shutil.copyfile(source, target_path)
+    if validator is not None:
+        validator(json.loads(target_path.read_text(encoding="utf-8")))
+    evidence[path_key] = target_path.name
+    evidence[digest_key] = base._sha256_bytes(target_path.read_bytes())
+
+
+def emit(args):
+    result = ORIGINAL_EMIT(args)
     output = pathlib.Path(args.output)
-    attestation_path = output / "attestation.json"
-    attestation = base._read_json(attestation_path)
-    evidence = base._require_mapping("evidence", attestation.get("evidence"))
+    receipt = output / "attestation.json"
+    document = base._read_json(receipt)
+    evidence = base._require_mapping("evidence", document.get("evidence"))
 
-    if not _CAPABILITY_STATE.is_file():
+    if not ROOT_STATE.is_file():
         raise base.AttestationError("canonical capability state is missing")
-    capability_copy = output / "capability-state.json"
-    shutil.copyfile(_CAPABILITY_STATE, capability_copy)
-    _require_capability_state(json.loads(capability_copy.read_text(encoding="utf-8")))
-    evidence["capabilityState"] = capability_copy.name
-    evidence["capabilityStateSha256"] = base._sha256_bytes(capability_copy.read_bytes())
+    copy_evidence(
+        output,
+        ROOT_STATE,
+        "capability-state.json",
+        "capabilityState",
+        "capabilityStateSha256",
+        evidence,
+        require_state,
+    )
 
-    if _WIRE_LOCK.is_file():
-        copied_lock = output / "wire-Cargo.lock"
-        shutil.copyfile(_WIRE_LOCK, copied_lock)
-        evidence["wireCargoLock"] = copied_lock.name
-        evidence["wireCargoLockSha256"] = base._sha256_bytes(copied_lock.read_bytes())
+    runner_temp = os.environ.get("RUNNER_TEMP", "").strip()
+    metrics = pathlib.Path(runner_temp) / METRICS_NAME if runner_temp else None
+    self_test = "self-test" in sys.argv[1:]
+    if args.conclusion == "success" and not self_test and (metrics is None or not metrics.is_file()):
+        raise base.AttestationError("successful qualification is missing capacity metrics")
+    if metrics is not None and metrics.is_file():
+        copy_evidence(
+            output,
+            metrics,
+            "capacity-metrics.json",
+            "capacityMetrics",
+            "capacityMetricsSha256",
+            evidence,
+            require_metrics,
+        )
+    if WIRE_LOCK.is_file():
+        copy_evidence(
+            output,
+            WIRE_LOCK,
+            "wire-Cargo.lock",
+            "wireCargoLock",
+            "wireCargoLockSha256",
+            evidence,
+        )
 
-    digest = base._write_json(attestation_path, attestation)
+    digest = base._write_json(receipt, document)
     (output / "attestation.sha256").write_text(
         f"{digest}  attestation.json\n", encoding="utf-8"
     )
     return result
 
 
-def _verify_payload_with_full_evidence(path, value):
-    document = _ORIGINAL_VERIFY_PAYLOAD(path, value)
+def verify_pair(receipt, evidence, path_key, digest_key, label):
+    path_value = evidence.get(path_key)
+    digest_value = evidence.get(digest_key)
+    if (path_value is None) != (digest_value is None):
+        raise base.AttestationError(f"{label} evidence pair is incomplete")
+    if path_value is None:
+        return None
+    path = base._resolve_evidence_file(receipt, path_value)
+    digest = base._require_hex(f"evidence.{digest_key}", digest_value, base._SHA256_RE)
+    if base._sha256_bytes(path.read_bytes()) != digest:
+        raise base.AttestationError(f"{label} evidence digest mismatch")
+    return path
+
+
+def verify(receipt, value):
+    document = ORIGINAL_VERIFY(receipt, value)
     evidence = base._require_mapping("evidence", document.get("evidence"))
 
-    capability_path = base._resolve_evidence_file(path, evidence.get("capabilityState"))
-    capability_digest = base._require_hex(
-        "evidence.capabilityStateSha256",
-        evidence.get("capabilityStateSha256"),
-        base._SHA256_RE,
+    state_path = verify_pair(
+        receipt, evidence, "capabilityState", "capabilityStateSha256", "capability state"
     )
-    if base._sha256_bytes(capability_path.read_bytes()) != capability_digest:
-        raise base.AttestationError("capability-state evidence digest mismatch")
-    _require_capability_state(json.loads(capability_path.read_text(encoding="utf-8")))
-    if not _CAPABILITY_STATE.is_file() or base._sha256_bytes(
-        _CAPABILITY_STATE.read_bytes()
-    ) != capability_digest:
-        raise base.AttestationError(
-            "capability-state evidence does not match the qualified checkout"
-        )
+    if state_path is None:
+        raise base.AttestationError("capability-state evidence is missing")
+    require_state(json.loads(state_path.read_text(encoding="utf-8")))
+    if not ROOT_STATE.is_file() or base._sha256_bytes(ROOT_STATE.read_bytes()) != evidence["capabilityStateSha256"]:
+        raise base.AttestationError("capability-state evidence differs from checkout")
 
-    lock_path_value = evidence.get("wireCargoLock")
-    lock_digest_value = evidence.get("wireCargoLockSha256")
-    if (lock_path_value is None) != (lock_digest_value is None):
-        raise base.AttestationError(
-            "wire Cargo.lock evidence requires both a path and SHA-256 digest"
-        )
-    if lock_path_value is not None:
-        lock_path = base._resolve_evidence_file(path, lock_path_value)
-        lock_digest = base._require_hex(
-            "evidence.wireCargoLockSha256",
-            lock_digest_value,
-            base._SHA256_RE,
-        )
-        if base._sha256_bytes(lock_path.read_bytes()) != lock_digest:
-            raise base.AttestationError("wire Cargo.lock evidence digest mismatch")
-        lock_text = lock_path.read_text(encoding="utf-8")
-        if not lock_text.startswith("# This file is automatically @generated by Cargo."):
-            raise base.AttestationError("wire Cargo.lock evidence is not a Cargo lockfile")
+    metrics_path = verify_pair(
+        receipt, evidence, "capacityMetrics", "capacityMetricsSha256", "capacity metrics"
+    )
+    if metrics_path is not None:
+        require_metrics(json.loads(metrics_path.read_text(encoding="utf-8")))
+    if document.get("conclusion") == "success" and metrics_path is None:
+        raise base.AttestationError("successful receipt is missing capacity metrics")
+
+    lock_path = verify_pair(
+        receipt, evidence, "wireCargoLock", "wireCargoLockSha256", "wire Cargo.lock"
+    )
+    if lock_path is not None and not lock_path.read_text(encoding="utf-8").startswith(
+        "# This file is automatically @generated by Cargo."
+    ):
+        raise base.AttestationError("wire Cargo.lock evidence is invalid")
     return document
 
 
-base.emit_payload = _emit_payload_with_full_evidence
-base._verify_payload = _verify_payload_with_full_evidence
-
+base.emit_payload = emit
+base._verify_payload = verify
 
 if __name__ == "__main__":
     raise SystemExit(base.main())

@@ -48,6 +48,11 @@
       "name": "complete_read_only_query_with_owner_cut",
       "source": "codex-rs/hepta-memory-federation-wire/src/host.rs",
       "state": "source_candidate_not_agentd_composed"
+    },
+    {
+      "name": "measure_logical_host_capacity_and_recovery",
+      "source": "codex-rs/hepta-memory-federation-wire/src/bin/memory_federation_capacity_probe.rs",
+      "state": "retained_diagnostics_candidate_not_slo"
     }
   ],
   "qualification": {
@@ -60,6 +65,7 @@
     "deterministicCurrentBaseMergeRequired": true,
     "wireLibraryTestsRequired": true,
     "wireCompileFailDoctestsRequired": true,
+    "capacityMetricsRequiredForSuccess": true,
     "strictClippyRequired": true
   },
   "claimBoundary": {
