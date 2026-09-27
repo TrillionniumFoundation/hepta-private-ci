@@ -1,0 +1,73 @@
+name: One-shot prompt optimizer patch transport
+
+on:
+  push:
+    branches:
+      - work/prompt-optimizer-hardening-20260927
+    paths:
+      - .github/workflows/prompt-optimizer-bootstrap.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prompt-optimizer-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact bootstrap commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+          persist-credentials: true
+
+      - name: Require exact parent and reproduce validated source tree
+        env:
+          EXACT_PARENT: 312616586f1d330bf8bb0d64f3a245cffb94193d
+          PATCH_SHA256: 7bafa65c697bd174b5740ca8c7a937429206411e6cdf1ea7c643237560cd12ef
+          EXPECTED_TREE: 25312dc5dbcad66ead10d116f5d3e0a4a1783a2b
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"
+
+          cat > "$RUNNER_TEMP/expected-files" <<'EOF'
+          .github/prompt-optimizer-bootstrap/chunk-00.txt
+          .github/prompt-optimizer-bootstrap/chunk-01.txt
+          .github/prompt-optimizer-bootstrap/chunk-02.txt
+          .github/prompt-optimizer-bootstrap/chunk-03.txt
+          .github/prompt-optimizer-bootstrap/chunk-04.txt
+          .github/prompt-optimizer-bootstrap/chunk-05.txt
+          .github/workflows/prompt-optimizer-bootstrap.yml
+          EOF
+          git diff --name-only HEAD^ HEAD | sort > "$RUNNER_TEMP/actual-files"
+          diff -u "$RUNNER_TEMP/expected-files" "$RUNNER_TEMP/actual-files"
+
+          cat .github/prompt-optimizer-bootstrap/chunk-*.txt \
+            | base64 --decode \
+            | xz --decompress \
+            > "$RUNNER_TEMP/prompt-optimizer-hardening.patch"
+          echo "$PATCH_SHA256  $RUNNER_TEMP/prompt-optimizer-hardening.patch" \
+            | sha256sum --check -
+
+          git apply --check "$RUNNER_TEMP/prompt-optimizer-hardening.patch"
+          git apply --index "$RUNNER_TEMP/prompt-optimizer-hardening.patch"
+          git rm -r \
+            .github/prompt-optimizer-bootstrap \
+            .github/workflows/prompt-optimizer-bootstrap.yml
+          git diff --cached --check
+          test "$(git write-tree)" = "$EXPECTED_TREE"
+
+          git config user.name "Hepta Prompt Bootstrap"
+          git config user.email "hepta-prompt-bootstrap@users.noreply.github.com"
+          git commit \
+            -m "prompt.optimizer: add canonical codecs, bounded solver and dispatch provenance" \
+            -m "Apply the independently validated exact-base patch and remove the one-shot transport." \
+            -m "Production activation, external acceptance, promotion and release remain false."
+          git push origin HEAD:work/prompt-optimizer-hardening-20260927
