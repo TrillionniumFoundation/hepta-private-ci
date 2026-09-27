@@ -2,6 +2,7 @@
 
 #![forbid(unsafe_code)]
 
+mod canonical_handoff;
 mod decision;
 mod engram;
 mod generation_bound;
@@ -19,6 +20,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+pub use canonical_handoff::compare_canonical_recall_handoff_v1;
 pub use decision::AssignmentErrorV1;
 pub use decision::RetrievalAssignmentCompletenessV1;
 pub use decision::RetrievalAssignmentObservationV1;

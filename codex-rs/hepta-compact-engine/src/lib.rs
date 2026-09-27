@@ -9,6 +9,8 @@ use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::contract::Validated;
+use codex_hepta_cognitive_types::transitions::validate_record_transition_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -70,26 +72,22 @@ pub fn compact(
             .then_with(|| left.revision.cmp(&right.revision))
     });
 
-    let mut latest = BTreeMap::<StableId, MemoryRecord>::new();
+    let mut latest = BTreeMap::<StableId, Validated<MemoryRecord>>::new();
     for record in records {
-        record
-            .validate()
+        let record = Validated::new(record)
             .map_err(|error| Error::InvalidRecord(error.to_string()))?;
         if let Some(previous) = latest.get(&record.record_id) {
             if record.revision == previous.revision {
                 return Err(Error::DuplicateRevision(record.record_id.to_string()));
             }
-            if record.revision.get() != previous.revision.get().saturating_add(1)
-                || record.predecessor_digest != Some(previous.record_digest())
-            {
-                return Err(Error::BrokenLineage(record.record_id.to_string()));
-            }
+            validate_record_transition_v1(previous, &record)
+                .map_err(|_| Error::BrokenLineage(record.record_id.to_string()))?;
         } else if record.revision.get() != 1 {
             return Err(Error::BrokenLineage(record.record_id.to_string()));
         }
         latest.insert(record.record_id.clone(), record);
     }
-    let compacted = latest.into_values().collect::<Vec<_>>();
+    let compacted = latest.into_values().map(Validated::into_inner).collect::<Vec<_>>();
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.compact.checkpoint.v1");
     bytes.extend_from_slice(&generation.get().to_be_bytes());
@@ -109,3 +107,7 @@ pub fn compact(
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "lineage_tests.rs"]
+mod lineage_tests;

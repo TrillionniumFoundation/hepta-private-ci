@@ -25,6 +25,9 @@ def commands(suite: str) -> list[tuple[str, list[str], int]]:
             ("v1-vectors", ["python3", "qualification/cognitive-types-v1/verify_vectors.py"], 0),
             ("bound-python", ["python3", "qualification/cognitive-types-v1/verify_bound_vector.py"], 0),
             ("bound-node", ["node", "qualification/cognitive-types-v1/verify_bound_vector.mjs"], 0),
+            ("all-schema-python", ["python3", "qualification/cognitive-types-v1/verify_closure_vectors.py"], 0),
+            ("all-schema-typescript", ["node", "--experimental-strip-types", "qualification/cognitive-types-v1/verify_closure_vectors.ts"], 0),
+            ("mutation-classifier", ["python3", "scripts/tests/test_cognitive_types_mutation.py"], 0),
         ]
     packages = PACKAGES[:1] if suite == "types" else PACKAGES[1:]
     result = []

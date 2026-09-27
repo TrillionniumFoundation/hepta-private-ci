@@ -12,6 +12,7 @@ use crate::contract::ContractErrorCodeV1;
 use crate::contract::ContractViolationV1;
 use crate::contract::ValidateContractV1;
 use crate::contract::Validated;
+use crate::lane_c::CognitiveSnapshotKeyV1;
 use crate::lane_c::MemoryWriteDisposition;
 use crate::lane_c::MemoryWriteIntentV1;
 use crate::lane_c::MemoryWriteOutcomeV1;
@@ -34,16 +35,17 @@ impl Validated<MemoryRecord> {
 
 /// Validate exactly one successor, never an arbitrary jump or another record.
 /// Tombstones are terminal in this compatibility record protocol. A future
-/// restore protocol must carry distinct, owner-authorized semantics.
+/// restore protocol must carry distinct, owner-authorized semantics. Memory
+/// kind is revisioned content in the existing owner protocol, not an identity.
 pub fn validate_record_transition_v1(
     previous: &Validated<MemoryRecord>,
     next: &Validated<MemoryRecord>,
 ) -> Result<(), ContractViolationV1> {
-    if previous.record_id != next.record_id || previous.kind != next.kind {
+    if previous.record_id != next.record_id {
         return Err(ContractViolationV1::new(
             ContractErrorCodeV1::StateConflict,
-            "recordId/kind",
-            "a revision cannot change its record identity or kind",
+            "recordId",
+            "a revision cannot change its record identity",
         ));
     }
     if previous.revision.get().checked_add(1) != Some(next.revision.get())
@@ -73,15 +75,30 @@ pub fn validate_write_transition_v1(
     intent: &MemoryWriteIntentV1,
     receipt: &MemoryWriteReceiptV1,
 ) -> Result<(), ContractViolationV1> {
-    receipt.validate_against_intent(intent).map_err(|error| error.violation())?;
-    let expected = &intent.expected_snapshot().vector;
-    let observed = &receipt.snapshot_key().vector;
+    receipt.validate_against_intent(intent).map_err(|error| error.violation())
+}
+
+// Constructors and integrity validation call this same non-recursive check.
+// The expected snapshot is retained privately and is already digest-bound by
+// the complete intent, so historical receipts remain self-validating.
+pub(crate) fn validate_receipt_transition_v1(
+    expected_snapshot: &CognitiveSnapshotKeyV1,
+    observed_snapshot: &CognitiveSnapshotKeyV1,
+    outcome: &MemoryWriteOutcomeV1,
+) -> Result<(), ContractViolationV1> {
+    let expected = &expected_snapshot.vector;
+    let observed = &observed_snapshot.vector;
     if expected.scope_id != observed.scope_id || expected.purpose_id != observed.purpose_id {
         return Err(ContractViolationV1::new(
             ContractErrorCodeV1::StateConflict,
             "snapshot.scopeId/purposeId",
             "a write result cannot move to another scope or purpose",
         ));
+    }
+    // Rejection observes state; it does not commit or certify a transition.
+    // A request naming a future frontier can legitimately be rejected.
+    if matches!(outcome, MemoryWriteOutcomeV1::Rejected { .. }) {
+        return Ok(());
     }
     if observed.memory_ledger_frontier < expected.memory_ledger_frontier
         || observed.knowledge_fact_frontier < expected.knowledge_fact_frontier
@@ -98,7 +115,7 @@ pub fn validate_write_transition_v1(
             "a receipt cannot roll back an approved frontier",
         ));
     }
-    if let MemoryWriteOutcomeV1::Committed { disposition, .. } = receipt.outcome() {
+    if let MemoryWriteOutcomeV1::Committed { disposition, .. } = outcome {
         if observed.authority_epoch != expected.authority_epoch
             || observed.retrieval_profile_digest != expected.retrieval_profile_digest
             || observed.encoder_preprocessor_digest != expected.encoder_preprocessor_digest

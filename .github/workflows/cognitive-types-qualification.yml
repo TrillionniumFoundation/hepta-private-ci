@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   resolve:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     outputs:
       source: ${{ steps.identity.outputs.source }}
       base: ${{ steps.identity.outputs.base }}
@@ -93,6 +93,10 @@ jobs:
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,cargo-nextest@0.9.145
+      - if: matrix.suite == 'contracts'
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: '22.16.0'
       - name: Retain toolchain identity
         if: matrix.suite != 'contracts'
         shell: bash

@@ -103,12 +103,15 @@ fn write_receipt_binds_complete_intent_and_rejection_has_no_record_placeholder()
         digest("authorization"),
     )
     .expect("valid intent");
+    let mut committed_vector = expected.vector.clone();
+    committed_vector.memory_ledger_frontier += 1;
+    let committed_snapshot = CognitiveSnapshotKeyV1::new(committed_vector).expect("snapshot");
     let committed = MemoryWriteReceiptV1::committed(
         &intent,
-        expected.clone(),
+        committed_snapshot,
         id("record:hardening"),
         digest("record"),
-        expected.vector.memory_ledger_frontier,
+        expected.vector.memory_ledger_frontier + 1,
         MemoryWriteDisposition::Inserted,
     )
     .expect("committed receipt");

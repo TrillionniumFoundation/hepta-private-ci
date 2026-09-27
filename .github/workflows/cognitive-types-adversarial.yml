@@ -1,0 +1,66 @@
+name: cognitive-types-adversarial
+on:
+  pull_request:
+    paths: ['codex-rs/hepta-cognitive-types/**', 'scripts/cognitive_types_*.py', 'scripts/tests/test_cognitive_types_mutation.py', 'qualification/cognitive-types-v1/**', '.github/workflows/cognitive-types-adversarial.yml']
+  push:
+    branches: [main, codex/cognitive-types-production-hardening-20260926]
+    paths: ['codex-rs/hepta-cognitive-types/**', 'scripts/cognitive_types_*.py', 'scripts/tests/test_cognitive_types_mutation.py', 'qualification/cognitive-types-v1/**', '.github/workflows/cognitive-types-adversarial.yml']
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cognitive-types-adversarial-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-adversarial:
+    runs-on: macos-15
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [fuzz, mutation]
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_TERM_COLOR: never
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: '1.95.0'
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,cargo-nextest@0.9.145
+      - if: matrix.mode == 'fuzz'
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: nightly-2026-09-01
+      - if: matrix.mode == 'fuzz'
+        run: cargo +1.95.0 install cargo-fuzz --version 0.13.2 --locked
+      - name: Record native tool identities
+        run: |
+          mkdir -p "$RUNNER_TEMP/adversarial-tools"
+          rustc --version --verbose > "$RUNNER_TEMP/adversarial-tools/toolchain.txt"
+          cargo nextest --version >> "$RUNNER_TEMP/adversarial-tools/toolchain.txt"
+          just --version >> "$RUNNER_TEMP/adversarial-tools/toolchain.txt"
+      - name: Execute bounded native fuzz
+        if: matrix.mode == 'fuzz'
+        run: python3 scripts/cognitive_types_fuzz.py --output "$RUNNER_TEMP/adversarial-evidence"
+      - name: Execute baseline and compiled source mutants
+        if: matrix.mode == 'mutation'
+        run: python3 scripts/cognitive_types_mutation.py --output "$RUNNER_TEMP/adversarial-evidence"
+      - name: Retain raw logs, lock inputs, corpus and crashes even on failure
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: cognitive-types-${{ matrix.mode }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/adversarial-evidence
+            ${{ runner.temp }}/adversarial-tools
+          if-no-files-found: error
+          retention-days: 90
