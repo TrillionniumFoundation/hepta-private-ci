@@ -103,9 +103,11 @@ pub(crate) async fn reconcile_batch(
 }
 
 fn recovery_time(now_ms: u64, started: Instant) -> Result<u64, AgentdError> {
-    let elapsed = u64::try_from(started.elapsed().as_millis())
-        .map_err(|_| AutomationError::Invalid)?;
-    now_ms.checked_add(elapsed).ok_or_else(|| AutomationError::Invalid.into())
+    let elapsed =
+        u64::try_from(started.elapsed().as_millis()).map_err(|_| AutomationError::Invalid)?;
+    now_ms
+        .checked_add(elapsed)
+        .ok_or_else(|| AutomationError::Invalid.into())
 }
 
 fn retain_recovery_result(
@@ -530,12 +532,12 @@ async fn reconcile_queue(
         }),
     )
     .await
-    .map_err(|_| AgentdError::Protocol(
-        "automation queue reconcile failed: read deadline exceeded".to_string(),
-    ))?
-    .map_err(|error| {
-        AgentdError::Protocol(format!("automation queue reconcile failed: {error}"))
-    })
+    .map_err(|_| {
+        AgentdError::Protocol(
+            "automation queue reconcile failed: read deadline exceeded".to_string(),
+        )
+    })?
+    .map_err(|error| AgentdError::Protocol(format!("automation queue reconcile failed: {error}")))
 }
 
 async fn find_turn(
@@ -560,13 +562,15 @@ async fn find_turn(
                 },
             }),
         )
-            .await
-            .map_err(|_| AgentdError::Protocol(
+        .await
+        .map_err(|_| {
+            AgentdError::Protocol(
                 "automation turn observation failed: read deadline exceeded".to_string(),
-            ))?
-            .map_err(|error| {
-                AgentdError::Protocol(format!("automation turn observation failed: {error}"))
-            })?;
+            )
+        })?
+        .map_err(|error| {
+            AgentdError::Protocol(format!("automation turn observation failed: {error}"))
+        })?;
         if let Some(turn) = response.data.into_iter().find(|turn| turn.id == turn_id) {
             return Ok(TurnLookup::Found(turn));
         }
@@ -630,7 +634,9 @@ fn taskflow_error(error: codex_hepta_automation::TaskFlowError) -> AgentdError {
         TaskFlowError::StaleFence => AutomationError::AccessDenied,
         TaskFlowError::Corrupt(_) => AutomationError::Corrupt,
         TaskFlowError::Invalid(_) => AutomationError::Invalid,
-        TaskFlowError::Conflict(_) | TaskFlowError::InvalidTransition(_) => AutomationError::Conflict,
+        TaskFlowError::Conflict(_) | TaskFlowError::InvalidTransition(_) => {
+            AutomationError::Conflict
+        }
         TaskFlowError::Unavailable => AutomationError::Unavailable,
     })
 }

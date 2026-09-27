@@ -135,9 +135,11 @@ async fn cancelled_batch_does_not_create_a_claim_or_contact_the_queue() {
     let queue = Arc::new(Queue::new(QueueMode::Success));
     queue.stop.store(true, Ordering::SeqCst);
     let report = scheduler(&store, &queue)
-        .tick_batch_cancellable(&AutomationRuntimePolicyV1::default(), || Ok(100), || {
-            queue.stop.load(Ordering::SeqCst)
-        })
+        .tick_batch_cancellable(
+            &AutomationRuntimePolicyV1::default(),
+            || Ok(100),
+            || queue.stop.load(Ordering::SeqCst),
+        )
         .await
         .expect("cancelled batch");
     assert_eq!(report.ticks, Vec::new());
@@ -159,9 +161,11 @@ async fn cancellation_preserves_first_acknowledgement_and_stops_second_claim() {
     let store = fixture.open().await;
     let queue = Arc::new(Queue::new(QueueMode::CancelAfterReceipt));
     let report = scheduler(&store, &queue)
-        .tick_batch_cancellable(&AutomationRuntimePolicyV1::default(), || Ok(100), || {
-            queue.stop.load(Ordering::SeqCst)
-        })
+        .tick_batch_cancellable(
+            &AutomationRuntimePolicyV1::default(),
+            || Ok(100),
+            || queue.stop.load(Ordering::SeqCst),
+        )
         .await
         .expect("batch");
     assert_eq!(report.stop_reason, AutomationBatchStopReason::Cancelled);
@@ -182,9 +186,14 @@ async fn cancellation_preserves_first_acknowledgement_and_stops_second_claim() {
         None
     );
     store.close().await;
-    let reopened = AutomationStore::open(&fixture.layout).await.expect("reopen");
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen");
     assert_eq!(
-        reopened.automation_occurrence(first.task_id, 1).await.expect("read"),
+        reopened
+            .automation_occurrence(first.task_id, 1)
+            .await
+            .expect("read"),
         Some(first)
     );
     reopened.close().await;
@@ -201,9 +210,18 @@ async fn proven_pre_admission_failure_yields_to_host_backoff_after_one_attempt()
         .expect("batch");
     assert_eq!(report.stop_reason, AutomationBatchStopReason::RetryDeferred);
     assert_eq!(report.ticks.len(), 1);
-    assert!(matches!(report.ticks[0], AutomationTick::RetryScheduled { .. }));
+    assert!(matches!(
+        report.ticks[0],
+        AutomationTick::RetryScheduled { .. }
+    ));
     assert_eq!(queue.calls.load(Ordering::SeqCst), 1);
-    assert!(store.uncertain_dispatches(8).await.expect("unknown").is_empty());
+    assert!(
+        store
+            .uncertain_dispatches(8)
+            .await
+            .expect("unknown")
+            .is_empty()
+    );
     store.close().await;
 }
 
@@ -224,8 +242,13 @@ async fn fatal_and_fenced_queue_failures_keep_their_class_and_durable_uncertaint
         let before = store.uncertain_dispatches(8).await.expect("unknown");
         assert_eq!(before.len(), 1);
         store.close().await;
-        let reopened = AutomationStore::open(&fixture.layout).await.expect("reopen");
-        assert_eq!(reopened.uncertain_dispatches(8).await.expect("unknown"), before);
+        let reopened = AutomationStore::open(&fixture.layout)
+            .await
+            .expect("reopen");
+        assert_eq!(
+            reopened.uncertain_dispatches(8).await.expect("unknown"),
+            before
+        );
         reopened.close().await;
     }
 }

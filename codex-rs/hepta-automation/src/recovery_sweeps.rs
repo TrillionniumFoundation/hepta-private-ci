@@ -82,7 +82,9 @@ impl AutomationStore {
         };
         let uncertain = select_lane(&mut tx, self, "unknown", unknown_limit).await?;
         let pending = select_lane(&mut tx, self, "terminal", limit - uncertain.len()).await?;
-        tx.commit().await.map_err(|_| AutomationError::Unavailable)?;
+        tx.commit()
+            .await
+            .map_err(|_| AutomationError::Unavailable)?;
         Ok(AutomationRecoverySelection { uncertain, pending })
     }
 
@@ -180,12 +182,16 @@ async fn select_lane(
             .try_get("sweep_generation")
             .map_err(|_| AutomationError::Corrupt)?,
         after: (
-            row.try_get("after_task_id").map_err(|_| AutomationError::Corrupt)?,
-            row.try_get("after_occurrence").map_err(|_| AutomationError::Corrupt)?,
+            row.try_get("after_task_id")
+                .map_err(|_| AutomationError::Corrupt)?,
+            row.try_get("after_occurrence")
+                .map_err(|_| AutomationError::Corrupt)?,
         ),
         upper: (
-            row.try_get("upper_task_id").map_err(|_| AutomationError::Corrupt)?,
-            row.try_get("upper_occurrence").map_err(|_| AutomationError::Corrupt)?,
+            row.try_get("upper_task_id")
+                .map_err(|_| AutomationError::Corrupt)?,
+            row.try_get("upper_occurrence")
+                .map_err(|_| AutomationError::Corrupt)?,
         ),
     };
     validate_sweep(&original)?;
@@ -211,7 +217,9 @@ async fn select_lane(
             if !rows.is_empty() {
                 let mut keys = Vec::with_capacity(rows.len());
                 for row in rows {
-                    let task: String = row.try_get("task_id").map_err(|_| AutomationError::Corrupt)?;
+                    let task: String = row
+                        .try_get("task_id")
+                        .map_err(|_| AutomationError::Corrupt)?;
                     let occurrence: i64 = row
                         .try_get("occurrence")
                         .map_err(|_| AutomationError::Corrupt)?;
@@ -243,8 +251,12 @@ async fn select_lane(
             .ok_or(AutomationError::Corrupt)?;
         sweep.after = (String::new(), 0);
         sweep.upper = (
-            upper.try_get("task_id").map_err(|_| AutomationError::Corrupt)?,
-            upper.try_get("occurrence").map_err(|_| AutomationError::Corrupt)?,
+            upper
+                .try_get("task_id")
+                .map_err(|_| AutomationError::Corrupt)?,
+            upper
+                .try_get("occurrence")
+                .map_err(|_| AutomationError::Corrupt)?,
         );
         validate_sweep(&sweep)?;
     }

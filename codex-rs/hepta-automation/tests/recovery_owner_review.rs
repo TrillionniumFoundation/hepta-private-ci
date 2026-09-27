@@ -53,32 +53,45 @@ impl Fixture {
                 100,
                 1,
             );
-            draft.task_id = AutomationTaskId::parse(&format!(
-                "019153a4-3088-7000-a56a-{index:012x}"
-            ))
-            .expect("task ID");
+            draft.task_id =
+                AutomationTaskId::parse(&format!("019153a4-3088-7000-a56a-{index:012x}"))
+                    .expect("task ID");
             store.create_task(&draft).await.expect("task");
         }
-        Self { _temp: temp, layout, store }
+        Self {
+            _temp: temp,
+            layout,
+            store,
+        }
     }
 
     async fn admit(&self) {
         let scheduler = AutomationScheduler::new(
-            self.store.clone(), Arc::new(Queue), 1,
-            Duration::from_secs(30), Duration::from_secs(2),
-        ).expect("scheduler");
+            self.store.clone(),
+            Arc::new(Queue),
+            1,
+            Duration::from_secs(30),
+            Duration::from_secs(2),
+        )
+        .expect("scheduler");
         let policy = AutomationRuntimePolicyV1 {
             admission_budget_per_cycle: 64,
             ..AutomationRuntimePolicyV1::default()
         };
-        scheduler.tick_batch(&policy, || Ok(100)).await.expect("admit");
+        scheduler
+            .tick_batch(&policy, || Ok(100))
+            .await
+            .expect("admit");
     }
 }
 
 struct Queue;
 
 impl AutomationTurnQueue for Queue {
-    fn enqueue(&self, admission: AutomationAdmission) -> AutomationFuture<'_, AutomationQueueReceipt> {
+    fn enqueue(
+        &self,
+        admission: AutomationAdmission,
+    ) -> AutomationFuture<'_, AutomationQueueReceipt> {
         Box::pin(async move {
             Ok(AutomationQueueReceipt {
                 queued_submission_id: format!("accepted:{}", admission.task_id),
@@ -92,20 +105,50 @@ impl AutomationTurnQueue for Queue {
 async fn ninth_pending_occurrence_is_reached_after_reopen_without_business_updates() {
     let fixture = Fixture::new(9).await;
     fixture.admit().await;
-    let before = fixture.store.pending_occurrence_work(16).await.expect("pending");
+    let before = fixture
+        .store
+        .pending_occurrence_work(16)
+        .await
+        .expect("pending");
     assert_eq!(before.len(), 9);
-    let keys: Vec<_> = before.iter()
-        .map(|work| (work.occurrence.task_id, work.occurrence.occurrence)).collect();
-    let first = fixture.store.reserve_recovery_selection(8).await.expect("page");
+    let keys: Vec<_> = before
+        .iter()
+        .map(|work| (work.occurrence.task_id, work.occurrence.occurrence))
+        .collect();
+    let first = fixture
+        .store
+        .reserve_recovery_selection(8)
+        .await
+        .expect("page");
     assert!(first.uncertain.is_empty());
     assert_eq!(first.pending, keys[..8].to_vec());
     fixture.store.close().await;
-    let reopened = AutomationStore::open(&fixture.layout).await.expect("reopen");
-    assert_eq!(reopened.reserve_recovery_selection(8).await.expect("next page").pending,
-               keys[8..].to_vec());
-    assert_eq!(reopened.pending_occurrence_work(16).await.expect("business records"), before);
-    assert_eq!(reopened.reserve_recovery_selection(8).await.expect("new sweep").pending,
-               keys[..8].to_vec());
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen");
+    assert_eq!(
+        reopened
+            .reserve_recovery_selection(8)
+            .await
+            .expect("next page")
+            .pending,
+        keys[8..].to_vec()
+    );
+    assert_eq!(
+        reopened
+            .pending_occurrence_work(16)
+            .await
+            .expect("business records"),
+        before
+    );
+    assert_eq!(
+        reopened
+            .reserve_recovery_selection(8)
+            .await
+            .expect("new sweep")
+            .pending,
+        keys[..8].to_vec()
+    );
     reopened.close().await;
 }
 
@@ -113,7 +156,9 @@ async fn ninth_pending_occurrence_is_reached_after_reopen_without_business_updat
 async fn independent_handles_reserve_disjoint_pages_before_wrap() {
     let fixture = Fixture::new(20).await;
     fixture.admit().await;
-    let independent = AutomationStore::open(&fixture.layout).await.expect("independent pool");
+    let independent = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("independent pool");
     let (left, right) = tokio::join!(
         fixture.store.reserve_recovery_selection(8),
         independent.reserve_recovery_selection(8),
@@ -123,7 +168,15 @@ async fn independent_handles_reserve_disjoint_pages_before_wrap() {
     assert_eq!(left.len(), 8);
     assert_eq!(right.len(), 8);
     assert!(left.iter().all(|key| !right.contains(key)));
-    assert_eq!(fixture.store.pending_occurrence_work(32).await.expect("pending").len(), 20);
+    assert_eq!(
+        fixture
+            .store
+            .pending_occurrence_work(32)
+            .await
+            .expect("pending")
+            .len(),
+        20
+    );
     independent.close().await;
     fixture.store.close().await;
 }
@@ -133,8 +186,18 @@ async fn predecessor_timer_cannot_mutate_recovery_progress() {
     let fixture = Fixture::new(2).await;
     fixture.store.quiesce_timer().await.expect("drain");
     let successor = fixture.store.handoff_timer().await.expect("handoff");
-    assert_eq!(fixture.store.reserve_recovery_selection(8).await, Err(AutomationError::TimerFenced));
-    assert!(successor.reserve_recovery_selection(8).await.expect("current epoch").pending.is_empty());
+    assert_eq!(
+        fixture.store.reserve_recovery_selection(8).await,
+        Err(AutomationError::TimerFenced)
+    );
+    assert!(
+        successor
+            .reserve_recovery_selection(8)
+            .await
+            .expect("current epoch")
+            .pending
+            .is_empty()
+    );
     successor.close().await;
     fixture.store.close().await;
 }
