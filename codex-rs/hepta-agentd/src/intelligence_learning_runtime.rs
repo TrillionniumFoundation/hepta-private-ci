@@ -1,9 +1,8 @@
-//! Daemon-owned scheduling for durable intelligence Decision/Outcome closure.
+//! Daemon-owned scheduling for the existing durable learning outbox.
 //!
-//! The host and all final-use authority are supplied explicitly by the product
-//! embedding. Agentd owns only bounded restart reconciliation and outbox drain
-//! scheduling for the current Running generation. The default CLI installs no
-//! host and therefore gains no learning-writer authority.
+//! Recovery and first dispatch receive separate bounded shares. A poison prefix
+//! cannot consume every iteration, and a batch of one alternates between them.
+//! Generation fencing and exact destination reconciliation remain mandatory.
 
 use std::sync::Arc;
 use std::time::Duration;
@@ -19,11 +18,8 @@ const MIN_RECONCILE_INTERVAL: Duration = Duration::from_millis(10);
 const MAX_RECONCILE_INTERVAL: Duration = Duration::from_secs(60 * 60);
 const MAX_RECONCILE_BATCH: u32 = 256;
 const NOT_READY_POLL: Duration = Duration::from_millis(50);
+const TRANSIENT_BACKOFF: Duration = Duration::from_secs(1);
 
-/// Explicit product-owned scheduling profile for the durable learning outbox.
-///
-/// Construction does not mint a writer, grant provider, or authority. Those
-/// objects are already sealed inside `AgentdIntelligenceLearningHostV1`.
 pub struct AgentdIntelligenceLearningRuntimeConfigV1 {
     host: Arc<AgentdIntelligenceLearningHostV1>,
     interval: Duration,
@@ -37,11 +33,7 @@ impl AgentdIntelligenceLearningRuntimeConfigV1 {
         max_batch: u32,
     ) -> Result<Self, AgentdError> {
         validate_runtime_policy(interval, max_batch)?;
-        Ok(Self {
-            host,
-            interval,
-            max_batch,
-        })
+        Ok(Self { host, interval, max_batch })
     }
 
     #[must_use]
@@ -68,6 +60,26 @@ fn validate_runtime_policy(interval: Duration, max_batch: u32) -> Result<(), Age
     Ok(())
 }
 
+fn iteration_budget(max_batch: u32, recovery_turn: bool) -> (u32, u32) {
+    if max_batch == 1 {
+        if recovery_turn { (1, 0) } else { (0, 1) }
+    } else {
+        let recovery = max_batch / 2;
+        (recovery, max_batch - recovery)
+    }
+}
+
+fn require_generation(state: &AgentdState, expected: u64) -> Result<(), AgentdError> {
+    let current = state.current_generation()?;
+    if current != expected {
+        state.mark_fenced();
+        return Err(AgentdError::GenerationFenced(format!(
+            "intelligence learning generation {expected} does not match current {current}"
+        )));
+    }
+    Ok(())
+}
+
 pub(crate) async fn run_intelligence_learning_runtime_v1(
     host: Arc<AgentdIntelligenceLearningHostV1>,
     state: Arc<AgentdState>,
@@ -76,7 +88,11 @@ pub(crate) async fn run_intelligence_learning_runtime_v1(
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
     validate_runtime_policy(interval, max_batch)?;
+    let mut recovery_turn = true;
     loop {
+        if cancellation.is_cancelled() {
+            return Ok(());
+        }
         if !state.automation_admission_ready()? {
             tokio::select! {
                 _ = cancellation.cancelled() => return Ok(()),
@@ -84,51 +100,54 @@ pub(crate) async fn run_intelligence_learning_runtime_v1(
             }
             continue;
         }
-
-        let current_generation = state.current_generation()?;
         let owner_generation = host.owner_generation().get();
-        if current_generation != owner_generation {
-            state.mark_fenced();
-            return Err(AgentdError::GenerationFenced(format!(
-                "intelligence learning host generation {owner_generation} does not match current Running generation {current_generation}"
-            )));
-        }
-
-        let reconciled = host
-            .reconcile_unsettled(max_batch)
-            .await
-            .map_err(learning_error)?;
-        let reconciled = u32::try_from(reconciled.len()).unwrap_or(max_batch);
-        let mut remaining = max_batch.saturating_sub(reconciled);
-        while remaining > 0 {
-            match host.dispatch_next().await.map_err(learning_error)? {
-                Some(_) => remaining -= 1,
-                None => break,
+        require_generation(&state, owner_generation)?;
+        let (recovery_budget, mut dispatch_budget) = iteration_budget(max_batch, recovery_turn);
+        recovery_turn = !recovery_turn;
+        let mut transient_failure = false;
+        if recovery_budget > 0 {
+            match host.reconcile_unsettled(recovery_budget).await {
+                Ok(receipts) => {
+                    let visited = u32::try_from(receipts.len()).unwrap_or(recovery_budget);
+                    dispatch_budget += recovery_budget.saturating_sub(visited);
+                }
+                Err(error) if error.is_transient() => transient_failure = true,
+                Err(error) => return Err(learning_error(error)),
             }
         }
-
-        // A generation change during destination observation or append closes
-        // the required service. The operation store retains any unsettled row
-        // for adoption and exact replay by the successor generation.
-        state.refresh_generation()?;
-        if state.current_generation()? != owner_generation {
-            state.mark_fenced();
-            return Err(AgentdError::GenerationFenced(
-                "intelligence learning generation changed during reconciliation".to_string(),
-            ));
+        while dispatch_budget > 0 {
+            if cancellation.is_cancelled() {
+                return Ok(());
+            }
+            require_generation(&state, owner_generation)?;
+            dispatch_budget -= 1;
+            match host.dispatch_next().await {
+                Ok(Some(_)) => {}
+                Ok(None) => break,
+                Err(error) if error.is_transient() => {
+                    // The operation retains its original identity. Only the
+                    // owner's proved pre-dispatch deferral can requeue it.
+                    transient_failure = true;
+                    break;
+                }
+                Err(error) => return Err(learning_error(error)),
+            }
         }
-
+        require_generation(&state, owner_generation)?;
+        let delay = if transient_failure {
+            interval.max(TRANSIENT_BACKOFF)
+        } else {
+            interval
+        };
         tokio::select! {
             _ = cancellation.cancelled() => return Ok(()),
-            _ = tokio::time::sleep(interval) => {}
+            _ = tokio::time::sleep(delay) => {}
         }
     }
 }
 
 fn learning_error(error: AgentdIntelligenceLearningErrorV1) -> AgentdError {
-    AgentdError::Protocol(format!(
-        "intelligence learning reconciliation failed: {error}"
-    ))
+    AgentdError::Protocol(format!("intelligence learning reconciliation failed: {error}"))
 }
 
 #[cfg(test)]
@@ -144,5 +163,29 @@ mod tests {
         assert!(validate_runtime_policy(Duration::from_secs(3601), 1).is_err());
         assert!(validate_runtime_policy(Duration::from_secs(1), 0).is_err());
         assert!(validate_runtime_policy(Duration::from_secs(1), 257).is_err());
+    }
+
+    #[test]
+    fn recovery_and_dispatch_each_receive_a_bounded_share() {
+        for total in 2..=256 {
+            let (recovery, dispatch) = iteration_budget(total, true);
+            assert!(recovery > 0);
+            assert!(dispatch > 0);
+            assert_eq!(recovery + dispatch, total);
+        }
+    }
+
+    #[test]
+    fn single_slot_alternates_instead_of_starving_new_work() {
+        assert_eq!(iteration_budget(1, true), (1, 0));
+        assert_eq!(iteration_budget(1, false), (0, 1));
+        let mut dispatched = 0;
+        let mut recovered = 0;
+        for iteration in 0..10 {
+            let (recovery, dispatch) = iteration_budget(1, iteration % 2 == 0);
+            recovered += recovery;
+            dispatched += dispatch;
+        }
+        assert_eq!((recovered, dispatched), (5, 5));
     }
 }

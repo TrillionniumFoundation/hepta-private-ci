@@ -19,6 +19,8 @@ mod exact_claim;
 mod ledger;
 mod model;
 mod outbox;
+mod pre_dispatch_defer;
+mod reconciliation_cursor;
 
 pub use destination_dedupe::DestinationApplyStart;
 pub use destination_dedupe::DestinationApplyTransaction;
@@ -60,6 +62,8 @@ pub use outbox::MAX_MODEL_OUTBOX_RECORDS;
 pub use outbox::Outbox;
 pub use outbox::OutboxIntent;
 pub use outbox::OutboxState;
+pub use reconciliation_cursor::UnsettledOperationCursorV1;
+pub use reconciliation_cursor::UnsettledOperationPageV1;
 
 #[cfg(test)]
 mod exact_claim_tests;
