@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: runtime-codex-effect-fence-${{ github.event.pull_request.number }}
+  group: runtime-codex-effect-fence-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
   cancel-in-progress: false
 
 jobs:
