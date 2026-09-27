@@ -269,7 +269,13 @@ impl LockedFileFinalHoldoutCasStoreV1 {
                 let receipt = journal
                     .consume(journal.head_digest(), &source_record.plan)
                     .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-                if receipt != source_record.receipt {
+                let replayed_record = journal
+                    .records()
+                    .last()
+                    .ok_or(LockedFileCasErrorV1::Corrupt)?;
+                if receipt.disposition != crate::HoldoutUseDispositionV1::Recorded
+                    || replayed_record != source_record
+                {
                     return Err(LockedFileCasErrorV1::Corrupt);
                 }
                 let next = FinalHoldoutCasRecordV1::new(
