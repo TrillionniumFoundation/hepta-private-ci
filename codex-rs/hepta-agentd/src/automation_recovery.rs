@@ -44,12 +44,40 @@ enum TurnLookup {
     Exhausted,
 }
 
+fn recovery_slot_allocation(
+    limit: usize,
+    uncertain_count: usize,
+    pending_count: usize,
+) -> (usize, usize) {
+    if limit == 0 || (uncertain_count == 0 && pending_count == 0) {
+        return (0, 0);
+    }
+    if uncertain_count == 0 {
+        return (0, pending_count.min(limit));
+    }
+    if pending_count == 0 {
+        return (uncertain_count.min(limit), 0);
+    }
+    if limit == 1 {
+        return (1, 0);
+    }
+
+    // Unknown dispatch remains the risk-priority frontier. One slot is reserved
+    // for terminal observation so a sustained unknown backlog cannot starve
+    // already-admitted work forever.
+    let uncertain_slots = uncertain_count.min(limit - 1);
+    let pending_slots = pending_count.min(limit - uncertain_slots);
+    (uncertain_slots, pending_slots)
+}
+
 /// Reconcile a bounded snapshot of distinct durable frontiers.
 ///
-/// Unknown dispatches retain priority. Pending occurrences are selected before
-/// any unknown dispatch is mutated, so an occurrence that moves from unknown to
-/// admitted is not immediately observed a second time in the same cycle. Each
-/// selected row is therefore contacted at most once per batch.
+/// Unknown dispatches retain priority. When both frontiers are non-empty and
+/// the budget exceeds one, at least one slot is reserved for admitted terminal
+/// observation. Both frontiers are selected before any unknown dispatch is
+/// mutated, so an occurrence that moves from unknown to admitted is not
+/// immediately observed a second time in the same cycle. Each selected row is
+/// therefore contacted at most once per batch.
 pub(crate) async fn reconcile_batch(
     store: &AutomationStore,
     state: &AgentdState,
@@ -60,20 +88,20 @@ pub(crate) async fn reconcile_batch(
     if limit == 0 {
         return Ok(0);
     }
-    let uncertain = store.uncertain_dispatches(limit).await?;
-    let pending_limit = limit.saturating_sub(uncertain.len());
-    let pending = if pending_limit == 0 {
-        Vec::new()
-    } else {
-        store.pending_occurrence_work(pending_limit).await?
-    };
+    let uncertain_candidates = store.uncertain_dispatches(limit).await?;
+    let pending_candidates = store.pending_occurrence_work(limit).await?;
+    let (uncertain_slots, pending_slots) = recovery_slot_allocation(
+        limit,
+        uncertain_candidates.len(),
+        pending_candidates.len(),
+    );
 
     let mut processed = 0;
-    for dispatch in uncertain {
+    for dispatch in uncertain_candidates.into_iter().take(uncertain_slots) {
         reconcile_unknown_dispatch(store, state, identity, dispatch, now_ms).await?;
         processed += 1;
     }
-    for work in pending {
+    for work in pending_candidates.into_iter().take(pending_slots) {
         reconcile_work(store, state, identity, work, now_ms).await?;
         processed += 1;
     }
@@ -569,4 +597,17 @@ fn observation_digest(value: &impl serde::Serialize) -> Result<Sha256Digest, Age
 
 fn taskflow_error(error: codex_hepta_automation::TaskFlowError) -> AgentdError {
     AgentdError::Protocol(format!("automation TaskFlow recovery failed: {error}"))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::recovery_slot_allocation;
+
+    #[test]
+    fn recovery_slots_reserve_terminal_progress_under_unknown_pressure() {
+        assert_eq!(recovery_slot_allocation(8, 100, 100), (7, 1));
+        assert_eq!(recovery_slot_allocation(8, 2, 100), (2, 6));
+        assert_eq!(recovery_slot_allocation(8, 100, 0), (8, 0));
+        assert_eq!(recovery_slot_allocation(1, 100, 100), (1, 0));
+    }
 }
