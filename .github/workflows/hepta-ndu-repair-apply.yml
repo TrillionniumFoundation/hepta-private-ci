@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 20
     env:
-      OUT: ${{ runner.temp }}/ndu-source-repair
+      OUT: /tmp/ndu-source-repair-${{ github.run_id }}
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -91,6 +91,6 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ndu-source-repair-${{ github.sha }}
-          path: ${{ runner.temp }}/ndu-source-repair
+          path: ${{ env.OUT }}
           if-no-files-found: error
           retention-days: 30
