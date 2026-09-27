@@ -5,7 +5,6 @@ use std::str::FromStr;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use codex_hepta_wire::DecodedEnvelope;
 use codex_hepta_wire::PayloadCodec;
 use codex_hepta_wire::SchemaAdmissionError;
 use codex_hepta_wire::SchemaCodecError;
@@ -14,7 +13,6 @@ use codex_hepta_wire::SchemaRegistry;
 use codex_hepta_wire::WireEnvelopeV2;
 use codex_hepta_wire::WireV2Error;
 use codex_hepta_wire::WireVersion;
-use codex_hepta_wire::decode_frame;
 use codex_hepta_wire::decode_typed;
 use codex_hepta_wire::encode_typed;
 use serde::Deserialize;
@@ -397,7 +395,8 @@ pub fn decode_codex_operation_intent_wire_v3(
 ///
 /// This does not serialize authority tokens. It preserves the exact App Server
 /// request binding and verifies that the domain request digest is unchanged by
-/// the frame/codec boundary.
+/// the frame/codec boundary. The product path decodes the exact V2 frame type;
+/// it never dispatches through the compatibility any-version decoder.
 pub fn adapt_product_wire_v3(
     now_ms: u64,
     intent: &CodexOperationIntent,
@@ -407,10 +406,7 @@ pub fn adapt_product_wire_v3(
         .map_err(|_| WireAdapterError::Identity("producer"))?;
     let envelope = encode_codex_operation_intent_wire_v3(intent, producer, generation)?;
     let frame = envelope.encode();
-    let decoded_envelope = match decode_frame(&frame).map_err(WireAdapterError::Frame)? {
-        DecodedEnvelope::V2(envelope) => envelope,
-        DecodedEnvelope::V1(_) => return Err(WireAdapterError::UnexpectedFrameVersion),
-    };
+    let decoded_envelope = WireEnvelopeV2::decode(&frame).map_err(WireAdapterError::Envelope)?;
     let decoded = decode_codex_operation_intent_wire_v3(&decoded_envelope)?;
     if request_digest(&decoded) != request_digest(intent) {
         return Err(WireAdapterError::RequestBindingMismatch);
@@ -483,7 +479,6 @@ pub enum WireAdapterError {
     Schema(SchemaAdmissionError),
     Payload(SchemaCodecError),
     Envelope(WireV2Error),
-    Frame(codex_hepta_wire::DecodeFrameError),
     Identity(&'static str),
     Digest(&'static str),
     ProductBindingUnsupportedByV2,
@@ -492,7 +487,6 @@ pub enum WireAdapterError {
         frame: Generation,
         binding: Generation,
     },
-    UnexpectedFrameVersion,
     RequestBindingMismatch,
     Adapter(Error),
 }
@@ -509,7 +503,6 @@ impl StdError for WireAdapterError {
             Self::Schema(error) => Some(error),
             Self::Payload(error) => Some(error),
             Self::Envelope(error) => Some(error),
-            Self::Frame(error) => Some(error),
             Self::Adapter(error) => Some(error),
             Self::UnexpectedProducer(_)
             | Self::Identity(_)
@@ -517,7 +510,6 @@ impl StdError for WireAdapterError {
             | Self::ProductBindingUnsupportedByV2
             | Self::ProductBindingRequired
             | Self::GenerationBindingMismatch { .. }
-            | Self::UnexpectedFrameVersion
             | Self::RequestBindingMismatch => None,
         }
     }
