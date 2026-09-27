@@ -42,13 +42,20 @@ run_step consumer-compile run_rust cargo check --locked --manifest-path "$MANIFE
   -p codex-hepta-supervisor --lib
 run_step manifest-rust run_rust cargo test --locked --manifest-path "$MANIFEST" \
   -p codex-hepta-types --test manifest_protocol_consumer
-run_step types-tests just test --locked -p codex-hepta-types --all-targets --retries 0
-run_step wire-tests just test --locked -p codex-hepta-wire --lib --retries 0
-run_step ndu-tests just test --locked -p codex-hepta-ndu --lib --retries 0
-run_step prompt-producer just test --locked -p codex-hepta-codex-adapter --lib -E 'test(prompt_delivery)' --retries 0
-run_step prompt-ledger just test --locked -p codex-hepta-learning-ledger --lib -E 'test(runtime_delivery)' --retries 0
-run_step topology-consumer just test --locked -p codex-hepta-supervisor --lib -E 'test(topology_candidate)' --retries 0
-run_step manifest-owners just test --locked -p codex-hepta-supervisor --lib -E 'test(platform_manifest_admission)' --retries 0
+run_step types-tests run_rust cargo test --locked --manifest-path "$MANIFEST" \
+  -p codex-hepta-types --all-targets
+run_step wire-tests run_rust cargo test --locked --manifest-path "$MANIFEST" \
+  -p codex-hepta-wire --lib
+run_step ndu-tests run_rust cargo test --locked --manifest-path "$MANIFEST" \
+  -p codex-hepta-ndu --lib
+run_step prompt-producer run_rust cargo test --locked --manifest-path "$MANIFEST" \
+  -p codex-hepta-codex-adapter --lib prompt_delivery
+run_step prompt-ledger run_rust cargo test --locked --manifest-path "$MANIFEST" \
+  -p codex-hepta-learning-ledger --lib runtime_delivery
+run_step topology-consumer run_rust cargo test --locked --manifest-path "$MANIFEST" \
+  -p codex-hepta-supervisor --lib topology_candidate
+run_step manifest-owners run_rust cargo test --locked --manifest-path "$MANIFEST" \
+  -p codex-hepta-supervisor --lib platform_manifest_admission
 run_step types-lint run_rust cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-types --all-targets -- -D warnings
 run_step wire-lint run_rust cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-wire --lib -- -D warnings
 run_step ndu-lint run_rust cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib -- -D warnings
