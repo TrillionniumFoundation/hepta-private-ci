@@ -1,9 +1,9 @@
 name: context.compiler lock refresh
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - "codex/context-compiler-provider-closure-final-20260927"
     paths:
       - "codex-rs/**"
       - ".github/workflows/context-compiler-lock-refresh.yml"
@@ -12,12 +12,11 @@ permissions:
   contents: read
 
 concurrency:
-  group: context-compiler-lock-refresh-${{ github.event.pull_request.number }}
+  group: context-compiler-lock-refresh-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   refresh-lockfile:
-    if: github.head_ref == 'codex/context-compiler-provider-closure-final-20260927'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
