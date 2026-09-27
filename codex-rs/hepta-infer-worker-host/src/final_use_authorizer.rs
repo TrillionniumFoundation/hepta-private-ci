@@ -25,6 +25,7 @@ use tokio::time::timeout;
 
 use crate::native_app_server::TurnStartAuthorityFuture;
 use crate::native_app_server::TurnStartAuthorizer;
+use crate::native_observability::record_authority_denial;
 
 const AUTHORITY_PORT_SCHEMA_VERSION: u32 = 1;
 const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
@@ -108,6 +109,7 @@ impl UnixFinalUseAuthorizer {
                 if reason.is_empty() || reason.len() > MAX_DENIAL_REASON_BYTES {
                     return Err("invalid final-use authority denial reason".into());
                 }
+                record_authority_denial();
                 Err(format!("final-use authority denied turn/start: {reason}").into())
             }
             _ => Err("final-use authority response must contain exactly one outcome".into()),

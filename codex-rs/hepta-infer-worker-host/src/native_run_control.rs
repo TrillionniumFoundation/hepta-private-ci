@@ -3,11 +3,22 @@
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
+use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 use sha2::Digest;
 use sha2::Sha256;
 use tokio_util::sync::CancellationToken;
 
+use crate::native_observability::record_indeterminate;
+use crate::native_observability::record_provider_receipt_resolution;
+use crate::native_observability::record_reconciliation_attempt;
+use crate::native_observability::record_reconciliation_failure;
+use crate::native_observability::record_reconciliation_success;
+use crate::native_observability::record_terminal;
+use crate::provider_receipt::ProviderReceiptResolution;
+use crate::provider_receipt::VerifiedProviderTerminalReceipt;
+
 use super::AppServerModelDriver;
+use super::NativeBoundaryStatus;
 use super::NativeOwnerAuthority;
 use super::NativeRunOutput;
 use super::NativeRunStatus;
@@ -75,6 +86,105 @@ impl AppServerModelDriver {
         .await
     }
 
+    /// Inspect one existing dispatch through exact App Server history. This API
+    /// never calls `turn/start`; lack of exact evidence remains indeterminate.
+    pub async fn resolve_indeterminate(
+        &self,
+        control: &mut DurableInferenceControl,
+        request_id: &str,
+        expected_prompt: &str,
+    ) -> Result<NativeRunOutput> {
+        if expected_prompt.is_empty() || expected_prompt.len() > super::MAX_PROMPT_BYTES {
+            return Err("prompt must contain 1..32768 bytes".into());
+        }
+        let record = control
+            .native_record(request_id)
+            .cloned()
+            .ok_or("native request not found")?;
+        if record.state == NativeReservationState::Reserved
+            || record.pre_dispatch_stop.is_some()
+            || record.dispatch_rejection.is_some()
+        {
+            return Err("native request has no reconcile-only provider dispatch".into());
+        }
+        if let Some(output) = record
+            .observation
+            .as_ref()
+            .filter(|output| output.terminal_observed && output.observed_output_tokens.is_some())
+        {
+            observe_output_metrics(request_id, output);
+            return Ok(output.clone());
+        }
+        record_reconciliation_attempt();
+        match self.reconcile_existing(&record, expected_prompt).await {
+            Ok(Some(output)) => {
+                let settled = control.settle_native(request_id, output)?;
+                let output = settled
+                    .observation
+                    .ok_or("durable reconciliation omitted its normalized observation")?;
+                record_reconciliation_success();
+                observe_output_metrics(request_id, &output);
+                Ok(output)
+            }
+            Ok(None) => {
+                record_reconciliation_failure();
+                let output = match record.observation.clone() {
+                    Some(output) => output,
+                    None => indeterminate_output(&record)?,
+                };
+                if control
+                    .native_record(request_id)
+                    .is_some_and(|current| current.observation.is_none())
+                {
+                    control.settle_native(request_id, output.clone())?;
+                }
+                observe_output_metrics(request_id, &output);
+                Ok(output)
+            }
+            Err(error) => {
+                record_reconciliation_failure();
+                record_indeterminate(request_id);
+                Err(error)
+            }
+        }
+    }
+
+    /// Apply an independently verified provider terminal/usage receipt to one
+    /// exact durable dispatch. Provider evidence cannot upgrade owner authority.
+    pub fn resolve_with_provider_receipt(
+        &self,
+        control: &mut DurableInferenceControl,
+        request_id: &str,
+        receipt: &VerifiedProviderTerminalReceipt,
+    ) -> Result<ProviderReceiptResolution> {
+        let record = control
+            .native_record(request_id)
+            .cloned()
+            .ok_or("native request not found")?;
+        record_reconciliation_attempt();
+        let mut resolution = match receipt.resolve(&record) {
+            Ok(resolution) => resolution,
+            Err(error) => {
+                record_reconciliation_failure();
+                return Err(error.into());
+            }
+        };
+        let settled = match control.settle_native(request_id, resolution.output.clone()) {
+            Ok(settled) => settled,
+            Err(error) => {
+                record_reconciliation_failure();
+                return Err(error.into());
+            }
+        };
+        resolution.output = settled
+            .observation
+            .ok_or("provider receipt settlement omitted its normalized observation")?;
+        record_reconciliation_success();
+        record_provider_receipt_resolution();
+        observe_output_metrics(request_id, &resolution.output);
+        Ok(resolution)
+    }
+
     async fn run_bound(
         &self,
         control: &mut DurableInferenceControl,
@@ -123,39 +233,36 @@ impl AppServerModelDriver {
                 .as_ref()
                 .filter(|output| output.terminal_observed)
             {
+                observe_output_metrics(&record.request.request_id, output);
                 return Ok(output.clone());
             }
-            if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
-                let settled = control.settle_native(&record.request.request_id, reconciled)?;
-                return settled.observation.ok_or_else(|| {
-                    "durable reconciliation omitted its normalized observation".into()
-                });
+            record_reconciliation_attempt();
+            match self.reconcile_existing(&record, &prompt).await {
+                Ok(Some(reconciled)) => {
+                    let settled = control.settle_native(&record.request.request_id, reconciled)?;
+                    let output = settled.observation.ok_or_else(|| {
+                        "durable reconciliation omitted its normalized observation"
+                    })?;
+                    record_reconciliation_success();
+                    observe_output_metrics(&record.request.request_id, &output);
+                    return Ok(output);
+                }
+                Ok(None) => {
+                    record_reconciliation_failure();
+                }
+                Err(error) => {
+                    record_reconciliation_failure();
+                    record_indeterminate(&record.request.request_id);
+                    return Err(error);
+                }
             }
-            if let Some(output) = record.observation {
+            if let Some(output) = record.observation.clone() {
+                observe_output_metrics(&record.request.request_id, &output);
                 return Ok(output);
             }
-            let dispatch = record
-                .dispatch
-                .as_ref()
-                .ok_or("missing durable dispatch binding")?;
-            let output = NativeRunOutput {
-                thread_id: dispatch.thread_id.clone(),
-                turn_id: record.turn_id.clone().unwrap_or_default(),
-                model: record.request.model.clone(),
-                model_provider: dispatch.model_provider.clone(),
-                status: NativeRunStatus::Indeterminate,
-                boundary_status: codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus::Indeterminate,
-                output: String::new(),
-                observed_output_tokens: None,
-                terminal_observed: false,
-                owner_authority: NativeOwnerAuthority::Unverified,
-                stop_reason: Some(
-                    "reopened after possible dispatch; thread/read found no exact terminal evidence; reservation held, no replay"
-                        .to_string(),
-                ),
-                codex_terminal_correlation_digest: None,
-            };
+            let output = indeterminate_output(&record)?;
             control.settle_native(&record.request.request_id, output.clone())?;
+            observe_output_metrics(&record.request.request_id, &output);
             return Ok(output);
         }
         let request_id = record.request.request_id;
@@ -175,9 +282,11 @@ impl AppServerModelDriver {
                     control.cancel_native(&request_id)?;
                 }
                 let settled = control.settle_native(&request_id, output)?;
-                settled.observation.ok_or_else(|| {
-                    "durable execution settlement omitted its normalized observation".into()
-                })
+                let output = settled.observation.ok_or_else(|| {
+                    "durable execution settlement omitted its normalized observation"
+                })?;
+                observe_output_metrics(&request_id, &output);
+                Ok(output)
             }
             Err(error) => {
                 if control
@@ -187,10 +296,44 @@ impl AppServerModelDriver {
                     // Only Reserved proves turn/start could not have happened.
                     let reason: String = error.to_string().chars().take(1024).collect();
                     control.stop_native_before_dispatch(&request_id, reason)?;
+                } else {
+                    record_indeterminate(&request_id);
                 }
                 Err(error)
             }
         }
+    }
+}
+
+fn indeterminate_output(record: &NativeRunRecord) -> Result<NativeRunOutput> {
+    let dispatch = record
+        .dispatch
+        .as_ref()
+        .ok_or("reconciliation requires durable dispatch")?;
+    Ok(NativeRunOutput {
+        thread_id: dispatch.thread_id.clone(),
+        turn_id: record.turn_id.clone().unwrap_or_default(),
+        model: record.request.model.clone(),
+        model_provider: dispatch.model_provider.clone(),
+        status: NativeRunStatus::Indeterminate,
+        boundary_status: NativeBoundaryStatus::Indeterminate,
+        output: String::new(),
+        observed_output_tokens: None,
+        terminal_observed: false,
+        owner_authority: NativeOwnerAuthority::Unverified,
+        stop_reason: Some(
+            "reopened after possible dispatch; exact history found no terminal evidence; reservation held, no replay"
+                .to_string(),
+        ),
+        codex_terminal_correlation_digest: None,
+    })
+}
+
+fn observe_output_metrics(request_id: &str, output: &NativeRunOutput) {
+    if output.terminal_observed {
+        record_terminal(request_id, output.observed_output_tokens.is_some());
+    } else {
+        record_indeterminate(request_id);
     }
 }
 

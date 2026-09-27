@@ -10,7 +10,9 @@
 
 pub mod final_use_authorizer;
 pub mod native_app_server;
+pub mod native_observability;
 pub mod profile;
+pub mod provider_receipt;
 
 /// Experimental model-manifest/grant state machine. This module is deliberately
 /// absent from the default public API so a product caller cannot mistake an

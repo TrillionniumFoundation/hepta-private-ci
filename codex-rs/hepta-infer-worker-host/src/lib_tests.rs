@@ -112,3 +112,5 @@ fn token_limit_is_enforced() {
         Err(Error::TokenLimitExceeded)
     );
 }
+
+include!("provider_receipt_tests.rs");
