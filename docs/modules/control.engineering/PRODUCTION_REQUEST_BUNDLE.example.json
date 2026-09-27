@@ -1,0 +1,23 @@
+{
+  "completionRequest": {
+    "claimId": "replace-with-claim-id",
+    "expectedResultDigest": "replace-with-sha256"
+  },
+  "distributedRequest": {
+    "clusterId": "replace-with-cluster",
+    "envelopeId": "replace-with-envelope",
+    "leaseId": "replace-with-lease"
+  },
+  "keyCustodyRequest": {
+    "requiredRoles": [
+      "source_authority",
+      "ci_executor",
+      "independent_evaluator",
+      "engineering_evidence_binder"
+    ]
+  },
+  "terminalRequest": {
+    "packageId": "replace-with-package",
+    "queueGenerationId": "replace-with-queue-generation"
+  }
+}

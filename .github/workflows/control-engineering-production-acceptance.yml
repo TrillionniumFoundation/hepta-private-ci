@@ -1,0 +1,169 @@
+name: control.engineering production acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact reviewed source SHA
+        required: true
+        type: string
+      target_id:
+        description: Registered production target identity
+        required: true
+        type: string
+      database_path:
+        description: Absolute path to the quiescent engineering owner database
+        required: true
+        type: string
+      backup_path:
+        description: New absolute path for the rehearsal backup
+        required: true
+        type: string
+      request_bundle_path:
+        description: Absolute path to the provider request bundle
+        required: true
+        type: string
+      capacity_policy_path:
+        description: Absolute path to the reviewed target capacity policy
+        required: true
+        type: string
+      capacity_observation_path:
+        description: Absolute path to the measured capacity observation
+        required: true
+        type: string
+      operator_receipt_path:
+        description: Optional absolute path to an externally signed operator receipt
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  HEPTA_PROVIDER_SIGNATURE_TOKEN: ${{ secrets.CONTROL_ENGINEERING_SIGNATURE_TOKEN }}
+  HEPTA_PROVIDER_DISTRIBUTED_TOKEN: ${{ secrets.CONTROL_ENGINEERING_DISTRIBUTED_TOKEN }}
+  HEPTA_PROVIDER_AUDIT_TOKEN: ${{ secrets.CONTROL_ENGINEERING_AUDIT_TOKEN }}
+  HEPTA_PROVIDER_CUSTODY_TOKEN: ${{ secrets.CONTROL_ENGINEERING_CUSTODY_TOKEN }}
+  HEPTA_PROVIDER_COMPLETION_TOKEN: ${{ secrets.CONTROL_ENGINEERING_COMPLETION_TOKEN }}
+  HEPTA_PROVIDER_TERMINAL_TOKEN: ${{ secrets.CONTROL_ENGINEERING_TERMINAL_TOKEN }}
+
+jobs:
+  acceptance:
+    name: Collect externally governed acceptance evidence
+    runs-on: [self-hosted, linux, control-engineering-production]
+    environment: control-engineering-production
+    timeout-minutes: 90
+    steps:
+      - name: Checkout the exact reviewed source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Fail closed on identity, path, or provider configuration drift
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          DATABASE_PATH: ${{ inputs.database_path }}
+          BACKUP_PATH: ${{ inputs.backup_path }}
+          REQUEST_BUNDLE_PATH: ${{ inputs.request_bundle_path }}
+          CAPACITY_POLICY_PATH: ${{ inputs.capacity_policy_path }}
+          CAPACITY_OBSERVATION_PATH: ${{ inputs.capacity_observation_path }}
+          SIGNATURE_PROVIDER: ${{ vars.CONTROL_ENGINEERING_SIGNATURE_PROVIDER }}
+          DISTRIBUTED_PROVIDER: ${{ vars.CONTROL_ENGINEERING_DISTRIBUTED_PROVIDER }}
+          AUDIT_PROVIDER: ${{ vars.CONTROL_ENGINEERING_AUDIT_PROVIDER }}
+          CUSTODY_PROVIDER: ${{ vars.CONTROL_ENGINEERING_CUSTODY_PROVIDER }}
+          COMPLETION_PROVIDER: ${{ vars.CONTROL_ENGINEERING_COMPLETION_PROVIDER }}
+          TERMINAL_PROVIDER: ${{ vars.CONTROL_ENGINEERING_TERMINAL_PROVIDER }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          test -f "$DATABASE_PATH"
+          test ! -e "$BACKUP_PATH"
+          test -f "$REQUEST_BUNDLE_PATH"
+          test -f "$CAPACITY_POLICY_PATH"
+          test -f "$CAPACITY_OBSERVATION_PATH"
+          for provider in \
+            "$SIGNATURE_PROVIDER" "$DISTRIBUTED_PROVIDER" "$AUDIT_PROVIDER" \
+            "$CUSTODY_PROVIDER" "$COMPLETION_PROVIDER" "$TERMINAL_PROVIDER"; do
+            case "$provider" in /*) ;; *) echo "provider path is not absolute" >&2; exit 1;; esac
+            test -x "$provider"
+          done
+          test -n "$HEPTA_PROVIDER_SIGNATURE_TOKEN"
+          test -n "$HEPTA_PROVIDER_DISTRIBUTED_TOKEN"
+          test -n "$HEPTA_PROVIDER_AUDIT_TOKEN"
+          test -n "$HEPTA_PROVIDER_CUSTODY_TOKEN"
+          test -n "$HEPTA_PROVIDER_COMPLETION_TOKEN"
+          test -n "$HEPTA_PROVIDER_TERMINAL_TOKEN"
+
+      - name: Collect real provider, checkpoint, capacity, and recovery evidence
+        env:
+          PYTHONPATH: tools/hepta-engineering-control
+          DATABASE_PATH: ${{ inputs.database_path }}
+          BACKUP_PATH: ${{ inputs.backup_path }}
+          REQUEST_BUNDLE_PATH: ${{ inputs.request_bundle_path }}
+          CAPACITY_POLICY_PATH: ${{ inputs.capacity_policy_path }}
+          CAPACITY_OBSERVATION_PATH: ${{ inputs.capacity_observation_path }}
+          TARGET_ID: ${{ inputs.target_id }}
+          SIGNATURE_PROVIDER: ${{ vars.CONTROL_ENGINEERING_SIGNATURE_PROVIDER }}
+          DISTRIBUTED_PROVIDER: ${{ vars.CONTROL_ENGINEERING_DISTRIBUTED_PROVIDER }}
+          AUDIT_PROVIDER: ${{ vars.CONTROL_ENGINEERING_AUDIT_PROVIDER }}
+          CUSTODY_PROVIDER: ${{ vars.CONTROL_ENGINEERING_CUSTODY_PROVIDER }}
+          COMPLETION_PROVIDER: ${{ vars.CONTROL_ENGINEERING_COMPLETION_PROVIDER }}
+          TERMINAL_PROVIDER: ${{ vars.CONTROL_ENGINEERING_TERMINAL_PROVIDER }}
+          CHECKPOINT_ISSUER: ${{ vars.CONTROL_ENGINEERING_CHECKPOINT_ISSUER }}
+          CHECKPOINT_SIGNING_IDENTITY: ${{ vars.CONTROL_ENGINEERING_CHECKPOINT_SIGNING_IDENTITY }}
+          RECOVERY_ISSUER: ${{ vars.CONTROL_ENGINEERING_RECOVERY_ISSUER }}
+          RECOVERY_SIGNING_IDENTITY: ${{ vars.CONTROL_ENGINEERING_RECOVERY_SIGNING_IDENTITY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_TREE="$(git rev-parse 'HEAD^{tree}')"
+          python3 tools/hepta-engineering-control/production_acceptance.py \
+            --database "$DATABASE_PATH" --backup "$BACKUP_PATH" \
+            --target-id "$TARGET_ID" \
+            --source-commit "${{ inputs.source_sha }}" --source-tree "$SOURCE_TREE" \
+            --request-bundle "$REQUEST_BUNDLE_PATH" \
+            --capacity-policy "$CAPACITY_POLICY_PATH" \
+            --capacity-observation "$CAPACITY_OBSERVATION_PATH" \
+            --signature-provider "$SIGNATURE_PROVIDER" \
+            --distributed-provider "$DISTRIBUTED_PROVIDER" \
+            --audit-provider "$AUDIT_PROVIDER" \
+            --key-custody-provider "$CUSTODY_PROVIDER" \
+            --completion-provider "$COMPLETION_PROVIDER" \
+            --terminal-provider "$TERMINAL_PROVIDER" \
+            --checkpoint-issuer "$CHECKPOINT_ISSUER" \
+            --checkpoint-signing-identity "$CHECKPOINT_SIGNING_IDENTITY" \
+            --recovery-issuer "$RECOVERY_ISSUER" \
+            --recovery-signing-identity "$RECOVERY_SIGNING_IDENTITY" \
+            --output "$RUNNER_TEMP/control-engineering-acceptance-candidate.json"
+
+      - name: Verify optional independent operator receipt
+        if: inputs.operator_receipt_path != ''
+        env:
+          PYTHONPATH: tools/hepta-engineering-control
+          SIGNATURE_PROVIDER: ${{ vars.CONTROL_ENGINEERING_SIGNATURE_PROVIDER }}
+          OPERATOR_RECEIPT_PATH: ${{ inputs.operator_receipt_path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$OPERATOR_RECEIPT_PATH"
+          python3 tools/hepta-engineering-control/operator_acceptance_cli.py \
+            --candidate "$RUNNER_TEMP/control-engineering-acceptance-candidate.json" \
+            --operator-receipt "$OPERATOR_RECEIPT_PATH" \
+            --signature-provider "$SIGNATURE_PROVIDER" \
+            --output "$RUNNER_TEMP/control-engineering-operator-acceptance.json"
+
+      - name: Retain acceptance candidate and optional operator verification
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-production-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/control-engineering-*.json
+          if-no-files-found: error
+          retention-days: 90

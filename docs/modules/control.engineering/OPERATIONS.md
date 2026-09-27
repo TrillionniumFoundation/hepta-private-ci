@@ -295,3 +295,13 @@ WAL bytes, audit verification, online backup, restored-snapshot equality, contro
 against the selected target-host profile; do not invent universal thresholds or delete
 Git-object/materialized-workspace checks to make a benchmark green. The profile has every
 authority field false and is not an operator acceptance receipt.
+
+<!-- control-engineering-production-closure-v1 -->
+## Production-closure workflow
+
+Use `control-engineering-required.yml` for PR source/base and post-merge exact-main
+qualification. Use `control-engineering-production-acceptance.yml` only on the
+protected `control-engineering-production` self-hosted environment with distinct real
+provider commands and credentials. The first run emits an acceptance candidate; a
+second run may verify an independently signed operator receipt. Neither run changes
+the canonical production flag. See [PRODUCTION_CLOSURE.md](PRODUCTION_CLOSURE.md).

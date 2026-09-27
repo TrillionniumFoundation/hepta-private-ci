@@ -80,7 +80,12 @@ def git(*args: str, input_text: str | None = None) -> str:
     return p.stdout.strip()
 
 
-def checked_identity(value, candidate: dict[str, str]) -> dict[str, str]:
+def checked_identity(
+    value,
+    candidate: dict[str, str],
+    *,
+    require_ancestor: bool = True,
+) -> dict[str, str]:
     if not isinstance(value, dict) or any(
         not isinstance(value.get(key), str)
         or not re.fullmatch(r"[0-9a-f]{40}", value[key])
@@ -92,7 +97,8 @@ def checked_identity(value, candidate: dict[str, str]) -> dict[str, str]:
         raise ValueError("source identity does not identify a commit")
     if git("rev-parse", f"{commit}^{{tree}}") != tree:
         raise ValueError("source tree mismatch")
-    git("merge-base", "--is-ancestor", commit, candidate["commit"])
+    if require_ancestor:
+        git("merge-base", "--is-ancestor", commit, candidate["commit"])
     return {"commit": commit, "tree": tree}
 
 
@@ -224,10 +230,32 @@ def verify_source_identity(
     policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
     if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
         raise ValueError(f"unknown source identity policy: {policy}")
-    source = checked_identity(row.get("sourceBase"), candidate)
     mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
     if mapping_mode not in {"path_only", "exact_blob"}:
         raise ValueError(f"unknown mapping source identity mode: {mapping_mode}")
+    source_base_mode = row.get(
+        "sourceBaseIdentityMode",
+        (
+            "object_provenance_v1"
+            if mapping_mode == "exact_blob"
+            else "path_object_provenance_v1"
+        ),
+    )
+    if source_base_mode not in {
+        "ancestor_provenance_v1",
+        "path_object_provenance_v1",
+        "object_provenance_v1",
+    }:
+        raise ValueError("unknown source-base identity mode")
+    if source_base_mode == "object_provenance_v1" and mapping_mode != "exact_blob":
+        raise ValueError("object provenance requires exact-blob mapping")
+    if source_base_mode == "path_object_provenance_v1" and mapping_mode != "path_only":
+        raise ValueError("path-object provenance requires path-only mapping")
+    source = checked_identity(
+        row.get("sourceBase"),
+        candidate,
+        require_ancestor=(source_base_mode == "ancestor_provenance_v1"),
+    )
     paths = evidence_paths(row, roots)
     # In exact-blob mode ``sourceBase`` is immutable integration provenance,
     # not the current-source observation. Currentness is proved independently
@@ -235,7 +263,24 @@ def verify_source_identity(
     # evidence/root set. Path-only maps retain the historical no-drift anchor.
     observations = [] if mapping_mode == "exact_blob" else [(source, paths)]
     if "observedAtHead" in row:
-        observed = checked_identity(row["observedAtHead"], candidate)
+        observation_mode = row.get(
+            "observationIdentityMode",
+            (
+                "path_object_equivalence_v1"
+                if policy == "candidate_or_exact_observation_v1"
+                else "ancestor_only"
+            ),
+        )
+        if observation_mode not in {
+            "ancestor_only",
+            "path_object_equivalence_v1",
+        }:
+            raise ValueError("unknown observation identity mode")
+        observed = checked_identity(
+            row["observedAtHead"],
+            candidate,
+            require_ancestor=(observation_mode == "ancestor_only"),
+        )
         observed_paths = row.get("observedSourcePaths", roots)
         if (
             not isinstance(observed_paths, list)
@@ -737,6 +782,13 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             **migrated.get("observedAtHead", {}),
             **source_base,
         }
+        if migrated.get("mappingSourceIdentityMode") == "exact_blob":
+            migrated["observationIdentityMode"] = (
+                "path_object_equivalence_v1"
+            )
+            migrated.setdefault(
+                "sourceBaseIdentityMode", "object_provenance_v1"
+            )
         observed_paths = set(migrated.get("observedSourcePaths", []))
         observed_paths.update(migrated["resolvedRoots"])
         if migrated.get(
@@ -790,8 +842,30 @@ def migrate(selected_modules: list[str] | None = None):
         row = load(str(path.relative_to(ROOT)))
         if row.get("module", mid) != mid:
             raise SystemExit(f"{mid}: identity")
-        anchor = checked_identity(row.get("sourceBase"), source_base)
         mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
+        source_base_mode = row.get(
+            "sourceBaseIdentityMode",
+            (
+                "object_provenance_v1"
+                if mapping_mode == "exact_blob"
+                else "path_object_provenance_v1"
+            ),
+        )
+        if source_base_mode not in {
+            "ancestor_provenance_v1",
+            "path_object_provenance_v1",
+            "object_provenance_v1",
+        }:
+            raise ValueError("unknown source-base identity mode")
+        if source_base_mode == "object_provenance_v1" and mapping_mode != "exact_blob":
+            raise ValueError("object provenance requires exact-blob mapping")
+        if source_base_mode == "path_object_provenance_v1" and mapping_mode != "path_only":
+            raise ValueError("path-object provenance requires path-only mapping")
+        anchor = checked_identity(
+            row.get("sourceBase"),
+            source_base,
+            require_ancestor=(source_base_mode == "ancestor_provenance_v1"),
+        )
         migrated = migrate_map(row, by_id[mid], lanes, anchor)
         if "observedAtHead" in row:
             migrated["observedAtHead"] = row["observedAtHead"]
@@ -1438,7 +1512,7 @@ def verify(
                 "provenanceAnchoredExactBlobMaps": provenance_anchored_exact_blob_maps,
                 "legacyProvenanceOnlyMaps": [],
                 "sourceObservationCount": len(source_bases),
-                "sourceBaseSemantics": "provenance_anchor_plus_exact_head_blobs_and_current_observation",
+                "sourceBaseSemantics": "validated_provenance_objects_plus_path-equivalent_or_exact-blob_current-observation",
                 "validationScope": "source_navigation_and_declared_evidence_not_build_or_execution",
             },
             sort_keys=True,

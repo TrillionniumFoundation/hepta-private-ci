@@ -1,0 +1,48 @@
+name: control.engineering scheduled soak
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '17 3 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  soak:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare real strong sandbox
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap libcap-dev
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - name: Run long operational profile
+        env:
+          PYTHONPATH: tools/hepta-engineering-control
+        run: |
+          python3 tools/hepta-engineering-control/operational_stress.py \
+            --iterations 1000 --workers 16 --crash-cycles 20 \
+            --output "$RUNNER_TEMP/control-engineering-operational-soak.json"
+          python3 -m control_engineering_v2.qualification_profile \
+            --repository "$GITHUB_WORKSPACE" --iterations 50 --sandbox-mode strong \
+            --output "$RUNNER_TEMP/control-engineering-host-profile-soak.json"
+          python3 tools/hepta-engineering-control/real_mutation_campaign.py \
+            --repository "$GITHUB_WORKSPACE" \
+            --output "$RUNNER_TEMP/control-engineering-mutation-soak.json"
+      - name: Retain soak evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-soak-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/control-engineering-*.json
+          if-no-files-found: error
+          retention-days: 90

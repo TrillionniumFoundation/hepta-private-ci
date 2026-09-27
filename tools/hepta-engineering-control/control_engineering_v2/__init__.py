@@ -124,8 +124,60 @@ from .sandbox_control import (
     SandboxExecutionPolicy,
     SandboxExecutionResult,
 )
+from .audit_checkpoint import (
+    AuditCheckpointReceipt,
+    AuditSuffixVerification,
+    OwnerStateAnchor,
+    OwnerTableAnchor,
+    build_audit_checkpoint,
+    build_owner_state_anchor,
+    checkpoint_receipt_digest,
+    verify_audit_suffix,
+    verify_current_audit_checkpoint,
+)
+from .capacity_policy import (
+    SQLiteCapacityDecision,
+    SQLiteCapacityObservation,
+    SQLiteCapacityPolicy,
+    evaluate_sqlite_capacity,
+)
+from .clock import (
+    ClockPolicy,
+    FixedClock,
+    SystemClock,
+    elapsed_within_budget,
+    validate_observation_window,
+)
+from .operator_acceptance import (
+    OperatorAcceptanceReceipt,
+    operator_acceptance_digest,
+    verify_operator_acceptance,
+)
+from .provider_adapters import (
+    AuditPublicationReceipt,
+    ExternalProductionEvidenceBundle,
+    ProviderCommand,
+    ProviderTrustStore,
+    collect_external_production_evidence,
+    invoke_provider,
+)
+from .recovery_rehearsal import (
+    RecoveryRehearsalReceipt,
+    recovery_rehearsal_digest,
+    rehearse_backup_restore,
+    verify_recovery_rehearsal,
+)
+from .worker_registration_governance import (
+    WorkerKeyRotationReceipt,
+    WorkerRegistrationRenewalReceipt,
+    WorkerRegistrationState,
+    renew_worker_registration,
+    rotate_worker_signing_identity,
+    worker_registration_state,
+)
 from .product_gate import verify_product_receipt_pair
 from .product_runtime import EngineeringControlProduct
+from .production_composition import EngineeringControlProductionProduct
 from .production import (
     ProductionReadinessDecision,
     ProductionReadinessFacts,
@@ -291,5 +343,43 @@ __all__ = [
     "verify_production_controls",
     "verify_product_receipt_pair",
     "verify_sealed_candidate_evidence",
+    "AuditCheckpointReceipt",
+    "AuditPublicationReceipt",
+    "AuditSuffixVerification",
+    "ClockPolicy",
+    "EngineeringControlProductionProduct",
+    "ExternalProductionEvidenceBundle",
+    "FixedClock",
+    "OperatorAcceptanceReceipt",
+    "OwnerStateAnchor",
+    "OwnerTableAnchor",
+    "ProviderCommand",
+    "ProviderTrustStore",
+    "RecoveryRehearsalReceipt",
+    "SQLiteCapacityDecision",
+    "SQLiteCapacityObservation",
+    "SQLiteCapacityPolicy",
+    "SystemClock",
+    "WorkerKeyRotationReceipt",
+    "WorkerRegistrationRenewalReceipt",
+    "WorkerRegistrationState",
+    "build_audit_checkpoint",
+    "build_owner_state_anchor",
+    "checkpoint_receipt_digest",
+    "collect_external_production_evidence",
+    "elapsed_within_budget",
+    "evaluate_sqlite_capacity",
+    "invoke_provider",
+    "operator_acceptance_digest",
+    "recovery_rehearsal_digest",
+    "rehearse_backup_restore",
+    "renew_worker_registration",
+    "rotate_worker_signing_identity",
+    "validate_observation_window",
+    "verify_audit_suffix",
+    "verify_current_audit_checkpoint",
+    "verify_operator_acceptance",
+    "verify_recovery_rehearsal",
+    "worker_registration_state",
     "store_snapshot_digest",
 ]

@@ -353,3 +353,13 @@ positive review eligibility even when all legacy booleans are true. Historical
 registries that merely asserted maturity or counted source symbols have been
 retired in favor of these behavior tests and this single implementation map. CI definitions remain in
 the repository's current workflow; this document does not certify an unobserved run.
+
+<!-- control-engineering-production-closure-v1 -->
+## Production-closure extensions
+
+The implementation now includes revision-bound Worker renewal/key rotation, injected
+clock policy, signed audit checkpoints with suffix verification, explicit target-host
+capacity decisions, real no-shell provider adapters, backup/restore rehearsal,
+operator-acceptance verification, a real mutation campaign and scheduled operational
+soak. See [PRODUCTION_CLOSURE.md](PRODUCTION_CLOSURE.md) and the generated
+[STATUS.json](STATUS.json). None of these surfaces mints authority.

@@ -604,3 +604,13 @@ The bootstrap source-location obligation for `control.engineering` is implemente
 - `tools/hepta-engineering-control`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+<!-- control-engineering-production-closure-v1 -->
+## 16. Production-closure implementation
+
+The exact merge/qualification, worker-registration governance, explicit clock,
+audit-checkpoint, target capacity, provider-adapter, recovery and operator-acceptance
+contracts are specified in [PRODUCTION_CLOSURE.md](PRODUCTION_CLOSURE.md). The
+machine-readable current projection is [STATUS.json](STATUS.json). These additions
+keep `production_implementation`, deployment, merge and release false until genuine
+external receipts and current-head independent review are present.
