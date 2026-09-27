@@ -1,0 +1,110 @@
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -775,6 +775,107 @@
+ 
+ #[cfg(unix)]
+ #[tokio::test]
++async fn sync_echo_after_retry_claim_uses_prior_entered_proof() -> TestResult {
++    let authorizer = TestAuthorizer::new()?;
++    let temp = TempDir::new()?;
++    let agent_id = agent(FIRST_AGENT)?;
++    let layout = layout(&temp, &agent_id)?;
++    let store = prepared_store(&layout).await?;
++    let original = enqueue_final(&store, &agent_id, 10).await?;
++    let transport = FakeTransport::new([Err(MatrixTransportError::ResponseLost)]);
++    let config = OutboxDispatchConfig {
++        lease_ms: 20,
++        retry_delay_ms: 10,
++        max_retry_delay_ms: 40,
++        max_attempts: 3,
++        claim_limit: 1,
++        idle_poll: Duration::from_millis(10),
++    };
++
++    let first = dispatch_outbox_once(
++        &store,
++        &transport,
++        &authorizer,
++        &config,
++        &CancellationToken::new(),
++        10,
++    )
++    .await?;
++    assert_eq!(first.retry_scheduled, 1);
++    assert_eq!(
++        store
++            .dispatch_for_txn(&original.stable_txn_id)
++            .await?
++            .ok_or("first indeterminate dispatch disappeared")?
++            .state,
++        MatrixDispatchState::Indeterminate
++    );
++    assert!(
++        store
++            .dispatch_authority_claim(&original.stable_txn_id, 1)
++            .await?
++            .is_some(),
++        "attempt one must retain its qualified entered-use lineage",
++    );
++
++    // A retry owner has claimed attempt two, but has not obtained authority or
++    // entered the adapter. The delayed server echo still belongs to the stable
++    // transaction and must be qualified by attempt one's entered-use proof.
++    let retry_claim = store.claim_outbox(100, config.lease_ms, 1).await?;
++    assert_eq!(retry_claim.len(), 1);
++    assert_eq!(retry_claim[0].stable_txn_id, original.stable_txn_id);
++    assert_eq!(retry_claim[0].attempts, 2);
++    assert!(
++        store
++            .dispatch_authority_claim(&original.stable_txn_id, 2)
++            .await?
++            .is_none(),
++        "attempt two has not crossed final-use verification",
++    );
++
++    let terminal_event = event("$echo-after-retry-claim")?;
++    observe_outbound(
++        &store,
++        original.stable_txn_id.clone(),
++        terminal_event.clone(),
++        101,
++    )
++    .await?;
++    assert_eq!(
++        store
++            .dispatch_for_txn(&original.stable_txn_id)
++            .await?
++            .ok_or("qualified terminal dispatch disappeared")?
++            .state,
++        MatrixDispatchState::Succeeded
++    );
++    let settled = store
++        .outbox_for_txn(&original.stable_txn_id)
++        .await?
++        .ok_or("qualified terminal outbox disappeared")?;
++    assert_eq!(settled.state, OutboxState::Sent);
++    assert_eq!(settled.attempts, 2);
++    assert_eq!(settled.sent_event_id, Some(terminal_event));
++    store.close().await;
++
++    // Startup verification must use the same transaction-level qualification
++    // rule; otherwise a valid terminal row would make the durable owner fail.
++    let reopened = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
++    assert_eq!(
++        reopened
++            .dispatch_for_txn(&original.stable_txn_id)
++            .await?
++            .ok_or("qualified terminal dispatch did not survive reopen")?
++            .state,
++        MatrixDispatchState::Succeeded
++    );
++    assert_eq!(reopened.unresolved_dispatch_count().await?, 0);
++    reopened.close().await;
++    Ok(())
++}
++
++#[cfg(unix)]
++#[tokio::test]
+ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> TestResult {
+     let authorizer = TestAuthorizer::new()?;
+     let temp = TempDir::new()?;
