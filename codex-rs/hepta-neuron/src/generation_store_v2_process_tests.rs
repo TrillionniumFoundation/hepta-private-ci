@@ -1,5 +1,4 @@
 use super::*;
-use crate::generation_store_v2::GenerationStoreFailpointV2;
 use crate::AnchorWitnessStore;
 use crate::FileNeuronWitnessStoreV2;
 use crate::JournalError;
@@ -7,6 +6,7 @@ use crate::NeuronWitnessContextV2;
 use crate::SparseConfig;
 use crate::SparseJournal;
 use crate::SparseTick;
+use crate::generation_store_v2::GenerationStoreFailpointV2;
 use pretty_assertions::assert_eq;
 use std::fs;
 use std::fs::File;
@@ -162,10 +162,7 @@ fn open_store(root: &Path) -> FileNeuronGenerationStoreV2 {
             store_context(),
         ))
     } else {
-        checked(FileNeuronGenerationStoreV2::create(
-            &path,
-            store_context(),
-        ))
+        checked(FileNeuronGenerationStoreV2::create(&path, store_context()))
     }
 }
 
@@ -177,10 +174,7 @@ fn open_witness(root: &Path) -> FileNeuronWitnessStoreV2 {
             witness_context(8),
         ))
     } else {
-        checked(FileNeuronWitnessStoreV2::create(
-            &path,
-            witness_context(8),
-        ))
+        checked(FileNeuronWitnessStoreV2::create(&path, witness_context(8)))
     }
 }
 
@@ -414,8 +408,7 @@ fn inspect_before_recovery(root: &Path, cut: &str) {
     assert_eq!(record.is_some(), record_expected, "cut={cut}");
     let witness_expected = matches!(
         cut,
-        "after_witness_sync_before_response"
-            | "after_response_before_caller_acknowledgement"
+        "after_witness_sync_before_response" | "after_response_before_caller_acknowledgement"
     );
     assert_eq!(
         checked(witness.current()),

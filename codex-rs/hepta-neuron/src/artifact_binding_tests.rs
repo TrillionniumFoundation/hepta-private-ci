@@ -67,10 +67,8 @@ fn v2_semantic_identity_excludes_telemetry_and_binds_runtime_ids() {
         "quantization:{}",
         config.quantization_digest
     )));
-    output.runtime_receipt.backend_id = checked(StableId::new(format!(
-        "runtime:{}",
-        config.runtime_digest
-    )));
+    output.runtime_receipt.backend_id =
+        checked(StableId::new(format!("runtime:{}", config.runtime_digest)));
     output.output_digest = checked(canonical_model_output_digest_v1(
         &output.drive_q24,
         &output.prediction_q24,

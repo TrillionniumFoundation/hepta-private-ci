@@ -293,7 +293,9 @@ impl FileNeuronGenerationStoreV2 {
                 return Err(GenerationStoreError::Corrupt);
             }
             let frame_len = 4_u64
-                .checked_add(u64::try_from(payload_len).map_err(|_| GenerationStoreError::Capacity)?)
+                .checked_add(
+                    u64::try_from(payload_len).map_err(|_| GenerationStoreError::Capacity)?,
+                )
                 .and_then(|value| value.checked_add(CHECKSUM_BYTES as u64))
                 .ok_or(GenerationStoreError::Capacity)?;
             if remaining < frame_len {
@@ -449,12 +451,8 @@ impl FileNeuronGenerationStoreV2 {
         if record.expected_anchor != self.witness_frontier {
             return Err(GenerationStoreError::Backpressure);
         }
-        let payload = encode_witness_ack_event(
-            self.event_frontier,
-            key,
-            anchor,
-            record.operation_digest,
-        )?;
+        let payload =
+            encode_witness_ack_event(self.event_frontier, key, anchor, record.operation_digest)?;
         self.check_file_capacity(framed_bytes(payload.len())?)?;
         self.append_payload(&payload)?;
         let record = self
@@ -541,10 +539,7 @@ impl FileNeuronGenerationStoreV2 {
         if !is_successor(value.expected_anchor, value.next_anchor) {
             return Err(GenerationStoreError::InvalidRecord("checkpoint successor"));
         }
-        self.validate_value_lengths(
-            value.checkpoint_bytes.len(),
-            value.full_receipt_bytes.len(),
-        )?;
+        self.validate_value_lengths(value.checkpoint_bytes.len(), value.full_receipt_bytes.len())?;
         value
             .disposition
             .semantic_digest()
@@ -608,7 +603,8 @@ impl FileNeuronGenerationStoreV2 {
         if payload.is_empty() || payload.len() > MAX_FRAME_BYTES {
             return Err(GenerationStoreError::Capacity);
         }
-        let payload_len = u32::try_from(payload.len()).map_err(|_| GenerationStoreError::Capacity)?;
+        let payload_len =
+            u32::try_from(payload.len()).map_err(|_| GenerationStoreError::Capacity)?;
         let length_bytes = payload_len.to_be_bytes();
         let checksum = Digest32::of_parts(&[&length_bytes, payload]);
         let added = framed_bytes(payload.len())?;
@@ -832,7 +828,9 @@ fn encode_witness_ack_event(
     key.semantic_digest()
         .map_err(|_| GenerationStoreError::InvalidRecord("operation key"))?;
     if anchor.sequence == 0 || anchor.checkpoint_digest.is_zero() || operation_digest.is_zero() {
-        return Err(GenerationStoreError::InvalidRecord("witness acknowledgement"));
+        return Err(GenerationStoreError::InvalidRecord(
+            "witness acknowledgement",
+        ));
     }
     let mut body = Vec::new();
     body.push(EVENT_WITNESS_ACK);
@@ -961,10 +959,7 @@ fn decode_operation(bytes: &[u8]) -> Result<NeuronGenerationRecordV2, Generation
         || checkpoint_payload_digest
             != Digest32::of_parts(&[b"hepta.neuron.checkpoint-payload.v2", &checkpoint_bytes])
         || full_receipt_digest
-            != Digest32::of_parts(&[
-                b"hepta.neuron.full-result-receipt.v2",
-                &full_receipt_bytes,
-            ])
+            != Digest32::of_parts(&[b"hepta.neuron.full-result-receipt.v2", &full_receipt_bytes])
         || !is_successor(expected_anchor, next_anchor)
     {
         return Err(GenerationStoreError::Corrupt);
@@ -1096,33 +1091,41 @@ impl<'a> Decoder<'a> {
     fn take_u32(&mut self) -> Result<u32, GenerationStoreError> {
         let bytes = self.take_exact(4)?;
         Ok(u32::from_be_bytes(
-            bytes.try_into().map_err(|_| GenerationStoreError::Corrupt)?,
+            bytes
+                .try_into()
+                .map_err(|_| GenerationStoreError::Corrupt)?,
         ))
     }
 
     fn take_u64(&mut self) -> Result<u64, GenerationStoreError> {
         let bytes = self.take_exact(8)?;
         Ok(u64::from_be_bytes(
-            bytes.try_into().map_err(|_| GenerationStoreError::Corrupt)?,
+            bytes
+                .try_into()
+                .map_err(|_| GenerationStoreError::Corrupt)?,
         ))
     }
 
     fn take_digest(&mut self) -> Result<Digest32, GenerationStoreError> {
         let bytes = self.take_exact(32)?;
         Ok(Digest32::from_array(
-            bytes.try_into().map_err(|_| GenerationStoreError::Corrupt)?,
+            bytes
+                .try_into()
+                .map_err(|_| GenerationStoreError::Corrupt)?,
         ))
     }
 
     fn take_id(&mut self) -> Result<StableId, GenerationStoreError> {
-        let length = usize::try_from(self.take_u32()?).map_err(|_| GenerationStoreError::Corrupt)?;
+        let length =
+            usize::try_from(self.take_u32()?).map_err(|_| GenerationStoreError::Corrupt)?;
         let bytes = self.take_exact(length)?;
         let raw = std::str::from_utf8(bytes).map_err(|_| GenerationStoreError::Corrupt)?;
         StableId::new(raw.to_owned()).map_err(|_| GenerationStoreError::Corrupt)
     }
 
     fn take_bytes(&mut self, maximum: usize) -> Result<Vec<u8>, GenerationStoreError> {
-        let length = usize::try_from(self.take_u32()?).map_err(|_| GenerationStoreError::Corrupt)?;
+        let length =
+            usize::try_from(self.take_u32()?).map_err(|_| GenerationStoreError::Corrupt)?;
         if length > maximum {
             return Err(GenerationStoreError::Corrupt);
         }

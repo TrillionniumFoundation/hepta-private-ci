@@ -101,10 +101,7 @@ pub struct FileNeuronWitnessStoreV2 {
 }
 
 impl FileNeuronWitnessStoreV2 {
-    pub fn create(
-        path: &Path,
-        context: NeuronWitnessContextV2,
-    ) -> Result<Self, WitnessStoreError> {
+    pub fn create(path: &Path, context: NeuronWitnessContextV2) -> Result<Self, WitnessStoreError> {
         Self::create_segment(path, context, None)
     }
 
@@ -382,9 +379,7 @@ fn encode_record(expected: Option<JournalAnchor>, next: JournalAnchor) -> [u8; R
 fn decode_record(
     bytes: &[u8; RECORD_BYTES],
 ) -> Result<(Option<JournalAnchor>, JournalAnchor), WitnessStoreError> {
-    if Digest32::of_bytes(&bytes[..RECORD_BYTES - 32]).as_array()
-        != &bytes[RECORD_BYTES - 32..]
-    {
+    if Digest32::of_bytes(&bytes[..RECORD_BYTES - 32]).as_array() != &bytes[RECORD_BYTES - 32..] {
         return Err(WitnessStoreError::Corrupt);
     }
     let expected_sequence = u64::from_be_bytes(

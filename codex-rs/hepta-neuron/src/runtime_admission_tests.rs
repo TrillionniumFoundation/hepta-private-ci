@@ -1,5 +1,5 @@
-use super::*;
 use super::MechanismOnly;
+use super::*;
 
 use crate::AbstainReasonV1;
 use crate::DegradationReasonV1;
@@ -102,7 +102,11 @@ impl Fixture {
                 write_amplification_ppm: 4_000_000,
             },
         };
-        Self { path, native, config }
+        Self {
+            path,
+            native,
+            config,
+        }
     }
 
     fn file(&self, name: &str) -> File {
@@ -203,12 +207,9 @@ impl NeuronModelPort for Model {
         let mut drive_q24 = vec![0; request.expected_output_width];
         drive_q24[0] = Q;
         let prediction_q24 = vec![0; request.expected_output_width];
-        let output_digest = canonical_model_output_digest_v1(
-            &drive_q24,
-            &prediction_q24,
-            &runtime_receipt,
-        )
-        .expect("fixture output digest");
+        let output_digest =
+            canonical_model_output_digest_v1(&drive_q24, &prediction_q24, &runtime_receipt)
+                .expect("fixture output digest");
         Ok(NeuronModelOutputV1 {
             encoder_digest: request.encoder_digest,
             head_digest: request.head_digest,

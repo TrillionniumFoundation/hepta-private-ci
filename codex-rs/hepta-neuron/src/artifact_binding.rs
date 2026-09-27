@@ -84,7 +84,8 @@ impl NeuronRuntimeConfigV1 {
         output: &NeuronModelOutputV1,
     ) -> Result<(ModelSemanticIdentityV2, ModelExecutionObservationV1), NeuronRuntimeError> {
         validate_model_output(self, output)?;
-        let expected_quantization_id = derived_runtime_id("quantization", self.quantization_digest)?;
+        let expected_quantization_id =
+            derived_runtime_id("quantization", self.quantization_digest)?;
         let expected_backend_id = derived_runtime_id("runtime", self.runtime_digest)?;
         if output.runtime_receipt.quantization_id != expected_quantization_id
             || output.runtime_receipt.backend_id != expected_backend_id
