@@ -28,6 +28,7 @@ use crate::hnmf_learning::RecallPacketV1;
 use crate::hnmf_learning::ReplaySelectionReceiptV1;
 use crate::hnmf_learning::SynapseV1;
 use crate::hnmf_learning::TopologyProposalV1;
+use crate::strict::ValidateStrictV1;
 
 pub const COGNITIVE_WIRE_VERSION_V1: u32 = 1;
 const MAX_ENVELOPE_OVERHEAD_BYTES: usize = 1_024;
@@ -88,7 +89,7 @@ impl_contract!(
     "SynapseV1",
     "hepta.hnmf.synapse.v1",
     65_536,
-    SynapseV1::validate
+    SynapseV1::validate_strict_v1
 );
 impl_contract!(
     MemoryCueV1,
@@ -116,28 +117,28 @@ impl_contract!(
     "ReplaySelectionReceiptV1",
     "hepta.hnmf.replay-selection-receipt.v1",
     65_536,
-    ReplaySelectionReceiptV1::validate
+    ReplaySelectionReceiptV1::validate_strict_v1
 );
 impl_contract!(
     PlasticityBatchV1,
     "PlasticityBatchV1",
     "hepta.hnmf.plasticity-batch.v1",
     262_144,
-    PlasticityBatchV1::validate
+    PlasticityBatchV1::validate_strict_v1
 );
 impl_contract!(
     TopologyProposalV1,
     "TopologyProposalV1",
     "hepta.hnmf.topology-proposal.v1",
     262_144,
-    TopologyProposalV1::validate
+    TopologyProposalV1::validate_strict_v1
 );
 impl_contract!(
     ForgetPropagationReceiptV1,
     "ForgetPropagationReceiptV1",
     "hepta.hnmf.forget-propagation-receipt.v1",
     65_536,
-    ForgetPropagationReceiptV1::validate
+    ForgetPropagationReceiptV1::validate_strict_v1
 );
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
