@@ -74,7 +74,9 @@ fn provider_waits_for_active_quarantined_and_draining_dependents() -> TestResult
         let before = registry.snapshot();
         assert_eq!(
             registry.begin_retire(&id("provider")?, generation()?),
-            Err(RuntimeModuleRegistryError::SelectedDependent(id("consumer")?))
+            Err(RuntimeModuleRegistryError::SelectedDependent(id(
+                "consumer"
+            )?))
         );
         assert_eq!(registry.snapshot(), before);
         assert_eq!(
@@ -87,7 +89,9 @@ fn provider_waits_for_active_quarantined_and_draining_dependents() -> TestResult
         registry.begin_retire(&id("consumer")?, generation()?)?;
         assert_eq!(
             registry.begin_retire(&id("provider")?, generation()?),
-            Err(RuntimeModuleRegistryError::SelectedDependent(id("consumer")?))
+            Err(RuntimeModuleRegistryError::SelectedDependent(id(
+                "consumer"
+            )?))
         );
         registry.finish_retire(&id("consumer")?, generation()?)?;
         registry.begin_retire(&id("provider")?, generation()?)?;
@@ -110,7 +114,9 @@ fn finish_rechecks_consumers_selected_during_the_drain_window() -> TestResult {
     let before = registry.snapshot();
     assert_eq!(
         registry.finish_retire(&id("provider")?, generation()?),
-        Err(RuntimeModuleRegistryError::SelectedDependent(id("late-consumer")?))
+        Err(RuntimeModuleRegistryError::SelectedDependent(id(
+            "late-consumer"
+        )?))
     );
     assert_eq!(registry.snapshot(), before);
     assert_eq!(
@@ -153,7 +159,7 @@ fn unselected_candidate_does_not_pin_a_provider_forever() -> TestResult {
 fn invalid_self_dependency_does_not_consume_the_generation_identity() -> TestResult {
     let mut registry = RuntimeModuleRegistryV1::new();
     assert_eq!(
-        registry.register_candidate(abi("self-dependent", &["self-dependent"])?) ,
+        registry.register_candidate(abi("self-dependent", &["self-dependent"])?),
         Err(RuntimeModuleRegistryError::SelfDependency)
     );
     assert!(
