@@ -1261,7 +1261,7 @@ async fn homeserver_observation_without_dispatch_row_is_legacy_unqualified() -> 
 }
 
 #[tokio::test]
-async fn qualified_success_requires_matching_durable_final_use_claim() -> TestResult {
+async fn caller_filled_claim_without_entered_kernel_proof_stays_unqualified() -> TestResult {
     let temp = TempDir::new()?;
     let agent_id = agent()?;
     let store_layout = layout(&temp, &agent_id)?;
@@ -1345,7 +1345,8 @@ async fn qualified_success_requires_matching_durable_final_use_claim() -> TestRe
             .await?
             .ok_or("qualified dispatch disappeared")?
             .state,
-        MatrixDispatchState::Succeeded,
+        MatrixDispatchState::ObservedUnqualified,
+        "caller-filled authority metadata cannot replace an entered kernel proof",
     );
 
     let redaction = MatrixSyncMutationV2 {
@@ -1375,8 +1376,8 @@ async fn qualified_success_requires_matching_durable_final_use_claim() -> TestRe
             .await?
             .ok_or("qualified redacted dispatch disappeared")?
             .state,
-        MatrixDispatchState::Redacted,
-        "redaction may be qualified only when the original send has durable final-use proof",
+        MatrixDispatchState::ObservedUnqualified,
+        "redaction remains unqualified when the original send lacks a durable entered-use proof",
     );
     Ok(())
 }
@@ -2551,6 +2552,36 @@ async fn startup_requires_final_use_claim_schema_guards() -> TestResult {
     sqlx::query("DROP TRIGGER matrix_dispatch_succeeded_requires_authority_claim")
         .execute(&pool)
         .await?;
+    pool.close().await;
+
+    assert!(matches!(
+        MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await,
+        Err(MatrixDurableError::Corrupt)
+    ));
+    Ok(())
+}
+
+#[tokio::test]
+async fn startup_rejects_same_name_weakened_entered_use_guard() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let store_layout = layout(&temp, &agent_id)?;
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    store.close().await;
+
+    let database_path = store_layout.matrix_root().join("matrix_1.sqlite3");
+    let pool = open_hostile_fixture_pool(&database_path).await?;
+    let mut transaction = pool.begin_with("BEGIN IMMEDIATE").await?;
+    sqlx::query("DROP TRIGGER matrix_dispatch_use_entries_guard_insert")
+        .execute(&mut *transaction)
+        .await?;
+    sqlx::query(
+        "CREATE TRIGGER matrix_dispatch_use_entries_guard_insert
+         BEFORE INSERT ON matrix_dispatch_use_entries BEGIN SELECT 1; END",
+    )
+    .execute(&mut *transaction)
+    .await?;
+    transaction.commit().await?;
     pool.close().await;
 
     assert!(matches!(

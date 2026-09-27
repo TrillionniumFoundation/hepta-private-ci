@@ -290,6 +290,9 @@ pub async fn dispatch_outbox_once<
                 .map_err(store_error)?;
             clock.deadline(claim.lease_until_ms())?;
             let gate = FinalSendGate {
+                store,
+                claim,
+                clock: &clock,
                 transport,
                 authorizer,
                 expected_identity: &identity,

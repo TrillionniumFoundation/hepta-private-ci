@@ -11,6 +11,9 @@ use super::*;
 use crate::content::outbound_payload_digest;
 
 pub(super) struct FinalSendGate<'a, T: ?Sized, A: ?Sized> {
+    pub(super) store: &'a MatrixDurableStore,
+    pub(super) claim: &'a MatrixFencedOutboxClaim,
+    pub(super) clock: &'a DispatchClock,
     pub(super) transport: &'a T,
     pub(super) authorizer: &'a A,
     pub(super) expected_identity: &'a MatrixOutboundIdentity,
@@ -36,95 +39,107 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
     ) -> Result<EnteredSend, OutboxDispatchError> {
         let claimed_epoch = token.claimed_authority_epoch();
         let claimed_revision = token.claimed_revocation_revision();
-        let mut token = Some(token);
-        let mut proof = None;
-        let mut send: Option<MatrixSendFuture<'_>> = None;
-        let observed = {
-            // Recheck every continuation poll: DNS, TLS and encryption may
-            // yield before the transport ever writes its request.
-            let gated = poll_fn(|context| {
-                if self.cancel.is_cancelled() {
-                    return Poll::Ready(Err(OutboxDispatchError::Canceled));
-                }
-                if Instant::now() >= self.deadline {
-                    return Poll::Ready(Err(OutboxDispatchError::LeaseExpired));
-                }
-                if self.authorizer.refresh_revocations().is_err() {
-                    return Poll::Ready(Err(OutboxDispatchError::Authority));
-                }
-                let head = match self.authorizer.authority().revocation_head() {
-                    Ok(head) => head,
-                    Err(_) => return Poll::Ready(Err(OutboxDispatchError::Authority)),
-                };
-                if head.authority_epoch != claimed_epoch || head.revision != claimed_revision {
-                    return Poll::Ready(Err(OutboxDispatchError::Authority));
-                }
-                match self.transport.identity() {
-                    Ok(identity) if &identity == self.expected_identity => {}
-                    _ => return Poll::Ready(Err(OutboxDispatchError::TransportIdentity)),
-                }
-                match outbound_payload_digest(self.record) {
-                    Ok(digest) if digest.as_str() == hex_digest(binding.payload_sha256) => {}
-                    _ => return Poll::Ready(Err(OutboxDispatchError::Authority)),
-                }
-                if send.is_none() {
-                    let Some(token) = token.take() else {
-                        return Poll::Ready(Err(OutboxDispatchError::Authority));
-                    };
-                    let entered = match self.authorizer.authority().enter_verified_use(token, binding) {
-                        Ok(entered) if entered.matches(binding) => Arc::new(entered),
-                        _ => return Poll::Ready(Err(OutboxDispatchError::Authority)),
-                    };
-                    let permit = match MatrixSendPermit::new(
-                        Arc::clone(&entered), binding, self.expected_identity, self.record,
-                    ) {
-                        Ok(permit) => permit,
-                        Err(_) => return Poll::Ready(Err(OutboxDispatchError::Authority)),
-                    };
-                    if self.cancel.is_cancelled() {
-                        return Poll::Ready(Err(OutboxDispatchError::Canceled));
-                    }
-                    if Instant::now() >= self.deadline {
-                        return Poll::Ready(Err(OutboxDispatchError::LeaseExpired));
-                    }
-                    proof = Some(entered);
-                    send = Some(self.transport.send_authorized(self.record, permit));
-                }
-                // Synchronous refresh, digest work or future construction must
-                // never extend the lease or delay cancellation past this poll.
-                if self.cancel.is_cancelled() {
-                    return Poll::Ready(Err(OutboxDispatchError::Canceled));
-                }
-                if Instant::now() >= self.deadline {
-                    return Poll::Ready(Err(OutboxDispatchError::LeaseExpired));
-                }
-                match send.as_mut() {
-                    Some(send) => send.as_mut().poll(context).map(Ok),
-                    None => Poll::Ready(Err(OutboxDispatchError::Invalid)),
-                }
-            });
-            tokio::select! {
-                biased;
-                _ = self.cancel.cancelled() => Err(OutboxDispatchError::Canceled),
-                result = tokio::time::timeout_at(self.deadline, gated) => {
-                    result.unwrap_or(Err(OutboxDispatchError::LeaseExpired))
-                }
+        self.preflight(claimed_epoch, claimed_revision, binding)?;
+
+        let entered = self
+            .authorizer
+            .authority()
+            .enter_verified_use(token, binding)
+            .map_err(|_| OutboxDispatchError::Authority)?;
+        if !entered.matches(binding) {
+            return Err(OutboxDispatchError::Authority);
+        }
+        let proof = Arc::new(entered);
+
+        // Crossing the kernel check is not yet physical I/O. Persist the exact
+        // non-constructible proof under the live random claim, then re-read all
+        // volatile boundaries after this await before constructing the SDK
+        // future. A failed/expired persistence path cannot enter transport.
+        tokio::time::timeout_at(
+            self.deadline,
+            self.store.record_outbox_entered_use(
+                self.claim,
+                proof.as_ref(),
+                binding,
+                self.clock.now_ms()?,
+            ),
+        )
+        .await
+        .map_err(|_| OutboxDispatchError::LeaseExpired)?
+        .map_err(store_error)?;
+        self.preflight(claimed_epoch, claimed_revision, binding)?;
+
+        let permit = MatrixSendPermit::new(
+            Arc::clone(&proof),
+            binding,
+            self.expected_identity,
+            self.record,
+        )
+        .map_err(|_| OutboxDispatchError::Authority)?;
+        self.preflight(claimed_epoch, claimed_revision, binding)?;
+        let mut send = self.transport.send_authorized(self.record, permit);
+
+        // Recheck every continuation poll: DNS, TLS and encryption may yield
+        // before the transport ever writes its request. Once the future exists,
+        // dropping it cannot prove that no bytes crossed the network boundary,
+        // so every gate stop is returned as an indeterminate transport result.
+        let gated = poll_fn(|context| {
+            if self
+                .preflight(claimed_epoch, claimed_revision, binding)
+                .is_err()
+            {
+                return Poll::Ready(Err(OutboxDispatchError::Authority));
+            }
+            send.as_mut().poll(context).map(Ok)
+        });
+        let observed = tokio::select! {
+            biased;
+            _ = self.cancel.cancelled() => Err(OutboxDispatchError::Canceled),
+            result = tokio::time::timeout_at(self.deadline, gated) => {
+                result.unwrap_or(Err(OutboxDispatchError::LeaseExpired))
             }
         };
-        match proof {
-            Some(proof) => Ok(EnteredSend {
-                result: match observed {
-                    Ok(result) => result,
-                    Err(OutboxDispatchError::LeaseExpired) => Err(MatrixTransportError::ReadTimeout),
-                    // Dropping an entered future cannot undo already-written bytes.
-                    Err(_) => Err(MatrixTransportError::ResponseLost),
-                },
-                _proof: proof,
-            }),
-            None => match observed {
-                Err(error) => Err(error),
-                Ok(_) => Err(OutboxDispatchError::Invalid),
+        Ok(EnteredSend {
+            result: match observed {
+                Ok(result) => result,
+                Err(OutboxDispatchError::LeaseExpired) => Err(MatrixTransportError::ReadTimeout),
+                Err(_) => Err(MatrixTransportError::ResponseLost),
             },
+            _proof: proof,
+        })
+    }
+
+    fn preflight(
+        &self,
+        claimed_epoch: u64,
+        claimed_revision: u64,
+        binding: &FinalUseBinding,
+    ) -> Result<(), OutboxDispatchError> {
+        if self.cancel.is_cancelled() {
+            return Err(OutboxDispatchError::Canceled);
         }
+        if Instant::now() >= self.deadline {
+            return Err(OutboxDispatchError::LeaseExpired);
+        }
+        self.authorizer
+            .refresh_revocations()
+            .map_err(authority_error)?;
+        let head = self
+            .authorizer
+            .authority()
+            .revocation_head()
+            .map_err(|_| OutboxDispatchError::Authority)?;
+        if head.authority_epoch != claimed_epoch || head.revision != claimed_revision {
+            return Err(OutboxDispatchError::Authority);
+        }
+        match self.transport.identity() {
+            Ok(identity) if &identity == self.expected_identity => {}
+            _ => return Err(OutboxDispatchError::TransportIdentity),
+        }
+        match outbound_payload_digest(self.record) {
+            Ok(digest) if digest.as_str() == hex_digest(binding.payload_sha256) => {}
+            _ => return Err(OutboxDispatchError::Authority),
+        }
+        Ok(())
     }
 }

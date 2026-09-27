@@ -1001,6 +1001,63 @@ async fn qualified_authority_claim_exists_tx(
     {
         return Err(MatrixDurableError::Corrupt);
     }
+
+    let entry_count: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM matrix_dispatch_use_entries
+         WHERE stable_txn_id = ? AND attempt = ?",
+    )
+    .bind(txn_id.as_str())
+    .bind(to_i64(expected_attempt)?)
+    .fetch_one(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
+    if entry_count == 0 {
+        // A signed proposal and durable metadata are not evidence that a
+        // non-constructible token crossed the final revocation check.
+        return Ok(false);
+    }
+    if entry_count != 1 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+
+    let qualified: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM matrix_dispatch_use_entries AS entry
+         JOIN matrix_dispatch_authority_claims AS authority_claim
+           ON authority_claim.stable_txn_id = entry.stable_txn_id
+          AND authority_claim.attempt = entry.attempt
+         JOIN matrix_dispatch_authority_witnesses AS authority_witness
+           ON authority_witness.stable_txn_id = entry.stable_txn_id
+          AND authority_witness.attempt = entry.attempt
+         JOIN matrix_dispatch_content_bindings AS content
+           ON content.stable_txn_id = entry.stable_txn_id
+         WHERE entry.stable_txn_id = ? AND entry.attempt = ?
+           AND entry.operation_id = ?
+           AND entry.subject_id = ?
+           AND authority_claim.operation_id = entry.operation_id
+           AND authority_claim.subject_id = entry.subject_id
+           AND authority_claim.destination_id = entry.destination_id
+           AND authority_claim.request_sha256 = entry.request_sha256
+           AND authority_claim.scope_sha256 = entry.scope_sha256
+           AND authority_claim.payload_sha256 = ?
+           AND authority_witness.authority_epoch = authority_claim.authority_epoch
+           AND authority_witness.revocation_revision = authority_claim.revocation_revision
+           AND authority_witness.grant_id = authority_claim.grant_id
+           AND authority_witness.verified_use_witness_sha256 = entry.entered_use_witness_sha256
+           AND content.scope_sha256 = entry.scope_sha256
+           AND content.canonical_content_sha256 = entry.canonical_payload_sha256",
+    )
+    .bind(txn_id.as_str())
+    .bind(to_i64(expected_attempt)?)
+    .bind(operation_id)
+    .bind(expected_subject_id)
+    .bind(payload_digest)
+    .fetch_one(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
+    if qualified != 1 {
+        return Err(MatrixDurableError::Corrupt);
+    }
     Ok(true)
 }
 

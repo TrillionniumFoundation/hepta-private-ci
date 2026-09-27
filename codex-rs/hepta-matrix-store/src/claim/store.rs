@@ -1,3 +1,6 @@
+use codex_hepta_contracts::EnteredUseToken;
+use codex_hepta_contracts::FinalUseBinding;
+
 use crate::ChangeKind;
 use crate::MatrixDurableError;
 use crate::MatrixDurableStore;
@@ -280,6 +283,155 @@ impl MatrixDurableStore {
         let remaining = active.lease_until_ms.saturating_sub(recorded_at_ms);
         transaction.commit().await.map_err(unavailable)?;
         Ok(remaining)
+    }
+
+    /// Persist the exact kernel proof that crossed its final revocation and
+    /// expiry check before final Matrix adapter authorization entry.
+    ///
+    /// This API accepts the non-constructible `EnteredUseToken`, rather than a
+    /// caller-filled digest, and binds it to the live random claim, canonical
+    /// content pin, signed request and durable authority witness. Identical
+    /// replay is idempotent; any semantic drift conflicts.
+    pub async fn record_outbox_entered_use(
+        &self,
+        claim: &MatrixFencedOutboxClaim,
+        proof: &EnteredUseToken,
+        binding: &FinalUseBinding,
+        recorded_at_ms: u64,
+    ) -> Result<(), MatrixDurableError> {
+        if !proof.matches(binding) || binding.subject_id != self.owner_agent_id().as_str() {
+            return Err(MatrixDurableError::AccessDenied);
+        }
+        let request_sha256 = hex_sha256(binding.request_sha256);
+        let scope_sha256 = hex_sha256(binding.scope_sha256);
+        let canonical_payload_sha256 = hex_sha256(binding.payload_sha256);
+        let entered_use_witness_sha256 = hex_sha256(proof.witness_sha256());
+        let identity = claim.identity();
+        let operation_id = format!("matrix.send:{}", identity.stable_txn_id.as_str());
+
+        let mut transaction = self
+            .sqlite_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(unavailable)?;
+        let active = require_live_active_claim_tx(&mut transaction, &identity, recorded_at_ms).await?;
+        if active.phase != "dispatching" {
+            return Err(MatrixDurableError::Conflict);
+        }
+
+        let existing: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM matrix_dispatch_use_entries
+             WHERE stable_txn_id = ? AND attempt = ?",
+        )
+        .bind(identity.stable_txn_id.as_str())
+        .bind(to_i64(identity.attempt)?)
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if existing != 0 {
+            let identical: i64 = sqlx::query_scalar(
+                "SELECT COUNT(*) FROM matrix_dispatch_use_entries
+                 WHERE stable_txn_id = ? AND attempt = ? AND lease_epoch = ?
+                   AND claim_token_sha256 = ? AND operation_id = ?
+                   AND subject_id = ? AND destination_id = ?
+                   AND request_sha256 = ? AND scope_sha256 = ?
+                   AND canonical_payload_sha256 = ?
+                   AND entered_use_witness_sha256 = ?",
+            )
+            .bind(identity.stable_txn_id.as_str())
+            .bind(to_i64(identity.attempt)?)
+            .bind(to_i64(identity.lease_epoch)?)
+            .bind(identity.token_sha256)
+            .bind(&operation_id)
+            .bind(&binding.subject_id)
+            .bind(&binding.destination_id)
+            .bind(&request_sha256)
+            .bind(&scope_sha256)
+            .bind(&canonical_payload_sha256)
+            .bind(&entered_use_witness_sha256)
+            .fetch_one(&mut *transaction)
+            .await
+            .map_err(unavailable)?;
+            if identical == 1 {
+                transaction.commit().await.map_err(unavailable)?;
+                return Ok(());
+            }
+            return Err(MatrixDurableError::Conflict);
+        }
+
+        let qualified: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*)
+             FROM matrix_dispatch_ledger AS dispatch
+             JOIN matrix_dispatch_authority_claims AS authority_claim
+               ON authority_claim.stable_txn_id = dispatch.stable_txn_id
+              AND authority_claim.attempt = dispatch.attempts
+             JOIN matrix_dispatch_authority_witnesses AS authority_witness
+               ON authority_witness.stable_txn_id = dispatch.stable_txn_id
+              AND authority_witness.attempt = dispatch.attempts
+             JOIN matrix_dispatch_content_bindings AS content
+               ON content.stable_txn_id = dispatch.stable_txn_id
+             WHERE dispatch.stable_txn_id = ? AND dispatch.attempts = ?
+               AND dispatch.operation_id = ?
+               AND authority_claim.operation_id = dispatch.operation_id
+               AND authority_claim.subject_id = ?
+               AND authority_claim.destination_id = ?
+               AND authority_claim.request_sha256 = ?
+               AND authority_claim.scope_sha256 = ?
+               AND authority_claim.payload_sha256 = dispatch.payload_sha256
+               AND authority_claim.expires_at_ms > ?
+               AND authority_witness.lease_epoch = ?
+               AND authority_witness.claim_token_sha256 = ?
+               AND authority_witness.authority_epoch = authority_claim.authority_epoch
+               AND authority_witness.revocation_revision = authority_claim.revocation_revision
+               AND authority_witness.grant_id = authority_claim.grant_id
+               AND authority_witness.verified_use_witness_sha256 = ?
+               AND content.scope_sha256 = ?
+               AND content.canonical_content_sha256 = ?",
+        )
+        .bind(identity.stable_txn_id.as_str())
+        .bind(to_i64(identity.attempt)?)
+        .bind(&operation_id)
+        .bind(&binding.subject_id)
+        .bind(&binding.destination_id)
+        .bind(&request_sha256)
+        .bind(&scope_sha256)
+        .bind(to_i64(recorded_at_ms)?)
+        .bind(to_i64(identity.lease_epoch)?)
+        .bind(identity.token_sha256)
+        .bind(&entered_use_witness_sha256)
+        .bind(&scope_sha256)
+        .bind(&canonical_payload_sha256)
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if qualified != 1 {
+            return Err(MatrixDurableError::Conflict);
+        }
+
+        sqlx::query(
+            "INSERT INTO matrix_dispatch_use_entries (
+                stable_txn_id, attempt, lease_epoch, claim_token_sha256,
+                operation_id, subject_id, destination_id, request_sha256,
+                scope_sha256, canonical_payload_sha256,
+                entered_use_witness_sha256, entered_at_ms
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        )
+        .bind(identity.stable_txn_id.as_str())
+        .bind(to_i64(identity.attempt)?)
+        .bind(to_i64(identity.lease_epoch)?)
+        .bind(identity.token_sha256)
+        .bind(&operation_id)
+        .bind(&binding.subject_id)
+        .bind(&binding.destination_id)
+        .bind(&request_sha256)
+        .bind(&scope_sha256)
+        .bind(&canonical_payload_sha256)
+        .bind(&entered_use_witness_sha256)
+        .bind(to_i64(recorded_at_ms)?)
+        .execute(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        transaction.commit().await.map_err(unavailable)
     }
 
     pub async fn release_outbox_claim_canceled(
@@ -591,4 +743,14 @@ impl MatrixDurableStore {
         delete_active_claim_tx(&mut transaction, &identity).await?;
         transaction.commit().await.map_err(unavailable)
     }
+}
+
+fn hex_sha256(value: [u8; 32]) -> String {
+    use std::fmt::Write as _;
+
+    let mut output = String::with_capacity(64);
+    for byte in value {
+        write!(&mut output, "{byte:02x}").expect("writing to String cannot fail");
+    }
+    output
 }
