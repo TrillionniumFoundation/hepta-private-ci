@@ -213,7 +213,7 @@ fn admission_returns_history_before_model_and_conflicts_on_payload_drift() {
     };
     assert_eq!(
         checked(store.admit_operation(&value.key, None, 100, 100)),
-        NeuronGenerationAdmissionV2::Historical(record)
+        NeuronGenerationAdmissionV2::Historical(Box::new(record))
     );
     let changed = NeuronOperationKeyV2 {
         tick_id: value.key.tick_id,

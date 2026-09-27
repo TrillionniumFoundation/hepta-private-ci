@@ -237,7 +237,7 @@ fn tampered_digest_unknown_fields_and_path_escape_fail_closed() {
         &manifest,
     ));
 
-    let bytes = checked(fs::read(&fixture.manifest()));
+    let bytes = checked(fs::read(fixture.manifest()));
     let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
     json["manifestDigest"] = serde_json::Value::String(digest("tampered").to_string());
     checked(fs::write(

@@ -395,7 +395,7 @@ fn is_successor(expected: Option<JournalAnchor>, next: JournalAnchor) -> bool {
 fn sync_parent_directory(path: &Path) -> Result<(), WitnessStoreError> {
     let parent = path
         .parent()
-        .ok_or_else(|| WitnessStoreError::Io(std::io::ErrorKind::InvalidInput))?;
+        .ok_or(WitnessStoreError::Io(std::io::ErrorKind::InvalidInput))?;
     File::open(parent)?.sync_all()?;
     Ok(())
 }

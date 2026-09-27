@@ -143,7 +143,7 @@ pub fn migrate_legacy_v1_operation_history<W: AnchorWitnessStore>(
     if journal_frontier != witness_frontier {
         return Err(NeuronLegacyOperationMigrationError::FrontierMismatch);
     }
-    if journal_frontier.is_some() != !archive.is_empty() {
+    if journal_frontier.is_some() == archive.is_empty() {
         return Err(NeuronLegacyOperationMigrationError::InvalidArchive);
     }
     if archive.len() > max_operations {
