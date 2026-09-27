@@ -1,0 +1,100 @@
+name: Learning artifacts qualification
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-artifacts-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  CARGO_TERM_COLOR: never
+  RUSTUP_TOOLCHAIN: 1.95.0
+
+jobs:
+  source-inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Retain exact audit inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p .hepta-evidence/artifact-source
+          git rev-parse HEAD HEAD^{tree} > .hepta-evidence/artifact-source/identity.txt
+          git ls-tree -r HEAD > .hepta-evidence/artifact-source/tree.txt
+          git archive --format=tar --output=.hepta-evidence/artifact-source/source.tar HEAD \
+            AGENTS.md justfile codex-rs/hepta-learning-artifacts codex-rs/hepta-types \
+            codex-rs/hepta-agentd/src codex-rs/hepta-intelligence/src \
+            codex-rs/hepta-intelligence-eval/src codex-rs/hepta-learning-ledger/src \
+            codex-rs/Cargo.toml codex-rs/Cargo.lock \
+            scripts .github/workflows docs/lane-e docs/modules/learning.artifacts \
+            docs/modules/learning.operator qualification/lane-e \
+            qualification/module-execution-dossiers/detail/learning.artifacts.md
+          sha256sum .hepta-evidence/artifact-source/source.tar > .hepta-evidence/artifact-source/source.sha256
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: artifact-source-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: .hepta-evidence/artifact-source
+          if-no-files-found: error
+          retention-days: 14
+
+  qualification:
+    name: learning.artifacts (${{ matrix.lane }})
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source, merge]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install explicit toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt
+      - name: Execute all diagnostics and bind receipts
+        env:
+          QUALIFICATION_LANE: ${{ matrix.lane }}
+        run: python3 scripts/hepta-learning-artifacts-qualification.py run
+      - name: Retain results even on diagnostic failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: artifact-qualification-${{ env.SOURCE_SHA }}-${{ matrix.lane }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-artifacts
+          if-no-files-found: error
+          retention-days: 30
+
+  required:
+    name: Learning artifacts required
+    if: always()
+    needs: [source-inventory, qualification]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Fail on missing, skipped, cancelled or failed qualification
+        env:
+          INVENTORY_RESULT: ${{ needs.source-inventory.result }}
+          QUALIFICATION_RESULT: ${{ needs.qualification.result }}
+        run: |
+          test "$INVENTORY_RESULT" = success
+          test "$QUALIFICATION_RESULT" = success
