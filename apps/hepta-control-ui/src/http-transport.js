@@ -14,6 +14,7 @@ import {
 const encoder = new TextEncoder();
 const MAX_RESPONSE_BYTES = 1024 * 1024;
 const JSON_CONTENT_TYPE = /^application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/iu;
+const SAFE_BACKEND_CODE = /^[A-Za-z0-9._:-]{1,128}$/u;
 
 function invalid(message, details) {
   return uiControlError(UI_CONTROL_ERROR_CODES.INVALID_INPUT, message, { details });
@@ -36,65 +37,160 @@ function anySignal(signals) {
   return controller.signal;
 }
 
-async function readResponseText(response, signal) {
-  if (!signal) return response.text();
-  if (signal.aborted) throw signal.reason ?? new DOMException("request aborted", "AbortError");
-  let rejectOnAbort;
-  const aborted = new Promise((resolve, reject) => {
-    rejectOnAbort = () => reject(
-      signal.reason ?? new DOMException("request aborted", "AbortError"),
+function responseTooLarge(status) {
+  return uiControlError(
+    UI_CONTROL_ERROR_CODES.TRANSPORT,
+    "ui.control response exceeds the maximum allowed size",
+    { details: { status, requestDispatched: true, maxBytes: MAX_RESPONSE_BYTES } },
+  );
+}
+
+function validateResponseHeaders(response) {
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!JSON_CONTENT_TYPE.test(contentType)) {
+    throw uiControlError(
+      UI_CONTROL_ERROR_CODES.TRANSPORT,
+      "ui.control backend returned a non-JSON content type",
+      { details: { status: response.status, contentType, requestDispatched: true } },
     );
-    signal.addEventListener("abort", rejectOnAbort, { once: true });
-  });
+  }
+
+  const rawLength = response.headers.get("content-length");
+  if (rawLength === null) return;
+  const normalizedLength = rawLength.trim();
+  if (!/^(?:0|[1-9][0-9]*)$/u.test(normalizedLength)) {
+    throw uiControlError(
+      UI_CONTROL_ERROR_CODES.TRANSPORT,
+      "ui.control backend returned an invalid Content-Length header",
+      { details: { status: response.status, requestDispatched: true } },
+    );
+  }
+  const declaredLength = Number(normalizedLength);
+  if (!Number.isSafeInteger(declaredLength)) {
+    throw uiControlError(
+      UI_CONTROL_ERROR_CODES.TRANSPORT,
+      "ui.control backend returned an unsafe Content-Length header",
+      { details: { status: response.status, requestDispatched: true } },
+    );
+  }
+  if (declaredLength > MAX_RESPONSE_BYTES) throw responseTooLarge(response.status);
+}
+
+async function readResponseText(response, signal) {
+  if (signal?.aborted) {
+    throw signal.reason ?? new DOMException("request aborted", "AbortError");
+  }
+  if (response.body === null) return "";
+  if (typeof response.body?.getReader !== "function") {
+    throw uiControlError(
+      UI_CONTROL_ERROR_CODES.TRANSPORT,
+      "ui.control response body is not a readable byte stream",
+      { details: { status: response.status, requestDispatched: true } },
+    );
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder("utf-8", { fatal: true });
+  let bytes = 0;
+  let output = "";
+  let removeAbortListener = () => {};
+  const aborted = signal
+    ? new Promise((_, reject) => {
+        const onAbort = () => {
+          void reader.cancel(signal.reason).catch(() => {});
+          reject(signal.reason ?? new DOMException("request aborted", "AbortError"));
+        };
+        signal.addEventListener("abort", onAbort, { once: true });
+        removeAbortListener = () => signal.removeEventListener("abort", onAbort);
+      })
+    : null;
+
   try {
-    return await Promise.race([response.text(), aborted]);
+    while (true) {
+      const chunk = aborted
+        ? await Promise.race([reader.read(), aborted])
+        : await reader.read();
+      if (chunk.done) break;
+      if (!(chunk.value instanceof Uint8Array)) {
+        throw uiControlError(
+          UI_CONTROL_ERROR_CODES.TRANSPORT,
+          "ui.control response stream yielded a non-byte chunk",
+          { details: { status: response.status, requestDispatched: true } },
+        );
+      }
+      bytes += chunk.value.byteLength;
+      if (bytes > MAX_RESPONSE_BYTES) {
+        void reader.cancel("ui.control response too large").catch(() => {});
+        throw responseTooLarge(response.status);
+      }
+      output += decoder.decode(chunk.value, { stream: true });
+    }
+    if (signal?.aborted) {
+      throw signal.reason ?? new DOMException("request aborted", "AbortError");
+    }
+    output += decoder.decode();
+    return output;
   } finally {
-    signal.removeEventListener("abort", rejectOnAbort);
+    removeAbortListener();
+    try {
+      reader.releaseLock();
+    } catch {
+      // The stream may still be settling after abort/cancel; no authority state
+      // depends on releasing the local reader lock.
+    }
   }
 }
 
 function classifyHttpFailure(status, payload) {
-  const message =
-    payload && typeof payload.message === "string"
-      ? payload.message
-      : `ui.control backend returned HTTP ${status}`;
+  const backendCode =
+    typeof payload?.errorCode === "string" && SAFE_BACKEND_CODE.test(payload.errorCode)
+      ? payload.errorCode
+      : null;
   const details = {
     status,
-    backendCode: payload?.errorCode ?? null,
+    backendCode,
     requestDispatched: true,
   };
   if (status === 401) {
-    return uiControlError(UI_CONTROL_ERROR_CODES.SESSION_EXPIRED, message, {
-      retryable: true,
-      details,
-    });
+    return uiControlError(
+      UI_CONTROL_ERROR_CODES.SESSION_EXPIRED,
+      "ui.control authentication expired",
+      { retryable: true, details },
+    );
   }
   if (status === 403) {
-    return uiControlError(UI_CONTROL_ERROR_CODES.PERMISSION_DENIED, message, {
-      details,
-    });
+    return uiControlError(
+      UI_CONTROL_ERROR_CODES.PERMISSION_DENIED,
+      "ui.control permission was denied",
+      { details },
+    );
   }
   if (status === 409) {
-    return uiControlError(UI_CONTROL_ERROR_CODES.OPERATION_CONFLICT, message, {
-      retryable: true,
-      details,
-    });
+    return uiControlError(
+      UI_CONTROL_ERROR_CODES.OPERATION_CONFLICT,
+      "ui.control operation identity conflicts with an existing request",
+      { retryable: true, details },
+    );
   }
   if (status === 412) {
-    return uiControlError(UI_CONTROL_ERROR_CODES.STALE_REVISION, message, {
-      retryable: true,
-      details,
-    });
+    return uiControlError(
+      UI_CONTROL_ERROR_CODES.STALE_REVISION,
+      "ui.control runtime view is stale",
+      { retryable: true, details },
+    );
   }
   if ([400, 404, 422].includes(status)) {
-    return uiControlError(UI_CONTROL_ERROR_CODES.BACKEND_REJECTED, message, {
-      details,
-    });
+    return uiControlError(
+      UI_CONTROL_ERROR_CODES.BACKEND_REJECTED,
+      "ui.control backend rejected the request",
+      { details },
+    );
   }
-  return uiControlError(UI_CONTROL_ERROR_CODES.TRANSPORT, message, {
-    retryable: status >= 429,
-    details,
-  });
+  return uiControlError(
+    UI_CONTROL_ERROR_CODES.TRANSPORT,
+    `ui.control backend returned HTTP ${status}`,
+    { retryable: status >= 429, details },
+  );
 }
 
 export class SameOriginHttpTransport {
@@ -146,6 +242,7 @@ export class SameOriginHttpTransport {
       body: endpointManifest,
       signal,
       mutation: false,
+      csrf: true,
     });
     this.#session = session;
     return session;
@@ -173,14 +270,14 @@ export class SameOriginHttpTransport {
     } catch (cause) {
       if (
         cause instanceof UiControlError &&
-        (cause.code === UI_CONTROL_ERROR_CODES.BACKEND_REJECTED ||
+        (cause.code === UI_CONTROL_ERROR_CODES.INVALID_INPUT ||
+          cause.code === UI_CONTROL_ERROR_CODES.BACKEND_REJECTED ||
           cause.code === UI_CONTROL_ERROR_CODES.OPERATION_CONFLICT ||
           cause.code === UI_CONTROL_ERROR_CODES.STALE_REVISION ||
           cause.code === UI_CONTROL_ERROR_CODES.SESSION_EXPIRED ||
           cause.code === UI_CONTROL_ERROR_CODES.PERMISSION_DENIED ||
           cause.code === UI_CONTROL_ERROR_CODES.AMBIGUOUS_SUBMISSION ||
-          (cause.code === UI_CONTROL_ERROR_CODES.ABORTED &&
-            cause.details.requestDispatched === false))
+          cause.details.requestDispatched === false)
       ) {
         throw cause;
       }
@@ -229,6 +326,7 @@ export class SameOriginHttpTransport {
       },
       signal,
       mutation: false,
+      csrf: true,
     });
     this.#session = refreshed;
     return refreshed;
@@ -258,6 +356,7 @@ export class SameOriginHttpTransport {
         },
         signal,
         mutation: false,
+        csrf: true,
       });
     } finally {
       this.#session = null;
@@ -266,19 +365,26 @@ export class SameOriginHttpTransport {
 
   async #fetchJson(
     path,
-    { method, body, signal, mutation, requestId = globalThis.crypto.randomUUID() },
+    {
+      method,
+      body,
+      signal,
+      mutation,
+      csrf = mutation,
+      requestId = globalThis.crypto.randomUUID(),
+    },
   ) {
     const url = new URL(path, this.#baseUrl);
     if (url.origin !== this.#origin || !url.href.startsWith(this.#baseUrl.href)) {
       throw invalid("transport path escaped the same-origin API base", { path });
     }
     let csrfToken = null;
-    if (mutation) {
+    if (csrf) {
       const providedToken = this.#csrfTokenProvider();
       if (typeof providedToken !== "string" || providedToken.length === 0) {
         throw uiControlError(
           UI_CONTROL_ERROR_CODES.PERMISSION_DENIED,
-          "mutation request requires a CSRF token",
+          "POST request requires a CSRF token",
           { details: { requestDispatched: false } },
         );
       }
@@ -289,6 +395,19 @@ export class SameOriginHttpTransport {
         retryable: true,
         details: { requestDispatched: false },
       });
+    }
+
+    let serializedBody;
+    if (body !== undefined) {
+      try {
+        serializedBody = JSON.stringify(body);
+      } catch (cause) {
+        throw uiControlError(
+          UI_CONTROL_ERROR_CODES.INVALID_INPUT,
+          "request body is not JSON serializable",
+          { details: { requestDispatched: false }, cause },
+        );
+      }
     }
 
     const timeout = new AbortController();
@@ -308,24 +427,16 @@ export class SameOriginHttpTransport {
         referrerPolicy: "no-referrer",
         headers: {
           accept: "application/json",
-          ...(body === undefined ? {} : { "content-type": "application/json" }),
+          ...(serializedBody === undefined ? {} : { "content-type": "application/json" }),
           "x-hepta-request-id": assertStableIdentifier(requestId, "requestId", {
             maxBytes: 192,
           }),
           ...(csrfToken ? { "x-hepta-csrf-token": csrfToken } : {}),
         },
-        body: body === undefined ? undefined : JSON.stringify(body),
+        body: serializedBody,
         signal: combinedSignal,
       });
-
-      const declaredLength = Number(response.headers.get("content-length") ?? 0);
-      if (Number.isFinite(declaredLength) && declaredLength > MAX_RESPONSE_BYTES) {
-        throw uiControlError(
-          UI_CONTROL_ERROR_CODES.TRANSPORT,
-          "ui.control response exceeds the maximum allowed size",
-          { details: { status: response.status, requestDispatched: true } },
-        );
-      }
+      validateResponseHeaders(response);
       text = await readResponseText(response, combinedSignal);
     } catch (cause) {
       if (combinedSignal?.aborted) {
@@ -348,19 +459,7 @@ export class SameOriginHttpTransport {
     }
 
     if (encoder.encode(text).byteLength > MAX_RESPONSE_BYTES) {
-      throw uiControlError(
-        UI_CONTROL_ERROR_CODES.TRANSPORT,
-        "ui.control response exceeds the maximum allowed size",
-        { details: { status: response.status, requestDispatched: true } },
-      );
-    }
-    const contentType = response.headers.get("content-type") ?? "";
-    if (text.length > 0 && !JSON_CONTENT_TYPE.test(contentType)) {
-      throw uiControlError(
-        UI_CONTROL_ERROR_CODES.TRANSPORT,
-        "ui.control backend returned a non-JSON content type",
-        { details: { status: response.status, contentType, requestDispatched: true } },
-      );
+      throw responseTooLarge(response.status);
     }
     let payload = null;
     if (text.length > 0) {

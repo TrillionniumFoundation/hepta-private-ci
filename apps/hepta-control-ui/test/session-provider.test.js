@@ -42,6 +42,57 @@ function fakeClient(overrides = {}) {
   };
 }
 
+test("concurrent start callers share one connection attempt", async () => {
+  const gate = deferred();
+  const events = [];
+  const client = fakeClient({
+    async connect() {
+      client.state.connectCount += 1;
+      await gate.promise;
+      client.state.connected = true;
+    },
+  });
+  const provider = new SessionProvider({ client, endpointManifest: {} });
+  provider.subscribe(event => events.push(event.type));
+
+  const first = provider.start();
+  const second = provider.start();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(client.state.connectCount, 1);
+  gate.resolve();
+  await Promise.all([first, second]);
+  assert.equal(client.state.connectCount, 1);
+  assert.deepEqual(events, ["connected"]);
+  provider.stop();
+});
+
+test("stop fences an in-flight connection and closes local authority once", async () => {
+  const gate = deferred();
+  const events = [];
+  const client = fakeClient({
+    async connect() {
+      client.state.connectCount += 1;
+      await gate.promise;
+      client.state.connected = true;
+    },
+  });
+  const provider = new SessionProvider({ client, endpointManifest: {} });
+  provider.subscribe(event => events.push(event.type));
+
+  const starting = provider.start();
+  await new Promise(resolve => setImmediate(resolve));
+  provider.stop();
+  gate.resolve();
+
+  await assert.rejects(
+    starting,
+    error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.ABORTED,
+  );
+  assert.equal(client.state.closeCount, 1);
+  assert.equal(client.state.connected, false);
+  assert.deepEqual(events, []);
+});
+
 test("concurrent refresh callers share one in-flight refresh", async () => {
   const gate = deferred();
   const client = fakeClient({
@@ -85,6 +136,36 @@ test("stop fences an in-flight refresh from emitting success or rescheduling", a
     error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.ABORTED,
   );
   assert.deepEqual(events, ["connected"]);
+  await assert.rejects(
+    provider.refresh(),
+    error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.NOT_CONNECTED,
+  );
+});
+
+test("session authority loss during refresh fails closed and emits revocation", async () => {
+  const events = [];
+  const client = fakeClient({
+    async refreshSession() {
+      client.state.refreshCount += 1;
+      client.state.connected = false;
+      throw new UiControlError(
+        UI_CONTROL_ERROR_CODES.SESSION_EXPIRED,
+        "session expired",
+      );
+    },
+  });
+  const provider = new SessionProvider({ client, endpointManifest: {} });
+  provider.subscribe(event => events.push(event.type));
+  await provider.start();
+
+  await assert.rejects(
+    provider.refresh(),
+    error =>
+      error instanceof UiControlError &&
+      error.code === UI_CONTROL_ERROR_CODES.SESSION_EXPIRED,
+  );
+  assert.equal(client.state.closeCount, 1);
+  assert.deepEqual(events, ["connected", "revoked"]);
   await assert.rejects(
     provider.refresh(),
     error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.NOT_CONNECTED,

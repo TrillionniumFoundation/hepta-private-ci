@@ -13,7 +13,7 @@ function response(payload, { status = 200, headers = {} } = {}) {
   });
 }
 
-test("HTTP transport enforces same-origin URLs and credentials", async () => {
+test("HTTP transport enforces same-origin URLs, credentials, and lifecycle CSRF", async () => {
   let observed;
   const transport = new SameOriginHttpTransport({
     origin: "https://control.example",
@@ -28,6 +28,7 @@ test("HTTP transport enforces same-origin URLs and credentials", async () => {
   assert.equal(observed.options.credentials, "include");
   assert.equal(observed.options.redirect, "error");
   assert.equal(observed.options.referrerPolicy, "no-referrer");
+  assert.equal(observed.options.headers["x-hepta-csrf-token"], "csrf-token");
 });
 
 test("default fetch is invoked with the global receiver", async t => {
@@ -45,11 +46,32 @@ test("default fetch is invoked with the global receiver", async t => {
 
   const transport = new SameOriginHttpTransport({
     origin: "https://control.example",
+    csrfTokenProvider: () => "csrf-token",
   });
   await transport.connect({ client: "test" });
 
   assert.equal(receiver, globalThis);
   assert.equal(observedUrl, "https://control.example/api/ui-control/v1/session/connect");
+});
+
+test("session lifecycle POSTs require CSRF before dispatch", async () => {
+  let calls = 0;
+  const transport = new SameOriginHttpTransport({
+    origin: "https://control.example",
+    csrfTokenProvider: () => null,
+    fetchImpl: async () => {
+      calls += 1;
+      return response({});
+    },
+  });
+  await assert.rejects(
+    transport.connect({ client: "test" }),
+    error =>
+      error instanceof UiControlError &&
+      error.code === UI_CONTROL_ERROR_CODES.PERMISSION_DENIED &&
+      error.details.requestDispatched === false,
+  );
+  assert.equal(calls, 0);
 });
 
 test("mutations require bounded CSRF and are never automatically retried", async () => {
@@ -99,7 +121,7 @@ test("backend conflicts and stale revisions preserve typed definite rejection", 
       origin: "https://control.example",
       csrfTokenProvider: () => "csrf-token",
       fetchImpl: async () => response(
-        { errorCode: `STATUS_${status}`, message: `backend returned ${status}` },
+        { errorCode: `STATUS_${status}`, message: "internal secret must not be reflected" },
         { status },
       ),
     });
@@ -108,7 +130,10 @@ test("backend conflicts and stale revisions preserve typed definite rejection", 
         operationId: `operation-${status}`,
         semanticDigest: "a".repeat(64),
       }),
-      error => error instanceof UiControlError && error.code === expectedCode,
+      error =>
+        error instanceof UiControlError &&
+        error.code === expectedCode &&
+        !error.message.includes("internal secret"),
     );
   }
 });
@@ -132,20 +157,56 @@ test("network loss after mutation dispatch is ambiguous", async () => {
   );
 });
 
-test("timeout remains active while the response body is being read", async () => {
+test("timeout remains active while the response body stream is being read", async () => {
   const transport = new SameOriginHttpTransport({
     origin: "https://control.example",
+    csrfTokenProvider: () => "csrf-token",
     timeoutMs: 100,
-    fetchImpl: async () => ({
-      ok: true,
-      status: 200,
-      headers: new Headers({ "content-type": "application/json" }),
-      text: async () => new Promise(() => {}),
-    }),
+    fetchImpl: async () => new Response(
+      new ReadableStream({
+        pull() {
+          return new Promise(() => {});
+        },
+      }),
+      {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      },
+    ),
   });
   await assert.rejects(
     transport.connect({ client: "test" }),
     error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.ABORTED,
+  );
+});
+
+test("chunked responses are rejected as soon as the hard byte ceiling is crossed", async () => {
+  const first = new Uint8Array(700 * 1024).fill(0x20);
+  const second = new Uint8Array(400 * 1024).fill(0x20);
+  const chunks = [first, second];
+  const transport = new SameOriginHttpTransport({
+    origin: "https://control.example",
+    csrfTokenProvider: () => "csrf-token",
+    fetchImpl: async () => new Response(
+      new ReadableStream({
+        pull(controller) {
+          const chunk = chunks.shift();
+          if (chunk) controller.enqueue(chunk);
+          else controller.close();
+        },
+      }),
+      {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      },
+    ),
+  });
+  await assert.rejects(
+    transport.connect({ client: "test" }),
+    error =>
+      error instanceof UiControlError &&
+      error.code === UI_CONTROL_ERROR_CODES.TRANSPORT &&
+      error.details.maxBytes === 1024 * 1024,
   );
 });
 
@@ -173,6 +234,7 @@ test("operation lookup validates every identity binding before dispatch", async 
 test("successful responses require an explicit JSON media type", async () => {
   const transport = new SameOriginHttpTransport({
     origin: "https://control.example",
+    csrfTokenProvider: () => "csrf-token",
     fetchImpl: async () => new Response("{}", {
       status: 200,
       headers: { "content-type": "text/plain" },

@@ -5,6 +5,14 @@ import {
 } from "./errors.js";
 
 const MAX_TIMER_DELAY_MS = 2_147_000_000;
+const SESSION_AUTHORITY_LOSS = new Set([
+  UI_CONTROL_ERROR_CODES.SESSION_EXPIRED,
+  UI_CONTROL_ERROR_CODES.SESSION_REVOKED,
+  UI_CONTROL_ERROR_CODES.SESSION_IDENTITY_CHANGED,
+  UI_CONTROL_ERROR_CODES.PERMISSION_DENIED,
+  UI_CONTROL_ERROR_CODES.STALE_PERMISSION_REVISION,
+  UI_CONTROL_ERROR_CODES.PROTOCOL_MISMATCH,
+]);
 
 export class SessionProvider {
   #client;
@@ -15,11 +23,24 @@ export class SessionProvider {
   #listeners = new Set();
   #active = false;
   #epoch = 0;
+  #startPromise = null;
   #refreshPromise = null;
 
   constructor({ client, endpointManifest, clock = () => Date.now(), refreshSkewMs = 60_000 }) {
-    if (!client || typeof client.connect !== "function" || typeof client.refreshSession !== "function") {
-      throw new TypeError("client must implement connect and refreshSession");
+    const requiredMethods = [
+      "connect",
+      "refreshSession",
+      "revokeSession",
+      "close",
+      "readView",
+    ];
+    if (
+      !client ||
+      requiredMethods.some(method => typeof client[method] !== "function")
+    ) {
+      throw new TypeError(
+        "client must implement connect, refreshSession, revokeSession, close, and readView",
+      );
     }
     if (!Number.isSafeInteger(refreshSkewMs) || refreshSkewMs < 5_000 || refreshSkewMs > 600_000) {
       throw new TypeError("refreshSkewMs must be a safe integer in [5000, 600000]");
@@ -37,16 +58,44 @@ export class SessionProvider {
   }
 
   async start({ signal } = {}) {
+    if (this.#startPromise) return this.#startPromise;
+    const current = this.#client.readView();
+    if (this.#active && current.connected) {
+      this.#schedule(this.#epoch);
+      return current;
+    }
+
     this.#active = true;
     const epoch = ++this.#epoch;
     this.#clearTimer();
-    await this.#client.connect(this.#manifest, { signal });
+    const startPromise = this.#startOnce(epoch, signal);
+    this.#startPromise = startPromise;
+    try {
+      return await startPromise;
+    } finally {
+      if (this.#startPromise === startPromise) this.#startPromise = null;
+    }
+  }
+
+  async #startOnce(epoch, signal) {
+    try {
+      await this.#client.connect(this.#manifest, { signal });
+    } catch (error) {
+      if (this.#active && epoch === this.#epoch) {
+        this.#active = false;
+        ++this.#epoch;
+        this.#clearTimer();
+        this.#emit("connect-failed", error);
+      }
+      throw error;
+    }
+
     if (!this.#active || epoch !== this.#epoch) {
       try {
         await this.#client.close({ signal });
       } catch {
-        // The provider is already stopped; RuntimeClient closes local authority
-        // before attempting the transport close.
+        // RuntimeClient closes local authority before attempting transport
+        // cleanup, so a lost close acknowledgement cannot restore access.
       }
       throw uiControlError(
         UI_CONTROL_ERROR_CODES.ABORTED,
@@ -94,16 +143,18 @@ export class SessionProvider {
     } catch (error) {
       if (
         error instanceof UiControlError &&
-        [
-          UI_CONTROL_ERROR_CODES.SESSION_REVOKED,
-          UI_CONTROL_ERROR_CODES.SESSION_IDENTITY_CHANGED,
-          UI_CONTROL_ERROR_CODES.PERMISSION_DENIED,
-          UI_CONTROL_ERROR_CODES.STALE_PERMISSION_REVISION,
-        ].includes(error.code)
+        SESSION_AUTHORITY_LOSS.has(error.code) &&
+        this.#active &&
+        epoch === this.#epoch
       ) {
         this.#active = false;
         ++this.#epoch;
         this.#clearTimer();
+        try {
+          await this.#client.close({ signal });
+        } catch {
+          // Local authority is already removed by RuntimeClient.close().
+        }
         this.#emit("revoked", error);
       }
       throw error;
