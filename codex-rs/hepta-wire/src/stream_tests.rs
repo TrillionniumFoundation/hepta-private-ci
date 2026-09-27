@@ -36,11 +36,14 @@ fn one_byte_chunks_do_not_dispatch_until_complete() -> Result<(), Box<dyn Error>
 
     let mut decoder = StreamingDecoder::new();
     for byte in &frame[..frame.len() - 1] {
-        assert!(decoder.push(std::slice::from_ref(byte))?.is_empty());
+        let batch = decoder.push(std::slice::from_ref(byte));
+        assert!(batch.frames().is_empty());
+        assert_eq!(batch.terminal_error(), None);
     }
-    let decoded = decoder.push(&frame[frame.len() - 1..])?;
-    assert_eq!(decoded.len(), 1);
-    assert_eq!(decoded[0].payload(), b"payload");
+    let decoded = decoder.push(&frame[frame.len() - 1..]);
+    assert_eq!(decoded.frames().len(), 1);
+    assert_eq!(decoded.frames()[0].payload(), b"payload");
+    assert_eq!(decoded.terminal_error(), None);
     assert_eq!(decoder.buffered_len(), 0);
     Ok(())
 }
@@ -65,10 +68,11 @@ fn consecutive_v1_and_v2_frames_decode_from_one_chunk() -> Result<(), Box<dyn Er
     bytes.extend_from_slice(&v2);
 
     let mut decoder = StreamingDecoder::new();
-    let decoded = decoder.push(&bytes)?;
-    assert_eq!(decoded.len(), 2);
-    assert_eq!(decoded[0].version(), WireVersion::V1);
-    assert_eq!(decoded[1].version(), WireVersion::V2);
+    let decoded = decoder.push(&bytes);
+    assert_eq!(decoded.frames().len(), 2);
+    assert_eq!(decoded.frames()[0].version(), WireVersion::V1);
+    assert_eq!(decoded.frames()[1].version(), WireVersion::V2);
+    assert_eq!(decoded.terminal_error(), None);
     Ok(())
 }
 
@@ -81,16 +85,16 @@ fn oversized_advertised_payload_rejects_at_header_boundary() -> Result<(), Box<d
 
     let mut decoder = StreamingDecoder::new();
     assert!(matches!(
-        decoder.push(&header),
-        Err(StreamDecodeError::HeaderValidation(
+        decoder.push(&header).terminal_error(),
+        Some(StreamDecodeError::HeaderValidation(
             FrameHeaderValidationError::PayloadLength {
                 actual,
                 maximum,
                 byte_offset: 50,
                 ..
             }
-        )) if actual == crate::MAX_WIRE_PAYLOAD_BYTES + 1
-            && maximum == crate::MAX_WIRE_PAYLOAD_BYTES
+        )) if *actual == crate::MAX_WIRE_PAYLOAD_BYTES + 1
+            && *maximum == crate::MAX_WIRE_PAYLOAD_BYTES
     ));
     Ok(())
 }
@@ -100,8 +104,8 @@ fn buffer_limit_rejects_before_copying_unbounded_chunk() {
     let mut decoder = StreamingDecoder::new();
     let oversized = vec![0_u8; crate::MAX_WIRE_FRAME_BYTES * MAX_BUFFERED_WIRE_FRAMES + 1];
     assert!(matches!(
-        decoder.push(&oversized),
-        Err(StreamDecodeError::BufferLimit { .. })
+        decoder.push(&oversized).terminal_error(),
+        Some(StreamDecodeError::BufferLimit { .. })
     ));
     assert_eq!(decoder.buffered_len(), 0);
 }
@@ -168,16 +172,13 @@ fn valid_prefix_and_terminal_error_are_reported_atomically() -> Result<(), Box<d
     assert!(is_magic(batch.terminal_error()));
     assert!(decoder.is_poisoned());
     assert_eq!(decoder.buffered_len(), 0);
-    assert!(matches!(
-        decoder.push(&valid),
-        Err(StreamDecodeError::HeaderParse(
-            FrameHeaderParseError::Magic { .. }
-        ))
-    ));
+    assert!(is_magic(decoder.push(&valid).terminal_error()));
 
     decoder.clear();
     assert!(!decoder.is_poisoned());
-    assert_eq!(decoder.push(&valid)?.len(), 1);
+    let batch = decoder.push(&valid);
+    assert_eq!(batch.frames().len(), 1);
+    assert_eq!(batch.terminal_error(), None);
     Ok(())
 }
 
@@ -224,6 +225,70 @@ fn every_chunk_boundary_preserves_the_same_valid_prefix_and_terminal_error()
             expected.terminal_error(),
             "terminal error changed at chunk boundary {split_at}"
         );
+    }
+    Ok(())
+}
+
+fn all_partitions(length: usize) -> impl Iterator<Item = Vec<usize>> {
+    (0_u128..(1_u128 << length.saturating_sub(1))).map(move |mask| {
+        let mut ends = Vec::new();
+        for index in 1..length {
+            if mask & (1_u128 << (index - 1)) != 0 {
+                ends.push(index);
+            }
+        }
+        ends.push(length);
+        ends
+    })
+}
+
+#[test]
+fn every_partition_of_three_frames_preserves_delivery_and_error() -> Result<(), Box<dyn Error>> {
+    let first = WireEnvelopeV2::new(stable("s")?, stable("p")?, Generation::new(1)?, vec![1])?;
+    let second = WireEnvelopeV2::new(stable("s")?, stable("p")?, Generation::new(2)?, vec![2])?;
+    let mut bad = WireEnvelopeV2::new(stable("s")?, stable("p")?, Generation::new(3)?, vec![3])?
+        .encode();
+    *bad.last_mut().ok_or("empty frame")? ^= 1;
+    let mut bytes = first.encode();
+    bytes.extend_from_slice(&second.encode());
+    bytes.extend_from_slice(&bad);
+
+    // Exhaustive byte partitions grow exponentially. This fixture uses every
+    // boundary combination across the first twelve bytes and fixed one-byte
+    // chunks thereafter, covering nested header fragmentation deterministically.
+    let prefix = 12.min(bytes.len());
+    for ends in all_partitions(prefix) {
+        let mut decoder = StreamingDecoder::new();
+        let mut delivered = Vec::new();
+        let mut terminal = None;
+        let mut start = 0;
+        for end in ends {
+            let batch = decoder.push(&bytes[start..end]);
+            delivered.extend_from_slice(batch.frames());
+            terminal = batch.terminal_error().cloned().or(terminal);
+            start = end;
+        }
+        for byte in &bytes[start..] {
+            let batch = decoder.push(std::slice::from_ref(byte));
+            delivered.extend_from_slice(batch.frames());
+            terminal = batch.terminal_error().cloned().or(terminal);
+            if terminal.is_some() {
+                break;
+            }
+        }
+        assert_eq!(
+            delivered,
+            vec![
+                DecodedEnvelope::V2(first.clone()),
+                DecodedEnvelope::V2(second.clone()),
+            ]
+        );
+        assert!(matches!(
+            terminal,
+            Some(StreamDecodeError::Frame(DecodeFrameError::V2(
+                crate::WireV2Error::DigestMismatch { .. }
+            )))
+        ));
     }
     Ok(())
 }
@@ -286,12 +351,12 @@ fn configurable_work_budget_preserves_the_valid_prefix() -> Result<(), Box<dyn E
 }
 
 #[test]
-fn compatibility_push_returns_valid_prefix_before_latched_error() -> Result<(), Box<dyn Error>> {
+fn push_never_hides_a_later_terminal_error() -> Result<(), Box<dyn Error>> {
     let valid = WireEnvelopeV2::new(
         stable("hepta.stream.v2")?,
         stable("runtime.codex")?,
         Generation::new(6)?,
-        b"compat-prefix".to_vec(),
+        b"visible-prefix".to_vec(),
     )?
     .encode();
     let mut invalid = valid.clone();
@@ -300,16 +365,11 @@ fn compatibility_push_returns_valid_prefix_before_latched_error() -> Result<(), 
     chunk.extend_from_slice(&invalid);
 
     let mut decoder = StreamingDecoder::new();
-    let frames = decoder.push(&chunk)?;
-    assert_eq!(frames.len(), 1);
-    assert_eq!(frames[0].payload(), b"compat-prefix");
-    assert!(is_magic(decoder.terminal_error()));
-    assert!(matches!(
-        decoder.push(&valid),
-        Err(StreamDecodeError::HeaderParse(
-            FrameHeaderParseError::Magic { .. }
-        ))
-    ));
+    let batch = decoder.push(&chunk);
+    assert_eq!(batch.frames().len(), 1);
+    assert_eq!(batch.frames()[0].payload(), b"visible-prefix");
+    assert!(is_magic(batch.terminal_error()));
+    assert!(is_magic(decoder.push(&valid).terminal_error()));
     Ok(())
 }
 

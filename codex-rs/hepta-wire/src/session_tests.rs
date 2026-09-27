@@ -65,16 +65,16 @@ fn negotiated_v2_session_rejects_v1_frame_and_stays_poisoned() -> Result<(), Box
 
     let mut decoder = NegotiatedStreamingDecoder::new(negotiated);
     assert!(matches!(
-        decoder.push(&v1),
-        Err(NegotiatedDecodeError::VersionMismatch {
+        decoder.push(&v1).terminal_error(),
+        Some(NegotiatedDecodeError::VersionMismatch {
             negotiated: WireVersion::V2,
             observed: WireVersion::V1,
         })
     ));
     assert!(decoder.is_poisoned());
     assert!(matches!(
-        decoder.push(&[]),
-        Err(NegotiatedDecodeError::VersionMismatch { .. })
+        decoder.push(&[]).terminal_error(),
+        Some(NegotiatedDecodeError::VersionMismatch { .. })
     ));
     Ok(())
 }

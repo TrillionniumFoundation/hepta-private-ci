@@ -260,16 +260,12 @@ impl StreamingDecoder {
         }
     }
 
-    /// Compatibility wrapper for callers that consume only complete batches.
-    pub fn push(&mut self, chunk: &[u8]) -> Result<Vec<DecodedEnvelope>, StreamDecodeError> {
-        let batch = self.push_batch(chunk);
-        let (frames, terminal_error) = batch.into_parts();
-        if frames.is_empty()
-            && let Some(error) = terminal_error
-        {
-            return Err(error);
-        }
-        Ok(frames)
+    /// Lossless convenience alias. Unlike the historical `Result<Vec<_>, _>`
+    /// shape, this cannot hide a terminal error that follows valid frames in
+    /// the same transport chunk.
+    #[must_use = "consume the completed prefix and inspect the terminal error"]
+    pub fn push(&mut self, chunk: &[u8]) -> StreamDecodeBatch {
+        self.push_batch(chunk)
     }
 
     fn fail(

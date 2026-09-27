@@ -115,15 +115,11 @@ impl NegotiatedStreamingDecoder {
         }
     }
 
-    pub fn push(&mut self, chunk: &[u8]) -> Result<Vec<DecodedEnvelope>, NegotiatedDecodeError> {
-        let batch = self.push_batch(chunk);
-        let (frames, terminal_error) = batch.into_parts();
-        if frames.is_empty()
-            && let Some(error) = terminal_error
-        {
-            return Err(error);
-        }
-        Ok(frames)
+    /// Lossless convenience alias. A terminal error can never be hidden behind
+    /// a successful result containing the valid prefix.
+    #[must_use = "consume the completed prefix and inspect the terminal error"]
+    pub fn push(&mut self, chunk: &[u8]) -> NegotiatedDecodeBatch {
+        self.push_batch(chunk)
     }
 
     fn fail(
@@ -262,15 +258,11 @@ impl WireSessionDecoder {
         }
     }
 
-    pub fn push(&mut self, chunk: &[u8]) -> Result<Vec<DecodedEnvelope>, WireSessionDecodeError> {
-        let batch = self.push_batch(chunk);
-        let (frames, terminal_error) = batch.into_parts();
-        if frames.is_empty()
-            && let Some(error) = terminal_error
-        {
-            return Err(error);
-        }
-        Ok(frames)
+    /// Lossless convenience alias. Session-policy and stream failures always
+    /// remain visible alongside any valid prefix from the same feed.
+    #[must_use = "consume the completed prefix and inspect the terminal error"]
+    pub fn push(&mut self, chunk: &[u8]) -> WireSessionDecodeBatch {
+        self.push_batch(chunk)
     }
 
     fn fail(
