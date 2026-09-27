@@ -12,11 +12,14 @@
 //! physical `turn/start` after the point at which an earlier process might have
 //! crossed the effect boundary.
 
+use std::collections::BTreeMap;
 use std::fmt;
 use std::future::Future;
 use std::path::Path;
 use std::path::PathBuf;
 use std::pin::Pin;
+use std::sync::Arc;
+use std::sync::Mutex as StdMutex;
 use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
@@ -35,6 +38,10 @@ use crate::AgentdIdentity;
 mod persistence;
 #[path = "runtime_codex_executor_process.rs"]
 mod process;
+
+pub(crate) use process::RuntimeCodexInputProviderV1;
+pub(crate) use process::RuntimeCodexScheduleReservationV1;
+pub(crate) use process::RuntimeCodexSupervisorSnapshotV1;
 
 const JOB_SCHEMA_VERSION: u32 = 1;
 const MAX_EXECUTABLE_BYTES: u64 = 2 * 1024 * 1024 * 1024;
@@ -227,7 +234,7 @@ impl RuntimeCodexExecutionInputV1 {
         self.deadline_ms
     }
 
-    fn digest(&self) -> Result<Digest32, AgentdError> {
+    pub(crate) fn digest(&self) -> Result<Digest32, AgentdError> {
         #[derive(Serialize)]
         struct DigestInput<'a> {
             domain: &'static str,
@@ -280,6 +287,13 @@ pub struct RuntimeCodexReconcileReportV1 {
     pub scanned: usize,
     pub already_terminal: usize,
     pub reconciled_terminal: usize,
+    /// Manifest exists but no dispatch fence exists. An exact authenticated
+    /// retry may still perform the first physical dispatch.
+    pub prepared_unfenced: usize,
+    /// A physical dispatch may have happened and current reconciliation did not
+    /// recover exact terminal evidence. New blind dispatch remains forbidden.
+    pub fenced_unresolved: usize,
+    /// Compatibility aggregate retained for callers and older evidence readers.
     pub unresolved: usize,
 }
 
@@ -308,10 +322,10 @@ pub struct ProcessRuntimeCodexExecutorV1 {
     journal_root: PathBuf,
     maximum_in_flight: usize,
     interrupt_grace: Duration,
-    // One Agentd owner is the only process permitted to construct this adapter.
-    // The async mutex serializes exact-run duplicate calls and startup recovery
-    // so no same-process task can race a fresh dispatch against reconciliation.
-    operation_lock: Mutex<()>,
+    // Different run identities execute concurrently. Exact duplicates and
+    // recovery for one run share one keyed lock, so they cannot race a fresh
+    // dispatch against reconciliation.
+    operation_locks: StdMutex<BTreeMap<String, Arc<Mutex<()>>>>,
 }
 
 impl fmt::Debug for ProcessRuntimeCodexExecutorV1 {
@@ -371,7 +385,7 @@ impl ProcessRuntimeCodexExecutorV1 {
             journal_root,
             maximum_in_flight,
             interrupt_grace,
-            operation_lock: Mutex::new(()),
+            operation_locks: StdMutex::new(BTreeMap::new()),
         })
     }
 
@@ -379,17 +393,51 @@ impl ProcessRuntimeCodexExecutorV1 {
         self.worker_artifact_digest
     }
 
+    pub const fn final_use_authority_digest(&self) -> Digest32 {
+        self.final_use_authority_digest
+    }
+
+    pub const fn maximum_in_flight(&self) -> usize {
+        self.maximum_in_flight
+    }
+
     pub fn journal_root(&self) -> &Path {
         &self.journal_root
     }
 
-    async fn execute_inner(
+    fn operation_lock_for(&self, run_id: &str) -> Result<Arc<Mutex<()>>, AgentdError> {
+        let mut locks = self.operation_locks.lock().map_err(|_| {
+            AgentdError::Protocol("runtime.codex keyed lock registry is poisoned".to_string())
+        })?;
+        Ok(Arc::clone(
+            locks
+                .entry(run_id.to_string())
+                .or_insert_with(|| Arc::new(Mutex::new(()))),
+        ))
+    }
+
+    fn release_operation_lock(
+        &self,
+        run_id: &str,
+        operation_lock: &Arc<Mutex<()>>,
+    ) -> Result<(), AgentdError> {
+        let mut locks = self.operation_locks.lock().map_err(|_| {
+            AgentdError::Protocol("runtime.codex keyed lock registry is poisoned".to_string())
+        })?;
+        if locks.get(run_id).is_some_and(|current| {
+            Arc::ptr_eq(current, operation_lock) && Arc::strong_count(current) == 2
+        }) {
+            locks.remove(run_id);
+        }
+        Ok(())
+    }
+
+    async fn execute_locked(
         &self,
         owner: RuntimeCodexOwnerV1,
         input: RuntimeCodexExecutionInputV1,
         cancellation: CancellationToken,
     ) -> Result<RuntimeCodexExecutionReceiptV1, AgentdError> {
-        let _operation_guard = self.operation_lock.lock().await;
         persistence::validate_owner(self, &owner)?;
         persistence::revalidate_external_files(self)?;
         let input_digest = input.digest()?;
@@ -427,12 +475,26 @@ impl ProcessRuntimeCodexExecutorV1 {
         Ok(receipt)
     }
 
+    async fn execute_inner(
+        &self,
+        owner: RuntimeCodexOwnerV1,
+        input: RuntimeCodexExecutionInputV1,
+        cancellation: CancellationToken,
+    ) -> Result<RuntimeCodexExecutionReceiptV1, AgentdError> {
+        let run_id = input.run_id().to_string();
+        let operation_lock = self.operation_lock_for(&run_id)?;
+        let guard = operation_lock.lock().await;
+        let result = self.execute_locked(owner, input, cancellation).await;
+        drop(guard);
+        self.release_operation_lock(&run_id, &operation_lock)?;
+        result
+    }
+
     async fn reconcile_pending_inner(
         &self,
         owner: RuntimeCodexOwnerV1,
         cancellation: CancellationToken,
     ) -> Result<RuntimeCodexReconcileReportV1, AgentdError> {
-        let _operation_guard = self.operation_lock.lock().await;
         persistence::validate_owner(self, &owner)?;
         persistence::revalidate_external_files(self)?;
         let directories = persistence::list_operation_directories(&self.journal_root)?;
@@ -452,53 +514,69 @@ impl ProcessRuntimeCodexExecutorV1 {
                 &owner,
                 self.worker_artifact_digest,
             )?;
-            if persistence::read_receipt_if_present(&paths.receipt, &manifest)?.is_some() {
-                report.already_terminal = report
-                    .already_terminal
-                    .checked_add(1)
-                    .ok_or_else(|| {
-                        AgentdError::Protocol("recovery counter overflow".to_string())
-                    })?;
-                continue;
-            }
-            if !persistence::dispatch_is_fenced(&paths, &manifest)? {
-                // A manifest written before the dispatch fence is not evidence
-                // that physical execution was attempted. Startup lacks the
-                // prompt by design, so it must not invent or launch work. A
-                // matching authenticated caller can later finish first dispatch.
-                report.unresolved = report.unresolved.checked_add(1).ok_or_else(|| {
-                    AgentdError::Protocol("recovery counter overflow".to_string())
-                })?;
-                continue;
-            }
-            match process::spawn_worker(
-                self,
-                &owner,
-                &manifest,
-                &paths,
-                None,
-                cancellation.child_token(),
-            )
-            .await
-            {
-                Ok(receipt) => {
-                    persistence::write_receipt(&paths.receipt, &manifest, &receipt)?;
-                    report.reconciled_terminal = report
-                        .reconciled_terminal
+            let run_id = manifest.run_id.clone();
+            let operation_lock = self.operation_lock_for(&run_id)?;
+            let guard = operation_lock.lock().await;
+            let result = async {
+                if persistence::read_receipt_if_present(&paths.receipt, &manifest)?.is_some() {
+                    report.already_terminal = report
+                        .already_terminal
                         .checked_add(1)
                         .ok_or_else(|| {
                             AgentdError::Protocol("recovery counter overflow".to_string())
                         })?;
+                    return Ok(());
                 }
-                Err(_) => {
-                    // One unresolved historical operation remains durable and
-                    // reconcile-only; it does not authorize a replay or make a
-                    // different operation disappear.
+                if !persistence::dispatch_is_fenced(&paths, &manifest)? {
+                    report.prepared_unfenced = report
+                        .prepared_unfenced
+                        .checked_add(1)
+                        .ok_or_else(|| {
+                            AgentdError::Protocol("recovery counter overflow".to_string())
+                        })?;
                     report.unresolved = report.unresolved.checked_add(1).ok_or_else(|| {
                         AgentdError::Protocol("recovery counter overflow".to_string())
                     })?;
+                    return Ok(());
                 }
+                match process::spawn_worker(
+                    self,
+                    &owner,
+                    &manifest,
+                    &paths,
+                    None,
+                    cancellation.child_token(),
+                )
+                .await
+                {
+                    Ok(receipt) => {
+                        persistence::write_receipt(&paths.receipt, &manifest, &receipt)?;
+                        report.reconciled_terminal = report
+                            .reconciled_terminal
+                            .checked_add(1)
+                            .ok_or_else(|| {
+                                AgentdError::Protocol("recovery counter overflow".to_string())
+                            })?;
+                    }
+                    Err(_) => {
+                        report.fenced_unresolved = report
+                            .fenced_unresolved
+                            .checked_add(1)
+                            .ok_or_else(|| {
+                                AgentdError::Protocol("recovery counter overflow".to_string())
+                            })?;
+                        report.unresolved =
+                            report.unresolved.checked_add(1).ok_or_else(|| {
+                                AgentdError::Protocol("recovery counter overflow".to_string())
+                            })?;
+                    }
+                }
+                Ok(())
             }
+            .await;
+            drop(guard);
+            self.release_operation_lock(&run_id, &operation_lock)?;
+            result?;
         }
         Ok(report)
     }

@@ -22,6 +22,7 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::CognitiveRetrievalMode;
+use crate::ProcessRuntimeCodexExecutorV1;
 use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
 use crate::automation::spawn_automation_service;
@@ -89,9 +90,11 @@ pub async fn run(
     let intuition_policy_host = config.intuition_policy_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
+    let runtime_codex_installed = ProcessRuntimeCodexExecutorV1::agentd_supervisor_installed();
     require_intelligence_composition(
         intelligence_product.is_some(),
         intelligence_invocation.is_some(),
+        runtime_codex_installed,
     )?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
@@ -214,9 +217,9 @@ pub async fn run(
         }
     };
     // The writer-enabled qualification binary must never start in a
-    // degraded CognitiveRuntime state.  The default/production binary keeps
-    // the existing availability-tolerant behavior; only the explicit
-    // compile-time qualification profile takes this fail-closed startup gate.
+    // degraded CognitiveRuntime state. The default/production binary keeps the
+    // existing availability-tolerant behavior; only the explicit compile-time
+    // writer profile takes this fail-closed startup gate.
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
     if let Some(store) = cognitive_runtime.available_store() {
         state.attach_cognitive_store(Arc::clone(store))?;
@@ -275,6 +278,15 @@ pub async fn run(
             )?;
         }
         tasks.spawn_required("control-server", control.run())?;
+        if runtime_codex_installed {
+            tasks.spawn_required(
+                "runtime-codex-supervisor",
+                ProcessRuntimeCodexExecutorV1::run_installed_agentd_supervisor(
+                    identity.clone(),
+                    cancellation.clone(),
+                ),
+            )?;
+        }
         let app_identity = identity.clone();
         let app_state = Arc::clone(&state);
         let app_drain = state.app_server_drain_handle();
@@ -329,6 +341,7 @@ pub async fn run(
     }
     .await;
     if let Err(error) = startup {
+        let _ = ProcessRuntimeCodexExecutorV1::cancel_installed_runs();
         tasks.shutdown().await;
         return Err(error);
     }
@@ -341,14 +354,18 @@ pub async fn run(
         .await
 }
 
-fn require_intelligence_composition(runner: bool, provider: bool) -> Result<(), AgentdError> {
-    if runner != provider {
-        return Err(AgentdError::Invalid(
-            "canonical intelligence requires both a runner and an authoritative invocation provider"
-                .to_string(),
-        ));
+fn require_intelligence_composition(
+    runner: bool,
+    provider: bool,
+    runtime_codex: bool,
+) -> Result<(), AgentdError> {
+    if runner == provider && provider == runtime_codex {
+        return Ok(());
     }
-    Ok(())
+    Err(AgentdError::Invalid(
+        "canonical intelligence requires one complete runner/provider/runtime.codex profile"
+            .to_string(),
+    ))
 }
 
 fn require_cognitive_retrieval_context_for_mode(
@@ -461,12 +478,14 @@ async fn monitor_runtime(
     let mut app_server_ready = false;
     loop {
         if state.is_fenced()? {
+            let _ = ProcessRuntimeCodexExecutorV1::cancel_installed_runs();
             return Err(AgentdError::GenerationFenced(
                 "agentd runtime was fenced by an owner or generation violation".to_string(),
             ));
         }
         if let Err(error) = state.refresh_generation() {
             state.mark_fenced();
+            let _ = ProcessRuntimeCodexExecutorV1::cancel_installed_runs();
             return Err(error);
         }
         state.expire_run_deadlines()?;
@@ -489,6 +508,7 @@ async fn monitor_runtime(
                 }
                 Err(error @ AgentdError::GenerationFenced(_)) => {
                     state.mark_fenced();
+                    let _ = ProcessRuntimeCodexExecutorV1::cancel_installed_runs();
                     return Err(error);
                 }
                 Err(_not_ready) => {}
@@ -531,6 +551,7 @@ async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> 
 
 async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
     state.mark_draining()?;
+    ProcessRuntimeCodexExecutorV1::cancel_installed_runs()?;
     let drain_deadline = Instant::now() + RUN_DRAIN_GRACE;
     loop {
         state.expire_run_deadlines()?;

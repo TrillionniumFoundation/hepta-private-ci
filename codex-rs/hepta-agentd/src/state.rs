@@ -21,6 +21,7 @@ use crate::AgentdError;
 use crate::AgentdEventKind;
 use crate::AgentdIdentity;
 use crate::EventBuffer;
+use crate::ProcessRuntimeCodexExecutorV1;
 use crate::RunReceipt;
 use crate::RuntimeComposition;
 
@@ -362,47 +363,45 @@ impl AgentdState {
             )));
         }
 
-        let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
-        if runtime.current_generation != record.lifecycle.generation
-            || runtime.lifecycle != record.lifecycle.lifecycle
+        let mut entered_draining = false;
         {
-            runtime.current_generation = record.lifecycle.generation;
-            runtime.lifecycle = record.lifecycle.lifecycle;
-            if runtime.lifecycle != AgentLifecycle::Running {
-                runtime.admission_open = false;
-            }
-            if matches!(
-                runtime.lifecycle,
-                AgentLifecycle::Draining | AgentLifecycle::Stopped | AgentLifecycle::Failed
-            ) {
-                runtime.app_server_ready = false;
-                runtime.required_ports_ready = false;
-            }
-            if runtime.lifecycle == AgentLifecycle::Running
-                && runtime.app_server_ready
-                && runtime.critical_stores_ready
-                && runtime.revocation_ready
-                && runtime.required_ports_ready
-                && !runtime.fenced
+            let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+            if runtime.current_generation != record.lifecycle.generation
+                || runtime.lifecycle != record.lifecycle.lifecycle
             {
-                runtime.admission_open = true;
-            }
-            self.events
-                .lock()
-                .map_err(poisoned_state)?
-                .push(AgentdEventKind::Lifecycle {
-                    lifecycle: record.lifecycle.lifecycle,
-                    generation: record.lifecycle.generation,
-                });
-            if runtime.lifecycle == AgentLifecycle::Draining {
-                self.runs
+                runtime.current_generation = record.lifecycle.generation;
+                runtime.lifecycle = record.lifecycle.lifecycle;
+                if runtime.lifecycle != AgentLifecycle::Running {
+                    runtime.admission_open = false;
+                }
+                if matches!(
+                    runtime.lifecycle,
+                    AgentLifecycle::Draining | AgentLifecycle::Stopped | AgentLifecycle::Failed
+                ) {
+                    runtime.app_server_ready = false;
+                    runtime.required_ports_ready = false;
+                }
+                self.events
                     .lock()
                     .map_err(poisoned_state)?
-                    .begin_drain(unix_now_ms()?, "supervisor_draining")
-                    .map_err(run_error)?;
+                    .push(AgentdEventKind::Lifecycle {
+                        lifecycle: record.lifecycle.lifecycle,
+                        generation: record.lifecycle.generation,
+                    });
+                if runtime.lifecycle == AgentLifecycle::Draining {
+                    entered_draining = true;
+                    self.runs
+                        .lock()
+                        .map_err(poisoned_state)?
+                        .begin_drain(unix_now_ms()?, "supervisor_draining")
+                        .map_err(run_error)?;
+                }
             }
         }
-        Ok(())
+        if entered_draining {
+            ProcessRuntimeCodexExecutorV1::cancel_installed_runs()?;
+        }
+        self.refresh_runtime_codex_readiness()
     }
 
     /// Return the current fleet lifecycle generation after refreshing the
@@ -435,43 +434,46 @@ impl AgentdState {
     /// effect-authorized composition must replace it before opening admission.
     pub(crate) fn mark_runtime_prerequisites_ready(&self) -> Result<(), AgentdError> {
         let critical_stores_ready = self.cognitive.lock().map_err(poisoned_state)?.is_some();
-        let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
-        runtime.critical_stores_ready = critical_stores_ready;
-        runtime.revocation_ready = true;
-        Ok(())
+        {
+            let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+            runtime.critical_stores_ready = critical_stores_ready;
+            runtime.revocation_ready = true;
+        }
+        self.refresh_runtime_codex_readiness()
     }
 
     pub(crate) fn mark_app_server_ready(&self) -> Result<(), AgentdError> {
-        let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
-        if !runtime.app_server_ready {
-            runtime.app_server_ready = true;
-            runtime.required_ports_ready = true;
-            if runtime.lifecycle == AgentLifecycle::Running
-                && runtime.critical_stores_ready
-                && runtime.revocation_ready
-                && !runtime.fenced
-            {
-                runtime.admission_open = true;
+        let changed = {
+            let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+            if runtime.app_server_ready {
+                false
+            } else {
+                runtime.app_server_ready = true;
+                true
             }
+        };
+        if changed {
             self.events
                 .lock()
                 .map_err(poisoned_state)?
                 .push(AgentdEventKind::AppServerReady);
         }
-        Ok(())
+        self.refresh_runtime_codex_readiness()
     }
 
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
-        let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
-        runtime.app_server_ready = false;
-        runtime.required_ports_ready = false;
-        runtime.admission_open = false;
+        {
+            let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+            runtime.app_server_ready = false;
+            runtime.required_ports_ready = false;
+            runtime.admission_open = false;
+        }
+        ProcessRuntimeCodexExecutorV1::cancel_installed_runs()?;
         self.app_server_drain.request_drain();
         self.events
             .lock()
             .map_err(poisoned_state)?
             .push(AgentdEventKind::Draining);
-        drop(runtime);
         self.runs
             .lock()
             .map_err(poisoned_state)?
@@ -537,6 +539,7 @@ impl AgentdState {
             runtime.admission_open = false;
             runtime.fenced = true;
         }
+        let _ = ProcessRuntimeCodexExecutorV1::cancel_installed_runs();
         if let Ok(mut events) = self.events.lock() {
             events.push(AgentdEventKind::GenerationFenced);
         }
@@ -590,8 +593,40 @@ impl AgentdState {
             && runtime.app_server_ready
             && !runtime.fenced)
     }
-    pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
+
+    pub(crate) fn canonical_intelligence_configured(&self) -> bool {
         self.intelligence_product.get().is_some() && self.intelligence_invocation.get().is_some()
+    }
+
+    pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
+        if !self.canonical_intelligence_configured() {
+            return false;
+        }
+        ProcessRuntimeCodexExecutorV1::agentd_supervisor_snapshot()
+            .ok()
+            .flatten()
+            .is_some_and(|snapshot| snapshot.ready && !snapshot.closed)
+    }
+
+    /// Recompute readiness from the actual physical-execution owner. A
+    /// configured canonical profile cannot advertise required ports or admit
+    /// work until startup recovery has resolved every dispatch-fenced unknown.
+    pub(crate) fn refresh_runtime_codex_readiness(&self) -> Result<(), AgentdError> {
+        let required_ports_ready = if self.canonical_intelligence_configured() {
+            ProcessRuntimeCodexExecutorV1::agentd_supervisor_snapshot()?
+                .is_some_and(|snapshot| snapshot.ready && !snapshot.closed)
+        } else {
+            true
+        };
+        let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        runtime.required_ports_ready = required_ports_ready;
+        runtime.admission_open = runtime.lifecycle == AgentLifecycle::Running
+            && runtime.app_server_ready
+            && runtime.critical_stores_ready
+            && runtime.revocation_ready
+            && runtime.required_ports_ready
+            && !runtime.fenced;
+        Ok(())
     }
 
     /// Prepare the exact durable Objective through the configured canonical
@@ -616,6 +651,11 @@ impl AgentdState {
                 )),
             };
 
+        if !self.canonical_intelligence_enabled() {
+            return Err(AgentdError::Protocol(
+                "canonical intelligence physical executor is not ready".to_string(),
+            ));
+        }
         self.require_current_run_start(record)?;
         let invocation = runner
             .build_invocation(Arc::clone(provider), self.identity.clone(), record.clone())

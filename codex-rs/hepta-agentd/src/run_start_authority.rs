@@ -8,9 +8,11 @@
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_types::Digest32;
 
-use crate::AgentdClient;
+use crate::AgentRunPhase;
 use crate::AgentdError;
 use crate::AgentdIntelligenceAdmittedOutcomeV1;
+use crate::AgentdMethod;
+use crate::AgentdPayload;
 use crate::AgentdState;
 use crate::ProcessRuntimeCodexExecutorV1;
 use crate::RunReceipt;
@@ -72,12 +74,16 @@ impl VerifiedRunStartV1<'_> {
         Ok(receipt)
     }
 
-    /// Select the canonical path when its full host composition is installed;
-    /// otherwise enter compatibility admission. The witness is consumed once,
-    /// and the canonical path independently revalidates after each async owner
-    /// boundary before mutating the coordinator.
+    /// Select the canonical path when its complete host composition is
+    /// installed; otherwise enter compatibility admission. Queue capacity is
+    /// reserved before asynchronous owner preparation mutates the coordinator.
     pub(crate) async fn admit(self) -> Result<VerifiedRunAdmissionV1, AgentdError> {
         let verified = self.reverify()?;
+        let reservation = if verified.agentd.canonical_intelligence_enabled() {
+            Some(ProcessRuntimeCodexExecutorV1::reserve_canonical_run()?)
+        } else {
+            None
+        };
         match verified
             .agentd
             .start_canonical_intelligence(verified.record)
@@ -89,42 +95,97 @@ impl VerifiedRunStartV1<'_> {
                     run_receipt,
                 } = &outcome
                 {
-                    if let Err(error) = ProcessRuntimeCodexExecutorV1::schedule_canonical_run(
+                    let reservation = reservation.ok_or_else(|| {
+                        AgentdError::Protocol(
+                            "canonical intelligence admitted without runtime.codex capacity"
+                                .to_string(),
+                        )
+                    })?;
+                    match reservation.schedule(
                         verified.agentd.identity(),
                         verified.record,
                         prepared,
                         run_receipt,
                     ) {
-                        cancel_rejected_canonical_run(verified.agentd, run_receipt).await?;
-                        return Err(error);
+                        Ok(true) => {}
+                        Ok(false) if run_receipt.idempotent => {}
+                        Ok(false) => {
+                            cancel_canonical_run_after_schedule_rejection(
+                                verified.agentd,
+                                run_receipt,
+                            )
+                            .await?;
+                            return Err(AgentdError::Protocol(
+                                "new canonical run collided with an existing runtime.codex job"
+                                    .to_string(),
+                            ));
+                        }
+                        Err(error) => {
+                            cancel_canonical_run_after_schedule_rejection(
+                                verified.agentd,
+                                run_receipt,
+                            )
+                            .await?;
+                            return Err(error);
+                        }
                     }
                 }
                 Ok(VerifiedRunAdmissionV1::Canonical(outcome))
             }
-            None => verified
-                .admit_compatibility()
-                .map(VerifiedRunAdmissionV1::Compatibility),
+            None => {
+                if reservation.is_some() {
+                    return Err(AgentdError::Protocol(
+                        "canonical runtime capacity was reserved but composition fell back"
+                            .to_string(),
+                    ));
+                }
+                verified
+                    .admit_compatibility()
+                    .map(VerifiedRunAdmissionV1::Compatibility)
+            }
         }
     }
 }
 
-async fn cancel_rejected_canonical_run(
+/// Roll back a pre-dispatch coordinator record through the in-process typed
+/// dispatch. This deliberately does not open Agentd's own UDS or depend on a
+/// connection permit while recovering from queue/scheduling pressure.
+async fn cancel_canonical_run_after_schedule_rejection(
     agentd: &AgentdState,
     receipt: &RunReceipt,
 ) -> Result<(), AgentdError> {
-    let client = AgentdClient::new(
-        agentd.identity().control_socket.clone(),
-        agentd.identity().agent_id.clone(),
-        agentd.identity().spawn_generation,
-    )?;
-    client
-        .run_cancel(
-            receipt.run_id.clone(),
-            receipt.revision,
-            "runtime_codex_schedule_rejected".to_string(),
+    if receipt.idempotent {
+        return Ok(());
+    }
+    let response = agentd
+        .response(
+            0,
+            agentd.identity().spawn_generation,
+            AgentdMethod::RunCancel {
+                run_id: receipt.run_id.clone(),
+                expected_revision: receipt.revision,
+                reason: "runtime_codex_schedule_rejected".to_string(),
+            },
         )
         .await?;
-    Ok(())
+    match response.payload {
+        AgentdPayload::RunCancellation(cancelled)
+            if cancelled.receipt.phase == AgentRunPhase::Cancelled
+                && cancelled.receipt.terminal_observed =>
+        {
+            Ok(())
+        }
+        AgentdPayload::RunCancellation(cancelled) => Err(AgentdError::Protocol(format!(
+            "runtime.codex schedule rollback remained {:?}",
+            cancelled.receipt.phase
+        ))),
+        AgentdPayload::Error { code, message } => Err(AgentdError::Protocol(format!(
+            "runtime.codex schedule rollback rejected ({code}): {message}"
+        ))),
+        _ => Err(AgentdError::Protocol(
+            "runtime.codex schedule rollback returned the wrong response".to_string(),
+        )),
+    }
 }
 
 pub(crate) fn verify_current_run_start<'a>(
