@@ -84,6 +84,11 @@ impl HeptaEvidenceStore {
                 "trust generation and external frontier are not one atomic authority subject",
             ));
         }
+        self.verify_production_qualification_provenance(
+            trust.registry_generation,
+            &trust.registry_sha256,
+        )
+        .await?;
         let mut transaction = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
