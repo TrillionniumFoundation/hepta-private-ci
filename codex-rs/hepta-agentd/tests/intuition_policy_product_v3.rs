@@ -527,5 +527,8 @@ fn v3_product_host_commits_once_replays_idempotently_and_reopens() {
     .expect("reopened writer");
     let records = reopened.records().expect("reopened records");
     assert_eq!(records.len(), 1, "idempotent replay appended a duplicate");
-    assert_eq!(reopened.snapshot().expect("snapshot").records, 1);
+    assert_eq!(
+        reopened.snapshot().expect("snapshot").records().len(),
+        1
+    );
 }
