@@ -1,0 +1,81 @@
+name: Runtime Codex macOS Convergence
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-full-convergence-macos-20260927
+
+jobs:
+  repair-test-and-publish:
+    runs-on: macos-15-xlarge
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Resolve verified sandboxed V8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: aarch64-apple-darwin
+
+      - name: Apply bounded convergence repair
+        run: |
+          python3 -m py_compile scripts/apply_runtime_codex_full_convergence.py
+          python3 scripts/apply_runtime_codex_full_convergence.py
+
+      - name: Format exact candidate
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Focused durable-owner tests
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-infer-core native_control
+          cargo test --locked -p codex-hepta-agentd lane_b_runtime
+          cargo test --locked -p codex-hepta-infer-worker-host --lib
+          cargo test --locked -p codex-hepta-infer-worker-host --test runtime_codex_crash_matrix
+
+      - name: Product caller E2E
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked -p codex-hepta-agentd
+          runtime_codex_product_caller_commits_one_authorized_terminal_turn
+          -- --exact --nocapture
+
+      - name: Strict Clippy
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked
+          -p codex-hepta-infer-core
+          -p codex-hepta-agent-protocol
+          -p codex-hepta-agentd
+          -p codex-hepta-infer-worker-host
+          --all-targets -- -D warnings
+
+      - name: Publish exact tested source tree
+        env:
+          SOURCE_HEAD: ${{ github.sha }}
+        run: |
+          rm -f scripts/apply_runtime_codex_full_convergence.py
+          rm -f .github/workflows/runtime-codex-macos-convergence.yml
+          git add -A
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git config user.name 'runtime-codex-convergence-bot'
+          git config user.email 'runtime-codex-convergence-bot@users.noreply.github.com'
+          git commit \
+            -m 'runtime.codex: publish structured execution convergence' \
+            -m "Validated from exact source head ${SOURCE_HEAD} on macos-15-xlarge with Rust 1.95.0. Adds the server-owned irreversible effect-entry marker, local durable entry proof, exact owner reconciliation, typestate orchestration, monotonic deadline budget, bounded thread cleanup, signed quarantine verifier, executable crash-window matrix, and issuer process-instance binding." \
+            -m 'This is repository source evidence only. Linux exact-head and synthetic-merge qualification, target-host identity, production key custody, trusted time/revocation, real-provider fault evidence, canary, promotion, and release remain separate gates.'
+          git push origin HEAD:${GITHUB_REF_NAME}
