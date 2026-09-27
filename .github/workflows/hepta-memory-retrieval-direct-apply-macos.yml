@@ -1,0 +1,80 @@
+name: Hepta retrieval direct source application macOS
+
+on:
+  push:
+    branches: [work/memory-retrieval-completion-20260927]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: retrieval-direct-macos-${{ github.sha }}
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  apply:
+    if: contains(github.event.head_commit.message, '[retrieval-direct-macos-v1]')
+    runs-on: macos-15
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify exact source and stage reviewed patch
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+          BRANCH: work/memory-retrieval-completion-20260927
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = TrillionniumFoundation/hepta-private-ci
+          test "$GITHUB_REF" = "refs/heads/$BRANCH"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git ls-remote --heads origin "$BRANCH" | cut -f1)" = "$EXPECTED_HEAD"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          test "$(git hash-object scripts/hepta_memory_retrieval_apply_closure.py)" = 49f364b29e6a2a75389a08e8cf99db0311cab569
+          mkdir -p "$RUNNER_TEMP/retrieval-direct-macos"
+          python3 scripts/hepta_memory_retrieval_apply_closure.py \
+            --receipt "$RUNNER_TEMP/retrieval-direct-macos/application.json"
+
+      - name: Format scoped source and publish by CAS
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+          BRANCH: work/memory-retrieval-completion-20260927
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+          files=(
+            codex-rs/hepta-agentd/src/lib.rs
+            codex-rs/hepta-agentd/src/production_writer_host.rs
+            codex-rs/hepta-agentd/src/retrieval_delivery.rs
+            codex-rs/hepta-agentd/src/retrieval_delivery_tests.rs
+            codex-rs/hepta-memory/src/cognitive_proposition_writer.rs
+            codex-rs/hepta-memory/src/production_writer.rs
+          )
+          rustup run 1.95.0 rustfmt --edition 2024 --config-path codex-rs/rustfmt.toml "${files[@]}"
+          git add -- "${files[@]}"
+          test -z "$(git diff --name-only)"
+          git diff --cached --check
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git commit -m 'feat(memory.retrieval): bind explicit assertion writes and native delivery evidence'
+          test "$(git ls-remote --heads origin "$BRANCH" | cut -f1)" = "$EXPECTED_HEAD"
+          git push origin "HEAD:refs/heads/$BRANCH"
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/retrieval-direct-macos/final-identity.txt"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: retrieval-direct-macos-${{ github.run_id }}
+          path: ${{ runner.temp }}/retrieval-direct-macos/
+          retention-days: 30
+          if-no-files-found: error
