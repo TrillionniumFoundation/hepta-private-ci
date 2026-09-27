@@ -7,8 +7,11 @@ on:
       - 'codex-rs/hepta-memory/**'
       - 'codex-rs/hepta-agentd/**'
       - 'codex-rs/state/**'
+      - 'tools/cognitive-store-host-bootstrap/**'
       - 'docs/modules/cognitive.store/**'
+      - 'scripts/check-rust-module-inventory.py'
       - 'scripts/verify_cognitive_store_boundary.py'
+      - 'scripts/cognitive_store_map_verify.py'
       - 'scripts/cognitive_qualification_manifest.py'
       - '.github/workflows/cognitive-store-qualification.yml'
   push:
@@ -20,8 +23,11 @@ on:
       - 'codex-rs/hepta-memory/**'
       - 'codex-rs/hepta-agentd/**'
       - 'codex-rs/state/**'
+      - 'tools/cognitive-store-host-bootstrap/**'
       - 'docs/modules/cognitive.store/**'
+      - 'scripts/check-rust-module-inventory.py'
       - 'scripts/verify_cognitive_store_boundary.py'
+      - 'scripts/cognitive_store_map_verify.py'
       - 'scripts/cognitive_qualification_manifest.py'
       - '.github/workflows/cognitive-store-qualification.yml'
   workflow_dispatch:
@@ -44,7 +50,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+        lane: ${{ fromJSON('["source-head","base-merge"]') }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -52,19 +58,25 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Resolve current pull-request base
+      - name: Resolve current base
         id: current-base
-        if: github.event_name == 'pull_request'
         env:
-          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          BASE_REF: ${{ github.base_ref }}
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          EVENT_BEFORE: ${{ github.event.before }}
+          BASE_REF: ${{ github.base_ref || 'main' }}
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$EVENT_BASE_SHA"
-          test -n "$BASE_REF"
-          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          if [ "$EVENT_NAME" = push ] && [ "$REF_NAME" = main ]; then
+            CURRENT_BASE="$EVENT_BEFORE"
+          else
+            test -n "$BASE_REF"
+            git fetch --no-tags origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
+            CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          fi
           [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          test "$CURRENT_BASE" != 0000000000000000000000000000000000000000
           git cat-file -e "$CURRENT_BASE^{commit}"
           printf 'sha=%s\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
           printf 'BASE_SHA=%s\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
@@ -74,9 +86,9 @@ jobs:
         if: matrix.lane == 'base-merge'
         uses: ./.github/actions/hepta-synthetic-merge
         with:
-          base-sha: ${{ steps.current-base.outputs.sha || env.BASE_SHA }}
+          base-sha: ${{ steps.current-base.outputs.sha }}
           source-sha: ${{ env.SOURCE_SHA }}
-          pr-number: ${{ github.event.pull_request.number }}
+          pr-number: ${{ github.event.pull_request.number || 0 }}
           author-name: Hepta Cognitive Qualification
           author-email: hepta-cognitive-ci@users.noreply.github.com
           message: Cognitive store synthetic merge
@@ -118,6 +130,33 @@ jobs:
             --output "$RUNNER_TEMP/cognitive-command-records/boundary.json" -- \
             python3 scripts/verify_cognitive_store_boundary.py \
               --output "$RUNNER_TEMP/cognitive-boundary-receipt.json"
+
+      - name: Verify exact implementation map
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/cognitive-command-records/implementation-map.json" -- \
+            python3 scripts/cognitive_store_map_verify.py \
+              --expected-sha "$TESTED_SHA" \
+              --expected-tree "$(git rev-parse HEAD^{tree})"
+
+      - name: Verify Rust module inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/cognitive-command-records/module-inventory.json" -- \
+            python3 scripts/check-rust-module-inventory.py \
+              codex-rs/hepta-cognitive-store/src
+
+      - name: Verify host bootstrap harness
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/cognitive-command-records/host-bootstrap.json" -- \
+            python3 tools/cognitive-store-host-bootstrap/test_bootstrap.py
 
       - name: Check formatting
         working-directory: codex-rs
@@ -257,6 +296,9 @@ jobs:
             --output "$RUNNER_TEMP/cognitive-qualification-manifest.json" \
             --required workspace.json \
             --required boundary.json \
+            --required implementation-map.json \
+            --required module-inventory.json \
+            --required host-bootstrap.json \
             --required format.json \
             --required cognitive-store-tests.json \
             --required memory-tests.json \
