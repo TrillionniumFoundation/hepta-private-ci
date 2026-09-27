@@ -64,11 +64,20 @@ jobs:
               '\n    6,\n)\n# Two branches use a temporary `stopped` result',
               '\n    7,\n)\n# Two branches use a temporary `stopped` result',
           )
+          value = value.replace(
+              'codex_authority_witness_sha256: Some(\\"f\\".repeat(64)),',
+              'codex_authority_witness_sha256: Some(\\"1\\".repeat(64)),',
+              1,
+          )
           path.write_text(value)
           PY
           python3 scripts/bootstrap_runtime_codex_hardening.py
           python3 - <<'PY'
           from pathlib import Path
+
+          # Historical native-v1 events did not carry a proof opening. Keep
+          # those records readable, but never upgrade them into a new exact
+          # cross-owner proof.
           path = Path('codex-rs/hepta-infer-core/src/native_control.rs')
           value = path.read_text()
           value = value.replace(
@@ -94,6 +103,37 @@ jobs:
           if value.count(old) != 1:
               raise SystemExit('legacy abort compatibility anchor mismatch')
           path.write_text(value.replace(old, new, 1))
+
+          # Cover the legacy test dispatch whose authority witness is absent.
+          path = Path('codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs')
+          value = path.read_text()
+          old = '''                codex_authority_witness_sha256: None,
+            },'''
+          new = '''                codex_authority_witness_sha256: None,
+                pre_effect_abort_commitment_sha256: None,
+            },'''
+          if value.count(old) != 1:
+              raise SystemExit('native dispatch fixture anchor mismatch')
+          path.write_text(value.replace(old, new, 1))
+
+          # Give the proof digest a named lifetime and make the comparison
+          # straightforward for strict Clippy.
+          path = Path('codex-rs/hepta-infer-worker-host/src/native_app_server.rs')
+          value = path.read_text()
+          old = ''') -> bool {
+    receipt.phase == AgentRunPhase::Cancelled'''
+          new = ''') -> bool {
+    let proof_sha256 = proof.proof_sha256();
+    receipt.phase == AgentRunPhase::Cancelled'''
+          if value.count(old) != 1:
+              raise SystemExit('Agentd abort receipt helper anchor mismatch')
+          value = value.replace(old, new, 1)
+          value = value.replace(
+              '== Some(proof.proof_sha256().as_str())',
+              '== Some(proof_sha256.as_str())',
+              1,
+          )
+          path.write_text(value)
           PY
           cargo fmt --all
           git diff --check
