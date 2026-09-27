@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b7f3eb7558b5dff2d5003d9072ad7c107e6a9bb0",
-    "tree": "a7a52b7ff32d4b71c7eb2824df1a35d66bda7e9e"
+    "commit": "9503d177a5afe8e820d774f42cfd1a44553f6208",
+    "tree": "f649f7f64f76f178df3f71504f2f00412b119e01"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -87,9 +87,9 @@
   "headAttestation": {
     "candidateBranch": "feat/memory-federation-full-closure-20260927",
     "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "candidateHead": "b7f3eb7558b5dff2d5003d9072ad7c107e6a9bb0",
-    "candidateTree": "a7a52b7ff32d4b71c7eb2824df1a35d66bda7e9e",
-    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status",
+    "candidateHead": "9503d177a5afe8e820d774f42cfd1a44553f6208",
+    "candidateTree": "f649f7f64f76f178df3f71504f2f00412b119e01",
+    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -120,6 +120,7 @@
       "restart_surviving_cancel_fences_late_terminal",
       "handler_supplied_authenticated_owner_cut",
       "per_peer_durable_replay_attempt_isolation",
+      "retained_logical_capacity_recovery_metrics",
       "module_scoped_reuse_of_canonical_implementation_verifier",
       "execution_guard_binds_sha_tree_source_and_commands_before_after",
       "canonical_status_projection_and_receipt_binding",
@@ -143,6 +144,7 @@
       "codex-rs/hepta-memory-federation/src/v2_tests.rs",
       "codex-rs/hepta-memory-federation-wire/Cargo.toml",
       "codex-rs/hepta-memory-federation-wire/src/attempt.rs",
+      "codex-rs/hepta-memory-federation-wire/src/bin/memory_federation_capacity_probe.rs",
       "codex-rs/hepta-memory-federation-wire/src/codec.rs",
       "codex-rs/hepta-memory-federation-wire/src/credential.rs",
       "codex-rs/hepta-memory-federation-wire/src/host.rs",
@@ -167,15 +169,15 @@
       "scripts/verify_memory_federation_implementation.py",
       "scripts/verify_memory_federation_status.py"
     ],
-    "note": "sourceBase and observedAtHead bind the immediately preceding source-and-document state. This implementation-map-only commit does not manufacture execution evidence. The in-process caller now reserves read time after discovery; verified wire values are immutable outside the verifier; replay admission rejects clock rollback and isolates directional credentials; the transport-neutral host persists replay and pending/cancel/terminal state around a read-only handler. Product execution, real transport selection, independent acceptance, activation and release remain false until their separate gates pass.",
+    "note": "sourceBase and observedAtHead bind the immediately preceding source-and-document state. This implementation-map-only commit does not manufacture execution or performance evidence. The in-process caller reserves read time after discovery; verified wire values are immutable outside the verifier; replay admission rejects clock rollback and isolates directional credentials; the transport-neutral host persists replay and pending/cancel/terminal state around a read-only handler. The logical-host capacity probe is retained diagnostic evidence only and cannot satisfy selected-host or two-real-host gates. Product execution, real transport selection, independent acceptance, activation and release remain false until their separate gates pass.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
     ]
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "b7f3eb7558b5dff2d5003d9072ad7c107e6a9bb0",
-    "tree": "a7a52b7ff32d4b71c7eb2824df1a35d66bda7e9e"
+    "commit": "9503d177a5afe8e820d774f42cfd1a44553f6208",
+    "tree": "f649f7f64f76f178df3f71504f2f00412b119e01"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
