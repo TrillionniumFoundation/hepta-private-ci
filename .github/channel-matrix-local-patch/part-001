@@ -1,0 +1,108 @@
+diff --git a/codex-rs/hepta-matrix-sdk/src/authority.rs b/codex-rs/hepta-matrix-sdk/src/authority.rs
+index d46b61d..7193552 100644
+--- a/codex-rs/hepta-matrix-sdk/src/authority.rs
++++ b/codex-rs/hepta-matrix-sdk/src/authority.rs
+@@ -124,9 +124,8 @@ impl MatrixFinalUseRequest {
+     }
+ }
+ 
+-pub type MatrixGrantFuture<'a> = Pin<
+-    Box<dyn Future<Output = Result<SignedFinalUseGrant, MatrixAuthorityError>> + Send + 'a>,
+->;
++pub type MatrixGrantFuture<'a> =
++    Pin<Box<dyn Future<Output = Result<SignedFinalUseGrant, MatrixAuthorityError>> + Send + 'a>>;
+ 
+ /// Independently supplied Matrix final-use authority.
+ ///
+diff --git a/codex-rs/hepta-matrix-sdk/src/authority.rs b/codex-rs/hepta-matrix-sdk/src/authority.rs
+index d46b61d..7193552 100644
+--- a/codex-rs/hepta-matrix-sdk/src/authority.rs
++++ b/codex-rs/hepta-matrix-sdk/src/authority.rs
+@@ -158,7 +157,10 @@ pub trait MatrixOutboundAuthorizer: Send + Sync {
+     where
+         Self: Sized,
+     {
+-        let frontier = self.authority().frontier().map_err(|_| MatrixAuthorityError::Rejected)?;
++        let frontier = self
++            .authority()
++            .frontier()
++            .map_err(|_| MatrixAuthorityError::Rejected)?;
+         self.authority()
+             .enter_verified_use(token, expected)
+             .map_err(|_| MatrixAuthorityError::Rejected)?;
+diff --git a/codex-rs/hepta-matrix-sdk/src/authority.rs b/codex-rs/hepta-matrix-sdk/src/authority.rs
+index d46b61d..7193552 100644
+--- a/codex-rs/hepta-matrix-sdk/src/authority.rs
++++ b/codex-rs/hepta-matrix-sdk/src/authority.rs
+@@ -346,7 +348,9 @@ fn hex_nibble(value: u8) -> Result<u8, MatrixAuthorityError> {
+ fn identifier(value: &str, maximum: usize) -> bool {
+     !value.is_empty()
+         && value.len() <= maximum
+-        && value.bytes().all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
++        && value
++            .bytes()
++            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
+ }
+ 
+ fn bounded_text(value: &str, maximum: usize) -> bool {
+diff --git a/codex-rs/hepta-matrix-sdk/src/authority_tests.rs b/codex-rs/hepta-matrix-sdk/src/authority_tests.rs
+index 341c968..7b7a397 100644
+--- a/codex-rs/hepta-matrix-sdk/src/authority_tests.rs
++++ b/codex-rs/hepta-matrix-sdk/src/authority_tests.rs
+@@ -67,15 +67,21 @@ fn binding_changes_for_attempt_destination_and_payload() {
+     retry_record.attempts = 2;
+     let mut retry_dispatch = dispatch.clone();
+     retry_dispatch.attempts = 2;
+-    let retry = build_matrix_final_use_request(&first.subject_id, &retry_dispatch, &retry_record, &identity)
+-        .expect("retry binding");
++    let retry = build_matrix_final_use_request(
++        &first.subject_id,
++        &retry_dispatch,
++        &retry_record,
++        &identity,
++    )
++    .expect("retry binding");
+     assert_ne!(first.request_digest, retry.request_digest);
+     assert_eq!(first.scope_digest, retry.scope_digest);
+     assert_eq!(first.payload_digest, retry.payload_digest);
+     let mut other_identity = identity.clone();
+     other_identity.device_id = "OTHER".to_string();
+-    let other = build_matrix_final_use_request(&first.subject_id, &dispatch, &record, &other_identity)
+-        .expect("other binding");
++    let other =
++        build_matrix_final_use_request(&first.subject_id, &dispatch, &record, &other_identity)
++            .expect("other binding");
+     assert_ne!(first.scope_digest, other.scope_digest);
+     assert_ne!(first.destination_id, other.destination_id);
+     let mut edit = record.clone();
+diff --git a/codex-rs/hepta-matrix-sdk/src/content.rs b/codex-rs/hepta-matrix-sdk/src/content.rs
+index e9270f0..68986bc 100644
+--- a/codex-rs/hepta-matrix-sdk/src/content.rs
++++ b/codex-rs/hepta-matrix-sdk/src/content.rs
+@@ -45,8 +45,8 @@ pub(crate) fn outbound_payload_digest(
+     if record.payload.len() > MAX_BODY_BYTES {
+         return Err(MatrixAuthorityError::InvalidBinding);
+     }
+-    let body = std::str::from_utf8(&record.payload)
+-        .map_err(|_| MatrixAuthorityError::InvalidBinding)?;
++    let body =
++        std::str::from_utf8(&record.payload).map_err(|_| MatrixAuthorityError::InvalidBinding)?;
+     let content = outbound_message_content(body, record.replaces_event_id.as_ref());
+     content_digest(&content)
+ }
+diff --git a/codex-rs/hepta-matrix-sdk/src/content_tests.rs b/codex-rs/hepta-matrix-sdk/src/content_tests.rs
+index 08b95c1..a301631 100644
+--- a/codex-rs/hepta-matrix-sdk/src/content_tests.rs
++++ b/codex-rs/hepta-matrix-sdk/src/content_tests.rs
+@@ -23,7 +23,10 @@ fn replacement_target_and_nested_content_are_in_the_signed_digest() {
+     let second = MatrixEventId::parse("$second:example.test").expect("second target");
+     let first_content = outbound_message_content("same body", Some(&first));
+     let second_content = outbound_message_content("same body", Some(&second));
+-    assert_ne!(content_digest(&first_content), content_digest(&second_content));
++    assert_ne!(
++        content_digest(&first_content),
++        content_digest(&second_content)
++    );
+     let mut altered = first_content.clone();
+     altered["m.new_content"]["body"] = Value::String("different".to_string());
+     assert_ne!(content_digest(&first_content), content_digest(&altered));

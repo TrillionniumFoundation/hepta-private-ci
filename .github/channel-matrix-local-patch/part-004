@@ -1,0 +1,116 @@
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -418,18 +418,12 @@ impl FakeTransport {
+             .map_err(|_| "fake transaction log lock poisoned")?
+             .clone())
+     }
+-}
+ 
+-impl MatrixOutboundTransport for FakeTransport {
+-    fn identity(&self) -> Result<MatrixOutboundIdentity, MatrixTransportError> {
+-        Ok(fake_outbound_identity())
+-    }
+-
+-    fn send<'a>(
+-        &'a self,
+-        record: &'a OutboxRecord,
+-        _seal: MatrixRawSendSeal,
+-    ) -> MatrixSendFuture<'a> {
++    /// Fixture-only lazy send used to model a crash after kernel entry but
++    /// before the production final gate records adapter entry. The real public
++    /// transport path remains sealed by `MatrixRawSendSeal` and is exercised by
++    /// the dispatcher tests below.
++    fn fixture_lazy_send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
+         Box::pin(async move {
+             self.txn_ids
+                 .lock()
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -444,6 +438,20 @@ impl MatrixOutboundTransport for FakeTransport {
+     }
+ }
+ 
++impl MatrixOutboundTransport for FakeTransport {
++    fn identity(&self) -> Result<MatrixOutboundIdentity, MatrixTransportError> {
++        Ok(fake_outbound_identity())
++    }
++
++    fn send<'a>(
++        &'a self,
++        record: &'a OutboxRecord,
++        _seal: MatrixRawSendSeal,
++    ) -> MatrixSendFuture<'a> {
++        self.fixture_lazy_send(record)
++    }
++}
++
+ #[tokio::test]
+ async fn duplicate_sync_event_is_exactly_idempotent() -> TestResult {
+     let temp = TempDir::new()?;
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -645,7 +653,8 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
+             .retry_scheduled,
+         1
+     );
+-    let accepted = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
++    let accepted =
++        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
+     assert_eq!(accepted.sent, 0);
+     assert_eq!(accepted.transport_accepted, 1);
+     assert_eq!(
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -711,7 +720,8 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
+     assert_eq!(after_response_loss.state, OutboxState::RetryScheduled);
+     assert_eq!(after_response_loss.sent_event_id, None);
+ 
+-    let second = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
++    let second =
++        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
+     assert_eq!(second.sent, 0);
+     assert_eq!(second.transport_accepted, 1);
+     assert_eq!(
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -898,7 +908,10 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
+     // lazy future, but Matrix has not durably recorded the claim and the
+     // future has never been polled.
+     let first = store.claim_outbox(10, config.lease_ms, 1).await?;
+-    let first = first.first().ok_or("missing first crash-cut claim")?.clone();
++    let first = first
++        .first()
++        .ok_or("missing first crash-cut claim")?
++        .clone();
+     let prepared = store.prepare_outbox_dispatch(&first, 10).await?;
+     let request = build_matrix_final_use_request(
+         agent_id.as_str(),
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -908,9 +921,11 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
+     )?;
+     let signed = authorizer.signed_grant(&request).await?;
+     let token = authorizer.authority().claim(&signed, &request.binding)?;
+-    let (future, _) = authorizer
+-        .authority()
+-        .with_verified_use_at_frontier(token, &request.binding, || transport.send(&first))?;
++    let (future, _) = authorizer.authority().with_verified_use_at_frontier(
++        token,
++        &request.binding,
++        || transport.fixture_lazy_send(&first),
++    )?;
+     drop(future);
+     assert!(transport.txn_ids()?.is_empty());
+     assert!(

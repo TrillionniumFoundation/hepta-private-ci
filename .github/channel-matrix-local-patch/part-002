@@ -1,0 +1,93 @@
+diff --git a/codex-rs/hepta-matrix-sdk/src/content_tests.rs b/codex-rs/hepta-matrix-sdk/src/content_tests.rs
+index 08b95c1..a301631 100644
+--- a/codex-rs/hepta-matrix-sdk/src/content_tests.rs
++++ b/codex-rs/hepta-matrix-sdk/src/content_tests.rs
+@@ -35,10 +38,8 @@ fn replacement_target_and_nested_content_are_in_the_signed_digest() {
+ #[test]
+ fn object_insertion_order_is_not_semantic_but_unicode_and_escaping_are() {
+     let left = serde_json::json!({"z": {"b": "雪", "a": "line\nquote\""}, "a": "x"});
+-    let right: Value = serde_json::from_str(
+-        r#"{"a":"x","z":{"a":"line\nquote\"","b":"雪"}}"#,
+-    )
+-    .expect("same JSON");
++    let right: Value =
++        serde_json::from_str(r#"{"a":"x","z":{"a":"line\nquote\"","b":"雪"}}"#).expect("same JSON");
+     assert_eq!(content_digest(&left), content_digest(&right));
+     let composed = outbound_message_content("é", /*replaces_event_id*/ None);
+     let decomposed = outbound_message_content("e\u{301}", /*replaces_event_id*/ None);
+diff --git a/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs b/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs
+index e4ffea2..03db8d1 100644
+--- a/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs
++++ b/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs
+@@ -338,12 +338,18 @@ pub async fn dispatch_outbox_once<
+                         .map_err(store_error)?;
+                     stats.transport_accepted += 1;
+                     if observed.state.is_terminal() {
+-                        close_observed_terminal(store, claim, &observed, &clock, &mut stats).await?;
++                        close_observed_terminal(store, claim, &observed, &clock, &mut stats)
++                            .await?;
+                     } else {
+                         let scheduled_at_ms = clock.now_ms()?;
+                         let next = reconciliation_attempt_at(config, record, scheduled_at_ms)?;
+                         store
+-                            .finish_outbox_transport_accepted(claim, &event_id, scheduled_at_ms, next)
++                            .finish_outbox_transport_accepted(
++                                claim,
++                                &event_id,
++                                scheduled_at_ms,
++                                next,
++                            )
+                             .await
+                             .map_err(store_error)?;
+                         count_retry(&mut stats, next);
+diff --git a/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs b/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs
+index e4ffea2..03db8d1 100644
+--- a/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs
++++ b/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs
+@@ -382,7 +388,8 @@ pub async fn dispatch_outbox_once<
+                     } else if observed.state.is_terminal() {
+                         // A concurrent sync terminal fact wins over this
+                         // attempt's later rejection; do not invent failure.
+-                        close_observed_terminal(store, claim, &observed, &clock, &mut stats).await?;
++                        close_observed_terminal(store, claim, &observed, &clock, &mut stats)
++                            .await?;
+                     } else {
+                         return Err(OutboxDispatchError::Store);
+                     }
+diff --git a/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs b/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs
+index e4ffea2..03db8d1 100644
+--- a/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs
++++ b/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs
+@@ -397,7 +404,8 @@ pub async fn dispatch_outbox_once<
+                         .await
+                         .map_err(store_error)?;
+                     if observed.state.is_terminal() {
+-                        close_observed_terminal(store, claim, &observed, &clock, &mut stats).await?;
++                        close_observed_terminal(store, claim, &observed, &clock, &mut stats)
++                            .await?;
+                     } else {
+                         let scheduled_at_ms = clock.now_ms()?;
+                         let next = classified_retry_at(config, record, scheduled_at_ms, error)?;
+diff --git a/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs b/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs
+index e4ffea2..03db8d1 100644
+--- a/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs
++++ b/codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs
+@@ -494,9 +502,15 @@ pub async fn run_outbox_sender<
+         if cancel.is_cancelled() {
+             return Ok(());
+         }
+-        let stats =
+-            dispatch_outbox_once(store, transport, authorizer, config, cancel, system_time_ms()?)
+-                .await?;
++        let stats = dispatch_outbox_once(
++            store,
++            transport,
++            authorizer,
++            config,
++            cancel,
++            system_time_ms()?,
++        )
++        .await?;
+         if stats.cancelled {
+             return Ok(());
+         }

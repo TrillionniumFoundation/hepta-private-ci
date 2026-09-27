@@ -1,0 +1,120 @@
+diff --git a/codex-rs/hepta-matrix-sdk/src/outbound_v2/retry.rs b/codex-rs/hepta-matrix-sdk/src/outbound_v2/retry.rs
+index dfa69da..e172d6e 100644
+--- a/codex-rs/hepta-matrix-sdk/src/outbound_v2/retry.rs
++++ b/codex-rs/hepta-matrix-sdk/src/outbound_v2/retry.rs
+@@ -79,15 +79,15 @@ pub(super) fn classified_retry_at(
+         | MatrixTransportError::ReadTimeout
+         | MatrixTransportError::ConnectionReset
+         | MatrixTransportError::ResponseLost
+-        | MatrixTransportError::ServerUnavailable => {
+-            retry_delay_ms(config, record.attempts)?
+-        }
++        | MatrixTransportError::ServerUnavailable => retry_delay_ms(config, record.attempts)?,
+         MatrixTransportError::Permanent => return Err(OutboxDispatchError::Invalid),
+     };
+     let delay = base
+         .saturating_add(stable_jitter_ms(record, base))
+         .min(config.max_retry_delay_ms);
+-    now_ms.checked_add(delay).ok_or(OutboxDispatchError::Invalid)
++    now_ms
++        .checked_add(delay)
++        .ok_or(OutboxDispatchError::Invalid)
+ }
+ 
+ pub(super) fn retry_delay_ms(
+diff --git a/codex-rs/hepta-matrix-sdk/src/sdk.rs b/codex-rs/hepta-matrix-sdk/src/sdk.rs
+index 7485d56..4402008 100644
+--- a/codex-rs/hepta-matrix-sdk/src/sdk.rs
++++ b/codex-rs/hepta-matrix-sdk/src/sdk.rs
+@@ -103,7 +103,9 @@ impl MatrixSdkClient {
+         ingress: &MatrixIngress,
+         cancel: &CancellationToken,
+     ) -> Result<MatrixSyncExit, MatrixSdkError> {
+-        self.inner.sync_durable_until_cancelled(store, ingress, cancel).await
++        self.inner
++            .sync_durable_until_cancelled(store, ingress, cancel)
++            .await
+     }
+ 
+     pub async fn sync_durable_once(
+diff --git a/codex-rs/hepta-matrix-sdk/src/sdk.rs b/codex-rs/hepta-matrix-sdk/src/sdk.rs
+index 7485d56..4402008 100644
+--- a/codex-rs/hepta-matrix-sdk/src/sdk.rs
++++ b/codex-rs/hepta-matrix-sdk/src/sdk.rs
+@@ -148,7 +150,10 @@ impl MatrixOutboundTransport for MatrixSdkClient {
+                 .map_err(|_| MatrixTransportError::Permanent)?;
+             let room_id = OwnedRoomId::try_from(record.room_id.as_str())
+                 .map_err(|_| MatrixTransportError::Permanent)?;
+-            let room = self.inner.client().get_room(&room_id)
++            let room = self
++                .inner
++                .client()
++                .get_room(&room_id)
+                 .ok_or(MatrixTransportError::Retryable)?;
+             let txn_id = OwnedTransactionId::from(record.stable_txn_id.as_str());
+             let content = outbound_message_content(body, record.replaces_event_id.as_ref());
+diff --git a/codex-rs/hepta-matrix-sdk/src/sync.rs b/codex-rs/hepta-matrix-sdk/src/sync.rs
+index 6ddeb21..a75031e 100644
+--- a/codex-rs/hepta-matrix-sdk/src/sync.rs
++++ b/codex-rs/hepta-matrix-sdk/src/sync.rs
+@@ -9,13 +9,13 @@ use codex_hepta_matrix_protocol::MAX_MATRIX_SYNC_BATCH_PAYLOAD_BYTES_V2;
+ use codex_hepta_matrix_protocol::MAX_MATRIX_SYNC_MUTATIONS_V2;
+ use codex_hepta_matrix_protocol::MatrixEventId;
+ use codex_hepta_matrix_protocol::MatrixRoomId;
+-use codex_hepta_matrix_protocol::MatrixTransactionId;
+ use codex_hepta_matrix_protocol::MatrixSyncBatchV2;
+ use codex_hepta_matrix_protocol::MatrixSyncDecisionV2;
+ use codex_hepta_matrix_protocol::MatrixSyncMutationBodyV2;
+ use codex_hepta_matrix_protocol::MatrixSyncMutationDispositionV2;
+ use codex_hepta_matrix_protocol::MatrixSyncMutationV2;
+ use codex_hepta_matrix_protocol::MatrixSyncResultV2;
++use codex_hepta_matrix_protocol::MatrixTransactionId;
+ use codex_hepta_matrix_protocol::MatrixUserId;
+ use codex_hepta_matrix_store::MatrixDurableStore;
+ use codex_hepta_matrix_store::MatrixSyncCheckpoint;
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -1,6 +1,6 @@
+-use std::collections::VecDeque;
+ #[cfg(unix)]
+ use std::collections::BTreeSet;
++use std::collections::VecDeque;
+ use std::error::Error;
+ use std::fs;
+ use std::sync::Mutex;
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -43,8 +43,6 @@ use codex_hepta_matrix_sdk::IngressIgnoredReason;
+ #[cfg(unix)]
+ use codex_hepta_matrix_sdk::MatrixAuthorityError;
+ #[cfg(unix)]
+-use codex_hepta_matrix_sdk::build_matrix_final_use_request;
+-#[cfg(unix)]
+ use codex_hepta_matrix_sdk::MatrixFinalUseRequest;
+ #[cfg(unix)]
+ use codex_hepta_matrix_sdk::MatrixGrantFuture;
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -60,12 +58,14 @@ use codex_hepta_matrix_sdk::MatrixSidecarConfig;
+ use codex_hepta_matrix_sdk::MatrixTimelineEvent;
+ use codex_hepta_matrix_sdk::MatrixTransportError;
+ use codex_hepta_matrix_sdk::OutboxDispatchConfig;
++#[cfg(unix)]
++use codex_hepta_matrix_sdk::build_matrix_final_use_request;
+ use codex_hepta_matrix_sdk::dispatch_outbox_once;
+ use codex_hepta_matrix_sdk::run_outbox_sender;
+-use codex_hepta_matrix_store::MatrixDurableConfig;
+ use codex_hepta_matrix_store::MatrixDispatchAuthorityClaim;
+-use codex_hepta_matrix_store::MatrixDurableStore;
+ use codex_hepta_matrix_store::MatrixDispatchState;
++use codex_hepta_matrix_store::MatrixDurableConfig;
++use codex_hepta_matrix_store::MatrixDurableStore;
+ use codex_hepta_matrix_store::OutboxDisposition;
+ use codex_hepta_matrix_store::OutboxDraft;
+ use codex_hepta_matrix_store::OutboxKind;

@@ -1,0 +1,68 @@
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -1063,18 +1087,23 @@ async fn revocation_after_claim_before_adapter_entry_never_crosses_network() ->
+ 
+     let mut revoked = BTreeSet::new();
+     revoked.insert(signed.grant.grant_id.clone());
+-    authorizer.authority().update_revocations(FinalUseRevocations {
+-        authority_epoch: signed.grant.authority_epoch,
+-        revision: 2,
+-        revoked_grant_ids: revoked,
+-    })?;
++    authorizer
++        .authority()
++        .update_revocations(FinalUseRevocations {
++            authority_epoch: signed.grant.authority_epoch,
++            revision: 2,
++            revoked_grant_ids: revoked,
++        })?;
+ 
+     let entered = authorizer.authority().with_verified_use_at_frontier(
+         token,
+         &request.binding,
+-        || transport.send(&claimed),
++        || transport.fixture_lazy_send(&claimed),
++    );
++    assert!(
++        entered.is_err(),
++        "revocation committed before adapter entry must deny use"
+     );
+-    assert!(entered.is_err(), "revocation committed before adapter entry must deny use");
+     assert!(transport.txn_ids()?.is_empty());
+     assert!(
+         store
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -1152,10 +1181,12 @@ async fn later_permanent_rejection_cannot_erase_prior_transport_acceptance() ->
+     };
+     let cancel = CancellationToken::new();
+ 
+-    let accepted = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 10).await?;
++    let accepted =
++        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 10).await?;
+     assert_eq!(accepted.transport_accepted, 1);
+     assert_eq!(accepted.sent, 0);
+-    let rejected_retry = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
++    let rejected_retry =
++        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
+     assert_eq!(rejected_retry.permanent_failure, 0);
+     assert_eq!(rejected_retry.indeterminate, 1);
+ 
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -1235,7 +1266,8 @@ async fn transient_failures_use_bounded_backoff_and_then_park_for_reconciliation
+         .await?
+         .ok_or("second retry record disappeared")?;
+     assert_eq!(second_retry.next_attempt_at_ms, 40);
+-    let parked = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 40).await?;
++    let parked =
++        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 40).await?;
+     assert_eq!(parked.permanent_failure, 0);
+     assert_eq!(parked.indeterminate, 1);
+     let unresolved = store

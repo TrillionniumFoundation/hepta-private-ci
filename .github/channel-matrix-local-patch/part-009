@@ -1,0 +1,129 @@
+diff --git a/codex-rs/hepta-matrix-sdk/tests/final_poll_regressions.rs b/codex-rs/hepta-matrix-sdk/tests/final_poll_regressions.rs
+index 99a8f3c..915a25a 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/final_poll_regressions.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/final_poll_regressions.rs
+@@ -388,8 +434,15 @@ async fn cancellation_after_first_poll_stays_indeterminate() -> TestResult {
+     let mut transport = Transport::new();
+     transport.wait_forever = true;
+     transport.cancel_after_entry = Some(cancel.clone());
+-    let stats = dispatch_outbox_once(&store, &transport, &authority, &config(), &cancel, now_ms()?)
+-        .await?;
++    let stats = dispatch_outbox_once(
++        &store,
++        &transport,
++        &authority,
++        &config(),
++        &cancel,
++        now_ms()?,
++    )
++    .await?;
+     assert_eq!(transport.polls.load(Ordering::SeqCst), 1);
+     assert_eq!(stats.permanent_failure, 0);
+     assert!(stats.cancelled);
+diff --git a/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs b/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs
+index e6160c0..8ca3999 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs
+@@ -71,12 +71,19 @@ fn now_ms() -> TestResult<u64> {
+     )?)
+ }
+ 
+-async fn fixture() -> TestResult<(TempDir, HeptaAgentLayout, MatrixDurableStore, MatrixTransactionId)> {
++async fn fixture() -> TestResult<(
++    TempDir,
++    HeptaAgentLayout,
++    MatrixDurableStore,
++    MatrixTransactionId,
++)> {
+     let temp = TempDir::new()?;
+     let root = temp.path().join("fleet");
+     fs::create_dir_all(&root)?;
+     let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
+-    let layout = HeptaFleetRoot::parse(root.canonicalize()?)?.layout().agent(&agent);
++    let layout = HeptaFleetRoot::parse(root.canonicalize()?)?
++        .layout()
++        .agent(&agent);
+     let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+     let room = MatrixRoomId::parse("!allowed:example.test")?;
+     store
+diff --git a/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs b/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs
+index e6160c0..8ca3999 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs
+@@ -174,9 +181,7 @@ impl MatrixOutboundAuthorizer for Authorizer {
+     }
+ 
+     fn refresh_revocations(&self) -> Result<(), MatrixAuthorityError> {
+-        if self.polls.load(Ordering::SeqCst) == 0
+-            || self.changed.swap(1, Ordering::SeqCst) != 0
+-        {
++        if self.polls.load(Ordering::SeqCst) == 0 || self.changed.swap(1, Ordering::SeqCst) != 0 {
+             return Ok(());
+         }
+         match self.interruption {
+diff --git a/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs b/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs
+index e6160c0..8ca3999 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs
+@@ -275,7 +280,11 @@ async fn check_interruption(interruption: Interruption) -> TestResult {
+     );
+     assert_eq!(polls.load(Ordering::SeqCst), if continuing { 2 } else { 1 });
+     assert_eq!(
+-        (stats.sent, stats.permanent_failure, stats.transport_accepted),
++        (
++            stats.sent,
++            stats.permanent_failure,
++            stats.transport_accepted
++        ),
+         (0, 0, u64::from(continuing))
+     );
+     let expected = if continuing {
+diff --git a/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs b/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs
+index e6160c0..8ca3999 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs
+@@ -284,13 +293,23 @@ async fn check_interruption(interruption: Interruption) -> TestResult {
+         MatrixDispatchState::Indeterminate
+     };
+     assert_eq!(
+-        store.dispatch_for_txn(&txn).await?.ok_or("missing ledger")?.state,
++        store
++            .dispatch_for_txn(&txn)
++            .await?
++            .ok_or("missing ledger")?
++            .state,
+         expected
+     );
+     if !continuing {
+-        assert!(store.dispatch_attempt_events(&txn).await?.iter().any(|event| {
+-            event.failure_class == Some(MatrixAttemptFailureClass::ResponseLost)
+-        }));
++        assert!(
++            store
++                .dispatch_attempt_events(&txn)
++                .await?
++                .iter()
++                .any(|event| {
++                    event.failure_class == Some(MatrixAttemptFailureClass::ResponseLost)
++                })
++        );
+     }
+     let events = store.dispatch_attempt_events(&txn).await?;
+     store.close().await;
+diff --git a/codex-rs/hepta-matrix-store/src/claim/content.rs b/codex-rs/hepta-matrix-store/src/claim/content.rs
+index 38320cf..c98a653 100644
+--- a/codex-rs/hepta-matrix-store/src/claim/content.rs
++++ b/codex-rs/hepta-matrix-store/src/claim/content.rs
+@@ -27,9 +27,9 @@ impl MatrixDurableStore {
+         for digest in [canonical_content_sha256, scope_sha256] {
+             if digest.len() != 64
+                 || digest.bytes().all(|byte| byte == b'0')
+-                || !digest.bytes().all(|byte| {
+-                    byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase()
+-                })
++                || !digest
++                    .bytes()
++                    .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+             {
+                 return Err(MatrixDurableError::Invalid);
+             }

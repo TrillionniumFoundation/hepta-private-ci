@@ -1,0 +1,122 @@
+diff --git a/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs b/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
+index 3c6c207..cb07552 100644
+--- a/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
++++ b/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
+@@ -91,20 +115,54 @@ async fn ack_loss_survives_retry_rejection_and_reopen() -> TestResult {
+     let (_temp, layout, store, original) = fixture().await?;
+     let first = claimed(&store, /*now*/ 10).await?;
+     store.prepare_outbox_dispatch(&first, /*now_ms*/ 11).await?;
+-    store.record_outbox_transport_indeterminate(&first.stable_txn_id, first.attempts, /*now_ms*/ 12).await?;
+-    store.mark_outbox_retry(&first.stable_txn_id, first.attempts, /*now_ms*/ 13, /*next_attempt_at_ms*/ 20).await?;
++    store
++        .record_outbox_transport_indeterminate(
++            &first.stable_txn_id,
++            first.attempts,
++            /*now_ms*/ 12,
++        )
++        .await?;
++    store
++        .mark_outbox_retry(
++            &first.stable_txn_id,
++            first.attempts,
++            /*now_ms*/ 13,
++            /*next_attempt_at_ms*/ 20,
++        )
++        .await?;
+     store.close().await;
+     let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+     let second = claimed(&store, /*now*/ 21).await?;
+     assert_eq!(second.stable_txn_id, original.stable_txn_id);
+     assert_eq!(second.attempts, first.attempts + 1);
+-    assert_eq!(store.prepare_outbox_dispatch(&second, /*now_ms*/ 22).await?.state, MatrixDispatchState::Indeterminate);
+-    assert_eq!(store.record_outbox_transport_rejected(&second.stable_txn_id, second.attempts, /*now_ms*/ 23).await?.state,
+-               MatrixDispatchState::Indeterminate);
++    assert_eq!(
++        store
++            .prepare_outbox_dispatch(&second, /*now_ms*/ 22)
++            .await?
++            .state,
++        MatrixDispatchState::Indeterminate
++    );
++    assert_eq!(
++        store
++            .record_outbox_transport_rejected(
++                &second.stable_txn_id,
++                second.attempts,
++                /*now_ms*/ 23
++            )
++            .await?
++            .state,
++        MatrixDispatchState::Indeterminate
++    );
+     store.close().await;
+     let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+-    assert_eq!(store.dispatch_for_txn(&original.stable_txn_id).await?.ok_or("missing dispatch")?.state,
+-               MatrixDispatchState::Indeterminate);
++    assert_eq!(
++        store
++            .dispatch_for_txn(&original.stable_txn_id)
++            .await?
++            .ok_or("missing dispatch")?
++            .state,
++        MatrixDispatchState::Indeterminate
++    );
+     store.close().await;
+     Ok(())
+ }
+diff --git a/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs b/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
+index 3c6c207..cb07552 100644
+--- a/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
++++ b/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
+@@ -118,9 +176,24 @@ async fn crashed_dispatch_without_ack_is_not_erased_by_a_new_attempt() -> TestRe
+     let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+     let second = claimed(&store, /*now*/ 111).await?;
+     assert_eq!(second.stable_txn_id, original.stable_txn_id);
+-    assert_eq!(store.prepare_outbox_dispatch(&second, /*now_ms*/ 112).await?.state, MatrixDispatchState::Indeterminate);
+-    assert_eq!(store.record_outbox_transport_rejected(&second.stable_txn_id, second.attempts, /*now_ms*/ 113).await?.state,
+-               MatrixDispatchState::Indeterminate);
++    assert_eq!(
++        store
++            .prepare_outbox_dispatch(&second, /*now_ms*/ 112)
++            .await?
++            .state,
++        MatrixDispatchState::Indeterminate
++    );
++    assert_eq!(
++        store
++            .record_outbox_transport_rejected(
++                &second.stable_txn_id,
++                second.attempts,
++                /*now_ms*/ 113
++            )
++            .await?
++            .state,
++        MatrixDispatchState::Indeterminate
++    );
+     store.close().await;
+     Ok(())
+ }
+diff --git a/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs b/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
+index 3c6c207..cb07552 100644
+--- a/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
++++ b/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
+@@ -130,8 +203,17 @@ async fn first_definitive_rejection_remains_a_negative_outcome() -> TestResult {
+     let (_temp, _layout, store, _) = fixture().await?;
+     let first = claimed(&store, /*now*/ 10).await?;
+     store.prepare_outbox_dispatch(&first, /*now_ms*/ 11).await?;
+-    assert_eq!(store.record_outbox_transport_rejected(&first.stable_txn_id, first.attempts, /*now_ms*/ 12).await?.state,
+-               MatrixDispatchState::Failed);
++    assert_eq!(
++        store
++            .record_outbox_transport_rejected(
++                &first.stable_txn_id,
++                first.attempts,
++                /*now_ms*/ 12
++            )
++            .await?
++            .state,
++        MatrixDispatchState::Failed
++    );
+     store.close().await;
+     Ok(())
+ }

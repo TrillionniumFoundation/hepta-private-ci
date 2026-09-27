@@ -1,0 +1,118 @@
+diff --git a/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs b/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
+index 3c6c207..cb07552 100644
+--- a/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
++++ b/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
+@@ -188,12 +317,25 @@ async fn post_expiry_old_token_cannot_finalize_the_new_owner() -> TestResult {
+     let (_temp, _layout, store, _) = fixture().await?;
+     let old = fenced(&store).await?;
+     dispatch_intent(&store, &old).await?;
+-    let mut next = store.claim_outbox_fenced(/*now_ms*/ 111, /*lease_ms*/ 100, /*limit*/ 1).await?;
++    let mut next = store
++        .claim_outbox_fenced(/*now_ms*/ 111, /*lease_ms*/ 100, /*limit*/ 1)
++        .await?;
+     let next = next.pop().ok_or("missing new claim")?;
+-    assert_eq!(store.finish_outbox_indeterminate(&old, MatrixAttemptFailureClass::ResponseLost,
+-               /*retry_after_ms*/ None, /*recorded_at_ms*/ 112, /*next_attempt_at_ms*/ 120).await,
+-               Err(MatrixDurableError::Conflict));
+-    store.record_outbox_prepared(&next, /*recorded_at_ms*/ 113).await?;
++    assert_eq!(
++        store
++            .finish_outbox_indeterminate(
++                &old,
++                MatrixAttemptFailureClass::ResponseLost,
++                /*retry_after_ms*/ None,
++                /*recorded_at_ms*/ 112,
++                /*next_attempt_at_ms*/ 120
++            )
++            .await,
++        Err(MatrixDurableError::Conflict)
++    );
++    store
++        .record_outbox_prepared(&next, /*recorded_at_ms*/ 113)
++        .await?;
+     store.close().await;
+     Ok(())
+ }
+diff --git a/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs b/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
+index 3c6c207..cb07552 100644
+--- a/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
++++ b/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
+@@ -203,8 +345,12 @@ async fn an_expired_claim_never_authorizes_new_dispatch() -> TestResult {
+     let (_temp, _layout, store, _) = fixture().await?;
+     let claim = fenced(&store).await?;
+     dispatch_intent(&store, &claim).await?;
+-    assert_eq!(store.record_outbox_dispatching(&claim, claim.lease_until_ms()).await,
+-               Err(MatrixDurableError::Conflict));
++    assert_eq!(
++        store
++            .record_outbox_dispatching(&claim, claim.lease_until_ms())
++            .await,
++        Err(MatrixDurableError::Conflict)
++    );
+     store.close().await;
+     Ok(())
+ }
+diff --git a/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs b/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
+index 3c6c207..cb07552 100644
+--- a/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
++++ b/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
+@@ -214,11 +360,23 @@ async fn unknown_dispatch_cannot_be_closed_as_permanent_failure() -> TestResult
+     let (_temp, _layout, store, _) = fixture().await?;
+     let claim = fenced(&store).await?;
+     dispatch_intent(&store, &claim).await?;
+-    assert_eq!(store.finish_outbox_permanently_rejected(&claim, /*recorded_at_ms*/ 14).await,
+-               Err(MatrixDurableError::Conflict));
+-    assert_eq!(store.close_terminal_outbox_claim(&claim, MatrixDispatchAttemptEventKind::Confirmed,
+-               /*event_id*/ None, /*recorded_at_ms*/ 14).await,
+-               Err(MatrixDurableError::Conflict));
++    assert_eq!(
++        store
++            .finish_outbox_permanently_rejected(&claim, /*recorded_at_ms*/ 14)
++            .await,
++        Err(MatrixDurableError::Conflict)
++    );
++    assert_eq!(
++        store
++            .close_terminal_outbox_claim(
++                &claim,
++                MatrixDispatchAttemptEventKind::Confirmed,
++                /*event_id*/ None,
++                /*recorded_at_ms*/ 14
++            )
++            .await,
++        Err(MatrixDurableError::Conflict)
++    );
+     store.close().await;
+     Ok(())
+ }
+diff --git a/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs b/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
+index 3c6c207..cb07552 100644
+--- a/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
++++ b/codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs
+@@ -227,10 +385,22 @@ async fn unknown_dispatch_cannot_be_closed_as_permanent_failure() -> TestResult
+ async fn identical_prepare_is_idempotent_in_the_append_only_history() -> TestResult {
+     let (_temp, _layout, store, _) = fixture().await?;
+     let claim = fenced(&store).await?;
+-    store.record_outbox_prepared(&claim, /*recorded_at_ms*/ 11).await?;
+-    store.record_outbox_prepared(&claim, /*recorded_at_ms*/ 12).await?;
+-    let events = store.dispatch_attempt_events(&claim.record().stable_txn_id).await?;
+-    assert_eq!(events.iter().filter(|event| event.event_kind == MatrixDispatchAttemptEventKind::Prepared).count(), 1);
++    store
++        .record_outbox_prepared(&claim, /*recorded_at_ms*/ 11)
++        .await?;
++    store
++        .record_outbox_prepared(&claim, /*recorded_at_ms*/ 12)
++        .await?;
++    let events = store
++        .dispatch_attempt_events(&claim.record().stable_txn_id)
++        .await?;
++    assert_eq!(
++        events
++            .iter()
++            .filter(|event| event.event_kind == MatrixDispatchAttemptEventKind::Prepared)
++            .count(),
++        1
++    );
+     store.close().await;
+     Ok(())
+ }

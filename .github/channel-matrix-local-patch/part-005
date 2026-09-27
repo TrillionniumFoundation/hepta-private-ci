@@ -1,0 +1,90 @@
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -925,7 +940,10 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
+     // is still dropped before its first poll.
+     let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+     let second = store.claim_outbox(20, config.lease_ms, 1).await?;
+-    let second = second.first().ok_or("missing second crash-cut claim")?.clone();
++    let second = second
++        .first()
++        .ok_or("missing second crash-cut claim")?
++        .clone();
+     let prepared = store.prepare_outbox_dispatch(&second, 20).await?;
+     let request = build_matrix_final_use_request(
+         agent_id.as_str(),
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -935,9 +953,11 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
+     )?;
+     let signed = authorizer.signed_grant(&request).await?;
+     let token = authorizer.authority().claim(&signed, &request.binding)?;
+-    let (future, frontier) = authorizer
+-        .authority()
+-        .with_verified_use_at_frontier(token, &request.binding, || transport.send(&second))?;
++    let (future, frontier) = authorizer.authority().with_verified_use_at_frontier(
++        token,
++        &request.binding,
++        || transport.fixture_lazy_send(&second),
++    )?;
+     store
+         .record_dispatch_authority_claim(
+             &original.stable_txn_id,
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -950,16 +970,14 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
+                 device_id: request.device_id.clone(),
+                 session_generation: request.session_generation,
+                 authority_epoch: frontier.authority_epoch,
+-                revocation_revision: frontier.revision,
++                revocation_revision: frontier.revocation_revision,
+                 grant_id: signed.grant.grant_id.clone(),
+                 request_digest: request.request_digest.clone(),
+                 scope_digest: request.scope_digest.clone(),
+                 payload_digest: request.payload_digest.clone(),
+                 attempt: second.attempts,
+                 expires_at_ms: signed.grant.expires_at_unix_ms,
+-                claimed_at_ms: SystemTime::now()
+-                    .duration_since(UNIX_EPOCH)?
+-                    .as_millis() as u64,
++                claimed_at_ms: SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64,
+             },
+         )
+         .await?;
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -1026,7 +1044,10 @@ async fn revoked_grant_never_enters_the_physical_matrix_adapter() -> TestResult
+         10,
+     )
+     .await;
+-    assert!(matches!(result, Err(codex_hepta_matrix_sdk::OutboxDispatchError::Authority)));
++    assert!(matches!(
++        result,
++        Err(codex_hepta_matrix_sdk::OutboxDispatchError::Authority)
++    ));
+     assert!(transport.txn_ids()?.is_empty());
+     assert!(
+         store
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index 789ccce..538e594 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -1050,7 +1071,10 @@ async fn revocation_after_claim_before_adapter_entry_never_crosses_network() ->
+     let transport = FakeTransport::new([Ok(event("$must-not-send-revocation-race")?)]);
+ 
+     let claimed = store.claim_outbox(10, 20, 1).await?;
+-    let claimed = claimed.first().ok_or("missing revocation-race claim")?.clone();
++    let claimed = claimed
++        .first()
++        .ok_or("missing revocation-race claim")?
++        .clone();
+     let prepared = store.prepare_outbox_dispatch(&claimed, 10).await?;
+     let request = build_matrix_final_use_request(
+         agent_id.as_str(),
