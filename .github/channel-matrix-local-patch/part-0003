@@ -1,0 +1,34 @@
+diff --git a/codex-rs/hepta-matrix-store/src/store.rs b/codex-rs/hepta-matrix-store/src/store.rs
+--- a/codex-rs/hepta-matrix-store/src/store.rs
++++ b/codex-rs/hepta-matrix-store/src/store.rs
+@@ -1636,11 +1636,16 @@
+                     binding_revision, generation, state, attempts, next_attempt_at_ms,
+                     lease_until_ms, created_at_ms, updated_at_ms, sent_event_id
+-             FROM matrix_sendable_outbox_v2
+-             WHERE (
+-                    state IN ('pending', 'retry_scheduled') AND next_attempt_at_ms <= ?
+-                   ) OR (
+-                    state = 'in_flight' AND lease_until_ms <= ?
+-                   )
++             FROM matrix_sendable_outbox_v2 AS outbox
++             WHERE NOT EXISTS (
++                    SELECT 1 FROM matrix_dispatch_legacy_content_holds AS hold
++                    WHERE hold.stable_txn_id = outbox.stable_txn_id
++                   )
++               AND (
++                    (
++                     state IN ('pending', 'retry_scheduled') AND next_attempt_at_ms <= ?
++                    ) OR (
++                     state = 'in_flight' AND lease_until_ms <= ?
++                    )
++                   )
+              ORDER BY next_attempt_at_ms, outbox_id LIMIT ?",
+         )
+diff --git a/scripts/verify_channel_matrix_candidate.py b/scripts/verify_channel_matrix_candidate.py
+--- a/scripts/verify_channel_matrix_candidate.py
++++ b/scripts/verify_channel_matrix_candidate.py
+@@ -35,6 +35,7 @@
+     "codex-rs/hepta-matrix-store/src/claim/store.rs": ("claim_outbox_fenced(", "record_outbox_authorized(", "record_outbox_dispatching(", "record_outbox_entered_use(", "finish_outbox_indeterminate(", "matrix_dispatch_authority_witnesses", "matrix_dispatch_attempt_events", "matrix_dispatch_use_entries"),
+     "codex-rs/hepta-matrix-store/src/claim/content.rs": ("pin_outbox_content(", "require_live_active_claim_tx", "matrix_dispatch_content_bindings", "matrix_dispatch_legacy_content_holds", "unsafe_prior"),
++    "codex-rs/hepta-matrix-store/src/store.rs": ("MATRIX_DISPATCH_SCHEMA_SOURCES", "FROM matrix_sendable_outbox_v2 AS outbox", "matrix_dispatch_legacy_content_holds AS hold"),
+     "codex-rs/hepta-matrix-store/src/dispatch.rs": ("pub async fn prepare_outbox_dispatch(", "pub(crate) async fn observe_outbound_event_tx(", "pub(crate) async fn apply_dispatch_redaction_tx("),
