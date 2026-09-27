@@ -25,6 +25,9 @@ impl DurableInferenceControl {
     }
 
     /// Production settlement stores only a protected-output marker and metadata.
+    /// Dispatch expiry prevents a new external effect, but cannot erase terminal
+    /// truth for an effect which already crossed the boundary. Settlement still
+    /// requires the exact previously bound plan identity and live data policy.
     /// A non-terminal observation with no output has no data object to encrypt;
     /// its absence is persisted explicitly rather than fabricating ciphertext.
     pub fn settle_native_authorized(
@@ -35,7 +38,7 @@ impl DurableInferenceControl {
         mut output: NativeRunOutput,
         protected_output: Option<ProtectedOutput>,
     ) -> Result<NativeRunRecord, Error> {
-        self.assert_native_plan_binding(request_id, plan, now_unix_ms)?;
+        self.assert_native_plan_identity(request_id, plan)?;
         let protected = if output.output.is_empty() && !output.terminal_observed {
             None
         } else {
