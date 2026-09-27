@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SELF = Path(__file__).resolve()
 PATCH_PAYLOAD = ROOT / ".github/inference-control-closure.patch.gz.b64"
 VERIFIER_PAYLOAD = ROOT / ".github/inference-control-actor-verifier.py.gz.b64"
-EXPECTED_PARENT = "14225e60084eae0b415f153336e9508bc2888d76"
+EXPECTED_PARENT = "c5bf1fb779537e1285cc6fda8b69f05381589872"
 PATCH_SHA256 = "f5a28e5845bcb80797add43c89770733efcf0ca0106b7f6e47a64eefc5632b08"
 FINAL_SHA256 = "649e67017c21faf9e3055b354bb88b7dd314427d0969c0e06a7c4706d33b5b45"
 
