@@ -1,0 +1,75 @@
+name: runtime.codex fault matrix
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - docs/modules/runtime.codex/**
+      - scripts/check-runtime-codex-fault-matrix.py
+      - .github/workflows/runtime-codex-fault-matrix.yml
+  push:
+    branches: [main]
+    paths:
+      - docs/modules/runtime.codex/**
+      - scripts/check-runtime-codex-fault-matrix.py
+      - .github/workflows/runtime-codex-fault-matrix.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-codex-fault-matrix-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-head:
+    name: fault matrix exact-head
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Validate Python helper
+        run: python3 -m py_compile scripts/check-runtime-codex-fault-matrix.py
+      - name: Validate closed-world fault matrix
+        run: python3 scripts/check-runtime-codex-fault-matrix.py
+
+  synthetic-merge:
+    name: fault matrix synthetic-merge
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Construct deterministic merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'runtime.codex fault qualification'
+          git config user.email 'runtime-codex-faults@invalid'
+          git fetch --no-tags origin "${{ github.event.pull_request.base.sha }}"
+          git merge --no-ff --no-edit "${{ github.event.pull_request.base.sha }}"
+      - name: Validate closed-world fault matrix
+        run: python3 scripts/check-runtime-codex-fault-matrix.py
+
+  required:
+    name: runtime.codex fault matrix required
+    if: always()
+    needs: [exact-head, synthetic-merge]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Verify required jobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ needs.exact-head.result }}" = success
+          if test "${{ github.event_name }}" = pull_request; then
+            test "${{ needs.synthetic-merge.result }}" = success
+          else
+            test "${{ needs.synthetic-merge.result }}" = skipped
+          fi
