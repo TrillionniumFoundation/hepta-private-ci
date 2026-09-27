@@ -16,7 +16,7 @@ concurrency:
 jobs:
   materialize-verify-commit:
     if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[materialize-v3]') }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 240
     steps:
       - name: Checkout exact branch head
