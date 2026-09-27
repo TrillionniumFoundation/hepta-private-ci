@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euxo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-# Verify only maps whose declared source/evidence is changed by this closure.
-# Repository-wide map truth remains enforced by the protected global CI lane.
-python3 scripts/hepta-implementation-maps.py migrate \
-  --module memory.federation \
-  --module knowledge.graph
-git diff --exit-code -- \
-  docs/modules/memory.federation/IMPLEMENTATION_MAP.json \
-  docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
+# Qualification is read-only. The implementation-map migrator rewrites provenance
+# anchors and is intentionally never invoked from a verifier lane: a committed map
+# cannot contain the SHA of the commit that contains that same map. Verify the exact
+# checked-out candidate instead, including every registered map and mapped source
+# object, and require the checkout to stay clean throughout the matrix.
+CANDIDATE_SHA="$(git rev-parse HEAD)"
+CANDIDATE_TREE="$(git rev-parse HEAD^{tree})"
+python3 scripts/hepta-implementation-maps.py verify \
+  --expected-sha "$CANDIDATE_SHA" \
+  --expected-tree "$CANDIDATE_TREE"
 
 cd codex-rs
 cargo fmt \
