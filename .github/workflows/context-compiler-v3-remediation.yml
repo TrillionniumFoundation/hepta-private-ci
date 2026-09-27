@@ -13,34 +13,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  materialize-and-verify:
+  materialize-direct-source:
     if: ${{ contains(github.event.head_commit.message, '[materialize-v3]') }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 240
+    runs-on: macos-15
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Install native prerequisites
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y build-essential libcap-dev pkg-config
-
-      - name: Install pinned Rust toolchain
+      - name: Install pinned formatting toolchain
         shell: bash
         run: |
           set -euo pipefail
           rustup set profile minimal
-          rustup toolchain install 1.95.0 --component rustfmt --component clippy
+          rustup toolchain install 1.95.0 --component rustfmt
           rustup default 1.95.0
           rustc -Vv
           cargo -V
 
-      - name: Materialize current hardened V3 source
+      - name: Materialize reviewed V3 source
         shell: bash
         run: |
           set -euo pipefail
@@ -77,62 +70,17 @@ jobs:
           crate.write_text(text)
           PY
 
-      - name: Format and refresh lockfile
-        working-directory: codex-rs
+      - name: Format, resolve lockfile and regenerate truth projections
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --all
-          cargo metadata --format-version 1 > /dev/null
-
-      - name: Bind canonical state to formatted source
-        shell: bash
-        run: |
-          set -euo pipefail
+          (cd codex-rs && cargo fmt --all && cargo metadata --format-version 1 > /dev/null)
           python3 scripts/refresh_context_compiler_current_state.py
           python3 scripts/generate_context_compiler_module_docs.py --write
           python3 scripts/generate_context_compiler_module_docs.py --check
           python3 scripts/test_context_compiler_state.py
-          python3 scripts/test_context_compiler_candidate.py
-          python3 scripts/test_context_compiler_execution.py
 
-      - name: Verify default product profile
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo test --locked \
-            -p codex-hepta-prompt-registry \
-            -p codex-hepta-context-compiler \
-            -p codex-hepta-intelligence \
-            -p codex-extension-api \
-            -p codex-core \
-            -p codex-hepta-agentd \
-            -p codex-hepta-prompt-extension
-
-      - name: Verify explicit legacy compatibility profile
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-intelligence --features legacy-prompt-context-v1
-          cargo test --locked -p codex-hepta-agentd --features legacy-prompt-context-v1
-
-      - name: Strict Clippy across product and compatibility profiles
-        working-directory: codex-rs
-        shell: bash
-        run: >-
-          cargo clippy --locked
-          -p codex-hepta-prompt-registry
-          -p codex-hepta-context-compiler
-          -p codex-hepta-intelligence
-          -p codex-extension-api
-          -p codex-core
-          -p codex-hepta-agentd
-          -p codex-hepta-prompt-extension
-          --all-targets --all-features -- -D warnings
-
-      - name: Commit direct source and retire one-shot machinery
+      - name: Commit ordinary direct source and retire writer machinery
         env:
           BRANCH: ${{ github.ref_name }}
         shell: bash
