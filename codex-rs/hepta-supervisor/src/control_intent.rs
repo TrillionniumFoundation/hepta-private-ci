@@ -12,10 +12,12 @@ use std::path::Path;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
+use std::time::Instant;
 use std::time::SystemTime;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_fleet::AgentLifecycle;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest;
@@ -23,6 +25,7 @@ use sha2::Sha256;
 use thiserror::Error;
 
 use crate::ProcessIdentity;
+use crate::control::pending::PendingControl;
 
 pub(crate) const CONTROL_INTENT_SCHEMA_VERSION: u32 = 1;
 pub(crate) const CONTROL_INTENT_FILE: &str = "supervisor-control-intent.json";
@@ -44,6 +47,13 @@ pub(crate) enum DurableControlPhase {
     Prepared,
     StopRequested,
     KillRequested,
+    Completed,
+}
+
+impl DurableControlPhase {
+    fn terminal(self) -> bool {
+        matches!(self, Self::Completed)
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -57,6 +67,7 @@ pub(crate) struct DurableControlIntent {
     pub expected_lifecycle_generation: u64,
     pub requested_unix_ms: u64,
     pub stop_deadline_unix_ms: Option<u64>,
+    pub completed_unix_ms: Option<u64>,
     pub phase: DurableControlPhase,
     pub operation_sha256: Sha256Digest,
     pub record_sha256: Sha256Digest,
@@ -95,6 +106,7 @@ impl DurableControlIntent {
             expected_lifecycle_generation,
             requested_unix_ms,
             stop_deadline_unix_ms,
+            completed_unix_ms: None,
             phase: DurableControlPhase::Prepared,
             operation_sha256: Sha256Digest::for_bytes(b"pending"),
             record_sha256: Sha256Digest::for_bytes(b"pending"),
@@ -108,9 +120,11 @@ impl DurableControlIntent {
     fn with_phase(
         &self,
         phase: DurableControlPhase,
+        completed_unix_ms: Option<u64>,
     ) -> Result<Self, DurableControlIntentError> {
         let mut next = Self {
             phase,
+            completed_unix_ms,
             ..self.clone()
         };
         next.record_sha256 = next.compute_record_digest()?;
@@ -125,11 +139,20 @@ impl DurableControlIntent {
                 .is_some_and(|deadline| deadline >= self.requested_unix_ms),
             DurableControlKind::Kill => self.stop_deadline_unix_ms.is_none(),
         };
+        let completion_valid = match self.phase {
+            DurableControlPhase::Completed => self
+                .completed_unix_ms
+                .is_some_and(|completed| completed >= self.requested_unix_ms),
+            DurableControlPhase::Prepared
+            | DurableControlPhase::StopRequested
+            | DurableControlPhase::KillRequested => self.completed_unix_ms.is_none(),
+        };
         if self.schema_version != CONTROL_INTENT_SCHEMA_VERSION
             || self.target_spawn_generation == 0
             || self.expected_lifecycle_generation == 0
             || self.requested_unix_ms == 0
             || !stop_deadline_valid
+            || !completion_valid
             || (self.kind == DurableControlKind::Stop
                 && self.phase == DurableControlPhase::KillRequested)
             || (self.kind == DurableControlKind::Kill
@@ -153,6 +176,17 @@ impl DurableControlIntent {
             && self.target_process_identity == other.target_process_identity
     }
 
+    fn matches_target(
+        &self,
+        agent_id: &AgentId,
+        spawn_generation: u64,
+        identity: &ProcessIdentity,
+    ) -> bool {
+        self.agent_id == *agent_id
+            && self.target_spawn_generation == spawn_generation
+            && self.target_process_identity == *identity
+    }
+
     fn compute_operation_digest(&self) -> Result<Sha256Digest, DurableControlIntentError> {
         let payload = serde_json::to_vec(&(
             self.schema_version,
@@ -170,7 +204,11 @@ impl DurableControlIntent {
     }
 
     fn compute_record_digest(&self) -> Result<Sha256Digest, DurableControlIntentError> {
-        let payload = serde_json::to_vec(&(&self.operation_sha256, self.phase))?;
+        let payload = serde_json::to_vec(&(
+            &self.operation_sha256,
+            self.phase,
+            self.completed_unix_ms,
+        ))?;
         Ok(Sha256Digest::from_sha256_output(Sha256::digest(
             [CONTROL_RECORD_DOMAIN, payload.as_slice()].concat(),
         )))
@@ -240,6 +278,72 @@ pub(crate) fn mark_kill_requested(run_root: &Path) -> Result<(), DurableControlI
     )
 }
 
+pub(crate) fn recover_pending(
+    run_root: &Path,
+    agent_id: &AgentId,
+    spawn_generation: u64,
+    identity: &ProcessIdentity,
+    now: Instant,
+) -> Result<Option<PendingControl>, DurableControlIntentError> {
+    let Some(intent) = read_control_intent(run_root)? else {
+        return Ok(None);
+    };
+    if intent.phase.terminal() {
+        return Ok(None);
+    }
+    if !intent.matches_target(agent_id, spawn_generation, identity) {
+        return Err(DurableControlIntentError::Invalid(
+            "unresolved control intent does not bind the current process lease".to_string(),
+        ));
+    }
+    Ok(Some(match intent.kind {
+        DurableControlKind::Kill => PendingControl::Kill { spawn_generation },
+        DurableControlKind::Stop => PendingControl::Stop {
+            spawn_generation,
+            deadline: restore_deadline(
+                now,
+                intent.requested_unix_ms,
+                intent.stop_deadline_unix_ms.ok_or_else(|| {
+                    DurableControlIntentError::Invalid(
+                        "durable Stop intent has no deadline".to_string(),
+                    )
+                })?,
+            )?,
+        },
+    }))
+}
+
+pub(crate) fn reconcile_absent(
+    run_root: &Path,
+    agent_id: &AgentId,
+    lifecycle: AgentLifecycle,
+) -> Result<(), DurableControlIntentError> {
+    let Some(intent) = read_control_intent(run_root)? else {
+        return Ok(());
+    };
+    if intent.phase.terminal() {
+        return Ok(());
+    }
+    if intent.agent_id != *agent_id
+        || !matches!(lifecycle, AgentLifecycle::Stopped | AgentLifecycle::Failed)
+        || crate::lease::read_lease(run_root)
+            .map_err(|error| DurableControlIntentError::Invalid(error.to_string()))?
+            .is_some()
+    {
+        return Err(DurableControlIntentError::Unresolved);
+    }
+    write_control_intent(
+        run_root,
+        &intent.with_phase(DurableControlPhase::Completed, Some(unix_ms_now()?))?,
+    )
+}
+
+pub(crate) fn has_unresolved(
+    run_root: &Path,
+) -> Result<bool, DurableControlIntentError> {
+    Ok(read_control_intent(run_root)?.is_some_and(|intent| !intent.phase.terminal()))
+}
+
 fn prepare(run_root: &Path, next: DurableControlIntent) -> Result<(), DurableControlIntentError> {
     if let Some(existing) = read_control_intent(run_root)? {
         if existing.kind == next.kind && existing.same_target(&next) {
@@ -248,16 +352,9 @@ fn prepare(run_root: &Path, next: DurableControlIntent) -> Result<(), DurableCon
         if next.kind == DurableControlKind::Kill && existing.same_target(&next) {
             return write_control_intent(run_root, &next);
         }
-        let current_lease = crate::lease::read_lease(run_root)
-            .map_err(|error| DurableControlIntentError::Invalid(error.to_string()))?;
-        if current_lease.as_ref().is_some_and(|lease| {
-            lease.agent_id == next.agent_id
-                && lease.spawn_generation == next.target_spawn_generation
-                && lease.identity == next.target_process_identity
-        }) {
-            return write_control_intent(run_root, &next);
+        if !existing.phase.terminal() {
+            return Err(DurableControlIntentError::Unresolved);
         }
-        return Err(DurableControlIntentError::Unresolved);
     }
     write_control_intent(run_root, &next)
 }
@@ -270,12 +367,28 @@ fn advance(
     let current = read_control_intent(run_root)?.ok_or_else(|| {
         DurableControlIntentError::Invalid("control intent is absent".to_string())
     })?;
-    if current.kind != expected_kind {
+    if current.kind != expected_kind || current.phase.terminal() {
         return Err(DurableControlIntentError::Invalid(
-            "control intent kind changed before acknowledgement".to_string(),
+            "control intent kind or phase changed before acknowledgement".to_string(),
         ));
     }
-    write_control_intent(run_root, &current.with_phase(phase)?)
+    write_control_intent(run_root, &current.with_phase(phase, None)?)
+}
+
+fn restore_deadline(
+    now: Instant,
+    requested_unix_ms: u64,
+    deadline_unix_ms: u64,
+) -> Result<Instant, DurableControlIntentError> {
+    let current_unix_ms = unix_ms_now()?;
+    if current_unix_ms < requested_unix_ms {
+        return Err(DurableControlIntentError::Invalid(
+            "wall-clock rollback precedes the durable control request".to_string(),
+        ));
+    }
+    let remaining = deadline_unix_ms.saturating_sub(current_unix_ms);
+    now.checked_add(Duration::from_millis(remaining))
+        .ok_or_else(|| DurableControlIntentError::Invalid("deadline overflow".to_string()))
 }
 
 fn read_control_intent(
@@ -354,7 +467,7 @@ mod tests {
     }
 
     #[test]
-    fn stop_round_trips_and_retry_preserves_the_original_deadline() {
+    fn stop_retry_preserves_original_deadline_and_recovers_exact_target() {
         let dir = tempfile::tempdir().expect("temp");
         prepare_stop(
             dir.path(),
@@ -381,16 +494,26 @@ mod tests {
             .expect("read")
             .expect("intent");
         assert_eq!(replayed.operation_sha256, prepared.operation_sha256);
-        assert_eq!(
-            replayed.stop_deadline_unix_ms,
-            prepared.stop_deadline_unix_ms
-        );
-        mark_stop_requested(dir.path()).expect("requested");
-        let requested = read_control_intent(dir.path())
-            .expect("read")
-            .expect("intent");
-        assert_eq!(requested.operation_sha256, prepared.operation_sha256);
-        assert_eq!(requested.phase, DurableControlPhase::StopRequested);
+        assert_eq!(replayed.stop_deadline_unix_ms, prepared.stop_deadline_unix_ms);
+        assert!(matches!(
+            recover_pending(
+                dir.path(),
+                &agent(),
+                7,
+                &identity("incarnation-a"),
+                Instant::now(),
+            )
+            .expect("recover"),
+            Some(PendingControl::Stop { spawn_generation: 7, .. })
+        ));
+        assert!(recover_pending(
+            dir.path(),
+            &agent(),
+            7,
+            &identity("incarnation-b"),
+            Instant::now(),
+        )
+        .is_err());
     }
 
     #[test]
@@ -416,7 +539,7 @@ mod tests {
     }
 
     #[test]
-    fn kill_may_supersede_stop_only_for_the_same_exact_process() {
+    fn kill_supersedes_stop_only_for_same_process_and_absence_completes() {
         let dir = tempfile::tempdir().expect("temp");
         prepare_stop(
             dir.path(),
@@ -436,17 +559,6 @@ mod tests {
         )
         .expect("dominant kill");
         assert!(matches!(
-            prepare_stop(
-                dir.path(),
-                &agent(),
-                7,
-                &identity("incarnation-a"),
-                8,
-                Duration::from_secs(5),
-            ),
-            Err(DurableControlIntentError::Unresolved)
-        ));
-        assert!(matches!(
             prepare_kill(
                 dir.path(),
                 &agent(),
@@ -456,5 +568,8 @@ mod tests {
             ),
             Err(DurableControlIntentError::Unresolved)
         ));
+        reconcile_absent(dir.path(), &agent(), AgentLifecycle::Stopped)
+            .expect("terminal absence");
+        assert!(!has_unresolved(dir.path()).expect("status"));
     }
 }
