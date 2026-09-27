@@ -4,11 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       build_run_id:
-        description: GitHub Actions run ID containing the exact worker evidence artifact
+        description: GitHub Actions run ID containing the primary exact worker evidence artifact
+        required: true
+        type: string
+      independent_build_run_id:
+        description: GitHub Actions run ID containing the independent exact-input rebuild
         required: true
         type: string
       worker_sha256:
-        description: Expected SHA-256 of the worker binary from the reviewed build receipt
+        description: Expected SHA-256 of the worker binary from the reviewed primary receipt
         required: true
         type: string
 
@@ -30,6 +34,7 @@ jobs:
     env:
       SOURCE_SHA: ${{ github.sha }}
       BUILD_RUN_ID: ${{ inputs.build_run_id }}
+      INDEPENDENT_BUILD_RUN_ID: ${{ inputs.independent_build_run_id }}
       EXPECTED_WORKER_SHA256: ${{ inputs.worker_sha256 }}
       SERVO_PIN: b5a1f5e6ec6f8685d40cd389802ced7abe4980f6
     steps:
@@ -42,6 +47,8 @@ jobs:
           test "$SOURCE_SHA" = "$GITHUB_SHA"
           [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
           [[ "$BUILD_RUN_ID" =~ ^[0-9]+$ ]]
+          [[ "$INDEPENDENT_BUILD_RUN_ID" =~ ^[0-9]+$ ]]
+          test "$BUILD_RUN_ID" != "$INDEPENDENT_BUILD_RUN_ID"
           [[ "$EXPECTED_WORKER_SHA256" =~ ^[0-9a-f]{64}$ ]]
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -69,7 +76,7 @@ jobs:
           prlimit --version | head -n 1 > deployment-evidence/prlimit-version.txt
           sha256sum "$(command -v prlimit)" > deployment-evidence/prlimit.sha256
 
-      - name: Verify exact worker build run provenance
+      - name: Verify both independent build run provenances
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -77,25 +84,45 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           import json, os, urllib.request
-          request = urllib.request.Request(
-              f"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/{os.environ['BUILD_RUN_ID']}",
-              headers={
-                  "Accept": "application/vnd.github+json",
-                  "Authorization": f"Bearer {os.environ['GH_TOKEN']}",
-                  "X-GitHub-Api-Version": "2022-11-28",
-              },
+
+          def load(run_id):
+              request = urllib.request.Request(
+                  f"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/{run_id}",
+                  headers={
+                      "Accept": "application/vnd.github+json",
+                      "Authorization": f"Bearer {os.environ['GH_TOKEN']}",
+                      "X-GitHub-Api-Version": "2022-11-28",
+                  },
+              )
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return json.load(response)
+
+          primary = load(os.environ["BUILD_RUN_ID"])
+          independent = load(os.environ["INDEPENDENT_BUILD_RUN_ID"])
+          expected = (
+              (
+                  primary,
+                  "Hepta Browser Servo worker dev",
+                  ".github/workflows/hepta-browser-servo-worker-dev.yml",
+              ),
+              (
+                  independent,
+                  "Hepta Browser Servo independent rebuild",
+                  ".github/workflows/hepta-browser-servo-independent-rebuild.yml",
+              ),
           )
-          with urllib.request.urlopen(request, timeout=30) as response:
-              run = json.load(response)
-          assert run["head_sha"] == os.environ["SOURCE_SHA"]
-          assert run["head_branch"] == "main"
-          assert run["name"] == "Hepta Browser Servo worker dev"
-          assert run["path"] == ".github/workflows/hepta-browser-servo-worker-dev.yml"
-          assert run["conclusion"] == "success"
-          assert run["event"] in {"push", "workflow_dispatch"}
+          for run, name, path in expected:
+              assert run["head_sha"] == os.environ["SOURCE_SHA"]
+              assert run["head_branch"] == "main"
+              assert run["name"] == name
+              assert run["path"] == path
+              assert run["conclusion"] == "success"
+              assert run["event"] in {"push", "workflow_dispatch"}
+              assert run["repository"]["full_name"] == "TrillionniumFoundation/hepta-private-ci"
+          assert primary["id"] != independent["id"]
           PY
 
-      - name: Download exact worker evidence
+      - name: Download exact primary worker evidence
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: hepta-browser-servo-worker-evidence-${{ github.sha }}
@@ -104,7 +131,16 @@ jobs:
           run-id: ${{ inputs.build_run_id }}
           github-token: ${{ github.token }}
 
-      - name: Verify reviewed build receipt and artifact identity
+      - name: Download exact independent rebuild
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: hepta-browser-servo-independent-rebuild-${{ github.sha }}
+          path: independent-evidence
+          repository: TrillionniumFoundation/hepta-private-ci
+          run-id: ${{ inputs.independent_build_run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Verify reviewed receipts, exact artifacts and cross-runner reproducibility
         shell: bash
         run: |
           set -euo pipefail
@@ -112,41 +148,93 @@ jobs:
           test -s worker-evidence/hepta-servo-worker
           test -s worker-evidence/Cargo.lock
           test -s worker-evidence/hepta-servo-worker.spdx.json
-          actual="$(sha256sum worker-evidence/hepta-servo-worker | awk '{print $1}')"
-          test "$actual" = "$EXPECTED_WORKER_SHA256"
+          test -s independent-evidence/independent-rebuild-receipt.json
+          test -s independent-evidence/hepta-servo-worker
+          test -s independent-evidence/Cargo.lock
+          primary_sha="$(sha256sum worker-evidence/hepta-servo-worker | awk '{print $1}')"
+          independent_sha="$(sha256sum independent-evidence/hepta-servo-worker | awk '{print $1}')"
+          test "$primary_sha" = "$EXPECTED_WORKER_SHA256"
+          test "$independent_sha" = "$EXPECTED_WORKER_SHA256"
+          cmp --silent worker-evidence/hepta-servo-worker independent-evidence/hepta-servo-worker
           python3 - <<'PY'
           import hashlib, json, os, pathlib, subprocess
-          root = pathlib.Path('worker-evidence')
+          primary_root = pathlib.Path('worker-evidence')
+          independent_root = pathlib.Path('independent-evidence')
+          target_root = pathlib.Path('deployment-evidence')
           def digest(path):
               return hashlib.sha256(path.read_bytes()).hexdigest()
-          receipt = json.loads((root / 'build-receipt.json').read_text())
-          assert receipt['sourceSha'] == os.environ['SOURCE_SHA']
-          assert receipt['sourceTree'] == subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
-          assert receipt['servoPin'] == os.environ['SERVO_PIN']
-          assert receipt['cargoLockCommitted'] is True
-          assert receipt['cargoLockSha256'] == digest(root / 'Cargo.lock')
-          assert receipt['workerSha256'] == os.environ['EXPECTED_WORKER_SHA256']
-          assert receipt['workerSha256'] == digest(root / 'hepta-servo-worker')
-          assert receipt['sbomSha256'] == digest(root / 'hepta-servo-worker.spdx.json')
-          assert receipt['reproducibleIndependentBuilds'] is True
-          assert receipt['linuxSandboxProbe']['externalNetworkDenied'] is True
-          assert receipt['linuxSandboxProbe']['hostSecretHidden'] is True
-          assert receipt['linuxSandboxProbe']['parentDeathCleanupObserved'] is True
-          assert receipt['linuxSandboxProbe']['descendantCleanupObserved'] is True
-          assert receipt['linuxSandboxProbe']['resourceLimitsEnforced'] is True
-          assert receipt['realWorkerSmoke']['currentPinWorkerBooted'] is True
-          assert receipt['realWorkerSmoke']['privateProtocolRoundTrip'] is True
-          assert receipt['realBrowserE2E']['openNavigateObserveTypeClickClose'] is True
-          assert receipt['realBrowserE2E']['crossOriginSubresourceDenied'] is True
-          assert receipt['realBrowserE2E']['redirectEscapeDenied'] is True
-          assert receipt['realBrowserE2E']['profileAllowedCrossOriginRedirectDeniedByEffectGrant'] is True
-          assert receipt['realBrowserE2E']['crossProfileCookieIsolation'] is True
-          assert receipt['realBrowserE2E']['persistedCrashReconciliation'] is True
-          assert receipt['realBrowserSoak']['cycles'] == 32
-          assert receipt['realBrowserSoak']['boundedFdGrowth'] is True
+
+          source_tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
+          primary = json.loads((primary_root / 'build-receipt.json').read_text())
+          independent = json.loads((independent_root / 'independent-rebuild-receipt.json').read_text())
+
+          assert primary['schema'] == 'hepta.browser.servo-worker-build-receipt.v2'
+          assert primary['sourceSha'] == os.environ['SOURCE_SHA']
+          assert primary['sourceTree'] == source_tree
+          assert primary['servoPin'] == os.environ['SERVO_PIN']
+          assert primary['cargoLockCommitted'] is True
+          assert primary['sameRunnerByteIdenticalBuilds'] is True
+          assert primary['reproducibleIndependentBuilds'] is False
+          assert primary['independentRunnerBuildCount'] == 1
+          assert primary['cargoLockSha256'] == digest(primary_root / 'Cargo.lock')
+          assert primary['workerSha256'] == os.environ['EXPECTED_WORKER_SHA256']
+          assert primary['workerSha256'] == digest(primary_root / 'hepta-servo-worker')
+          assert primary['sbomSha256'] == digest(primary_root / 'hepta-servo-worker.spdx.json')
+
+          assert independent['schema'] == 'hepta.browser.servo-independent-rebuild-receipt.v1'
+          assert independent['sourceSha'] == os.environ['SOURCE_SHA']
+          assert independent['sourceTree'] == source_tree
+          assert independent['servoPin'] == os.environ['SERVO_PIN']
+          assert independent['committedLock'] is True
+          assert independent['independentEphemeralRunner'] is True
+          assert independent['githubRunId'] == os.environ['INDEPENDENT_BUILD_RUN_ID']
+          assert independent['cargoLockSha256'] == digest(independent_root / 'Cargo.lock')
+          assert independent['cargoLockSha256'] == primary['cargoLockSha256']
+          assert independent['workerSha256'] == primary['workerSha256']
+          assert independent['workerSha256'] == digest(independent_root / 'hepta-servo-worker')
+
+          assert primary['linuxSandboxProbe']['externalNetworkDenied'] is True
+          assert primary['linuxSandboxProbe']['hostSecretHidden'] is True
+          assert primary['linuxSandboxProbe']['parentDeathCleanupObserved'] is True
+          assert primary['linuxSandboxProbe']['descendantCleanupObserved'] is True
+          assert primary['linuxSandboxProbe']['resourceLimitsEnforced'] is True
+          assert primary['realWorkerSmoke']['currentPinWorkerBooted'] is True
+          assert primary['realWorkerSmoke']['privateProtocolRoundTrip'] is True
+          assert primary['realBrowserE2E']['openNavigateObserveTypeClickClose'] is True
+          assert primary['realBrowserE2E']['crossOriginSubresourceDenied'] is True
+          assert primary['realBrowserE2E']['redirectEscapeDenied'] is True
+          assert primary['realBrowserE2E']['profileAllowedCrossOriginRedirectDeniedByEffectGrant'] is True
+          assert primary['realBrowserE2E']['crossProfileCookieIsolation'] is True
+          assert primary['realBrowserE2E']['persistedCrashReconciliation'] is True
+          assert primary['realBrowserSoak']['cycles'] == 32
+          assert primary['realBrowserSoak']['boundedFdGrowth'] is True
+
+          multi = {
+              'schema': 'hepta.browser.servo-multi-builder-receipt.v1',
+              'sourceSha': os.environ['SOURCE_SHA'],
+              'sourceTree': source_tree,
+              'servoPin': os.environ['SERVO_PIN'],
+              'primaryBuildRunId': os.environ['BUILD_RUN_ID'],
+              'independentBuildRunId': os.environ['INDEPENDENT_BUILD_RUN_ID'],
+              'cargoLockSha256': primary['cargoLockSha256'],
+              'workerSha256': primary['workerSha256'],
+              'primaryReceiptSha256': digest(primary_root / 'build-receipt.json'),
+              'independentReceiptSha256': digest(independent_root / 'independent-rebuild-receipt.json'),
+              'reproducibleIndependentBuilds': True,
+              'independentRunnerBuildCount': 2,
+              'byteIdentical': True,
+          }
+          (target_root / 'multi-builder-receipt.json').write_text(
+              json.dumps(multi, sort_keys=True, separators=(',', ':')) + '\n',
+              encoding='utf-8',
+          )
           PY
+          sha256sum deployment-evidence/multi-builder-receipt.json \
+            > deployment-evidence/multi-builder-receipt.json.sha256
           chmod 0555 worker-evidence/hepta-servo-worker
           cp worker-evidence/build-receipt.json deployment-evidence/source-build-receipt.json
+          cp independent-evidence/independent-rebuild-receipt.json \
+            deployment-evidence/independent-rebuild-receipt.json
           sha256sum worker-evidence/hepta-servo-worker \
             > deployment-evidence/worker.sha256
 
@@ -235,12 +323,17 @@ jobs:
           def digest(path):
               return hashlib.sha256(path.read_bytes()).hexdigest()
           public_egress = json.loads((root / 'public-egress-probe.json').read_text())
+          multi = json.loads((root / 'multi-builder-receipt.json').read_text())
           receipt = {
-              'schema': 'hepta.browser.servo-linux-target-qualification.v1',
+              'schema': 'hepta.browser.servo-linux-target-qualification.v2',
               'sourceSha': os.environ['SOURCE_SHA'],
               'sourceTree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
               'buildRunId': os.environ['BUILD_RUN_ID'],
+              'independentBuildRunId': os.environ['INDEPENDENT_BUILD_RUN_ID'],
               'workerSha256': os.environ['EXPECTED_WORKER_SHA256'],
+              'multiBuilderReceiptSha256': digest(root / 'multi-builder-receipt.json'),
+              'reproducibleIndependentBuilds': multi['reproducibleIndependentBuilds'],
+              'independentRunnerBuildCount': multi['independentRunnerBuildCount'],
               'sandboxProbeSha256': digest(root / 'linux-sandbox-probe.json'),
               'realWorkerSmokeSha256': digest(root / 'real-worker-smoke.json'),
               'realBrowserE2ESha256': digest(root / 'real-browser-e2e.json'),
@@ -259,7 +352,7 @@ jobs:
               'operatorAcceptance': False,
               'promotion': False,
               'releaseQualified': False,
-              'interpretation': 'target execution evidence only; independent operator/release authority is not self-issued',
+              'interpretation': 'two-builder artifact identity plus target execution evidence; independent operator/release authority is not self-issued',
           }
           (root / 'target-qualification-receipt.json').write_text(
               json.dumps(receipt, sort_keys=True, separators=(',', ':')) + '\n',
