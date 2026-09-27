@@ -74,14 +74,18 @@ Queue submission is non-terminal. Missing replies are not absence proofs.
 ## 5. Capacity and fairness
 
 The default runtime policy budgets eight distinct recovery items and sixteen new
-admissions per Agentd cycle. Recovery snapshots its frontier once: unknown
-dispatches have priority and are ordered by oldest observation time; remaining
+admissions per Agentd cycle. Recovery snapshots both frontiers once: unknown
+dispatches have priority and are ordered by oldest observation time;
 admitted/running/indeterminate occurrences are ordered by oldest durable update
-time. Each selected row is contacted at most once in the cycle, so one
-in-progress turn cannot consume the whole recovery budget. New admission remains
-ordered by scheduled instant, task and occurrence identity. Provider contact is
-serialized and a fresh clock is sampled per admission item. Unknown dispatch
-stops the admission batch and returns the next cycle to reconciliation.
+time. When both frontiers are non-empty and the budget exceeds one, at least one
+slot is reserved for terminal observation and all remaining capacity continues
+to favor unknown dispatch. With a one-item budget, unknown dispatch retains
+priority. Each selected row is contacted at most once in the cycle, so neither
+one in-progress turn nor sustained unknown pressure can consume all terminal
+observation capacity. New admission remains ordered by scheduled instant, task
+and occurrence identity. Provider contact is serialized and a fresh clock is
+sampled per admission item. Unknown dispatch stops the admission batch and
+returns the next cycle to reconciliation.
 
 Errors are classified as fence, fail-stop, retry, reconcile or isolate. Temporary
 pre-admission and recovery-transport failure uses independent capped exponential
@@ -123,9 +127,10 @@ selected-host acceptance remain required.
 The module defines a fail-closed manifest but does not claim distributed storage
 or consensus. A source must be draining and handoff-safe, with no leased or
 unknown provider result. The manifest binds checkpoint and external host-fence
-receipts and requires the target to observe schema 19 and exactly the next writer
-epoch. A deserialized manifest also revalidates the canonical owner Agent ID; a
-recomputed manifest digest cannot legitimize a malformed owner identity.
+receipts and requires the target to observe schema 19, exactly the next writer
+epoch and the same owner Agent read from the copied store. A deserialized
+manifest also revalidates the canonical owner Agent ID; a recomputed manifest
+digest cannot legitimize a malformed or different owner identity.
 
 ## 9. Verification commands
 
