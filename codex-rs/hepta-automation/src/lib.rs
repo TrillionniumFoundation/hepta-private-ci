@@ -24,6 +24,7 @@ mod durable_neural_circuit;
 mod durable_neural_circuit_recovery;
 mod effect_dispatch_ledger;
 mod external_host_fence;
+#[path = "lifecycle_bounded.rs"]
 mod lifecycle;
 mod model;
 mod neural_circuit;
