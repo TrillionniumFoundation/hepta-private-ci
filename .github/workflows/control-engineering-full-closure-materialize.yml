@@ -1,0 +1,113 @@
+name: control.engineering metadata materialization
+
+on:
+  push:
+    branches:
+      - codex/control-engineering-full-closure-20260927
+    paths:
+      - scripts/control_engineering_metadata.py
+      - tools/hepta-engineering-control/**
+      - docs/modules/control.engineering/**
+      - .github/workflows/control-engineering-full-closure-materialize.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: control-engineering-full-closure-materialize
+  cancel-in-progress: false
+
+env:
+  TARGET_BRANCH: codex/control-engineering-full-closure-20260927
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact branch head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git branch --show-current)" = "$TARGET_BRANCH"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Configure materializer identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Control Engineering CI"
+          git config user.email "hepta-control-engineering-ci@users.noreply.github.com"
+
+      - name: Materialize structural metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/control_engineering_metadata.py
+          python3 scripts/control_engineering_metadata.py sync-structure
+          if ! git diff --quiet; then
+            git add \
+              docs/modules/control.engineering/IMPLEMENTATION_MAP.json \
+              docs/modules/control.engineering/COMPONENTS.json \
+              docs/modules/control.engineering/TRACEABILITY.json
+            git commit -m "docs(control.engineering): register production-state boundaries"
+          fi
+
+      - name: Rebind exact source blobs and generate current status
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module control.engineering
+          python3 scripts/control_engineering_metadata.py sync-status
+          if ! git diff --quiet; then
+            git add \
+              docs/modules/control.engineering/IMPLEMENTATION_MAP.json \
+              docs/modules/control.engineering/STATUS.json
+            git commit -m "docs(control.engineering): bind exact source map and status"
+          fi
+
+      - name: Verify generated metadata and exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/control_engineering_metadata.py check
+          python3 scripts/hepta-implementation-maps.py verify \
+            --module control.engineering \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-gap-closure.py verify
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Compile and run complete owner suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q \
+            scripts/control_engineering_metadata.py \
+            tools/hepta-engineering-control/control_engineering_v2 \
+            tools/hepta-engineering-control/test_*.py
+          python3 -B -m unittest discover -v \
+            -s tools/hepta-engineering-control -p 'test_*.py'
+
+      - name: Push verified metadata commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "$TARGET_BRANCH"
+          test "$(git rev-parse origin/$TARGET_BRANCH)" = "$GITHUB_SHA"
+          if test "$(git rev-parse HEAD)" != "$GITHUB_SHA"; then
+            git push origin "HEAD:$TARGET_BRANCH"
+          fi
