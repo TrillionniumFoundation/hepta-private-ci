@@ -1,0 +1,54 @@
+name: Inference remediation preparation (no ref writes)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hepta-inference-prepare.yml'
+      - 'scripts/hepta_inference_prepare.py'
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    if: >-
+      github.event.pull_request.number == 1065 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'codex/inference-worker-hardening-20260927'
+    runs-on: macos-15
+    timeout-minutes: 20
+    # This one-shot editing helper may publish immutable Git blobs ONLY.
+    # It never creates commits, moves refs, approves, merges or qualifies source.
+    # Remove this helper from the reviewed candidate before merge.
+    permissions:
+      contents: write
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare bounded repairs in an isolated worktree
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          python3 scripts/hepta_inference_prepare.py --output "$RUNNER_TEMP/inference-prepared" --publish-blobs
+      - name: Retain proposed diff, exact source and blob identities for review
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-prepared-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/inference-prepared/
+          if-no-files-found: error
+          retention-days: 1
+      - name: Require original tracked candidate unchanged
+        if: ${{ always() }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
