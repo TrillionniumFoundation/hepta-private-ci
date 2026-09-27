@@ -9,10 +9,12 @@ use codex_hepta_cognitive_types::CognitiveSnapshot;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
+use codex_hepta_memory_retrieval::ContradictionEvidenceV2;
 use codex_hepta_memory_retrieval::EngramDynamicsPolicyV1;
 use codex_hepta_memory_retrieval::EngramSnapshotV1;
 use codex_hepta_memory_retrieval::GeneratedCandidateInputV1;
 use codex_hepta_memory_retrieval::GeneratedRecallV1;
+use codex_hepta_memory_retrieval::PropositionPolarityV2;
 use codex_hepta_memory_retrieval::RetrievalAssignmentObservationV1;
 use codex_hepta_memory_retrieval::RetrievalChannelCandidateV1;
 use codex_hepta_memory_retrieval::RetrievalChannelV1;
@@ -42,8 +44,7 @@ use crate::RetrievalObservation;
 
 const OWNER_GENERATION_DOMAIN: &[u8] = b"hepta.sqlite.retrieval-owner-generation.v1";
 const OWNER_SUPPORT_DOMAIN: &[u8] = b"hepta.sqlite.retrieval-support.v1";
-const OWNER_POLICY_ID: &str = "policy:sqlite-owner-retrieval-v2";
-const OWNER_CONTRADICTION_DOMAIN: &[u8] = b"hepta.sqlite.retrieval-contradiction-group.v1";
+const OWNER_POLICY_ID: &str = "policy:sqlite-owner-retrieval-v3";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RetrievalExecutionContextV1 {
@@ -211,9 +212,24 @@ pub(crate) fn generated_input_from_owner_observation(
                     &record,
                     *channel_rank,
                 ),
-                contradiction_group_digest: (semantic_channel
-                    == RetrievalChannelV1::ContradictionSupport)
-                    .then(|| owner_contradiction_group_digest(owner_observation_digest)),
+                // This owner observes that a record reports a Contradicts
+                // relation. It does not yet expose normalized proposition
+                // endpoints or assertion polarity. Do not invent either side
+                // and do not group unrelated records by the whole observation.
+                contradiction_group_digest: if semantic_channel
+                    == RetrievalChannelV1::ContradictionSupport
+                {
+                    Some(
+                        ContradictionEvidenceV2::new(
+                            record.content_digest,
+                            snapshot_key.vector_digest,
+                            PropositionPolarityV2::ConflictReported,
+                        )
+                        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?,
+                    )
+                } else {
+                    None
+                },
                 generation_vector_digest: snapshot_key.vector_digest,
             });
         }
@@ -252,6 +268,8 @@ pub(crate) fn generated_input_from_owner_observation(
 /// explicit; typed KG semantics are separated from generic graph evidence.
 /// One-eighth weights keep the maximum seven-channel sum below Q32 saturation.
 /// Learned policy reranking remains a downstream optional ordering stage.
+/// OOD remains uncalibrated in this compatibility profile; zero is not a claim
+/// of measured in-distribution probability.
 pub fn sqlite_owner_retrieval_policy_v1() -> Result<RetrievalPolicyV1, CognitiveStoreError> {
     let eighth = FixedQ32::from_raw(1_i64 << 29);
     let channel_limit = u32::try_from(MAX_RETRIEVAL_CHANNEL_CANDIDATES).map_err(|_| {
@@ -419,13 +437,6 @@ const fn owner_channel_code(channel: RetrievalChannel) -> u8 {
         RetrievalChannel::Procedural => 5,
         RetrievalChannel::ContradictionSupport => 6,
     }
-}
-
-fn owner_contradiction_group_digest(observation_digest: Digest32) -> Digest32 {
-    let mut bytes = Vec::new();
-    bytes.extend_from_slice(OWNER_CONTRADICTION_DOMAIN);
-    bytes.extend_from_slice(observation_digest.as_array());
-    Digest32::of_bytes(&bytes)
 }
 
 #[cfg(test)]

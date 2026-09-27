@@ -19,6 +19,7 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
 use crate::CandidateUnionV1;
+use crate::ContradictionEvidenceV2;
 use crate::EngramDynamicsPolicyV1;
 use crate::EngramSnapshotV1;
 use crate::MAX_GENERATION_BOUND_CANDIDATES;
@@ -203,8 +204,10 @@ impl RetrievalGeneratorBatchV1 {
                 return Err(GeneratorErrorV1::ScoreOutOfRange);
             }
             ensure_digest("generator_candidate_support", candidate.support_digest)?;
-            if let Some(group) = candidate.contradiction_group_digest {
-                ensure_digest("generator_contradiction_group", group)?;
+            if let Some(claim) = candidate.contradiction_group_digest {
+                claim
+                    .validate(self.receipt.generation_vector_digest)
+                    .map_err(GeneratorErrorV1::Recall)?;
             }
             let identity = (
                 candidate.record.record_id.clone(),
@@ -628,7 +631,7 @@ struct MergedCandidate {
     ood: ProbabilityQ32,
     support_digests: BTreeSet<Digest32>,
     receipt_digests: BTreeSet<Digest32>,
-    contradiction_group_digest: Option<Digest32>,
+    contradiction_group_digest: Option<ContradictionEvidenceV2>,
     generation_vector_digest: Digest32,
 }
 

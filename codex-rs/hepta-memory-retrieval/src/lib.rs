@@ -6,6 +6,7 @@ mod decision;
 mod engram;
 mod generation_bound;
 mod generator;
+mod semantics;
 mod v2;
 
 use std::collections::BTreeSet;
@@ -78,6 +79,8 @@ pub use generator::build_candidate_union_from_generated;
 pub use generator::compile_cue;
 pub use generator::recall_generated;
 pub use generator::recall_generated_with_engram;
+pub use semantics::ContradictionEvidenceV2;
+pub use semantics::PropositionPolarityV2;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
 
@@ -242,3 +245,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "semantics_tests.rs"]
+mod semantics_tests;

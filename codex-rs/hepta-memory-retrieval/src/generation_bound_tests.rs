@@ -159,9 +159,23 @@ fn high_risk_contradiction_forces_abstention() {
     let policy = policy();
     let group = digest("contradiction-group");
     let mut first = candidate(record(1), RetrievalChannelV1::Lexical, 1);
-    first.contradiction_group_digest = Some(group);
+    first.contradiction_group_digest = Some(
+        crate::ContradictionEvidenceV2::new(
+            group,
+            cue.snapshot_key.vector_digest,
+            crate::PropositionPolarityV2::Affirmed,
+        )
+        .expect("affirmed proposition"),
+    );
     let mut second = candidate(record(2), RetrievalChannelV1::Entity, 1);
-    second.contradiction_group_digest = Some(group);
+    second.contradiction_group_digest = Some(
+        crate::ContradictionEvidenceV2::new(
+            group,
+            cue.snapshot_key.vector_digest,
+            crate::PropositionPolarityV2::Denied,
+        )
+        .expect("denied proposition"),
+    );
     let packet = recall(&cue, &policy, vec![first, second])
         .unwrap_or_else(|error| panic!("valid abstention: {error}"));
     assert_eq!(
