@@ -1,0 +1,48 @@
+name: Apply learning.artifacts remediation patch
+
+on:
+  push:
+    branches:
+      - codex/learning-artifacts-hardening-20260927
+    paths:
+      - remediation/learning-artifacts/closure.patch
+
+permissions:
+  contents: write
+
+concurrency:
+  group: learning-artifacts-remediation-applicator
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: codex/learning-artifacts-hardening-20260927
+
+      - name: Apply exact-base remediation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git apply --check remediation/learning-artifacts/closure.patch
+          git apply remediation/learning-artifacts/closure.patch
+          rm remediation/learning-artifacts/closure.patch
+          rm .github/workflows/learning-artifacts-apply-remediation.yml
+          rmdir remediation/learning-artifacts 2>/dev/null || true
+          rmdir remediation 2>/dev/null || true
+          git diff --check
+
+      - name: Commit exact patch result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git commit -m "learning.artifacts: close Lane E verifier drift"
+          git push origin HEAD:codex/learning-artifacts-hardening-20260927
