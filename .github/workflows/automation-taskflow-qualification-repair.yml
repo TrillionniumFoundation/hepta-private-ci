@@ -1,6 +1,7 @@
 name: Automation TaskFlow qualification repair
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - work/automation-taskflow-full-closure-2026-09-27
@@ -16,8 +17,8 @@ concurrency:
 
 jobs:
   repair:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
     steps:
       - name: Check out exact work branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -104,7 +105,7 @@ jobs:
             scripts/automation_taskflow_fact_sync.py
           git diff --check
           git add -A
-          git commit -m "docs(automation): rebind repaired schema-v19 truth"
+          git commit -m "docs(automation): rebind repaired schema truth"
           python3 scripts/hepta-implementation-maps.py verify \
             --expected-sha "$SOURCE_SHA" \
             --expected-tree "$SOURCE_TREE"
