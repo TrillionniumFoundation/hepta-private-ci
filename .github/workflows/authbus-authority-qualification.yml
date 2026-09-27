@@ -42,7 +42,7 @@ jobs:
   source-head:
     name: AuthBus exact source head
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
         with:
@@ -74,6 +74,12 @@ jobs:
           cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test kernel_evidence_product 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/agentd.log"
           cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-bao-adapter --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/bao.log"
 
+      - name: Exact-head workspace regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --workspace --all-targets --no-fail-fast 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/workspace.log"
+
       - name: Strict lint
         shell: bash
         run: |
@@ -95,6 +101,7 @@ jobs:
             --test-log "$RUNNER_TEMP/authbus-evidence/evidence.log" \
             --test-log "$RUNNER_TEMP/authbus-evidence/agentd.log" \
             --test-log "$RUNNER_TEMP/authbus-evidence/bao.log" \
+            --test-log "$RUNNER_TEMP/authbus-evidence/workspace.log" \
             --test-log "$RUNNER_TEMP/authbus-evidence/clippy.log"
 
       - name: Clean tracked tree
@@ -111,7 +118,7 @@ jobs:
     if: github.event_name == 'pull_request'
     name: AuthBus synthetic merge
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
         with:
@@ -129,7 +136,7 @@ jobs:
       - name: Closed-world API inventory
         run: python3 scripts/check-authbus-closed-world.py --check
 
-      - name: Merge-candidate execution
+      - name: Merge-candidate focused execution
         shell: bash
         run: |
           set -euo pipefail
@@ -137,7 +144,26 @@ jobs:
           cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/authbus.log"
           cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus-p1-3-qualification --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/qualification.log"
           cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/evidence.log"
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test kernel_evidence_product 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/agentd.log"
           cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-bao-adapter --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/bao.log"
+
+      - name: Merge-candidate workspace regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --workspace --all-targets --no-fail-fast 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/workspace.log"
+
+      - name: Merge-candidate strict lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-authbus \
+            -p codex-hepta-authbus-p1-3-qualification \
+            -p codex-hepta-evidence \
+            -p codex-hepta-agentd \
+            -p codex-hepta-bao-adapter \
+            --all-targets --all-features -- -D warnings 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/clippy.log"
 
       - name: Merge-candidate evidence receipt
         run: |
@@ -146,7 +172,10 @@ jobs:
             --test-log "$RUNNER_TEMP/authbus-evidence/authbus.log" \
             --test-log "$RUNNER_TEMP/authbus-evidence/qualification.log" \
             --test-log "$RUNNER_TEMP/authbus-evidence/evidence.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/bao.log"
+            --test-log "$RUNNER_TEMP/authbus-evidence/agentd.log" \
+            --test-log "$RUNNER_TEMP/authbus-evidence/bao.log" \
+            --test-log "$RUNNER_TEMP/authbus-evidence/workspace.log" \
+            --test-log "$RUNNER_TEMP/authbus-evidence/clippy.log"
 
       - name: Clean tracked tree
         run: git diff --exit-code && git diff --cached --exit-code
