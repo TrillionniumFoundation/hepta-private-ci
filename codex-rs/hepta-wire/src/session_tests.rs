@@ -109,7 +109,10 @@ fn negotiated_session_preserves_valid_prefix_before_version_mismatch() -> Result
 
 #[test]
 fn v1_session_does_not_report_v2_metadata_binding_as_effective() -> Result<(), Box<dyn Error>> {
-    let v1_only = NegotiationOffer::new(vec![1], WireCapabilities::CURRENT)?;
+    let v1_only = NegotiationOffer::new(
+        vec![1],
+        WireCapabilities::SCHEMA_ADMISSION.union(WireCapabilities::STREAM_DECODING),
+    )?;
     let negotiated = negotiate(
         &v1_only,
         &NegotiationOffer::current(),
@@ -117,7 +120,7 @@ fn v1_session_does_not_report_v2_metadata_binding_as_effective() -> Result<(), B
     )?;
     assert_eq!(negotiated.version(), WireVersion::V1);
     assert!(
-        negotiated
+        !negotiated
             .common_advertised_capabilities()
             .contains(WireCapabilities::METADATA_BOUND_DIGEST)
     );
