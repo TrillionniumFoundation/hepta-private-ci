@@ -1,4 +1,4 @@
-name: Apply knowledge.graph convergence on managed self-hosted runner
+name: Publish knowledge.graph convergence from single hosted lane
 
 on:
   pull_request:
@@ -24,7 +24,7 @@ jobs:
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.actor != 'github-actions[bot]'
-    runs-on: [self-hosted]
+    runs-on: macos-15
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -33,13 +33,14 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Bind exact source and managed runner identity
+      - name: Bind exact source and publisher identity
         shell: bash
         run: |
           set -euo pipefail
-          case "$RUNNER_NAME" in
-            rog|pocket4|macbook-pro) ;;
-            *) printf 'unexpected managed runner: %s\n' "$RUNNER_NAME" >&2; exit 1 ;;
+          test "$RUNNER_OS" = macOS
+          case "$RUNNER_ARCH" in
+            X64|ARM64) ;;
+            *) printf 'unexpected publisher architecture: %s\n' "$RUNNER_ARCH" >&2; exit 1 ;;
           esac
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain)"
@@ -177,7 +178,7 @@ jobs:
           receipt['runnerName'] = os.environ['RUNNER_NAME']
           receipt['runnerOs'] = os.environ['RUNNER_OS']
           receipt['runnerArch'] = os.environ['RUNNER_ARCH']
-          receipt['hostClass'] = 'managed-self-hosted-pre-main-assembly-nonqualifying'
+          receipt['hostClass'] = 'github-hosted-pre-main-assembly-nonqualifying'
           (directory / 'kernel-benchmark.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
           PY
 
@@ -185,7 +186,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: knowledge-graph-managed-assembly-${{ github.run_id }}-${{ github.run_attempt }}
+          name: knowledge-graph-publisher-assembly-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/kg-convergence-managed
           if-no-files-found: error
           retention-days: 90
