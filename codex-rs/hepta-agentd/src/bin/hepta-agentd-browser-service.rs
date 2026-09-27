@@ -168,10 +168,7 @@ fn execute_call_result(
                 "Browser caller must not supply reserved replayOnly".into(),
             ));
         }
-        let probe = BrowserServoCall::read(
-            BrowserServoMethod::ReconcileOperation,
-            replay_input,
-        )?;
+        let probe = BrowserServoCall::read(BrowserServoMethod::ReconcileOperation, replay_input)?;
         if let Some(receipt) = classify_replay_probe(owner.call(probe))? {
             return Ok(receipt);
         }
@@ -360,10 +357,7 @@ fn require_object<'a>(
         .ok_or_else(|| format!("{name} must be an object").into())
 }
 
-fn positive_u64(
-    value: Option<&Value>,
-    name: &str,
-) -> Result<u64, Box<dyn std::error::Error>> {
+fn positive_u64(value: Option<&Value>, name: &str) -> Result<u64, Box<dyn std::error::Error>> {
     value
         .and_then(Value::as_u64)
         .filter(|value| *value > 0 && *value <= JS_SAFE_INTEGER)
@@ -377,7 +371,9 @@ fn validate_safe_json(value: &Value, depth: usize) -> Result<(), Box<dyn std::er
     match value {
         Value::Null | Value::Bool(_) | Value::String(_) => Ok(()),
         Value::Number(number) => {
-            let safe = number.as_u64().is_some_and(|value| value <= JS_SAFE_INTEGER)
+            let safe = number
+                .as_u64()
+                .is_some_and(|value| value <= JS_SAFE_INTEGER)
                 || number
                     .as_i64()
                     .is_some_and(|value| value.unsigned_abs() <= JS_SAFE_INTEGER);
@@ -418,7 +414,9 @@ fn write_canonical(
         Value::Bool(value) => output.push_str(if *value { "true" } else { "false" }),
         Value::String(value) => output.push_str(&serde_json::to_string(value)?),
         Value::Number(number) => {
-            let safe = number.as_u64().is_some_and(|value| value <= JS_SAFE_INTEGER)
+            let safe = number
+                .as_u64()
+                .is_some_and(|value| value <= JS_SAFE_INTEGER)
                 || number
                     .as_i64()
                     .is_some_and(|value| value.unsigned_abs() <= JS_SAFE_INTEGER);
