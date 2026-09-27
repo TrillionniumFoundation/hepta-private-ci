@@ -70,10 +70,12 @@ enum Authorization {
 impl Authorization {
     fn revalidate(&self, snapshot: &RankerAdmissionSnapshotV2) -> Result<(), String> {
         match self {
-            Self::Selection(selection) => selection
-                .revalidate(&snapshot.learning_verifier, snapshot.now_unix_micros),
-            Self::Rollback(rollback) => rollback
-                .revalidate(&snapshot.learning_verifier, snapshot.now_unix_micros),
+            Self::Selection(selection) => {
+                selection.revalidate(&snapshot.learning_verifier, snapshot.now_unix_micros)
+            }
+            Self::Rollback(rollback) => {
+                rollback.revalidate(&snapshot.learning_verifier, snapshot.now_unix_micros)
+            }
         }
         .map_err(|error| error.to_string())
     }
@@ -102,7 +104,8 @@ impl EvaluatedUse {
             return Err("ranker trust/runtime/clock changed; explicit reload required".to_string());
         }
         self.authorization.revalidate(&snapshot)?;
-        self.last_use.fetch_max(snapshot.now_unix_micros, Ordering::AcqRel);
+        self.last_use
+            .fetch_max(snapshot.now_unix_micros, Ordering::AcqRel);
         Ok(())
     }
 }
@@ -133,10 +136,21 @@ impl PinnedCognitiveRanker {
             || model_pin.trust_digest != receipt.evaluation_trust_digest
             || model_pin.authority_epoch != selection.authority_epoch()
         {
-            return Err("selected ranker does not match independently admitted candidate".to_string());
+            return Err(
+                "selected ranker does not match independently admitted candidate".to_string(),
+            );
         }
-        Self::load_authorized(owner, body_generation, snapshot, payload, selected,
-            model_pin, current, admission, Authorization::Selection(selection.clone()))
+        Self::load_authorized(
+            owner,
+            body_generation,
+            snapshot,
+            payload,
+            selected,
+            model_pin,
+            current,
+            admission,
+            Authorization::Selection(selection.clone()),
+        )
     }
 
     /// Rollback restores immutable predecessor bytes, with a fresh runtime
@@ -162,10 +176,21 @@ impl PinnedCognitiveRanker {
             || model_pin.trust_digest != receipt.evaluation_trust_digest
             || model_pin.authority_epoch != rollback.selection().authority_epoch()
         {
-            return Err("rollback ranker does not match independently admitted predecessor".to_string());
+            return Err(
+                "rollback ranker does not match independently admitted predecessor".to_string(),
+            );
         }
-        Self::load_authorized(owner, body_generation, snapshot, payload, selected,
-            model_pin, current, admission, Authorization::Rollback(rollback.clone()))
+        Self::load_authorized(
+            owner,
+            body_generation,
+            snapshot,
+            payload,
+            selected,
+            model_pin,
+            current,
+            admission,
+            Authorization::Rollback(rollback.clone()),
+        )
     }
 
     #[allow(clippy::too_many_arguments)]

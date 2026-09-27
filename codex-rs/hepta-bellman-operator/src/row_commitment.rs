@@ -2,17 +2,17 @@
 //! preimage avoids the evidence verifier's 1 MiB transport limit without
 //! silently truncating rows. The materialization bound is checked first.
 
-use std::collections::BTreeSet;
-use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
-use codex_hepta_learning_ledger::LedgerWriter;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::StableId;
-use crate::TabularOperatorPlanV1;
-use crate::WorldModelSampleV1;
 use super::MAX_SIGNED_OPERATOR_ROWS;
 use super::OperatorDatasetBindingError;
 use super::verify_evidence_membership;
 use super::verify_tabular_plan_binding;
+use crate::TabularOperatorPlanV1;
+use crate::WorldModelSampleV1;
+use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_learning_ledger::LedgerWriter;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
+use std::collections::BTreeSet;
 
 type BindingError = OperatorDatasetBindingError;
 
@@ -31,9 +31,14 @@ pub fn tabular_training_signing_payload_v2(
     let mut bytes = canonical_tabular_row_semantics_v1(plan, receipt)?;
     if plan.minimum_samples_per_cell == 0
         || plan.minimum_samples_per_cell > MAX_SIGNED_OPERATOR_ROWS
-        || plan.sensor_ids.is_empty() || plan.sensor_ids.len() > 4096
-        || plan.action_ids.is_empty() || plan.action_ids.len() > 128
-        || plan.sensor_ids.len().checked_mul(plan.action_ids.len())
+        || plan.sensor_ids.is_empty()
+        || plan.sensor_ids.len() > 4096
+        || plan.action_ids.is_empty()
+        || plan.action_ids.len() > 128
+        || plan
+            .sensor_ids
+            .len()
+            .checked_mul(plan.action_ids.len())
             .is_none_or(|cells| cells > MAX_SIGNED_OPERATOR_ROWS)
     {
         return Err(BindingError::Bounds);
@@ -41,12 +46,19 @@ pub fn tabular_training_signing_payload_v2(
     bytes.extend_from_slice(&(plan.minimum_samples_per_cell as u64).to_be_bytes());
     let sensors = canonical_ids(&plan.sensor_ids, &mut bytes)?;
     let actions = canonical_ids(&plan.action_ids, &mut bytes)?;
-    if plan.samples.iter().any(|row|
-        !sensors.contains(&row.sensor_id) || !actions.contains(&row.action_id))
+    if plan
+        .samples
+        .iter()
+        .any(|row| !sensors.contains(&row.sensor_id) || !actions.contains(&row.action_id))
     {
         return Err(BindingError::EvidenceSetMismatch);
     }
-    owner_commitment(b"hepta.operator.tabular-owner-rows.v2\0", bytes, receipt, owner)
+    owner_commitment(
+        b"hepta.operator.tabular-owner-rows.v2\0",
+        bytes,
+        receipt,
+        owner,
+    )
 }
 
 pub fn world_model_training_signing_payload_v2(
@@ -58,10 +70,17 @@ pub fn world_model_training_signing_payload_v2(
     if rows.is_empty() || rows.len() > MAX_SIGNED_OPERATOR_ROWS {
         return Err(BindingError::Bounds);
     }
-    verify_evidence_membership(&receipt.snapshot.source_record_digests,
-        rows.iter().map(|row| row.evidence_digest))?;
+    verify_evidence_membership(
+        &receipt.snapshot.source_record_digests,
+        rows.iter().map(|row| row.evidence_digest),
+    )?;
     let bytes = canonical_world_model_row_semantics_v1(model_id, rows, receipt)?;
-    owner_commitment(b"hepta.operator.world-owner-rows.v2\0", bytes, receipt, owner)
+    owner_commitment(
+        b"hepta.operator.world-owner-rows.v2\0",
+        bytes,
+        receipt,
+        owner,
+    )
 }
 
 fn owner_commitment(
@@ -78,11 +97,15 @@ fn owner_commitment(
         return Err(BindingError::TrustContextMismatch);
     }
     let mut payload = domain.to_vec();
-    for digest in [Digest32::of_bytes(&rows), receipt.snapshot.dataset_digest,
-        receipt.snapshot.ledger_head_digest, verifier.trust_digest(),
-        owner.trust_distribution_digest(), verifier.scope_digest(),
-        verifier.objective_digest()]
-    {
+    for digest in [
+        Digest32::of_bytes(&rows),
+        receipt.snapshot.dataset_digest,
+        receipt.snapshot.ledger_head_digest,
+        verifier.trust_digest(),
+        owner.trust_distribution_digest(),
+        verifier.scope_digest(),
+        verifier.objective_digest(),
+    ] {
         payload.extend_from_slice(digest.as_array());
     }
     payload.extend_from_slice(&owner.trust_generation().to_be_bytes());
@@ -91,37 +114,49 @@ fn owner_commitment(
 }
 
 fn canonical_ids<'a>(
-    values: &'a [StableId], bytes: &mut Vec<u8>,
+    values: &'a [StableId],
+    bytes: &mut Vec<u8>,
 ) -> Result<BTreeSet<&'a StableId>, BindingError> {
     let ids = values.iter().collect::<BTreeSet<_>>();
     if ids.len() != values.len() {
         return Err(BindingError::DuplicateIdentity);
     }
     bytes.extend_from_slice(&(ids.len() as u64).to_be_bytes());
-    for id in &ids { push_id(bytes, id); }
+    for id in &ids {
+        push_id(bytes, id);
+    }
     Ok(ids)
 }
 
 pub(super) fn canonical_tabular_row_semantics_v1(
-    plan: &TabularOperatorPlanV1, receipt: &DatasetSnapshotReceiptV3,
+    plan: &TabularOperatorPlanV1,
+    receipt: &DatasetSnapshotReceiptV3,
 ) -> Result<Vec<u8>, BindingError> {
     if plan.samples.is_empty() || plan.samples.len() > MAX_SIGNED_OPERATOR_ROWS {
         return Err(BindingError::Bounds);
     }
     let mut rows = plan.samples.iter().collect::<Vec<_>>();
     rows.sort_by(|a, b| a.sample_id.cmp(&b.sample_id));
-    if rows.windows(2).any(|pair| pair[0].sample_id == pair[1].sample_id) {
+    if rows
+        .windows(2)
+        .any(|pair| pair[0].sample_id == pair[1].sample_id)
+    {
         return Err(BindingError::DuplicateIdentity);
     }
     let mut bytes = b"hepta.bellman-operator.verified-tabular-rows.v1".to_vec();
     push_id(&mut bytes, &plan.artifact_id);
     push_id(&mut bytes, &plan.producer_id);
     bytes.extend_from_slice(&plan.generation.get().to_be_bytes());
-    for digest in [plan.objective_digest, plan.dataset_digest,
-        plan.sensor_core_digest, plan.training_profile_digest,
-        receipt.snapshot.ledger_head_digest, receipt.correction_cut_digest,
-        receipt.revocation_cut_digest, receipt.inclusion_policy_digest]
-    {
+    for digest in [
+        plan.objective_digest,
+        plan.dataset_digest,
+        plan.sensor_core_digest,
+        plan.training_profile_digest,
+        receipt.snapshot.ledger_head_digest,
+        receipt.correction_cut_digest,
+        receipt.revocation_cut_digest,
+        receipt.inclusion_policy_digest,
+    ] {
         bytes.extend_from_slice(digest.as_array());
     }
     bytes.extend_from_slice(&(rows.len() as u64).to_be_bytes());
@@ -136,7 +171,8 @@ pub(super) fn canonical_tabular_row_semantics_v1(
 }
 
 pub(super) fn canonical_world_model_row_semantics_v1(
-    model_id: &StableId, samples: &[WorldModelSampleV1],
+    model_id: &StableId,
+    samples: &[WorldModelSampleV1],
     receipt: &DatasetSnapshotReceiptV3,
 ) -> Result<Vec<u8>, BindingError> {
     if samples.is_empty() || samples.len() > MAX_SIGNED_OPERATOR_ROWS {
@@ -144,15 +180,22 @@ pub(super) fn canonical_world_model_row_semantics_v1(
     }
     let mut rows = samples.iter().collect::<Vec<_>>();
     rows.sort_by(|a, b| a.sample_id.cmp(&b.sample_id));
-    if rows.windows(2).any(|pair| pair[0].sample_id == pair[1].sample_id) {
+    if rows
+        .windows(2)
+        .any(|pair| pair[0].sample_id == pair[1].sample_id)
+    {
         return Err(BindingError::DuplicateIdentity);
     }
     let mut bytes = b"hepta.bellman-operator.verified-world-model-rows.v1".to_vec();
     push_id(&mut bytes, model_id);
-    for digest in [receipt.snapshot.objective_digest, receipt.snapshot.dataset_digest,
-        receipt.snapshot.ledger_head_digest, receipt.correction_cut_digest,
-        receipt.revocation_cut_digest, receipt.inclusion_policy_digest]
-    {
+    for digest in [
+        receipt.snapshot.objective_digest,
+        receipt.snapshot.dataset_digest,
+        receipt.snapshot.ledger_head_digest,
+        receipt.correction_cut_digest,
+        receipt.revocation_cut_digest,
+        receipt.inclusion_policy_digest,
+    ] {
         bytes.extend_from_slice(digest.as_array());
     }
     bytes.extend_from_slice(&(rows.len() as u64).to_be_bytes());

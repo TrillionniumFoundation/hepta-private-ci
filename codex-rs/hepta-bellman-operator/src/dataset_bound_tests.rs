@@ -144,12 +144,18 @@ fn op_07_row_semantics_payload_binds_every_tabular_field() {
 
     plan.samples[0].target = FixedQ32::from_raw(11);
     let changed_target = canonical_tabular_row_semantics_v1(&plan, &receipt).expect("canonical");
-    assert_ne!(Digest32::of_bytes(&baseline), Digest32::of_bytes(&changed_target));
+    assert_ne!(
+        Digest32::of_bytes(&baseline),
+        Digest32::of_bytes(&changed_target)
+    );
 
     plan.samples[0].target = FixedQ32::from_raw(10);
     plan.samples[0].action_id = id("changed-action");
     let changed_action = canonical_tabular_row_semantics_v1(&plan, &receipt).expect("canonical");
-    assert_ne!(Digest32::of_bytes(&baseline), Digest32::of_bytes(&changed_action));
+    assert_ne!(
+        Digest32::of_bytes(&baseline),
+        Digest32::of_bytes(&changed_action)
+    );
 }
 
 #[test]
@@ -164,10 +170,10 @@ fn op_07_world_model_payload_binds_transition_semantics() {
         outcome: FixedQ32::from_raw(10),
         evidence_digest: records[0],
     }];
-    let baseline = canonical_world_model_row_semantics_v1(&id("model"), &rows, &receipt)
-        .expect("canonical");
+    let baseline =
+        canonical_world_model_row_semantics_v1(&id("model"), &rows, &receipt).expect("canonical");
     rows[0].next_state_id = id("changed-next");
-    let changed = canonical_world_model_row_semantics_v1(&id("model"), &rows, &receipt)
-        .expect("canonical");
+    let changed =
+        canonical_world_model_row_semantics_v1(&id("model"), &rows, &receipt).expect("canonical");
     assert_ne!(Digest32::of_bytes(&baseline), Digest32::of_bytes(&changed));
 }

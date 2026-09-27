@@ -35,8 +35,8 @@ use candidate_cache::with_exclusive_candidate;
 #[path = "cognitive_ranker_admission.rs"]
 mod admission;
 pub use admission::CurrentRankerAdmission;
-pub use admission::RankerAdmissionSnapshotV2;
 use admission::EvaluatedUse;
+pub use admission::RankerAdmissionSnapshotV2;
 use admission::RankerModel;
 
 /// The artifact authority, not the model or a caller-supplied receipt,

@@ -87,7 +87,11 @@ mod tests {
         // a regressed implementation cannot strand a blocked test thread.
         let concurrent = result_rx.recv_timeout(Duration::from_secs(2));
         release_tx.send(()).unwrap();
-        assert!(concurrent.expect("contender must fail without waiting").is_err());
+        assert!(
+            concurrent
+                .expect("contender must fail without waiting")
+                .is_err()
+        );
         contender.join().unwrap();
         assert_eq!(worker.join().unwrap(), Ok(()));
         assert_eq!(*cache.lock().unwrap(), Some(8));
@@ -107,9 +111,8 @@ mod tests {
     fn panic_drops_candidate_without_poisoning_mutex_or_resurrection() {
         let cache = Mutex::new(Some(7_u64));
         let panic = catch_unwind(AssertUnwindSafe(|| {
-            let _: Result<(), String> = with_exclusive_candidate(&cache, |_| {
-                panic!("simulated registry-provider panic")
-            });
+            let _: Result<(), String> =
+                with_exclusive_candidate(&cache, |_| panic!("simulated registry-provider panic"));
         }));
         assert!(panic.is_err());
         assert!(!cache.is_poisoned());

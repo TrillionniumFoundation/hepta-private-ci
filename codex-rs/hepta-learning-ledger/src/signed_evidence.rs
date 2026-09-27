@@ -258,7 +258,9 @@ impl LearningEvidenceVerifierV1 {
         {
             return Err(SignedEvidenceError::ContextMismatch);
         }
-        let signer = self.signers.get(&evidence.principal.principal_id)
+        let signer = self
+            .signers
+            .get(&evidence.principal.principal_id)
             .ok_or(SignedEvidenceError::UnknownSigner)?;
         if signer.principal != evidence.principal
             || signer.controller_id != evidence.controller_id

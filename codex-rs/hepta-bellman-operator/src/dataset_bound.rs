@@ -17,8 +17,8 @@ use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::dataset_freeze_signing_payload_v2;
-use codex_hepta_learning_ledger::verify_signed_independent_roles_v1;
 use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_v3;
+use codex_hepta_learning_ledger::verify_signed_independent_roles_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -170,7 +170,9 @@ pub fn fit_tabular_operator_verified_v3(
     now: u64,
 ) -> Result<TabularOperatorArtifactV1, OperatorDatasetBindingError> {
     let payload = tabular_training_signing_payload_v2(
-        &verified.plan, &verified.admission.receipt, verified.admission.owner,
+        &verified.plan,
+        &verified.admission.receipt,
+        verified.admission.owner,
     )?;
     verified.admission.revalidate(&payload, now)?;
     fit_tabular_operator_strict_v2(verified.plan).map_err(OperatorDatasetBindingError::Learned)
@@ -183,10 +185,14 @@ pub fn verify_world_model_dataset_v2(
     now: u64,
 ) -> Result<VerifiedWorldModelDatasetV2, OperatorDatasetBindingError> {
     verify_dataset_snapshot_receipt_v3(receipt, now)?;
-    verify_evidence_membership(&receipt.snapshot.source_record_digests,
-        samples.iter().map(|sample| sample.evidence_digest))?;
+    verify_evidence_membership(
+        &receipt.snapshot.source_record_digests,
+        samples.iter().map(|sample| sample.evidence_digest),
+    )?;
     Ok(VerifiedWorldModelDatasetV2 {
-        model_id, dataset_digest: receipt.snapshot.dataset_digest, samples,
+        model_id,
+        dataset_digest: receipt.snapshot.dataset_digest,
+        samples,
     })
 }
 
@@ -209,7 +215,11 @@ pub fn verify_world_model_dataset_v3<'a>(
         admitted_at: now,
     };
     admission.revalidate(&payload, now)?;
-    Ok(VerifiedWorldModelDatasetV3 { model_id, samples, admission })
+    Ok(VerifiedWorldModelDatasetV3 {
+        model_id,
+        samples,
+        admission,
+    })
 }
 
 pub fn fit_transition_model_verified_v2(
@@ -224,13 +234,18 @@ pub fn fit_transition_model_verified_v3(
     now: u64,
 ) -> Result<TabularWorldModelV1, OperatorDatasetBindingError> {
     let payload = world_model_training_signing_payload_v2(
-        &verified.model_id, &verified.samples, &verified.admission.receipt,
+        &verified.model_id,
+        &verified.samples,
+        &verified.admission.receipt,
         verified.admission.owner,
     )?;
     verified.admission.revalidate(&payload, now)?;
-    fit_transition_model(verified.model_id,
-        verified.admission.receipt.snapshot.dataset_digest, verified.samples)
-        .map_err(OperatorDatasetBindingError::WorldModel)
+    fit_transition_model(
+        verified.model_id,
+        verified.admission.receipt.snapshot.dataset_digest,
+        verified.samples,
+    )
+    .map_err(OperatorDatasetBindingError::WorldModel)
 }
 
 impl OwnerAdmission<'_> {
@@ -245,22 +260,35 @@ impl OwnerAdmission<'_> {
         };
         // Re-derive every field (including cuts/frontiers/producer) from the
         // current durable owner, rather than accepting a rehashed public struct.
-        let expected = self.owner.freeze_dataset(plan.clone(), &self.freeze_evidence, now)
+        let expected = self
+            .owner
+            .freeze_dataset(plan.clone(), &self.freeze_evidence, now)
             .map_err(|error| OperatorDatasetBindingError::Owner(error.to_string()))?;
         if expected != self.receipt {
             return Err(OperatorDatasetBindingError::TrustContextMismatch);
         }
-        self.owner.read_dataset_records(&self.receipt, now)
+        self.owner
+            .read_dataset_records(&self.receipt, now)
             .map_err(|error| OperatorDatasetBindingError::Owner(error.to_string()))?;
-        let snapshot = self.owner.snapshot()
+        let snapshot = self
+            .owner
+            .snapshot()
             .map_err(|error| OperatorDatasetBindingError::Owner(error.to_string()))?;
         let freeze_payload = dataset_freeze_signing_payload_v2(&snapshot, &plan)
             .map_err(|error| OperatorDatasetBindingError::Owner(error.to_string()))?;
         let verifier = self.owner.verifier();
-        let evaluator = verifier.verify(LearningEvidenceRoleV1::Evaluator,
-            &self.freeze_evidence, &freeze_payload, now)?;
-        let observer = verifier.verify(LearningEvidenceRoleV1::Observer,
-            &self.row_evidence, payload, now)?;
+        let evaluator = verifier.verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &self.freeze_evidence,
+            &freeze_payload,
+            now,
+        )?;
+        let observer = verifier.verify(
+            LearningEvidenceRoleV1::Observer,
+            &self.row_evidence,
+            payload,
+            now,
+        )?;
         verify_signed_independent_roles_v1(&evaluator, &observer, now)?;
         Ok(())
     }
@@ -276,8 +304,10 @@ fn verify_tabular_plan_binding(
     if plan.objective_digest != receipt.snapshot.objective_digest {
         return Err(OperatorDatasetBindingError::ObjectiveDigestMismatch);
     }
-    verify_evidence_membership(&receipt.snapshot.source_record_digests,
-        plan.samples.iter().map(|sample| sample.evidence_digest))
+    verify_evidence_membership(
+        &receipt.snapshot.source_record_digests,
+        plan.samples.iter().map(|sample| sample.evidence_digest),
+    )
 }
 
 fn verify_evidence_membership(
@@ -302,12 +332,12 @@ fn verify_evidence_membership(
 
 #[path = "row_commitment.rs"]
 mod row_commitment;
-pub use row_commitment::tabular_training_signing_payload_v2;
-pub use row_commitment::world_model_training_signing_payload_v2;
 #[cfg(test)]
 use row_commitment::canonical_tabular_row_semantics_v1;
 #[cfg(test)]
 use row_commitment::canonical_world_model_row_semantics_v1;
+pub use row_commitment::tabular_training_signing_payload_v2;
+pub use row_commitment::world_model_training_signing_payload_v2;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum OperatorDatasetBindingError {
@@ -334,15 +364,19 @@ impl fmt::Display for OperatorDatasetBindingError {
 }
 impl StdError for OperatorDatasetBindingError {}
 impl From<DatasetReceiptError> for OperatorDatasetBindingError {
-    fn from(value: DatasetReceiptError) -> Self { Self::DatasetReceipt(value) }
+    fn from(value: DatasetReceiptError) -> Self {
+        Self::DatasetReceipt(value)
+    }
 }
 impl From<SignedEvidenceError> for OperatorDatasetBindingError {
-    fn from(value: SignedEvidenceError) -> Self { Self::SignedEvidence(value) }
+    fn from(value: SignedEvidenceError) -> Self {
+        Self::SignedEvidence(value)
+    }
 }
 
 #[cfg(test)]
-#[path = "dataset_bound_tests.rs"]
-mod tests;
-#[cfg(test)]
 #[path = "owner_dataset_tests.rs"]
 mod owner_tests;
+#[cfg(test)]
+#[path = "dataset_bound_tests.rs"]
+mod tests;
