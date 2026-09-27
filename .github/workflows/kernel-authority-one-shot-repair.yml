@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   repair:
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
       - name: Checkout repair branch
@@ -31,9 +31,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if ! rustup toolchain list | grep -q '^1.95.0'; then
-            rustup toolchain install 1.95.0 --profile minimal --component rustfmt
-          fi
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
 
       - name: Repair source and closed-world caller inventory
         shell: bash
@@ -46,17 +44,21 @@ jobs:
           text = source.read_text(encoding='utf-8')
           old = r'b"pending\1"'
           new = r'b"pending\x01"'
-          if old not in text:
-              raise SystemExit('expected invalid pending frontier byte literal not found')
-          source.write_text(text.replace(old, new, 1), encoding='utf-8')
+          if old in text:
+              text = text.replace(old, new, 1)
+              source.write_text(text, encoding='utf-8')
+          elif new not in text:
+              raise SystemExit('pending frontier byte marker has an unexpected shape')
 
           callers = Path('CALLERS.toml')
           text = callers.read_text(encoding='utf-8')
           old = 'product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]'
           new = 'product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-contracts/src/authority_trust.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]'
-          if old not in text:
-              raise SystemExit('final_use_open_state caller inventory shape changed')
-          callers.write_text(text.replace(old, new, 1), encoding='utf-8')
+          if old in text:
+              text = text.replace(old, new, 1)
+              callers.write_text(text, encoding='utf-8')
+          elif new not in text:
+              raise SystemExit('final_use_open_state caller inventory has an unexpected shape')
           PY
           (
             cd codex-rs
@@ -64,7 +66,7 @@ jobs:
           )
           git diff --check
 
-      - name: Commit exact source repair
+      - name: Commit and push exact source repair
         id: source
         shell: bash
         run: |
@@ -72,11 +74,10 @@ jobs:
           git config user.name 'kernel-authority-repair[bot]'
           git config user.email 'kernel-authority-repair[bot]@users.noreply.github.com'
           git add CALLERS.toml codex-rs/hepta-contracts/src/final_use.rs codex-rs/hepta-contracts/tests/final_use_pending_recovery.rs
-          if git diff --cached --quiet; then
-            echo 'source repair produced no staged changes' >&2
-            exit 1
+          if ! git diff --cached --quiet; then
+            git commit -m 'fix(kernel-authority): close final-use build and caller proof'
+            git push origin HEAD:work/kernel-authority-convergence-20260925
           fi
-          git commit -m 'fix(kernel-authority): close final-use build and caller proof'
           echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "tree=$(git rev-parse 'HEAD^{tree}')" >> "$GITHUB_OUTPUT"
 
