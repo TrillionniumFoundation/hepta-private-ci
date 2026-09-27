@@ -4,7 +4,6 @@ on:
   pull_request: {}
   push:
     branches: [main]
-  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -24,34 +23,36 @@ jobs:
     name: Memory retrieval exact source
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    outputs:
-      source_sha: ${{ steps.identity.outputs.source_sha }}
-      base_sha: ${{ steps.identity.outputs.base_sha }}
-      main_sha: ${{ steps.identity.outputs.main_sha }}
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Bind candidate and current main base
-        id: identity
+      - name: Bind event candidate and freshly fetched main
         shell: bash
-        env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          REQUESTED_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
           set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          MAIN_SHA="$(git rev-parse --verify refs/remotes/origin/main^{commit})"
+          if test "$MAIN_SHA" = "$SOURCE_SHA"; then
+            BASE_SHA="$(git rev-parse --verify "$SOURCE_SHA^1")"
+          else
+            BASE_SHA="$MAIN_SHA"
+          fi
           mkdir -p "$RUNNER_TEMP/retrieval-source"
-          python3 scripts/hepta_memory_retrieval_candidate.py refs --source "$SOURCE_SHA" \
-            | tee "$RUNNER_TEMP/retrieval-source/refs.env" >> "$GITHUB_OUTPUT"
-          BASE_SHA="$(sed -n 's/^base_sha=//p' "$RUNNER_TEMP/retrieval-source/refs.env")"
-          MAIN_SHA="$(sed -n 's/^main_sha=//p' "$RUNNER_TEMP/retrieval-source/refs.env")"
+          printf 'source_sha=%s\nbase_sha=%s\nmain_sha=%s\n' \
+            "$SOURCE_SHA" "$BASE_SHA" "$MAIN_SHA" \
+            | tee "$RUNNER_TEMP/retrieval-source/refs.env"
           git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/retrieval-source/identity.txt"
           printf '%s\n' "$BASE_SHA" > "$RUNNER_TEMP/retrieval-source/base.txt"
           printf '%s\n' "$MAIN_SHA" > "$RUNNER_TEMP/retrieval-source/current-main.txt"
-          printf '%s\n' "$REQUESTED_BASE" > "$RUNNER_TEMP/retrieval-source/event-base-provenance.txt"
-          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/retrieval-source/source.tar.gz"
+          git archive --format=tar.gz "$SOURCE_SHA" > "$RUNNER_TEMP/retrieval-source/source.tar.gz"
           sha256sum "$RUNNER_TEMP/retrieval-source/source.tar.gz" > "$RUNNER_TEMP/retrieval-source/SHA256SUMS"
       - name: Test candidate, verifier, retention and SLO rejection behavior
         run: >-
@@ -62,8 +63,6 @@ jobs:
           scripts.tests.test_hepta_memory_retrieval_archive
           scripts.tests.test_hepta_memory_retrieval_refresh_map
       - name: Require current source-object closure
-        env:
-          SOURCE_SHA: ${{ steps.identity.outputs.source_sha }}
         run: >-
           python3 scripts/hepta_memory_retrieval_qualification.py source
           --head "$SOURCE_SHA"
@@ -71,7 +70,6 @@ jobs:
       - name: Enforce independent review before product claim promotion
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          SOURCE_SHA: ${{ steps.identity.outputs.source_sha }}
         run: >-
           python3 scripts/hepta_memory_retrieval_qualification.py promotion
           --head "$SOURCE_SHA"
@@ -89,33 +87,56 @@ jobs:
     needs: identity
     runs-on: ubuntu-24.04
     timeout-minutes: 90
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
         lane: [source-head, base-merge, current-main]
     env:
-      SOURCE_SHA: ${{ needs.identity.outputs.source_sha }}
-      BASE_SHA: ${{ needs.identity.outputs.base_sha }}
-      MAIN_SHA: ${{ needs.identity.outputs.main_sha }}
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       QUALIFICATION_LANE: ${{ matrix.lane }}
       HEPTA_CI_LANE: ${{ matrix.lane }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_TARGET_DIR: ${{ runner.temp }}/retrieval-cargo-target
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ needs.identity.outputs.source_sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Construct the exact tested object
+      - name: Construct the exact tested object without candidate-selected checkout
         shell: bash
         run: |
           set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          MAIN_SHA="$(git rev-parse --verify refs/remotes/origin/main^{commit})"
+          if test "$MAIN_SHA" = "$SOURCE_SHA"; then
+            BASE_SHA="$(git rev-parse --verify "$SOURCE_SHA^1")"
+          else
+            BASE_SHA="$MAIN_SHA"
+          fi
           mkdir -p "$RUNNER_TEMP/retrieval-$QUALIFICATION_LANE"
           case "$QUALIFICATION_LANE" in
             source-head)
               TESTED_SHA="$SOURCE_SHA"
               ;;
             base-merge)
-              TESTED_SHA="$(python3 scripts/hepta_memory_retrieval_candidate.py merge --base "$BASE_SHA" --source "$SOURCE_SHA")"
+              TREE_SHA="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+              [[ "$TREE_SHA" =~ ^[0-9a-f]{40}$ ]]
+              export GIT_AUTHOR_NAME='Memory retrieval qualification'
+              export GIT_AUTHOR_EMAIL='qualification@users.noreply.github.com'
+              export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+              export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+              export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z'
+              export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+              TESTED_SHA="$(printf '%s\n' 'Deterministic memory retrieval qualification' \
+                | git -c commit.gpgSign=false commit-tree "$TREE_SHA" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+              test "$(git show -s --format=%P "$TESTED_SHA")" = "$BASE_SHA $SOURCE_SHA"
+              test "$(git rev-parse "$TESTED_SHA^{tree}")" = "$TREE_SHA"
               ;;
             current-main)
               TESTED_SHA="$MAIN_SHA"
@@ -124,10 +145,13 @@ jobs:
               ;;
             *) exit 1 ;;
           esac
+          [[ "$TESTED_SHA" =~ ^[0-9a-f]{40}$ ]]
           git checkout --detach "$TESTED_SHA"
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           test -z "$(git status --porcelain --untracked-files=normal)"
-          echo "TESTED_SHA=$TESTED_SHA" >> "$GITHUB_ENV"
+          printf 'source_sha=%s\nbase_sha=%s\nmain_sha=%s\ntested_sha=%s\n' \
+            "$SOURCE_SHA" "$BASE_SHA" "$MAIN_SHA" "$TESTED_SHA" \
+            > "$RUNNER_TEMP/retrieval-$QUALIFICATION_LANE/refs.env"
           git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/retrieval-$QUALIFICATION_LANE/tested-object.txt"
       - name: Prepare native host prerequisites
         run: |
