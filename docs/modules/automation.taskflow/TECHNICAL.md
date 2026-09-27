@@ -131,6 +131,13 @@ inside one DecisionCell activation and is included in the trace digest. A route
 must select an already admitted outgoing edge. Capability widening still
 requires separately governed topology and authority admission.
 
+Before any DecisionCell or organ sees an event, runtime v1 recomputes the
+canonical event-ingress digest from the event ID, payload digest and causal
+parent. Every trace then binds that event digest, the admitted circuit digest and
+a canonical digest of the exact step, depth, feedback and cost profile. Terminal,
+wait and effect-boundary receipts therefore cannot be relabeled as executions
+under different event identity or runtime limits.
+
 An Effect node returns `CircuitEffectBoundaryV1`; it never calls a provider. The
 existing TaskFlow authorized-effect path owns grant verification, provider
 identity, dispatch evidence and reconciliation. A pending Wait node similarly
@@ -140,8 +147,9 @@ returns a boundary for the existing durable run owner to checkpoint.
 
 Each DecisionCell request binds circuit, event, node, activation number, feedback
 round and remaining cost. The receipt binds the selected successor or feedback
-digest and the source decision digest. Route replay uses the recorded choice; it
-does not ask a changed policy to reinterpret historical execution.
+digest and the source decision digest. The enclosing trace also binds the exact
+runtime-profile digest. Route replay uses the recorded choice; it does not ask a
+changed policy to reinterpret historical execution.
 
 ### 4.3 Bounded admission and recovery
 
@@ -151,11 +159,20 @@ Agentd uses separate per-cycle budgets:
 - admission budget: new due occurrences;
 - provider in-flight limit: one, preserving the existing serial provider seam.
 
-The scheduler samples a fresh host clock for every occurrence in a batch. It
-stops immediately on an unknown dispatch so the next cycle reconciles the same
-identity. Age-first SQL ordering (`scheduled_for_ms`, task ID, occurrence) gives
-old work deterministic priority while separate budgets prevent recovery and new
-admission from starving one another.
+Recovery snapshots a bounded set of distinct frontier rows once per cycle.
+Unknown dispatches are selected first by oldest `observed_at_ms`; any remaining
+budget selects admitted/running/indeterminate occurrences by oldest
+`updated_at_ms`. Each selected row is contacted at most once in that cycle, so a
+single in-progress turn cannot consume the full recovery budget. A retryable
+recovery failure consumes an independent backoff budget and blocks new admission
+for that cycle.
+
+New due admission remains ordered by canonical `scheduled_for_ms`, task ID and
+occurrence. The scheduler samples a fresh host clock for every occurrence in a
+batch and stops immediately on an unknown dispatch so the next cycle reconciles
+the same identity. Separate recovery and admission budgets prevent either lane
+from permanently starving the other while retaining old-work priority within
+each lane.
 
 ### 4.4 External-effect product path
 
@@ -220,9 +237,11 @@ Cross-host recovery is now explicitly specified by
 - source and target hosts differ;
 - the target opens schema v19 at exactly source epoch + 1.
 
-The module does not claim to provide storage transport or distributed consensus.
-The deployment controller owns byte transfer and the external host lease. A
-target tuple mismatch returns `TimerFenced`.
+A deserialized manifest re-parses the canonical owner Agent ID and recomputes the
+manifest digest, so a caller cannot legitimize a malformed owner merely by
+recomputing the outer hash. The module does not claim to provide storage
+transport or distributed consensus. The deployment controller owns byte transfer
+and the external host lease. A target tuple mismatch returns `TimerFenced`.
 
 ## 7. Calendar V2 and timezone evidence
 
