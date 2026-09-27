@@ -1,0 +1,184 @@
+name: Hepta retrieval prepared publication closure
+
+on:
+  push:
+    branches: [work/memory-retrieval-phase-a-publication-20260927]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: retrieval-phase-a-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  close:
+    if: contains(github.event.head_commit.message, '[retrieval-phase-a-v1]')
+    runs-on: macos-15
+    timeout-minutes: 180
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Bind exact source and decode reviewed payloads
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+          BRANCH: work/memory-retrieval-phase-a-publication-20260927
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = TrillionniumFoundation/hepta-private-ci
+          test "$GITHUB_REF" = "refs/heads/$BRANCH"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git ls-remote --heads origin "$BRANCH" | cut -f1)" = "$EXPECTED_HEAD"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          mkdir -p "$RUNNER_TEMP/retrieval-phase-a"
+          python3 - <<'PY'
+          import base64, hashlib, pathlib, zlib
+          rows = (
+              ('scripts/patches/memory_retrieval_phase_a_apply.py.zlib.b64', pathlib.Path(__import__('os').environ['RUNNER_TEMP'])/'retrieval-phase-a'/'apply.py', 'b3e7f3e7a2a8b5469ddfc86d1c627f1c24dd4c507f750198b1412ecd159169fb'),
+              ('scripts/patches/retrieval_delivery_v2.rs.zlib.b64', pathlib.Path('scripts/patches/retrieval_delivery_v2.rs'), '8af737465ab5a1cf894977fd85f7a51fc00dfe6404eb6dbb59ed1dc6c9e92798'),
+              ('scripts/patches/retrieval_delivery_tests_v2.rs.zlib.b64', pathlib.Path('scripts/patches/retrieval_delivery_tests_v2.rs'), '5894f3b1f53012414ca4eb889c06a9f6a4b1e76c21379f29415e69d143601a67'),
+          )
+          for source, target, expected in rows:
+              raw = zlib.decompress(base64.b64decode(pathlib.Path(source).read_bytes(), validate=True))
+              if hashlib.sha256(raw).hexdigest() != expected:
+                  raise SystemExit(f'payload identity mismatch: {source}')
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(raw)
+          compile((pathlib.Path(__import__('os').environ['RUNNER_TEMP'])/'retrieval-phase-a'/'apply.py').read_bytes(), 'apply.py', 'exec')
+          PY
+          python3 "$RUNNER_TEMP/retrieval-phase-a/apply.py"
+      - name: Format and commit exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml --all
+          rm -f scripts/patches/retrieval_delivery_v2.rs scripts/patches/retrieval_delivery_tests_v2.rs
+          git add -- \
+            codex-rs/hepta-agent-protocol/src/lib.rs \
+            codex-rs/hepta-agentd/src \
+            codex-rs/hepta-infer-core/src \
+            codex-rs/hepta-infer-worker-host/src \
+            codex-rs/hepta-memory/src
+          test -z "$(git diff --name-only)"
+          git diff --cached --check
+          git diff --cached --binary > "$RUNNER_TEMP/retrieval-phase-a/source.patch"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git commit -m 'fix(memory.retrieval): make native dispatch the durable publication fact'
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/retrieval-phase-a/source-identity.txt"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just,cargo-nextest
+      - name: Resolve repository-pinned V8 inputs
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Native package and crash-boundary tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/retrieval-phase-a/package-tests.json" \
+            --minimum-tests 20 --timeout-seconds 7200 -- \
+            just test --locked \
+              -p codex-hepta-agent-protocol \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-infer-core \
+              -p codex-hepta-agentd \
+              -p codex-hepta-infer-worker-host \
+              -p codex-hepta-memory
+      - name: Strict all-target Clippy
+        if: ${{ !cancelled() }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/retrieval-phase-a/clippy.json" \
+            --timeout-seconds 5400 -- \
+            cargo +1.95.0 clippy --locked \
+              -p codex-hepta-agent-protocol \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-infer-core \
+              -p codex-hepta-agentd \
+              -p codex-hepta-infer-worker-host \
+              -p codex-hepta-memory \
+              --all-targets -- -D warnings
+      - name: Semantic guards and clean source
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd codex-rs && python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/retrieval-phase-a/format.json" -- just fmt-check)
+          ! grep -q 'append_with_delivery_policy(' codex-rs/hepta-agentd/src/cognitive_context.rs
+          grep -q 'RetrievalDeliveryStageV1::Prepared' codex-rs/hepta-agentd/src/retrieval_delivery.rs
+          grep -q 'retrieval_assignment_record_id' codex-rs/hepta-infer-core/src/native_control.rs
+          grep -q 'retrieval_items' codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Remove one-shot transports, refresh map, and publish
+        if: ${{ !cancelled() }}
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+          BRANCH: work/memory-retrieval-phase-a-publication-20260927
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f \
+            .github/workflows/hepta-memory-retrieval-source-export.yml \
+            .github/workflows/hepta-memory-retrieval-assertion-delivery.yml \
+            .github/workflows/hepta-memory-retrieval-phase-a-publication.yml \
+            scripts/patches/memory_retrieval_assertion_delivery_v1.json \
+            scripts/patches/memory_retrieval_phase_a_apply.py.zlib.b64 \
+            scripts/patches/retrieval_delivery_v2.rs.zlib.b64 \
+            scripts/patches/retrieval_delivery_tests_v2.rs.zlib.b64
+          for index in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
+            rm -f "$(printf 'scripts/patches/memory_retrieval_assertion_delivery_v2.part%02d' "$index")"
+          done
+          git add -A -- .github/workflows scripts/patches
+          git commit -m 'chore(memory.retrieval): remove one-shot publication transports'
+          python3 - <<'PY'
+          import importlib.util, json, pathlib, subprocess
+          root = pathlib.Path.cwd()
+          spec = importlib.util.spec_from_file_location('retrieval_refresh', root/'scripts/hepta_memory_retrieval_refresh_map.py')
+          module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+          head = subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip()
+          docs = subprocess.check_output(['git','ls-tree','-r','--name-only',head,'--','docs/modules/memory.retrieval'], text=True).splitlines()
+          module.INPUTS = tuple(module.INPUTS) + tuple(path for path in docs if path != module.MAP)
+          before = json.loads((root/module.MAP).read_text())
+          mapping = module.refresh(root, head)
+          if mapping['sourceBase'] != before['sourceBase']:
+              raise SystemExit('sourceBase changed')
+          for field in ('productionImplementation','productExecutionProved','independentAcceptance','activation','release'):
+              if mapping['claimBoundary'][field] is not False:
+                  raise SystemExit(f'claim advanced: {field}')
+          (root/module.MAP).write_text(json.dumps(mapping, indent=2)+'\n')
+          PY
+          git add -- docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json
+          git diff --cached --quiet || git commit -m 'docs(memory.retrieval): observe prepared publication state machine'
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          test "$(git ls-remote --heads origin "$BRANCH" | cut -f1)" = "$EXPECTED_HEAD"
+          git push origin "HEAD:refs/heads/$BRANCH"
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/retrieval-phase-a/final-identity.txt"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/retrieval-phase-a/source.tar.gz"
+          shasum -a 256 "$RUNNER_TEMP/retrieval-phase-a/source.tar.gz" > "$RUNNER_TEMP/retrieval-phase-a/SHA256SUMS"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: retrieval-phase-a-${{ github.run_id }}
+          path: ${{ runner.temp }}/retrieval-phase-a/
+          retention-days: 30
+          if-no-files-found: error
