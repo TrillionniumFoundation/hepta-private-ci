@@ -46,6 +46,7 @@ pub struct AgentdIntelligenceDecisionPlanV1 {
     completeness: CandidateSetCompletenessReceiptV1,
     evidence_provider: Arc<dyn AgentdIntelligenceDecisionEvidenceProviderV1>,
     metrics: Option<Arc<AgentdIntelligenceRuntimeMetricsV1>>,
+    acknowledged_binding: Arc<Mutex<Option<IntelligenceLearningBindingV1>>>,
 }
 
 impl AgentdIntelligenceDecisionPlanV1 {
@@ -85,6 +86,7 @@ impl AgentdIntelligenceDecisionPlanV1 {
             completeness,
             evidence_provider,
             metrics: None,
+            acknowledged_binding: Arc::new(Mutex::new(None)),
         })
     }
 
@@ -93,6 +95,20 @@ impl AgentdIntelligenceDecisionPlanV1 {
         metrics: Arc<AgentdIntelligenceRuntimeMetricsV1>,
     ) {
         self.metrics = Some(metrics);
+    }
+
+    /// Exact run/Decision binding made available only after the canonical
+    /// learning owner acknowledges the Decision append. Cloned plans share this
+    /// one immutable publication cell, so an outcome observer cannot race a
+    /// different binding into the same run.
+    pub fn acknowledged_binding(
+        &self,
+    ) -> Result<Option<IntelligenceLearningBindingV1>, IntelligenceLearningErrorV1> {
+        Ok(self
+            .acknowledged_binding
+            .lock()
+            .map_err(|_| IntelligenceLearningErrorV1::Poisoned)?
+            .clone())
     }
 
     fn prepare(
@@ -177,6 +193,7 @@ impl AgentdIntelligenceDecisionPlanV1 {
         now: u64,
     ) -> Result<IntelligenceLearningStatusV1, IntelligenceLearningErrorV1> {
         let decision = self.prepare(prepared, now)?;
+        let acknowledged_binding = decision.binding.clone();
         let status = learning_host.enqueue_decision(
             decision.binding,
             decision.expected_predecessor,
@@ -186,6 +203,22 @@ impl AgentdIntelligenceDecisionPlanV1 {
         )?;
         if let Some(metrics) = self.metrics.as_ref() {
             metrics.record_learning_state(&status.state);
+        }
+        if matches!(
+            &status.state,
+            IntelligenceLearningStateV1::Acknowledged { .. }
+        ) {
+            let mut slot = self
+                .acknowledged_binding
+                .lock()
+                .map_err(|_| IntelligenceLearningErrorV1::Poisoned)?;
+            if slot
+                .as_ref()
+                .is_some_and(|current| current != &acknowledged_binding)
+            {
+                return Err(IntelligenceLearningErrorV1::Conflict);
+            }
+            *slot = Some(acknowledged_binding);
         }
         Ok(status)
     }
