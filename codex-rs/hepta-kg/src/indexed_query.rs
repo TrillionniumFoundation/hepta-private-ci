@@ -5,6 +5,29 @@
 
 use super::*;
 
+/// Query-local inspections plus retained support copies, not a latency promise.
+/// The cognitive owner has at most 10,000 node and 50,000 edge occurrences per
+/// scope, so this ceiling does not tighten that owner's admitted source bound.
+const MAX_QUERY_SUPPORT_WORK_V2: u64 = 1_000_000;
+
+/// Charge before inspecting or copying. Exhaustion never yields a partial result
+/// with a misleading exact omitted_count. Lower caller limits cannot raise the
+/// library ceiling. Generation validation/index construction is a separate cost.
+fn charge_support_work(
+    used: &mut u64,
+    maximum: u64,
+    amount: usize,
+) -> Result<(), KnowledgeGenerationErrorV2> {
+    let amount = u64::try_from(amount)
+        .map_err(|_| KnowledgeGenerationErrorV2::InvalidQueryLimit)?;
+    let next = used
+        .checked_add(amount)
+        .filter(|next| *next <= maximum)
+        .ok_or(KnowledgeGenerationErrorV2::InvalidQueryLimit)?;
+    *used = next;
+    Ok(())
+}
+
 /// An owned generation validated once and indexed without changing edge order.
 ///
 /// No mutable generation reference or unchecked constructor is exposed. A caller
@@ -74,12 +97,27 @@ impl VerifiedKnowledgeGenerationV2 {
         query: KnowledgeRelationQueryV2,
     ) -> Result<(KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2), KnowledgeGenerationErrorV2>
     {
+        self.query_relations_with_work_budget(query, MAX_QUERY_SUPPORT_WORK_V2)
+    }
+
+    /// Apply a lower request-local resource ceiling without changing successful
+    /// query semantics or receipts. One work unit is one support inspected or
+    /// copied. Invalid/exhausted budgets return InvalidQueryLimit, never a
+    /// truncated-success result. The budget is not an authorization mechanism.
+    pub fn query_relations_with_work_budget(
+        &self,
+        query: KnowledgeRelationQueryV2,
+        maximum_support_work: u64,
+    ) -> Result<(KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2), KnowledgeGenerationErrorV2>
+    {
         if query.generation_digest != self.generation.generation_digest {
             return Err(KnowledgeGenerationErrorV2::DigestMismatch(
                 "query_generation",
             ));
         }
-        if query.seed_node_ids.len() > MAX_KNOWLEDGE_NODES_V2
+        if maximum_support_work == 0
+            || maximum_support_work > MAX_QUERY_SUPPORT_WORK_V2
+            || query.seed_node_ids.len() > MAX_KNOWLEDGE_NODES_V2
             || query.relation_kinds.len() > MAX_KNOWLEDGE_EDGES_V2
         {
             return Err(KnowledgeGenerationErrorV2::InvalidQueryLimit);
@@ -97,14 +135,17 @@ impl VerifiedKnowledgeGenerationV2 {
             return Err(KnowledgeGenerationErrorV2::InvalidQueryLimit);
         }
         let request_digest = compute_query_request_digest(&query, &seeds, &kinds);
-        // Sorted original positions preserve the reference full-scan ordering,
-        // including self-loops and edges reached from multiple seeds.
+        // A validated generation bounds this set by MAX_KNOWLEDGE_EDGES_V2;
+        // undirected adjacency visits each edge at most twice. Sorted original
+        // positions preserve reference ordering and deduplicate self-loops and
+        // edges reached from multiple seeds.
         let incident = seeds
             .iter()
             .filter_map(|seed| self.adjacency.get(seed))
             .flat_map(|indices| indices.iter().copied())
             .collect::<BTreeSet<_>>();
         let mut work = KnowledgeRelationQueryWorkV2::default();
+        let mut support_work = 0_u64;
         let mut visible_nodes = BTreeMap::<&StableId, bool>::new();
         let mut edges = Vec::new();
         let mut omitted_count = 0_u32;
@@ -117,16 +158,27 @@ impl VerifiedKnowledgeGenerationV2 {
             if let Some(at) = query.valid_at_unix_seconds {
                 let mut endpoints_visible = true;
                 for node_id in [&edge.identity.source_node_id, &edge.identity.target_node_id] {
-                    let visible = *visible_nodes.entry(node_id).or_insert_with(|| {
-                        work.visibility_nodes_scanned += 1;
-                        self.generation.nodes[self.nodes[node_id]]
-                            .supports
-                            .iter()
-                            .any(|support| {
+                    let visible = match visible_nodes.entry(node_id) {
+                        std::collections::btree_map::Entry::Occupied(entry) => *entry.get(),
+                        std::collections::btree_map::Entry::Vacant(entry) => {
+                            work.visibility_nodes_scanned += 1;
+                            let mut visible = false;
+                            for support in &self.generation.nodes[self.nodes[node_id]].supports {
+                                charge_support_work(
+                                    &mut support_work,
+                                    maximum_support_work,
+                                    1,
+                                )?;
                                 work.visibility_supports_inspected += 1;
-                                support.visible_at(at)
-                            })
-                    });
+                                if support.visible_at(at) {
+                                    visible = true;
+                                    break;
+                                }
+                            }
+                            entry.insert(visible);
+                            visible
+                        }
+                    };
                     if !visible {
                         endpoints_visible = false;
                         break;
@@ -136,14 +188,19 @@ impl VerifiedKnowledgeGenerationV2 {
                     continue;
                 }
             }
-            // Once the output is full, count visibility without cloning payload.
+            // Once output is full, inspect visibility without copying payload.
             if edges.len() == maximum {
-                let visible = query.valid_at_unix_seconds.is_none_or(|at| {
-                    edge.supports.iter().any(|support| {
+                let mut visible = query.valid_at_unix_seconds.is_none();
+                if let Some(at) = query.valid_at_unix_seconds {
+                    for support in &edge.supports {
+                        charge_support_work(&mut support_work, maximum_support_work, 1)?;
                         work.relation_supports_inspected += 1;
-                        support.visible_at(at)
-                    })
-                });
+                        if support.visible_at(at) {
+                            visible = true;
+                            break;
+                        }
+                    }
+                }
                 if visible {
                     omitted_count += 1;
                     work.matching_edges += 1;
@@ -152,16 +209,26 @@ impl VerifiedKnowledgeGenerationV2 {
                 continue;
             }
             let supports = match query.valid_at_unix_seconds {
-                Some(at) => edge
-                    .supports
-                    .iter()
-                    .filter(|support| {
+                Some(at) => {
+                    let mut selected = Vec::new();
+                    for support in &edge.supports {
+                        charge_support_work(&mut support_work, maximum_support_work, 1)?;
                         work.relation_supports_inspected += 1;
-                        support.visible_at(at)
-                    })
-                    .cloned()
-                    .collect::<Vec<_>>(),
-                None => edge.supports.clone(),
+                        if support.visible_at(at) {
+                            charge_support_work(&mut support_work, maximum_support_work, 1)?;
+                            selected.push(support.clone());
+                        }
+                    }
+                    selected
+                }
+                None => {
+                    charge_support_work(
+                        &mut support_work,
+                        maximum_support_work,
+                        edge.supports.len(),
+                    )?;
+                    edge.supports.clone()
+                }
             };
             if supports.is_empty() {
                 continue;
@@ -190,3 +257,7 @@ impl VerifiedKnowledgeGenerationV2 {
         Ok((result, work))
     }
 }
+
+#[cfg(test)]
+#[path = "indexed_query_budget_tests.rs"]
+mod budget_tests;
