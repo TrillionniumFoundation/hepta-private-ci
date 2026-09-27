@@ -16,7 +16,7 @@
 
 This stable document is the implementation guide for `learning.eval`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
-**Normative production API and ownership contract:** [`codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md`](../../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md). Default builds expose signature-verified qualification ingress; direct evaluators exist only behind the explicit `trusted-inprocess-eval` compatibility feature. Multi-writer final-holdout ownership requires the fenced CAS contract defined there.
+**Normative production API and ownership contract:** [`codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md`](../../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md). Default builds expose the recorded product runner with an independently anchored journal capability and signature-verified qualification ingress. The raw runner is crate-private unless the explicit `trusted-inprocess-eval` compatibility feature is selected. Multi-writer final-holdout ownership requires the fenced CAS contract defined there. The [recovery contract](../../../codex-rs/hepta-intelligence-eval/RECOVERY_CONTRACT.md) defines intent, publication, anchoring and restart boundaries.
 
 ## 1. Identity, mission and ownership
 
@@ -32,7 +32,7 @@ Declared exclusive target roots:
 
 - `codex-rs/hepta-intelligence-eval`
 
-Existing declared roots at this exact source snapshot:
+Existing declared roots at this source snapshot:
 
 - `codex-rs/hepta-intelligence-eval`
 
@@ -44,7 +44,9 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.eval`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots are materialized and have configured closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification workflows. Their presence does not prove those commands passed for the current commit. The immutable execution artifact must identify the exact commit, source tree, ordered merge parents, commands, exit codes and log/output digests. This status does not activate `learning.eval`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+
+The canonical delivery path is PR #1011. PR #1051 remains unmerged comparison/history material; divergent commits and checkpoint designs are not silently declared accepted. The generated source-status projection below separates lexical materialization from compiler reachability, product invocation, exact-tree execution, target-host evidence and independent acceptance.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -54,9 +56,17 @@ Direct dependencies:
 - `learning.artifacts`
 - `kernel.evidence`
 
-Authoritative write domains:
+Authoritative write domains from the exact registry projection:
 
-None.
+- `algorithm_fault_receipt_v1`
+- `candidate_evaluation_receipt_v1`
+- `conformance_receipt_v1`
+- `ndu_well_posedness_certificate_v1`
+- `operator_applicability_certificate_v1`
+- `regularity_profile_v1`
+- `support_audit_receipt_v1`
+
+These are declared qualification-domain ownership responsibilities, not permission to mutate another owner's store or the production writer. Registry ownership does not prove every target operation is implemented or activated.
 
 Explicitly denied capabilities:
 
@@ -116,7 +126,9 @@ retain current source, wire and capability states.
 
 ## 5. Contracts, ports and compatibility
 
-Produced contracts:
+The following bootstrap contract lists are retained for design lineage. The complete current registry contract, protocol and domain inventory is the exact generated registry projection below; the bootstrap subset must not be interpreted as exhaustive.
+
+Produced bootstrap contracts:
 
 - `EvaluationReceiptV1`
 - `LongitudinalEvaluationReceiptV1`
@@ -124,7 +136,7 @@ Produced contracts:
 - `ModulePort::learning.eval::learning.plasticity`
 - `UnlearningComplianceReceiptV1`
 
-Consumed contracts:
+Consumed bootstrap contracts:
 
 - `BellmanOperatorArtifactV1`
 - `CreditAssignmentReceiptV1`
@@ -150,7 +162,7 @@ Consumed contracts:
 - `RegularityProfileV1`
 - `TopologyProposalV1`
 
-Critical protocol schemas:
+Critical bootstrap protocol schemas:
 
 - `CreditAssignmentReceiptV1`
 - `DatasetSnapshotV1`
@@ -180,15 +192,13 @@ Canonical vector `TEMPORAL-PLAN-DIGEST-GV-001` fixes the complete 293-byte compo
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Rust types and canonical JSON represent identical semantics where the codec is defined. Required codec tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes. Internal sealed evaluation objects are not presumed serializable merely because their digests exist.
 
 ## 6. Data authority, persistence and migrations
 
-Owned authoritative or rebuildable domains:
+Owned authoritative or rebuildable domains are the seven qualification domains listed in Section 3 and the exact registry projection. The earlier empty bootstrap ownership list is superseded; it must not be used to deny or widen current registry ownership.
 
-None.
-
-Read-only data dependencies:
+Bootstrap read-only data dependencies:
 
 - `learning_artifact_registry`
 - `learning_credit_ledger`
@@ -197,7 +207,7 @@ Read-only data dependencies:
 - `operator_sensor_core_registry`
 - `qualification_evidence`
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+The complete read inventory is in the generated registry projection. For every owned domain, this module is the only declared authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation. Actual backing stores and deployed writer bindings require their own implementation and host evidence.
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
@@ -205,35 +215,92 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ### Canonical product evaluation composition
 
-The source product composition is `ProductEvaluationRunnerV1`. It binds a
-preregistered metric-to-estimator mapping into the frozen estimand, consumes the
-final holdout through `FencedFinalHoldoutOwnerV1`, and only then calls
-`FinalHoldoutProviderV1::release_after_consumption`. Candidate and baseline
-intervals come from sealed temporal/cluster estimator receipts; product callers
-do not submit final `MetricGateV1` values. Qualification returns only after the
-declared `ProductQualificationEvidenceSinkV1` reports a durable nonzero
-publication digest.
+The default product composition is `RecordedProductEvaluationRunnerV1` with
+`DurableProductEvaluationAttemptJournalV1`. It persists `IntentPersisted` before
+provider manifest lookup or final-holdout CAS, consumes through
+`FencedFinalHoldoutOwnerV1`, acknowledges `HoldoutConsumed`, and only then releases
+observations. Candidate and baseline intervals come from sealed temporal/cluster
+estimator receipts; product callers do not submit final `MetricGateV1` values.
+`ComparisonSealed` binds the complete execution before return.
+
+Qualification verifies V2/V3 signed evidence and persists `QualificationDecided`
+and `PublicationPending` before publication. It records `Published` only after
+observing the exact durable nonzero publication result. The raw
+`ProductEvaluationRunnerV1` is not a default public alternative; its explicit
+compatibility feature must be absent from the selected production build.
 
 `LockedFileFinalHoldoutCasStoreV1` is the repository concrete cross-process
 CAS/replay backend. Recovery is bounded by an independently retained
 `FinalHoldoutCasAnchorV1`; `HoldoutFenceIssuerV1` resumes monotonic fence
-generation from that anchor. Cross-host deployment of this backend additionally
-requires a shared filesystem with qualified linearizable lock and fsync
-semantics.
+generation from that anchor. Cross-host deployment additionally requires a
+shared filesystem with qualified linearizable lock and fsync semantics.
 
-The evaluated-shadow caller now consumes only the sealed `ProductQualificationReceiptV1`, rechecks current trust/dataset/candidate bindings and never re-runs low-level signed admission. This leaves one repository-controlled product qualification spine.
+`AnchoredProductEvaluationAttemptJournalV1` separately binds the complete attempt
+history to an independent anchor authority. An old complete backup is rejected,
+not accepted merely because its frame checksums are valid. Uncertain file or
+anchor acknowledgements poison the handle; recovery validates the retained
+prefix before adopting a committed tail. It never erases final-holdout use.
+
+The evaluated-shadow caller consumes the sealed `ProductQualificationReceiptV1`,
+rechecks current trust/dataset/candidate bindings and does not rerun low-level
+signed admission. This source consumer is not a demonstrated deployment or a
+consumer of the additive multi-outcome qualification receipt.
+
+### Measured outcome channels
+
+`freeze_product_outcome_plan_v1` adds a complete typed measurement contract for
+each metric: channel identity, schema, unit, normalization, subgroup, time window,
+provenance commitment, input digest and both temporal plans. A maximum of 32
+channels and 100,000 aggregate batch input rows is enforced before composition.
+Each temporal estimator retains its smaller stage-specific limits.
+
+`FinalOutcomeHoldoutProviderV1` releases one complete channel batch after the same
+single authoritative final-holdout consumption. `evaluate_outcome_comparison`
+checks each payload and paired logged measurements, estimates channels separately,
+and seals the multi-outcome execution. A renamed metric cannot substitute for a
+new measured channel. Missing, duplicate or swapped payloads do not yield a
+partial qualified result. The internal carrier is not publicly extractable.
+
+`qualify_outcomes_and_persist` derives and verifies the full outcome bundle and
+uses the same durable publication lifecycle. A schema/provenance digest is a
+commitment, not proof of independent observation or correct normalization.
+Authenticating the real measurement custodian, consuming the new outcome receipt
+in a product host, and full signed outcome E2E testing remain separate obligations.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.eval.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.eval.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.eval.md#8-current-native-implementation) identifies the state owner, in-memory versus persistent surfaces, and lock/transaction boundary. The current API and recovery changes are mapped in [NATIVE_MAPPING.md](../../../codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md) and the generated source inventory; an older dossier statement must not override current code. Target state-machine operations remain identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.eval.md).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
+`reconcile_pending_page` supplies bounded lexicographic discovery and advances past unresolved attempts. It does not own a background scheduling service. The selected host must persist the cursor, bound retries, preserve fairness across sweeps and exclude concurrent recovery of a live attempt. An indeterminate journal stops the sweep rather than continuing to mutate a poisoned handle.
+
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.eval.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.eval.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use the [recovery contract](../../../codex-rs/hepta-intelligence-eval/RECOVERY_CONTRACT.md), the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.eval.md#8-current-native-implementation), and module-specific fault cases in the [implementation design](../../../qualification/module-execution-dossiers/detail/learning.eval.md). A source library or fixture cannot stand in for an unimplemented durable recovery service or external reconciler.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+
+Recovery validates the complete per-attempt history, including identity, sequence,
+legal phases, predecessor digests, plan/holdout binding and the latest pointer.
+It reads authoritative holdout/publication records and mutates only the attempt
+journal. These operations are external-owner-read-only reconciliation, not
+literally read-only diagnostics.
+
+A `QualificationDecided` attempt can resume its first publication through
+`resume_decided_qualification` or `resume_decided_outcome_qualification` only when
+its original sealed receipt and signed evidence are recoverable. Current trust,
+expiry, revocation and scope are reverified; the canonical request must match
+preregistration exactly. The raw publication helper stays crate-private.
+Pending or Published is never retried through this path. A missing Pending record
+may represent an unknown write and remains unresolved until authoritative
+submission state is known.
+
+The attempt journal stores digests and transitions, not complete sealed
+estimator/signed-evidence objects. Recovery after computation but before sealing
+cannot invent a result or re-release final-holdout data. An owned immutable object
+store, its verified codecs, and a crash-safe archive/submission protocol remain
+needed for automatic recovery of every computation and publication boundary.
 
 ## 9. Security, privacy and threat controls
 
@@ -244,13 +311,20 @@ Owned threat entries:
 
 The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
 
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+Required negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics. Test-source existence and current execution coverage are separate facts.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.eval.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs](../../../codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.eval.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [temporal_evaluation.rs](../../../codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs), outcome contracts and the linked implementation components.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+
+Attempt append updates only the addressed history; replay is streaming within
+configured event/file limits. The existing 1,024-attempt and 512-fence source
+profile is not near-capacity, long-backlog or sustained recovery qualification.
+Holdout copy-compaction does not imply attempt-journal checkpoint/rotation.
+Selected-host startup, backlog, fsync latency, memory and recovery measurements
+must be collected on the declared storage topology.
 
 ## 11. Observability and operations
 
@@ -258,9 +332,10 @@ Independent evaluation library. Freeze the estimand, split, thresholds, nuisance
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md](../../../codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md).
-- [codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md](../../../codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md).
-- [docs/readiness/LEARNING_EVALUATION_EXECUTION.md](../../readiness/LEARNING_EVALUATION_EXECUTION.md).
+- [NATIVE_MAPPING.md](../../../codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md).
+- [EVIDENCE_ADMISSION.md](../../../codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md).
+- [RECOVERY_CONTRACT.md](../../../codex-rs/hepta-intelligence-eval/RECOVERY_CONTRACT.md).
+- [LEARNING_EVALUATION_EXECUTION.md](../../readiness/LEARNING_EVALUATION_EXECUTION.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -268,12 +343,29 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-intelligence-eval/src/closure_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/closure_tests.rs); named case: `eval_03_intersects_superiority_safety_retention_and_unlearning`.
-- [codex-rs/hepta-intelligence-eval/src/lib_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/lib_tests.rs); named case: `eligible_is_not_promotion`.
+- [closure_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/closure_tests.rs); named case: `eval_03_intersects_superiority_safety_retention_and_unlearning`.
+- [lib_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/lib_tests.rs); named case: `eligible_is_not_promotion`.
+- [outcome_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/outcome_tests.rs); independent per-channel intervals, complete payload binding and semantic mutation tests.
+- [attempt_recovery_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/attempt_recovery_tests.rs); whole-history validation, decided recovery, cursor fairness and bounds.
+- [recorded_runner_process_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/recorded_runner_process_tests.rs); seven actual child-process termination cuts.
 
-In `codex-rs`, run `just test -p codex-hepta-intelligence-eval`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.eval.md) separately labels target acceptance designs.
+The seven cuts are committed consume before attempt record, consumed before
+release, computed before sealing, sealed before qualification, decided before
+pending, pending before publication, and publication committed before acknowledgement.
+The publication half isolates persistence using fixture decisions; it does not
+replace full signed product/outcome/recovery E2E testing or a real host.
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+In `codex-rs`, run `just test -p codex-hepta-intelligence-eval`. The command is a test invocation, not a stored result. Inspect exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.eval.md) separately labels target acceptance designs.
+
+The read-only `Hepta learning.eval exact trees` workflow addresses exact source
+and ordered-parent merge trees. It preserves commands, exit codes, logs and
+artifact digests on failure and retains the 85% library coverage threshold.
+`hepta-learning-eval-status.py verify` checks inventory/map and digest-bound
+technical/native projections without repairing source. Explicit authoring uses
+`write`; qualification must never invoke it. Python projection tests do not prove
+Rust compilation, source qualification, target-host acceptance or production use.
+
+[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain source/merge, failure, compilation and independent-evidence obligations.
 
 ## 13. Implementation sequence and work packages
 
@@ -296,7 +388,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Product composition now exists and the evaluated-shadow consumer is bound to the product qualification receipt; target-host composition still requires the named evidence sink/holdout namespace. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Source product composition exists and the evaluated-shadow consumer is bound to the single-stream product qualification receipt; this does not establish the additive outcome consumer or a selected production host. Target-host composition requires the authenticated evidence sink, provider, independent anchors, holdout namespace and recovery controller. Qualification requires current exact-candidate execution evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `learning.eval`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
@@ -603,8 +695,30 @@ The following additional work packages are source-planning envelopes introduced 
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation for `learning.eval` is implemented by work package `LRN-2-CAUSAL-EVALUATION` in:
+The bootstrap source-location obligation for `learning.eval` is materialized by work package `LRN-2-CAUSAL-EVALUATION` in:
 
 - `codex-rs/hepta-intelligence-eval`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The configured source checks include `.github/workflows/hepta-consolidated-source.yml`, the focused learning-eval convergence workflow and the exact-tree workflow. Their configuration is not a passing execution receipt. Current qualification requires the final head's inventory, package tests, all-target compilation, strict Clippy, measured coverage and clean tracked state, as well as its ordered-parent merge result. Queued, cancelled, skipped or infrastructure-invalid jobs never count as passes. This source-location statement grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+<!-- BEGIN GENERATED LEARNING.EVAL SOURCE STATUS -->
+### Current candidate source inventory
+
+Canonical inventory: `docs/modules/learning.eval/CURRENT_STATUS.json`.
+Inventory SHA-256: `293088082dd4adf7ea208af37cd17a7e36a4f199416308262ac0cb65bd6165e7`.
+
+This block is generated from lexical source facts, not test results.
+Default ingress: recorded runner with independently anchored journal capability.
+Raw runner: explicit `trusted-inprocess-eval` compatibility feature only.
+Recovery: durable intent, full-history validation, bounded cursor reconciliation,
+and signature-reverified decided-only publication resume.
+Process-kill fixture cuts: `7`; their execution is separately qualified.
+Outcome source: at most `32` preregistered channels and
+`100000` batch rows, with separate measured estimates.
+A deployed outcome-receipt consumer and authenticated measurement provenance
+are not established by the source inventory.
+
+Exact-head, ordered-parent merge, coverage and strict lint require immutable
+execution artifacts. Real target-host, future-window and independent acceptance
+evidence remain external. Production, activation and release claims remain false.
+<!-- END GENERATED LEARNING.EVAL SOURCE STATUS -->
