@@ -12,12 +12,12 @@ permissions:
 
 concurrency:
   group: memory-federation-one-shot-rustfmt
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   rustfmt:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - name: Check out exact trigger commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
