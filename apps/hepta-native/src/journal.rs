@@ -17,11 +17,14 @@ use crate::model::sha256_hex;
 use crate::model::validate_digest;
 use crate::model::validate_stable_id;
 use crate::private_state::PrivateStateRoot;
+use crate::retirement::Checkpoint;
+use crate::retirement::RetirementStore;
 
 const JOURNAL_SCHEMA_V2: &str = "hepta.native-operation-journal.v2";
 const JOURNAL_SCHEMA_V3: &str = "hepta.native-operation-journal.v3";
 const JOURNAL_SCHEMA_V4: &str = "hepta.native-operation-journal.v4";
 const JOURNAL_SCHEMA_V5: &str = "hepta.native-operation-journal.v5";
+const JOURNAL_SCHEMA_V6: &str = "hepta.native-operation-journal.v6";
 const MAX_JOURNAL_BYTES: u64 = 8 * 1024 * 1024;
 const MAX_OPERATION_RECORDS: usize = 4096;
 const MAX_RETIRED_OPERATION_DIGESTS: usize = 32 * 1024;
@@ -118,12 +121,22 @@ struct JournalFile {
     #[serde(default)]
     retired_operation_digests: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    retirement_checkpoint: Option<Checkpoint>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     checksum: Option<String>,
 }
 
 impl JournalFile {
     fn checksum(&self) -> Result<String, ShellError> {
         // Detect accidental corruption, NOT a MAC or rollback-prevention authority.
+        if self.schema == JOURNAL_SCHEMA_V6 {
+            return Ok(sha256_hex(serde_json::to_vec(&(
+                &self.schema,
+                &self.operations,
+                &self.retired_operation_digests,
+                &self.retirement_checkpoint,
+            ))?));
+        }
         Ok(sha256_hex(serde_json::to_vec(&(
             &self.schema,
             &self.operations,
@@ -132,8 +145,13 @@ impl JournalFile {
     }
 
     fn verify_integrity(&self) -> Result<(), ShellError> {
+        if self.schema != JOURNAL_SCHEMA_V6 && self.retirement_checkpoint.is_some() {
+            return Err(ShellError::State(
+                "legacy journal contains a v6 retirement checkpoint".to_owned(),
+            ));
+        }
         match self.schema.as_str() {
-            JOURNAL_SCHEMA_V4 | JOURNAL_SCHEMA_V5
+            JOURNAL_SCHEMA_V4 | JOURNAL_SCHEMA_V5 | JOURNAL_SCHEMA_V6
                 if self.checksum.as_ref() == Some(&self.checksum()?) => Ok(()),
             JOURNAL_SCHEMA_V2 | JOURNAL_SCHEMA_V3 if self.checksum.is_none() => Ok(()),
             _ => Err(ShellError::State(
@@ -150,7 +168,8 @@ pub struct JournalCapacity {
     pub pending_records: usize,
     pub closed_observations: usize,
     pub retired_identities: usize,
-    pub retirement_limit: usize,
+    pub retirement_limit: Option<usize>,
+    pub retirement_segments: usize,
 }
 
 #[derive(Debug)]
@@ -158,6 +177,7 @@ pub struct OperationJournal {
     path: PathBuf,
     operations: Vec<OperationRecord>,
     retired_operation_digests: Vec<String>,
+    retirement: Option<RetirementStore>,
     failed: bool,
     private_root: PrivateStateRoot,
     _lock: File,
@@ -200,7 +220,9 @@ impl OperationJournal {
             ))
         })?;
         if !path.exists() {
-            if std::fs::symlink_metadata(crate::journal_storage::previous_path(&path)).is_ok() {
+            if std::fs::symlink_metadata(crate::journal_storage::previous_path(&path)).is_ok()
+                || std::fs::symlink_metadata(crate::retirement::directory(&path)).is_ok()
+            {
                 return Err(ShellError::State(
                     "journal is missing but a prior snapshot exists; recovery requires authority reconciliation, not replay".to_owned(),
                 ));
@@ -209,6 +231,7 @@ impl OperationJournal {
                 path,
                 operations: Vec::new(),
                 retired_operation_digests: Vec::new(),
+                retirement: None,
                 failed: false,
                 private_root,
                 _lock: lock,
@@ -232,7 +255,7 @@ impl OperationJournal {
         }
         let mut state: JournalFile = serde_json::from_slice(&bytes)?;
         state.verify_integrity()?;
-        if state.schema != JOURNAL_SCHEMA_V5
+        if !matches!(state.schema.as_str(), JOURNAL_SCHEMA_V5 | JOURNAL_SCHEMA_V6)
             && state
                 .operations
                 .iter()
@@ -267,6 +290,7 @@ impl OperationJournal {
             }
         }
         state.retired_operation_digests.sort_unstable();
+        let retirement = RetirementStore::open(&path, state.retirement_checkpoint.as_ref())?;
         let mut keys = HashSet::with_capacity(state.operations.len());
         for operation in &state.operations {
             operation.validate()?;
@@ -281,11 +305,37 @@ impl OperationJournal {
                     "active operation also appears in retirement frontier".to_owned(),
                 ));
             }
+            if retirement
+                .as_ref()
+                .is_some_and(|store| store.contains(&digest))
+                && !matches!(
+                    operation.phase,
+                    OperationPhase::Terminal | OperationPhase::ObservationClosed
+                )
+            {
+                return Err(ShellError::State(
+                    "live operation overlaps a durable retirement; possible journal rollback"
+                        .to_owned(),
+                ));
+            }
+        }
+        // Retirement publication precedes journal replacement. Reopening at
+        // that boundary retires only already-closed records, never live work.
+        let mut operations = Vec::with_capacity(state.operations.len());
+        for record in state.operations {
+            let digest = retirement_digest(&record.endpoint_id, &record.key)?;
+            if !retirement
+                .as_ref()
+                .is_some_and(|store| store.contains(&digest))
+            {
+                operations.push(record);
+            }
         }
         Ok(Self {
             path,
-            operations: state.operations,
+            operations,
             retired_operation_digests: state.retired_operation_digests,
+            retirement,
             failed: false,
             private_root,
             _lock: lock,
@@ -314,7 +364,17 @@ impl OperationJournal {
     }
 
     pub fn retired_count(&self) -> usize {
-        self.retired_operation_digests.len()
+        self.retirement.as_ref().map_or(0, RetirementStore::len)
+            + self
+                .retired_operation_digests
+                .iter()
+                .filter(|digest| {
+                    !self
+                        .retirement
+                        .as_ref()
+                        .is_some_and(|store| store.contains(digest))
+                })
+                .count()
     }
 
     pub fn ensure_not_retired(
@@ -327,6 +387,10 @@ impl OperationJournal {
             .retired_operation_digests
             .binary_search(&digest)
             .is_ok()
+            || self
+                .retirement
+                .as_ref()
+                .is_some_and(|store| store.contains(&digest))
         {
             return Err(ShellError::State(
                 "operation identity belongs to the durable retirement frontier".to_owned(),
@@ -437,7 +501,11 @@ impl OperationJournal {
                 .filter(|record| record.phase == OperationPhase::ObservationClosed)
                 .count(),
             retired_identities: self.retired_count(),
-            retirement_limit: MAX_RETIRED_OPERATION_DIGESTS,
+            retirement_limit: None,
+            retirement_segments: self
+                .retirement
+                .as_ref()
+                .map_or(0, RetirementStore::segments),
         }
     }
 
@@ -492,17 +560,22 @@ impl OperationJournal {
         }
         next_retired.sort_unstable();
         next_retired.dedup();
-        if next_retired.len() > MAX_RETIRED_OPERATION_DIGESTS {
-            return Err(ShellError::State(format!(
-                "operation retirement frontier reached {MAX_RETIRED_OPERATION_DIGESTS} entries"
-            )));
-        }
-        if let Err(error) = self.persist(&next_operations, &next_retired) {
+        let publication = (|| {
+            if self.retirement.is_none() {
+                self.retirement = Some(RetirementStore::create(&self.path)?);
+            }
+            self.retirement
+                .as_mut()
+                .ok_or_else(|| ShellError::State("retirement store unavailable".to_owned()))?
+                .append(&next_retired)?;
+            self.persist(&next_operations, &[])
+        })();
+        if let Err(error) = publication {
             self.failed = true;
             return Err(error);
         }
         self.operations = next_operations;
-        self.retired_operation_digests = next_retired;
+        self.retired_operation_digests.clear();
         Ok(())
     }
 
@@ -513,9 +586,10 @@ impl OperationJournal {
     ) -> Result<(), ShellError> {
         self.private_root.verify()?;
         let mut state = JournalFile {
-            schema: JOURNAL_SCHEMA_V5.to_owned(),
+            schema: JOURNAL_SCHEMA_V6.to_owned(),
             operations: operations.to_vec(),
             retired_operation_digests: retired_operation_digests.to_vec(),
+            retirement_checkpoint: self.retirement.as_ref().map(RetirementStore::checkpoint),
             checksum: None,
         };
         state.checksum = Some(state.checksum()?);

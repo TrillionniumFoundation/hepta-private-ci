@@ -8,10 +8,11 @@
 
 **Lane:** `LANE-B-RUNTIME`
 
-**Canonical candidate:** `work/ui-native-operational-closure-20260927`
+**Canonical candidate:** `work/ui-native-verified-closure-20260927`
 
-**Current protocol/evidence ledger:** [Operational closure](OPERATIONAL-CLOSURE-20260927.md).
-Request binding v2 and journal v5 are the current candidate protocols.
+**Current protocol/evidence ledger:** [Verified closure](VERIFIED-CLOSURE-20260927.md).
+Request binding v2 and journal v6 with segmented retirement are the current candidate protocols.
+The [operational closure](OPERATIONAL-CLOSURE-20260927.md) is inherited history, not a current pass.
 The previous current-source branch remains an integration ancestor, not a current pass.
 
 **Status:** Rust product source composed; exact-head, merge, physical acceptance

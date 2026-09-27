@@ -461,17 +461,15 @@ impl HeptaNativeApp {
         if let Ok(runtime) = self.runtime.try_lock() {
             let capacity = runtime.journal_capacity();
             ui.label(format!(
-                "active={}/{} pending={} closed={} retired={}/{}",
+                "active={}/{} pending={} closed={} retired={} segments={}",
                 capacity.active_records,
                 capacity.active_limit,
                 capacity.pending_records,
                 capacity.closed_observations,
                 capacity.retired_identities,
-                capacity.retirement_limit
+                capacity.retirement_segments
             ));
-            if capacity.active_records >= capacity.active_limit * 4 / 5
-                || capacity.retired_identities >= capacity.retirement_limit * 4 / 5
-            {
+            if capacity.active_records >= capacity.active_limit * 4 / 5 {
                 ui.label(self.locale.text(
                     "Journal pressure: reconcile or close observations; NEVER delete the journal to retry.",
                     "日志容量告警：请对账或结束观察；绝不能删除日志后重试。"

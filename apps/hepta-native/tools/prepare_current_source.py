@@ -16,7 +16,7 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[3]
 APP = ROOT / "apps/hepta-native"
 BASE = "7ddbfac88525196e7a4b31387ceae194958275f5"
-BRANCH = "work/ui-native-operational-closure-20260927"
+BRANCH = "work/ui-native-verified-closure-20260927"
 WRITE_BRANCHES = {"work/ui-native-operational-closure-20260927", BRANCH, "work/ui-native-remediation-20260927", "work/ui-native-closure-20260927"}
 INTEGRATION_ROOTS = (
     ROOT / "codex-rs/hepta-native-gateway",

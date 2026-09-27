@@ -2,7 +2,7 @@ name: ui.native remediation qualification
 
 on:
   push:
-    branches: [main, work/ui-native-remediation-20260927, work/ui-native-closure-20260927]
+    branches: [main, work/ui-native-remediation-20260927, work/ui-native-closure-20260927, work/ui-native-verified-closure-20260927]
   pull_request:
     paths:
       - apps/hepta-native/**
@@ -58,7 +58,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED"
-          base=$(git rev-parse refs/remotes/origin/main)
+          base=a126987b84737dbc2ee2592442a314117bddb4a2
           git cat-file -e "$base^{commit}"
           echo "candidate=$EXPECTED" >> "$GITHUB_OUTPUT"
           echo "base=$base" >> "$GITHUB_OUTPUT"

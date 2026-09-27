@@ -197,11 +197,14 @@ fn duplicate_or_overlapping_retirement_frontier_is_rejected_on_reopen() {
 
     let mut state: serde_json::Value =
         serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
-    let digest = state["retired_operation_digests"][0].clone();
-    state["retired_operation_digests"]
-        .as_array_mut()
+    // Legacy duplicate-frontier validation remains independent of v6 segments.
+    state["schema"] = "hepta.native-operation-journal.v3".into();
+    state.as_object_mut().unwrap().remove("checksum");
+    state
+        .as_object_mut()
         .unwrap()
-        .push(digest);
+        .remove("retirement_checkpoint");
+    state["retired_operation_digests"] = serde_json::json!(["1".repeat(64), "1".repeat(64)]);
     std::fs::write(&path, serde_json::to_vec(&state).unwrap()).unwrap();
     assert!(OperationJournal::open(&path).is_err());
 }
@@ -224,7 +227,7 @@ fn legacy_v2_journal_migrates_on_first_persisted_change() {
     journal.upsert(prepared()).unwrap();
     drop(journal);
     let state: serde_json::Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
-    assert_eq!(state["schema"], "hepta.native-operation-journal.v5");
+    assert_eq!(state["schema"], "hepta.native-operation-journal.v6");
     assert_eq!(state["retired_operation_digests"], serde_json::json!([]));
 }
 

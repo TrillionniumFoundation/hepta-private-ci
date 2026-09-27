@@ -1,17 +1,17 @@
 # ui.native current-source development guide
 
-Current candidate: `work/ui-native-operational-closure-20260927`. See
-[the operational protocol and evidence ledger](../../docs/modules/ui.native/OPERATIONAL-CLOSURE-20260927.md)
-for request binding v2, journal v5, migration, unknown-outcome archival and remaining release gates.
+Current candidate: `work/ui-native-verified-closure-20260927`. See
+[the current protocol and evidence ledger](../../docs/modules/ui.native/VERIFIED-CLOSURE-20260927.md)
+for request binding v2, journal v6, segmented retirement, migration and release gates.
 Historical commands below remain valid unless that ledger explicitly supersedes a protocol.
 
 ## 1. Candidate identity and claim boundary
 
 The single convergence candidate is
-`work/ui-native-current-source-20260925`. It descends from the initial
+`work/ui-native-verified-closure-20260927`. The historical current-source branch is an ancestor. It descends from the initial
 convergence ancestor `7ddbfac88525196e7a4b31387ceae194958275f5` and is merged
-with current `main`; every qualification run records the exact current-main base
-rather than treating the initial ancestor as the active integration base. The
+with a pinned `main`; every qualification run records that exact base
+rather than treating the initial ancestor or a moving ref as the active integration base. The
 Rust application was recovered from PR #830 source commit
 `3198549d80d6c59887b82e2c50018ab818217c53`, then reviewed against the current
 owner contracts. A merged historical branch is not implementation delivery;
