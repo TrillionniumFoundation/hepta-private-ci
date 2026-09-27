@@ -1,7 +1,7 @@
 diff --git a/codex-rs/hepta-matrix-store/src/store.rs b/codex-rs/hepta-matrix-store/src/store.rs
 --- a/codex-rs/hepta-matrix-store/src/store.rs
 +++ b/codex-rs/hepta-matrix-store/src/store.rs
-@@ -1636,11 +1636,16 @@
+@@ -1636,10 +1636,15 @@
                      binding_revision, generation, state, attempts, next_attempt_at_ms,
                      lease_until_ms, created_at_ms, updated_at_ms, sent_event_id
 -             FROM matrix_sendable_outbox_v2
