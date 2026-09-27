@@ -46,7 +46,7 @@ permissions:
 
 concurrency:
   group: kernel-authority-status-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   # BEGIN VERIFIED-HEAD-MIGRATION
@@ -177,13 +177,8 @@ jobs:
           start = text.index(start_marker)
           end = text.index(end_marker, start) + len(end_marker)
           text = text[:start] + text[end:]
-          if text.count('  cancel-in-progress: false\n') != 1:
-              raise SystemExit('temporary concurrency marker drifted')
-          text = text.replace(
-              '  cancel-in-progress: false\n',
-              '  cancel-in-progress: true\n',
-              1,
-          )
+          if text.count('  cancel-in-progress: true\n') != 1:
+              raise SystemExit('status concurrency marker drifted')
           path.write_text(text, encoding='utf-8')
           PY
 
