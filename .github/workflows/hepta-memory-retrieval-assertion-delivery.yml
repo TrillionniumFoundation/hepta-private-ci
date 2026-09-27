@@ -34,7 +34,6 @@ jobs:
           test "$(git ls-remote --heads origin "$BRANCH" | cut -f1)" = "$EXPECTED_HEAD"
           test -z "$(git status --porcelain --untracked-files=normal)"
           mkdir -p "$RUNNER_TEMP/retrieval-assertion-delivery"
-          cat scripts/patches/memory_retrieval_assertion_delivery_v2.part{00..16} > "$RUNNER_TEMP/retrieval-assertion-delivery/payload.b64"
           python3 - <<'PY'
           import base64, hashlib, json, os, pathlib, subprocess, zlib
           def pairs(rows):
@@ -44,7 +43,12 @@ jobs:
                   out[key] = value
               return out
           out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'retrieval-assertion-delivery'
-          payload = json.loads(base64.b64decode((out/'payload.b64').read_bytes(), validate=True), object_pairs_hook=pairs)
+          parts = [pathlib.Path(f'scripts/patches/memory_retrieval_assertion_delivery_v2.part{index:02d}') for index in range(17)]
+          if any(not part.is_file() for part in parts):
+              raise SystemExit('missing patch transport part')
+          payload_bytes = b''.join(part.read_bytes() for part in parts)
+          (out/'payload.b64').write_bytes(payload_bytes)
+          payload = json.loads(base64.b64decode(payload_bytes, validate=True), object_pairs_hook=pairs)
           if set(payload) != {'schema','sha256','bytes','patch_zlib_base64'} or payload['schema'] != 'hepta.retrieval.closure-patch.v1':
               raise SystemExit('invalid payload')
           patch = zlib.decompress(base64.b64decode(payload['patch_zlib_base64'], validate=True))
@@ -108,8 +112,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -f .github/workflows/hepta-memory-retrieval-source-export.yml .github/workflows/hepta-memory-retrieval-assertion-delivery.yml scripts/patches/memory_retrieval_assertion_delivery_v1.json scripts/patches/memory_retrieval_assertion_delivery_v2.part{00..16}
-          git add -A -- .github/workflows/hepta-memory-retrieval-source-export.yml .github/workflows/hepta-memory-retrieval-assertion-delivery.yml scripts/patches/memory_retrieval_assertion_delivery_v1.json scripts/patches/memory_retrieval_assertion_delivery_v2.part{00..16}
+          rm -f .github/workflows/hepta-memory-retrieval-source-export.yml .github/workflows/hepta-memory-retrieval-assertion-delivery.yml scripts/patches/memory_retrieval_assertion_delivery_v1.json
+          for index in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
+            part=$(printf 'scripts/patches/memory_retrieval_assertion_delivery_v2.part%02d' "$index")
+            rm -f "$part"
+          done
+          git add -A -- .github/workflows/hepta-memory-retrieval-source-export.yml .github/workflows/hepta-memory-retrieval-assertion-delivery.yml scripts/patches
           git commit -m 'chore(memory.retrieval): remove one-shot closure transport'
           python3 - <<'PY'
           import importlib.util, json, pathlib, subprocess
