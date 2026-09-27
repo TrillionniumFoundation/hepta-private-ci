@@ -116,3 +116,83 @@ jobs:
           path: ${{ runner.temp }}/intelligence-diagnostic-records/*
           if-no-files-found: error
           retention-days: 14
+
+  offline-authoring-inputs:
+    # Input export only, never a source-head/merge pass or an automatic edit.
+    # Bounded to the current remediation PR; no credentials or .git/config leave CI.
+    if: github.event.pull_request.number == 1022
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Export exact committed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          out="$RUNNER_TEMP/intelligence-inputs"
+          mkdir -p "$out"
+          git archive --format=tar.gz --output="$out/source.tar.gz" HEAD
+          printf '%s\n' "$SOURCE_SHA" > "$out/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$out/source-tree.txt"
+          shasum -a 256 "$out/source.tar.gz" > "$out/source.sha256"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-authoring-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/intelligence-inputs/source*
+          compression-level: 0
+          retention-days: 3
+      - name: Export pinned Linux compiler independently of lock resolution
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$VERSION" --profile minimal --component rustfmt --component clippy
+          rustup toolchain install "$VERSION-x86_64-unknown-linux-gnu" --force-non-host --profile minimal --component rustfmt --component clippy
+          out="$RUNNER_TEMP/intelligence-inputs"
+          tar -C "$HOME/.rustup/toolchains/$VERSION-x86_64-unknown-linux-gnu" -czf "$out/compiler.tar.gz" .
+          shasum -a 256 "$out/compiler.tar.gz" > "$out/compiler.sha256"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-authoring-compiler-${{ github.run_id }}
+          path: ${{ runner.temp }}/intelligence-inputs/compiler*
+          compression-level: 0
+          retention-days: 3
+      - name: Diagnose lock repair in an isolated unqualified worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/intelligence-input-worktree"
+          out="$RUNNER_TEMP/intelligence-inputs"
+          git worktree add --detach "$work" "$SOURCE_SHA"
+          printf '%s\n' 'Unqualified dependency repair suggestion; original exact-source checks are unchanged.' > "$out/lock-SCOPE.txt"
+          (cd "$work/codex-rs" && cargo update --workspace) > "$out/lock-resolution.log" 2>&1
+          git -C "$work" diff --binary -- codex-rs/Cargo.lock > "$out/lock.patch"
+          cp "$work/codex-rs/Cargo.lock" "$out/Cargo.lock"
+          (cd "$work/codex-rs" && cargo vendor --locked --versioned-dirs "$out/vendor") > "$out/offline-config.toml" 2> "$out/vendor.log"
+          tar -C "$out" -czf "$out/dependencies.tar.gz" vendor offline-config.toml Cargo.lock
+          shasum -a 256 "$out/dependencies.tar.gz" > "$out/dependencies.sha256"
+          git diff --exit-code
+          git diff --cached --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: intelligence-authoring-lock-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/intelligence-inputs/lock*
+            ${{ runner.temp }}/intelligence-inputs/Cargo.lock
+            ${{ runner.temp }}/intelligence-inputs/vendor.log
+          if-no-files-found: warn
+          retention-days: 3
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: intelligence-authoring-dependencies-${{ github.run_id }}
+          path: ${{ runner.temp }}/intelligence-inputs/dependencies*
+          compression-level: 0
+          retention-days: 3
