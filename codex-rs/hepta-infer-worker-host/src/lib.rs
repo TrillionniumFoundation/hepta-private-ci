@@ -13,9 +13,12 @@ pub mod model_worker;
 pub mod final_use_authorizer;
 pub mod native_app_server;
 pub mod output_protection;
+pub mod unix_output_protector;
 
 pub use output_protection::NativeOutputProtectionFuture;
 pub use output_protection::NativeOutputProtector;
+pub use unix_output_protector::UnixOutputProtector;
+pub use unix_output_protector::UnixOutputProtectorConfig;
 
 use std::error::Error as StdError;
 use std::fmt;
