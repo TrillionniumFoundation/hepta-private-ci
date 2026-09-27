@@ -11,6 +11,7 @@ mod archive_codec;
 mod coordinator;
 #[path = "durable_facade.rs"]
 mod durable;
+#[path = "fenced_coordinator_guarded.rs"]
 mod fenced_coordinator;
 mod publication;
 #[allow(clippy::too_many_arguments)]
