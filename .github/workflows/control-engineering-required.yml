@@ -11,7 +11,7 @@ permissions:
 jobs:
   exact-candidate:
     name: control.engineering exact candidate (${{ matrix.lane }})
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -234,7 +234,7 @@ jobs:
     name: control.engineering independent current-head review
     needs: exact-candidate
     if: github.event_name == 'pull_request' || github.event_name == 'pull_request_review'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     env:
       GH_TOKEN: ${{ github.token }}
