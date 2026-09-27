@@ -28,24 +28,25 @@ impl AgentdIntelligenceProductRunnerV1 {
         let snapshot =
             RunSnapshot::from_revalidated_run_start(&record).map_err(crate::state::run_error)?;
         let now = wall_clock_ms().map_err(|error| AgentdError::Protocol(error.to_string()))?;
-        let remaining = snapshot
-            .deadline_ms
-            .min(record.authentication.expires_at_ms)
+        let expires_at_ms = snapshot.deadline_ms.min(record.authentication.expires_at_ms);
+        let remaining = expires_at_ms
             .checked_sub(now)
             .filter(|value| *value > 0)
             .ok_or_else(|| {
                 AgentdError::Invalid("RunStart expired before owner input production".to_string())
             })?;
+        let run_id = record.snapshot.run_id.clone();
         let mut worker = self
             .spawn_owner_work(move || {
                 let invocation = provider.build(&identity, &record)?;
                 invocation.validate(&identity, &record)?;
-                Ok(invocation)
+                let neuron_seal = provider.seal_neuron(&identity, &record, &invocation)?;
+                Ok((invocation, neuron_seal))
             })
             .map_err(|error| AgentdError::Protocol(error.to_string()))?;
         // Input preparation is bounded separately from the later seven-stage
         // computation, always within the durable objective/admission horizon.
-        timeout(
+        let (invocation, neuron_seal) = timeout(
             Duration::from_millis(remaining).min(crate::control_budget::OWNER_INPUT_TIMEOUT),
             &mut worker,
         )
@@ -54,7 +55,9 @@ impl AgentdIntelligenceProductRunnerV1 {
             worker.abort();
             AgentdError::Protocol("canonical owner input production timed out".to_string())
         })?
-        .map_err(|_| AgentdError::Protocol("canonical owner input worker failed".to_string()))?
+        .map_err(|_| AgentdError::Protocol("canonical owner input worker failed".to_string()))??;
+        self.stage_neuron_seal(&run_id, neuron_seal, expires_at_ms)?;
+        Ok(invocation)
     }
 }
 
