@@ -1,0 +1,174 @@
+diff --git a/codex-rs/hepta-agent-protocol/src/ndu.rs b/codex-rs/hepta-agent-protocol/src/ndu.rs
+index 3f6c0a9..697f116 100644
+--- a/codex-rs/hepta-agent-protocol/src/ndu.rs
++++ b/codex-rs/hepta-agent-protocol/src/ndu.rs
+@@ -53 +53,3 @@ pub enum NduControlRequestV1 {
+-    MetricsV2,
++    // An empty struct variant enforces deny_unknown_fields. A unit variant
++    // silently ignored extra JSON fields despite the enum-level attribute.
++    MetricsV2 {},
+@@ -105 +107 @@ impl NduControlRequestV1 {
+-            | Self::MetricsV2
++            | Self::MetricsV2 {}
+@@ -243 +245 @@ fn canonical_ndu_control_request_digest_v2(
+-        NduControlRequestV1::MetricsV2 => bytes.push(6),
++        NduControlRequestV1::MetricsV2 {} => bytes.push(6),
+@@ -473 +475 @@ mod tests {
+-        let v2 = NduControlRequestV1::MetricsV2;
++        let v2 = NduControlRequestV1::MetricsV2 {};
+@@ -485,6 +487,8 @@ mod tests {
+-        assert!(
+-            serde_json::from_str::<NduControlRequestV1>(
+-                r#"{"operation":"metrics_v2","authorize":true}"#
+-            )
+-            .is_err()
+-        );
++        for malformed in [
++            r#"{"operation":"metrics_v2","authorize":true}"#,
++            r#"{"operation":"metrics_v2","grant":{}}"#,
++            r#"{"operation":"metrics_v2","request":{"operation":"context"}}"#,
++            r#"{"operation":"metrics_v2","operation":"context"}"#,
++        ] {
++            assert!(serde_json::from_str::<NduControlRequestV1>(malformed).is_err());
++        }
+diff --git a/codex-rs/hepta-agentd/src/ndu_control.rs b/codex-rs/hepta-agentd/src/ndu_control.rs
+index 84fa5ec..d60bdfc 100644
+--- a/codex-rs/hepta-agentd/src/ndu_control.rs
++++ b/codex-rs/hepta-agentd/src/ndu_control.rs
+@@ -42 +42 @@ impl AgentdNduOwnerHostV1 {
+-        if matches!(&request, NduControlRequestV1::MetricsV2) {
++        if matches!(&request, NduControlRequestV1::MetricsV2 {}) {
+@@ -67 +67 @@ impl AgentdNduOwnerHostV1 {
+-                | NduControlRequestV1::MetricsV2
++                | NduControlRequestV1::MetricsV2 {}
+@@ -166 +166 @@ impl AgentdNduOwnerHostV1 {
+-            NduControlRequestV1::MetricsV2 => {
++            NduControlRequestV1::MetricsV2 {} => {
+diff --git a/codex-rs/hepta-agentd/src/ndu_owner_tests.rs b/codex-rs/hepta-agentd/src/ndu_owner_tests.rs
+index 3a1c821..270627b 100644
+--- a/codex-rs/hepta-agentd/src/ndu_owner_tests.rs
++++ b/codex-rs/hepta-agentd/src/ndu_owner_tests.rs
+@@ -590 +590 @@ fn metrics_v2_reports_storage_health_and_does_not_block_on_owner() -> TestResult
+-        .control(NduControlRequestV1::MetricsV2, || Ok(()))?;
++        .control(NduControlRequestV1::MetricsV2 {}, || Ok(()))?;
+@@ -608 +608 @@ fn metrics_v2_reports_storage_health_and_does_not_block_on_owner() -> TestResult
+-        .control(NduControlRequestV1::MetricsV2, || Ok(()))?;
++        .control(NduControlRequestV1::MetricsV2 {}, || Ok(()))?;
+@@ -620 +620 @@ fn metrics_v2_reports_storage_health_and_does_not_block_on_owner() -> TestResult
+-            .control(NduControlRequestV1::MetricsV2, || Err(
++            .control(NduControlRequestV1::MetricsV2 {}, || Err(
+diff --git a/docs/modules/utility.ndu/QUALIFICATION_REQUEST.md b/docs/modules/utility.ndu/QUALIFICATION_REQUEST.md
+index 0335a91..a114fee 100644
+--- a/docs/modules/utility.ndu/QUALIFICATION_REQUEST.md
++++ b/docs/modules/utility.ndu/QUALIFICATION_REQUEST.md
+@@ -25 +25,4 @@ Each retained suite directory contains a closed-world SHA-256 manifest. Download
+-verify and aggregate all twelve on the trusted producer workflow. Publish
++verify and aggregate all twelve on the trusted producer workflow. Reopen the
++raw named-host and mounted-filesystem records, including observed workloads,
++latency thresholds and recovery phases; do not trust summary flags or hashes
++alone. Publish
+diff --git a/docs/modules/utility.ndu/STATUS.md b/docs/modules/utility.ndu/STATUS.md
+index 8425f64..b290d99 100644
+--- a/docs/modules/utility.ndu/STATUS.md
++++ b/docs/modules/utility.ndu/STATUS.md
+@@ -57 +57 @@ The following remain separate gates and must stay false/not-established until ev
+-- named-host capacity and recovery measurements;
++- named production-target capacity and recovery measurements (hosted CI receipts establish only their named CI host);
+@@ -94,0 +95,5 @@ Unknown backup age and target-host acceptance remain explicit until observed.
++
++The A–D remediation and per-stage acceptance boundaries are recorded in
++`REMEDIATION_2026-09-28.md`. Aggregation independently revalidates the raw native
++receipts, including actual latency thresholds, even if summaries and checksums
++are rewritten. Only a successfully retained aggregate qualifies its exact source.
+diff --git a/scripts/hepta-ndu-qualification.py b/scripts/hepta-ndu-qualification.py
+index 74d7ab6..ec66ee8 100644
+--- a/scripts/hepta-ndu-qualification.py
++++ b/scripts/hepta-ndu-qualification.py
+@@ -9 +9 @@ checkout; source must remain clean and bound to the same SHA/tree throughout.
+-from hepta_ndu_evidence import seal
++from hepta_ndu_evidence import bounded_read, seal
+@@ -238,2 +238,2 @@ def file_digest(path: Path) -> str:
+-def validate_host_receipt(path: Path, sha: str, tree: str, lane: str) -> dict:
+-    receipt = json.loads(path.read_text())
++def validate_host_receipt(path: Path, sha: str, tree: str, lane: str, *, expected_host: str | None = None) -> dict:
++    receipt = json.loads(bounded_read(path))
+@@ -245 +245 @@ def validate_host_receipt(path: Path, sha: str, tree: str, lane: str) -> dict:
+-        "hostId": platform.node(),
++        "hostId": platform.node() if expected_host is None else expected_host,
+@@ -296,2 +296,2 @@ def validate_host_receipt(path: Path, sha: str, tree: str, lane: str) -> dict:
+-def validate_mounted_receipt(path: Path, sha: str, tree: str, lane: str) -> dict:
+-    receipt = json.loads(path.read_text())
++def validate_mounted_receipt(path: Path, sha: str, tree: str, lane: str, *, expected_host: str | None = None) -> dict:
++    receipt = json.loads(bounded_read(path))
+@@ -301 +301 @@ def validate_mounted_receipt(path: Path, sha: str, tree: str, lane: str) -> dict
+-        "host": platform.node(), "binaryUnchanged": True,
++        "host": platform.node() if expected_host is None else expected_host, "binaryUnchanged": True,
+diff --git a/scripts/hepta_ndu_evidence.py b/scripts/hepta_ndu_evidence.py
+index 00a2222..7b80a53 100644
+--- a/scripts/hepta_ndu_evidence.py
++++ b/scripts/hepta_ndu_evidence.py
+@@ -83 +83 @@ def verify(root: Path) -> dict:
+-def expected_commands(suite: str, sha: str, tree: str) -> dict:
++def trusted_runner():
+@@ -89 +89,5 @@ def expected_commands(suite: str, sha: str, tree: str) -> dict:
+-    return {name: command for name, _, command in module.commands(suite, sha, tree)}
++    return module
++
++
++def expected_commands(suite: str, sha: str, tree: str) -> dict:
++    return {name: command for name, _, command in trusted_runner().commands(suite, sha, tree)}
+@@ -135,0 +140,11 @@ def aggregate(root: Path, source: str, base: str, merge: str) -> dict:
++            host_id = receipt.get("host")
++            if not isinstance(host_id, str) or not host_id or len(host_id) > 256:
++                raise ValueError("missing execution host identity")
++            # Re-read native bytes with trusted validation, including numerical
++            # SLO thresholds. A summary's true bits and a resealed digest are
++            # not a substitute for the observed full-envelope/fault records.
++            runner = trusted_runner()
++            actual_host = runner.validate_host_receipt(receipt_path.parent / "named-host.json", expected, receipt["sourceTree"], key[0], expected_host=host_id)
++            actual_mounted = runner.validate_mounted_receipt(receipt_path.parent / "mounted-filesystem/mounted-filesystem.json", expected, receipt["sourceTree"], key[0], expected_host=host_id)
++            if actual_host != host or actual_mounted != mounted:
++                raise ValueError("native evidence digest or observed result substitution")
+diff --git a/scripts/test_hepta_ndu_evidence.py b/scripts/test_hepta_ndu_evidence.py
+index e9c2ef7..ff58547 100644
+--- a/scripts/test_hepta_ndu_evidence.py
++++ b/scripts/test_hepta_ndu_evidence.py
+@@ -28,2 +28,17 @@ class EvidenceTests(unittest.TestCase):
+-                receipt["hostReceipt"] = {"identityValidated": True, "performancePassed": True}
+-                receipt["mountedFilesystemReceipt"] = {"identityValidated": True}
++                receipt["host"] = "fixture-host"
++                if suite == "host":
++                    native = {
++                        "schema": "hepta.ndu.named-host-qualification.v3", "sourceSha": receipt["sourceSha"], "sourceTree": receipt["sourceTree"], "lane": lane, "hostId": receipt["host"],
++                        "journal": {"recordCapacity": 4096, "liveProjectionCapacity": 2048, "ordinaryOverflowRejected": True, "fullEnvelopeRevocation": True, "restartRecovery": True},
++                        "hotPath": {"runs": 100, "candidates": 32, "organs": 8, "p50Micros": 100, "p95Micros": 200, "p99Micros": 300, "targetPass": True},
++                        "durability": dict.fromkeys(["restartReopen", "revocationNonResurrection", "backupRestore", "fullCapacityDiskRecovery", "oversizedImageBoundedReject"], True),
++                    }
++                    native["durability"]["oversizedSparseBytes"] = 1 << 40
++                    host_path = root / "named-host.json"; host_path.write_text(json.dumps(native))
++                    mounted = {"schema": "hepta.ndu.mounted-filesystem-qualification.v1", "sourceSha": receipt["sourceSha"], "sourceTree": receipt["sourceTree"], "lane": lane, "host": receipt["host"], "binaryUnchanged": True, "passed": True, "productionActivation": False, "binarySha256": "e" * 64,
++                        "cases": [{"fault": fault, "filesystem": "tmpfs", "observedErrno": errno, "passed": True, "cleanupPassed": True, "exitCode": 0, "phases": ["READY", "FAULT_OBSERVED", "RECOVERED"], "filledBytes": 4096} for fault, errno in [("enospc", 28), ("erofs", 30)]]}
++                    (root / "mounted-filesystem").mkdir()
++                    mounted_path = root / "mounted-filesystem/mounted-filesystem.json"; mounted_path.write_text(json.dumps(mounted))
++                    runner = evidence.trusted_runner()
++                    receipt["hostReceipt"] = runner.validate_host_receipt(host_path, receipt["sourceSha"], receipt["sourceTree"], lane, expected_host=receipt["host"])
++                    receipt["mountedFilesystemReceipt"] = runner.validate_mounted_receipt(mounted_path, receipt["sourceSha"], receipt["sourceTree"], lane, expected_host=receipt["host"])
+@@ -68,0 +84,18 @@ class EvidenceTests(unittest.TestCase):
++    def test_resealed_native_evidence_cannot_override_actual_observations(self):
++        self.twelve()
++        root = self.root / "source-head-host"
++        native_path = root / "named-host.json"
++        original = json.loads(native_path.read_text())
++        receipt_path = root / "suite-receipt.json"
++        receipt = json.loads(receipt_path.read_text())
++        for modification in ["slow", "foreign-host", "missing-recovery"]:
++            native = copy.deepcopy(original)
++            if modification == "slow": native["hotPath"]["p99Micros"] = 6000
++            elif modification == "foreign-host": native["hostId"] = "foreign"
++            else: native["durability"]["restartReopen"] = False
++            native_path.write_text(json.dumps(native))
++            receipt["hostReceipt"]["sha256"] = evidence.digest(native_path.read_bytes())
++            receipt_path.write_text(json.dumps(receipt))
++            (root / evidence.MANIFEST).unlink(); evidence.seal(root)
++            with self.assertRaises(ValueError): evidence.aggregate(self.root, "a" * 40, "b" * 40, "c" * 40)
++

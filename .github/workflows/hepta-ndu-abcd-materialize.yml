@@ -38,13 +38,13 @@ jobs:
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/ndu-materialized"
           test "$(git rev-parse HEAD)" = "$REQUEST_SHA"
-          test "$(git rev-parse HEAD^)" = 5beffa35a1ae237c5fe4cc0327fdad588c481e21
+          test "$(git rev-parse HEAD^)" = fabb8c345dc67b857c2929ce785bb69eedc056c8
           BASE=$(git rev-parse origin/main)
           git merge-base --is-ancestor "$BASE" HEAD
-          echo '7e171b9e535b1510bb974a5833f305a51af43bcfc98fecbe1f979322e8d6e521  scripts/ndu-abcd-lock-repair.patch' | sha256sum -c -
-          git apply --check scripts/ndu-abcd-lock-repair.patch
-          git apply scripts/ndu-abcd-lock-repair.patch
-          rm scripts/ndu-abcd-lock-repair.patch
+          echo 'ef906069a6617a1efa3cb3b44ab81592d8cb9845fd7aa429c327b60e6371d381  scripts/ndu-abcd-final-repair.patch' | sha256sum -c -
+          git apply --check --unidiff-zero scripts/ndu-abcd-final-repair.patch
+          git apply --unidiff-zero scripts/ndu-abcd-final-repair.patch
+          rm scripts/ndu-abcd-final-repair.patch
           (cd codex-rs && cargo fmt --package codex-hepta-ndu --package codex-hepta-agent-protocol --package codex-hepta-agentd --package codex-hepta-control-plane)
           for test in source_policy map_integrity mounted_filesystem qualification evidence; do
             python3 "scripts/test_hepta_ndu_$test.py"
@@ -63,7 +63,7 @@ jobs:
           git diff --cached --check
           git config user.name hepta-ndu-remediation
           git config user.email qualification@invalid
-          git commit -s -m 'fix(ndu): disambiguate locked rustix 1.1.4 and rebind exact candidate'
+          git commit -s -m 'fix(ndu): reject unknown metrics fields and independently revalidate native evidence'
           test -z "$(git status --porcelain --untracked-files=all)"
           python3 scripts/hepta-ndu-implementation-map-closed-world.py --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})" 2>&1 | tee "$RUNNER_TEMP/ndu-materialized/map-verifier.log"
           # Fast-forward only: a concurrent update is a conflict, never overwritten.
