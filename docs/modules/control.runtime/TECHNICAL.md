@@ -16,6 +16,8 @@
 
 This stable document is the implementation guide for `control.runtime`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+Current component maturity is owned by [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json), projected into [CURRENT_STATE.json](CURRENT_STATE.json) and [CURRENT_PRODUCT_PATH.md](CURRENT_PRODUCT_PATH.md). This guide explains the implementation, not a second set of completion flags. Read-only Agentd source composition, a global durable writer, native qualification and independent activation are distinct facts. The detailed target requirements below remain in scope; source candidates do not close unexecuted acceptance cases.
+
 ## 1. Identity, mission and ownership
 
 Select a feasible bounded global plan from exact snapshots while staying off local hot paths and effect boundaries.
@@ -46,7 +48,9 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-control-plane/src/organ_runtime.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs); observed identifiers include `OrganHostV1`, `TrustedReadOnlyOrganV1`, `OrganDeliveryV1`, `OrganFaultRecordV1`, `start_all`, `dispatch_once`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/control.runtime.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) for the implemented subset and remaining product work.
+The registered organ-host navigation source is [codex-rs/hepta-control-plane/src/organ_runtime.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs); identifiers include `OrganHostV1`, `TrustedReadOnlyOrganV1`, `OrganDeliveryV1`, `OrganFaultRecordV1`, `start_all`, `dispatch_once`. It is not the whole planner implementation or proof of every production consumer. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/control.runtime.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md).
+
+The source inventory separates six components: deterministic planner, read-only organ host, runtime module registry, embodiment reference, read-only Agentd caller and planner storage. `planner.rs` owns public admission; `planner_kernel.rs` retains the original deterministic algorithms and regression fixtures. `planner_store.rs` owns the bounded file-store candidate; `planner_envelope.rs` retains complete consumed planning projections. Agentd remains the owner of its control listener and cognitive read boundary; listing its callsites does not transfer ownership into this crate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -85,6 +89,14 @@ Ingress validates identity, version, size, scope and revision before domain logi
 Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+
+### Current planner admission and Agentd composition
+
+The public planner rejects undeclared owner summaries, duplicate effect payloads, effectful abstention and oversized resource/NDU projections before normalization. It rechecks owner age and time ordering at preparation, finalization and grant-request construction. A collection-time readiness mask cannot establish freshness at a later use.
+
+The real Agentd control listener owns `ContextPlanReceipts`, a bounded, non-global receipt ledger. Its read path calls `plan_authenticated_context` with an opaque canonical exact-ID read result. That adapter verifies the exact IDs, revisions and content digests, then computes the record count and serialized bytes itself. The legacy `ObservedContextV1` remains a trusted reference API, not an external authentication interface.
+
+The native plan receipt digest is preserved on the wire. Host-issued membership binds that digest to the complete ordered response, request ID, exact query digest, owner, process/lifecycle generation and current retrieval/ranker profiles. Final use requires membership and a live monotonic lease before and after the existing canonical owner-cut/item revalidation. Restarting or replacing the listener invalidates its old volatile receipts. These checks are source-composed candidates, not a deployment or transport-success receipt.
 
 ### Multiscale DecisionCell integration target
 
@@ -137,6 +149,8 @@ Every producer validates output before publication and binds semantic fields int
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
+The `HCPENV01` planning archive and `HCPSTR01` store are owner-local candidate formats, not admitted external wire protocols. Decoding an archive checks integrity; it cannot construct an execution capability. Fresh native planning inputs and independent authority checks remain necessary.
+
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:
@@ -157,17 +171,29 @@ Migrations are deterministic and checksum-bound. Store open verifies required sc
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
+### Current durability candidate and remaining requirements
+
+`PlannerJournalV1` remains the digest-only reference. `PlannerStoreV1` adds an exclusive OS file lock, framed full-body appends, checksums, file synchronization, generation files, temporary-file replacement and directory synchronization. Each successful append also requires an independently signed current-anchor compare-and-swap. A transport error after writing poisons the handle; reopening reconciles to the independently acknowledged prefix. An incomplete acknowledged prefix fails closed rather than silently deleting a committed decision.
+
+`PlannerDecisionEnvelopeV1` retains snapshot, feasible candidate bodies, prepared input, consumed NDU projection and final receipt as five canonical sections. Each section must reproduce the native kernel digest. Rejected source candidates and opaque owner profiles remain externally referenced by their original digests; the archive does not fabricate their bodies. Revalidation requires fresh native projections and exact envelope equality.
+
+Compaction preserves every semantic record and operation identity in a new physical generation. Retention removes only predecessor generation files. The current profile therefore still has a lifetime limit of 4096 retained records and 64 MiB; it is not a rolling unlimited production log. Restore admits only the independently current signed frontier, never an older valid signature. A real production anchor adapter, selected writer, schema migration, domain-specific retention and target-filesystem crash/disk-full qualification remain required. See [STORE_AND_RECOVERY.md](STORE_AND_RECOVERY.md).
+
 ## 7. Runtime, concurrency and transaction model
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/control.runtime.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
+The context receipt ledger belongs to one control listener, holds at most 1024 entries and holds no mutex across asynchronous owner calls. The current one-second context lease uses `Instant`; planner timestamps are request-relative monotonic microseconds. Cognitive-store Unix validity timestamps keep their separate owner contract. File-store locking is a single-host local-filesystem profile, not a distributed writer lease.
+
 ## 8. Failure semantics, recovery and rollback
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/control.runtime.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+
+Unacknowledged store suffixes are recoverable; lost acknowledged bytes, invalid signatures and stale external frontiers are not repaired into success. Lost anchor replies require reopen and equal-identity reconciliation. Organ fan-out still reports partial delivery; per-target durable deduplication, retry and terminal reconciliation remain a separate product integration requirement.
 
 ## 9. Security, privacy and threat controls
 
@@ -180,11 +206,15 @@ The posture is least authority, bounded input, typed contracts, digest binding a
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
+The planner store contains only a pinned verification key, not its anchor's private signing key. The anchor port must authenticate CURRENT state and linearize compare-and-swap; a historical signed checkpoint alone is insufficient. The filesystem candidate assumes an owner-private, non-symlink directory and is not an adversarial same-UID filesystem sandbox. Test signers are fixtures, not independent acceptance evidence.
+
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-control-plane/src/organ_runtime.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Native limits belong to the planner, store and [organ runtime](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs) respectively; none implies physical safety qualification.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+
+The generic context helper ceiling is 24 KiB; the Agentd profile separately bounds its response and metadata reserve. Store envelope, whole-file, record-count and retained-generation bounds are separate dimensions. Capacity exhaustion rejects instead of silently forgetting identities or increasing a budget. Latency, filesystem portability and sustained-load behavior remain unmeasured until named-host receipts exist.
 
 ## 11. Observability and operations
 
@@ -194,6 +224,8 @@ Current operating and state-format references:
 
 - [docs/readiness/CONTROL_RUNTIME_EXECUTION.md](../../readiness/CONTROL_RUNTIME_EXECUTION.md).
 - [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
+- [CURRENT_PRODUCT_PATH.md](CURRENT_PRODUCT_PATH.md).
+- [STORE_AND_RECOVERY.md](STORE_AND_RECOVERY.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -201,10 +233,17 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [planner_admission_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_admission_tests.rs): undeclared owners, duplicate payloads, effectful abstention, bounded inputs and final-use freshness.
+- [planner_store_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_store_tests.rs): full-body reopen, corruption, partial suffixes, anchor failures, locks, compaction and backup rollback.
+- [planner_envelope_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_envelope_tests.rs): native digest parity, all-byte mutation, truncation and fresh native revalidation.
+- [control_context_receipts_tests.rs](../../../codex-rs/hepta-agentd/src/control_context_receipts_tests.rs): receipt identity, request/profile/generation binding, monotonic lease and bounded retention.
+- [cognitive_context_planner_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_planner_tests.rs): canonical owner content, count, revision, snapshot and clock checks.
 - [codex-rs/hepta-control-plane/src/embodiment/cart_tests.rs](../../../codex-rs/hepta-control-plane/src/embodiment/cart_tests.rs); named case: `typed_controller_and_plant_replay_the_explicit_euler_q24_golden`.
 - [codex-rs/hepta-control-plane/src/embodiment/timing_tests.rs](../../../codex-rs/hepta-control-plane/src/embodiment/timing_tests.rs); named case: `blocking_and_higher_priority_interference_are_included`.
 
-In `codex-rs`, run `just test -p codex-hepta-control-plane`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-control-plane`. The command is a test invocation, not a stored result. Inspect exact-candidate passes, failures and skips. Qualification must run NDU, control callers, Agentd tests, all-target checks, strict Clippy, formatting and named-host checks independently enough that one regression failure does not suppress every later observation.
+
+`python3 scripts/hepta-control-runtime-state.py --check --verify-source` is a read-only status/source gate. `--write` is explicit documentation preparation, never a qualification repair step. Historical `sourceBase` remains provenance; current source objects and command-head receipts are separate. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -224,6 +263,8 @@ Source implementation completes only when the declared target root exists, publi
 Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+
+A source-author test, static manifest or signed test fixture cannot issue independent semantic review, canary acceptance or release. The full global planner-to-authority-to-executor-to-terminal-reconciliation path remains in scope and is not replaced by the read-only context caller.
 
 ## 15. Definition of module completion
 
@@ -339,4 +380,4 @@ The bootstrap source-location obligation for `control.runtime` is implemented by
 
 - `codex-rs/hepta-control-plane`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The candidate is subject to `.github/workflows/hepta-consolidated-source.yml` and the module-specific read-only qualification workflow. Their definitions are not passing receipts. Current exact-head, merge-candidate, package, lint, formatting and named-host conclusions must be read from immutable execution artifacts. This document records source locations and boundaries only; it grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
