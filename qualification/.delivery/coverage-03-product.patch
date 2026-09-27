@@ -1,0 +1,300 @@
+diff --git a/codex-rs/hepta-intelligence/src/plasticity_product.rs b/codex-rs/hepta-intelligence/src/plasticity_product.rs
+index 128016b..6352ae5 100644
+--- a/codex-rs/hepta-intelligence/src/plasticity_product.rs
++++ b/codex-rs/hepta-intelligence/src/plasticity_product.rs
+@@ -30,15 +30,19 @@ use codex_hepta_plasticity::DurableProposalRegistry;
+ use codex_hepta_plasticity::DurableProposalRegistryError;
+ use codex_hepta_plasticity::DurableRegistryAnchorV1;
+ use codex_hepta_plasticity::GeneratedParameterCandidateSetV3;
++use codex_hepta_plasticity::GeneratorCoverageReceiptV1;
++use codex_hepta_plasticity::GeneratorCoverageTerminalV1;
+ use codex_hepta_plasticity::ParameterCandidateKindV2;
+ use codex_hepta_plasticity::ParameterGeneratorErrorV3;
+ use codex_hepta_plasticity::ParameterGeneratorProfileV3;
+ use codex_hepta_plasticity::ParameterProposalRequestV2;
+ use codex_hepta_plasticity::ParameterProposalV2;
+ use codex_hepta_plasticity::ProposalWindowV2;
++use codex_hepta_plasticity::generator_coverage_signing_payload_v1;
+ use codex_hepta_plasticity::parameter_generator_signing_payload_v3;
+ use codex_hepta_plasticity::propose_v2;
+ use codex_hepta_plasticity::verify_generated_parameter_candidates_v3;
++use codex_hepta_plasticity::verify_generator_coverage_receipt_v1;
+ use codex_hepta_types::Digest32;
+ use codex_hepta_types::Generation;
+ use codex_hepta_types::StableId;
+@@ -53,6 +57,8 @@ pub struct PlasticityAdmissionEvidenceV1 {
+     pub qualification_evidence_head_digest: Digest32,
+     /// Canonical digest of host-resolved, context-bound owner evidence receipts.
+     pub owner_evidence_set_digest: Digest32,
++    /// Digest of the Observer-signed generator coverage proof.
++    pub generator_coverage_digest: Digest32,
+     pub window: ProposalWindowV2,
+     pub baseline_generation: Generation,
+     pub candidate_generation: Generation,
+@@ -76,9 +82,11 @@ pub struct ParameterPlasticityProductRequestV1 {
+     pub proposal_id: StableId,
+     pub generator_profile: ParameterGeneratorProfileV3,
+     pub generated: GeneratedParameterCandidateSetV3,
++    pub coverage: GeneratorCoverageReceiptV1,
+     pub generator_attestation: SignedLearningEvidenceV1,
+     pub admission: PlasticityAdmissionEvidenceV1,
+     pub admission_attestation: SignedLearningEvidenceV1,
++    pub coverage_attestation: SignedLearningEvidenceV1,
+     /// Required only when deterministic generation produces no admissible update.
+     /// The independent Evaluator attests that terminal disposition rather than
+     /// fabricating a candidate evaluation for a nonexistent update.
+@@ -91,6 +99,23 @@ pub struct ParameterPlasticityProductRequestV1 {
+ pub enum ParameterPlasticityDispositionV1 {
+     UpdateCandidates,
+     NoAdmissibleUpdate,
++    ZeroEligibleSignals,
++    PolicyDisabledUpdates,
++}
++
++impl ParameterPlasticityDispositionV1 {
++    const fn tag(self) -> u8 {
++        match self {
++            Self::UpdateCandidates => 0,
++            Self::NoAdmissibleUpdate => 1,
++            Self::ZeroEligibleSignals => 2,
++            Self::PolicyDisabledUpdates => 3,
++        }
++    }
++
++    const fn requires_no_change_attestation(self) -> bool {
++        !matches!(self, Self::UpdateCandidates)
++    }
+ }
+ 
+ #[derive(Clone, Debug, Eq, PartialEq)]
+@@ -99,6 +124,8 @@ pub struct ParameterPlasticityProductReceiptV1 {
+     pub registry: DurableProposalAppendReceiptV1,
+     pub generator_authentication_digest: Digest32,
+     pub admission_authentication_digest: Digest32,
++    pub coverage_authentication_digest: Digest32,
++    pub coverage_digest: Digest32,
+     pub evaluation_digest: Digest32,
+     pub disposition: ParameterPlasticityDispositionV1,
+     pub committed_registry_anchor: DurableRegistryAnchorV1,
+@@ -111,6 +138,7 @@ pub enum ParameterPlasticityProductErrorV1 {
+     Generator(ParameterGeneratorErrorV3),
+     GeneratorEvidence(SignedEvidenceError),
+     AdmissionEvidence(SignedEvidenceError),
++    CoverageEvidence(SignedEvidenceError),
+     Evaluation(SignedEvaluationError),
+     Ineligible(IndependentEvaluationDispositionV1),
+     MissingEvaluation(String),
+@@ -297,6 +325,7 @@ pub fn plasticity_admission_signing_payload_v1(
+         evidence.artifact_registry_head_digest,
+         evidence.qualification_evidence_head_digest,
+         evidence.owner_evidence_set_digest,
++        evidence.generator_coverage_digest,
+     ] {
+         bytes.extend_from_slice(digest.as_array());
+     }
+@@ -324,20 +353,23 @@ pub fn plasticity_admission_signing_payload_v1(
+ pub fn no_change_disposition_signing_payload_v1(
+     generated: &GeneratedParameterCandidateSetV3,
+     admission: &PlasticityAdmissionEvidenceV1,
++    disposition: ParameterPlasticityDispositionV1,
+ ) -> Result<Vec<u8>, ParameterPlasticityProductErrorV1> {
+     let no_change = generated
+         .candidates
+         .iter()
+         .find(|candidate| candidate.kind == ParameterCandidateKindV2::NoChange)
+         .ok_or(ParameterPlasticityProductErrorV1::NoUpdateCandidate)?;
+-    let mut bytes = b"hepta.intelligence.plasticity-no-admissible-update.v1\0".to_vec();
++    let mut bytes = b"hepta.intelligence.plasticity-no-admissible-update.v2\0".to_vec();
+     bytes.extend_from_slice(generated.generator_digest.as_array());
+     bytes.extend_from_slice(admission.owner_evidence_set_digest.as_array());
++    bytes.extend_from_slice(admission.generator_coverage_digest.as_array());
+     bytes.extend_from_slice(admission.selected_artifact_digest.as_array());
+     push_id(&mut bytes, &admission.window.window_id);
+     bytes.extend_from_slice(admission.window.window_digest.as_array());
+     bytes.extend_from_slice(&admission.baseline_generation.get().to_be_bytes());
+     bytes.extend_from_slice(&admission.candidate_generation.get().to_be_bytes());
++    bytes.push(disposition.tag());
+     push_id(&mut bytes, &no_change.candidate_id);
+     Ok(bytes)
+ }
+@@ -358,6 +390,11 @@ pub fn propose_authenticated_parameter_plasticity_v1(
+         request.generator_profile.clone(),
+         &request.generated,
+     )?;
++    verify_generator_coverage_receipt_v1(
++        &request.generator_profile,
++        &request.generated,
++        &request.coverage,
++    )?;
+     validate_admission_binding(&request)?;
+ 
+     let generator_payload = parameter_generator_signing_payload_v3(&request.generated);
+@@ -379,9 +416,24 @@ pub fn propose_authenticated_parameter_plasticity_v1(
+         )
+         .map_err(E::AdmissionEvidence)?;
+     verify_signed_role_separation(&generator, &observer, now).map_err(E::AdmissionEvidence)?;
++    let coverage_payload = generator_coverage_signing_payload_v1(&request.coverage);
++    let coverage_observer = verifier
++        .verify(
++            LearningEvidenceRoleV1::Observer,
++            &request.coverage_attestation,
++            &coverage_payload,
++            now,
++        )
++        .map_err(E::CoverageEvidence)?;
++    verify_signed_role_separation(&generator, &coverage_observer, now)
++        .map_err(E::CoverageEvidence)?;
++    if coverage_observer.principal() != observer.principal() {
++        return Err(E::Binding("coverage observer identity"));
++    }
+ 
+     if request.generator_attestation.objective_digest != request.admission.objective_digest
+         || request.admission_attestation.objective_digest != request.admission.objective_digest
++        || request.coverage_attestation.objective_digest != request.admission.objective_digest
+     {
+         return Err(E::Binding("objective trust context"));
+     }
+@@ -392,10 +444,20 @@ pub fn propose_authenticated_parameter_plasticity_v1(
+         .iter()
+         .filter(|candidate| candidate.kind == ParameterCandidateKindV2::Update)
+         .collect::<Vec<_>>();
+-    let disposition = if update_candidates.is_empty() {
+-        ParameterPlasticityDispositionV1::NoAdmissibleUpdate
+-    } else {
+-        ParameterPlasticityDispositionV1::UpdateCandidates
++    let disposition = match request.coverage.terminal {
++        GeneratorCoverageTerminalV1::UpdateCandidates if !update_candidates.is_empty() => {
++            ParameterPlasticityDispositionV1::UpdateCandidates
++        }
++        GeneratorCoverageTerminalV1::NoAdmissibleUpdate if update_candidates.is_empty() => {
++            ParameterPlasticityDispositionV1::NoAdmissibleUpdate
++        }
++        GeneratorCoverageTerminalV1::ZeroEligibleSignals if update_candidates.is_empty() => {
++            ParameterPlasticityDispositionV1::ZeroEligibleSignals
++        }
++        GeneratorCoverageTerminalV1::PolicyDisabledUpdates if update_candidates.is_empty() => {
++            ParameterPlasticityDispositionV1::PolicyDisabledUpdates
++        }
++        _ => return Err(E::Binding("generator coverage terminal")),
+     };
+ 
+     let mut evaluations = BTreeMap::new();
+@@ -409,7 +471,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
+     let mut evaluator_id: Option<StableId> = None;
+     let mut evaluation_binding = b"hepta.intelligence.plasticity-evaluations.v1\0".to_vec();
+ 
+-    if disposition == ParameterPlasticityDispositionV1::NoAdmissibleUpdate {
++    if disposition.requires_no_change_attestation() {
+         if let Some(unexpected) = evaluations.keys().next() {
+             return Err(E::UnexpectedEvaluation(unexpected.to_string()));
+         }
+@@ -418,7 +480,11 @@ pub fn propose_authenticated_parameter_plasticity_v1(
+             .as_ref()
+             .ok_or(E::MissingNoChangeAttestation)?;
+         let payload =
+-            no_change_disposition_signing_payload_v1(&request.generated, &request.admission)?;
++            no_change_disposition_signing_payload_v1(
++                &request.generated,
++                &request.admission,
++                disposition,
++            )?;
+         let evaluator = verifier
+             .verify(
+                 LearningEvidenceRoleV1::Evaluator,
+@@ -429,6 +495,8 @@ pub fn propose_authenticated_parameter_plasticity_v1(
+             .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
+         verify_signed_independent_roles_v1(&observer, &evaluator, now)
+             .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
++        verify_signed_independent_roles_v1(&coverage_observer, &evaluator, now)
++            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
+         verify_signed_independent_roles_v1(&generator, &evaluator, now)
+             .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
+         if attestation.objective_digest != request.admission.objective_digest {
+@@ -483,6 +551,8 @@ pub fn propose_authenticated_parameter_plasticity_v1(
+         }
+         verify_signed_independent_roles_v1(&observer, &evaluator, now)
+             .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
++        verify_signed_independent_roles_v1(&coverage_observer, &evaluator, now)
++            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
+ 
+         let decision =
+             decide_with_signed_evidence_v2(bundle, metric_roles, &evidence, verifier, now)
+@@ -504,15 +574,15 @@ pub fn propose_authenticated_parameter_plasticity_v1(
+     let candidate_evaluation_digest = Digest32::of_bytes(&evaluation_binding);
+     let generator_authentication_digest = attestation_digest(&request.generator_attestation);
+     let admission_authentication_digest = attestation_digest(&request.admission_attestation);
++    let coverage_authentication_digest = attestation_digest(&request.coverage_attestation);
+     let mut governed_evaluation = b"hepta.intelligence.plasticity-governed-admission.v1\0".to_vec();
+-    governed_evaluation.push(match disposition {
+-        ParameterPlasticityDispositionV1::UpdateCandidates => 0,
+-        ParameterPlasticityDispositionV1::NoAdmissibleUpdate => 1,
+-    });
++    governed_evaluation.push(disposition.tag());
+     for digest in [
+         candidate_evaluation_digest,
+         generator_authentication_digest,
+         admission_authentication_digest,
++        coverage_authentication_digest,
++        request.coverage.coverage_digest,
+         request.admission.owner_evidence_set_digest,
+         request.generated.generator_digest,
+         verifier.trust_digest(),
+@@ -582,10 +652,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
+     writer.state = PlasticityWriterStateV1::Healthy;
+ 
+     let mut composition = b"hepta.intelligence.plasticity-composition.v1\0".to_vec();
+-    composition.push(match disposition {
+-        ParameterPlasticityDispositionV1::UpdateCandidates => 0,
+-        ParameterPlasticityDispositionV1::NoAdmissibleUpdate => 1,
+-    });
++    composition.push(disposition.tag());
+     for digest in [
+         proposal.proposal_digest,
+         registry.frame_digest,
+@@ -593,6 +660,8 @@ pub fn propose_authenticated_parameter_plasticity_v1(
+         request.generated.generator_digest,
+         generator_authentication_digest,
+         admission_authentication_digest,
++        coverage_authentication_digest,
++        request.coverage.coverage_digest,
+         evaluation_digest,
+     ] {
+         composition.extend_from_slice(digest.as_array());
+@@ -602,6 +671,8 @@ pub fn propose_authenticated_parameter_plasticity_v1(
+         registry,
+         generator_authentication_digest,
+         admission_authentication_digest,
++        coverage_authentication_digest,
++        coverage_digest: request.coverage.coverage_digest,
+         evaluation_digest,
+         disposition,
+         committed_registry_anchor,
+@@ -630,6 +701,7 @@ fn validate_admission_binding(
+             evidence.qualification_evidence_head_digest,
+         ),
+         ("owner evidence set", evidence.owner_evidence_set_digest),
++        ("generator coverage", evidence.generator_coverage_digest),
+         ("dataset", evidence.dataset_digest),
+         ("update rule", evidence.update_rule_digest),
+         ("modulator", evidence.modulator_digest),
+@@ -647,6 +719,12 @@ fn validate_admission_binding(
+     if evidence.selected_artifact_digest != request.generated.selected_artifact_digest
+         || evidence.window != request.generated.window
+         || evidence.generator_digest != request.generated.generator_digest
++        || evidence.generator_coverage_digest != request.coverage.coverage_digest
++        || request.coverage.owner_frontier_digest != evidence.owner_evidence_set_digest
++        || request.coverage.mutation_grammar_digest
++            != request.generator_profile.mutation_policy.mutation_grammar_digest
++        || request.coverage.selected_artifact_digest != evidence.selected_artifact_digest
++        || request.coverage.window != evidence.window
+         || request.generator_profile.selected_artifact_digest
+             != request.generated.selected_artifact_digest
+         || request.generator_profile.window != request.generated.window
+@@ -702,6 +780,7 @@ mod tests {
+             artifact_registry_head_digest: Digest32::of_bytes(b"artifact-head"),
+             qualification_evidence_head_digest: Digest32::of_bytes(b"evidence-head"),
+             owner_evidence_set_digest: Digest32::of_bytes(b"owner-evidence-set"),
++            generator_coverage_digest: Digest32::of_bytes(b"coverage"),
+             window: ProposalWindowV2 {
+                 window_id: id("window:1"),
+                 window_digest: Digest32::of_bytes(b"window"),
