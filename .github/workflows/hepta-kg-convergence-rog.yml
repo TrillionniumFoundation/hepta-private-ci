@@ -1,4 +1,4 @@
-name: Apply knowledge.graph convergence on managed Linux runner
+name: Apply knowledge.graph convergence on managed self-hosted runner
 
 on:
   pull_request:
@@ -24,7 +24,7 @@ jobs:
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.actor != 'github-actions[bot]'
-    runs-on: [self-hosted, linux, x64]
+    runs-on: [self-hosted]
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -38,7 +38,7 @@ jobs:
         run: |
           set -euo pipefail
           case "$RUNNER_NAME" in
-            rog|pocket4) ;;
+            rog|pocket4|macbook-pro) ;;
             *) printf 'unexpected managed runner: %s\n' "$RUNNER_NAME" >&2; exit 1 ;;
           esac
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
@@ -49,6 +49,8 @@ jobs:
           git archive --format=tar.gz --output="$EVIDENCE_DIR/input-source.tar.gz" HEAD
           printf '%s\n' "$SOURCE_SHA" > "$EVIDENCE_DIR/input-sha.txt"
           printf '%s\n' "$RUNNER_NAME" > "$EVIDENCE_DIR/runner-name.txt"
+          printf '%s\n' "$RUNNER_OS" > "$EVIDENCE_DIR/runner-os.txt"
+          printf '%s\n' "$RUNNER_ARCH" > "$EVIDENCE_DIR/runner-arch.txt"
           uname -a | tee "$EVIDENCE_DIR/host.log"
           python3 scripts/test_hepta_kg_convergence_finalize.py -v 2>&1 \
             | tee "$EVIDENCE_DIR/finalizer-tests.log"
@@ -148,7 +150,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          timeout --signal=TERM 15m cargo test --locked --release -p codex-hepta-kg \
+          cargo test --locked --release -p codex-hepta-kg \
             canonical_cardinality_high_fanout_benchmark_receipt -- --ignored --nocapture \
             2>&1 | tee "$EVIDENCE_DIR/kernel-benchmark-raw.log"
           python3 - "$EVIDENCE_DIR" <<'PY'
@@ -173,7 +175,9 @@ jobs:
           receipt['sourceTree'] = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
           receipt['rawLogSha256'] = hashlib.sha256(raw.encode()).hexdigest()
           receipt['runnerName'] = os.environ['RUNNER_NAME']
-          receipt['hostClass'] = 'managed-linux-pre-main-assembly-nonqualifying'
+          receipt['runnerOs'] = os.environ['RUNNER_OS']
+          receipt['runnerArch'] = os.environ['RUNNER_ARCH']
+          receipt['hostClass'] = 'managed-self-hosted-pre-main-assembly-nonqualifying'
           (directory / 'kernel-benchmark.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
           PY
 
