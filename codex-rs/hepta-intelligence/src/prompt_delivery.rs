@@ -31,6 +31,7 @@ use crate::PromptDeliveryPrepareRequestV1;
 use crate::PromptPipelineErrorV1;
 use crate::compile_exercised_prompt_context_v1;
 use crate::prepare_prompt_delivery_v1;
+use codex_hepta_prompt_optimizer::canonical::PromptExerciseActionV1;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
 use codex_hepta_prompt_optimizer::canonical::SelectedPromptPortfolioV1;
 
@@ -285,6 +286,16 @@ pub enum PromptRegistryCompilationErrorV2 {
     Registry(DurableRegistryError),
     Pipeline(PromptPipelineErrorV1),
     Context(ContextCompilerV2Error),
+    Optimizer(String),
+    ExerciseRejected(PromptExerciseActionV1),
+    EmptySelection,
+    IncompleteRegistryRead(u32),
+    DuplicateAdmission(String),
+    MissingAdmission(String),
+    AdmissionSetMismatch,
+    AdmissionBindingMismatch(String),
+    UnsupportedPromptRole(String),
+    SerializedPayloadNotUtf8,
     ProfileMismatch,
     Integrity,
 }
@@ -296,6 +307,9 @@ impl fmt::Display for PromptRegistryCompilationErrorV2 {
 }
 
 impl std::error::Error for PromptRegistryCompilationErrorV2 {}
+
+#[path = "qualified_prompt_context.rs"]
+mod qualified_prompt_context;
 
 #[cfg(test)]
 #[path = "prompt_delivery_tests.rs"]
