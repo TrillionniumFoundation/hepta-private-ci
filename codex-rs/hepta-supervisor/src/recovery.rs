@@ -91,18 +91,75 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
-        let pending = crate::restart_budget::pending_restart(
+        let Some(pending) = crate::restart_budget::pending_restart_snapshot(
             record.layout.run_root(),
             self.config.restart_max_attempts,
         )
-        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        if let Some(claim) = pending {
-            slot.restart_attempt = claim.attempt;
-            slot.restart_not_before = Some(deadline(now, claim.backoff)?);
-            // An adopted replacement is already satisfying this durable
-            // restart. Only a missing runtime needs the replacement queued.
-            slot.restart_pending = slot.runtime.is_none();
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        else {
+            slot.restart_pending = false;
+            slot.restart_not_before = None;
+            return Ok(());
+        };
+        slot.restart_attempt = pending.claim.attempt;
+        slot.restart_not_before = Some(deadline(now, pending.claim.backoff)?);
+
+        // A historical pending record without process lineage is not converted
+        // into authority to stop, replace or complete a process. It remains
+        // durable for operator Stop/Kill cancellation and cannot silently run.
+        let Some(target_release) = pending.state.target_release.as_ref() else {
+            slot.restart_pending = false;
+            return Ok(());
+        };
+
+        let Some(runtime) = slot.runtime.as_ref() else {
+            let predecessor_closed = pending.state.predecessor.is_none()
+                || pending.state.predecessor_exit_observed_unix_ms.is_some();
+            slot.restart_pending = predecessor_closed && pending.state.replacement.is_none();
+            return Ok(());
+        };
+
+        let is_predecessor = pending
+            .state
+            .predecessor
+            .as_ref()
+            .is_some_and(|process| {
+                process.matches(runtime.spawn_generation, &runtime.identity)
+            });
+        if is_predecessor {
+            if pending.state.predecessor_exit_observed_unix_ms.is_some() {
+                return Err(SupervisorError::Invalid(
+                    "restart predecessor is live after its durable exit observation".to_string(),
+                ));
+            }
+            slot.restart_pending = true;
+            return Ok(());
         }
+
+        if let Some(replacement) = pending.state.replacement.as_ref() {
+            if !replacement.matches(runtime.spawn_generation, &runtime.identity)
+                || runtime.release_id != *target_release
+            {
+                return Err(SupervisorError::Invalid(
+                    "adopted process differs from the durable restart replacement".to_string(),
+                ));
+            }
+            slot.restart_pending = false;
+            return Ok(());
+        }
+
+        if pending.state.predecessor_exit_observed_unix_ms.is_none() {
+            slot.restart_pending = false;
+            return Ok(());
+        }
+        crate::restart_budget::bind_restart_replacement(
+            record.layout.run_root(),
+            &runtime.release_id,
+            runtime.spawn_generation,
+            &runtime.identity,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        slot.restart_pending = false;
         Ok(())
     }
 
@@ -141,6 +198,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 "agent {agent_id} has an unresolved durable termination intent"
             )));
         }
+        crate::restart_budget::verify_restart_replacement_admission(
+            record.layout.run_root(),
+            release.release_id(),
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         if read_lease(record.layout.run_root())?.is_some() {
             return Err(SupervisorError::UnresolvedLease(agent_id.clone()));
         }
@@ -212,54 +274,76 @@ impl<D: ProcessDriver> Supervisor<D> {
                 record.layout.run_root(),
                 &lease,
             ));
-            slot.pending_control = None;
-            slot.restart_pending = false;
-            slot.restart_not_before = None;
-            let termination = if let Some(runtime) = slot.runtime.as_mut() {
-                runtime.healthy = false;
-                runtime.fenced = true;
-                runtime.phase = RuntimePhase::Stopping { deadline: now };
-                let result = runtime.process.kill();
-                if result.is_ok() {
-                    runtime.phase = RuntimePhase::Killing;
-                }
-                result
-            } else {
-                unreachable!("freshly acquired child was installed above")
-            };
-            match termination {
-                Ok(()) => slot.event(starting.generation, SupervisorEventKind::KillRequested),
-                Err(fault) => slot.event(
-                    starting.generation,
-                    SupervisorEventKind::DriverFault(bounded_message(fault.to_string())),
-                ),
-            }
-            match self.registry.compare_and_transition(
-                agent_id,
-                starting.generation,
-                AgentLifecycle::Failed,
-            ) {
-                Ok(failed) => {
-                    if let Some(runtime) = slot.runtime.as_mut() {
-                        runtime.generation = failed.generation;
-                    }
-                    slot.event(
-                        failed.generation,
-                        SupervisorEventKind::Lifecycle(AgentLifecycle::Failed),
-                    );
-                }
-                Err(fault) => slot.event(
-                    starting.generation,
-                    SupervisorEventKind::DriverFault(bounded_message(fault.to_string())),
-                ),
-            }
+            self.contain_failed_launch(agent_id, slot, starting.generation, now);
             // A failed kill or lifecycle CAS never drops the only handle. The
             // original publication error stays the operation's failure result.
             return Err(error);
         }
+        if let Err(error) = crate::restart_budget::bind_restart_replacement(
+            record.layout.run_root(),
+            release.release_id(),
+            starting.generation,
+            &lease.identity,
+        ) {
+            self.contain_failed_launch(agent_id, slot, starting.generation, now);
+            return Err(SupervisorError::Invalid(error.to_string()));
+        }
         slot.last_command = Some(release.command().clone());
         slot.active_release = Some(release);
         Ok(())
+    }
+
+    fn contain_failed_launch(
+        &mut self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        starting_generation: u64,
+        now: Instant,
+    ) {
+        slot.pending_control = None;
+        slot.restart_pending = false;
+        slot.restart_not_before = None;
+        let termination = if let Some(runtime) = slot.runtime.as_mut() {
+            runtime.healthy = false;
+            runtime.fenced = true;
+            runtime.phase = RuntimePhase::Stopping { deadline: now };
+            let result = runtime.process.kill();
+            if result.is_ok() {
+                runtime.phase = RuntimePhase::Killing;
+            }
+            result
+        } else {
+            unreachable!("freshly acquired child must remain installed");
+        };
+        match termination {
+            Ok(()) => slot.event(
+                starting_generation,
+                SupervisorEventKind::KillRequested,
+            ),
+            Err(fault) => slot.event(
+                starting_generation,
+                SupervisorEventKind::DriverFault(bounded_message(fault.to_string())),
+            ),
+        }
+        match self.registry.compare_and_transition(
+            agent_id,
+            starting_generation,
+            AgentLifecycle::Failed,
+        ) {
+            Ok(failed) => {
+                if let Some(runtime) = slot.runtime.as_mut() {
+                    runtime.generation = failed.generation;
+                }
+                slot.event(
+                    failed.generation,
+                    SupervisorEventKind::Lifecycle(AgentLifecycle::Failed),
+                );
+            }
+            Err(fault) => slot.event(
+                starting_generation,
+                SupervisorEventKind::DriverFault(bounded_message(fault.to_string())),
+            ),
+        }
     }
 
     pub(crate) fn recover_slot(
@@ -306,6 +390,13 @@ impl<D: ProcessDriver> Supervisor<D> {
             now,
         )
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let restart_control = crate::restart_budget::recover_predecessor_control(
+            record.layout.run_root(),
+            lease.spawn_generation,
+            &lease.identity,
+            now,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let spec = AdoptSpec {
             agent_id: agent_id.clone(),
             registry_generation: record.lifecycle.generation,
@@ -347,8 +438,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                 }),
             ),
         };
-        let recovery_control = durable_control.or(lifecycle_control);
+        let recovery_control = durable_control.or(restart_control).or(lifecycle_control);
         let mut control_fault = None;
+        let mut process_fault = None;
         match self
             .driver
             .adopt(&spec)
@@ -374,26 +466,38 @@ impl<D: ProcessDriver> Supervisor<D> {
                         .is_none_or(|active| active.release_id() != &lease.release_id);
                     if needs_resolution {
                         let resolved = self.registry.resolve_release(agent_id, &lease.release_id);
-                        self.bind_adopted_release(agent_id, slot, record, resolved, now)?;
+                        if let Err(error) =
+                            self.bind_adopted_release(agent_id, slot, record, resolved, now)
+                        {
+                            process_fault = Some(error);
+                        }
                     }
                 }
-                slot.event(
-                    record.lifecycle.generation,
-                    SupervisorEventKind::OrphanAdopted,
-                );
-                // Install the exact adopted handle before any fallible control
-                // call. Failed signals retain both ownership and a bounded retry.
-                slot.pending_control = recovery_control;
-                control_fault =
-                    pending::apply_to_slot(agent_id, slot, now, self.config.stop_grace).err();
-                if record.lifecycle.lifecycle == AgentLifecycle::Running {
-                    // A daemon can die after committing the Running lifecycle but before
-                    // appending the matching release-state revision. The lease and exact
-                    // agentd handshake prove the live release; close that crash window now.
-                    self.persist_release_state(agent_id, slot)?;
+                if process_fault.is_none() {
+                    slot.event(
+                        record.lifecycle.generation,
+                        SupervisorEventKind::OrphanAdopted,
+                    );
+                    // Install the exact adopted handle before any fallible control
+                    // call. Failed signals retain both ownership and a bounded retry.
+                    slot.pending_control = recovery_control;
+                    control_fault =
+                        pending::apply_to_slot(agent_id, slot, now, self.config.stop_grace).err();
+                    if record.lifecycle.lifecycle == AgentLifecycle::Running
+                        && let Err(error) = self.persist_release_state(agent_id, slot)
+                    {
+                        process_fault = Some(error);
+                    }
                 }
             }
             Adoption::Missing => {
+                crate::restart_budget::observe_restart_process_exit(
+                    record.layout.run_root(),
+                    &lease.release_id,
+                    lease.spawn_generation,
+                    &lease.identity,
+                )
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 remove_lease(record.layout.run_root(), &lease)?;
                 let generation = if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(
@@ -431,10 +535,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.event(generation, SupervisorEventKind::OrphanRejected);
             }
         }
-        // A main-process signal or identity failure must not skip companion
-        // adoption. Each owned process remains independently recoverable.
+        // A main-process signal, release or identity failure must not skip
+        // companion adoption. Each owned process remains independently recoverable.
         self.recover_matrix_companion(agent_id, slot, record, now)?;
         if let Some(error) = control_fault {
+            return Err(error);
+        }
+        if let Some(error) = process_fault {
             return Err(error);
         }
         Ok(())

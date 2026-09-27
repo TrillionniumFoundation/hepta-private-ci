@@ -19,12 +19,13 @@ use sha2::Sha256;
 
 use crate::SupervisorError;
 use crate::restart_budget::RestartBudgetState;
+use crate::restart_budget::validate_persisted_state;
 use crate::restart_policy::RESTART_ATTEMPT_BUDGET;
 use crate::restart_policy::RESTART_RECOVERY_WINDOW;
 
 pub(crate) const RESTART_JOURNAL_SCHEMA_VERSION: u32 = 1;
 pub(crate) const RESTART_JOURNAL_FILE: &str = "supervisor-restart-budget.json";
-const MAX_RESTART_JOURNAL_BYTES: u64 = 4_096;
+const MAX_RESTART_JOURNAL_BYTES: u64 = 16_384;
 const RESTART_JOURNAL_DOMAIN: &[u8] = b"hepta-supervisor:restart-budget:v1";
 static RESTART_JOURNAL_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
@@ -104,8 +105,9 @@ impl RestartBudgetJournal {
 }
 
 // One physical writer/codec owns both independent restart domains. The main
-// Agent budget includes a pending intent; Matrix has a separate release-bound
-// fault window. They may not overwrite each other's record at this path.
+// Agent budget includes a pending intent and exact process lineage; Matrix has
+// a separate release-bound fault window. They may not overwrite each other's
+// record at this path.
 const RESTART_RECORD_SCHEMA: u32 = 2;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -148,16 +150,9 @@ impl RestartRecord {
                 "invalid canonical restart record".to_string(),
             ));
         }
-        if let Some(main) = &self.main
-            && (main.schema_version != 1
-                || main.window_started_unix_ms == 0
-                || (main.pending
-                    && (main.attempts == 0
-                        || main.next_eligible_unix_ms < main.window_started_unix_ms)))
-        {
-            return Err(SupervisorError::CorruptLease(
-                "invalid pending restart state".to_string(),
-            ));
+        if let Some(main) = &self.main {
+            validate_persisted_state(main)
+                .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
         }
         if let Some(companion) = &self.companion {
             companion.validate()?;
@@ -189,6 +184,16 @@ fn legacy_main(
         attempts: window.attempts,
         pending: false,
         next_eligible_unix_ms: started,
+        target_release: None,
+        operation_started_unix_ms: None,
+        predecessor: None,
+        predecessor_drain_deadline_unix_ms: None,
+        predecessor_stop_deadline_unix_ms: None,
+        predecessor_exit_observed_unix_ms: None,
+        replacement: None,
+        replacement_healthy_unix_ms: None,
+        terminal: None,
+        terminal_unix_ms: None,
     }))
 }
 
@@ -305,6 +310,8 @@ pub(crate) fn write_main_restart_budget(
     run_root: &Path,
     state: &RestartBudgetState,
 ) -> Result<(), SupervisorError> {
+    validate_persisted_state(state)
+        .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
     let mut record = read_record(run_root)?.unwrap_or_else(RestartRecord::empty);
     record.main = Some(state.clone());
     write_record(run_root, record)
