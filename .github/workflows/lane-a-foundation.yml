@@ -249,3 +249,46 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 90
+
+  secrets-native-paired-attestation:
+    name: secrets.heptabao paired exact-candidate attestation
+    if: always() && github.event_name == 'pull_request'
+    needs:
+      - secrets-native-head
+      - secrets-native-merge
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out source-side pairing logic
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Download source-head receipt
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e
+        with:
+          name: secrets-native-head-${{ github.event.pull_request.head.sha }}
+          path: .hepta-pair/source
+      - name: Download synthetic-merge receipt
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e
+        with:
+          name: secrets-native-merge-${{ github.event.pull_request.head.sha }}
+          path: .hepta-pair/merge
+      - name: Bind both exact candidates and execution environments
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 codex-rs/hepta-bao-adapter/qa/pair_receipts.py \
+            --source .hepta-pair/source/receipt.json \
+            --merge .hepta-pair/merge/receipt.json \
+            --expected-source-sha "${{ github.event.pull_request.head.sha }}" \
+            --output .hepta-pair/paired-receipt.json
+      - name: Retain paired attestation including a failed verdict
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: secrets-native-paired-${{ github.event.pull_request.head.sha }}
+          path: .hepta-pair/paired-receipt.json
+          if-no-files-found: error
+          retention-days: 90
