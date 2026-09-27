@@ -1,0 +1,89 @@
+name: inference.worker closure bootstrap
+
+on:
+  push:
+    branches:
+      - codex/inference-worker-closure-20260927
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: inference-worker-closure-bootstrap-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-and-verify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CARGO_BUILD_JOBS: "2"
+      RUST_BACKTRACE: "1"
+    steps:
+      - name: Check out exact closure branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Expand bounded remediation patch
+        run: python3 scripts/inference_worker_closure_bootstrap.py
+
+      - name: Format owned Rust packages
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path Cargo.toml \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-infer-worker-host
+
+      - name: Rebind conservative exact-source declaration
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-inference-worker-status.py --declaration
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta_module_registry.py --strict
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta-inference-worker-status.py --check
+
+      - name: Commit expanded candidate before execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .bootstrap/inference-worker
+          rm -f scripts/inference_worker_closure_bootstrap.py
+          git config user.name "Hepta inference.worker CI"
+          git config user.email "hepta-inference-worker-ci@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "inference.worker: close local durability and qualification gaps"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: Test inference.control library
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-infer-core --lib
+
+      - name: Test hosted and legacy worker surfaces
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-infer-worker-host --lib
+          cargo test --locked -p codex-hepta-infer-worker-host --bin hepta-infer-worker
+
+      - name: Test experimental local worker and all targets
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-infer-worker-host --all-targets --features local-model-experimental,legacy-local-model-boundary
+
+      - name: Strict inference.worker lint
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets --features local-model-experimental,legacy-local-model-boundary -- -D warnings
+
+      - name: Assert committed candidate is unchanged
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
