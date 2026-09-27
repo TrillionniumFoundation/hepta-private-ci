@@ -8,7 +8,6 @@
 //! rejects old responses. No raw query or context body is retained here.
 
 use std::collections::BTreeMap;
-use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Duration;
 use std::time::Instant;
@@ -73,8 +72,8 @@ impl ContextPlanReceipts {
         }
         let mut entries = self.entries.lock().map_err(|_| closed("context receipt lock"))?;
         entries.retain(|_, existing| now < existing.expires);
-        // Never replace an existing plan identity with another request or extend
-        // an existing lease on replay, even when both responses have equal text.
+        // Never replace an existing identity with another request or extend
+        // a lease on replay, even when both responses have equal text.
         if let Some(existing) = entries.get(&plan) {
             return if existing.binding(plan) == entry.binding(plan) {
                 Ok(())
@@ -98,7 +97,9 @@ impl ContextPlanReceipts {
         now: Instant,
     ) -> Result<Digest32, AgentdError> {
         let entries = self.entries.lock().map_err(|_| closed("context receipt lock"))?;
-        let entry = entries.get(&plan).ok_or_else(|| closed("context plan was not issued by this host"))?;
+        let entry = entries
+            .get(&plan)
+            .ok_or_else(|| closed("context plan was not issued by this host"))?;
         if now < entry.issued
             || now >= entry.expires
             || entry.response_binding != response_binding
@@ -126,7 +127,8 @@ impl ContextPlanReceipts {
                     return Err(closed("context request outside bounded profile"));
                 }
                 let issued = Instant::now();
-                let expires = issued.checked_add(CONTEXT_LEASE)
+                let expires = issued
+                    .checked_add(CONTEXT_LEASE)
                     .ok_or_else(|| closed("monotonic context lease overflow"))?;
                 let generation = state.current_generation()?;
                 let before = current_profiles(state).await?;
@@ -148,14 +150,18 @@ impl ContextPlanReceipts {
                         return Err(closed("context owner profile changed during read"));
                     }
                     let plan = plan_identity(snapshot)?;
-                    self.publish(plan, Entry {
-                        request_binding,
-                        response_binding: snapshot_binding(snapshot)?,
-                        profiles: before,
-                        lifecycle_generation: generation,
-                        issued,
-                        expires,
-                    }, Instant::now())?;
+                    self.publish(
+                        plan,
+                        Entry {
+                            request_binding,
+                            response_binding: snapshot_binding(snapshot)?,
+                            profiles: before,
+                            lifecycle_generation: generation,
+                            issued,
+                            expires,
+                        },
+                        Instant::now(),
+                    )?;
                 }
                 Ok(response)
             }
@@ -177,13 +183,19 @@ impl ContextPlanReceipts {
                 let response_binding = snapshot_binding(&snapshot)?;
                 let generation = state.current_generation()?;
                 let before = current_profiles(state).await?;
-                let binding = self.require(plan, response_binding, before, generation, Instant::now())?;
+                let binding = self.require(
+                    plan, response_binding, before, generation, Instant::now(),
+                )?;
                 // Canonical owner-cut, item revision/content and ranker checks
-                // remain mandatory. Host receipt membership never replaces them.
+                // remain mandatory. Membership never replaces these checks.
                 let response = state.response(request_id, spawn_generation, method).await?;
                 let after = current_profiles(state).await?;
                 let final_binding = self.require(
-                    plan, response_binding, after, state.current_generation()?, Instant::now(),
+                    plan,
+                    response_binding,
+                    after,
+                    state.current_generation()?,
+                    Instant::now(),
                 )?;
                 if binding != final_binding {
                     return Err(closed("context receipt changed during final-use revalidation"));
@@ -201,17 +213,25 @@ async fn current_profiles(state: &AgentdState) -> Result<Profiles, AgentdError> 
     let owner = state.identity().agent_id.clone();
     let generation = state.identity().spawn_generation;
     tokio::task::spawn_blocking(move || {
-        let retrieval = retrieval.map(|current| {
-            let context = current.current(&owner, generation).map_err(|_| closed("retrieval profile unavailable"))?;
-            context.validate().map_err(|_| closed("retrieval profile invalid"))?;
-            Ok::<_, AgentdError>(context.binding_digest())
-        }).transpose()?;
-        let ranker = ranker.map(|ranker| {
-            ranker.current_policy_digest(&owner, generation)
-                .map_err(|_| closed("ranker policy unavailable"))
-        }).transpose()?;
+        let retrieval = retrieval
+            .map(|current| {
+                let context = current
+                    .current(&owner, generation)
+                    .map_err(|_| closed("retrieval profile unavailable"))?;
+                context.validate().map_err(|_| closed("retrieval profile invalid"))?;
+                Ok::<_, AgentdError>(context.binding_digest())
+            })
+            .transpose()?;
+        let ranker = ranker
+            .map(|ranker| {
+                ranker.current_policy_digest(&owner, generation)
+                    .map_err(|_| closed("ranker policy unavailable"))
+            })
+            .transpose()?;
         Ok(Profiles { retrieval, ranker })
-    }).await.map_err(|_| closed("context profile worker failed"))?
+    })
+    .await
+    .map_err(|_| closed("context profile worker failed"))?
 }
 
 fn plan_identity(snapshot: &CognitiveContextSnapshot) -> Result<Digest32, AgentdError> {
