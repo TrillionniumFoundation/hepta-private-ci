@@ -1,0 +1,104 @@
+name: Temporary compact.engine include-surface repair
+
+on:
+  push:
+    branches:
+      - fix/compact-engine-current-main-convergence-20260925
+    paths:
+      - .github/workflows/compact-engine-include-fix.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: compact-engine-include-repair-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact repair trigger
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Repair include-compatible module surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path("codex-rs/hepta-compact-engine/src")
+          for name in [
+              "durable.rs",
+              "fenced_coordinator.rs",
+              "fenced_coordinator_guarded.rs",
+          ]:
+              path = root / name
+              lines = path.read_text().splitlines(keepends=True)
+              changed = 0
+              for index, line in enumerate(lines):
+                  if line.startswith("//!"):
+                      lines[index] = "//" + line[3:]
+                      changed += 1
+                  elif line.strip():
+                      break
+              if changed == 0:
+                  raise SystemExit(f"expected leading inner documentation in {path}")
+              path.write_text("".join(lines))
+
+          durable = root / "durable.rs"
+          text = durable.read_text()
+          old = "use codex_hepta_cognitive_types::lane_c::{CompactionProofV2, CompactionProofWitnessV1};\n"
+          if text.count(old) != 1:
+              raise SystemExit("unexpected durable proof import surface")
+          text = text.replace(old, "", 1)
+          old = "use sqlx::{Connection, Executor, Row, SqliteConnection, SqlitePool};"
+          if text.count(old) != 1:
+              raise SystemExit("unexpected durable sqlx import surface")
+          text = text.replace(old, "use sqlx::{Row, SqliteConnection, SqlitePool};", 1)
+          durable.write_text(text)
+
+          fenced = root / "fenced_coordinator.rs"
+          text = fenced.read_text()
+          old = "use sqlx::{Executor, Row, SqliteConnection, SqlitePool};"
+          if text.count(old) != 1:
+              raise SystemExit("unexpected fenced coordinator sqlx import surface")
+          fenced.write_text(
+              text.replace(old, "use sqlx::{Row, SqliteConnection, SqlitePool};", 1)
+          )
+
+          facade = root / "durable_facade.rs"
+          text = facade.read_text()
+          old = "pub use original::DurableCompactionSelectionV1;\n"
+          if text.count(old) != 1:
+              raise SystemExit("unexpected durable selection export surface")
+          facade.write_text(text.replace(old, "", 1))
+          PY
+
+          rm .github/workflows/compact-engine-include-fix.yml
+          git diff --check
+          mapfile -t changed < <(git status --short | sed -E 's/^.. //' | sort)
+          printf '%s\n' "${changed[@]}" > /tmp/actual-paths
+          cat > /tmp/expected-paths <<'EOF'
+          .github/workflows/compact-engine-include-fix.yml
+          codex-rs/hepta-compact-engine/src/durable.rs
+          codex-rs/hepta-compact-engine/src/durable_facade.rs
+          codex-rs/hepta-compact-engine/src/fenced_coordinator.rs
+          codex-rs/hepta-compact-engine/src/fenced_coordinator_guarded.rs
+          EOF
+          sort -o /tmp/expected-paths /tmp/expected-paths
+          diff -u /tmp/expected-paths /tmp/actual-paths
+
+          git config user.name 'OpenAI'
+          git config user.email 'noreply@openai.com'
+          git add -A -- .github/workflows/compact-engine-include-fix.yml codex-rs/hepta-compact-engine/src
+          git commit -s -m 'fix(compact.engine): make included owners compile cleanly'
+          git push origin "HEAD:fix/compact-engine-current-main-convergence-20260925"
