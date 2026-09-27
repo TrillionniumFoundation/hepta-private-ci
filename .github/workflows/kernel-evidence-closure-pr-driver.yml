@@ -1,0 +1,84 @@
+name: Kernel evidence closure PR driver
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kernel-evidence-closure-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  drive:
+    if: ${{ github.head_ref == 'fix/kernel-evidence-production-closure' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 125
+    steps:
+      - name: Check out closure branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: fix/kernel-evidence-production-closure
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Execute audited closure stages
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git log -1 --pretty=%B | grep -Fq '[kernel-evidence-closure]'; then
+            echo 'Closure commit already present; this synchronized run is a no-op.'
+            exit 0
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          workflow = Path('.github/workflows/kernel-evidence-closure-bot.yml')
+          lines = workflow.read_text(encoding='utf-8').splitlines()
+          stages = [
+              'Apply correctness and policy closure',
+              'Run focused source qualification',
+              'Commit source closure',
+              'Refresh implementation map and verify repository gates',
+              'Remove temporary worker and publish commits',
+          ]
+
+          for stage in stages:
+              marker = f'- name: {stage}'
+              try:
+                  start = next(index for index, line in enumerate(lines) if line.strip() == marker)
+              except StopIteration as exc:
+                  raise SystemExit(f'missing closure stage: {stage}') from exc
+              try:
+                  run_line = next(
+                      index
+                      for index in range(start + 1, len(lines))
+                      if lines[index].strip() == 'run: |'
+                  )
+              except StopIteration as exc:
+                  raise SystemExit(f'missing run block for closure stage: {stage}') from exc
+              run_indent = len(lines[run_line]) - len(lines[run_line].lstrip())
+              body = []
+              for line in lines[run_line + 1:]:
+                  indent = len(line) - len(line.lstrip())
+                  if line.strip() and indent <= run_indent:
+                      break
+                  prefix = min(len(line), run_indent + 2)
+                  body.append(line[prefix:])
+              script = '\n'.join(body) + '\n'
+              print(f'::group::{stage}', flush=True)
+              subprocess.run(['bash', '-lc', script], check=True)
+              print('::endgroup::', flush=True)
+          PY
+
+          git rm .github/workflows/kernel-evidence-closure-pr-driver.yml
+          git commit -m 'ci: remove kernel.evidence PR driver [kernel-evidence-closure]'
+          python3 scripts/hepta-implementation-maps.py verify
+          git push origin HEAD:fix/kernel-evidence-production-closure
