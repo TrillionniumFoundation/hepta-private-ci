@@ -119,13 +119,16 @@ pub enum FederationHostAdmissionV1 {
     Inbound(VerifiedFederationFrameV1),
 }
 
-/// Transport-neutral host boundary for the authenticated cross-host candidate.
+/// Transport-neutral server-side host boundary for the authenticated cross-host
+/// candidate.
 ///
 /// The selected network adapter must supply the peer identity authenticated by
 /// its secure channel. This host checks that identity against the frame sender,
-/// persists replay admission before exposing a query, persists pending attempt
-/// intent before read execution, and persists cancellation/terminal state before
-/// emitting an acknowledgement or response. It owns no memory writer.
+/// durably commits replay plus query/cancel state before exposing work or bytes,
+/// and commits terminal state before returning a response. Recovery transitions
+/// are staged and installed only after the recovery store atomically replaces
+/// its prior snapshot, so a store failure leaves the live host retryable. It owns
+/// no memory writer.
 pub struct FederationWireHostV1<S>
 where
     S: FederationRecoveryStoreV1,
@@ -134,6 +137,7 @@ where
     credentials: PeerCredentialRegistryV1,
     outbound_credentials: BTreeMap<String, FederationOutboundCredentialV1>,
     replay: ReplayCacheV1,
+    recovery_limits: FederationRecoveryLimitsV1,
     recovery: DurableFederationStateV1,
     recovery_store: S,
 }
@@ -174,10 +178,11 @@ where
             credentials,
             outbound_credentials: BTreeMap::new(),
             replay,
+            recovery_limits,
             recovery,
             recovery_store,
         };
-        host.persist_recovery()?;
+        host.persist_current()?;
         Ok(host)
     }
 
@@ -247,7 +252,10 @@ where
         if &frame.sender_peer_id != transport_peer_id {
             return Err(FederationHostError::TransportPeerMismatch);
         }
-        let durable_replay_key = self.recovery.preflight_frame(
+
+        let mut next_recovery = self.stage_recovery()?;
+        let mut next_replay = self.replay.clone();
+        let durable_replay_key = next_recovery.preflight_frame(
             &frame.sender_peer_id,
             &frame.receiver_peer_id,
             &frame.key_id,
@@ -260,58 +268,51 @@ where
             &self.local_peer_id,
             now_unix_ms,
             &self.credentials,
-            &mut self.replay,
+            &mut next_replay,
         )?;
-        self.recovery.record_verified_frame(
+        next_recovery.record_verified_frame(
             durable_replay_key,
             verified.sender_peer_id(),
             verified.expires_unix_ms(),
         )?;
-        // A query is never exposed until the verified frame's replay admission
-        // survives restart.
-        self.persist_recovery()?;
 
-        match verified.message().clone() {
+        let admission = match verified.message().clone() {
             FederationWireMessageV1::Query(query) => {
-                self.recovery.begin_attempt(
+                next_recovery.begin_attempt(
                     verified.sender_peer_id(),
                     &query.query_id,
                     query.query_binding_digest,
                     verified.expires_unix_ms(),
                     now_unix_ms,
                 )?;
-                // Durable intent precedes the read handler. A store failure is a
-                // fail-closed admission failure, not permission to execute.
-                self.persist_recovery()?;
-                Ok(FederationHostAdmissionV1::Query(
-                    AdmittedFederationQueryV1 {
-                        peer_id: verified.sender_peer_id().clone(),
-                        query,
-                        admitted_unix_ms: now_unix_ms,
-                        response_expiry_ceiling_unix_ms: verified.expires_unix_ms(),
-                    },
-                ))
+                FederationHostAdmissionV1::Query(AdmittedFederationQueryV1 {
+                    peer_id: verified.sender_peer_id().clone(),
+                    query,
+                    admitted_unix_ms: now_unix_ms,
+                    response_expiry_ceiling_unix_ms: verified.expires_unix_ms(),
+                })
             }
             FederationWireMessageV1::Cancel(cancel) => {
-                let ack = self.recovery.observe_cancel(
+                let acknowledgement = next_recovery.observe_cancel(
                     verified.sender_peer_id(),
                     &cancel,
                     now_unix_ms,
                 )?;
-                self.persist_recovery()?;
                 let reply = self.seal_outbound(
                     verified.sender_peer_id(),
-                    FederationWireMessageV1::CancelAck(ack),
+                    FederationWireMessageV1::CancelAck(acknowledgement),
                     now_unix_ms,
                     verified.expires_unix_ms(),
                 )?;
-                Ok(FederationHostAdmissionV1::Reply(reply))
+                FederationHostAdmissionV1::Reply(reply)
             }
             FederationWireMessageV1::Response(_)
             | FederationWireMessageV1::CancelAck(_) => {
-                Ok(FederationHostAdmissionV1::Inbound(verified))
+                FederationHostAdmissionV1::Inbound(verified)
             }
-        }
+        };
+        self.commit_recovery_and_replay(next_recovery, next_replay)?;
+        Ok(admission)
     }
 
     pub fn complete_query(
@@ -337,23 +338,22 @@ where
             terminal_observed: true,
         });
         let terminal_digest = message.binding_digest();
-        self.recovery.observe_terminal(
+        let mut next_recovery = self.stage_recovery()?;
+        next_recovery.observe_terminal(
             &admitted.peer_id,
             &admitted.query.query_id,
             admitted.query.query_binding_digest,
             terminal_digest,
             now_unix_ms,
         )?;
-        // Terminal state is durable before bytes can leave the host. If a
-        // cancellation was persisted first, observe_terminal returns Cancelled
-        // and no success response can be emitted.
-        self.persist_recovery()?;
-        self.seal_outbound(
+        let response = self.seal_outbound(
             &admitted.peer_id,
             message,
             now_unix_ms,
             admitted.response_expiry_ceiling_unix_ms,
-        )
+        )?;
+        self.commit_recovery(next_recovery)?;
+        Ok(response)
     }
 
     pub fn recovery_snapshot(&self) -> Result<Vec<u8>, FederationHostError> {
@@ -402,7 +402,40 @@ where
             .map_err(|_| FederationHostError::Codec)
     }
 
-    fn persist_recovery(&mut self) -> Result<(), FederationHostError> {
+    fn stage_recovery(&self) -> Result<DurableFederationStateV1, FederationHostError> {
+        let snapshot = self.recovery.snapshot_bytes()?;
+        DurableFederationStateV1::restore(
+            self.local_peer_id.clone(),
+            self.recovery_limits,
+            self.recovery.last_observed_unix_ms(),
+            &snapshot,
+        )
+        .map_err(FederationHostError::Recovery)
+    }
+
+    fn commit_recovery(
+        &mut self,
+        next_recovery: DurableFederationStateV1,
+    ) -> Result<(), FederationHostError> {
+        let snapshot = next_recovery.snapshot_bytes()?;
+        self.recovery_store.store(&snapshot)?;
+        self.recovery = next_recovery;
+        Ok(())
+    }
+
+    fn commit_recovery_and_replay(
+        &mut self,
+        next_recovery: DurableFederationStateV1,
+        next_replay: ReplayCacheV1,
+    ) -> Result<(), FederationHostError> {
+        let snapshot = next_recovery.snapshot_bytes()?;
+        self.recovery_store.store(&snapshot)?;
+        self.recovery = next_recovery;
+        self.replay = next_replay;
+        Ok(())
+    }
+
+    fn persist_current(&mut self) -> Result<(), FederationHostError> {
         let snapshot = self.recovery.snapshot_bytes()?;
         self.recovery_store.store(&snapshot)?;
         Ok(())
@@ -430,14 +463,29 @@ impl fmt::Display for FederationHostError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Codec => formatter.write_str("authenticated federation codec rejected the frame"),
-            Self::InvalidOutboundCredential => formatter.write_str("outbound credential selector is invalid"),
-            Self::MissingOutboundCredential => formatter.write_str("outbound directional credential is not bound"),
-            Self::PeerCapacityExhausted => formatter.write_str("federation host peer capacity is exhausted"),
-            Self::TransportPeerMismatch => formatter.write_str("secure transport peer identity does not match frame sender"),
-            Self::EmptyResultDigest => formatter.write_str("federation query result digest cannot be zero"),
-            Self::FrontierOwnerMismatch => formatter.write_str("owner-cut witness does not belong to this host"),
-            Self::FrontierClockInvalid => formatter.write_str("owner-cut witness time is outside the admitted query interval"),
-            Self::ResponseExpired => formatter.write_str("federation response has no remaining authenticated lifetime"),
+            Self::InvalidOutboundCredential => {
+                formatter.write_str("outbound credential selector is invalid")
+            }
+            Self::MissingOutboundCredential => {
+                formatter.write_str("outbound directional credential is not bound")
+            }
+            Self::PeerCapacityExhausted => {
+                formatter.write_str("federation host peer capacity is exhausted")
+            }
+            Self::TransportPeerMismatch => formatter.write_str(
+                "secure transport peer identity does not match frame sender",
+            ),
+            Self::EmptyResultDigest => {
+                formatter.write_str("federation query result digest cannot be zero")
+            }
+            Self::FrontierOwnerMismatch => {
+                formatter.write_str("owner-cut witness does not belong to this host")
+            }
+            Self::FrontierClockInvalid => formatter.write_str(
+                "owner-cut witness time is outside the admitted query interval",
+            ),
+            Self::ResponseExpired => formatter
+                .write_str("federation response has no remaining authenticated lifetime"),
             Self::Credential(error) => error.fmt(formatter),
             Self::Protocol(error) => error.fmt(formatter),
             Self::Replay(error) => error.fmt(formatter),

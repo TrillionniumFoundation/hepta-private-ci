@@ -14,6 +14,7 @@ struct ReplayEntry {
     expires_unix_ms: u64,
 }
 
+#[derive(Clone)]
 pub struct ReplayCacheV1 {
     capacity: usize,
     per_credential_capacity: usize,
