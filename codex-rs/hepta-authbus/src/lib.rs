@@ -14,6 +14,7 @@ mod authority_store;
 mod host;
 mod issuer_registry;
 mod operations;
+#[path = "owner_fence_secure.rs"]
 mod owner_fence;
 mod quota;
 mod quota_store;
