@@ -136,6 +136,57 @@ impl SemanticRetrievalRequestV1 {
         Ok(bytes)
     }
 
+    /// Recover exactly the existing V1 bytes. Decoding does not revalidate
+    /// present-day source authorization; the consumer owns that use boundary.
+    pub fn decode(raw: &[u8]) -> Result<Self, RetrievalWireError> {
+        if raw.len() > MAX_RETRIEVAL_FRAME_BYTES {
+            return Err(RetrievalWireError::Bounds);
+        }
+        let mut reader = Reader { remaining: raw };
+        if reader.take(REQUEST_MAGIC.len())? != REQUEST_MAGIC {
+            return Err(RetrievalWireError::Profile);
+        }
+        let operation_id = reader.text(128)?;
+        let workspace_id = reader.text(128)?;
+        let generation = reader.u64()?;
+        let objective_digest = reader.digest_hex()?;
+        let observation_digest = reader.digest_hex()?;
+        let bundle_digest = reader.digest_hex()?;
+        let deadline_ms = reader.u64()?;
+        let query = reader.text(2048)?;
+        let count = reader.u32()?;
+        if count == 0 || count > 15 {
+            return Err(RetrievalWireError::Bounds);
+        }
+        let mut sources = Vec::new();
+        for _ in 0..count {
+            sources.push(RetrievalSourceV1 {
+                source_id: reader.text(128)?,
+                revision: reader.u64()?,
+                content_sha256: reader.digest_hex()?,
+                text: reader.text(2048)?,
+            });
+        }
+        if !reader.remaining.is_empty() {
+            return Err(RetrievalWireError::Trailing);
+        }
+        let request = Self {
+            operation_id,
+            workspace_id,
+            generation,
+            objective_digest,
+            observation_digest,
+            bundle_digest,
+            deadline_ms,
+            query,
+            sources,
+        };
+        if request.encode()?.as_slice() != raw {
+            return Err(RetrievalWireError::Binding);
+        }
+        Ok(request)
+    }
+
     /// Decode a complete reply only for this exact request. This proves byte
     /// correspondence, not model execution, authority, calibration or success.
     pub fn decode_reply(&self, raw: &[u8]) -> Result<SemanticRetrievalReplyV1, RetrievalWireError> {
@@ -243,6 +294,26 @@ impl<'a> Reader<'a> {
         }
         let (value, remaining) = self.remaining.split_at(count);
         self.remaining = remaining;
+        Ok(value)
+    }
+
+    fn text(&mut self, maximum: usize) -> Result<String, RetrievalWireError> {
+        let length = usize::try_from(self.u32()?).map_err(|_| RetrievalWireError::Bounds)?;
+        if length == 0 || length > maximum {
+            return Err(RetrievalWireError::Bounds);
+        }
+        std::str::from_utf8(self.take(length)?)
+            .map(str::to_owned)
+            .map_err(|_| RetrievalWireError::Profile)
+    }
+
+    fn digest_hex(&mut self) -> Result<String, RetrievalWireError> {
+        const HEX: &[u8; 16] = b"0123456789abcdef";
+        let mut value = String::with_capacity(64);
+        for &byte in self.take(32)? {
+            value.push(char::from(HEX[usize::from(byte >> 4)]));
+            value.push(char::from(HEX[usize::from(byte & 15)]));
+        }
         Ok(value)
     }
 
