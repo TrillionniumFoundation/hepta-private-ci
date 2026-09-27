@@ -225,10 +225,31 @@ class RetrievalDriver:
     def predict(self, raw: bytes, deadline: float) -> dict[str, Any]:
         # Deadline is a host-supplied monotonic absolute deadline, not a field
         # supplied by model input or a timeout reset on each retry.
-        if not isinstance(deadline, (int, float)) or not math.isfinite(deadline):
+        try:
+            valid_deadline = type(deadline) in (int, float) and math.isfinite(deadline)
+        except OverflowError:
+            valid_deadline = False
+        if not valid_deadline:
             raise Rejected("invalid deadline")
+        last_clock = None
+
+        def clock() -> float:
+            nonlocal last_clock
+            value = time.monotonic()
+            try:
+                valid = type(value) in (int, float) and math.isfinite(value)
+            except OverflowError:
+                valid = False
+            if not valid or (last_clock is not None and value < last_clock):
+                raise Rejected("invalid or regressed monotonic clock")
+            last_clock = value
+            return value
         request, state, questions = prepare(raw)
-        if time.monotonic() >= deadline:
+        # Preserve both meaning and order before handing mutable Python values
+        # to the predictor. Canonical JSON alone does not bind tie-break order.
+        admitted_questions = encoded(questions)
+        candidate_order = tuple(questions["source"]["criteria"])
+        if clock() >= deadline:
             raise Rejected("expired before inference")
         if not self._lock.acquire(blocking=False):
             raise Rejected("worker capacity occupied")
@@ -236,19 +257,26 @@ class RetrievalDriver:
         try:
             tokens = token_budget(self._agent, state, questions["source"],
                                   self._max_len, self._head_max_len)
-            if time.monotonic() >= deadline:
+            entry = clock()
+            if entry >= deadline:
                 raise Rejected("expired before model entry")
-            started = time.monotonic()
+            started = entry
             result = self._agent.predict(state, questions, max_len=self._max_len,
                                          head_max_len=self._head_max_len)
-            elapsed = time.monotonic() - started
-            if time.monotonic() >= deadline:
+            elapsed = clock() - started
+            if clock() >= deadline:
                 # Work may have consumed resources; the host must record it and
                 # reconcile. Do not release a durable reservation as unexecuted.
                 raise TimeoutError("inference entered; result arrived after deadline")
+            if (encoded(questions) != admitted_questions
+                    or tuple(questions["source"]["criteria"]) != candidate_order):
+                raise Rejected("predictor changed admitted question or candidate order")
             answer = result["answers"]["source"]
-            probabilities = answer["probabilities"]
-            if not isinstance(probabilities, dict) or set(probabilities) != set(questions["source"]["criteria"]):
+            if not isinstance(answer["probabilities"], dict):
+                raise Rejected("invalid prediction distribution")
+            # Do not publish a receipt that still aliases predictor-owned data.
+            probabilities = dict(answer["probabilities"])
+            if set(probabilities) != set(candidate_order):
                 raise Rejected("model changed the complete candidate set")
             if any(type(p) not in (int, float) or not math.isfinite(p) or not 0 <= p <= 1
                    for p in probabilities.values()) or abs(sum(probabilities.values()) - 1) > 0.002:
@@ -256,7 +284,7 @@ class RetrievalDriver:
             if answer["choice"] not in probabilities:
                 raise Rejected("unknown model selection")
             # The host policy owns deterministic tie-breaking in admitted order.
-            selected = max(questions["source"]["criteria"], key=probabilities.__getitem__)
+            selected = max(candidate_order, key=probabilities.__getitem__)
             # Ignore act_probability, self-reported success and raw confidence.
             observation = {"format": FORMAT, "operation_id": request["operation_id"],
                            "scope": request["scope"], "input_digest": digest(request),
@@ -269,11 +297,15 @@ class RetrievalDriver:
                            "latency_seconds": elapsed, "authority": False,
                            "calibration_verified": False, "task_success": None}
             observation["receipt_digest"] = digest(observation)
+            # Validation and hashing consume the original budget too. A late or
+            # invalid completion is entered work, never an unused reservation.
+            if clock() >= deadline:
+                raise TimeoutError("inference entered; acceptance exceeded deadline")
             return observation
         except Exception as error:
             if started is not None:
                 raise EnteredFailure("model entered without a publishable result",
-                                     time.monotonic() - started) from error
+                                     max(0.0, last_clock - started)) from error
             raise
         finally:
             self._lock.release()
