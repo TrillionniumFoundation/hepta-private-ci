@@ -42,6 +42,18 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           mkdir -p .hepta-evidence
+          tar -czf .hepta-evidence/runtime-supervisor-source.tar.gz \
+            codex-rs/hepta-supervisor \
+            docs/modules/runtime.supervisor \
+            docs/modules/MODULE_DOCS.json \
+            qualification/lane-b \
+            scripts/hepta_supervisor_ci.py \
+            scripts/hepta_supervisor_evidence.py \
+            scripts/hepta-lane-b-truth.py \
+            scripts/hepta-module-docs.py \
+            scripts/hepta-docs.py \
+            .github/workflows/hepta-supervisor-qualification.yml \
+            .github/workflows/hepta-lane-b-truth.yml
           python3 - <<'PY'
           import json
           import subprocess
