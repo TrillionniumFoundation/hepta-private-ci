@@ -140,14 +140,15 @@ mod tests {
 
     #[test]
     fn recovered_binding_is_exact_and_requires_no_decision_replay() {
+        let run_id = id("run.recovered");
         let binding = IntelligenceLearningBindingV1::new(
-            id("run.recovered"),
+            run_id.clone(),
             digest("snapshot"),
             digest("objective"),
             digest("envelope"),
             digest("candidates"),
             digest("dispatch"),
-            id("decision.recovered"),
+            run_id,
             id("episode.recovered"),
             id("candidate.recovered"),
         )
