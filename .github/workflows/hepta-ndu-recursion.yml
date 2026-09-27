@@ -51,6 +51,9 @@ on:
       - "scripts/test_verify_cargo_lock.py"
       - "scripts/hepta_ndu_evidence.py"
       - "scripts/test_hepta_ndu_evidence.py"
+      - "scripts/hepta_ndu_observer.py"
+      - "scripts/test_hepta_ndu_observer.py"
+      - "codex-rs/hepta-agentd/tests/support/ndu_observer.rs"
       - "scripts/test_hepta_ndu_source_policy.py"
       - "scripts/hepta-ndu-mounted-filesystem.py"
       - "scripts/test_hepta_ndu_mounted_filesystem.py"
@@ -108,6 +111,9 @@ on:
       - "scripts/test_verify_cargo_lock.py"
       - "scripts/hepta_ndu_evidence.py"
       - "scripts/test_hepta_ndu_evidence.py"
+      - "scripts/hepta_ndu_observer.py"
+      - "scripts/test_hepta_ndu_observer.py"
+      - "codex-rs/hepta-agentd/tests/support/ndu_observer.rs"
       - "scripts/test_hepta_ndu_source_policy.py"
       - "scripts/hepta-ndu-mounted-filesystem.py"
       - "scripts/test_hepta_ndu_mounted_filesystem.py"
@@ -136,7 +142,7 @@ jobs:
           persist-credentials: false
       - id: pin
         env:
-          BASE: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+          BASE: ${{ github.event.pull_request.base.sha || '' }}
         shell: bash
         run: |
           set -euo pipefail
