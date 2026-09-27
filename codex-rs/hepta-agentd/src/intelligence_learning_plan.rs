@@ -1,10 +1,13 @@
-//! Host-owned construction of the canonical learning Decision.
+//! Host-owned construction and ownership of canonical learning Decisions.
 //!
-//! The provider supplies policy identity, candidate-completeness evidence and a
-//! signer capability.  Run, snapshot, selected candidate and dispatch identities
-//! are derived only from the prepared canonical envelope.
+//! The shared product profile is installed into both the invocation provider
+//! and runner. It owns the durable learning host plus bounded per-run Decision
+//! plans. A bound runner cannot return `Ready` until the exact Decision intent
+//! is durably acknowledged by the canonical learning-ledger writer.
 
+use std::collections::BTreeMap;
 use std::sync::Arc;
+use std::sync::Mutex;
 
 use codex_hepta_intelligence::AdvisoryDecisionV1;
 use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
@@ -13,9 +16,14 @@ use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use crate::AgentdIntelligenceLearningHostV1;
 use crate::IntelligenceLearningBindingV1;
 use crate::IntelligenceLearningErrorV1;
+use crate::IntelligenceLearningStateV1;
+use crate::IntelligenceLearningStatusV1;
 use crate::PreparedAgentdIntelligenceRunV1;
+
+const MAX_PENDING_DECISION_PLANS: usize = 256;
 
 pub trait AgentdIntelligenceDecisionEvidenceProviderV1: Send + Sync {
     fn sign(
@@ -25,6 +33,7 @@ pub trait AgentdIntelligenceDecisionEvidenceProviderV1: Send + Sync {
     ) -> Result<SignedLearningEvidenceV1, IntelligenceLearningErrorV1>;
 }
 
+#[derive(Clone)]
 pub struct AgentdIntelligenceDecisionPlanV1 {
     expected_predecessor: Digest32,
     episode_id: StableId,
@@ -67,7 +76,7 @@ impl AgentdIntelligenceDecisionPlanV1 {
         })
     }
 
-    pub(crate) fn prepare(
+    fn prepare(
         &self,
         prepared: &PreparedAgentdIntelligenceRunV1,
         now: u64,
@@ -94,7 +103,10 @@ impl AgentdIntelligenceDecisionPlanV1 {
         let run_snapshot = prepared.run_snapshot();
         if run_snapshot.run_id != prepared.envelope.run_id.to_string()
             || run_snapshot.objective_digest != prepared.envelope.objective_digest.to_string()
-            || run_snapshot.compilation_receipt_digest_is_invalid()
+            || !valid_digest_text(&run_snapshot.request_digest)
+            || !valid_digest_text(&run_snapshot.body_digest)
+            || !valid_digest_text(&run_snapshot.artifact_set_digest)
+            || !valid_digest_text(&run_snapshot.fence_digest)
         {
             return Err(IntelligenceLearningErrorV1::Invalid(
                 "prepared run snapshot identity",
@@ -134,11 +146,114 @@ impl AgentdIntelligenceDecisionPlanV1 {
     }
 }
 
-pub(crate) struct PreparedIntelligenceLearningDecisionV1 {
-    pub binding: IntelligenceLearningBindingV1,
-    pub expected_predecessor: Digest32,
-    pub decision: ProductionDecisionV2,
-    pub evidence: SignedLearningEvidenceV1,
+pub struct AgentdIntelligenceProductProfileV1 {
+    profile_digest: Digest32,
+    learning_host: Arc<AgentdIntelligenceLearningHostV1>,
+    plans: Mutex<BTreeMap<StableId, AgentdIntelligenceDecisionPlanV1>>,
+}
+
+impl AgentdIntelligenceProductProfileV1 {
+    pub fn new(
+        profile_digest: Digest32,
+        learning_host: Arc<AgentdIntelligenceLearningHostV1>,
+    ) -> Result<Self, IntelligenceLearningErrorV1> {
+        if profile_digest.is_zero() {
+            return Err(IntelligenceLearningErrorV1::Invalid(
+                "product profile digest",
+            ));
+        }
+        Ok(Self {
+            profile_digest,
+            learning_host,
+            plans: Mutex::new(BTreeMap::new()),
+        })
+    }
+
+    #[must_use]
+    pub const fn digest(&self) -> Digest32 {
+        self.profile_digest
+    }
+
+    pub fn register_plan(
+        &self,
+        run_id: StableId,
+        plan: AgentdIntelligenceDecisionPlanV1,
+    ) -> Result<(), IntelligenceLearningErrorV1> {
+        let mut plans = self
+            .plans
+            .lock()
+            .map_err(|_| IntelligenceLearningErrorV1::Poisoned)?;
+        if plans.contains_key(&run_id) {
+            return Err(IntelligenceLearningErrorV1::Conflict);
+        }
+        if plans.len() >= MAX_PENDING_DECISION_PLANS {
+            return Err(IntelligenceLearningErrorV1::Capacity);
+        }
+        plans.insert(run_id, plan);
+        Ok(())
+    }
+
+    pub fn remove_plan(
+        &self,
+        run_id: &StableId,
+    ) -> Result<bool, IntelligenceLearningErrorV1> {
+        Ok(self
+            .plans
+            .lock()
+            .map_err(|_| IntelligenceLearningErrorV1::Poisoned)?
+            .remove(run_id)
+            .is_some())
+    }
+
+    pub fn pending_plans(&self) -> Result<usize, IntelligenceLearningErrorV1> {
+        Ok(self
+            .plans
+            .lock()
+            .map_err(|_| IntelligenceLearningErrorV1::Poisoned)?
+            .len())
+    }
+
+    pub(crate) fn append_prepared_decision(
+        &self,
+        prepared: &PreparedAgentdIntelligenceRunV1,
+        now: u64,
+    ) -> Result<IntelligenceLearningStatusV1, IntelligenceLearningErrorV1> {
+        let run_id = &prepared.envelope.run_id;
+        let plan = self
+            .plans
+            .lock()
+            .map_err(|_| IntelligenceLearningErrorV1::Poisoned)?
+            .get(run_id)
+            .cloned()
+            .ok_or(IntelligenceLearningErrorV1::Missing)?;
+        let decision = plan.prepare(prepared, now)?;
+        let status = self.learning_host.enqueue_decision(
+            decision.binding,
+            decision.expected_predecessor,
+            decision.decision,
+            decision.evidence,
+            now,
+        )?;
+        if matches!(status.state, IntelligenceLearningStateV1::Acknowledged { .. }) {
+            self.remove_plan(run_id)?;
+        }
+        Ok(status)
+    }
+
+    pub fn learning_backlog(&self) -> Result<usize, IntelligenceLearningErrorV1> {
+        self.learning_host.backlog()
+    }
+
+    pub fn learning_host(&self) -> Arc<AgentdIntelligenceLearningHostV1> {
+        Arc::clone(&self.learning_host)
+    }
+}
+
+struct PreparedIntelligenceLearningDecisionV1 {
+    binding: IntelligenceLearningBindingV1,
+    expected_predecessor: Digest32,
+    decision: ProductionDecisionV2,
+    evidence: SignedLearningEvidenceV1,
 }
 
 fn agent_run_snapshot_digest(
@@ -161,6 +276,14 @@ fn agent_run_snapshot_digest(
     Ok(Digest32::of_bytes(&bytes))
 }
 
+fn valid_digest_text(value: &str) -> bool {
+    value.len() == 64
+        && !value.bytes().all(|byte| byte == b'0')
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+}
+
 fn push_string(
     bytes: &mut Vec<u8>,
     value: &str,
@@ -170,17 +293,4 @@ fn push_string(
     bytes.extend_from_slice(&length.to_be_bytes());
     bytes.extend_from_slice(value.as_bytes());
     Ok(())
-}
-
-trait AgentRunSnapshotSanityV1 {
-    fn compilation_receipt_digest_is_invalid(&self) -> bool;
-}
-
-impl AgentRunSnapshotSanityV1 for crate::AgentRunSnapshot {
-    fn compilation_receipt_digest_is_invalid(&self) -> bool {
-        self.request_digest.len() != 64
-            || self.body_digest.len() != 64
-            || self.artifact_set_digest.len() != 64
-            || self.fence_digest.len() != 64
-    }
 }
