@@ -32,7 +32,9 @@ jobs:
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-      - name: Synchronize knowledge.graph docs and bind implementation map
+          persist-credentials: true
+
+      - name: Verify immutable candidate and bind source objects
         id: bind
         shell: bash
         env:
@@ -45,7 +47,15 @@ jobs:
           test "$(git ls-remote origin "refs/heads/$OWN_BRANCH" | cut -f1)" = "$SOURCE_SHA"
           git diff --exit-code
           git diff --cached --exit-code
-          python3 scripts/hepta_kg_documentation_sync.py --apply
+
+          # Candidate generation happens in ordinary commits. Execution never
+          # rewrites prose or runtime claims while trying to validate that same
+          # candidate. This check must therefore be clean before source binding.
+          python3 scripts/hepta_kg_documentation_sync.py --check
+
+          # The implementation map cannot bind its own future blob. It binds the
+          # exact source/evidence path objects at SOURCE_SHA; a map-only commit
+          # records that manifest without changing any mapped object.
           python3 - <<'PY'
           import importlib.util
           import json
@@ -62,38 +72,11 @@ jobs:
           row = json.loads(path.read_text(), object_pairs_hook=maps.unique_keys)
           assert row['module'] == 'knowledge.graph'
           assert row['declaredRoots'] == ['codex-rs/hepta-kg']
-          extra = {
-              '.github/workflows/hepta-kg-abc-execution.yml',
-              'scripts/hepta_knowledge_graph_map_verify.py',
-              'scripts/hepta_kg_current_candidate_runner.py',
-              'scripts/hepta_kg_documentation_sync.py',
-              'scripts/hepta_kg_evidence.py',
-              'scripts/test_hepta_kg_measurement.py',
-              'scripts/hepta_kg_execution_audit.py',
-              'scripts/test_hepta_kg_execution_audit.py',
-              'qualification/knowledge-graph/EXECUTION_20260927.md',
-              'qualification/knowledge-graph/EXECUTION_POSTFLIGHT_20260927.md',
-              'qualification/knowledge-graph/QUERY_CLOSURE_20260927.md',
-              'qualification/knowledge-graph/TARGET_HOST.md',
-              'qualification/knowledge-graph/WRITER_SELECTION_20260927.md',
-          }
-          existing = {item['path'] for item in row['sourceObjects']}
-          row['sourceObjects'].extend(
-              {'path': item} for item in sorted(extra - existing)
-          )
-          candidate = maps.current_source_base()
+          current = maps.current_source_base()
           current_objects = maps.current_source_objects(row)
-          changed = current_objects != row['sourceObjects']
-          if not changed:
-              try:
-                  maps.verify_source_identity(
-                      row, row['resolvedRoots'], candidate
-                  )
-              except maps.SourceDrift:
-                  changed = True
-          if changed:
-              row['sourceBase'] = candidate
-              row['observedAtHead'] = candidate
+          if current_objects != row['sourceObjects']:
+              row['sourceBase'] = current
+              row['observedAtHead'] = current
               row['sourceObjects'] = current_objects
               row['observedSourcePaths'] = sorted(
                   set(row['observedSourcePaths'])
@@ -109,23 +92,29 @@ jobs:
           ):
               assert row['claimBoundary'][key] is False
           PY
+
           git diff --check
-          git add \
-            docs/modules/knowledge.graph/TECHNICAL.md \
-            docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json \
-            qualification/module-execution-dossiers/detail/knowledge.graph.md \
-            qualification/knowledge-graph/WRITER_SELECTION_20260927.md
+          git add docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
           if ! git diff --cached --quiet; then
-            unexpected="$(git diff --cached --name-only | grep -Ev '^(docs/modules/knowledge\.graph/(TECHNICAL\.md|IMPLEMENTATION_MAP\.json)|qualification/module-execution-dossiers/detail/knowledge\.graph\.md|qualification/knowledge-graph/WRITER_SELECTION_20260927\.md)$' || true)"
-            test -z "$unexpected"
+            test "$(git diff --cached --name-only)" = \
+              'docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json'
             git config user.name 'Hepta KG candidate binding'
             git config user.email 'hepta-kg-ci@users.noreply.github.com'
             git commit \
-              -m 'docs(knowledge.graph): synchronize runtime and writer decision' \
+              -m 'docs(knowledge.graph): bind immutable candidate source objects' \
               -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
             git push origin "HEAD:refs/heads/$OWN_BRANCH"
           fi
-          echo "candidate=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+          candidate="$(git rev-parse HEAD)"
+          tree="$(git rev-parse HEAD^{tree})"
+          test "$(git ls-remote origin "refs/heads/$OWN_BRANCH" | cut -f1)" = "$candidate"
+          python3 scripts/hepta_knowledge_graph_map_verify.py \
+            --expected-sha "$candidate" \
+            --expected-tree "$tree"
+          git diff --exit-code
+          git diff --cached --exit-code
+          echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
 
   execution:
     needs: bind
