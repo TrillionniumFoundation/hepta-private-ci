@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.learning-artifacts-qualification-status.v1",
+  "module": "learning.artifacts",
+  "unifiedComplete": false,
+  "dimensions": {
+    "sourceImplementation": "implemented",
+    "readProductComposition": "implemented",
+    "writerServiceComposition": "implemented",
+    "referenceHost": "repository_candidate_under_qualification",
+    "exactHeadQualification": "pending_current_candidate",
+    "targetHostDurability": "external_not_established",
+    "productionActivation": "external_not_established",
+    "independentAcceptance": "external_not_established",
+    "release": "external_not_established"
+  },
+  "qualificationPolicy": {
+    "requiredTaskCount": 10,
+    "skippedAccepted": false,
+    "historicalResultAccepted": false,
+    "exactCommitAndTreeRequired": true,
+    "sourceObjectBindingRequired": true,
+    "receiptArtifact": "learning-artifacts-exact-head-<sha>.json"
+  },
+  "externalGates": [
+    "target-host power-loss qualification",
+    "production owner and selector trust provisioning",
+    "independent semantic and operator acceptance",
+    "canary, promotion and release authority"
+  ]
+}
