@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   apply:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - name: Check out exact branch head
