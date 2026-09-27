@@ -62,15 +62,47 @@ def tensor_bytes(value: torch.Tensor) -> bytes:
     return value.detach().numpy().tobytes(order="C")
 
 
+def _check_execution_profile(head: nn.Sequential) -> None:
+    # Tensor digests cannot bind Python hooks, compiled callables, method
+    # overrides or gradient transformations. Reject them before serialization,
+    # deepcopy or forward/backward can invoke unregistered behavior. This is a
+    # trusted in-process compatibility check, not a Python security sandbox.
+    hooks = ("_forward_pre_hooks", "_forward_hooks", "_backward_pre_hooks",
+             "_backward_hooks", "_state_dict_pre_hooks", "_state_dict_hooks",
+             "_load_state_dict_pre_hooks", "_load_state_dict_post_hooks")
+    methods = ("forward", "_call_impl", "_wrapped_call_impl", "state_dict",
+               "load_state_dict", "_save_to_state_dict", "_load_from_state_dict",
+               "__deepcopy__", "__reduce__", "__reduce_ex__", "__getstate__",
+               "__setstate__", "named_modules", "modules", "parameters",
+               "named_parameters", "_apply", "train", "eval", "requires_grad_")
+    module_runtime = vars(nn.modules.module)
+    if any(value for name, value in module_runtime.items()
+           if name.startswith("_global_") and name.endswith("_hooks")):
+        raise HeadRejected("global module callbacks are outside the scorer profile")
+    for module in (head, *head):
+        attributes = vars(module)
+        if (any(attributes.get(name) for name in hooks)
+                or any(name in attributes for name in methods)
+                or getattr(module, "_compiled_call_impl", None) is not None):
+            raise HeadRejected("scorer callbacks or executable overrides are not admitted")
+        for parameter in module._parameters.values():
+            if parameter is not None and (type(parameter) is not nn.Parameter
+                    or getattr(parameter, "_backward_hooks", None)
+                    or getattr(parameter, "_post_accumulate_grad_hooks", None)):
+                raise HeadRejected("parameter gradient callbacks are not admitted")
+
+
 def head_schema(head: nn.Module) -> dict:
     # Match the pinned Laya scorer, not arbitrary executable modules/dropout.
     if type(head) is not nn.Sequential or [type(m) for m in head] != [nn.LayerNorm, nn.Linear, nn.GELU, nn.Linear]:
         raise HeadRejected("unsupported head architecture")
+    _check_execution_profile(head)
     width = head[1].in_features
     if (not 1 <= width <= MAX_WIDTH or head[0].normalized_shape != (width,)
             or head[1].out_features != width or head[3].in_features != width
             or head[3].out_features != 1 or not head[0].elementwise_affine
             or head[0].bias is None or head[1].bias is None or head[3].bias is None
+            or head[2].approximate not in ("none", "tanh")
             or not math.isfinite(head[0].eps) or not 1e-8 <= head[0].eps <= 1):
         raise HeadRejected("head dimensions or normalization")
     if any(module.training for module in head.modules()):
@@ -80,16 +112,25 @@ def head_schema(head: nn.Module) -> dict:
         raise HeadRejected("unexpected parameter or buffer inventory")
     if sum(t.numel() * t.element_size() for t in state.values()) > MAX_HEAD_BYTES:
         raise HeadRejected("head byte bound")
-    for tensor in state.values():
+    expected_shapes = {"0.weight": (width,), "0.bias": (width,),
+                       "1.weight": (width, width), "1.bias": (width,),
+                       "3.weight": (1, width), "3.bias": (1,)}
+    storages = set()
+    for name, tensor in state.items():
         tensor_bytes(tensor)
+        storage = tensor.untyped_storage().data_ptr()
+        if tuple(tensor.shape) != expected_shapes[name] or storage in storages:
+            raise HeadRejected("scorer shape or independent-storage contract")
+        storages.add(storage)
     return {"schema": "hepta.cell-scorer.f32.v1", "width": width,
             "eps": head[0].eps, "gelu": head[2].approximate,
             "tensors": {k: list(v.shape) for k, v in sorted(state.items())}}
 
 
 def state_digest(head: nn.Module) -> str:
+    schema = head_schema(head)
     state = head.state_dict()
-    h = hashlib.sha256(canonical(head_schema(head)))
+    h = hashlib.sha256(canonical(schema))
     for name, value in sorted(state.items()):
         h.update(canonical(name)); h.update(tensor_bytes(value))
     return h.hexdigest()
@@ -236,8 +277,8 @@ def fit_head(selected: nn.Module, rows: tuple[HeadRow, ...], *, scope: str,
         check_time()
         if state_digest(selected) != baseline_digest:
             raise HeadRejected("selected parameters changed during training")
-        payload = None if candidate is None else save_tensors(candidate.state_dict())
         candidate_digest = baseline_digest if candidate is None else state_digest(candidate)
+        payload = None if candidate is None else save_tensors(candidate.state_dict())
         payload_digest = None if payload is None else hashlib.sha256(payload).hexdigest()
         check_time()
         return HeadFit("no_change" if payload is None else "candidate", bundle,
@@ -272,7 +313,8 @@ def fit_head(selected: nn.Module, rows: tuple[HeadRow, ...], *, scope: str,
     for _ in range(budget.epochs):
         for row in frozen:
             features, target = row.features, row.target
-            check_time(); optimizer.zero_grad(set_to_none=True)
+            check_time(); _check_execution_profile(candidate)
+            optimizer.zero_grad(set_to_none=True)
             logits = candidate(features).squeeze(-1) / temperature
             loss = -(target * torch.log_softmax(logits, dim=-1)).sum()
             if not bool(torch.isfinite(loss)):
@@ -328,6 +370,7 @@ def restore_candidate(selected: nn.Module, fit: HeadFit, *, bundle: str,
             raise HeadRejected("candidate tensor shape changed")
         tensor_bytes(tensor)
     restored = copy.deepcopy(selected).eval()
+    head_schema(restored)
     restored.load_state_dict(decoded, strict=True)
     if state_digest(restored) != fit.candidate_head_digest:
         raise HeadRejected("candidate tensor identity changed")

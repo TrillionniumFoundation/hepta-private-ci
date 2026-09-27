@@ -57,6 +57,24 @@ no-data/no-update, budget rejection before copies, retained drift rejection and
 unchanged-candidate parity. This is snapshot integrity, not authenticated source
 permission, independent outcomes, a process sandbox or longitudinal improvement.
 
+## Execution profile and tensor identity
+
+The scorer profile admits only the exact eager CPU layer types, tensor shapes
+and independent parameter storage. Active module/global/autograd callbacks,
+instance execution or serialization overrides and compiled call substitutions
+reject before admitted model work. Actual candidate copies are rechecked before
+updates and restoration. Tensor digests alone cannot describe these Python
+execution changes; accepting them would mislabel the fitted behavior and can
+change the effective update when storage is tied. Supported unmodified scorers
+retain their existing schema, digest and numerical algorithm.
+
+`test_cell_profile.py` covers hooks, overridden calls, shared storage, candidate
+copy boundaries and unchanged behavior after hook removal. This is a compatibility
+profile inside a trusted exclusive-owner process, not an isolation mechanism
+against arbitrary Python execution, class monkey-patching or concurrent foreign
+mutation. Source authentication, independent outcome evaluation, artifact
+selection and actual process isolation remain with their existing owners.
+
 ## Actual model experiment versus fixtures
 
 The existing `Hepta Laya real-model smoke` workflow checks source-head and fixed
