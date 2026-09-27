@@ -5,6 +5,9 @@
 //! material. A composition owner derives those inputs from the already-durable
 //! RunStart record and the current owner generation.
 
+use std::fmt;
+use std::sync::Arc;
+
 use codex_hepta_intelligence::CanonicalIntelligenceRunRequestV1;
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
@@ -19,11 +22,29 @@ use crate::AgentdIntelligenceOwnerInputsV1;
 use crate::AgentdIntelligenceRuntimeMetricsV1;
 use crate::agentd_objective_fence;
 
+#[derive(Clone)]
+struct RuntimeMetricsSidecarV1(Arc<AgentdIntelligenceRuntimeMetricsV1>);
+
+impl fmt::Debug for RuntimeMetricsSidecarV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str("RuntimeMetricsSidecarV1(attached)")
+    }
+}
+
+impl PartialEq for RuntimeMetricsSidecarV1 {
+    fn eq(&self, _other: &Self) -> bool {
+        true
+    }
+}
+
+impl Eq for RuntimeMetricsSidecarV1 {}
+
 /// Exact durable identity inherited by a prepared canonical intelligence run.
 ///
-/// Every field is copied from the already-authenticated `RunStartRecordV1`.
-/// The canonical runner may derive additional advisory receipts, but it may not
-/// replace the request, body, artifact, deadline, generation or fence identity.
+/// Every identity field is copied from the already-authenticated
+/// `RunStartRecordV1`. The optional metrics sidecar is attached only by the
+/// host-owned provider after identity validation. It is excluded from the
+/// binding digest and cannot affect equality, authority or physical dispatch.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentdRunStartBindingV1 {
     run_id: StableId,
@@ -43,6 +64,7 @@ pub struct AgentdRunStartBindingV1 {
     fence_digest: Digest32,
     deadline_ms: u64,
     binding_digest: Digest32,
+    runtime_metrics: Option<RuntimeMetricsSidecarV1>,
 }
 
 impl AgentdRunStartBindingV1 {
@@ -97,6 +119,7 @@ impl AgentdRunStartBindingV1 {
             fence_digest: snapshot.fence_digest,
             deadline_ms,
             binding_digest: Digest32::of_bytes(&bytes),
+            runtime_metrics: None,
         })
     }
 
@@ -106,12 +129,24 @@ impl AgentdRunStartBindingV1 {
         record: &RunStartRecordV1,
     ) -> Result<(), AgentdError> {
         let current = Self::from_record(identity, record)?;
-        if self != &current {
+        let mut observed = self.clone();
+        observed.runtime_metrics = None;
+        if observed != current {
             return Err(AgentdError::Invalid(
                 "canonical intelligence run-start binding changed after construction".to_string(),
             ));
         }
         Ok(())
+    }
+
+    fn attach_runtime_metrics(&mut self, metrics: Arc<AgentdIntelligenceRuntimeMetricsV1>) {
+        self.runtime_metrics = Some(RuntimeMetricsSidecarV1(metrics));
+    }
+
+    pub(crate) fn runtime_metrics(&self) -> Option<Arc<AgentdIntelligenceRuntimeMetricsV1>> {
+        self.runtime_metrics
+            .as_ref()
+            .map(|sidecar| Arc::clone(&sidecar.0))
     }
 
     #[must_use]
@@ -211,6 +246,16 @@ impl AgentdIntelligenceInvocationV1 {
         Ok(value)
     }
 
+    pub(crate) fn attach_runtime_metrics(
+        &mut self,
+        metrics: Arc<AgentdIntelligenceRuntimeMetricsV1>,
+    ) {
+        self.run_start.attach_runtime_metrics(Arc::clone(&metrics));
+        if let Some(plan) = self.decision_plan.as_mut() {
+            plan.attach_runtime_metrics(metrics);
+        }
+    }
+
     pub(crate) fn validate(
         &self,
         identity: &AgentdIdentity,
@@ -269,13 +314,13 @@ pub trait AgentdIntelligenceInvocationProviderV1: Send + Sync {
 
     /// Product learning owner attached to this exact provider profile. A
     /// provider without it remains a compatibility/source-test profile.
-    fn learning_host(&self) -> Option<std::sync::Arc<AgentdIntelligenceLearningHostV1>> {
+    fn learning_host(&self) -> Option<Arc<AgentdIntelligenceLearningHostV1>> {
         None
     }
 
     /// Product-profile metrics. Legacy providers default to no metrics and can
     /// therefore never satisfy canonical product readiness.
-    fn runtime_metrics(&self) -> Option<std::sync::Arc<AgentdIntelligenceRuntimeMetricsV1>> {
+    fn runtime_metrics(&self) -> Option<Arc<AgentdIntelligenceRuntimeMetricsV1>> {
         None
     }
 
