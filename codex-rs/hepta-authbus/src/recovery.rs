@@ -336,6 +336,22 @@ async fn authority_frontier_digest_tx(
          FROM authbus_issuer_registry ORDER BY issuer_id, purpose, key_epoch",
     )
     .await?;
+    // Preserve the pre-migration frontier for an empty extension. Once a
+    // closure exists, its immutable identity is part of every future cut.
+    let closures: i64 = sqlx::query_scalar("SELECT count(*) FROM authbus_operation_closure")
+        .fetch_one(&mut **tx)
+        .await
+        .map_err(storage)?;
+    if closures != 0 {
+        append_rows(
+            tx,
+            &mut bytes,
+            "operation_closure_v1",
+            "SELECT operation_id||'|'||hex(effect_digest)||'|'||hex(closed_at_ms)
+             FROM authbus_operation_closure ORDER BY operation_id",
+        )
+        .await?;
+    }
     Ok(Digest32::of_bytes(&bytes))
 }
 

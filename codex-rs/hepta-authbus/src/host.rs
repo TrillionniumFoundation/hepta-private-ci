@@ -353,6 +353,21 @@ impl AuthBusAuthorityHost {
         self.store.reservation(reservation_id).await
     }
 
+    /// Atomically close an unreserved operation or return its original reservation.
+    /// A completed closure prevents late reserve commits; a lookup alone does not.
+    pub async fn seal_unreserved_operation(
+        &self,
+        operation_id: &StableId,
+        effect_digest: Digest32,
+        time: TrustedTimeSample,
+    ) -> Result<Option<QuotaReservation>, AuthBusAuthorityError> {
+        let result = self
+            .store
+            .seal_unreserved_operation(operation_id, effect_digest, time)
+            .await;
+        self.finish(result).await
+    }
+
     /// Find the unique hot or archived reservation for an operation identity.
     /// This is a read-only recovery projection; it does not reserve quota or
     /// weaken the semantic checks performed by `reserve`.
