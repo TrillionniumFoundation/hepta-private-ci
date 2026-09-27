@@ -1,0 +1,116 @@
+name: learning.eval P0 closure autofix
+
+on:
+  push:
+    branches:
+      - fix/learning-eval-production-closure-20260927
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: learning-eval-p0-autofix-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  patch-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Apply production-boundary patch
+        run: python3 scripts/apply-learning-eval-p0.py
+
+      - name: Format touched Rust crates
+        run: >-
+          cargo fmt --manifest-path codex-rs/Cargo.toml
+          --package codex-hepta-intelligence-eval
+          --package codex-hepta-intelligence
+          --package codex-hepta-agentd
+
+      - name: Verify closed world and private API
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+
+      - name: Compile migrated consumers
+        working-directory: codex-rs
+        run: >-
+          cargo check --locked
+          -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
+          -p codex-hepta-agentd
+          --all-targets
+
+      - name: Run learning.eval owner tests
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-intelligence-eval
+
+      - name: Run governed plasticity tests
+        working-directory: codex-rs
+        run: >-
+          just test --locked
+          -p codex-hepta-intelligence
+          plasticity_product
+          --test-threads=1
+
+      - name: Run Agentd evaluation tests
+        working-directory: codex-rs
+        run: >-
+          just test --locked
+          -p codex-hepta-agentd
+          intelligence_evaluation
+          --test-threads=1
+
+      - name: Prove low-level API is externally private
+        run: bash scripts/hepta-learning-eval-private-api.sh
+
+      - name: Strict lint migrated boundary
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked
+          -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
+          -p codex-hepta-agentd
+          --all-targets -- -D warnings
+
+      - name: Commit verified patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            .github/workflows/hepta-lane-e-gap-closure.yml \
+            codex-rs/hepta-intelligence-eval \
+            codex-rs/hepta-agentd/src/intelligence_evaluation.rs \
+            codex-rs/hepta-intelligence/src/plasticity_product.rs \
+            docs/modules/learning.eval \
+            qualification/fixtures/learning-eval-private-api \
+            qualification/module-execution-dossiers/detail/learning.eval.md \
+            scripts/hepta-lane-e-closure.py \
+            scripts/hepta-learning-eval-private-api.sh
+          if git diff --cached --quiet; then
+            echo "verified patch already committed"
+            exit 0
+          fi
+          git config user.name hepta-learning-eval-ci
+          git config user.email hepta-learning-eval-ci@users.noreply.github.com
+          git commit -m "learning.eval: close low-level admission boundary"
+          git push origin HEAD:fix/learning-eval-production-closure-20260927
