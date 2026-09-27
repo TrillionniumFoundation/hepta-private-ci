@@ -12,6 +12,7 @@ use crate::EvidenceReceiptKindV1;
 use crate::EvidenceReferenceV1;
 use crate::HeptaEvidenceStore;
 use crate::QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS;
+use crate::canonical::canonical_json;
 use crate::qualification_envelope_bytes;
 use crate::schema_validation::classify_sqlx_error;
 
@@ -124,7 +125,8 @@ fn decode_reference(
     }
     let envelope_sha256 = Sha256Digest::for_bytes(&canonical);
     let stored_envelope = parse_digest(row, "envelope_sha256")?;
-    let payload_sha256 = parse_digest(row, "payload_sha256")?;
+    let payload_sha256 = Sha256Digest::for_bytes(&canonical_json(&envelope.payload)?);
+    let stored_payload = parse_digest(row, "payload_sha256")?;
     let evidence_id: String = row.try_get("evidence_id").map_err(classify_sqlx_error)?;
     let candidate_id: String = row.try_get("candidate_id").map_err(classify_sqlx_error)?;
     let source_commit: String = row.try_get("source_commit").map_err(classify_sqlx_error)?;
@@ -160,6 +162,7 @@ fn decode_reference(
         || observed_unix_ms != envelope.observed_unix_ms
         || expires_unix_ms != envelope.expires_unix_ms
         || envelope_sha256 != stored_envelope
+        || payload_sha256 != stored_payload
     {
         return Err(EvidenceError::Corrupt(
             "qualification evidence page projection differs from its canonical envelope"
