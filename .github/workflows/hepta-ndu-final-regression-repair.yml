@@ -39,42 +39,18 @@ jobs:
           from pathlib import Path
 
           root = Path.cwd()
-
           metrics_path = root / "codex-rs/hepta-ndu/src/operational_metrics.rs"
           metrics = metrics_path.read_text(encoding="utf-8")
-          old_metrics = """        let mut changed = [
-            policy.clone(),
-            policy.clone(),
-            policy.clone(),
-            policy.clone(),
-            policy.clone(),
-        ];
-"""
-          new_metrics = """        let mut changed = [
-            policy.clone(),
-            policy.clone(),
-            policy.clone(),
-            policy.clone(),
-            policy,
-        ];
-"""
+          old_metrics = "        let mut changed = [\n            policy.clone(),\n            policy.clone(),\n            policy.clone(),\n            policy.clone(),\n            policy.clone(),\n        ];\n"
+          new_metrics = "        let mut changed = [\n            policy.clone(),\n            policy.clone(),\n            policy.clone(),\n            policy.clone(),\n            policy,\n        ];\n"
           if metrics.count(old_metrics) != 1:
               raise SystemExit("operational metrics redundant-clone fixture drifted")
           metrics_path.write_text(metrics.replace(old_metrics, new_metrics), encoding="utf-8")
 
           kill_path = root / "codex-rs/hepta-ndu/src/projection_store_process_kill_tests.rs"
           kill = kill_path.read_text(encoding="utf-8")
-          old_kill = """        fs::create_dir(&path).expect(\"create process-kill root\");
-        Self(path)
-"""
-          new_kill = """        match fs::create_dir(&path) {
-            Ok(()) => Self(path),
-            Err(error) => panic!(
-                \"create process-kill root at {}: {error}\",
-                path.display()
-            ),
-        }
-"""
+          old_kill = "        fs::create_dir(&path).expect(\"create process-kill root\");\n        Self(path)\n"
+          new_kill = "        match fs::create_dir(&path) {\n            Ok(()) => Self(path),\n            Err(error) => panic!(\n                \\\"create process-kill root at {}: {error}\\\",\n                path.display()\n            ),\n        }\n"
           if kill.count(old_kill) != 1:
               raise SystemExit("process-kill temporary-root fixture drifted")
           kill_path.write_text(kill.replace(old_kill, new_kill), encoding="utf-8")
@@ -142,13 +118,9 @@ jobs:
               if local is None or not local.exists():
                   raise SystemExit(f"invalid sourceObjects path: {path!r}")
               if local.is_file():
-                  actual = subprocess.check_output(
-                      ["git", "hash-object", path], cwd=root, text=True
-                  ).strip()
+                  actual = subprocess.check_output(["git", "hash-object", path], cwd=root, text=True).strip()
               elif local.is_dir():
-                  actual = subprocess.check_output(
-                      ["git", "rev-parse", f"HEAD:{path}"], cwd=root, text=True
-                  ).strip()
+                  actual = subprocess.check_output(["git", "rev-parse", f"HEAD:{path}"], cwd=root, text=True).strip()
               else:
                   raise SystemExit(f"unsupported sourceObjects path type: {path}")
               if entry.get("object") != actual:
