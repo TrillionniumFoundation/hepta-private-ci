@@ -398,10 +398,10 @@ mod tests {
                 consumed_record_digest: None,
                 journal_error: None,
             };
-            assert_eq!(
+            assert!(matches!(
                 recorded.release_after_consumption(&receipt),
                 Err(ProductProviderErrorV1::Indeterminate)
-            );
+            ));
             assert_eq!(
                 recorded.consumed_record_digest,
                 Some(receipt.record_digest)
