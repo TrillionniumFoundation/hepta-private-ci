@@ -2,8 +2,8 @@
   "schema": "hepta.kernel-authority-status-manifest.v1",
   "schemaVersion": 1,
   "sourceAnchor": {
-    "commit": "d86979f779cabd851e4e29dc863a8204b28a2bae",
-    "tree": "775b6acfe4c7756b0b6f4e791b0200f14da15470"
+    "commit": "fa2503b893e4f4980e236e06d7404326cf2a5c06",
+    "tree": "3d3fa0ca8de269eb4a2e1735b2222d699f5786e7"
   },
   "module": "kernel.authority",
   "laneId": "LANE-A-FOUNDATION",
@@ -60,31 +60,34 @@
       "operation": "final_use_authority",
       "nativeSymbol": "FinalUseAuthority::with_verified_use",
       "sourcePath": "codex-rs/hepta-contracts/src/final_use.rs",
-      "state": "source_implemented_nonce_claim_final_entry_durable_pending_revocation_v4_and_key_ring_recovery_not_product_activated",
+      "state": "source_implemented_nonce_claim_final_entry_durable_pending_revocation_v4_key_ring_recovery_and_authenticated_production_recovery_head_not_product_activated",
       "authority": "security-authority",
       "tests": [
         "codex-rs/hepta-contracts/src/final_use_tests.rs",
         "codex-rs/hepta-contracts/src/final_use_store_tests.rs",
+        "codex-rs/hepta-contracts/src/authority_trust_tests.rs",
         "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
         "codex-rs/hepta-contracts/tests/final_use_pending_recovery.rs"
       ],
-      "designOperation": "claim_enter_dispatch_recover_and_revoke",
+      "designOperation": "claim_enter_dispatch_recover_with_verified_head_and_revoke",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "codex-rs/hepta-contracts/src/final_use_store.rs"
+        "codex-rs/hepta-contracts/src/final_use_store.rs",
+        "codex-rs/hepta-contracts/src/authority_trust.rs"
       ]
     },
     {
       "operation": "final_use_control",
       "nativeSymbol": "FinalUseRevocationConvergenceVerifier::verify",
       "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "state": "source_implemented_independent_approval_signed_feed_and_receipt_bound_convergence_transport_external",
+      "state": "source_implemented_independent_approval_signed_feed_receipt_bound_convergence_and_opaque_verified_recovery_head_transport_external",
       "authority": "security-authority",
       "tests": [
         "codex-rs/hepta-contracts/src/final_use_control.rs",
-        "codex-rs/hepta-contracts/src/final_use_tests.rs"
+        "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "codex-rs/hepta-contracts/src/authority_trust_tests.rs"
       ],
-      "designOperation": "verify_approval_ingest_revocation_and_verify_convergence",
+      "designOperation": "verify_approval_ingest_revocation_verify_convergence_and_authenticate_recovery_head",
       "mappingClass": "owner_native_verifier",
       "delegatedCallees": []
     },
@@ -92,13 +95,14 @@
       "operation": "production_trust_bundle",
       "nativeSymbol": "ProductionAuthorityTrustBundle::new",
       "sourcePath": "codex-rs/hepta-contracts/src/authority_trust.rs",
-      "state": "source_implemented_mandatory_clock_frontier_kms_custody_and_external_receipts_target_qualification_external",
+      "state": "source_implemented_mandatory_clock_frontier_kms_custody_external_receipts_verified_recovery_head_and_clock_uncertainty_target_qualification_external",
       "authority": "security-authority",
       "tests": [
         "codex-rs/hepta-contracts/src/authority_trust_tests.rs",
-        "codex-rs/hepta-agentd/src/authority_trust_host.rs"
+        "codex-rs/hepta-agentd/src/authority_trust_host.rs",
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs"
       ],
-      "designOperation": "fail_closed_production_open_with_live_trust_domain_and_key_set_validation",
+      "designOperation": "fail_closed_production_open_with_live_trust_domain_key_set_verified_head_and_uncertainty_validation",
       "mappingClass": "owner_native_trust_contract",
       "delegatedCallees": []
     },
@@ -134,13 +138,13 @@
       "operation": "agentd_effect_owner",
       "nativeSymbol": "AgentdAutomationEffectHost::execute",
       "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
-      "state": "source_implemented_exact_wire_dispatch_durable_attempt_witness_terminal_receipt_and_reconciliation_not_activated",
+      "state": "source_implemented_authenticated_initial_recovery_head_exact_wire_dispatch_durable_attempt_witness_terminal_receipt_and_reconciliation_not_activated",
       "authority": "automation.taskflow",
       "tests": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
         "codex-rs/hepta-automation/tests/authorized_effect.rs"
       ],
-      "designOperation": "dispatch_reconcile_and_settle_authorized_provider_effect",
+      "designOperation": "authenticate_initial_head_dispatch_reconcile_and_settle_authorized_provider_effect",
       "mappingClass": "product_effect_owner",
       "delegatedCallees": []
     },
@@ -216,7 +220,7 @@
       "id": "automation.taskflow.agentd",
       "nativeSymbol": "AgentdAutomationEffectHost::execute",
       "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
-      "state": "source_composed_effect_owner_with_reconciliation_and_durable_receipts_not_product_activated",
+      "state": "source_composed_authenticated_initial_head_effect_owner_with_reconciliation_and_durable_receipts_not_product_activated",
       "tests": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
         "codex-rs/hepta-automation/tests/authorized_effect.rs"
@@ -236,7 +240,8 @@
     "Obtain green required exact-head and deterministic synthetic-merge receipts for the current candidate SHA.",
     "Keep the canonical B4 and extension API inventories exhaustive as authority APIs and product callers change.",
     "Retain candidate identity, command, log digest and result in every product-pilot and performance receipt.",
-    "Keep production constructors mandatory and fail closed; compatibility clocks, local frontiers or evidence-only key claims must not satisfy them.",
+    "Keep production constructors mandatory and fail closed; compatibility clocks, local frontiers, unsigned recovery heads or evidence-only key claims must not satisfy them.",
+    "Keep qualification workflows read-only; validation must never repair or push the candidate it is qualifying.",
     "Do not replace the current authority spine with the WAL/checkpoint reference model without preserving linearization and anti-rollback proofs."
   ],
   "externalEvidenceGates": [
@@ -294,7 +299,7 @@
       "modes": [
         "exact-source"
       ],
-      "state": "generated_truth_and_closed_extension_api_check_defined"
+      "state": "read_only_generated_truth_closed_api_and_qualification_regression_check_defined"
     }
   ],
   "productionTrustBundle": {
@@ -303,17 +308,20 @@
       "production clock",
       "rollback-independent CAS frontier",
       "live KMS/HSM key custody",
+      "authenticated fresh revocation recovery head",
       "deployment and disaster-recovery receipts"
     ],
     "liveKeySetDigestBound": true,
     "keyGenerationAndRevocationFloorBound": true,
     "privateKeyExportRejected": true,
+    "verifiedRevocationHeadRequired": true,
+    "clockUncertaintyBoundAtRecovery": true,
     "targetDeploymentQualified": false
   },
   "productPilots": {
     "fleet": "candidate-bound create-restart-dispatch-revoke process pilot defined with exact supporting-case claims; current candidate receipt pending",
-    "browserAgentd": "candidate-bound process pilot defined with exact supporting-case claims; current candidate receipt pending",
-    "restartRevocationRollbackRotation": "covered by named repository tests including durable pending and both frontier-first crash windows; target deployment drill external",
+    "browserAgentd": "candidate-bound authenticated-initial-head process pilot defined with exact supporting-case claims; current candidate receipt pending",
+    "restartRevocationRollbackRotation": "covered by named repository tests including durable pending, authenticated recovery head and both frontier-first crash windows; target deployment drill external",
     "deploymentActivationProved": false
   },
   "qualification": {
@@ -321,6 +329,7 @@
     "syntheticMerge": "workflow defined; current candidate receipt pending",
     "staleArtifactReuseRejected": true,
     "differentShaReuseRejected": true,
+    "selfModifyingQualificationRejected": true,
     "currentCandidateGreen": false
   },
   "performanceAndScale": {
