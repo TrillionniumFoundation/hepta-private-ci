@@ -108,6 +108,20 @@
       "delegatedCallees": []
     },
     {
+      "operation": "generate_vector_batch_v1",
+      "nativeSymbol": "generate_vector_batch_v1",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/vector_owner.rs",
+      "state": "source_implemented_index_owner_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/vector_owner_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "vector_candidate_generation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "build_candidate_union",
       "nativeSymbol": "build_candidate_union",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
@@ -150,14 +164,14 @@
     "Obtain green exact-head and ordered-parent synthetic-merge receipts for the exact observed source snapshot, including package tests, all-target Clippy, formatting and clean source. The merge must use the main fetched for that run, not a stale PR event base.",
     "Qualify the ordinary Agentd signed bootstrap on a real protected host. Paired pinned-descriptor CLI flags, strict bounded context/publication decoding and the file-backed leased provider are now source implemented. The independently deployed monotonic frontier service, its durable recovery, protected launcher/filesystem isolation and real-process lifecycle fault injection remain unfinished.",
     "Execute native four-mode, protected-rollout and signed-renewal/final-use regressions on this exact candidate, including the bootstrap/codec and rollout-policy tests plus dependency/Bazel lock validation. Compatibility/shadow/canary/required dispatch, descriptor-v2 ppm allocation and static non-delivery structural budgets are source composed; CPU/RSS/allocation/wall-time isolation, cancellation and measured rollback remain unfinished.",
-    "Bind and qualify a real current encoder/vector-index owner before enabling the Vector policy channel; no lexical, generic-graph or learned-ranker score may be relabelled as vector evidence.",
+    "Compose and qualify a real current text encoder plus durable vector-index publication before enabling the Vector policy channel. The immutable generation/model/encoder/content-bound index owner and tests are source implemented, but it is not an encoder, publisher or Agentd product caller; no lexical, generic-graph or learned-ranker score may be relabelled as vector evidence.",
     "Instrument and execute the complete nine-stage Agentd E2E workload matrix with actual allocation, SQLite, CPU/RSS and contention counters against independently approved SLO limits. The v2 validator binds an observed clean source tree and uses ceiling-ppm outcome limits; its passing unit tests are not a native measurement producer or product SLO evidence.",
     "Establish independently governed retention and import new raw E2E samples. The original historical 13601-byte ZIP and canonical member-hash manifest are now retained in Git under archive SHA-256 808b68350dc4f9d1b542803ac75a8d7e255ee836dd95de2255ad42a57b23b212 and checked by the maintenance workflow. Git retention is not external WORM, current-source qualification or new E2E evidence."
   ],
   "externalEvidenceGates": [
     "independent semantic review and acceptance",
     "approved named target-host p50/p95/p99 latency, throughput, CPU, RSS/peak-memory, allocation and SQLite/revalidation measurements",
-    "actual encoder/vector-index owner qualification before the Vector policy channel is enabled",
+    "actual text encoder and durable vector-index publication qualification before the Vector policy channel is enabled",
     "independently observed learned-ranker propensity/outcome evidence for causal utility claims",
     "operator acceptance, canary, promotion and release"
   ],
@@ -202,8 +216,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "35e14e6c05c8ef3d10c28fdb9f323ac241fe5699",
-    "tree": "f5c8a78ef6d6a3572232b28a64bce84ba8db8160"
+    "commit": "46196c6803ac70a82ab392a642e71426bcfa5873",
+    "tree": "dbd6b3f4590df65e6db47347a6c113c4d3d000a8"
   },
   "observedSourcePaths": [
     ".cargo",
@@ -296,11 +310,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs",
-      "object": "06f62c0ba4c62c5635c3f3b47a27b31ab74ec8f0"
+      "object": "8e975c0aa893986de822a16c6ecd635a847b9e1d"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval",
-      "object": "99d8f6e661a84d47a8b501ccd192068c8040e39c"
+      "object": "3d42ab01876c5fec4aca7f5a7411f2472b465a72"
     },
     {
       "path": "scripts",
