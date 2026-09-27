@@ -82,3 +82,7 @@ pub use verified::pricing_evidence_signing_payload_v1;
 #[cfg(test)]
 #[path = "canonical_codec_tests.rs"]
 mod codec_tests;
+
+#[cfg(test)]
+#[path = "canonical_verified_tests.rs"]
+mod verified_tests;
