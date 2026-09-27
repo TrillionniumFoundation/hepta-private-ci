@@ -155,13 +155,7 @@ def verify_map(module: str) -> tuple[str, ...]:
     return tuple(owner_roots)
 
 
-def verify() -> int:
-    for path in REQUIRED_DOCS:
-        need((ROOT / path).is_file(), f"missing document {path}")
-    for module in MODULES:
-        verify_map(module)
-
-    objective_map = load(MAPS["objective.compiler"])
+def verify_objective_product_operations(objective_map: dict) -> None:
     objective_operations = {
         operation["operation"] for operation in objective_map["operations"]
     }
@@ -172,7 +166,7 @@ def verify() -> int:
         "admit_objective_v1",
         "compile_admitted_objective_v1",
         "check_feasibility_v1",
-        "encode_objective_function_v1",
+        "encode_authenticated_objective_function_v1",
         "decode_objective_function_v1",
     }
     need(
@@ -186,7 +180,7 @@ def verify() -> int:
             "validate_structure",
             "admit_objective_v1",
             "compile_admitted_objective_v1",
-            "encode_objective_function_v1",
+            "encode_authenticated_objective_function_v1",
             "decode_objective_function_v1",
         ],
         "objective.compiler canonical product operation order",
@@ -200,6 +194,16 @@ def verify() -> int:
         wrapper.get("productRole") == "compatibility_not_canonical_product_path",
         "objective.compiler convenience wrapper product-role drift",
     )
+
+
+def verify() -> int:
+    for path in REQUIRED_DOCS:
+        need((ROOT / path).is_file(), f"missing document {path}")
+    for module in MODULES:
+        verify_map(module)
+
+    objective_map = load(MAPS["objective.compiler"])
+    verify_objective_product_operations(objective_map)
 
     objective = (
         ROOT / "codex-rs/hepta-objective/src/objective_admission.rs"
@@ -320,6 +324,19 @@ def verify() -> int:
                 product_caller == "source_composed_authenticated_agentd_not_activated",
                 f"truth boundary {module} productCaller",
             )
+        elif module == "utility.ndu":
+            need(
+                product_caller
+                == "request_local_read_only_established_authenticated_production_not_composed",
+                f"truth boundary {module} productCaller",
+            )
+            # This state recognizes the current request-local adapter only;
+            # production acceptance and activation remain separate false gates.
+            for evidence_path in row["dimensions"]["productCaller"]["evidence"]:
+                need(
+                    (ROOT / evidence_path).is_file(),
+                    f"missing NDU caller evidence {evidence_path}",
+                )
         else:
             need(
                 product_caller == "not_established",

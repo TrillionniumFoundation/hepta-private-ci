@@ -3516,6 +3516,7 @@ dependencies = [
  "core_test_support",
  "ed25519-dalek",
  "http 1.4.0",
+ "libc",
  "serde",
  "serde_json",
  "sha2 0.10.9",
@@ -4055,6 +4056,8 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-state",
+ "codex-utils-absolute-path",
  "ed25519-dalek",
  "sqlx",
  "tempfile",

@@ -1,7 +1,11 @@
-use std::fs::OpenOptions;
+use std::sync::Mutex;
 
 use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
+use codex_hepta_learning_ledger::RunStartCheckpointOwnerV1;
+use codex_hepta_learning_ledger::RunStartCheckpointV1;
+use codex_hepta_learning_ledger::RunStartJournal;
 use codex_hepta_learning_ledger::RunStartSnapshotV1;
+use codex_hepta_learning_ledger::RunStartStoreError;
 use tempfile::TempDir;
 
 use super::*;
@@ -64,19 +68,50 @@ fn record(
     }
 }
 
+struct TestCheckpoint(Mutex<RunStartCheckpointV1>);
+
+impl TestCheckpoint {
+    fn new() -> Self {
+        Self(Mutex::new(RunStartCheckpointV1::ZERO))
+    }
+}
+
+impl RunStartCheckpointOwnerV1 for TestCheckpoint {
+    fn current_checkpoint(&self) -> Result<RunStartCheckpointV1, RunStartStoreError> {
+        self.0
+            .lock()
+            .map(|value| *value)
+            .map_err(|_| RunStartStoreError::Poisoned)
+    }
+
+    fn compare_and_swap(
+        &self,
+        expected: RunStartCheckpointV1,
+        next: RunStartCheckpointV1,
+    ) -> Result<(), RunStartStoreError> {
+        let mut current = self.0.lock().map_err(|_| RunStartStoreError::Poisoned)?;
+        if *current == next {
+            return Ok(());
+        }
+        if *current != expected || !next.is_well_formed() {
+            return Err(RunStartStoreError::RollbackDetected);
+        }
+        *current = next;
+        Ok(())
+    }
+}
+
 fn state_with(record: RunStartRecordV1) -> (TempDir, ObjectiveHostState) {
     let temp = TempDir::new().expect("temp");
-    let path = temp.path().join("journal");
-    let file = OpenOptions::new()
-        .create_new(true)
-        .read(true)
-        .write(true)
-        .open(path)
-        .expect("journal");
-    let mut journal =
-        DurableRunStartJournal::create(file, digest("binding"), 16).expect("create journal");
+    let mut journal = DurableRunStartStore::open(
+        temp.path().join("run-start"),
+        digest("binding"),
+        16,
+        Box::new(TestCheckpoint::new()),
+    )
+    .expect("create journal");
     journal
-        .append(Digest32::ZERO, record)
+        .append_run_start(Digest32::ZERO, record)
         .expect("append record");
     let highest_sequences = replay_frontier(&journal).expect("frontier");
     (
@@ -265,4 +300,250 @@ fn recovered_authentication_rejects_revoked_and_stale_owner_trust() {
         !authentication_is_current(&durable, &stale, &identity, now_ms)
             .expect("stale authentication")
     );
+}
+
+#[test]
+fn sub_millisecond_deadline_never_extends_final_use() {
+    assert!(deadline_is_expired(1_000_001, 1_000));
+    assert!(!deadline_is_expired(1_001_000, 1_000));
+}
+
+#[test]
+fn product_ingress_uses_the_registered_protocol_capacity() {
+    assert_eq!(
+        AuthBusObjectiveBody::MAX_SOURCE_ENVELOPE_JSON_BYTES,
+        32 * 1024
+    );
+    assert_eq!(
+        AuthBusObjectiveBody::MAX_CANONICAL_BODY_JSON_BYTES,
+        48 * 1024
+    );
+}
+
+#[test]
+fn compiled_admission_exposes_exact_execution_binding_but_abstain_does_not() {
+    let compiled = record("run.binding", 31, RunStartObjectiveDispositionV1::Compiled);
+    let binding = objective_execution_binding(&compiled, "compiled").expect("compiled binding");
+    assert_eq!(
+        binding.request_digest,
+        compiled.admission.admitted_source_digest.to_string()
+    );
+    assert_eq!(
+        binding.objective_digest,
+        compiled.snapshot.objective_digest.to_string()
+    );
+    assert_eq!(
+        binding.body_digest,
+        compiled.runtime_body_digest.to_string()
+    );
+    assert_eq!(
+        binding.artifact_set_digest,
+        compiled.snapshot.artifact_set_digest.to_string()
+    );
+    assert_eq!(binding.authority_epoch, compiled.snapshot.authority_epoch);
+    assert_eq!(binding.generation, compiled.snapshot.generation);
+    assert_eq!(
+        binding.fence_digest,
+        compiled.snapshot.fence_digest.to_string()
+    );
+    assert_eq!(binding.deadline_ms, 100_000);
+
+    assert!(objective_execution_binding(&compiled, "canonical_ready").is_none());
+    let abstain = record(
+        "run.abstain.binding",
+        32,
+        RunStartObjectiveDispositionV1::ExplicitAbstain,
+    );
+    assert!(objective_execution_binding(&abstain, "explicit_abstain").is_none());
+}
+
+#[test]
+fn exact_publication_replay_retains_original_result_without_new_admission() {
+    let first = record(
+        "run.replay.original",
+        7,
+        RunStartObjectiveDispositionV1::Compiled,
+    );
+    let (_temp, mut state) = state_with(first.clone());
+    let original = state
+        .journal
+        .index_entry(&first.snapshot.run_id)
+        .unwrap()
+        .unwrap()
+        .clone();
+    let later = record(
+        "run.replay.later",
+        8,
+        RunStartObjectiveDispositionV1::ExplicitAbstain,
+    );
+    state
+        .journal
+        .append_run_start(state.journal.head_digest(), later)
+        .unwrap();
+    state.highest_sequences = replay_frontier(&state.journal).unwrap();
+    let head = state.journal.head_digest();
+
+    // The original observation is at 1s. A later clock must not readmit the
+    // already-durable source or change a previously published decision.
+    for now_ms in [1_001, 10_000, 99_999] {
+        require_replay_admission(&state, &first.authentication, &first.snapshot.run_id).unwrap();
+        match resolve_authenticated_replay(
+            &state,
+            &first.authentication,
+            &first.snapshot.run_id,
+            now_ms,
+            first.snapshot.generation,
+            first.snapshot.fence_digest,
+        )
+        .unwrap()
+        .unwrap()
+        {
+            ObjectiveReplayPublication::Run {
+                publication,
+                record,
+            } => {
+                assert_eq!(*record, first);
+                assert_eq!(
+                    publication,
+                    codex_hepta_learning_ledger::RunStartAppendReceipt {
+                        disposition: RunStartAppendDisposition::IdempotentReplay,
+                        sequence: original.sequence,
+                        record_digest: original.record_digest,
+                        chain_digest: original.chain_digest,
+                    }
+                );
+            }
+            ObjectiveReplayPublication::Conflict { .. } => panic!("run became a conflict"),
+        }
+        assert_eq!(state.journal.head_digest(), head);
+    }
+}
+
+#[test]
+fn exact_publication_replay_rejects_every_authentication_substitution() {
+    let first = record(
+        "run.replay.auth",
+        7,
+        RunStartObjectiveDispositionV1::Compiled,
+    );
+    let (_temp, state) = state_with(first.clone());
+    let mut variants = vec![first.authentication.clone(); 8];
+    variants[0].issuer_id = id("issuer.other");
+    variants[1].key_epoch += 1;
+    variants[2].message_id = id("message.other");
+    variants[3].sequence += 1;
+    variants[4].expires_at_ms += 1;
+    variants[5].scope_digest = digest("other-scope");
+    variants[6].signed_body_digest = digest("modified-source-body");
+    variants[7].signature[0] ^= 1;
+    for authentication in variants {
+        assert!(
+            resolve_authenticated_replay(
+                &state,
+                &authentication,
+                &first.snapshot.run_id,
+                10_000,
+                first.snapshot.generation,
+                first.snapshot.fence_digest,
+            )
+            .is_err()
+        );
+    }
+    assert!(require_replay_admission(&state, &first.authentication, &id("run.other")).is_err());
+}
+
+#[test]
+fn exact_publication_replay_cannot_extend_deadline_generation_or_fence() {
+    let first = record(
+        "run.replay.current",
+        7,
+        RunStartObjectiveDispositionV1::Compiled,
+    );
+    let (_temp, state) = state_with(first.clone());
+    for (now_ms, generation, fence) in [
+        (
+            100_000,
+            first.snapshot.generation,
+            first.snapshot.fence_digest,
+        ),
+        (
+            10_000,
+            first.snapshot.generation + 1,
+            first.snapshot.fence_digest,
+        ),
+        (10_000, first.snapshot.generation, digest("other-fence")),
+    ] {
+        assert!(
+            resolve_authenticated_replay(
+                &state,
+                &first.authentication,
+                &first.snapshot.run_id,
+                now_ms,
+                generation,
+                fence,
+            )
+            .is_err()
+        );
+    }
+    let mut short_auth = record(
+        "run.replay.expired-auth",
+        9,
+        RunStartObjectiveDispositionV1::ExplicitAbstain,
+    );
+    short_auth.authentication.expires_at_ms = 2_000;
+    let (_temp, state) = state_with(short_auth.clone());
+    assert!(
+        resolve_authenticated_replay(
+            &state,
+            &short_auth.authentication,
+            &short_auth.snapshot.run_id,
+            2_000,
+            short_auth.snapshot.generation,
+            short_auth.snapshot.fence_digest,
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn exact_conflict_replay_retains_terminal_outcome_without_recompilation() {
+    let first = record(
+        "run.replay.seed",
+        1,
+        RunStartObjectiveDispositionV1::Compiled,
+    );
+    let (_temp, mut state) = state_with(first.clone());
+    let mut authentication = first.authentication.clone();
+    authentication.sequence = 2;
+    authentication.message_id = id("message.conflict");
+    let run_id = id("run.replay.conflict");
+    let conflict_bytes = b"immutable-objective-conflict".to_vec();
+    let conflict_digest = Digest32::of_bytes(&conflict_bytes);
+    let head = state.journal.head_digest();
+    state
+        .journal
+        .append_objective_conflict(
+            head,
+            codex_hepta_learning_ledger::RunStartConflictRecordV1 {
+                authentication: authentication.clone(),
+                admission: first.admission,
+                run_id: run_id.clone(),
+                runtime_body_digest: first.runtime_body_digest,
+                conflict_digest,
+                conflict_receipt_bytes: conflict_bytes,
+            },
+        )
+        .unwrap();
+    state.highest_sequences = replay_frontier(&state.journal).unwrap();
+    let head = state.journal.head_digest();
+    match resolve_authenticated_replay(&state, &authentication, &run_id, 99_999, 3, digest("fence"))
+        .unwrap()
+        .unwrap()
+    {
+        ObjectiveReplayPublication::Conflict {
+            conflict_digest: actual,
+        } => assert_eq!(actual, conflict_digest),
+        ObjectiveReplayPublication::Run { .. } => panic!("conflict resurrected as a run"),
+    }
+    assert_eq!(state.journal.head_digest(), head);
 }

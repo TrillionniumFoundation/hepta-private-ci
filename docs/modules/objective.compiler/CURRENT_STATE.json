@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.objective-compiler-current-state.v1",
+  "schemaVersion": 1,
+  "module": "objective.compiler",
+  "implementationState": {
+    "core": "source_complete",
+    "productComposition": "source_composed_durable_proof_bound_not_activated",
+    "semanticHardening": "source_complete_pending_exact_head_qualification",
+    "currentHeadQualification": "required_check_not_embedded_in_source",
+    "syntheticMergeQualification": "required_check_not_embedded_in_source",
+    "targetHostQualification": "selected_target_host_receipt_absent",
+    "independentAcceptance": "absent",
+    "canaryPromotionRollback": "source_policy_not_activated"
+  },
+  "truth": {
+    "productionImplementation": false,
+    "accepted": false,
+    "activated": false,
+    "released": false
+  },
+  "requiredChecks": [
+    "Hepta objective admission qualification",
+    "Hepta objective product composition / source-head",
+    "Hepta objective product composition / synthetic-merge",
+    "Hepta Lane D semantic conformance",
+    "objective.compiler current-state projection",
+    "Agentd objective product E2E",
+    "strict objective clippy",
+    "objective release guard"
+  ],
+  "externalGates": [
+    "selected deployment target-host measurement and resource-policy acceptance",
+    "independent semantic and security review",
+    "operator acceptance",
+    "canary observation",
+    "promotion approval",
+    "rollback authority validation",
+    "release authority approval"
+  ]
+}

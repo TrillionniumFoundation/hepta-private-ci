@@ -7,23 +7,23 @@
 //! ephemeral runtime coordinator. No effect authority is granted here.
 
 use std::collections::BTreeMap;
-use std::fs::OpenOptions;
 use std::path::Path;
+use std::path::PathBuf;
 use std::str::FromStr;
 use std::sync::Mutex;
 
 use codex_hepta_authbus::Error as AuthBusError;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
+use codex_hepta_contracts::AgentId;
 use codex_hepta_intelligence::ObjectiveRunBindingsV1;
 use codex_hepta_intelligence::ObjectiveRunError;
 use codex_hepta_intelligence::compile_and_publish_objective_run_v1;
-use codex_hepta_learning_ledger::DurableRunStartJournal;
+use codex_hepta_learning_ledger::DurableRunStartStore;
 use codex_hepta_learning_ledger::RunStartAppendDisposition;
 use codex_hepta_learning_ledger::RunStartAuthenticationV1;
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
-use codex_hepta_learning_ledger::RunStartRecovery;
 use codex_hepta_objective::ObjectiveAdmissionContextV1;
 use codex_hepta_objective::ObjectiveAdmissionProfileV1;
 use codex_hepta_objective::ObjectiveSourceAuthenticationV1;
@@ -40,17 +40,21 @@ use crate::AgentdState;
 use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;
 use crate::ObjectiveRunAdmission;
+use crate::ObjectiveRunExecutionBinding;
 use crate::authbus_ingress;
 use crate::authbus_trust::TextTrust;
 use crate::authbus_trust::hex_bytes;
 use crate::authbus_trust::invalid;
 use crate::authbus_trust::read_private_owner_file;
+use crate::objective_run_start_checkpoint::ObjectiveRunStartCheckpointFile;
 
-const PRODUCT_SOURCE_JSON_BYTES: usize = 32 * 1024;
-const PRODUCT_BODY_JSON_BYTES: usize = 48 * 1024;
+#[path = "objective_runtime_replay.rs"]
+mod replay;
+use replay::ObjectiveReplayPublication;
+use replay::resolve_authenticated_replay;
+
 const MAX_RUN_START_RECORDS: usize = 4_096;
 const RUN_START_DIRECTORY: &str = "objective-run-start-v1";
-const RUN_START_FILE: &str = "journal.bin";
 
 pub(crate) enum ObjectiveStartResult {
     Admitted(ObjectiveRunAdmission),
@@ -67,7 +71,7 @@ pub(crate) struct ObjectiveRuntimeHost {
 }
 
 struct ObjectiveHostState {
-    journal: DurableRunStartJournal,
+    journal: DurableRunStartStore,
     highest_sequences: BTreeMap<(String, u64), u64>,
 }
 
@@ -75,6 +79,7 @@ impl ObjectiveRuntimeHost {
     pub(crate) fn open(
         identity: &AgentdIdentity,
         profile_file: &Path,
+        checkpoint_file: PathBuf,
     ) -> Result<Self, AgentdError> {
         let bytes = read_private_owner_file(profile_file, identity, 262_144)?;
         let profile = decode_admission_profile_json_v1(&bytes)
@@ -87,7 +92,7 @@ impl ObjectiveRuntimeHost {
         let profile_digest = profile
             .digest()
             .map_err(|error| invalid(&format!("objective profile: {error}")))?;
-        let journal = open_run_start_journal(identity, profile_digest)?;
+        let journal = open_run_start_store(identity, profile_digest, checkpoint_file)?;
         let highest_sequences = replay_frontier(&journal)?;
         Ok(Self {
             profile,
@@ -111,15 +116,22 @@ impl ObjectiveRuntimeHost {
             return Ok(());
         }
         let trust = authbus_ingress::attached(agentd)?.trust(agentd)?;
-        let state = self.state.lock().map_err(|_| {
+        let mut state = self.state.lock().map_err(|_| {
             AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
         })?;
+        let retire_before_unix_micros = now_ms
+            .checked_mul(1_000)
+            .ok_or_else(|| invalid("objective host clock overflow"))?;
+        state
+            .journal
+            .compact_expired_prefix(retire_before_unix_micros)
+            .map_err(store_error)?;
         let fence = objective_fence(agentd.identity(), current_generation);
         for record in state.journal.records().map_err(store_error)? {
             if record.snapshot.generation != current_generation
                 || record.snapshot.fence_digest != fence
                 || record.disposition != RunStartObjectiveDispositionV1::Compiled
-                || record.admission.deadline_unix_micros.div_ceil(1_000) <= now_ms
+                || deadline_is_expired(record.admission.deadline_unix_micros, now_ms)
             {
                 continue;
             }
@@ -131,7 +143,7 @@ impl ObjectiveRuntimeHost {
                     // rather than silently entering the compatibility path.
                     continue;
                 }
-                agentd.start_current_run_start(&state.journal, &record.snapshot.run_id)?;
+                agentd.start_current_run_start_record(record)?;
             }
         }
         Ok(())
@@ -205,45 +217,101 @@ impl ObjectiveRuntimeHost {
 
         // Durable publication and replay-frontier mutation remain serialized,
         // but the guard is deliberately dropped before seven-owner execution.
-        let (published, record) = {
+        let (publication, record) = {
             let mut state = self.state.lock().map_err(|_| {
                 AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
             })?;
             require_replay_admission(&state, &authentication, &run_id)?;
+            match resolve_authenticated_replay(
+                &state,
+                &authentication,
+                &run_id,
+                authbus_ingress::now_ms()?,
+                current_generation,
+                objective_fence(agentd.identity(), current_generation),
+            )? {
+                Some(ObjectiveReplayPublication::Run {
+                    publication,
+                    record,
+                }) => (publication, *record),
+                Some(ObjectiveReplayPublication::Conflict { conflict_digest }) => {
+                    return Ok(ObjectiveStartResult::Conflict {
+                        run_id: request.body.run_id,
+                        conflict_digest: conflict_digest.to_string(),
+                    });
+                }
+                None => {
+                    // Admission time is sampled after acquiring the writer lock.
+                    let mut context = context;
+                    let now_unix_micros = authbus_ingress::now_ms()?
+                        .checked_mul(1_000)
+                        .ok_or_else(|| invalid("objective host clock overflow"))?;
+                    context.now_unix_micros = now_unix_micros;
+                    state
+                        .journal
+                        .compact_expired_prefix(now_unix_micros)
+                        .map_err(store_error)?;
 
-            let expected_run_start_head = state.journal.head_digest();
-            let published = match compile_and_publish_objective_run_v1(
-                &source,
-                &self.profile,
-                &context,
-                ObjectiveRunBindingsV1 {
-                    authentication,
-                    run_id: run_id.clone(),
-                    runtime_body_digest,
-                    preference_state_digest,
-                    model_tuple_digest,
-                    prompt_registry_digest,
-                    artifact_set_digest,
-                    authority_epoch: request.body.authority_epoch,
-                    generation: current_generation,
-                    fence_digest: objective_fence(agentd.identity(), current_generation),
-                    expected_run_start_head,
-                },
-                &mut state.journal,
-            ) {
-                Ok(published) => published,
-                Err(ObjectiveRunError::Conflict {
-                    conflict,
-                    publication: _,
-                }) => {
+                    let expected_run_start_head = state.journal.head_digest();
+                    let published = match compile_and_publish_objective_run_v1(
+                        &source,
+                        &self.profile,
+                        &context,
+                        ObjectiveRunBindingsV1 {
+                            authentication,
+                            run_id: run_id.clone(),
+                            runtime_body_digest,
+                            preference_state_digest,
+                            model_tuple_digest,
+                            prompt_registry_digest,
+                            artifact_set_digest,
+                            authority_epoch: request.body.authority_epoch,
+                            generation: current_generation,
+                            fence_digest: objective_fence(agentd.identity(), current_generation),
+                            expected_run_start_head,
+                        },
+                        &mut state.journal,
+                    ) {
+                        Ok(published) => published,
+                        Err(ObjectiveRunError::Conflict {
+                            conflict,
+                            publication: _,
+                        }) => {
+                            let record = state
+                                .journal
+                                .get_conflict(&run_id)
+                                .map_err(store_error)?
+                                .cloned()
+                                .ok_or_else(|| {
+                                    invalid("durable objective conflict publication disappeared")
+                                })?;
+                            let key = (
+                                record.authentication.issuer_id.to_string(),
+                                record.authentication.key_epoch,
+                            );
+                            state
+                                .highest_sequences
+                                .entry(key)
+                                .and_modify(|value| {
+                                    *value = (*value).max(record.authentication.sequence)
+                                })
+                                .or_insert(record.authentication.sequence);
+                            return Ok(ObjectiveStartResult::Conflict {
+                                run_id: request.body.run_id,
+                                conflict_digest: conflict.conflict_digest.to_string(),
+                            });
+                        }
+                        Err(error) => {
+                            return Err(invalid(&format!("objective publication: {error}")));
+                        }
+                    };
+
                     let record = state
                         .journal
-                        .get_conflict(&run_id)
+                        .get(&run_id)
                         .map_err(store_error)?
                         .cloned()
-                        .ok_or_else(|| {
-                            invalid("durable objective conflict publication disappeared")
-                        })?;
+                        .ok_or_else(|| invalid("durable objective publication disappeared"))?;
                     let key = (
                         record.authentication.issuer_id.to_string(),
                         record.authentication.key_epoch,
@@ -253,36 +321,21 @@ impl ObjectiveRuntimeHost {
                         .entry(key)
                         .and_modify(|value| *value = (*value).max(record.authentication.sequence))
                         .or_insert(record.authentication.sequence);
-                    return Ok(ObjectiveStartResult::Conflict {
-                        run_id: request.body.run_id,
-                        conflict_digest: conflict.conflict_digest.to_string(),
-                    });
+                    (published.publication, record)
                 }
-                Err(error) => {
-                    return Err(invalid(&format!("objective publication: {error}")));
-                }
-            };
-
-            let record = state
-                .journal
-                .get(&run_id)
-                .map_err(store_error)?
-                .cloned()
-                .ok_or_else(|| invalid("durable objective publication disappeared"))?;
-            let key = (
-                record.authentication.issuer_id.to_string(),
-                record.authentication.key_epoch,
-            );
-            state
-                .highest_sequences
-                .entry(key)
-                .and_modify(|value| *value = (*value).max(record.authentication.sequence))
-                .or_insert(record.authentication.sequence);
-            (published, record)
+            }
         };
 
         authbus_ingress::require_ready(agentd)?;
         let current = authbus.trust(agentd)?;
+        if deadline_is_expired(
+            record.admission.deadline_unix_micros,
+            authbus_ingress::now_ms()?,
+        ) {
+            return Err(invalid(
+                "objective deadline expired after durable publication",
+            ));
+        }
         if !authentication_is_current(
             &record,
             &current,
@@ -315,17 +368,34 @@ impl ObjectiveRuntimeHost {
             RunStartObjectiveDispositionV1::ExplicitAbstain => "explicit_abstain",
         };
 
+        let execution = objective_execution_binding(&record, disposition);
         Ok(ObjectiveStartResult::Admitted(ObjectiveRunAdmission {
-            run_id: published.run_start.run_id.to_string(),
-            objective_digest: published.run_start.objective_digest.to_string(),
-            hard_constraint_digest: published.run_start.hard_constraint_digest.to_string(),
-            publication_digest: published.publication.record_digest.to_string(),
-            chain_digest: published.publication.chain_digest.to_string(),
+            run_id: record.snapshot.run_id.to_string(),
+            objective_digest: record.snapshot.objective_digest.to_string(),
+            hard_constraint_digest: record.snapshot.hard_constraint_digest.to_string(),
+            publication_digest: publication.record_digest.to_string(),
+            chain_digest: publication.chain_digest.to_string(),
             disposition: disposition.to_string(),
-            idempotent: published.publication.disposition
-                == RunStartAppendDisposition::IdempotentReplay,
+            execution,
+            idempotent: publication.disposition == RunStartAppendDisposition::IdempotentReplay,
         }))
     }
+}
+
+fn objective_execution_binding(
+    record: &RunStartRecordV1,
+    disposition: &str,
+) -> Option<ObjectiveRunExecutionBinding> {
+    (disposition == "compiled").then(|| ObjectiveRunExecutionBinding {
+        request_digest: record.admission.admitted_source_digest.to_string(),
+        objective_digest: record.snapshot.objective_digest.to_string(),
+        body_digest: record.runtime_body_digest.to_string(),
+        artifact_set_digest: record.snapshot.artifact_set_digest.to_string(),
+        authority_epoch: record.snapshot.authority_epoch,
+        generation: record.snapshot.generation,
+        fence_digest: record.snapshot.fence_digest.to_string(),
+        deadline_ms: record.admission.deadline_unix_micros / 1_000,
+    })
 }
 
 fn objective_payload(
@@ -333,12 +403,18 @@ fn objective_payload(
     body: &AuthBusObjectiveBody,
     current_generation: u64,
 ) -> Result<Vec<u8>, AgentdError> {
-    if body.spawn_generation != identity.spawn_generation
+    if body.spawn_generation != identity.spawn_generation || current_generation == 0 {
+        return Err(invalid("objective generation is invalid"));
+    }
+    objective_body_payload(body)
+}
+
+fn objective_body_payload(body: &AuthBusObjectiveBody) -> Result<Vec<u8>, AgentdError> {
+    if body.spawn_generation == 0
         || body.objective_revision == 0
         || body.authority_epoch == 0
-        || current_generation == 0
         || body.source_envelope_json.is_empty()
-        || body.source_envelope_json.len() > PRODUCT_SOURCE_JSON_BYTES
+        || body.source_envelope_json.len() > AuthBusObjectiveBody::MAX_SOURCE_ENVELOPE_JSON_BYTES
     {
         return Err(invalid(
             "objective generation, revision, authority or source bound is invalid",
@@ -355,14 +431,42 @@ fn objective_payload(
         parse_digest(digest, field)?;
     }
     let bytes = serde_json::to_vec(body)?;
-    if bytes.len() > PRODUCT_BODY_JSON_BYTES {
-        return Err(invalid("encoded objective body exceeds 48 KiB"));
+    if bytes.len() > AuthBusObjectiveBody::MAX_CANONICAL_BODY_JSON_BYTES {
+        return Err(invalid(
+            "encoded objective body exceeds the product contract",
+        ));
     }
     Ok(bytes)
 }
 
+fn deadline_is_expired(deadline_unix_micros: u64, now_ms: u64) -> bool {
+    // ObjectiveFunctionV1 exposes only millisecond precision. Flooring at the
+    // final-use boundary is conservative: no sub-millisecond remainder can
+    // extend authority beyond the exact admitted deadline.
+    deadline_unix_micros / 1_000 <= now_ms
+}
+
+/// Canonical claims for an independently signed objective request. This helper
+/// validates the registered product body bounds and binds the signature to the
+/// exact Agent owner and ObjectiveStart scope; it grants no effect authority.
+pub fn authbus_objective_claims(
+    owner: &AgentId,
+    request: &AuthBusObjectiveIngress,
+) -> Result<SignedMessageClaims, AgentdError> {
+    let payload = objective_body_payload(&request.body)?;
+    objective_claims_for_payload(owner, request, &payload)
+}
+
 fn objective_claims(
     identity: &AgentdIdentity,
+    request: &AuthBusObjectiveIngress,
+    payload: &[u8],
+) -> Result<SignedMessageClaims, AgentdError> {
+    objective_claims_for_payload(&identity.agent_id, request, payload)
+}
+
+fn objective_claims_for_payload(
+    owner: &AgentId,
     request: &AuthBusObjectiveIngress,
     payload: &[u8],
 ) -> Result<SignedMessageClaims, AgentdError> {
@@ -373,9 +477,9 @@ fn objective_claims(
             .map_err(|error| invalid(&format!("objective key epoch: {error}")))?,
         message_id: StableId::new(&request.message_id)
             .map_err(|error| invalid(&format!("objective message id: {error}")))?,
-        subject_id: StableId::new(identity.agent_id.as_str())
+        subject_id: StableId::new(owner.as_str())
             .map_err(|error| invalid(&format!("objective subject: {error}")))?,
-        scope_digest: objective_scope(identity),
+        scope_digest: objective_scope_for_agent(owner),
         payload_digest: Digest32::of_bytes(payload),
         sequence: request.sequence,
         expires_at_ms: request.expires_at_ms,
@@ -383,8 +487,12 @@ fn objective_claims(
 }
 
 fn objective_scope(identity: &AgentdIdentity) -> Digest32 {
+    objective_scope_for_agent(&identity.agent_id)
+}
+
+fn objective_scope_for_agent(owner: &AgentId) -> Digest32 {
     let mut bytes = b"hepta:agentd:signed-objective:v1\0".to_vec();
-    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
+    bytes.extend_from_slice(owner.as_str().as_bytes());
     Digest32::of_bytes(&bytes)
 }
 
@@ -412,78 +520,27 @@ fn run_start_binding(identity: &AgentdIdentity, profile_digest: Digest32) -> Dig
     Digest32::of_bytes(&bytes)
 }
 
-fn open_run_start_journal(
+fn open_run_start_store(
     identity: &AgentdIdentity,
     profile_digest: Digest32,
-) -> Result<DurableRunStartJournal, AgentdError> {
+    checkpoint_file: PathBuf,
+) -> Result<DurableRunStartStore, AgentdError> {
     let root = identity.home_root.join(RUN_START_DIRECTORY);
-    prepare_private_directory(&root)?;
-    let path = root.join(RUN_START_FILE);
-    if path.exists() {
-        let metadata = std::fs::symlink_metadata(&path)?;
-        if !metadata.is_file() || metadata.file_type().is_symlink() {
-            return Err(invalid(
-                "objective run-start journal must be a regular file",
-            ));
-        }
-    }
-    let mut options = OpenOptions::new();
-    options.read(true).write(true).create(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
-    }
-    let file = options.open(path)?;
-    if file.metadata()?.len() == 0 {
-        let journal = DurableRunStartJournal::create(
-            file,
-            run_start_binding(identity, profile_digest),
-            MAX_RUN_START_RECORDS,
-        )
-        .map_err(store_error)?;
-        sync_run_start_directory(&root)?;
-        Ok(journal)
-    } else {
-        DurableRunStartJournal::recover(
-            file,
-            run_start_binding(identity, profile_digest),
-            MAX_RUN_START_RECORDS,
-            RunStartRecovery::Unacknowledged,
-        )
+    let initialize_checkpoint =
+        DurableRunStartStore::checkpoint_initialization_allowed(&root).map_err(store_error)?;
+    let binding = run_start_binding(identity, profile_digest);
+    let checkpoint = ObjectiveRunStartCheckpointFile::open(
+        checkpoint_file,
+        identity,
+        binding,
+        initialize_checkpoint,
+    )?;
+    DurableRunStartStore::open(root, binding, MAX_RUN_START_RECORDS, Box::new(checkpoint))
         .map_err(store_error)
-    }
-}
-
-#[cfg(unix)]
-fn sync_run_start_directory(path: &Path) -> Result<(), AgentdError> {
-    std::fs::File::open(path)?.sync_all()?;
-    Ok(())
-}
-
-#[cfg(not(unix))]
-fn sync_run_start_directory(_path: &Path) -> Result<(), AgentdError> {
-    // The selected non-Unix host profile must independently qualify directory-entry
-    // durability. The journal file itself is synchronized before this boundary.
-    Ok(())
-}
-
-fn prepare_private_directory(path: &Path) -> Result<(), AgentdError> {
-    std::fs::create_dir_all(path)?;
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;
-    }
-    let metadata = std::fs::symlink_metadata(path)?;
-    if !metadata.is_dir() || metadata.file_type().is_symlink() {
-        return Err(invalid("objective run-start root must be a real directory"));
-    }
-    Ok(())
 }
 
 fn replay_frontier(
-    journal: &DurableRunStartJournal,
+    journal: &DurableRunStartStore,
 ) -> Result<BTreeMap<(String, u64), u64>, AgentdError> {
     let mut highest: BTreeMap<(String, u64), u64> = BTreeMap::new();
     for (authentication, _) in journal.authentication_records().map_err(store_error)? {
@@ -516,12 +573,9 @@ fn require_replay_admission(
     }
     let exact = state
         .journal
-        .authentication_records()
+        .index_entry(run_id)
         .map_err(store_error)?
-        .into_iter()
-        .any(|(record_authentication, record_run_id)| {
-            record_authentication == authentication && record_run_id == run_id
-        });
+        .is_some_and(|entry| &entry.authentication == authentication);
     if exact {
         Ok(())
     } else {

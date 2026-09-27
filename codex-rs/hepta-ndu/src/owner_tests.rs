@@ -32,7 +32,7 @@ use crate::UtilityContribution;
 use crate::UtilityProfile;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("valid stable id")
+    StableId::new(value).unwrap_or_else(|error| panic!("valid stable id: {error:?}"))
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -88,7 +88,7 @@ fn policy() -> NduProductionPolicyV1 {
 
 fn contributions() -> ContributionSet {
     let objective = digest("objective");
-    let generation = Generation::new(1).expect("generation");
+    let generation = Generation::new(1).unwrap_or_else(|error| panic!("generation: {error:?}"));
     ContributionSet {
         objective_digest: objective,
         generation,
@@ -155,12 +155,13 @@ struct Fixture {
 }
 
 fn fixture() -> Fixture {
-    let store_dir = tempfile::tempdir().expect("store tempdir");
-    let authority_dir = tempfile::tempdir().expect("authority tempdir");
+    let store_dir = tempfile::tempdir().unwrap_or_else(|error| panic!("store tempdir: {error:?}"));
+    let authority_dir =
+        tempfile::tempdir().unwrap_or_else(|error| panic!("authority tempdir: {error:?}"));
     std::fs::set_permissions(store_dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("private store permissions");
+        .unwrap_or_else(|error| panic!("private store permissions: {error:?}"));
     std::fs::set_permissions(authority_dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("private authority permissions");
+        .unwrap_or_else(|error| panic!("private authority permissions: {error:?}"));
 
     let signing = SigningKey::from_bytes(&[91; 32]);
     let head = FinalUseRevocations {
@@ -174,7 +175,7 @@ fn fixture() -> Fixture {
         signing.verifying_key().to_bytes(),
         head,
     )
-    .expect("authority");
+    .unwrap_or_else(|error| panic!("authority: {error:?}"));
 
     let owner = NduAuthenticatedOwnerV1::open(
         store_dir.path(),
@@ -189,7 +190,7 @@ fn fixture() -> Fixture {
         },
         policy(),
     )
-    .expect("authenticated owner");
+    .unwrap_or_else(|error| panic!("authenticated owner: {error:?}"));
 
     Fixture {
         owner,
@@ -203,14 +204,20 @@ fn fixture() -> Fixture {
 
 impl Fixture {
     fn sign(&mut self, mutation: &NduOwnerMutationV1, grant_id: &str) -> SignedFinalUseGrant {
-        let binding = self.owner.final_use_binding(mutation).expect("binding");
+        let binding = self
+            .owner
+            .final_use_binding(mutation)
+            .unwrap_or_else(|error| panic!("binding: {error:?}"));
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
-            .expect("clock")
+            .unwrap_or_else(|error| panic!("clock: {error:?}"))
             .as_millis() as u64;
         let mut nonce = [0_u8; 32];
         nonce[0] = self.next_nonce;
-        self.next_nonce = self.next_nonce.checked_add(1).expect("nonce bound");
+        self.next_nonce = self
+            .next_nonce
+            .checked_add(1)
+            .unwrap_or_else(|| panic!("nonce bound"));
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "ndu-issuer".to_string(),
@@ -221,9 +228,11 @@ impl Fixture {
             not_before_unix_ms: now.saturating_sub(1_000),
             expires_at_unix_ms: now.saturating_add(60_000),
         };
-        let signature = self
-            .signing
-            .sign(&grant.signing_bytes().expect("signing bytes"));
+        let signature = self.signing.sign(
+            &grant
+                .signing_bytes()
+                .unwrap_or_else(|error| panic!("signing bytes: {error:?}")),
+        );
         SignedFinalUseGrant {
             grant,
             signature: signature.to_bytes().to_vec(),

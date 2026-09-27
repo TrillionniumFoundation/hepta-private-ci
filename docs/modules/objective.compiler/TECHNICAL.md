@@ -98,6 +98,7 @@ Produced contracts:
 - `ModulePort::objective.compiler::intelligence.control`
 - `ObjectiveFunctionV1`
 - `RunStartSnapshotV1`
+- `ObjectiveRunExecutionBinding`
 
 Consumed contracts:
 
@@ -111,7 +112,7 @@ Critical protocol schemas:
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-`ObjectiveFunction` has two deliberately separate identities. `ObjectiveFunction::semantic_digest` is the compact owner-native compiler identity used by `RunStartSnapshotV1.objectiveDigest`; `encode_objective_function_v1` materializes the registered canonical JSON `ObjectiveFunctionV1` and computes a separate protocol-wire digest. The durable run-start v2 record binds both byte strings and both digests, and Agentd refuses legacy records without canonical protocol identity at final use. Tests cover exact canonical round trips, unknown/non-canonical JSON, native/protocol digest separation, maximum bounds and durable revalidation. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+`ObjectiveFunction` has two deliberately separate identities. `ObjectiveFunction::semantic_digest` is the compact owner-native compiler identity used by `RunStartSnapshotV1.objectiveDigest`; the product path uses `encode_authenticated_objective_function_v1` to recompute admission and native compilation from the authenticated context before materializing the registered canonical JSON `ObjectiveFunctionV1` and its separate protocol-wire digest. `decode_objective_function_v1` validates exact canonical bytes plus semantic uniqueness, ordering, intrinsic-abstain, allowed/forbidden disjointness and soft-weight bounds. The durable run-start v2 record binds both byte strings and both digests, and Agentd refuses legacy records without canonical protocol identity at final use. For a compiled compatibility-path run, `ObjectiveStart` also returns an optional `ObjectiveRunExecutionBinding` copied from the daemon-owned durable record. The binding contains only the exact request/objective/body/artifact/authority/generation/fence/deadline identity needed by a trusted execution owner to attach independently produced context; it grants no effect authority. Tests cover source/profile/context drift, duplicate or reordered wire identities, unknown/non-canonical JSON, native/protocol digest separation, maximum bounds and durable revalidation. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
 ## 6. Data authority, persistence and migrations
 
@@ -160,7 +161,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Stateless compiler/admission library with a named product-source composition in Agentd. `ObjectiveRuntimeHost::submit` authenticates the signed structured request against current AuthBus trust, derives the owner-local admission context/profile/generation/fence, and calls `compile_and_publish_objective_run_v1`; the destination-owned `DurableRunStartJournal` synchronously persists the admission binding, objective semantic bytes and `RunStartSnapshotV1` before a non-abstain run reaches `AgentRunCoordinator`; initial journal creation also synchronizes the containing directory on Unix, while non-Unix directory-entry durability remains a selected-host qualification obligation. Restart recovery replays the journal and revalidates retained signatures against current trust. The compiler still owns no daemon or private objective database. This is source composition, not deployment activation. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
+Stateless compiler/admission library with a named product-source composition in Agentd. `ObjectiveRuntimeHost::submit` authenticates the signed structured request against current AuthBus trust, derives the owner-local admission context/profile/generation/fence, and calls `compile_and_publish_objective_run_v1`; the destination-owned `DurableRunStartStore` synchronously persists the admission binding, native semantic bytes, canonical protocol bytes and `RunStartSnapshotV1` before a non-abstain run reaches `AgentRunCoordinator`. The store rotates bounded segments, compacts only complete expired sealed prefixes, and binds every append and compaction transition by CAS to an independent monotonic checkpoint file outside the Agent-home rollback domain. Agentd requires `--objective-profile-file` and `--objective-checkpoint-file` together; the checkpoint owner uses a private sidecar writer lock and atomic replace on Unix. Restart recovery rejects missing, stale, wrong-binding or ahead-of-local checkpoints, reconciles acknowledgement loss, and revalidates retained signatures against current trust. A compiled fallback admission exposes the exact daemon snapshot through `ObjectiveRunExecutionBinding`; the trusted worker must attach its context/envelope, obtain current final-use authority, durably commit dispatch, perform exactly one physical App Server turn, and publish the observed terminal state back to that same Agentd run. Exact durable retry returns the stored observation without a second provider send. The compiler still owns no daemon or private objective database. This is source composition, not deployment activation. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
 
 Current operating and state-format references:
 
@@ -174,10 +175,13 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-objective/src/compiler_tests.rs](../../../codex-rs/hepta-objective/src/compiler_tests.rs); named case: `compilation_is_permutation_invariant`.
 - [codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs](../../../codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs); named case: `all_three_action_graphs_match_truth_table_and_have_minimal_conflicts`.
-- [codex-rs/hepta-agentd/src/objective_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/objective_runtime_tests.rs); signed ingress, replay frontier, explicit revoked/stale owner-trust recovery rejection, generation/fence rejection and runtime handoff.
-- [codex-rs/hepta-learning-ledger/src/run_start_tests.rs](../../../codex-rs/hepta-learning-ledger/src/run_start_tests.rs); durable append, exact replay, canonical protocol-digest validation, partial-tail recovery, acknowledgement-loss replay and semantic/protocol drift conflict.
+- [codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs](../../../codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs); authenticated projection rebinding, wire uniqueness/order, intrinsic abstain, disjoint actions, capacity and microsecond-deadline projection.
+- [codex-rs/hepta-agentd/src/objective_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/objective_runtime_tests.rs); signed ingress, replay frontier, product capacity identity, conservative deadline final use, explicit revoked/stale owner-trust recovery rejection, generation/fence rejection and runtime handoff.
+- [codex-rs/hepta-agentd/src/objective_run_start_checkpoint_tests.rs](../../../codex-rs/hepta-agentd/src/objective_run_start_checkpoint_tests.rs); private checkpoint creation/reopen, writer exclusion, binding checks, missing-witness rollback detection and Agent-home separation.
+- [codex-rs/hepta-agentd/tests/objective_product_e2e.rs](../../../codex-rs/hepta-agentd/tests/objective_product_e2e.rs); real daemon signed ObjectiveStart, durable explicit-abstain terminal, compiled-run execution binding, context attachment, current final-use grant, one physical mock-provider App Server turn, terminal observation, exact retry without resend, process restart, checkpoint-frontier recovery, missing-witness startup rejection and structured target-host round-trip/restart measurement.
+- [codex-rs/hepta-learning-ledger/src/run_start_tests.rs](../../../codex-rs/hepta-learning-ledger/src/run_start_tests.rs) and [run_start_store_tests.rs](../../../codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs); durable append, exact replay, segment rotation, compacted-prefix recovery, checkpoint acknowledgement loss, rollback detection and semantic/protocol drift conflict.
 
-In `codex-rs`, run `just test -p codex-hepta-objective`, plus the focused `codex-hepta-learning-ledger` run-start, `codex-hepta-intelligence` objective-run and `codex-hepta-agentd` objective-runtime tests. `.github/workflows/hepta-objective-admission.yml` executes those owner/caller checks, the exact-source verifier and measurement-recorder self-test. `.github/workflows/hepta-lane-d-semantic-conformance.yml` supplies cross-platform Lane-D package checks; the consolidated source workflow also carries `codex-hepta-objective` in this candidate. These commands/workflows are invocations and exact-candidate evidence surfaces, not permanent pass receipts.
+In `codex-rs`, run `just test -p codex-hepta-objective`, plus the focused `codex-hepta-learning-ledger` run-start, `codex-hepta-intelligence` objective-run, `codex-hepta-agentd` objective-runtime and objective-checkpoint tests. `.github/workflows/hepta-objective-admission.yml` executes those owner/caller checks, the exact-source verifier and measurement-recorder self-test. `.github/workflows/hepta-lane-d-semantic-conformance.yml` supplies cross-platform Lane-D package checks; the consolidated source workflow also carries `codex-hepta-objective` in this candidate. These commands/workflows are invocations and exact-candidate evidence surfaces, not permanent pass receipts.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -294,3 +298,15 @@ The bootstrap source-location obligation for `objective.compiler` is implemented
 - `codex-rs/hepta-objective`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+### RunStart rotation writer fence (2026-09-25)
+
+The destination-owned segmented store now retains a directory writer lease
+across active-file close/rename/create and compaction. Same-process and
+cross-process regression probes must reject a competing writer at those cuts;
+reopening after the original owner exits preserves the exact run and chain.
+Compacted summary count/length validation precedes allocation. The authoritative
+protocol and retained-index capacity boundary are specified in
+`../../readiness/OBJECTIVE_COMPILER_EXECUTION.md`; neither a passing local test
+nor filesystem metadata grants target-host acceptance or activation.

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "1133f7e5a5afd348e6fbed5694144572dda59a9a",
-    "tree": "0cae5e6f633248513e343f7776a88bdad22cb19c"
+    "commit": "b3581605844729baac9cb6522e486af9746399f4",
+    "tree": "c7943ebe42481e53edd9841f83b814cc51f92759"
   },
   "laneId": "LANE-G-ENGINEERING",
   "module": "control.engineering",
@@ -930,12 +930,12 @@
   "sourceRoot": [
     "tools/hepta-engineering-control"
   ],
-  "sourceBaseRole": "integration_baseline",
+  "sourceBaseRole": "current_mapping_baseline_not_execution_receipt",
   "currentCandidateIdentityAuthority": {
     "repository": "TrillionniumFoundation/hepta-private-ci",
     "authority": "exact-head-and-deterministic-synthetic-merge execution receipts",
     "embeddedCommit": false,
-    "reason": "sourceBase is integration provenance; current operation bytes are exact Git blobs and current candidate/merge identity is established externally by CI execution receipts."
+    "reason": "historicalSourceBaselines retain integration provenance; sourceBase is the current mapping baseline, exact operation blobs bind source, and current execution qualification requires external exact-head and deterministic synthetic-merge receipts."
   },
   "mappingSourceIdentityMode": "exact_blob",
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
@@ -944,8 +944,8 @@
     "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
   },
   "observedAtHead": {
-    "commit": "55e8b38debd6333f376b77889e689c9b4825b9e8",
-    "tree": "35d20fa0c9d0589e7d0abbf0abeb8b98db004548"
+    "commit": "4b4053b9f58d6754ef5587d1841194d4db279019",
+    "tree": "fed4439ce829f2a160eec20a184e2ea8c7fc7704"
   },
   "observedSourcePaths": [
     "tools/hepta-engineering-control"
@@ -1086,6 +1086,21 @@
     {
       "path": "tools/hepta-engineering-control/test_worker_lifecycle.py",
       "object": "caa8a8f49cd8b671010632e616dcdcfac2000e87"
+    }
+  ],
+  "historicalSourceBaselines": [
+    {
+      "commit": "1133f7e5a5afd348e6fbed5694144572dda59a9a",
+      "tree": "0cae5e6f633248513e343f7776a88bdad22cb19c",
+      "role": "integration_baseline",
+      "disposition": "history_only_nonancestor_after_source_integration_not_current_qualification"
+    }
+  ],
+  "historicalSourceObservations": [
+    {
+      "commit": "55e8b38debd6333f376b77889e689c9b4825b9e8",
+      "tree": "35d20fa0c9d0589e7d0abbf0abeb8b98db004548",
+      "disposition": "unavailable_pre_squash_observation_not_current_qualification"
     }
   ]
 }

@@ -1,0 +1,181 @@
+name: Hepta objective target-host qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact 40-character objective candidate commit
+        required: true
+        type: string
+      host_profile_id:
+        description: Registered deployment host profile identifier
+        required: true
+        type: string
+      ordinary_samples:
+        description: Ordinary admission/compile sample count
+        required: true
+        default: "1000"
+        type: string
+      conflict_samples:
+        description: 256-atom/257-oracle conflict sample count
+        required: true
+        default: "64"
+        type: string
+      product_samples:
+        description: Signed daemon round-trip sample count
+        required: true
+        default: "32"
+        type: string
+      execution_samples:
+        description: Physical provider execution sample count
+        required: true
+        default: "4"
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_RELEASE_DEBUG: "0"
+
+jobs:
+  target-host:
+    runs-on: [self-hosted, objective-target-host]
+    environment: objective-target-host-qualification
+    timeout-minutes: 180
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source and repository declarations
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          test "${#CANDIDATE_SHA}" = 40
+          test "$(git rev-parse HEAD)" = "${CANDIDATE_SHA}"
+          CANDIDATE_TREE="$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain)"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --module objective.compiler \
+            --expected-sha "${CANDIDATE_SHA}" \
+            --expected-tree "${CANDIDATE_TREE}"
+          python3 scripts/hepta-objective-current-state.py verify
+          python3 scripts/hepta-objective-release-gate.py verify-source
+          rustc --version
+          cargo --version
+          printf 'CANDIDATE_SHA=%s\nCANDIDATE_TREE=%s\n' \
+            "${CANDIDATE_SHA}" "${CANDIDATE_TREE}" >> "${GITHUB_ENV}"
+
+      - name: Measure worst-case and product paths
+        shell: bash
+        env:
+          HOST_PROFILE_ID: ${{ inputs.host_profile_id }}
+          ORDINARY_SAMPLES: ${{ inputs.ordinary_samples }}
+          CONFLICT_SAMPLES: ${{ inputs.conflict_samples }}
+          PRODUCT_SAMPLES: ${{ inputs.product_samples }}
+          EXECUTION_SAMPLES: ${{ inputs.execution_samples }}
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/objective-target-host"
+          python3 scripts/hepta-objective-target-measure.py \
+            --expected-sha "${CANDIDATE_SHA}" \
+            --host-profile-id "${HOST_PROFILE_ID}" \
+            --ordinary-samples "${ORDINARY_SAMPLES}" \
+            --conflict-samples "${CONFLICT_SAMPLES}" \
+            --product-samples "${PRODUCT_SAMPLES}" \
+            --execution-samples "${EXECUTION_SAMPLES}" \
+            --output "${RUNNER_TEMP}/objective-target-host/evidence.json"
+          test "$(git rev-parse HEAD)" = "${CANDIDATE_SHA}"
+          test "$(git rev-parse HEAD^{tree})" = "${CANDIDATE_TREE}"
+          test -z "$(git status --porcelain)"
+
+      - name: Produce measurement envelope and unsigned acceptance template
+        shell: bash
+        env:
+          HOST_PROFILE_ID: ${{ inputs.host_profile_id }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["RUNNER_TEMP"]) / "objective-target-host"
+          evidence_path = root / "evidence.json"
+          evidence_bytes = evidence_path.read_bytes()
+          evidence = json.loads(evidence_bytes)
+          digest = hashlib.sha256(evidence_bytes).hexdigest()
+          if evidence["sourceCommit"] != os.environ["CANDIDATE_SHA"]:
+              raise SystemExit("target-host evidence candidate mismatch")
+          if evidence["sourceTree"] != os.environ["CANDIDATE_TREE"]:
+              raise SystemExit("target-host evidence tree mismatch")
+          if evidence["hostProfileId"] != os.environ["HOST_PROFILE_ID"]:
+              raise SystemExit("target-host evidence profile mismatch")
+          envelope = {
+              "schema": "hepta.objective-target-host-envelope.v1",
+              "schemaVersion": 1,
+              "module": "objective.compiler",
+              "candidateCommit": os.environ["CANDIDATE_SHA"],
+              "candidateTree": os.environ["CANDIDATE_TREE"],
+              "hostProfileId": os.environ["HOST_PROFILE_ID"],
+              "workflowRunId": int(os.environ["GITHUB_RUN_ID"]),
+              "workflowRunAttempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "runnerName": os.environ["RUNNER_NAME"],
+              "runnerEnvironment": os.environ["RUNNER_ENVIRONMENT"],
+              "measurementDigest": digest,
+              "storageQualificationProved": False,
+              "resourceBudgetsAccepted": False,
+              "activationGranted": False,
+              "releaseGranted": False,
+          }
+          template = {
+              "schema": "hepta.objective-release-receipt.v1",
+              "schemaVersion": 1,
+              "module": "objective.compiler",
+              "kind": "target_host_qualification",
+              "candidateCommit": os.environ["CANDIDATE_SHA"],
+              "candidateTree": os.environ["CANDIDATE_TREE"],
+              "releasePolicyDigest": "SET_FROM_RELEASE_POLICY",
+              "issuer": "SET_BY_TARGET_HOST_QUALIFICATION_AUTHORITY",
+              "issuedAt": "SET_BY_TARGET_HOST_QUALIFICATION_AUTHORITY",
+              "evidenceDigest": digest,
+              "accepted": False,
+              "dependencies": {},
+              "payload": {
+                  "hostProfileId": os.environ["HOST_PROFILE_ID"],
+                  "measurementDigest": digest,
+                  "storageQualificationDigest": "SET_BY_STORAGE_QUALIFICATION_AUTHORITY",
+                  "worstCase257OracleCallsMeasured": True,
+                  "resourceBudgetsAccepted": False,
+                  "storageDurabilityAccepted": False,
+              },
+              "receiptDigest": "COMPUTE_ONLY_AFTER_EXTERNAL_ACCEPTANCE",
+          }
+          (root / "measurement-envelope.json").write_text(
+              json.dumps(envelope, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          (root / "target-host-receipt-template.json").write_text(
+              json.dumps(template, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          (root / "SHA256SUMS").write_text(
+              f"{digest}  evidence.json\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Retain exact target-host evidence
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: objective-target-host-${{ inputs.candidate_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-target-host
+          if-no-files-found: error
+          retention-days: 90
