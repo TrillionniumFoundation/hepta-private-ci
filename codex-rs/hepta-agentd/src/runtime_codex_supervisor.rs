@@ -103,10 +103,15 @@ impl RuntimeCodexSchedulePermitV1 {
         prepared: &PreparedAgentdIntelligenceRunV1,
         receipt: &RunReceipt,
     ) -> Result<bool, AgentdError> {
-        if self.installation.closed.load(Ordering::Acquire) {
-            return Err(AgentdError::Protocol(
-                "runtime.codex supervisor closed before queue commit".to_string(),
-            ));
+        let current = status(&self.installation);
+        if !current.admission_ready {
+            return Err(AgentdError::Protocol(format!(
+                "runtime.codex supervisor lost admission readiness before queue commit: started={} degraded={} unresolved={} post_dispatch={}",
+                current.started,
+                current.degraded,
+                current.unresolved,
+                current.unresolved_post_dispatch
+            )));
         }
         let input = self
             .installation
@@ -262,10 +267,15 @@ impl ProcessRuntimeCodexExecutorV1 {
             )
         })?
         .map_err(|_| AgentdError::Protocol("runtime.codex supervisor queue closed".to_string()))?;
-        if installed.closed.load(Ordering::Acquire) || !installed.started.load(Ordering::Acquire) {
-            return Err(AgentdError::Protocol(
-                "runtime.codex supervisor changed state while reserving capacity".to_string(),
-            ));
+        let current = status(&installed);
+        if !current.admission_ready {
+            return Err(AgentdError::Protocol(format!(
+                "runtime.codex supervisor changed state while reserving capacity: started={} degraded={} unresolved={} post_dispatch={}",
+                current.started,
+                current.degraded,
+                current.unresolved,
+                current.unresolved_post_dispatch
+            )));
         }
         Ok(RuntimeCodexSchedulePermitV1 {
             installation: installed,
@@ -312,6 +322,12 @@ impl ProcessRuntimeCodexExecutorV1 {
                 _ = lifetime.cancelled() => break,
                 joined = workers.join_next(), if !workers.is_empty() => {
                     observe_worker(&installed, joined).await?;
+                    if workers.is_empty() {
+                        let report = installed.executor
+                            .reconcile_pending(owner.clone(), lifetime.child_token())
+                            .await?;
+                        publish_recovery_status(&installed, &report);
+                    }
                 }
                 _ = recovery.tick(), if installed.degraded.load(Ordering::Acquire) && workers.is_empty() => {
                     let report = installed.executor
@@ -385,14 +401,20 @@ fn status(installed: &Installation) -> RuntimeCodexSupervisorStatusV1 {
     let started = installed.started.load(Ordering::Acquire);
     let degraded = installed.degraded.load(Ordering::Acquire);
     let closed = installed.closed.load(Ordering::Acquire);
+    let unresolved = installed.unresolved.load(Ordering::Acquire);
+    let unresolved_post_dispatch = installed
+        .unresolved_post_dispatch
+        .load(Ordering::Acquire);
     RuntimeCodexSupervisorStatusV1 {
         started,
-        admission_ready: started && !closed && !degraded,
+        // A pre-dispatch manifest is degraded historical work but cannot have
+        // crossed the effect boundary. It may coexist with fresh admissions so
+        // the exact authenticated retry can finish that first dispatch. Any
+        // unresolved post-dispatch operation closes new admission.
+        admission_ready: started && !closed && unresolved_post_dispatch == 0,
         degraded,
-        unresolved: installed.unresolved.load(Ordering::Acquire),
-        unresolved_post_dispatch: installed
-            .unresolved_post_dispatch
-            .load(Ordering::Acquire),
+        unresolved,
+        unresolved_post_dispatch,
     }
 }
 
@@ -408,7 +430,7 @@ fn publish_recovery_status(
         .store(report.unresolved_post_dispatch, Ordering::Release);
     installed
         .degraded
-        .store(report.unresolved_post_dispatch > 0, Ordering::Release);
+        .store(report.unresolved > 0, Ordering::Release);
     installed.started.store(true, Ordering::Release);
     installed.status_changed.notify_waiters();
 }

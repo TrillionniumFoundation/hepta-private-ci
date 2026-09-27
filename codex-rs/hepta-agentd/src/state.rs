@@ -21,4 +21,13 @@ impl AgentdState {
             .map_err(run_error)?;
         Ok(receipt)
     }
+
+    /// Configuration and runtime availability are distinct. A canonical
+    /// profile remains configured while its durable executor reconciles, but it
+    /// is advertised and counted as ready only while the executor can admit a
+    /// newly reserved schedule.
+    pub(crate) fn canonical_intelligence_available(&self) -> bool {
+        self.canonical_intelligence_enabled()
+            && crate::ProcessRuntimeCodexExecutorV1::agentd_supervisor_status().admission_ready
+    }
 }

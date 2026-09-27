@@ -82,10 +82,15 @@ impl AgentdState {
         };
         let automation = self.automation.lock().map_err(poisoned_state)?.clone();
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
+        let canonical_configured = self.canonical_intelligence_enabled();
+        let canonical_available =
+            !canonical_configured || self.canonical_intelligence_available();
+        let effective_required_ports_ready = required_ports_ready && canonical_available;
+        let effective_admission_open = admission_open && canonical_available;
         // Automation remains an explicitly optional plane and therefore does
-        // not gate core Agent readiness. The required cognitive owner is
-        // represented by critical_stores_ready, which is frozen only after
-        // owner-local startup completes under the generation fence.
+        // not gate core Agent readiness. A configured canonical product plane
+        // is different: its required executor must have completed recovery and
+        // be admission-ready before the daemon advertises overall readiness.
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
                 let mut capabilities = vec![
@@ -150,7 +155,7 @@ impl AgentdState {
                             .map_err(AgentdError::Protocol)?,
                     );
                 }
-                if self.canonical_intelligence_enabled() {
+                if canonical_configured && canonical_available {
                     capabilities.push(
                         crate::AgentdCapability::new(
                             crate::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1,
@@ -171,14 +176,14 @@ impl AgentdState {
                 ) && app_server_ready
                     && critical_stores_ready
                     && revocation_ready
-                    && required_ports_ready
+                    && effective_required_ports_ready
                     && !fenced,
                 ready: lifecycle == AgentLifecycle::Running
                     && app_server_ready
                     && critical_stores_ready
                     && revocation_ready
-                    && required_ports_ready
-                    && admission_open
+                    && effective_required_ports_ready
+                    && effective_admission_open
                     && !fenced,
                 fenced,
                 lifecycle,
@@ -195,8 +200,8 @@ impl AgentdState {
             crate::AgentdMethod::Readiness => AgentdPayload::Readiness(crate::ReadinessSnapshot {
                 critical_stores_ready,
                 revocation_ready,
-                required_ports_ready,
-                admission_open,
+                required_ports_ready: effective_required_ports_ready,
+                admission_open: effective_admission_open,
             }),
             crate::AgentdMethod::Drain => {
                 AgentdPayload::Drain(self.request_drain(automation.as_ref()).await?)
@@ -233,6 +238,16 @@ impl AgentdState {
                         },
                     );
                 };
+                if canonical_configured && !canonical_available {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        AgentdPayload::Error {
+                            code: "canonical_runtime_recovering".to_string(),
+                            message: "canonical execution is reconciling an unresolved post-dispatch operation; retry only the original operation identity after readiness returns".to_string(),
+                        },
+                    );
+                }
                 match host.submit(self, request, current_generation).await? {
                     crate::objective_runtime::ObjectiveStartResult::Admitted(receipt) => {
                         AgentdPayload::ObjectiveRun(receipt)
@@ -286,8 +301,6 @@ impl AgentdState {
                         cognitive_control_unavailable(),
                     );
                 };
-                // The model and context plan bind to the body that was launched.
-                // Current lifecycle authority remains fenced before and after I/O.
                 let result = crate::cognitive_context::read_with_retrieval_context_and_learning(
                     &store,
                     &self.identity.agent_id,

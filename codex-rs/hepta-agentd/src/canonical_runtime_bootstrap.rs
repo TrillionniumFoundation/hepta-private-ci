@@ -14,6 +14,7 @@ use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_types::Digest32;
 
 use crate::AgentdConfig;
+use crate::AgentdDurableNeuronInvocationHandleV1;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdIntelligenceInvocationProviderV1;
@@ -31,7 +32,7 @@ const MAX_SHUTDOWN_TIMEOUT: Duration = Duration::from_secs(60);
 /// Host-owned builder for the exact physical runtime.codex input.
 ///
 /// Request bytes never implement this port. The implementation derives prompt,
-/// model and optional context query from the current owners and the sealed run.
+/// model and optional context query from current owners and the sealed run.
 pub trait RuntimeCodexInputProviderV1: Send + Sync {
     fn build(
         &self,
@@ -64,73 +65,9 @@ where
     }
 }
 
-/// Current durable owner witness for one Neuron invocation source.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct AgentdNeuronInvocationWitnessV1 {
-    pub agent_id: String,
-    pub generation: u64,
-    pub owner_revision: u64,
-    pub owner_digest: Digest32,
-}
-
-impl AgentdNeuronInvocationWitnessV1 {
-    pub fn new(
-        agent_id: String,
-        generation: u64,
-        owner_revision: u64,
-        owner_digest: Digest32,
-    ) -> Result<Self, AgentdError> {
-        if agent_id.is_empty()
-            || generation == 0
-            || owner_revision == 0
-            || owner_digest.is_zero()
-        {
-            return Err(AgentdError::Invalid(
-                "invalid durable Neuron invocation witness".to_string(),
-            ));
-        }
-        Ok(Self {
-            agent_id,
-            generation,
-            owner_revision,
-            owner_digest,
-        })
-    }
-
-    fn require_identity(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {
-        if self.agent_id != identity.agent_id.as_str()
-            || self.generation != identity.spawn_generation
-        {
-            return Err(AgentdError::GenerationFenced(
-                "durable Neuron owner does not match the Agentd identity".to_string(),
-            ));
-        }
-        Ok(())
-    }
-}
-
-/// Opaque product owner for canonical Neuron inputs.
-///
-/// The legacy seven-owner provider may internally materialize sparse values,
-/// but a production bootstrap cannot use them until this durable owner verifies
-/// the exact invocation against its current selected artifact and witness state.
-pub trait AgentdDurableNeuronInvocationOwnerV1: Send + Sync {
-    fn current_witness(
-        &self,
-        identity: &AgentdIdentity,
-    ) -> Result<AgentdNeuronInvocationWitnessV1, AgentdError>;
-
-    fn verify_invocation(
-        &self,
-        identity: &AgentdIdentity,
-        record: &RunStartRecordV1,
-        invocation: &AgentdIntelligenceInvocationV1,
-    ) -> Result<Digest32, AgentdError>;
-}
-
 struct NeuronVerifiedInvocationProviderV1 {
     inner: Arc<dyn AgentdIntelligenceInvocationProviderV1>,
-    neuron_owner: Arc<dyn AgentdDurableNeuronInvocationOwnerV1>,
+    neuron_owner: AgentdDurableNeuronInvocationHandleV1,
 }
 
 impl AgentdIntelligenceInvocationProviderV1 for NeuronVerifiedInvocationProviderV1 {
@@ -140,7 +77,6 @@ impl AgentdIntelligenceInvocationProviderV1 for NeuronVerifiedInvocationProvider
         record: &RunStartRecordV1,
     ) -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
         let before = self.neuron_owner.current_witness(identity)?;
-        before.require_identity(identity)?;
         let invocation = self.inner.build(identity, record)?;
         let invocation_digest = self
             .neuron_owner
@@ -151,10 +87,10 @@ impl AgentdIntelligenceInvocationProviderV1 for NeuronVerifiedInvocationProvider
             ));
         }
         let after = self.neuron_owner.current_witness(identity)?;
-        after.require_identity(identity)?;
         if before != after {
             return Err(AgentdError::GenerationFenced(
-                "durable Neuron owner changed while canonical inputs were prepared".to_string(),
+                "durable Neuron owner changed while canonical inputs were prepared"
+                    .to_string(),
             ));
         }
         Ok(invocation)
@@ -165,7 +101,7 @@ impl AgentdIntelligenceInvocationProviderV1 for NeuronVerifiedInvocationProvider
 pub struct AgentdCanonicalRuntimeBootstrapV1 {
     runner: Arc<AgentdIntelligenceProductRunnerV1>,
     invocation_provider: Arc<dyn AgentdIntelligenceInvocationProviderV1>,
-    neuron_owner: Arc<dyn AgentdDurableNeuronInvocationOwnerV1>,
+    neuron_owner: AgentdDurableNeuronInvocationHandleV1,
     executor: Arc<ProcessRuntimeCodexExecutorV1>,
     input_provider: Arc<dyn RuntimeCodexInputProviderV1>,
     queue_capacity: usize,
@@ -177,6 +113,7 @@ impl fmt::Debug for AgentdCanonicalRuntimeBootstrapV1 {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
             .debug_struct("AgentdCanonicalRuntimeBootstrapV1")
+            .field("neuron_owner", &self.neuron_owner)
             .field("worker_artifact_digest", &self.executor.worker_artifact_digest())
             .field(
                 "final_use_authority_digest",
@@ -194,7 +131,7 @@ impl AgentdCanonicalRuntimeBootstrapV1 {
     pub fn new(
         runner: Arc<AgentdIntelligenceProductRunnerV1>,
         invocation_provider: Arc<dyn AgentdIntelligenceInvocationProviderV1>,
-        neuron_owner: Arc<dyn AgentdDurableNeuronInvocationOwnerV1>,
+        neuron_owner: AgentdDurableNeuronInvocationHandleV1,
         executor: Arc<ProcessRuntimeCodexExecutorV1>,
         input_provider: Arc<dyn RuntimeCodexInputProviderV1>,
         queue_capacity: usize,
@@ -210,13 +147,14 @@ impl AgentdCanonicalRuntimeBootstrapV1 {
             || executor.final_use_authority_digest().is_zero()
         {
             return Err(AgentdError::Invalid(
-                "invalid canonical runtime bootstrap limits or pinned identities".to_string(),
+                "invalid canonical runtime bootstrap limits or pinned identities"
+                    .to_string(),
             ));
         }
         let verified_provider: Arc<dyn AgentdIntelligenceInvocationProviderV1> =
             Arc::new(NeuronVerifiedInvocationProviderV1 {
                 inner: invocation_provider,
-                neuron_owner: Arc::clone(&neuron_owner),
+                neuron_owner: neuron_owner.clone(),
             });
         Ok(Self {
             runner,
@@ -231,8 +169,7 @@ impl AgentdCanonicalRuntimeBootstrapV1 {
     }
 
     fn validate_for(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {
-        let witness = self.neuron_owner.current_witness(identity)?;
-        witness.require_identity(identity)
+        self.neuron_owner.current_witness(identity).map(|_| ())
     }
 
     pub(crate) fn install_executor(
@@ -299,28 +236,11 @@ impl AgentdConfig {
             .map_err(|_| AgentdError::Protocol("canonical bootstrap slot is poisoned".to_string()))?;
         if slot.is_some() {
             return Err(AgentdError::Invalid(
-                "a canonical runtime bootstrap is already pending in this process".to_string(),
+                "a canonical runtime bootstrap is already pending in this process"
+                    .to_string(),
             ));
         }
         *slot = Some(bootstrap);
         Ok(self)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn neuron_witness_rejects_zero_identity_fields() {
-        assert!(
-            AgentdNeuronInvocationWitnessV1::new(
-                "agent".to_string(),
-                1,
-                1,
-                Digest32::from_array([0_u8; 32]),
-            )
-            .is_err()
-        );
     }
 }
