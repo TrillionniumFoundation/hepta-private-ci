@@ -2,8 +2,8 @@
   "schema": "hepta.kernel-authority-status-manifest.v1",
   "schemaVersion": 1,
   "sourceAnchor": {
-    "commit": "fb3a6e73ed4cc7a8ab8c1d30cd0ee35f7452cc81",
-    "tree": "21240e20fc06efb5908af34cdb4b5d568518b9ee"
+    "commit": "d86979f779cabd851e4e29dc863a8204b28a2bae",
+    "tree": "775b6acfe4c7756b0b6f4e791b0200f14da15470"
   },
   "module": "kernel.authority",
   "laneId": "LANE-A-FOUNDATION",
@@ -148,7 +148,7 @@
       "operation": "candidate_product_pilot",
       "nativeSymbol": "pilot",
       "sourcePath": "qualification/kernel-authority/runtime_qualification.py",
-      "state": "candidate_bound_fleet_browser_agentd_restart_revoke_rollback_rotation_and_pending_crash_matrix_process_pilot_defined_execution_pending",
+      "state": "candidate_bound_case_specific_fleet_browser_agentd_restart_revoke_rollback_rotation_and_pending_crash_matrix_process_pilot_defined_execution_pending",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-fleet/src/authority_port.rs",
@@ -156,7 +156,8 @@
         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
         "codex-rs/hepta-agentd/src/authority_trust_host.rs",
         "codex-rs/hepta-contracts/src/final_use_tests.rs",
-        "codex-rs/hepta-contracts/tests/final_use_pending_recovery.rs"
+        "codex-rs/hepta-contracts/tests/final_use_pending_recovery.rs",
+        "qualification/kernel-authority/test_runtime_qualification.py"
       ],
       "designOperation": "run_candidate_bound_dual_product_failure_and_recovery_pilot",
       "mappingClass": "qualification_harness",
@@ -169,7 +170,8 @@
       "state": "qualification_measurement_defined_for_put_dispatch_revoke_contention_throughput_snapshot_and_reopen_no_production_slo",
       "authority": "none",
       "tests": [
-        "qualification/kernel-authority/runtime_qualification.py"
+        "qualification/kernel-authority/runtime_qualification.py",
+        "qualification/kernel-authority/test_runtime_qualification.py"
       ],
       "designOperation": "measure_p50_p95_p99_throughput_lock_contention_snapshot_and_restart",
       "mappingClass": "qualification_benchmark",
@@ -179,10 +181,12 @@
       "operation": "storage_scaling_model",
       "nativeSymbol": "main",
       "sourcePath": "qualification/kernel-authority/storage_model.py",
-      "state": "executable_reference_model_for_wal_checkpoint_corruption_recovery_sharding_and_capacity_not_runtime",
+      "state": "executable_reference_model_for_full_prefix_wal_checkpoint_corruption_recovery_sharding_and_capacity_not_runtime",
       "authority": "none",
       "tests": [
-        "qualification/kernel-authority/runtime_qualification.py"
+        "qualification/kernel-authority/runtime_qualification.py",
+        "qualification/kernel-authority/test_runtime_qualification.py",
+        "qualification/kernel-authority/test_storage_model.py"
       ],
       "designOperation": "model_hash_chained_wal_checkpoint_sharding_and_lifetime",
       "mappingClass": "non_authorizing_reference_model",
@@ -257,6 +261,8 @@
     "qualification/kernel-authority/prepare_candidate.py",
     "qualification/kernel-authority/runtime_qualification.py",
     "qualification/kernel-authority/storage_model.py",
+    "qualification/kernel-authority/test_runtime_qualification.py",
+    "qualification/kernel-authority/test_storage_model.py",
     "qualification/kernel-authority/verify.py",
     "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
     "qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json",
@@ -305,8 +311,8 @@
     "targetDeploymentQualified": false
   },
   "productPilots": {
-    "fleet": "candidate-bound create-restart-dispatch-revoke process pilot defined; current candidate receipt pending",
-    "browserAgentd": "candidate-bound process pilot defined; current candidate receipt pending",
+    "fleet": "candidate-bound create-restart-dispatch-revoke process pilot defined with exact supporting-case claims; current candidate receipt pending",
+    "browserAgentd": "candidate-bound process pilot defined with exact supporting-case claims; current candidate receipt pending",
     "restartRevocationRollbackRotation": "covered by named repository tests including durable pending and both frontier-first crash windows; target deployment drill external",
     "deploymentActivationProved": false
   },
@@ -321,7 +327,7 @@
     "latencyPercentiles": "qualification benchmark emits min mean p50 p95 p99 max",
     "throughputAndContention": "qualification benchmark defined",
     "snapshotAndRestart": "qualification benchmark defined",
-    "walCheckpoint": "executable reference model only",
+    "walCheckpoint": "executable full-prefix reference model only",
     "registrySharding": "deterministic reference model only",
     "capacityLifetime": "bounded reserve projections defined",
     "productionSloGranted": false
