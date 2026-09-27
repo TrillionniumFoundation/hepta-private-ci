@@ -37,6 +37,9 @@ use crate::TemporalComparisonInputsV1;
 use crate::TemporalEvaluationPlan;
 use crate::recorded_publication::RecordedPublicationSinkV1;
 
+#[path = "outcome_runner.rs"]
+mod outcomes;
+
 pub struct RecordedProductEvaluationRunnerV1<S> {
     inner: ProductEvaluationRunnerV1<S>,
     namespace: Digest32,
@@ -72,6 +75,33 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         P: FinalHoldoutProviderV1,
         J: DurableProductEvaluationAttemptJournalV1,
     {
+        self.evaluate_recorded(attempt_id, product_plan, candidate_plan, baseline_plan,
+            provider, journal, |receipt, _| {
+                let execution_digest = receipt.execution_digest;
+                Ok((receipt, execution_digest))
+            })
+    }
+
+    // The finish callback is private. Multi-outcome composition must finish
+    // before ComparisonSealed is appended; the one-stream carrier never escapes
+    // as an externally qualifiable substitute for the measured channel result.
+    #[allow(clippy::too_many_arguments)]
+    fn evaluate_recorded<P, J, T, F>(
+        &mut self,
+        attempt_id: StableId,
+        product_plan: &ProductFrozenEvaluationPlanV1,
+        candidate_plan: &TemporalEvaluationPlan,
+        baseline_plan: &TemporalEvaluationPlan,
+        provider: &mut P,
+        journal: &mut J,
+        finish: F,
+    ) -> Result<T, RecordedProductEvaluationErrorV1>
+    where
+        P: FinalHoldoutProviderV1,
+        J: DurableProductEvaluationAttemptJournalV1,
+        F: FnOnce(ProductTemporalEvaluationReceiptV1, &mut P)
+            -> Result<(T, Digest32), ProductEvaluationError>,
+    {
         let plan_digest = product_plan.frozen_plan.plan_digest;
         if journal.latest(&attempt_id)?.is_some() {
             return Err(RecordedProductEvaluationErrorV1::AttemptRequiresRecovery { attempt_id });
@@ -80,15 +110,16 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         journal.append(ProductEvaluationAttemptTransitionV1::intent(
             attempt_id.clone(), plan_digest, self.namespace, before,
         ))?;
-        let mut recorded_provider = RecordedHoldoutProviderV1 {
-            attempt_id: attempt_id.clone(), plan_digest, inner: provider, journal,
-            consumed_record_digest: None, journal_error: None,
+        let (result, consumed, journal_error) = {
+            let mut recorded_provider = RecordedHoldoutProviderV1 {
+                attempt_id: attempt_id.clone(), plan_digest, inner: provider, journal,
+                consumed_record_digest: None, journal_error: None,
+            };
+            let result = self.inner.evaluate_temporal_comparison(
+                product_plan, candidate_plan, baseline_plan, &mut recorded_provider,
+            );
+            (result, recorded_provider.consumed_record_digest, recorded_provider.journal_error)
         };
-        let result = self.inner.evaluate_temporal_comparison(
-            product_plan, candidate_plan, baseline_plan, &mut recorded_provider,
-        );
-        let consumed = recorded_provider.consumed_record_digest;
-        let journal_error = recorded_provider.journal_error;
         if let Some(journal_error) = journal_error {
             let holdout_record_digest = consumed.ok_or(RecordedProductEvaluationErrorV1::Invariant(
                 "attempt journal failed without an observed holdout receipt",
@@ -102,12 +133,12 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
                 )),
             };
         }
+        let result = result.and_then(|receipt| finish(receipt, provider));
         match result {
-            Ok(receipt) => {
+            Ok((receipt, execution_digest)) => {
                 let holdout_record_digest = consumed.ok_or(RecordedProductEvaluationErrorV1::Invariant(
                     "successful evaluation without recorded holdout consumption",
                 ))?;
-                let execution_digest = receipt.execution_digest;
                 journal.append(ProductEvaluationAttemptTransitionV1::comparison_sealed(
                     attempt_id.clone(), plan_digest, holdout_record_digest, execution_digest,
                 )).map_err(|journal| RecordedProductEvaluationErrorV1::ComparisonSealedButJournalFailed {
@@ -293,3 +324,7 @@ impl From<ProductEvaluationAttemptJournalErrorV1> for RecordedProductEvaluationE
 #[cfg(test)]
 #[path = "recorded_runner_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "outcome_tests.rs"]
+mod outcome_tests;

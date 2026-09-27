@@ -424,3 +424,15 @@ pub use longitudinal_time::longitudinal_evaluation_signing_payload_v3;
 #[cfg(test)]
 #[path = "signed_qualification_e2e_tests.rs"]
 mod signed_qualification_e2e_tests;
+
+mod outcome_channels;
+mod outcome_receipt;
+pub use outcome_channels::FinalOutcomeHoldoutProviderV1;
+pub use outcome_channels::ProductFrozenOutcomePlanV1;
+pub use outcome_channels::ProductOutcomeChannelContractV1;
+pub use outcome_channels::ProductOutcomeInputV1;
+pub use outcome_channels::freeze_product_outcome_plan_v1;
+pub use outcome_channels::product_outcome_inputs_digest_v1;
+pub use outcome_receipt::ProductOutcomeEstimateV1;
+pub use outcome_receipt::ProductOutcomeEvaluationReceiptV1;
+pub use outcome_receipt::ProductOutcomeQualificationReceiptV1;
