@@ -55,23 +55,23 @@ jobs:
           git diff --quiet
           git diff --cached --quiet
 
-      - name: Synchronize the local package lock entry and deterministic formatting
+      - name: Synchronize lock, evidence regression and deterministic formatting
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
 
-          path = Path('codex-rs/Cargo.lock')
-          text = path.read_text(encoding='utf-8')
-          old = '''[[package]]
+          lock_path = Path('codex-rs/Cargo.lock')
+          lock_text = lock_path.read_text(encoding='utf-8')
+          old_lock = '''[[package]]
           name = "codex-hepta-wire"
           version = "0.0.0"
           dependencies = [
            "codex-hepta-types",
           ]
           '''
-          new = '''[[package]]
+          new_lock = '''[[package]]
           name = "codex-hepta-wire"
           version = "0.0.0"
           dependencies = [
@@ -79,15 +79,51 @@ jobs:
            "serde_json",
           ]
           '''
-          if old in text:
-              if text.count(old) != 1:
+          if old_lock in lock_text:
+              if lock_text.count(old_lock) != 1:
                   raise SystemExit('ambiguous codex-hepta-wire lock entry')
-              path.write_text(text.replace(old, new), encoding='utf-8')
-          elif new not in text:
+              lock_path.write_text(lock_text.replace(old_lock, new_lock), encoding='utf-8')
+          elif new_lock not in lock_text:
               raise SystemExit('unexpected codex-hepta-wire lock entry')
+
+          test_path = Path('codex-rs/hepta-wire/src/stream_tests.rs')
+          test_text = test_path.read_text(encoding='utf-8')
+          test_name = 'fn many_small_frames_transfer_ownership_without_retaining_suffix()'
+          anchor = '''#[test]
+          fn many_small_frames_stop_at_the_explicit_work_budget() -> Result<(), Box<dyn Error>> {
+          '''
+          regression = '''#[test]
+          fn many_small_frames_transfer_ownership_without_retaining_suffix() -> Result<(), Box<dyn Error>> {
+              let frame =
+                  WireEnvelopeV2::new(stable("s")?, stable("p")?, Generation::new(1)?, vec![1])?.encode();
+              let count = 128;
+              let chunk = frame.repeat(count);
+              let mut decoder = StreamingDecoder::new();
+              let batch = decoder.push_batch(&chunk);
+              assert_eq!(batch.frames().len(), count);
+              assert_eq!(batch.terminal_error(), None);
+              assert_eq!(decoder.buffered_len(), 0);
+              assert!(!decoder.is_poisoned());
+              Ok(())
+          }
+
+          '''
+          if test_name not in test_text:
+              if anchor not in test_text:
+                  raise SystemExit('stream regression insertion anchor missing')
+              test_path.write_text(test_text.replace(anchor, regression + anchor), encoding='utf-8')
           PY
           cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-wire
           git diff --check
+
+      - name: Verify Lane A truth before committing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_lane_a_foundation.py self-test
+          python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/platform_wire_status.py self-test
+          python3 scripts/platform_wire_status.py check-doc
 
       - name: Commit the atomic repair to the branch
         shell: bash
@@ -100,7 +136,7 @@ jobs:
           fi
           git config user.name 'Hepta Platform Wire CI'
           git config user.email 'hepta-platform-wire-ci@users.noreply.github.com'
-          git commit -m 'fix(platform.wire): synchronize lockfile and formatting'
+          git commit -m 'fix(platform.wire): synchronize qualification source'
           git push origin "HEAD:$HEAD_REF"
 
       - name: Validate the repaired checkout
