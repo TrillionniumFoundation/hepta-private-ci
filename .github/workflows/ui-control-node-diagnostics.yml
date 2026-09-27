@@ -1,0 +1,74 @@
+name: ui.control node-test diagnostics
+
+on:
+  push:
+    branches:
+      - "work/ui-control-*"
+    paths:
+      - "apps/hepta-control-ui/**"
+      - ".github/workflows/ui-control-node-diagnostics.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-control-node-diagnostics-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  node-tests:
+    name: isolate node test failures
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: 22
+
+      - name: Run every Node test independently and retain output
+        shell: bash
+        run: |
+          set -u
+          mkdir -p ui-control-node-diagnostics
+          failed=0
+          tests=(
+            control.test.js
+            canonical-profile.test.js
+            runtime-client.test.js
+            runtime-client-lifecycle.test.js
+            browser-app-lifecycle.test.js
+            http-transport.test.js
+            session-provider.test.js
+            recovery-safety.test.js
+            runtime-recovery-integration.test.js
+          )
+          for test_file in "${tests[@]}"; do
+            echo "=== ${test_file} ==="
+            if node --test "apps/hepta-control-ui/test/${test_file}" \
+              > "ui-control-node-diagnostics/${test_file}.log" 2>&1; then
+              echo "PASS ${test_file}"
+            else
+              echo "FAIL ${test_file}"
+              failed=1
+            fi
+          done
+          printf '%s\n' "$failed" > ui-control-node-diagnostics/failed
+          exit "$failed"
+
+      - name: Upload exact test diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-control-node-diagnostics-${{ github.sha }}
+          path: ui-control-node-diagnostics/
+          if-no-files-found: error
+          retention-days: 7
