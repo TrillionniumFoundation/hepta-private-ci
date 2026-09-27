@@ -1,22 +1,22 @@
+use codex_hepta_contracts::Sha256Digest;
 use sqlx::Row;
 
 use crate::MatrixDurableError;
 use crate::MatrixDurableStore;
 
+use super::MatrixFencedOutboxClaim;
 use super::sql::require_live_active_claim_tx;
 use super::sql::to_i64;
 use super::sql::unavailable;
-use super::*;
 
 const CONTENT_SCHEMA: &str = include_str!("../../migrations/0008_matrix_content_binding.sql");
+const LEGACY_SCHEMA: &str = include_str!("../../migrations/0009_matrix_legacy_content_holds.sql");
 
 impl MatrixDurableStore {
-    /// Pin full canonical content and authenticated transaction scope before
-    /// requesting authority. This operation grants no permission to send.
-    ///
-    /// An identical retry is idempotent. A different edit target, body, device,
-    /// session or destination cannot reuse this stable transaction. Unpinned
-    /// legacy attempts are not automatically reinterpreted after an upgrade.
+    /// Pin canonical content and authenticated transaction scope before a grant
+    /// request. A pin is an immutable identity, not permission or effect proof.
+    /// Identical retries are idempotent; semantic drift conflicts. Migration 9
+    /// distinguishes inherited unknown attempts from new pre-pin cancellations.
     pub async fn pin_outbox_content(
         &self,
         claim: &MatrixFencedOutboxClaim,
@@ -27,7 +27,9 @@ impl MatrixDurableStore {
         for digest in [canonical_content_sha256, scope_sha256] {
             if digest.len() != 64
                 || digest.bytes().all(|byte| byte == b'0')
-                || !digest.bytes().all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+                || !digest.bytes().all(|byte| {
+                    byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase()
+                })
             {
                 return Err(MatrixDurableError::Invalid);
             }
@@ -37,17 +39,22 @@ impl MatrixDurableStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
-        // Compare actual DDL, not merely the presence of named objects.
-        // All three statements in this migration are separated by blank lines.
-        for statement in CONTENT_SCHEMA.split("\n\n").filter(|sql| sql.starts_with("CREATE ")) {
-            let name = statement.split_whitespace().nth(2).ok_or(MatrixDurableError::Corrupt)?;
-            let actual: Option<String> = sqlx::query_scalar("SELECT sql FROM sqlite_schema WHERE name = ?")
+        // Validate complete DDL, including the sealed historical hold snapshot.
+        // This critical-boundary check does not replace full startup integrity.
+        for schema in [CONTENT_SCHEMA, LEGACY_SCHEMA] {
+            for statement in schema.split("\n\n").filter(|sql| sql.starts_with("CREATE ")) {
+                let name = statement.split_whitespace().nth(2)
+                    .ok_or(MatrixDurableError::Corrupt)?;
+                let actual: Option<String> = sqlx::query_scalar(
+                    "SELECT sql FROM sqlite_schema WHERE name = ?",
+                )
                 .bind(name)
                 .fetch_optional(&mut *transaction)
                 .await
                 .map_err(unavailable)?;
-            if actual.as_deref().map(normalized_sql) != Some(normalized_sql(statement)) {
-                return Err(MatrixDurableError::Corrupt);
+                if actual.as_deref().map(normalized_sql) != Some(normalized_sql(statement)) {
+                    return Err(MatrixDurableError::Corrupt);
+                }
             }
         }
         let identity = claim.identity();
@@ -86,27 +93,40 @@ impl MatrixDurableStore {
         .map_err(unavailable)?;
         if let Some(row) = existing {
             if row.try_get::<i64, _>("canonicalization_version").map_err(unavailable)? != 1
-                || row.try_get::<String, _>("canonical_content_sha256").map_err(unavailable)? != canonical_content_sha256
-                || row.try_get::<String, _>("scope_sha256").map_err(unavailable)? != scope_sha256
-                || row.try_get::<String, _>("source_payload_sha256").map_err(unavailable)? != raw_digest.as_str()
+                || row.try_get::<String, _>("canonical_content_sha256")
+                    .map_err(unavailable)? != canonical_content_sha256
+                || row.try_get::<String, _>("scope_sha256")
+                    .map_err(unavailable)? != scope_sha256
+                || row.try_get::<String, _>("source_payload_sha256")
+                    .map_err(unavailable)? != raw_digest.as_str()
             {
                 return Err(MatrixDurableError::Conflict);
             }
         } else {
-            // No new pin may retroactively authorize an earlier unknown send.
-            // The first new sender attempt pins before grant acquisition, so
-            // subsequent legitimate retries always find the retained binding.
-            if record.attempts != 1 {
-                return Err(MatrixDurableError::Conflict);
-            }
-            let prior: i64 = sqlx::query_scalar(
-                "SELECT COUNT(*) FROM matrix_dispatch_authority_claims WHERE stable_txn_id = ?",
+            let txn = identity.stable_txn_id.as_str();
+            // Never retrofit a binding onto inherited, authorized or possibly
+            // entered work. A new claim canceled before pin publication has
+            // none of these facts and can safely establish its first binding.
+            let unsafe_prior: i64 = sqlx::query_scalar(
+                "SELECT
+                    (SELECT COUNT(*) FROM matrix_dispatch_legacy_content_holds
+                     WHERE stable_txn_id = ?)
+                  + (SELECT COUNT(*) FROM matrix_dispatch_authority_claims
+                     WHERE stable_txn_id = ?)
+                  + (SELECT COUNT(*) FROM matrix_dispatch_authority_witnesses
+                     WHERE stable_txn_id = ?)
+                  + (SELECT COUNT(*) FROM matrix_dispatch_attempt_events
+                     WHERE stable_txn_id = ? AND event_kind NOT IN
+                         ('claimed', 'prepared', 'canceled', 'expired', 'retry_scheduled'))",
             )
-            .bind(identity.stable_txn_id.as_str())
+            .bind(txn)
+            .bind(txn)
+            .bind(txn)
+            .bind(txn)
             .fetch_one(&mut *transaction)
             .await
             .map_err(unavailable)?;
-            if prior != 0 {
+            if unsafe_prior != 0 {
                 return Err(MatrixDurableError::Conflict);
             }
             sqlx::query(
@@ -115,7 +135,7 @@ impl MatrixDurableStore {
                     scope_sha256, source_payload_sha256, pinned_at_ms
                  ) VALUES (?, 1, ?, ?, ?, ?)",
             )
-            .bind(identity.stable_txn_id.as_str())
+            .bind(txn)
             .bind(canonical_content_sha256)
             .bind(scope_sha256)
             .bind(raw_digest.as_str())

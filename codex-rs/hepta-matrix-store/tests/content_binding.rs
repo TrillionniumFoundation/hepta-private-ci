@@ -79,17 +79,15 @@ async fn pin_survives_reopen_and_rejects_content_scope_and_old_claim_drift() -> 
 }
 
 #[tokio::test]
-async fn an_unpinned_legacy_retry_cannot_acquire_a_new_content_identity() -> TestResult {
+async fn new_pre_pin_cancellation_survives_reopen_and_keeps_transaction_identity() -> TestResult {
     let (_temp, layout, store) = fixture().await?;
     let first = claim(&store, /*now_ms*/ 10).await?;
     store.release_outbox_claim_canceled(&first, /*recorded_at_ms*/ 12).await?;
     store.close().await;
     let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
     let second = claim(&store, /*now_ms*/ 20).await?;
-    assert_eq!(
-        store.pin_outbox_content(&second, &"a".repeat(64), &"b".repeat(64), /*recorded_at_ms*/ 22).await,
-        Err(MatrixDurableError::Conflict)
-    );
+    assert_eq!(first.record().stable_txn_id, second.record().stable_txn_id);
+    store.pin_outbox_content(&second, &"a".repeat(64), &"b".repeat(64), /*recorded_at_ms*/ 22).await?;
     store.close().await;
     Ok(())
 }
