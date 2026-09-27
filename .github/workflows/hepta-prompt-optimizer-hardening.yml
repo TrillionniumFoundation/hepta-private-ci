@@ -29,7 +29,7 @@ env:
 
 jobs:
   source-diagnostics:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -46,6 +46,9 @@ jobs:
           git rev-parse HEAD HEAD^{tree} > "$out/identity.txt"
           git -C .. archive --format=tar.gz HEAD > "$out/source.tar.gz"
           mapfile -d '' changed < <(git -C .. diff --name-only --diff-filter=ACMR -z "$BASE_SHA" "$SOURCE_SHA" -- '*.rs')
+          if test "$BASE_SHA" = "$SOURCE_SHA"; then
+            mapfile -d '' changed < <(git -C .. ls-files -z -- 'codex-rs/hepta-prompt-optimizer/**/*.rs' 'codex-rs/hepta-agentd/src/prompt*.rs' 'codex-rs/hepta-intelligence/src/prompt*.rs')
+          fi
           for path in "${changed[@]}"; do
             rustfmt --edition 2024 --config imports_granularity=Item,skip_children=true "../$path"
           done
@@ -108,12 +111,12 @@ jobs:
         run: |
           set -euo pipefail
           cargo check --locked --all-targets -p codex-hepta-prompt-optimizer 2>&1 | tee "$RUNNER_TEMP/prompt-qualification/optimizer-check.log"
-      - name: Optimizer library regressions
+      - name: Optimizer library and external API regressions
         if: always() && steps.runner.outcome == 'success'
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --locked --lib -p codex-hepta-prompt-optimizer 2>&1 | tee "$RUNNER_TEMP/prompt-qualification/optimizer-tests.log"
+          just test --locked -p codex-hepta-prompt-optimizer 2>&1 | tee "$RUNNER_TEMP/prompt-qualification/optimizer-tests.log"
       - name: Product consumer compilation
         if: always() && steps.compile.outcome == 'success'
         working-directory: codex-rs

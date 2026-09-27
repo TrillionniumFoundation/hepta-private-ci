@@ -243,8 +243,6 @@ pub(super) fn verify_interactions(
             | KnowledgeRelationKindV2::PromptRedundant | KnowledgeRelationKindV2::PromptSupersedes) {
             conflicts.insert((left.clone(), right.clone()));
         }
-        // Conservatively expire at the first retained support boundary. A fresh
-        // generation can be selected again; cached graph claims cannot outlive it.
         for support in &edge.supports {
             if let Some(until) = support.valid_to_unix_seconds {
                 let until = u64::try_from(until).ok().and_then(|s| s.checked_mul(1000))
@@ -268,8 +266,8 @@ pub(super) fn verify_interactions(
         let mut closure = BTreeSet::new();
         let mut pending = vec![root.clone()];
         while let Some(node) = pending.pop() {
-            if closure.insert(node.clone()) {
-                if let Some(children) = requires.get(&node) { pending.extend(children.iter().cloned()); }
+            if closure.insert(node.clone()) && let Some(children) = requires.get(&node) {
+                pending.extend(children.iter().cloned());
             }
         }
         if conflicts.iter().any(|(left, right)| closure.contains(left) && closure.contains(right)) {
