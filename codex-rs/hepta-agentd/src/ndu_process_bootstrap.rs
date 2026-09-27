@@ -1,21 +1,24 @@
-//! Explicit process bootstrap for the deterministic local-host baseline.
-//! A pinned descriptor selects policy, paths and independent feed trust. This
-//! profile does not assert a protected clock or an off-host rollback oracle.
+//! Explicit local and protected-host NDU bootstrap profiles.
+//! A pinned descriptor selects policy, paths and independent feed trust.
+//! Protected providers are supplied by the embedding host, never the wire.
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
 use crate::AgentdIdentity;
 use crate::AgentdNduOwnerBootstrapV1;
 use crate::AgentdNduOwnerErrorV1;
 use crate::AgentdNduOwnerHostV1;
+use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::AuthorityClock;
+use codex_hepta_contracts::AuthorityFrontierStore;
 use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseFrontier;
 use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
 use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
+use codex_hepta_contracts::SystemAuthorityClock;
 use codex_hepta_ndu::AggregationOperator;
 use codex_hepta_ndu::AxisAggregationRule;
 use codex_hepta_ndu::AxisDirection;
@@ -45,6 +48,45 @@ struct Descriptor {
     revocation_key: [u8; 32],
     revocation_update_path: PathBuf,
     policy: Policy,
+    #[serde(default)]
+    production_trust: Option<ProductionTrustDescriptor>,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ProductionTrustDescriptor {
+    caller_id: String,
+    profile_digest: String,
+}
+
+/// Host-supplied providers for the explicitly named protected-host profile.
+/// This value is not a deployment qualification or an attestation issuer. The
+/// host must enroll the concrete clock and external CAS service independently;
+/// neither a descriptor nor a wire request can manufacture those providers.
+pub struct NduProductionHostTrustV1 {
+    caller_id: StableId,
+    profile_digest: Digest32,
+    clock: Arc<dyn AuthorityClock>,
+    frontier: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
+}
+
+impl NduProductionHostTrustV1 {
+    pub fn new(
+        caller_id: StableId,
+        profile_digest: Digest32,
+        clock: Arc<dyn AuthorityClock>,
+        frontier: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
+    ) -> Result<Self, AgentdNduOwnerErrorV1> {
+        if profile_digest.is_zero() {
+            return Err(invalid("production trust profile must not be zero"));
+        }
+        Ok(Self {
+            caller_id,
+            profile_digest,
+            clock,
+            frontier,
+        })
+    }
 }
 
 #[derive(Deserialize)]
@@ -215,8 +257,13 @@ pub(crate) struct NduRevocationSourceV1 {
     path: PathBuf,
     verifier: FinalUseRevocationFeedVerifier,
     pub(crate) trust_digest: Digest32,
+    clock: Arc<dyn AuthorityClock>,
+    pub(crate) production_caller: Option<StableId>,
 }
 impl NduRevocationSourceV1 {
+    pub(crate) fn now_ms(&self) -> Result<u64, AgentdNduOwnerErrorV1> {
+        self.clock.now_unix_ms().map_err(invalid)
+    }
     fn current(&self) -> Result<SignedFinalUseRevocationUpdate, AgentdNduOwnerErrorV1> {
         serde_json::from_slice(&read_bounded(&self.path, 1_048_576)?).map_err(invalid)
     }
@@ -230,7 +277,7 @@ impl NduRevocationSourceV1 {
         let signed = self.current()?;
         let head = self
             .verifier
-            .authenticated_head(&signed, now_ms()?)
+            .authenticated_head(&signed, self.now_ms()?)
             .map_err(invalid)?;
         if authority.revocation_head()? != head {
             return Err(AgentdNduOwnerErrorV1::RevocationAdvanced);
@@ -243,7 +290,7 @@ impl NduRevocationSourceV1 {
         authority: &FinalUseAuthority,
     ) -> Result<(), AgentdNduOwnerErrorV1> {
         let signed = self.current()?;
-        let now = now_ms()?;
+        let now = self.now_ms()?;
         let head = self
             .verifier
             .authenticated_head(&signed, now)
@@ -257,27 +304,115 @@ impl NduRevocationSourceV1 {
     }
 }
 
-/// Load a descriptor whose digest was pinned by the trusted process launcher.
-/// Only the explicit local baseline is supported; production trust is never
-/// silently downgraded to a process clock and a local-only authority store.
+/// Load the explicit local-deterministic profile. A descriptor requesting
+/// production trust is rejected instead of silently using the process clock.
 pub fn load_ndu_process_bootstrap_v1(
     path: &Path,
     expected_digest: Digest32,
     identity: &AgentdIdentity,
+) -> Result<Arc<AgentdNduOwnerHostV1>, AgentdNduOwnerErrorV1> {
+    load_bootstrap(
+        path,
+        expected_digest,
+        &identity.agent_id,
+        identity.spawn_generation,
+        None,
+    )
+}
+
+/// Compose the same named Agentd writer with a host-owned protected clock and
+/// an externally durable authority frontier. This uses the existing runtime
+/// attachment (`AgentdConfig::with_ndu_owner_host`) and private control socket,
+/// not a parallel writer. Concrete provider qualification and projection-store
+/// off-host anti-rollback evidence remain deployment obligations.
+pub fn load_ndu_production_bootstrap_v2(
+    path: &Path,
+    expected_digest: Digest32,
+    identity: &AgentdIdentity,
+    trust: NduProductionHostTrustV1,
+) -> Result<Arc<AgentdNduOwnerHostV1>, AgentdNduOwnerErrorV1> {
+    load_bootstrap(
+        path,
+        expected_digest,
+        &identity.agent_id,
+        identity.spawn_generation,
+        Some(trust),
+    )
+}
+
+fn load_bootstrap(
+    path: &Path,
+    expected_digest: Digest32,
+    agent_id: &AgentId,
+    spawn_generation: u64,
+    trust: Option<NduProductionHostTrustV1>,
 ) -> Result<Arc<AgentdNduOwnerHostV1>, AgentdNduOwnerErrorV1> {
     let bytes = read_bounded(path, 65_536)?;
     if expected_digest.is_zero() || Digest32::of_bytes(&bytes) != expected_digest {
         return Err(invalid("NDU descriptor digest mismatch"));
     }
     let descriptor: Descriptor = serde_json::from_slice(&bytes).map_err(invalid)?;
-    if descriptor.schema != "hepta.agentd.ndu-bootstrap.v1"
-        || descriptor.trust_profile != "local-deterministic"
-        || descriptor.agent_id != identity.agent_id.as_str()
+    if descriptor.agent_id != agent_id.as_str()
         || descriptor.authority_key == descriptor.revocation_key
+        || spawn_generation == 0
     {
         return Err(invalid(
-            "unsupported NDU profile, agent identity or non-independent feed trust",
+            "NDU agent identity or independent feed trust mismatch",
         ));
+    }
+    let (clock, frontier, production_caller, profile_digest) = match trust {
+        Some(trust) => {
+            let declared = descriptor
+                .production_trust
+                .as_ref()
+                .ok_or_else(|| invalid("missing protected-host trust binding"))?;
+            let declared_digest: Digest32 = declared.profile_digest.parse().map_err(invalid)?;
+            if descriptor.schema != "hepta.agentd.ndu-bootstrap.v2"
+                || descriptor.trust_profile != "protected-host-v1"
+                || declared.caller_id != trust.caller_id.as_str()
+                || declared_digest != trust.profile_digest
+            {
+                return Err(invalid(
+                    "protected-host provider/descriptor binding mismatch",
+                ));
+            }
+            (
+                trust.clock,
+                Some(trust.frontier),
+                Some(trust.caller_id),
+                trust.profile_digest,
+            )
+        }
+        None => {
+            if descriptor.schema != "hepta.agentd.ndu-bootstrap.v1"
+                || descriptor.trust_profile != "local-deterministic"
+                || descriptor.production_trust.is_some()
+            {
+                return Err(invalid(
+                    "production profile requires host-owned trust providers",
+                ));
+            }
+            (
+                Arc::new(SystemAuthorityClock) as Arc<dyn AuthorityClock>,
+                None,
+                None,
+                Digest32::ZERO,
+            )
+        }
+    };
+    // Reject the entire policy before either authority or projection-store I/O.
+    let policy = descriptor.policy.native()?;
+    codex_hepta_ndu::canonical_evaluation_policy_digest(
+        &policy.utility_profile,
+        &policy.evaluation_policy,
+    )
+    .map_err(invalid)?;
+    if let Some(scalarization) = &policy.scalarization {
+        codex_hepta_ndu::ValidatedScalarizationProfileV1::try_new(
+            &policy.utility_profile,
+            scalarization.clone(),
+        )
+        .map_err(invalid)?;
     }
     for directory in [&descriptor.store_root, &descriptor.authority_directory] {
         if !directory.is_absolute() || directory.canonicalize().map_err(invalid)? != *directory {
@@ -299,55 +434,68 @@ pub fn load_ndu_process_bootstrap_v1(
             }
         }
     }
+    let local_trust = Digest32::of_parts(&[
+        b"hepta.agentd.ndu.trust.v1\0",
+        &descriptor.authority_key,
+        &descriptor.revocation_key,
+        descriptor.authority_signer.as_bytes(),
+        b"\0",
+        descriptor.revocation_distributor.as_bytes(),
+    ]);
+    let trust_digest = production_caller.as_ref().map_or(local_trust, |caller| {
+        Digest32::of_parts(&[
+            b"hepta.agentd.ndu.protected-host-trust.v1\0",
+            local_trust.as_array(),
+            profile_digest.as_array(),
+            caller.as_str().as_bytes(),
+        ])
+    });
     let source = NduRevocationSourceV1 {
         path: descriptor.revocation_update_path,
         verifier: FinalUseRevocationFeedVerifier::new(
-            descriptor.revocation_distributor.clone(),
+            descriptor.revocation_distributor,
             descriptor.revocation_key,
         )
         .map_err(invalid)?,
-        trust_digest: Digest32::of_parts(&[
-            b"hepta.agentd.ndu.trust.v1\0",
-            &descriptor.authority_key,
-            &descriptor.revocation_key,
-            descriptor.authority_signer.as_bytes(),
-            b"\0",
-            descriptor.revocation_distributor.as_bytes(),
-        ]),
+        trust_digest,
+        clock: clock.clone(),
+        production_caller,
     };
     let signed = source.current()?;
     let head = source
         .verifier
-        .authenticated_head(&signed, now_ms()?)
+        .authenticated_head(&signed, source.now_ms()?)
         .map_err(invalid)?;
-    let authority = FinalUseAuthority::open_state_dir(
-        &descriptor.authority_directory,
-        descriptor.authority_signer,
-        descriptor.authority_key,
-        head,
-    )?;
+    let authority = match frontier {
+        Some(frontier) => FinalUseAuthority::open_state_dir_with_trust(
+            &descriptor.authority_directory,
+            descriptor.authority_signer,
+            descriptor.authority_key,
+            head,
+            clock,
+            frontier,
+        )?,
+        None => FinalUseAuthority::open_state_dir_with_clock(
+            &descriptor.authority_directory,
+            descriptor.authority_signer,
+            descriptor.authority_key,
+            head,
+            clock,
+        )?,
+    };
     source.refresh(&authority)?;
     AgentdNduOwnerHostV1::open_with_feed(
-        identity.agent_id.clone(),
-        identity.spawn_generation,
+        agent_id.clone(),
+        spawn_generation,
         AgentdNduOwnerBootstrapV1 {
             store_root: descriptor.store_root,
             authority,
-            policy: descriptor.policy.native()?,
+            policy,
         },
         Some(source),
     )
 }
 
-fn now_ms() -> Result<u64, AgentdNduOwnerErrorV1> {
-    u64::try_from(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_err(invalid)?
-            .as_millis(),
-    )
-    .map_err(invalid)
-}
 fn read_bounded(path: &Path, limit: u64) -> Result<Vec<u8>, AgentdNduOwnerErrorV1> {
     if !path.is_absolute() || path.canonicalize().map_err(invalid)? != path {
         return Err(invalid("NDU input must be a canonical absolute file"));

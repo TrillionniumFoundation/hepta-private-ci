@@ -160,12 +160,12 @@ impl AgentdNduOwnerHostV1 {
     }
 
     pub fn context(&self) -> Result<NduOwnerContextV1, AgentdNduOwnerErrorV1> {
-        let before = current_frontier(&self.authority)?;
-        let mut owner = self.lock_owner()?;
-        owner.refresh_revocation_frontier(before)?;
+        let owner = self.refreshed_owner()?;
+        let before = owner.context().revocation_frontier_digest;
         let context = owner.context().clone();
         drop(owner);
         require_stable_frontier(&self.authority, before)?;
+        self.require_current_feed()?;
         Ok(context)
     }
 
@@ -173,12 +173,12 @@ impl AgentdNduOwnerHostV1 {
         &self,
         contributions: ContributionSet,
     ) -> Result<NduAuthenticatedEvaluationReceiptV1, AgentdNduOwnerErrorV1> {
-        let before = current_frontier(&self.authority)?;
-        let mut owner = self.lock_owner()?;
-        owner.refresh_revocation_frontier(before)?;
+        let owner = self.refreshed_owner()?;
+        let before = owner.context().revocation_frontier_digest;
         let receipt = owner.evaluate(contributions)?;
         drop(owner);
         require_stable_frontier(&self.authority, before)?;
+        self.require_current_feed()?;
         Ok(receipt)
     }
 
@@ -186,12 +186,12 @@ impl AgentdNduOwnerHostV1 {
         &self,
         mutation: &NduOwnerMutationV1,
     ) -> Result<FinalUseBinding, AgentdNduOwnerErrorV1> {
-        let before = current_frontier(&self.authority)?;
-        let mut owner = self.lock_owner()?;
-        owner.refresh_revocation_frontier(before)?;
+        let owner = self.refreshed_owner()?;
+        let before = owner.context().revocation_frontier_digest;
         let binding = owner.final_use_binding(mutation)?;
         drop(owner);
         require_stable_frontier(&self.authority, before)?;
+        self.require_current_feed()?;
         Ok(binding)
     }
 
@@ -200,6 +200,9 @@ impl AgentdNduOwnerHostV1 {
         signed: &SignedFinalUseGrant,
         mutation: NduOwnerMutationV1,
     ) -> Result<NduProjectionEntryV1, AgentdNduOwnerErrorV1> {
+        if self.feed.is_some() {
+            return Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-012"));
+        }
         let frontier = current_frontier(&self.authority)?;
         let mut owner = self.lock_owner()?;
         owner.refresh_revocation_frontier(frontier)?;
@@ -211,13 +214,43 @@ impl AgentdNduOwnerHostV1 {
         objective_digest: Digest32,
         subject_digest: Digest32,
     ) -> Result<Option<Digest32>, AgentdNduOwnerErrorV1> {
-        let before = current_frontier(&self.authority)?;
-        let mut owner = self.lock_owner()?;
-        owner.refresh_revocation_frontier(before)?;
+        let owner = self.refreshed_owner()?;
+        let before = owner.context().revocation_frontier_digest;
         let selected = owner.selected_projection_digest(objective_digest, subject_digest)?;
         drop(owner);
         require_stable_frontier(&self.authority, before)?;
+        self.require_current_feed()?;
         Ok(selected)
+    }
+
+    fn admission_now_ms(&self) -> Result<u64, AgentdNduOwnerErrorV1> {
+        use codex_hepta_contracts::AuthorityClock;
+        match &self.feed {
+            Some(feed) => feed
+                .now_ms()
+                .map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-004")),
+            None => codex_hepta_contracts::SystemAuthorityClock
+                .now_unix_ms()
+                .map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-004")),
+        }
+    }
+
+    fn refreshed_owner(
+        &self,
+    ) -> Result<MutexGuard<'_, NduAuthenticatedOwnerV1>, AgentdNduOwnerErrorV1> {
+        let mut owner = self.lock_owner()?;
+        if let Some(feed) = &self.feed {
+            feed.refresh(&self.authority)?;
+        }
+        owner.refresh_revocation_frontier(current_frontier(&self.authority)?)?;
+        Ok(owner)
+    }
+
+    fn require_current_feed(&self) -> Result<(), AgentdNduOwnerErrorV1> {
+        if let Some(feed) = &self.feed {
+            feed.require_current(&self.authority)?;
+        }
+        Ok(())
     }
 
     fn lock_owner(&self) -> Result<MutexGuard<'_, NduAuthenticatedOwnerV1>, AgentdNduOwnerErrorV1> {

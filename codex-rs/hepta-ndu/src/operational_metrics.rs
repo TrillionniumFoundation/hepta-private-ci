@@ -225,6 +225,52 @@ pub struct NduRestoreDrillReceiptV1 {
     pub passed: bool,
 }
 
+/// V2 binds the complete backup policy, including destination, encryption and
+/// retention, rather than treating a caller-provided policy ID/revision as its
+/// complete semantic identity. The receipt remains evidence, not restore or
+/// deletion authority and not a substitute for an off-host acknowledgement.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NduRestoreDrillReceiptV2 {
+    pub policy_digest: Digest32,
+    pub receipt: NduRestoreDrillReceiptV1,
+}
+
+pub fn canonical_backup_policy_digest_v1(
+    policy: &NduBackupPolicyV1,
+) -> Result<Digest32, NduOperationsError> {
+    validate_backup_policy_v1(policy)?;
+    Ok(Digest32::of_parts(&[
+        b"hepta.ndu.backup-policy.v1\0",
+        policy.policy_id.as_str().as_bytes(),
+        b"\0",
+        &policy.revision.to_be_bytes(),
+        &policy.minimum_copies.to_be_bytes(),
+        &policy.retention_copies.to_be_bytes(),
+        &policy.max_backup_age_seconds.to_be_bytes(),
+        policy.off_host_destination_digest.as_array(),
+        policy.encryption_profile_digest.as_array(),
+    ]))
+}
+
+pub fn validate_restore_drill_receipt_v2(
+    policy: &NduBackupPolicyV1,
+    receipt: &NduRestoreDrillReceiptV2,
+    now_unix_seconds: u64,
+) -> Result<Digest32, NduOperationsError> {
+    let expected = canonical_backup_policy_digest_v1(policy)?;
+    if receipt.policy_digest != expected {
+        return Err(NduOperationsError::InvalidReceipt(
+            "complete policy binding",
+        ));
+    }
+    let base = validate_restore_drill_receipt_v1(policy, &receipt.receipt, now_unix_seconds)?;
+    Ok(Digest32::of_parts(&[
+        b"hepta.ndu.restore-drill-receipt.v2\0",
+        expected.as_array(),
+        base.as_array(),
+    ]))
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum NduOperationsError {
     InvalidPolicy(&'static str),
@@ -430,5 +476,61 @@ mod tests {
             validate_restore_drill_receipt_v1(&policy, &receipt, 4000),
             Err(NduOperationsError::BackupExpired)
         );
+    }
+
+    #[test]
+    fn restore_drill_v2_rejects_destination_encryption_and_retention_substitution()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let policy = NduBackupPolicyV1 {
+            policy_id: id("backup-policy-v2"),
+            revision: 1,
+            minimum_copies: 2,
+            retention_copies: 7,
+            max_backup_age_seconds: 3600,
+            off_host_destination_digest: Digest32::of_bytes(b"registered-off-host-destination"),
+            encryption_profile_digest: Digest32::of_bytes(b"registered-encryption-profile"),
+        };
+        let head = Digest32::of_bytes(b"source-and-restored-head");
+        let receipt = NduRestoreDrillReceiptV2 {
+            policy_digest: canonical_backup_policy_digest_v1(&policy)?,
+            receipt: NduRestoreDrillReceiptV1 {
+                policy_id: policy.policy_id.clone(),
+                policy_revision: 1,
+                source_journal_head_digest: head,
+                restored_journal_head_digest: head,
+                backup_digest: Digest32::of_bytes(b"backup-bytes"),
+                off_host_object_version_digest: Digest32::of_bytes(b"external-version"),
+                operator_identity_digest: Digest32::of_bytes(b"operator"),
+                target_host_digest: Digest32::of_bytes(b"drill-target"),
+                backup_created_at_unix_seconds: 100,
+                started_at_unix_seconds: 110,
+                completed_at_unix_seconds: 120,
+                backup_bytes: 600,
+                restored_record_count: 3,
+                passed: true,
+            },
+        };
+        assert!(!validate_restore_drill_receipt_v2(&policy, &receipt, 130)?.is_zero());
+        let mut changed = [
+            policy.clone(),
+            policy.clone(),
+            policy.clone(),
+            policy.clone(),
+            policy.clone(),
+        ];
+        changed[0].off_host_destination_digest = Digest32::of_bytes(b"other-destination");
+        changed[1].encryption_profile_digest = Digest32::of_bytes(b"other-encryption");
+        changed[2].retention_copies = 8;
+        changed[3].minimum_copies = 3;
+        changed[4].max_backup_age_seconds = 3601;
+        for policy in changed {
+            assert_eq!(
+                validate_restore_drill_receipt_v2(&policy, &receipt, 130),
+                Err(NduOperationsError::InvalidReceipt(
+                    "complete policy binding"
+                ))
+            );
+        }
+        Ok(())
     }
 }

@@ -12,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import subprocess
 import time
 
@@ -181,6 +182,19 @@ def commands(suite: str, sha: str, tree: str) -> list[tuple[str, Path, list[str]
                     "ndu-named-host-qualification",
                 ],
             ),
+            (
+                "mounted-filesystem-binary",
+                rust,
+                ["cargo", "build", "--locked", "--release", "-p", CORE[0],
+                 "--target-dir", str(rust / "target"),
+                 "--bin", "ndu-mounted-filesystem-qualification"],
+            ),
+            (
+                "mounted-filesystem",
+                ROOT,
+                ["python3", "scripts/hepta-ndu-mounted-filesystem.py",
+                 "--binary", str(rust / "target/release/ndu-mounted-filesystem-qualification")],
+            ),
         ]
     packages = [arg for package in CORE + PRODUCT for arg in ["--package", package]]
     return [
@@ -189,6 +203,7 @@ def commands(suite: str, sha: str, tree: str) -> list[tuple[str, Path, list[str]
             ROOT,
             ["python3", "scripts/test_hepta_ndu_qualification.py"],
         ),
+        ("mounted-filesystem-orchestrator-tests", ROOT, ["python3", "scripts/test_hepta_ndu_mounted_filesystem.py"]),
         ("map-integrity-tests", ROOT, ["python3", "scripts/test_hepta_ndu_map_integrity.py"]),
         ("lock", ROOT, ["python3", "scripts/verify_cargo_lock.py"]),
         ("legacy-policy", ROOT, ["python3", "scripts/hepta-ndu-source-policy.py"]),
@@ -274,6 +289,35 @@ def validate_host_receipt(path: Path, sha: str, tree: str, lane: str) -> dict:
     }
 
 
+def validate_mounted_receipt(path: Path, sha: str, tree: str, lane: str) -> dict:
+    receipt = json.loads(path.read_text())
+    expected = {
+        "schema": "hepta.ndu.mounted-filesystem-qualification.v1",
+        "sourceSha": sha, "sourceTree": tree, "lane": lane,
+        "host": platform.node(), "binaryUnchanged": True,
+        "passed": True, "productionActivation": False,
+    }
+    if any(type(receipt.get(key)) is not type(value) or receipt.get(key) != value
+           for key, value in expected.items()):
+        raise ValueError("mounted filesystem receipt identity/result mismatch")
+    if re.fullmatch(r"[0-9a-f]{64}", receipt.get("binarySha256", "")) is None:
+        raise ValueError("mounted filesystem receipt lacks binary identity")
+    cases = receipt.get("cases")
+    if not isinstance(cases, list) or len(cases) != 2:
+        raise ValueError("mounted filesystem receipt must contain exactly two observations")
+    for case, (fault, expected_errno) in zip(cases, [("enospc", 28), ("erofs", 30)]):
+        if (case.get("fault") != fault or case.get("filesystem") != "tmpfs"
+            or type(case.get("observedErrno")) is not int or case["observedErrno"] != expected_errno
+            or case.get("passed") is not True or case.get("cleanupPassed") is not True
+            or type(case.get("exitCode")) is not int or case["exitCode"] != 0
+            or case.get("phases") != ["READY", "FAULT_OBSERVED", "RECOVERED"]):
+            raise ValueError("mounted filesystem observation is absent, substituted or unsuccessful")
+        if fault == "enospc" and (type(case.get("filledBytes")) is not int
+            or not 0 < case["filledBytes"] <= 8 * 1024 * 1024):
+            raise ValueError("mounted filesystem ENOSPC observation was not bounded")
+    return {"file": path.name, "sha256": file_digest(path), "identityValidated": True}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -319,6 +363,7 @@ def main() -> int:
         ).strip(),
         HEPTA_NDU_CLK_TCK=str(os.sysconf("SC_CLK_TCK")),
         HEPTA_NDU_RECEIPT_PATH=str(output / "named-host.json"),
+        HEPTA_NDU_MOUNTED_OUTPUT=str(output / "mounted-filesystem"),
         HEPTA_NDU_SOURCE_SHA=sha,
         HEPTA_NDU_SOURCE_TREE=tree,
         HEPTA_NDU_QUALIFICATION_LANE=args.lane,
@@ -354,6 +399,7 @@ def main() -> int:
         records.append(record)
         print(json.dumps(record), flush=True)
     host_receipt = None
+    mounted_receipt = None
     if args.suite == "host":
         try:
             host_receipt = validate_host_receipt(
@@ -366,6 +412,12 @@ def main() -> int:
         else:
             if not host_receipt["performancePassed"]:
                 records.append({"name": "host-performance-threshold", "exitCode": 1})
+        try:
+            mounted_receipt = validate_mounted_receipt(
+                output / "mounted-filesystem/mounted-filesystem.json", sha, tree, args.lane
+            )
+        except (OSError, ValueError, KeyError, TypeError, AttributeError) as error:
+            records.append({"name": "mounted-filesystem-receipt-validation", "exitCode": 1, "error": str(error)})
     unchanged = (
         git("rev-parse", "HEAD") == sha
         and git("rev-parse", "HEAD^{tree}") == tree
@@ -384,6 +436,7 @@ def main() -> int:
         "sourceUnchanged": unchanged,
         "commands": records,
         "hostReceipt": host_receipt,
+        "mountedFilesystemReceipt": mounted_receipt,
         "passed": passed,
         "productionActivation": False,
     }

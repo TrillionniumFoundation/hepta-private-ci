@@ -1,8 +1,6 @@
 //! NDU dispatch through the existing private Agentd control socket.
 use super::*;
 use std::collections::BTreeSet;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
 use codex_hepta_agent_protocol::NduCommittedEntryV1;
 use codex_hepta_agent_protocol::NduControlRequestV1;
@@ -20,7 +18,7 @@ impl AgentdNduOwnerHostV1 {
         request: NduControlRequestV1,
         live_guard: impl FnMut() -> Result<(), AgentdNduOwnerErrorV1>,
     ) -> Result<NduControlResultV1, AgentdNduOwnerErrorV1> {
-        self.control_inner(request, live_guard, now_unix_ms)
+        self.control_inner(request, live_guard, || self.admission_now_ms())
     }
 
     #[cfg(test)]
@@ -39,6 +37,32 @@ impl AgentdNduOwnerHostV1 {
         mut live_guard: impl FnMut() -> Result<(), AgentdNduOwnerErrorV1>,
         clock: impl Fn() -> Result<u64, AgentdNduOwnerErrorV1>,
     ) -> Result<NduControlResultV1, AgentdNduOwnerErrorV1> {
+        // Diagnostic observations do not claim a current authority view.
+        // Keep them readable when the protected clock or store has failed.
+        if matches!(&request, NduControlRequestV1::MetricsV1) {
+            live_guard()?;
+            return Ok(metrics_result());
+        }
+        if let Some(caller) = self
+            .feed
+            .as_ref()
+            .and_then(|feed| feed.production_caller.as_ref())
+        {
+            match &request {
+                NduControlRequestV1::ExternalAdmissionV2 { caller_id, .. } => {
+                    if caller_id != caller.as_str() {
+                        return Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-013"));
+                    }
+                }
+                NduControlRequestV1::Prepare { .. } | NduControlRequestV1::Apply { .. } => {
+                    return Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-012"));
+                }
+                NduControlRequestV1::Context
+                | NduControlRequestV1::MetricsV1
+                | NduControlRequestV1::Selection { .. }
+                | NduControlRequestV1::Outcome { .. } => {}
+            }
+        }
         let encoded_len = serde_json::to_vec(&request)
             .map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-006"))?
             .len();
@@ -65,10 +89,6 @@ impl AgentdNduOwnerHostV1 {
             Ok(())
         };
 
-        if matches!(&request, NduControlRequestV1::MetricsV1) {
-            live_guard()?;
-            return Ok(metrics_result());
-        }
         let mut owner = self.lock_owner()?;
         live_guard()?;
         if let Some(feed) = &self.feed {
@@ -318,12 +338,4 @@ fn wire_entry(entry: NduProjectionEntryV1) -> NduCommittedEntryV1 {
         predecessor_entry: *entry.predecessor_entry_digest.as_array(),
         entry_digest: *entry.entry_digest.as_array(),
     }
-}
-
-fn now_unix_ms() -> Result<u64, AgentdNduOwnerErrorV1> {
-    let milliseconds = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-004"))?
-        .as_millis();
-    u64::try_from(milliseconds).map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-004"))
 }

@@ -207,13 +207,71 @@
           "symbol": "named_host_exposes_read_only_metrics_without_a_final_use_grant"
         }
       ]
+    },
+    {
+      "operation": "load_ndu_production_bootstrap_v2",
+      "nativeSymbol": "codex_hepta_agentd::load_ndu_production_bootstrap_v2",
+      "sourcePath": "codex-rs/hepta-agentd/src/ndu_process_bootstrap.rs",
+      "sourcePathExists": true,
+      "state": "source_candidate_requires_exact_native_qualification",
+      "authority": "none",
+      "nonClaim": "Reuses the named owner with explicit host providers; test providers are not enrolled protected clocks or external services; no production activation.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/ndu_process_bootstrap_tests.rs",
+          "symbol": "production_bootstrap_uses_one_clock_and_external_authority_frontier_through_restart"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/ndu_process_bootstrap_tests.rs",
+          "symbol": "production_bootstrap_rejects_fallback_policy_drift_and_external_frontier_rollback"
+        }
+      ]
+    },
+    {
+      "operation": "validate_restore_drill_receipt_v2",
+      "nativeSymbol": "codex_hepta_ndu::validate_restore_drill_receipt_v2",
+      "sourcePath": "codex-rs/hepta-ndu/src/operational_metrics.rs",
+      "sourcePathExists": true,
+      "state": "source_candidate_requires_exact_native_qualification",
+      "authority": "none",
+      "nonClaim": "Complete policy binding is not an upload acknowledgement, observed restore, executed retention or delete authority.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/operational_metrics.rs",
+          "symbol": "restore_drill_v2_rejects_destination_encryption_and_retention_substitution"
+        }
+      ]
+    },
+    {
+      "operation": "mounted_filesystem_native_qualification",
+      "nativeSymbol": "ndu_mounted_filesystem_qualification::main",
+      "sourcePath": "codex-rs/hepta-ndu/src/bin/ndu-mounted-filesystem-qualification.rs",
+      "sourcePathExists": true,
+      "state": "source_candidate_requires_exact_native_qualification",
+      "authority": "none",
+      "nonClaim": "Unit tests cover orchestration only. Host suite must retain actual native ENOSPC/EROFS/recovery observations, scoped to Linux/tmpfs.",
+      "tests": [
+        {
+          "path": "scripts/test_hepta_ndu_mounted_filesystem.py",
+          "symbol": "test_host_suite_builds_and_executes_native_binary_not_a_skippable_test"
+        },
+        {
+          "path": "scripts/test_hepta_ndu_mounted_filesystem.py",
+          "symbol": "test_receipt_rejects_skips_wrong_identity_cleanup_and_missing_cuts"
+        }
+      ]
     }
   ],
   "supportingSources": [
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/ndu_control.rs",
+    "codex-rs/hepta-agentd/src/ndu_owner.rs",
+    "codex-rs/hepta-agentd/src/ndu_process_bootstrap.rs",
     "codex-rs/hepta-agentd/src/ndu_process_bootstrap_tests.rs",
     "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
     "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
     "codex-rs/hepta-control-plane/tests/runtime_retirement_dependencies.rs",
+    "codex-rs/hepta-ndu/src/bin/ndu-mounted-filesystem-qualification.rs",
     "codex-rs/hepta-ndu/src/bin/ndu-named-host-qualification.rs",
     "codex-rs/hepta-ndu/src/bin/ndu-named-host-qualification/fixture.rs",
     "codex-rs/hepta-ndu/src/conditional_moments.rs",
@@ -224,10 +282,17 @@
     "codex-rs/hepta-ndu/src/fixed_tests.rs",
     "codex-rs/hepta-ndu/src/lib.rs",
     "codex-rs/hepta-ndu/src/model.rs",
+    "codex-rs/hepta-ndu/src/operational_metrics.rs",
     "codex-rs/hepta-ndu/src/preference_receipts.rs",
     "codex-rs/hepta-ndu/src/recursive.rs",
     "codex-rs/hepta-ndu/src/recursive_tests.rs",
     "codex-rs/hepta-ndu/src/scoring.rs",
-    "codex-rs/hepta-ndu/src/scoring_tests.rs"
+    "codex-rs/hepta-ndu/src/scoring_tests.rs",
+    "docs/modules/utility.ndu/OPERATOR_RUNBOOK.md",
+    "docs/modules/utility.ndu/TECHNICAL.md",
+    "scripts/hepta-ndu-mounted-filesystem.py",
+    "scripts/hepta-ndu-qualification.py",
+    "scripts/test_hepta_ndu_mounted_filesystem.py",
+    "scripts/test_hepta_ndu_qualification.py"
   ]
 }

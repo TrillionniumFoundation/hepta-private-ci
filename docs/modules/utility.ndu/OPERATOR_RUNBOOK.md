@@ -28,8 +28,8 @@ Reject enrollment if any digest is zero, any path is non-canonical, group/other 
 
 1. Verify the exact descriptor digest before parsing it.
 2. Verify Agentd identity and nonzero spawn generation.
-3. Authenticate and install the current signed revocation head.
-4. Validate the frozen production policy, including `ValidatedScalarizationProfileV1`, before acquiring a writer lock or opening the store.
+3. Validate the entire frozen production policy, including `ValidatedScalarizationProfileV1`, before opening either the authority store or the projection store.
+4. Authenticate and install the current signed revocation head using the same configured clock as final-use and external admission.
 5. Acquire the sole writer lock. `Busy` is an operational conflict, not a retry-success signal.
 6. Reopen the journal with bounded metadata admission. Reject symlinks, non-regular files, oversized images, truncation, corruption and hash-chain drift.
 7. Verify the stable owner binding and current host fence.
@@ -43,7 +43,7 @@ Export the `NduOperationalMetricSnapshotV1` fields with source SHA, source tree,
 
 | Metric | Required interpretation | Minimum alert condition |
 |---|---|---|
-| `evaluation_count`, latency total/max and host p50/p95/p99 | End-to-end deterministic evaluation at the authenticated owner boundary | p95 above 2 ms or p99 above 5 ms for the qualified workload |
+| `evaluation_count`, latency total/max and host p50/p95/p99 | Numerical evaluation calls, including V3 preflight calls; excludes owner-lock/feed wait | p95 above 2 ms or p99 above 5 ms for the qualified workload |
 | `convergence_runs`, `convergence_iterations`, `convergence_exhaustions` | Bounded preference solver outcome | any unexpected exhaustion; sustained iteration growth |
 | `candidate_rejections` | Policy-admitted but infeasible candidate count | abrupt rate change or rejection of `abstain` |
 | `candidate_quarantines` | Malformed non-abstain candidate isolated by V3 semantics | nonzero sustained rate; any quarantine schema not recognized |
@@ -85,7 +85,7 @@ Run the drill on an isolated target host or namespace with no production writer 
 7. Verify selected projections, revoked projections and full-capacity behavior; no revocation may resurrect.
 8. Record restored record count, source/restored heads, backup size, timestamps, operator identity and target-host digest.
 9. Mark `passed=true` only after every comparison succeeds.
-10. Validate the resulting `NduRestoreDrillReceiptV1`; archive its digest with the exact source and host qualification receipts.
+10. Validate the resulting policy-digest-bound `NduRestoreDrillReceiptV2`; archive its digest with the exact source and host qualification receipts.
 
 A mismatch, expired backup, zero identity, time regression or false `passed` value fails closed.
 
@@ -97,7 +97,7 @@ The target host must retain a receipt for each cut:
 |---|---|
 | temp write failure | old authoritative journal remains readable; mutation fails |
 | file sync failure | old authoritative journal remains readable; mutation fails |
-| rename failure | old authoritative journal remains readable; mutation fails |
+| rename failure | acknowledgement is conservatively `Indeterminate`; fence the handle and reopen before authoritative reads |
 | rename succeeds, directory sync fails | handle becomes `Indeterminate`; reopen decides authoritative state |
 | process kill after temp write/file sync/before rename | reopen old image; stale temp is discarded |
 | process kill after rename/before or after directory sync | reopen the complete new image; never a torn image |
@@ -197,3 +197,69 @@ an independently operated deployment evaluator or its real artifact dataset.
 The `ENOSPC`/`EROFS` source tests inject operating-system error numbers at the
 persistence boundary; they are not a physically full disk or mounted read-only
 production filesystem. Preserve this distinction in acceptance records.
+
+
+## Protected-host bootstrap and envelope entry (2026-09-27)
+
+`load_ndu_production_bootstrap_v2` accepts only
+`schema=hepta.agentd.ndu-bootstrap.v2` and `trust_profile=protected-host-v1`.
+The pinned descriptor must contain `production_trust.caller_id` and
+`production_trust.profile_digest` matching the independently supplied
+`NduProductionHostTrustV1`. The host supplies one `AuthorityClock` and one
+`AuthorityFrontierStore<FinalUseFrontier>`; their concrete enrollment and
+protected/durable implementation are external deployment evidence, not facts
+inferred from a Rust trait or a nonzero digest.
+
+The same clock drives envelope expiry, signed revocation-feed freshness and
+final-use grant checks. Failure never falls back to system time. The existing
+`AgentdConfig::with_ndu_owner_host` attaches the existing named owner; the writer
+remains `NduProjectionStoreV1`, not a second process or a parallel journal.
+The authority frontier binds both revocations and claimed nonces and is checked
+again on reopen. It does not by itself prove whole-directory projection/replay
+rollback resistance; deployment still requires the external journal frontier
+and coordinated backup evidence described above.
+
+Protected-host control ingress requires external admission V2 for Prepare and
+Apply (`NDU-ADMIT-012` otherwise). The caller binding must match the descriptor
+(`NDU-ADMIT-013` otherwise); this string is not caller authentication by itself.
+Authentication still comes from the private control-channel host boundary and
+the exact final-use grant. A feed-bound host rejects the legacy direct mutation
+method; production mutations use the head-bound, lifecycle-guarded control
+path. Read-only Metrics remains accessible through the private control socket
+when the clock/feed/store is unavailable and never claims current authority.
+The V1 command-line local bootstrap rejects a protected-host descriptor rather
+than silently creating providers. An embedding host must supply enrolled
+providers and attach the V2 owner explicitly.
+
+## Real mounted-filesystem qualification
+
+The host suite builds `ndu-mounted-filesystem-qualification` from the exact
+candidate and runs `scripts/hepta-ndu-mounted-filesystem.py`. It creates two
+fresh private 4 MiB tmpfs fixtures, never a production directory. One fixture is
+filled until an actual ENOSPC is observed; the other is remounted read-only and
+must return EROFS, not merely EACCES. The open native writer must reject before
+commit and preserve its authoritative image. After capacity or write access is
+restored, a new handle must reopen the same journal, reject an older backup
+that predates revocation, remain unable to resurrect the revoked selection,
+and successfully commit a new projection.
+
+The receipt binds exact source SHA/tree, lane, host/kernel, binary SHA-256,
+observed errno, bounded fill size, the native phase sequence, exit status and
+successful unmount cleanup. Missing sudo/mount support fails qualification;
+it is never a skip, injected-error substitute or a green receipt. This is real
+Linux/tmpfs failure evidence, not a qualification of an untested production
+storage stack. The existing named-host durability and process-kill matrix still
+run independently on the configured host filesystem.
+
+## Complete backup-policy binding
+
+Use `canonical_backup_policy_digest_v1` with `NduRestoreDrillReceiptV2` and
+`validate_restore_drill_receipt_v2` for new integrations. The digest covers ID,
+revision, minimum/retained copies, maximum age, destination and encryption
+profile. A receipt cannot be relabelled with another destination, encryption
+scheme, retention count or age limit while reusing its policy ID/revision.
+The V1 receipt validator remains a compatibility reader, not complete policy
+binding. Neither version manufactures an off-host upload acknowledgement,
+a decryption observation, a successful restore, retention execution or
+permission to delete a backup. Keep the backup-age gauge unset until a real
+verified off-host transfer supplies the observation.

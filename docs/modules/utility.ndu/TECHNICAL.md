@@ -302,3 +302,24 @@ Ordinary repository coding does not receive runtime authority from an execution 
 ## 17. Source implementation receipt
 
 The bootstrap source-location obligation is implemented in `codex-rs/hepta-ndu`. Source-head and deterministic synthetic-merge qualification, closed-world source mapping, package tests, strict lint, clean-tree checks and retained receipts are required for each candidate. A workflow definition or pending run is not a passing receipt. Source evidence grants no activation, operator acceptance, selection, promotion, merge or release authority.
+
+
+## 2026-09-27 protected-host and operational entrypoints
+
+The named protected-host composition is `load_ndu_production_bootstrap_v2`
+with a pinned V2 descriptor and host-supplied `NduProductionHostTrustV1`.
+It reuses Agentd's existing owner attachment, final-use authority and sole
+`NduProjectionStoreV1` writer. Envelope, feed and grant checks use one configured
+clock without fallback. Protected mutations require the versioned external
+admission and physical lifecycle guard. The caller label is a binding, not a
+standalone credential. Concrete provider enrollment, journal anti-rollback and
+production-host qualification remain external requirements.
+
+The host qualification also runs the native mounted-filesystem binary through
+`hepta-ndu-mounted-filesystem.py` and validates the exact two-case receipt. Real
+ENOSPC/EROFS observations are separate from injected fault tests and are scoped
+to the recorded Linux/tmpfs fixture. New restore-drill integrations use the V2
+receipt that binds the full backup policy; V1 is only a compatibility reader.
+See `OPERATOR_RUNBOOK.md` for the exact entrypoints, stable admission failures,
+fixture boundary and remaining off-host evidence. These owner-local helpers
+and qualification types do not expand the generated system contract registry.
