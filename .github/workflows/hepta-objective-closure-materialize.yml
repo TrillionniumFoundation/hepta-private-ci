@@ -1,4 +1,4 @@
-# closure-trigger: durable-proof-and-evidence-hosted-r7-20260927
+# closure-trigger: durable-proof-and-evidence-hosted-r8-20260927
 name: Hepta objective compiler closure materializer
 
 on:
@@ -13,7 +13,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: hepta-objective-production-convergence
+  # Branch-scoped: unrelated objective closure branches must not hold this writer.
+  group: hepta-objective-production-convergence-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
