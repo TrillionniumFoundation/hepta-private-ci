@@ -1,0 +1,82 @@
+name: runtime.codex main attestation
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/app-server/**"
+      - "codex-rs/core/**"
+      - "codex-rs/hepta-codex-adapter/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "docs/modules/runtime.codex/**"
+      - "qualification/module-execution-dossiers/detail/runtime.codex.md"
+      - "scripts/runtime_codex_qualification.py"
+      - ".github/workflows/runtime-codex-required.yml"
+      - ".github/workflows/runtime-codex-main-attestation.yml"
+      - ".github/workflows/blocking-ci.yml"
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: runtime-codex-main-attestation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  qualification:
+    name: Qualify protected main candidate
+    permissions:
+      contents: read
+    uses: ./.github/workflows/runtime-codex-required.yml
+    secrets: inherit
+
+  attest:
+    name: Attest runtime.codex receipts
+    needs: qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact protected-main source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download exact-head receipt
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: runtime-codex-exact-head-${{ github.sha }}-${{ github.run_id }}
+          path: .hepta-evidence/runtime-codex/exact-head
+
+      - name: Download synthetic-merge receipt
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: runtime-codex-synthetic-merge-${{ github.sha }}-${{ github.run_id }}
+          path: .hepta-evidence/runtime-codex/synthetic-merge
+
+      - name: Re-verify retained receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/runtime_codex_qualification.py verify \
+            .hepta-evidence/runtime-codex/exact-head/receipt.json
+          python3 scripts/runtime_codex_qualification.py verify \
+            .hepta-evidence/runtime-codex/synthetic-merge/receipt.json
+
+      - name: Attest exact-head receipt
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: .hepta-evidence/runtime-codex/exact-head/receipt.json
+
+      - name: Attest synthetic-merge receipt
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: .hepta-evidence/runtime-codex/synthetic-merge/receipt.json
