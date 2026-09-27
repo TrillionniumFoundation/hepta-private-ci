@@ -2,7 +2,7 @@
 edition.workspace = true
 license.workspace = true
 name = "codex-hepta-types"
-rust-version = "1.95"
+rust-version = "1.96"
 version.workspace = true
 publish = false
 
@@ -19,3 +19,4 @@ sha2 = { workspace = true }
 
 [dev-dependencies]
 serde_json = { workspace = true }
+serde = { workspace = true }
