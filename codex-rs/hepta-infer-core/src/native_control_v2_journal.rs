@@ -189,7 +189,10 @@ impl NativeJournal {
                 if record.dispatch_rejection.is_some() {
                     return Err(Error::InvalidTransition);
                 }
-                if record.execution_binding.is_some() && protected_output.is_none() {
+                if record.execution_binding.is_some()
+                    && protected_output.is_none()
+                    && (!output.output.is_empty() || output.terminal_observed)
+                {
                     return Err(Error::InvalidIdentity("native protected output"));
                 }
                 apply_observation(record, output)?;
