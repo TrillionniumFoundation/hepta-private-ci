@@ -1,0 +1,83 @@
+name: Context Compiler Materialize ARM Once
+
+on:
+  push:
+    branches:
+      - codex/context-compiler-production-closure-20260927
+
+permissions:
+  contents: write
+
+concurrency:
+  group: context-compiler-materialize-arm-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  materialize-and-verify:
+    if: ${{ contains(github.event.head_commit.message, '[arm-materialize]') }}
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 180
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify source ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 6e2e28a3283be4c34ee6f6a85b7fcb8ffc33ee3d HEAD
+          test "${GITHUB_REF_NAME}" = 'codex/context-compiler-production-closure-20260927'
+
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup set profile minimal
+          rustup toolchain install 1.95.0 --component rustfmt --component clippy
+          rustup default 1.95.0
+          rustc -Vv
+          cargo -V
+
+      - name: Materialize direct V3 source and hardening
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B scripts/apply_context_compiler_full_closure.py
+          python3 -B scripts/apply_context_compiler_hardening.py
+          python3 -B scripts/finalize_context_compiler_truth.py
+          python3 -B scripts/generate_context_compiler_module_docs.py --write
+          cargo fmt --all
+          python3 -B scripts/generate_context_compiler_module_docs.py --check
+          git diff --check
+
+      - name: Focused native verification
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-context-compiler
+          cargo test --locked -p codex-hepta-intelligence
+          cargo test --locked -p codex-hepta-prompt-extension exact_body
+          cargo test --locked -p codex-hepta-agentd exact_context_delivery
+          cargo check --locked -p codex-hepta-context-compiler -p codex-hepta-intelligence -p codex-hepta-prompt-extension -p codex-hepta-agentd
+          cargo clippy --locked -p codex-hepta-context-compiler -p codex-hepta-intelligence -p codex-hepta-prompt-extension -p codex-hepta-agentd --all-targets -- -D warnings
+
+      - name: Commit verified direct implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/context-compiler-materialize-once.yml
+          rm -f .github/workflows/context-compiler-materialize-arm-once.yml
+          rm -f .github/context-compiler-materialize-v3.trigger
+          rm -f scripts/apply_context_compiler_full_closure.py
+          rm -f scripts/apply_context_compiler_hardening.py
+          rm -f scripts/finalize_context_compiler_truth.py
+          git add -A
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git config user.name 'hepta-context-compiler-bot'
+          git config user.email 'hepta-context-compiler-bot@users.noreply.github.com'
+          git commit -m 'feat(context.compiler): materialize canonical V3 provider closure [context-compiler-materialized]'
+          git push origin HEAD:${GITHUB_REF_NAME}
