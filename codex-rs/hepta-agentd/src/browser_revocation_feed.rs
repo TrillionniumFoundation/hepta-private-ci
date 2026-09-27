@@ -280,10 +280,7 @@ fn read_feed(path: &Path) -> Result<BrowserRevocationHead, String> {
         if opened.dev() != after.dev() || opened.ino() != after.ino() {
             return Err("Browser revocation feed changed during secure open".into());
         }
-        if opened.uid() != euid
-            || after.uid() != euid
-            || opened.nlink() != 1
-            || after.nlink() != 1
+        if opened.uid() != euid || after.uid() != euid || opened.nlink() != 1 || after.nlink() != 1
         {
             return Err("Browser revocation feed ownership/link count changed during open".into());
         }

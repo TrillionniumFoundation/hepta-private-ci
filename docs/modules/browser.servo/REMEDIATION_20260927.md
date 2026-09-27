@@ -201,10 +201,11 @@ substitutes for main-only target qualification.
 
 ## Remaining repository-controlled work
 
-No known design-level source blocker remains in the four-stage remediation
-scope. The remaining repository-controlled work is evidentiary and remedial:
-run the final exact head and deterministic merge candidate, inspect every real
-failure, and correct the same candidate without weakening the invariants.
+The four-stage source implementation must still be exercised on the final
+exact head and deterministic merge candidate. In particular, an incomplete
+sandbox observation is an unresolved qualification blocker, not independent
+proof that the underlying process boundary is correct. Inspect and remediate
+actual failures on this same candidate without weakening the invariants.
 
 Queued, pending, skipped-applicable, cancelled, prior-head or donor-branch
 results are not pass evidence.
@@ -231,7 +232,7 @@ The current booleans remain:
 
 ```text
 source_root_present = true
-repository_controlled_source_boundary_gaps_closed = true
+repository_controlled_source_boundary_gaps_closed = false
 production_implementation = false
 product_execution_proved = false
 deployment_qualification = false
@@ -243,3 +244,44 @@ release = false
 
 No main update, protected-branch bypass, deployment, activation, independent
 acceptance, promotion or release is performed by this continuation.
+
+
+## 2026-09-28 qualification continuation
+
+This continuation starts from exact source
+`9e9011fe06575e96265434c4de13e81d8f84ce86`, not from the older audit head.
+The original complete Node suite was executed from the retained source archive:
+245 passed, zero failed, cancelled or skipped. Those results are baseline
+results, not acceptance of the subsequent changed source.
+
+The Agentd revocation-feed conditional is aligned with the retained native
+rustfmt diagnostic without changing its owner, inode or link-count checks.
+Native formatting, compilation and strict lint must run again on the new head.
+
+The Linux sandbox oracle now waits for acknowledged worker readiness before
+releasing the launcher parent. Its C canary forks a live descendant before
+publishing the readiness marker. The outer oracle captures bounded host PID
+and start-time identities while the helper is still alive, sends an explicit
+release, drains helper output through close, and observes disappearance of all
+captured lifetimes. Empty/post-mortem censuses cannot pass. Where task/children
+is absent, a bounded /proc parent-PID census is used for the stationary READY
+canaries; missing observations are not silently interpreted as no descendants.
+No arbitrary numeric PID is signalled by the observer.
+
+Qualification processes now have monotonic deadlines and bounded diagnostics.
+A signal request, SIGKILL, partial ready line, missing descendant, output flood
+or timeout cannot become a successful probe receipt. Direct-network denial
+must be a concrete routing/permission error, not an in-progress connection.
+The resource limits and all filesystem/network/parent-death assertions remain
+in force. The earlier sandbox SIGKILL is not assigned an unproved root cause;
+a fresh successful real target execution is still required.
+
+Eleven real-process observer regressions cover close/output ordering, explicit
+release, early exit, SIGKILL, timeout, both output budgets, spawn failure,
+partial readiness, invalid/empty census and live child/descendant retention.
+They test the qualification observer, not Bubblewrap or Servo isolation.
+The local environment has Node and a C compiler, but no Cargo/Rust/Bubblewrap;
+local observer or JavaScript success must not be labelled native or target
+qualification. All changed package files are included by the tracked-package
+source inventory, including the new helper and tests. Production activation,
+independent acceptance, promotion and release remain false.
