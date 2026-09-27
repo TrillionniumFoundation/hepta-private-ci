@@ -14,11 +14,11 @@ permissions:
 
 concurrency:
   group: cognitive-types-convergence-apply
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply-and-qualify:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 90
     env:
       BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
