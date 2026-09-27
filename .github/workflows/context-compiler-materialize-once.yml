@@ -1,0 +1,249 @@
+name: Context Compiler Materialize Once
+
+on:
+  push:
+    branches:
+      - codex/context-compiler-production-closure-20260927
+
+permissions:
+  contents: write
+
+concurrency:
+  group: context-compiler-materialize-once
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: ${{ !contains(github.event.head_commit.message, '[context-compiler-materialized]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Verify immutable parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_parent='6e2e28a3283be4c34ee6f6a85b7fcb8ffc33ee3d'
+          actual_parent="$(git rev-parse HEAD^)"
+          test "$actual_parent" = "$expected_parent"
+          test "${GITHUB_REF_NAME}" = 'codex/context-compiler-production-closure-20260927'
+
+      - name: Materialize canonical V3 product path
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B scripts/apply_context_compiler_full_closure.py
+          python3 -B scripts/apply_context_compiler_hardening.py
+
+      - name: Refresh single-source module truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('.')
+          path = root / 'docs/modules/context.compiler/MODULE_MANIFEST.json'
+          manifest = json.loads(path.read_text(encoding='utf-8'))
+          manifest['integrationBranch'] = 'codex/context-compiler-production-closure-20260927'
+          manifest['status'] = {
+              'coreImplementation': 'complete',
+              'productComposition': 'complete',
+              'v2ProviderClosure': 'complete',
+              'currentHeadQualification': 'absent',
+          }
+          manifest['statusRationale'] = {
+              'coreImplementation': 'Verified admission, typed successor lineage, deterministic compilation, compiler-owned serialization, exact final-request tokenization, pre-dispatch preparation, and terminal delivery receipts are implemented in direct source.',
+              'productComposition': 'AgentdPromptPipelineOwner compiles registry-owned V3 context, stages the exact object into the durable encoded-body owner, and exposes one App Server provider spine. Legacy V1 composition is default-off and qualification-only.',
+              'v2ProviderClosure': 'The exact encoded provider body is observed before transport, checked by the provider/model framing policy, tokenized by a binary/vocabulary/version/normalization identity bound to the V3 execution profile, durably claimed before send, and reconciled through observe_delivery.',
+              'currentHeadQualification': 'Source state does not self-assert qualification. Exact-head, synthetic-merge, target-host, independent-security-review, activation, and release gates remain external.',
+          }
+          manifest['sourceRoots'] = [
+              'codex-rs/hepta-context-compiler/src/provider_closure.rs',
+              'codex-rs/hepta-context-compiler/src/v2.rs',
+              'codex-rs/hepta-context-compiler/src/v2/redaction.rs',
+              'codex-rs/hepta-context-compiler/src/v2/delivery_evidence.rs',
+              'codex-rs/hepta-prompt-registry/src/context_authority.rs',
+              'codex-rs/hepta-intelligence/src/prompt_product_v3.rs',
+              'codex-rs/hepta-agentd/src/prompt_runtime.rs',
+              'codex-rs/hepta-agentd/src/exact_context_delivery.rs',
+              'codex-rs/ext/hepta-prompt/src/exact_body.rs',
+              'codex-rs/ext/hepta-prompt/src/lib.rs',
+              'codex-rs/codex-api/src/encoded_body_observer.rs',
+              'codex-rs/codex-api/src/endpoint/responses.rs',
+              'codex-rs/core/src/client.rs',
+              'codex-rs/core/src/model_provider_policy',
+              'codex-rs/hepta-codex-adapter/src/lib.rs',
+          ]
+          manifest['publicSurface'] = [
+              'compile_prompt_registry_v3',
+              'PromptRegistryCompilationRequestV3',
+              'PromptRegistryCompiledContextV3',
+              'PromptExactTokenizerV3',
+              'prepare_prompt_delivery_v3',
+              'verify_admission_snapshot_successor_typed_v2',
+              'prepare_delivery_from_successor_v2',
+              'prove_final_provider_request_v2',
+              'FinalRequestFramingVerifierV2',
+              'ExactFinalRequestTokenizerV2',
+              'observe_final_provider_delivery_v2',
+              'AgentdPromptPipelineOwner::compile_and_stage_v3',
+              'AgentdExactContextDeliveryOwner',
+          ]
+          manifest['proofObjects'] = [
+              'VerifiedAdmissionSnapshotV2',
+              'VerifiedAdmissionSnapshotSuccessorV2',
+              'PromptRegistryCompiledContextV3',
+              'PromptExecutionProfileV3',
+              'ContextCompilationReceiptV2',
+              'ContextAttachmentV2',
+              'PreparedPromptDeliveryV3',
+              'ContextDeliveryPreparationV2',
+              'FinalRequestTokenizerIdentityV2',
+              'FinalRequestTokenizationReceiptV2',
+              'FinalProviderRequestProofV2',
+              'ContextDeliveryReceiptV2',
+          ]
+          manifest['sequence'] = [
+              'authoritative registry/admission snapshot',
+              'verify_admission_snapshot_successor_v2',
+              'verify_admission_v2',
+              'compile_prompt_registry_v3 / compile_v2',
+              'compiler-owned canonical context serialization',
+              'build_attachment',
+              'prepare_prompt_delivery_v3 immediately before final request proof',
+              'host constructs exact encoded provider request',
+              'qualified provider/model framing verification',
+              'real tokenizer over exact final request bytes',
+              'consume final-use authority and persist durable pre-send claim',
+              'physical provider submit using the attested bytes',
+              'canonical provider terminal evidence',
+              'independent provider-evidence verification and observe_delivery',
+              'durable ContextDeliveryReceiptV2',
+          ]
+          manifest['invariants'] = [
+              'The default product path accepts only registry-owned V3 compiled context; legacy V1 compilation is feature-gated, default-off, and cannot stage authoritative exact-delivery evidence.',
+              'The admission verifier consumes authority-owned records and monotone typed successor snapshots; product composition cannot self-mint an accepted authority cut.',
+              'The strict serializer is compiler-owned; product callers cannot certify arbitrary prepared payload bytes.',
+              'The active role profile accepts DeveloperInstruction only. SystemInstruction, UserTemplate, ToolSchemaFragment, and evidence in an instruction slot fail closed until a matching typed provider slot exists.',
+              'Tokenizer identity binds provider, model, profile digest, executable digest, version, vocabulary, and normalization policy.',
+              'The exact encoded body observed before transport is both tokenizer input and physical HTTP body; no post-proof reconstruction is permitted.',
+              'A pre-send record is durably persisted before transport release, and unresolved dispatch survives restart and blocks blind replay.',
+              'All raw context-bearing Debug implementations are redacted and stable error displays expose codes rather than dynamic payload details.',
+              'Provider terminal evidence binds the provider intent, wire-semantic digest, final-request proof, preparation, and deny-all delivery receipt.',
+          ]
+          manifest['testMatrix'] = [
+              'canonical serializer golden and adversarial prepared-payload rejection',
+              'independent admission-authority rejection, typed successor lineage, rollback, fork, and revocation-resurrection rejection',
+              'wrong role, metadata-only context, duplicate context, schema-slot confusion, and unqualified framing rejection',
+              'tokenizer executable/version/vocabulary/normalization/provider/model/profile identity mismatch',
+              'real subprocess tokenizer receiving the exact Unicode/control-byte final provider body',
+              'crash/reopen unresolved pre-send blocking, retry idempotency, and terminal conflict',
+              'registry to V3 compiler to exact body to provider terminal to durable ContextDeliveryReceiptV2 integration',
+              'redacted Debug and stable error-code regression tests',
+              'property-generated deterministic coverage, fuzz corpus, mutation fail-closed corpus, and target-host capacity benchmark',
+          ]
+          manifest['knownOpenItems'] = [
+              'Exact-head and deterministic synthetic-merge qualification remain absent until external immutable receipts pass for the final commit.',
+              'Deployment must provision an approved tokenizer executable, vocabulary, provider/model identity, normalization policy, and authority verifier keys; missing or mismatched capabilities fail closed.',
+              'Only DeveloperInstruction has an active typed provider slot. Other roles remain rejected rather than coerced into developer policy.',
+              'Independent security review, target-host benchmark acceptance, canary, activation, promotion, and release remain external governance decisions.',
+              'Historical V1 data may be retained for migration and audit but is not accepted as V3/V2 provider-closure evidence.',
+          ]
+          path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+          current_path = root / 'docs/modules/context.compiler/CURRENT_PRODUCT_PATH.md'
+          current_path.write_text('''<!-- GENERATED FROM MODULE_MANIFEST.json AND DIRECT SOURCE REVIEW. -->
+          # `context.compiler` current product path
+
+          ## Status boundary
+
+          The candidate source composes the canonical context path through Agentd and the exact encoded provider-body observer. This is source/product-composition evidence, not exact-head qualification, independent acceptance, activation, promotion, or release authority.
+
+          ## Canonical call graph
+
+          ```text
+          DurablePromptRegistry + authoritative admission authority
+            -> AgentdPromptPipelineOwner::compile_and_stage_v3
+            -> compile_prompt_registry_v3(real PromptExactTokenizerV3)
+            -> verify_admission_snapshot_successor_v2 / verify_admission_v2
+            -> compile_v2
+            -> compiler-owned canonical serialization + final payload tokenization
+            -> build_attachment
+            -> AgentdExactContextDeliveryOwner::stage
+            -> PromptRuntimeHost final-request observer
+            -> prepare_prompt_delivery_v3 using the current authority cut
+            -> qualified provider/model framing verification
+            -> real tokenizer over the exact encoded HTTP request body
+            -> consume current final-use authority
+            -> durable dispatch claim
+            -> physical provider submit using the same observed bytes
+            -> canonical provider terminal evidence
+            -> independent delivery verification + observe_delivery
+            -> durable ContextDeliveryReceiptV2
+          ```
+
+          There is one physical provider spine: the existing encoded-body observer immediately before transport. Alternative experimental Core/extension V3 provider hosts are removed rather than retained as parallel authorities.
+
+          ## Active role profile
+
+          `DeveloperInstruction` is the only active provider slot in this cut. `SystemInstruction`, `UserTemplate`, `ToolSchemaFragment`, and untrusted evidence presented in an instruction/schema slot are rejected. New roles require an exact typed provider slot, byte-placement proof, framing policy, and negative tests before activation.
+
+          ## Concrete trust adapters
+
+          - **Admission authority:** the durable prompt-registry V3 authority owns admission records, current snapshots, revocation lineage, and execution-profile bindings. Context compilation verifies this authority; Agentd does not mint a replacement root snapshot.
+          - **Compilation tokenizer:** `PromptExactTokenizerV3` executes over supplied bytes and is identity-bound to the V3 execution profile. Registered token costs are not accepted as proof of final payload size.
+          - **Serializer:** context.compiler owns canonical serialization from typed realized items. Caller-supplied prepared payloads cannot satisfy the strict product proof.
+          - **Final-request tokenizer:** Agentd invokes the configured tokenizer executable over the exact encoded provider body. Identity includes provider, model, profile, executable, version, vocabulary, and normalization digests.
+          - **Provider evidence:** the exact-body owner persists pre-send evidence before transport release and converts authenticated terminal evidence through the independent delivery verifier into `ContextDeliveryReceiptV2`.
+
+          ## Legacy path
+
+          `legacy-prompt-context-v1` is default-off. Its source and fixtures remain available only for migration/qualification builds. It cannot stage the authoritative exact-delivery object, consume production final-use authority, or produce V3/V2 provider-closure evidence.
+
+          ## Remaining proof and operational gates
+
+          Source composition still does not establish exact-head execution, deterministic synthetic-merge execution, target-host performance, independent security acceptance, canary approval, activation, promotion, or release. These remain separately evidenced gates and must not be collapsed into a single `implemented` boolean.
+          ''').replace('\n          ', '\n').lstrip(), encoding='utf-8')
+          PY
+          python3 -B scripts/generate_context_compiler_module_docs.py --write
+
+      - name: Format and validate generated truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all
+          python3 -B scripts/generate_context_compiler_module_docs.py --check
+          python3 -m py_compile scripts/generate_context_compiler_module_docs.py
+          git diff --check
+
+      - name: Focused native tests
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-context-compiler
+          cargo test --locked -p codex-hepta-intelligence
+          cargo test --locked -p codex-hepta-prompt-extension exact_body
+          cargo test --locked -p codex-hepta-agentd exact_context_delivery
+          cargo check --locked -p codex-hepta-context-compiler -p codex-hepta-intelligence -p codex-hepta-prompt-extension -p codex-hepta-agentd
+
+      - name: Commit direct source implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/context-compiler-materialize-once.yml
+          rm -f scripts/apply_context_compiler_full_closure.py
+          rm -f scripts/apply_context_compiler_hardening.py
+          git add -A
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat(context.compiler): materialize canonical V3 provider closure [context-compiler-materialized]'
+          git push origin HEAD:${GITHUB_REF_NAME}
