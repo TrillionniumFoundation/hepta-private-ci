@@ -33,11 +33,11 @@ jobs:
           rustc -Vv
           cargo -V
 
-      - name: Materialize direct V3 source
+      - name: Materialize registry-owned V3 into the exact provider spine
         run: |
           set -euo pipefail
           python3 scripts/apply_context_compiler_v3_source.py
-          python3 scripts/apply_context_compiler_v3_core.py
+          python3 scripts/apply_context_compiler_full_closure.py
 
       - name: Format workspace
         working-directory: codex-rs
@@ -47,7 +47,7 @@ jobs:
         working-directory: codex-rs
         run: cargo update --workspace
 
-      - name: Focused tests
+      - name: Run default-off product tests
         working-directory: codex-rs
         run: >-
           cargo test --locked
@@ -59,7 +59,14 @@ jobs:
           -p codex-hepta-agentd
           -p codex-hepta-prompt-extension
 
-      - name: Strict clippy
+      - name: Run legacy compatibility tests explicitly
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-intelligence --features legacy-prompt-context-v1
+          cargo test --locked -p codex-hepta-agentd --features legacy-prompt-context-v1
+
+      - name: Strict Clippy across product and compatibility profiles
         working-directory: codex-rs
         run: >-
           cargo clippy --locked
@@ -77,12 +84,13 @@ jobs:
           BRANCH: ${{ github.ref_name }}
         run: |
           set -euo pipefail
-          rm scripts/apply_context_compiler_v3_source.py
-          rm scripts/apply_context_compiler_v3_core.py
-          rm .github/workflows/context-compiler-v3-direct-source.yml
+          rm -f scripts/apply_context_compiler_v3_source.py
+          rm -f scripts/apply_context_compiler_v3_core.py
+          rm -f scripts/apply_context_compiler_full_closure.py
+          rm -f .github/workflows/context-compiler-v3-direct-source.yml
           git config user.name "hepta-closure-bot"
           git config user.email "hepta-closure-bot@users.noreply.github.com"
           git add --all
           git diff --cached --check
-          git commit -m "feat(context.compiler): materialize registry-owned V3 source"
+          git commit -m "feat(context.compiler): materialize V3 exact provider proof chain"
           git push origin "HEAD:${BRANCH}"
