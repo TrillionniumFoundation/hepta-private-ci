@@ -46,6 +46,7 @@ cases=(
   locked_file_store_replays_takeover_and_rejects_backup_rollback
   child_process_observes_lock_then_recovers_after_owner_exit
   compaction_drops_obsolete_fences_and_preserves_final_anchor
+  compaction_replays_nonempty_holdout_journal_without_semantic_drift
 )
 
 cd "${ROOT}/codex-rs"
