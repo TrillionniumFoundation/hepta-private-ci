@@ -28,6 +28,38 @@ env:
   CARGO_PROFILE_DEV_DEBUG: '0'
 
 jobs:
+  source-diagnostics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Retain exact source and formatter patch without publishing changes
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/prompt-source"
+          mkdir -p "$out"
+          git rev-parse HEAD HEAD^{tree} > "$out/identity.txt"
+          git -C .. archive --format=tar.gz HEAD > "$out/source.tar.gz"
+          mapfile -d '' changed < <(git -C .. diff --name-only --diff-filter=ACMR -z "$BASE_SHA" "$SOURCE_SHA" -- '*.rs')
+          for path in "${changed[@]}"; do
+            rustfmt --edition 2024 --config imports_granularity=Item,skip_children=true "../$path"
+          done
+          git diff --binary > "$out/format.patch"
+          test ! -s "$out/format.patch"
+      - name: Upload source diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-source-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/prompt-source
+          if-no-files-found: error
+          retention-days: 7
+
   native:
     name: Prompt optimizer (${{ matrix.lane }})
     runs-on: ubuntu-24.04-arm
@@ -57,7 +89,8 @@ jobs:
       - name: Record tested Git identity
         run: |
           set -euo pipefail
-          git rev-parse HEAD HEAD^{tree}
+          mkdir -p "$RUNNER_TEMP/prompt-qualification"
+          git rev-parse HEAD HEAD^{tree} | tee "$RUNNER_TEMP/prompt-qualification/identity.txt"
           test "$(git rev-parse HEAD)" = "${{ steps.merge.outputs.sha || env.SOURCE_SHA }}"
           git diff --check
       - name: Install native prerequisites
@@ -72,28 +105,57 @@ jobs:
       - name: Optimizer all-target compilation
         id: compile
         working-directory: codex-rs
-        run: cargo check --locked --all-targets -p codex-hepta-prompt-optimizer
+        run: |
+          set -euo pipefail
+          cargo check --locked --all-targets -p codex-hepta-prompt-optimizer 2>&1 | tee "$RUNNER_TEMP/prompt-qualification/optimizer-check.log"
       - name: Optimizer library regressions
         if: always() && steps.runner.outcome == 'success'
         working-directory: codex-rs
-        run: just test --locked --lib -p codex-hepta-prompt-optimizer
+        run: |
+          set -euo pipefail
+          just test --locked --lib -p codex-hepta-prompt-optimizer 2>&1 | tee "$RUNNER_TEMP/prompt-qualification/optimizer-tests.log"
       - name: Product consumer compilation
         if: always() && steps.compile.outcome == 'success'
         working-directory: codex-rs
-        run: cargo check --locked --all-targets -p codex-hepta-intelligence -p codex-hepta-agentd
+        run: |
+          set -euo pipefail
+          cargo check --locked --all-targets -p codex-hepta-intelligence -p codex-hepta-agentd 2>&1 | tee "$RUNNER_TEMP/prompt-qualification/consumer-check.log"
       - name: Intelligence prompt integration regressions
         if: always() && steps.compile.outcome == 'success'
         working-directory: codex-rs
-        run: just test --locked --lib -p codex-hepta-intelligence -E 'test(prompt_)'
+        run: |
+          set -euo pipefail
+          just test --locked --lib -p codex-hepta-intelligence -E 'test(prompt_)' 2>&1 | tee "$RUNNER_TEMP/prompt-qualification/intelligence-tests.log"
       - name: Agentd prompt runtime regressions
         if: always() && steps.compile.outcome == 'success'
         working-directory: codex-rs
-        run: just test --locked --lib -p codex-hepta-agentd -E 'test(prompt_runtime)'
+        run: |
+          set -euo pipefail
+          just test --locked --lib -p codex-hepta-agentd -E 'test(prompt_runtime)' 2>&1 | tee "$RUNNER_TEMP/prompt-qualification/agentd-tests.log"
       - name: Optimizer strict lint
         if: always() && steps.compile.outcome == 'success'
         working-directory: codex-rs
-        run: cargo clippy --locked --all-targets -p codex-hepta-prompt-optimizer -- -D warnings
-      - name: Retain source formatting diagnostics
-        if: always() && steps.runner.outcome == 'success'
-        working-directory: codex-rs
-        run: cargo fmt --all -- --check
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --all-targets -p codex-hepta-prompt-optimizer -- -D warnings 2>&1 | tee "$RUNNER_TEMP/prompt-qualification/optimizer-clippy.log"
+      - name: Summarize retained diagnostics
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import os, pathlib
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'prompt-qualification'
+          for path in sorted(root.glob('*.log')):
+              print('\n###', path.name)
+              lines = path.read_text(errors='replace').splitlines()
+              for i, line in enumerate(lines):
+                  if line.startswith('error') or 'Summary [' in line or 'FAIL [' in line:
+                      print('\n'.join(lines[max(0, i-1):i+10]))
+          PY
+      - name: Upload exact-candidate diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-optimizer-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/prompt-qualification
+          if-no-files-found: error
+          retention-days: 7
