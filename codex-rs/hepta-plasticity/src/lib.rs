@@ -9,6 +9,7 @@
 #![forbid(unsafe_code)]
 
 mod durable_registry;
+#[allow(unused_imports)]
 mod generator_coverage_v1;
 mod generator_v3;
 mod legacy;

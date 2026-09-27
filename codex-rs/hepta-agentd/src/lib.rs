@@ -20,6 +20,7 @@ mod cognitive_retrieval_context;
 mod cognitive_retrieval_learning;
 mod config;
 mod control;
+#[allow(clippy::too_many_arguments, clippy::type_complexity)]
 mod control_engineering_iteration;
 mod error;
 mod event_buffer;
@@ -37,6 +38,7 @@ mod plasticity_host;
 mod plasticity_learning_producer;
 mod plasticity_owner_evidence;
 mod plasticity_process_bootstrap;
+#[allow(clippy::too_many_arguments, clippy::type_complexity)]
 mod plasticity_runtime;
 mod production_writer_host;
 mod prompt_runtime;
@@ -225,7 +227,10 @@ pub use plasticity_owner_evidence::plasticity_eligibility_digest_v1;
 pub use plasticity_owner_evidence::plasticity_modulator_broadcast_digest_v1;
 pub use plasticity_owner_evidence::plasticity_modulator_digest_v1;
 pub use plasticity_owner_evidence::plasticity_parameter_signal_digest_v1;
+pub use plasticity_process_bootstrap::PlasticityPathIdentityV1;
+pub use plasticity_process_bootstrap::PlasticityRollbackDomainReceiptV1;
 pub use plasticity_process_bootstrap::load_plasticity_process_bootstrap_v1;
+pub use plasticity_process_bootstrap::verify_plasticity_rollback_domain_profile_v1;
 pub use plasticity_runtime::PlasticityRuntimeBootstrapV1;
 pub use plasticity_runtime::PlasticityRuntimeCallErrorV1;
 pub use plasticity_runtime::PlasticityRuntimeHandleV1;
