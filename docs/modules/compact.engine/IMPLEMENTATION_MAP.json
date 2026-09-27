@@ -11,26 +11,30 @@
   "owner": "cognitive-platform",
   "deputy": "durability-kernel",
   "technicalGuide": "docs/modules/compact.engine/TECHNICAL.md",
+  "recoveryProtocol": "docs/modules/compact.engine/RECOVERY_PROTOCOL_V2.md",
   "declaredRoots": [
-    "codex-rs/hepta-compact-engine"
+    "codex-rs/hepta-compact-engine",
+    "codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs"
   ],
   "resolvedRoots": [
-    "codex-rs/hepta-compact-engine"
+    "codex-rs/hepta-compact-engine",
+    "codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs"
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "named_memory_checkpoint_coordinator_source_implemented_product_bootstrap_pending",
-  "productionWriterState": "durable_checkpoint_owner_source_implemented_qualification_pending",
+  "productCallerState": "agentd_runtime_compaction_scheduler_source_composed_final_qualification_pending",
+  "productionWriterState": "v2_fenced_durable_checkpoint_owner_source_implemented_final_qualification_pending",
   "operations": [
     {
       "operation": "build_qualified_candidate",
       "nativeSymbol": "build_qualified_candidate",
       "sourcePath": "codex-rs/hepta-compact-engine/src/trust.rs",
-      "state": "canonical_signed_builder_source_implemented_qualification_pending",
-      "authority": "externally_enrolled_selector_generator_and_tokenizer",
+      "state": "canonical_signed_builder_source_implemented_final_qualification_pending",
+      "authority": "root_manifest_enrolled_selector_generator_and_tokenizer",
       "tests": [
         "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
-        "codex-rs/hepta-compact-engine/src/trust_tests.rs"
+        "codex-rs/hepta-compact-engine/src/trust_tests.rs",
+        "codex-rs/hepta-compact-engine/src/product_e2e_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "build_qualified_candidate",
@@ -41,11 +45,11 @@
       "operation": "prove_compaction",
       "nativeSymbol": "prove_compaction",
       "sourcePath": "codex-rs/hepta-compact-engine/src/trust.rs",
-      "state": "independently_signed_proof_source_implemented_qualification_pending",
-      "authority": "externally_enrolled_evaluator",
+      "state": "independently_signed_proof_source_implemented_final_qualification_pending",
+      "authority": "root_manifest_enrolled_independent_evaluator",
       "tests": [
-        "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
-        "codex-rs/hepta-compact-engine/src/trust_tests.rs"
+        "codex-rs/hepta-compact-engine/src/trust_tests.rs",
+        "codex-rs/hepta-compact-engine/src/product_e2e_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "prove_compaction",
@@ -53,39 +57,100 @@
       "delegatedCallees": []
     },
     {
-      "operation": "publish_verified_checkpoint",
-      "nativeSymbol": "MemoryCheckpointCoordinatorV1::publish_verified_checkpoint",
-      "sourcePath": "codex-rs/hepta-compact-engine/src/durable.rs",
-      "state": "durable_atomic_owner_source_implemented_qualification_pending",
-      "authority": "verified_bundle_and_generation_predecessor_cas",
+      "operation": "seal_verified_publication",
+      "nativeSymbol": "VerifiedCompactionPublicationV1::verify",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/publication.rs",
+      "state": "root_manifest_bound_archive_source_implemented_final_qualification_pending",
+      "authority": "pinned_root_signed_manifest_and_four_role_receipts",
       "tests": [
-        "codex-rs/hepta-compact-engine/src/durable_tests.rs"
+        "codex-rs/hepta-compact-engine/src/product_e2e_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "seal_publication",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "build_qualified_candidate",
+        "prove_compaction"
+      ]
+    },
+    {
+      "operation": "open_fenced_checkpoint_owner",
+      "nativeSymbol": "MemoryCheckpointCoordinatorV2::open_with_manifest_chain",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/fenced_coordinator_final.rs",
+      "state": "prelease_manifest_preflight_and_continuous_guard_source_implemented_final_qualification_pending",
+      "authority": "pinned_root_manifest_chain_owner_lease_and_durable_active_manifest",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/durable_fence_tests.rs",
+        "codex-rs/hepta-compact-engine/src/product_e2e_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "open_checkpoint_owner",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-compact-engine/src/fenced_coordinator_guarded.rs",
+        "codex-rs/hepta-compact-engine/src/fenced_coordinator.rs"
+      ]
+    },
+    {
+      "operation": "publish_verified_checkpoint",
+      "nativeSymbol": "MemoryCheckpointCoordinatorV2::publish_verified_checkpoint",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/fenced_coordinator_final.rs",
+      "state": "three_stage_fenced_atomic_publication_source_implemented_final_qualification_pending",
+      "authority": "sealed_publication_exact_lease_root_manifest_nonce_reservation_and_generation_predecessor_cas",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/durable_tests.rs",
+        "codex-rs/hepta-compact-engine/src/durable_fence_tests.rs",
+        "codex-rs/hepta-compact-engine/src/product_e2e_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "publish_checkpoint",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-compact-engine/src/fenced_coordinator.rs",
+        "codex-rs/hepta-compact-engine/src/coordinator.rs",
+        "codex-rs/hepta-compact-engine/src/durable_facade.rs"
+      ]
     },
     {
       "operation": "recover_current_checkpoint",
-      "nativeSymbol": "MemoryCheckpointCoordinatorV1::recover_current_checkpoint",
-      "sourcePath": "codex-rs/hepta-compact-engine/src/durable.rs",
-      "state": "reopen_integrity_reconciliation_and_revoked_fallback_source_implemented_qualification_pending",
-      "authority": "read_only_checkpoint_selection",
+      "nativeSymbol": "MemoryCheckpointCoordinatorV2::recover_current_checkpoint",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/fenced_coordinator_final.rs",
+      "state": "manifest_guarded_reopen_reconstruction_readmission_and_revoked_fallback_source_implemented_final_qualification_pending",
+      "authority": "read_only_selection_after_integrity_historical_verification_and_current_trust_readmission",
       "tests": [
-        "codex-rs/hepta-compact-engine/src/durable_tests.rs"
+        "codex-rs/hepta-compact-engine/src/durable_tests.rs",
+        "codex-rs/hepta-compact-engine/src/product_e2e_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "recover_checkpoint",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "VerifiedCompactionPublicationV1::reopen"
+      ]
+    },
+    {
+      "operation": "compose_agentd_compaction_scheduler",
+      "nativeSymbol": "AgentdCompactionCheckpointHostV1",
+      "sourcePath": "codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs",
+      "state": "named_product_host_source_composed_final_qualification_pending",
+      "authority": "agentd_production_writer_authority_plus_v2_compaction_owner",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/product_e2e_tests.rs",
+        ".github/workflows/compact-engine-qualification.yml"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "product_compaction_scheduler",
+      "mappingClass": "product_composition",
+      "delegatedCallees": [
+        "MemoryCheckpointCoordinatorV2"
+      ]
     },
     {
       "operation": "claim_compaction_outbox",
-      "nativeSymbol": "DurableCompactionStoreV1::claim_next_outbox",
-      "sourcePath": "codex-rs/hepta-compact-engine/src/durable.rs",
-      "state": "durable_claim_fence_source_implemented_qualification_pending",
-      "authority": "claim_token_and_attempt_bound",
+      "nativeSymbol": "MemoryCheckpointCoordinatorV2::claim_next_outbox",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/fenced_coordinator_final.rs",
+      "state": "owner_manifest_and_claim_token_fenced_source_implemented_final_qualification_pending",
+      "authority": "current_product_authority_owner_lease_active_manifest_claim_token_and_attempt_bound",
       "tests": [
         "codex-rs/hepta-compact-engine/src/durable_tests.rs"
       ],
@@ -96,10 +161,10 @@
     },
     {
       "operation": "revoke_checkpoint",
-      "nativeSymbol": "DurableCompactionStoreV1::revoke_checkpoint",
-      "sourcePath": "codex-rs/hepta-compact-engine/src/durable.rs",
-      "state": "append_only_revocation_and_fallback_source_implemented_qualification_pending",
-      "authority": "checkpoint_digest_and_reason_bound",
+      "nativeSymbol": "MemoryCheckpointCoordinatorV2::revoke_checkpoint",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/fenced_coordinator_final.rs",
+      "state": "append_only_fenced_revocation_and_fallback_source_implemented_final_qualification_pending",
+      "authority": "current_product_authority_owner_lease_active_manifest_checkpoint_and_reason_bound",
       "tests": [
         "codex-rs/hepta-compact-engine/src/durable_tests.rs"
       ],
@@ -111,19 +176,22 @@
   ],
   "repositoryControlledGaps": [
     "Close every exact-head and deterministic synthetic-merge compact.engine qualification finding on the final candidate SHA.",
-    "Compose MemoryCheckpointCoordinatorV1 through the product-owned cognitive-store or runtime bootstrap and add full build-to-restart reconstruction E2E coverage.",
-    "Implement and qualify fenced physical payload GC; current source intentionally fails closed on physical deletion.",
-    "Add transaction crash injection, migration rollback, concurrent CAS, corruption, property and fuzz qualification.",
-    "Publish target-host 65536-record, 64-MiB and 8000000-token capacity measurements before raising the production implementation claim."
+    "Publish exact-source target-host capacity evidence, including a representative full publish/reopen profile in addition to the pure-kernel ceiling.",
+    "Complete final-schema transaction crash/power-loss injection and migration rollback rehearsal.",
+    "Complete remaining concurrent-writer, corruption, property and bounded-fuzz qualification findings.",
+    "Implement and qualify separately reviewed fenced physical payload GC; current source intentionally fails closed on physical deletion.",
+    "Populate exactSourceEvidence only after the immutable final candidate SHA is known."
   ],
   "externalEvidenceGates": [
     "independent semantic review and reconstruction acceptance",
     "production trust enrollment and target-host storage/power-loss qualification",
-    "operator acceptance, canary, promotion and release"
+    "operator acceptance, activation, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
+    "productSourceCompositionPresent": true,
+    "publicRestartReconstructionE2ESourcePresent": true,
     "productionImplementation": false,
     "productExecutionProved": false,
     "independentAcceptance": false,
@@ -132,9 +200,11 @@
     "implementedOperationMappingComplete": true
   },
   "sourceRoot": [
-    "codex-rs/hepta-compact-engine"
+    "codex-rs/hepta-compact-engine",
+    "codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs"
   ],
   "qualificationWorkflow": ".github/workflows/compact-engine-qualification.yml",
+  "capacityWorkflow": ".github/workflows/compact-engine-capacity.yml",
   "exactSourceEvidence": {
     "kind": "pending_final_path_blob_manifest_v1",
     "entries": []
