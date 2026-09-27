@@ -1,36 +1,46 @@
 name: platform.wire one-shot repair
 
 on:
+  push:
+    branches:
+      - codex/platform-wire-final-convergence-20260925
+    paths:
+      - '.github/workflows/platform-wire-repair.yml'
+      - 'codex-rs/Cargo.lock'
+      - 'codex-rs/hepta-wire/**'
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - '.github/workflows/platform-wire-repair.yml'
       - 'codex-rs/Cargo.lock'
       - 'codex-rs/hepta-wire/**'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: platform-wire-one-shot-repair-${{ github.event.pull_request.number }}
+  group: platform-wire-one-shot-repair-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   repair:
     if: >-
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.head.ref == 'codex/platform-wire-final-convergence-20260925'
+      (github.event_name == 'push' && github.ref_name == 'codex/platform-wire-final-convergence-20260925') ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.full_name == github.repository &&
+       github.event.pull_request.head.ref == 'codex/platform-wire-final-convergence-20260925')
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
-      HEAD_REF: ${{ github.event.pull_request.head.ref }}
-      EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      HEAD_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+      EXPECTED_SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       CARGO_INCREMENTAL: '0'
       CARGO_BUILD_JOBS: '2'
       CARGO_PROFILE_TEST_DEBUG: '0'
       CARGO_PROFILE_DEV_DEBUG: '0'
     steps:
-      - name: Check out the writable PR head
+      - name: Check out the writable branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.HEAD_REF }}
@@ -79,7 +89,7 @@ jobs:
           cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-wire
           git diff --check
 
-      - name: Commit the atomic repair to the PR branch
+      - name: Commit the atomic repair to the branch
         shell: bash
         run: |
           set -euo pipefail
