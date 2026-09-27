@@ -40,6 +40,16 @@ use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::authbus_trust::hex_bytes;
 
+pub(crate) enum EvidenceRuntimeProfile {
+    Development {
+        recovery_frontier: Option<(PathBuf, PathBuf)>,
+    },
+    Production {
+        descriptor: PathBuf,
+        signer_trust_file: PathBuf,
+    },
+}
+
 /// These modes have intentionally different trust-refresh semantics.
 enum EvidenceTrustMode {
     Development,
@@ -58,11 +68,9 @@ impl EvidenceHost {
     pub(crate) async fn open(
         identity: &AgentdIdentity,
         trust_file: PathBuf,
-        recovery_frontier: Option<(PathBuf, PathBuf)>,
+        profile: EvidenceRuntimeProfile,
     ) -> Result<Self, AgentdError> {
-        let production_profile = recovery_frontier.as_ref().is_some_and(|(path, _)| {
-            crate::evidence_production::is_production_evidence_profile(identity, path)
-        });
+        let production_profile = matches!(profile, EvidenceRuntimeProfile::Production { .. });
         let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
         let sqlite = SqliteConfig::from_sqlite_home(home);
         let preflight_snapshot = if production_profile {
@@ -99,14 +107,17 @@ impl EvidenceHost {
                 ));
             }
         }
-        let trust_mode = match recovery_frontier {
-            Some((frontier_or_config, signer_trust_file)) if production_profile => {
+        let trust_mode = match profile {
+            EvidenceRuntimeProfile::Production {
+                descriptor,
+                signer_trust_file,
+            } => {
                 let admitted_registry_sha256 =
                     crate::evidence_production::verify_production_evidence_frontier(
                         identity,
                         &store,
                         &trust_file,
-                        &frontier_or_config,
+                        &descriptor,
                         &signer_trust_file,
                     )
                     .await?;
@@ -121,7 +132,9 @@ impl EvidenceHost {
                     admitted_registry_sha256,
                 }
             }
-            Some((frontier, signer_trust_file)) => {
+            EvidenceRuntimeProfile::Development {
+                recovery_frontier: Some((frontier, signer_trust_file)),
+            } => {
                 crate::evidence_frontier::verify_evidence_recovery_frontier(
                     identity,
                     &store,
@@ -138,7 +151,9 @@ impl EvidenceHost {
                 .map_err(evidence_error)?;
                 EvidenceTrustMode::Development
             }
-            None => {
+            EvidenceRuntimeProfile::Development {
+                recovery_frontier: None,
+            } => {
                 VerifiedEvidenceTrustSnapshot::load_owner_registry(
                     &store,
                     &trust_file,
