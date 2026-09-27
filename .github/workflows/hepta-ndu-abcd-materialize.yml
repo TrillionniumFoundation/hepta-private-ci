@@ -1,0 +1,106 @@
+name: NDU A-stage exact source repair
+on:
+  push:
+    branches: [work/utility-ndu-abcd-convergence-20260928]
+    paths: [.github/workflows/hepta-ndu-abcd-materialize.yml]
+permissions:
+  contents: read
+concurrency:
+  group: ndu-abcd-stage-a
+  cancel-in-progress: false
+jobs:
+  materialize:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.source.outputs.sha }}
+      base: ${{ steps.source.outputs.base }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Apply reviewed patch, normalize source, and bind the staged tree
+        id: source
+        shell: bash
+        env:
+          REQUEST_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$REQUEST_SHA"
+          test "$(git hash-object scripts/ndu-remediation-stage-a.patch)" = 3c4b7cad3b61da153a8d20599b1941254f6ac386
+          BASE=$(git rev-parse origin/main)
+          git merge-base --is-ancestor "$BASE" HEAD
+          git apply --check scripts/ndu-remediation-stage-a.patch
+          git apply scripts/ndu-remediation-stage-a.patch
+          rm scripts/ndu-remediation-stage-a.patch
+          rm .github/workflows/hepta-ndu-abcd-materialize.yml
+          rm .github/workflows/hepta-ndu-abcd-source-export.yml
+          rm .github/workflows/hepta-ndu-final-regression-repair.yml
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-ndu
+          python3 scripts/test_hepta_ndu_source_policy.py
+          python3 scripts/test_hepta_ndu_map_integrity.py
+          python3 scripts/test_hepta_ndu_mounted_filesystem.py
+          git add -A
+          python3 scripts/hepta_ndu_map_integrity.py --rebind-index --candidate-branch "$GITHUB_REF_NAME" --baseline-main "$BASE"
+          git add docs/modules/utility.ndu/IMPLEMENTATION_MAP.json
+          git diff --cached --check
+          git config user.name hepta-ndu-remediation
+          git config user.email qualification@invalid
+          git commit -s -m 'fix(ndu): materialize lexical scanner, strict lint, and real EROFS recovery'
+          test -z "$(git status --porcelain --untracked-files=all)"
+          python3 scripts/hepta-ndu-implementation-map-closed-world.py --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
+  verify:
+    needs: materialize
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, synthetic-merge]
+        suite: [source, core, callers, product, lint, host]
+    env:
+      SOURCE_SHA: ${{ needs.materialize.outputs.sha }}
+      BASE_SHA: ${{ needs.materialize.outputs.base }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: true
+      CARGO_BUILD_JOBS: 2
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source or deterministic merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if [ '${{ matrix.lane }}' = synthetic-merge ]; then
+            TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+            export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            MERGE=$(printf '%s\n' 'Qualification only; no selection or release' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            git checkout --detach "$MERGE"
+          fi
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+          checksum: true
+      - name: Execute independent suite
+        run: python3 scripts/hepta-ndu-qualification.py --suite '${{ matrix.suite }}' --lane '${{ matrix.lane }}' --output '${{ runner.temp }}/ndu-${{ matrix.lane }}-${{ matrix.suite }}'
+      - name: Retain logs and exact-source receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-abcd-a-${{ matrix.lane }}-${{ matrix.suite }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/ndu-${{ matrix.lane }}-${{ matrix.suite }}/
+          if-no-files-found: error
+          retention-days: 30
