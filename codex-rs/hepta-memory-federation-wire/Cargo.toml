@@ -6,6 +6,8 @@ version = "0.0.0"
 publish = false
 
 [dependencies]
+codex-hepta-types = { path = "../hepta-types" }
+codex-hepta-wire = { path = "../hepta-wire" }
 hmac = "0.12.1"
 rand = "0.9"
 serde = { version = "1", features = ["derive"] }
@@ -15,6 +17,6 @@ thiserror = "2.0.17"
 zeroize = "1.8.2"
 
 # Keep the authenticated cross-host protocol independently buildable until a
-# product host explicitly composes it.  This prevents merely adding the protocol
+# product host explicitly composes it. This prevents merely adding the protocol
 # source from widening the existing in-process workspace/product claim.
 [workspace]
