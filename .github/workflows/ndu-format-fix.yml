@@ -1,0 +1,58 @@
+name: NDU one-shot rustfmt repair
+
+on:
+  push:
+    branches:
+      - codex/utility-ndu-production-hardening-20260926
+    paths:
+      - ".github/workflows/ndu-format-fix.yml"
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-agentd/src/ndu*.rs"
+      - "codex-rs/hepta-agent-protocol/src/ndu.rs"
+      - "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ndu-one-shot-rustfmt
+  cancel-in-progress: true
+
+jobs:
+  format-and-push:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/utility-ndu-production-hardening-20260926
+          fetch-depth: 0
+      - name: Format exact NDU qualification package set
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt \
+            --package codex-hepta-ndu \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-learning-artifacts \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-shadow-qualification \
+            --package codex-hepta-agentd \
+            --package codex-hepta-agent-protocol \
+            --package codex-hepta-contracts \
+            --package codex-hepta-control-plane
+      - name: Commit mechanical formatting only
+        run: |
+          set -euo pipefail
+          git diff --check
+          if git diff --quiet; then
+            echo "No formatting changes required"
+            exit 0
+          fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add codex-rs
+          git commit -m "style(ndu): apply qualification rustfmt"
+          git push origin HEAD:refs/heads/codex/utility-ndu-production-hardening-20260926
