@@ -230,10 +230,21 @@ def patch_docs() -> None:
         "After generation one, the durable candidate publishes through predecessor-bound `apply_incremental_delta`; every 64th generation must equal the independently assembled complete candidate byte-for-byte before the transaction may advance the selected pointer. The adapter still assembles the bounded complete physical source cut on ordinary writes to preserve the legacy physical output digest and reopen oracle. That remaining scan is explicit in benchmark receipts and must meet the target-host p95/p99, RSS and DB-growth budgets before production qualification.",
         "technical writer boundary",
     )
+    phase_one_summary = (
+        "The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md) specifies this module's algorithm and pilot ceilings. "
+        "The kernel now bounds aggregate supports, canonical digest input bytes, query seeds and relation kinds, and offers a once-validated generation-bound adjacency index for localized multi-seed reads. "
+        "After generation one, the durable candidate publishes through predecessor-bound `apply_incremental_delta`; every 64th generation must equal the independently assembled complete candidate byte-for-byte before the transaction may advance the selected pointer. "
+        "The adapter still assembles the bounded complete physical source cut on ordinary writes to preserve the legacy physical output digest and reopen oracle. "
+        "That remaining scan is explicit in benchmark receipts and must meet the target-host p95/p99, RSS and DB-growth budgets before production qualification."
+    )
     source = replace_once(
         source,
-        "The current durable writer deliberately performs one bounded complete-generation rebuild for each logical mutation; `apply_incremental_delta` remains the independent equivalence/reference path until measurements justify selecting it as the durable runtime algorithm.",
-        "The durable candidate now selects the predecessor-bound incremental kernel after bootstrap and performs a complete-rebuild oracle comparison every 64 generations. Physical source-cut assembly remains intentionally visible as a scale boundary until a separately qualified support-index cache removes it without changing reopen semantics.",
+        phase_one_summary,
+        "The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md) specifies this module's algorithm and pilot ceilings. "
+        "The kernel bounds aggregate supports, canonical digest input bytes, query seeds and relation kinds, and offers a once-validated generation-bound adjacency index for localized multi-seed reads. "
+        "After bootstrap, the durable candidate selects predecessor-bound incremental publication and performs a complete-rebuild oracle comparison every 64 generations. "
+        "Physical source-cut assembly remains intentionally visible as a scale boundary until a separately qualified support-index cache removes it without changing reopen semantics. "
+        "Target-host p95/p99, RSS and DB-growth receipts remain mandatory before production qualification.",
         "technical implementation summary",
     )
     TECHNICAL.write_text(source, encoding="utf-8")
