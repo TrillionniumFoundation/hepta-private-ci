@@ -14,9 +14,9 @@ doctest = false
 default = []
 # Only the named Agentd production host may compose the mutable durable owner.
 agentd-production-host = []
-# Qualification fixtures may inspect the raw backend explicitly; normal product
-# crates cannot enable this transitively.
-qualification-cognitive-write = []
+# Qualification fixtures extend the exact same host capability rather than
+# creating a second mutable-owner feature or product route.
+qualification-cognitive-write = ["agentd-production-host"]
 
 [lints]
 workspace = true
