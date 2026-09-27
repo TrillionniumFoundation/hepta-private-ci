@@ -367,3 +367,6 @@ fn uncertain_checkpoint_fences_unrelated_requests_and_current_reads() {
 #[cfg(unix)]
 #[path = "owner/service_crash_tests.rs"]
 mod process;
+
+#[path = "owner/drain_tests.rs"]
+mod drain;

@@ -2,7 +2,7 @@ name: Hepta learning.artifacts qualification
 
 on:
   push:
-    branches: [main, 'codex/learning-artifacts-qualification-recovery-*']
+    branches: [main, 'codex/learning-artifacts-qualification-recovery-*', 'codex/learning-artifacts-qualified-host-*']
   pull_request:
   merge_group:
   workflow_dispatch:
@@ -23,6 +23,7 @@ env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || inputs.base_commit }}
   PUSH_BEFORE: ${{ github.event.before }}
+  PYTHONDONTWRITEBYTECODE: '1'
 
 jobs:
   qualify:

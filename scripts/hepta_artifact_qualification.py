@@ -109,6 +109,7 @@ def execution_evidence(inventory: dict, xml: bytes) -> dict:
         cases = []
         for case in suite:
             if case.tag in ("properties", "system-out", "system-err"):
+                # Testcases hidden in metadata must not count as execution.
                 if any(node.tag == "testcase" for node in case.iter()):
                     raise ValueError("testcase hidden in JUnit metadata")
                 continue
@@ -248,6 +249,8 @@ def traceability(mapping: dict, execution: dict) -> list[dict]:
             if sep:
                 path += ".rs"
                 prefix = Path(path).stem.removesuffix("_tests")
+                # Module-scoped match: an identically named test in another
+                # binary or module is not evidence for this declaration.
                 matches = [row for row in identities if row["binaryId"] == PACKAGE
                            and path.startswith(SOURCE_ROOT + "/src/")
                            and row["testName"].startswith(prefix + "::")
@@ -265,6 +268,8 @@ def traceability(mapping: dict, execution: dict) -> list[dict]:
 
 def qualify(root: Path, out: Path, source: str, base: str, lane: str) -> int:
     out.mkdir(parents=True, exist_ok=False)
+    # Wrong source/parents/merge tree are never executed. A stale *map* does
+    # not suppress independent native gates, but permanently fails this run.
     binding = checkout_identity(root, source, base, lane)
     errors, execution = [], {}
     try:
@@ -290,6 +295,7 @@ def qualify(root: Path, out: Path, source: str, base: str, lane: str) -> int:
             for suffix in ("stdout", "stderr"):
                 with (out / f"{name}.{suffix}").open("rb") as stream:
                     stream.seek(max(0, os.fstat(stream.fileno()).st_size - 8192))
+                    # JSON escaping prevents log text from injecting workflow commands.
                     print(json.dumps({"gate": name, "stream": suffix,
                                       "failureTail": stream.read().decode("utf-8", "replace")}), flush=True)
     try:

@@ -65,6 +65,7 @@ pub struct LearningArtifactOwnerService {
     storage_binding: Digest32,
     request_identity: RequestIdentityVerifier,
     recovery_required: Option<StableId>,
+    draining: bool,
 }
 
 impl fmt::Debug for LearningArtifactOwnerService {
@@ -76,6 +77,7 @@ impl fmt::Debug for LearningArtifactOwnerService {
             .field("withdrawal_head", &self.withdrawal_registry.head_digest())
             .field("storage_binding", &self.storage_binding)
             .field("recovery_required", &self.recovery_required)
+            .field("draining", &self.draining)
             .finish()
     }
 }
@@ -126,6 +128,7 @@ impl LearningArtifactOwnerService {
             storage_binding: config.storage_binding,
             request_identity,
             recovery_required,
+            draining: false,
         })
     }
 
@@ -157,6 +160,25 @@ impl LearningArtifactOwnerService {
     #[must_use]
     pub fn recovery_required(&self) -> Option<&StableId> {
         self.recovery_required.as_ref()
+    }
+
+    /// Stop admitting new publications without releasing the writer fence.
+    ///
+    /// A known non-terminal operation may still be reconciled and exact
+    /// terminal retries may still read their historical DENY_ALL receipt.
+    /// There is no resume operation: a new serving lifetime requires reopening
+    /// and startup reconciliation. The embedding host owns durable stop intent
+    /// across process restarts and must keep its routes closed after a stop.
+    pub fn begin_drain(&mut self) {
+        self.draining = true;
+    }
+
+    /// True only after draining was requested and no uncertain operation is
+    /// retained. This is not a current-authority or deployment-readiness proof.
+    /// The writer fence remains held until the service is actually dropped.
+    #[must_use]
+    pub fn is_drained(&self) -> bool {
+        self.draining && self.recovery_required.is_none()
     }
 
     /// Install an authenticated newer withdrawal frontier. The service accepts
@@ -246,6 +268,13 @@ impl LearningArtifactOwnerService {
             }
         }
 
+        if self.draining && checkpoint.is_none() {
+            // Check before creating Prepared or touching any new payload path.
+            // Keeping recovery and historical receipt reads available does not
+            // allow an unrelated operation to reopen admission.
+            return Err(LearningArtifactOwnerServiceError::Draining);
+        }
+
         let predecessor = self
             .host
             .recover_registry_by_head(request.expected_registry_predecessor_head)?;
@@ -322,6 +351,7 @@ pub enum LearningArtifactOwnerServiceError {
     CheckpointShape,
     CheckpointMismatch,
     UnexpectedPhase,
+    Draining,
 }
 
 impl fmt::Display for LearningArtifactOwnerServiceError {

@@ -173,13 +173,13 @@
       "tests": [
         "codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs::named_owner_service_publishes_retries_and_reopens_from_current_head",
         "codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs::uncertain_checkpoint_fences_unrelated_requests_and_current_reads",
-        "codex-rs/hepta-learning-artifacts/src/owner/service_crash_tests.rs::sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion"
+        "owner_service::tests::process::sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion"
       ],
       "sourcePathExists": true,
       "designOperation": "authenticated_current_registry_view",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "7828f8873f0e5e01fe5440002dfbc13a9388b732"
+      "sourceBlob": "89fbce16465e9d234317104a7df5fc849db36849"
     },
     {
       "operation": "owner_writer_fence",
@@ -254,13 +254,13 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs::named_owner_service_publishes_retries_and_reopens_from_current_head",
-        "codex-rs/hepta-learning-artifacts/src/owner/service_crash_tests.rs::sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion"
+        "owner_service::tests::process::sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion"
       ],
       "sourcePathExists": true,
       "designOperation": "owner_service_open",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "7828f8873f0e5e01fe5440002dfbc13a9388b732"
+      "sourceBlob": "89fbce16465e9d234317104a7df5fc849db36849"
     },
     {
       "operation": "owner_service_publish",
@@ -272,13 +272,13 @@
         "codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs::named_owner_service_publishes_retries_and_reopens_from_current_head",
         "codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs::uncertain_checkpoint_fences_unrelated_requests_and_current_reads",
         "codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs::rejected_payload_before_prepare_leaves_no_checkpoint",
-        "codex-rs/hepta-learning-artifacts/src/owner/service_crash_tests.rs::sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion"
+        "owner_service::tests::process::sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion"
       ],
       "sourcePathExists": true,
       "designOperation": "owner_service_publish",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "7828f8873f0e5e01fe5440002dfbc13a9388b732"
+      "sourceBlob": "89fbce16465e9d234317104a7df5fc849db36849"
     },
     {
       "operation": "recover_current_registry",
@@ -364,11 +364,50 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourceBlob": "83bfc190f930409df01d099668370ad2d7578f7f"
+    },
+    {
+      "operation": "owner_service_drain",
+      "nativeSymbol": "LearningArtifactOwnerService::begin_drain",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "owner_service::tests::drain::drain_rejects_new_publication_without_creating_prepared",
+        "owner_service::tests::drain::drain_serves_exact_terminal_receipt_without_reopening_admission",
+        "owner_service::tests::drain::drain_resumes_only_pending_publication_and_keeps_writer_fence",
+        "owner_service::tests::drain::corrupt_checkpoint_never_becomes_drained"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_service_drain",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "89fbce16465e9d234317104a7df5fc849db36849"
+    },
+    {
+      "operation": "owner_service_drain_status",
+      "nativeSymbol": "LearningArtifactOwnerService::is_drained",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "owner_service::tests::drain::drain_rejects_new_publication_without_creating_prepared",
+        "owner_service::tests::drain::drain_serves_exact_terminal_receipt_without_reopening_admission",
+        "owner_service::tests::drain::drain_resumes_only_pending_publication_and_keeps_writer_fence",
+        "owner_service::tests::drain::corrupt_checkpoint_never_becomes_drained"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_service_drain_status",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "89fbce16465e9d234317104a7df5fc849db36849"
     }
   ],
-  "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate",
+  "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate; one-way service drain is a source candidate with native execution pending",
   "repositoryControlledGaps": [
-    "Execute exact unified-candidate source binding, build and owner recovery qualification after cross-family composition."
+    "Pass final exact-head and actual-base merge native qualification; skipped or historical jobs are not execution evidence.",
+    "Complete named authenticated transport, host lifecycle persistence, operational metrics and independently provisioned trust.",
+    "Close directory durability/capability-backed paths and qualify target filesystem power-loss behavior.",
+    "Complete native model/concurrency/fuzz/capacity/migration verification and per-requirement test traceability."
   ],
   "hostIntegrationRequirements": [
     "Persist ArtifactPublicationTransactionSnapshotV1 under the product writer fence before treating a phase as durable.",
@@ -451,12 +490,16 @@
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/hepta-learning-artifacts-qualification.yml",
+      "object": "e6893f1e59a04e4ab2a7b662f63e8f63efa2b967"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
       "object": "28e565a3569f9148e3d371b0150a02e14bf2fde4"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "ad64c4dd6331a6dcc1ded9f8fb18ff5bfbe9e49b"
+      "object": "1bc83cb7d5b618b0d2df747cd416847990aac84b"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
@@ -479,6 +522,10 @@
       "object": "afa6ee9f052def7d17e291bf0fcd4e483bf4e08f"
     },
     {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner/drain_tests.rs",
+      "object": "35bbb35f6902c4d07b8a5d24c32ad7e9be39b7a1"
+    },
+    {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/publication_recovery.rs",
       "object": "e0f4cc08e39fcdd311eb8c581481a0e547b6f73c"
     },
@@ -496,11 +543,11 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
-      "object": "7828f8873f0e5e01fe5440002dfbc13a9388b732"
+      "object": "89fbce16465e9d234317104a7df5fc849db36849"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs",
-      "object": "900aa7507e62d8ce4f3ea7dbdf01901e444576d7"
+      "object": "327420eca72030449329534e0b13123703c54a14"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
@@ -531,8 +578,20 @@
       "object": "35d784e64383f3cc30f19b3e3c79b8258d09688d"
     },
     {
+      "path": "docs/modules/learning.artifacts/INTEGRATION_RUNBOOK.md",
+      "object": "1a3eb75f5b5161f4431b9993985b544d03db6f0a"
+    },
+    {
       "path": "docs/modules/learning.artifacts/TECHNICAL.md",
       "object": "c693b6e0a78375b78e70d1243661819446c74fb7"
+    },
+    {
+      "path": "scripts/hepta_artifact_qualification.py",
+      "object": "a8be1b53ed0983bfc383ea7fc2904869663500f6"
+    },
+    {
+      "path": "scripts/test_hepta_artifact_qualification.py",
+      "object": "1c3c130795019fab9ab62663fc8ac9f1b26d7c1b"
     }
   ]
 }
