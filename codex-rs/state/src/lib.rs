@@ -10,6 +10,7 @@ const _: () = assert!(
 );
 
 mod audit;
+mod durable_sqlite;
 mod extract;
 pub mod log_db;
 mod migrations;
@@ -20,6 +21,7 @@ mod sqlite;
 mod sqlite_recovery;
 mod telemetry;
 
+pub use durable_sqlite::open_durable_evidence_pool_with_limit;
 pub use model::CreatedProject;
 pub use model::LogEntry;
 pub use model::LogQuery;
