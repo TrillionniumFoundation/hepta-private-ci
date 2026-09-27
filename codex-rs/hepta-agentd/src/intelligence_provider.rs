@@ -131,8 +131,10 @@ impl AgentdIntelligenceInvocationRegistryV1 {
     }
 
     #[must_use]
-    pub fn product_ready(&self) -> bool {
-        self.learning_host.is_some() && !self.profile_digest.is_zero()
+    pub fn is_product_ready(&self) -> bool {
+        self.learning_host.is_some()
+            && !self.profile_digest.is_zero()
+            && self.pending_len().is_ok()
     }
 
     #[must_use]
@@ -141,17 +143,29 @@ impl AgentdIntelligenceInvocationRegistryV1 {
     }
 }
 
+impl crate::intelligence_ingress::provider_sealed::Sealed
+    for AgentdIntelligenceInvocationRegistryV1
+{
+}
+
 impl AgentdIntelligenceInvocationProviderV1 for AgentdIntelligenceInvocationRegistryV1 {
     fn profile_digest(&self) -> Digest32 {
-        self.profile_digest
+        if self.is_product_ready() {
+            self.profile_digest
+        } else {
+            Digest32::ZERO
+        }
     }
 
     fn learning_host(&self) -> Option<Arc<AgentdIntelligenceLearningHostV1>> {
-        self.learning_host.clone()
+        self.is_product_ready()
+            .then(|| self.learning_host.as_ref().map(Arc::clone))
+            .flatten()
     }
 
     fn runtime_metrics(&self) -> Option<Arc<AgentdIntelligenceRuntimeMetricsV1>> {
-        Some(Arc::clone(&self.metrics))
+        self.is_product_ready()
+            .then(|| Arc::clone(&self.metrics))
     }
 
     fn pending_invocations(&self) -> Result<Option<usize>, AgentdError> {
@@ -163,6 +177,11 @@ impl AgentdIntelligenceInvocationProviderV1 for AgentdIntelligenceInvocationRegi
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
     ) -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
+        if !self.product_ready()? {
+            return Err(AgentdError::Invalid(
+                "canonical intelligence provider is not product-ready".to_string(),
+            ));
+        }
         let factory = self
             .pending
             .lock()
@@ -194,9 +213,9 @@ pub fn compose_canonical_intelligence_profile_v1(
     runner: Arc<AgentdIntelligenceProductRunnerV1>,
     provider: Arc<AgentdIntelligenceInvocationRegistryV1>,
 ) -> Result<AgentdConfig, AgentdError> {
-    if !provider.product_ready() {
+    if !provider.product_ready()? {
         return Err(AgentdError::Invalid(
-            "canonical intelligence product profile requires a durable learning owner"
+            "canonical intelligence product profile requires a durable learning owner, bounded registry and metrics"
                 .to_string(),
         ));
     }
@@ -213,8 +232,8 @@ mod tests {
         assert!(AgentdIntelligenceInvocationRegistryV1::new(Digest32::ZERO).is_err());
         let registry = AgentdIntelligenceInvocationRegistryV1::new(Digest32::of_bytes(b"profile"))
             .expect("registry");
-        assert!(!registry.product_ready());
-        assert!(registry.runtime_metrics().is_some());
+        assert!(!registry.is_product_ready());
+        assert!(registry.runtime_metrics().is_none());
         assert_eq!(registry.pending_invocations().unwrap(), Some(0));
         let run_id = StableId::new("run.provider").expect("run id");
         registry
