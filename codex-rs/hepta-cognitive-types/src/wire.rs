@@ -39,7 +39,12 @@ const MAX_ENVELOPE_OVERHEAD_BYTES: usize = 1_024;
 const DIGEST_DOMAIN_V1: &[u8] = b"hepta.cognitive.contract.canonical-json.v1\0";
 const BOUND_DIGEST_DOMAIN_V1: &[u8] = b"hepta.cognitive.contract.bound-digest.v1\0";
 
-pub trait CognitiveContractV1: Serialize + DeserializeOwned + Clone + Eq + PartialEq {
+/// Frozen wire inventory. Downstream code cannot register a look-alike type.
+/// Raw encode/digest helpers validate before use; production handoffs should
+/// retain `Validated<T>` so unchecked or subsequently mutated values cannot enter.
+pub trait CognitiveContractV1:
+    crate::wire_semantics::Sealed + Serialize + DeserializeOwned + Clone + Eq + PartialEq
+{
     const CONTRACT_ID: &'static str;
     const SCHEMA_ID: &'static str;
     const MAX_ENCODED_BYTES: usize;
@@ -66,7 +71,9 @@ macro_rules! impl_contract {
             const MAX_ENCODED_BYTES: usize = $maximum;
 
             fn validate_contract(&self) -> Result<(), HnmfContractError> {
-                ($validate)(self)
+                crate::wire_semantics::validate_serialized_bound(self, Self::MAX_ENCODED_BYTES)?;
+                ($validate)(self)?;
+                crate::wire_semantics::Sealed::validate_semantics(self)
             }
         }
     };
@@ -166,15 +173,6 @@ struct CognitiveWireEnvelopeV1<T> {
     payload: T,
 }
 
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct CognitiveWireEnvelopeRefV1<'a, T> {
-    schema: &'static str,
-    schema_version: u32,
-    contract: &'static str,
-    payload: &'a T,
-}
-
 pub fn encode_payload_canonical_v1<T: CognitiveContractV1>(
     value: &T,
 ) -> Result<Vec<u8>, CognitiveWireError> {
@@ -192,20 +190,24 @@ pub fn encode_payload_canonical_v1<T: CognitiveContractV1>(
 }
 
 pub fn encode_wire_v1<T: CognitiveContractV1>(value: &T) -> Result<Vec<u8>, CognitiveWireError> {
-    encode_payload_canonical_v1(value)?;
-    let envelope = CognitiveWireEnvelopeRefV1 {
-        schema: T::SCHEMA_ID,
-        schema_version: COGNITIVE_WIRE_VERSION_V1,
-        contract: T::CONTRACT_ID,
-        payload: value,
-    };
-    let encoded = canonical_json_bytes(&envelope)?;
+    let payload = encode_payload_canonical_v1(value)?;
+    encode_envelope_payload::<T>(&payload)
+}
+
+// The four envelope keys have a frozen lexical order. Reuse the already
+// canonical payload instead of serializing/parsing it a second time.
+fn encode_envelope_payload<T: CognitiveContractV1>(payload: &[u8]) -> Result<Vec<u8>, CognitiveWireError> {
     let maximum = T::MAX_ENCODED_BYTES + MAX_ENVELOPE_OVERHEAD_BYTES;
+    let mut encoded = Vec::with_capacity(payload.len().saturating_add(256).min(maximum));
+    encoded.extend_from_slice(b"{\"contract\":");
+    serde_json::to_writer(&mut encoded, T::CONTRACT_ID).map_err(CognitiveWireError::Json)?;
+    encoded.extend_from_slice(b",\"payload\":");
+    encoded.extend_from_slice(payload);
+    encoded.extend_from_slice(b",\"schema\":");
+    serde_json::to_writer(&mut encoded, T::SCHEMA_ID).map_err(CognitiveWireError::Json)?;
+    encoded.extend_from_slice(b",\"schemaVersion\":1}");
     if encoded.len() > maximum {
-        return Err(CognitiveWireError::EnvelopeLength {
-            actual: encoded.len(),
-            maximum,
-        });
+        return Err(CognitiveWireError::EnvelopeLength { actual: encoded.len(), maximum });
     }
     Ok(encoded)
 }
@@ -240,7 +242,7 @@ pub fn decode_wire_v1<T: CognitiveContractV1>(bytes: &[u8]) -> Result<T, Cogniti
             maximum: T::MAX_ENCODED_BYTES,
         });
     }
-    let canonical = canonical_json_bytes(&envelope)?;
+    let canonical = encode_envelope_payload::<T>(&payload)?;
     if canonical.as_slice() != bytes {
         return Err(CognitiveWireError::NonCanonicalInput);
     }
@@ -252,6 +254,18 @@ pub fn decode_validated_wire_v1<T: CognitiveContractV1>(
 ) -> Result<Validated<T>, CognitiveWireError> {
     let value = decode_wire_v1(bytes)?;
     Validated::new(value).map_err(CognitiveWireError::Contract)
+}
+
+/// Read-only checked handles retain the frozen inventory and never expose
+/// mutable access. Legacy helpers below remain validating compatibility APIs.
+impl<T: CognitiveContractV1> Validated<T> {
+    pub fn encode_wire(&self) -> Result<Vec<u8>, CognitiveWireError> {
+        encode_wire_v1(self.as_inner())
+    }
+
+    pub fn bound_digest(&self) -> Result<Digest32, CognitiveWireError> {
+        canonical_contract_digest_bound_v1(self.as_inner())
+    }
 }
 
 /// Canonical V1 digest for one validated contract payload. The contract name is

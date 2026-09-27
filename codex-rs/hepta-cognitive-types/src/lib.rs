@@ -11,6 +11,13 @@ pub mod hnmf;
 pub mod hnmf_learning;
 pub mod lane_c;
 pub mod wire;
+mod wire_semantics;
+pub mod transitions;
+pub mod handoff;
+
+#[cfg(test)]
+#[path = "closure_tests.rs"]
+mod closure_tests;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;

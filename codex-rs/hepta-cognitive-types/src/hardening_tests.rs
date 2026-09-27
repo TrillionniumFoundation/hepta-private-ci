@@ -240,6 +240,8 @@ struct TextProbeV1 {
     value: String,
 }
 
+impl crate::wire_semantics::Sealed for TextProbeV1 {}
+
 impl CognitiveContractV1 for TextProbeV1 {
     const CONTRACT_ID: &'static str = "hepta.test.text-probe.v1";
     const SCHEMA_ID: &'static str = "hepta.test.text-probe.schema.v1";
