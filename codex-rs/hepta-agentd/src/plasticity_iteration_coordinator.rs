@@ -1,16 +1,17 @@
 //! control.engineering-owned self-iteration coordination for governed plasticity.
 //!
-//! This is the non-test product caller between `IterationEnvelopeV1` and the
-//! state-held `AgentdLearningPlasticityProducerV1`.  It freezes and validates the
-//! exact envelope/model context, regenerates parameter candidates, accounts for
-//! generator coverage, requires independent evidence already carried by the product
-//! request, and submits only through `AgentdState`.  It never owns a registry writer,
+//! This is the non-test product caller between `IterationEnvelopeV1` and the named
+//! `AgentdLearningPlasticityProducerV1`. It freezes and validates the exact
+//! envelope/model context, regenerates parameter candidates, accounts for generator
+//! coverage, requires independent evidence already carried by the product request,
+//! submits through the bounded Agentd owner, and durably records the terminal result
+//! in a separate control.engineering journal. It never owns a proposal writer,
 //! selects a candidate, activates an artifact, applies topology, promotes or releases.
 
 use std::error::Error as StdError;
 use std::fmt;
-use std::future::Future;
-use std::time::Duration;
+use std::sync::Arc;
+use std::sync::Mutex;
 
 use codex_hepta_intelligence::ParameterPlasticityDispositionV1;
 use codex_hepta_intelligence::ParameterPlasticityProductReceiptV1;
@@ -19,7 +20,6 @@ use codex_hepta_intelligence::TopologyPlasticityProductReceiptV1;
 use codex_hepta_intelligence::TopologyPlasticityProductRequestV1;
 use codex_hepta_intelligence::topology_generation_signing_payload_v1;
 use codex_hepta_learning_artifacts::IterationEnvelopeV1;
-use codex_hepta_plasticity::AppendDisposition;
 use codex_hepta_plasticity::GeneratorCoverageDispositionV1;
 use codex_hepta_plasticity::GeneratorCoverageErrorV1;
 use codex_hepta_plasticity::GeneratorCoverageReceiptV1;
@@ -30,9 +30,18 @@ use codex_hepta_plasticity::generate_parameter_candidates_v3;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use tokio_util::sync::CancellationToken;
 
-use crate::AgentdState;
+use crate::AgentdLearningPlasticityProducerV1;
+use crate::ControlEngineeringPlasticityJournalV1;
+use crate::PersistedPlasticityIterationReceiptV1;
+use crate::PlasticityIterationJournalErrorV1;
+use crate::PlasticityIterationKindV1;
+use crate::PlasticityIterationTerminalReceiptV1;
+use crate::PlasticityIterationTerminalV1;
 use crate::PlasticityRuntimeCallErrorV1;
+use crate::PlasticityRuntimeHandleV1;
+use crate::build_terminal_receipt_v1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ParameterPlasticityIterationV1 {
@@ -46,67 +55,11 @@ pub struct ParameterPlasticityIterationV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TopologyPlasticityIterationV1 {
     pub envelope: IterationEnvelopeV1,
-    /// Exact structural grammar selected by control.engineering.  It must equal the
+    /// Exact structural grammar selected by control.engineering. It must equal the
     /// envelope grammar and is additionally bound into the terminal receipt.
     pub structural_grammar_digest: Digest32,
     pub request: TopologyPlasticityProductRequestV1,
     pub deadline_unix_seconds: u64,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum PlasticityIterationKindV1 {
-    Parameter,
-    Topology,
-}
-
-impl PlasticityIterationKindV1 {
-    const fn tag(self) -> u8 {
-        match self {
-            Self::Parameter => 0,
-            Self::Topology => 1,
-        }
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum PlasticityIterationTerminalV1 {
-    UpdateCandidates,
-    NoAdmissibleUpdate,
-    ZeroEligibleSignals,
-    PolicyDisabledUpdates,
-    TopologyCandidates,
-    NoTopologyChange,
-}
-
-impl PlasticityIterationTerminalV1 {
-    const fn tag(self) -> u8 {
-        match self {
-            Self::UpdateCandidates => 0,
-            Self::NoAdmissibleUpdate => 1,
-            Self::ZeroEligibleSignals => 2,
-            Self::PolicyDisabledUpdates => 3,
-            Self::TopologyCandidates => 4,
-            Self::NoTopologyChange => 5,
-        }
-    }
-}
-
-/// Terminal identity anchored by the proposal registry frame.  The exact receipt is
-/// reconstructible from the stored proposal, the independently retained registry
-/// anchor and the frozen envelope/coverage inputs; no second proposal writer exists.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct PlasticityIterationTerminalReceiptV1 {
-    pub envelope_digest: Digest32,
-    pub proposal_id: StableId,
-    pub candidate_generation: Generation,
-    pub kind: PlasticityIterationKindV1,
-    pub terminal: PlasticityIterationTerminalV1,
-    pub coverage_digest: Option<Digest32>,
-    pub durable_sequence: u64,
-    pub durable_frame_digest: Digest32,
-    pub product_composition_digest: Digest32,
-    pub idempotent_replay: bool,
-    pub receipt_digest: Digest32,
 }
 
 #[derive(Debug)]
@@ -121,6 +74,8 @@ pub enum ControlEngineeringPlasticityErrorV1 {
     Coverage(GeneratorCoverageErrorV1),
     Generator(ParameterGeneratorErrorV3),
     Runtime(PlasticityRuntimeCallErrorV1),
+    Journal(PlasticityIterationJournalErrorV1),
+    JournalWorkerFailed,
     TerminalMismatch,
 }
 
@@ -145,17 +100,61 @@ impl From<PlasticityRuntimeCallErrorV1> for ControlEngineeringPlasticityErrorV1 
         Self::Runtime(value)
     }
 }
+impl From<PlasticityIterationJournalErrorV1> for ControlEngineeringPlasticityErrorV1 {
+    fn from(value: PlasticityIterationJournalErrorV1) -> Self {
+        Self::Journal(value)
+    }
+}
 
-#[derive(Clone, Copy, Debug, Default)]
-pub struct ControlEngineeringPlasticityCoordinatorV1;
+/// Public control.engineering façade over the named Agentd producer and a separate
+/// terminal journal. The façade contains no proposal writer or trust root.
+#[derive(Clone)]
+pub struct ControlEngineeringPlasticityCoordinatorV1 {
+    producer: AgentdLearningPlasticityProducerV1,
+    journal: Arc<Mutex<ControlEngineeringPlasticityJournalV1>>,
+}
 
 impl ControlEngineeringPlasticityCoordinatorV1 {
-    pub(crate) async fn submit_parameter(
+    pub fn new(
+        handle: PlasticityRuntimeHandleV1,
+        journal: ControlEngineeringPlasticityJournalV1,
+    ) -> Self {
+        Self {
+            producer: AgentdLearningPlasticityProducerV1::new(handle),
+            journal: Arc::new(Mutex::new(journal)),
+        }
+    }
+
+    pub fn from_shared_journal(
+        handle: PlasticityRuntimeHandleV1,
+        journal: Arc<Mutex<ControlEngineeringPlasticityJournalV1>>,
+    ) -> Self {
+        Self {
+            producer: AgentdLearningPlasticityProducerV1::new(handle),
+            journal,
+        }
+    }
+
+    #[must_use]
+    pub fn journal(&self) -> Arc<Mutex<ControlEngineeringPlasticityJournalV1>> {
+        Arc::clone(&self.journal)
+    }
+
+    pub async fn submit_parameter(
         &self,
-        state: &AgentdState,
+        iteration: ParameterPlasticityIterationV1,
+        now: u64,
+    ) -> Result<PersistedPlasticityIterationReceiptV1, ControlEngineeringPlasticityErrorV1> {
+        self.submit_parameter_with_control(iteration, now, CancellationToken::new())
+            .await
+    }
+
+    pub async fn submit_parameter_with_control(
+        &self,
         mut iteration: ParameterPlasticityIterationV1,
         now: u64,
-    ) -> Result<PlasticityIterationTerminalReceiptV1, ControlEngineeringPlasticityErrorV1> {
+        cancellation: CancellationToken,
+    ) -> Result<PersistedPlasticityIterationReceiptV1, ControlEngineeringPlasticityErrorV1> {
         let envelope_digest = validate_envelope_and_deadline(
             &iteration.envelope,
             iteration.deadline_unix_seconds,
@@ -216,21 +215,34 @@ impl ControlEngineeringPlasticityCoordinatorV1 {
             ));
         }
 
-        let product = run_before_deadline(
-            iteration.deadline_unix_seconds,
-            now,
-            state.submit_parameter_plasticity_v1(iteration.request, now),
-        )
-        .await??;
-        parameter_terminal_receipt(envelope_digest, coverage, product)
+        let product = self
+            .producer
+            .submit_parameter_with_control(
+                iteration.request,
+                now,
+                iteration.deadline_unix_seconds,
+                cancellation,
+            )
+            .await?;
+        let terminal = parameter_terminal_receipt(envelope_digest, coverage, product)?;
+        self.persist_terminal(terminal).await
     }
 
-    pub(crate) async fn submit_topology(
+    pub async fn submit_topology(
         &self,
-        state: &AgentdState,
         iteration: TopologyPlasticityIterationV1,
         now: u64,
-    ) -> Result<PlasticityIterationTerminalReceiptV1, ControlEngineeringPlasticityErrorV1> {
+    ) -> Result<PersistedPlasticityIterationReceiptV1, ControlEngineeringPlasticityErrorV1> {
+        self.submit_topology_with_control(iteration, now, CancellationToken::new())
+            .await
+    }
+
+    pub async fn submit_topology_with_control(
+        &self,
+        iteration: TopologyPlasticityIterationV1,
+        now: u64,
+        cancellation: CancellationToken,
+    ) -> Result<PersistedPlasticityIterationReceiptV1, ControlEngineeringPlasticityErrorV1> {
         let envelope_digest = validate_envelope_and_deadline(
             &iteration.envelope,
             iteration.deadline_unix_seconds,
@@ -262,13 +274,37 @@ impl ControlEngineeringPlasticityCoordinatorV1 {
             ));
         }
 
-        let product = run_before_deadline(
-            iteration.deadline_unix_seconds,
-            now,
-            state.submit_topology_plasticity_v1(iteration.request, now),
-        )
-        .await??;
-        topology_terminal_receipt(envelope_digest, product)
+        let product = self
+            .producer
+            .submit_topology_with_control(
+                iteration.request,
+                now,
+                iteration.deadline_unix_seconds,
+                cancellation,
+            )
+            .await?;
+        let terminal = topology_terminal_receipt(envelope_digest, product)?;
+        self.persist_terminal(terminal).await
+    }
+
+    async fn persist_terminal(
+        &self,
+        terminal: PlasticityIterationTerminalReceiptV1,
+    ) -> Result<PersistedPlasticityIterationReceiptV1, ControlEngineeringPlasticityErrorV1> {
+        let journal = Arc::clone(&self.journal);
+        let persisted_terminal = terminal.clone();
+        let append = tokio::task::spawn_blocking(move || {
+            let mut journal = journal
+                .lock()
+                .map_err(|_| PlasticityIterationJournalErrorV1::Poisoned)?;
+            journal.append(persisted_terminal)
+        })
+        .await
+        .map_err(|_| ControlEngineeringPlasticityErrorV1::JournalWorkerFailed)??;
+        Ok(PersistedPlasticityIterationReceiptV1 {
+            terminal,
+            journal: append,
+        })
     }
 }
 
@@ -360,22 +396,6 @@ fn validate_envelope_and_deadline(
     Ok(digest)
 }
 
-async fn run_before_deadline<F, T>(
-    deadline: u64,
-    now: u64,
-    future: F,
-) -> Result<T, ControlEngineeringPlasticityErrorV1>
-where
-    F: Future<Output = T>,
-{
-    let remaining = deadline
-        .checked_sub(now)
-        .ok_or(ControlEngineeringPlasticityErrorV1::InvalidDeadline)?;
-    tokio::time::timeout(Duration::from_secs(remaining), future)
-        .await
-        .map_err(|_| ControlEngineeringPlasticityErrorV1::InvalidDeadline)
-}
-
 fn parameter_terminal_receipt(
     envelope_digest: Digest32,
     coverage: GeneratorCoverageReceiptV1,
@@ -406,7 +426,7 @@ fn parameter_terminal_receipt(
         ) => PlasticityIterationTerminalV1::PolicyDisabledUpdates,
         _ => return Err(ControlEngineeringPlasticityErrorV1::TerminalMismatch),
     };
-    build_terminal_receipt(
+    Ok(build_terminal_receipt_v1(
         envelope_digest,
         product.proposal.proposal_id,
         product.proposal.candidate_generation,
@@ -416,8 +436,8 @@ fn parameter_terminal_receipt(
         product.registry.sequence,
         product.registry.frame_digest,
         product.composition_digest,
-        product.registry.disposition == AppendDisposition::Unchanged,
-    )
+        false,
+    )?)
 }
 
 fn topology_terminal_receipt(
@@ -441,7 +461,7 @@ fn topology_terminal_receipt(
     } else {
         PlasticityIterationTerminalV1::NoTopologyChange
     };
-    build_terminal_receipt(
+    Ok(build_terminal_receipt_v1(
         envelope_digest,
         product.governed.proposal.proposal_id,
         product.governed.proposal.candidate_generation,
@@ -451,68 +471,8 @@ fn topology_terminal_receipt(
         product.durable.sequence,
         product.durable.frame_digest,
         product.composition_digest,
-        product.durable.disposition == AppendDisposition::Unchanged,
-    )
-}
-
-#[allow(clippy::too_many_arguments)]
-fn build_terminal_receipt(
-    envelope_digest: Digest32,
-    proposal_id: StableId,
-    candidate_generation: Generation,
-    kind: PlasticityIterationKindV1,
-    terminal: PlasticityIterationTerminalV1,
-    coverage_digest: Option<Digest32>,
-    durable_sequence: u64,
-    durable_frame_digest: Digest32,
-    product_composition_digest: Digest32,
-    idempotent_replay: bool,
-) -> Result<PlasticityIterationTerminalReceiptV1, ControlEngineeringPlasticityErrorV1> {
-    if durable_sequence == 0
-        || durable_frame_digest.is_zero()
-        || product_composition_digest.is_zero()
-        || coverage_digest.is_some_and(|digest| digest.is_zero())
-    {
-        return Err(ControlEngineeringPlasticityErrorV1::TerminalMismatch);
-    }
-    let mut receipt = PlasticityIterationTerminalReceiptV1 {
-        envelope_digest,
-        proposal_id,
-        candidate_generation,
-        kind,
-        terminal,
-        coverage_digest,
-        durable_sequence,
-        durable_frame_digest,
-        product_composition_digest,
-        idempotent_replay,
-        receipt_digest: Digest32::ZERO,
-    };
-    receipt.receipt_digest = digest_terminal_receipt(&receipt)?;
-    Ok(receipt)
-}
-
-fn digest_terminal_receipt(
-    receipt: &PlasticityIterationTerminalReceiptV1,
-) -> Result<Digest32, ControlEngineeringPlasticityErrorV1> {
-    let mut bytes = b"hepta.control-engineering.plasticity-terminal-receipt.v1\0".to_vec();
-    bytes.extend_from_slice(receipt.envelope_digest.as_array());
-    push_id(&mut bytes, &receipt.proposal_id)?;
-    bytes.extend_from_slice(&receipt.candidate_generation.get().to_be_bytes());
-    bytes.push(receipt.kind.tag());
-    bytes.push(receipt.terminal.tag());
-    match receipt.coverage_digest {
-        Some(digest) => {
-            bytes.push(1);
-            bytes.extend_from_slice(digest.as_array());
-        }
-        None => bytes.push(0),
-    }
-    bytes.extend_from_slice(&receipt.durable_sequence.to_be_bytes());
-    bytes.extend_from_slice(receipt.durable_frame_digest.as_array());
-    bytes.extend_from_slice(receipt.product_composition_digest.as_array());
-    bytes.push(u8::from(receipt.idempotent_replay));
-    Ok(Digest32::of_bytes(&bytes))
+        false,
+    )?)
 }
 
 fn push_id(
