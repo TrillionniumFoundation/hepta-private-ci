@@ -21,7 +21,7 @@ env:
 jobs:
   probe:
     name: Exact candidate source qualification
-    runs-on: macos-15
+    runs-on: macos-15-intel
     timeout-minutes: 60
     steps:
       - name: Checkout exact PR candidate
