@@ -9,12 +9,12 @@ permissions:
 
 concurrency:
   group: kernel-evidence-closure-${{ github.event.pull_request.number }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   drive:
     if: ${{ github.head_ref == 'fix/kernel-evidence-production-closure' }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 125
     steps:
       - name: Check out closure branch
