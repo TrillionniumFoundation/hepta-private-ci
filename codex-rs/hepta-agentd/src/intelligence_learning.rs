@@ -1,16 +1,20 @@
 //! Durable product Decision/Outcome closure for canonical intelligence.
 //!
 //! The product path uses the sole `learning.ledger::LedgerWriter`; the legacy
-//! qualification append seam is not promoted.  Before a ledger mutation can be
+//! qualification append seam is not promoted. Before a ledger mutation can be
 //! attempted, an immutable payload is synced to disk and a `kernel.operations`
-//! intent/outbox row is committed.  Unknown effects are reconciled by replaying
-//! the exact payload and original ledger predecessor through the idempotent
-//! product writer.  A new logical event is never synthesized during recovery.
+//! intent/outbox row is committed. Unknown effects are reconciled by observing
+//! the destination first and otherwise replaying the exact payload and original
+//! ledger predecessor through the idempotent product writer. A new logical event
+//! is never synthesized during recovery. The enqueue/admission time retained in
+//! the payload is historical audit data; every first application or replay uses
+//! a fresh product-owned clock observation for evidence validity.
 
 use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -18,6 +22,8 @@ use std::str::FromStr;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseError;
@@ -72,7 +78,27 @@ const LEARNING_PAYLOAD_SCHEMA_VERSION: u32 = 2;
 const LEARNING_DESTINATION_ID: &str = "learning.ledger";
 const MAX_LEARNING_PAYLOAD_BYTES: usize = 1_048_576;
 const CLAIM_LEASE: Duration = Duration::from_secs(30);
+const GRANT_RETRY_DELAY: Duration = Duration::from_secs(1);
 const MAX_RECONCILE_BATCH: u32 = 256;
+
+/// Product-owned time source for evidence validity. Values use Unix seconds,
+/// matching learning-ledger evidence/principal validity fields. Tests and
+/// embeddings with a governed clock can inject an implementation explicitly.
+pub trait AgentdIntelligenceLearningClockV1: Send + Sync {
+    fn now(&self) -> Result<u64, AgentdIntelligenceLearningErrorV1>;
+}
+
+#[derive(Default)]
+pub struct SystemAgentdIntelligenceLearningClockV1;
+
+impl AgentdIntelligenceLearningClockV1 for SystemAgentdIntelligenceLearningClockV1 {
+    fn now(&self) -> Result<u64, AgentdIntelligenceLearningErrorV1> {
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|duration| duration.as_secs())
+            .map_err(|error| AgentdIntelligenceLearningErrorV1::Clock(error.to_string()))
+    }
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum AgentdIntelligenceLearningDispositionV1 {
@@ -97,6 +123,7 @@ pub struct AgentdIntelligenceDecisionAppendV1 {
     pub policy_digest: Digest32,
     pub completeness: CandidateSetCompletenessReceiptV1,
     pub evidence: SignedLearningEvidenceV1,
+    /// Current evidence-validation time at enqueue/direct-append admission.
     pub now: u64,
 }
 
@@ -109,6 +136,7 @@ pub struct AgentdIntelligenceOutcomeAppendV1 {
     pub provider_terminal_digest: Digest32,
     pub outcome: AuthenticatedOutcomeV1,
     pub evidence: SignedLearningEvidenceV1,
+    /// Current evidence-validation time at enqueue/direct-append admission.
     pub now: u64,
 }
 
@@ -118,6 +146,7 @@ pub enum AgentdIntelligenceLearningErrorV1 {
     InvalidValue(String),
     Io(String),
     Json(String),
+    Clock(String),
     Operation(DurableOperationError),
     Authority(FinalUseError),
     Ledger(ProductionLedgerError),
@@ -240,28 +269,32 @@ pub fn intelligence_run_snapshot_digest_v1(
 }
 
 /// Formal product Decision append. This path is available in the default build
-/// and admits only through `LedgerWriter`.
+/// and admits only through `LedgerWriter`. Direct calls use the caller-supplied
+/// current time for both admission and immediate application.
 pub fn append_intelligence_decision_v1(
     writer: &mut LedgerWriter,
     prepared: &PreparedAgentdIntelligenceRunV1,
     request: AgentdIntelligenceDecisionAppendV1,
 ) -> Result<AppendReceipt, AgentdIntelligenceLearningErrorV1> {
+    let validation_now = request.now;
     let payload = decision_payload(writer, prepared, request)?;
-    apply_decision(writer, &payload).map_err(Into::into)
+    apply_decision(writer, &payload, validation_now).map_err(Into::into)
 }
 
 /// Formal product Outcome append bound to the same Decision, candidate,
-/// snapshot and observed physical terminal run.
+/// snapshot and observed physical terminal run. Direct calls use the supplied
+/// current time; durable recovery always obtains a fresh time from the host.
 pub fn append_intelligence_outcome_v1(
     writer: &mut LedgerWriter,
     prepared: &PreparedAgentdIntelligenceRunV1,
     request: AgentdIntelligenceOutcomeAppendV1,
 ) -> Result<AppendReceipt, AgentdIntelligenceLearningErrorV1> {
+    let validation_now = request.now;
     let payload = outcome_payload(writer, prepared, request)?;
-    apply_outcome(writer, &payload).map_err(Into::into)
+    apply_outcome(writer, &payload, validation_now).map_err(Into::into)
 }
 
-/// Durable product host.  Payload files are immutable sidecars; logical state,
+/// Durable product host. Payload files are immutable sidecars; logical state,
 /// leasing, fencing and terminal reconciliation are owned by kernel.operations.
 pub struct AgentdIntelligenceLearningHostV1 {
     operations: DurableOperationStore,
@@ -272,6 +305,7 @@ pub struct AgentdIntelligenceLearningHostV1 {
     authority: FinalUseAuthority,
     grants: Arc<dyn AgentdFinalUseGrantProvider>,
     writer: Mutex<LedgerWriter>,
+    clock: Arc<dyn AgentdIntelligenceLearningClockV1>,
 }
 
 impl AgentdIntelligenceLearningHostV1 {
@@ -284,11 +318,34 @@ impl AgentdIntelligenceLearningHostV1 {
         worker_id: StableId,
         generation: Generation,
     ) -> Result<Self, AgentdIntelligenceLearningErrorV1> {
+        Self::open_with_clock(
+            root,
+            writer,
+            authority,
+            grants,
+            worker_id,
+            generation,
+            Arc::new(SystemAgentdIntelligenceLearningClockV1),
+        )
+        .await
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub async fn open_with_clock(
+        root: &Path,
+        writer: LedgerWriter,
+        authority: FinalUseAuthority,
+        grants: Arc<dyn AgentdFinalUseGrantProvider>,
+        worker_id: StableId,
+        generation: Generation,
+        clock: Arc<dyn AgentdIntelligenceLearningClockV1>,
+    ) -> Result<Self, AgentdIntelligenceLearningErrorV1> {
         if !root.is_absolute() {
             return Err(AgentdIntelligenceLearningErrorV1::Invalid(
                 "learning outbox root must be absolute",
             ));
         }
+        let _ = clock.now()?;
         ensure_private_directory(root)?;
         let payload_root = root.join("payloads");
         ensure_private_directory(&payload_root)?;
@@ -304,6 +361,7 @@ impl AgentdIntelligenceLearningHostV1 {
             authority,
             grants,
             writer: Mutex::new(writer),
+            clock,
         })
     }
 
@@ -386,7 +444,8 @@ impl AgentdIntelligenceLearningHostV1 {
     }
 
     /// Dispatch one queued Decision/Outcome through final-use authority and the
-    /// sole product writer. Returns `None` when no queued operation exists.
+    /// sole product writer. Temporary grant-provider failure releases the claim
+    /// with bounded retry instead of terminating the daemon reconciler.
     pub async fn dispatch_next(
         &self,
     ) -> Result<Option<AgentdIntelligenceLearningReceiptV1>, AgentdIntelligenceLearningErrorV1>
@@ -405,9 +464,29 @@ impl AgentdIntelligenceLearningHostV1 {
         };
         let payload = self.load_payload(claim.intent.payload_digest)?;
         validate_claim_payload(&claim.intent, &payload)?;
-        let signed = self
+        let validation_now = self.clock.now()?;
+        let signed = match self
             .grants
-            .signed_grant(&claim.intent.final_use_binding())?;
+            .signed_grant(&claim.intent.final_use_binding())
+        {
+            Ok(signed) => signed,
+            Err(error) => {
+                let evidence_digest = grant_provider_error_digest(&error);
+                self.operations
+                    .release_not_dispatched(
+                        &claim,
+                        evidence_digest,
+                        GRANT_RETRY_DELAY,
+                    )
+                    .await?;
+                return Ok(Some(AgentdIntelligenceLearningReceiptV1 {
+                    operation_id: claim.intent.operation_id,
+                    disposition: AgentdIntelligenceLearningDispositionV1::Indeterminate,
+                    evidence_digest,
+                    append: None,
+                }));
+            }
+        };
         let authorized = self
             .operations
             .authorize_dispatch(&self.authority, &signed, &claim)
@@ -416,7 +495,9 @@ impl AgentdIntelligenceLearningHostV1 {
             .operations
             .execute_authorized(authorized, |_| {
                 let applied = match self.writer.lock() {
-                    Ok(mut writer) => classify_apply(apply_payload(&mut writer, &payload)),
+                    Ok(mut writer) => {
+                        classify_apply(apply_payload(&mut writer, &payload, validation_now))
+                    }
                     Err(_) => ApplyObservation::Indeterminate(Digest32::of_bytes(
                         b"hepta.agentd.intelligence-learning.writer-poisoned.v1",
                     )),
@@ -450,7 +531,7 @@ impl AgentdIntelligenceLearningHostV1 {
     /// restart. The destination is observed first. If the exact event is already
     /// present, the operation is acknowledged without consuming new authority.
     /// Otherwise the exact payload/original predecessor may be replayed only
-    /// behind a fresh final-use grant for the adopted operation generation.
+    /// behind a fresh final-use grant and fresh evidence-validity time.
     pub async fn reconcile_unsettled(
         &self,
         limit: u32,
@@ -479,22 +560,27 @@ impl AgentdIntelligenceLearningHostV1 {
             };
             let payload = self.load_payload(record.intent.payload_digest)?;
             validate_claim_payload(&record.intent, &payload)?;
+            let validation_now = self.clock.now()?;
             let observation = match self.writer.lock() {
                 Ok(mut writer) => match observe_applied_payload(&writer, &payload) {
                     Ok(Some(receipt)) => ApplyObservation::Acknowledged(receipt),
                     Ok(None) => {
                         let binding = record.intent.final_use_binding();
-                        let signed = self.grants.signed_grant(&binding)?;
-                        match claim_final_use(&self.authority, &signed, &binding) {
-                            Ok(token) => {
-                                match dispatch_final_use(&self.authority, token, &binding, || {
-                                    apply_payload(&mut writer, &payload)
-                                }) {
-                                    Ok(result) => classify_apply(result),
-                                    Err(error) => classify_authority_error(error),
+                        match self.grants.signed_grant(&binding) {
+                            Ok(signed) => match claim_final_use(&self.authority, &signed, &binding) {
+                                Ok(token) => {
+                                    match dispatch_final_use(&self.authority, token, &binding, || {
+                                        apply_payload(&mut writer, &payload, validation_now)
+                                    }) {
+                                        Ok(result) => classify_apply(result),
+                                        Err(error) => classify_authority_error(error),
+                                    }
                                 }
-                            }
-                            Err(error) => classify_authority_error(error),
+                                Err(error) => classify_authority_error(error),
+                            },
+                            Err(error) => ApplyObservation::Indeterminate(
+                                grant_provider_error_digest(&error),
+                            ),
                         }
                     }
                     Err(error) => classify_apply(Err(error)),
@@ -539,19 +625,7 @@ impl AgentdIntelligenceLearningHostV1 {
         payload_digest: Digest32,
     ) -> Result<PersistedLearningEnvelopeV1, AgentdIntelligenceLearningErrorV1> {
         let path = payload_path(&self.payload_root, payload_digest);
-        let metadata = std::fs::symlink_metadata(&path)
-            .map_err(|error| AgentdIntelligenceLearningErrorV1::Io(error.to_string()))?;
-        if metadata.file_type().is_symlink()
-            || !metadata.is_file()
-            || metadata.len() == 0
-            || metadata.len() > MAX_LEARNING_PAYLOAD_BYTES as u64
-        {
-            return Err(AgentdIntelligenceLearningErrorV1::Invalid(
-                "learning payload file",
-            ));
-        }
-        let bytes = std::fs::read(&path)
-            .map_err(|error| AgentdIntelligenceLearningErrorV1::Io(error.to_string()))?;
+        let bytes = read_bounded_regular_file(&path, MAX_LEARNING_PAYLOAD_BYTES)?;
         if Digest32::of_bytes(&bytes) != payload_digest {
             return Err(AgentdIntelligenceLearningErrorV1::Invalid(
                 "learning payload digest",
@@ -673,6 +747,13 @@ impl LearningPayloadV1 {
             ),
         }
     }
+
+    fn admitted_at(&self) -> u64 {
+        match self {
+            Self::Decision(value) => value.admitted_at,
+            Self::Outcome(value) => value.admitted_at,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -692,7 +773,10 @@ struct DecisionPayloadV1 {
     decision_digest: String,
     evidence: EvidencePayloadV1,
     evidence_binding: VerifiedEvidenceBindingPayloadV1,
-    now: u64,
+    /// Historical admission time. Serialized under the V2-compatible `now`
+    /// field but never reused as recovery currentness.
+    #[serde(rename = "now")]
+    admitted_at: u64,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -707,7 +791,10 @@ struct OutcomePayloadV1 {
     outcome: OutcomePayloadRecordV1,
     evidence: EvidencePayloadV1,
     evidence_binding: VerifiedEvidenceBindingPayloadV1,
-    now: u64,
+    /// Historical admission time. Serialized under the V2-compatible `now`
+    /// field but never reused as recovery currentness.
+    #[serde(rename = "now")]
+    admitted_at: u64,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -840,7 +927,7 @@ fn decision_payload(
         decision_digest: prepared.envelope.decision.decision_digest.to_string(),
         evidence: EvidencePayloadV1::from_typed(&request.evidence),
         evidence_binding,
-        now: request.now,
+        admitted_at: request.now,
     })
 }
 
@@ -883,7 +970,7 @@ fn outcome_payload(
         outcome: OutcomePayloadRecordV1::from_typed(&request.outcome),
         evidence: EvidencePayloadV1::from_typed(&request.evidence),
         evidence_binding,
-        now: request.now,
+        admitted_at: request.now,
     })
 }
 
@@ -1067,26 +1154,61 @@ fn verify_outcome_evidence_binding(
     ))
 }
 
+fn require_current_payload_window(
+    payload: &LearningPayloadV1,
+    validation_now: u64,
+) -> Result<(), ProductionLedgerError> {
+    let (evidence, principal_window) = match payload {
+        LearningPayloadV1::Decision(value) => (&value.evidence, None),
+        LearningPayloadV1::Outcome(value) => (
+            &value.evidence,
+            Some((value.outcome.observer.authenticated_at, value.outcome.observer.expires_at)),
+        ),
+    };
+    if evidence.issued_at > validation_now
+        || validation_now > evidence.expires_at
+        || evidence.issued_at > evidence.expires_at
+    {
+        return Err(ProductionLedgerError::Evidence(
+            SignedEvidenceError::ValidityWindow,
+        ));
+    }
+    if let Some((authenticated_at, expires_at)) = principal_window {
+        if authenticated_at > validation_now
+            || validation_now > expires_at
+            || authenticated_at > expires_at
+        {
+            return Err(ProductionLedgerError::Evidence(
+                SignedEvidenceError::ValidityWindow,
+            ));
+        }
+    }
+    Ok(())
+}
+
 fn apply_payload(
     writer: &mut LedgerWriter,
     envelope: &PersistedLearningEnvelopeV1,
+    validation_now: u64,
 ) -> Result<AppendReceipt, ProductionLedgerError> {
+    require_current_payload_window(&envelope.payload, validation_now)?;
     match &envelope.payload {
-        LearningPayloadV1::Decision(value) => apply_decision(writer, value),
-        LearningPayloadV1::Outcome(value) => apply_outcome(writer, value),
+        LearningPayloadV1::Decision(value) => apply_decision(writer, value, validation_now),
+        LearningPayloadV1::Outcome(value) => apply_outcome(writer, value, validation_now),
     }
 }
 
 fn apply_decision(
     writer: &mut LedgerWriter,
     payload: &DecisionPayloadV1,
+    validation_now: u64,
 ) -> Result<AppendReceipt, ProductionLedgerError> {
     let request = decision_request_from_payload(payload)?;
     let evidence = payload
         .evidence
         .to_typed(LearningEvidenceRoleV1::Generator)?;
     let current_binding =
-        verify_decision_evidence_binding(writer, &request, &evidence, payload.now)?;
+        verify_decision_evidence_binding(writer, &request, &evidence, validation_now)?;
     if current_binding != payload.evidence_binding {
         return Err(ProductionLedgerError::Binding(
             "decision verified evidence drift",
@@ -1096,13 +1218,14 @@ fn apply_decision(
         ledger_digest(&payload.expected_ledger_predecessor)?,
         request,
         &evidence,
-        payload.now,
+        validation_now,
     )
 }
 
 fn apply_outcome(
     writer: &mut LedgerWriter,
     payload: &OutcomePayloadV1,
+    validation_now: u64,
 ) -> Result<AppendReceipt, ProductionLedgerError> {
     let decision_record_id = ledger_id(&payload.decision_record_id)?;
     let episode_id = ledger_id(&payload.episode_id)?;
@@ -1138,7 +1261,7 @@ fn apply_outcome(
         .evidence
         .to_typed(LearningEvidenceRoleV1::Observer)?;
     let current_binding =
-        verify_outcome_evidence_binding(writer, &outcome, &evidence, payload.now)?;
+        verify_outcome_evidence_binding(writer, &outcome, &evidence, validation_now)?;
     if current_binding != payload.evidence_binding {
         return Err(ProductionLedgerError::Binding(
             "outcome verified evidence drift",
@@ -1148,7 +1271,7 @@ fn apply_outcome(
         ledger_digest(&payload.expected_ledger_predecessor)?,
         outcome,
         &evidence,
-        payload.now,
+        validation_now,
     )
 }
 
@@ -1182,7 +1305,8 @@ fn classify_apply(result: Result<AppendReceipt, ProductionLedgerError>) -> Apply
         Err(error) => {
             let digest = error_digest(&error);
             match error {
-                ProductionLedgerError::Evidence(SignedEvidenceError::Revoked) => {
+                ProductionLedgerError::Evidence(SignedEvidenceError::Revoked)
+                | ProductionLedgerError::Evidence(SignedEvidenceError::ValidityWindow) => {
                     ApplyObservation::Revoked(digest)
                 }
                 ProductionLedgerError::IndeterminateAfterLedgerCommit { .. }
@@ -1287,6 +1411,68 @@ fn error_digest(error: &ProductionLedgerError) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
+fn grant_provider_error_digest(error: &AgentdError) -> Digest32 {
+    let mut bytes = b"hepta.agentd.intelligence-learning-grant-provider.v1\0".to_vec();
+    bytes.extend_from_slice(format!("{error:?}").as_bytes());
+    Digest32::of_bytes(&bytes)
+}
+
+fn read_bounded_regular_file(
+    path: &Path,
+    maximum_bytes: usize,
+) -> Result<Vec<u8>, AgentdIntelligenceLearningErrorV1> {
+    let path_metadata = std::fs::symlink_metadata(path)
+        .map_err(|error| AgentdIntelligenceLearningErrorV1::Io(error.to_string()))?;
+    if path_metadata.file_type().is_symlink() || !path_metadata.is_file() {
+        return Err(AgentdIntelligenceLearningErrorV1::Invalid(
+            "learning payload file",
+        ));
+    }
+    let mut file = OpenOptions::new()
+        .read(true)
+        .open(path)
+        .map_err(|error| AgentdIntelligenceLearningErrorV1::Io(error.to_string()))?;
+    let opened_metadata = file
+        .metadata()
+        .map_err(|error| AgentdIntelligenceLearningErrorV1::Io(error.to_string()))?;
+    if !opened_metadata.is_file()
+        || opened_metadata.len() == 0
+        || opened_metadata.len() > maximum_bytes as u64
+    {
+        return Err(AgentdIntelligenceLearningErrorV1::Invalid(
+            "learning payload file",
+        ));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        use std::os::unix::fs::PermissionsExt;
+        if path_metadata.dev() != opened_metadata.dev()
+            || path_metadata.ino() != opened_metadata.ino()
+            || opened_metadata.permissions().mode() & 0o022 != 0
+        {
+            return Err(AgentdIntelligenceLearningErrorV1::Invalid(
+                "learning payload file replacement or permissions",
+            ));
+        }
+    }
+    let limit = u64::try_from(maximum_bytes)
+        .map_err(|_| AgentdIntelligenceLearningErrorV1::Invalid("learning payload size"))?
+        .saturating_add(1);
+    let mut bytes = Vec::with_capacity(
+        usize::try_from(opened_metadata.len()).unwrap_or(maximum_bytes),
+    );
+    file.take(limit)
+        .read_to_end(&mut bytes)
+        .map_err(|error| AgentdIntelligenceLearningErrorV1::Io(error.to_string()))?;
+    if bytes.is_empty() || bytes.len() > maximum_bytes {
+        return Err(AgentdIntelligenceLearningErrorV1::Invalid(
+            "learning payload size",
+        ));
+    }
+    Ok(bytes)
+}
+
 fn persist_payload(
     root: &Path,
     digest: Digest32,
@@ -1294,8 +1480,7 @@ fn persist_payload(
 ) -> Result<(), AgentdIntelligenceLearningErrorV1> {
     let final_path = payload_path(root, digest);
     if final_path.exists() {
-        let existing = std::fs::read(&final_path)
-            .map_err(|error| AgentdIntelligenceLearningErrorV1::Io(error.to_string()))?;
+        let existing = read_bounded_regular_file(&final_path, MAX_LEARNING_PAYLOAD_BYTES)?;
         if existing == bytes {
             return Ok(());
         }
@@ -1666,6 +1851,14 @@ fn terminality_name(value: OutcomeTerminalityV1) -> &'static str {
 mod tests {
     use super::*;
 
+    struct FixedClock(u64);
+
+    impl AgentdIntelligenceLearningClockV1 for FixedClock {
+        fn now(&self) -> Result<u64, AgentdIntelligenceLearningErrorV1> {
+            Ok(self.0)
+        }
+    }
+
     #[test]
     fn operation_ids_are_kind_separated_and_stable() {
         let run = StableId::new("run.learning").expect("run id");
@@ -1782,8 +1975,26 @@ mod tests {
             decision_digest: Digest32::of_bytes(b"decision").to_string(),
             evidence: EvidencePayloadV1::from_typed(&evidence),
             evidence_binding: binding,
-            now: 150,
+            admitted_at: 150,
         }
+    }
+
+    #[test]
+    fn recovery_uses_current_time_not_persisted_admission_time() {
+        let payload = LearningPayloadV1::Decision(recovery_test_decision_payload());
+        assert_eq!(payload.admitted_at(), 150);
+        assert!(require_current_payload_window(&payload, 150).is_ok());
+        assert!(matches!(
+            require_current_payload_window(&payload, 201),
+            Err(ProductionLedgerError::Evidence(
+                SignedEvidenceError::ValidityWindow
+            ))
+        ));
+    }
+
+    #[test]
+    fn governed_clock_is_injectable() {
+        assert_eq!(FixedClock(177).now().expect("clock"), 177);
     }
 
     #[test]
