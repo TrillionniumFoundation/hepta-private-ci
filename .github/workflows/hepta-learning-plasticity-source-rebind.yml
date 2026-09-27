@@ -1,0 +1,51 @@
+name: Learning plasticity source rebind
+
+on:
+  push:
+    branches:
+      - work/learning-plasticity-full-convergence-20260927
+    paths:
+      - codex-rs/hepta-plasticity/**
+      - codex-rs/hepta-agentd/**
+      - docs/modules/learning.plasticity/**
+      - docs/modules/runtime.agentd/**
+      - .github/workflows/hepta-learning-plasticity-source-rebind.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: learning-plasticity-source-rebind-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  rebind:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Rebind exact mapped source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate \
+            --module learning.plasticity \
+            --module runtime.agentd
+          python3 scripts/hepta-implementation-maps.py sync-plasticity-status
+          if git diff --quiet -- \
+              docs/modules/learning.plasticity \
+              docs/modules/runtime.agentd; then
+            echo 'Exact-source documents are already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/modules/learning.plasticity docs/modules/runtime.agentd
+          git commit -m 'docs(plasticity): rebind exact convergence source'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
