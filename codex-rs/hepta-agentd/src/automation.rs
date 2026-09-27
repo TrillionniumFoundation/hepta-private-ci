@@ -266,8 +266,9 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
     policy: AutomationRuntimePolicyV1,
 ) -> Result<(), AgentdError> {
     let mut retry_budget = DispatchRetryBudget::default();
-    let mut transient_budget = TransientSchedulerErrorBudget::default();
-    loop {
+    let mut scheduler_transient_budget = TransientErrorBudget::default();
+    let mut recovery_transient_budget = TransientErrorBudget::default();
+    'scheduler: loop {
         tokio::select! {
             biased;
             _ = cancellation.cancelled() => return Ok(()),
@@ -288,9 +289,10 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
             continue;
         }
 
-        // Historical reconciliation has an independent capacity budget so a
-        // backlog cannot monopolize admission and new work cannot starve
-        // unknown-result recovery.
+        // Historical reconciliation has an independent capacity and transient
+        // failure budget. A failed recovery attempt never permits new admission
+        // in the same cycle, so transport loss cannot grow an unresolved
+        // backlog. Identity, ledger and fencing violations still fail closed.
         for _ in 0..policy.recovery_budget_per_cycle {
             if cancellation.is_cancelled() {
                 return Ok(());
@@ -309,11 +311,31 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
             )
             .await
             {
-                Ok(true) => {}
-                Ok(false) => break,
-                Err(error) => {
-                    return stop_after_recovery_error(error, &state, &cancellation).await;
+                Ok(true) => recovery_transient_budget.reset(),
+                Ok(false) => {
+                    recovery_transient_budget.reset();
+                    break;
                 }
+                Err(error) => match classify_recovery_error(&error) {
+                    AutomationFailureDisposition::Fence
+                    | AutomationFailureDisposition::FailStop => {
+                        return stop_after_recovery_error(error, &state, &cancellation).await;
+                    }
+                    AutomationFailureDisposition::Reconcile
+                    | AutomationFailureDisposition::Retry
+                    | AutomationFailureDisposition::Isolate => {
+                        let consecutive = recovery_transient_budget.observe();
+                        if consecutive >= policy.max_consecutive_pre_admission_failures {
+                            return stop_after_recovery_error(error, &state, &cancellation).await;
+                        }
+                        let delay = Duration::from_millis(policy.retry_delay_ms(consecutive));
+                        tokio::select! {
+                            _ = cancellation.cancelled() => return Ok(()),
+                            _ = tokio::time::sleep(delay) => {}
+                        }
+                        continue 'scheduler;
+                    }
+                },
             }
         }
 
@@ -325,7 +347,7 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
         // lease timestamps across the entire cycle.
         match scheduler.tick_batch(&policy, unix_time_ms).await {
             Ok(report) => {
-                transient_budget.reset();
+                scheduler_transient_budget.reset();
                 for tick in report.ticks {
                     if handle_automation_tick_with_limit(
                         tick,
@@ -345,10 +367,10 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
                     return stop_after_automation_error(error, &state, &cancellation).await;
                 }
                 AutomationFailureDisposition::Reconcile => {
-                    transient_budget.reset();
+                    scheduler_transient_budget.reset();
                 }
                 AutomationFailureDisposition::Retry | AutomationFailureDisposition::Isolate => {
-                    let consecutive = transient_budget.observe();
+                    let consecutive = scheduler_transient_budget.observe();
                     if consecutive >= policy.max_consecutive_pre_admission_failures {
                         return stop_after_automation_error(error, &state, &cancellation).await;
                     }
@@ -361,6 +383,31 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
             },
         }
     }
+}
+
+fn classify_recovery_error(error: &AgentdError) -> AutomationFailureDisposition {
+    match error {
+        AgentdError::GenerationFenced(_) => AutomationFailureDisposition::Fence,
+        AgentdError::Automation(error) => classify_automation_error(error),
+        AgentdError::Io(_) | AgentdError::Overloaded { .. } => {
+            AutomationFailureDisposition::Retry
+        }
+        AgentdError::Protocol(message) if transient_recovery_protocol_error(message) => {
+            AutomationFailureDisposition::Retry
+        }
+        _ => AutomationFailureDisposition::FailStop,
+    }
+}
+
+fn transient_recovery_protocol_error(message: &str) -> bool {
+    [
+        "automation recovery requires a ready owning Agent generation",
+        "automation recovery connect failed:",
+        "automation queue reconcile failed:",
+        "automation turn observation failed:",
+    ]
+    .iter()
+    .any(|prefix| message.starts_with(prefix))
 }
 
 /// Applies the scheduler's fail-stop policy to one tick. A durable unknown
@@ -428,11 +475,11 @@ impl DispatchRetryBudget {
 }
 
 #[derive(Default)]
-struct TransientSchedulerErrorBudget {
+struct TransientErrorBudget {
     consecutive_failures: u8,
 }
 
-impl TransientSchedulerErrorBudget {
+impl TransientErrorBudget {
     fn observe(&mut self) -> u8 {
         self.consecutive_failures = self.consecutive_failures.saturating_add(1);
         self.consecutive_failures
@@ -552,12 +599,45 @@ mod tests {
     }
 
     #[test]
-    fn transient_scheduler_error_budget_resets_after_progress() {
-        let mut budget = TransientSchedulerErrorBudget::default();
+    fn transient_error_budget_resets_after_progress() {
+        let mut budget = TransientErrorBudget::default();
         assert_eq!(budget.observe(), 1);
         assert_eq!(budget.observe(), 2);
         budget.reset();
         assert_eq!(budget.observe(), 1);
+    }
+
+    #[test]
+    fn recovery_error_classification_retries_transport_but_fails_closed_on_drift() {
+        for message in [
+            "automation recovery requires a ready owning Agent generation",
+            "automation recovery connect failed: unavailable",
+            "automation queue reconcile failed: closed",
+            "automation turn observation failed: timeout",
+        ] {
+            assert_eq!(
+                classify_recovery_error(&AgentdError::Protocol(message.to_string())),
+                AutomationFailureDisposition::Retry
+            );
+        }
+        assert_eq!(
+            classify_recovery_error(&AgentdError::Automation(
+                AutomationError::DispatchUnknown
+            )),
+            AutomationFailureDisposition::Reconcile
+        );
+        assert_eq!(
+            classify_recovery_error(&AgentdError::GenerationFenced(
+                "stale generation".to_string()
+            )),
+            AutomationFailureDisposition::Fence
+        );
+        assert_eq!(
+            classify_recovery_error(&AgentdError::Protocol(
+                "automation reconciliation identity or payload mismatch".to_string()
+            )),
+            AutomationFailureDisposition::FailStop
+        );
     }
 
     #[test]
