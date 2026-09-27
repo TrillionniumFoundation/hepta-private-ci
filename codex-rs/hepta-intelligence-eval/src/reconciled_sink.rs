@@ -123,13 +123,19 @@ pub trait ProductQualificationPublicationStoreV1 {
     fn load(
         &mut self,
         execution_digest: Digest32,
-    ) -> Result<Option<ProductQualificationPublicationRecordV1>, ProductQualificationPublicationStoreErrorV1>;
+    ) -> Result<
+        Option<ProductQualificationPublicationRecordV1>,
+        ProductQualificationPublicationStoreErrorV1,
+    >;
 
     fn compare_and_publish(
         &mut self,
         expected_record_digest: Option<Digest32>,
         request: &ProductQualificationPublicationRequestV1,
-    ) -> Result<ProductQualificationPublicationRecordV1, ProductQualificationPublicationStoreErrorV1>;
+    ) -> Result<
+        ProductQualificationPublicationRecordV1,
+        ProductQualificationPublicationStoreErrorV1,
+    >;
 }
 
 pub struct ReconciledProductQualificationSinkV1<S> {
@@ -312,8 +318,10 @@ mod tests {
         fn load(
             &mut self,
             execution_digest: Digest32,
-        ) -> Result<Option<ProductQualificationPublicationRecordV1>, ProductQualificationPublicationStoreErrorV1>
-        {
+        ) -> Result<
+            Option<ProductQualificationPublicationRecordV1>,
+            ProductQualificationPublicationStoreErrorV1,
+        > {
             Ok(self
                 .record
                 .clone()
@@ -324,8 +332,10 @@ mod tests {
             &mut self,
             expected_record_digest: Option<Digest32>,
             request: &ProductQualificationPublicationRequestV1,
-        ) -> Result<ProductQualificationPublicationRecordV1, ProductQualificationPublicationStoreErrorV1>
-        {
+        ) -> Result<
+            ProductQualificationPublicationRecordV1,
+            ProductQualificationPublicationStoreErrorV1,
+        > {
             let current = self.record.as_ref().map(|record| record.record_digest);
             if current != expected_record_digest {
                 return Err(ProductQualificationPublicationStoreErrorV1::Conflict);
