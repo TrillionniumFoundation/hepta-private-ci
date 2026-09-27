@@ -33,7 +33,10 @@ struct RollbackRecordV1 {
 }
 
 impl RollbackRecordV1 {
-    fn new(authority_epoch: u64, manifest_digest: Digest32) -> Result<Self, IntelligenceAuthorityRollbackErrorV1> {
+    fn new(
+        authority_epoch: u64,
+        manifest_digest: Digest32,
+    ) -> Result<Self, IntelligenceAuthorityRollbackErrorV1> {
         if authority_epoch == 0 || manifest_digest.is_zero() {
             return Err(IntelligenceAuthorityRollbackErrorV1::Invalid(
                 "authority rollback identity",
@@ -52,8 +55,9 @@ impl RollbackRecordV1 {
                 "authority rollback schema or epoch",
             ));
         }
-        let digest = Digest32::from_str(&self.manifest_digest)
-            .map_err(|_| IntelligenceAuthorityRollbackErrorV1::Invalid("authority rollback digest"))?;
+        let digest = Digest32::from_str(&self.manifest_digest).map_err(|_| {
+            IntelligenceAuthorityRollbackErrorV1::Invalid("authority rollback digest")
+        })?;
         if digest.is_zero() {
             return Err(IntelligenceAuthorityRollbackErrorV1::Invalid(
                 "authority rollback digest",
@@ -109,9 +113,11 @@ impl IntelligenceAuthorityRollbackGuardV1 {
                 "authority rollback path must be absolute",
             ));
         }
-        let parent = path.parent().ok_or(IntelligenceAuthorityRollbackErrorV1::Invalid(
-            "authority rollback parent",
-        ))?;
+        let parent = path
+            .parent()
+            .ok_or(IntelligenceAuthorityRollbackErrorV1::Invalid(
+                "authority rollback parent",
+            ))?;
         ensure_private_directory(parent)?;
 
         let lock_path = path.with_extension("lock");
@@ -189,6 +195,11 @@ impl IntelligenceAuthorityRollbackGuardV1 {
     }
 
     #[must_use]
+    pub fn path(&self) -> &Path {
+        &self.path
+    }
+
+    #[must_use]
     pub fn profile_digest(&self) -> Digest32 {
         let mut bytes = b"hepta.agentd.intelligence-authority-rollback-profile.v1\0".to_vec();
         bytes.extend_from_slice(self.path.to_string_lossy().as_bytes());
@@ -258,9 +269,11 @@ fn persist_record(
     path: &Path,
     record: &RollbackRecordV1,
 ) -> Result<(), IntelligenceAuthorityRollbackErrorV1> {
-    let parent = path.parent().ok_or(IntelligenceAuthorityRollbackErrorV1::Invalid(
-        "authority rollback parent",
-    ))?;
+    let parent = path
+        .parent()
+        .ok_or(IntelligenceAuthorityRollbackErrorV1::Invalid(
+            "authority rollback parent",
+        ))?;
     let bytes = serde_json::to_vec(record)
         .map_err(|error| IntelligenceAuthorityRollbackErrorV1::Json(error.to_string()))?;
     if bytes.is_empty() || bytes.len() > MAX_ROLLBACK_RECORD_BYTES {
