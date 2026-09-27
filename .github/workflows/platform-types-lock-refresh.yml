@@ -10,6 +10,7 @@ on:
       - "codex-rs/**/Cargo.toml"
       - "codex-rs/hepta-types/**"
       - "codex-rs/hepta-wire/**"
+      - "codex-rs/hepta-ndu/**"
       - "docs/lane-a-foundation/platform.types/**"
       - "docs/modules/platform.types/**"
       - "qualification/module-execution-dossiers/detail/platform.types.md"
@@ -72,7 +73,7 @@ jobs:
           unexpected="$(
             git -C "$repo_root" status --porcelain --untracked-files=no |
               cut -c4- |
-              grep -Ev '^(codex-rs/Cargo\.lock|codex-rs/hepta-types/src/numeric_conversion\.rs|codex-rs/hepta-types/src/numeric_registry_v2\.rs|codex-rs/hepta-types/src/numeric_conversion_tests\.rs|codex-rs/hepta-types/src/numeric_profile\.rs|codex-rs/hepta-ndu/src/numeric_admission\.rs|scripts/platform_types_api_compat_fixup\.py)$' || true
+              grep -Ev '^(codex-rs/Cargo\.lock|codex-rs/hepta-types/src/numeric_conversion\.rs|codex-rs/hepta-types/src/numeric_registry_v2\.rs|codex-rs/hepta-types/src/numeric_conversion_tests\.rs|codex-rs/hepta-types/src/numeric_profile\.rs|codex-rs/hepta-types/src/topology\.rs|codex-rs/hepta-ndu/src/numeric_admission\.rs|codex-rs/hepta-ndu/src/owner\.rs|codex-rs/hepta-ndu/src/owner_tests\.rs|scripts/platform_types_api_compat_fixup\.py)$' || true
           )"
           if [[ -n "$unexpected" ]]; then
             printf 'compatibility/lock convergence changed unexpected tracked paths:\n%s\n' "$unexpected" >&2
@@ -99,7 +100,10 @@ jobs:
             codex-rs/hepta-types/src/numeric_registry_v2.rs \
             codex-rs/hepta-types/src/numeric_conversion_tests.rs \
             codex-rs/hepta-types/src/numeric_profile.rs \
+            codex-rs/hepta-types/src/topology.rs \
             codex-rs/hepta-ndu/src/numeric_admission.rs \
+            codex-rs/hepta-ndu/src/owner.rs \
+            codex-rs/hepta-ndu/src/owner_tests.rs \
             scripts/platform_types_api_compat_fixup.py \
             | tee "$evidence/diff-stat.txt"
           sha256sum \
@@ -107,11 +111,13 @@ jobs:
             "$repo_root/codex-rs/hepta-types/src/numeric_conversion.rs" \
             "$repo_root/codex-rs/hepta-types/src/numeric_registry_v2.rs" \
             "$repo_root/codex-rs/hepta-types/src/numeric_profile.rs" \
+            "$repo_root/codex-rs/hepta-types/src/topology.rs" \
             "$repo_root/codex-rs/hepta-ndu/src/numeric_admission.rs" \
+            "$repo_root/codex-rs/hepta-ndu/src/owner.rs" \
             | tee "$evidence/candidate-files.sha256"
 
           if git -C "$repo_root" diff --quiet --exit-code; then
-            echo "numeric API compatibility and Cargo.lock are already canonical"
+            echo "V1 API compatibility and Cargo.lock are already canonical"
             exit 0
           fi
 
@@ -123,9 +129,12 @@ jobs:
             codex-rs/hepta-types/src/numeric_registry_v2.rs \
             codex-rs/hepta-types/src/numeric_conversion_tests.rs \
             codex-rs/hepta-types/src/numeric_profile.rs \
+            codex-rs/hepta-types/src/topology.rs \
             codex-rs/hepta-ndu/src/numeric_admission.rs \
+            codex-rs/hepta-ndu/src/owner.rs \
+            codex-rs/hepta-ndu/src/owner_tests.rs \
             scripts/platform_types_api_compat_fixup.py
-          git -C "$repo_root" commit -m "fix(platform.types): preserve numeric V1 source compatibility"
+          git -C "$repo_root" commit -m "fix(platform.types): preserve V1 public API compatibility"
           git -C "$repo_root" push origin "HEAD:${HEAD_REF}"
 
       - name: Preserve compatibility/lock diagnostics
