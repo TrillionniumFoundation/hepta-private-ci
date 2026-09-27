@@ -1,0 +1,84 @@
+name: Cognitive store integration fixup
+
+on:
+  push:
+    branches:
+      - codex/cognitive-store-total-closure-20260927
+
+permissions:
+  contents: write
+
+jobs:
+  fixup:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/cognitive-store-total-closure-20260927
+          fetch-depth: 0
+
+      - name: Reconcile lockfile and deterministic fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          lock_path = Path('codex-rs/Cargo.lock')
+          lock = lock_path.read_text(encoding='utf-8')
+          package_start = lock.index('[[package]]\nname = "codex-hepta-agentd"')
+          package_end = lock.index('\n[[package]]', package_start + 1)
+          package = lock[package_start:package_end]
+          if ' "ed25519-dalek",\n' not in package:
+              marker = ' "core_test_support",\n'
+              if marker not in package:
+                  raise SystemExit('agentd lockfile insertion marker missing')
+              package = package.replace(marker, marker + ' "ed25519-dalek",\n', 1)
+              lock = lock[:package_start] + package + lock[package_end:]
+          lock_path.write_text(lock, encoding='utf-8')
+
+          migration_path = Path('codex-rs/hepta-memory/src/cognitive_store_tests.rs')
+          migration = migration_path.read_text(encoding='utf-8')
+          old_versions = '"1,2,3,4,5,6,7,8,9,10,11,12,13,14"'
+          new_versions = '"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"'
+          if migration.count(old_versions) != 1:
+              raise SystemExit('expected exactly one stale migration-ledger assertion')
+          migration_path.write_text(migration.replace(old_versions, new_versions, 1), encoding='utf-8')
+
+          compact_path = Path('codex-rs/hepta-memory/src/local_compact_executor_tests.rs')
+          compact = compact_path.read_text(encoding='utf-8')
+          old_offset = 'let expiry_offset = if transition == "expire" { 1 } else { 3_600 };'
+          new_offset = 'let expiry_offset = if transition == "expire" { 5 } else { 3_600 };'
+          old_wait = 'for _ in 0..120 {'
+          new_wait = 'for _ in 0..400 {'
+          if compact.count(old_offset) != 1 or compact.count(old_wait) != 1:
+              raise SystemExit('expected deterministic compact-expiry fixture markers')
+          compact = compact.replace(old_offset, new_offset, 1).replace(old_wait, new_wait, 1)
+          compact_path.write_text(compact, encoding='utf-8')
+          PY
+
+      - name: Verify static convergence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/check-rust-module-inventory.py codex-rs/hepta-cognitive-store/src
+          python3 scripts/verify_cognitive_store_boundary.py
+          cd codex-rs
+          cargo metadata --locked --format-version 1 --no-deps >/dev/null
+
+      - name: Commit exact fixups
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/cognitive-store-integration-fixup.yml
+          git config user.name 'Hepta Cognitive CI'
+          git config user.email 'hepta-cognitive-ci@users.noreply.github.com'
+          git add codex-rs/Cargo.lock \
+            codex-rs/hepta-memory/src/cognitive_store_tests.rs \
+            codex-rs/hepta-memory/src/local_compact_executor_tests.rs \
+            .github/workflows/cognitive-store-integration-fixup.yml
+          git diff --cached --check
+          git commit -m 'test(cognitive-store): reconcile migration and lease fixtures'
+          git push origin HEAD:codex/cognitive-store-total-closure-20260927
