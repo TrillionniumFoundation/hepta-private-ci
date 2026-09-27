@@ -100,7 +100,10 @@ impl SemanticRecordV1 {
     }
 
     fn holds_slot(&self) -> bool {
-        matches!(self.phase, SemanticPhaseV1::Reserved | SemanticPhaseV1::DispatchFenced)
+        matches!(
+            self.phase,
+            SemanticPhaseV1::Reserved | SemanticPhaseV1::DispatchFenced
+        )
     }
 }
 
@@ -115,12 +118,43 @@ pub(super) struct SemanticJournal {
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 enum Event {
-    Reserve { admission: SemanticAdmissionV1, maximum_in_flight: usize, now_ms: u64 },
-    Fence { request_id: String, expected_revision: u64, now_ms: u64 },
-    Cancel { request_id: String },
-    Stop { request_id: String, reason: String },
-    Complete { request_id: String, completion: SemanticCompletionV1 },
-    Acknowledge { request_id: String, receipt_digest: String },
+    Reserve {
+        admission: SemanticAdmissionV1,
+        maximum_in_flight: usize,
+        now_ms: u64,
+    },
+    Fence {
+        request_id: String,
+        expected_revision: u64,
+        now_ms: u64,
+    },
+    Cancel {
+        request_id: String,
+    },
+    Stop {
+        request_id: String,
+        reason: String,
+    },
+    Complete {
+        request_id: String,
+        completion: SemanticCompletionV1,
+    },
+    Acknowledge {
+        request_id: String,
+        receipt_digest: String,
+    },
+}
+
+// File locks otherwise survive until the last duplicated or fork-inherited
+// descriptor closes. Explicit release at owner destruction prevents an unrelated
+// concurrent child spawn from retaining this owner's fence until exec. The file
+// remains private and all journal writes have completed before this destructor.
+impl Drop for DurableInferenceControl {
+    fn drop(&mut self) {
+        // Failure is conservative: closing all descriptors still releases the
+        // lock, and another open must continue to fail rather than steal it.
+        let _ = self.file.unlock();
+    }
 }
 
 impl DurableInferenceControl {
@@ -132,7 +166,11 @@ impl DurableInferenceControl {
     ) -> Result<SemanticRecordV1, Error> {
         self.semantic_ready()?;
         let request = validate_admission(&admission)?;
-        if self.semantic.maximum_in_flight.is_some_and(|limit| limit != maximum_in_flight) {
+        if self
+            .semantic
+            .maximum_in_flight
+            .is_some_and(|limit| limit != maximum_in_flight)
+        {
             return Err(Error::Conflict);
         }
         if let Some(record) = self.semantic.records.get(&request.operation_id) {
@@ -160,19 +198,29 @@ impl DurableInferenceControl {
         {
             use std::os::unix::fs::PermissionsExt;
             if self.file.metadata()?.permissions().mode() & 0o077 != 0 {
-                return Err(Error::InvalidIdentity("semantic journal must be owner-only"));
+                return Err(Error::InvalidIdentity(
+                    "semantic journal must be owner-only",
+                ));
             }
         }
-        let reserve = self.semantic.pending_result_bytes()
+        let reserve = self
+            .semantic
+            .pending_result_bytes()
             .checked_add(2 * FUTURE_RECORD_BYTES)
             .and_then(|bytes| bytes.checked_add(2 * super::MAX_JOURNAL_LINE_BYTES as u64))
             .ok_or(Error::ArithmeticOverflow)?;
-        if self.journal_bytes.checked_add(reserve)
+        if self
+            .journal_bytes
+            .checked_add(reserve)
             .is_none_or(|bytes| bytes > super::MAX_JOURNAL_BYTES)
         {
             return Err(Error::CapacityExceeded);
         }
-        self.commit_semantic(Event::Reserve { admission, maximum_in_flight, now_ms })
+        self.commit_semantic(Event::Reserve {
+            admission,
+            maximum_in_flight,
+            now_ms,
+        })
     }
 
     /// The only transition that permits a live caller to enter the driver.
@@ -185,36 +233,55 @@ impl DurableInferenceControl {
         now_ms: u64,
     ) -> Result<SemanticRecordV1, Error> {
         self.commit_semantic(Event::Fence {
-            request_id: request_id.to_string(), expected_revision, now_ms,
+            request_id: request_id.to_string(),
+            expected_revision,
+            now_ms,
         })
     }
 
     pub fn cancel_semantic(&mut self, request_id: &str) -> Result<SemanticRecordV1, Error> {
-        self.commit_semantic(Event::Cancel { request_id: request_id.to_string() })
+        self.commit_semantic(Event::Cancel {
+            request_id: request_id.to_string(),
+        })
     }
 
     /// Only the durable Reserved state proves that the driver was not entered.
     pub fn stop_semantic_before_dispatch(
-        &mut self, request_id: &str, reason: String,
+        &mut self,
+        request_id: &str,
+        reason: String,
     ) -> Result<SemanticRecordV1, Error> {
-        self.commit_semantic(Event::Stop { request_id: request_id.to_string(), reason })
+        self.commit_semantic(Event::Stop {
+            request_id: request_id.to_string(),
+            reason,
+        })
     }
 
     /// Trusted observer port. Validate and persist full results, including late
     /// or over-budget results; delivery eligibility is a separate fact. A
     /// driver error, timeout or cancellation ACK is not a completion.
     pub fn complete_semantic(
-        &mut self, request_id: &str, completion: SemanticCompletionV1,
+        &mut self,
+        request_id: &str,
+        completion: SemanticCompletionV1,
     ) -> Result<SemanticRecordV1, Error> {
-        self.commit_semantic(Event::Complete { request_id: request_id.to_string(), completion })
+        self.commit_semantic(Event::Complete {
+            request_id: request_id.to_string(),
+            completion,
+        })
     }
 
     /// Record an already validated downstream owner acknowledgement. This
     /// does not directly mutate Neuron, TaskFlow or the learning ledger.
     pub fn acknowledge_semantic_delivery(
-        &mut self, request_id: &str, receipt_digest: String,
+        &mut self,
+        request_id: &str,
+        receipt_digest: String,
     ) -> Result<SemanticRecordV1, Error> {
-        self.commit_semantic(Event::Acknowledge { request_id: request_id.to_string(), receipt_digest })
+        self.commit_semantic(Event::Acknowledge {
+            request_id: request_id.to_string(),
+            receipt_digest,
+        })
     }
 
     pub fn semantic_record(&self, request_id: &str) -> Result<Option<&SemanticRecordV1>, Error> {
@@ -223,7 +290,11 @@ impl DurableInferenceControl {
     }
 
     fn semantic_ready(&self) -> Result<(), Error> {
-        if self.poisoned { Err(Error::WriterUnavailable) } else { Ok(()) }
+        if self.poisoned {
+            Err(Error::WriterUnavailable)
+        } else {
+            Ok(())
+        }
     }
 
     fn commit_semantic(&mut self, event: Event) -> Result<SemanticRecordV1, Error> {
@@ -232,8 +303,8 @@ impl DurableInferenceControl {
         if self.semantic.records.get(&prepared.0) == Some(&prepared.1) {
             return Ok(prepared.1);
         }
-        let encoded = serde_json::to_string(&event)
-            .map_err(|_| Error::CorruptJournal("semantic encode"))?;
+        let encoded =
+            serde_json::to_string(&event).map_err(|_| Error::CorruptJournal("semantic encode"))?;
         self.append_with_semantic_reservation(&format!("{JOURNAL_PREFIX}{encoded}\n"), prepared.5)?;
         // Domain validation precedes append. Publication follows fsync;
         // failed writes poison the owner rather than publish cached success.
@@ -246,7 +317,14 @@ impl DurableInferenceControl {
 // The primary record is an internal identity reservation only. Public legacy
 // get/mutation paths reject semantic IDs rather than exposing this sentinel
 // as an alternative state machine. Native IDs share the same capacity check.
-type Prepared = (String, SemanticRecordV1, Option<RequestRecord>, usize, usize, u64);
+type Prepared = (
+    String,
+    SemanticRecordV1,
+    Option<RequestRecord>,
+    usize,
+    usize,
+    u64,
+);
 
 impl SemanticJournal {
     pub(super) fn pending_result_bytes(&self) -> u64 {
@@ -254,26 +332,44 @@ impl SemanticJournal {
     }
 
     pub(super) fn replay(
-        &mut self, json: &str, primary: &mut BTreeMap<String, RequestRecord>,
+        &mut self,
+        json: &str,
+        primary: &mut BTreeMap<String, RequestRecord>,
     ) -> Result<(), Error> {
-        let event: Event = serde_json::from_str(json)
-            .map_err(|_| Error::CorruptJournal("semantic decode"))?;
+        let event: Event =
+            serde_json::from_str(json).map_err(|_| Error::CorruptJournal("semantic decode"))?;
         let prepared = self.prepare(&event, primary)?;
         self.publish(prepared, primary);
         Ok(())
     }
 
-    fn prepare(&self, event: &Event, primary: &BTreeMap<String, RequestRecord>) -> Result<Prepared, Error> {
-        if let Event::Reserve { admission, maximum_in_flight, now_ms } = event {
+    fn prepare(
+        &self,
+        event: &Event,
+        primary: &BTreeMap<String, RequestRecord>,
+    ) -> Result<Prepared, Error> {
+        if let Event::Reserve {
+            admission,
+            maximum_in_flight,
+            now_ms,
+        } = event
+        {
             let input = validate_admission(admission)?;
-            if *now_ms >= input.deadline_ms { return Err(Error::InvalidTime); }
+            if *now_ms >= input.deadline_ms {
+                return Err(Error::InvalidTime);
+            }
             if !(1..=256).contains(maximum_in_flight) || self.in_flight >= *maximum_in_flight {
                 return Err(Error::CapacityExceeded);
             }
-            if self.maximum_in_flight.is_some_and(|limit| limit != *maximum_in_flight)
+            if self
+                .maximum_in_flight
+                .is_some_and(|limit| limit != *maximum_in_flight)
                 || primary.contains_key(&input.operation_id)
                 || self.records.contains_key(&input.operation_id)
-                || self.records.values().any(|record| record.admission.reservation_id == admission.reservation_id)
+                || self
+                    .records
+                    .values()
+                    .any(|record| record.admission.reservation_id == admission.reservation_id)
             {
                 return Err(Error::Conflict);
             }
@@ -299,26 +395,50 @@ impl SemanticJournal {
                 usage_units: 0,
             };
             let record = SemanticRecordV1 {
-                admission: admission.clone(), revision: 1, admitted_at_ms: *now_ms, phase: SemanticPhaseV1::Reserved,
-                cancel_requested: false, stop_reason: None, completion: None,
-                completion_digest: None, within_resource_budget: false, delivery_ack_digest: None,
+                admission: admission.clone(),
+                revision: 1,
+                admitted_at_ms: *now_ms,
+                phase: SemanticPhaseV1::Reserved,
+                cancel_requested: false,
+                stop_reason: None,
+                completion: None,
+                completion_digest: None,
+                within_resource_budget: false,
+                delivery_ack_digest: None,
             };
-            let pending = self.pending_bytes.checked_add(record.reserved_bytes())
+            let pending = self
+                .pending_bytes
+                .checked_add(record.reserved_bytes())
                 .ok_or(Error::ArithmeticOverflow)?;
-            return Ok((input.operation_id, record, Some(marker), *maximum_in_flight, self.in_flight + 1, pending));
+            return Ok((
+                input.operation_id,
+                record,
+                Some(marker),
+                *maximum_in_flight,
+                self.in_flight + 1,
+                pending,
+            ));
         }
         let id = match event {
             Event::Reserve { .. } => return Err(Error::InvalidTransition),
-            Event::Fence { request_id, .. } | Event::Cancel { request_id }
-            | Event::Stop { request_id, .. } | Event::Complete { request_id, .. }
+            Event::Fence { request_id, .. }
+            | Event::Cancel { request_id }
+            | Event::Stop { request_id, .. }
+            | Event::Complete { request_id, .. }
             | Event::Acknowledge { request_id, .. } => request_id,
         };
         let old = self.records.get(id).ok_or(Error::RequestNotFound)?;
         let mut next = old.clone();
         match event {
             Event::Reserve { .. } => return Err(Error::InvalidTransition),
-            Event::Fence { expected_revision, now_ms, .. } => {
-                if old.revision != *expected_revision { return Err(Error::StaleRevision); }
+            Event::Fence {
+                expected_revision,
+                now_ms,
+                ..
+            } => {
+                if old.revision != *expected_revision {
+                    return Err(Error::StaleRevision);
+                }
                 if old.phase != SemanticPhaseV1::Reserved || old.cancel_requested {
                     return Err(Error::InvalidTransition);
                 }
@@ -338,55 +458,87 @@ impl SemanticJournal {
             Event::Stop { reason, .. } => {
                 validate_identity(reason, "semantic stop reason")?;
                 if old.phase == SemanticPhaseV1::NotDispatched {
-                    if old.stop_reason.as_ref() != Some(reason) { return Err(Error::Conflict); }
+                    if old.stop_reason.as_ref() != Some(reason) {
+                        return Err(Error::Conflict);
+                    }
                 } else if old.phase == SemanticPhaseV1::Reserved {
                     next.phase = SemanticPhaseV1::NotDispatched;
                     next.stop_reason = Some(reason.clone());
-                } else { return Err(Error::InvalidTransition); }
+                } else {
+                    return Err(Error::InvalidTransition);
+                }
             }
             Event::Complete { completion, .. } => {
                 let request = validate_admission(&old.admission)?;
-                let reply = request.decode_reply(&completion.reply_wire)
+                let reply = request
+                    .decode_reply(&completion.reply_wire)
                     .map_err(|_| Error::CorruptJournal("semantic reply binding"))?;
                 if old.phase == SemanticPhaseV1::Completed {
-                    if old.completion.as_ref() != Some(completion) { return Err(Error::Conflict); }
+                    if old.completion.as_ref() != Some(completion) {
+                        return Err(Error::Conflict);
+                    }
                 } else if old.phase == SemanticPhaseV1::DispatchFenced {
-                    let total = reply.input_tokens.checked_add(reply.output_tokens)
+                    let total = reply
+                        .input_tokens
+                        .checked_add(reply.output_tokens)
                         .ok_or(Error::ArithmeticOverflow)?;
                     next.within_resource_budget = total <= u64::from(old.admission.maximum_tokens)
-                        && completion.observed_memory_bytes.is_some_and(|memory| memory > 0
-                            && memory <= old.admission.maximum_memory_bytes);
+                        && completion.observed_memory_bytes.is_some_and(|memory| {
+                            memory > 0 && memory <= old.admission.maximum_memory_bytes
+                        });
                     let encoded = serde_json::to_vec(completion)
                         .map_err(|_| Error::CorruptJournal("semantic completion"))?;
                     next.completion_digest = Some(Digest32::of_bytes(&encoded).to_string());
                     next.completion = Some(completion.clone());
                     next.phase = SemanticPhaseV1::Completed;
-                } else { return Err(Error::InvalidTransition); }
+                } else {
+                    return Err(Error::InvalidTransition);
+                }
             }
             Event::Acknowledge { receipt_digest, .. } => {
                 validate_digest(receipt_digest, "semantic downstream receipt")?;
                 if let Some(existing) = &old.delivery_ack_digest {
-                    if existing != receipt_digest { return Err(Error::Conflict); }
+                    if existing != receipt_digest {
+                        return Err(Error::Conflict);
+                    }
                 } else {
-                    if !old.delivery_pending() { return Err(Error::InvalidTransition); }
+                    if !old.delivery_pending() {
+                        return Err(Error::InvalidTransition);
+                    }
                     next.delivery_ack_digest = Some(receipt_digest.clone());
                 }
             }
         }
-        let slots = self.in_flight.checked_sub(usize::from(old.holds_slot() && !next.holds_slot()))
+        let slots = self
+            .in_flight
+            .checked_sub(usize::from(old.holds_slot() && !next.holds_slot()))
             .ok_or(Error::CorruptJournal("semantic slot accounting"))?;
         if &next != old {
-            next.revision = next.revision.checked_add(1).ok_or(Error::ArithmeticOverflow)?;
+            next.revision = next
+                .revision
+                .checked_add(1)
+                .ok_or(Error::ArithmeticOverflow)?;
         }
-        let pending = self.pending_bytes.checked_sub(old.reserved_bytes())
+        let pending = self
+            .pending_bytes
+            .checked_sub(old.reserved_bytes())
             .and_then(|bytes| bytes.checked_add(next.reserved_bytes()))
             .ok_or(Error::CorruptJournal("semantic byte accounting"))?;
-        Ok((id.clone(), next, None, self.maximum_in_flight.ok_or(Error::InvalidTransition)?, slots, pending))
+        Ok((
+            id.clone(),
+            next,
+            None,
+            self.maximum_in_flight.ok_or(Error::InvalidTransition)?,
+            slots,
+            pending,
+        ))
     }
 
     fn publish(&mut self, prepared: Prepared, primary: &mut BTreeMap<String, RequestRecord>) {
         let (id, record, marker, limit, slots, pending) = prepared;
-        if let Some(marker) = marker { primary.insert(id.clone(), marker); }
+        if let Some(marker) = marker {
+            primary.insert(id.clone(), marker);
+        }
         self.records.insert(id, record);
         self.maximum_in_flight = Some(limit);
         self.in_flight = slots;
@@ -394,16 +546,23 @@ impl SemanticJournal {
     }
 }
 
-fn validate_admission(admission: &SemanticAdmissionV1) -> Result<SemanticRetrievalRequestV1, Error> {
+fn validate_admission(
+    admission: &SemanticAdmissionV1,
+) -> Result<SemanticRetrievalRequestV1, Error> {
     let request = SemanticRetrievalRequestV1::decode(&admission.request_wire)
         .map_err(|_| Error::CorruptJournal("semantic request binding"))?;
     validate_identity(&request.operation_id, "semantic request")?;
     validate_identity(&admission.principal_id, "semantic principal")?;
     validate_identity(&admission.reservation_id, "semantic reservation")?;
     validate_identity(&admission.worker_id, "semantic worker")?;
-    validate_digest(&admission.authority_binding_digest, "semantic authority binding")?;
-    if admission.worker_generation != request.generation || admission.maximum_tokens == 0
-        || admission.maximum_tokens > super::MAX_TOKENS || admission.maximum_memory_bytes == 0
+    validate_digest(
+        &admission.authority_binding_digest,
+        "semantic authority binding",
+    )?;
+    if admission.worker_generation != request.generation
+        || admission.maximum_tokens == 0
+        || admission.maximum_tokens > super::MAX_TOKENS
+        || admission.maximum_memory_bytes == 0
     {
         return Err(Error::InvalidTransition);
     }
@@ -413,3 +572,7 @@ fn validate_admission(admission: &SemanticAdmissionV1) -> Result<SemanticRetriev
 #[cfg(test)]
 #[path = "semantic_control_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "semantic_owner_lock_tests.rs"]
+mod owner_lock_tests;

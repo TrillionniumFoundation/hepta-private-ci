@@ -108,17 +108,21 @@ The workflow `hepta-multiscale-regressions.yml` binds source-head and determinis
 base-merge checks to the actual Git event. It uses read-only permissions and the
 existing exact-execution recorder. Ordinary prose does not select native recovery
 work. This workflow does not replace `CI required` or `Architecture required`.
-Python tests use explicit doubles; Rust tests exercise the existing owner store
-across close/reopen. Neither is a real-model, live-browser, power-loss or kill-9
-qualification. A missing/failed native result remains missing/failed.
+Python tests use explicit doubles. Automation tests exercise close/reopen; the
+semantic owner suite additionally kills a real child after named durable
+boundaries. Neither supplies real-model, live-browser, disk power-loss or
+independent product qualification. Native tests must actually execute before a
+pass is recorded; a missing/failed native result remains missing/failed.
 
 The native semantic input/output boundary below is now source-implemented.
 Existing `NeuronFeatureRequestV1` still carries numeric features and is unchanged.
 Current `PinnedCognitiveRanker` loads an independently selected tabular artifact.
 Do not bypass that selector or instantiate this script as an unrestricted Agentd
 model server. Product integration still needs a qualified concrete transport,
-durable reservation and exact-result replay, source/registry currentness at final
-use, artifact approval/revocation, then real task data on fixed hardware. The
+the durable owner/worker composition described below, source/registry
+currentness at final use, artifact approval/revocation, then real task data on
+fixed hardware. Source implementation of the owner journal is not product
+startup selection or independent qualification. The
 advisory callback here is not a sealed capability and cannot supply permissions.
 
 Controlled computer effects and stateful topology cutover remain with their
@@ -190,3 +194,80 @@ actual subprocess pre-model rejection cases. The Rust suites add nine native
 wire conformance cases and twenty worker lifecycle cases using deterministic
 fixtures, not weights. Execution of one language is not proof that the other
 compiled or that real model/device/retention performance was measured.
+
+
+## Durable semantic owner profile
+
+`durable_control::semantic` extends the existing `DurableInferenceControl` file,
+exclusive writer lock, fsync-before-publication and poisoned-handle recovery.
+It introduces no new database, daemon, event bus, source writer or effect owner.
+The journal distinguishes `semantic-retrieval-v1|` from native V1 and legacy
+records. Existing record meanings and numeric Neuron feature contracts remain
+unchanged. Old binaries do not understand the new journal prefix; deployment
+must retain a compatible reader and must not reinterpret or discard records.
+
+The transitions are:
+
+```text
+Reserved -> DispatchFenced -> Completed -> downstream acknowledgement
+    |              |
+    v              +-> unknown after lost reply, crash or cancellation
+NotDispatched          (no automatic redispatch and no slot release)
+```
+
+A record binds full request bytes, operation/workspace/generation, principal,
+reservation, worker generation, selected bundle, resource limits and host grant
+identity. Before driver entry the same owner fsyncs a dispatch fence. Complete
+validated reply bytes and optional observed memory are then fsynced before
+publication. In-memory output, stdout completion or a digest alone is not the
+stored result. Changed request or completion bytes conflict under the same ID.
+Legacy/native entry points cannot reuse a semantic identity. Historical replay
+returns the original record without loading or executing another model.
+
+Cancellation while Reserved is a durable negative. Cancellation after the fence
+retains unknown execution and its capacity obligation. A later valid result is
+retained as an observation even after cancellation or resource overrun, but is
+not thereby eligible for current consumption. The final consumer must recheck
+source/artifact currentness, objective, generation, deadline and actual authority.
+The separate acknowledgement binds the destination owner's receipt; the inference
+owner never writes Neuron checkpoints, TaskFlow outboxes or the learning ledger.
+This is an outbox-style pending-result surface, not an implemented cross-owner
+acknowledgement worker or a crash-atomic transaction spanning owners.
+
+Result and acknowledgement headroom are reserved before admission. Unrelated
+journal appends cannot spend this semantic reservation. Completed unacknowledged
+eligible results retain acknowledgement space. Missing memory measurement stays
+unknown, not zero. A valid observed completion releases the compute slot even
+when its result cannot be used. Malformed output and lost replies do not.
+
+`InferenceWorker::run_semantic_retrieval_durable` is the new trusted composition
+port. The older in-memory call remains a compatibility seam, not a durable
+product path. The concrete process transport, owner-authenticated observations,
+shared physical quotas across execution profiles, external anti-rollback
+frontier, source revocation and Agentd product integration remain separate work.
+Caller-supplied digests are bindings, not signed credentials or model attestation.
+An unknown operation without a trusted reconciliation result remains blocked;
+changing request IDs, deleting the journal or swapping a backup is not recovery.
+
+The Python worker's deadline budget begins before model loading. A monotonic
+elapsed limit complements absolute wall expiry, and observed clock regression
+poisons the local guard. It never retries. This guard cannot preempt a stuck
+model or certify time across reboot; the host must enforce process termination.
+
+Additional executable checks:
+
+```sh
+python3 -m unittest -v scripts.tests.test_hepta_laya_deadline
+cd codex-rs
+just test --locked -p codex-hepta-infer-core --lib durable_control::semantic::tests
+just test --locked -p codex-hepta-infer-worker-host --test semantic_owner_recovery
+cargo test --locked -p codex-hepta-infer-core semantic_journal_retained_history_curve -- --ignored --nocapture --test-threads=1
+```
+
+The explicit measurement writes and fsyncs 64/256/1024 complete records, reopens
+the same journal, verifies every stored result/ack and verifies replay appends no
+bytes. It reports actual append/reopen duration and journal growth. It does not
+perform compaction or establish a long-term SLO. The maintenance workflow's old
+`post_compaction_multi_generation_curve` filter matched zero tests in the source
+candidate; the new filter selects this actual retained-history test without
+weakening the minimum executed-test requirement.
