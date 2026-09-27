@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import tempfile
 import tomllib
 from pathlib import Path
@@ -12,6 +13,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 TRUTH = ROOT / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
+MODULE_ID = re.compile(r"^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$")
 
 
 class Invalid(ValueError):
@@ -81,6 +83,44 @@ def inside(path: str, roots: list[str]) -> bool:
     return any(path == root or path.startswith(root + "/") for root in roots)
 
 
+def resolve_delegated_owner_roots(
+    root: Path, module: Any, roots: dict[str, list[str]]
+) -> list[str]:
+    """Resolve a cross-lane owner through its canonical implementation map.
+
+    Lane B truth remains authoritative only for Lane B membership.  A delegated
+    callee may name a module owned by another lane, but that owner is admitted
+    solely through docs/modules/<module>/IMPLEMENTATION_MAP.json, with exact
+    module identity and canonical existing roots.  The foreign map is not
+    promoted into Lane B and its operations are not re-verified here.
+    """
+    need(
+        isinstance(module, str) and MODULE_ID.fullmatch(module) is not None,
+        "delegated owner: invalid module identity",
+    )
+    if module in roots:
+        return roots[module]
+    map_value = f"docs/modules/{module}/IMPLEMENTATION_MAP.json"
+    map_path = canonical_path(
+        root, map_value, f"{module}: delegated owner map", require_file=True
+    )
+    row = load(map_path)
+    need(row.get("module") == module, f"{module}: delegated owner map identity")
+    resolved_roots = row.get("resolvedRoots")
+    need(
+        isinstance(resolved_roots, list)
+        and resolved_roots
+        and all(isinstance(item, str) and item for item in resolved_roots),
+        f"{module}: delegated owner resolved roots",
+    )
+    for owner_root in resolved_roots:
+        canonical_path(
+            root, owner_root, f"{module}: delegated owner root", require_file=None
+        )
+    roots[module] = resolved_roots
+    return resolved_roots
+
+
 def delegated_dependency_matches(
     root: Path, owner_roots: list[str], anchor: dict[str, Any]
 ) -> bool:
@@ -139,13 +179,10 @@ def verify_anchor(
         need(inside(path, roots[module]), f"{module}: owner-root escape {path}")
     else:
         delegated_owner = anchor.get("ownerModule")
+        delegated_roots = resolve_delegated_owner_roots(root, delegated_owner, roots)
         need(
-            isinstance(delegated_owner, str) and delegated_owner in roots,
-            f"{module}: delegated owner",
-        )
-        need(
-            inside(path, roots[delegated_owner])
-            or delegated_dependency_matches(root, roots[delegated_owner], anchor),
+            inside(path, delegated_roots)
+            or delegated_dependency_matches(root, delegated_roots, anchor),
             f"{module}: delegate-root escape {path}",
         )
     symbol = anchor["symbol"]
@@ -173,7 +210,10 @@ def verify(root: Path = ROOT) -> int:
         need(isinstance(entry, dict), "module index entry")
         module = entry.get("module")
         map_path = entry.get("mapPath")
-        need(isinstance(module, str) and bool(module), "module identity")
+        need(
+            isinstance(module, str) and MODULE_ID.fullmatch(module) is not None,
+            "module identity",
+        )
         path = canonical_path(root, map_path, f"{module}: map", require_file=True)
         row = load(path)
         need(row.get("module") == module, f"{module}: map identity")
@@ -225,6 +265,7 @@ def verify(root: Path = ROOT) -> int:
             {
                 "status": "PASS_HEPTA_LANE_B_CANONICAL_PATH_GUARD",
                 "modules": len(maps),
+                "crossLaneOwners": len(roots) - len(maps),
                 "operations": operations,
                 "delegates": delegates,
                 "testBindings": tests,
@@ -288,6 +329,25 @@ def self_test() -> int:
                 pass
             else:
                 raise Invalid("accepted symlink binding")
+
+        external_map = root / "docs/modules/external.owner/IMPLEMENTATION_MAP.json"
+        external_map.parent.mkdir(parents=True)
+        external_map.write_text(
+            json.dumps(
+                {"module": "external.owner", "resolvedRoots": ["foreign"]},
+                sort_keys=True,
+            ),
+            encoding="utf-8",
+        )
+        resolved = resolve_delegated_owner_roots(root, "external.owner", {})
+        need(resolved == ["foreign"], "cross-lane owner fixture")
+        for bad_module in ("../owner", "External.Owner", "owner//module"):
+            try:
+                resolve_delegated_owner_roots(root, bad_module, {})
+            except Invalid:
+                pass
+            else:
+                raise Invalid(f"accepted unsafe owner module {bad_module!r}")
     print(
         json.dumps(
             {"status": "PASS_HEPTA_LANE_B_CANONICAL_PATH_GUARD_SELF_TEST"},
