@@ -146,16 +146,13 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
         // dropping it cannot prove that no bytes crossed the network boundary,
         // so every gate stop is returned as an indeterminate transport result.
         let gated = poll_fn(|context| {
-            if self
-                .preflight(
-                    claimed_epoch,
-                    claimed_revision,
-                    grant_expires_at_ms,
-                    binding,
-                )
-                .is_err()
-            {
-                return Poll::Ready(Err(OutboxDispatchError::Authority));
+            if let Err(error) = self.preflight(
+                claimed_epoch,
+                claimed_revision,
+                grant_expires_at_ms,
+                binding,
+            ) {
+                return Poll::Ready(Err(error));
             }
             send.as_mut().poll(context).map(Ok)
         });

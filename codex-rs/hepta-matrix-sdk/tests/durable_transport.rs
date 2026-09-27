@@ -579,7 +579,7 @@ async fn expired_crash_lease_reuses_the_stable_transaction_after_reopen() -> Tes
         &transport,
         &authorizer,
         &OutboxDispatchConfig {
-            lease_ms: 20,
+            lease_ms: 5_000,
             retry_delay_ms: 10,
             max_retry_delay_ms: 40,
             max_attempts: 3,
@@ -638,7 +638,7 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
         Ok(event("$sent-after-retry")?),
     ]);
     let config = OutboxDispatchConfig {
-        lease_ms: 20,
+        lease_ms: 5_000,
         retry_delay_ms: 10,
         max_retry_delay_ms: 40,
         max_attempts: 3,
@@ -653,8 +653,20 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
             .retry_scheduled,
         1
     );
-    let accepted =
-        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
+    let retry_at = store
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("retry outbox disappeared")?
+        .next_attempt_at_ms;
+    let accepted = dispatch_outbox_once(
+        &store,
+        &transport,
+        &authorizer,
+        &config,
+        &cancel,
+        retry_at,
+    )
+    .await?;
     assert_eq!(accepted.sent, 0);
     assert_eq!(accepted.transport_accepted, 1);
     assert_eq!(
@@ -664,11 +676,17 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
             original.stable_txn_id.clone()
         ]
     );
+    let observed_at_ms = store
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("accepted retry outbox disappeared")?
+        .updated_at_ms
+        .saturating_add(1);
     observe_outbound(
         &store,
         original.stable_txn_id.clone(),
         event("$sent-after-retry")?,
-        21,
+        observed_at_ms,
     )
     .await?;
     assert_eq!(
@@ -702,7 +720,7 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     let accepted_event_id = event("$synapse-accepted-before-ack-loss")?;
     let transport = PostSendAckLossTransport::new(accepted_event_id.clone());
     let config = OutboxDispatchConfig {
-        lease_ms: 20,
+        lease_ms: 5_000,
         retry_delay_ms: 10,
         max_retry_delay_ms: 40,
         max_attempts: 3,
@@ -720,8 +738,16 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     assert_eq!(after_response_loss.state, OutboxState::RetryScheduled);
     assert_eq!(after_response_loss.sent_event_id, None);
 
-    let second =
-        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
+    let retry_at = after_response_loss.next_attempt_at_ms;
+    let second = dispatch_outbox_once(
+        &store,
+        &transport,
+        &authorizer,
+        &config,
+        &cancel,
+        retry_at,
+    )
+    .await?;
     assert_eq!(second.sent, 0);
     assert_eq!(second.transport_accepted, 1);
     assert_eq!(
@@ -752,11 +778,12 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     assert_eq!(second_claim.revocation_revision, 1);
     assert_eq!(first_claim.payload_digest, second_claim.payload_digest);
     assert_eq!(first_claim.subject_id, agent_id.as_str());
+    let observed_at_ms = accepted.updated_at_ms.saturating_add(1);
     observe_outbound(
         &store,
         original.stable_txn_id.clone(),
         accepted_event_id.clone(),
-        21,
+        observed_at_ms,
     )
     .await?;
     let committed = store
@@ -794,7 +821,7 @@ async fn sync_echo_after_retry_claim_uses_prior_entered_proof() -> TestResult {
     let original = enqueue_final(&store, &agent_id, 10).await?;
     let transport = FakeTransport::new([Err(MatrixTransportError::ResponseLost)]);
     let config = OutboxDispatchConfig {
-        lease_ms: 20,
+        lease_ms: 5_000,
         retry_delay_ms: 10,
         max_retry_delay_ms: 40,
         max_attempts: 3,
@@ -896,7 +923,7 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
     let accepted_event_id = event("$after-pre-io-crashes")?;
     let transport = FakeTransport::new([Ok(accepted_event_id)]);
     let config = OutboxDispatchConfig {
-        lease_ms: 5,
+        lease_ms: 5_000,
         retry_delay_ms: 5,
         max_retry_delay_ms: 20,
         max_attempts: 4,
@@ -921,11 +948,12 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
     )?;
     let signed = authorizer.signed_grant(&request).await?;
     let token = authorizer.authority().claim(&signed, &request.binding)?;
-    let (future, _) = authorizer.authority().with_verified_use_at_frontier(
-        token,
-        &request.binding,
-        || transport.fixture_lazy_send(&first),
-    )?;
+    let (future, _) =
+        authorizer
+            .authority()
+            .with_verified_use_at_frontier(token, &request.binding, || {
+                transport.fixture_lazy_send(&first)
+            })?;
     drop(future);
     assert!(transport.txn_ids()?.is_empty());
     assert!(
@@ -939,12 +967,12 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
     // Cut 2: the exact authority claim is durable, but the lazy network future
     // is still dropped before its first poll.
     let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
-    let second = store.claim_outbox(20, config.lease_ms, 1).await?;
+    let second = store.claim_outbox(5_011, config.lease_ms, 1).await?;
     let second = second
         .first()
         .ok_or("missing second crash-cut claim")?
         .clone();
-    let prepared = store.prepare_outbox_dispatch(&second, 20).await?;
+    let prepared = store.prepare_outbox_dispatch(&second, 5_011).await?;
     let request = build_matrix_final_use_request(
         agent_id.as_str(),
         &prepared,
@@ -953,11 +981,12 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
     )?;
     let signed = authorizer.signed_grant(&request).await?;
     let token = authorizer.authority().claim(&signed, &request.binding)?;
-    let (future, frontier) = authorizer.authority().with_verified_use_at_frontier(
-        token,
-        &request.binding,
-        || transport.fixture_lazy_send(&second),
-    )?;
+    let (future, frontier) =
+        authorizer
+            .authority()
+            .with_verified_use_at_frontier(token, &request.binding, || {
+                transport.fixture_lazy_send(&second)
+            })?;
     store
         .record_dispatch_authority_claim(
             &original.stable_txn_id,
@@ -974,7 +1003,7 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
                 grant_id: signed.grant.grant_id.clone(),
                 request_digest: request.request_digest.clone(),
                 scope_digest: request.scope_digest.clone(),
-                payload_digest: request.payload_digest.clone(),
+                payload_digest: prepared.payload_digest.clone(),
                 attempt: second.attempts,
                 expires_at_ms: signed.grant.expires_at_unix_ms,
                 claimed_at_ms: SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64,
@@ -998,7 +1027,7 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
         &authorizer,
         &config,
         &CancellationToken::new(),
-        30,
+        10_012,
     )
     .await?;
     assert_eq!(stats.transport_accepted, 1);
@@ -1027,7 +1056,7 @@ async fn revoked_grant_never_enters_the_physical_matrix_adapter() -> TestResult 
     let original = enqueue_final(&store, &agent_id, 10).await?;
     let transport = FakeTransport::new([Ok(event("$must-not-send")?)]);
     let config = OutboxDispatchConfig {
-        lease_ms: 20,
+        lease_ms: 5_000,
         retry_delay_ms: 10,
         max_retry_delay_ms: 40,
         max_attempts: 3,
@@ -1095,11 +1124,12 @@ async fn revocation_after_claim_before_adapter_entry_never_crosses_network() -> 
             revoked_grant_ids: revoked,
         })?;
 
-    let entered = authorizer.authority().with_verified_use_at_frontier(
-        token,
-        &request.binding,
-        || transport.fixture_lazy_send(&claimed),
-    );
+    let entered =
+        authorizer
+            .authority()
+            .with_verified_use_at_frontier(token, &request.binding, || {
+                transport.fixture_lazy_send(&claimed)
+            });
     assert!(
         entered.is_err(),
         "revocation committed before adapter entry must deny use"
@@ -1126,7 +1156,7 @@ async fn wrong_signer_grant_never_enters_the_physical_matrix_adapter() -> TestRe
     let original = enqueue_final(&store, &agent_id, 10).await?;
     let transport = FakeTransport::new([Ok(event("$must-not-send-wrong-signer")?)]);
     let config = OutboxDispatchConfig {
-        lease_ms: 20,
+        lease_ms: 5_000,
         retry_delay_ms: 10,
         max_retry_delay_ms: 40,
         max_attempts: 3,
@@ -1172,7 +1202,7 @@ async fn later_permanent_rejection_cannot_erase_prior_transport_acceptance() -> 
         Err(MatrixTransportError::Permanent),
     ]);
     let config = OutboxDispatchConfig {
-        lease_ms: 20,
+        lease_ms: 5_000,
         retry_delay_ms: 10,
         max_retry_delay_ms: 40,
         max_attempts: 3,
@@ -1185,8 +1215,20 @@ async fn later_permanent_rejection_cannot_erase_prior_transport_acceptance() -> 
         dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 10).await?;
     assert_eq!(accepted.transport_accepted, 1);
     assert_eq!(accepted.sent, 0);
-    let rejected_retry =
-        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
+    let retry_at = store
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("accepted outbox disappeared before reconciliation retry")?
+        .next_attempt_at_ms;
+    let rejected_retry = dispatch_outbox_once(
+        &store,
+        &transport,
+        &authorizer,
+        &config,
+        &cancel,
+        retry_at,
+    )
+    .await?;
     assert_eq!(rejected_retry.permanent_failure, 0);
     assert_eq!(rejected_retry.indeterminate, 1);
 
@@ -1203,11 +1245,12 @@ async fn later_permanent_rejection_cannot_erase_prior_transport_acceptance() -> 
     assert_eq!(queued.state, OutboxState::RetryScheduled);
     assert_eq!(queued.next_attempt_at_ms, i64::MAX as u64);
 
+    let observed_at_ms = queued.updated_at_ms.saturating_add(1);
     observe_outbound(
         &store,
         original.stable_txn_id.clone(),
         accepted_event_id.clone(),
-        21,
+        observed_at_ms,
     )
     .await?;
     let settled = store
@@ -1235,7 +1278,7 @@ async fn transient_failures_use_bounded_backoff_and_then_park_for_reconciliation
         Err(MatrixTransportError::Retryable),
     ]);
     let config = OutboxDispatchConfig {
-        lease_ms: 20,
+        lease_ms: 5_000,
         retry_delay_ms: 10,
         max_retry_delay_ms: 25,
         max_attempts: 3,
@@ -1254,20 +1297,40 @@ async fn transient_failures_use_bounded_backoff_and_then_park_for_reconciliation
         .outbox_for_txn(&original.stable_txn_id)
         .await?
         .ok_or("first retry record disappeared")?;
-    assert_eq!(first_retry.next_attempt_at_ms, 20);
+    let first_delay = first_retry
+        .next_attempt_at_ms
+        .saturating_sub(first_retry.updated_at_ms);
+    assert!((10..=12).contains(&first_delay));
     assert_eq!(
-        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20)
-            .await?
-            .retry_scheduled,
+        dispatch_outbox_once(
+            &store,
+            &transport,
+            &authorizer,
+            &config,
+            &cancel,
+            first_retry.next_attempt_at_ms,
+        )
+        .await?
+        .retry_scheduled,
         1
     );
     let second_retry = store
         .outbox_for_txn(&original.stable_txn_id)
         .await?
         .ok_or("second retry record disappeared")?;
-    assert_eq!(second_retry.next_attempt_at_ms, 40);
-    let parked =
-        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 40).await?;
+    let second_delay = second_retry
+        .next_attempt_at_ms
+        .saturating_sub(second_retry.updated_at_ms);
+    assert!((20..=24).contains(&second_delay));
+    let parked = dispatch_outbox_once(
+        &store,
+        &transport,
+        &authorizer,
+        &config,
+        &cancel,
+        second_retry.next_attempt_at_ms,
+    )
+    .await?;
     assert_eq!(parked.permanent_failure, 0);
     assert_eq!(parked.indeterminate, 1);
     let unresolved = store

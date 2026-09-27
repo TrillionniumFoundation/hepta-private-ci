@@ -295,15 +295,20 @@ fn validate_private_socket(path: &Path) -> Result<(), MatrixFinalUseBrokerError>
     {
         return Err(MatrixFinalUseBrokerError::UnsafePath);
     }
-    if std::fs::canonicalize(path).map_err(|_| MatrixFinalUseBrokerError::UnsafePath)? != path {
-        return Err(MatrixFinalUseBrokerError::UnsafePath);
-    }
-    let metadata =
-        std::fs::symlink_metadata(path).map_err(|_| MatrixFinalUseBrokerError::UnsafePath)?;
+    let metadata = match std::fs::symlink_metadata(path) {
+        Ok(metadata) => metadata,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            return Err(MatrixFinalUseBrokerError::BrokerUnavailable);
+        }
+        Err(_) => return Err(MatrixFinalUseBrokerError::UnsafePath),
+    };
     if !metadata.file_type().is_socket()
         || metadata.mode() & 0o077 != 0
         || metadata.uid() != rustix::process::geteuid().as_raw()
     {
+        return Err(MatrixFinalUseBrokerError::UnsafePath);
+    }
+    if std::fs::canonicalize(path).map_err(|_| MatrixFinalUseBrokerError::UnsafePath)? != path {
         return Err(MatrixFinalUseBrokerError::UnsafePath);
     }
     Ok(())
@@ -365,18 +370,19 @@ mod tests {
     ) -> TestResult<(TempDir, MatrixFinalUseBroker)> {
         let directory = TempDir::new()?;
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
+        let root = directory.path().canonicalize()?;
         let signer = SigningKey::from_bytes(&[71; 32]);
-        let revocations_file = directory.path().join("revocations.json");
+        let revocations_file = root.join("revocations.json");
         write_private_json(&revocations_file, &file_head)?;
         let authority = FinalUseAuthority::open_state_dir(
-            &directory.path().join("authority"),
+            &root.join("authority"),
             "matrix-broker-test".to_string(),
             signer.verifying_key().to_bytes(),
             initial,
         )?;
         let broker = MatrixFinalUseBroker {
             authority,
-            broker_socket: directory.path().join("broker.sock"),
+            broker_socket: root.join("broker.sock"),
             revocations_file,
             request_timeout: Duration::from_millis(MIN_BROKER_TIMEOUT_MS),
         };
@@ -438,7 +444,7 @@ mod tests {
     #[tokio::test]
     async fn broker_socket_death_fails_probe_closed() -> TestResult {
         let (directory, mut broker) = test_broker(head(17, 1, &[]), head(17, 1, &[]))?;
-        let socket = directory.path().join("broker.sock");
+        let socket = directory.path().canonicalize()?.join("broker.sock");
         let listener = tokio::net::UnixListener::bind(&socket)?;
         std::fs::set_permissions(&socket, std::fs::Permissions::from_mode(0o700))?;
         broker.broker_socket = socket;
