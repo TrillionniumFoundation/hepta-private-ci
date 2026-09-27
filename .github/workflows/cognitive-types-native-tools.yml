@@ -1,37 +1,48 @@
-name: cognitive-types-native-tools
+name: cognitive-types-format-inspection
 on:
   push:
     branches: [codex/cognitive-types-production-hardening-20260926]
-    paths: [.github/workflows/cognitive-types-native-tools.yml]
+    paths:
+      - .github/workflows/cognitive-types-native-tools.yml
+      - codex-rs/hepta-cognitive-types/**
+      - codex-rs/hepta-compact-engine/**
+      - codex-rs/hepta-memory-retrieval/**
 permissions:
   contents: read
+concurrency:
+  group: cognitive-types-format-inspection-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  native-tools:
-    runs-on: ubuntu-24.04
+  format-inspection:
+    runs-on: macos-15
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: '1.95.0'
-          components: rustfmt, clippy
-      - name: Export compiler and rustfmt without credentials or Cargo home
+          components: rustfmt
+      - name: Inspect formatting without rewriting the branch or issuing qualification
         shell: bash
         run: |
           set -euo pipefail
-          out="$RUNNER_TEMP/native-tools"
+          out="$RUNNER_TEMP/format-inspection"
           mkdir -p "$out"
-          toolchain=$(rustc --print sysroot)
-          rustc --version --verbose > "$out/rustc.txt"
+          git rev-parse HEAD > "$out/input-source.txt"
+          git rev-parse HEAD^{tree} > "$out/input-tree.txt"
           rustfmt --version > "$out/rustfmt.txt"
-          git rev-parse HEAD > "$out/source.txt"
-          tar -C "$toolchain" -czf "$out/rust-toolchain.tar.gz" bin lib
-          sha256sum "$out/rust-toolchain.tar.gz" > "$out/SHA256SUMS"
-      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-cognitive-types -p codex-hepta-compact-engine -p codex-hepta-memory-retrieval
+          git diff --binary > "$out/format.patch"
+          tar -czf "$out/formatted-source.tar.gz" codex-rs/hepta-cognitive-types codex-rs/hepta-compact-engine/src codex-rs/hepta-memory-retrieval/src
+          shasum -a 256 "$out/format.patch" "$out/formatted-source.tar.gz" > "$out/SHA256SUMS"
+          printf 'This artifact is formatting output, not an exact-head test or acceptance receipt.\n' > "$out/BOUNDARY.txt"
+      - if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
-          name: cognitive-types-native-tools-${{ github.sha }}
-          path: ${{ runner.temp }}/native-tools
+          name: cognitive-types-format-inspection-${{ github.sha }}
+          path: ${{ runner.temp }}/format-inspection
           if-no-files-found: error
-          retention-days: 3
+          retention-days: 7
