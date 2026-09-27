@@ -36,6 +36,7 @@ on:
       - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
       - "scripts/hepta-implementation-maps.py"
       - "scripts/memory_federation_attestation.py"
+      - "scripts/memory_federation_full_attestation.py"
       - "scripts/run_memory_federation_qualification.sh"
 
 permissions:
@@ -81,7 +82,7 @@ jobs:
       - name: Self-test qualification tooling
         run: |
           set -euo pipefail
-          python3 -m py_compile scripts/memory_federation_attestation.py
+          python3 -m py_compile scripts/memory_federation_attestation.py scripts/memory_federation_full_attestation.py
           bash -n scripts/run_memory_federation_qualification.sh
 
       - name: Run exact qualification matrix
@@ -97,7 +98,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf "$RUNNER_TEMP/memory-federation-source"
-          python3 scripts/memory_federation_attestation.py emit-payload \
+          python3 scripts/memory_federation_full_attestation.py emit-payload \
             --output "$RUNNER_TEMP/memory-federation-source" \
             --lane source-head \
             --conclusion "$JOB_CONCLUSION" \
@@ -105,7 +106,7 @@ jobs:
             --tested-sha "$SOURCE_SHA" \
             --tested-tree "$SOURCE_TREE" \
             --base-sha "$BASE_SHA"
-          python3 scripts/memory_federation_attestation.py verify \
+          python3 scripts/memory_federation_full_attestation.py verify \
             "$RUNNER_TEMP/memory-federation-source/attestation.json"
 
       - name: Upload exact-head qualification payload
@@ -128,7 +129,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/memory-federation-source-envelope"
-          python3 scripts/memory_federation_attestation.py emit-envelope \
+          python3 scripts/memory_federation_full_attestation.py emit-envelope \
             --output "$RUNNER_TEMP/memory-federation-source-envelope/envelope.json" \
             --payload "$RUNNER_TEMP/memory-federation-source/attestation.json" \
             --lane source-head \
@@ -136,7 +137,7 @@ jobs:
             --artifact-name "memory-federation-source-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
             --artifact-id "$ARTIFACT_ID" \
             --artifact-digest "$ARTIFACT_DIGEST"
-          python3 scripts/memory_federation_attestation.py verify \
+          python3 scripts/memory_federation_full_attestation.py verify \
             "$RUNNER_TEMP/memory-federation-source-envelope/envelope.json"
 
       - name: Upload exact-head qualification envelope
@@ -199,7 +200,7 @@ jobs:
       - name: Self-test qualification tooling
         run: |
           set -euo pipefail
-          python3 -m py_compile scripts/memory_federation_attestation.py
+          python3 -m py_compile scripts/memory_federation_attestation.py scripts/memory_federation_full_attestation.py
           bash -n scripts/run_memory_federation_qualification.sh
 
       - name: Run deterministic-merge qualification matrix
@@ -216,7 +217,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf "$RUNNER_TEMP/memory-federation-merge"
-          python3 scripts/memory_federation_attestation.py emit-payload \
+          python3 scripts/memory_federation_full_attestation.py emit-payload \
             --output "$RUNNER_TEMP/memory-federation-merge" \
             --lane deterministic-merge \
             --conclusion "$JOB_CONCLUSION" \
@@ -226,7 +227,7 @@ jobs:
             --base-sha "$BASE_SHA" \
             --merge-sha "$MERGE_SHA" \
             --merge-tree "$MERGE_TREE"
-          python3 scripts/memory_federation_attestation.py verify \
+          python3 scripts/memory_federation_full_attestation.py verify \
             "$RUNNER_TEMP/memory-federation-merge/attestation.json"
 
       - name: Upload deterministic-merge qualification payload
@@ -249,7 +250,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/memory-federation-merge-envelope"
-          python3 scripts/memory_federation_attestation.py emit-envelope \
+          python3 scripts/memory_federation_full_attestation.py emit-envelope \
             --output "$RUNNER_TEMP/memory-federation-merge-envelope/envelope.json" \
             --payload "$RUNNER_TEMP/memory-federation-merge/attestation.json" \
             --lane deterministic-merge \
@@ -257,7 +258,7 @@ jobs:
             --artifact-name "memory-federation-merge-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
             --artifact-id "$ARTIFACT_ID" \
             --artifact-digest "$ARTIFACT_DIGEST"
-          python3 scripts/memory_federation_attestation.py verify \
+          python3 scripts/memory_federation_full_attestation.py verify \
             "$RUNNER_TEMP/memory-federation-merge-envelope/envelope.json"
 
       - name: Upload deterministic-merge qualification envelope
