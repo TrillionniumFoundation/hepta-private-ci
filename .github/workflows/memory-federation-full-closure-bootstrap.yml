@@ -44,6 +44,7 @@ jobs:
           python3 scripts/memory_federation_registry_closure.py
           python3 scripts/memory_federation_codec_closure.py
           python3 scripts/memory_federation_codec_hardening.py
+          python3 scripts/memory_federation_runtime_hardening.py
           python3 -m py_compile \
             scripts/hepta-memory-federation-state.py \
             scripts/memory_federation_core_closure.py \
@@ -51,7 +52,8 @@ jobs:
             scripts/memory_federation_metadata_closure.py \
             scripts/memory_federation_registry_closure.py \
             scripts/memory_federation_codec_closure.py \
-            scripts/memory_federation_codec_hardening.py
+            scripts/memory_federation_codec_hardening.py \
+            scripts/memory_federation_runtime_hardening.py
 
       - name: Format and precompile generated source
         working-directory: codex-rs
@@ -106,6 +108,7 @@ jobs:
             --expected-tree "${{ steps.tested.outputs.tree }}"
           python3 scripts/hepta-memory-federation-state.py verify
           python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-docs.py verify
 
       - name: Run exact candidate qualification
         working-directory: codex-rs
@@ -158,5 +161,6 @@ jobs:
             --expected-tree "$(git rev-parse HEAD^{tree})"
           python3 scripts/hepta-memory-federation-state.py verify
           python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-docs.py verify
           git diff --check
           test -z "$(git status --porcelain)"
