@@ -73,6 +73,13 @@ jobs:
     uses: ./.github/workflows/hepta-contract-gate.yml
     secrets: inherit
 
+  agentd-protected:
+    name: Agentd exact source and synthetic merge
+    needs: scope
+    if: needs.scope.outputs.lifecycle == 'true' || needs.scope.outputs.full_repo == 'true'
+    uses: ./.github/workflows/runtime-agentd-protected-gate.yml
+    secrets: inherit
+
   bazel:
     name: Bazel
     needs: scope
@@ -217,6 +224,7 @@ jobs:
     needs:
       - scope
       - hepta-contract-gate
+      - agentd-protected
       - bazel
       - blob-size-policy
       - cargo-deny
@@ -236,6 +244,7 @@ jobs:
         env:
           NEEDS: ${{ toJSON(needs) }}
           NATIVE: ${{ needs.scope.outputs.native }}
+          LIFECYCLE: ${{ needs.scope.outputs.lifecycle }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
         shell: bash
         run: |
@@ -245,10 +254,13 @@ jobs:
           import json
           import os
           native = os.environ["NATIVE"] == "true"
+          lifecycle = os.environ["LIFECYCLE"] == "true"
           full = os.environ["FULL_REPO"] == "true"
           allowed = []
           if not (native or full):
               allowed.append("hepta-contract-gate")
+          if not (lifecycle or full):
+              allowed.append("agentd-protected")
           if not full:
               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
           if not (native and not full):

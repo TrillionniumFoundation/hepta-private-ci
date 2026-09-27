@@ -1,0 +1,264 @@
+name: Runtime Agentd protected candidate gate
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-agentd-protected-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  MERGE_SHA: ${{ github.event.pull_request && github.sha || github.sha }}
+  CARGO_INCREMENTAL: '0'
+
+jobs:
+  source-contract:
+    name: Source contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Bind source identity and exercise receipt verifier
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
+          node scripts/architecture/ci-source-ownership.mjs
+
+  source-suite:
+    name: Source ${{ matrix.os }} / ${{ matrix.suite }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+        suite: [owner-libraries, native-library, native-process, daemon-process, product-process, strict-clippy, read-only-profile]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact repository toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal --component clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: codex-rs
+          shared-key: agentd-protected-source-v1
+      - name: Execute source suite and retain exact receipts
+        if: ${{ always() }}
+        shell: bash
+        env:
+          QUALIFICATION_OS: ${{ matrix.os }}
+          QUALIFICATION_SUITE: ${{ matrix.suite }}
+        run: |
+          python3 -B scripts/qualification/agentd_exact_head.py run \
+            --workspace "$GITHUB_WORKSPACE" --sha "$SOURCE_SHA" \
+            --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
+            --os "$QUALIFICATION_OS" --suite "$QUALIFICATION_SUITE" \
+            --output "$RUNNER_TEMP/agentd-source-receipt"
+      - name: Upload source evidence including failures
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: agentd-protected-source-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.suite }}
+          path: ${{ runner.temp }}/agentd-source-receipt
+          if-no-files-found: error
+          retention-days: 30
+
+  source-result:
+    name: Source candidate required
+    if: ${{ always() }}
+    needs: [source-contract, source-suite]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: agentd-protected-source-${{ github.run_id }}-${{ github.run_attempt }}-*
+          path: ${{ runner.temp }}/agentd-source-evidence
+      - name: Reject missing, skipped, failed, stale or tampered source evidence
+        env:
+          CONTRACT_RESULT: ${{ needs.source-contract.result }}
+          SUITE_RESULT: ${{ needs.source-suite.result }}
+        run: |
+          set -euo pipefail
+          python3 -B scripts/qualification/agentd_exact_head.py verify \
+            --sha "$SOURCE_SHA" --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
+            --evidence "$RUNNER_TEMP/agentd-source-evidence" \
+            --output "$RUNNER_TEMP/agentd-source-result.json" \
+            --contract-result "$CONTRACT_RESULT" --suite-result "$SUITE_RESULT"
+          test "$CONTRACT_RESULT" = success
+          test "$SUITE_RESULT" = success
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: agentd-protected-source-result-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/agentd-source-result.json
+          if-no-files-found: error
+          retention-days: 30
+
+  merge-contract:
+    name: Synthetic merge contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.MERGE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Bind synthetic merge identity and exercise receipt verifier
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$MERGE_SHA"
+          if [ "${{ github.event_name }}" = pull_request ]; then
+            test "$(git rev-parse HEAD^2)" = "$SOURCE_SHA"
+            test "$(git rev-parse HEAD^1)" = "${{ github.event.pull_request.base.sha }}"
+          fi
+          python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
+          node scripts/architecture/ci-source-ownership.mjs
+
+  merge-suite:
+    name: Synthetic merge ${{ matrix.os }} / ${{ matrix.suite }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+        suite: [owner-libraries, native-library, native-process, daemon-process, product-process, strict-clippy, read-only-profile]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.MERGE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact repository toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$MERGE_SHA"
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal --component clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: codex-rs
+          shared-key: agentd-protected-merge-v1
+      - name: Execute synthetic-merge suite and retain exact receipts
+        if: ${{ always() }}
+        shell: bash
+        env:
+          QUALIFICATION_OS: ${{ matrix.os }}
+          QUALIFICATION_SUITE: ${{ matrix.suite }}
+        run: |
+          python3 -B scripts/qualification/agentd_exact_head.py run \
+            --workspace "$GITHUB_WORKSPACE" --sha "$MERGE_SHA" \
+            --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
+            --os "$QUALIFICATION_OS" --suite "$QUALIFICATION_SUITE" \
+            --output "$RUNNER_TEMP/agentd-merge-receipt"
+      - name: Upload synthetic-merge evidence including failures
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: agentd-protected-merge-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.suite }}
+          path: ${{ runner.temp }}/agentd-merge-receipt
+          if-no-files-found: error
+          retention-days: 30
+
+  merge-result:
+    name: Synthetic merge required
+    if: ${{ always() }}
+    needs: [merge-contract, merge-suite]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.MERGE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: agentd-protected-merge-${{ github.run_id }}-${{ github.run_attempt }}-*
+          path: ${{ runner.temp }}/agentd-merge-evidence
+      - name: Reject missing, skipped, failed, stale or tampered merge evidence
+        env:
+          CONTRACT_RESULT: ${{ needs.merge-contract.result }}
+          SUITE_RESULT: ${{ needs.merge-suite.result }}
+        run: |
+          set -euo pipefail
+          python3 -B scripts/qualification/agentd_exact_head.py verify \
+            --sha "$MERGE_SHA" --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
+            --evidence "$RUNNER_TEMP/agentd-merge-evidence" \
+            --output "$RUNNER_TEMP/agentd-merge-result.json" \
+            --contract-result "$CONTRACT_RESULT" --suite-result "$SUITE_RESULT"
+          test "$CONTRACT_RESULT" = success
+          test "$SUITE_RESULT" = success
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: agentd-protected-merge-result-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/agentd-merge-result.json
+          if-no-files-found: error
+          retention-days: 30
+
+  required:
+    name: Agentd protected candidate required
+    if: ${{ always() }}
+    needs: [source-result, merge-result]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require exact source and synthetic merge
+        env:
+          SOURCE_RESULT: ${{ needs.source-result.result }}
+          MERGE_RESULT: ${{ needs.merge-result.result }}
+        run: |
+          set -euo pipefail
+          test "$SOURCE_RESULT" = success
+          test "$MERGE_RESULT" = success
