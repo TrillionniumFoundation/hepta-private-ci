@@ -31,12 +31,19 @@ export const OPERATION_ACTIONS = Object.freeze([
 
 const STATUS_SET = new Set(RUNTIME_STATUSES);
 const ACTION_SET = new Set(OPERATION_ACTIONS);
+const FORBIDDEN_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 const MAX_MODULES = 1000;
 
 function invalid(message, details) {
   return uiControlError(UI_CONTROL_ERROR_CODES.INVALID_INPUT, message, {
     details,
   });
+}
+
+function compareAscii(left, right) {
+  if (left < right) return -1;
+  if (left > right) return 1;
+  return 0;
 }
 
 function assertPlainObject(value, label) {
@@ -46,6 +53,21 @@ function assertPlainObject(value, label) {
   const prototype = Object.getPrototypeOf(value);
   if (prototype !== Object.prototype && prototype !== null) {
     throw invalid(`${label} must be a plain object`, { label });
+  }
+  if (Object.getOwnPropertySymbols(value).length > 0) {
+    throw invalid(`${label} cannot contain symbol keys`, { label });
+  }
+  const descriptors = Object.getOwnPropertyDescriptors(value);
+  for (const [key, descriptor] of Object.entries(descriptors)) {
+    if (FORBIDDEN_KEYS.has(key)) {
+      throw invalid(`${label} contains a forbidden object key`, { label, key });
+    }
+    if (!("value" in descriptor) || descriptor.get || descriptor.set) {
+      throw invalid(`${label} cannot contain accessors`, { label, key });
+    }
+    if (!descriptor.enumerable) {
+      throw invalid(`${label} cannot contain hidden properties`, { label, key });
+    }
   }
   return value;
 }
@@ -91,7 +113,7 @@ export function projectRuntime(runtime) {
   }
   const seen = new Set();
   const modules = runtime.modules.map(normalizeModule).sort((left, right) =>
-    left.id.localeCompare(right.id),
+    compareAscii(left.id, right.id),
   );
   for (const module of modules) {
     if (seen.has(module.id)) {
@@ -132,9 +154,17 @@ export function buildOperationIntent({
 }
 
 export async function digestOperationIntent(intent) {
-  return digestCanonical("hepta.ui-control.operation-intent.v1", intent, {
-    maxEncodedBytes: 16 * 1024,
-  });
+  assertPlainObject(intent, "operation intent");
+  exactKeys(
+    intent,
+    ["action", "targetId", "generation", "displayedRevision", "reason"],
+    "operation intent",
+  );
+  return digestCanonical(
+    "hepta.ui-control.operation-intent.v1",
+    buildOperationIntent(intent),
+    { maxEncodedBytes: 16 * 1024 },
+  );
 }
 
 export function projectRuntimeFromLocalCanonicalJson(text) {
