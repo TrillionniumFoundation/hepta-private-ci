@@ -1,0 +1,67 @@
+name: Control runtime revision diagnostics
+
+on:
+  push:
+    branches: [codex/control-runtime-hardening-20260927]
+    paths: [.github/workflows/control-runtime-revision.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Export tracked review inputs only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/control-runtime-source"
+          git rev-parse HEAD HEAD^{tree} > "${RUNNER_TEMP}/control-runtime-source/SOURCE.txt"
+          python3 - <<'PY'
+          import pathlib, subprocess
+          roots = ('codex-rs/hepta-control-plane/', 'codex-rs/hepta-ndu/', 'codex-rs/hepta-types/', 'codex-rs/hepta-cognitive-read/', 'codex-rs/hepta-agentd/', 'codex-rs/hepta-intelligence-eval/', 'codex-rs/hepta-intelligence/', 'codex-rs/hepta-learning-artifacts/', 'codex-rs/hepta-learning-ledger/', 'docs/modules/control.runtime/', 'docs/readiness/', 'qualification/module-execution-dossiers/detail/control.runtime.md', '.github/workflows/', 'scripts/')
+          paths = subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0')
+          selected = [p for p in paths if p and (p.startswith(roots) or p in ('AGENTS.md', 'codex-rs/Cargo.toml', 'codex-rs/Cargo.lock', 'codex-rs/rust-toolchain.toml', 'codex-rs/rustfmt.toml'))]
+          pathlib.Path('/tmp/control-runtime-source-files').write_bytes(b'\0'.join(p.encode() for p in selected) + b'\0')
+          PY
+          tar --null -T /tmp/control-runtime-source-files -czf "${RUNNER_TEMP}/control-runtime-source/source.tar.gz"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-runtime-source-${{ github.sha }}
+          path: ${{ runner.temp }}/control-runtime-source
+          retention-days: 7
+          if-no-files-found: error
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [codex-hepta-ndu, codex-hepta-control-plane]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Exact native package tests
+        working-directory: codex-rs
+        env:
+          PACKAGE: ${{ matrix.package }}
+          CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+        run: |
+          set -o pipefail
+          cargo test --locked -p "$PACKAGE" --all-targets --no-fail-fast 2>&1 | tee "${RUNNER_TEMP}/${PACKAGE}.log"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: control-runtime-baseline-${{ matrix.package }}-${{ github.sha }}
+          path: ${{ runner.temp }}/${{ matrix.package }}.log
+          retention-days: 7
+          if-no-files-found: error
