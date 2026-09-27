@@ -14,11 +14,9 @@ on:
 
 permissions:
   contents: read
-
 concurrency:
   group: prompt-optimizer-hardening-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
-
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
@@ -71,6 +69,8 @@ jobs:
       fail-fast: false
       matrix:
         lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    env:
+      CARGO_TARGET_DIR: ${{ runner.temp }}/prompt-native-${{ matrix.lane }}
     steps:
       - name: Checkout exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -105,8 +105,13 @@ jobs:
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - name: Verify source operation and test navigation
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_prompt_optimizer_inventory.py --source-only 2>&1 | tee "$RUNNER_TEMP/prompt-qualification/source-inventory.log"
       - name: Optimizer all-target compilation
         id: compile
+        if: always() && steps.runner.outcome == 'success'
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -117,6 +122,13 @@ jobs:
         run: |
           set -euo pipefail
           just test --locked -p codex-hepta-prompt-optimizer 2>&1 | tee "$RUNNER_TEMP/prompt-qualification/optimizer-tests.log"
+      - name: Verify compiler-reachable source and actual test discovery
+        if: always() && steps.compile.outcome == 'success'
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo nextest list --locked -p codex-hepta-prompt-optimizer --message-format json > "$RUNNER_TEMP/prompt-qualification/nextest-list.json"
+          python3 ../scripts/hepta_prompt_optimizer_inventory.py --dep-root "$CARGO_TARGET_DIR/debug/deps" --test-list "$RUNNER_TEMP/prompt-qualification/nextest-list.json" 2>&1 | tee "$RUNNER_TEMP/prompt-qualification/compiled-inventory.log"
       - name: Product consumer compilation
         if: always() && steps.compile.outcome == 'success'
         working-directory: codex-rs
