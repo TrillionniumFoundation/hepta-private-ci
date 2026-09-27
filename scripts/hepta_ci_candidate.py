@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Bind merge qualification to exact Git objects without duplicate native builds.
+"""Bind independent source and prospective-merge execution to exact Git objects.
 
-Identical trees may share native execution only inside a workflow whose final
-fan-in also requires source-head success. This plan is not a test-pass receipt.
-A different prospective tree must execute its own applicable tests.
+Tree equality is diagnostic information, not an execution receipt. Both lanes
+must run their applicable native checks: commit parents, build metadata and
+runner/checkout state can differ even when source trees are equal. A plan never
+claims that a command was executed or accepted.
 """
 
 import argparse
@@ -38,15 +39,16 @@ def candidate_plan(*, source: str, tested: str, lane: str, base: str | None = No
     tested_tree = git("rev-parse", f"{tested}^{{tree}}")
     identical = source_tree == tested_tree
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "lane": lane,
         "source_sha": source,
         "tested_sha": tested,
         "base_sha": base,
         "source_tree": source_tree,
         "tested_tree": tested_tree,
-        "native_execution_required": lane == "source-head" or not identical,
-        "requires_source_head_success": merge_lane and identical,
+        "source_tree_identical": identical,
+        "native_execution_required": True,
+        "requires_source_head_success": False,
     }
 
 

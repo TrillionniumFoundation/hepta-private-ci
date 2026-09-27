@@ -252,9 +252,21 @@ jobs:
           import json
           import os
           from hepta_repository_controls import observe_write_transport_denial
-          observation = observe_write_transport_denial(os.environ["REPO"], os.environ["GH_TOKEN"])
+          exit_code = 0
+          try:
+              observation = observe_write_transport_denial(os.environ["REPO"], os.environ["GH_TOKEN"])
+          except Exception as error:
+              # Keep a bounded failure observation, never response bodies, token
+              # headers or exception text. Unknown is not an explicit denial.
+              observation = {"write_transport_denied": None,
+                             "activation_authorized": False,
+                             "credential_separation_proven": False,
+                             "observation_status": "not_established",
+                             "failure_type": type(error).__name__}
+              exit_code = 1
           observation.update(admin_denial_proven=False, pull_request_write_denial_proven=False)
           print(json.dumps(observation, sort_keys=True))
+          raise SystemExit(exit_code)
           PYCODE
       - name: Verify unchanged reviewed source
         run: |
@@ -288,4 +300,4 @@ jobs:
           RESULT: ${{ needs.qualification.result }}
         run: |
           test "$RESULT" = success
-          echo "All applicable exact-candidate lanes succeeded; identical-tree reuse includes source-head success."
+          echo "All applicable checks executed successfully in each exact-candidate lane; tree equality did not waive execution."

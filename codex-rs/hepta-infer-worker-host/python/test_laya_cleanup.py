@@ -3,6 +3,7 @@ import os
 import signal
 import subprocess
 import threading
+import time
 import unittest
 
 from laya_wait import observation_supported, observe_owned_exit
@@ -103,7 +104,22 @@ class CleanupTests(unittest.TestCase):
         self.addCleanup(failure.reconcile_cleanup)
         self.assertTrue(failure.observation["group_kill_sent"])
         self.assertIsNotNone(failure.child)
-        self.assertTrue(failure.reconcile_cleanup()["direct_child_reaped"])
+        # SIGKILL delivery and waitability are distinct kernel events. The
+        # injected wait timeout may return before Darwin publishes the exited
+        # singleton. Reconcile through the real owner within a fixed bound;
+        # never weaken EPERM, externally reap, or rerun the model request.
+        limit = time.monotonic() + 3
+        observed = failure.reconcile_cleanup()
+        while not observed["direct_child_reaped"] and time.monotonic() < limit:
+            self.assertNotEqual(observed["cleanup_error"], "ChildOwnershipLost", observed)
+            self.assertFalse(observed["eligible_reply"], observed)
+            self.assertFalse(observed["retry_allowed"], observed)
+            time.sleep(0.005)
+            observed = failure.reconcile_cleanup()
+        self.assertTrue(observed["direct_child_reaped"], observed)
+        self.assertIsNone(failure.child)
+        self.assertFalse(observed["eligible_reply"])
+        self.assertFalse(observed["retry_allowed"])
 
     def test_interruption_with_failed_cleanup_retains_child_on_typed_failure(self):
         # Inject interrupt only in the exchange; the cleanup observation uses

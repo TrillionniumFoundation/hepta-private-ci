@@ -47,11 +47,12 @@ class CandidatePlanTests(unittest.TestCase):
         self.assertTrue(plan["native_execution_required"])
         self.assertFalse(plan["requires_source_head_success"])
 
-    def test_identical_merge_reuses_tree_only_with_required_source_success(self):
+    def test_identical_merge_requires_its_own_real_native_execution(self):
         merge = self.merge()
         plan = candidate_plan(source=self.source, tested=merge, base=self.base, lane="base-merge")
-        self.assertFalse(plan["native_execution_required"])
-        self.assertTrue(plan["requires_source_head_success"])
+        self.assertTrue(plan["native_execution_required"])
+        self.assertFalse(plan["requires_source_head_success"])
+        self.assertTrue(plan["source_tree_identical"])
         self.assertEqual(plan["source_tree"], plan["tested_tree"])
         self.assertNotEqual(plan["source_sha"], plan["tested_sha"])
 
@@ -63,8 +64,9 @@ class CandidatePlanTests(unittest.TestCase):
             base=self.base,
             lane="synthetic-merge",
         )
-        self.assertFalse(plan["native_execution_required"])
-        self.assertTrue(plan["requires_source_head_success"])
+        self.assertTrue(plan["native_execution_required"])
+        self.assertFalse(plan["requires_source_head_success"])
+        self.assertTrue(plan["source_tree_identical"])
         self.assertEqual(plan["source_tree"], plan["tested_tree"])
 
     def test_different_merge_tree_requires_real_tests_not_only_compile(self):

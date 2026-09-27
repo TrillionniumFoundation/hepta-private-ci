@@ -239,7 +239,12 @@ def _exchange(command: list[str], request_wire: bytes, deadline: OwnerDeadline,
         reason, cause = type(error).__name__, error
         identity_lost = isinstance(error, ChildProcessError)
     finally:
-        selector.close()
+        # A selector/pipe finalizer must not bypass owned-child cleanup. Keep
+        # interruptions as the cause of the typed failure until identity is safe.
+        try:
+            selector.close()
+        except BaseException as error:
+            reason, cause = type(error).__name__, error
         if child is not None and identity_lost:
             observation["cleanup_error"] = "ChildOwnershipLost"
         if child is not None and not identity_lost:
@@ -252,7 +257,10 @@ def _exchange(command: list[str], request_wire: bytes, deadline: OwnerDeadline,
         if child is not None:
             for stream in (child.stdin, child.stdout, child.stderr):
                 if stream is not None:
-                    stream.close()
+                    try:
+                        stream.close()
+                    except BaseException as error:
+                        reason, cause = type(error).__name__, error
         observation.update(stdout_bytes=len(output), stderr_bytes=len(diagnostics),
                            stderr_sha256=hashlib.sha256(diagnostics).hexdigest(),
                            transport_seconds=time.monotonic() - started)
@@ -263,6 +271,10 @@ def _exchange(command: list[str], request_wire: bytes, deadline: OwnerDeadline,
                 raise Rejected("process did not complete the admitted exchange")
             deadline.check(request["deadline_ms"])
             decode_reply(bytes(output), request_wire)
+            # The last loop check predates group observation and bounded reap.
+            # Cancellation during that interval cannot publish an eligible reply.
+            if cancel is not None and cancel.is_set():
+                raise Rejected("cancelled before result delivery")
         except Exception as error:
             reason, cause = type(error).__name__, error
     if reason is not None:
