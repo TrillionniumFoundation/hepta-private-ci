@@ -1,4 +1,4 @@
-name: Hepta intuition qualification
+name: intuition.policy Qualification
 
 on:
   pull_request:
@@ -14,12 +14,13 @@ on:
       - "docs/modules/intuition.policy/**"
       - "qualification/module-execution-dossiers/detail/intuition.policy.md"
       - "qualification/intuition.policy/**"
-      - "scripts/intuition_qualify_exact.py"
+      - "scripts/intuition_*.py"
+      - "scripts/tests/test_intuition*.py"
       - ".github/workflows/hepta-intuition-qualification.yml"
       - ".github/actions/hepta-synthetic-merge/**"
       - ".github/actions/setup-ci/**"
   push:
-    branches: [main]
+    branches: [main, codex/intuition-policy-production-closure-20260927]
     paths:
       - "codex-rs/hepta-intuition/**"
       - "codex-rs/hepta-intelligence/**"
@@ -32,26 +33,41 @@ on:
       - "docs/modules/intuition.policy/**"
       - "qualification/module-execution-dossiers/detail/intuition.policy.md"
       - "qualification/intuition.policy/**"
-      - "scripts/intuition_qualify_exact.py"
+      - "scripts/intuition_*.py"
+      - "scripts/tests/test_intuition*.py"
       - ".github/workflows/hepta-intuition-qualification.yml"
       - ".github/actions/hepta-synthetic-merge/**"
       - ".github/actions/setup-ci/**"
+  merge_group:
+    types: [checks_requested]
   workflow_dispatch:
 
 permissions:
   contents: read
 
-# No shared concurrency group with any other module or source-writing workflow.
-# Preserve receipts for an already-running exact commit instead of cancelling it.
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
 concurrency:
   group: hepta-intuition-readonly-${{ github.event.pull_request.number || github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
   cancel-in-progress: false
 
 jobs:
+  evidence-tests:
+    name: Intuition evidence integrity tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - run: python3 -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
+
   qualify:
     name: Intuition qualification (${{ matrix.lane }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -84,6 +100,7 @@ jobs:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
           LANE: ${{ matrix.lane }}
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intuition-target
         shell: bash
         run: |
           set -euo pipefail
@@ -102,14 +119,91 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
+  independent:
+    name: Intuition independent execution
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Run independent mode in a clean runner and target directory
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intuition-independent-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/intuition_qualify_exact.py \
+            --source-commit "$SOURCE_SHA" --independent \
+            --evidence "$RUNNER_TEMP/intuition-evidence/independent"
+      - name: Retain independent command evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-independent-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intuition-evidence/independent/
+          if-no-files-found: error
+          retention-days: 90
+
+  aggregate:
+    name: Intuition exact-source evidence agreement
+    needs: [evidence-tests, qualify, independent]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      # No run-id override or cross-workflow lookup: only artifacts from this run.
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: intuition-source-head-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/inputs/qualification
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: intuition-independent-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/inputs/independent
+      - name: Verify exact command sets, digests, run identity and distinct jobs
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/intuition_accept_exact.py \
+            --source-commit "$SOURCE_SHA" \
+            --qualification "$RUNNER_TEMP/inputs/qualification" \
+            --independent "$RUNNER_TEMP/inputs/independent" \
+            --output "$RUNNER_TEMP/intuition-agreement"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-agreement-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intuition-agreement/
+          if-no-files-found: error
+          retention-days: 90
+
   required:
     name: Intuition required
     if: always()
-    needs: [qualify]
+    needs: [evidence-tests, qualify, independent, aggregate]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Require every applicable qualification lane
+      - name: Require all source, merge, independent and evidence checks
         env:
+          EVIDENCE_RESULT: ${{ needs.evidence-tests.result }}
           QUALIFICATION_RESULT: ${{ needs.qualify.result }}
-        run: test "$QUALIFICATION_RESULT" = success
+          INDEPENDENT_RESULT: ${{ needs.independent.result }}
+          AGREEMENT_RESULT: ${{ needs.aggregate.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$EVIDENCE_RESULT" = success
+          test "$QUALIFICATION_RESULT" = success
+          test "$INDEPENDENT_RESULT" = success
+          test "$AGREEMENT_RESULT" = success
