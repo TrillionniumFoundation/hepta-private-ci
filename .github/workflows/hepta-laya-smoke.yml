@@ -92,9 +92,10 @@ jobs:
       - name: Real pinned checkpoint load and bounded read-only predictions
         run: |
           set -euo pipefail
-          EXTRA=()
-          if [[ "$RUNNER_OS" == "Linux" ]]; then EXTRA+=(--supervised); fi
-          "$RUNNER_TEMP/laya-env/bin/python" codex-rs/hepta-infer-worker-host/python/laya_smoke.py "${EXTRA[@]}" --output "$RUNNER_TEMP/laya-smoke" 2>&1 | tee "$RUNNER_TEMP/laya-smoke.log"
+          # Empty arrays under nounset fail on the macOS Bash 3.2 runner.
+          set --
+          if [[ "$RUNNER_OS" == "Linux" ]]; then set -- --supervised; fi
+          "$RUNNER_TEMP/laya-env/bin/python" codex-rs/hepta-infer-worker-host/python/laya_smoke.py "$@" --output "$RUNNER_TEMP/laya-smoke" 2>&1 | tee "$RUNNER_TEMP/laya-smoke.log"
       - name: Require actual model observations on this tested tree
         env:
           TESTED: ${{ steps.merge.outputs.sha || env.SOURCE_SHA }}
