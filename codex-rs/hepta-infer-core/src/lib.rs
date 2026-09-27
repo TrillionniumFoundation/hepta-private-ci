@@ -4,6 +4,8 @@
 
 #![forbid(unsafe_code)]
 
+/// Exact signed quota, resource, model identity, reconciliation and retirement contracts.
+pub mod control_contracts;
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
 mod neuron_feature;
