@@ -11,6 +11,8 @@ use codex_hepta_fleet::DurableFleetOwner;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::LinuxProcfsCapacityObserverV1;
 use codex_hepta_fleet::SystemFleetClock;
+use codex_hepta_fleet::reconcile_expired_idempotent;
+use codex_hepta_fleet::refresh_capacity_idempotent;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::FleetStartAdmission;
 use codex_hepta_supervisor::H7H89ProductionGrantVerifier;
@@ -27,6 +29,7 @@ use tokio::time::MissedTickBehavior;
 use tokio_util::sync::CancellationToken;
 
 const CAPACITY_TTL_MS: u64 = 60_000;
+const CAPACITY_REFRESH_INTERVAL_MS: u64 = 20_000;
 const CAPACITY_REFRESH_INTERVAL: Duration = Duration::from_secs(20);
 const MAX_MEMORY_PRESSURE_BASIS_POINTS: u16 = 5_000;
 const HOST_ID_ENV: &str = "HEPTA_FLEET_HOST_ID";
@@ -97,14 +100,15 @@ fn perform_maintenance(
     let mut owner = DurableFleetOwner::open_supervisor_state_root(state_root, clock)
         .map_err(|error| SupervisorError::Invalid(format!("open runtime.fleet owner: {error}")))?;
     let now_ms = unix_ms()?;
+    let maintenance_slot = now_ms / CAPACITY_REFRESH_INTERVAL_MS;
+    let expiry_operation_id = format!("supervisor-expiry-slot-{maintenance_slot}");
     if owner
         .metrics()
         .map_err(map_owner_error)?
         .fleet_expired_uncollected_grants
         > 0
     {
-        owner
-            .reconcile_expired(&format!("supervisor-expiry-{now_ms}"))
+        reconcile_expired_idempotent(&mut owner, &expiry_operation_id)
             .map_err(map_owner_error)?;
     }
 
@@ -123,7 +127,8 @@ fn perform_maintenance(
             "configure runtime.fleet capacity observer: {error}"
         ))
     })?;
-    match owner.refresh_capacity(&format!("supervisor-capacity-{now_ms}"), &observer) {
+    let capacity_operation_id = format!("supervisor-capacity-slot-{maintenance_slot}");
+    match refresh_capacity_idempotent(&mut owner, &capacity_operation_id, &observer) {
         Ok(_) => Ok(()),
         // Pressure is an observed unavailable state, not fabricated zero
         // capacity. Do not refresh the prior observation; it expires within one

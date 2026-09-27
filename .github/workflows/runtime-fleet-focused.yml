@@ -69,7 +69,7 @@ jobs:
             status="$fleet_test_status"
           fi
 
-          cargo test -p codex-hepta-supervisor --lib \
+          cargo test -p codex-hepta-supervisor --all-targets \
             2>&1 | tee "$RUNNER_TEMP/runtime-fleet-evidence/supervisor-test.log"
           supervisor_test_status=${PIPESTATUS[0]}
           if [ "$supervisor_test_status" -ne 0 ] && [ "$status" -eq 0 ]; then
@@ -83,14 +83,14 @@ jobs:
             status="$supervisor_check_status"
           fi
 
-          cargo clippy -p codex-hepta-fleet --all-targets -- -D warnings \
+          cargo clippy -p codex-hepta-fleet --all-targets --all-features -- -D warnings \
             2>&1 | tee "$RUNNER_TEMP/runtime-fleet-evidence/fleet-clippy.log"
           fleet_clippy_status=${PIPESTATUS[0]}
           if [ "$fleet_clippy_status" -ne 0 ] && [ "$status" -eq 0 ]; then
             status="$fleet_clippy_status"
           fi
 
-          cargo clippy -p codex-hepta-supervisor --lib --bin hepta-supervisord -- -D warnings \
+          cargo clippy -p codex-hepta-supervisor --all-targets --all-features -- -D warnings \
             2>&1 | tee "$RUNNER_TEMP/runtime-fleet-evidence/supervisor-clippy.log"
           supervisor_clippy_status=${PIPESTATUS[0]}
           if [ "$supervisor_clippy_status" -ne 0 ] && [ "$status" -eq 0 ]; then
@@ -170,8 +170,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "${{ steps.merge.outputs.sha }}"
           cargo fmt --all -- --check
           cargo test -p codex-hepta-fleet --all-targets
-          cargo test -p codex-hepta-supervisor --lib
+          cargo test -p codex-hepta-supervisor --all-targets
           cargo check -p codex-hepta-supervisor --bin hepta-supervisord
-          cargo clippy -p codex-hepta-fleet --all-targets -- -D warnings
-          cargo clippy -p codex-hepta-supervisor --lib --bin hepta-supervisord -- -D warnings
+          cargo clippy -p codex-hepta-fleet --all-targets --all-features -- -D warnings
+          cargo clippy -p codex-hepta-supervisor --all-targets --all-features -- -D warnings
           git diff --check

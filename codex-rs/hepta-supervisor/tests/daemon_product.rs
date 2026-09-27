@@ -3,6 +3,8 @@
 use std::io::Read;
 use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
+use std::path::Path;
+use std::path::PathBuf;
 use std::process::Child;
 use std::process::Command;
 use std::process::Stdio;
@@ -20,6 +22,10 @@ use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::SupervisordClient;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
+const DISTRIBUTOR_KEY: &str =
+    "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565";
+const NODE_KEY: &str =
+    "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61";
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolated() -> Result<()> {
@@ -31,6 +37,7 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
         .prefix("hsup-product-")
         .tempdir_in("/tmp")?;
     let root = temp.path().canonicalize()?;
+    let trust_profile = write_fleet_start_trust_profile(&root)?;
     let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
     let registry = FleetRegistry::initialize(fleet_root.clone())?;
     let workspace = root.join("workspace");
@@ -43,7 +50,7 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
         ResourceBudget::local_default(),
     )?)?;
 
-    let mut daemon = DaemonChild::spawn(fleet_root.as_path())?;
+    let mut daemon = DaemonChild::spawn(fleet_root.as_path(), &trust_profile)?;
     let client = wait_for_daemon(&registry).await?;
     let health = client.health().await?;
     ensure!(health.ready && health.registered_agents == 1);
@@ -66,6 +73,8 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
     let second = Command::new(env!("CARGO_BIN_EXE_hepta-supervisord"))
         .arg("--fleet-root")
         .arg(fleet_root.as_path())
+        .arg("--fleet-start-trust-profile")
+        .arg(&trust_profile)
         .output()?;
     ensure!(
         !second.status.success(),
@@ -107,7 +116,7 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
     );
 
     daemon.kill()?;
-    let mut restarted = DaemonChild::spawn(fleet_root.as_path())?;
+    let mut restarted = DaemonChild::spawn(fleet_root.as_path(), &trust_profile)?;
     let restarted_client = wait_for_daemon(&registry).await?;
     let restarted_health = restarted_client.health().await?;
     ensure!(restarted_health.ready);
@@ -121,7 +130,39 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
     Ok(())
 }
 
-fn send_bounded_frame(path: &std::path::Path, frame: &[u8]) -> Result<serde_json::Value> {
+fn write_fleet_start_trust_profile(root: &Path) -> Result<PathBuf> {
+    let path = root.join("fleet-start-trust-v1.json");
+    let profile = serde_json::json!({
+        "schema_version": 1,
+        "local_node_id": "node-a",
+        "distributor_id": "revocation-distributor",
+        "distributor_keys": [
+            {
+                "key_id": "distributor-v1",
+                "verifying_key_hex": DISTRIBUTOR_KEY,
+                "not_before_authority_epoch": 1,
+                "not_after_authority_epoch": 99
+            }
+        ],
+        "nodes": [
+            {
+                "node_id": "node-a",
+                "keys": [
+                    {
+                        "key_id": "node-a-v1",
+                        "verifying_key_hex": NODE_KEY,
+                        "not_before_authority_epoch": 1,
+                        "not_after_authority_epoch": 99
+                    }
+                ]
+            }
+        ]
+    });
+    std::fs::write(&path, serde_json::to_vec_pretty(&profile)?)?;
+    Ok(path)
+}
+
+fn send_bounded_frame(path: &Path, frame: &[u8]) -> Result<serde_json::Value> {
     let mut stream = std::os::unix::net::UnixStream::connect(path)?;
     stream.set_read_timeout(Some(Duration::from_secs(3)))?;
     stream.write_all(frame)?;
@@ -146,7 +187,7 @@ fn assert_wire_error(value: &serde_json::Value, request_id: u64, code: &str) -> 
     Ok(())
 }
 
-fn send_oversized_frame(path: &std::path::Path) -> Result<()> {
+fn send_oversized_frame(path: &Path) -> Result<()> {
     let mut stream = std::os::unix::net::UnixStream::connect(path)?;
     stream.set_write_timeout(Some(Duration::from_secs(3)))?;
     stream.write_all(&vec![b'x'; 65_537])?;
@@ -173,10 +214,12 @@ async fn wait_for_daemon(registry: &FleetRegistry) -> Result<SupervisordClient> 
 struct DaemonChild(Child);
 
 impl DaemonChild {
-    fn spawn(fleet_root: &std::path::Path) -> Result<Self> {
+    fn spawn(fleet_root: &Path, trust_profile: &Path) -> Result<Self> {
         let child = Command::new(env!("CARGO_BIN_EXE_hepta-supervisord"))
             .arg("--fleet-root")
             .arg(fleet_root)
+            .arg("--fleet-start-trust-profile")
+            .arg(trust_profile)
             .stdin(Stdio::null())
             .stdout(Stdio::null())
             // Keep daemon startup failures visible to the test harness.  A
