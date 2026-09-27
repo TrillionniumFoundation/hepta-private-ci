@@ -7,11 +7,45 @@
 
 #![forbid(unsafe_code)]
 
-/// Model-manifest/grant state machine for native driver implementations.
+/// Experimental signed-grant local-model boundary. It is absent from default
+/// builds and cannot be treated as production execution evidence.
+#[cfg(feature = "local-model-experimental")]
+pub mod local_model;
+
+/// Legacy in-memory model-driver fixture. Validation-only and never provider
+/// execution evidence.
+#[cfg(feature = "legacy-local-model-boundary")]
 pub mod model_worker;
 
 pub mod final_use_authorizer;
+pub mod governed_app_server;
 pub mod native_app_server;
+
+/// Closed-world public capability split for `inference.worker`.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum InferenceWorkerProfile {
+    HostedAppServerWorker,
+    LocalModelWorker,
+    LegacyReceiptBoundary,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ProfileMaturity {
+    ProductionCandidateNotActivated,
+    ExperimentalNonProduction,
+    ValidationOnly,
+}
+
+#[must_use]
+pub const fn profile_maturity(profile: InferenceWorkerProfile) -> ProfileMaturity {
+    match profile {
+        InferenceWorkerProfile::HostedAppServerWorker => {
+            ProfileMaturity::ProductionCandidateNotActivated
+        }
+        InferenceWorkerProfile::LocalModelWorker => ProfileMaturity::ExperimentalNonProduction,
+        InferenceWorkerProfile::LegacyReceiptBoundary => ProfileMaturity::ValidationOnly,
+    }
+}
 
 use std::error::Error as StdError;
 use std::fmt;
