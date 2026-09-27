@@ -20,6 +20,7 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGES = ["-p", "codex-hepta-intuition", "-p", "codex-hepta-intelligence", "-p", "codex-hepta-agentd"]
 COMMANDS = [
+    ("golden-vectors-python", ["python3", "../scripts/intuition_golden_vectors.py", "hepta-intuition/testdata/production_contract_v2.json"]),
     ("fmt", ["cargo", "fmt", *PACKAGES, "--", "--check"]),
     ("check", ["cargo", "check", "--locked", *PACKAGES, "--all-targets"]),
     ("clippy", ["cargo", "clippy", "--locked", *PACKAGES, "--all-targets", "--", "-D", "warnings"]),
@@ -28,6 +29,7 @@ COMMANDS = [
     ("agentd-policy-tests", ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "--lib", "intuition_policy"]),
     ("agentd-product-tests", ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "--test", "intuition_policy_product"]),
     ("agentd-v3-product-tests", ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "--test", "intuition_policy_product_v3"]),
+    ("agentd-commit-boundary-tests", ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "--test", "intuition_policy_commit_boundary"]),
     ("kernel-fast-gate", ["cargo", "run", "--locked", "--release", "-p", "codex-hepta-intuition", "--example", "fast_gate"]),
     ("authenticated-fast-gate", ["cargo", "run", "--locked", "--release", "-p", "codex-hepta-intelligence", "--example", "intuition_authenticated_fast_gate"]),
 ]
@@ -86,10 +88,17 @@ def main() -> int:
         return 1
     toolchain = evidence / "toolchain.txt"
     with toolchain.open("w", encoding="utf-8") as stream:
-        for command in (["rustc", "-Vv"], ["cargo", "-V"], ["uname", "-a"]):
+        for command in (["rustc", "-Vv"], ["cargo", "-V"], ["uname", "-a"], ["lscpu"]):
             stream.write("$ " + " ".join(command) + "\n")
             stream.flush()
-            subprocess.run(command, cwd=ROOT, stdout=stream, stderr=subprocess.STDOUT, check=False)
+            try:
+                completed = subprocess.run(command, cwd=ROOT, stdout=stream, stderr=subprocess.STDOUT, check=False)
+                stream.write("exit_code=" + str(completed.returncode) + "\n")
+            except OSError as error:
+                stream.write("unavailable: " + str(error) + "\n")
+    record["toolchainLogSha256"] = hashlib.sha256(toolchain.read_bytes()).hexdigest()
+    lockfile = ROOT / "codex-rs/Cargo.lock"
+    record["cargoLockSha256"] = hashlib.sha256(lockfile.read_bytes()).hexdigest() if lockfile.is_file() else None
     failed = False
     for name, command in COMMANDS:
         result = {"name": name, "argv": command, "cwd": "codex-rs", "startedAt": utc(), "status": "running"}
