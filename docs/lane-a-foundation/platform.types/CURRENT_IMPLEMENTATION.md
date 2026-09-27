@@ -113,8 +113,8 @@ objects into an ambient serialization platform.
   ordinary-definition data.
 - Numeric signals admit at most 4096 values and reject overflow.
 - Manifest text, timestamps, ranges and confidence are explicitly bounded.
-- Topology delta and related-module sets use strictly increasing `StableId`
-  order and reject producer non-conformance rather than silently sorting.
+- Topology delta and related-module sets use strictly increasing `StableId` order
+  and reject producer non-conformance rather than silently sorting.
 - V1 prompt bytes are not HPTC and are never relabeled as HPTC.
 - Coverage-guided fuzz execution is bounded evidence, not exhaustive proof.
 - No type or receipt grants runtime, write, selection, promotion or release
