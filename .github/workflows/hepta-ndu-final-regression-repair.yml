@@ -1,0 +1,247 @@
+name: Hepta NDU exact regression repair
+
+on:
+  push:
+    branches:
+      - codex/utility-ndu-production-hardening-20260926
+    paths:
+      - .github/workflows/hepta-ndu-final-regression-repair.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact repair request
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned qualification tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Repair the three exact regression roots
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          import subprocess
+
+          root = Path.cwd()
+
+          lifecycle_path = root / "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs"
+          lifecycle = lifecycle_path.read_text(encoding="utf-8")
+          start = lifecycle.index("    fn append_transition(\n")
+          end = lifecycle.index("\n    fn selected_journal(\n", start)
+          replacement = '''    struct LifecycleTransitionFixture {
+              event_id: &'static str,
+              actor_id: StableId,
+              role: LifecycleActorRoleV2,
+              prior_state: ArtifactLifecycleStateV1,
+              next_state: ArtifactLifecycleStateV1,
+              evidence_digest: Digest32,
+              occurred_at: u64,
+          }
+
+          fn append_transition(
+              journal: &mut ArtifactLifecycleJournalV2,
+              manifest: &LearningArtifactManifestV2,
+              transition: LifecycleTransitionFixture,
+          ) {
+              let LifecycleTransitionFixture {
+                  event_id,
+                  actor_id,
+                  role,
+                  prior_state,
+                  next_state,
+                  evidence_digest,
+                  occurred_at,
+              } = transition;
+              let credential = digest(&format!("{event_id}-credential"));
+              journal
+                  .append(
+                      journal.head_digest(),
+                      &manifest.producer_id,
+                      LifecycleActorEvidenceV2 {
+                          actor_id: actor_id.clone(),
+                          credential_digest: credential,
+                          role,
+                          authority_epoch: 4,
+                          verified_at: 10,
+                          expires_at: 100,
+                      },
+                      ArtifactLifecycleEventV1 {
+                          event_id: id(event_id),
+                          artifact_id: manifest.artifact_id.clone(),
+                          prior_state,
+                          next_state,
+                          actor_id,
+                          actor_credential_digest: credential,
+                          evidence_digest,
+                          authority_epoch: 4,
+                          occurred_at,
+                      },
+                      occurred_at,
+                  )
+                  .expect("lifecycle transition");
+          }
+          '''
+          lifecycle = lifecycle[:start] + replacement + lifecycle[end:]
+
+          old_loop = '''            append_transition(
+                          &mut journal,
+                          manifest,
+                          event,
+                          actor,
+                          role,
+                          prior,
+                          next,
+                          digest(&format!("{event}-evidence")),
+                          50,
+                      );'''
+          new_loop = '''            append_transition(
+                          &mut journal,
+                          manifest,
+                          LifecycleTransitionFixture {
+                              event_id: event,
+                              actor_id: actor,
+                              role,
+                              prior_state: prior,
+                              next_state: next,
+                              evidence_digest: digest(&format!("{event}-evidence")),
+                              occurred_at: 50,
+                          },
+                      );'''
+          if lifecycle.count(old_loop) != 1:
+              raise SystemExit("transition loop call site drifted")
+          lifecycle = lifecycle.replace(old_loop, new_loop)
+
+          old_revocation = '''        append_transition(
+                      &mut journal,
+                      &manifest,
+                      "revoked",
+                      id("revocation-authority"),
+                      LifecycleActorRoleV2::RevocationAuthority,
+                      ArtifactLifecycleStateV1::Selected,
+                      ArtifactLifecycleStateV1::Revoked,
+                      digest("revocation-evidence"),
+                      60,
+                  );'''
+          new_revocation = '''        append_transition(
+                      &mut journal,
+                      &manifest,
+                      LifecycleTransitionFixture {
+                          event_id: "revoked",
+                          actor_id: id("revocation-authority"),
+                          role: LifecycleActorRoleV2::RevocationAuthority,
+                          prior_state: ArtifactLifecycleStateV1::Selected,
+                          next_state: ArtifactLifecycleStateV1::Revoked,
+                          evidence_digest: digest("revocation-evidence"),
+                          occurred_at: 60,
+                      },
+                  );'''
+          if lifecycle.count(old_revocation) != 1:
+              raise SystemExit("revocation call site drifted")
+          lifecycle_path.write_text(
+              lifecycle.replace(old_revocation, new_revocation), encoding="utf-8"
+          )
+
+          mounted_path = root / "scripts/hepta-ndu-mounted-filesystem.py"
+          mounted = mounted_path.read_text(encoding="utf-8")
+          replacements = {
+              'command(privilege + ["mount", "-t", "tmpfs", "-o", "remount,ro", "ndu-qualification", str(mount)])':
+                  'command(privilege + ["mount", "-o", "remount,ro", str(mount)])',
+              'command(privilege + ["mount", "-t", "tmpfs", "-o", "remount,rw", "ndu-qualification", str(mount)])':
+                  'command(privilege + ["mount", "-o", "remount,rw", str(mount)])',
+          }
+          for old, new in replacements.items():
+              if mounted.count(old) != 1:
+                  raise SystemExit(f"mounted-filesystem command drifted: {old}")
+              mounted = mounted.replace(old, new)
+          mounted_path.write_text(mounted, encoding="utf-8")
+
+          subprocess.run(
+              ["cargo", "fmt", "--package", "codex-hepta-intelligence"],
+              cwd=root / "codex-rs",
+              check=True,
+          )
+
+          map_path = root / "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"
+          mapping = json.loads(map_path.read_text(encoding="utf-8"))
+          manifest = mapping.get("sourceObjects")
+          if not isinstance(manifest, list) or not manifest:
+              raise SystemExit("utility.ndu sourceObjects manifest missing")
+          changed = []
+          for entry in manifest:
+              if not isinstance(entry, dict):
+                  raise SystemExit("invalid sourceObjects entry")
+              path = entry.get("path")
+              if not isinstance(path, str) or not (root / path).is_file():
+                  raise SystemExit(f"invalid sourceObjects path: {path!r}")
+              actual = subprocess.check_output(
+                  ["git", "hash-object", path], cwd=root, text=True
+              ).strip()
+              if entry.get("object") != actual:
+                  changed.append(path)
+                  entry["object"] = actual
+          required = {
+              "codex-rs/hepta-agent-protocol/src/ndu.rs",
+              "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs",
+              "scripts/hepta-ndu-mounted-filesystem.py",
+          }
+          if not required.issubset({entry.get("path") for entry in manifest}):
+              raise SystemExit("sourceObjects omits one of the repaired evidence paths")
+          map_path.write_text(json.dumps(mapping, indent=2) + "\n", encoding="utf-8")
+          print(json.dumps({"refreshedSourceObjects": changed}, indent=2))
+          PY
+
+          rm .github/workflows/hepta-ndu-final-regression-repair.yml
+          git config user.name hepta-qualification-repair
+          git config user.email qualification@invalid
+          git add \
+            codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs \
+            scripts/hepta-ndu-mounted-filesystem.py \
+            docs/modules/utility.ndu/IMPLEMENTATION_MAP.json \
+            .github/workflows/hepta-ndu-final-regression-repair.yml
+          git diff --cached --check
+          git commit -s -m "fix(ndu): close exact map lint and mounted-host regressions"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Reproduce the exact failing suites on the clean repair commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA=$(git rev-parse HEAD)
+          for suite in source lint host; do
+            python3 scripts/hepta-ndu-qualification.py \
+              --suite "$suite" \
+              --lane source-head \
+              --output "${RUNNER_TEMP}/ndu-repair-${suite}"
+          done
+          test "$(git rev-parse HEAD)" = "$SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Retain repair qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-exact-regression-repair-${{ github.sha }}
+          path: ${{ runner.temp }}/ndu-repair-*
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Publish the validated fast-forward repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:${GITHUB_REF_NAME}"
