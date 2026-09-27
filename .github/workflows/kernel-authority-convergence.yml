@@ -47,36 +47,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  refresh-projections:
-    name: Refresh kernel.authority projections
-    if: github.event_name == 'push' && github.ref_name == 'work/kernel-authority-convergence-20260925'
-    permissions:
-      contents: write
+  projection-consistency:
+    name: Require committed kernel.authority projections
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - name: Checkout exact working branch
+      - name: Checkout exact event source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: work/kernel-authority-convergence-20260925
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
-          persist-credentials: true
-      - name: Rebind map and generate projections
+          persist-credentials: false
+      - name: Verify generated projections without mutating the branch
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py migrate --module kernel.authority
-          python3 scripts/kernel_authority_status.py write
+          python3 scripts/kernel_authority_status.py check
+          python3 qualification/kernel-authority/generate_status.py --check
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse 'HEAD^{tree}')"
           git diff --check
-          git config user.name kernel-authority-projection-bot
-          git config user.email kernel-authority-projection-bot@users.noreply.github.com
-          if [ -n "$(git status --porcelain)" ]; then
-            git add docs/modules/kernel.authority/IMPLEMENTATION_MAP.json \
-              docs/modules/kernel.authority/CURRENT_STATE.json \
-              docs/modules/kernel.authority/CURRENT_STATE.md
-            git commit -m 'docs(kernel-authority): regenerate current-state projections'
-            git push origin HEAD:work/kernel-authority-convergence-20260925
-          fi
+          test -z "$(git status --porcelain)"
 
   identity:
     name: Pin immutable source and base
@@ -246,13 +238,14 @@ jobs:
   merge-gate:
     name: Merge gate
     if: always()
-    needs: [identity, qualify]
+    needs: [projection-consistency, identity, qualify]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Require immutable identity and every exact/merge lane
+      - name: Require immutable projections, identity, and every exact/merge lane
         shell: bash
         env:
+          PROJECTIONS_RESULT: ${{ needs.projection-consistency.result }}
           IDENTITY_RESULT: ${{ needs.identity.result }}
           QUALIFY_RESULT: ${{ needs.qualify.result }}
           SOURCE: ${{ needs.identity.outputs.source }}
@@ -260,6 +253,7 @@ jobs:
           BASE: ${{ needs.identity.outputs.base }}
         run: |
           set -euo pipefail
+          test "$PROJECTIONS_RESULT" = success
           test "$IDENTITY_RESULT" = success
           test "$QUALIFY_RESULT" = success
           test "${#SOURCE}" -eq 40
