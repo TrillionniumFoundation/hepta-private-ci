@@ -264,12 +264,13 @@ impl AgentdIntelligenceProductRunnerV1 {
         inputs: AgentdIntelligenceOwnerInputsV1,
         run_start: crate::AgentdRunStartBindingV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        let metrics = run_start.runtime_metrics();
         self.prepare_bound_for_composition_inner(
             composition,
             request,
             inputs,
             run_start,
-            None,
+            metrics,
         )
         .await
     }
@@ -400,9 +401,9 @@ impl AgentdIntelligenceProductRunnerV1 {
                 );
                 let owner_id = StableId::new("learning.eval")
                     .map_err(|_| AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
-                let current_owner = oracle.current(&owner_id).map_err(|error| {
-                    observed_canonical_error(metrics.as_ref(), error)
-                })?;
+                let current_owner = oracle
+                    .current(&owner_id)
+                    .map_err(|error| observed_canonical_error(metrics.as_ref(), error))?;
                 Some(AgentdEvaluationSessionV1 {
                     run_id: request.run_id.clone(),
                     current_owner,
