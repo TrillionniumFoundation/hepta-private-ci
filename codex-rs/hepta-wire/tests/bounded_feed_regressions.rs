@@ -65,7 +65,7 @@ fn session() -> Result<WireSession, Box<dyn Error>> {
         StableId::new("role.review")?,
         registry,
         transcript,
-    ))
+    )?)
 }
 
 fn drain(decoder: &mut StreamingDecoder, input: &[u8]) -> Vec<DecodedEnvelope> {
@@ -158,12 +158,43 @@ fn session_decoders_preserve_consumption_across_yields() -> Result<(), Box<dyn E
     assert!(first.batch().terminal_error().is_none());
     assert!(second.batch().terminal_error().is_none());
     assert_eq!(
-        selected.feed(&input[first.bytes_consumed()..]).batch().frames().len(),
+        selected
+            .feed(&input[first.bytes_consumed()..])
+            .batch()
+            .frames()
+            .len(),
         1
     );
     assert_eq!(
-        policy.feed(&input[second.bytes_consumed()..]).batch().frames().len(),
+        policy
+            .feed(&input[second.bytes_consumed()..])
+            .batch()
+            .frames()
+            .len(),
         1
     );
+    Ok(())
+}
+
+#[test]
+fn eof_rejects_every_truncated_frame_without_retracting_delivered_prefix()
+-> Result<(), Box<dyn Error>> {
+    let first = frame(1, 5)?;
+    let second = frame(2, 5)?.encode();
+    for cut in 1..second.len() {
+        let mut decoder = StreamingDecoder::new();
+        let bytes = [first.encode(), second[..cut].to_vec()].concat();
+        let (batch, consumed) = decoder.feed(&bytes).into_parts();
+        assert_eq!(consumed, bytes.len());
+        assert_eq!(batch.frames(), std::slice::from_ref(&first));
+        assert!(batch.terminal_error().is_none());
+        let final_batch = decoder.finish();
+        assert!(final_batch.frames().is_empty());
+        assert!(final_batch.terminal_error().is_some());
+    }
+    let mut decoder = WireSessionDecoder::new(session()?);
+    let encoded = first.encode();
+    assert_eq!(decoder.feed(&encoded).batch().frames().len(), 1);
+    assert!(decoder.finish().terminal_error().is_none());
     Ok(())
 }

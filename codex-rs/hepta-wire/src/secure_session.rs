@@ -2,6 +2,12 @@ use std::error::Error;
 use std::fmt;
 use std::sync::Arc;
 
+use zeroize::Zeroize;
+use zeroize::Zeroizing;
+
+use crate::authentication::hmac_sha256;
+use crate::authentication::verify_mac;
+
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -27,7 +33,7 @@ use crate::encode_typed;
 use crate::negotiate;
 
 const TRANSCRIPT_DOMAIN: &[u8] = b"HPTA-NEGOTIATION-TRANSCRIPT-V1\0";
-const SESSION_ID_DOMAIN: &[u8] = b"HPTA-WIRE-SESSION-V1\0";
+const SESSION_ID_DOMAIN: &[u8] = b"HPTA-WIRE-SESSION-V2\0";
 const RECORD_MAC_DOMAIN: &[u8] = b"HPTA-AUTHENTICATED-RECORD-V1\0";
 const AUTHENTICATED_RECORD_MAGIC: [u8; 4] = *b"HPTM";
 const AUTHENTICATED_RECORD_FORMAT: u16 = 1;
@@ -43,6 +49,8 @@ pub const MAX_AUTHENTICATED_RECORD_BYTES: usize =
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct NegotiationTranscript {
     digest: Digest32,
+    negotiated: NegotiatedWire,
+    registry_digest: Digest32,
 }
 
 impl NegotiationTranscript {
@@ -53,14 +61,16 @@ impl NegotiationTranscript {
         registry_digest: Digest32,
         channel_binding: &[u8],
     ) -> Result<Self, WireSessionError> {
-        if !(MIN_CHANNEL_BINDING_BYTES..=MAX_CHANNEL_BINDING_BYTES)
-            .contains(&channel_binding.len())
+        if !(MIN_CHANNEL_BINDING_BYTES..=MAX_CHANNEL_BINDING_BYTES).contains(&channel_binding.len())
         {
             return Err(WireSessionError::ChannelBindingLength {
                 actual: channel_binding.len(),
                 minimum: MIN_CHANNEL_BINDING_BYTES,
                 maximum: MAX_CHANNEL_BINDING_BYTES,
             });
+        }
+        if channel_binding.iter().all(|byte| *byte == 0) {
+            return Err(WireSessionError::ZeroChannelBinding);
         }
         let recomputed = negotiate(initiator, responder, negotiated.required_capabilities())
             .map_err(WireSessionError::Negotiation)?;
@@ -87,6 +97,8 @@ impl NegotiationTranscript {
         put_bytes(&mut encoded, channel_binding);
         Ok(Self {
             digest: Digest32::of_bytes(&encoded),
+            negotiated,
+            registry_digest,
         })
     }
 
@@ -108,12 +120,21 @@ pub struct WireSession {
 }
 
 impl WireSession {
+    /// Construct only when the immutable transcript binds this exact negotiation
+    /// and registry. Session identity V2 also binds the runtime admission role.
     pub fn new(
         negotiated: NegotiatedWire,
         role: StableId,
         registry: Arc<FrozenSchemaRegistry>,
         transcript: NegotiationTranscript,
-    ) -> Self {
+    ) -> Result<Self, WireSessionError> {
+        if transcript.negotiated != negotiated {
+            return Err(WireSessionError::NegotiationResultMismatch);
+        }
+        if transcript.registry_digest != registry.snapshot_digest() {
+            return Err(WireSessionError::TranscriptRegistryMismatch);
+        }
+        let role_length = (role.as_str().len() as u16).to_be_bytes();
         let version = negotiated.version().as_u16().to_be_bytes();
         let capabilities = negotiated.capabilities().bits().to_be_bytes();
         let session_id = Digest32::of_parts(&[
@@ -122,14 +143,16 @@ impl WireSession {
             registry.snapshot_digest().as_array(),
             &version,
             &capabilities,
+            &role_length,
+            role.as_str().as_bytes(),
         ]);
-        Self {
+        Ok(Self {
             negotiated,
             role,
             registry,
             transcript,
             session_id,
-        }
+        })
     }
 
     pub const fn negotiated(&self) -> NegotiatedWire {
@@ -163,6 +186,27 @@ impl WireSession {
     }
 
     pub fn decode_frame(&self, encoded: &[u8]) -> Result<DecodedEnvelope, WireSessionError> {
+        let header = crate::FrameHeader::parse(encoded).map_err(|error| {
+            let source = crate::frame::map_header_error(error);
+            WireSessionError::Decode {
+                context: SessionErrorContext {
+                    session_id: self.session_id,
+                    byte_offset: decode_error_offset(&source, encoded.len()),
+                },
+                source,
+            }
+        })?;
+        if header.version() != self.negotiated.version() {
+            let source = FrozenAdmissionError::VersionMismatch {
+                expected: self.negotiated.version().as_u16(),
+                actual: header.version().as_u16(),
+                byte_offset: 4,
+            };
+            return Err(WireSessionError::Admission {
+                context: SessionErrorContext::for_admission(self.session_id, &source),
+                source,
+            });
+        }
         let envelope = decode_frame(encoded).map_err(|source| WireSessionError::Decode {
             context: SessionErrorContext {
                 session_id: self.session_id,
@@ -258,6 +302,8 @@ impl SessionErrorContext {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum WireSessionError {
+    ZeroChannelBinding,
+    TranscriptRegistryMismatch,
     ChannelBindingLength {
         actual: usize,
         minimum: usize,
@@ -281,6 +327,10 @@ pub enum WireSessionError {
 impl fmt::Display for WireSessionError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::ZeroChannelBinding => formatter.write_str("channel binding must not be all zero"),
+            Self::TranscriptRegistryMismatch => {
+                formatter.write_str("session registry differs from negotiated transcript")
+            }
             Self::ChannelBindingLength {
                 actual,
                 minimum,
@@ -296,14 +346,12 @@ impl fmt::Display for WireSessionError {
             Self::Decode { context, source } => write!(
                 formatter,
                 "session {} frame decode failed at byte {:?}: {source}",
-                context.session_id,
-                context.byte_offset
+                context.session_id, context.byte_offset
             ),
             Self::Admission { context, source } => write!(
                 formatter,
                 "session {} frame admission failed at byte {:?}: {source}",
-                context.session_id,
-                context.byte_offset
+                context.session_id, context.byte_offset
             ),
             Self::Codec(error) => error.fmt(formatter),
             Self::V1(error) => error.fmt(formatter),
@@ -329,14 +377,14 @@ impl Error for WireSessionError {
 /// A fixed-size HMAC-SHA-256 key. Its Debug representation never exposes key
 /// bytes and an all-zero key is rejected.
 #[derive(Clone)]
-pub struct SessionMacKey([u8; 32]);
+pub struct SessionMacKey(Zeroizing<[u8; 32]>);
 
 impl SessionMacKey {
     pub fn new(bytes: [u8; 32]) -> Result<Self, AuthenticatedSessionError> {
         if bytes.iter().all(|byte| *byte == 0) {
             return Err(AuthenticatedSessionError::ZeroMacKey);
         }
-        Ok(Self(bytes))
+        Ok(Self(Zeroizing::new(bytes)))
     }
 }
 
@@ -380,6 +428,11 @@ impl AuthenticatedWireSession {
         self.poisoned
     }
 
+    pub(crate) fn poison(&mut self) {
+        self.poisoned = true;
+        self.key.0.zeroize();
+    }
+
     pub fn seal_envelope(
         &mut self,
         envelope: &DecodedEnvelope,
@@ -398,13 +451,12 @@ impl AuthenticatedWireSession {
                 byte_offset: AUTHENTICATED_RECORD_PREFIX_BYTES,
             });
         }
-        let frame_length = u32::try_from(frame.len()).map_err(|_| {
-            AuthenticatedSessionError::FrameLength {
+        let frame_length =
+            u32::try_from(frame.len()).map_err(|_| AuthenticatedSessionError::FrameLength {
                 actual: frame.len(),
                 maximum: MAX_WIRE_FRAME_BYTES,
                 byte_offset: AUTHENTICATED_RECORD_PREFIX_BYTES,
-            }
-        })?;
+            })?;
         let sequence = self.next_send_sequence;
         let mut record = Vec::with_capacity(
             AUTHENTICATED_RECORD_PREFIX_BYTES + frame.len() + AUTHENTICATED_RECORD_TAG_BYTES,
@@ -415,7 +467,7 @@ impl AuthenticatedWireSession {
         record.extend_from_slice(&sequence.to_be_bytes());
         record.extend_from_slice(&frame_length.to_be_bytes());
         record.extend_from_slice(&frame);
-        let tag = hmac_sha256(&self.key.0, &[RECORD_MAC_DOMAIN, &record]);
+        let tag = hmac_sha256(&self.key.0, &[RECORD_MAC_DOMAIN, &record])?;
         record.extend_from_slice(tag.as_array());
         self.next_send_sequence = sequence
             .checked_add(1)
@@ -447,7 +499,7 @@ impl AuthenticatedWireSession {
         match self.open_record_inner(record) {
             Ok(envelope) => Ok(envelope),
             Err(error) => {
-                self.poisoned = true;
+                self.poison();
                 Err(error)
             }
         }
@@ -529,13 +581,13 @@ impl AuthenticatedWireSession {
                 byte_offset: length_offset,
             },
         )?;
-        let expected_length = frame_end.checked_add(AUTHENTICATED_RECORD_TAG_BYTES).ok_or(
-            AuthenticatedSessionError::LengthMismatch {
+        let expected_length = frame_end
+            .checked_add(AUTHENTICATED_RECORD_TAG_BYTES)
+            .ok_or(AuthenticatedSessionError::LengthMismatch {
                 actual: record.len(),
                 expected: MAX_AUTHENTICATED_RECORD_BYTES,
                 byte_offset: length_offset,
-            },
-        )?;
+            })?;
         if record.len() != expected_length {
             return Err(AuthenticatedSessionError::LengthMismatch {
                 actual: record.len(),
@@ -544,11 +596,11 @@ impl AuthenticatedWireSession {
             });
         }
         let observed_tag = &record[frame_end..expected_length];
-        let expected_tag = hmac_sha256(
+        if !verify_mac(
             &self.key.0,
             &[RECORD_MAC_DOMAIN, &record[..frame_end]],
-        );
-        if !constant_time_eq(observed_tag, expected_tag.as_array()) {
+            observed_tag,
+        ) {
             return Err(AuthenticatedSessionError::MacMismatch {
                 session_id: self.session.session_id(),
                 byte_offset: frame_end,
@@ -567,6 +619,7 @@ impl AuthenticatedWireSession {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AuthenticatedSessionError {
+    MacKeyLength,
     Poisoned,
     ZeroMacKey,
     RecordTooShort {
@@ -613,6 +666,7 @@ pub enum AuthenticatedSessionError {
 impl fmt::Display for AuthenticatedSessionError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::MacKeyLength => formatter.write_str("invalid HMAC key length"),
             Self::Poisoned => formatter.write_str("authenticated wire session is poisoned"),
             Self::ZeroMacKey => formatter.write_str("authenticated wire MAC key is all zero"),
             Self::RecordTooShort {
@@ -624,7 +678,10 @@ impl fmt::Display for AuthenticatedSessionError {
                 "authenticated record ended at byte {byte_offset}: {actual} bytes, minimum is {minimum}"
             ),
             Self::Magic { byte_offset } => {
-                write!(formatter, "authenticated record magic mismatch at byte {byte_offset}")
+                write!(
+                    formatter,
+                    "authenticated record magic mismatch at byte {byte_offset}"
+                )
             }
             Self::Format {
                 actual,
@@ -700,25 +757,6 @@ fn decode_error_offset(error: &DecodeFrameError, encoded_length: usize) -> Optio
         DecodeFrameError::Version(_) => Some(4),
         DecodeFrameError::V1(_) | DecodeFrameError::V2(_) => None,
     }
-}
-
-fn hmac_sha256(key: &[u8; 32], parts: &[&[u8]]) -> Digest32 {
-    let mut inner_pad = [0x36_u8; 64];
-    let mut outer_pad = [0x5c_u8; 64];
-    for (index, key_byte) in key.iter().enumerate() {
-        inner_pad[index] ^= key_byte;
-        outer_pad[index] ^= key_byte;
-    }
-    let capacity = parts
-        .iter()
-        .fold(inner_pad.len(), |total, part| total.saturating_add(part.len()));
-    let mut inner = Vec::with_capacity(capacity);
-    inner.extend_from_slice(&inner_pad);
-    for part in parts {
-        inner.extend_from_slice(part);
-    }
-    let inner_digest = Digest32::of_bytes(&inner);
-    Digest32::of_parts(&[&outer_pad, inner_digest.as_array()])
 }
 
 fn constant_time_eq(left: &[u8], right: &[u8]) -> bool {
@@ -836,14 +874,9 @@ mod tests {
         let schema = id("schema.secure-message.v1")?;
         let producer = id("producer.secure-test")?;
         let role = id("role.secure-test")?;
-        let descriptor = SchemaDescriptor::new(
-            schema,
-            WireVersion::V2,
-            WireVersion::V2,
-            256,
-        )?;
-        let required = WireCapabilities::METADATA_BOUND_DIGEST
-            .union(WireCapabilities::SCHEMA_ADMISSION);
+        let descriptor = SchemaDescriptor::new(schema, WireVersion::V2, WireVersion::V2, 256)?;
+        let required =
+            WireCapabilities::METADATA_BOUND_DIGEST.union(WireCapabilities::SCHEMA_ADMISSION);
         let policy = SchemaPolicy::new(
             descriptor.clone(),
             vec![producer],
@@ -863,7 +896,7 @@ mod tests {
             channel_binding,
         )?;
         Ok((
-            WireSession::new(negotiated, role, registry, transcript),
+            WireSession::new(negotiated, role, registry, transcript)?,
             Codec { descriptor },
         ))
     }
@@ -896,7 +929,10 @@ mod tests {
             &codec,
             &Message("hello".to_string()),
         )?;
-        assert_eq!(receiver.open_typed(&record, &codec)?, Message("hello".to_string()));
+        assert_eq!(
+            receiver.open_typed(&record, &codec)?,
+            Message("hello".to_string())
+        );
         assert!(matches!(
             receiver.open_record(&record),
             Err(AuthenticatedSessionError::SequenceMismatch { .. })
@@ -918,6 +954,131 @@ mod tests {
         assert!(matches!(
             other_receiver.open_record(&record),
             Err(AuthenticatedSessionError::SessionIdMismatch { .. })
+        ));
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod construction_tests {
+    use super::*;
+    use crate::FrozenSchemaRegistryBuilder;
+    use crate::SchemaDescriptor;
+    use crate::SchemaPolicy;
+    use crate::WireCapabilities;
+
+    fn registry(limit: usize) -> Result<Arc<FrozenSchemaRegistry>, Box<dyn Error>> {
+        let policy = SchemaPolicy::new(
+            SchemaDescriptor::new(
+                StableId::new("schema.constructor")?,
+                WireVersion::V1,
+                WireVersion::V2,
+                limit,
+            )?,
+            vec![StableId::new("producer.constructor")?],
+            vec![StableId::new("role.a")?, StableId::new("role.b")?],
+            WireCapabilities::NONE,
+        )?;
+        let mut builder = FrozenSchemaRegistryBuilder::new();
+        builder.register(policy)?;
+        Ok(Arc::new(builder.freeze()?))
+    }
+
+    #[test]
+    fn transcript_rejects_registry_and_negotiated_posture_substitution()
+    -> Result<(), Box<dyn Error>> {
+        let registry = registry(128)?;
+        let offer = NegotiationOffer::current();
+        let posture = negotiate(&offer, &offer, WireCapabilities::METADATA_BOUND_DIGEST)?;
+        let transcript = NegotiationTranscript::from_offers(
+            &offer,
+            &offer,
+            posture,
+            registry.snapshot_digest(),
+            &[9; 32],
+        )?;
+        let v1_offer = NegotiationOffer::new(vec![1], WireCapabilities::NONE)?;
+        let downgraded = negotiate(&v1_offer, &v1_offer, WireCapabilities::NONE)?;
+        assert!(matches!(
+            WireSession::new(
+                downgraded,
+                StableId::new("role.a")?,
+                registry.clone(),
+                transcript
+            ),
+            Err(WireSessionError::NegotiationResultMismatch)
+        ));
+        assert!(matches!(
+            WireSession::new(
+                posture,
+                StableId::new("role.a")?,
+                self::registry(256)?,
+                transcript
+            ),
+            Err(WireSessionError::TranscriptRegistryMismatch)
+        ));
+        Ok(())
+    }
+
+    #[test]
+    fn runtime_role_is_bound_into_the_authenticated_session_identity() -> Result<(), Box<dyn Error>>
+    {
+        let registry = registry(128)?;
+        let offer = NegotiationOffer::current();
+        let posture = negotiate(&offer, &offer, WireCapabilities::METADATA_BOUND_DIGEST)?;
+        let transcript = NegotiationTranscript::from_offers(
+            &offer,
+            &offer,
+            posture,
+            registry.snapshot_digest(),
+            &[9; 32],
+        )?;
+        let a = WireSession::new(
+            posture,
+            StableId::new("role.a")?,
+            registry.clone(),
+            transcript,
+        )?;
+        let b = WireSession::new(posture, StableId::new("role.b")?, registry, transcript)?;
+        assert_ne!(a.session_id(), b.session_id());
+        let frame = DecodedEnvelope::V2(WireEnvelopeV2::new(
+            StableId::new("schema.constructor")?,
+            StableId::new("producer.constructor")?,
+            Generation::new(1)?,
+            vec![1],
+        )?);
+        let mut sender = crate::AuthenticatedWireSession::new(
+            a,
+            crate::SessionMacKey::new([8; 32])?,
+            crate::SessionEndpoint::Initiator,
+        )?;
+        let mut receiver = crate::AuthenticatedWireSession::new(
+            b,
+            crate::SessionMacKey::new([8; 32])?,
+            crate::SessionEndpoint::Responder,
+        )?;
+        assert!(
+            receiver
+                .open_record(&sender.seal_envelope(&frame)?)
+                .is_err()
+        );
+        assert!(receiver.is_poisoned());
+        Ok(())
+    }
+
+    #[test]
+    fn all_zero_channel_binding_is_rejected() -> Result<(), Box<dyn Error>> {
+        let offer = NegotiationOffer::current();
+        let posture = negotiate(&offer, &offer, WireCapabilities::METADATA_BOUND_DIGEST)?;
+        assert!(matches!(
+            NegotiationTranscript::from_offers(
+                &offer,
+                &offer,
+                posture,
+                registry(128)?.snapshot_digest(),
+                &[0; 32]
+            ),
+            Err(WireSessionError::ZeroChannelBinding)
         ));
         Ok(())
     }

@@ -246,6 +246,28 @@ impl StreamingDecoder {
         )
     }
 
+    /// Consume this connection at EOF. A retained partial frame is a terminal
+    /// truncation, never a successful empty stream. Ownership prevents reuse.
+    pub fn finish(mut self) -> StreamDecodeBatch {
+        if let Some(error) = self.terminal_error.clone() {
+            return self.fail(Vec::new(), error);
+        }
+        if !self.buffer.is_empty() {
+            return self.fail(
+                Vec::new(),
+                StreamDecodeError::UnexpectedEof {
+                    actual: self.buffer.len(),
+                    expected: self.expected_frame_length.unwrap_or(WIRE_HEADER_BYTES),
+                    byte_offset: self.buffer.len(),
+                },
+            );
+        }
+        StreamDecodeBatch {
+            frames: Vec::new(),
+            terminal_error: None,
+        }
+    }
+
     /// Strict compatibility API requiring consumption of the complete chunk.
     /// Live transports use `feed` and preserve the unconsumed suffix on yields.
     /// This API retains its historical pre-copy byte limit and terminal work
@@ -363,6 +385,11 @@ impl Error for ReadFrameError {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum StreamDecodeError {
+    UnexpectedEof {
+        actual: usize,
+        expected: usize,
+        byte_offset: usize,
+    },
     InvalidBufferFrameLimit {
         actual: usize,
         minimum: usize,
@@ -399,7 +426,8 @@ pub enum StreamDecodeError {
 impl StreamDecodeError {
     pub const fn byte_offset(&self) -> Option<usize> {
         match self {
-            Self::BufferLimit { byte_offset, .. }
+            Self::UnexpectedEof { byte_offset, .. }
+            | Self::BufferLimit { byte_offset, .. }
             | Self::WorkFrameLimit { byte_offset, .. }
             | Self::NegotiatedVersionMismatch { byte_offset, .. }
             | Self::LengthOverflow { byte_offset } => Some(*byte_offset),
@@ -415,6 +443,12 @@ impl StreamDecodeError {
 impl fmt::Display for StreamDecodeError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::UnexpectedEof {
+                actual, expected, ..
+            } => write!(
+                formatter,
+                "wire stream ended after {actual} bytes of a {expected}-byte frame"
+            ),
             Self::InvalidBufferFrameLimit {
                 actual,
                 minimum,
@@ -460,7 +494,10 @@ impl fmt::Display for StreamDecodeError {
                 negotiated.as_u16()
             ),
             Self::LengthOverflow { byte_offset } => {
-                write!(formatter, "wire stream length overflow at byte {byte_offset}")
+                write!(
+                    formatter,
+                    "wire stream length overflow at byte {byte_offset}"
+                )
             }
             Self::Frame(error) => error.fmt(formatter),
         }

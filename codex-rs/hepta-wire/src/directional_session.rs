@@ -1,5 +1,9 @@
 use std::fmt;
 
+use zeroize::Zeroizing;
+
+use crate::authentication::hmac_sha256;
+
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -42,14 +46,14 @@ impl SessionEndpoint {
 /// session identifier, and the endpoint direction. Debug output never exposes
 /// key bytes and an all-zero master key is rejected.
 #[derive(Clone)]
-pub struct SessionMacKey([u8; 32]);
+pub struct SessionMacKey(Zeroizing<[u8; 32]>);
 
 impl SessionMacKey {
     pub fn new(bytes: [u8; 32]) -> Result<Self, AuthenticatedSessionError> {
         if bytes.iter().all(|byte| *byte == 0) {
             return Err(AuthenticatedSessionError::ZeroMacKey);
         }
-        Ok(Self(bytes))
+        Ok(Self(Zeroizing::new(bytes)))
     }
 }
 
@@ -82,8 +86,8 @@ impl AuthenticatedWireSession {
     ) -> Result<Self, AuthenticatedSessionError> {
         let (send_label, receive_label) = endpoint.direction_labels();
         let session_id = session.session_id();
-        let send_key = derive_directional_key(&master_key.0, session_id, send_label);
-        let receive_key = derive_directional_key(&master_key.0, session_id, receive_label);
+        let send_key = derive_directional_key(&master_key.0, session_id, send_label)?;
+        let receive_key = derive_directional_key(&master_key.0, session_id, receive_label)?;
         debug_assert_ne!(send_key, receive_key);
         let outbound = UndirectedAuthenticatedWireSession::new(
             session.clone(),
@@ -121,7 +125,7 @@ impl AuthenticatedWireSession {
         match self.outbound.seal_envelope(envelope) {
             Ok(record) => Ok(record),
             Err(error) => {
-                self.poisoned = true;
+                self.poison();
                 Err(error)
             }
         }
@@ -135,13 +139,10 @@ impl AuthenticatedWireSession {
         value: &C::Value,
     ) -> Result<Vec<u8>, AuthenticatedSessionError> {
         self.ensure_live()?;
-        match self
-            .outbound
-            .seal_typed(producer, generation, codec, value)
-        {
+        match self.outbound.seal_typed(producer, generation, codec, value) {
             Ok(record) => Ok(record),
             Err(error) => {
-                self.poisoned = true;
+                self.poison();
                 Err(error)
             }
         }
@@ -155,7 +156,7 @@ impl AuthenticatedWireSession {
         match self.inbound.open_record(record) {
             Ok(envelope) => Ok(envelope),
             Err(error) => {
-                self.poisoned = true;
+                self.poison();
                 Err(error)
             }
         }
@@ -170,10 +171,16 @@ impl AuthenticatedWireSession {
         match self.inbound.open_typed(record, codec) {
             Ok(value) => Ok(value),
             Err(error) => {
-                self.poisoned = true;
+                self.poison();
                 Err(error)
             }
         }
+    }
+
+    fn poison(&mut self) {
+        self.poisoned = true;
+        self.outbound.poison();
+        self.inbound.poison();
     }
 
     fn ensure_live(&self) -> Result<(), AuthenticatedSessionError> {
@@ -189,31 +196,12 @@ fn derive_directional_key(
     master_key: &[u8; 32],
     session_id: Digest32,
     direction: &[u8],
-) -> [u8; 32] {
-    hmac_sha256(
+) -> Result<[u8; 32], AuthenticatedSessionError> {
+    Ok(hmac_sha256(
         master_key,
         &[DIRECTIONAL_KEY_DOMAIN, session_id.as_array(), direction],
-    )
-    .into_array()
-}
-
-fn hmac_sha256(key: &[u8; 32], parts: &[&[u8]]) -> Digest32 {
-    let mut inner_pad = [0x36_u8; 64];
-    let mut outer_pad = [0x5c_u8; 64];
-    for (index, key_byte) in key.iter().enumerate() {
-        inner_pad[index] ^= key_byte;
-        outer_pad[index] ^= key_byte;
-    }
-    let capacity = parts
-        .iter()
-        .fold(inner_pad.len(), |total, part| total.saturating_add(part.len()));
-    let mut inner = Vec::with_capacity(capacity);
-    inner.extend_from_slice(&inner_pad);
-    for part in parts {
-        inner.extend_from_slice(part);
-    }
-    let inner_digest = Digest32::of_bytes(&inner);
-    Digest32::of_parts(&[&outer_pad, inner_digest.as_array()])
+    )?
+    .into_array())
 }
 
 #[cfg(test)]
@@ -240,20 +228,10 @@ mod tests {
         let schema = id("schema.directional-record.v1")?;
         let producer = id("producer.directional-test")?;
         let role = id("role.directional-test")?;
-        let descriptor = SchemaDescriptor::new(
-            schema,
-            WireVersion::V2,
-            WireVersion::V2,
-            256,
-        )?;
-        let required = WireCapabilities::METADATA_BOUND_DIGEST
-            .union(WireCapabilities::SCHEMA_ADMISSION);
-        let policy = SchemaPolicy::new(
-            descriptor,
-            vec![producer],
-            vec![role.clone()],
-            required,
-        )?;
+        let descriptor = SchemaDescriptor::new(schema, WireVersion::V2, WireVersion::V2, 256)?;
+        let required =
+            WireCapabilities::METADATA_BOUND_DIGEST.union(WireCapabilities::SCHEMA_ADMISSION);
+        let policy = SchemaPolicy::new(descriptor, vec![producer], vec![role.clone()], required)?;
         let mut builder = FrozenSchemaRegistryBuilder::new();
         builder.register(policy)?;
         let registry = Arc::new(builder.freeze()?);
@@ -266,7 +244,7 @@ mod tests {
             registry.snapshot_digest(),
             channel_binding,
         )?;
-        Ok(WireSession::new(negotiated, role, registry, transcript))
+        Ok(WireSession::new(negotiated, role, registry, transcript)?)
     }
 
     fn envelope() -> Result<DecodedEnvelope, Box<dyn Error>> {
@@ -286,11 +264,8 @@ mod tests {
             key.clone(),
             SessionEndpoint::Initiator,
         )?;
-        let mut responder = AuthenticatedWireSession::new(
-            session(&[7_u8; 32])?,
-            key,
-            SessionEndpoint::Responder,
-        )?;
+        let mut responder =
+            AuthenticatedWireSession::new(session(&[7_u8; 32])?, key, SessionEndpoint::Responder)?;
         let outbound = envelope()?;
         let record = initiator.seal_envelope(&outbound)?;
         assert_eq!(responder.open_record(&record)?, outbound);
@@ -325,11 +300,8 @@ mod tests {
             key.clone(),
             SessionEndpoint::Initiator,
         )?;
-        let mut wrong_receiver = AuthenticatedWireSession::new(
-            session(&[7_u8; 32])?,
-            key,
-            SessionEndpoint::Initiator,
-        )?;
+        let mut wrong_receiver =
+            AuthenticatedWireSession::new(session(&[7_u8; 32])?, key, SessionEndpoint::Initiator)?;
         let record = sender.seal_envelope(&envelope()?)?;
         assert!(matches!(
             wrong_receiver.open_record(&record),

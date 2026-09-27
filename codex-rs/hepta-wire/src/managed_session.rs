@@ -74,6 +74,9 @@ impl ManagedAuthenticatedWireSession {
     }
 
     pub fn session(&self) -> Result<&WireSession, ManagedSessionError> {
+        if self.state() != SessionLifecycleState::Active {
+            return Err(ManagedSessionError::Inactive(self.state()));
+        }
         self.inner
             .as_ref()
             .map(AuthenticatedWireSession::session)
@@ -99,6 +102,13 @@ impl ManagedAuthenticatedWireSession {
         let state = self.state();
         if state != SessionLifecycleState::Active {
             return Err(ManagedSessionError::Inactive(state));
+        }
+        let previous = self.session()?;
+        if previous.role() != new_session.role()
+            || previous.negotiated() != new_session.negotiated()
+            || previous.registry().snapshot_digest() != new_session.registry().snapshot_digest()
+        {
+            return Err(ManagedSessionError::RotationPolicyChanged);
         }
         let new_session_id = new_session.session_id();
         if new_session_id == self.session_id {
@@ -126,10 +136,7 @@ impl ManagedAuthenticatedWireSession {
         self.with_active(|session| session.seal_typed(producer, generation, codec, value))
     }
 
-    pub fn open_record(
-        &mut self,
-        record: &[u8],
-    ) -> Result<DecodedEnvelope, ManagedSessionError> {
+    pub fn open_record(&mut self, record: &[u8]) -> Result<DecodedEnvelope, ManagedSessionError> {
         self.with_active(|session| session.open_record(record))
     }
 
@@ -143,9 +150,7 @@ impl ManagedAuthenticatedWireSession {
 
     fn with_active<T>(
         &mut self,
-        operation: impl FnOnce(
-            &mut AuthenticatedWireSession,
-        ) -> Result<T, AuthenticatedSessionError>,
+        operation: impl FnOnce(&mut AuthenticatedWireSession) -> Result<T, AuthenticatedSessionError>,
     ) -> Result<T, ManagedSessionError> {
         if self.state() != SessionLifecycleState::Active {
             return Err(ManagedSessionError::Inactive(self.state()));
@@ -158,6 +163,7 @@ impl ManagedAuthenticatedWireSession {
             Ok(value) => Ok(value),
             Err(error) => {
                 self.state = SessionLifecycleState::Poisoned;
+                self.inner = None;
                 Err(ManagedSessionError::Authenticated(error))
             }
         }
@@ -166,6 +172,7 @@ impl ManagedAuthenticatedWireSession {
 
 #[derive(Debug)]
 pub enum ManagedSessionError {
+    RotationPolicyChanged,
     Inactive(SessionLifecycleState),
     FreshSessionIdentityRequired { previous: Digest32 },
     Authenticated(AuthenticatedSessionError),
@@ -174,8 +181,14 @@ pub enum ManagedSessionError {
 impl fmt::Display for ManagedSessionError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::RotationPolicyChanged => {
+                formatter.write_str("key rotation cannot change session admission policy")
+            }
             Self::Inactive(state) => {
-                write!(formatter, "authenticated wire session is not active: {state:?}")
+                write!(
+                    formatter,
+                    "authenticated wire session is not active: {state:?}"
+                )
             }
             Self::FreshSessionIdentityRequired { previous } => write!(
                 formatter,
@@ -190,7 +203,9 @@ impl Error for ManagedSessionError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
             Self::Authenticated(error) => Some(error),
-            Self::Inactive(_) | Self::FreshSessionIdentityRequired { .. } => None,
+            Self::Inactive(_)
+            | Self::FreshSessionIdentityRequired { .. }
+            | Self::RotationPolicyChanged => None,
         }
     }
 }
@@ -222,8 +237,8 @@ mod tests {
             WireVersion::V2,
             256,
         )?;
-        let required = WireCapabilities::METADATA_BOUND_DIGEST
-            .union(WireCapabilities::SCHEMA_ADMISSION);
+        let required =
+            WireCapabilities::METADATA_BOUND_DIGEST.union(WireCapabilities::SCHEMA_ADMISSION);
         let policy = SchemaPolicy::new(
             descriptor,
             vec![id("producer.managed-session")?],
@@ -247,7 +262,7 @@ mod tests {
             id("role.managed-session")?,
             registry,
             transcript,
-        ))
+        )?)
     }
 
     fn envelope(generation: u64) -> Result<DecodedEnvelope, Box<dyn Error>> {
@@ -301,11 +316,8 @@ mod tests {
             key.clone(),
             SessionEndpoint::Initiator,
         )?;
-        let responder = ManagedAuthenticatedWireSession::new(
-            session(1)?,
-            key,
-            SessionEndpoint::Responder,
-        )?;
+        let responder =
+            ManagedAuthenticatedWireSession::new(session(1)?, key, SessionEndpoint::Responder)?;
         let new_key = SessionMacKey::new([7; 32])?;
         let mut initiator = initiator.rotate(session(2)?, new_key.clone())?;
         let mut responder = responder.rotate(session(2)?, new_key)?;
@@ -314,6 +326,41 @@ mod tests {
         assert_eq!(responder.open_record(&record)?, frame);
         assert_eq!(initiator.state(), SessionLifecycleState::Active);
         assert_eq!(responder.state(), SessionLifecycleState::Active);
+        Ok(())
+    }
+    #[test]
+    fn rotation_cannot_change_the_runtime_role() -> Result<(), Box<dyn Error>> {
+        let old = session(1)?;
+        let next = session(2)?;
+        let altered = WireSession::new(
+            next.negotiated(),
+            id("role.other")?,
+            Arc::new(next.registry().clone()),
+            next.transcript(),
+        )?;
+        let owner = ManagedAuthenticatedWireSession::new(
+            old,
+            SessionMacKey::new([1; 32])?,
+            SessionEndpoint::Initiator,
+        )?;
+        assert!(matches!(
+            owner.rotate(altered, SessionMacKey::new([2; 32])?),
+            Err(ManagedSessionError::RotationPolicyChanged)
+        ));
+        Ok(())
+    }
+
+    #[test]
+    fn poison_drops_key_bearing_state_immediately() -> Result<(), Box<dyn Error>> {
+        let mut owner = ManagedAuthenticatedWireSession::new(
+            session(1)?,
+            SessionMacKey::new([1; 32])?,
+            SessionEndpoint::Initiator,
+        )?;
+        assert!(owner.open_record(b"invalid").is_err());
+        assert_eq!(owner.state(), SessionLifecycleState::Poisoned);
+        assert!(owner.inner.is_none());
+        assert!(owner.session().is_err());
         Ok(())
     }
 }

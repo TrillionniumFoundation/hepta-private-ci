@@ -87,6 +87,15 @@ impl NegotiatedStreamingDecoder {
         DecodeFeed::new(self.admit_stream_batch(stream_batch), consumed)
     }
 
+    /// Finalize this connection and reject a retained truncated frame.
+    pub fn finish(mut self) -> NegotiatedDecodeBatch {
+        if let Some(error) = self.terminal_error.clone() {
+            return self.fail(Vec::new(), error);
+        }
+        let stream = std::mem::take(&mut self.stream);
+        self.admit_stream_batch(stream.finish())
+    }
+
     /// Strict compatibility call; the whole input must fit its per-call budget.
     pub fn push_batch(&mut self, chunk: &[u8]) -> NegotiatedDecodeBatch {
         if let Some(error) = self.terminal_error.clone() {
@@ -267,6 +276,15 @@ impl WireSessionDecoder {
         }
         let (stream_batch, consumed) = self.stream.feed(chunk).into_parts();
         DecodeFeed::new(self.admit_stream_batch(stream_batch), consumed)
+    }
+
+    /// Finalize this connection and reject a retained truncated frame.
+    pub fn finish(mut self) -> WireSessionDecodeBatch {
+        if let Some(error) = self.terminal_error.clone() {
+            return self.fail(Vec::new(), error);
+        }
+        let stream = std::mem::take(&mut self.stream);
+        self.admit_stream_batch(stream.finish())
     }
 
     /// Strict compatibility call; the whole input must fit its per-call budget.

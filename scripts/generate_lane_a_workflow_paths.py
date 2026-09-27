@@ -48,11 +48,11 @@ def _safe_repo_path(raw: object, *, field: str, module_id: str) -> str:
         raise GenerationError(f"{module_id}.{field} must be a non-empty string")
     value = raw.replace("\\", "/").strip().rstrip("/")
     candidate = PurePosixPath(value)
-    if candidate.is_absolute() or ".." in candidate.parts:
+    if not candidate.parts or candidate.is_absolute() or ".." in candidate.parts:
         raise GenerationError(f"{module_id}.{field} escapes the repository: {raw!r}")
     if any(part in {"", "."} for part in candidate.parts):
         raise GenerationError(f"{module_id}.{field} is not canonical: {raw!r}")
-    if any(char in value for char in "*?[]{}!\n\r\t"):
+    if any(char in value for char in "*?[]{}!\n\r\t") or any(ord(char) < 32 for char in value):
         raise GenerationError(f"{module_id}.{field} contains workflow glob syntax: {raw!r}")
     normalized = posixpath.normpath(value)
     if normalized != value:
@@ -133,7 +133,7 @@ def module_owned_paths(
 
 def render_generated_block(paths: Iterable[str]) -> str:
     lines = [BEGIN_MARKER]
-    lines.extend(f'{ITEM_INDENT}- "{path}"' for path in paths)
+    lines.extend(f"{ITEM_INDENT}- {json.dumps(path)}" for path in paths)
     lines.append(END_MARKER)
     return "\n".join(lines)
 
@@ -146,7 +146,7 @@ def replace_generated_block(workflow: str, block: str) -> str:
             "workflow must contain exactly one generated Lane A path marker pair"
         )
     begin = workflow.index(BEGIN_MARKER)
-    end = workflow.index(END_MARKER, begin) + len(END_MARKER)
+    end = workflow.index(END_MARKER) + len(END_MARKER)
     if end <= begin:
         raise GenerationError("generated Lane A path markers are reversed")
     return workflow[:begin] + block + workflow[end:]

@@ -24,21 +24,11 @@ fn production_session() -> Result<WireSession, Box<dyn Error>> {
     let schema = stable("schema.session-stream.v1")?;
     let producer = stable("producer.session-stream")?;
     let role = stable("role.session-stream")?;
-    let descriptor = SchemaDescriptor::new(
-        schema,
-        WireVersion::V2,
-        WireVersion::V2,
-        256,
-    )?;
+    let descriptor = SchemaDescriptor::new(schema, WireVersion::V2, WireVersion::V2, 256)?;
     let required = WireCapabilities::METADATA_BOUND_DIGEST
         .union(WireCapabilities::SCHEMA_ADMISSION)
         .union(WireCapabilities::STREAM_DECODING);
-    let policy = SchemaPolicy::new(
-        descriptor,
-        vec![producer],
-        vec![role.clone()],
-        required,
-    )?;
+    let policy = SchemaPolicy::new(descriptor, vec![producer], vec![role.clone()], required)?;
     let mut builder = FrozenSchemaRegistryBuilder::new();
     builder.register(policy)?;
     let registry = Arc::new(builder.freeze()?);
@@ -51,7 +41,7 @@ fn production_session() -> Result<WireSession, Box<dyn Error>> {
         registry.snapshot_digest(),
         &[0x5a; 32],
     )?;
-    Ok(WireSession::new(negotiated, role, registry, transcript))
+    Ok(WireSession::new(negotiated, role, registry, transcript)?)
 }
 
 #[test]
@@ -222,8 +212,7 @@ fn negotiated_mismatch_discards_following_partial_frame() -> Result<(), Box<dyn 
 }
 
 #[test]
-fn wire_session_decoder_applies_registry_role_and_producer_policy()
--> Result<(), Box<dyn Error>> {
+fn wire_session_decoder_applies_registry_role_and_producer_policy() -> Result<(), Box<dyn Error>> {
     let session = production_session()?;
     let session_id = session.session_id();
     let valid = WireEnvelopeV2::new(

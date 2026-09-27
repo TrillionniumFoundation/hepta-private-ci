@@ -169,10 +169,16 @@ impl fmt::Display for CodecBindingError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::ZeroSchemaRevision(schema) => {
-                write!(formatter, "codec for schema {schema} has a zero semantic revision")
+                write!(
+                    formatter,
+                    "codec for schema {schema} has a zero semantic revision"
+                )
             }
             Self::UnknownSchema(schema) => {
-                write!(formatter, "codec schema {schema} is absent from the frozen registry")
+                write!(
+                    formatter,
+                    "codec schema {schema} is absent from the frozen registry"
+                )
             }
             Self::DescriptorMismatch(schema) => write!(
                 formatter,
@@ -284,8 +290,8 @@ mod tests {
             256,
         )?;
         let revision = Digest32::of_bytes(b"codec-binding-revision-v1");
-        let required = WireCapabilities::METADATA_BOUND_DIGEST
-            .union(WireCapabilities::SCHEMA_ADMISSION);
+        let required =
+            WireCapabilities::METADATA_BOUND_DIGEST.union(WireCapabilities::SCHEMA_ADMISSION);
         let policy = SchemaPolicy::new_bound(
             descriptor.clone(),
             revision,
@@ -308,12 +314,7 @@ mod tests {
             &[0x42; 32],
         )?;
         Ok((
-            WireSession::new(
-                negotiated,
-                id("role.codec-binding")?,
-                registry,
-                transcript,
-            ),
+            WireSession::new(negotiated, id("role.codec-binding")?, registry, transcript)?,
             Codec { descriptor },
             revision,
         ))
@@ -322,11 +323,8 @@ mod tests {
     #[test]
     fn exact_codec_binding_round_trips() -> Result<(), Box<dyn Error>> {
         let (session, codec, revision) = fixture()?;
-        let bound = PayloadCodecBinding::new(
-            &codec,
-            revision,
-            CanonicalizationProfile::CanonicalJsonV1,
-        )?;
+        let bound =
+            PayloadCodecBinding::new(&codec, revision, CanonicalizationProfile::CanonicalJsonV1)?;
         let value = Message("hello".to_string());
         let envelope = session.encode_bound_typed_envelope(
             id("producer.codec-binding")?,
@@ -334,7 +332,10 @@ mod tests {
             &bound,
             &value,
         )?;
-        assert_eq!(session.decode_bound_typed_envelope(&envelope, &bound)?, value);
+        assert_eq!(
+            session.decode_bound_typed_envelope(&envelope, &bound)?,
+            value
+        );
         Ok(())
     }
 
@@ -351,11 +352,8 @@ mod tests {
             Err(CodecBindingError::SchemaRevisionMismatch { .. })
         ));
 
-        let wrong_profile = PayloadCodecBinding::new(
-            &codec,
-            revision,
-            CanonicalizationProfile::OpaqueBytesV1,
-        )?;
+        let wrong_profile =
+            PayloadCodecBinding::new(&codec, revision, CanonicalizationProfile::OpaqueBytesV1)?;
         assert!(matches!(
             verify_codec_binding(session.registry(), &wrong_profile),
             Err(CodecBindingError::CanonicalizationMismatch { .. })

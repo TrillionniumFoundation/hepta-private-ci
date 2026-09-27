@@ -103,6 +103,24 @@ class LaneAWorkflowPathGenerationTests(unittest.TestCase):
         with self.assertRaisesRegex(subject.GenerationError, "exactly one"):
             subject.replace_generated_block("paths:\n", "generated")
 
+    def test_repository_workflow_matches_current_inventory(self) -> None:
+        subject.check()
+
+    def test_reversed_markers_reject_as_generation_error(self) -> None:
+        with self.assertRaisesRegex(subject.GenerationError, "reversed"):
+            subject.replace_generated_block(subject.END_MARKER + "\n" + subject.BEGIN_MARKER, "x")
+
+    def test_root_and_control_character_paths_reject(self) -> None:
+        for path in [".", "a\x00b", "a\x1fb"]:
+            with self.assertRaises(subject.GenerationError):
+                subject._safe_repo_path(path, field="path", module_id="platform.wire")
+
+    def test_quoted_paths_cannot_escape_the_generated_yaml_string(self) -> None:
+        import json
+        path = 'docs/a"b/**'
+        line = subject.render_generated_block([path]).splitlines()[1].strip()
+        self.assertEqual(json.loads(line[2:]), path)
+
 
 if __name__ == "__main__":
     unittest.main()

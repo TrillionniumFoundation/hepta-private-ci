@@ -74,7 +74,7 @@ pub fn decode_frame(encoded: &[u8]) -> Result<DecodedEnvelope, DecodeFrameError>
     }
 }
 
-fn map_header_error(error: FrameHeaderParseError) -> DecodeFrameError {
+pub(crate) fn map_header_error(error: FrameHeaderParseError) -> DecodeFrameError {
     match error {
         FrameHeaderParseError::Truncated { .. } => DecodeFrameError::Truncated,
         FrameHeaderParseError::Magic { .. } => DecodeFrameError::Magic,

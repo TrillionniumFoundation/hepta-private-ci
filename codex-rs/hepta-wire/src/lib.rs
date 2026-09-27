@@ -8,6 +8,7 @@
 
 #![forbid(unsafe_code)]
 
+mod authentication;
 mod codec_binding;
 mod directional_session;
 mod envelope;
@@ -76,6 +77,7 @@ pub use secure_session::MIN_CHANNEL_BINDING_BYTES;
 pub use secure_session::NegotiationTranscript;
 pub use secure_session::SessionErrorContext;
 pub use secure_session::WireSession;
+pub use secure_session::WireSession as NegotiatedSession;
 pub use secure_session::WireSessionError;
 pub use session::NegotiatedDecodeBatch;
 pub use session::NegotiatedDecodeError;

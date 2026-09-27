@@ -39,9 +39,7 @@ impl FrameHeader {
                 byte_offset: encoded.len(),
             });
         }
-        let actual_magic: [u8; 4] = encoded[..4]
-            .try_into()
-            .expect("fixed header admission guarantees four magic bytes");
+        let actual_magic = [encoded[0], encoded[1], encoded[2], encoded[3]];
         if actual_magic != WIRE_MAGIC {
             return Err(FrameHeaderParseError::Magic {
                 actual: actual_magic,
@@ -332,7 +330,10 @@ impl fmt::Display for FrameHeaderValidationError {
                 "wire frame length derived at byte {byte_offset} is {actual}, maximum is {maximum}"
             ),
             Self::LengthOverflow { byte_offset } => {
-                write!(formatter, "wire frame length overflow at byte {byte_offset}")
+                write!(
+                    formatter,
+                    "wire frame length overflow at byte {byte_offset}"
+                )
             }
         }
     }
@@ -358,27 +359,29 @@ fn validate_identity_length(
 }
 
 fn read_u16(bytes: &[u8], start: usize) -> u16 {
-    u16::from_be_bytes(
-        bytes[start..start + 2]
-            .try_into()
-            .expect("fixed header admission guarantees u16 field"),
-    )
+    u16::from_be_bytes([bytes[start], bytes[start + 1]])
 }
 
 fn read_u32(bytes: &[u8], start: usize) -> u32 {
-    u32::from_be_bytes(
-        bytes[start..start + 4]
-            .try_into()
-            .expect("fixed header admission guarantees u32 field"),
-    )
+    u32::from_be_bytes([
+        bytes[start],
+        bytes[start + 1],
+        bytes[start + 2],
+        bytes[start + 3],
+    ])
 }
 
 fn read_u64(bytes: &[u8], start: usize) -> u64 {
-    u64::from_be_bytes(
-        bytes[start..start + 8]
-            .try_into()
-            .expect("fixed header admission guarantees u64 field"),
-    )
+    u64::from_be_bytes([
+        bytes[start],
+        bytes[start + 1],
+        bytes[start + 2],
+        bytes[start + 3],
+        bytes[start + 4],
+        bytes[start + 5],
+        bytes[start + 6],
+        bytes[start + 7],
+    ])
 }
 
 #[cfg(test)]

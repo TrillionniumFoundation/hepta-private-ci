@@ -35,6 +35,10 @@ IMPLEMENTATION_FILES = (
     "codex-rs/hepta-wire/src/registry.rs",
     "codex-rs/hepta-wire/src/secure_session.rs",
     "codex-rs/hepta-wire/src/directional_session.rs",
+    "codex-rs/hepta-wire/src/authentication.rs",
+    "codex-rs/hepta-wire/src/managed_session.rs",
+    "codex-rs/hepta-wire/src/codec_binding.rs",
+    "codex-rs/hepta-wire/src/feed.rs",
 )
 WORKFLOW_RECEIPT_KINDS = {
     "platform-wire-exact-head",

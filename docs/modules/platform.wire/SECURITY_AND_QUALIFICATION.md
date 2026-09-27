@@ -23,9 +23,9 @@ The builder is bounded to `MAX_FROZEN_SCHEMA_ENTRIES` and rejects conflicting re
 4. frozen registry snapshot digest;
 5. an authenticated transport channel binding.
 
-The channel binding must contain 16–512 bytes. It should be a TLS exporter, Noise handshake hash, mutually authenticated local-channel binding, or an equivalently authenticated value supplied by the transport owner. A hostname, socket address, bearer token string, or unverified peer claim is not an acceptable channel binding.
+The channel binding must contain 16–512 bytes and must not be all zero. This syntactic check does not prove that the transport supplied an authentic value. It should be a TLS exporter, Noise handshake hash, mutually authenticated local-channel binding, or an equivalently authenticated value supplied by the transport owner. A hostname, socket address, bearer token string, or unverified peer claim is not an acceptable channel binding.
 
-`WireSession` derives a stable session identifier from the transcript, registry snapshot and selected posture. It couples typed encoding/decoding to the negotiated version, runtime role, admitted producer and schema policy.
+`WireSession::new` returns `Result` and rejects a registry snapshot or negotiated posture that differs from the immutable transcript. `NegotiatedSession` is an alias for this checked type. Session-identity derivation profile V2 (`HPTA-WIRE-SESSION-V2\0`) includes the length-prefixed runtime admission role as well as the transcript, registry snapshot and selected posture. Both endpoints must agree on this shared admission role; it is not the local initiator/responder direction. Deploy this profile with fresh sessions at both endpoints. Identity-profile V1 peers fail closed; there is no in-place counter reset or fallback. Frozen HPTA framing and the HPTM record field layout are unchanged. It couples typed encoding/decoding to the negotiated version, runtime role, admitted producer and schema policy.
 
 ## 3. Direction-separated authenticated record format
 
@@ -51,9 +51,9 @@ Record V1 layout:
 | frame | variable | exact HPTA V1/V2 frame selected by the session |
 | tag | 32 | HMAC-SHA-256 over domain separator and all preceding record bytes, using the direction-specific key |
 
-The MAC covers the exact frame bytes, session identity and sequence. Verification uses a constant-work byte comparison. Wrong session, sequence, length, format, tag, direction or admitted frame poisons both directions of the connection-local authenticated session. Sequence state is never reset in place; reconnect and renegotiate instead.
+The MAC covers the exact frame bytes, session identity and sequence. Verification uses the standard `hmac` crate `Mac::verify_slice` API, with SHA-256 supplied by `sha2`, instead of a handwritten authenticator. The RFC 4231 test-case-one tag is a native regression vector. Wrong session, sequence, length, format, tag, direction or admitted frame poisons both directions of the connection-local authenticated session. Sequence state is never reset in place; reconnect and renegotiate instead.
 
-`SessionMacKey` is exactly 32 bytes, rejects the all-zero value and redacts its debug representation. Key creation, storage, rotation and destruction remain responsibilities of the authenticated transport/secret owner. Keys must not enter generic evidence, logs, prompts or learning artifacts.
+`SessionMacKey` is exactly 32 bytes, rejects the all-zero value and redacts its debug representation. Owned master and directional key arrays use `zeroize::Zeroizing`; terminal poison clears both directional keys, managed poison drops key-bearing state immediately, and retirement drops the session. Rotation consumes the previous owner, requires a fresh session identifier and preserves the frozen registry, negotiated posture and shared runtime role. A policy change requires an explicitly new admission, not key rotation. Upstream key creation, durable storage, entropy and destruction of copies outside these owners remain responsibilities of the authenticated transport/secret owner; this is not a claim that all compiler-created or caller-owned copies are erased. Keys must not enter generic evidence, logs, prompts or learning artifacts.
 
 ## 4. Security boundaries and nonclaims
 
@@ -67,7 +67,7 @@ A transport that already supplies equivalent authenticated encryption, direction
 
 Production-facing errors carry the session identifier and, where known, the byte offset. Length failures report actual and maximum or expected values. Registry failures identify the rejected schema, producer, role or capability mask. These diagnostics are safe identifiers and bounds; secret key bytes and payload contents are not included.
 
-The existing `StreamingDecoder` remains header-first, bounded and terminally poisoned after protocol/resource failure. The authenticated layer additionally caps records at `MAX_AUTHENTICATED_RECORD_BYTES`, verifies record bounds before frame decode and poisons the bidirectional public session after a terminal record error.
+The existing `StreamingDecoder` remains header-first, bounded and terminally poisoned after protocol/resource failure. `StreamingDecoder::finish`, `NegotiatedStreamingDecoder::finish` and `WireSessionDecoder::finish` consume the decoder at EOF. A retained partial header or body yields `UnexpectedEof`; previously delivered prefix frames are never retracted. These APIs frame HPTA streams, not an unparsed HPTM stream. The authenticated layer additionally caps records at `MAX_AUTHENTICATED_RECORD_BYTES`, verifies record bounds before frame decode and poisons the bidirectional public session after a terminal record error.
 
 ## 6. Evidence-derived lifecycle
 
@@ -112,3 +112,7 @@ The native suite must cover:
 - exact-head, synthetic-merge, protected target-host, independent-reviewer and operations receipt validation.
 
 Any change to the HPTM layout, transcript material, registry digest, direction labels, key derivation, sequence semantics or MAC algorithm requires a new version and cannot reinterpret V1 bytes in place.
+
+## 9. Current remediation and deployment boundary
+
+See [REMEDIATION_20260928.md](REMEDIATION_20260928.md) for exact source changes and verification distinctions. An in-process product codec round trip does not prove a remotely authenticated ingress. No live TLS exporter, independently authenticated peer admission, target-host recovery, rolling upgrade or external acceptance is asserted by these source changes.

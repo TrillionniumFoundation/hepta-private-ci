@@ -7,15 +7,16 @@ pub(crate) enum RuntimeRepresentation {
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 struct Candidate {
-    quality: u16,
     specificity: u8,
+    quality: u16,
 }
 
 /// Select the response representation from all HTTP Accept fields.
 ///
 /// This is HTTP representation negotiation only. It does not establish an
-/// HPTN protocol session and it does not authenticate a peer. Media ranges are
-/// compared by quality and specificity; parameters are case-insensitive,
+/// HPTN protocol session and it does not authenticate a peer. For each representation the most
+/// specific matching range determines quality (RFC 9110, section 12.5.1).
+/// Explicit q=0 exclusions therefore override wildcard ranges. Parameter names are case-insensitive,
 /// quoted version values are accepted, q=0 is an explicit exclusion, and an
 /// unsupported wire version may fall back to an independently acceptable JSON
 /// range.
@@ -39,11 +40,13 @@ pub(crate) fn runtime_representation(request: &str) -> RuntimeRepresentation {
             let Some(range) = parse_media_range(raw_range) else {
                 continue;
             };
-            if range.quality == 0 {
+            if range.unsupported_parameters {
                 continue;
             }
             match range.media_type.as_str() {
-                "application/x-hepta-wire" if range.version.as_deref() == Some("2") => {
+                "application/x-hepta-wire"
+                    if range.version.as_deref() == Some("2") && range.charset.is_none() =>
+                {
                     update_best(
                         &mut best_wire,
                         Candidate {
@@ -57,11 +60,11 @@ pub(crate) fn runtime_representation(request: &str) -> RuntimeRepresentation {
                         &mut best_json,
                         Candidate {
                             quality: range.quality,
-                            specificity: 3,
+                            specificity: if range.charset.is_some() { 4 } else { 3 },
                         },
                     );
                 }
-                "application/*" if range.version.is_none() => {
+                "application/*" if range.version.is_none() && range.charset.is_none() => {
                     update_best(
                         &mut best_json,
                         Candidate {
@@ -70,7 +73,7 @@ pub(crate) fn runtime_representation(request: &str) -> RuntimeRepresentation {
                         },
                     );
                 }
-                "*/*" if range.version.is_none() => {
+                "*/*" if range.version.is_none() && range.charset.is_none() => {
                     update_best(
                         &mut best_json,
                         Candidate {
@@ -87,8 +90,14 @@ pub(crate) fn runtime_representation(request: &str) -> RuntimeRepresentation {
     if !saw_accept {
         return RuntimeRepresentation::Json;
     }
+    let best_wire = best_wire.filter(|candidate| candidate.quality != 0);
+    let best_json = best_json.filter(|candidate| candidate.quality != 0);
     match (best_wire, best_json) {
-        (Some(wire), Some(json)) if wire >= json => RuntimeRepresentation::WireV2,
+        (Some(wire), Some(json))
+            if (wire.quality, wire.specificity) >= (json.quality, json.specificity) =>
+        {
+            RuntimeRepresentation::WireV2
+        }
         (Some(_), Some(_)) => RuntimeRepresentation::Json,
         (Some(_), None) => RuntimeRepresentation::WireV2,
         (None, Some(_)) => RuntimeRepresentation::Json,
@@ -106,6 +115,8 @@ fn update_best(best: &mut Option<Candidate>, candidate: Candidate) {
 struct MediaRange {
     media_type: String,
     version: Option<String>,
+    charset: Option<String>,
+    unsupported_parameters: bool,
     quality: u16,
 }
 
@@ -121,6 +132,9 @@ fn parse_media_range(raw: &str) -> Option<MediaRange> {
     }
 
     let mut version = None;
+    let mut charset = None;
+    let mut unsupported_parameters = false;
+    let mut parameters = std::collections::BTreeSet::new();
     let mut quality = None;
     for field in fields {
         let field = field.trim();
@@ -130,6 +144,9 @@ fn parse_media_range(raw: &str) -> Option<MediaRange> {
         let (name, raw_value) = field.split_once('=')?;
         let name = name.trim().to_ascii_lowercase();
         if !valid_token(&name) {
+            return None;
+        }
+        if !parameters.insert(name.clone()) {
             return None;
         }
         let value = unquote(raw_value.trim())?;
@@ -144,13 +161,21 @@ fn parse_media_range(raw: &str) -> Option<MediaRange> {
                     return None;
                 }
             }
-            _ => {}
+            "charset" => {
+                if !value.eq_ignore_ascii_case("utf-8") {
+                    unsupported_parameters = true;
+                }
+                charset = Some(value.to_string());
+            }
+            _ => unsupported_parameters = true,
         }
     }
 
     Some(MediaRange {
         media_type,
         version,
+        charset,
+        unsupported_parameters,
         quality: quality.unwrap_or(1000),
     })
 }
@@ -260,7 +285,6 @@ mod tests {
             "Accept: application/x-hepta-wire; version=2",
             "Accept: Application/X-Hepta-Wire;VERSION=\"2\"",
             "Accept: application/x-hepta-wire ; q = 0.8 ; version = 2",
-            "Accept: text/plain, application/x-hepta-wire;foo=bar;version=2",
         ] {
             assert_eq!(
                 runtime_representation(&request(accept)),
@@ -304,6 +328,11 @@ mod tests {
     fn explicit_exclusion_or_unrelated_ranges_fail_closed() {
         for accept in [
             "Accept: application/x-hepta-wire;version=2;q=0",
+            "Accept: text/plain, application/x-hepta-wire;foo=bar;version=2",
+            "Accept: application/json;foo=bar",
+            "Accept: application/json;charset=latin1",
+            "Accept: application/json;q=0, */*;q=1",
+            "Accept: application/json;q=0, application/*;q=1",
             "Accept: text/plain",
             "Accept: application/x-hepta-wire;version=99",
             "Accept: application/json;q=bogus",
@@ -338,5 +367,25 @@ Accept: application/x-hepta-wire; version=2; q=0.7\r\n\r\n";
         assert_eq!(parse_quality("1.001"), None);
         assert_eq!(parse_quality("0.0000"), None);
         assert_eq!(parse_quality(".5"), None);
+    }
+
+    #[test]
+    fn specificity_determines_quality_before_representations_are_compared() {
+        assert_eq!(
+            runtime_representation(&request(
+                "Accept: application/json;q=0.1, */*;q=1, application/x-hepta-wire;version=2;q=0.5"
+            )),
+            RuntimeRepresentation::WireV2
+        );
+        assert_eq!(
+            runtime_representation(&request(
+                "Accept: application/json;charset=utf-8;q=0, application/json;q=1"
+            )),
+            RuntimeRepresentation::NotAcceptable
+        );
+        assert_eq!(
+            runtime_representation(&request("Accept: application/json;CHARSET=\"UTF-8\"")),
+            RuntimeRepresentation::Json
+        );
     }
 }
