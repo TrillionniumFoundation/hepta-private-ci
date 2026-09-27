@@ -62,10 +62,8 @@ impl DurableFleetOwner {
     ) -> Result<Self, DurableFleetError> {
         let supervisor_state_root = supervisor_state_root.into();
         preflight_existing_frontier(&supervisor_state_root)?;
-        let inner = frontier::DurableFleetOwner::open_supervisor_state_root(
-            supervisor_state_root,
-            clock,
-        )?;
+        let inner =
+            frontier::DurableFleetOwner::open_supervisor_state_root(supervisor_state_root, clock)?;
         Ok(Self { inner })
     }
 
@@ -208,9 +206,7 @@ fn preflight_existing_frontier(supervisor_state_root: &Path) -> Result<(), Durab
 fn is_generation_name(name: &str) -> bool {
     name.strip_prefix(STATE_FILE_PREFIX)
         .and_then(|value| value.strip_suffix(STATE_FILE_SUFFIX))
-        .is_some_and(|value| {
-            value.len() == 20 && value.bytes().all(|byte| byte.is_ascii_digit())
-        })
+        .is_some_and(|value| value.len() == 20 && value.bytes().all(|byte| byte.is_ascii_digit()))
 }
 
 #[cfg(test)]
@@ -223,26 +219,19 @@ mod tests {
         let directory = tempfile::tempdir().expect("tempdir");
         let state_root = directory.path().join("state");
         std::fs::create_dir(&state_root).expect("state root");
-        let owner = DurableFleetOwner::open_supervisor_state_root(
-            &state_root,
-            Arc::new(SystemFleetClock),
-        )
-        .expect("initial owner");
+        let owner =
+            DurableFleetOwner::open_supervisor_state_root(&state_root, Arc::new(SystemFleetClock))
+                .expect("initial owner");
         assert_eq!(owner.state().generation, 0);
         drop(owner);
 
         let owner_root = state_root.join(DURABLE_FLEET_DIRECTORY);
-        let generation_zero = owner_root.join(format!(
-            "{STATE_FILE_PREFIX}{:020}{STATE_FILE_SUFFIX}",
-            0
-        ));
+        let generation_zero =
+            owner_root.join(format!("{STATE_FILE_PREFIX}{:020}{STATE_FILE_SUFFIX}", 0));
         std::fs::remove_file(&generation_zero).expect("delete generation zero");
 
         assert!(matches!(
-            DurableFleetOwner::open_supervisor_state_root(
-                &state_root,
-                Arc::new(SystemFleetClock),
-            ),
+            DurableFleetOwner::open_supervisor_state_root(&state_root, Arc::new(SystemFleetClock),),
             Err(DurableFleetError::CorruptState)
         ));
         assert!(

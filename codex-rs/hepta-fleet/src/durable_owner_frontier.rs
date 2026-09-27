@@ -112,10 +112,8 @@ impl DurableFleetOwner {
     ) -> Result<Self, DurableFleetError> {
         let supervisor_state_root = supervisor_state_root.into();
         let root = supervisor_state_root.join(DURABLE_FLEET_DIRECTORY);
-        let inner = core::DurableFleetOwner::open_supervisor_state_root(
-            &supervisor_state_root,
-            clock,
-        )?;
+        let inner =
+            core::DurableFleetOwner::open_supervisor_state_root(&supervisor_state_root, clock)?;
         let mut owner = Self { inner, root };
         owner.reconcile_latest_frontier("open")?;
         Ok(owner)
@@ -348,9 +346,7 @@ fn load_retained_states(root: &Path) -> Result<Vec<DurableFleetStateV1>, Durable
     Ok(states)
 }
 
-fn load_frontier(
-    path: &Path,
-) -> Result<Option<DurableFleetLatestFrontierV1>, DurableFleetError> {
+fn load_frontier(path: &Path) -> Result<Option<DurableFleetLatestFrontierV1>, DurableFleetError> {
     let metadata = match std::fs::symlink_metadata(path) {
         Ok(metadata) => metadata,
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
@@ -359,8 +355,7 @@ fn load_frontier(
     if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
         return Err(DurableFleetError::CorruptState);
     }
-    let frontier: DurableFleetLatestFrontierV1 =
-        serde_json::from_slice(&std::fs::read(path)?)?;
+    let frontier: DurableFleetLatestFrontierV1 = serde_json::from_slice(&std::fs::read(path)?)?;
     frontier.validate()?;
     Ok(Some(frontier))
 }
@@ -404,9 +399,7 @@ fn state_digest(state: &DurableFleetStateV1) -> Result<String, DurableFleetError
     Ok(format!("{:x}", digest.finalize()))
 }
 
-fn frontier_digest(
-    frontier: &DurableFleetLatestFrontierV1,
-) -> Result<String, DurableFleetError> {
+fn frontier_digest(frontier: &DurableFleetLatestFrontierV1) -> Result<String, DurableFleetError> {
     let mut candidate = frontier.clone();
     candidate.content_sha256.clear();
     let encoded = serde_json::to_vec(&candidate)?;
@@ -509,11 +502,9 @@ mod tests {
     fn initial_open_pins_generation_zero_frontier() {
         let directory = tempfile::tempdir().expect("tempdir");
         let root = state_root(&directory);
-        let owner = DurableFleetOwner::open_supervisor_state_root(
-            &root,
-            Arc::new(SystemFleetClock),
-        )
-        .expect("owner");
+        let owner =
+            DurableFleetOwner::open_supervisor_state_root(&root, Arc::new(SystemFleetClock))
+                .expect("owner");
         let frontier = load_frontier(
             &root
                 .join(DURABLE_FLEET_DIRECTORY)
@@ -532,11 +523,9 @@ mod tests {
         DurableFleetOwner::open_supervisor_state_root(&root, Arc::new(SystemFleetClock))
             .expect("initial owner");
 
-        let mut core_owner = core::DurableFleetOwner::open_supervisor_state_root(
-            &root,
-            Arc::new(SystemFleetClock),
-        )
-        .expect("core owner");
+        let mut core_owner =
+            core::DurableFleetOwner::open_supervisor_state_root(&root, Arc::new(SystemFleetClock))
+                .expect("core owner");
         core_owner
             .persist_revocation_snapshot(
                 "frontier-crash-window",
@@ -545,20 +534,15 @@ mod tests {
             .expect("publish descendant without wrapper frontier");
         drop(core_owner);
 
-        let recovered = DurableFleetOwner::open_supervisor_state_root(
-            &root,
-            Arc::new(SystemFleetClock),
-        )
-        .expect("recover one descendant");
+        let recovered =
+            DurableFleetOwner::open_supervisor_state_root(&root, Arc::new(SystemFleetClock))
+                .expect("recover one descendant");
         assert_eq!(recovered.state().generation, 1);
         drop(recovered);
 
         std::fs::remove_file(generation_path(&root, 1)).expect("delete latest generation");
         assert!(matches!(
-            DurableFleetOwner::open_supervisor_state_root(
-                &root,
-                Arc::new(SystemFleetClock),
-            ),
+            DurableFleetOwner::open_supervisor_state_root(&root, Arc::new(SystemFleetClock),),
             Err(DurableFleetError::CorruptState)
         ));
     }
@@ -567,11 +551,9 @@ mod tests {
     fn missing_frontier_after_nonzero_generation_fails_closed() {
         let directory = tempfile::tempdir().expect("tempdir");
         let root = state_root(&directory);
-        let mut owner = DurableFleetOwner::open_supervisor_state_root(
-            &root,
-            Arc::new(SystemFleetClock),
-        )
-        .expect("owner");
+        let mut owner =
+            DurableFleetOwner::open_supervisor_state_root(&root, Arc::new(SystemFleetClock))
+                .expect("owner");
         owner
             .persist_revocation_snapshot(
                 "frontier-present",
@@ -585,10 +567,7 @@ mod tests {
         )
         .expect("delete frontier");
         assert!(matches!(
-            DurableFleetOwner::open_supervisor_state_root(
-                &root,
-                Arc::new(SystemFleetClock),
-            ),
+            DurableFleetOwner::open_supervisor_state_root(&root, Arc::new(SystemFleetClock),),
             Err(DurableFleetError::CorruptState)
         ));
     }

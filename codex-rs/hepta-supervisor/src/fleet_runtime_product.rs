@@ -116,8 +116,7 @@ fn perform_maintenance(
         .fleet_expired_uncollected_grants
         > 0
     {
-        reconcile_expired_idempotent(&mut owner, &expiry_operation_id)
-            .map_err(map_owner_error)?;
+        reconcile_expired_idempotent(&mut owner, &expiry_operation_id).map_err(map_owner_error)?;
     }
 
     let Some(identity) = identity else {

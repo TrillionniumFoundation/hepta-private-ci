@@ -30,10 +30,7 @@ tokio::task_local! {
     static FLEET_START_ADMISSION: FleetStartAdmission;
 }
 
-pub(crate) async fn with_fleet_start_admission<F, T>(
-    admission: FleetStartAdmission,
-    future: F,
-) -> T
+pub(crate) async fn with_fleet_start_admission<F, T>(admission: FleetStartAdmission, future: F) -> T
 where
     F: Future<Output = T>,
 {
@@ -82,10 +79,7 @@ impl ProcessDriver for UnixProcessDriver {
         self.inner.spawn(spec)
     }
 
-    fn adopt(
-        &mut self,
-        spec: &AdoptSpec,
-    ) -> Result<Adoption<Self::Process>, ProcessDriverError> {
+    fn adopt(&mut self, spec: &AdoptSpec) -> Result<Adoption<Self::Process>, ProcessDriverError> {
         self.verify_process_effect(&spec.agent_id)?;
         self.inner.adopt(spec)
     }
@@ -118,8 +112,7 @@ mod tests {
     const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
     const DISTRIBUTOR_KEY: &str =
         "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565";
-    const NODE_KEY: &str =
-        "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61";
+    const NODE_KEY: &str = "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61";
 
     fn trust_profile() -> FleetStartTrustProfileV1 {
         FleetStartTrustProfileV1 {

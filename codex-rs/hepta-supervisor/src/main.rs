@@ -62,9 +62,10 @@ fn parse_options() -> anyhow::Result<Options> {
     let fleet_root = HeptaFleetRoot::parse(PathBuf::from(
         fleet_root.ok_or_else(|| anyhow::anyhow!("--fleet-root is required"))?,
     ))?;
-    let trust_profile_path = PathBuf::from(fleet_start_trust_profile.ok_or_else(|| {
-        anyhow::anyhow!("--fleet-start-trust-profile is required")
-    })?);
+    let trust_profile_path = PathBuf::from(
+        fleet_start_trust_profile
+            .ok_or_else(|| anyhow::anyhow!("--fleet-start-trust-profile is required"))?,
+    );
     let trust_profile = load_fleet_start_trust_profile(trust_profile_path)?;
     let fleet_start_admission = FleetStartAdmission::new(
         fleet_root.layout().state_root().to_path_buf(),

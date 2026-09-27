@@ -22,10 +22,8 @@ use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::SupervisordClient;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
-const DISTRIBUTOR_KEY: &str =
-    "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565";
-const NODE_KEY: &str =
-    "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61";
+const DISTRIBUTOR_KEY: &str = "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565";
+const NODE_KEY: &str = "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61";
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolated() -> Result<()> {
