@@ -20,6 +20,7 @@ const EXPECTED_OPERATIONS = Object.freeze([
 const SOURCE_PATHS = Object.freeze([
   "apps/hepta-browser/scripts/generate-source-registry.mjs",
   "apps/hepta-browser/scripts/verify-deployment-evidence.py",
+  "apps/hepta-browser/test/deployment-verifier.test.js",
   "apps/hepta-browser/src/action.js",
   "apps/hepta-browser/src/agentd-protocol.js",
   "apps/hepta-browser/src/agentd-service-main.js",
@@ -97,6 +98,11 @@ function verifyCapabilities() {
     "open_browser_servo_port_from_file",
     "while let Some(frame)",
     "navigate_or_act requires signed final-use grant",
+  ]);
+  assertContains("apps/hepta-browser/test/deployment-verifier.test.js", [
+    "python3",
+    "py_compile",
+    "verify-deployment-evidence.py",
   ]);
   assertContains(".github/workflows/blocking-ci.yml", [
     "browser-servo-source",
