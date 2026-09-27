@@ -40,16 +40,19 @@ pub struct AgentdIntelligenceDecisionPlanV1 {
     expected_predecessor: Digest32,
     episode_id: StableId,
     policy_digest: Digest32,
+    canonical_candidate_set_digest: Digest32,
     candidate_ids: Vec<StableId>,
     completeness: CandidateSetCompletenessReceiptV1,
     evidence_provider: Arc<dyn AgentdIntelligenceDecisionEvidenceProviderV1>,
 }
 
 impl AgentdIntelligenceDecisionPlanV1 {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         expected_predecessor: Digest32,
         episode_id: StableId,
         policy_digest: Digest32,
+        canonical_candidate_set_digest: Digest32,
         mut candidate_ids: Vec<StableId>,
         completeness: CandidateSetCompletenessReceiptV1,
         evidence_provider: Arc<dyn AgentdIntelligenceDecisionEvidenceProviderV1>,
@@ -58,6 +61,7 @@ impl AgentdIntelligenceDecisionPlanV1 {
         let candidates_digest = candidate_ids_digest_v2(&candidate_ids);
         let canonical_order_digest = candidate_order_digest_v2(&candidate_ids);
         if policy_digest.is_zero()
+            || canonical_candidate_set_digest.is_zero()
             || candidate_ids.is_empty()
             || candidate_ids.len() > 128
             || candidate_ids.windows(2).any(|pair| pair[0] == pair[1])
@@ -74,6 +78,7 @@ impl AgentdIntelligenceDecisionPlanV1 {
             expected_predecessor,
             episode_id,
             policy_digest,
+            canonical_candidate_set_digest,
             candidate_ids,
             completeness,
             evidence_provider,
@@ -96,8 +101,9 @@ impl AgentdIntelligenceDecisionPlanV1 {
         };
         if now == 0
             || !self.candidate_ids.contains(candidate_id)
-            || self.candidate_ids != prepared.candidate_ids
             || propensity.raw() == 0
+            || self.canonical_candidate_set_digest
+                != prepared.envelope.candidate_set_digest
         {
             return Err(IntelligenceLearningErrorV1::Invalid(
                 "prepared Decision binding",
