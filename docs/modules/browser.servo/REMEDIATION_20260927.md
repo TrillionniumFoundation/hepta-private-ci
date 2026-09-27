@@ -1,104 +1,189 @@
 # browser.servo remediation ledger — 2026-09-27
 
-## Exact source and scope
+## Exact integration line
 
-The single continuation is PR #1064, branch `codex/browser-servo-full-convergence-20260927`, based on `main@a126987b84737dbc2ee2592442a314117bddb4a2`.
-Runtime source immediately before this metadata correction is `650f31244257a8d362e1bbb7fb0a1ea780fc50db`, tree `f50e0b45e75ea55d79908c6a0edd176ee36f5acd`. No other paper/module branch or main was changed. Draft remains required.
+The sole continuation is PR #1064 on
+`codex/browser-servo-full-convergence-20260927`, based on
+`main@a126987b84737dbc2ee2592442a314117bddb4a2`.
 
-This ledger updates the completion statements in the inherited detailed technical guide, worker guide, pin audit and dossier. Those documents remain useful design references, but their stronger source-closure statements do not establish current qualification. The implementation map deliberately retains open repository-controlled gaps. Source hashes identify bytes, not successful execution or deployment.
+The exact implementation predecessor of this ledger is
+`12762d626f53b64e81aa8b4cd70b10734699418e`, tree
+`bc8dcaca21d71bf5dfa9e6abb2b55740f8c58fc9`. This file is a source and
+qualification ledger, not an activation or release receipt. Later metadata-only
+successors do not widen runtime claims.
 
-## Changes actually published
+No parallel Browser candidate is used as evidence. Donor branches were read
+only to identify reviewed fixes; every accepted change is represented by bytes
+and tests on this branch.
 
-| Commit | Actual scope |
+## Repository-controlled convergence now published
+
+### One bootable source line
+
+The Browser parent accepts class-based host capabilities and the production
+entrypoint composes the real `BrowserProfileHost`, persistent file journal,
+profile-affine subprocess pool, operation-scoped network owner, observation
+redactor, worker-admission boundary, durable-evidence decorator and private
+Agentd service.
+
+The generated registry now inventories the complete tracked
+`apps/hepta-browser` package plus the selected Agentd, workflow, documentation
+and Servo-pin objects. Its import parser accepts only actual static import
+statements; comments and string fixtures no longer fabricate dependencies.
+`journal-v2.js`, journal ownership, evidence drivers, tests and service
+composition are all in the exact source-object set.
+
+The stale runtime ownership fixture now expects the canonical digest of the
+actual profile/principal/generation/manifest/grant tuple. The negative forged
+ownership test remains intact.
+
+### Authority-free exact replay
+
+The long-lived Agentd service performs a reserved read-only replay probe before
+new `navigate_or_act` authorization:
+
+1. Agentd adds internal `replayOnly=true` to a `reconcile_operation` probe;
+2. `ReplayProbeBrowserHost` routes that probe through
+   `BrowserProfileHost.navigateOrAct`;
+3. an existing immutable operation returns its stored receipt before final-use
+   authority and without calling the driver;
+4. a missing operation reaches `admitNewOperation`, which returns the single
+   typed absence error and cannot authorize or dispatch;
+5. only that exact absence permits the ordinary signed final-use path.
+
+Caller-supplied `replayOnly` is rejected by the named Agentd service. Semantic
+substitution remains an error, not proof of absence. Ordinary
+`reconcile_operation` retains its live observer semantics.
+
+This closes the previous protocol failure in which a legitimate replay could be
+misread as a missing authority challenge and reset the Browser child. It does
+not convert replay into a fresh terminal observation.
+
+### Durable worker-admission and network evidence
+
+`DurableEvidenceBrowserDriver` reuses the same
+`FileBrowserOperationJournal`; no second state owner was added. The Browser
+owner records immutable dispatch intent first. The decorator then requires and
+persists the worker-originated admission receipt before dispatch returns to the
+final-use boundary. Missing admission fails closed.
+
+Immediate, deferred-settlement and live-reconciliation egress receipts are
+bound to the same profile/generation/operation/request/semantic identity and
+written through the journal's monotonic `recordEgress` transition. These
+receipts establish bounded operation-network observations only; they are not
+remote business success.
+
+### Existing safety and owner semantics retained
+
+The candidate retains:
+
+- the permanent kernel `flock` owner protocol, without stale PID-directory
+  rename/reclaim;
+- validated incremental journal indexes with identity-change invalidation,
+  compaction, torn-tail recovery and monotonic generation retirement;
+- operation-scoped egress admission, frozen DNS/IP bindings, HTTP/CONNECT/SNI
+  checks, request/response/deadline bounds and owned socket shutdown;
+- `OwnedBrowserChild` process-lifetime tracking, observed exit before successful
+  containment, retained ownership after failed cleanup and bounded descendant
+  census;
+- short random profile directories and explicit Unix-socket path bounds;
+- `lstat`/`stat.S_ISREG` deployment evidence validation with bounded reads,
+  duplicate-key rejection and exact run/source/lock checks.
+
+These source controls still require exact native and target execution evidence.
+
+## Commits in this continuation
+
+| Commit | Published change |
 | --- | --- |
-| `7a6ce1e95a919e7c84ca9d2885378463b2428c0d` | Selective import from #1010: class-capability validation, operation egress gate, host-private upstream endpoint, bounded framing/deadlines, redaction and matching tests. Kept #1064 native split and journal generation format. |
-| `710678f66dda385a3bb60c4c6e854c3b1b60c751` | Read-only composition workflow retains exact source and formatting diagnostics even after earlier failure. Existing tests and strict lint remain. |
-| `acdd57f1c1f4dab797eb73c78d2d8e6f11dfbfb6` | Kernel-owned permanent journal lock, immutable transitions, validated incremental indexes, crash recovery, inline retirement, admission/egress storage APIs and real-process regressions. |
-| `650f31244257a8d362e1bbb7fb0a1ea780fc50db` | Async DNS/connect cancellation, owned upstream/downstream socket closure, HTTP/CONNECT byte/time bounds, exact pinned HTTP socket use and cleanup retry without dropping resources. |
+| `d2daa5b06f4899aa8c1302fb303c592ca04f31ef` | Correct static-import parsing and restore exact Browser source-registry closure. |
+| `e6eeec60958b6d11d089a03288dfd44eb7f55b11` | Bind the positive ownership fixture to the actual canonical identity without weakening the forged-digest regression. |
+| `3f6709b44046ab0a598ee73fe41046732891ab62` / `d754ee59c04e8bdb4e1dbbdc4d4ad418ba4b080f` / `a0abe6da1c4a17dce6e234a09a52b98de3b842d2` | Add, compose and test durable admission/egress evidence on the existing journal owner. |
+| `db937434ce04c66a1fb7c6a75722483963151a13` / `84d0d295b8b1e8d37fb06a8158d28a2576f459b1` / `772bbeb466eb940ece518d074699229ec063c1bb` / `7beeb32907ccd6bd4babff37592fe375480cb5c1` / `c9e997c63c8a65591ff5526fdcc88c7418b658d5` | Implement and test the reserved non-executing replay probe across Browser and Agentd. |
+| `12762d626f53b64e81aa8b4cd70b10734699418e` | Refresh the exact generated source registry for the replay path. |
 
-The new journal admission and egress APIs are storage primitives. The runtime/worker producers and consumers prepared locally are NOT published in these commits. An API test is not a proof that the production call path uses that API.
+## Verification state
 
-## Kernel owner lock migration and operational assumptions
+At this ledger's implementation predecessor, exact-source workflows were
+created for Browser Node/source checks, Agentd composition, Lane B, blocking CI,
+Servo worker build and independent rebuild. They were queued or pending when
+this ledger was written. Queued, pending, skipped-applicable, cancelled,
+prior-head or donor-branch results are not pass evidence.
 
-The lock is a permanent private regular file at `<journal>.owner-lock`; the owner keeps the open-file description while `/usr/bin/flock` acquires the Linux advisory lock. There is no live stale-PID deletion or lock-directory rename. SIGKILL of the owner releases its descriptor in the kernel.
+Earlier runs on `fb0395fd1cf9a20c4049614b5d9f75b07eacf928`
+failed before Browser tests because the former registry parser interpreted a
+string fixture as an import. That defect is fixed in the current source, but the
+old failures are not relabelled as passes.
 
-Never unlink or replace this inode while any writer is alive. Use a protected local Linux filesystem and the same protocol for all writers. A legacy lock directory or legacy JSON lock is rejected rather than reclaimed. Migration requires stopping and observing termination of every old writer, preserving the journal and old lock for review, and installing the new lock protocol offline. Do not mix old and new binaries. A rollback must account for the newer journal event schemas and inline retirement markers.
-
-The launcher checks a canonical root-owned non-writable `/usr/bin/flock`, but exact artifact-digest binding of this new dependency and target filesystem qualification remain open. Root/same-owner malicious lock-inode replacement is not solved by advisory locking.
-
-## Storage and network semantics
-
-Owned appends update validated in-memory operation/profile indexes. Reads reuse the index only when device, inode, size, mtime and ctime match under the owner lock. A foreign append/replacement forces full validation. This improves the ordinary single-owner path; it does not yet provide incremental tail ingestion for a constantly alternating multi-writer workload.
-
-Terminal identities remain monotonic and exact duplicates append no bytes. File/parent fsync, atomic snapshot replacement, bounded capacity and recovery fencing remain required. Empty profile generations can be durably retired. Independent admission and egress receipts survive reopening/compaction; neither is remote business success.
-
-The operation gate stays in front of the profile DNS/IP/SNI broker. Its upstream socket is outside the worker-writable mount. The broker tracks sockets while connecting, checks liveness after async work, limits transfer bytes/time, and waits for actual socket close. Failed gate/network cleanup retains resources for retry and cannot skip the worker stop attempt. Full process/descendant containment still needs the native/runtime continuation.
-
-## Executed evidence and limits
-
-Local runtime: Node v22.16.0 on Linux. No Cargo, Rust compiler/rustfmt, Bubblewrap or built Servo artifact was available locally.
-
-| Source scope | Executed result |
-| --- | --- |
-| Selected donor import suites | 39 passed, no failures/cancellations/skips. |
-| Published journal slice | 87 passed, no failures/cancellations/skips. Includes real SIGKILL, simultaneous lock contenders, foreign-process append and cache invalidation. |
-| Published network slice | 28 passed, no failures/cancellations/skips. Includes actual local TCP/UDS connection closure, DNS-close race and oversized response abort. |
-| Hash-matched `650f312` package subset | 22 test files, 219 tests: 205 passed, 14 failed, no cancellations/skips. The separate deployment-verifier test was not present in this local subset and is NOT counted as passed. |
-
-The 14 source-matched failures comprise 13 worker-driver cases whose long profile/socket paths exceed the Linux Unix-socket bound, and one runtime fixture still asserting the old fixed ownership digest. Shorter admitted profile roots can avoid the path bound, but the current generated directory naming still needs a product fix; do not remove the bound or suppress the tests.
-
-Larger passing local candidate runs included unpublished protocol/runtime changes and must not be attributed to this remote SHA. CI queued, pending or cancelled states are not successes. No final exact-head/synthetic-merge native qualification, real Servo E2E, public HTTPS, signed multi-builder artifact or target receipt is established by this ledger.
-
-## Outstanding work recorded at bfca18dc (see continuation below)
-
-1. Fix long profile/socket naming and the stale fixture; run all current Browser files, not a selected suite.
-2. Publish and qualify the coherent Browser/Agentd/worker replay and admission protocol, with exact semantic binding. A tool safety check rejected the attempted Browser service protocol write during this continuation; that write was not retried through an alternate route and is not in the branch.
-3. Connect real worker-originated admission and operation egress observations to the new journal APIs inside the appropriate authority/durability boundary.
-4. Require observed process/descendant/network termination before releasing uncertain ownership or claiming containment. Retain ownership after failed cleanup; do not merely clear handles.
-5. Qualify atomic final action revalidation and engine-private DOM node identity. A local fixed-script experiment is not proof against hostile page-realm monkeypatching or identical-shape node replacement.
-6. Fix `verify-deployment-evidence.py::require_file`: `Path.stat()` returns a stat result, which has no `is_file()` method. Add runtime tests; Python compilation alone misses this defect.
-7. Finish actual service/native/runtime dependency and launcher closure, formatter, strict lint, exact-head and deterministic merge checks, locked Servo build, real sandbox/HTTPS/storage-isolation/recovery/soak, independent builders and signed evidence verification.
-8. Reconcile the detailed guides/pin audit with this ledger and actual final source. Continue to distinguish one-in-flight parent calls from resident worker-pool capacity.
-
-## Completion boundary retained
-
-All stages are not closed. `productionImplementation`, `productExecutionProved`, `deploymentQualification`, `operatorAcceptance`, `activation`, `promotion` and `release` remain false. Credential/upload/download remain disconnected. No merge, bypass, target activation or independent acceptance was requested or performed by this continuation.
-
-## Owner and verifier continuation from bfca18dc
-
-This continuation extends `bfca18dcc4b2cba7be1e248050fd78efede11bf0` on the same PR #1064 branch. Its accompanying source registry binds the changed and newly added files. It does not import results from unpublished patches or replace unrelated Agentd/Servo work.
-
-### Implemented changes
-
-The subprocess driver now allocates a `p.<128-bit-random-hex>` directory independently of profile/principal identifier length. The exact identities remain in the host-private ownership manifest and private protocol. A conservative 103-byte UTF-8 socket pathname bound is checked before resource allocation; an excessive root still fails explicitly rather than truncating names or disabling the bound. The driver returns `privateProfileDirectory` only as in-process composition metadata for the existing effect-network wrapper. `BrowserProfileHost` publishes its explicit identity receipt, not that path.
-
-`OwnedBrowserChild` retains the actual acquired child and observed Linux PID/start-time lifetimes. A successful signal request is not an exit observation. Startup failure, pre-admission cancellation, explicit containment and lease expiry wait for owned process exit and broker shutdown. An incomplete cleanup retains handles and raises `BROWSER_CONTAINMENT_UNPROVED`; it cannot free a pool reservation. Filesystem cleanup clears each owned path only after deletion succeeds and never deletes a failed exclusive-create collision. A later stop retries the same owner without spawning a replacement. Concurrent starts are excluded, concurrent stops share the complete retirement, and effects are fenced as soon as shutdown begins. A pending startup cannot be reported stopped by a pool no-op; its caller must cancel startup first. The physical lease uses both wall-clock and monotonic deadlines.
-
-The Linux process census is bounded and observes only captured lifetimes. It does not signal raw descendant PIDs. It is not independent proof that every possible descendant of a compromised worker is contained; production namespace teardown and exact target-host descendant tests remain mandatory. The outer admission decorator and Rust parent still require their own error propagation and final-use-fence ordering qualification.
-
-The deployment verifier now uses `lstat` plus `stat.S_ISREG`, rather than calling the nonexistent `stat_result.is_file()`. It rejects nonregular/final-symlink, empty and oversized evidence; bounds actual JSON reads; rejects duplicate keys, non-finite constants and invalid UTF-8; and compares expected JSON fields without Boolean/integer coercion. Workflow inputs require canonical positive run IDs and `status=completed` plus `conclusion=success`. Builder locks are checked against the exact committed source lock, and finalization binds the multi-builder and attestation receipts to the current source/tree/pin/worker/run tuple instead of relabelling old aggregate evidence. The workflow's cryptographic `gh attestation verify` remains required. These unit tests are not signed build or target evidence, and hostile filesystem replacement between separate reads is not claimed solved.
-
-### Validation actually executed for this continuation
-
-The original driver and original test file were first checked against Git blobs `67859381b2bb4b7353950b80b48e7010428b9137` and `62036cc612bbf432d9a48af82ffec18512850cca`. A separate baseline execution ran 21 cases: 8 passed and 13 failed, with no skips/cancellations. Twelve failures hit the Unix-socket path bound and the pool test exposed a missing `rm` import. This baseline is distinct from the historical 219-case run above.
-
-After the source fixes, all 21 original driver assertions remain. The missing `rm` import is fixed. The explicitly selected command below passed 41 Node top-level tests, with zero failures, cancellations or skips, on Node v22.16.0/Linux:
+The current exact candidate still requires terminal-success evidence for:
 
 ```sh
-node --test --test-reporter=tap \
-  apps/hepta-browser/test/worker-driver.test.js \
-  apps/hepta-browser/test/profile-artifacts.test.js \
-  apps/hepta-browser/test/worker-lifecycle.test.js \
-  apps/hepta-browser/test/worker-owner-regression.test.js \
-  apps/hepta-browser/test/evidence-runtime-regression.test.js
+npm --prefix apps/hepta-browser run verify:registry
+node --test apps/hepta-browser/test/*.test.js
+node --check apps/hepta-browser/src/*.js
+
+cd codex-rs
+cargo fmt --package codex-hepta-agentd -- --check
+cargo test --locked -p codex-hepta-agentd browser_servo --lib
+cargo test --locked -p codex-hepta-agentd --bin hepta-agentd-browser-service
+cargo check --locked -p codex-hepta-agentd \
+  --bin hepta-agentd-browser \
+  --bin hepta-agentd-browser-service
+cargo clippy --locked -p codex-hepta-agentd \
+  --lib \
+  --bin hepta-agentd-browser \
+  --bin hepta-agentd-browser-service \
+  --no-deps -- -D warnings
 ```
 
-The 41 cases comprise 21 retained driver tests, 3 path tests, 6 lifetime tests, 10 driver-owner regressions and 1 wrapper that executes 11 Python verifier tests. The Python tests also passed separately using `python3 -B apps/hepta-browser/test/evidence-runtime-regression.py`. Do not count the wrapper and its nested cases as two independent qualifications. Available JavaScript files were syntax-checked individually; the modified Python verifier compiled successfully.
+It also requires the exact-lock Servo worker build, real Browser E2E, public
+HTTPS, storage isolation, parent/descendant cleanup, recovery, soak,
+byte-identical independent rebuild, SBOM and signed provenance gates on the same
+final source.
 
-Real local OS processes and Unix sockets are used for exit-before-return, admission cancellation, startup cleanup, lease expiry and pool-capacity retention tests. The child is a Node private-protocol fixture, not Servo; its test launcher is not Bubblewrap. The local checkout contains only the listed test/dependency subset. This is NOT a complete Browser suite, full source-registry execution, native Agentd/Servo build, final-head/synthetic-merge pass, public HTTPS test, soak or independent target receipt. Original and modified file hashes and raw passing/failing logs are retained as local diagnostic evidence.
+## Remaining repository-controlled blocker
 
-### Still open after this continuation
+The native worker still performs action-surface revalidation and
+click/type/focus execution in separate JavaScript evaluations. The exact Servo
+worker has not yet established an engine-private DOM node handle or a single
+atomic final validation-and-action primitive. A hostile page-realm API
+monkeypatch or identical-shape node replacement therefore remains outside the
+proved invariant.
 
-The preceding outstanding-work list is historical. Its socket naming and verifier runtime-error items are addressed above; the stale full-runtime fixture and full-package execution still require verification. Remaining repository-controlled work includes coherent native replay/admission protocol, real worker admission and egress producers connected to journal storage, propagation of outer-decorator cleanup failure without converting it into success, and Rust containment before final-use-fence release. Engine-private DOM target identity and atomic final action admission are not implemented by this patch. Actual service/runtime/launcher artifact closure, flock identity, strict native formatting/lint and full exact-head/merge qualification remain open. Updating the detailed design guides cannot substitute for those implementations or tests.
+This must be closed in the real worker and exercised by a real-page regression;
+a fixture flag, another digest comparison, or a document statement is not
+sufficient. Until then, repository-controlled source-boundary closure remains
+false.
 
-No main update, protected-branch bypass, production activation, independent acceptance, promotion or release is performed. Credential/upload/download remain disconnected. The user-requested four stages are not fully closed.
+## External and independently governed gates
+
+Even after repository-controlled source and exact-head checks succeed, the
+following remain separate:
+
+- successful signed primary and independent artifacts from merged `main`;
+- main-only trusted Linux target execution for namespace, launcher, listener,
+  direct-egress, profile isolation, process-tree cleanup and soak;
+- independently operated signed remote-business terminal observations where
+  business terminality is claimed;
+- operator acceptance, production activation, promotion and release;
+- macOS or Windows isolation only if those platforms enter scope.
+
+Credential, upload and download remain fail-closed and disconnected.
+
+## Completion boundary
+
+The current booleans remain:
+
+```text
+source_root_present = true
+production_implementation = false
+product_execution_proved = false
+deployment_qualification = false
+operator_acceptance = false
+activation = false
+promotion = false
+release = false
+```
+
+No main update, protected-branch bypass, deployment, activation, independent
+acceptance, promotion or release is performed by this continuation.
