@@ -2,8 +2,25 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "5a439daaa11b805f6ae7dd2ada4282bddf06021c",
-    "tree": "f2d9c1626ca9dd5f61d5764f98660215cb3cc679"
+    "commit": "d5cc601c240713231149a823b3a9f334d8a90c41",
+    "tree": "68ffabb7625cb888114f5f1892c6029190185a29"
+  },
+  "sourceBasePurpose": "Frozen inspected source baseline, not a passing execution receipt and not the self-referential commit containing this document.",
+  "executionIdentity": {
+    "authority": "same-run immutable qualification artifact",
+    "record": "command-record.json",
+    "commitField": "testedSha",
+    "treeField": "testedTree",
+    "sourceField": "sourceSha",
+    "generator": "scripts/intuition_qualify_exact.py",
+    "independentVerifier": "scripts/intuition_accept_exact.py",
+    "trackedDocumentIsExecutionProof": false
+  },
+  "full_completion_predicate": {
+    "is_production_implemented": false,
+    "happy_path_verified": false,
+    "edge_failures_verified": false,
+    "has_independent_acceptance_proof": false
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "intuition.policy",
@@ -14,8 +31,18 @@
   "resolvedRoots": ["codex-rs/hepta-intuition"],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "host_and_gate_source_present_canonical_hook_unverified",
+  "productCallerState": "host_and_gate_source_present_canonical_hook_execution_unverified",
   "productionWriterState": "sole_host_owned_writer_source_present_execution_unverified",
+  "servingProfile": {
+    "environmentVariable": "HEPTA_INTUITION_PROFILE",
+    "default": "production",
+    "productionRequiresAuthenticatedProductHost": true,
+    "legacyHostSatisfiesProduction": false,
+    "developmentCompatibilityRequiresExplicitOptIn": true,
+    "testProfileAllowedInProductBinary": false,
+    "configurationPinnedOnFirstUse": true,
+    "runtimeVerification": "pending_exact_source_artifacts"
+  },
   "productCallers": [
     {
       "name": "authenticated intuition qualification",
@@ -26,11 +53,11 @@
       "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy.rs"
     },
     {
-      "name": "Agentd canonical ObjectiveStart gate source; invocation unverified",
+      "name": "Agentd canonical ObjectiveStart gate source; execution unverified",
       "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy_serving.rs"
     },
     {
-      "name": "Agentd canonical serving method; authenticated hook unverified",
+      "name": "Agentd canonical serving method; authenticated hook execution unverified",
       "sourcePath": "codex-rs/hepta-agentd/src/state.rs"
     }
   ],
@@ -207,7 +234,7 @@
       "operation": "AgentdState::start_canonical_intelligence",
       "nativeSymbol": "start_canonical_intelligence",
       "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
-      "state": "serving_method_present_authenticated_hook_materialization_unverified",
+      "state": "serving_method_present_authenticated_hook_execution_unverified",
       "authority": "run_admission_after_authenticated_decision",
       "tests": ["codex-rs/hepta-agentd/src/intuition_policy_serving.rs"],
       "sourcePathExists": true,
@@ -217,14 +244,27 @@
         "codex-rs/hepta-agentd/src/intuition_policy_serving.rs",
         "codex-rs/hepta-agentd/src/intuition_policy_service.rs"
       ]
+    },
+    {
+      "operation": "authenticate_canonical_intuition",
+      "nativeSymbol": "authenticate_canonical_intuition",
+      "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy_serving.rs",
+      "state": "production_profile_fail_closed_source_implemented_execution_unverified",
+      "authority": "none",
+      "tests": ["codex-rs/hepta-agentd/src/intuition_policy_serving.rs"],
+      "sourcePathExists": true,
+      "designOperation": "default production profile and authenticated product-host requirement",
+      "mappingClass": "product_caller",
+      "delegatedCallees": ["codex-rs/hepta-agentd/src/intuition_policy.rs"]
     }
   ],
   "repositoryControlledGaps": [
-    "Commit and inspect the actual canonical serving hook; a queued source-composition action is not implementation evidence.",
-    "Rebind provenance after materialization and verify the current exact source and merge trees without modifying either.",
+    "Complete current exact-source and synthetic-merge executions; a queued job or historical log is not a passing receipt.",
+    "Keep implementation source provenance separate from actual testedSha/testedTree and run identity in immutable artifacts.",
     "Complete legacy caller migration and validate the non-default compatibility boundary.",
     "Obtain real Agentd process/request, crash-interruption, revocation/rollback and combined signature-plus-ledger latency receipts.",
-    "Require authentic independent acceptance instead of treating a template or fixture as a receipt."
+    "Require authentic independent semantic acceptance in addition to the separately executed CI suite.",
+    "Complete and qualify production audit/exporter integration, dashboards, SLOs and rehearsed operator recovery."
   ],
   "externalEvidenceGates": [
     "independent semantic evaluator acceptance",
