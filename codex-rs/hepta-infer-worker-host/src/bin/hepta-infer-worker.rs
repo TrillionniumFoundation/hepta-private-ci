@@ -27,13 +27,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut intelligence_revision = None;
     let mut intelligence_context_digest = None;
     let mut intelligence_envelope_digest = None;
+    let mut intelligence_prompt_digest = None;
     let mut native_profile_selected = false;
     let mut timeout_ms = 120_000_u64;
     let mut args = std::env::args().skip(1);
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX --intelligence-prompt-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
             );
             return Ok(());
         }
@@ -56,6 +57,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "--intelligence-revision" => intelligence_revision = Some(value.parse()?),
             "--intelligence-context-digest" => intelligence_context_digest = Some(value),
             "--intelligence-envelope-digest" => intelligence_envelope_digest = Some(value),
+            "--intelligence-prompt-digest" => intelligence_prompt_digest = Some(value),
             "--timeout-ms" => timeout_ms = value.parse()?,
             _ => return Err(format!("unknown argument: {flag}").into()),
         }
@@ -100,18 +102,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         intelligence_revision,
         intelligence_context_digest,
         intelligence_envelope_digest,
+        intelligence_prompt_digest,
     ) {
-        (None, None, None, None) => None,
-        (Some(run_id), Some(expected_revision), Some(context_digest), Some(envelope_digest)) => {
-            Some(NativeIntelligenceRunBinding {
-                run_id,
-                expected_revision,
-                context_digest,
-                envelope_digest,
-            })
-        }
+        (None, None, None, None, None) => None,
+        (
+            Some(run_id),
+            Some(expected_revision),
+            Some(context_digest),
+            Some(envelope_digest),
+            Some(prompt_digest),
+        ) => Some(NativeIntelligenceRunBinding {
+            run_id,
+            expected_revision,
+            context_digest,
+            envelope_digest,
+            prompt_digest,
+        }),
         _ => {
-            return Err("all four --intelligence-* arguments must be supplied together".into());
+            return Err("all five --intelligence-* arguments must be supplied together".into());
         }
     };
     let result = match intelligence {
