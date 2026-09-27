@@ -9,6 +9,7 @@ on:
       - scripts/finalize-intelligence-control-product.py
       - scripts/finalize-intelligence-control-closed-loop.py
       - scripts/finalize-intelligence-control-boundaries.py
+      - scripts/finalize-intelligence-control-learning-io.py
 
 permissions:
   contents: write
@@ -44,9 +45,13 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EVENT_HEAD"
           git cat-file -e "$EVENT_BASE^{commit}"
           git merge-base --is-ancestor "$EVENT_BASE" HEAD
-          test -f scripts/finalize-intelligence-control-product.py
-          test -f scripts/finalize-intelligence-control-closed-loop.py
-          test -f scripts/finalize-intelligence-control-boundaries.py
+          for script in \
+            scripts/finalize-intelligence-control-product.py \
+            scripts/finalize-intelligence-control-closed-loop.py \
+            scripts/finalize-intelligence-control-boundaries.py \
+            scripts/finalize-intelligence-control-learning-io.py; do
+            test -f "$script"
+          done
 
       - name: Materialize existing-owner product closure
         shell: bash
@@ -55,6 +60,7 @@ jobs:
           python3 scripts/finalize-intelligence-control-product.py
           python3 scripts/finalize-intelligence-control-closed-loop.py
           python3 scripts/finalize-intelligence-control-boundaries.py
+          python3 scripts/finalize-intelligence-control-learning-io.py
           git diff --check
 
       - name: Format and refresh generated truth
@@ -78,7 +84,8 @@ jobs:
           git rm scripts/finalize-intelligence-control-product.py
           git rm scripts/finalize-intelligence-control-closed-loop.py
           git rm scripts/finalize-intelligence-control-boundaries.py
-          allowed='^(\.github/workflows/hepta-intelligence-source-finalizer\.yml|scripts/finalize-intelligence-control-(product|closed-loop|boundaries)\.py|codex-rs/Cargo\.lock|codex-rs/hepta-agentd/Cargo\.toml|codex-rs/hepta-agentd/src/intelligence_.*\.rs|codex-rs/hepta-agentd/src/(config|state|runtime|objective_runtime|lib)\.rs|codex-rs/hepta-infer-worker-host/src/(lib|native_intelligence_product|native_run_control|native_run_control_tests)\.rs|docs/modules/intelligence\.control/(IMPLEMENTATION_MAP|TEST_TRACEABILITY)\.json)$'
+          git rm scripts/finalize-intelligence-control-learning-io.py
+          allowed='^(\.github/workflows/hepta-intelligence-source-finalizer\.yml|scripts/finalize-intelligence-control-(product|closed-loop|boundaries|learning-io)\.py|codex-rs/Cargo\.lock|codex-rs/hepta-agentd/Cargo\.toml|codex-rs/hepta-agentd/src/intelligence_.*\.rs|codex-rs/hepta-agentd/src/(config|state|runtime|objective_runtime|lib)\.rs|codex-rs/hepta-operations/src/durable_store\.rs|codex-rs/hepta-infer-worker-host/src/(lib|native_intelligence_product|native_run_control|native_run_control_tests)\.rs|docs/modules/intelligence\.control/(IMPLEMENTATION_MAP|TEST_TRACEABILITY)\.json)$'
           unexpected="$(git status --short | cut -c4- | grep -Ev "$allowed" || true)"
           if [ -n "$unexpected" ]; then
             printf 'unexpected changed paths:\n%s\n' "$unexpected" >&2
@@ -87,7 +94,7 @@ jobs:
           git config user.name "Hepta Intelligence Source Finalizer"
           git config user.email "hepta-intelligence-source-finalizer@users.noreply.github.com"
           git add -A
-          git commit -m "feat(intelligence): close owner-backed product and rollback boundaries"
+          git commit -m "feat(intelligence): close owner-backed product and recovery boundaries"
           printf 'TESTED_SHA=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
       - name: Verify canonical and product packages
