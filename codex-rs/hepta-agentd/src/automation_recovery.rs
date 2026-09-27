@@ -21,6 +21,7 @@ use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
+use codex_hepta_automation::AutomationDispatchUncertainty;
 use codex_hepta_automation::AutomationOccurrenceTerminalState;
 use codex_hepta_automation::AutomationOccurrenceWork;
 use codex_hepta_automation::AutomationQueueReceipt;
@@ -49,25 +50,52 @@ pub(crate) async fn reconcile_one(
     identity: &AgentdIdentity,
     now_ms: u64,
 ) -> Result<bool, AgentdError> {
-    if reconcile_one_unknown_dispatch(store, state, identity, now_ms).await? {
-        return Ok(true);
-    }
-    let Some(work) = store.pending_occurrence_work(1).await?.into_iter().next() else {
-        return Ok(false);
-    };
-    reconcile_work(store, state, identity, work, now_ms).await?;
-    Ok(true)
+    Ok(reconcile_batch(store, state, identity, now_ms, 1).await? != 0)
 }
 
-async fn reconcile_one_unknown_dispatch(
+/// Reconcile a bounded snapshot of distinct durable frontiers.
+///
+/// Unknown dispatches retain priority. Pending occurrences are selected before
+/// any unknown dispatch is mutated, so an occurrence that moves from unknown to
+/// admitted is not immediately observed a second time in the same cycle. Each
+/// selected row is therefore contacted at most once per batch.
+pub(crate) async fn reconcile_batch(
     store: &AutomationStore,
     state: &AgentdState,
     identity: &AgentdIdentity,
     now_ms: u64,
-) -> Result<bool, AgentdError> {
-    let Some(uncertain) = store.uncertain_dispatches(1).await?.into_iter().next() else {
-        return Ok(false);
+    limit: usize,
+) -> Result<usize, AgentdError> {
+    if limit == 0 {
+        return Ok(0);
+    }
+    let uncertain = store.uncertain_dispatches(limit).await?;
+    let pending_limit = limit.saturating_sub(uncertain.len());
+    let pending = if pending_limit == 0 {
+        Vec::new()
+    } else {
+        store.pending_occurrence_work(pending_limit).await?
     };
+
+    let mut processed = 0;
+    for dispatch in uncertain {
+        reconcile_unknown_dispatch(store, state, identity, dispatch, now_ms).await?;
+        processed += 1;
+    }
+    for work in pending {
+        reconcile_work(store, state, identity, work, now_ms).await?;
+        processed += 1;
+    }
+    Ok(processed)
+}
+
+async fn reconcile_unknown_dispatch(
+    store: &AutomationStore,
+    state: &AgentdState,
+    identity: &AgentdIdentity,
+    uncertain: AutomationDispatchUncertainty,
+    now_ms: u64,
+) -> Result<(), AgentdError> {
     let task = store
         .task(uncertain.task_id)
         .await?
@@ -176,7 +204,7 @@ async fn reconcile_one_unknown_dispatch(
             ));
         }
     }
-    Ok(true)
+    Ok(())
 }
 
 async fn reconcile_work(
