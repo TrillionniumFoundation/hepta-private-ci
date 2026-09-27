@@ -10,14 +10,14 @@ on:
 
 concurrency:
   group: control-engineering-bootstrap
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 permissions:
   contents: write
 
 jobs:
   materialize:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     steps:
       - name: Checkout isolated delivery branch
