@@ -16,9 +16,9 @@ concurrency:
 
 jobs:
   finalize:
-    name: format lock and verify prompt binding
+    name: compose and verify exact intelligence closed loop
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
       - name: Check out exact trigger
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -31,8 +31,35 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "dfc57d0e5dc90399fc377ecc57d469d388913c2f"
+          test "$(git rev-parse HEAD^)" = "ea94aad1aca3195ca50127e31320d21b77b20d9d"
           test "$(git branch --show-current)" = "codex/intelligence-control-product-closure-20260926"
+
+      - name: Compose existing owners without a second control plane
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one replacement, found {count}")
+              target.write_text(text.replace(old, new))
+
+          replace(
+              "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+              '#[path = "intelligence_learning_payload.rs"]\nmod payload;\n',
+              '#[path = "intelligence_learning_payload.rs"]\nmod payload;\n#[path = "intelligence_learning_exact.rs"]\nmod exact;\n',
+          )
+          replace(
+              "codex-rs/hepta-infer-worker-host/src/lib.rs",
+              "pub mod final_use_authorizer;\npub mod native_app_server;\n",
+              "pub mod final_use_authorizer;\npub mod native_app_server;\npub mod native_intelligence_product;\n",
+          )
+          PY
 
       - name: Format and refresh the exact lockfile
         working-directory: codex-rs
@@ -43,7 +70,7 @@ jobs:
           cargo generate-lockfile
           cargo metadata --locked --no-deps --format-version 1 >/dev/null
 
-      - name: Verify physical prompt binding and all worker targets
+      - name: Verify exact learning and physical product packages
         working-directory: codex-rs
         env:
           CARGO_INCREMENTAL: "0"
@@ -55,14 +82,16 @@ jobs:
           set -euo pipefail
           cargo test --locked -p codex-hepta-infer-worker-host intelligence_handoff_is_committed_to_native_admission_identity
           cargo test --locked -p codex-hepta-infer-worker-host intelligence_prompt_substitution_fails_before_provider_contact
-          cargo check --locked -p codex-hepta-infer-worker-host --all-targets
+          cargo test --locked -p codex-hepta-agentd --lib intelligence_learning
+          cargo check --locked -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets
+          cargo clippy --locked -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets -- -D warnings
 
       - name: Restrict mutation and self-remove
         shell: bash
         run: |
           set -euo pipefail
           git rm .github/workflows/hepta-intelligence-source-finalizer.yml
-          allowed='^(\.github/workflows/hepta-intelligence-source-finalizer\.yml|codex-rs/Cargo\.lock|codex-rs/hepta-agentd/src/intelligence_.*\.rs|codex-rs/hepta-intelligence/(src|tests)/.*\.rs|codex-rs/hepta-operations/src/.*\.rs|codex-rs/hepta-infer-worker-host/src/(native_run_control|native_run_control_tests)\.rs|codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker\.rs)$'
+          allowed='^(\.github/workflows/hepta-intelligence-source-finalizer\.yml|codex-rs/Cargo\.lock|codex-rs/hepta-agentd/src/intelligence_.*\.rs|codex-rs/hepta-intelligence/(src|tests)/.*\.rs|codex-rs/hepta-operations/src/.*\.rs|codex-rs/hepta-infer-worker-host/src/(lib|native_intelligence_product|native_run_control|native_run_control_tests)\.rs|codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker\.rs)$'
           unexpected="$(git status --short | cut -c4- | grep -Ev "$allowed" || true)"
           if [ -n "$unexpected" ]; then
             printf 'unexpected changed paths:\n%s\n' "$unexpected" >&2
@@ -70,12 +99,12 @@ jobs:
           fi
           test -n "$(git status --short)"
 
-      - name: Commit verified mechanical closure
+      - name: Commit verified product closure
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "Hepta Intelligence Source Finalizer"
           git config user.email "hepta-intelligence-source-finalizer@users.noreply.github.com"
           git add -A
-          git commit -m "chore(intelligence): format prompt binding and refresh lockfile"
+          git commit -m "feat(intelligence): compose decision execution outcome closure"
           git push origin HEAD:codex/intelligence-control-product-closure-20260926
