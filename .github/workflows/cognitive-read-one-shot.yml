@@ -18,6 +18,7 @@ concurrency:
 
 env:
   RUST_MIN_STACK: "8388608"
+  PYTHONPATH: scripts
   TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
 
 jobs:
@@ -36,7 +37,7 @@ jobs:
       - name: Prepare repository CI tools
         uses: ./.github/actions/setup-ci
 
-      - name: Configure exact writer identity
+      - name: Configure exact writer identity and final workflow baseline
         shell: bash
         run: |
           set -euo pipefail
@@ -44,6 +45,8 @@ jobs:
           git config user.email 'cognitive-read-convergence@users.noreply.github.com'
           test "$(git branch --show-current)" = "$TARGET_BRANCH" || git switch -C "$TARGET_BRANCH"
           test "$(git rev-parse HEAD)" = '${{ github.sha }}'
+          git show a16fa81bfec716037332ed30ab3c4e82d91c8636:.github/workflows/cognitive-read-qualification.yml \
+            > .github/workflows/cognitive-read-qualification.yml
 
       - name: Assemble reviewed convergence helper
         shell: bash
@@ -54,11 +57,55 @@ jobs:
             | xz --decompress > "$RUNNER_TEMP/cognitive_read_converge.py"
           python3 -m py_compile "$RUNNER_TEMP/cognitive_read_converge.py"
 
-      - name: Apply reviewed source, contract, and workflow closure
+      - name: Apply reviewed source, contract, lock, and workflow closure
         shell: bash
         run: |
           set -euo pipefail
           python3 "$RUNNER_TEMP/cognitive_read_converge.py" patch
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              if text.count(old) != 1:
+                  raise SystemExit(
+                      f"{path}: expected exactly one generated regression marker, "
+                      f"found {text.count(old)}"
+                  )
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "codex-rs/hepta-cognitive-read/src/property_tests.rs",
+              "                        record_ids: candidate_ids,\n",
+              "                        record_ids: candidate_ids.clone(),\n",
+          )
+          replace_once(
+              "codex-rs/hepta-cognitive-read/src/golden_vectors.rs",
+              '            "{\\n",\n',
+              '            "{{\\n",\n',
+          )
+          replace_once(
+              "codex-rs/hepta-cognitive-read/src/golden_vectors.rs",
+              '            "}"\n        ),\n        EXPECTED_CANONICAL_HEX\n',
+              '            "}}"\n        ),\n        EXPECTED_CANONICAL_HEX\n',
+          )
+
+          for path in (
+              ".github/workflows/cognitive-read-qualification.yml",
+              "scripts/run-cognitive-read-qualification.sh",
+          ):
+              target = Path(path)
+              if not target.is_file():
+                  continue
+              text = target.read_text(encoding="utf-8")
+              text = text.replace(
+                  "python3 -m unittest scripts/test_hepta_implementation_maps.py",
+                  "PYTHONPATH=scripts python3 -m unittest "
+                  "scripts/test_hepta_implementation_maps.py",
+              )
+              target.write_text(text, encoding="utf-8")
+          PY
           python3 -m py_compile \
             scripts/emit-cognitive-read-qualification.py \
             scripts/verify-cognitive-read-constants.py \
@@ -90,16 +137,19 @@ jobs:
         run: |
           set -euo pipefail
           test -z "$(git status --porcelain)"
-          python3 "$RUNNER_TEMP/cognitive_read_converge.py" rebind-maps | tee "$RUNNER_TEMP/rebound-maps.json"
+          python3 "$RUNNER_TEMP/cognitive_read_converge.py" rebind-maps \
+            | tee "$RUNNER_TEMP/rebound-maps.json"
           git diff --check
           git add docs/modules
           git diff --cached --quiet && { echo 'map convergence produced no changes' >&2; exit 1; }
           git commit -m 'docs(cognitive.read): atomically rebind affected implementation maps'
 
-      - name: Verify source, maps, lock, and focused Rust surface
+      - name: Verify source, maps, lock, lint, and focused Rust surface
+        id: verify
         shell: bash
         run: |
           set -euo pipefail
+          exec > >(tee "$RUNNER_TEMP/cognitive-read-one-shot-verification.log") 2>&1
           expected_sha="$(git rev-parse HEAD)"
           python3 .github/scripts/verify_cargo_workspace_manifests.py
           python3 scripts/verify-cognitive-read-constants.py
@@ -115,12 +165,29 @@ jobs:
             -p codex-hepta-infer-core \
             -p codex-hepta-infer-worker-host \
             --all-targets
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-cognitive-read \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            --all-targets -- -D warnings
           cargo test --manifest-path codex-rs/Cargo.toml --locked \
             -p codex-hepta-cognitive-read --lib
           cargo check --manifest-path codex-rs/hepta-cognitive-read/fuzz/Cargo.toml \
             --all-targets
           rm -f codex-rs/hepta-cognitive-read/fuzz/Cargo.lock
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain one-shot verification diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-read-one-shot-verification-${{ github.sha }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/cognitive-read-one-shot-verification.log
+            ${{ runner.temp }}/rebound-maps.json
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Remove one-shot bootstrap and seal branch
         id: seal
@@ -153,5 +220,3 @@ jobs:
             echo "- sealed tree: \`${{ steps.seal.outputs.tree }}\`"
             echo '- production/activation/release claims remain false.'
           } >> "$GITHUB_STEP_SUMMARY"
-
-# Registered workflow retrigger for the sealed branch candidate.
