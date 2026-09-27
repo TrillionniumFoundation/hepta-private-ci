@@ -227,7 +227,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                 if applies_to_runtime && lifecycle_allows_action {
                     let result = match action.kind {
                         DeferredAgentActionKind::Drain => self.drain_slot(agent_id, slot, now),
-                        DeferredAgentActionKind::Stop => self.stop_slot(agent_id, slot, now),
+                        // This resumes the already-admitted owner intent; it is
+                        // not a new operator Stop that cancels a restart claim.
+                        DeferredAgentActionKind::Stop => self.stop_runtime_slot(agent_id, slot, now),
                     };
                     if let Err(error) = result {
                         // A callee may clear its transient action before its

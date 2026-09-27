@@ -25,6 +25,10 @@ pub(crate) mod pending;
 #[path = "control_retry_tests.rs"]
 mod tests;
 
+#[cfg(test)]
+#[path = "control_durable_restart_tests.rs"]
+mod durable_restart_tests;
+
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn drain_slot(
         &mut self,
@@ -78,7 +82,21 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        slot.restart_pending = false;
+        // Cancel durably before companion deferral, lifecycle CAS or signaling.
+        // A cancellation error is not an acknowledged operator stop.
+        self.cancel_pending_restart(agent_id, slot)?;
+        self.stop_runtime_slot(agent_id, slot, now)
+    }
+
+    /// Process control shared by operator Stop and restart's internal drain.
+    /// It cannot cancel a restart claim: deferred Matrix continuation and
+    /// restart use this path after their own owner intent was established.
+    pub(crate) fn stop_runtime_slot(
+        &mut self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
         if self.defer_agent_action_for_matrix(agent_id, slot, DeferredAgentActionKind::Stop, now)? {
             return Ok(());
         }
@@ -97,12 +115,26 @@ impl<D: ProcessDriver> Supervisor<D> {
         pending::apply_to_slot(agent_id, slot, now, self.config.stop_grace)
     }
 
+    fn cancel_pending_restart(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+    ) -> Result<(), SupervisorError> {
+        slot.restart_pending = false;
+        slot.restart_not_before = None;
+        let record = self.record(agent_id)?;
+        crate::restart_budget::cancel_restart(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))
+    }
+
     pub(crate) fn kill_slot(
         &mut self,
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
-        slot.restart_pending = false;
+        // Failure to persist cancellation must be reported, but it must not
+        // prevent emergency termination of either already-owned process.
+        let cancellation = self.cancel_pending_restart(agent_id, slot);
         slot.deferred_agent_action = None;
         // Prepare only the main lifecycle here. Do not enter a potentially
         // failing companion driver before attempting the main emergency signal.
@@ -123,12 +155,13 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             Ok(())
         })();
-        let main = if preparation.is_err()
+        let main = if cancellation.is_err()
+            || preparation.is_err()
             || slot.runtime.as_ref().is_some_and(|runtime| runtime.fenced)
         {
             // Storage/CAS failure cannot revoke ownership of the already
             // acquired process. Fence it and attempt termination, but report
-            // the failed preparation rather than claiming durable completion.
+            // the failed persistence/preparation instead of durable completion.
             slot.pending_control = None;
             if let Some(runtime) = slot.runtime.as_mut() {
                 runtime.healthy = false;
@@ -145,10 +178,14 @@ impl<D: ProcessDriver> Supervisor<D> {
         // Both outcomes are collected; neither an error nor a delayed companion
         // call can prevent the main signal that was attempted above.
         let companion = self.kill_matrix_now(agent_id, slot);
-        for fault in [main.as_ref().err(), companion.as_ref().err()].into_iter().flatten() {
+        for fault in [
+            cancellation.as_ref().err(),
+            main.as_ref().err(),
+            companion.as_ref().err(),
+        ].into_iter().flatten() {
             slot.event(0, SupervisorEventKind::DriverFault(bounded_message(fault.to_string())));
         }
-        preparation.and(main).and(companion)
+        cancellation.and(preparation).and(main).and(companion)
     }
 
     pub(crate) fn restart_slot(
@@ -191,7 +228,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         ) {
             self.drain_slot(agent_id, slot, now)
         } else {
-            self.stop_slot(agent_id, slot, now)
+            self.stop_runtime_slot(agent_id, slot, now)
         };
         // A driver error after staging control must not lose the durable restart
         // claim. Earlier preflight failures do not create a new in-memory intent.
