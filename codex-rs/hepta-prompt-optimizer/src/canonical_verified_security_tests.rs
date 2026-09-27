@@ -22,16 +22,16 @@ use codex_hepta_prompt_registry::PromptRealizationBindingV2;
 use codex_hepta_prompt_registry::PromptRoleV2;
 use codex_hepta_prompt_registry::final_use_admission_binding;
 use codex_hepta_prompt_registry::final_use_realization_binding;
-use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
-use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use std::collections::BTreeSet;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
@@ -98,6 +98,10 @@ fn fixture(same_controller: bool, verifier_objective: Digest32) -> Fixture {
         },
     )
     .expect("authority");
+    let grant_now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("system clock")
+        .as_millis() as u64;
     let actor = id("reviewer:verified");
     let scope = digest("registry-scope");
     let evidence = digest("registry-evidence");
@@ -110,8 +114,8 @@ fn fixture(same_controller: bool, verifier_objective: Digest32) -> Fixture {
         grant_id: "grant:prompt-admission".to_owned(),
         nonce: [31; 32],
         binding,
-        not_before_unix_ms: 1,
-        expires_at_unix_ms: 10_000,
+        not_before_unix_ms: grant_now.saturating_sub(1_000),
+        expires_at_unix_ms: grant_now.saturating_add(30_000),
     };
     let admission_signed = SignedFinalUseGrant {
         signature: admission_key
@@ -171,8 +175,8 @@ fn fixture(same_controller: bool, verifier_objective: Digest32) -> Fixture {
         grant_id: "grant:realization".to_owned(),
         nonce: [32; 32],
         binding: realization_binding,
-        not_before_unix_ms: 1,
-        expires_at_unix_ms: 10_000,
+        not_before_unix_ms: grant_now.saturating_sub(1_000),
+        expires_at_unix_ms: grant_now.saturating_add(30_000),
     };
     let realization_signed = SignedFinalUseGrant {
         signature: admission_key
@@ -202,7 +206,7 @@ fn fixture(same_controller: bool, verifier_objective: Digest32) -> Fixture {
         source_revision: Revision::new(1).expect("revision"),
         source_fact_digest: digest("source-fact"),
         validity_digest: digest("validity"),
-        valid_from_unix_seconds: Some(0),
+        valid_from_unix_seconds: None,
         valid_to_unix_seconds: Some(5),
         tombstoned: false,
     };
@@ -661,7 +665,7 @@ fn exercise_rejects_graph_and_trust_drift_with_typed_reasons() {
         Some(PromptExerciseRejectionReasonV1::GraphDrift)
     );
 
-    let rotated = fixture(false, digest("objective"));
+    let rotated = fixture(true, digest("objective"));
     let mut trust_request = exercise_request(&fixture);
     trust_request.current_verifier = rotated.verifier;
     let trust_decision = exercise_v1(
