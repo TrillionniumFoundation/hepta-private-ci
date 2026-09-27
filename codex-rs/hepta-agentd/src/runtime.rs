@@ -25,6 +25,8 @@ use crate::CognitiveRetrievalMode;
 use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
 use crate::automation::spawn_automation_service;
+use crate::config::EvidenceRuntimeMode;
+use crate::evidence_host::EvidenceRuntimeProfile;
 
 const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
@@ -47,9 +49,27 @@ pub async fn run(
     let evidence_trust_file = config
         .evidence_trust_file()
         .map(std::path::Path::to_path_buf);
+    let evidence_runtime_mode = config.evidence_runtime_mode();
     let evidence_recovery_frontier = config
         .evidence_recovery_frontier_files()
         .map(|(frontier, trust)| (frontier.to_path_buf(), trust.to_path_buf()));
+    let evidence_runtime_profile = match (evidence_runtime_mode, evidence_recovery_frontier) {
+        (EvidenceRuntimeMode::Development, recovery_frontier) => {
+            EvidenceRuntimeProfile::Development { recovery_frontier }
+        }
+        (EvidenceRuntimeMode::Production, Some((descriptor, signer_trust_file))) => {
+            EvidenceRuntimeProfile::Production {
+                descriptor,
+                signer_trust_file,
+            }
+        }
+        (EvidenceRuntimeMode::Production, None) => {
+            return Err(AgentdError::Invalid(
+                "production kernel evidence mode requires descriptor and signer trust files"
+                    .to_string(),
+            ));
+        }
+    };
     let automation_effect_host_file = config
         .automation_effect_host_file()
         .map(std::path::Path::to_path_buf);
@@ -150,16 +170,26 @@ pub async fn run(
     }
     if let Some(path) = evidence_trust_file {
         state.refresh_generation()?;
-        let host =
-            crate::evidence_host::EvidenceHost::open(&identity, path, evidence_recovery_frontier)
-                .await?;
+        let host = crate::evidence_host::EvidenceHost::open(
+            &identity,
+            path,
+            evidence_runtime_profile,
+        )
+        .await?;
         state.refresh_generation()?;
         state.evidence.set(Arc::new(host)).map_err(|_| {
             AgentdError::Protocol("kernel evidence host already attached".to_string())
         })?;
-    } else if evidence_recovery_frontier.is_some() {
+    } else if evidence_runtime_mode == EvidenceRuntimeMode::Production
+        || !matches!(
+            evidence_runtime_profile,
+            EvidenceRuntimeProfile::Development {
+                recovery_frontier: None
+            }
+        )
+    {
         return Err(AgentdError::Invalid(
-            "kernel evidence recovery frontier requires --evidence-trust-file".to_string(),
+            "kernel evidence runtime profile requires --evidence-trust-file".to_string(),
         ));
     }
     if let Some(path) = objective_profile_file {
@@ -194,10 +224,6 @@ pub async fn run(
             .await?
         }
     };
-    // The writer-enabled qualification binary must never start in a
-    // degraded CognitiveRuntime state.  The default/production binary keeps
-    // the existing availability-tolerant behavior; only the explicit
-    // compile-time qualification profile takes this fail-closed startup gate.
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
     if let Some(store) = cognitive_runtime.available_store() {
         state.attach_cognitive_store(Arc::clone(store))?;
@@ -245,8 +271,6 @@ pub async fn run(
         cancellation.clone(),
     )
     .await?;
-    // The single task host owns cancellation and joining on every exit path.
-    // All fallible owner opens and control binding above precede task startup.
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
     let startup: Result<(), AgentdError> = async {
         if let Some((host, interval)) = production_operations {
@@ -271,9 +295,6 @@ pub async fn run(
             .await
             .map_err(AgentdError::from)?;
             if app_drain.drained() && app_drain.running_turns() == 0 {
-                // A completed drain is not an unexpected required-service exit.
-                // Keep control and durable reconcilers alive so Supervisor can
-                // observe the acknowledgement before its explicit stop signal.
                 app_lifetime.cancelled().await;
             }
             Ok(())
@@ -310,7 +331,6 @@ pub async fn run(
     tasks
         .run_until(async move {
             shutdown_signal().await?;
-            // Keep control and owner reconciliation alive throughout drain.
             drain_runtime(state).await
         })
         .await
@@ -380,8 +400,6 @@ async fn attach_federation_after_generation_fence(
     }
     state.refresh_generation()?;
     let runtime = runtime.with_federation_sources(state.identity().agent_id.clone(), owner_layouts);
-    // Physical federation reads rediscover current grants. Fence the fleet
-    // generation on both sides of composition without freezing a reader set.
     state.refresh_generation()?;
     Ok(runtime)
 }
@@ -396,9 +414,6 @@ where
 {
     state.refresh_generation()?;
     let cognitive_runtime = CognitiveRuntime::from_open_result(open().await);
-    // Opening and migrating the store is bounded durable work. Fence again
-    // before binding control or starting App Server so a generation change
-    // concurrent with that work cannot reach a serving runtime.
     state.refresh_generation()?;
     Ok(cognitive_runtime)
 }
@@ -409,8 +424,6 @@ async fn run_production_operation_reconciler(
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
     loop {
-        // Reconcile immediately after startup/restart, then at a bounded
-        // cadence. Agentd never dispatches from this recovery loop.
         host.reconcile(256).await?;
         tokio::select! {
             _ = cancellation.cancelled() => return Ok(()),
