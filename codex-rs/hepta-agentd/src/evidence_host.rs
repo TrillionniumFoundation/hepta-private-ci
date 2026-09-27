@@ -21,6 +21,7 @@ use codex_hepta_evidence::EvidenceCandidateV1;
 use codex_hepta_evidence::EvidenceClaimClassV1;
 use codex_hepta_evidence::EvidenceIssuerRoleV1;
 use codex_hepta_evidence::EvidenceVerificationProfileV1;
+use codex_hepta_evidence::EvidenceVerificationSummaryV1;
 use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_hepta_evidence::ProfiledVerifyChainRequestV1;
 use codex_hepta_evidence::QualificationEvidenceEnvelopeV1;
@@ -109,7 +110,6 @@ impl EvidenceHost {
                         &signer_trust_file,
                     )
                     .await?;
-                // Refuse a registry replacement between signed admission and host publication.
                 VerifiedEvidenceTrustSnapshot::load_owner_registry(
                     &store,
                     &trust_file,
@@ -129,8 +129,6 @@ impl EvidenceHost {
                     &signer_trust_file,
                 )
                 .await?;
-                // Development may retain V1 for compatibility, but it still enters
-                // through the same sealed parser used by every operation.
                 VerifiedEvidenceTrustSnapshot::load_owner_registry(
                     &store,
                     &trust_file,
@@ -257,7 +255,26 @@ pub(crate) async fn query(
 ) -> Result<KernelEvidenceResult, AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
+    let page_selector = request
+        .page_selector()
+        .map_err(|error| invalid(&error))?
+        .map(|(claim, after_seq, limit)| (claim.to_string(), after_seq, limit));
     let candidate = candidate(request.candidate)?;
+    if let Some((claim, after_seq, limit)) = page_selector {
+        let claim_class = EvidenceClaimClassV1::parse(&claim).map_err(|error| invalid(&error))?;
+        let page = host
+            .store
+            .query_qualification_claim_page(
+                &candidate,
+                claim_class,
+                after_seq,
+                usize::from(limit),
+            )
+            .await
+            .map_err(evidence_error)?;
+        require_ready(state)?;
+        return result(&page);
+    }
     let claim_class =
         EvidenceClaimClassV1::parse(&request.claim_class).map_err(|error| invalid(&error))?;
     let references = host
@@ -276,22 +293,30 @@ pub(crate) async fn verify(
 ) -> Result<KernelEvidenceResult, AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
+    let profile_name = request
+        .profile_name()
+        .map_err(|error| invalid(&error))?
+        .map(str::to_string);
     let candidate = candidate(request.candidate)?;
-    let claim_class =
-        EvidenceClaimClassV1::parse(&request.claim_class).map_err(|error| invalid(&error))?;
-    if request.required_roles.len()
-        > codex_hepta_agent_protocol::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES
-    {
-        return Err(invalid("too many required evidence roles"));
-    }
-    let roles = request
-        .required_roles
-        .iter()
-        .map(|role| EvidenceIssuerRoleV1::parse(role).map_err(|error| invalid(&error)))
-        .collect::<Result<Vec<_>, _>>()?;
-    let profile = EvidenceVerificationProfileV1::from_legacy_roles(claim_class, &roles)
-        .map_err(evidence_error)?;
-    let request = ProfiledVerifyChainRequestV1::new(
+    let profile = if let Some(profile_name) = profile_name.as_deref() {
+        EvidenceVerificationProfileV1::parse(profile_name).map_err(|error| invalid(&error))?
+    } else {
+        let claim_class =
+            EvidenceClaimClassV1::parse(&request.claim_class).map_err(|error| invalid(&error))?;
+        if request.required_roles.len()
+            > codex_hepta_agent_protocol::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES
+        {
+            return Err(invalid("too many required evidence roles"));
+        }
+        let roles = request
+            .required_roles
+            .iter()
+            .map(|role| EvidenceIssuerRoleV1::parse(role).map_err(|error| invalid(&error)))
+            .collect::<Result<Vec<_>, _>>()?;
+        EvidenceVerificationProfileV1::from_legacy_roles(claim_class, &roles)
+            .map_err(evidence_error)?
+    };
+    let profiled_request = ProfiledVerifyChainRequestV1::new(
         candidate,
         profile,
         current_time_millis()?,
@@ -301,11 +326,17 @@ pub(crate) async fn verify(
     let disposition = host
         .store
         .qualification()
-        .verify_chain(&request, &current_trust)
+        .verify_chain(&profiled_request, &current_trust)
         .await
         .map_err(evidence_error)?;
     require_ready(state)?;
-    result(&disposition)
+    if profile_name.is_some() {
+        let summary = EvidenceVerificationSummaryV1::from_disposition(profile, &disposition)
+            .map_err(evidence_error)?;
+        result(&summary)
+    } else {
+        result(&disposition)
+    }
 }
 
 fn candidate(candidate: KernelEvidenceCandidateV1) -> Result<EvidenceCandidateV1, AgentdError> {
