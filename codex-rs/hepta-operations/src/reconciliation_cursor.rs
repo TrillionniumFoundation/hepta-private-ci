@@ -72,17 +72,16 @@ impl DurableOperationStore {
                 operation_id: StableId::new(operation)
                     .map_err(|_| DurableOperationError::Invalid("unsettled operation"))?,
             };
-            if let Some(record) = self.operation(&key.scope_id, &key.operation_id).await? {
-                if record.intent.destination == *destination
-                    && matches!(
-                        record.state,
-                        DurableOperationState::Dispatching
-                            | DurableOperationState::Dispatched
-                            | DurableOperationState::Indeterminate
-                    )
-                {
-                    records.push(record);
-                }
+            if let Some(record) = self.operation(&key.scope_id, &key.operation_id).await?
+                && record.intent.destination == *destination
+                && matches!(
+                    record.state,
+                    DurableOperationState::Dispatching
+                        | DurableOperationState::Dispatched
+                        | DurableOperationState::Indeterminate
+                )
+            {
+                records.push(record);
             }
             // Advance even when the selected row was concurrently settled.
             last = Some(key);
@@ -141,10 +140,14 @@ mod tests {
         .execute(&store.pool)
         .await
         .expect("unsettled fixture");
-        sqlx::query("UPDATE cross_owner_outbox SET state = 'indeterminate'")
-            .execute(&store.pool)
-            .await
-            .expect("unsettled outbox fixture");
+        sqlx::query(
+            "UPDATE cross_owner_outbox
+             SET state = 'indeterminate', worker_id = NULL, lease_until_ms = NULL,
+                 terminal_at_ms = updated_at_ms",
+        )
+        .execute(&store.pool)
+        .await
+        .expect("unsettled outbox fixture");
         let mut cursor = None;
         let mut seen = BTreeSet::new();
         for _ in 0..4 {
@@ -174,8 +177,18 @@ mod tests {
             .await
             .expect("open operations");
         let destination = id("learning.ledger");
-        assert!(store.unsettled_operation_page_v1(&destination, None, 0).await.is_err());
-        assert!(store.unsettled_operation_page_v1(&destination, None, 257).await.is_err());
+        assert!(
+            store
+                .unsettled_operation_page_v1(&destination, None, 0)
+                .await
+                .is_err()
+        );
+        assert!(
+            store
+                .unsettled_operation_page_v1(&destination, None, 257)
+                .await
+                .is_err()
+        );
         let page = store
             .unsettled_operation_page_v1(&id("other.destination"), None, 256)
             .await

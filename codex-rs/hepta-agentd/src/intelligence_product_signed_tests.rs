@@ -87,7 +87,9 @@ async fn signed_input_cannot_install_host_trust_or_change_actual_context() {
         runner
             .prepare(&product_test_coordinator(), value.request, value.inputs)
             .await,
-        Err(AgentdIntelligenceProductError::InvalidAuthorityVerifier)
+        Err(AgentdIntelligenceProductError::Canonical(
+            CanonicalIntelligenceError::FreshnessUnavailable(_)
+        ))
     ));
 
     let (mut value, trust) = signed_fixture();
