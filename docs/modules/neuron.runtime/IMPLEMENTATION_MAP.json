@@ -28,7 +28,10 @@
       "state": "source_implemented_owner_not_activated",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-neuron/src/runtime_tests.rs"
+        "codex-rs/hepta-neuron/src/runtime_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_admission_tests.rs",
+        "codex-rs/hepta-neuron/src/legacy_migration_tests.rs",
+        "codex-rs/hepta-neuron/src/legacy_migration_test_cases.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "neuron_runtime_tick",
@@ -49,7 +52,8 @@
           "symbol": "AnchorWitnessStore",
           "role": "source_declaration"
         }
-      ]
+      ],
+      "sourceBlob": "d5a9d5e3077a8497102cb6cc47dfcc0680a92689"
     },
     {
       "operation": "inference_control_model_port",
@@ -69,7 +73,8 @@
           "symbol": "inference.control::NeuronFeatureReceiptV1",
           "role": "source_declaration"
         }
-      ]
+      ],
+      "sourceBlob": "8a85a1e433f29b1354b4ee3c73f27b85a1842b31"
     },
     {
       "operation": "sparse_journal",
@@ -84,7 +89,8 @@
       "sourcePathExists": true,
       "designOperation": "sparse_journal",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "07e54ceb25a76b314a477eac0a0bfb77f4adf8e6"
     },
     {
       "operation": "anchor_witness_store",
@@ -98,7 +104,8 @@
       "sourcePathExists": true,
       "designOperation": "anchor_witness_store",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "f1108e906be98e0db9499df71b31d64ead6f9aa2"
     },
     {
       "operation": "plasticity_statistics",
@@ -112,7 +119,8 @@
       "sourcePathExists": true,
       "designOperation": "plasticity_statistics",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "0bcfab2466d4b03161e6f4c4eb66fcbcf110b6ec"
     },
     {
       "operation": "deletion_rebuild_admission",
@@ -126,7 +134,8 @@
       "sourcePathExists": true,
       "designOperation": "deletion_rebuild_admission",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "4c7d8a6d22b7daabc65e80e2d4f39b03737c6bf5"
     },
     {
       "operation": "qualification_surfaces",
@@ -140,7 +149,8 @@
       "sourcePathExists": true,
       "designOperation": "qualification_surfaces",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2794951279cdb1795623dfe420d7f9f4f5f6a6d1"
     },
     {
       "operation": "canonical_neuron_protocols",
@@ -154,7 +164,8 @@
       "sourcePathExists": true,
       "designOperation": "canonical_neuron_protocols",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2fdaef357d9bb3d73411978fb338ae82c7feeebd"
     },
     {
       "operation": "population_sparse_v2",
@@ -168,7 +179,8 @@
       "sourcePathExists": true,
       "designOperation": "population_sparse_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2222068405ee85e2adf0f550ae626f7f8fc1ea08"
     }
   ],
   "repositoryControlledGaps": [
@@ -210,7 +222,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
-      "object": "3e880ef975af2b7210a7466b9fb4e12f62937d9c"
+      "object": "13134d58629ec8e8657aa464c3fb77a7f984ea80"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/neuron_feature.rs",
@@ -222,7 +234,7 @@
     },
     {
       "path": "codex-rs/hepta-neuron",
-      "object": "2e0cb699ff6d11dd63e996040d935153f4e63f57"
+      "object": "c5516855cbc52f63624e5587e1a0c686701c431b"
     },
     {
       "path": "codex-rs/hepta-neuron/src/deletion.rs",
@@ -242,7 +254,7 @@
     },
     {
       "path": "codex-rs/hepta-neuron/src/journal.rs",
-      "object": "4a1a9cbba6082e259da3b8df7414aea8f87c79bb"
+      "object": "07e54ceb25a76b314a477eac0a0bfb77f4adf8e6"
     },
     {
       "path": "codex-rs/hepta-neuron/src/journal_anchor_tests.rs",
@@ -251,6 +263,14 @@
     {
       "path": "codex-rs/hepta-neuron/src/journal_segment_tests.rs",
       "object": "29158c335533fd09687aa1941317e8253aa1f369"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/legacy_migration_test_cases.rs",
+      "object": "7cc57b34ec2ef1d1db2de3eb97d9743cd0ddcb2b"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/legacy_migration_tests.rs",
+      "object": "1975e5a2c245f579e06446a90127e206380adcf1"
     },
     {
       "path": "codex-rs/hepta-neuron/src/plasticity.rs",
@@ -270,7 +290,7 @@
     },
     {
       "path": "codex-rs/hepta-neuron/src/protocol.rs",
-      "object": "7afd7cdb43063e35dab9ca89f5d3b94765f43665"
+      "object": "2fdaef357d9bb3d73411978fb338ae82c7feeebd"
     },
     {
       "path": "codex-rs/hepta-neuron/src/protocol_tests.rs",
@@ -286,27 +306,42 @@
     },
     {
       "path": "codex-rs/hepta-neuron/src/runtime.rs",
-      "object": "d483e00a69756339254124a633eb4fdcd05664d7"
+      "object": "d5a9d5e3077a8497102cb6cc47dfcc0680a92689"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_admission_tests.rs",
+      "object": "ce6a370f95f248df3d025726584aa740a480eec9"
     },
     {
       "path": "codex-rs/hepta-neuron/src/runtime_tests.rs",
-      "object": "4e46c63f3c0d915ae5bbe5474dfe3ca6b13e99d6"
+      "object": "a753274b4d44e54fddf9f2d41c3e3ee079fdc076"
     },
     {
       "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
-      "object": "d15b3a4f8be07c35d1884f660b6a20d494c8e5e4"
+      "object": "2db4eab27c03d2f14cbbe17e21ebb358bcfcb97a"
     },
     {
       "path": "codex-rs/hepta-neuron/src/witness.rs",
-      "object": "c56bad3540aa606fcadf0d45dc4fea45145cb4c6"
+      "object": "f1108e906be98e0db9499df71b31d64ead6f9aa2"
     },
     {
       "path": "codex-rs/hepta-neuron/src/witness_tests.rs",
-      "object": "586bddeee18e2c9e9c8e1680397608410b23b0f0"
+      "object": "d7ac77954afd9c31fe20aa099e9c47b87fccacda"
     },
     {
       "path": "docs/modules/neuron.runtime/TECHNICAL.md",
       "object": "aff785fa12439d958f035ca8a069029004864c24"
     }
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "d0d0874215802c443813e9c4e1c7b3abd484b6f6",
+    "tree": "c854b73b1e45a9b64adc3f79ce2817dce8580e09"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-neuron"
   ]
 }
