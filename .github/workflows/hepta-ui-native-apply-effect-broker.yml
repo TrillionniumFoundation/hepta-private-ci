@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: ui-native-one-shot-effect-broker
+  group: ui-native-one-shot-effect-broker-macos
   cancel-in-progress: false
 
 env:
@@ -24,7 +24,7 @@ env:
 jobs:
   apply-and-verify:
     name: apply, verify, bind and push audited source
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -38,29 +38,33 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           git ls-files --error-unmatch "$PATCH_PATH"
           git diff --exit-code -- "$PATCH_PATH"
-      - name: Decode the audited patch transport
-        run: |
-          set -euo pipefail
-          base64 --decode "$PATCH_PATH" > /tmp/ui-native-effect-broker.patch.gz
-          test -s /tmp/ui-native-effect-broker.patch.gz
-      - name: Validate and decompress the audited patch
-        run: |
-          set -euo pipefail
-          gzip -t /tmp/ui-native-effect-broker.patch.gz
-          gzip -dc /tmp/ui-native-effect-broker.patch.gz > /tmp/ui-native-effect-broker.patch
-          test -s /tmp/ui-native-effect-broker.patch
-      - name: Record the commit-bound patch identity
+      - name: Decode, validate and identify the audited patch
         id: patch
         run: |
           set -euo pipefail
-          actual="$(sha256sum /tmp/ui-native-effect-broker.patch | awk '{print $1}')"
-          echo "sha256=$actual" >> "$GITHUB_OUTPUT"
-          {
-            echo '### Commit-bound effect-broker patch'
-            echo
-            echo "Workflow input commit: \`$GITHUB_SHA\`"
-            echo "Decoded patch SHA-256: \`$actual\`"
-          } >> "$GITHUB_STEP_SUMMARY"
+          python3 - <<'PY'
+          import base64
+          import gzip
+          import hashlib
+          import os
+          from pathlib import Path
+
+          source = Path(os.environ["PATCH_PATH"])
+          encoded = "".join(source.read_text(encoding="ascii").split())
+          compressed = base64.b64decode(encoded, validate=True)
+          patch = gzip.decompress(compressed)
+          if not patch:
+              raise SystemExit("decoded effect-broker patch is empty")
+          target = Path("/tmp/ui-native-effect-broker.patch")
+          target.write_bytes(patch)
+          digest = hashlib.sha256(patch).hexdigest()
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as handle:
+              handle.write(f"sha256={digest}\n")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as handle:
+              handle.write("### Commit-bound effect-broker patch\n\n")
+              handle.write(f"Workflow input commit: `{os.environ['GITHUB_SHA']}`\n\n")
+              handle.write(f"Decoded patch SHA-256: `{digest}`\n")
+          PY
       - name: Check and apply the audited patch
         run: |
           set -euo pipefail
@@ -84,14 +88,6 @@ jobs:
           path.write_text(source.replace(old, new, 1), encoding="utf-8")
           PY
           git add -- apps/hepta-native/src/platform.rs
-      - name: Install Linux native prerequisites
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y \
-            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
-            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
-            libgl1-mesa-dev libssl-dev
       - name: Install pinned Rust toolchain
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
       - name: Format the materialized source
@@ -171,5 +167,5 @@ jobs:
             echo "Published head: \`$(git rev-parse HEAD)\`"
             echo "Patch SHA-256: \`${{ steps.patch.outputs.sha256 }}\`"
             echo
-            echo 'This run is a source-construction diagnostic, not a six-subject qualification receipt.'
+            echo 'This run proves macOS source construction and native tests; it is not the six-subject release qualification receipt.'
           } >> "$GITHUB_STEP_SUMMARY"
