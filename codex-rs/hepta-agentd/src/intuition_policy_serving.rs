@@ -34,14 +34,12 @@ pub(crate) fn authenticate_canonical_intuition(
         (true, Some(product)) => product,
         (true, None) => {
             return Err(AgentdError::Invalid(
-                "configured intuition product host requires authenticated invocation material"
-                    .to_string(),
+                "agentd.intuition.service.authenticated_invocation_required".to_string(),
             ));
         }
         (false, Some(_)) => {
             return Err(AgentdError::Invalid(
-                "authenticated intuition invocation material requires a configured product host"
-                    .to_string(),
+                "agentd.intuition.service.product_host_required".to_string(),
             ));
         }
     };
@@ -73,12 +71,7 @@ pub(crate) fn authenticate_canonical_intuition(
                 run_snapshot_digest,
                 now,
             )
-            .map_err(|error| {
-                AgentdError::Protocol(format!(
-                    "authenticated intuition preparation failed: {}",
-                    error.code()
-                ))
-            })?
+            .map_err(AgentdError::from)?
     };
     require_outcome_parity(
         canonical,
@@ -86,19 +79,17 @@ pub(crate) fn authenticate_canonical_intuition(
         &policy_prepared.decision().decision.propensities,
     )?;
 
+    // Signature verification and advisory preparation consume time. A lease
+    // validated at prepare cannot be extended by replaying its old timestamp.
+    let commit_now = crate::authbus_ingress::now_ms()?;
     let committed = state
         .commit_intuition_policy_v3(
             policy_prepared,
             expected_ledger_head,
             decision_evidence,
-            now,
+            commit_now,
         )
-        .map_err(|error| {
-            AgentdError::Protocol(format!(
-                "authenticated intuition commit failed: {}",
-                error.code()
-            ))
-        })?;
+        .map_err(AgentdError::from)?;
     require_outcome_parity(
         canonical,
         &committed.decision.decision.disposition,
@@ -108,15 +99,14 @@ pub(crate) fn authenticate_canonical_intuition(
     match &committed.decision.decision.disposition {
         ProductionDispositionV1::Selected(_) if committed.learning.is_none() => {
             return Err(AgentdError::Protocol(
-                "selected intuition result reached serving without a durable Decision append"
-                    .to_string(),
+                "agentd.intuition.service.selected_without_durable_decision".to_string(),
             ));
         }
         ProductionDispositionV1::Abstained(_) | ProductionDispositionV1::SlowPath(_)
             if committed.learning.is_some() =>
         {
             return Err(AgentdError::Protocol(
-                "non-selected intuition result unexpectedly appended a Decision".to_string(),
+                "agentd.intuition.service.nonselected_with_decision".to_string(),
             ));
         }
         _ => {}
@@ -146,7 +136,7 @@ fn require_outcome_parity(
         Ok(())
     } else {
         Err(AgentdError::Protocol(
-            "authenticated intuition result diverged from the canonical advisory stage".to_string(),
+            "agentd.intuition.service.advisory_disposition_mismatch".to_string(),
         ))
     }
 }
