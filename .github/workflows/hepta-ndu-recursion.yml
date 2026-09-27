@@ -4,6 +4,14 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle*.rs"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-control-plane/tests/runtime_retirement_dependencies.rs"
+      - "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/rustfmt.toml"
+      - "docs/modules/MODULE_DOCS.json"
       - "codex-rs/hepta-agentd/src/ndu*.rs"
       - "codex-rs/hepta-agentd/src/main.rs"
       - "codex-rs/hepta-agentd/src/config.rs"
@@ -48,6 +56,14 @@ on:
       - main
     paths:
       - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle*.rs"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-control-plane/tests/runtime_retirement_dependencies.rs"
+      - "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/rustfmt.toml"
+      - "docs/modules/MODULE_DOCS.json"
       - "codex-rs/hepta-agentd/src/ndu*.rs"
       - "codex-rs/hepta-agentd/src/main.rs"
       - "codex-rs/hepta-agentd/src/config.rs"

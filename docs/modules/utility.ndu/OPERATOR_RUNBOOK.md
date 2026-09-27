@@ -29,9 +29,9 @@ Reject enrollment if any digest is zero, any path is non-canonical, group/other 
 1. Verify the exact descriptor digest before parsing it.
 2. Verify Agentd identity and nonzero spawn generation.
 3. Authenticate and install the current signed revocation head.
-4. Acquire the sole writer lock. `Busy` is an operational conflict, not a retry-success signal.
-5. Reopen the journal with bounded metadata admission. Reject symlinks, non-regular files, oversized images, truncation, corruption and hash-chain drift.
-6. Validate the frozen production policy, including `ValidatedScalarizationProfileV1`, before store open or mutation.
+4. Validate the frozen production policy, including `ValidatedScalarizationProfileV1`, before acquiring a writer lock or opening the store.
+5. Acquire the sole writer lock. `Busy` is an operational conflict, not a retry-success signal.
+6. Reopen the journal with bounded metadata admission. Reject symlinks, non-regular files, oversized images, truncation, corruption and hash-chain drift.
 7. Verify the stable owner binding and current host fence.
 8. Publish readiness only after the above steps and metrics exporter initialization succeed.
 
@@ -178,3 +178,22 @@ has been wired. A local `backup_bytes()` export is never counted as off-host
 backup success. The deployment exporter, alert destination, independently
 governed backup service and target-host restore drill still require real
 integration and external receipts.
+
+## Admission deadlines and qualification scope
+
+External V2 deadlines are revalidated after owner-lock/feed waits, after durable
+replay admission, before returning a cached response, and at physical mutation
+entry after the final lifecycle/feed guard. A longer-lived final-use grant does
+not extend its envelope. Detected clock regression fails closed. An expiry
+before replay admission consumes no replay slot; expiry after reservation leaves
+Pending and requires reconciliation by the original mutation identity. Do not
+turn a post-reservation timeout into a fresh ID or interpret it as authorization.
+
+Both core qualification lanes explicitly include `ndu_stochastic_admission` and
+`ndu_stochastic_lifecycle`; the independent-evaluation command runs the entire
+evaluator library, including convergence and well-posedness tests. These are
+executable signed-evidence and numerical-policy regression tests, not proof of
+an independently operated deployment evaluator or its real artifact dataset.
+The `ENOSPC`/`EROFS` source tests inject operating-system error numbers at the
+persistence boundary; they are not a physically full disk or mounted read-only
+production filesystem. Preserve this distinction in acceptance records.

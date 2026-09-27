@@ -68,6 +68,18 @@ class ReceiptValidationTests(unittest.TestCase):
         recipe = (runner.ROOT / "justfile").read_text()
         self.assertIn("cargo nextest run --no-fail-fast", recipe)
 
+    def test_core_executes_admission_and_lifecycle_without_skipping_failures(self):
+        commands = {name: command for name, _, command in runner.commands("core", "a" * 40, "b" * 40)}
+        command = commands["stochastic-admission"]
+        expression = command[command.index("-E") + 1]
+        self.assertEqual(expression, "test(ndu_stochastic_admission) | test(ndu_stochastic_lifecycle)")
+        self.assertEqual(command[command.index("--no-tests") + 1], "fail")
+        self.assertEqual(command[command.index("--retries") + 1], "0")
+        evaluator = commands["independent-evaluation"]
+        self.assertIn("codex-hepta-intelligence-eval", evaluator)
+        self.assertIn("--lib", evaluator)
+        self.assertNotIn("-E", evaluator)
+
     def test_valid_measurement_and_honest_performance_failure(self):
         self.assertTrue(self.validate(self.fixture)["performancePassed"])
         self.fixture["hotPath"].update(p99Micros=6000, targetPass=False)

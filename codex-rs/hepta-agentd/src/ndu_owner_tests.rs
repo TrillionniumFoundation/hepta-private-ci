@@ -454,3 +454,130 @@ fn named_host_exposes_read_only_metrics_without_a_final_use_grant() -> TestResul
     );
     Ok(())
 }
+
+#[test]
+fn external_deadline_is_rechecked_after_owner_wait_before_replay() -> TestResult<()> {
+    let fixture = fixture()?;
+    let request = external_admission(
+        &fixture.host,
+        NduControlRequestV1::Context,
+        "expire-at-lock",
+        "expire-at-lock",
+    )?;
+    let (issued, deadline) = match &request {
+        NduControlRequestV1::ExternalAdmissionV2 {
+            issued_at_unix_ms,
+            deadline_unix_ms,
+            ..
+        } => (*issued_at_unix_ms, *deadline_unix_ms),
+        _ => return Err("expected external admission".into()),
+    };
+    let clock = std::cell::Cell::new(issued);
+    let result = fixture.host.control_with_test_clock(
+        request.clone(),
+        || {
+            clock.set(deadline + 1);
+            Ok(())
+        },
+        || Ok(clock.get()),
+    );
+    assert!(matches!(
+        result,
+        Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-004"))
+    ));
+    // Reset only the deterministic test clock: no replay reservation was made.
+    clock.set(issued);
+    assert!(matches!(
+        fixture
+            .host
+            .control_with_test_clock(request, || Ok(()), || Ok(clock.get()))?,
+        NduControlResultV1::Context { .. }
+    ));
+    Ok(())
+}
+
+#[test]
+fn external_deadline_is_rechecked_at_mutation_entry_without_effect() -> TestResult<()> {
+    let mut fixture = fixture()?;
+    let mutation = append("deadline-cut");
+    let wire = NduMutationV1 {
+        operation: NduMutationOperationV1::AppendPreference,
+        identity: *digest("deadline-cut-append").as_array(),
+        objective: *digest("objective").as_array(),
+        subject: *digest("subject").as_array(),
+        projection: *digest("deadline-cut-projection").as_array(),
+        expected_predecessor: None,
+    };
+    let prepared = fixture.host.control(
+        NduControlRequestV1::Prepare {
+            mutation: wire.clone(),
+            expected_head: [0; 32],
+        },
+        || Ok(()),
+    )?;
+    let binding = match prepared {
+        NduControlResultV1::Prepared { binding, .. } => binding,
+        _ => return Err("expected prepared binding".into()),
+    };
+    let mut grant = fixture.sign(&mutation, "deadline-cut-grant")?;
+    grant.grant.binding = binding;
+    grant.signature = fixture
+        .signing
+        .sign(&grant.grant.signing_bytes()?)
+        .to_bytes()
+        .to_vec();
+    let request = external_admission(
+        &fixture.host,
+        NduControlRequestV1::Apply {
+            mutation: wire,
+            expected_head: [0; 32],
+            grant,
+        },
+        "expire-at-effect",
+        "expire-at-effect",
+    )?;
+    let (issued, deadline) = match &request {
+        NduControlRequestV1::ExternalAdmissionV2 {
+            issued_at_unix_ms,
+            deadline_unix_ms,
+            ..
+        } => (*issued_at_unix_ms, *deadline_unix_ms),
+        _ => return Err("expected external admission".into()),
+    };
+    let clock = std::cell::Cell::new(issued);
+    let calls = std::cell::Cell::new(0);
+    let result = fixture.host.control_with_test_clock(
+        request.clone(),
+        || {
+            calls.set(calls.get() + 1);
+            if calls.get() == 2 {
+                clock.set(deadline + 1);
+            }
+            Ok(())
+        },
+        || Ok(clock.get()),
+    );
+    assert_eq!(calls.get(), 2);
+    assert!(matches!(
+        result,
+        Err(AgentdNduOwnerErrorV1::Owner(NduOwnerError::InvalidContext(
+            "external admission expired at mutation entry"
+        )))
+    ));
+    let outcome = fixture.host.control(
+        NduControlRequestV1::Outcome {
+            identity: *digest("deadline-cut-append").as_array(),
+        },
+        || Ok(()),
+    )?;
+    assert_eq!(outcome, NduControlResultV1::Outcome { entry: None });
+    // A reserved operation is never re-admitted merely by resetting test time.
+    clock.set(issued);
+    assert!(matches!(
+        fixture
+            .host
+            .control_with_test_clock(request, || Ok(()), || Ok(clock.get())),
+        Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-010"))
+    ));
+    Ok(())
+}

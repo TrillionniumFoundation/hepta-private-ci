@@ -18,17 +18,52 @@ impl AgentdNduOwnerHostV1 {
     pub(crate) fn control(
         &self,
         request: NduControlRequestV1,
+        live_guard: impl FnMut() -> Result<(), AgentdNduOwnerErrorV1>,
+    ) -> Result<NduControlResultV1, AgentdNduOwnerErrorV1> {
+        self.control_inner(request, live_guard, now_unix_ms)
+    }
+
+    #[cfg(test)]
+    pub(super) fn control_with_test_clock(
+        &self,
+        request: NduControlRequestV1,
+        live_guard: impl FnMut() -> Result<(), AgentdNduOwnerErrorV1>,
+        clock: impl Fn() -> Result<u64, AgentdNduOwnerErrorV1>,
+    ) -> Result<NduControlResultV1, AgentdNduOwnerErrorV1> {
+        self.control_inner(request, live_guard, clock)
+    }
+
+    fn control_inner(
+        &self,
+        request: NduControlRequestV1,
         mut live_guard: impl FnMut() -> Result<(), AgentdNduOwnerErrorV1>,
+        clock: impl Fn() -> Result<u64, AgentdNduOwnerErrorV1>,
     ) -> Result<NduControlResultV1, AgentdNduOwnerErrorV1> {
         let encoded_len = serde_json::to_vec(&request)
             .map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-006"))?
             .len();
-        let now = now_unix_ms()?;
-        if matches!(&request, NduControlRequestV1::ExternalAdmissionV2 { .. }) {
+        let admitted_at = clock()?;
+        let admission = if matches!(&request, NduControlRequestV1::ExternalAdmissionV2 { .. }) {
             request
-                .validate_external_admission_v2(encoded_len, now, &BTreeSet::new())
+                .validate_external_admission_v2(encoded_len, admitted_at, &BTreeSet::new())
                 .map_err(AgentdNduOwnerErrorV1::Admission)?;
-        }
+            Some(request.clone())
+        } else {
+            None
+        };
+        // Reuse the same canonical envelope validation at each physical entry.
+        // A valid grant does not extend the enclosing admission deadline.
+        let revalidate = |now| -> Result<(), AgentdNduOwnerErrorV1> {
+            if let Some(envelope) = &admission {
+                if now < admitted_at {
+                    return Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-004"));
+                }
+                envelope
+                    .validate_external_admission_v2(encoded_len, now, &BTreeSet::new())
+                    .map_err(AgentdNduOwnerErrorV1::Admission)?;
+            }
+            Ok(())
+        };
 
         if matches!(&request, NduControlRequestV1::MetricsV1) {
             live_guard()?;
@@ -40,6 +75,8 @@ impl AgentdNduOwnerHostV1 {
             feed.refresh(&self.authority)?;
         }
         owner.refresh_revocation_frontier(current_frontier(&self.authority)?)?;
+        let now = clock()?;
+        revalidate(now)?;
 
         let (request, replay_key) = match request {
             NduControlRequestV1::ExternalAdmissionV2 {
@@ -82,7 +119,10 @@ impl AgentdNduOwnerHostV1 {
                     .begin(key.clone(), binding_digest, deadline_unix_ms, now)
                     .map_err(replay_store_error)?
                 {
-                    NduExternalReplayBeginV2::Cached(result) => return Ok(*result),
+                    NduExternalReplayBeginV2::Cached(result) => {
+                        revalidate(clock()?)?;
+                        return Ok(*result);
+                    }
                     NduExternalReplayBeginV2::Fresh => {}
                 }
                 drop(replay);
@@ -91,6 +131,9 @@ impl AgentdNduOwnerHostV1 {
             ordinary => (ordinary, None),
         };
 
+        // The durable replay reservation may itself have blocked on I/O.
+        // Expiry here leaves Pending for reconciliation; it is not a new try.
+        revalidate(clock()?)?;
         let head = owner.journal_head_digest()?;
         let result = match request {
             NduControlRequestV1::MetricsV1 => Ok(metrics_result()),
@@ -137,6 +180,14 @@ impl AgentdNduOwnerHostV1 {
                                 )
                             })?;
                         }
+                        let now = clock().map_err(|_| {
+                            NduOwnerError::InvalidContext("external admission clock")
+                        })?;
+                        revalidate(now).map_err(|_| {
+                            NduOwnerError::InvalidContext(
+                                "external admission expired at mutation entry",
+                            )
+                        })?;
                         Ok(())
                     },
                 )?;

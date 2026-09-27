@@ -61,7 +61,10 @@ def commands(suite: str, sha: str, tree: str) -> list[tuple[str, Path, list[str]
             (
                 "stochastic-admission",
                 rust,
-                test(CORE[2], "--lib", "-E", "test(ndu_stochastic_admission)"),
+                test(
+                    CORE[2], "--lib", "-E",
+                    "test(ndu_stochastic_admission) | test(ndu_stochastic_lifecycle)",
+                ),
             ),
             ("current-artifacts", rust, test(CORE[3], "--lib", "-E", "test(pinned)")),
             (

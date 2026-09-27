@@ -94,6 +94,14 @@
         {
           "path": "codex-rs/hepta-agentd/src/ndu_replay.rs",
           "symbol": "corrupt_image_and_symlink_fail_closed"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/ndu_owner_tests.rs",
+          "symbol": "external_deadline_is_rechecked_after_owner_wait_before_replay"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/ndu_owner_tests.rs",
+          "symbol": "external_deadline_is_rechecked_at_mutation_entry_without_effect"
         }
       ]
     },
@@ -144,6 +152,10 @@
         {
           "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
           "symbol": "current_artifact_and_independent_evidence_compose_to_deny_all_admission"
+        },
+        {
+          "path": "scripts/test_hepta_ndu_qualification.py",
+          "symbol": "test_core_executes_admission_and_lifecycle_without_skipping_failures"
         }
       ]
     },
@@ -194,6 +206,8 @@
     }
   ],
   "supportingSources": [
+    "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
+    "codex-rs/hepta-control-plane/tests/runtime_retirement_dependencies.rs",
     "codex-rs/hepta-ndu/src/bin/ndu-named-host-qualification.rs",
     "codex-rs/hepta-ndu/src/bin/ndu-named-host-qualification/fixture.rs",
     "codex-rs/hepta-ndu/src/conditional_moments.rs",
