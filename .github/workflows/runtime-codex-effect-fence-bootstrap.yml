@@ -1,0 +1,75 @@
+name: runtime.codex effect-entry fence bootstrap
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-effect-fence-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  apply-reviewed-source:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'runtime-codex/closure-20260927'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out the exact same-repository head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned formatter
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+
+      - name: Apply exact reviewed transforms
+        run: |
+          set -euo pipefail
+          # The effect-fence transformer replaces marker-inclusive regions.
+          # Normalize its helper to consume the end marker before running it.
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/runtime_codex_effect_fence_bootstrap.py')
+          source = path.read_text()
+          old = 'return text[:first] + replacement + text[stop:]'
+          new = 'return text[:first] + replacement + text[stop + len(end):]'
+          if source.count(old) != 1:
+              raise SystemExit('unexpected effect-fence transformer helper')
+          path.write_text(source.replace(old, new, 1))
+          PY
+          python3 scripts/runtime_codex_effect_fence_bootstrap.py
+          python3 scripts/runtime_codex_rejection_settlement_bootstrap.py
+
+      - name: Format without compiling candidate code
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-agentd \
+            --package codex-hepta-infer-worker-host
+          git diff --check
+
+      - name: Publish source-only candidate
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+          test "$HEAD_REF" = runtime-codex/closure-20260927
+          git config user.name 'OpenAI Codex'
+          git config user.email 'noreply@openai.com'
+          git add -A
+          git diff --cached --check
+          git commit -m 'runtime.codex: make Agentd the irreversible effect-entry and rejection owner [runtime-codex-fenced]' \
+            -m 'Only a fresh exact Agentd CAS permits physical turn/start. Typed pre-admission rejection is first durably prepared locally, then terminally acknowledged by Agentd, and only then releases local capacity. Idempotent, lost, mismatched, or post-fence paths remain reconcile-only. No activation, provider qualification, acceptance, or release is claimed.'
+          git push origin "HEAD:refs/heads/${HEAD_REF}"
