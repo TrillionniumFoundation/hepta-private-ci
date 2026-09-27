@@ -240,6 +240,13 @@ pub(crate) async fn verify_production_evidence_frontier(
             "production issuer trust must use monotonic registry schema V2",
         ));
     }
+    store
+        .verify_production_qualification_provenance_bounded(
+            verified_trust.registry_generation(),
+            verified_trust.registry_sha256(),
+        )
+        .await
+        .map_err(evidence_error)?;
     let frontier_sha256 = evidence_recovery_frontier_v2_sha256(&frontier)
         .map_err(|error| recovery_required(&error.to_string()))?;
     let accepted_frontier = EvidenceAcceptedFrontierV1 {
