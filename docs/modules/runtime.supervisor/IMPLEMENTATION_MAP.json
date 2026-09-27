@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "adcaa49951ced10b66716a2df49e61b75a6bff5d",
-    "tree": "018a2d2fc518184292ab07ef329c15319ee638a8"
+    "commit": "2ef4cc9d2c38490eadcc04064b0f86419ec2310c",
+    "tree": "1a248d56d814286c1e48c5f808fdb8dc59f65f58"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
@@ -460,8 +460,8 @@
     "codex-rs/hepta-supervisor"
   ],
   "observedAtHead": {
-    "commit": "adcaa49951ced10b66716a2df49e61b75a6bff5d",
-    "tree": "018a2d2fc518184292ab07ef329c15319ee638a8",
+    "commit": "2ef4cc9d2c38490eadcc04064b0f86419ec2310c",
+    "tree": "1a248d56d814286c1e48c5f808fdb8dc59f65f58",
     "interpretation": "Reviewed source composition for signed lifecycle, durable bounded fault recovery, independent release caller and host qualification. This observation is not an execution or deployment receipt."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
@@ -488,23 +488,23 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-supervisor",
-      "object": "ba252eb8b988f86f42b7c8e3ad13d6a8f06c2189"
+      "object": "71d7abc5c5f5f8f2ff612d6da22bb6cf9ce84713"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/authority_signer.rs",
-      "object": "aaab6e572b5663e9948da731a25eb708a227bdbc"
+      "object": "110e6841b8c791c07a887eaf69666ef38b1798da"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/bin/hepta-supervisor-release-controller.rs",
-      "object": "4103a9884d7a2c0e0e558af3303b279e8e2216c5"
+      "object": "7707d40dba2ad94bef23adbcab07a6fafefad9ea"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/release_controller.rs",
-      "object": "7010926a9ed45e7aef4a69eadb55f7bfb1a8d00a"
+      "object": "fafc0e48e955c63af65bbac35c90a66eaa08f662"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/release_controller_tests.rs",
-      "object": "b6332c0bc6dfa359fcdc8b6bcabba34ff554067c"
+      "object": "ab0aff1f4743d5ae718ae69c4c7127d847550054"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
