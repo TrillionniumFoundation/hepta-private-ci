@@ -17,6 +17,12 @@ def replace_once(path: str, old: str, new: str) -> None:
 
 replace_once(
     "codex-rs/hepta-intelligence/src/prompt_product_v3.rs",
+    "use codex_hepta_prompt_registry::PromptContextAuthorityAdmissionV3;\n",
+    "",
+)
+
+replace_once(
+    "codex-rs/hepta-intelligence/src/prompt_product_v3.rs",
     "    #[must_use]\n"
     "    pub const fn portfolio_valid_until_unix_ms(&self) -> u64 {\n"
     "        self.portfolio_valid_until_unix_ms\n"
