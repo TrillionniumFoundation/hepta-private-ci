@@ -1,0 +1,232 @@
+diff --git a/codex-rs/hepta-agentd/src/cognitive_context.rs b/codex-rs/hepta-agentd/src/cognitive_context.rs
+index 9189e1783..000000000 100644
+--- a/codex-rs/hepta-agentd/src/cognitive_context.rs
++++ b/codex-rs/hepta-agentd/src/cognitive_context.rs
+@@ -473,6 +473,10 @@ pub(crate) async fn read_with_retrieval_executor(
+             return Err(CognitiveContextError::RetrievalContextUnavailable);
+         }
+     }
++    // All owner, ranker and retrieval-lifecycle fences have passed. The append
++    // below is the owner-publication commit point. Actual turn/start attachment
++    // remains a separate inference-journal fact joined by the exact published
++    // context digest.
+     if let Some(sink) = learning_sink.filter(|_| pending_assignment.is_some()) {
+         let assignment =
+             pending_assignment.ok_or(CognitiveContextError::RetrievalLearningUnavailable)?;
+@@ -530,22 +534,9 @@ pub(crate) async fn read_with_retrieval_executor(
+             eprintln!("shadow retrieval assignment append unavailable; no exposure recorded");
+         }
+     }
+-    // Append completion is not a freshness fence. A prepared assignment does
+-    // not prove native consumption; publication still requires current owners.
+-    store
+-        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
+-        .await?;
+-    if let (Some(current), Some(expected)) = (current_retrieval, expected_retrieval_context_digest)
+-    {
+-        if load_retrieval_context(current, owner, body_generation, executor, &request_work)
+-            .await?
+-            .binding_digest()
+-            != expected
+-        {
+-            return Err(CognitiveContextError::RetrievalContextUnavailable);
+-        }
+-    }
++    // Do not perform a fallible owner check after the publication record: that
++    // would allow a request to fail after the ledger said the response was
++    // exposed. Native consumption remains separately reconciled by inference.
+     Ok(response)
+ }
+diff --git a/codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs b/codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs
+index bf1dcdcd8..000000000 100644
+--- a/codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs
++++ b/codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs
+@@ -184,12 +184,13 @@ async fn current_hnmf_context_filters_owner_candidates_before_delivery() {
+     let expected_id = context.engram_snapshot.nodes[0].support[0]
+         .record_id
+         .as_str()
+         .to_string();
++    let calls = Arc::new(AtomicUsize::new(0));
+     let provider: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(SwitchingContext {
+         owner: owner.clone(),
+         generation: 1,
+         first: context.clone(),
+         later: context,
+         switch_after_first: false,
+-        calls: Arc::new(AtomicUsize::new(0)),
++        calls: Arc::clone(&calls),
+     });
+     let result = read_with_retrieval_context(&store, &owner, 1, "lemon", 4, None, Some(&provider))
+         .await
+@@ -198,6 +199,10 @@ async fn current_hnmf_context_filters_owner_candidates_before_delivery() {
+     assert_eq!(result.items.len(), 1);
+     assert_eq!(result.items[0].memory_id, expected_id);
+     assert_ne!(result.items[0].memory_id, excluded_id);
++    // One acquisition binds the execution context and one final acquisition
++    // fences publication. No fallible provider call is allowed after the
++    // learning publication commit point.
++    assert_eq!(calls.load(Ordering::SeqCst), 2);
+ }
+diff --git a/codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap.rs b/codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap.rs
+index 530cee2f7..000000000 100644
+--- a/codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap.rs
++++ b/codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap.rs
+@@ -9,11 +9,13 @@ use codex_hepta_contracts::AgentId;
+ use codex_hepta_memory::RetrievalExecutionContextV1;
+ use codex_hepta_memory_retrieval::MAX_ENGRAM_NODES;
+ use codex_hepta_memory_retrieval::MAX_ENGRAM_SETTLING_STEPS;
+ use codex_hepta_memory_retrieval::MAX_ENGRAM_SYNAPSES;
+ use codex_hepta_memory_retrieval::MAX_GENERATION_BOUND_CANDIDATES;
++use codex_hepta_memory_retrieval::RetrievalChannelV1;
++use codex_hepta_memory_retrieval::RetrievalPolicyV1;
+ use codex_hepta_types::Digest32;
++use codex_hepta_types::FixedQ32;
+ use serde::Deserialize;
+@@ -282,13 +284,28 @@ fn decode_publication(bytes: &[u8]) -> Result<SignedMemoryRetrievalContextV1, String> {
+     if wire.schema != "hepta.agentd.retrieval-publication-file.v1" {
+         return Err("unsupported retrieval publication file schema".to_string());
+     }
++    let context = codec::decode(wire.context_json.as_bytes())?;
++    ensure_bootstrap_supported_policy(&context.retrieval_policy)?;
+     Ok(SignedMemoryRetrievalContextV1 {
+         owner: AgentId::parse(wire.owner_id).map_err(|error| error.to_string())?,
+         body_generation: wire.body_generation,
+         sequence: wire.sequence,
+         not_before_unix_ms: wire.not_before_unix_ms,
+         expires_unix_ms: wire.expires_unix_ms,
+-        context: codec::decode(wire.context_json.as_bytes())?,
++        context,
+         signature: hex_array(&wire.signature_hex)?,
+     })
+ }
++
++fn ensure_bootstrap_supported_policy(policy: &RetrievalPolicyV1) -> Result<(), String> {
++    if policy.channel_weights.iter().any(|row| {
++        row.channel == RetrievalChannelV1::Vector && row.weight > FixedQ32::ZERO
++    }) {
++        return Err(
++            "ordinary retrieval bootstrap cannot enable Vector without an authenticated generation-bound encoder/index owner"
++                .to_string(),
++        );
++    }
++    Ok(())
++}
++
+ fn hex_array<const N: usize>(text: &str) -> Result<[u8; N], String> {
+diff --git a/codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap_tests.rs b/codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap_tests.rs
+index e6401a2ac..000000000 100644
+--- a/codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap_tests.rs
++++ b/codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap_tests.rs
+@@ -1,5 +1,8 @@
+ use super::*;
++use codex_hepta_memory::sqlite_owner_retrieval_policy_v1;
++use codex_hepta_memory_retrieval::RetrievalChannelWeightV1;
+ use serde_json::json;
+ 
+ #[test]
+@@ -45,6 +48,24 @@ fn publication_decoder_does_not_treat_a_signature_string_as_verified_context() {
+     assert!(decode_publication(&serde_json::to_vec(&value).expect("json")).is_err());
+ }
+ 
++#[test]
++fn ordinary_bootstrap_rejects_positive_vector_without_composed_owner() {
++    let mut policy = sqlite_owner_retrieval_policy_v1().expect("owner policy");
++    assert!(ensure_bootstrap_supported_policy(&policy).is_ok());
++    policy.channel_weights.push(RetrievalChannelWeightV1 {
++        channel: RetrievalChannelV1::Vector,
++        weight: FixedQ32::ONE,
++        maximum_candidates: 32,
++    });
++    assert_eq!(
++        ensure_bootstrap_supported_policy(&policy),
++        Err(
++            "ordinary retrieval bootstrap cannot enable Vector without an authenticated generation-bound encoder/index owner"
++                .to_string()
++        )
++    );
++}
++
+ #[cfg(unix)]
+ #[test]
+ fn host_reader_enforces_regular_canonical_private_bounded_files() {
+diff --git a/codex-rs/hepta-learning-ledger/src/model.rs b/codex-rs/hepta-learning-ledger/src/model.rs
+index ebdec3db9..000000000 100644
+--- a/codex-rs/hepta-learning-ledger/src/model.rs
++++ b/codex-rs/hepta-learning-ledger/src/model.rs
+@@ -83,15 +83,18 @@ pub struct RetrievalAssignmentFact {
+     pub enumerated_candidate_digests: Vec<Digest32>,
+     pub legal_candidate_indices: Vec<u32>,
+     pub selected_candidate_indices: Vec<u32>,
+-    /// Exact subset published by the owner to the named product consumer after
+-    /// downstream learned reranking, response budget, NDU planning and final
+-    /// owner/currentness fences. Provider/model attachment is proved separately
+-    /// by the inference journal; this field alone does not claim model delivery.
++    /// Exact subset in the owner response after downstream learned reranking,
++    /// response budget, NDU planning and final in-process owner/currentness
++    /// fences. Provider/model attachment is proved separately by the inference
++    /// journal; this field alone does not claim native model consumption.
+     pub delivered_candidate_indices: Vec<u32>,
+-    /// Whether a non-empty retrieval context was published to that consumer.
++    /// Whether the owner returned a non-empty retrieval context after its final
++    /// publication fences. This is not proof that a downstream native turn
++    /// started or consumed the context.
+     pub context_exposed: bool,
+-    /// Digest of the exact serialized CognitiveContextSnapshot returned by the
+-    /// owner. The inference journal carries the same digest so a later
+-    /// native_started receipt can prove actual turn/start attachment.
++    /// Digest of the exact serialized CognitiveContextSnapshot returned after
++    /// owner publication. The inference journal carries the same digest so a
++    /// later native_started receipt can prove actual turn/start attachment.
+     pub published_context_digest: Option<Digest32>,
+diff --git a/docs/modules/memory.retrieval/TECHNICAL.md b/docs/modules/memory.retrieval/TECHNICAL.md
+index 14c128c23..000000000 100644
+--- a/docs/modules/memory.retrieval/TECHNICAL.md
++++ b/docs/modules/memory.retrieval/TECHNICAL.md
+@@ -58,6 +58,10 @@ The independent frontier owner retains current epoch/sequence outside Agent-home
+ The core uses typed immutable input and no network or process-global state. SQLite observation is coherent within its owner transaction; final delivery still checks the current cut and selected record/source identities.
+ 
+ The signed provider returns context, publication lifecycle and lease together. Combined installation/acquisition performs one fresh challenged frontier observation. Parsing may be cached by exact publication bytes; signature, native validation, current frontier and monotonic lease remain checked. Invalid or missing current input does not fall back to a cached payload.
+ 
+-Current shadow ceilings are structural. Separate bounded scheduling, cancellation and measured CPU/RSS/allocation isolation remain unfinished and cannot be inferred from the four-mode enum or a node limit. Follow [shared concurrency requirements](../README.md#shared-concurrency-and-transactions).
++Agentd now offloads provider I/O and recall to host-owned delivery/shadow semaphores with zero waiting queue, fixed deadlines, one shared deterministic work budget and cooperative cancellation. A timed-out worker retains its capacity permit until it actually exits; cancellation cannot create hidden oversubscription. These source bounds do not establish measured CPU/RSS/allocation isolation or an accepted numerical product SLO. Follow [shared concurrency requirements](../README.md#shared-concurrency-and-transactions).
++
++The assignment append occurs only after the current SQLite cut, ranker and signed retrieval lifecycle pass their final in-process publication fences. No fallible owner check follows a successful assignment append. The exact published-context digest is still only owner publication evidence; actual turn/start attachment and terminal use are joined through the inference journal.
+@@ -92,7 +96,7 @@ Explicit assertion observation uses one parameterized batch query over exact obs
+ 
+ [POLICY_REFERENCE.md](POLICY_REFERENCE.md) distinguishes the uncalibrated SQLite baseline from a measured risk policy. OOD zero and a threshold of one are not calibration. [VECTOR_OWNER.md](VECTOR_OWNER.md) describes the real encoder/index seam; a configuration without that owner keeps Vector disabled.
+ 
+-Capacity invariants are not latency or efficiency measurements. [E2E_MEASUREMENT.md](E2E_MEASUREMENT.md) specifies the nine-stage contract, exact source/binary binding, failure traces and request-scoped counters. The complete native producer, approved workload/SLO and current-host measurements remain required.
++The ordinary signed bootstrap rejects every positive-weight Vector policy until a distinct authenticated generation-bound encoder/index owner is added to host composition. Capacity invariants are not latency or efficiency measurements. [E2E_MEASUREMENT.md](E2E_MEASUREMENT.md) specifies the nine-stage contract, exact source/binary binding, failure traces and request-scoped counters. The complete native producer, approved workload/SLO and current-host measurements remain required.
+diff --git a/docs/modules/memory.retrieval/API.md b/docs/modules/memory.retrieval/API.md
+index 0be22e59d..000000000 100644
+--- a/docs/modules/memory.retrieval/API.md
++++ b/docs/modules/memory.retrieval/API.md
+@@ -21,11 +21,11 @@ Status: source candidate; Rust execution, independent acceptance and production
+ | `CurrentMemoryRetrievalContext` rollout methods | Host-captured canary policy version, ppm threshold, nonzero salt and shadow structural ceilings | These values are host policy, not request fields. The runtime wrapper binds them into final-use identity and rejects invalid policy. |
+ | `LeasedMemoryRetrievalProviderV1::from_loopback_frontier` | Protected endpoint, context/frontier public-key pins and time bounds | Constructs the real bounded client; does not create the remote owner or authority keys. |
+-| `LeasedMemoryRetrievalProviderV1::load_process_bootstrap` | Protected canonical descriptor path, independently approved raw-byte SHA-256 pin and launched Agent identity | Strict bounded v1/v2 descriptor, publication and context decoding followed by signature and fresh frontier checks. Returns a current-context provider that rereads signed publications; malformed, stale or unavailable input fails closed. |
++| `LeasedMemoryRetrievalProviderV1::load_process_bootstrap` | Protected canonical descriptor path, independently approved raw-byte SHA-256 pin and launched Agent identity | Strict bounded v1/v2 descriptor, publication and context decoding followed by signature and fresh frontier checks. Returns a current-context provider that rereads signed publications; malformed, stale, unavailable or positive-Vector-without-owner input fails closed. |
+ 
+-`read_with_retrieval_context_and_learning` is the named Agentd caller, not a public application API. It binds lifecycle and host mode, bounds the operation deadline by the signed lease, and revalidates after ledger append and awaited final-use ranking. Same-payload publication renewal invalidates the old read. Published context and ledger preparation are not proof of native turn/start attachment or successful downstream use.
++`read_with_retrieval_context_and_learning` is the named Agentd caller, not a public application API. It binds lifecycle and host mode, bounds provider/recall work by host capacity, deadline and a shared work ceiling, and fences the SQLite cut, ranker and signed lifecycle before the assignment append. No fallible owner check follows a successful append. Same-payload publication renewal invalidates the old read. The published-context digest is owner publication evidence, not proof of native turn/start attachment or successful downstream use; the inference journal supplies that separate fact.
+ 
+-The runtime has explicit compatibility, shadow, canary and required routing. Shadow observes but does not publish HNMF selections as exposure; only the actual HNMF-delivered subset is attributed to treatment. Bootstrap v1 retains its historical fixed cohort. Bootstrap v2 requires a complete pinned rollout policy and separate non-delivery candidate/node/synapse/step ceilings. These ceilings are structural admission only, not CPU, RSS, allocation, wall-time or cancellation isolation. Mode and rollout policy are documented in `ROLLOUT_POLICY.md` and `CANARY_AND_ROLLBACK.md`; native process and host qualification remain required.
++The runtime has explicit compatibility, shadow, canary and required routing. Shadow observes but does not publish HNMF selections as exposure; only the actual HNMF-delivered subset is attributed to treatment. Bootstrap v1 retains its historical fixed cohort. Bootstrap v2 requires a complete pinned rollout policy and separate non-delivery candidate/node/synapse/step ceilings. Agentd additionally separates delivery and shadow capacity, uses zero-queue admission, deadlines and cooperative cancellation, but measured CPU, RSS and allocation isolation remain unproved. Mode and rollout policy are documented in `ROLLOUT_POLICY.md` and `CANARY_AND_ROLLBACK.md`; native process and host qualification remain required.
+diff --git a/docs/modules/memory.retrieval/PROCESS_BOOTSTRAP.md b/docs/modules/memory.retrieval/PROCESS_BOOTSTRAP.md
+index 8fc565936..000000000 100644
+--- a/docs/modules/memory.retrieval/PROCESS_BOOTSTRAP.md
++++ b/docs/modules/memory.retrieval/PROCESS_BOOTSTRAP.md
+@@ -77,7 +77,7 @@ The outer file is a strict JSON object, at most 33554432 bytes, with exactly the
+ 
+ `context_json` is deliberately not decoded through an intermediate generic JSON object: that would erase duplicate keys before strict context validation. The signature is over the existing `SignedMemoryRetrievalContextV1::signing_bytes()`, not JSON bytes. Those bytes bind owner/body, authority epoch, sequence, validity interval and the complete native execution-context digest. A syntactically valid signature string is not a verified signature.
+ 
+-Every acquisition rereads the bounded publication, validates the native context, checks the publication signature and observes the independent signed frontier. Identical installation is idempotent and cannot renew the existing monotonic lease. Errors do not reuse an old cached publication. The source implementation currently decodes the file on every acquisition; its CPU/allocation cost must be included in target-host measurements rather than assumed negligible.
++Every acquisition rereads the bounded publication, validates the native context, checks the publication signature and observes the independent signed frontier. Identical installation is idempotent and cannot renew the existing monotonic lease. Exact unchanged publication bytes may reuse their strictly decoded immutable value; cache hits never skip native validation, signature, lease or fresh challenged-frontier checks. Changed or invalid bytes cannot reuse an old cached publication. File read, digest, cache and validation cost must be included in target-host measurements rather than assumed negligible.
+@@ -91,7 +91,7 @@ The other top-level fields are `objective_digest`, `approved_context_digest`, `c
+ 
+-`retrieval_policy` contains `policy_id`, `channel_weights`, `maximum_results`, `minimum_total_score_q32`, `maximum_ood_q32`, `minimum_distinct_channels` and `abstain_on_contradiction`. Each channel row contains `channel`, `weight_q32` and `maximum_candidates`. At most eight rows are accepted. Channel codes are 0 lexical, 1 vector, 2 entity, 3 temporal, 4 causal, 5 procedural, 6 contradiction support and 7 generic graph. Unknown codes are rejected. The native policy digest must equal the vector's retrieval-profile digest. The existence of code 1 does not enable a vector producer; enabling it without a real generation-bound owner remains invalid product composition.
++`retrieval_policy` contains `policy_id`, `channel_weights`, `maximum_results`, `minimum_total_score_q32`, `maximum_ood_q32`, `minimum_distinct_channels` and `abstain_on_contradiction`. Each channel row contains `channel`, `weight_q32` and `maximum_candidates`. At most eight rows are accepted. Channel codes are 0 lexical, 1 vector, 2 entity, 3 temporal, 4 causal, 5 procedural, 6 contradiction support and 7 generic graph. Unknown codes are rejected. The native policy digest must equal the vector's retrieval-profile digest. The ordinary checked-in bootstrap rejects a positive-weight channel 1 because it has no authenticated encoder/index owner composition. Enabling Vector requires a later explicit host contract binding the real encoder and durable index generation; lexical, graph or learned-ranker scores cannot satisfy it.
+@@ -115,7 +115,7 @@ The frontier RPC framing, signature domain and total-deadline behavior remain sp
+ 
+-The candidate includes strict schema/path regressions for bounded decoding, duplicate/unknown keys, integer confusion/overflow, policy drift, generation binding, duplicate node support, canonical hex and private regular-file paths. It also includes v1 compatibility and v2 completeness/range tests plus routing tests for exact legacy cohort behavior, zero/full ppm limits, policy identity and each structural budget. They are authored source tests until exact-head CI records their execution.
++The candidate includes strict schema/path regressions for bounded decoding, duplicate/unknown keys, integer confusion/overflow, policy drift, generation binding, duplicate node support, canonical hex, positive-Vector rejection and private regular-file paths. It also includes v1 compatibility and v2 completeness/range tests plus routing tests for exact legacy cohort behavior, zero/full ppm limits, policy identity and each structural budget. They are authored source tests until exact-head CI records their execution.
