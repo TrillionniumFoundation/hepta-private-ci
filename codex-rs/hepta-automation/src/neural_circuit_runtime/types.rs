@@ -244,6 +244,7 @@ pub struct CircuitRecordedChoiceV1 {
 pub struct CircuitRuntimeTraceV1 {
     pub event_digest: Sha256Digest,
     pub circuit_digest: Sha256Digest,
+    pub runtime_profile_digest: Sha256Digest,
     pub steps: u32,
     pub depth: u16,
     pub consumed_cost_units: u64,
