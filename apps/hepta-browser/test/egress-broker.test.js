@@ -84,15 +84,20 @@ function connectTunnel(socketPath, authority, hello) {
     let response = Buffer.alloc(0);
     let tunneled = false;
     let settled = false;
-    const finish = () => {
+    let timer;
+
+    const settle = (result, error = null) => {
       if (settled) return;
       settled = true;
       clearTimeout(timer);
-      resolve({ header, body });
-    };
-    const timer = setTimeout(() => {
       socket.destroy();
-      reject(new Error("CONNECT fixture timed out"));
+      if (error) reject(error);
+      else resolve(result);
+    };
+    const finish = () => settle({ header, body });
+
+    timer = setTimeout(() => {
+      settle(null, new Error("CONNECT fixture timed out"));
     }, 5_000);
     socket.on("connect", () => {
       socket.write(
@@ -120,7 +125,7 @@ function connectTunnel(socketPath, authority, hello) {
     socket.on("close", finish);
     socket.on("error", (error) => {
       if (tunneled) finish();
-      else reject(error);
+      else settle(null, error);
     });
   });
 }
@@ -272,15 +277,31 @@ test("HTTPS CONNECT binds exact authority, port, and TLS ClientHello SNI before 
   });
   await broker.start();
   try {
-    const allowed = await connectTunnel(join(root, "proxy.sock"), allowedAuthority, tlsClientHello("localhost"));
+    const allowed = await connectTunnel(
+      join(root, "proxy.sock"),
+      allowedAuthority,
+      tlsClientHello("localhost"),
+    );
     assert.match(allowed.header, /200/);
     assert.equal(allowedHits, 1);
 
-    const mismatchedSni = await connectTunnel(join(root, "proxy.sock"), allowedAuthority, tlsClientHello("example.invalid"));
+    const mismatchedSni = await connectTunnel(
+      join(root, "proxy.sock"),
+      allowedAuthority,
+      tlsClientHello("example.invalid"),
+    );
     assert.match(mismatchedSni.header, /200/);
-    assert.equal(allowedHits, 1, "SNI drift must be rejected before any additional upstream connection");
+    assert.equal(
+      allowedHits,
+      1,
+      "SNI drift must be rejected before any additional upstream connection",
+    );
 
-    const denied = await connectTunnel(join(root, "proxy.sock"), deniedAuthority, tlsClientHello("127.0.0.1"));
+    const denied = await connectTunnel(
+      join(root, "proxy.sock"),
+      deniedAuthority,
+      tlsClientHello("127.0.0.1"),
+    );
     assert.doesNotMatch(denied.header, /200/);
     assert.equal(deniedHits, 0);
   } finally {
