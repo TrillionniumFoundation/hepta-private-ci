@@ -1,0 +1,176 @@
+name: Kernel authority one-shot repair
+
+on:
+  push:
+    branches:
+      - work/kernel-authority-convergence-20260925
+    paths:
+      - '.github/workflows/kernel-authority-one-shot-repair.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: kernel-authority-one-shot-repair
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout repair branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: work/kernel-authority-convergence-20260925
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned formatting toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+
+      - name: Repair source and closed-world caller inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          source = Path('codex-rs/hepta-contracts/src/final_use.rs')
+          text = source.read_text(encoding='utf-8')
+          old = r'b"pending\1"'
+          new = r'b"pending\x01"'
+          if old not in text:
+              raise SystemExit('expected invalid pending frontier byte literal not found')
+          source.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          callers = Path('CALLERS.toml')
+          text = callers.read_text(encoding='utf-8')
+          old = 'product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]'
+          new = 'product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-contracts/src/authority_trust.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]'
+          if old not in text:
+              raise SystemExit('final_use_open_state caller inventory shape changed')
+          callers.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+          (
+            cd codex-rs
+            cargo +1.95.0 fmt --all
+          )
+          git diff --check
+
+      - name: Commit exact source repair
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'kernel-authority-repair[bot]'
+          git config user.email 'kernel-authority-repair[bot]@users.noreply.github.com'
+          git add CALLERS.toml codex-rs/hepta-contracts/src/final_use.rs codex-rs/hepta-contracts/tests/final_use_pending_recovery.rs
+          if git diff --cached --quiet; then
+            echo 'source repair produced no staged changes' >&2
+            exit 1
+          fi
+          git commit -m 'fix(kernel-authority): close final-use build and caller proof'
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tree=$(git rev-parse 'HEAD^{tree}')" >> "$GITHUB_OUTPUT"
+
+      - name: Rebind source observations and regenerate canonical status
+        shell: bash
+        env:
+          SOURCE_COMMIT: ${{ steps.source.outputs.commit }}
+          SOURCE_TREE: ${{ steps.source.outputs.tree }}
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate \
+            --module kernel.authority \
+            --module kernel.operations \
+            --module runtime.supervisor \
+            --module runtime.fleet \
+            --module utility.ndu \
+            --module learning.plasticity \
+            --module automation.taskflow
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path('qualification/kernel-authority/status_manifest.json')
+          value = json.loads(path.read_text(encoding='utf-8'))
+          value['sourceAnchor'] = {
+              'commit': os.environ['SOURCE_COMMIT'],
+              'tree': os.environ['SOURCE_TREE'],
+          }
+          path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+          PY
+          python3 scripts/kernel_authority_status.py write
+          python3 scripts/hepta-implementation-maps.py sync-plasticity-status
+          rm .github/workflows/kernel-authority-one-shot-repair.yml
+          git diff --check
+
+      - name: Commit projections at the immutable source anchor
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'projection repair produced no staged changes' >&2
+            exit 1
+          fi
+          git commit -m 'docs(kernel-authority): rebind generated truth to repaired source'
+
+      - name: Verify governance, formatting, contracts and host compile
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/kernel_authority_status.py check
+          python3 qualification/kernel-authority/generate_status.py --check
+          python3 scripts/verify_hepta_callers.py
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse 'HEAD^{tree}')"
+          git diff --check
+          test -z "$(git status --porcelain)"
+          (
+            cd codex-rs
+            cargo +1.95.0 fmt --all -- --check
+            cargo +1.95.0 test --package codex-hepta-contracts --locked
+            cargo +1.95.0 clippy --package codex-hepta-contracts --all-targets --locked -- -D warnings
+            cargo +1.95.0 test --package codex-hepta-agentd --locked --no-run
+          )
+
+      - name: Push repaired candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin HEAD:work/kernel-authority-convergence-20260925
+
+      - name: Dispatch candidate-bound qualification workflows
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for workflow in \
+            kernel-authority-convergence.yml \
+            kernel-authority-production-closure.yml \
+            kernel-authority-status.yml
+          do
+            response="$(mktemp)"
+            code="$(curl --silent --show-error --location \
+              --output "$response" --write-out '%{http_code}' \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer ${GH_TOKEN}" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/dispatches" \
+              --data '{"ref":"work/kernel-authority-convergence-20260925"}')"
+            if [ "$code" != '204' ]; then
+              echo "workflow dispatch failed for ${workflow}: HTTP ${code}" >&2
+              cat "$response" >&2
+              exit 1
+            fi
+          done
