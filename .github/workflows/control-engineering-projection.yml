@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   projection:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
       - name: Checkout exact candidate
