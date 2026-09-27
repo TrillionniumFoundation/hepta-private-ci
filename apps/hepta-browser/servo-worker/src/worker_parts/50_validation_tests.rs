@@ -22,20 +22,38 @@ fn validate_action_target(
     if disabled {
         return Err("typed action selector is disabled in the admitted action surface".to_string());
     }
+    let tag = control
+        .get("tag")
+        .and_then(Value::as_str)
+        .ok_or_else(|| "semantic observation control.tag must be a string".to_string())?;
+    let input_type = control
+        .get("type")
+        .and_then(Value::as_str)
+        .ok_or_else(|| "semantic observation control.type must be a string".to_string())?;
+    if kind == "click"
+        && tag.eq_ignore_ascii_case("input")
+        && input_type.eq_ignore_ascii_case("file")
+    {
+        return Err("file chooser capability is not connected".to_string());
+    }
     if kind == "type" {
-        let tag = control
-            .get("tag")
-            .and_then(Value::as_str)
-            .ok_or_else(|| "semantic observation control.tag must be a string".to_string())?;
-        let input_type = control
-            .get("type")
-            .and_then(Value::as_str)
-            .ok_or_else(|| "semantic observation control.type must be a string".to_string())?;
-        if !matches!(tag, "input" | "textarea") {
+        if tag.eq_ignore_ascii_case("input") {
+            if input_type.eq_ignore_ascii_case("password") {
+                return Err("generic type action cannot target a password control".to_string());
+            }
+            let normalized = input_type.to_ascii_lowercase();
+            if !matches!(normalized.as_str(), "" | "text" | "search" | "email" | "url" | "tel") {
+                return Err("type action target is not a supported text-entry control".to_string());
+            }
+        } else if !tag.eq_ignore_ascii_case("textarea") {
             return Err("type action target is not a text-entry control".to_string());
         }
-        if input_type.eq_ignore_ascii_case("password") {
-            return Err("generic type action cannot target a password control".to_string());
+        let read_only = control
+            .get("readOnly")
+            .and_then(Value::as_bool)
+            .ok_or_else(|| "semantic observation control.readOnly must be boolean".to_string())?;
+        if read_only {
+            return Err("type action target is read-only".to_string());
         }
     }
     Ok(())
@@ -248,7 +266,7 @@ mod tests {
             "title": "Title A",
             "visibleText": "dynamic counter 1",
             "links": [{"text":"A","href":"https://example.com/a","selector":"a:nth-of-type(1)"}],
-            "controls": [{"selector":"button:nth-of-type(1)","tag":"button","role":"","type":"","name":"","ariaLabel":"Go","placeholder":"","disabled":false,"checked":false}],
+            "controls": [{"selector":"button:nth-of-type(1)","tag":"button","role":"","type":"","name":"","ariaLabel":"Go","placeholder":"","disabled":false,"readOnly":false,"checked":false}],
             "forms": [],
             "viewport": {"width":1280,"height":720},
             "truncated": false,
@@ -258,7 +276,7 @@ mod tests {
             "title": "Title B",
             "visibleText": "dynamic counter 2",
             "links": [{"text":"A","href":"https://example.com/a","selector":"a:nth-of-type(1)"}],
-            "controls": [{"selector":"button:nth-of-type(1)","tag":"button","role":"","type":"","name":"","ariaLabel":"Go","placeholder":"","disabled":false,"checked":false}],
+            "controls": [{"selector":"button:nth-of-type(1)","tag":"button","role":"","type":"","name":"","ariaLabel":"Go","placeholder":"","disabled":false,"readOnly":false,"checked":false}],
             "forms": [],
             "viewport": {"width":1280,"height":720},
             "truncated": false,
@@ -268,7 +286,17 @@ mod tests {
             "title": "Title B",
             "visibleText": "dynamic counter 2",
             "links": [{"text":"A","href":"https://example.com/a","selector":"a:nth-of-type(1)"}],
-            "controls": [{"selector":"button:nth-of-type(1)","tag":"button","role":"","type":"","name":"","ariaLabel":"Go","placeholder":"","disabled":true,"checked":false}],
+            "controls": [{"selector":"button:nth-of-type(1)","tag":"button","role":"","type":"","name":"","ariaLabel":"Go","placeholder":"","disabled":true,"readOnly":false,"checked":false}],
+            "forms": [],
+            "viewport": {"width":1280,"height":720},
+            "truncated": false,
+        });
+        let readonly_changed = json!({
+            "schema": "hepta.browser.semantic-observation.v1",
+            "title": "Title B",
+            "visibleText": "dynamic counter 2",
+            "links": [{"text":"A","href":"https://example.com/a","selector":"a:nth-of-type(1)"}],
+            "controls": [{"selector":"button:nth-of-type(1)","tag":"button","role":"","type":"","name":"","ariaLabel":"Go","placeholder":"","disabled":false,"readOnly":true,"checked":false}],
             "forms": [],
             "viewport": {"width":1280,"height":720},
             "truncated": false,
@@ -281,16 +309,24 @@ mod tests {
             action_surface_digest(&base).expect("base digest"),
             action_surface_digest(&control_changed).expect("control digest"),
         );
+        assert_ne!(
+            action_surface_digest(&base).expect("base digest"),
+            action_surface_digest(&readonly_changed).expect("readonly digest"),
+        );
     }
 
     #[test]
     fn page_local_action_selector_must_be_observed_and_sensitive_targets_fail_closed() {
         let observation = json!({
             "controls": [
-                {"selector":"button:nth-of-type(1)","tag":"button","type":"","disabled":false},
-                {"selector":"input:nth-of-type(1)","tag":"input","type":"text","disabled":false},
-                {"selector":"input:nth-of-type(2)","tag":"input","type":"password","disabled":false},
-                {"selector":"input:nth-of-type(3)","tag":"input","type":"text","disabled":true}
+                {"selector":"button:nth-of-type(1)","tag":"button","type":"","disabled":false,"readOnly":false},
+                {"selector":"input:nth-of-type(1)","tag":"input","type":"text","disabled":false,"readOnly":false},
+                {"selector":"input:nth-of-type(2)","tag":"input","type":"password","disabled":false,"readOnly":false},
+                {"selector":"input:nth-of-type(3)","tag":"input","type":"text","disabled":true,"readOnly":false},
+                {"selector":"input:nth-of-type(4)","tag":"input","type":"checkbox","disabled":false,"readOnly":false},
+                {"selector":"input:nth-of-type(5)","tag":"input","type":"text","disabled":false,"readOnly":true},
+                {"selector":"input:nth-of-type(6)","tag":"input","type":"file","disabled":false,"readOnly":false},
+                {"selector":"textarea:nth-of-type(1)","tag":"textarea","type":"","disabled":false,"readOnly":false}
             ]
         });
 
@@ -331,6 +367,51 @@ mod tests {
         )
         .unwrap_err()
         .contains("disabled"));
+
+        let checkbox_value = json!({
+            "kind":"type",
+            "selector":"input:nth-of-type(4)",
+            "text":"not-text"
+        });
+        assert!(validate_action_target(
+            checkbox_value.as_object().expect("checkbox object"),
+            &observation,
+        )
+        .unwrap_err()
+        .contains("supported text-entry"));
+
+        let readonly_value = json!({
+            "kind":"type",
+            "selector":"input:nth-of-type(5)",
+            "text":"blocked"
+        });
+        assert!(validate_action_target(
+            readonly_value.as_object().expect("readonly object"),
+            &observation,
+        )
+        .unwrap_err()
+        .contains("read-only"));
+
+        let file_click = json!({
+            "kind":"click",
+            "selector":"input:nth-of-type(6)"
+        });
+        assert!(validate_action_target(
+            file_click.as_object().expect("file click object"),
+            &observation,
+        )
+        .unwrap_err()
+        .contains("not connected"));
+
+        let textarea_type = json!({
+            "kind":"type",
+            "selector":"textarea:nth-of-type(1)",
+            "text":"allowed"
+        });
+        assert!(validate_action_target(
+            textarea_type.as_object().expect("textarea object"),
+            &observation,
+        ).is_ok());
     }
 
     #[test]
@@ -355,6 +436,9 @@ mod tests {
         assert!(script.contains("WeakMap"));
         assert!(script.contains("target_identity_drift"));
         assert!(script.contains("configurable:false"));
+        assert!(script.contains("supportedTextInput"));
+        assert!(script.contains("readOnly"));
+        assert!(script.contains("capability_not_connected"));
         let request = private_bridge_request_script(
             "__bridge_deadbeef",
             "secret",

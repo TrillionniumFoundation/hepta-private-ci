@@ -91,6 +91,7 @@ function verifyAnchors(paths) {
     "typedAction capability is not connected",
     "fn atomic_dom_action(",
     "target_identity_drift",
+    "capability_not_connected",
   ]);
   assertContains("apps/hepta-browser/servo-worker/src/worker_parts/20_runtime.rs", [
     '"dispatch_boundary"',
@@ -101,16 +102,31 @@ function verifyAnchors(paths) {
     "WeakMap",
     "configurable:false",
     "target_identity_drift",
+    "supportedTextInput",
+    "readOnly",
+    "capability_not_connected",
+  ]);
+  assertContains("apps/hepta-browser/servo-worker/src/worker_parts/40_observation_helpers.rs", [
+    'a.hasAttribute("download")',
+    'el.matches("a[download]")',
+    'type==="password"||type==="file"',
+    "readOnly:Boolean(el.readOnly)",
   ]);
   assertContains("apps/hepta-browser/servo-worker/src/worker_parts/50_validation_tests.rs", [
     "private_action_handles_detect_identical_shape_node_replacement",
     "private_bridge_uses_hidden_secret_bound_native_primitive",
+    "file chooser capability is not connected",
+    "supported text-entry control",
+    "type action target is read-only",
   ]);
   assertContains("apps/hepta-browser/scripts/real-worker-smoke.js", [
     "privateAtomicActionBridge",
     "pageRealmMonkeypatchBypassed",
     "identicalShapeNodeReplacementRejected",
     "worker_rejected_before_dispatch",
+    "nonTextTypeRejectedBeforeDispatch",
+    "readOnlyTypeRejectedBeforeDispatch",
+    "fileChooserAndDownloadExcluded",
   ]);
 
   assertContains("codex-rs/hepta-agentd/src/bin/hepta-agentd-browser-service.rs", ["open_browser_servo_port_from_file", "while let Some(body)"]);
@@ -151,6 +167,7 @@ function buildRegistry() {
       { capability: "semantic_observation", state: "implemented_bounded" },
       { capability: "worker_effect_admission", state: "implemented" },
       { capability: "atomic_dom_target_identity", state: "implemented_private_handle_bridge" },
+      { capability: "generic_dom_action_capability_fencing", state: "implemented_fail_closed" },
       { capability: "grant_scoped_egress", state: "implemented_linux_source" },
       { capability: "persisted_terminal_reconciliation", state: "implemented_signed_observer" },
       ...["credential", "upload", "download"].map(capability => ({ capability, state: "fail_closed_not_connected" })),

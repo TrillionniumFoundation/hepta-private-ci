@@ -136,6 +136,7 @@ export function redactSemanticObservation(value) {
           512,
         ),
         disabled: control.disabled === true,
+        readOnly: control.readOnly === true,
         checked: control.checked === true,
       };
     }),

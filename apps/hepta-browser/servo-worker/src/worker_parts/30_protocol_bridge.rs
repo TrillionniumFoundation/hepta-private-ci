@@ -168,6 +168,7 @@ const querySelector=Document.prototype.querySelector;
 const getClientRects=Element.prototype.getClientRects;
 const matches=Element.prototype.matches;
 const getAttribute=Element.prototype.getAttribute;
+const hasAttribute=Element.prototype.hasAttribute;
 const tagNameGetter=getOwnPropertyDescriptor(Element.prototype,"tagName").get;
 const getComputedStyleNative=window.getComputedStyle;
 const getPropertyValue=CSSStyleDeclaration.prototype.getPropertyValue;
@@ -176,6 +177,8 @@ const focus=HTMLElement.prototype.focus;
 const dispatchEvent=EventTarget.prototype.dispatchEvent;
 const inputValueSetter=getOwnPropertyDescriptor(HTMLInputElement.prototype,"value").set;
 const textareaValueSetter=getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,"value").set;
+const inputReadOnlyGetter=getOwnPropertyDescriptor(HTMLInputElement.prototype,"readOnly").get;
+const textareaReadOnlyGetter=getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,"readOnly").get;
 const NativeEvent=window.Event;
 const weakGet=WeakMap.prototype.get;
 const weakSet=WeakMap.prototype.set;
@@ -195,6 +198,13 @@ const visible=(element)=>{
 const disabled=(element)=>call(matches,element,[":disabled"]);
 const tag=(element)=>text(call(tagNameGetter,element,[])).toLowerCase();
 const attribute=(element,name)=>text(call(getAttribute,element,[name])).toLowerCase();
+const has=(element,name)=>call(hasAttribute,element,[name]);
+const supportedTextInput=(element,elementTag,inputType)=>{
+  if(elementTag==="textarea") return !call(textareaReadOnlyGetter,element,[]);
+  if(elementTag!=="input") return false;
+  if(call(inputReadOnlyGetter,element,[])) return false;
+  return inputType===""||inputType==="text"||inputType==="search"||inputType==="email"||inputType==="url"||inputType==="tel";
+};
 const tokenFor=(element)=>{
   let token=call(weakGet,handles,[element]);
   if(token===undefined){
@@ -226,15 +236,16 @@ const bridge=(candidateSecret,request)=>{
     if(!element) return fail("target_missing");
     if(tokenFor(element)!==request.handle) return fail("target_identity_drift");
     if(!visible(element)||disabled(element)) return fail("target_not_actionable");
+    const elementTag=tag(element);
+    const inputType=attribute(element,"type");
     if(request.action==="click"){
+      if((elementTag==="input"&&inputType==="file")||(elementTag==="a"&&has(element,"download"))) return fail("capability_not_connected");
       call(click,element,[]);
     }else if(request.action==="focus"){
       call(focus,element,[]);
     }else if(request.action==="type"){
       if(typeof request.text!=="string") return fail("invalid_type_text");
-      const elementTag=tag(element);
-      const inputType=attribute(element,"type");
-      if((elementTag!=="input"&&elementTag!=="textarea")||inputType==="password") return fail("target_type_not_allowed");
+      if(!supportedTextInput(element,elementTag,inputType)) return fail("target_type_not_allowed");
       call(focus,element,[]);
       if(elementTag==="textarea") call(textareaValueSetter,element,[request.text]);
       else call(inputValueSetter,element,[request.text]);

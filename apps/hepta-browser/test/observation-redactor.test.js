@@ -40,6 +40,7 @@ function semanticObservation() {
         ariaLabel: `secret=${TOKEN}`,
         placeholder: `Bearer ${TOKEN}`,
         disabled: false,
+        readOnly: true,
         checked: false,
       },
     ],
@@ -81,6 +82,7 @@ test("semantic redaction preserves stable action handles and page structure", ()
   assert.equal(redacted.schema, original.schema);
   assert.equal(redacted.links[0].selector, original.links[0].selector);
   assert.equal(redacted.controls[0].selector, original.controls[0].selector);
+  assert.equal(redacted.controls[0].readOnly, true);
   assert.equal(redacted.forms[0].selector, original.forms[0].selector);
   assert.deepEqual(redacted.viewport, original.viewport);
   assert.equal(redacted.truncated, false);
@@ -126,6 +128,7 @@ test("driver redacts only the upper-layer projection and rebinds its digest", as
   assert.equal(observed.documentDigest, D1);
   assert.equal(observed.pageGeneration, 7);
   assert.equal(JSON.stringify(observed.semanticObservation).includes(TOKEN), false);
+  assert.equal(observed.semanticObservation.controls[0].readOnly, true);
   assert.equal(
     observed.semanticDigest,
     canonicalDigest(observed.semanticObservation),

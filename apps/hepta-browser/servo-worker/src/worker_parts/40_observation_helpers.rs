@@ -85,7 +85,7 @@ const visible=(el)=>{
 };
 const links=[];
 for(const a of Array.from(document.querySelectorAll("a[href]")).slice(0,128)){
-  if(!visible(a)) continue;
+  if(!visible(a)||a.hasAttribute("download")) continue;
   const selector=selectorFor(a);
   if(!selector) continue;
   try{
@@ -97,11 +97,11 @@ for(const a of Array.from(document.querySelectorAll("a[href]")).slice(0,128)){
 const controls=[];
 const nodes=document.querySelectorAll("a[href],button,input:not([type=password]),textarea,select,[role=button],[tabindex]");
 for(const el of Array.from(nodes).slice(0,256)){
-  if(!visible(el)) continue;
+  if(!visible(el)||el.matches("a[download]")) continue;
   const selector=selectorFor(el);
   if(!selector) continue;
   const type=clean(el.getAttribute("type"),64).toLowerCase();
-  if(type==="password") continue;
+  if(type==="password"||type==="file") continue;
   controls.push({
     selector,
     tag:clean(el.tagName,32).toLowerCase(),
@@ -111,6 +111,7 @@ for(const el of Array.from(nodes).slice(0,256)){
     ariaLabel:clean(el.getAttribute("aria-label"),512),
     placeholder:clean(el.getAttribute("placeholder"),512),
     disabled:Boolean(el.disabled),
+    readOnly:Boolean(el.readOnly),
     checked:Boolean(el.checked)
   });
 }

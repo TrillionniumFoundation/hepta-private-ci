@@ -268,6 +268,7 @@ impl Browser {
                 | "target_not_actionable"
                 | "target_type_not_allowed"
                 | "target_missing"
+                | "capability_not_connected"
         ) {
             return Ok(failed(kind, error));
         }

@@ -85,6 +85,33 @@ async function settle(host, input, receipt) {
   return current;
 }
 
+async function requirePreDispatchRejection({ host, page, typedAction, origin, suffix }) {
+  const effectGrant = grant(
+    typedAction.kind,
+    browserActionDigest(typedAction),
+    origin,
+    suffix,
+  );
+  await host.admitEffectGrant({
+    profileId: "profile.smoke",
+    principalId: "principal.smoke",
+    generation: 1,
+    effectGrant,
+  });
+  const input = operation({
+    operationId: `operation.smoke.${suffix}`,
+    pageGeneration: page.pageGeneration,
+    typedAction,
+    origin,
+    effectGrant,
+  });
+  const receipt = await host.navigateOrAct(input);
+  assert.equal(receipt.terminalObserved, true);
+  assert.equal(receipt.status, "failed");
+  assert.equal(receipt.observationReason, "worker_rejected_before_dispatch");
+  return receipt;
+}
+
 const app = await listen((request, response) => {
   if (request.url !== "/atomic-target") {
     response.writeHead(404);
@@ -97,8 +124,13 @@ const app = await listen((request, response) => {
 <body>
 <button aria-label="Native click target" onclick="document.getElementById('native-result').textContent='original-fired'">Native</button>
 <button id="replacement-target" aria-label="Replacement target" onclick="document.getElementById('replacement-result').textContent='old-node-fired'">Replace me</button>
+<input aria-label="Readonly text target" type="text" value="locked" readonly oninput="document.getElementById('policy-result').textContent='readonly-mutated'">
+<input aria-label="Checkbox type target" type="checkbox" onchange="document.getElementById('policy-result').textContent='checkbox-mutated'">
+<input id="file-target" aria-label="File chooser target" type="file" onchange="document.getElementById('policy-result').textContent='file-mutated'">
+<a id="download-target" aria-label="Download target" href="/download.bin" download onclick="document.getElementById('policy-result').textContent='download-fired'">Download</a>
 <div id="native-result">native-pending</div>
 <div id="replacement-result">replacement-pending</div>
+<div id="policy-result">policy-pending</div>
 <div id="phase">initial</div>
 <script>
 setTimeout(() => {
@@ -225,6 +257,69 @@ try {
   );
   assert.ok(replacementTarget?.selector, "replacement target must be observed");
 
+  const readonlyTarget = page.semanticObservation.controls.find(
+    (control) => control.ariaLabel === "Readonly text target",
+  );
+  const checkboxTarget = page.semanticObservation.controls.find(
+    (control) => control.ariaLabel === "Checkbox type target",
+  );
+  assert.ok(readonlyTarget?.selector, "readonly text target must be observed");
+  assert.equal(readonlyTarget.readOnly, true);
+  assert.ok(checkboxTarget?.selector, "checkbox target must be observed");
+  assert.equal(
+    page.semanticObservation.controls.some(
+      (control) => control.ariaLabel === "File chooser target",
+    ),
+    false,
+  );
+  assert.equal(
+    page.semanticObservation.links.some((link) => link.text === "Download"),
+    false,
+  );
+
+  await requirePreDispatchRejection({
+    host,
+    page,
+    typedAction: {
+      kind: "type",
+      selector: readonlyTarget.selector,
+      text: "must-not-write",
+    },
+    origin,
+    suffix: "readonly-type",
+  });
+  await requirePreDispatchRejection({
+    host,
+    page,
+    typedAction: {
+      kind: "type",
+      selector: checkboxTarget.selector,
+      text: "must-not-coerce",
+    },
+    origin,
+    suffix: "checkbox-type",
+  });
+  await requirePreDispatchRejection({
+    host,
+    page,
+    typedAction: {
+      kind: "click",
+      selector: "html:nth-of-type(1)>body:nth-of-type(1)>input:nth-of-type(3)",
+    },
+    origin,
+    suffix: "file-click",
+  });
+  await requirePreDispatchRejection({
+    host,
+    page,
+    typedAction: {
+      kind: "click",
+      selector: "html:nth-of-type(1)>body:nth-of-type(1)>a:nth-of-type(1)",
+    },
+    origin,
+    suffix: "download-click",
+  });
+
   await new Promise((resolve) => setTimeout(resolve, 12_500));
   const replacementAction = {
     kind: "click",
@@ -264,8 +359,13 @@ try {
     observationBudget: 32_768,
   });
   assert.match(finalPage.semanticObservation.visibleText, /node-replaced/);
+  assert.match(finalPage.semanticObservation.visibleText, /policy-pending/);
   assert.doesNotMatch(finalPage.semanticObservation.visibleText, /replacement-fired/);
   assert.doesNotMatch(finalPage.semanticObservation.visibleText, /old-node-fired/);
+  assert.doesNotMatch(finalPage.semanticObservation.visibleText, /readonly-mutated/);
+  assert.doesNotMatch(finalPage.semanticObservation.visibleText, /checkbox-mutated/);
+  assert.doesNotMatch(finalPage.semanticObservation.visibleText, /file-mutated/);
+  assert.doesNotMatch(finalPage.semanticObservation.visibleText, /download-fired/);
 
   const stopped = await host.closeProfile({
     profileId: "profile.smoke",
@@ -284,6 +384,9 @@ try {
       privateAtomicActionBridge: true,
       pageRealmMonkeypatchBypassed: true,
       identicalShapeNodeReplacementRejected: true,
+      nonTextTypeRejectedBeforeDispatch: true,
+      readOnlyTypeRejectedBeforeDispatch: true,
+      fileChooserAndDownloadExcluded: true,
     }) + "\n",
   );
 } finally {
