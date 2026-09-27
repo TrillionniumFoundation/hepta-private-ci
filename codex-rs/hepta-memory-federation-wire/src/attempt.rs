@@ -8,6 +8,7 @@ use codex_hepta_types::StableId;
 use crate::protocol::FederationCancelAckMessageV1;
 use crate::protocol::FederationCancelMessageV1;
 use crate::protocol::FederationCancellationDispositionV1;
+use crate::protocol::FederationCancellationReasonV1;
 
 pub const MAX_FEDERATION_ATTEMPTS: usize = 16_384;
 
@@ -29,12 +30,20 @@ impl AttemptIdentity {
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum AttemptState {
     Pending,
-    Cancelled { cancellation_id: StableId },
-    Terminal { terminal_digest: Digest32 },
+    Cancelled {
+        cancellation_id: StableId,
+        reason: FederationCancellationReasonV1,
+        observed_unix_ms: u64,
+    },
+    Terminal {
+        terminal_digest: Digest32,
+        observed_unix_ms: u64,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct AttemptEntry {
+    began_unix_ms: u64,
     expires_unix_ms: u64,
     state: AttemptState,
 }
@@ -67,6 +76,9 @@ impl FederationAttemptRegistryV1 {
         now_unix_ms: u64,
     ) -> Result<(), AttemptRegistryError> {
         require_digest(query_binding_digest)?;
+        if now_unix_ms == 0 {
+            return Err(AttemptRegistryError::ZeroObservationTime);
+        }
         if expires_unix_ms <= now_unix_ms {
             return Err(AttemptRegistryError::Expired);
         }
@@ -81,6 +93,7 @@ impl FederationAttemptRegistryV1 {
         self.attempts.insert(
             identity,
             AttemptEntry {
+                began_unix_ms: now_unix_ms,
                 expires_unix_ms,
                 state: AttemptState::Pending,
             },
@@ -97,23 +110,33 @@ impl FederationAttemptRegistryV1 {
     ) -> Result<(), AttemptRegistryError> {
         require_digest(query_binding_digest)?;
         require_digest(terminal_digest)?;
+        if observed_unix_ms == 0 {
+            return Err(AttemptRegistryError::ZeroObservationTime);
+        }
         let identity = AttemptIdentity::new(query_id, query_binding_digest);
         let entry = self
             .attempts
             .get_mut(&identity)
             .ok_or(AttemptRegistryError::UnknownAttempt)?;
-        if observed_unix_ms == 0 || observed_unix_ms >= entry.expires_unix_ms {
+        require_monotonic_time(entry.began_unix_ms, observed_unix_ms)?;
+        if observed_unix_ms >= entry.expires_unix_ms {
             return Err(AttemptRegistryError::Expired);
         }
         match &entry.state {
             AttemptState::Pending => {
-                entry.state = AttemptState::Terminal { terminal_digest };
+                entry.state = AttemptState::Terminal {
+                    terminal_digest,
+                    observed_unix_ms,
+                };
                 Ok(())
             }
             AttemptState::Cancelled { .. } => Err(AttemptRegistryError::Cancelled),
             AttemptState::Terminal {
                 terminal_digest: current,
-            } if current == &terminal_digest => Ok(()),
+                observed_unix_ms: current_observed,
+            } if current == &terminal_digest => {
+                require_monotonic_time(*current_observed, observed_unix_ms)
+            }
             AttemptState::Terminal { .. } => Err(AttemptRegistryError::ConflictingTerminal),
         }
     }
@@ -128,32 +151,52 @@ impl FederationAttemptRegistryV1 {
             return Err(AttemptRegistryError::ZeroObservationTime);
         }
         let identity = AttemptIdentity::new(&request.query_id, request.query_binding_digest);
-        if self
-            .attempts
-            .get(&identity)
-            .is_some_and(|entry| observed_unix_ms >= entry.expires_unix_ms)
-        {
-            self.attempts.remove(&identity);
+        if let Some(entry) = self.attempts.get(&identity) {
+            require_monotonic_time(entry.began_unix_ms, observed_unix_ms)?;
+            if observed_unix_ms >= entry.expires_unix_ms {
+                self.attempts.remove(&identity);
+            }
         }
-        let disposition = match self.attempts.get_mut(&identity) {
-            None => FederationCancellationDispositionV1::UnknownAttempt,
+        let (disposition, acknowledged_unix_ms) = match self.attempts.get_mut(&identity) {
+            None => (
+                FederationCancellationDispositionV1::UnknownAttempt,
+                observed_unix_ms,
+            ),
             Some(entry) => match &entry.state {
                 AttemptState::Pending => {
                     entry.state = AttemptState::Cancelled {
                         cancellation_id: request.cancellation_id.clone(),
+                        reason: request.reason,
+                        observed_unix_ms,
                     };
-                    FederationCancellationDispositionV1::ObservedBeforeTerminal
+                    (
+                        FederationCancellationDispositionV1::ObservedBeforeTerminal,
+                        observed_unix_ms,
+                    )
                 }
-                AttemptState::Cancelled { cancellation_id }
-                    if cancellation_id == &request.cancellation_id =>
-                {
-                    FederationCancellationDispositionV1::ObservedBeforeTerminal
+                AttemptState::Cancelled {
+                    cancellation_id,
+                    reason,
+                    observed_unix_ms: first_observed,
+                } if cancellation_id == &request.cancellation_id && reason == &request.reason => {
+                    require_monotonic_time(*first_observed, observed_unix_ms)?;
+                    (
+                        FederationCancellationDispositionV1::ObservedBeforeTerminal,
+                        *first_observed,
+                    )
                 }
                 AttemptState::Cancelled { .. } => {
                     return Err(AttemptRegistryError::ConflictingCancellation);
                 }
-                AttemptState::Terminal { .. } => {
-                    FederationCancellationDispositionV1::TerminalAlreadyObserved
+                AttemptState::Terminal {
+                    observed_unix_ms: terminal_observed,
+                    ..
+                } => {
+                    require_monotonic_time(*terminal_observed, observed_unix_ms)?;
+                    (
+                        FederationCancellationDispositionV1::TerminalAlreadyObserved,
+                        observed_unix_ms,
+                    )
                 }
             },
         };
@@ -162,7 +205,7 @@ impl FederationAttemptRegistryV1 {
             query_binding_digest: request.query_binding_digest,
             cancellation_id: request.cancellation_id.clone(),
             disposition,
-            observed_unix_ms,
+            observed_unix_ms: acknowledged_unix_ms,
         })
     }
 
@@ -198,11 +241,22 @@ fn require_digest(digest: Digest32) -> Result<(), AttemptRegistryError> {
     Ok(())
 }
 
+fn require_monotonic_time(
+    earlier_unix_ms: u64,
+    observed_unix_ms: u64,
+) -> Result<(), AttemptRegistryError> {
+    if observed_unix_ms < earlier_unix_ms {
+        return Err(AttemptRegistryError::ClockRegression);
+    }
+    Ok(())
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum AttemptRegistryError {
     InvalidCapacity(usize),
     EmptyDigest,
     ZeroObservationTime,
+    ClockRegression,
     Expired,
     DuplicateAttempt,
     UnknownAttempt,
@@ -220,6 +274,9 @@ impl fmt::Display for AttemptRegistryError {
             Self::ZeroObservationTime => {
                 formatter.write_str("attempt observation time cannot be zero")
             }
+            Self::ClockRegression => {
+                formatter.write_str("attempt observation time regressed")
+            }
             Self::Expired => formatter.write_str("attempt is expired"),
             Self::DuplicateAttempt => formatter.write_str("attempt identity already exists"),
             Self::UnknownAttempt => formatter.write_str("attempt identity is unknown"),
@@ -228,7 +285,7 @@ impl fmt::Display for AttemptRegistryError {
                 formatter.write_str("attempt already has a different terminal result")
             }
             Self::ConflictingCancellation => {
-                formatter.write_str("attempt already has a different cancellation identity")
+                formatter.write_str("attempt already has a different cancellation identity or reason")
             }
             Self::CapacityExhausted => {
                 formatter.write_str("attempt registry is full with live entries")
