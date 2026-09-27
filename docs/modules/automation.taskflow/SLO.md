@@ -9,6 +9,7 @@ This schema-v19 SLO applies to the durable V1 scheduler, recovery lanes, externa
 | Scheduler lease | 30 s | expiry permits only the reviewed reclaim path; never proves provider absence |
 | Writer-epoch fence propagation | 1 s | mark host fenced and stop admission |
 | Distinct recovery rows per cycle | 8 | continue next cycle; each selected row is contacted at most once |
+| Terminal-observation liveness | at least 1 slot when both recovery frontiers are non-empty and budget > 1 | preserve unknown priority but never permit sustained unknown backlog to starve admitted terminal observation |
 | New admissions per cycle | 16 | continue next cycle; preserve scheduled-age ordering |
 | Provider calls in flight | 1 | apply backpressure rather than opening parallel authority paths |
 | Consecutive proven pre-admission failures | 3 | fail-stop automation after bounded exponential backoff |
@@ -29,6 +30,9 @@ provider response, turn terminal observation and TaskFlow reconciliation.
 - A failed recovery attempt admits no new work in the same cycle.
 - Occurrence-local conflicts are isolated per cycle; repeated conflict reaches
   fail-stop rather than spinning forever.
+- With a one-item recovery budget, unknown dispatch retains priority. With a
+  larger budget and both frontiers populated, one terminal-observation slot is
+  reserved and all remaining capacity continues to favor unknown dispatch.
 - New-admission backlog age is measured from canonical `scheduled_for_ms`.
   Unknown-dispatch recovery age is measured from `observed_at_ms`; admitted turn
   observation age is measured from the durable occurrence `updated_at_ms`.
