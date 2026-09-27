@@ -12,13 +12,13 @@ permissions:
 
 concurrency:
   group: intelligence-control-source-finalizer
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   finalize:
-    name: format and refresh lockfile
+    name: close physical prompt binding and mechanical gates
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - name: Check out exact trigger
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -27,14 +27,94 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Bind expected predecessor
+      - name: Bind exact predecessor
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "f083bdc792a0d11f7f8b885c0c8f4889ae5d32b6"
+          test "$(git rev-parse HEAD^)" = "8cd55b0763ea142eef51744facd3cd71471ab2f6"
           test "$(git branch --show-current)" = "codex/intelligence-control-product-closure-20260926"
 
-      - name: Format sources and refresh lockfile
+      - name: Bind the actual prompt bytes into intelligence handoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one replacement, found {count}")
+              target.write_text(text.replace(old, new))
+
+          replace(
+              "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+              """    pub context_digest: String,\n    pub envelope_digest: String,\n}""",
+              """    pub context_digest: String,\n    pub envelope_digest: String,\n    /// SHA-256 of the exact UTF-8 prompt bytes authorized by the host.\n    pub prompt_digest: String,\n}""",
+          )
+          replace(
+              "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+              """        if context_query\n            .as_ref()\n            .is_some_and(|query| query.is_empty() || query.len() > 2048)\n        {\n            return Err(\"context query must contain 1..2048 bytes\".into());\n        }\n        let request = NativeRequest {""",
+              """        if context_query\n            .as_ref()\n            .is_some_and(|query| query.is_empty() || query.len() > 2048)\n        {\n            return Err(\"context query must contain 1..2048 bytes\".into());\n        }\n        if let Some(binding) = intelligence {\n            let expected: Digest32 = binding.prompt_digest.parse()?;\n            if expected.is_zero() || expected != Digest32::of_bytes(prompt.as_bytes()) {\n                return Err(\"physical prompt bytes do not match the intelligence handoff\".into());\n            }\n        }\n        let request = NativeRequest {""",
+          )
+          replace(
+              "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+              """            &binding.context_digest,\n            &binding.envelope_digest,\n        ))?,""",
+              """            &binding.context_digest,\n            &binding.envelope_digest,\n            &binding.prompt_digest,\n        ))?,""",
+          )
+
+          replace(
+              "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+              """        || binding.context_digest.is_empty()\n        || binding.envelope_digest.is_empty()\n    {""",
+              """        || binding.context_digest.is_empty()\n        || binding.envelope_digest.is_empty()\n        || binding.prompt_digest.is_empty()\n    {""",
+          )
+          replace(
+              "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+              """    let context: Digest32 = binding.context_digest.parse()?;\n    let envelope: Digest32 = binding.envelope_digest.parse()?;\n    if context.is_zero() || envelope.is_zero() {\n        return Err(\"zero intelligence binding\".into());\n    }""",
+              """    let context: Digest32 = binding.context_digest.parse()?;\n    let envelope: Digest32 = binding.envelope_digest.parse()?;\n    let prompt: Digest32 = binding.prompt_digest.parse()?;\n    if context.is_zero() || envelope.is_zero() || prompt.is_zero() {\n        return Err(\"zero intelligence binding\".into());\n    }""",
+          )
+
+          replace(
+              "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+              """    let mut intelligence_context_digest = None;\n    let mut intelligence_envelope_digest = None;""",
+              """    let mut intelligence_context_digest = None;\n    let mut intelligence_envelope_digest = None;\n    let mut intelligence_prompt_digest = None;""",
+          )
+          replace(
+              "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+              """[--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX]""",
+              """[--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX --intelligence-prompt-digest HEX]""",
+          )
+          replace(
+              "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+              """            \"--intelligence-envelope-digest\" => intelligence_envelope_digest = Some(value),\n            \"--timeout-ms\"""",
+              """            \"--intelligence-envelope-digest\" => intelligence_envelope_digest = Some(value),\n            \"--intelligence-prompt-digest\" => intelligence_prompt_digest = Some(value),\n            \"--timeout-ms\"""",
+          )
+          replace(
+              "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+              """        intelligence_context_digest,\n        intelligence_envelope_digest,\n    ) {\n        (None, None, None, None) => None,\n        (Some(run_id), Some(expected_revision), Some(context_digest), Some(envelope_digest)) => {\n            Some(NativeIntelligenceRunBinding {\n                run_id,\n                expected_revision,\n                context_digest,\n                envelope_digest,\n            })\n        }\n        _ => {\n            return Err(\"all four --intelligence-* arguments must be supplied together\".into());\n        }""",
+              """        intelligence_context_digest,\n        intelligence_envelope_digest,\n        intelligence_prompt_digest,\n    ) {\n        (None, None, None, None, None) => None,\n        (\n            Some(run_id),\n            Some(expected_revision),\n            Some(context_digest),\n            Some(envelope_digest),\n            Some(prompt_digest),\n        ) => Some(NativeIntelligenceRunBinding {\n            run_id,\n            expected_revision,\n            context_digest,\n            envelope_digest,\n            prompt_digest,\n        }),\n        _ => {\n            return Err(\"all five --intelligence-* arguments must be supplied together\".into());\n        }""",
+          )
+
+          replace(
+              "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+              """        context_digest: \"a\".repeat(64),\n        envelope_digest: \"b\".repeat(64),\n    };""",
+              """        context_digest: \"a\".repeat(64),\n        envelope_digest: \"b\".repeat(64),\n        prompt_digest: digest(b\"prompt\"),\n    };""",
+          )
+          replace(
+              "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+              """    for field in 0..4 {""",
+              """    for field in 0..5 {""",
+          )
+          replace(
+              "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+              """            2 => changed.context_digest = \"c\".repeat(64),\n            _ => changed.envelope_digest = \"d\".repeat(64),""",
+              """            2 => changed.context_digest = \"c\".repeat(64),\n            3 => changed.envelope_digest = \"d\".repeat(64),\n            _ => changed.prompt_digest = digest(b\"other prompt\"),""",
+          )
+          PY
+
+      - name: Format and refresh the exact lockfile
         working-directory: codex-rs
         shell: bash
         run: |
@@ -43,12 +123,25 @@ jobs:
           cargo generate-lockfile
           cargo metadata --locked --no-deps --format-version 1 >/dev/null
 
+      - name: Verify the changed physical boundary
+        working-directory: codex-rs
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_BUILD_JOBS: "2"
+          CARGO_PROFILE_TEST_DEBUG: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-infer-worker-host intelligence_handoff_is_committed_to_native_admission_identity
+          cargo check --locked -p codex-hepta-infer-worker-host --all-targets
+
       - name: Restrict mutation and self-remove
         shell: bash
         run: |
           set -euo pipefail
           git rm .github/workflows/hepta-intelligence-source-finalizer.yml
-          allowed='^(\.github/workflows/hepta-intelligence-source-finalizer\.yml|codex-rs/Cargo\.lock|codex-rs/hepta-agentd/src/intelligence_(conformance_tests|ingress|learning|learning_payload|learning_runtime|learning_tests|product|product_runner)\.rs|codex-rs/hepta-intelligence/src/canonical\.rs)$'
+          allowed='^(\.github/workflows/hepta-intelligence-source-finalizer\.yml|codex-rs/Cargo\.lock|codex-rs/hepta-agentd/src/intelligence_.*\.rs|codex-rs/hepta-intelligence/(src|tests)/.*\.rs|codex-rs/hepta-operations/src/.*\.rs|codex-rs/hepta-infer-worker-host/src/(native_app_server|native_run_control|native_run_control_tests)\.rs|codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker\.rs)$'
           unexpected="$(git status --short | cut -c4- | grep -Ev "$allowed" || true)"
           if [ -n "$unexpected" ]; then
             printf 'unexpected changed paths:\n%s\n' "$unexpected" >&2
@@ -56,12 +149,12 @@ jobs:
           fi
           test -n "$(git status --short)"
 
-      - name: Commit bounded mechanical closure
+      - name: Commit verified source closure
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "Hepta Intelligence Source Finalizer"
           git config user.email "hepta-intelligence-source-finalizer@users.noreply.github.com"
           git add -A
-          git commit -m "chore(intelligence): format sources and refresh lockfile"
+          git commit -m "fix(intelligence): bind physical prompt before App Server send"
           git push origin HEAD:codex/intelligence-control-product-closure-20260926
