@@ -1103,7 +1103,7 @@ fn frontier_for_state(state: &State) -> FinalUseFrontier {
     hash.update(b"committed\0");
     hash_revocation_head(&mut hash, &state.head);
     if let Some(pending) = &state.pending_revocations {
-        hash.update(b"pending\1");
+        hash.update(b"pending\x01");
         hash_revocation_head(&mut hash, pending);
     } else {
         hash.update(b"pending\0");

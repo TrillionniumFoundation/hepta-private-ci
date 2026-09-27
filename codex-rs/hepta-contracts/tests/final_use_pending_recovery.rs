@@ -85,11 +85,7 @@ mod unix {
         }
     }
 
-    fn signed_grant(
-        issuer: &SigningKey,
-        grant_id: &str,
-        nonce: [u8; 32],
-    ) -> SignedFinalUseGrant {
+    fn signed_grant(issuer: &SigningKey, grant_id: &str, nonce: [u8; 32]) -> SignedFinalUseGrant {
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "security-owner".into(),
@@ -152,7 +148,10 @@ mod unix {
     fn begin_active_dispatch(
         authority: &FinalUseAuthority,
         grant: &SignedFinalUseGrant,
-    ) -> (mpsc::Sender<()>, thread::JoinHandle<Result<(), FinalUseError>>) {
+    ) -> (
+        mpsc::Sender<()>,
+        thread::JoinHandle<Result<(), FinalUseError>>,
+    ) {
         let token = authority.claim(grant, &grant.grant.binding).unwrap();
         let worker_authority = authority.clone();
         let worker_binding = grant.grant.binding.clone();
@@ -171,8 +170,7 @@ mod unix {
     #[test]
     fn pending_revocation_survives_restart_and_commits_exactly() {
         let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
-            .unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         let issuer = SigningKey::from_bytes(&[47; 32]);
         let initial = initial_head();
         let frontier = Arc::new(MemoryFrontier(Mutex::new(
@@ -196,12 +194,7 @@ mod unix {
         worker.join().unwrap().unwrap();
         drop(authority);
 
-        let recovered = recover(
-            directory.path(),
-            &issuer,
-            revoked.clone(),
-            frontier.clone(),
-        );
+        let recovered = recover(directory.path(), &issuer, revoked.clone(), frontier.clone());
         assert_eq!(
             recovered.claim(&later, &later.grant.binding).unwrap_err(),
             FinalUseError::RevocationPending
@@ -217,8 +210,7 @@ mod unix {
     #[test]
     fn recovery_closes_both_frontier_first_crash_windows() {
         let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
-            .unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         let issuer = SigningKey::from_bytes(&[51; 32]);
         let initial = initial_head();
         let frontier = Arc::new(MemoryFrontier(Mutex::new(
@@ -230,25 +222,19 @@ mod unix {
         let revoked = revoked_head(&grant.grant.grant_id);
 
         let (release, worker) = begin_active_dispatch(&authority, &grant);
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o500))
-            .unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o500)).unwrap();
         assert_eq!(
             authority.update_revocations(revoked.clone()),
             Err(FinalUseError::Unavailable),
             "the external pending frontier advances before a failed local snapshot"
         );
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
-            .unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         release.send(()).unwrap();
         worker.join().unwrap().unwrap();
         drop(authority);
 
-        let repaired_pending = recover(
-            directory.path(),
-            &issuer,
-            revoked.clone(),
-            frontier.clone(),
-        );
+        let repaired_pending =
+            recover(directory.path(), &issuer, revoked.clone(), frontier.clone());
         assert_eq!(
             repaired_pending
                 .claim(&later, &later.grant.binding)
@@ -256,23 +242,16 @@ mod unix {
             FinalUseError::RevocationPending
         );
 
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o500))
-            .unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o500)).unwrap();
         assert_eq!(
             repaired_pending.update_revocations(revoked.clone()),
             Err(FinalUseError::Unavailable),
             "the external committed frontier advances before a failed local snapshot"
         );
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
-            .unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         drop(repaired_pending);
 
-        let repaired_commit = recover(
-            directory.path(),
-            &issuer,
-            revoked.clone(),
-            frontier,
-        );
+        let repaired_commit = recover(directory.path(), &issuer, revoked.clone(), frontier);
         assert_eq!(repaired_commit.revocation_head().unwrap(), revoked);
         assert_eq!(
             repaired_commit
