@@ -1,4 +1,4 @@
-name: Inference cross-owner map preparation (no ref writes)
+name: Inference cross-owner map preparation v1 (no ref writes)
 
 on:
   push:
@@ -37,7 +37,6 @@ jobs:
           import json
           import os
           from pathlib import Path
-          import subprocess
           import sys
           import urllib.request
           root = Path.cwd()
