@@ -82,10 +82,60 @@ impl FleetAuthorityPort {
         Ok(witness)
     }
 
+    pub fn verify_renew_witness(
+        &self,
+        lease_id: &str,
+        expected_lease_revision: u64,
+        grant: &AllocationGrant,
+        expires_at_ms: u64,
+    ) -> Result<VerifiedUseTokenWitnessV1, FleetAuthorityError> {
+        let binding = lease_mutation_binding(grant, "fleet.renew", expires_at_ms, false)?;
+        self.verify_binding_witness(lease_id, expected_lease_revision, &binding)
+    }
+
+    pub fn verify_revoke_witness(
+        &self,
+        lease_id: &str,
+        expected_lease_revision: u64,
+        grant: &AllocationGrant,
+    ) -> Result<VerifiedUseTokenWitnessV1, FleetAuthorityError> {
+        let binding = lease_mutation_binding(grant, "fleet.revoke", grant.expires_at_ms, true)?;
+        self.verify_binding_witness(lease_id, expected_lease_revision, &binding)
+    }
+
     pub fn binding_for_issue(
         grant: &AllocationGrant,
     ) -> Result<AuthorityLeaseBinding, FleetAuthorityError> {
         allocation_binding(grant)
+    }
+
+    pub fn binding_for_renew(
+        grant: &AllocationGrant,
+        expires_at_ms: u64,
+    ) -> Result<AuthorityLeaseBinding, FleetAuthorityError> {
+        lease_mutation_binding(grant, "fleet.renew", expires_at_ms, false)
+    }
+
+    pub fn binding_for_revoke(
+        grant: &AllocationGrant,
+    ) -> Result<AuthorityLeaseBinding, FleetAuthorityError> {
+        lease_mutation_binding(grant, "fleet.revoke", grant.expires_at_ms, true)
+    }
+
+    fn verify_binding_witness(
+        &self,
+        lease_id: &str,
+        expected_lease_revision: u64,
+        binding: &AuthorityLeaseBinding,
+    ) -> Result<VerifiedUseTokenWitnessV1, FleetAuthorityError> {
+        let token = self
+            .verifier
+            .verify_use(lease_id, expected_lease_revision, binding)
+            .map_err(FleetAuthorityError::Authority)?;
+        let (_, witness) =
+            dispatch_authority_lease_with_witness(&self.verifier, token, binding, |_| ())
+                .map_err(FleetAuthorityError::Authority)?;
+        Ok(witness)
     }
 }
 
@@ -113,6 +163,47 @@ fn allocation_binding(
     Ok(AuthorityLeaseBinding {
         principal_id: grant.principal_id.clone(),
         operation_class: "fleet.allocate".into(),
+        destination_id: "runtime.fleet".into(),
+        scope_sha256: scope.finalize().into(),
+        payload_sha256,
+    })
+}
+
+fn lease_mutation_binding(
+    grant: &AllocationGrant,
+    operation_class: &str,
+    target_expires_at_ms: u64,
+    target_revoked: bool,
+) -> Result<AuthorityLeaseBinding, FleetAuthorityError> {
+    let payload_sha256 = parse_sha256(&grant.semantic_digest)?;
+    let mut scope = Sha256::new();
+    scope.update(b"hepta.kernel.authority.runtime-fleet.lease-mutation.v1\0");
+    hash_text(&mut scope, operation_class);
+    hash_text(&mut scope, &grant.allocation_id);
+    hash_text(&mut scope, &grant.request_id);
+    hash_text(&mut scope, &grant.principal_id);
+    hash_text(&mut scope, &grant.host_id);
+    hash_text(&mut scope, &grant.failure_domain_id);
+    hash_u64(&mut scope, grant.host_generation);
+    hash_u64(&mut scope, grant.authority_epoch);
+    hash_u64(&mut scope, grant.lease_generation);
+    hash_u64(&mut scope, grant.expires_at_ms);
+    hash_u64(&mut scope, target_expires_at_ms);
+    scope.update([u8::from(target_revoked)]);
+    hash_u64(&mut scope, u64::from(RESOURCE_VECTOR_SCHEMA_VERSION));
+    for value in [
+        grant.resources.cpu_millis,
+        grant.resources.memory_bytes,
+        grant.resources.accelerator_millis,
+        grant.resources.concurrent_turns,
+        grant.resources.tool_processes,
+        grant.resources.turn_queue_slots,
+    ] {
+        hash_u64(&mut scope, value);
+    }
+    Ok(AuthorityLeaseBinding {
+        principal_id: grant.principal_id.clone(),
+        operation_class: operation_class.to_string(),
         destination_id: "runtime.fleet".into(),
         scope_sha256: scope.finalize().into(),
         payload_sha256,
