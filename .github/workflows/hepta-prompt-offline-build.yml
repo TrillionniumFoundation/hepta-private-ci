@@ -7,7 +7,7 @@ permissions:
   contents: read
 jobs:
   inputs:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 40
     env:
       CARGO_BUILD_JOBS: '2'
@@ -29,8 +29,9 @@ jobs:
           out="$RUNNER_TEMP/prompt-offline-inputs"
           mkdir -p "$out"
           git rev-parse HEAD HEAD^{tree} > "$out/identity.txt"
-          rustc -Vv > "$out/rustc-version.txt"
-          sysroot="$(rustc --print sysroot)"
+          rustc -Vv > "$out/native-rustc-version.txt"
+          rustup toolchain install 1.95.0-x86_64-unknown-linux-gnu --force-non-host --profile minimal --component rustfmt --component clippy
+          sysroot="$HOME/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu"
           tar --exclude='./share/doc' --exclude='./lib/rustlib/src' -C "$sysroot" -czf "$out/toolchain.tar.gz" .
           cargo_home="${CARGO_HOME:-$HOME/.cargo}"
           paths=()
