@@ -100,15 +100,16 @@ impl ProviderReceiptVerifier {
         now_ms: u64,
     ) -> Result<VerifiedProviderTerminalReceipt, ProviderReceiptError> {
         validate_claims(&signed.claims)?;
+        let validity_ms = signed
+            .claims
+            .expires_at_ms
+            .checked_sub(signed.claims.issued_at_ms)
+            .ok_or(ProviderReceiptError::Invalid("receipt validity"))?;
         if signed.claims.issuer != self.issuer
             || signed.claims.authority_epoch != self.authority_epoch
             || signed.claims.issued_at_ms > now_ms
             || now_ms >= signed.claims.expires_at_ms
-            || signed
-                .claims
-                .expires_at_ms
-                .saturating_sub(signed.claims.issued_at_ms)
-                > self.maximum_validity_ms
+            || validity_ms > self.maximum_validity_ms
             || provider_receipt_semantic_digest(&signed.claims)?
                 != signed.claims.semantic_digest
         {

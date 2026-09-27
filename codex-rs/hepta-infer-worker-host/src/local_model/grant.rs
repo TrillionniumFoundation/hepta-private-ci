@@ -237,10 +237,12 @@ impl VerifiedResourceGrant {
         deadline_ms: u64,
     ) -> Result<TrustedDeadline, Error> {
         let now_ms = clock.now_ms()?;
-        if deadline_ms <= now_ms
+        let horizon_ms = deadline_ms
+            .checked_sub(now_ms)
+            .ok_or(Error::InvalidDeadline)?;
+        if horizon_ms == 0
             || deadline_ms > self.claims.expires_at_ms
-            || deadline_ms.saturating_sub(now_ms)
-                > MAX_DEADLINE_HORIZON_MS
+            || horizon_ms > MAX_DEADLINE_HORIZON_MS
         {
             return Err(Error::InvalidDeadline);
         }
