@@ -8,6 +8,13 @@ on:
       - "codex-rs/Cargo.lock"
       - "codex-rs/Cargo.toml"
       - "codex-rs/**/Cargo.toml"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-wire/**"
+      - "docs/lane-a-foundation/platform.types/**"
+      - "docs/modules/platform.types/**"
+      - "qualification/module-execution-dossiers/detail/platform.types.md"
+      - "scripts/platform_types_*.py"
+      - "scripts/run_platform_types_*.sh"
   workflow_dispatch:
 
 permissions:
