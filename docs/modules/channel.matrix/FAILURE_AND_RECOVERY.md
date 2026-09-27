@@ -5,9 +5,9 @@
 | Class | Examples | Required response |
 |---|---|---|
 | invalid/rejected | malformed identity, stale binding, digest drift, wrong signer | fail closed; no network effect |
-| authority unavailable | broker/feed/socket failure, corrupt authority state | stop dispatch; retain durable queue |
-| pre-entry network establishment | typed DNS/TLS/connect timeout or refusal | bounded retry with same transaction and a fresh claim/grant |
-| accepted-or-unknown | read timeout, reset, decode/ACK/response loss, cancellation after entry | indeterminate; reconcile only |
+| authority unavailable | broker/feed/socket failure, corrupt authority state before kernel entry | stop dispatch; retain durable queue |
+| pre-entry network establishment | typed DNS/TLS/connect timeout or refusal before any possible adapter write | bounded retry with same transaction and a fresh claim/grant |
+| entered-or-unknown | proof-write acknowledgement loss, grant expiry/revocation/identity/payload change after kernel entry, read timeout, reset, decode/ACK/response loss, cancellation after entry | indeterminate; retain the exact transaction and reconcile only |
 | permanent remote rejection | authenticated rejection with no earlier accepted/unknown evidence | terminal failed |
 | store unavailable/corrupt | SQLite I/O, schema/integrity mismatch | stop writer; operator recovery |
 | lifecycle fence | Agent generation, release, binding or process lease mismatch | drain/stop; supervisor reconciles |
@@ -17,19 +17,22 @@
 
 Retries preserve the stable Matrix transaction ID and derive a fresh random claim capability, final-use request and grant. Attempts/lease epochs are monotonic. Matrix `RetryAfter::Delay` and `RetryAfter::DateTime` are normalized to milliseconds, bounded by host policy and given stable transaction-derived jitter. Exponential fallback is capped. Exhausted ambiguous effects park for reconciliation instead of becoming failed.
 
+A claim may be released through the pre-entry path only while kernel final-use entry has not succeeded. After entry, even when no transport poll is demonstrated, the proof write or its acknowledgement may be uncertain; the exact attempt must remain monotone and cannot be rewritten as canceled, revoked or expired pre-entry work.
+
 ## 3. Shutdown
 
-Before physical entry, cancellation releases the current claim and unstarted rows in the claimed batch through the typed fenced path. After verified-use entry or transport poll, cancellation is an unknown external result and is recorded as indeterminate. Shutdown drains within grace, aborts remaining tasks and closes SQLite; it never edits attempts or clears evidence manually.
+Before kernel final-use entry, cancellation releases the current claim and unstarted rows in the claimed batch through the typed fenced path. After kernel entry or transport poll, cancellation is an entered/unknown external result and is recorded as indeterminate. Shutdown drains within grace, aborts remaining tasks and closes SQLite; it never edits attempts or clears evidence manually.
 
 ## 4. Restart recovery
 
 1. Supervisor validates Matrix process lease against Agent generation, release, binding digest, process incarnation and plane epoch.
 2. An exact live orphan may be adopted; stale or unverifiable processes are killed/rejected.
 3. Matrixd obtains the process lock, verifies migrations 1-12, exact schema SQL and final-use/legacy-hold/terminal-qualification invariants, completes an initial durable sync, resumes exact threads and recovers pending inbox work.
-4. Expired active claims receive an append-only `expired` event before a later attempt mints a new capability.
-5. Expired outbox leases are reclaimed with the same stable transaction and a higher attempt, except sealed legacy holds.
-6. Migration 11 closes stale legacy claims, records claimed-only work as expired and later phases as indeterminate, materializes the unresolved ledger, and parks the queue row at the non-runnable maximum schedule.
-7. Accepted/indeterminate dispatches remain unresolved until authenticated sync supplies matching server evidence. If a later attempt is merely claimed when the echo arrives, migration 12 qualifies the stable transaction with the earlier matching entered-use proof and closes the current claim without another effect.
+4. Expired active claims that never crossed kernel entry receive an append-only `expired` event before a later attempt mints a new capability.
+5. A dispatching attempt with a possible entered-use write or unknown proof acknowledgement is retained as unresolved; recovery never releases it by inference from process death.
+6. Expired outbox leases are reclaimed with the same stable transaction and a higher attempt only when the durable state permits another attempt, except sealed legacy holds.
+7. Migration 11 closes stale legacy claims, records claimed-only work as expired and later phases as indeterminate, materializes the unresolved ledger, and parks the queue row at the non-runnable maximum schedule.
+8. Accepted/indeterminate dispatches remain unresolved until authenticated sync supplies matching server evidence. If a later attempt is merely claimed when the echo arrives, migration 12 qualifies the stable transaction with the earlier matching entered-use proof and closes the current claim without another effect.
 
 ## 5. Corruption policy
 
@@ -47,7 +50,10 @@ Qualification injects failure:
 - after capability claim and before grant;
 - after nonce burn and before witness commit;
 - after witness commit and before dispatching;
-- after dispatching and before final revocation refresh;
+- after dispatching and before final revocation/expiry refresh;
+- after kernel final-use entry and before entered-use proof commit;
+- after entered-use proof commit but before its acknowledgement is observed;
+- while revocation refresh or identity/content validation consumes the remaining grant lifetime;
 - immediately before lazy transport polling;
 - after server acceptance and before SDK/local acknowledgement;
 - after transport observation and before fenced retry/closure;
@@ -56,4 +62,4 @@ Qualification injects failure:
 - during supervisor process-lease persistence/adoption;
 - during authenticated backup/restore with expired claims and redacted/revoked content.
 
-Each fixture records whether adapter entry occurred, stable transaction, attempt/lease, claim-token digest, authority frontier/witness digest, typed failure class and final durable state.
+Each fixture records whether kernel entry occurred, whether adapter polling occurred, stable transaction, attempt/lease, claim-token digest, authority frontier/witness digest, typed failure class and final durable state. A missing adapter poll does not authorize pre-entry release once kernel entry is known or its durable proof-write acknowledgement is uncertain.
