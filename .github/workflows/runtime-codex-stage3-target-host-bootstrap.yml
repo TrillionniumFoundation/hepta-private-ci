@@ -1,0 +1,55 @@
+name: runtime.codex stage3 target-host bootstrap
+
+on:
+  pull_request:
+    branches:
+      - runtime-codex/closure-stage2-20260927
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-stage3-target-host-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  apply-reviewed-source:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'runtime-codex/closure-stage3-20260927'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact target-host child candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply exact target-host transform
+        run: python3 scripts/runtime_codex_stage3_target_host_bootstrap.py
+
+      - name: Check Python and workflow source
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/runtime_codex_target_host_evidence.py \
+            scripts/tests/test_runtime_codex_target_host_evidence.py
+          python3 -m unittest -v scripts.tests.test_runtime_codex_target_host_evidence
+          git diff --check
+
+      - name: Publish source-only target-host candidate
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+          test "$HEAD_REF" = runtime-codex/closure-stage3-20260927
+          git config user.name 'OpenAI Codex'
+          git config user.email 'noreply@openai.com'
+          git add -A
+          git diff --cached --check
+          git commit -m 'runtime.codex: require external eight-scenario target-host qualification' \
+            -m 'Raise the real-provider sample to 30..200, use the canonical evidence verifier, require eight closed-world fault scenarios plus host/issuer/anti-rollback/canary/independent-review evidence, and retain activation and release as false.'
+          git push origin "HEAD:refs/heads/${HEAD_REF}"
