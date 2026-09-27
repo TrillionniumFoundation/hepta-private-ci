@@ -1,0 +1,104 @@
+name: Materialize KG query closure
+on:
+  push:
+    branches: [work/kg-verified-query-closure-20260927]
+    paths:
+      - .github/workflows/hepta-kg-query-closure-materialize.yml
+      - scripts/hepta-kg-query-closure-apply.py
+permissions:
+  contents: write
+jobs:
+  materialize:
+    if: github.ref == 'refs/heads/work/kg-verified-query-closure-20260927'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Apply exact scoped predecessor and query closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.sha }}'
+          git config user.name 'Hepta KG source integration'
+          git config user.email 'hepta-kg-ci@users.noreply.github.com'
+          python3 scripts/hepta-kg-query-closure-apply.py
+          cd codex-rs
+          cargo fmt --package codex-hepta-kg --package codex-hepta-memory
+      - name: Commit source and remove one-shot writer
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm scripts/hepta-kg-query-closure-apply.py .github/workflows/hepta-kg-query-closure-materialize.yml
+          git diff --check
+          python3 - <<'PY'
+          import subprocess
+          allowed = {
+              '.github/workflows/hepta-knowledge-graph-qualification.yml',
+              '.github/workflows/hepta-kg-query-closure-materialize.yml',
+              'scripts/hepta-kg-query-closure-apply.py',
+              'scripts/hepta-knowledge-graph-target-measure.py',
+              'qualification/knowledge-graph/TARGET_HOST.md',
+              'docs/modules/knowledge.graph/TECHNICAL.md',
+              'codex-rs/hepta-kg/src/generation.rs',
+              'codex-rs/hepta-kg/src/generation_tests.rs',
+              'codex-rs/hepta-kg/src/lib.rs',
+              'codex-rs/hepta-kg/src/indexed_query.rs',
+              'codex-rs/hepta-kg/src/query_closure_tests.rs',
+              'codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs',
+              'codex-rs/hepta-memory/src/cognitive_store_tests.rs',
+              'codex-rs/hepta-memory/src/cognitive_kg_history_tests.rs',
+              'codex-rs/hepta-memory/src/cognitive_retrieval.rs',
+          }
+          changed = set(subprocess.check_output(['git','diff','--name-only'],text=True).splitlines())
+          assert changed <= allowed, sorted(changed - allowed)
+          PY
+          git add -A -- codex-rs/hepta-kg codex-rs/hepta-memory docs/modules/knowledge.graph/TECHNICAL.md qualification/knowledge-graph/TARGET_HOST.md scripts/hepta-knowledge-graph-target-measure.py scripts/hepta-kg-query-closure-apply.py .github/workflows/hepta-knowledge-graph-qualification.yml .github/workflows/hepta-kg-query-closure-materialize.yml
+          git commit -m 'feat(knowledge.graph): wire verified transaction-local query cache and validator parity' -m 'Imports reviewed KG-only predecessor changes and retains full-scan equivalence oracle. No production or target-host qualification claim.' -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
+      - name: Bind module source map to committed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import importlib.util, json, sys
+          from pathlib import Path
+          sys.path.insert(0, str(Path('scripts').resolve()))
+          spec = importlib.util.spec_from_file_location('kg_maps', 'scripts/hepta-implementation-maps.py')
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          path = Path('docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json')
+          row = json.loads(path.read_text())
+          identity = module.current_source_base()
+          row['sourceBase'] = identity
+          row['observedAtHead'] = identity
+          extra = ['codex-rs/hepta-kg/src/indexed_query.rs', 'codex-rs/hepta-kg/src/query_closure_tests.rs', 'codex-rs/hepta-memory/src/cognitive_kg_history_tests.rs', 'qualification/knowledge-graph/QUERY_CLOSURE_20260927.md', 'scripts/hepta-knowledge-graph-target-measure.py']
+          row['observedSourcePaths'] = sorted(set(row['observedSourcePaths'] + extra))
+          for op in row['operations']:
+              if op['operation'] == 'query_relations':
+                  op['tests'].append('codex-rs/hepta-kg/src/query_closure_tests.rs')
+          for extra_path in extra:
+              if not any(item['path'] == extra_path for item in row['sourceObjects']):
+                  row['sourceObjects'].append({'path': extra_path})
+          row['sourceObjects'] = module.current_source_objects(row)
+          path.write_text(json.dumps(row, indent=2) + '\n')
+          PY
+          git add docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
+          git commit -m 'docs(knowledge.graph): bind exact committed query closure source objects' -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
+          test "$(git ls-remote origin refs/heads/work/kg-verified-query-closure-20260927 | cut -f1)" = '${{ github.sha }}'
+          git push origin HEAD:refs/heads/work/kg-verified-query-closure-20260927
+          git rev-parse HEAD HEAD^{tree}
+      - name: Export exact source for independent inspection
+        shell: bash
+        run: |
+          git archive --format=tar HEAD | gzip > "$RUNNER_TEMP/kg-source.tar.gz"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/kg-source-identity.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: kg-query-closure-source
+          path: |
+            ${{ runner.temp }}/kg-source.tar.gz
+            ${{ runner.temp }}/kg-source-identity.txt
+          if-no-files-found: warn
