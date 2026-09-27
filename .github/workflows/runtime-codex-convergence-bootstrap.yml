@@ -61,11 +61,14 @@ jobs:
             test ! -e scripts/runtime_codex_convergence_preflight_cleanup.py
             python3 -m py_compile scripts/runtime_codex_convergence.py
             python3 -m py_compile scripts/runtime_codex_convergence_fix.py
+            python3 -m py_compile scripts/runtime_codex_quarantine_wire_fix.py
             python3 scripts/runtime_codex_convergence.py
             test ! -e scripts/runtime_codex_convergence.py
             test ! -e .github/workflows/runtime-codex-convergence-bootstrap.yml
             python3 scripts/runtime_codex_convergence_fix.py
             test ! -e scripts/runtime_codex_convergence_fix.py
+            python3 scripts/runtime_codex_quarantine_wire_fix.py
+            test ! -e scripts/runtime_codex_quarantine_wire_fix.py
             python3 -c 'from pathlib import Path; p=Path("docs/modules/runtime.codex/TECHNICAL.md"); p.write_text(p.read_text(encoding="utf-8").rstrip()+"\n", encoding="utf-8")'
             git diff --check
           } >"$RUNNER_TEMP/runtime-codex-patch.log" 2>&1
