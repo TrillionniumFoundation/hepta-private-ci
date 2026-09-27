@@ -1,0 +1,117 @@
+          WHERE dispatch.state IN ('succeeded', 'redacted')
+            AND NOT EXISTS (
+-               SELECT 1 FROM matrix_dispatch_authority_claims AS claim
+-               WHERE claim.stable_txn_id = dispatch.stable_txn_id
+-                 AND claim.operation_id = dispatch.operation_id
+-                 AND claim.payload_sha256 = dispatch.payload_sha256
++               SELECT 1
++               FROM matrix_dispatch_use_entries AS entry
++               JOIN matrix_dispatch_authority_claims AS authority_claim
++                 ON authority_claim.stable_txn_id = entry.stable_txn_id
++                AND authority_claim.attempt = entry.attempt
++               JOIN matrix_dispatch_authority_witnesses AS authority_witness
++                 ON authority_witness.stable_txn_id = entry.stable_txn_id
++                AND authority_witness.attempt = entry.attempt
++               JOIN matrix_dispatch_content_bindings AS content
++                 ON content.stable_txn_id = entry.stable_txn_id
++               WHERE entry.stable_txn_id = dispatch.stable_txn_id
++                 AND entry.attempt = dispatch.attempts
++                 AND entry.operation_id = dispatch.operation_id
++                 AND authority_claim.operation_id = dispatch.operation_id
++                 AND authority_claim.subject_id = entry.subject_id
++                 AND authority_claim.destination_id = entry.destination_id
++                 AND authority_claim.request_sha256 = entry.request_sha256
++                 AND authority_claim.scope_sha256 = entry.scope_sha256
++                 AND authority_claim.payload_sha256 = dispatch.payload_sha256
++                 AND authority_witness.authority_epoch = authority_claim.authority_epoch
++                 AND authority_witness.revocation_revision = authority_claim.revocation_revision
++                 AND authority_witness.grant_id = authority_claim.grant_id
++                 AND authority_witness.verified_use_witness_sha256 = entry.entered_use_witness_sha256
++                 AND content.scope_sha256 = entry.scope_sha256
++                 AND content.canonical_content_sha256 = entry.canonical_payload_sha256
+            )",
+     )
+     .fetch_one(pool)
+diff --git a/codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs b/codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs
+index a5f6934..1cea3bc 100644
+--- a/codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs
++++ b/codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs
+@@ -1261,7 +1261,7 @@ async fn homeserver_observation_without_dispatch_row_is_legacy_unqualified() ->
+ }
+ 
+ #[tokio::test]
+-async fn qualified_success_requires_matching_durable_final_use_claim() -> TestResult {
++async fn caller_filled_claim_without_entered_kernel_proof_stays_unqualified() -> TestResult {
+     let temp = TempDir::new()?;
+     let agent_id = agent()?;
+     let store_layout = layout(&temp, &agent_id)?;
+@@ -1345,7 +1345,8 @@ async fn qualified_success_requires_matching_durable_final_use_claim() -> TestRe
+             .await?
+             .ok_or("qualified dispatch disappeared")?
+             .state,
+-        MatrixDispatchState::Succeeded,
++        MatrixDispatchState::ObservedUnqualified,
++        "caller-filled authority metadata cannot replace an entered kernel proof",
+     );
+ 
+     let redaction = MatrixSyncMutationV2 {
+@@ -1375,8 +1376,8 @@ async fn qualified_success_requires_matching_durable_final_use_claim() -> TestRe
+             .await?
+             .ok_or("qualified redacted dispatch disappeared")?
+             .state,
+-        MatrixDispatchState::Redacted,
+-        "redaction may be qualified only when the original send has durable final-use proof",
++        MatrixDispatchState::ObservedUnqualified,
++        "redaction remains unqualified when the original send lacks a durable entered-use proof",
+     );
+     Ok(())
+ }
+@@ -2560,6 +2561,36 @@ async fn startup_requires_final_use_claim_schema_guards() -> TestResult {
+     Ok(())
+ }
+ 
++#[tokio::test]
++async fn startup_rejects_same_name_weakened_entered_use_guard() -> TestResult {
++    let temp = TempDir::new()?;
++    let agent_id = agent()?;
++    let store_layout = layout(&temp, &agent_id)?;
++    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
++    store.close().await;
++
++    let database_path = store_layout.matrix_root().join("matrix_1.sqlite3");
++    let pool = open_hostile_fixture_pool(&database_path).await?;
++    let mut transaction = pool.begin_with("BEGIN IMMEDIATE").await?;
++    sqlx::query("DROP TRIGGER matrix_dispatch_use_entries_guard_insert")
++        .execute(&mut *transaction)
++        .await?;
++    sqlx::query(
++        "CREATE TRIGGER matrix_dispatch_use_entries_guard_insert
++         BEFORE INSERT ON matrix_dispatch_use_entries BEGIN SELECT 1; END",
++    )
++    .execute(&mut *transaction)
++    .await?;
++    transaction.commit().await?;
++    pool.close().await;
++
++    assert!(matches!(
++        MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await,
++        Err(MatrixDurableError::Corrupt)
++    ));
++    Ok(())
++}
++
+ #[test]
+ fn v2_validation_rejects_wrong_schema() -> TestResult {
+     let room_id = room("!wire:example.test")?;
+diff --git a/codex-rs/state/src/lib.rs b/codex-rs/state/src/lib.rs
+index 325351b..a2cad4d 100644
+--- a/codex-rs/state/src/lib.rs
++++ b/codex-rs/state/src/lib.rs
+@@ -77,6 +77,7 @@ pub use model::ThreadMetadataBuilder;
+ pub use model::ThreadRelationFilter;
+ pub use model::ThreadSection;
+ pub use model::ThreadSectionAppearance;
++pub use model::ThreadSectionsPage;
+ pub use model::ThreadsPage;
+ pub use runtime::ExternalAgentConfigImportDetailsRecord;
+ pub use runtime::ExternalAgentConfigImportFailureRecord;
