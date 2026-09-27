@@ -3,8 +3,8 @@ on:
   push:
     branches: [work/ui-native-acceptance-repair-20260927]
     paths:
-      - scripts/hepta_ui_native_acceptance_finish.py
       - .github/workflows/hepta-ui-native-acceptance-proposal.yml
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:
@@ -14,7 +14,7 @@ jobs:
   proposal:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/work/ui-native-acceptance-repair-20260927'
     runs-on: macos-15
-    timeout-minutes: 20
+    timeout-minutes: 30
     permissions:
       contents: write
     env:
@@ -44,7 +44,7 @@ jobs:
           cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-native-gateway -p codex-hepta-contracts -p codex-hepta-private-state
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add -- apps/hepta-native codex-rs/hepta-native-gateway codex-rs/hepta-contracts codex-rs/hepta-private-state docs/modules/ui.native scripts/test_hepta_ui_native_source.py .github/workflows/hepta-ui-native-remediation.yml .github/workflows/hepta-ui-native-remediation-format.yml .github/workflows/ui-native-candidate-rebind.yml
+          git add -- apps/hepta-native codex-rs/hepta-native-gateway codex-rs/hepta-contracts codex-rs/hepta-private-state docs/modules/ui.native scripts/test_hepta_ui_native_source.py .github/workflows/hepta-ui-native-remediation.yml .github/workflows/hepta-ui-native-remediation-format.yml .github/workflows/ui-native-candidate-rebind.yml qualification/ui.native qualification/module-execution-dossiers/NATIVE_BINDINGS.json
           git commit -m 'fix(ui.native): materialize archive regressions and current candidate documentation'
       - name: Bind metadata to the committed source, never promote claims
         shell: bash
@@ -57,67 +57,48 @@ jobs:
           python3 apps/hepta-native/tools/prepare_current_source.py
           cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml -- --check
           test -z "$(git status --porcelain)"
-      - name: Publish an isolated immutable proposal, not the live candidate
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Build immutable proposal evidence
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/native-acceptance-proposal"
-          git diff --binary "$INPUT_SHA" HEAD > "$RUNNER_TEMP/native-acceptance-proposal/proposal.patch"
-          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/native-acceptance-proposal/proposal.txt"
-          git archive --format=tar.gz -o "$RUNNER_TEMP/native-acceptance-proposal/source.tar.gz" HEAD
+          directory="$RUNNER_TEMP/native-acceptance-proposal"
+          mkdir -p "$directory"
+          git diff --binary "$INPUT_SHA" HEAD > "$directory/proposal.patch"
+          git rev-parse HEAD HEAD^{tree} > "$directory/proposal.txt"
+          git diff --stat "$INPUT_SHA" HEAD > "$directory/diff.stat"
+          git archive --format=tar.gz -o "$directory/source.tar.gz" HEAD
           python3 - <<'PY'
           import hashlib, json, os, pathlib, subprocess
-          def git(*args): return subprocess.check_output(['git', *args], text=True).strip()
+          def git(*args):
+              return subprocess.check_output(['git', *args], text=True).strip()
           directory = pathlib.Path(os.environ['RUNNER_TEMP']) / 'native-acceptance-proposal'
-          report = {'schema':'hepta.ui.native.acceptance-proposal.v1',
-                    'inputSha':os.environ['INPUT_SHA'], 'proposalSha':git('rev-parse','HEAD'),
-                    'proposalTree':git('rev-parse','HEAD^{tree}'),
-                    'patchSha256':hashlib.sha256((directory/'proposal.patch').read_bytes()).hexdigest(),
-                    'formatChecked':True, 'nativeTestsPassed':False,
-                    'qualificationPassed':False, 'releaseAuthorized':False}
-          (directory/'proposal.json').write_text(json.dumps(report, indent=2)+'\n')
+          proposal_sha = git('rev-parse', 'HEAD')
+          proposal_ref = 'refs/heads/work/ui-native-acceptance-proposal-' + os.environ['INPUT_SHA']
+          report = {
+              'schema': 'hepta.ui.native.acceptance-proposal.v2',
+              'inputSha': os.environ['INPUT_SHA'],
+              'proposalSha': proposal_sha,
+              'proposalTree': git('rev-parse', 'HEAD^{tree}'),
+              'proposalRef': proposal_ref,
+              'patchSha256': hashlib.sha256((directory / 'proposal.patch').read_bytes()).hexdigest(),
+              'sourceSha256': hashlib.sha256((directory / 'source.tar.gz').read_bytes()).hexdigest(),
+              'formatChecked': True,
+              'nativeTestsPassed': False,
+              'qualificationPassed': False,
+              'releaseAuthorized': False,
+          }
+          (directory / 'proposal.json').write_text(json.dumps(report, indent=2) + '\n')
           PY
-          # Export immutable objects before requesting a ref update. Some tokens
-          # cannot update workflow refs; the authorized reviewer can adopt the
-          # exact exported commit through the connector after inspecting it.
-          python3 - <<'PY'
-          import base64, json, os, subprocess, urllib.request
-          repo = 'TrillionniumFoundation/hepta-private-ci'
-          def git(*args): return subprocess.check_output(['git', *args])
-          def api(endpoint, payload):
-              request = urllib.request.Request('https://api.github.com/repos/'+repo+'/git/'+endpoint,
-                  data=json.dumps(payload).encode(), method='POST',
-                  headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],
-                           'Accept':'application/vnd.github+json', 'Content-Type':'application/json'})
-              with urllib.request.urlopen(request, timeout=60) as response: return json.load(response)
-          for commit in git('rev-list','--reverse',os.environ['INPUT_SHA']+'..HEAD').decode().splitlines():
-              parent = git('rev-parse',commit+'^').decode().strip()
-              entries = []
-              for path in git('diff','--name-only','-z',parent,commit).decode().split('\0'):
-                  if not path: continue
-                  entry = git('ls-tree',commit,'--',path).decode().strip()
-                  if not entry:
-                      entries.append({'path':path,'mode':'100644','type':'blob','sha':None}); continue
-                  mode, kind, expected = entry.split('\t')[0].split()
-                  if kind != 'blob': raise SystemExit('unexpected non-blob proposal entry')
-                  blob = api('blobs',{'encoding':'base64','content':base64.b64encode(git('show',commit+':'+path)).decode()})
-                  if blob['sha'] != expected: raise SystemExit('uploaded blob identity mismatch')
-                  entries.append({'path':path,'mode':mode,'type':'blob','sha':expected})
-              tree = api('trees',{'base_tree':git('rev-parse',parent+'^{tree}').decode().strip(),'tree':entries})
-              if tree['sha'] != git('rev-parse',commit+'^{tree}').decode().strip(): raise SystemExit('tree mismatch')
-              fields = git('show','-s','--format=%an%x00%ae%x00%aI%x00%cn%x00%ce%x00%cI',commit).decode().strip().split('\0')
-              message = git('cat-file','commit',commit).split(b'\n\n',1)[1].decode()
-              result = api('commits',{'tree':tree['sha'],'parents':[parent],'message':message,
-                  'author':dict(zip(('name','email','date'),fields[:3])),
-                  'committer':dict(zip(('name','email','date'),fields[3:]))})
-              if result['sha'] != commit: raise SystemExit('commit serialization mismatch: '+result['sha']+' != '+commit)
-              print('exported immutable proposal commit',commit)
-          PY
-          # This creates only an input-specific proposal ref, never the candidate.
-          # A ref-permission failure does not erase exported objects or evidence.
-          git push origin "HEAD:refs/heads/work/ui-native-acceptance-proposal-${INPUT_SHA}" || echo 'Proposal ref not created; inspect exported commit before connector adoption.' 
+      - name: Publish exact isolated proposal reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          proposal_sha="$(git rev-parse HEAD)"
+          proposal_ref="refs/heads/work/ui-native-acceptance-proposal-${INPUT_SHA}"
+          git push --force origin "${proposal_sha}:${proposal_ref}"
+          remote_sha="$(git ls-remote --exit-code origin "$proposal_ref" | awk '{print $1}')"
+          test "$remote_sha" = "$proposal_sha"
+          printf '%s\n' "$proposal_ref $proposal_sha" > "$RUNNER_TEMP/native-acceptance-proposal/published-ref.txt"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
