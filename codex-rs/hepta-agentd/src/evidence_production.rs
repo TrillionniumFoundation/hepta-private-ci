@@ -157,19 +157,18 @@ pub(crate) async fn verify_production_evidence_frontier(
     }
     signer_trust.verify(&frontier)?;
     validate_backup_publication(&backup, &frontier, now, config.frontier_max_age_ms)?;
-    let actual_snapshot = store.authenticated_recovery_snapshot().await.map_err(evidence_error)?;
-    if actual_snapshot != frontier.snapshot
-        || evidence_recovery_ledger_root_v2(&actual_snapshot) != frontier.ledger_root_sha256
-    {
-        return Err(recovery_required("local evidence database does not match the latest external ledger root"));
+    if evidence_recovery_ledger_root_v2(&frontier.snapshot) != frontier.ledger_root_sha256 {
+        return Err(recovery_required("signed snapshot does not match its ledger root"));
     }
     let frontier_sha256 = evidence_recovery_frontier_v2_sha256(&frontier)
         .map_err(|error| recovery_required(&error.to_string()))?;
-    store.accept_recovery_frontier(&EvidenceAcceptedFrontierV1 {
+    // The actual local snapshot is compared while holding the SAME write lock
+    // that protects the acceptance insert. Never replace this with read/await/write.
+    store.accept_recovery_frontier_at_snapshot(&EvidenceAcceptedFrontierV1 {
         store_id: frontier.store_id, frontier_generation: frontier.frontier_generation,
         frontier_sha256, backend_identity_sha256: frontier.backend_identity_sha256,
         accepted_at_unix_ms: now,
-    }).await.map_err(evidence_error)?;
+    }, &frontier.snapshot).await.map_err(evidence_error)?;
     Ok(issuer_trust_sha256)
 }
 

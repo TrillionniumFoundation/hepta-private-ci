@@ -71,6 +71,13 @@ impl HeptaEvidenceStore {
     }
 }
 
+/// Reuse a caller's transaction: no nested transaction or second pool checkout.
+pub(crate) async fn authenticated_snapshot_in_transaction(
+    transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+) -> Result<EvidenceRecoverySnapshotV1, EvidenceError> {
+    snapshot::collect_in_transaction(transaction, snapshot::Domain::AuthenticatedAdmission).await
+}
+
 #[cfg(test)]
 #[path = "recovery_snapshot_tests.rs"]
 mod tests;
