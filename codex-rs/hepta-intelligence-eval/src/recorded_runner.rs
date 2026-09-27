@@ -114,14 +114,25 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
                         "successful evaluation without recorded holdout consumption",
                     ),
                 )?;
-                journal.append(
+                let execution_digest = receipt.execution_digest;
+                if let Err(journal_error) = journal.append(
                     ProductEvaluationAttemptTransitionV1::comparison_sealed(
-                        attempt_id,
+                        attempt_id.clone(),
                         plan_digest,
                         holdout_record_digest,
-                        receipt.execution_digest,
+                        execution_digest,
                     ),
-                )?;
+                ) {
+                    return Err(
+                        RecordedProductEvaluationErrorV1::ComparisonSealedButJournalFailed {
+                            attempt_id,
+                            plan_digest,
+                            holdout_record_digest,
+                            execution_digest,
+                            journal: journal_error,
+                        },
+                    );
+                }
                 Ok(receipt)
             }
             Err(error) => {
@@ -129,16 +140,22 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
                     let failure_digest = evaluation_failure_digest(&error);
                     if let Err(journal_error) = journal.append(
                         ProductEvaluationAttemptTransitionV1::failed(
-                            attempt_id,
+                            attempt_id.clone(),
                             plan_digest,
                             holdout_record_digest,
                             failure_digest,
                         ),
                     ) {
-                        return Err(RecordedProductEvaluationErrorV1::EvaluationAndJournal {
-                            evaluation: error,
-                            journal: journal_error,
-                        });
+                        return Err(
+                            RecordedProductEvaluationErrorV1::EvaluationFailedButJournalFailed {
+                                attempt_id,
+                                plan_digest,
+                                holdout_record_digest,
+                                failure_digest,
+                                evaluation: error,
+                                journal: journal_error,
+                            },
+                        );
                     }
                 }
                 Err(RecordedProductEvaluationErrorV1::Evaluation(error))
@@ -254,7 +271,23 @@ pub enum RecordedProductEvaluationErrorV1 {
         evaluation: ProductEvaluationError,
         journal: ProductEvaluationAttemptJournalErrorV1,
     },
-    EvaluationAndJournal {
+    /// Estimation produced a sealed execution, but its terminal journal event was
+    /// not durably acknowledged. Reconcile by these exact coordinates before
+    /// publishing qualification evidence or retrying any product operation.
+    ComparisonSealedButJournalFailed {
+        attempt_id: StableId,
+        plan_digest: Digest32,
+        holdout_record_digest: Digest32,
+        execution_digest: Digest32,
+        journal: ProductEvaluationAttemptJournalErrorV1,
+    },
+    /// Evaluation failed after holdout consumption, and the corresponding failed
+    /// terminal event was not durably acknowledged. The holdout remains consumed.
+    EvaluationFailedButJournalFailed {
+        attempt_id: StableId,
+        plan_digest: Digest32,
+        holdout_record_digest: Digest32,
+        failure_digest: Digest32,
         evaluation: ProductEvaluationError,
         journal: ProductEvaluationAttemptJournalErrorV1,
     },
