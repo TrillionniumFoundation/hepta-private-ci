@@ -4,8 +4,8 @@
 
 ## Candidate identity
 
-- authoritative development branch: `work/ui-control-production-convergence-20260927`
-- convergence baseline: `3729c25bf6dfdf52eb91b74edda852fe84665543` / `a373ff294bccff8ec7eafa0e6ba5040291f2e03e`
+- authoritative development branch: `work/ui-control-authoritative-closure-20260927`
+- convergence baseline: `a126987b84737dbc2ee2592442a314117bddb4a2` / `a22fd0074c45ae6f3cef2092cd6e273bf9c26c30`
 - exact candidate SHA/tree: derived by the qualification workflow
 - release authorization: absent
 
