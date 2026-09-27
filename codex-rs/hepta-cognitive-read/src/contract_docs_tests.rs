@@ -2,6 +2,8 @@ use super::*;
 
 const CONTRACT_LIMITS: &str =
     include_str!("../../../docs/modules/cognitive.read/CONTRACT_LIMITS.md");
+const COMPATIBILITY: &str =
+    include_str!("../../../docs/modules/cognitive.read/COMPATIBILITY.md");
 const AGENT_PROTOCOL_SOURCE: &str = include_str!("../../hepta-agent-protocol/src/lib.rs");
 const AGENTD_CONTEXT_SOURCE: &str = include_str!("../../hepta-agentd/src/cognitive_context.rs");
 
@@ -32,6 +34,27 @@ fn byte_and_authority_semantics_are_documented() {
         assert!(
             CONTRACT_LIMITS.contains(required),
             "missing cognitive.read contract marker: {required}"
+        );
+    }
+}
+
+#[test]
+fn compatibility_matrix_locks_version_and_activation_rules() {
+    for required in [
+        "hepta.cognitive.read.ids.request.v1",
+        "hepta.cognitive.read.ids.v1",
+        "hepta.agentd.cognitive-context-read.v1",
+        "cognitive.context.revalidate@1",
+        "hepta.cognitive.read.golden-vector.v1",
+        "hepta.cognitive.read.qualification.v1",
+        "hepta.cognitive.read.benchmark.v1",
+        "Golden vectors are reviewed protocol artifacts",
+        "activation=false",
+        "Never by schema migration alone",
+    ] {
+        assert!(
+            COMPATIBILITY.contains(required),
+            "missing cognitive.read compatibility marker: {required}"
         );
     }
 }
