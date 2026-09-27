@@ -33,6 +33,10 @@ jobs:
           scripts.tests.test_hepta_memory_retrieval_slo
           scripts.tests.test_hepta_memory_retrieval_archive
           scripts.tests.test_hepta_memory_retrieval_refresh_map
+      - name: Verify retained original historical archive and canonical manifest
+        run: >-
+          python3 scripts/hepta_memory_retrieval_archive.py verify
+          qualification/memory-retrieval/BASELINES/808b68350dc4f9d1b542803ac75a8d7e255ee836dd95de2255ad42a57b23b212/receipt.json
       - name: Preserve clean source
         run: |
           git diff --check

@@ -1,6 +1,6 @@
 # memory.retrieval API and trust boundaries
 
-Status: source candidate; Rust execution, independent acceptance and production activation are separate gates. Read this with `TECHNICAL.md`, `IMPLEMENTATION_MAP.json`, `ADR/0001-semantic-admission.md` and `ADR/0003-signed-lifecycle-delivery.md`.
+Status: source candidate; Rust execution, independent acceptance and production activation are separate gates. Read this with `TECHNICAL.md`, `IMPLEMENTATION_MAP.json`, `ADR/0001-semantic-admission.md`, `ADR/0003-signed-lifecycle-delivery.md`, `PROCESS_BOOTSTRAP.md` and `E2E_MEASUREMENT.md`.
 
 ## Owner boundaries
 
@@ -19,16 +19,19 @@ Status: source candidate; Rust execution, independent acceptance and production 
 | `LeasedMemoryRetrievalProviderV1::current` | Exact Agent ID and launched body generation | Compatibility payload accessor delegating to atomic acquisition; verifies currentness and rejects revocation/rollback/expiry. |
 | `CurrentMemoryRetrievalContext::acquire_context` | Exact Agent/body from trusted host composition | Atomically returns context, lifecycle digest and optional absolute lease. The signed provider returns its publication digest and signed deadline under one mutex. The legacy default is payload-only with no product lease; it is not signed evidence. |
 | `LeasedMemoryRetrievalProviderV1::from_loopback_frontier` | Protected endpoint, context/frontier public-key pins and time bounds | Constructs the real bounded client; does not create the remote owner or authority keys. |
+| `LeasedMemoryRetrievalProviderV1::load_process_bootstrap` | Protected canonical descriptor path, independently approved raw-byte SHA-256 pin and launched Agent identity | Strict bounded descriptor/publication/context decoding followed by signature and fresh frontier checks. Returns a current-context provider that rereads signed publications; malformed, stale or unavailable input fails closed. |
 
 `read_with_retrieval_context_and_learning` is the named Agentd caller, not a public application API. It binds lifecycle and host mode, bounds the operation deadline by the signed lease, and revalidates after ledger append and awaited final-use ranking. Same-payload publication renewal invalidates the old read. Published context and ledger preparation are not proof of native turn/start attachment or successful downstream use.
 
-The runtime has explicit compatibility, shadow, canary and required routing. Shadow observes but does not publish HNMF selections as exposure; only the actual HNMF-delivered subset is attributed to the treatment. Mode policy, bootstrap, isolated resource budgets and independent rollout acceptance are documented in `CANARY_AND_ROLLBACK.md`.
+The runtime has explicit compatibility, shadow, canary and required routing. Shadow observes but does not publish HNMF selections as exposure; only the actual HNMF-delivered subset is attributed to the treatment. Mode policy, isolated resource budgets and independent rollout acceptance are documented in `CANARY_AND_ROLLBACK.md`. The ordinary-process bootstrap is implemented in source and specified in `PROCESS_BOOTSTRAP.md`; real process qualification remains required.
 
 ## Version and semantic migration
 
 `ContradictionEvidenceV2` replaces opaque contradiction-group values in this candidate's generation-bound Rust structures. Its fields are `proposition_digest`, `generation_vector_digest` and `polarity`. The legacy field names ending in `_digest` are retained only for source migration; their values are no longer bare `Digest32`. Rebuild all consumers together. Do not decode old serialized values as the new structure or invent missing polarity. The proposition digest must bind the owner's canonical subject, predicate/object and applicable temporal qualifiers; the generation vector supplies scope/purpose binding.
 
 `Affirmed` and `Denied` on the same proposition/generation conflict. `ConflictReported` is neither side. A SQLite record describing a contradiction must not be relabelled as a denied proposition. The canonical cognitive recall adapter remains a shadow migration surface, not a replacement product wire contract.
+
+The new bootstrap JSON schema is an explicit process-input format, not a change to the canonical cognitive recall wire. Native constructors still validate all decoded values. The SLO sample/receipt format moves to v2 to require actual source-tree binding; historical v1 measurements must not be relabelled with current source identities.
 
 ## Errors, empty results and authority
 
