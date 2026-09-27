@@ -69,6 +69,11 @@ run_logged implementation-map \
 run_logged core-tests \
   cargo test --manifest-path codex-rs/Cargo.toml --locked \
     -p codex-hepta-cognitive-read --lib
+run_logged fuzz-harness \
+  cargo check \
+    --manifest-path codex-rs/hepta-cognitive-read/fuzz/Cargo.toml \
+    --all-targets
+rm -f codex-rs/hepta-cognitive-read/fuzz/Cargo.lock
 
 if [[ "$profile" == "exact-head" ]]; then
   run_benchmark
