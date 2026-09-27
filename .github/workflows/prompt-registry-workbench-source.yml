@@ -1,0 +1,38 @@
+name: prompt-registry-workbench-source
+
+on:
+  push:
+    branches:
+      - codex/prompt-registry-convergence-v4
+
+permissions:
+  contents: read
+
+jobs:
+  export-source:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Create deterministic source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          git archive --format=tar HEAD | gzip -n > "$RUNNER_TEMP/hepta-private-ci-source.tar.gz"
+          sha256sum "$RUNNER_TEMP/hepta-private-ci-source.tar.gz" > "$RUNNER_TEMP/hepta-private-ci-source.sha256"
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-private-ci-source.head"
+
+      - name: Retain exact source archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-workbench-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-private-ci-source.tar.gz
+            ${{ runner.temp }}/hepta-private-ci-source.sha256
+            ${{ runner.temp }}/hepta-private-ci-source.head
+          if-no-files-found: error
+          retention-days: 1
