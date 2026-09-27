@@ -181,10 +181,12 @@ impl RuntimeCodexScheduleReservationV1 {
 }
 
 impl ProcessRuntimeCodexExecutorV1 {
-    /// Compatibility constructor for embeddings that already install the
-    /// process-local owner. New product profiles should use the typed bootstrap
-    /// and supply all canonical dependencies together.
-    pub fn install_agentd_supervisor<F>(
+    /// Crate-local compatibility constructor retained for existing Agentd
+    /// internals. External products cannot partially install a runtime.codex
+    /// owner; they must use `AgentdCanonicalRuntimeBootstrapV1`, which binds
+    /// runner, provider, Neuron owner, executor and final-use authority as one
+    /// validated composition.
+    pub(crate) fn install_agentd_supervisor<F>(
         self: Arc<Self>,
         queue_capacity: usize,
         provider: F,
@@ -209,7 +211,10 @@ impl ProcessRuntimeCodexExecutorV1 {
         )
     }
 
-    pub fn install_agentd_supervisor_with_limits(
+    /// Only the typed canonical bootstrap may call this installation seam.
+    /// Keeping it crate-local prevents a host from pairing public runner and
+    /// provider setters with an independently installed physical executor.
+    pub(crate) fn install_agentd_supervisor_with_limits(
         self: Arc<Self>,
         queue_capacity: usize,
         maximum_concurrent_jobs: usize,
