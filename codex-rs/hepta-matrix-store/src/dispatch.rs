@@ -825,7 +825,7 @@ impl MatrixDurableStore {
         let record = MatrixDispatchRecord {
             state: terminal_state,
             terminal_event_id: Some(event_id.clone()),
-            send_observation_digest: Some(observation_digest.to_string()),
+            send_observation_digest: Some(observation_digest.as_str().to_string()),
             updated_at_ms: observed_at_ms,
             terminal_observed_at_ms: Some(observed_at_ms),
             ..existing
@@ -922,7 +922,7 @@ impl MatrixDurableStore {
         let record = MatrixDispatchRecord {
             state: terminal_state,
             terminal_event_id: Some(target_event_id.clone()),
-            redaction_observation_digest: Some(redaction_digest.to_string()),
+            redaction_observation_digest: Some(redaction_digest.as_str().to_string()),
             updated_at_ms: observed_at_ms,
             terminal_observed_at_ms: Some(observed_at_ms),
             ..existing

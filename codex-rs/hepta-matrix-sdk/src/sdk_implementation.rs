@@ -31,6 +31,7 @@ use url::Url;
 use crate::MatrixIngress;
 use crate::MatrixOutboundIdentity;
 use crate::MatrixOutboundTransport;
+use crate::MatrixRawSendSeal;
 use crate::MatrixSdkPaths;
 use crate::MatrixSendFuture;
 use crate::MatrixSession;
@@ -362,7 +363,11 @@ impl MatrixOutboundTransport for MatrixSdkClient {
         })
     }
 
-    fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
+    fn send<'a>(
+        &'a self,
+        record: &'a OutboxRecord,
+        _seal: MatrixRawSendSeal,
+    ) -> MatrixSendFuture<'a> {
         Box::pin(async move {
             if !self.config.binding.allowed_rooms.contains(&record.room_id)
                 || record.binding_revision != self.config.binding.revision

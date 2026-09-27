@@ -80,6 +80,7 @@ const MATRIX_DISPATCH_SCHEMA_SOURCES: &[&str] = &[
     include_str!("../migrations/0008_matrix_content_binding.sql"),
     include_str!("../migrations/0009_matrix_legacy_content_holds.sql"),
     include_str!("../migrations/0010_matrix_entered_use_proofs.sql"),
+    include_str!("../migrations/0011_matrix_legacy_hold_remediation.sql"),
 ];
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
@@ -1629,11 +1630,17 @@ impl MatrixDurableStore {
                     payload, payload_sha256, logical_txn_count,
                     binding_revision, generation, state, attempts, next_attempt_at_ms,
                     lease_until_ms, created_at_ms, updated_at_ms, sent_event_id
-             FROM matrix_sendable_outbox_v2
-             WHERE (
-                    state IN ('pending', 'retry_scheduled') AND next_attempt_at_ms <= ?
-                   ) OR (
-                    state = 'in_flight' AND lease_until_ms <= ?
+             FROM matrix_sendable_outbox_v2 AS outbox
+             WHERE NOT EXISTS (
+                    SELECT 1 FROM matrix_dispatch_legacy_content_holds AS hold
+                    WHERE hold.stable_txn_id = outbox.stable_txn_id
+                   )
+               AND (
+                    (
+                     state IN ('pending', 'retry_scheduled') AND next_attempt_at_ms <= ?
+                    ) OR (
+                     state = 'in_flight' AND lease_until_ms <= ?
+                    )
                    )
              ORDER BY next_attempt_at_ms, outbox_id LIMIT ?",
         )
@@ -3784,6 +3791,7 @@ async fn verify_store(
             ('matrix_dispatch_legacy_content_holds_no_insert', 'trigger'),
             ('matrix_dispatch_legacy_content_holds_no_update', 'trigger'),
             ('matrix_dispatch_legacy_content_holds_no_delete', 'trigger'),
+            ('matrix_dispatch_legacy_hold_no_reactivate', 'trigger'),
             ('matrix_dispatch_use_entries', 'table'),
             ('matrix_dispatch_use_entries_by_witness', 'index'),
             ('matrix_dispatch_use_entries_guard_insert', 'trigger'),
@@ -3796,7 +3804,7 @@ async fn verify_store(
     .fetch_one(pool)
     .await
     .map_err(unavailable)?;
-    if required_objects != 75 {
+    if required_objects != 76 {
         return Err(MatrixDurableError::Corrupt);
     }
     verify_matrix_v2_schema(pool).await?;
@@ -3964,9 +3972,26 @@ async fn verify_store(
         "SELECT COUNT(*)
          FROM matrix_dispatch_legacy_content_holds AS hold
          JOIN outbox_messages AS message USING (stable_txn_id)
+         JOIN matrix_dispatch_ledger AS dispatch USING (stable_txn_id)
          LEFT JOIN matrix_dispatch_content_bindings AS content USING (stable_txn_id)
+         LEFT JOIN matrix_dispatch_active_claims AS active USING (stable_txn_id)
          WHERE hold.inherited_attempts > message.attempts
-            OR content.stable_txn_id IS NOT NULL",
+            OR dispatch.attempts != message.attempts
+            OR content.stable_txn_id IS NOT NULL
+            OR active.stable_txn_id IS NOT NULL
+            OR (
+                message.sent_event_id IS NOT NULL
+                AND dispatch.accepted_event_id IS NOT NULL
+                AND message.sent_event_id != dispatch.accepted_event_id
+            )
+            OR (
+                message.state IN ('pending', 'in_flight', 'retry_scheduled')
+                AND (
+                    message.state != 'retry_scheduled'
+                    OR message.next_attempt_at_ms != 9223372036854775807
+                    OR message.lease_until_ms IS NOT NULL
+                )
+            )",
     )
     .fetch_one(pool)
     .await

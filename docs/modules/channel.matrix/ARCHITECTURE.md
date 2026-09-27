@@ -22,7 +22,7 @@ hepta-supervisor
             └─ matrixd control server + health monitor
 ```
 
-The supervisor owns process lifecycle, release binding, process lease, restart budget and orphan adoption. `matrixd` owns local composition. The Matrix SDK owns homeserver transport/session mechanics. `MatrixDurableStore` owns Matrix ingress projection, sync cursor, room/thread binding, outbox, dispatch ledger, observations and authority-claim evidence. Agentd owns Agent execution state; Matrix code may call its registered boundary but never write Agentd state directly.
+The supervisor owns process lifecycle, release binding, process lease, restart budget and orphan adoption. `matrixd` owns local composition. The Matrix SDK owns homeserver transport/session mechanics. `MatrixDurableStore` owns Matrix ingress projection, sync cursor, room/thread binding, outbox, dispatch ledger, observations, canonical pins, entered-use proofs, sealed legacy holds and authority-claim evidence. Agentd owns Agent execution state; Matrix code may call its registered boundary but never write Agentd state directly.
 
 ## 2. Startup order
 
@@ -66,13 +66,15 @@ outbox row with stable Matrix transaction id
   -> claim bounded batch with lease/attempt fence
   -> prepare durable dispatch identity
   -> read authenticated transport identity
-  -> derive canonical final-use request and payload/scope digests
+  -> derive and durably pin canonical final-use content/scope digests
   -> obtain independently signed short-lived grant
   -> kernel FinalUseAuthority validates signature and burns nonce
   -> persist immutable authority claim for this transaction + attempt
   -> refresh authenticated revocation frontier
   -> exact-frontier enter_verified_use
-  -> poll lazy Matrix transport future under deadline < claim lease
+  -> persist the non-constructible entered-use proof
+  -> construct the opaque SDK permit
+  -> create and poll the lazy Matrix transport future under deadline < claim lease
   -> append transport observation
   -> wait for trusted /sync event observation
   -> atomically mark dispatch Confirmed and settle outbox Sent
@@ -98,7 +100,7 @@ The Matrix adapter does not mint authority. The grant broker is separately opera
 - Lifecycle caller: `codex-rs/hepta-supervisor/src/matrix.rs`
 - Product composition: `codex-rs/hepta-matrixd/src/runner.rs`
 - Ingress runtime: `codex-rs/hepta-matrixd/src/runtime.rs`
-- Authorized sender: `codex-rs/hepta-matrix-sdk/src/outbound.rs`
+- Authorized sender: `codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs`
 - Final-use request: `codex-rs/hepta-matrix-sdk/src/authority.rs`
 - Durable state: `codex-rs/hepta-matrix-store/src/store.rs` and `dispatch.rs`
 - Sync reconciliation: `codex-rs/hepta-matrix-store/src/sync_v2.rs`

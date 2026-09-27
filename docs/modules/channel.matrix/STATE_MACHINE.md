@@ -8,7 +8,8 @@ The authoritative send truth is owned by `MatrixDurableStore`. The SDK sender, c
 Prepared
   -> Claimed(attempt, lease_epoch, opaque_claim_token)
   -> Authorized(verified-use witness, revocation head)
-  -> Dispatching(final revocation refresh, token consumed)
+  -> Dispatching(final revocation refresh)
+  -> EnteredUse(non-constructible durable proof, sealed SDK permit)
   -> TransportAccepted
   -> Confirmed
   -> Redacted
@@ -26,6 +27,9 @@ Native state is split deliberately:
 | `matrix_dispatch_attempt_claims` | immutable `(transaction, attempt, lease_epoch, claim_token_sha256)` identity |
 | `matrix_dispatch_active_claims` | current nonterminal claim and `claimed/authorized/dispatching` phase |
 | `matrix_dispatch_authority_witnesses` | exact final-use witness and revocation-head digests |
+| `matrix_dispatch_content_bindings` | canonical Matrix content and scope pin |
+| `matrix_dispatch_use_entries` | exact non-constructible entered-use proof |
+| `matrix_dispatch_legacy_content_holds` | sealed inherited unknown-effect identity |
 | `matrix_dispatch_attempt_events` | append-only typed attempt history |
 | `matrix_dispatch_observations` | transport, homeserver and redaction observations |
 
@@ -52,8 +56,9 @@ For each logical send:
 | absent | outbox admission | prepared logical identity | stable transaction and canonical payload |
 | queued | bounded claim | claimed | new attempt/lease, random capability digest, `claimed` event |
 | claimed | durable final-use verification | authorized | witness digest, revocation-head digest, grant identity, `authorized` event |
-| authorized | final persistence before I/O | dispatching | exact live token/lease, `dispatching` event |
-| dispatching | SDK returns valid event ID | accepted | `transport_accepted` observation/event; not terminal success |
+| authorized | durable intent before final entry | dispatching | exact live token/lease, `dispatching` event |
+| dispatching | final revocation check and token entry | entered-use proof | immutable proof bound to claim, authority, scope and canonical content |
+| entered-use proof | sealed SDK permit polls transport | accepted/indeterminate/failed | typed physical-boundary observation; event ID is not terminal success |
 | dispatching | timeout/reset/unknown response | indeterminate | typed failure class and optional retry hint |
 | dispatching | proven pre-effect permanent rejection | failed | no earlier accepted evidence and `permanently_rejected` event |
 | accepted/indeterminate | matching authenticated `/sync` event | succeeded | exact room, transaction, event and qualified authority evidence |
@@ -85,19 +90,22 @@ claim fenced outbox
 -> persist dispatching phase
 -> refresh authenticated revocation frontier
 -> enter verified use with exact token/binding
--> poll lazy Matrix transport future
+-> persist the non-constructible entered-use proof under the live claim
+-> construct the opaque MatrixSendPermit
+-> create and poll the lazy Matrix transport future
 ```
 
-There is no `await`, persistence operation or mutable policy read between successful `enter_verified_use` and polling the transport future. The physical deadline is strictly shorter than the remaining lease.
+Entered-use proof persistence occurs before the transport future exists and therefore before any network effect. After the future is created, no unrelated persistence await precedes its first poll. The physical deadline is strictly shorter than the remaining lease.
 
 ## 6. Transaction boundaries
 
 1. Attempt claim identity, active claim and `claimed` event commit together.
 2. Authority witness, active-phase change and `authorized` event commit together.
 3. Dispatching phase and event commit together before final revocation refresh.
-4. Fenced outcome handling updates the outbox claim and append-only attempt history under the exact attempt/lease/token identity.
-5. `/sync` reconciliation, terminal ledger mutation, outbox settlement, change record and sync checkpoint commit in one owner transaction.
-6. Redaction, dispatch redaction and checkpoint advancement commit in one owner transaction.
+4. Entered-use proof commits under the exact claim/content/authority tuple before permit construction.
+5. Fenced outcome handling updates the outbox claim and append-only attempt history under the exact attempt/lease/token identity.
+6. `/sync` reconciliation, terminal ledger mutation, outbox settlement, change record and sync checkpoint commit in one owner transaction.
+7. Redaction, dispatch redaction and checkpoint advancement commit in one owner transaction.
 
 The durable dispatch ledger also uses attempt CAS. Random capability fencing protects active attempt transitions; stale workers cannot close, retry or settle a newer claim.
 
@@ -110,7 +118,8 @@ The durable dispatch ledger also uses attempt CAS. Random capability fencing pro
 | after capability claim, before grant | active claim expires; next attempt mints a new token |
 | after kernel nonce burn, before witness commit | nonce remains burned; no effect; retry uses a fresh grant |
 | after witness, before dispatching | exact claim can only be canceled/revoked/expired or resumed under its lease |
-| after dispatching, before transport poll | no effect if process dies before poll; recovery does not fabricate success |
+| after token entry, before proof commit | token remains consumed; no network effect; retry requires a fresh grant |
+| after proof commit, before transport poll | entered intent remains durable; no success is fabricated and reconciliation keeps the transaction unresolved |
 | after adapter entry, before response | indeterminate; retain stable transaction |
 | after event ID, before local commit | retry/reconcile same transaction; `/sync` settles terminality |
 | after `/sync` mutation, before commit | transaction and cursor roll back; event replays safely |
@@ -118,4 +127,4 @@ The durable dispatch ledger also uses attempt CAS. Random capability fencing pro
 
 ## 8. Capacity and scheduling
 
-Unresolved dispatch rows are capped at 4,096. Claim batches are bounded to 1-256, attempts to 1-64, network deadlines by lease, and retry delays by policy. Matrix `Retry-After` is normalized, bounded and given deterministic per-transaction jitter. Exhausted unknown effects park for reconciliation rather than spin or become false failures.
+Unresolved dispatch rows are capped at 4,096. Claim batches are bounded to 1-256, attempts to 1-64, network deadlines by lease, and retry delays by policy. Matrix `Retry-After` is normalized, bounded and given deterministic per-transaction jitter. Exhausted unknown effects park for reconciliation rather than spin or become false failures. Sealed legacy holds are materialized as accepted/indeterminate, stale claims are closed, and active queue rows are permanently parked until authenticated sync settles the original transaction.

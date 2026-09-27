@@ -35,7 +35,7 @@ Unparseable server event IDs after SDK completion are response loss, not proof o
 
 ## 5. Final-use broker
 
-The broker protocol is bounded newline-delimited JSON over a private Unix socket. Request and response use schema version 1. The independently operated broker owns signing policy and key; matrixd holds only verifier material.
+The broker protocol is bounded newline-delimited JSON over a private Unix socket. The local host-configuration file remains schema version 1, while request and response envelopes use the same schema version 2 as `MatrixFinalUseRequest`. Version-1/raw-body proposals and responses are rejected rather than reinterpreted. The independently operated broker owns signing policy and key; matrixd holds only verifier material.
 
 The request binds operation ID, stable transaction ID, logical outbox ID, attempt, subject, destination, homeserver, user, device, session generation, room, binding revision, Matrix-plane generation, request digest, scope digest and payload digest.
 
@@ -48,10 +48,12 @@ signed grant
 -> durable dispatching phase
 -> authenticated revocation refresh
 -> exact verified-use entry
--> poll lazy SDK future
+-> durable entered-use proof bound to the live claim and canonical content
+-> opaque MatrixSendPermit construction
+-> create and poll the lazy SDK future
 ```
 
-No await or persistence occurs after verified-use entry and before transport poll.
+Entered-use proof persistence completes before the transport future exists, so a crash cannot turn caller-filled witness metadata into a fabricated physical-entry receipt. After the future is created, no unrelated persistence await precedes its first poll.
 
 ## 6. Claim and lease protocol
 

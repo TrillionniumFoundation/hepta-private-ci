@@ -34,6 +34,7 @@ use crate::MatrixDurableError;
 use crate::MatrixEventId;
 use crate::MatrixRoomId;
 use crate::MatrixSyncCheckpoint;
+use crate::MatrixTransactionId;
 use crate::MatrixUserId;
 use crate::store::MatrixDurableStore;
 

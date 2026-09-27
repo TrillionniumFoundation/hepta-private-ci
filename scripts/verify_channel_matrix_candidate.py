@@ -25,6 +25,7 @@ REQUIRED_DOCS = (
 SOURCE_MARKERS = {
     "codex-rs/hepta-supervisor/src/matrix.rs": ("fn start_matrix_companion(", "spawn_matrixd(&spec)"),
     "codex-rs/hepta-matrixd/src/runner.rs": ("pub async fn run(", "MatrixFinalUseBroker::open(&config.layout)", "run_outbox_sender("),
+    "codex-rs/hepta-matrixd/src/final_use.rs": ("HOST_CONFIG_SCHEMA_VERSION: u32 = 1", "BROKER_WIRE_SCHEMA_VERSION: u32 = MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION", "response.schema_version != BROKER_WIRE_SCHEMA_VERSION"),
     "codex-rs/hepta-matrix-sdk/src/lib.rs": ("mod outbound_v2;", "pub use outbound_v2::run_outbox_sender;", "pub use outbound_v2::MatrixSendPermit;"),
     "codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs": (
         "claim_outbox_fenced(", "prepare_outbox_dispatch(record, prepared_at_ms)",
@@ -38,14 +39,17 @@ SOURCE_MARKERS = {
     "codex-rs/hepta-matrix-sdk/src/content.rs": ("hepta.matrix.canonical-outbound-content.v1", "m.new_content", "m.relates_to", "event_id", "sort_unstable_by"),
     "codex-rs/hepta-matrix-sdk/src/sdk.rs": ("mod implementation", "fn send_authorized", "permit.validate(record", "outbound_message_content(body", "disable_retry()"),
     "codex-rs/hepta-matrix-sdk/src/sdk_implementation.rs": ("ErrorKind::LimitExceeded", "RetryAfter::Delay", "MatrixTransportError::Dns", "MatrixTransportError::Tls", "MatrixTransportError::ResponseLost"),
-    "codex-rs/hepta-matrix-store/src/claim/store.rs": ("claim_outbox_fenced(", "record_outbox_authorized(", "record_outbox_dispatching(", "finish_outbox_indeterminate(", "matrix_dispatch_authority_witnesses", "matrix_dispatch_attempt_events"),
+    "codex-rs/hepta-matrix-store/src/claim/store.rs": ("claim_outbox_fenced(", "record_outbox_authorized(", "record_outbox_dispatching(", "record_outbox_entered_use(", "finish_outbox_indeterminate(", "matrix_dispatch_authority_witnesses", "matrix_dispatch_attempt_events", "matrix_dispatch_use_entries"),
     "codex-rs/hepta-matrix-store/src/claim/content.rs": ("pin_outbox_content(", "require_live_active_claim_tx", "matrix_dispatch_content_bindings", "matrix_dispatch_legacy_content_holds", "unsafe_prior"),
+    "codex-rs/hepta-matrix-store/src/store.rs": ("MATRIX_DISPATCH_SCHEMA_SOURCES", "FROM matrix_sendable_outbox_v2 AS outbox", "matrix_dispatch_legacy_content_holds AS hold"),
     "codex-rs/hepta-matrix-store/src/dispatch.rs": ("pub async fn prepare_outbox_dispatch(", "pub(crate) async fn observe_outbound_event_tx(", "pub(crate) async fn apply_dispatch_redaction_tx("),
     "codex-rs/hepta-matrix-store/src/sync_v2.rs": ("observe_outbound_event_tx(", "apply_dispatch_redaction_tx("),
     "codex-rs/hepta-matrix-store/migrations/0006_matrix_dispatch_ledger.sql": ("CREATE TABLE matrix_dispatch_ledger", "CREATE TABLE matrix_dispatch_observations", "CREATE TABLE matrix_dispatch_authority_claims", "matrix_dispatch_ledger_identity_immutable", "matrix_dispatch_succeeded_requires_authority_claim"),
     "codex-rs/hepta-matrix-store/migrations/0007_matrix_claim_fencing.sql": ("CREATE TABLE matrix_dispatch_attempt_claims", "CREATE TABLE matrix_dispatch_active_claims", "CREATE TABLE matrix_dispatch_authority_witnesses", "CREATE TABLE matrix_dispatch_attempt_events", "Matrix attempt history is append-only"),
     "codex-rs/hepta-matrix-store/migrations/0008_matrix_content_binding.sql": ("CREATE TABLE matrix_dispatch_content_bindings", "matrix_dispatch_content_bindings_no_update", "matrix_dispatch_content_bindings_no_delete"),
     "codex-rs/hepta-matrix-store/migrations/0009_matrix_legacy_content_holds.sql": ("CREATE TABLE matrix_dispatch_legacy_content_holds", "message.attempts > 0", "matrix_dispatch_legacy_content_holds_no_insert", "matrix_dispatch_legacy_content_holds_no_delete"),
+    "codex-rs/hepta-matrix-store/migrations/0010_matrix_entered_use_proofs.sql": ("CREATE TABLE matrix_dispatch_use_entries", "matrix_dispatch_use_entries_no_update", "matrix_dispatch_succeeded_requires_entered_use"),
+    "codex-rs/hepta-matrix-store/migrations/0011_matrix_legacy_hold_remediation.sql": ("INSERT INTO matrix_dispatch_ledger", "9223372036854775807", "matrix_dispatch_legacy_hold_no_reactivate"),
     "codex-rs/state/src/capability_random.rs": ("pub fn random_capability_bytes() -> [u8; 32]", "Uuid::new_v4()"),
 }
 DENIED_CLAIMS = (

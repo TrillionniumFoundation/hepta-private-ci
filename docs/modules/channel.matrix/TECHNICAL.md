@@ -87,15 +87,15 @@ Wire and storage identities are versioned and bounded. Unknown critical fields, 
 
 ## 6. Data authority, persistence and migrations
 
-`MatrixDurableStore` owns one private per-Agent SQLite database. Migrations 1-5 own the existing room/inbox/outbox/sync/control surfaces. Migration 6 adds the immutable dispatch ledger, observations and authority claims. Migration 7 adds random-capability attempt claims, active claim phases, verified-use/revocation-head witnesses and append-only attempt events.
+`MatrixDurableStore` owns one private per-Agent SQLite database. Migrations 1-5 own the existing room/inbox/outbox/sync/control surfaces. Migration 6 adds the immutable dispatch ledger, observations and authority claims. Migration 7 adds random-capability attempt claims, active claim phases, verified-use/revocation-head witnesses and append-only attempt events. Migration 8 pins canonical Matrix content and scope, migration 9 seals inherited unpinned attempts, migration 10 persists the non-constructible entered-use proof, and migration 11 parks every legacy hold behind authenticated reconciliation while materializing its unresolved durable ledger state.
 
-Operation ID, stable transaction ID and event IDs are independently unique. Logical identity columns are immutable; audit rows cannot be deleted. Store open validates migration history, schema objects, constraints, triggers, foreign keys and integrity before work.
+Operation ID, stable transaction ID and event IDs are independently unique. Logical identity columns are immutable; audit rows cannot be deleted. Store open validates migration history, exact table/index/view/trigger SQL, constraints, foreign keys, integrity and legacy-hold parking before work.
 
 ## 7. Runtime, concurrency and transaction model
 
 One process lock and one supervisor process lease fence the per-Agent writer. Outbox claims are bounded and carry monotonic attempt/lease epoch plus an opaque random capability. Only its SHA-256 digest is durable; the raw 32-byte value remains process-private.
 
-Active-claim transitions require the exact transaction, attempt, lease epoch and capability digest. The dispatch ledger also uses attempt CAS. Physical send deadline is shorter than remaining lease. A clean shutdown releases only pre-entry claims; post-entry cancellation becomes an indeterminate effect.
+Active-claim transitions require the exact transaction, attempt, lease epoch and capability digest. The dispatch ledger also uses attempt CAS. Physical send deadline is shorter than remaining lease. A clean shutdown releases only pre-entry claims; post-entry cancellation becomes an indeterminate effect. Legacy holds are never reclaimed: migration 11 closes stale claims, parks the queue row at the non-runnable maximum schedule and permits only authenticated sync settlement.
 
 Trusted `/sync` confirmation/redaction, dispatch terminal mutation, outbox settlement, change record and cursor advancement share one owner transaction.
 
@@ -109,7 +109,7 @@ Crash/recovery rules and exact cuts are defined in [Failure and recovery](FAILUR
 
 ## 9. Security, privacy and threat controls
 
-The final-use path binds subject, destination, homeserver, Matrix user/device/session, room, binding revision, plane generation, transaction, attempt and canonical payload. After the authority witness is durable, Matrixd records `dispatching`, refreshes authenticated revocations, consumes the exact verified-use token, and immediately polls the lazy transport future. No await or persistence intervenes.
+The final-use path binds subject, destination, homeserver, Matrix user/device/session, room, binding revision, plane generation, transaction, attempt and canonical payload. After the authority witness is durable, Matrixd records `dispatching`, refreshes authenticated revocations, consumes the exact verified-use token, durably binds the resulting non-constructible entered-use proof to the live claim/content/authority tuple, constructs the sealed permit, and then creates and polls the lazy transport future. The proof write occurs before any network effect; after the transport future exists, no unrelated persistence await precedes its first poll.
 
 Credentials, session keys, raw grants/tokens, signing material, raw claim capabilities and message content are excluded from general logs and receipts. See [Security model](SECURITY_MODEL.md) for mandatory negative tests and residual external gates.
 
@@ -133,7 +133,7 @@ Focused source checks include:
 - `codex-rs/hepta-matrixd/src/runtime/tests.rs`
 - `codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs`
 - supervisor Matrix lifecycle/orphan tests
-- migration and store reopen/integrity tests
+- migration and store reopen/integrity tests, including legacy-hold park/reactivation guards
 
 Run candidate binding, focused package tests, applicable all-target compilation, strict lint, clean-tree, exact source-head and deterministic synthetic-merge lanes. Retain structured receipts and logs as immutable artifacts. The full scenario table and receipt schema are in [Qualification matrix](QUALIFICATION_MATRIX.md).
 

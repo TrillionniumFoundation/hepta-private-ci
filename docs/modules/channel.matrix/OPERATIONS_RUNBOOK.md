@@ -2,7 +2,7 @@
 
 ## 1. Readiness
 
-Treat Matrix as ready only when the supervisor reports the exact companion healthy and matrixd reports: store/migrations 1-7 verified, final-use broker reachable, authenticated revocation feed current, Agentd connected, initial durable sync complete and continuous sync connected. Queue acceptance or process liveness alone is not readiness.
+Treat Matrix as ready only when the supervisor reports the exact companion healthy and matrixd reports: store/migrations 1-11 and their exact schema/invariants verified, final-use broker reachable, authenticated revocation feed current, Agentd connected, initial durable sync complete and continuous sync connected. Queue acceptance or process liveness alone is not readiness.
 
 ## 2. Required metrics
 
@@ -45,6 +45,10 @@ Do not create a new transaction ID and do not mark failure. Restore sync connect
 
 Verify no live exact matrixd owns the process lease. For a proven pre-entry claim use the typed fenced release path; otherwise allow lease expiry and a higher attempt to replace it. Never disclose/reconstruct the raw claim capability, delete the active row manually or decrement attempts.
 
+### Legacy canonical-content hold
+
+Do not retry, rename or delete a transaction listed in the sealed legacy-hold snapshot. Migration 11 closes any stale local claim, creates or reopens the durable result as `accepted`/`indeterminate`, and parks active queue states at the non-runnable maximum schedule. Restore authenticated sync and reconcile the original transaction; only the normal sync-owner transaction may settle it. A large held set consumes unresolved capacity by design and requires retention/archival planning rather than evidence deletion.
+
 ### Store corruption
 
 Fence/stop matrixd, preserve database/WAL, session and authority state, collect integrity/schema diagnostics, and restore only from a qualified authenticated snapshot. Do not delete and recreate the owner store.
@@ -55,7 +59,7 @@ Drain the old companion, commit the new public binding/session generation throug
 
 ## 6. Rollout and rollback
 
-Roll out with a canary Agent and bounded room set. Require current exact-head and synthetic-merge receipts plus applicable real homeserver qualification before promotion. Roll back only to a binary compatible with migrations 1-7; otherwise roll forward. Keep matrixd and agentd as one paired release and verify both program digests.
+Roll out with a canary Agent and bounded room set. Require current exact-head and synthetic-merge receipts plus applicable real homeserver qualification before promotion. Roll back only to a binary compatible with migrations 1-11, including canonical pins, entered-use proofs and parked legacy holds; otherwise roll forward. Keep matrixd and agentd as one paired release and verify both program digests.
 
 ## 7. Evidence collection
 

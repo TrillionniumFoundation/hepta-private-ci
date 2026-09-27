@@ -6,7 +6,10 @@ This increment continues PR #992 on the existing Matrix owner. It does not
 introduce another sender, state store, signer, provider or production caller.
 The nine existing module development documents remain the main specification.
 This supplement records the continuation-poll behavior and command-receipt
-format implemented in this increment.
+format implemented in this increment. Subsequent source commits additionally
+sealed the raw SDK entry, persisted the non-constructible entered-use proof,
+completed exact migrations 6-11 startup validation and parked sealed legacy
+holds; those source facts still require the exact-candidate receipts below.
 
 ## Resuming a pending transport future
 
@@ -30,9 +33,11 @@ This is a local poll boundary, not a lock spanning the homeserver. It cannot
 undo bytes already written, independently police work spawned by a transport,
 or prove continuous protected-clock authorization until server persistence.
 The kernel performs expiry validation at initial entry; transport duration is
-bounded by the unchanged lease deadline. Stronger transport-specific entry,
-canonical wire-content binding and sealed durable entry evidence still require
-separate implementation/qualification; this increment does not claim them.
+bounded by the unchanged lease deadline. The current source now binds canonical
+Matrix content, persists the entered-use proof before any network effect and
+requires an opaque permit at the SDK facade. This remains a local adapter
+boundary rather than a network-wide atomic lock, and exact native/target
+qualification is still required.
 
 The six new `pending_poll_regressions.rs` tests exercise revoked grants, epoch
 changes, feed failure, device rotation, unchanged authority and unrelated nonce

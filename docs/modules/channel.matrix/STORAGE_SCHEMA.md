@@ -8,6 +8,10 @@
 - Migration owner: `codex-rs/hepta-matrix-store/migrations/`
 - Dispatch truth: `0006_matrix_dispatch_ledger.sql`
 - Random claim fencing and append-only attempt evidence: `0007_matrix_claim_fencing.sql`
+- Canonical content/scope pins: `0008_matrix_content_binding.sql`
+- Sealed inherited-attempt snapshot: `0009_matrix_legacy_content_holds.sql`
+- Entered-use proof binding: `0010_matrix_entered_use_proofs.sql`
+- Legacy hold parking and anti-reactivation fence: `0011_matrix_legacy_hold_remediation.sql`
 - Writer: one exact per-Agent `hepta-matrixd` process generation
 - Durability: SQLite durable-evidence configuration; migration, fingerprint or integrity mismatch fails startup closed
 
@@ -34,6 +38,9 @@
 ## 3. Dispatch ledger
 
 `matrix_dispatch_ledger` binds the stable transaction, unique operation, outbox identity, room, binding revision, Matrix-plane generation, canonical payload digest, optional replacement target, authority/grant binding, state, accepted/terminal event IDs, observation digests, attempt and timestamps.
+| `matrix_dispatch_content_bindings` | immutable canonical Matrix content/scope pin | stable transaction ID |
+| `matrix_dispatch_legacy_content_holds` | sealed inherited unpinned-attempt snapshot | stable transaction ID |
+| `matrix_dispatch_use_entries` | exact non-constructible final-use entry proof | transaction + attempt |
 
 Identity columns are immutable by trigger. Rows cannot be deleted. Unique partial indexes protect accepted and terminal event IDs. A terminal homeserver observation must satisfy the authority-claim invariant; SDK/HTTP return cannot set `succeeded`.
 
@@ -62,7 +69,7 @@ Migration 7 adds `matrix_dispatch_authority_witnesses`, bound by foreign key to 
 - claim-time revocation-head digest;
 - witness-recorded time.
 
-The witness is immutable audit evidence, not reusable authority. The raw final-use token and raw claim capability never enter SQLite.
+The witness is immutable audit evidence, not reusable authority. Migration 10 separately persists the `EnteredUseToken` witness produced by the kernel after final expiry/revocation verification and binds it to the exact claim, signed request, canonical content and scope. Qualified success requires this entered-use row; caller-filled witness metadata cannot substitute. The raw final-use token and raw claim capability never enter SQLite.
 
 ## 6. Attempt event history
 
@@ -91,19 +98,22 @@ Redaction follows the same rule. The cursor cannot commit without the matching d
 
 ## 8. Startup verification
 
-Store open verifies at least:
+Store open verifies:
 
 - owner identity, schema version and migration history;
-- required tables, indexes, views and triggers from migrations 1-7;
-- foreign-key and integrity checks;
-- dispatch-state constraints and terminal-authority invariant;
+- exact normalized SQL for every dispatch/claim/content/use-proof/legacy object from migrations 6-11;
+- all 76 required tables, indexes, views and triggers;
+- `quick_check` and foreign-key checks;
+- dispatch-state, terminal-authority and entered-use invariants;
 - immutable/delete-prevention triggers;
 - uniqueness of operation, transaction, event, grant and claim-token identities;
 - active-claim phase/lease consistency;
+- canonical content/use-entry consistency;
+- every legacy hold has a matching durable ledger, no active claim/content pin, and any active queue state is parked at the non-runnable maximum schedule;
 - digest, generation, attempt and timestamp bounds.
 
 A mismatch is corruption or unsupported schema, never silent projection rebuild.
 
 ## 9. Retention, backup and restore
 
-Dispatch identities, grants, witnesses, claim digests, observations and attempt events are audit evidence. Compaction requires authenticated archival and cannot delete unresolved or terminal lineage. A backup must preserve a consistent SQLite snapshot together with matching authority-frontier metadata. Restore qualification must prove revoked/redacted content, expired active claims and stale session/outbox state cannot resurrect or re-enter physical I/O.
+Dispatch identities, grants, witnesses, entered-use proofs, canonical pins, legacy holds, claim digests, observations and attempt events are audit evidence. Compaction requires authenticated archival and cannot delete unresolved or terminal lineage. Parked legacy holds intentionally consume unresolved capacity until authenticated reconciliation or separately governed archival; resetting their schedule, attempts or transaction ID is prohibited. A backup must preserve a consistent SQLite snapshot together with matching authority-frontier metadata. Restore qualification must prove revoked/redacted content, expired active claims and stale session/outbox state cannot resurrect or re-enter physical I/O.

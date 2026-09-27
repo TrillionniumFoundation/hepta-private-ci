@@ -13,6 +13,7 @@ use tokio_util::sync::CancellationToken;
 use crate::MatrixIngress;
 use crate::MatrixOutboundIdentity;
 use crate::MatrixOutboundTransport;
+use crate::MatrixRawSendSeal;
 use crate::MatrixSdkPaths;
 use crate::MatrixSendFuture;
 use crate::MatrixSendPermit;
@@ -119,7 +120,11 @@ impl MatrixOutboundTransport for MatrixSdkClient {
         self.inner.identity()
     }
 
-    fn send<'a>(&'a self, _record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
+    fn send<'a>(
+        &'a self,
+        _record: &'a OutboxRecord,
+        _seal: MatrixRawSendSeal,
+    ) -> MatrixSendFuture<'a> {
         // Legacy deterministic transports retain this trait seam. The real
         // authenticated SDK never performs I/O through an unsealed entry.
         Box::pin(async { Err(MatrixTransportError::Permanent) })

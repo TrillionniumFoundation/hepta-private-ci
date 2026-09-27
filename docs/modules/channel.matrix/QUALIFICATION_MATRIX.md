@@ -12,7 +12,7 @@ Status labels: `source` means implementation/fixture exists; `executed` requires
 | MATRIX-Q04 | server accepts then connection drops | never marked failed; terminal only after trusted observation | source fault seam |
 | MATRIX-Q05 | revoke after claim, before entry | zero physical entry after rejection; fresh attempt/grant required | source |
 | MATRIX-Q06 | crash after remote acceptance before local commit | same transaction and restart reconciliation | hermetic Synapse source fixture |
-| MATRIX-Q07 | matrixd restart | transaction, claim history and verified authority lineage survive | source; genuine durable proof chain still a gate |
+| MATRIX-Q07 | matrixd restart | transaction, claim history and verified authority lineage survive | source; exact-head native execution required |
 | MATRIX-Q08 | supervisor restart/orphan | exact lease/adoption or fenced rejection | supervisor source tests and Synapse fixture |
 | MATRIX-Q09 | redaction | confirmed event becomes redacted in the same sync-owner transaction | source |
 | MATRIX-Q10 | sync gap/reconnect | no duplicate projection/send; cursor cannot skip terminal event | source |
@@ -25,14 +25,14 @@ Status labels: `source` means implementation/fixture exists; `executed` requires
 | MATRIX-Q17 | network failures | DNS/TLS/connect/read/response-loss/5xx classification | source; platform fault receipt required |
 | MATRIX-Q18 | edit target/content drift | same body with another replacement target produces a different signed binding | new Rust source; native execution required |
 | MATRIX-Q19 | raw SDK bypass | no public raw client; real unsealed send performs no I/O; only opaque permit enters SDK | new facade/permit source; compiler and transport-negative qualification required |
-| MATRIX-Q20 | pre-pin cancellation versus legacy unknown | new proven-pre-entry retry can first-pin; inherited unpinned attempts remain held | 6 isolated migration-9 tests passed; native reopen case remains source |
-| MATRIX-Q21 | same-name schema weakening | content pin rejects altered table/trigger DDL | isolated SQLite test passed; full startup/native qualification still required |
+| MATRIX-Q20 | pre-pin cancellation versus legacy unknown | new proven-pre-entry retry can first-pin; inherited unpinned attempts are durably unresolved and parked for authenticated reconciliation | migration-9/11 isolated tests passed; exact-head native execution required |
+| MATRIX-Q21 | same-name schema weakening | content pin and store-open checks reject altered table/trigger DDL | source-complete exact schema validation; exact-head native execution required |
 
 ## 2. Qualification sources
 
-`codex-rs/hepta-matrix-sdk/tests/durable_transport.rs`, `final_poll_regressions.rs` and `pending_poll_regressions.rs` retain sender/retry/fencing source cases. New `src/content_tests.rs` and `authority_tests.rs` cover the version-2 message binding. `codex-rs/hepta-matrix-store/tests/content_binding.rs` adds reopen, pre-pin cancel, semantic drift, stale claim, malformed digest and weakened-schema cases.
+`codex-rs/hepta-matrix-sdk/tests/durable_transport.rs`, `final_poll_regressions.rs` and `pending_poll_regressions.rs` retain sender/retry/fencing source cases. New `src/content_tests.rs` and `authority_tests.rs` cover the version-2 message binding. `codex-rs/hepta-matrix-store/tests/content_binding.rs` adds reopen, pre-pin cancel, semantic drift, stale claim, malformed digest and weakened-schema cases. `scripts/tests/test_channel_matrix_legacy_remediation.py` exercises migration-11 ledger materialization, stale-claim closure, queue parking and the anti-reactivation trigger.
 
-`codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs` and `tests/fixtures/run-hermetic-synapse.sh` retain the pinned unencrypted target profile. It records image/version/source/runner identity; storing it is not a successful run. Supervisor fixtures remain the lifecycle/adoption source. Migration-7 histories, migration-8 pins and migration-9 holds are not an independent sender or an authorization issuer.
+`codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs` and `tests/fixtures/run-hermetic-synapse.sh` retain the pinned unencrypted target profile. It records image/version/source/runner identity; storing it is not a successful run. Supervisor fixtures remain the lifecycle/adoption source. Migration-7 histories, migration-8 pins, migration-9 holds, migration-10 entered-use rows and migration-11 parking are durable owner facts, not an independent sender or authorization issuer.
 
 ## 3. Executed-scenario receipts
 
@@ -70,7 +70,7 @@ Use this homeserver schema only for a real homeserver execution. Isolated schema
 
 ## 5. Latest local and historical evidence
 
-For this increment, **27 isolated tests passed**: 13 migration-8 constraint tests, six migration-9 historical/new-work tests and eight temporary-Git verifier tests. The command is:
+Across the preceding content-boundary increment, **27 isolated tests passed**: 13 migration-8 constraint tests, six migration-9 historical/new-work tests and eight temporary-Git verifier tests. This remediation increment adds five narrow synthetic SQLite tests for migration 11; they passed in the authoring harness but do not replace exact-candidate CI. The discovery command is:
 
 ```sh
 python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix*.py' -v
@@ -82,4 +82,4 @@ Historical source-head run `36278075076`, candidate `b09690f5c25c6cf9c2e834335ee
 
 ## 6. Promotion rule
 
-No native source-completion, product-execution, deployment, independent-acceptance, activation or release claim is granted by this increment. Resolve the lockfile using the pinned resolver, not by dropping `--locked`. Complete the genuine kernel-proof/durable-authority/terminal-observation trust chain, whole-store startup checks, legacy item remediation and all applicable target profiles. A workflow file and local SQLite success cannot close those gates.
+No product-execution, deployment, independent-acceptance, activation or release claim is granted by this increment. Keep `--locked`; commit only the pinned resolver's scoped lockfile result. The source now contains the kernel entered-use proof, durable authority/content binding, exact whole-store startup validation and legacy-hold parking/reconciliation path, but those claims require passing exact-head and deterministic-merge native receipts. Real homeserver, encryption/rotation, restore/capacity and independent target profiles remain mandatory. A workflow file and local SQLite success cannot close those gates.

@@ -38,6 +38,7 @@ pub use matrix_sdk::SessionMeta;
 pub use matrix_sdk::SessionTokens;
 pub use matrix_sdk::authentication::matrix::MatrixSession;
 pub use outbound_v2::MatrixOutboundTransport;
+pub use outbound_v2::MatrixRawSendSeal;
 pub use outbound_v2::MatrixSendFuture;
 pub use outbound_v2::MatrixSendPermit;
 pub use outbound_v2::MatrixTransportError;

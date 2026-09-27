@@ -25,10 +25,11 @@ Before physical entry, cancellation releases the current claim and unstarted row
 
 1. Supervisor validates Matrix process lease against Agent generation, release, binding digest, process incarnation and plane epoch.
 2. An exact live orphan may be adopted; stale or unverifiable processes are killed/rejected.
-3. Matrixd obtains the process lock, verifies migrations 1-7 and final-use state, completes an initial durable sync, resumes exact threads and recovers pending inbox work.
+3. Matrixd obtains the process lock, verifies migrations 1-11, exact schema SQL and final-use/legacy-hold invariants, completes an initial durable sync, resumes exact threads and recovers pending inbox work.
 4. Expired active claims receive an append-only `expired` event before a later attempt mints a new capability.
-5. Expired outbox leases are reclaimed with the same stable transaction and a higher attempt.
-6. Accepted/indeterminate dispatches remain unresolved until authenticated sync supplies matching server evidence.
+5. Expired outbox leases are reclaimed with the same stable transaction and a higher attempt, except sealed legacy holds.
+6. Migration 11 closes stale legacy claims, records claimed-only work as expired and later phases as indeterminate, materializes the unresolved ledger, and parks the queue row at the non-runnable maximum schedule.
+7. Accepted/indeterminate dispatches remain unresolved until authenticated sync supplies matching server evidence.
 
 ## 5. Corruption policy
 
@@ -36,7 +37,7 @@ Never delete the database, WAL, session store, authority state or audit rows to 
 
 ## 6. Rollback
 
-Binary rollback is allowed only when the predecessor understands every committed migration and durable record. Migrations 6-7 dispatch, claim, witness and attempt-event rows cannot be ignored by an older sender. Otherwise keep the current store owner and roll forward. Release rollback retains stable transaction identities, current redaction/revocation frontiers and unresolved effects.
+Binary rollback is allowed only when the predecessor understands every committed migration and durable record. Migrations 6-11 dispatch, claim, witness, canonical-content, entered-use, legacy-hold and remediation rows cannot be ignored by an older sender. Otherwise keep the current store owner and roll forward. Release rollback retains stable transaction identities, current redaction/revocation frontiers, parked legacy holds and unresolved effects.
 
 ## 7. Fault-injection points
 

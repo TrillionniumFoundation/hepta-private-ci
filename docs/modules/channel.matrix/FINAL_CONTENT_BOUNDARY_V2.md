@@ -93,3 +93,9 @@ The existing CI now includes `test_channel_matrix*.py`, retains the local-unit l
 Resolve the lockfile with the pinned resolver and review the resulting scoped diff; execute all native fixtures, strict lint/format and complete startup/migration tests. Close the kernel-proof-to-durable-authority-to-authenticated-terminal trust chain: public caller-filled witness metadata must not become qualified proof merely because a sealed physical send permit exists. Validate configured session generation against real authenticated login/access-token and encryption-session rotation.
 
 Finally run the supported pinned unencrypted Synapse profile, encrypted-room rotation, ACK-loss/crash recovery, revocation-at-entry, redaction/restore and sustained-capacity scenarios with exact-candidate receipts. Independent operator/security acceptance, activation and release remain false. No enrollment, real production send, credential distribution, mainline merge or release is authorized by this source increment.
+
+## 9. Subsequent source closure
+
+Later commits supersede the source-gap statements above without changing their historical execution claims. Migration 10 now stores the non-constructible entered-use proof and makes qualified success/redaction depend on the exact claim, authority, content and proof tuple. Store open compares exact normalized SQL for the dispatch objects from migrations 6-11 and checks integrity, foreign keys, claims, content, use entries, terminal states and legacy holds.
+
+Migration 11 gives every sealed legacy hold a durable `accepted` or `indeterminate` ledger row, closes stale claims with append-only evidence, parks active queue rows at the maximum signed schedule and installs an anti-reactivation trigger. Only authenticated sync may settle the original transaction. The five narrow migration-11 tests passed in the authoring harness; exact-candidate Rust/CI and real homeserver qualification are still required.

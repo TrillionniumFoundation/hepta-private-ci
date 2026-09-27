@@ -53,6 +53,7 @@ use codex_hepta_matrix_sdk::MatrixIngress;
 use codex_hepta_matrix_sdk::MatrixOutboundAuthorizer;
 use codex_hepta_matrix_sdk::MatrixOutboundIdentity;
 use codex_hepta_matrix_sdk::MatrixOutboundTransport;
+use codex_hepta_matrix_sdk::MatrixRawSendSeal;
 use codex_hepta_matrix_sdk::MatrixSdkPaths;
 use codex_hepta_matrix_sdk::MatrixSendFuture;
 use codex_hepta_matrix_sdk::MatrixSidecarConfig;
@@ -380,7 +381,11 @@ impl MatrixOutboundTransport for PostSendAckLossTransport {
         Ok(fake_outbound_identity())
     }
 
-    fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
+    fn send<'a>(
+        &'a self,
+        record: &'a OutboxRecord,
+        _seal: MatrixRawSendSeal,
+    ) -> MatrixSendFuture<'a> {
         Box::pin(async move {
             let mut txn_ids = self
                 .txn_ids
@@ -420,7 +425,11 @@ impl MatrixOutboundTransport for FakeTransport {
         Ok(fake_outbound_identity())
     }
 
-    fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
+    fn send<'a>(
+        &'a self,
+        record: &'a OutboxRecord,
+        _seal: MatrixRawSendSeal,
+    ) -> MatrixSendFuture<'a> {
         Box::pin(async move {
             self.txn_ids
                 .lock()

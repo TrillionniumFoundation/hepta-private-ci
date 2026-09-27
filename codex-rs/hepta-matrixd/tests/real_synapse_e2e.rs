@@ -69,6 +69,7 @@ use codex_hepta_matrix_protocol::MatrixdResponse;
 use codex_hepta_matrix_protocol::client_user_message_id;
 use codex_hepta_matrix_protocol::matrix_binding_digest;
 use codex_hepta_matrix_sdk::MatrixFinalUseRequest;
+use codex_hepta_matrix_sdk::MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION;
 use codex_hepta_matrix_sdk::arm_post_send_pre_mark_ack_drop_once;
 use codex_hepta_matrix_store::InboxDispatchState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
@@ -144,7 +145,8 @@ const OUTBOUND_ACK_LOSS_BODY: &str = "agent-a-outbound-ack-loss";
 const FINAL_USE_SIGNER_ID: &str = "matrix-r4-authority";
 const FINAL_USE_AUTHORITY_EPOCH: u64 = 31;
 const FINAL_USE_REVOCATION_REVISION: u64 = 1;
-const FINAL_USE_BROKER_SCHEMA_VERSION: u32 = 1;
+const FINAL_USE_HOST_CONFIG_SCHEMA_VERSION: u32 = 1;
+const FINAL_USE_BROKER_WIRE_SCHEMA_VERSION: u32 = MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION;
 const FINAL_USE_BROKER_MAX_FRAME_BYTES: usize = 128 * 1024;
 
 #[derive(Clone, Debug)]
@@ -234,7 +236,7 @@ impl QualificationFinalUseBroker {
         write_private_json(
             &layout.matrix_secrets_root().join("final-use.json"),
             &json!({
-                "schema_version": FINAL_USE_BROKER_SCHEMA_VERSION,
+                "schema_version": FINAL_USE_HOST_CONFIG_SCHEMA_VERSION,
                 "signer_id": FINAL_USE_SIGNER_ID,
                 "verifying_key": self.verifying_key,
                 "broker_socket": self.socket.to_string_lossy(),
@@ -301,7 +303,7 @@ async fn handle_final_use_broker_connection(
     );
     let request: QualificationGrantBrokerRequest = serde_json::from_slice(&frame)?;
     ensure!(
-        request.schema_version == FINAL_USE_BROKER_SCHEMA_VERSION,
+        request.schema_version == FINAL_USE_BROKER_WIRE_SCHEMA_VERSION,
         "final-use broker schema drifted"
     );
     request.request.validate().map_err(anyhow::Error::msg)?;
@@ -332,7 +334,7 @@ async fn handle_final_use_broker_connection(
     let signature = signer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
     let grant_id = grant.grant_id.clone();
     let response = QualificationGrantBrokerResponse {
-        schema_version: FINAL_USE_BROKER_SCHEMA_VERSION,
+        schema_version: FINAL_USE_BROKER_WIRE_SCHEMA_VERSION,
         grant: SignedFinalUseGrant { grant, signature },
     };
     let bytes = serde_json::to_vec(&response)?;

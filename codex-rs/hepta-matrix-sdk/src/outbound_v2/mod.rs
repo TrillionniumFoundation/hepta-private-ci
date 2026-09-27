@@ -36,6 +36,22 @@ const PARKED_RECONCILIATION_AT_MS: u64 = i64::MAX as u64;
 pub type MatrixSendFuture<'a> =
     Pin<Box<dyn Future<Output = Result<MatrixEventId, MatrixTransportError>> + Send + 'a>>;
 
+/// Unforgeable safe-code admission to the raw transport implementation.
+///
+/// This type is public only because [`MatrixOutboundTransport`] is implementable
+/// by external deterministic fixtures. Its field is private, so downstream
+/// callers cannot invoke the raw `send` method directly. The durable final gate
+/// constructs it only after validating a sealed [`MatrixSendPermit`].
+///
+/// ```compile_fail
+/// use codex_hepta_matrix_sdk::MatrixRawSendSeal;
+/// let _forged = MatrixRawSendSeal { _private: () };
+/// ```
+#[doc(hidden)]
+pub struct MatrixRawSendSeal {
+    _private: (),
+}
+
 /// Lazy Matrix transport driven by the durable sender's final gate.
 /// The concrete SDK rejects unsealed entry. Deterministic fixture transports
 /// may retain the legacy method behind the default sealed adapter.
@@ -43,8 +59,14 @@ pub trait MatrixOutboundTransport: Send + Sync {
     /// Return the exact authenticated Matrix transport/session identity.
     fn identity(&self) -> Result<MatrixOutboundIdentity, MatrixTransportError>;
 
-    /// Legacy fixture seam. The real SDK returns a rejection without I/O.
-    fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a>;
+    /// Raw implementation seam. Safe downstream code cannot construct `seal`;
+    /// only this module's permit-validating adapter can enter it.
+    #[doc(hidden)]
+    fn send<'a>(
+        &'a self,
+        record: &'a OutboxRecord,
+        seal: MatrixRawSendSeal,
+    ) -> MatrixSendFuture<'a>;
 
     /// Consume one non-constructible permit. Construction must not perform I/O
     /// or spawn detached work: physical work stays inside final-gate polling.
@@ -57,7 +79,7 @@ pub trait MatrixOutboundTransport: Send + Sync {
             .identity()
             .and_then(|identity| permit.validate(record, &identity))
         {
-            Ok(()) => self.send(record),
+            Ok(()) => self.send(record, MatrixRawSendSeal { _private: () }),
             Err(error) => Box::pin(async move { Err(error) }),
         }
     }

@@ -27,9 +27,11 @@ The owner:
 3. persists witness and revocation-head digests under the exact claim;
 4. records dispatching;
 5. refreshes authenticated revocations;
-6. consumes the exact-frontier token immediately before polling the lazy transport future.
+6. consumes the exact-frontier token;
+7. persists the resulting non-constructible entered-use proof against the claim, authority and canonical-content tuple;
+8. constructs the opaque SDK permit and creates/polls the lazy transport future without an intervening unrelated persistence await.
 
-The raw 32-byte claim capability is process-private. Only its SHA-256 digest is durable. Every active-claim mutation is fenced by transaction, attempt, lease epoch and capability digest; the ledger additionally enforces monotonic attempt CAS.
+The raw 32-byte claim capability is process-private. Only its SHA-256 digest is durable. Every active-claim mutation is fenced by transaction, attempt, lease epoch and capability digest; the ledger additionally enforces monotonic attempt CAS. Qualified success or redaction requires the entered-use row, so caller-filled witness metadata cannot stand in for physical-entry proof.
 
 ## 4. Ingress threats
 
@@ -61,7 +63,8 @@ Logs and receipts retain typed IDs, error classes and digests. They exclude raw 
 - pre-entry cancellation/revocation produces zero network calls;
 - post-entry timeout/reset/response loss remains indeterminate;
 - conflicting event/transaction identities fail closed;
-- redacted/revoked content cannot reappear after reconnect or restore.
+- redacted/revoked content cannot reappear after reconnect or restore;
+- sealed legacy holds cannot be reclaimed, rescheduled or assigned a new transaction identity.
 
 ## 9. Residual gates
 

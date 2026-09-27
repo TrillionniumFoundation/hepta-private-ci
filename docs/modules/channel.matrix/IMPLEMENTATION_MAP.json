@@ -32,11 +32,11 @@
   ],
   "laneId": "LANE-B-RUNTIME",
   "module": "channel.matrix",
-  "sourceMaturity": "native_durable_channel_runtime_authorized_dispatch_source_composed_unqualified",
+  "sourceMaturity": "native_durable_channel_runtime_entered_use_legacy_park_source_composed_unqualified",
   "declaredRoots": ["codex-rs/hepta-matrix-sdk", "codex-rs/hepta-matrixd"],
   "resolvedRoots": ["codex-rs/hepta-matrix-sdk", "codex-rs/hepta-matrixd"],
-  "stateOwnerDisposition": "MatrixDurableStore owns ingress, sync frontier, outbox, dispatch ledger, fenced claims, witness metadata, attempt events, immutable canonical content/scope pins and the sealed legacy-content hold snapshot. No second sender or in-memory terminal ledger is introduced.",
-  "terminalObserverDisposition": "The canonical sync reducer commits matching remote event observations; HTTP acceptance is not qualified terminality. Trusted-ingress and kernel-proof-to-durable-terminal provenance remain explicit verification and implementation gates.",
+  "stateOwnerDisposition": "MatrixDurableStore owns ingress, sync frontier, outbox, dispatch ledger, fenced claims, witness metadata, entered-use proofs, attempt events, immutable canonical content/scope pins and sealed/parked legacy-content holds. No second sender or in-memory terminal ledger is introduced.",
+  "terminalObserverDisposition": "The canonical sync reducer commits matching authenticated remote event observations; HTTP acceptance is not qualified terminality. The kernel entered-use proof is durably bound before transport, while trusted target-ingress and exact-candidate execution remain qualification gates.",
   "productCallers": [
     {"role": "lifecycle_product_caller", "sourcePath": "codex-rs/hepta-supervisor/src/matrix.rs", "nativeSymbol": "pub(crate) fn start_matrix_companion("},
     {"role": "runtime_product_composition", "sourcePath": "codex-rs/hepta-matrixd/src/runner.rs", "nativeSymbol": "pub async fn run("}
@@ -68,7 +68,7 @@
         {"path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs", "kind": "authority_identity_claim_fencing_crash_and_retry", "command": "just test -p codex-hepta-matrix-sdk"},
         {"path": "codex-rs/hepta-matrix-store/tests/content_binding.rs", "kind": "canonical_pin_reopen_cancel_drift_and_schema", "command": "just test -p codex-hepta-matrix-store"}
       ],
-      "sourceSemantics": "Wires fenced claims, immutable canonical plaintext content/scope pins, schema-v2 grant proposals and a non-constructible kernel-entry permit into the real SDK facade. Witness metadata alone is not a genuine kernel proof or terminal-success qualification.",
+      "sourceSemantics": "Wires fenced claims, immutable canonical plaintext content/scope pins, schema-v2 grant proposals, a non-constructible entered-use proof and a sealed SDK permit into the real transport facade. Witness metadata alone cannot qualify success; authenticated sync terminality must match the persisted proof chain.",
       "operation": "prepare_send",
       "nativeSymbol": "pub async fn prepare_outbox_dispatch(",
       "sourcePath": "codex-rs/hepta-matrix-store/src/dispatch.rs",
@@ -96,11 +96,10 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Resolve the actual Cargo.lock/manifest mismatch using the pinned Cargo resolver; retain --locked verification and review the scoped lockfile diff.",
+    "Resolve and commit the scoped Cargo.lock result using the pinned resolver; retain --locked verification.",
     "Compile, format, strictly lint and execute all new and inherited native fixtures on the final source-head and deterministic merge candidate.",
-    "Close the genuine kernel proof -> durable authority record -> authenticated terminal observation chain; caller-filled witness metadata is not sufficient proof.",
-    "Integrate complete startup schema/invariant checks for all dispatch, claim, content-pin and legacy-hold objects; critical pin-boundary DDL checks alone are not full startup qualification.",
-    "Provide bounded item-level remediation for legacy holds and sustained retention/capacity; do not erase immutable pins or unresolved effects.",
+    "Execute the stored hermetic Synapse, ACK-loss/crash, revocation-entry and redaction scenarios with exact candidate receipts.",
+    "Provide authenticated archival/retention for sustained legacy-hold and unresolved-dispatch capacity without deleting evidence.",
     "Qualify authenticated login/access-token and encryption-session transaction scope across rotation; configured session generation alone is not a rotation proof."
   ],
   "externalEvidenceGates": [
@@ -111,9 +110,9 @@
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
-    "repositoryControlledDocumentationGapsClosed": false,
-    "repositoryControlledMappingGapsClosed": false,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,

@@ -8,6 +8,7 @@ use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_matrix_sdk::MatrixAuthorityError;
 use codex_hepta_matrix_sdk::MatrixFinalUseRequest;
+use codex_hepta_matrix_sdk::MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION;
 use codex_hepta_matrix_sdk::MatrixGrantFuture;
 use codex_hepta_matrix_sdk::MatrixOutboundAuthorizer;
 use codex_hepta_paths::HeptaAgentLayout;
@@ -22,7 +23,8 @@ const REVOCATIONS_MAX_BYTES: usize = 2 * 1024 * 1024;
 const BROKER_FRAME_MAX_BYTES: usize = 128 * 1024;
 const MIN_BROKER_TIMEOUT_MS: u64 = 100;
 const MAX_BROKER_TIMEOUT_MS: u64 = 10_000;
-const BROKER_SCHEMA_VERSION: u32 = 1;
+const HOST_CONFIG_SCHEMA_VERSION: u32 = 1;
+const BROKER_WIRE_SCHEMA_VERSION: u32 = MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION;
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -63,7 +65,7 @@ impl MatrixFinalUseBroker {
         let revocations_file = layout.matrix_secrets_root().join(REVOCATIONS_FILE);
         let config: MatrixFinalUseHostConfig =
             read_private_json(&config_path, HOST_CONFIG_MAX_BYTES)?;
-        if config.schema_version != BROKER_SCHEMA_VERSION
+        if config.schema_version != HOST_CONFIG_SCHEMA_VERSION
             || !(MIN_BROKER_TIMEOUT_MS..=MAX_BROKER_TIMEOUT_MS).contains(&config.request_timeout_ms)
         {
             return Err(MatrixFinalUseBrokerError::InvalidConfiguration);
@@ -131,7 +133,7 @@ impl MatrixFinalUseBroker {
         validate_private_socket(&self.broker_socket)
             .map_err(|_| MatrixAuthorityError::Unavailable)?;
         let frame = serde_json::to_vec(&MatrixGrantBrokerRequest {
-            schema_version: BROKER_SCHEMA_VERSION,
+            schema_version: BROKER_WIRE_SCHEMA_VERSION,
             request,
         })
         .map_err(|_| MatrixAuthorityError::InvalidBinding)?;
@@ -174,7 +176,7 @@ impl MatrixFinalUseBroker {
 
         let response: MatrixGrantBrokerResponse =
             serde_json::from_slice(&response).map_err(|_| MatrixAuthorityError::Rejected)?;
-        if response.schema_version != BROKER_SCHEMA_VERSION
+        if response.schema_version != BROKER_WIRE_SCHEMA_VERSION
             || response.grant.grant.binding != request.binding
         {
             return Err(MatrixAuthorityError::Rejected);
@@ -377,6 +379,8 @@ mod tests {
 
     #[test]
     fn config_constants_remain_bounded() {
+        assert_eq!(HOST_CONFIG_SCHEMA_VERSION, 1);
+        assert_eq!(BROKER_WIRE_SCHEMA_VERSION, MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION);
         assert!(HOST_CONFIG_MAX_BYTES <= BROKER_FRAME_MAX_BYTES);
         assert!(MIN_BROKER_TIMEOUT_MS > 0);
         assert!(MAX_BROKER_TIMEOUT_MS <= 10_000);

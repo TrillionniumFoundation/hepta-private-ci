@@ -32,6 +32,7 @@ use codex_hepta_matrix_sdk::MatrixGrantFuture;
 use codex_hepta_matrix_sdk::MatrixOutboundAuthorizer;
 use codex_hepta_matrix_sdk::MatrixOutboundIdentity;
 use codex_hepta_matrix_sdk::MatrixOutboundTransport;
+use codex_hepta_matrix_sdk::MatrixRawSendSeal;
 use codex_hepta_matrix_sdk::MatrixSendFuture;
 use codex_hepta_matrix_sdk::MatrixTransportError;
 use codex_hepta_matrix_sdk::OutboxDispatchConfig;
@@ -228,7 +229,11 @@ impl MatrixOutboundTransport for Transport {
         })
     }
 
-    fn send<'a>(&'a self, _record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
+    fn send<'a>(
+        &'a self,
+        _record: &'a OutboxRecord,
+        _seal: MatrixRawSendSeal,
+    ) -> MatrixSendFuture<'a> {
         Box::pin(poll_fn(move |context| {
             if self.polls.fetch_add(1, Ordering::SeqCst) == 0 {
                 context.waker().wake_by_ref();
