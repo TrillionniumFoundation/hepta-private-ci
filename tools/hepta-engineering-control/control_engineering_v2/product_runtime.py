@@ -11,6 +11,13 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterable
 
+from .capacity_policy import (
+    DatabaseCapacityDecision,
+    DatabaseCapacityPolicy,
+    enforce_database_capacity,
+    evaluate_database_capacity,
+)
+from .clock_policy import ClockPolicy
 from .control_plane import EngineeringError, EngineeringStore, WorkEnvelope
 from .evidence import SignatureTrustStore
 from .integration_controller import (
@@ -31,6 +38,11 @@ from .orchestration import (
     WorkerProfile,
     issue_repository_work_envelope,
     plan_engineering_work,
+)
+from .worker_identity import (
+    WorkerRegistrationRenewalDecision,
+    WorkerRegistrationRenewalReceipt,
+    renew_worker_registration,
 )
 from .worker_lifecycle import (
     WorkerClaim,
@@ -58,10 +70,20 @@ class EngineeringControlProduct:
         *,
         expected_repository: str,
         trust_store: SignatureTrustStore,
+        clock_policy: ClockPolicy = ClockPolicy(),
+        capacity_policy: DatabaseCapacityPolicy | None = None,
     ):
+        if not isinstance(clock_policy, ClockPolicy):
+            raise EngineeringError("invalid_clock_policy")
+        if capacity_policy is not None and not isinstance(
+            capacity_policy, DatabaseCapacityPolicy
+        ):
+            raise EngineeringError("invalid_capacity_policy")
         self.repository = Path(repository).resolve()
         self.expected_repository = expected_repository
         self.trust_store = trust_store
+        self.clock_policy = clock_policy
+        self.capacity_policy = capacity_policy
         self.store = EngineeringStore(database)
         self._startup_reconciled = False
 
@@ -142,8 +164,16 @@ class EngineeringControlProduct:
         now_ns: int | None = None,
     ) -> WorkerRecoveryReport:
         report = recover_worker_lifecycle(self.store, now_ns=now_ns)
+        if self.capacity_policy is not None:
+            enforce_database_capacity(self.store, self.capacity_policy)
         self._startup_reconciled = True
         return report
+
+    def database_capacity(self) -> DatabaseCapacityDecision:
+        return evaluate_database_capacity(
+            self.store,
+            self.capacity_policy or DatabaseCapacityPolicy(),
+        )
 
     def worker_capacity(self, worker_id: str):
         return worker_capacity_usage(self.store, worker_id)
@@ -161,6 +191,20 @@ class EngineeringControlProduct:
             now_ns=now_ns,
         )
 
+    def renew_worker(
+        self,
+        receipt: WorkerRegistrationRenewalReceipt,
+        *,
+        now_ns: int,
+    ) -> WorkerRegistrationRenewalDecision:
+        return renew_worker_registration(
+            self.store,
+            receipt,
+            self.trust_store,
+            now_ns=now_ns,
+            clock_policy=self.clock_policy,
+        )
+
     def claim(
         self,
         generation_id: str,
@@ -173,6 +217,8 @@ class EngineeringControlProduct:
     ) -> WorkerClaim:
         if not self._startup_reconciled:
             raise EngineeringError("product_startup_reconciliation_required")
+        if self.capacity_policy is not None:
+            enforce_database_capacity(self.store, self.capacity_policy)
         return claim_assignment(
             self.store,
             generation_id,

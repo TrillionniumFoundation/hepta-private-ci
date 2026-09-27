@@ -1,0 +1,49 @@
+name: control.engineering projection
+
+on:
+  pull_request:
+    paths:
+      - tools/hepta-engineering-control/**
+      - docs/modules/control.engineering/**
+      - .github/workflows/blocking-ci.yml
+      - .github/workflows/control-engineering-projection.yml
+      - .github/workflows/control-engineering-production-acceptance.yml
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  projection:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Generate exact implementation map, status and API inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.status_projection prepare \
+              --repository "$GITHUB_WORKSPACE" \
+              --output "$RUNNER_TEMP/control-engineering-projection.json"
+          mkdir -p "$RUNNER_TEMP/projection/docs/modules/control.engineering"
+          cp docs/modules/control.engineering/IMPLEMENTATION_MAP.json \
+             docs/modules/control.engineering/STATUS.json \
+             docs/modules/control.engineering/API_COMPATIBILITY.json \
+             "$RUNNER_TEMP/projection/docs/modules/control.engineering/"
+          cp "$RUNNER_TEMP/control-engineering-projection.json" "$RUNNER_TEMP/projection/"
+
+      - name: Retain exact generated projection
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-projection-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/projection
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,123 @@
+name: control.engineering production acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact main commit to verify
+        required: true
+        type: string
+      target_digest:
+        description: SHA-256 deployment target identity
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  verify-external-evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment: control-engineering-production
+    steps:
+      - name: Checkout exact production candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require current protected main identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "${{ inputs.source_sha }}" =~ ^[0-9a-f]{40}$ ]]
+          [[ "${{ inputs.target_digest }}" =~ ^[0-9a-f]{64}$ ]]
+          git fetch --no-tags origin main
+          test "$(git rev-parse HEAD)" = "${{ inputs.source_sha }}"
+          test "$(git rev-parse origin/main)" = "${{ inputs.source_sha }}"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Materialize externally governed receipts and public keys
+        env:
+          RECEIPTS_B64: ${{ secrets.CONTROL_ENGINEERING_EXTERNAL_RECEIPTS_B64 }}
+          PUBLIC_KEYS_B64: ${{ secrets.CONTROL_ENGINEERING_PUBLIC_KEYS_B64 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$RECEIPTS_B64"
+          test -n "$PUBLIC_KEYS_B64"
+          mkdir -p "$RUNNER_TEMP/control-engineering-acceptance/keys"
+          printf '%s' "$RECEIPTS_B64" | base64 --decode > \
+            "$RUNNER_TEMP/control-engineering-acceptance/receipts.json"
+          printf '%s' "$PUBLIC_KEYS_B64" | base64 --decode > \
+            "$RUNNER_TEMP/control-engineering-acceptance/public-keys-source.json"
+          python3 - "$RUNNER_TEMP/control-engineering-acceptance" <<'PY'
+          import base64, json, pathlib, sys
+          root = pathlib.Path(sys.argv[1])
+          rows = json.loads((root / 'public-keys-source.json').read_text())
+          if not isinstance(rows, list) or not rows:
+              raise SystemExit('public key bundle must be a nonempty array')
+          manifest = []
+          for index, row in enumerate(rows):
+              if not isinstance(row, dict) or not isinstance(row.get('publicKeyPemBase64'), str):
+                  raise SystemExit('invalid public key bundle')
+              path = root / 'keys' / f'key-{index:03d}.pem'
+              path.write_bytes(base64.b64decode(row['publicKeyPemBase64'], validate=True))
+              manifest.append({
+                  'issuer': row['issuer'],
+                  'signingIdentity': row['signingIdentity'],
+                  'algorithm': row['algorithm'],
+                  'publicKeyPath': str(path),
+              })
+          (root / 'public-keys.json').write_text(json.dumps(manifest, indent=2) + '\n')
+          PY
+          chmod -R go-rwx "$RUNNER_TEMP/control-engineering-acceptance"
+
+      - name: Verify role-separated external production bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.production_acceptance \
+              --receipts "$RUNNER_TEMP/control-engineering-acceptance/receipts.json" \
+              --public-keys "$RUNNER_TEMP/control-engineering-acceptance/public-keys.json" \
+              --source-commit "${{ inputs.source_sha }}" \
+              --source-tree "$(git rev-parse HEAD^{tree})" \
+              --target-digest "${{ inputs.target_digest }}" \
+              --output "$RUNNER_TEMP/control-engineering-acceptance/decision.json"
+
+      - name: Rehearse bounded recovery and target-host profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap libcap-dev
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.stress_profile \
+              --crash-reopens 10 --concurrent-writers 8 --growth-records 500 \
+              --output "$RUNNER_TEMP/control-engineering-acceptance/stress.json"
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.qualification_profile \
+              --repository "$GITHUB_WORKSPACE" --iterations 7 --sandbox-mode strong \
+              --output "$RUNNER_TEMP/control-engineering-acceptance/host-profile.json"
+
+      - name: Retain acceptance verification bundle
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-production-acceptance-${{ inputs.source_sha }}
+          path: |
+            ${{ runner.temp }}/control-engineering-acceptance/decision.json
+            ${{ runner.temp }}/control-engineering-acceptance/stress.json
+            ${{ runner.temp }}/control-engineering-acceptance/host-profile.json
+          if-no-files-found: warn
+          retention-days: 90

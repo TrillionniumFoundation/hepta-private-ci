@@ -2,6 +2,8 @@ name: blocking-ci
 
 on:
   pull_request: {}
+  pull_request_review:
+    types: [submitted, dismissed]
   push:
     branches: [main]
 
@@ -10,7 +12,9 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
+  actions: read
   contents: read
+  pull-requests: read
 
 jobs:
   scope:
@@ -26,6 +30,7 @@ jobs:
       native: ${{ steps.scope.outputs.native }}
       derived: ${{ steps.scope.outputs.derived }}
       full_repo: ${{ steps.scope.outputs.full_repo }}
+      control_engineering: ${{ steps.control-engineering.outputs.required }}
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -46,12 +51,27 @@ jobs:
           python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies
           python3 -m unittest -v scripts.test_hepta_readiness_semantics
           args=(--head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT")
-          if [ "$EVENT_NAME" = "pull_request" ]; then
+          if [[ "$EVENT_NAME" = pull_request* ]]; then
             args+=(--base "$BASE_SHA")
           else
             args+=(--full)
           fi
           python3 scripts/hepta_ci_scope.py "${args[@]}"
+
+      - name: Select control.engineering qualification
+        id: control-engineering
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.merge_policy scope \
+              --repository "$GITHUB_WORKSPACE" \
+              --base-sha "$BASE_SHA" \
+              --head-sha "$HEAD_SHA" \
+              --github-output "$GITHUB_OUTPUT"
 
       - name: Regression-test scoped fan-in policy
         shell: bash
@@ -210,6 +230,176 @@ jobs:
           python3 scripts/hepta-docs.py verify
           test -z "$(git status --porcelain --untracked-files=no)"
 
+  control-engineering:
+    name: control.engineering release blocker
+    needs: scope
+    if: needs.scope.outputs.control_engineering == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact candidate and merge policy
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          command=verify-main
+          if [[ "$EVENT_NAME" = pull_request* ]]; then command=verify-pr; fi
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.merge_policy "$command" \
+              --repository "$GITHUB_WORKSPACE" \
+              --base-sha "$BASE_SHA" \
+              --head-sha "$HEAD_SHA" \
+              --output "$RUNNER_TEMP/control-engineering-merge-policy.json"
+
+      - name: Prepare strong sandbox and quality tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+          python3 -m pip install --disable-pip-version-check \
+            coverage==7.16.1 mypy==2.3.1 ruff==0.16.9
+
+      - name: Verify exact source maps and generated status
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-gap-closure.py verify
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.status_projection verify \
+              --repository "$GITHUB_WORKSPACE" \
+              --output "$RUNNER_TEMP/control-engineering-status-verification.json"
+
+      - name: Run full owner suite with branch coverage and strong sandbox
+        env:
+          HEPTA_REQUIRE_STRONG_SANDBOX: "1"
+          PYTHONDONTWRITEBYTECODE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools/hepta-engineering-control \
+            coverage run --branch --source=control_engineering_v2 \
+              -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+          coverage json -o "$RUNNER_TEMP/control-engineering-coverage.json"
+          coverage report --fail-under=65
+
+      - name: Lint, type-check and compile the production extensions
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            tools/hepta-engineering-control/control_engineering_v2/audit_checkpoint.py
+            tools/hepta-engineering-control/control_engineering_v2/capacity_policy.py
+            tools/hepta-engineering-control/control_engineering_v2/clock_policy.py
+            tools/hepta-engineering-control/control_engineering_v2/merge_policy.py
+            tools/hepta-engineering-control/control_engineering_v2/production_acceptance.py
+            tools/hepta-engineering-control/control_engineering_v2/production_adapters.py
+            tools/hepta-engineering-control/control_engineering_v2/qualification_mutation_campaign.py
+            tools/hepta-engineering-control/control_engineering_v2/review_gate.py
+            tools/hepta-engineering-control/control_engineering_v2/status_projection.py
+            tools/hepta-engineering-control/control_engineering_v2/stress_profile.py
+            tools/hepta-engineering-control/control_engineering_v2/worker_identity.py
+            tools/hepta-engineering-control/control_engineering_v2/workflow_gate.py
+          )
+          python3 -m compileall -q "${files[@]}"
+          ruff check --select E4,E7,E9,F "${files[@]}" tools/hepta-engineering-control/test_*policy.py tools/hepta-engineering-control/test_worker_identity.py tools/hepta-engineering-control/test_audit_checkpoint.py tools/hepta-engineering-control/test_production_adapters.py tools/hepta-engineering-control/test_review_gate.py tools/hepta-engineering-control/test_merge_policy.py tools/hepta-engineering-control/test_stress_profile.py tools/hepta-engineering-control/test_workflow_gate.py
+          MYPYPATH=tools/hepta-engineering-control mypy \
+            --ignore-missing-imports --follow-imports=skip --check-untyped-defs \
+            "${files[@]}"
+
+      - name: Run bounded crash, contention, WAL and growth profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.stress_profile \
+              --crash-reopens 5 --concurrent-writers 8 --growth-records 250 \
+              --output "$RUNNER_TEMP/control-engineering-stress-profile.json"
+
+      - name: Run real evaluator-owned mutation campaign
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.qualification_mutation_campaign \
+              --repository "$GITHUB_WORKSPACE" \
+              --output "$RUNNER_TEMP/control-engineering-mutation-campaign.json"
+
+      - name: Require current-head independent GitHub approval
+        if: startsWith(github.event_name, 'pull_request')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          AUTHOR_ID: ${{ github.event.pull_request.user.id }}
+          AUTHOR_LOGIN: ${{ github.event.pull_request.user.login }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api --paginate \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/reviews?per_page=100" \
+            --slurp > "$RUNNER_TEMP/control-engineering-review-pages.json"
+          python3 - "$RUNNER_TEMP/control-engineering-review-pages.json" \
+            "$RUNNER_TEMP/control-engineering-reviews.json" <<'PY'
+          import json, pathlib, sys
+          pages = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          pathlib.Path(sys.argv[2]).write_text(json.dumps([item for page in pages for item in page]))
+          PY
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.review_gate \
+              --reviews "$RUNNER_TEMP/control-engineering-reviews.json" \
+              --expected-head-sha "$HEAD_SHA" \
+              --author-user-id "$AUTHOR_ID" \
+              --author-login "$AUTHOR_LOGIN" \
+              --allowed-reviewer Franksudoman \
+              --output "$RUNNER_TEMP/control-engineering-review-gate.json"
+
+      - name: Observe canonical dual-lane or post-merge product evidence
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(
+            --repository "$GITHUB_REPOSITORY"
+            --head-sha "$HEAD_SHA"
+            --output "$RUNNER_TEMP/control-engineering-workflow-observation.json"
+          )
+          if [[ "$GITHUB_EVENT_NAME" = pull_request* ]]; then args+=(--pull-request); fi
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.workflow_gate "${args[@]}"
+
+      - name: Retain control.engineering qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-required-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/control-engineering-*.json
+          if-no-files-found: warn
+          retention-days: 30
+
   required:
     timeout-minutes: 30
     name: CI required
@@ -226,6 +416,7 @@ jobs:
       - sdk
       - hepta-scoped
       - lightweight
+      - control-engineering
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -237,6 +428,7 @@ jobs:
           NEEDS: ${{ toJSON(needs) }}
           NATIVE: ${{ needs.scope.outputs.native }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
+          CONTROL_ENGINEERING: ${{ needs.scope.outputs.control_engineering }}
         shell: bash
         run: |
           set -euo pipefail
@@ -246,6 +438,7 @@ jobs:
           import os
           native = os.environ["NATIVE"] == "true"
           full = os.environ["FULL_REPO"] == "true"
+          control_engineering = os.environ["CONTROL_ENGINEERING"] == "true"
           allowed = []
           if not (native or full):
               allowed.append("hepta-contract-gate")
@@ -255,6 +448,8 @@ jobs:
               allowed.append("hepta-scoped")
           if not (not native and not full):
               allowed.append("lightweight")
+          if not control_engineering:
+              allowed.append("control-engineering")
           print(json.dumps(allowed))
           PY
           )"
