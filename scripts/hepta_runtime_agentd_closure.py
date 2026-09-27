@@ -157,8 +157,9 @@ SOURCE_REQUIREMENTS: dict[str, dict[str, tuple[str, ...]]] = {
     ".github/workflows/runtime-agentd-required.yml": {
         "required": (
             "name: Runtime Agentd required candidate",
-            "lane: source-head",
-            "lane: base-merge",
+            "Exact candidate lane: source-head or base-merge.",
+            "source-head)",
+            "base-merge)",
             "os: [ubuntu-latest, macos-latest]",
             "suite: [owner-libraries, native-library, native-process, daemon-process, product-process, strict-clippy, read-only-profile]",
             "fail-fast: false",
