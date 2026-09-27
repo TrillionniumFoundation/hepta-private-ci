@@ -47,17 +47,39 @@ jobs:
           target: aarch64-unknown-linux-gnu
 
       - name: Apply closed-world runtime.codex convergence patch
+        id: apply
         shell: bash
         run: |
+          set +e
+          {
+            set -euo pipefail
+            python3 -m py_compile scripts/runtime_codex_convergence.py
+            python3 -m py_compile scripts/runtime_codex_convergence_fix.py
+            python3 scripts/runtime_codex_convergence.py
+            test ! -e scripts/runtime_codex_convergence.py
+            test ! -e .github/workflows/runtime-codex-convergence-bootstrap.yml
+            python3 scripts/runtime_codex_convergence_fix.py
+            test ! -e scripts/runtime_codex_convergence_fix.py
+            git diff --check
+          } >"$RUNNER_TEMP/runtime-codex-patch.log" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/runtime-codex-patch.log"
+          exit "$status"
+
+      - name: Publish exact patch failure diagnostic
+        if: failure() && steps.apply.outcome == 'failure'
+        shell: bash
+        env:
+          TARGET_BRANCH: review/runtime-codex-convergence-20260927
+        run: |
           set -euo pipefail
-          python3 -m py_compile scripts/runtime_codex_convergence.py
-          python3 -m py_compile scripts/runtime_codex_convergence_fix.py
-          python3 scripts/runtime_codex_convergence.py
-          test ! -e scripts/runtime_codex_convergence.py
-          test ! -e .github/workflows/runtime-codex-convergence-bootstrap.yml
-          python3 scripts/runtime_codex_convergence_fix.py
-          test ! -e scripts/runtime_codex_convergence_fix.py
-          git diff --check
+          git reset --hard HEAD
+          cp "$RUNNER_TEMP/runtime-codex-patch.log" runtime_codex_patch_failure.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add runtime_codex_patch_failure.txt
+          git commit -m "runtime.codex: retain bootstrap patch failure"
+          git push origin "HEAD:${TARGET_BRANCH}"
 
       - name: Format owned Rust packages
         shell: bash
