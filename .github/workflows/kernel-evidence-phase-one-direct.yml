@@ -1,0 +1,151 @@
+name: Kernel evidence direct phase-one closure
+
+on:
+  push:
+    branches:
+      - fix/kernel-evidence-production-closure
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kernel-evidence-direct-phase-one
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  close-correctness:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 150
+    steps:
+      - name: Check out closure branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: fix/kernel-evidence-production-closure
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Apply audited phase-one patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -q 'EvidenceVerificationProfileV1' codex-rs/hepta-evidence/src/qualification.rs; then
+            echo 'Phase one is already present.'
+            exit 0
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          workflow = Path('.github/workflows/kernel-evidence-closure-bot.yml')
+          lines = workflow.read_text(encoding='utf-8').splitlines()
+          marker = '- name: Apply correctness and policy closure'
+          start = next(i for i, line in enumerate(lines) if line.strip() == marker)
+          run_line = next(
+              i for i in range(start + 1, len(lines)) if lines[i].strip() == 'run: |'
+          )
+          run_indent = len(lines[run_line]) - len(lines[run_line].lstrip())
+          body = []
+          for line in lines[run_line + 1:]:
+              indent = len(line) - len(line.lstrip())
+              if line.strip() and indent <= run_indent:
+                  break
+              body.append(line[min(len(line), run_indent + 2):])
+          script = '\n'.join(body) + '\n'
+
+          old = r'r"fn roles_have_distinct_authenticated_identities\(.*?\n\}\n\nfn read_u64_blob"'
+          new = r'r"fn roles_have_distinct_authenticated_identities\(.*?fn read_u64_blob"'
+          old = old.replace('\\"', '"')
+          new = new.replace('\\"', '"')
+          if old not in script:
+              raise SystemExit('missing role-assignment matcher requiring hardening')
+          script = script.replace(old, new, 1)
+
+          host_start = 'host = "codex-rs/hepta-agentd/src/evidence_host.rs"'
+          product_start = '\n\nproduct = "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"'
+          start_index = script.find(host_start)
+          end_index = script.find(product_start, start_index)
+          if start_index < 0 or end_index < 0:
+              raise SystemExit('missing evidence_host patch section')
+          structural_host_patch = r'''host = "codex-rs/hepta-agentd/src/evidence_host.rs"
+host_text = read(host)
+old_import = "use codex_hepta_evidence::EvidenceIssuerRoleV1;\n"
+new_import = (
+    "use codex_hepta_evidence::EvidenceIssuerRoleV1;\n"
+    "use codex_hepta_evidence::EvidenceVerificationProfileV1;\n"
+)
+if host_text.count(old_import) != 1:
+    raise SystemExit(f"{host}: expected one EvidenceIssuerRoleV1 import")
+host_text = host_text.replace(old_import, new_import, 1)
+verify_function = host_text.index("pub(crate) async fn verify(")
+verify_start = host_text.index("    let claim_class =", verify_function)
+trust_start = host_text.index("    let current_trust =", verify_start)
+new_verify_prelude = (
+    "    if request.verification_profile.is_empty()\n"
+    "        || request.verification_profile.len()\n"
+    "            > codex_hepta_agent_protocol::MAX_KERNEL_EVIDENCE_PROFILE_BYTES\n"
+    "    {\n"
+    "        return Err(invalid(\"invalid evidence verification profile length\"));\n"
+    "    }\n"
+    "    let profile = EvidenceVerificationProfileV1::parse(&request.verification_profile)\n"
+    "        .map_err(|error| invalid(&error))?;\n"
+)
+host_text = host_text[:verify_start] + new_verify_prelude + host_text[trust_start:]
+old_fields = (
+    "                candidate,\n"
+    "                claim_class,\n"
+    "                required_roles,\n"
+)
+new_fields = "                candidate,\n                profile,\n"
+if host_text.count(old_fields) != 1:
+    raise SystemExit(f"{host}: expected one legacy VerifyChainRequest field block")
+host_text = host_text.replace(old_fields, new_fields, 1)
+write(host, host_text)'''
+          script = script[:start_index] + structural_host_patch + script[end_index:]
+          subprocess.run(['bash', '-lc', script], check=True)
+          PY
+
+      - name: Run focused correctness qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test -p codex-hepta-evidence
+          cargo test -p codex-hepta-agentd --test kernel_evidence_product
+
+      - name: Commit phase one and refresh maps
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Hepta kernel evidence closure'
+          git config user.email 'hepta-kernel-evidence-closure@users.noreply.github.com'
+          git add codex-rs docs qualification
+          if ! git diff --cached --quiet; then
+            git commit -m 'kernel.evidence: close verification policy and assignment correctness [kernel-evidence-closure]'
+          fi
+          python3 scripts/hepta-implementation-maps.py migrate --module kernel.evidence
+          git add docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'kernel.evidence: rebind implementation map [kernel-evidence-closure]'
+          fi
+          python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-implementation-maps.py verify
+
+      - name: Remove phase-one workers and publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/kernel-evidence-phase-one-direct.yml
+          git rm -f .github/workflows/kernel-evidence-closure-bot.yml
+          git rm -f .github/workflows/kernel-evidence-closure-pr-driver.yml
+          git commit -m 'ci: remove kernel.evidence phase-one workers [kernel-evidence-closure]'
+          python3 scripts/hepta-implementation-maps.py verify
+          git push origin HEAD:fix/kernel-evidence-production-closure
