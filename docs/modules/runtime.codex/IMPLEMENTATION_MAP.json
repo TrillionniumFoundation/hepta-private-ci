@@ -2,19 +2,23 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "387adf91a0a134e0ae2030c2df7783dcc8d2d135",
-    "tree": "3fe9ebb2d0745be19c48f67b45de0d685fe6b568"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.codex",
   "sourceMaturity": "native_execution_spine",
   "declaredRoots": [
-    "codex-rs/codex-app-server",
-    "codex-rs/hepta-codex-adapter"
+    "codex-rs/app-server",
+    "codex-rs/hepta-codex-adapter",
+    "codex-rs/hepta-app-bridge",
+    "codex-rs/hepta-app-host"
   ],
   "resolvedRoots": [
     "codex-rs/app-server",
-    "codex-rs/hepta-codex-adapter"
+    "codex-rs/hepta-codex-adapter",
+    "codex-rs/hepta-app-bridge",
+    "codex-rs/hepta-app-host"
   ],
   "stateOwnerDisposition": "The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.",
   "terminalObserverDisposition": "The App Server/client path supplies typed process-local terminal and request-level observations; runtime.codex validates exact correlation. External tool/provider terminality remains with its effect owner and target-host trust is independently qualified.",
@@ -163,8 +167,10 @@
   "deputy": "agent-runtime",
   "technicalGuide": "docs/modules/runtime.codex/TECHNICAL.md",
   "sourceRoot": [
-    "codex-rs/codex-app-server",
-    "codex-rs/hepta-codex-adapter"
+    "codex-rs/app-server",
+    "codex-rs/hepta-codex-adapter",
+    "codex-rs/hepta-app-bridge",
+    "codex-rs/hepta-app-host"
   ],
   "productionCallerBindings": [
     {
@@ -309,11 +315,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/app-server",
-      "object": "369db165729574a745833cb651a17faf3fd00a46"
+      "object": "fbeea1483fbff7b1138a945752a2677886095e72"
     },
     {
       "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
-      "object": "6126faf53271e6108c96394b0217bc763213cf86"
+      "object": "e6ab2806d4a7d3fea3b679c2c857aaf815bc4aac"
     },
     {
       "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
@@ -326,10 +332,6 @@
     {
       "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
       "object": "e624887eccb92cc0be6eaceeec9c5a50da20dbc1"
-    },
-    {
-      "path": "codex-rs/codex-app-server/BINDING.json",
-      "object": "f3dec1f92ed39c2eeed2b7a97b34babb01800197"
     },
     {
       "path": "codex-rs/core/src/codex_thread.rs",
@@ -345,7 +347,15 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
-      "object": "87d1d31b67fc7efc7a39be8b427d94b5b3e36607"
+      "object": "46af276968104114b86c5102e4713127ff17abd5"
+    },
+    {
+      "path": "codex-rs/hepta-app-bridge",
+      "object": "8a08208a399c95783efb412d3c8123f8c32fb9e8"
+    },
+    {
+      "path": "codex-rs/hepta-app-host",
+      "object": "7fedfe61909bafe6c49e56fc1000f89d64208d9c"
     },
     {
       "path": "codex-rs/hepta-codex-adapter",
@@ -355,5 +365,25 @@
       "path": "docs/modules/runtime.codex/TECHNICAL.md",
       "object": "28590a009a9a3b47042547bb5c6fe23f60bdffad"
     }
+  ],
+  "observedAtHead": {
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
+  },
+  "observedSourcePaths": [
+    "codex-rs/app-server",
+    "codex-rs/app-server/src/request_processors/thread_processor.rs",
+    "codex-rs/app-server/src/request_processors/turn_processor.rs",
+    "codex-rs/app-server/tests/suite/v2/thread_start.rs",
+    "codex-rs/app-server/tests/suite/v2/turn_start.rs",
+    "codex-rs/codex-app-server/BINDING.json",
+    "codex-rs/core/src/codex_thread.rs",
+    "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
+    "codex-rs/core/src/tools/router.rs",
+    "codex-rs/hepta-agentd/src/app_runtime.rs",
+    "codex-rs/hepta-app-bridge",
+    "codex-rs/hepta-app-host",
+    "codex-rs/hepta-codex-adapter",
+    "docs/modules/runtime.codex/TECHNICAL.md"
   ]
 }

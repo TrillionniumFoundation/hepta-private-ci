@@ -7,8 +7,8 @@
   "deputy": "performance",
   "technicalGuide": "docs/modules/prompt.optimizer/TECHNICAL.md",
   "sourceBase": {
-    "commit": "55e1776f08f0907b4ba4dc8c9cbdc21d8d39c08a",
-    "tree": "09db0fe9a2a6af14d094747f8767e06d0bbed273"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "integrationProvenance": {
     "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
@@ -17,26 +17,36 @@
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "mappingSourceIdentityMode": "path_only",
   "observedAtHead": {
-    "commit": "55e1776f08f0907b4ba4dc8c9cbdc21d8d39c08a",
-    "tree": "09db0fe9a2a6af14d094747f8767e06d0bbed273"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-prompt-optimizer",
     "codex-rs/hepta-agentd/src/prompt_optimizer_product.rs",
-    "codex-rs/hepta-agentd/src/prompt_runtime.rs",
-    "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
-    "codex-rs/hepta-agentd/src/prompt_optimizer_evidence_fixture.rs",
-    "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
-    "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
     "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
-    "codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs",
-    "codex-rs/hepta-intelligence/src/prompt_optimizer_evidence_fixture.rs"
+    "codex-rs/hepta-prompt-optimizer",
+    "codex-rs/hepta-prompt-optimizer/src/canonical_body.rs",
+    "codex-rs/hepta-prompt-optimizer/src/canonical_orchestration_tests.rs",
+    "codex-rs/hepta-prompt-optimizer/src/canonical_verified_tests.rs",
+    "codex-rs/hepta-prompt-optimizer/src/compat.rs",
+    "codex-rs/hepta-prompt-optimizer/src/graph_impl.rs",
+    "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs",
+    "codex-rs/hepta-prompt-optimizer/src/lib_tests.rs",
+    "codex-rs/hepta-prompt-optimizer/src/local_shadow.rs",
+    "codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs",
+    "codex-rs/hepta-prompt-optimizer/tests/verified_compile_boundary.rs",
+    "docs/modules/prompt.optimizer/TECHNICAL.md"
   ],
-  "declaredRoots": ["codex-rs/hepta-prompt-optimizer"],
-  "resolvedRoots": ["codex-rs/hepta-prompt-optimizer"],
-  "sourceRoot": ["codex-rs/hepta-prompt-optimizer"],
+  "declaredRoots": [
+    "codex-rs/hepta-prompt-optimizer"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-prompt-optimizer"
+  ],
+  "sourceRoot": [
+    "codex-rs/hepta-prompt-optimizer"
+  ],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
@@ -133,7 +143,9 @@
       "sourcePathExists": true,
       "state": "compatibility_only",
       "authority": "none",
-      "tests": ["codex-rs/hepta-prompt-optimizer/src/lib_tests.rs::illegal_and_unadmitted_candidates_are_never_selected"]
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/lib_tests.rs::illegal_and_unadmitted_candidates_are_never_selected"
+      ]
     },
     {
       "operation": "optimize_with_factor_graph",
@@ -162,7 +174,9 @@
       "sourcePathExists": true,
       "state": "compatibility_only",
       "authority": "none",
-      "tests": ["codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs::legacy_v1_surface_keeps_its_original_selection_limit"]
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs::legacy_v1_surface_keeps_its_original_selection_limit"
+      ]
     }
   ],
   "productCallers": [
@@ -178,14 +192,29 @@
     }
   ],
   "ownedTargetProtocols": [
-    {"id": "PromptCandidateSetReceiptV1", "state": "in_process_implemented_wire_pending"},
-    {"id": "PromptPricingReceiptV1", "state": "in_process_implemented_wire_pending"},
-    {"id": "PromptPortfolioReceiptV1", "state": "in_process_implemented_wire_pending"},
-    {"id": "PromptExerciseDecisionV1", "state": "in_process_implemented_wire_pending"}
+    {
+      "id": "PromptCandidateSetReceiptV1",
+      "state": "in_process_implemented_wire_pending"
+    },
+    {
+      "id": "PromptPricingReceiptV1",
+      "state": "in_process_implemented_wire_pending"
+    },
+    {
+      "id": "PromptPortfolioReceiptV1",
+      "state": "in_process_implemented_wire_pending"
+    },
+    {
+      "id": "PromptExerciseDecisionV1",
+      "state": "in_process_implemented_wire_pending"
+    }
   ],
   "qualification": {
     "sourceInventoryCommand": "python3 scripts/hepta_prompt_optimizer_inventory.py --source-only",
-    "compilerInventoryInputs": ["rustc dep-info from clean all-target build", "nextest JSON list from the same candidate"],
+    "compilerInventoryInputs": [
+      "rustc dep-info from clean all-target build",
+      "nextest JSON list from the same candidate"
+    ],
     "workflow": ".github/workflows/hepta-architecture-convergence.yml",
     "storedPassReceipt": false
   },
@@ -215,5 +244,63 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false
-  }
+  },
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_optimizer_product.rs",
+      "object": "b2511ddaff8606b43a71a6ecf849045c06dad048"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+      "object": "1e247f40bb8156357cf6d6274891d09e8b88570e"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer",
+      "object": "4d88ec707917a44ce47a18d1d4c037d6ba7ec53d"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical_body.rs",
+      "object": "9ff39a347e26c705750dbdccebb5c884d6754e78"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical_orchestration_tests.rs",
+      "object": "6b4ecd380714777d721b909b4c843950ef8bf6bc"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical_verified_tests.rs",
+      "object": "07a54b23461866faa4b0746986e7a1bcbcf70270"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/compat.rs",
+      "object": "0e18fdc3ff236fcfba62b804132f5a6114e680c8"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/graph_impl.rs",
+      "object": "ead1df5ef6ec164fdeb4815694a7fdf690b3ddc5"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs",
+      "object": "8eae735e344c423e5a0af1c48844f7d4f79dd33c"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/lib_tests.rs",
+      "object": "7a61264c37f9941b8ca0d057b48daef236cece88"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow.rs",
+      "object": "0f75e0589c066df5287465ab38868db63d97e3c7"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs",
+      "object": "9ff91efc880f331648c0363d605c41e92e8fd532"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/tests/verified_compile_boundary.rs",
+      "object": "b3565fe524429728c72acfce0fb5518d0c1f288f"
+    },
+    {
+      "path": "docs/modules/prompt.optimizer/TECHNICAL.md",
+      "object": "88710ff30bafc919840182ac1dca88d9bf07819d"
+    }
+  ]
 }

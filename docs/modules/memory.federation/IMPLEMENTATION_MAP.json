@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "28d96586fa68e8db7ec0fe7fe53ce68b638d471b",
-    "tree": "9bfb2f00aba387426508b1c505c7c1cc300717f8"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -162,13 +162,20 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "28d96586fa68e8db7ec0fe7fe53ce68b638d471b",
-    "tree": "9bfb2f00aba387426508b1c505c7c1cc300717f8"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-memory-federation"
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-memory-federation",
+    "codex-rs/hepta-memory-federation/src/v2.rs",
+    "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+    "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+    "docs/modules/memory.federation/TECHNICAL.md"
   ],
   "productCallers": [
     {

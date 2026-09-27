@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
-    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -196,16 +196,8 @@
       "object": "23c8876f63ea701e0278493d7f1a1b1ba5a3f558"
     },
     {
-      "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "d68bfdf8188b8ec65fc0cff0693bf39a648a4c00"
-    },
-    {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
       "object": "bac0aeded80d33b1bc1bf234f19552c9f1c86777"
-    },
-    {
-      "path": "codex-rs/hepta-agentd/src/test_support.rs",
-      "object": "241611472e38d3892f5dcedc577285f18f0dee2d"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
@@ -230,10 +222,6 @@
     {
       "path": "codex-rs/hepta-cognitive-read/src/ids_tests.rs",
       "object": "2d36e6ed95eb5c08cad4dafd3082542e4b56dcfe"
-    },
-    {
-      "path": "codex-rs/hepta-cognitive-read/src/lib.rs",
-      "object": "80b0dc9fe5bb65113c032e76a74a2a4406b72cad"
     },
     {
       "path": "codex-rs/hepta-cognitive-read/src/v2.rs",
@@ -270,10 +258,6 @@
     {
       "path": "docs/modules/cognitive.read/TECHNICAL.md",
       "object": "20db7fccd7f41e3513f67dbfc8fe6a695689be81"
-    },
-    {
-      "path": "scripts/hepta-implementation-maps.py",
-      "object": "da509922ae9e23d77191c67de385c224ca758df5"
     }
   ],
   "productCallers": [
@@ -320,8 +304,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
-    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
@@ -340,6 +324,28 @@
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-cognitive-read"
+    "codex-rs/hepta-agent-protocol/src/lib.rs",
+    "codex-rs/hepta-agentd/src/client.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+    "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+    "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+    "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+    "codex-rs/hepta-cognitive-read",
+    "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+    "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
+    "codex-rs/hepta-cognitive-read/src/ids.rs",
+    "codex-rs/hepta-cognitive-read/src/ids_tests.rs",
+    "codex-rs/hepta-cognitive-read/src/v2.rs",
+    "codex-rs/hepta-cognitive-read/src/v2_tests.rs",
+    "codex-rs/hepta-infer-core/src/native_control.rs",
+    "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+    "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+    "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
+    "docs/modules/cognitive.read/TECHNICAL.md"
   ]
 }

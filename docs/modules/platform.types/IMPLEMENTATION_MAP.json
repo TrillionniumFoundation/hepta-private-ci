@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "309ccf58ece129d92508978b7c06e0da1b5562fb",
-    "tree": "945946079e4ca88c9afe6d71381909c30f41cfd9"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "platform.types",
@@ -277,12 +277,34 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "309ccf58ece129d92508978b7c06e0da1b5562fb",
-    "tree": "945946079e4ca88c9afe6d71381909c30f41cfd9"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-types"
+    "codex-rs/hepta-types",
+    "codex-rs/hepta-types/bindings/generate_bindings.py",
+    "codex-rs/hepta-types/bindings/verify_generated.mjs",
+    "codex-rs/hepta-types/bindings/verify_generated.py",
+    "codex-rs/hepta-types/conformance/verify_rejections.mjs",
+    "codex-rs/hepta-types/conformance/verify_rejections.py",
+    "codex-rs/hepta-types/conformance/verify_vectors.py",
+    "codex-rs/hepta-types/conformance/verify_vectors.ts",
+    "codex-rs/hepta-types/src/bounded.rs",
+    "codex-rs/hepta-types/src/bounded_tests.rs",
+    "codex-rs/hepta-types/src/canonical_digest.rs",
+    "codex-rs/hepta-types/src/canonical_digest_tests.rs",
+    "codex-rs/hepta-types/src/fixed.rs",
+    "codex-rs/hepta-types/src/fixed_tests.rs",
+    "codex-rs/hepta-types/src/identity.rs",
+    "codex-rs/hepta-types/src/identity_tests.rs",
+    "codex-rs/hepta-types/src/numeric_conversion.rs",
+    "codex-rs/hepta-types/src/numeric_conversion_tests.rs",
+    "codex-rs/hepta-types/src/numeric_profile.rs",
+    "codex-rs/hepta-types/src/numeric_profile_tests.rs",
+    "codex-rs/hepta-types/src/registry.rs",
+    "codex-rs/hepta-types/src/registry_tests.rs",
+    "docs/modules/platform.types/TECHNICAL.md"
   ]
 }

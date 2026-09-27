@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "d7a40d0c5d3631be7a86ebf09b9eb2e3f1f3e997",
-    "tree": "5ad71db087fb32f1792b0d91e792f44e9279222c"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "prompt.registry",
@@ -219,5 +219,17 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-prompt-registry"
+  ],
+  "observedAtHead": {
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
+  },
+  "observedSourcePaths": [
+    "codex-rs/hepta-prompt-registry",
+    "codex-rs/hepta-prompt-registry/src/durable.rs",
+    "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs",
+    "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+    "codex-rs/hepta-prompt-registry/src/v2_tests.rs",
+    "docs/modules/prompt.registry/TECHNICAL.md"
   ]
 }

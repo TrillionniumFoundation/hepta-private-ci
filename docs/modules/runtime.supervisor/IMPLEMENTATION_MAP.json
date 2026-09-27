@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
-    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
@@ -487,22 +487,26 @@
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/app-server",
-    "codex-rs/hepta-agent-protocol",
-    "codex-rs/hepta-agentd",
-    "codex-rs/hepta-automation",
-    "codex-rs/hepta-fleet",
     "codex-rs/hepta-supervisor",
+    "codex-rs/hepta-supervisor/src/authority_signer.rs",
+    "codex-rs/hepta-supervisor/src/bin/hepta-supervisor-release-controller.rs",
     "codex-rs/hepta-supervisor/src/daemon.rs",
-    "codex-rs/hepta-supervisor/src/daemon_client.rs",
-    "codex-rs/hepta-supervisor/src/daemon_protocol.rs",
     "codex-rs/hepta-supervisor/src/module_runtime_store.rs",
-    "codex-rs/hepta-supervisor/src/module_runtime_checkpoint.rs"
+    "codex-rs/hepta-supervisor/src/release_controller.rs",
+    "codex-rs/hepta-supervisor/src/release_controller_tests.rs",
+    "codex-rs/hepta-supervisor/src/release_transaction.rs",
+    "codex-rs/hepta-supervisor/src/signed_authority.rs",
+    "codex-rs/hepta-supervisor/src/supervisor.rs",
+    "codex-rs/hepta-supervisor/src/supervisor_signed_tests.rs",
+    "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+    "codex-rs/hepta-supervisor/src/unix_tests.rs",
+    "codex-rs/hepta-supervisor/tests/fault_recovery.rs",
+    "codex-rs/hepta-supervisor/tests/production_release_product.rs",
+    "docs/modules/runtime.supervisor/TECHNICAL.md"
   ],
   "observedAtHead": {
-    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
-    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4",
-    "interpretation": "Reviewed source composition for signed lifecycle, durable bounded fault recovery, independent release caller and host qualification. This observation is not an execution or deployment receipt."
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "productCallers": [
@@ -534,23 +538,31 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-supervisor",
-      "object": "ba252eb8b988f86f42b7c8e3ad13d6a8f06c2189"
+      "object": "434a091a20c71ed505f11f18440db5f36f95c22b"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/authority_signer.rs",
-      "object": "aaab6e572b5663e9948da731a25eb708a227bdbc"
+      "object": "232b4c487c3e81960be28886d7b83a392b1eac0f"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/bin/hepta-supervisor-release-controller.rs",
-      "object": "4103a9884d7a2c0e0e558af3303b279e8e2216c5"
+      "object": "7707d40dba2ad94bef23adbcab07a6fafefad9ea"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/daemon.rs",
+      "object": "e8312fa08a4926d9ed8e032c9cb9393bbbfd6264"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/module_runtime_store.rs",
+      "object": "16ffced7856445cfbd344c9857e770a80534797d"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/release_controller.rs",
-      "object": "7010926a9ed45e7aef4a69eadb55f7bfb1a8d00a"
+      "object": "a8da1ec08a4c7cccbb0de906753ea966ad492825"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/release_controller_tests.rs",
-      "object": "b6332c0bc6dfa359fcdc8b6bcabba34ff554067c"
+      "object": "6a86024b5a261a1b1efa868f9da3337d8243cf67"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
@@ -586,7 +598,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/TECHNICAL.md",
-      "object": "621afc89e6bcba2b568de33559221b92fb0ae893"
+      "object": "632f0a90c3fc3fb30888237e2fa35d31a8110ce7"
     }
   ]
 }

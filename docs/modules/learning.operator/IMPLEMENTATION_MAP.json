@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
-    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -334,13 +334,33 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
-    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-bellman-operator"
+    "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+    "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+    "codex-rs/hepta-bellman-operator",
+    "codex-rs/hepta-bellman-operator/src/authenticated.rs",
+    "codex-rs/hepta-bellman-operator/src/authenticated_tests.rs",
+    "codex-rs/hepta-bellman-operator/src/dataset_bound.rs",
+    "codex-rs/hepta-bellman-operator/src/dataset_bound_tests.rs",
+    "codex-rs/hepta-bellman-operator/src/learned.rs",
+    "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+    "codex-rs/hepta-bellman-operator/src/learned_tests.rs",
+    "codex-rs/hepta-bellman-operator/src/lib.rs",
+    "codex-rs/hepta-bellman-operator/src/lib_tests.rs",
+    "codex-rs/hepta-bellman-operator/src/loaded.rs",
+    "codex-rs/hepta-bellman-operator/src/loaded_tests.rs",
+    "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
+    "codex-rs/hepta-bellman-operator/src/owner_terminal_tests.rs",
+    "codex-rs/hepta-bellman-operator/src/reference.rs",
+    "codex-rs/hepta-bellman-operator/src/reference_tests.rs",
+    "codex-rs/hepta-bellman-operator/src/world_model.rs",
+    "codex-rs/hepta-bellman-operator/src/world_model_tests.rs",
+    "docs/modules/learning.operator/TECHNICAL.md"
   ],
   "productCallers": [
     {

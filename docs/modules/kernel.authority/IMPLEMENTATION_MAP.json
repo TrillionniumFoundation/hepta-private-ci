@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
-    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.authority",
@@ -217,14 +217,6 @@
   ],
   "sourceObjects": [
     {
-      "path": "apps/hepta-browser/src/runtime-host.js",
-      "object": "543407f89cd69f00804136ef8ba9f8cc2d0540f4"
-    },
-    {
-      "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
-      "object": "fdea3a28f6c97ea94085ff24bf81dd27aed3e36f"
-    },
-    {
       "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
       "object": "d6232415313fa47c332a309c9c377aad8d6e6278"
     },
@@ -234,7 +226,7 @@
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "377c2c66e6f6cb689d134a2f00f3da1d7e5eb750"
+      "object": "7a034a760502429386576f0803303560aaafb4b0"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
@@ -273,12 +265,27 @@
       "object": "262d9440bb26e1b905e817042d6e61c920940d66"
     },
     {
-      "path": "codex-rs/hepta-fleet/src/revocation_control.rs",
-      "object": "44e0abe36d58ca68a3cc9d5eec381cd077cb3789"
-    },
-    {
       "path": "docs/modules/kernel.authority/TECHNICAL.md",
       "object": "26694ea19236ed2260858c9c8ddd2bab8c420934"
     }
+  ],
+  "observedAtHead": {
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
+  },
+  "observedSourcePaths": [
+    "codex-rs/hepta-agentd/src/browser_servo.rs",
+    "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-contracts/src/authority_lease.rs",
+    "codex-rs/hepta-contracts/src/authority_trust.rs",
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    "codex-rs/hepta-contracts/src/final_use_control.rs",
+    "codex-rs/hepta-contracts/src/final_use_store.rs",
+    "codex-rs/hepta-contracts/src/final_use_tests.rs",
+    "codex-rs/hepta-contracts/src/verified_use_witness.rs",
+    "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+    "codex-rs/hepta-fleet/src/authority_port.rs",
+    "docs/modules/kernel.authority/TECHNICAL.md"
   ]
 }

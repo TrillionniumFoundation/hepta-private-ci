@@ -240,8 +240,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "f489360bc1f56ce95f086fc76333309cf16e8871",
-    "tree": "8ca2626c98d14b97a14a2e6cc6c1a7372583203b"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "repositoryControlledGaps": [
     "Bind every operation to an authenticated consumer callsite and owner store.",
@@ -251,5 +251,17 @@
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
+  ],
+  "observedAtHead": {
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
+  },
+  "observedSourcePaths": [
+    "codex-rs/hepta-control-plane",
+    "codex-rs/hepta-control-plane/src/planner.rs",
+    "codex-rs/hepta-control-plane/src/planner_journal.rs",
+    "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
+    "codex-rs/hepta-control-plane/src/planner_tests.rs",
+    "docs/modules/control.runtime/TECHNICAL.md"
   ]
 }

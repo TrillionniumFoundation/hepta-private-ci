@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
-    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -324,8 +324,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
-    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
+    "commit": "cd42f8dbbca00f97d27f4c82e8f80c6883bc646a",
+    "tree": "2d4ba90ee964fddd10d535812d56c6e3eb1afed9"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -354,29 +354,36 @@
     ]
   },
   "observedSourcePaths": [
-    "CALLERS.toml",
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/app-server-protocol/src/protocol/v2/thread.rs",
-    "codex-rs/app-server/src/request_processors/thread_processor.rs",
-    "codex-rs/hepta-agent-protocol",
     "codex-rs/hepta-agentd/src/automation.rs",
     "codex-rs/hepta-agentd/src/automation_effect_host.rs",
-    "codex-rs/hepta-agentd/src/automation_effect_host_config.rs",
     "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs",
-    "codex-rs/hepta-agentd/src/automation_recovery.rs",
-    "codex-rs/hepta-agentd/src/automation_recovery_policy_tests.rs",
-    "codex-rs/hepta-agentd/src/client.rs",
-    "codex-rs/hepta-agentd/src/error.rs",
-    "codex-rs/hepta-agentd/src/lib.rs",
-    "codex-rs/hepta-agentd/src/runtime.rs",
-    "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/automation_service.rs",
     "codex-rs/hepta-agentd/src/state_control.rs",
     "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
     "codex-rs/hepta-automation",
-    "codex-rs/hepta-contracts",
-    "codex-rs/hepta-operations",
-    "codex-rs/hepta-types"
+    "codex-rs/hepta-automation/src/authorized_effect.rs",
+    "codex-rs/hepta-automation/src/dispatch_recovery_cursor.rs",
+    "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+    "codex-rs/hepta-automation/src/lifecycle.rs",
+    "codex-rs/hepta-automation/src/neural_circuit.rs",
+    "codex-rs/hepta-automation/src/operation_destination.rs",
+    "codex-rs/hepta-automation/src/product_effect.rs",
+    "codex-rs/hepta-automation/src/product_effect_store.rs",
+    "codex-rs/hepta-automation/src/schedule_v2.rs",
+    "codex-rs/hepta-automation/src/scheduler.rs",
+    "codex-rs/hepta-automation/src/store.rs",
+    "codex-rs/hepta-automation/src/taskflow_step.rs",
+    "codex-rs/hepta-automation/src/threshold_circuit.rs",
+    "codex-rs/hepta-automation/src/threshold_circuit_tests.rs",
+    "codex-rs/hepta-automation/src/timer_lifecycle.rs",
+    "codex-rs/hepta-automation/tests/authorized_effect.rs",
+    "codex-rs/hepta-automation/tests/automation.rs",
+    "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
+    "codex-rs/hepta-automation/tests/product_effect.rs",
+    "codex-rs/hepta-automation/tests/threshold_circuit_capacity.rs",
+    "docs/modules/automation.taskflow/TECHNICAL.md"
   ],
   "repositoryControlledProductCompositionGaps": [
     "Independent final-use trust/revocation/clock and attested provider profiles must be provisioned and qualified on the selected host.",
