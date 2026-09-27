@@ -111,7 +111,13 @@ impl MatrixFinalUseBroker {
             .revocation_head()
             .map_err(|_| MatrixAuthorityError::Unavailable)?;
         if head.authority_epoch == current.authority_epoch && head.revision == current.revision {
-            return Ok(());
+            if head.revoked_grant_ids == current.revoked_grant_ids {
+                return Ok(());
+            }
+            // A revision is the immutable identity of one revocation set.
+            // Accepting different bytes under the same frontier would let a
+            // stale or rewritten file evade the monotonic update check.
+            return Err(MatrixAuthorityError::Rejected);
         }
         if head.authority_epoch < current.authority_epoch
             || (head.authority_epoch == current.authority_epoch
@@ -397,6 +403,23 @@ mod tests {
             Err(MatrixAuthorityError::Rejected),
         );
         assert_eq!(broker.authority.revocation_head()?.revision, 3);
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn same_revision_content_drift_fails_closed() -> TestResult {
+        let (_directory, broker) = test_broker(
+            head(17, 3, &["revoked-a"]),
+            head(17, 3, &["revoked-b"]),
+        )?;
+        assert_eq!(
+            broker.refresh_revocations(),
+            Err(MatrixAuthorityError::Rejected),
+        );
+        let frontier = broker.authority.revocation_head()?;
+        assert!(frontier.revoked_grant_ids.contains("revoked-a"));
+        assert!(!frontier.revoked_grant_ids.contains("revoked-b"));
         Ok(())
     }
 
