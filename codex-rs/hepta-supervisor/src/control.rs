@@ -8,6 +8,7 @@ use crate::ProcessDriver;
 use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEventKind;
+use crate::control_intent;
 use crate::restart_budget::RestartBudgetError;
 use crate::restart_budget::claim_restart;
 use crate::runtime::AgentRuntime;
@@ -82,10 +83,33 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        // Cancel durably before companion deferral, lifecycle CAS or signaling.
-        // A cancellation error is not an acknowledged operator stop.
+        let record = self.record(agent_id)?;
+        let runtime = slot
+            .runtime
+            .as_ref()
+            .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))?;
+        control_intent::prepare_stop(
+            record.layout.run_root(),
+            agent_id,
+            runtime.spawn_generation,
+            &runtime.identity,
+            record.lifecycle.generation,
+            self.config.stop_grace,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        // Cancel durably after the overriding Stop itself is durable, but before
+        // companion deferral, lifecycle CAS or signaling.
         self.cancel_pending_restart(agent_id, slot)?;
-        self.stop_runtime_slot(agent_id, slot, now)
+        let result = self.stop_runtime_slot(agent_id, slot, now);
+        if result.is_ok()
+            && slot.runtime.as_ref().is_some_and(|runtime| {
+                matches!(runtime.phase, RuntimePhase::Stopping { .. } | RuntimePhase::Killing)
+            })
+        {
+            control_intent::mark_stop_requested(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        }
+        result
     }
 
     /// Process control shared by operator Stop and restart's internal drain.
@@ -132,8 +156,24 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
-        // Failure to persist cancellation must be reported, but it must not
-        // prevent emergency termination of either already-owned process.
+        let record = self.record(agent_id)?;
+        let intent = slot
+            .runtime
+            .as_ref()
+            .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))
+            .and_then(|runtime| {
+                control_intent::prepare_kill(
+                    record.layout.run_root(),
+                    agent_id,
+                    runtime.spawn_generation,
+                    &runtime.identity,
+                    record.lifecycle.generation,
+                )
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))
+            });
+        // Failure to persist the overriding Kill or restart cancellation must
+        // be reported, but cannot suppress emergency termination of an already
+        // owned main or companion process.
         let cancellation = self.cancel_pending_restart(agent_id, slot);
         slot.deferred_agent_action = None;
         // Prepare only the main lifecycle here. Do not enter a potentially
@@ -155,7 +195,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             Ok(())
         })();
-        let main = if cancellation.is_err()
+        let main = if intent.is_err()
+            || cancellation.is_err()
             || preparation.is_err()
             || slot.runtime.as_ref().is_some_and(|runtime| runtime.fenced)
         {
@@ -175,17 +216,30 @@ impl<D: ProcessDriver> Supervisor<D> {
                     agent_id, slot, Instant::now(), self.config.stop_grace,
                 ))
         };
+        let acknowledgement = if intent.is_ok() && main.is_ok() {
+            control_intent::mark_kill_requested(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))
+        } else {
+            Ok(())
+        };
         // Both outcomes are collected; neither an error nor a delayed companion
         // call can prevent the main signal that was attempted above.
         let companion = self.kill_matrix_now(agent_id, slot);
         for fault in [
+            intent.as_ref().err(),
             cancellation.as_ref().err(),
             main.as_ref().err(),
+            acknowledgement.as_ref().err(),
             companion.as_ref().err(),
         ].into_iter().flatten() {
             slot.event(0, SupervisorEventKind::DriverFault(bounded_message(fault.to_string())));
         }
-        cancellation.and(preparation).and(main).and(companion)
+        intent
+            .and(cancellation)
+            .and(preparation)
+            .and(main)
+            .and(acknowledgement)
+            .and(companion)
     }
 
     pub(crate) fn restart_slot(
