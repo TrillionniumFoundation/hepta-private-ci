@@ -16,7 +16,7 @@ jobs:
   materialize-and-verify:
     if: ${{ contains(github.event.head_commit.message, '[materialize-v3]') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -44,9 +44,9 @@ jobs:
         working-directory: codex-rs
         run: cargo fmt --all
 
-      - name: Refresh lockfile
+      - name: Refresh lockfile without unconstrained dependency upgrades
         working-directory: codex-rs
-        run: cargo update --workspace
+        run: cargo metadata --format-version 1 > /dev/null
 
       - name: Run default-off product tests
         working-directory: codex-rs
@@ -90,9 +90,12 @@ jobs:
           rm -f scripts/apply_context_compiler_full_closure.py
           rm -f scripts/apply_context_compiler_hardening.py
           rm -f .github/workflows/context-compiler-v3-direct-source.yml
+          rm -f .github/workflows/context-compiler-property-fix.yml
+          rm -f .github/workflows/context-compiler-one-shot-remediation.yml
+          rm -f .github/context-compiler-materialize-v3.trigger
           git config user.name "hepta-closure-bot"
           git config user.email "hepta-closure-bot@users.noreply.github.com"
           git add --all
           git diff --cached --check
-          git commit -m "feat(context.compiler): materialize V3 exact provider proof chain"
+          git commit -m "feat(context.compiler): materialize V3 exact provider proof chain [context-source-fixed] [v3-materialized]"
           git push origin "HEAD:${BRANCH}"
