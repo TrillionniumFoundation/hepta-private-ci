@@ -1,9 +1,10 @@
-name: memory federation v2 final verify
+name: memory federation full closure qualification
 
 on:
   push:
     branches:
-      - fix/memory-federation-v2-closure-20260920
+      - main
+      - fix/memory-federation-full-closure-20260927
     paths:
       - ".github/workflows/memory-federation-v2-final-verify.yml"
       - ".github/actions/hepta-synthetic-merge/**"
@@ -17,6 +18,7 @@ on:
       - "qualification/module-execution-dossiers/detail/memory.federation.md"
       - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
       - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta-memory-federation-state.py"
   pull_request:
     branches:
       - main
@@ -33,19 +35,23 @@ on:
       - "qualification/module-execution-dossiers/detail/memory.federation.md"
       - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
       - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta-memory-federation-state.py"
+  workflow_dispatch:
+  schedule:
+    - cron: "23 3 * * *"
 
 permissions:
   contents: read
 
 concurrency:
-  group: memory-federation-v2-final-${{ github.event.pull_request.number || github.ref }}
+  group: memory-federation-qualification-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  source-head:
-    name: exact-head contract and product
+  exact-head:
+    name: exact-head contract, product, and evidence
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - name: Check out exact source head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -62,8 +68,13 @@ jobs:
           test -n "$EXPECTED_SHA"
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
 
-      - name: Verify implementation maps
-        run: python3 scripts/hepta-implementation-maps.py verify
+      - name: Verify implementation maps and current state
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-memory-federation-state.py verify
 
       - name: Check formatting
         working-directory: codex-rs
@@ -71,7 +82,10 @@ jobs:
 
       - name: Test canonical federation contract
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory-federation --lib
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-memory-federation --lib
+          cargo test -p codex-hepta-memory-federation --lib --features legacy-v1
 
       - name: Test memory product adapter
         working-directory: codex-rs
@@ -92,20 +106,53 @@ jobs:
       - name: Strict lint canonical and product crates
         working-directory: codex-rs
         run: |
+          set -euo pipefail
           cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
           cargo clippy -p codex-hepta-agentd --lib -- -D warnings
 
-      - name: Verify patch hygiene
+      - name: Emit exact immutable execution receipt
+        env:
+          GITHUB_RUN_ID_VALUE: ${{ github.run_id }}
+          GITHUB_RUN_ATTEMPT_VALUE: ${{ github.run_attempt }}
         run: |
           set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/memory-federation-receipt"
+          python3 - <<'PY'
+          import json, os, subprocess
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          receipt = {
+              "schema": "hepta.memory-federation-actions-receipt.v1",
+              "status": "passed",
+              "candidate": {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")},
+              "workflowRunId": os.environ["GITHUB_RUN_ID_VALUE"],
+              "workflowRunAttempt": os.environ["GITHUB_RUN_ATTEMPT_VALUE"],
+              "repositoryControlledQualification": True,
+              "physicalTwoHostQualification": False,
+              "independentAcceptance": False,
+              "activation": False,
+              "release": False,
+          }
+          with open(os.environ["RUNNER_TEMP"] + "/memory-federation-receipt/receipt.json", "w", encoding="utf-8") as handle:
+              json.dump(receipt, handle, indent=2, sort_keys=True)
+              handle.write("\n")
+          PY
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain exact execution receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-exact-${{ github.sha }}
+          path: ${{ runner.temp }}/memory-federation-receipt/receipt.json
+          if-no-files-found: error
+          retention-days: 90
 
   merge-candidate:
     name: deterministic merge contract and product
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - name: Check out exact source for merge construction
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -114,17 +161,15 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Resolve current main head for merge qualification
+      - name: Resolve current main head
         id: current-base
         env:
           BASE_REF: ${{ github.base_ref }}
         run: |
           set -euo pipefail
-          test -n "$BASE_REF"
           BASE_SHA="$(git rev-parse "refs/remotes/origin/$BASE_REF")"
           test -n "$BASE_SHA"
           echo "sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
-          echo "qualifying against current $BASE_REF@$BASE_SHA"
 
       - name: Construct deterministic synthetic merge
         id: synthetic
@@ -137,52 +182,29 @@ jobs:
           author-email: hepta-memory-federation-ci@users.noreply.github.com
           message: Memory federation synthetic merge
 
-      - name: Verify deterministic merge identity
+      - name: Verify deterministic merge identity and metadata
         env:
           EXPECTED_SHA: ${{ steps.synthetic.outputs.sha }}
           EXPECTED_TREE: ${{ steps.synthetic.outputs.tree }}
         run: |
           set -euo pipefail
-          test -n "$EXPECTED_SHA"
-          test -n "$EXPECTED_TREE"
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          python3 scripts/hepta-implementation-maps.py verify --expected-sha "$EXPECTED_SHA" --expected-tree "$EXPECTED_TREE"
+          python3 scripts/hepta-memory-federation-state.py verify
 
-      - name: Verify implementation maps on merge candidate
-        run: python3 scripts/hepta-implementation-maps.py verify
-
-      - name: Check formatting on merge candidate
+      - name: Run deterministic merge qualification
         working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server -- --check
-
-      - name: Test canonical federation contract on merge candidate
-        working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory-federation --lib
-
-      - name: Test memory product adapter on merge candidate
-        working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory --lib cognitive_runtime_tests
-
-      - name: Test legacy federation regression suite on merge candidate
-        working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory --lib cognitive_federation_tests
-
-      - name: Test model-input federation integration on merge candidate
-        working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory-extension --lib cognitive::federation
-
-      - name: Check Agentd and App Server composition on merge candidate
-        working-directory: codex-rs
-        run: cargo check -p codex-hepta-agentd -p codex-app-server
-
-      - name: Strict lint canonical and product crates on merge candidate
-        working-directory: codex-rs
-        run: |
-          cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
-          cargo clippy -p codex-hepta-agentd --lib -- -D warnings
-
-      - name: Verify merge patch hygiene
         run: |
           set -euo pipefail
+          cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server -- --check
+          cargo test -p codex-hepta-memory-federation --lib
+          cargo test -p codex-hepta-memory-federation --lib --features legacy-v1
+          cargo test -p codex-hepta-memory --lib cognitive_runtime_tests
+          cargo test -p codex-hepta-memory --lib cognitive_federation_tests
+          cargo test -p codex-hepta-memory-extension --lib cognitive::federation
+          cargo check -p codex-hepta-agentd -p codex-app-server
+          cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
+          cargo clippy -p codex-hepta-agentd --lib -- -D warnings
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
