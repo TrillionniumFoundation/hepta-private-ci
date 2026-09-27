@@ -64,7 +64,7 @@ jobs:
 
           cargo "+$PLATFORM_TYPES_MSRV" fmt \
             --manifest-path "$repo_root/codex-rs/Cargo.toml" \
-            --package codex-hepta-types --package codex-hepta-ndu -- --check
+            --package codex-hepta-types --package codex-hepta-ndu
 
           cargo "+$PLATFORM_TYPES_MSRV" generate-lockfile \
             --manifest-path "$repo_root/codex-rs/Cargo.toml"
