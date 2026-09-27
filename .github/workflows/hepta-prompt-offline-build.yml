@@ -1,0 +1,48 @@
+name: Prompt offline build inputs
+on:
+  push:
+    branches: ['work/prompt-optimizer-hardening-20260927']
+    paths: ['.github/workflows/hepta-prompt-offline-build.yml']
+permissions:
+  contents: read
+jobs:
+  inputs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Check exact optimizer candidate
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo check --locked --all-targets -p codex-hepta-prompt-optimizer
+      - name: Retain compiler and public dependency sources only
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/prompt-offline-inputs"
+          mkdir -p "$out"
+          git rev-parse HEAD HEAD^{tree} > "$out/identity.txt"
+          rustc -Vv > "$out/rustc-version.txt"
+          sysroot="$(rustc --print sysroot)"
+          tar --exclude='./share/doc' --exclude='./lib/rustlib/src' -C "$sysroot" -czf "$out/toolchain.tar.gz" .
+          cargo_home="${CARGO_HOME:-$HOME/.cargo}"
+          paths=()
+          for path in registry/src registry/cache registry/index git/db git/checkouts; do
+            if test -d "$cargo_home/$path"; then paths+=("$path"); fi
+          done
+          test "${#paths[@]}" -gt 0
+          tar -C "$cargo_home" -czf "$out/dependencies.tar.gz" "${paths[@]}"
+          sha256sum "$out"/*.tar.gz > "$out/checksums.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-offline-inputs-${{ github.sha }}
+          path: ${{ runner.temp }}/prompt-offline-inputs
+          if-no-files-found: error
+          retention-days: 1
