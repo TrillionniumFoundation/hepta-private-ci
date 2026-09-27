@@ -142,17 +142,242 @@ jobs:
 
           exact = Path("codex-rs/hepta-agentd/src/exact_context_delivery.rs")
           text = exact.read_text(encoding="utf-8")
+
           old = "        let provider_terminal = provider_terminal(terminal.terminal)?;\n"
           new = "        let provider_terminal = provider_terminal(terminal.terminal.clone())?;\n"
           if old in text:
               text = text.replace(old, new, 1)
           elif new not in text:
               raise SystemExit("provider terminal ownership site drifted")
+
+          old = '''        if !object.contains_key("input") && !object.contains_key("instructions") {
+              return Err("provider request has no typed model-input field".to_owned());
+          }
+          let occurrences = count_context_occurrences(&value, context)?;
+          if occurrences != 1 {
+              return Err(format!(
+                  "canonical context must occur in exactly one JSON string, observed {occurrences}"
+              ));
+          }
+          Ok(())
+          '''
+          new = '''        let instructions = object
+              .get("instructions")
+              .and_then(serde_json::Value::as_str)
+              .ok_or_else(|| {
+                  "provider request instructions must be the typed context field".to_owned()
+              })?;
+          let instruction_occurrences = instructions.match_indices(context).count();
+          if instruction_occurrences != 1 {
+              return Err(format!(
+                  "canonical context must occur exactly once in instructions, observed {instruction_occurrences}"
+              ));
+          }
+          let outside_occurrences = object
+              .iter()
+              .filter(|(name, _)| name.as_str() != "instructions")
+              .try_fold(0_usize, |total, (_, value)| {
+                  total
+                      .checked_add(count_context_occurrences(value, context)?)
+                      .ok_or_else(|| "context occurrence count overflow".to_owned())
+              })?;
+          if outside_occurrences != 0 {
+              return Err(format!(
+                  "canonical context escaped the typed instructions field, observed {outside_occurrences} outside occurrences"
+              ));
+          }
+          Ok(())
+          '''
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif "canonical context escaped the typed instructions field" not in text:
+              raise SystemExit("framing policy block drifted")
+
+          old = '''    async fn count(&self, request: &[u8]) -> Result<u64, ExactContextDeliveryError> {
+          let mut child = Command::new(&self.binary)
+          '''
+          new = '''    fn validate_runtime_files(&self) -> Result<(), ExactContextDeliveryError> {
+          if hash_bounded_file(&self.binary)? != self.identity.tokenizer_binary_digest()
+              || hash_bounded_file(&self.vocabulary)? != self.identity.vocabulary_digest()
+          {
+              return Err(ExactContextDeliveryError::TokenizerIdentity);
+          }
+          Ok(())
+      }
+
+      async fn count(&self, request: &[u8]) -> Result<u64, ExactContextDeliveryError> {
+          self.validate_runtime_files()?;
+          let mut child = Command::new(&self.binary)
+          '''
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif "fn validate_runtime_files(&self)" not in text:
+              raise SystemExit("tokenizer count entry drifted")
+
+          old = '''        if !status.success()
+              || u64::try_from(output.len()).unwrap_or(u64::MAX) > MAX_TOKENIZER_STDOUT_BYTES
+          {
+              return Err(ExactContextDeliveryError::TokenizerRejected);
+          }
+          parse_token_count(&output)
+          '''
+          new = '''        if !status.success()
+              || u64::try_from(output.len()).unwrap_or(u64::MAX) > MAX_TOKENIZER_STDOUT_BYTES
+          {
+              return Err(ExactContextDeliveryError::TokenizerRejected);
+          }
+          self.validate_runtime_files()?;
+          parse_token_count(&output)
+          '''
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif text.count("self.validate_runtime_files()?") < 2:
+              raise SystemExit("tokenizer post-execution verification drifted")
+
+          old = '''        assert!(policy.verify_final_request(&wrong_model, context).is_err());
+      }
+          '''
+          new = '''        assert!(policy.verify_final_request(&wrong_model, context).is_err());
+
+          let misplaced = serde_json::json!({
+              "model": "model",
+              "instructions": "ordinary instructions",
+              "input": [],
+              "metadata": String::from_utf8(context.to_vec()).expect("utf8")
+          });
+          let misplaced = serde_json::to_vec(&misplaced).expect("request");
+          assert!(policy.verify_final_request(&misplaced, context).is_err());
+
+          let non_string = serde_json::json!({
+              "model": "model",
+              "instructions": [String::from_utf8(context.to_vec()).expect("utf8")],
+              "input": []
+          });
+          let non_string = serde_json::to_vec(&non_string).expect("request");
+          assert!(policy.verify_final_request(&non_string, context).is_err());
+      }
+          '''
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif "let misplaced = serde_json::json!" not in text:
+              raise SystemExit("framing test insertion site drifted")
+
+          old = '''        assert_eq!(
+              tokenizer.count(request).await.expect("tokenizer count"),
+              u64::try_from(request.len()).expect("length")
+          );
+      }
+  }
+          '''
+          new = '''        assert_eq!(
+              tokenizer.count(request).await.expect("tokenizer count"),
+              u64::try_from(request.len()).expect("length")
+          );
+          std::fs::write(&tokenizer.vocabulary, b"mutated-vocabulary")
+              .expect("mutate vocabulary");
+          assert_eq!(
+              tokenizer.count(request).await,
+              Err(ExactContextDeliveryError::TokenizerIdentity)
+          );
+      }
+  }
+          '''
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif "mutated-vocabulary" not in text:
+              raise SystemExit("tokenizer mutation test insertion site drifted")
           exact.write_text(text, encoding="utf-8")
+
+          prompt = Path("codex-rs/ext/hepta-prompt/src/lib.rs")
+          text = prompt.read_text(encoding="utf-8")
+          old = '''    #[must_use]
+      fn has_final_terminal_observer(&self) -> bool {
+          self.final_terminal.is_some()
+      }
+          '''
+          new = '''    #[must_use]
+      fn has_final_terminal_observer(&self) -> bool {
+          self.final_terminal.is_some()
+      }
+
+      #[must_use]
+      fn exact_observers_are_paired(&self) -> bool {
+          self.final_request.is_some() == self.final_terminal.is_some()
+      }
+          '''
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif "fn exact_observers_are_paired(&self)" not in text:
+              raise SystemExit("host observer helper site drifted")
+
+          old = '''            if input.request_kind != ModelProviderRequestKind::Turn || !input.generate {
+              return Ok(ModelProviderPolicyDecision::Allow {
+                  lease: Box::new(PromptRuntimeNoopLease),
+              });
+          }
+          let resolved = self
+          '''
+          new = '''            if input.request_kind != ModelProviderRequestKind::Turn || !input.generate {
+              return Ok(ModelProviderPolicyDecision::Allow {
+                  lease: Box::new(PromptRuntimeNoopLease),
+              });
+          }
+          if !self.host.exact_observers_are_paired() {
+              return Err(ModelProviderPolicyError::new(
+                  "prompt_runtime_exact_observer_pair_incomplete",
+                  "exact request and terminal observers must be installed as one capability",
+              ));
+          }
+          let resolved = self
+          '''
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif "prompt_runtime_exact_observer_pair_incomplete" not in text:
+              raise SystemExit("provider begin pairing site drifted")
+          prompt.write_text(text, encoding="utf-8")
+
+          prompt_tests = Path("codex-rs/ext/hepta-prompt/src/lib_tests.rs")
+          text = prompt_tests.read_text(encoding="utf-8")
+          marker = "split_exact_observers_are_rejected_before_dispatch"
+          if marker not in text:
+              text += r'''
+
+  #[test]
+  fn split_exact_observers_are_rejected_before_dispatch() {
+      let dispatches = Arc::new(StdMutex::new(Vec::new()));
+      let records = Arc::new(StdMutex::new(Vec::new()));
+      let request_only = host(Arc::clone(&dispatches), Arc::clone(&records))
+          .with_final_request_observer(|_request| Box::pin(async { Ok(()) }));
+      assert!(!request_only.exact_observers_are_paired());
+
+      let paired = request_only.with_final_terminal_observer(|_terminal| {
+          Box::pin(async { Ok(()) })
+      });
+      assert!(paired.exact_observers_are_paired());
+  }
+  '''
+          prompt_tests.write_text(text, encoding="utf-8")
 
           manifest_path = Path("docs/modules/context.compiler/MODULE_MANIFEST.json")
           manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
           manifest["integrationBranch"] = branch
+          invariant = (
+              "The canonical context bundle occurs exactly once in the provider instructions field "
+              "and nowhere else in the final request."
+          )
+          pairing = (
+              "Exact request and terminal observers are configured as one capability; split "
+              "configuration is rejected before provider dispatch."
+          )
+          test_case = (
+              "typed-instructions confinement, tokenizer file mutation, and split observer "
+              "configuration fail closed"
+          )
+          for item in (invariant, pairing):
+              if item not in manifest["invariants"]:
+                  manifest["invariants"].append(item)
+          if test_case not in manifest["testMatrix"]:
+              manifest["testMatrix"].append(test_case)
           manifest_path.write_text(
               json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
               encoding="utf-8",
@@ -194,7 +419,7 @@ jobs:
           set -euo pipefail
           cargo test --locked -p codex-hepta-context-compiler
           cargo test --locked -p codex-hepta-intelligence prompt_delivery --lib
-          cargo test --locked -p codex-hepta-prompt-extension exact_body --lib
+          cargo test --locked -p codex-hepta-prompt-extension --lib
           cargo test --locked -p codex-hepta-agentd exact_context_delivery --lib
           cargo check --locked \
             -p codex-api \
@@ -217,9 +442,11 @@ jobs:
             codex-rs/Cargo.lock \
             codex-rs/hepta-context-compiler/src/provider_closure.rs \
             codex-rs/hepta-agentd/src/exact_context_delivery.rs \
+            codex-rs/ext/hepta-prompt/src/lib.rs \
+            codex-rs/ext/hepta-prompt/src/lib_tests.rs \
             docs/modules/context.compiler/MODULE_MANIFEST.json \
             docs/modules/context.compiler/TECHNICAL.md \
             docs/modules/context.compiler/IMPLEMENTATION_MAP.json \
             qualification/module-execution-dossiers/detail/context.compiler.md
-          git commit -m "fix(context.compiler): materialize bounded closure corrections"
+          git commit -m "fix(context.compiler): close exact provider request hardening gaps"
           git push origin HEAD:${TARGET_BRANCH}
