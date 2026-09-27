@@ -151,3 +151,5 @@ jobs:
           git diff --check HEAD~2..HEAD
           test -z "$(git status --porcelain)"
           git push origin "HEAD:${GITHUB_REF_NAME}"
+
+# Retriggered after OTEL export and evidence-contract hardening.
