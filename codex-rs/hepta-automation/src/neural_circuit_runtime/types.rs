@@ -286,14 +286,58 @@ pub struct CircuitEffectBoundaryV1 {
     pub boundary_digest: Sha256Digest,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "kind", content = "value", rename_all = "snake_case")]
 pub enum CircuitRuntimeOutcomeV1 {
     Terminal(CircuitTerminalReceiptV1),
     WaitPending(CircuitWaitBoundaryV1),
     EffectPending(CircuitEffectBoundaryV1),
 }
 
-#[derive(Default)]
+impl CircuitRuntimeOutcomeV1 {
+    #[must_use]
+    pub fn trace(&self) -> &CircuitRuntimeTraceV1 {
+        match self {
+            Self::Terminal(receipt) => &receipt.trace,
+            Self::WaitPending(boundary) => &boundary.trace,
+            Self::EffectPending(boundary) => &boundary.trace,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CircuitRuntimeCheckpointV1 {
+    pub event_digest: Sha256Digest,
+    pub circuit_digest: Sha256Digest,
+    pub runtime_profile_digest: Sha256Digest,
+    pub node_id: String,
+    pub steps: u32,
+    pub depth: u16,
+    pub consumed_cost_units: u64,
+    pub feedback_round: u16,
+    pub decision_activations: u32,
+    pub recorded_choices: Vec<CircuitRecordedChoiceV1>,
+    pub observation_digests: Vec<Sha256Digest>,
+    pub checkpoint_digest: Sha256Digest,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CircuitEffectResolutionStateV1 {
+    Succeeded,
+    Failed,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CircuitEffectResolutionV1 {
+    pub state: CircuitEffectResolutionStateV1,
+    pub observation_digest: Sha256Digest,
+    pub cost_units: u64,
+}
+
+#[derive(Clone, Default)]
 pub(super) struct RuntimeAccumulator {
     pub(super) steps: u32,
     pub(super) depth: u16,
