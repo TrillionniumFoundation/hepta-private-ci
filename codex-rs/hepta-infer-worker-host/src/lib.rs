@@ -14,6 +14,11 @@ pub mod model_worker;
 
 pub mod final_use_authorizer;
 pub mod native_app_server;
+mod native_diagnostics;
+pub use native_diagnostics::NativeAuthorityObservation;
+pub use native_diagnostics::NativeRecoveryAction;
+pub use native_diagnostics::NativeRecoverySnapshot;
+pub use native_diagnostics::inspect_native_run;
 
 use std::error::Error as StdError;
 use std::fmt;
