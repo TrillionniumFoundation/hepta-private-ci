@@ -1,5 +1,6 @@
 name: channel.matrix materialize
 
+# Dedicated Ubuntu lane: materialize the reviewed split patch before heavy CI.
 on:
   push:
     branches: [codex/channel-matrix-convergence-20260925]
