@@ -2,9 +2,9 @@
 //!
 //! A product host cannot install a runner, owner provider, Neuron frontier,
 //! runtime.codex process owner, or final-use authority independently through
-//! this surface. The raw compatibility setters remain available for legacy and
-//! qualification callers, but this typed profile is the only source-level
-//! product composition claim.
+//! this surface. Raw compatibility setters remain available for legacy and
+//! qualification callers, but they cannot mint the private installation token
+//! consumed by the daemon-recognized canonical runtime.codex owner.
 
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -32,6 +32,19 @@ use crate::ProcessRuntimeCodexExecutorV1;
 use crate::RunReceipt;
 use crate::RuntimeCodexExecutionInputV1;
 use crate::runtime_codex_executor::RuntimeCodexInputProviderV1;
+
+/// Unforgeable crate-internal proof that the complete typed bootstrap, rather
+/// than the compatibility executor API, owns one runtime.codex installation.
+/// The private field prevents sibling modules and tests from constructing it.
+pub(crate) struct CanonicalRuntimeInstallationTokenV1 {
+    _private: (),
+}
+
+impl CanonicalRuntimeInstallationTokenV1 {
+    fn new() -> Self {
+        Self { _private: () }
+    }
+}
 
 /// Non-serializable proof that one exact sparse invocation was checked against
 /// the current durable Neuron owner frontier. Its fields are private and there
@@ -343,12 +356,14 @@ impl AgentdCanonicalRuntimeBootstrapV1 {
         let configured = config
             .with_intelligence_product_runner(self.runner)?
             .with_intelligence_invocation_provider(provider)?;
-        self.executor.install_agentd_supervisor_with_limits(
-            self.queue_capacity,
-            self.maximum_concurrent_jobs,
-            self.recovery_interval,
-            self.input_provider,
-        )?;
+        self.executor
+            .install_agentd_canonical_supervisor_with_limits(
+                self.queue_capacity,
+                self.maximum_concurrent_jobs,
+                self.recovery_interval,
+                self.input_provider,
+                CanonicalRuntimeInstallationTokenV1::new(),
+            )?;
         Ok(configured)
     }
 }

@@ -7,8 +7,8 @@ use std::time::Duration;
 
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_types::Digest32;
-use tokio::sync::mpsc;
 use tokio::sync::Semaphore;
+use tokio::sync::mpsc;
 use tokio::task::JoinSet;
 use tokio::time::{MissedTickBehavior, interval};
 use tokio_util::sync::CancellationToken;
@@ -18,6 +18,7 @@ use super::super::{
     ProcessRuntimeCodexExecutorV1, RuntimeCodexExecutionInputV1, RuntimeCodexExecutorV1,
     RuntimeCodexOwnerV1,
 };
+use crate::canonical_runtime_bootstrap::CanonicalRuntimeInstallationTokenV1;
 use crate::{
     AgentdError, AgentdIdentity, PreparedAgentdIntelligenceRunV1, RunPhase, RunReceipt,
 };
@@ -84,6 +85,7 @@ struct ActiveJob {
 }
 
 struct Installation {
+    profile: RuntimeCodexInstallationProfileV1,
     executor: Arc<ProcessRuntimeCodexExecutorV1>,
     provider: Arc<dyn RuntimeCodexInputProviderV1>,
     sender: mpsc::Sender<Job>,
@@ -112,6 +114,18 @@ enum DispatchState {
     Terminal,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum RuntimeCodexInstallationProfileV1 {
+    Compatibility,
+    Canonical,
+}
+
+impl RuntimeCodexInstallationProfileV1 {
+    const fn is_canonical(self) -> bool {
+        matches!(self, Self::Canonical)
+    }
+}
+
 /// An owned queue slot acquired before canonical preparation mutates the run
 /// coordinator. Dropping this value releases capacity without admitting work.
 pub(crate) struct RuntimeCodexScheduleReservationV1 {
@@ -129,6 +143,12 @@ impl RuntimeCodexScheduleReservationV1 {
         prepared: &PreparedAgentdIntelligenceRunV1,
         receipt: &RunReceipt,
     ) -> Result<bool, AgentdError> {
+        if !self.installed.profile.is_canonical() {
+            return Err(AgentdError::Invalid(
+                "compatibility runtime.codex installation cannot schedule canonical work"
+                    .to_string(),
+            ));
+        }
         if self.installed.closed.load(Ordering::Acquire) {
             return Err(AgentdError::Protocol(
                 "runtime.codex supervisor closed after capacity reservation".to_string(),
@@ -181,9 +201,9 @@ impl RuntimeCodexScheduleReservationV1 {
 }
 
 impl ProcessRuntimeCodexExecutorV1 {
-    /// Compatibility constructor for embeddings that already install the
-    /// process-local owner. New product profiles should use the typed bootstrap
-    /// and supply all canonical dependencies together.
+    /// Compatibility constructor for embeddings that exercise the executor
+    /// outside Agentd product composition. This installation is intentionally
+    /// invisible to daemon canonical readiness.
     pub fn install_agentd_supervisor<F>(
         self: Arc<Self>,
         queue_capacity: usize,
@@ -209,12 +229,50 @@ impl ProcessRuntimeCodexExecutorV1 {
         )
     }
 
+    /// Compatibility-only bounded installation. The ordinary daemon refuses to
+    /// treat this surface as its canonical physical execution owner.
     pub fn install_agentd_supervisor_with_limits(
         self: Arc<Self>,
         queue_capacity: usize,
         maximum_concurrent_jobs: usize,
         recovery_interval: Duration,
         provider: Arc<dyn RuntimeCodexInputProviderV1>,
+    ) -> Result<(), AgentdError> {
+        self.install_agentd_supervisor_profile(
+            queue_capacity,
+            maximum_concurrent_jobs,
+            recovery_interval,
+            provider,
+            RuntimeCodexInstallationProfileV1::Compatibility,
+        )
+    }
+
+    /// Canonical installation is callable only by the all-or-none typed
+    /// bootstrap, which owns the private token required by this boundary.
+    pub(crate) fn install_agentd_canonical_supervisor_with_limits(
+        self: Arc<Self>,
+        queue_capacity: usize,
+        maximum_concurrent_jobs: usize,
+        recovery_interval: Duration,
+        provider: Arc<dyn RuntimeCodexInputProviderV1>,
+        _token: CanonicalRuntimeInstallationTokenV1,
+    ) -> Result<(), AgentdError> {
+        self.install_agentd_supervisor_profile(
+            queue_capacity,
+            maximum_concurrent_jobs,
+            recovery_interval,
+            provider,
+            RuntimeCodexInstallationProfileV1::Canonical,
+        )
+    }
+
+    fn install_agentd_supervisor_profile(
+        self: Arc<Self>,
+        queue_capacity: usize,
+        maximum_concurrent_jobs: usize,
+        recovery_interval: Duration,
+        provider: Arc<dyn RuntimeCodexInputProviderV1>,
+        profile: RuntimeCodexInstallationProfileV1,
     ) -> Result<(), AgentdError> {
         if !(1..=MAX_QUEUE_CAPACITY).contains(&queue_capacity)
             || !(1..=MAX_CONCURRENT_JOBS).contains(&maximum_concurrent_jobs)
@@ -229,6 +287,7 @@ impl ProcessRuntimeCodexExecutorV1 {
         let (sender, receiver) = mpsc::channel(queue_capacity);
         INSTALLATION
             .set(Arc::new(Installation {
+                profile,
                 executor: self,
                 provider,
                 sender,
@@ -251,12 +310,17 @@ impl ProcessRuntimeCodexExecutorV1 {
     }
 
     pub(crate) fn agentd_supervisor_installed() -> bool {
-        INSTALLATION.get().is_some()
+        INSTALLATION
+            .get()
+            .is_some_and(|installed| installed.profile.is_canonical())
     }
 
     pub(crate) fn agentd_supervisor_snapshot(
     ) -> Result<Option<RuntimeCodexSupervisorSnapshotV1>, AgentdError> {
-        let Some(installed) = INSTALLATION.get() else {
+        let Some(installed) = INSTALLATION
+            .get()
+            .filter(|installed| installed.profile.is_canonical())
+        else {
             return Ok(None);
         };
         let active = installed
@@ -284,6 +348,11 @@ impl ProcessRuntimeCodexExecutorV1 {
                 "canonical intelligence has no installed runtime.codex supervisor".to_string(),
             )
         })?);
+        if !installed.profile.is_canonical() {
+            return Err(AgentdError::Invalid(
+                "canonical intelligence requires the typed runtime bootstrap".to_string(),
+            ));
+        }
         if installed.closed.load(Ordering::Acquire) {
             return Err(AgentdError::Protocol(
                 "runtime.codex supervisor is closed".to_string(),
@@ -319,7 +388,10 @@ impl ProcessRuntimeCodexExecutorV1 {
     }
 
     pub(crate) fn cancel_installed_runs() -> Result<(), AgentdError> {
-        let Some(installed) = INSTALLATION.get() else {
+        let Some(installed) = INSTALLATION
+            .get()
+            .filter(|installed| installed.profile.is_canonical())
+        else {
             return Ok(());
         };
         installed.ready.store(false, Ordering::Release);
@@ -335,6 +407,11 @@ impl ProcessRuntimeCodexExecutorV1 {
                 "runtime.codex supervisor owner started without installation".to_string(),
             )
         })?);
+        if !installed.profile.is_canonical() {
+            return Err(AgentdError::Invalid(
+                "Agentd refuses a compatibility runtime.codex installation".to_string(),
+            ));
+        }
         let mut receiver = installed
             .receiver
             .lock()
@@ -485,7 +562,9 @@ fn publish_recovery_status(
     installed: &Installation,
     report: &super::super::RuntimeCodexReconcileReportV1,
 ) {
-    installed.unresolved.store(report.unresolved, Ordering::Release);
+    installed
+        .unresolved
+        .store(report.unresolved, Ordering::Release);
     installed
         .prepared_unfenced
         .store(report.prepared_unfenced, Ordering::Release);
@@ -547,11 +626,25 @@ fn remove_active(
     let mut active = installed.active.lock().map_err(|_| {
         AgentdError::Protocol("runtime.codex active registry is poisoned".to_string())
     })?;
-    if active.get(run_id).is_some_and(|observed| observed.digest != digest) {
+    if active
+        .get(run_id)
+        .is_some_and(|observed| observed.digest != digest)
+    {
         return Err(AgentdError::Protocol(
             "runtime.codex active cleanup observed semantic drift".to_string(),
         ));
     }
     active.remove(run_id);
     Ok(())
+}
+
+#[cfg(test)]
+mod installation_profile_tests {
+    use super::RuntimeCodexInstallationProfileV1;
+
+    #[test]
+    fn only_typed_profile_is_canonical() {
+        assert!(!RuntimeCodexInstallationProfileV1::Compatibility.is_canonical());
+        assert!(RuntimeCodexInstallationProfileV1::Canonical.is_canonical());
+    }
 }
