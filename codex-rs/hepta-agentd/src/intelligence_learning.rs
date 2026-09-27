@@ -748,6 +748,7 @@ impl LearningPayloadV1 {
         }
     }
 
+    #[cfg(test)]
     fn admitted_at(&self) -> u64 {
         match self {
             Self::Decision(value) => value.admitted_at,
@@ -1428,7 +1429,7 @@ fn read_bounded_regular_file(
             "learning payload file",
         ));
     }
-    let mut file = OpenOptions::new()
+    let file = OpenOptions::new()
         .read(true)
         .open(path)
         .map_err(|error| AgentdIntelligenceLearningErrorV1::Io(error.to_string()))?;
