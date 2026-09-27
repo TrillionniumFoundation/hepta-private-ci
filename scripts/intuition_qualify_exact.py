@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Read-only intuition qualification; never format, migrate, commit or sign acceptance.
+"""Read-only exact-SHA qualification. Evidence never modifies the tested checkout.
 
-Receipts live outside the checkout. A planned command is never recorded as passed.
-The checked-out tree, PR source and base remain distinct, including merge runs.
+--source-commit HEAD_SHA is the source-head entry point; the existing explicit
+--expected-sha/--source-sha/--base-sha/--lane interface remains supported.
+Independent execution is not semantic evaluator acceptance or release approval.
 """
 from __future__ import annotations
 
@@ -13,11 +14,15 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
+import signal
 import subprocess
 import sys
+import tempfile
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
+SCHEMA = "hepta.intuition.exact-command-record.v3"
 PACKAGES = ["-p", "codex-hepta-intuition", "-p", "codex-hepta-intelligence", "-p", "codex-hepta-agentd"]
 COMMANDS = [
     ("golden-vectors-python", ["python3", "../scripts/intuition_golden_vectors.py", "hepta-intuition/testdata/production_contract_v2.json"]),
@@ -30,8 +35,17 @@ COMMANDS = [
     ("agentd-product-tests", ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "--test", "intuition_policy_product"]),
     ("agentd-v3-product-tests", ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "--test", "intuition_policy_product_v3"]),
     ("agentd-commit-boundary-tests", ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "--test", "intuition_policy_commit_boundary"]),
+    ("ledger-production-tests", ["cargo", "test", "--locked", "-p", "codex-hepta-learning-ledger", "production"]),
     ("kernel-fast-gate", ["cargo", "run", "--locked", "--release", "-p", "codex-hepta-intuition", "--example", "fast_gate"]),
     ("authenticated-fast-gate", ["cargo", "run", "--locked", "--release", "-p", "codex-hepta-intelligence", "--example", "intuition_authenticated_fast_gate"]),
+    ("release-binaries", ["cargo", "build", "--locked", "--release", "-p", "codex-hepta-agentd", "--bins", "--message-format=json"]),
+]
+INDEPENDENT_COMMANDS = [
+    ("independent-policy", ["cargo", "test", "--locked", "-p", "codex-hepta-intuition"]),
+    ("independent-qualification", ["cargo", "test", "--locked", "-p", "codex-hepta-intelligence"]),
+    ("independent-product", ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "--test", "intuition_policy_product_v3"]),
+    ("independent-boundary", ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "--test", "intuition_policy_commit_boundary"]),
+    ("independent-ledger", ["cargo", "test", "--locked", "-p", "codex-hepta-learning-ledger", "production"]),
 ]
 
 
@@ -43,48 +57,175 @@ def utc() -> str:
     return dt.datetime.now(dt.timezone.utc).isoformat()
 
 
+def sha256(path: Path) -> str:
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
 def write_json(path: Path, value: object) -> None:
-    temporary = path.with_suffix(".tmp")
-    temporary.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    temporary = path.with_name(path.name + ".tmp")
+    with temporary.open("w", encoding="utf-8") as stream:
+        json.dump(value, stream, indent=2, sort_keys=True)
+        stream.write("\n")
+        stream.flush()
+        os.fsync(stream.fileno())
     temporary.replace(path)
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--evidence", type=Path, required=True)
-    parser.add_argument("--expected-sha", required=True)
-    parser.add_argument("--source-sha", required=True)
-    parser.add_argument("--base-sha", default="")
-    parser.add_argument("--lane", choices=["source-head", "synthetic-merge"], required=True)
-    args = parser.parse_args()
-    evidence = args.evidence.resolve()
-    if evidence == ROOT or ROOT in evidence.parents:
-        parser.error("evidence must be outside the tested checkout")
-    evidence.mkdir(parents=True, exist_ok=True)
-    head, tree = git("rev-parse", "HEAD"), git("rev-parse", "HEAD^{tree}")
-    record = {
-        "schema": "hepta.intuition.exact-command-record.v2",
-        "sourceSha": args.source_sha,
-        "baseSha": args.base_sha or None,
-        "testedSha": head,
-        "testedTree": tree,
-        "lane": args.lane,
-        "runId": os.environ.get("GITHUB_RUN_ID"),
-        "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
-        "host": platform.platform(),
-        "startedAt": utc(),
-        "status": "running",
-        "commands": [],
-        "independentAcceptance": "not_established",
-        "operatorAcceptance": "not_established",
-        "promotion": "not_authorized",
+def external_directory(path: Path) -> Path:
+    path = path.resolve()
+    if path == ROOT or ROOT in path.parents:
+        raise ValueError("evidence must be outside the tested checkout")
+    path.mkdir(parents=True, exist_ok=True)
+    if any(path.iterdir()):
+        raise ValueError("evidence directory must be empty; refusing stale receipts")
+    return path
+
+
+def identity_error(head: str, expected: str, source: str, base: str, lane: str) -> str | None:
+    if not all(re.fullmatch(r"[0-9a-f]{40}", value) for value in (head, expected, source)):
+        return "full_commit_sha_required"
+    if head != expected:
+        return "checkout_sha_mismatch"
+    if lane == "source-head":
+        return None if source == head else "source_sha_mismatch"
+    if not re.fullmatch(r"[0-9a-f]{40}", base):
+        return "merge_base_required"
+    parents = git("rev-list", "--parents", "-n", "1", head).split()[1:]
+    if len(parents) != 2 or set(parents) != {source, base}:
+        return "synthetic_merge_parent_mismatch"
+    return None
+
+
+def terminate_group(process: subprocess.Popen) -> None:
+    if process.poll() is None:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+    process.wait()
+
+
+def execute(command: list[str], log: Path, cwd: Path, timeout: int) -> int:
+    """Stream logs to disk; terminate the complete compiler subtree on timeout."""
+    with log.open("wb") as stream:
+        try:
+            process = subprocess.Popen(command, cwd=cwd, stdout=stream,
+                                       stderr=subprocess.STDOUT, start_new_session=True)
+        except OSError as error:
+            stream.write((str(error) + "\n").encode())
+            return 127
+        try:
+            return process.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            terminate_group(process)
+            stream.write(b"\nqualification command timed out\n")
+            return 124
+        except KeyboardInterrupt:
+            terminate_group(process)
+            stream.write(b"\nqualification command interrupted\n")
+            return 130
+
+
+def log_summary(path: Path) -> str:
+    with path.open("rb") as stream:
+        stream.seek(max(0, path.stat().st_size - 16384))
+        return "\n".join(stream.read().decode("utf-8", "replace").splitlines()[-60:])
+
+
+def nonzero_tests(path: Path) -> bool:
+    with path.open(encoding="utf-8", errors="replace") as stream:
+        return any(re.search(r"test result: ok\. [1-9][0-9]* passed;", line) for line in stream)
+
+
+def release_artifacts(path: Path) -> list[dict[str, str]]:
+    artifacts = []
+    with path.open(encoding="utf-8", errors="replace") as stream:
+        for line in stream:
+            try:
+                message = json.loads(line)
+            except ValueError:
+                continue
+            if message.get("reason") == "compiler-artifact" and message.get("executable"):
+                binary = Path(message["executable"])
+                if "bin" in message.get("target", {}).get("kind", []) and binary.is_file():
+                    artifacts.append({"name": message["target"]["name"], "sha256": sha256(binary)})
+    return artifacts
+
+
+def seal(evidence: Path) -> None:
+    files = {p.name: sha256(p) for p in sorted(evidence.iterdir()) if p.is_file() and p.name != "artifact-manifest.json"}
+    write_json(evidence / "artifact-manifest.json", {"schema": "hepta.intuition.artifacts.v1", "sha256": files})
+
+
+def project(record: dict, evidence: Path) -> None:
+    """Generate evidence-local projections; never overwrite development history."""
+    source_map = ROOT / "docs/modules/intuition.policy/IMPLEMENTATION_MAP.json"
+    mapping = json.loads(source_map.read_text()) if source_map.is_file() else {"module": "intuition.policy"}
+    mapping["sourceBase"] = {"commit": record["testedSha"], "tree": record["testedTree"]}
+    mapping["qualification"] = record
+    mapping["productionImplementation"] = False
+    mapping["full_completion_predicate"] = {
+        "is_production_implemented": False,
+        "happy_path_verified": False,
+        "edge_failures_verified": False,
+        "has_independent_acceptance_proof": False,
     }
+    mapping["claimBoundary"] = {**mapping.get("claimBoundary", {}),
+                                "productionImplementation": False, "productExecutionProved": False,
+                                "independentAcceptance": False, "activation": False, "release": False}
+    write_json(evidence / "IMPLEMENTATION_MAP.json", mapping)
+    lines = ["# intuition.policy exact execution dossier", "",
+             f"- Tested commit: `{record['testedSha']}`", f"- Tested tree: `{record['testedTree']}`",
+             f"- Source commit: `{record['sourceSha']}`", f"- Mode/lane: `{record['mode']}/{record['lane']}`",
+             f"- Workflow run: `{record['runId']}`; job: `{record['jobId']}`; attempt: `{record['runAttempt']}`",
+             f"- Result: `{record['status']}`", "",
+             "This single execution does not authorize production, independent semantic acceptance, or release.", "",
+             "| Command | Exit | Status | Log SHA-256 |", "|---|---:|---|---|"]
+    for command in record["commands"]:
+        lines.append(f"| {command['name']} | {command.get('exitCode', 'not returned')} | {command['status']} | {command.get('logSha256', 'not available')} |")
+    (evidence / "execution-dossier.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source-commit")
+    parser.add_argument("--evidence", "--output-dir", type=Path)
+    parser.add_argument("--expected-sha")
+    parser.add_argument("--source-sha")
+    parser.add_argument("--base-sha", default="")
+    parser.add_argument("--lane", choices=["source-head", "synthetic-merge"], default="source-head")
+    parser.add_argument("--independent", action="store_true")
+    parser.add_argument("--command-timeout", type=int, default=2400)
+    args = parser.parse_args(argv)
+    if args.command_timeout < 1:
+        parser.error("--command-timeout must be positive")
+    source = args.source_commit or args.source_sha
+    if not source or (args.source_commit and args.source_sha and args.source_commit != args.source_sha):
+        parser.error("one consistent source SHA is required")
+    expected = args.expected_sha or source
+    try:
+        evidence = external_directory(args.evidence or Path(tempfile.mkdtemp(prefix="intuition-evidence-")))
+    except ValueError as error:
+        parser.error(str(error))
+    head, tree = git("rev-parse", "HEAD"), git("rev-parse", "HEAD^{tree}")
+    record = {"schema": SCHEMA, "sourceSha": source, "baseSha": args.base_sha or None,
+              "testedSha": head, "testedTree": tree, "lane": args.lane,
+              "mode": "independent" if args.independent else "qualification",
+              "runId": os.environ.get("GITHUB_RUN_ID"), "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+              "jobId": os.environ.get("GITHUB_JOB"), "repository": os.environ.get("GITHUB_REPOSITORY"),
+              "host": platform.platform(), "startedAt": utc(), "status": "running", "commands": [],
+              "independentAcceptance": "not_established", "operatorAcceptance": "not_established",
+              "promotion": "not_authorized"}
     receipt = evidence / "command-record.json"
     write_json(receipt, record)
     initial = git("status", "--porcelain", "--untracked-files=all")
-    if head != args.expected_sha or initial:
-        record.update(status="failed", failure="source_identity_or_initial_worktree", worktree=initial)
+    failure = identity_error(head, expected, source, args.base_sha, args.lane)
+    if initial or failure:
+        record.update(status="failed", failure=failure or "initial_worktree_dirty", worktree=initial, worktreeUnchanged=False)
         write_json(receipt, record)
+        project(record, evidence)
+        seal(evidence)
         return 1
     toolchain = evidence / "toolchain.txt"
     with toolchain.open("w", encoding="utf-8") as stream:
@@ -92,39 +233,47 @@ def main() -> int:
             stream.write("$ " + " ".join(command) + "\n")
             stream.flush()
             try:
-                completed = subprocess.run(command, cwd=ROOT, stdout=stream, stderr=subprocess.STDOUT, check=False)
-                stream.write("exit_code=" + str(completed.returncode) + "\n")
-            except OSError as error:
-                stream.write("unavailable: " + str(error) + "\n")
-    record["toolchainLogSha256"] = hashlib.sha256(toolchain.read_bytes()).hexdigest()
+                completed = subprocess.run(command, cwd=ROOT, stdout=stream, stderr=subprocess.STDOUT, timeout=30, check=False)
+                stream.write(f"exit_code={completed.returncode}\n")
+            except (OSError, subprocess.TimeoutExpired) as error:
+                stream.write(f"unavailable: {error}\n")
+    record["toolchainLogSha256"] = sha256(toolchain)
     lockfile = ROOT / "codex-rs/Cargo.lock"
-    record["cargoLockSha256"] = hashlib.sha256(lockfile.read_bytes()).hexdigest() if lockfile.is_file() else None
+    record["cargoLockSha256"] = sha256(lockfile) if lockfile.is_file() else None
     failed = False
-    for name, command in COMMANDS:
+    for name, command in INDEPENDENT_COMMANDS if args.independent else COMMANDS:
         result = {"name": name, "argv": command, "cwd": "codex-rs", "startedAt": utc(), "status": "running"}
         record["commands"].append(result)
         write_json(receipt, record)
         start = time.monotonic()
         log = evidence / (name + ".log")
-        print("::group::" + name, flush=True)
-        print("$ " + " ".join(command), flush=True)
-        try:
-            with log.open("wb") as stream:
-                completed = subprocess.run(command, cwd=ROOT / "codex-rs", stdout=stream, stderr=subprocess.STDOUT, check=False)
-            code = completed.returncode
-        except OSError as error:
-            log.write_text(str(error) + "\n", encoding="utf-8")
-            code = 127
-        result.update(exitCode=code, status="passed" if code == 0 else "failed", finishedAt=utc(), durationSeconds=round(time.monotonic() - start, 6), logSha256=hashlib.sha256(log.read_bytes()).hexdigest())
-        failed = failed or code != 0
-        print("\n".join(log.read_text(encoding="utf-8", errors="replace").splitlines()[-60:]), flush=True)
-        print("exit_code=" + str(code), flush=True)
-        print("::endgroup::", flush=True)
+        print(f"::group::{name}\n$ {' '.join(command)}", flush=True)
+        code = execute(command, log, ROOT / "codex-rs", args.command_timeout)
+        passed = code == 0
+        if command[:2] == ["cargo", "test"]:
+            result["nonzeroTests"] = nonzero_tests(log)
+            passed = passed and result["nonzeroTests"]
+        if name == "release-binaries" and passed:
+            result["binaries"] = release_artifacts(log)
+            passed = bool(result["binaries"])
+        result.update(exitCode=code, status="passed" if passed else "failed", finishedAt=utc(),
+                      durationSeconds=round(time.monotonic() - start, 6), log=log.name,
+                      logSha256=sha256(log), logSummary=log_summary(log))
+        failed = failed or not passed
+        print(result["logSummary"] + f"\nexit_code={code}\n::endgroup::", flush=True)
         write_json(receipt, record)
+        if code == 130:
+            break
     final = git("status", "--porcelain", "--untracked-files=all")
     unchanged = git("rev-parse", "HEAD") == head and git("rev-parse", "HEAD^{tree}") == tree and not final
-    record.update(status="passed" if not failed and unchanged else "failed", finishedAt=utc(), worktreeUnchanged=unchanged, finalWorktree=final)
+    record.update(status="passed" if not failed and unchanged else "failed", finishedAt=utc(),
+                  worktreeUnchanged=unchanged, finalWorktree=final)
     write_json(receipt, record)
+    write_json(evidence / ("independent-report.json" if args.independent else "qualification-report.json"), record)
+    project(record, evidence)
+    seal(evidence)
+    print(json.dumps({"evidence": str(evidence), "sourceSha": source, "testedSha": head,
+                      "status": record["status"], "artifactManifestSha256": sha256(evidence / "artifact-manifest.json")}))
     return 0 if record["status"] == "passed" else 1
 
 
