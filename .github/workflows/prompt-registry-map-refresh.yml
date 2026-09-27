@@ -1,21 +1,23 @@
-name: Prompt registry exact implementation map refresh
+name: Prompt registry operational closure bootstrap
 
 on:
   push:
     branches: [codex/prompt-registry-remediation-20260927]
-    paths: [.github/workflows/prompt-registry-map-refresh.yml]
+    paths:
+      - "scripts/apply-prompt-registry-operations.py"
+      - ".github/workflows/prompt-registry-map-refresh.yml"
 
 permissions:
   contents: write
 
 concurrency:
-  group: prompt-registry-map-refresh-${{ github.ref }}
-  cancel-in-progress: true
+  group: prompt-registry-operational-closure-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  refresh:
-    runs-on: ubuntu-slim
-    timeout-minutes: 10
+  apply:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -23,51 +25,57 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Bind clean exact candidate
+      - name: Bind exact bootstrap source
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
           git diff --quiet
           git diff --cached --quiet
-          git rev-parse HEAD HEAD^{tree}
 
-      - name: Generate prompt.registry map from current source
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Apply bounded operational closure
+        run: python3 scripts/apply-prompt-registry-operations.py
+
+      - name: Format and test prompt registry
+        working-directory: codex-rs
         shell: bash
-        env:
-          PYTHONDONTWRITEBYTECODE: "1"
         run: |
           set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py migrate --module prompt.registry
+          cargo fmt --package codex-hepta-prompt-registry
+          cargo test --locked -p codex-hepta-prompt-registry -- --nocapture --test-threads=1
+          cargo test --locked -p codex-hepta-prompt-registry operational_ -- --ignored --nocapture --test-threads=1
+          cargo clippy --locked -p codex-hepta-prompt-registry --all-targets --no-deps -- -D warnings
+
+      - name: Validate generated Python and documents
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 - <<'PY'
-          import json
           from pathlib import Path
-          path = Path("docs/modules/prompt.registry/IMPLEMENTATION_MAP.json")
-          row = json.loads(path.read_text(encoding="utf-8"))
-          if row.get("schema") != "hepta.module-implementation-map.v3":
-              raise SystemExit("unexpected implementation-map schema")
-          if row.get("module") != "prompt.registry":
-              raise SystemExit("wrong implementation-map module")
-          if not row.get("operations"):
-              raise SystemExit("empty prompt.registry operation inventory")
-          print(json.dumps({
-              "module": row["module"],
-              "sourceBase": row.get("sourceBase"),
-              "observedAtHead": row.get("observedAtHead"),
-              "operations": len(row["operations"]),
-          }, sort_keys=True))
+          compile(
+              Path("scripts/hepta-prompt-registry-map.py").read_text(encoding="utf-8"),
+              "scripts/hepta-prompt-registry-map.py",
+              "exec",
+          )
           PY
-          git diff --check -- docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
+          python3 scripts/hepta-prompt-registry-map.py
+          python3 scripts/hepta-implementation-maps.py migrate --module prompt.registry
+          git checkout -- docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
+          git diff --check
 
-      - name: Commit exact generated map
+      - name: Commit operational closure
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- docs/modules/prompt.registry/IMPLEMENTATION_MAP.json; then
-            exit 0
-          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
-          git commit -m "prompt.registry: refresh exact implementation map [prompt-registry-map]"
+          git add -A
+          git diff --cached --check
+          git commit -m "prompt.registry: add operational checkpoint and qualification"
           git push origin "HEAD:${GITHUB_REF_NAME}"
