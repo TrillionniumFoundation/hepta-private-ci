@@ -1,0 +1,42 @@
+name: Inference worker Linux V8 inputs
+
+on:
+  pull_request:
+    paths: ['.github/workflows/inference-worker-v8-inputs.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inputs:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Reuse the repository artifact resolver without changing source
+        env:
+          PYTHONPATH: scripts
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          from codex_package.targets import TARGET_SPECS
+          from codex_package.v8 import resolve_codex_v8_cargo_env
+          root = Path(os.environ['RUNNER_TEMP']) / 'inference-linux-v8'
+          root.mkdir()
+          observed = resolve_codex_v8_cargo_env(TARGET_SPECS['x86_64-unknown-linux-gnu'], environ={}, cache_root=root)
+          (root / 'resolved.json').write_text(json.dumps(observed, indent=2) + '\n')
+          PY
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-linux-v8-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/inference-linux-v8/
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
