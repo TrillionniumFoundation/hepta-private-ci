@@ -32,19 +32,26 @@ jobs:
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.12'
-      - name: Format only the two repaired files and refresh typed source objects
+      - name: Apply bounded review patch and refresh typed source objects
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test -z "$(git status --porcelain)"
+          git apply --check --index .github/ndu-review-repair.patch
+          git apply --index .github/ndu-review-repair.patch
           (
             cd codex-rs
             rustfmt --edition 2024 --config-path rustfmt.toml \
               hepta-control-plane/tests/runtime_retirement_dependencies.rs \
-              hepta-agentd/src/plasticity_learning_producer.rs
+              hepta-agentd/src/plasticity_learning_producer.rs \
+              hepta-agentd/src/ndu_control.rs hepta-agentd/src/ndu_owner_tests.rs
           )
-          git add -- codex-rs/hepta-control-plane/tests/runtime_retirement_dependencies.rs codex-rs/hepta-agentd/src/plasticity_learning_producer.rs
+          git add -- codex-rs/hepta-control-plane/tests/runtime_retirement_dependencies.rs \
+            codex-rs/hepta-agentd/src/plasticity_learning_producer.rs \
+            codex-rs/hepta-agentd/src/ndu_control.rs codex-rs/hepta-agentd/src/ndu_owner_tests.rs
+          python3 scripts/test_hepta_ndu_qualification.py
+          python3 scripts/test_hepta_ndu_map_integrity.py
           python3 scripts/hepta_ndu_map_integrity.py --rebind-index
           git add -- docs/modules/utility.ndu/IMPLEMENTATION_MAP.json
           python3 - <<'PY'
@@ -52,20 +59,25 @@ jobs:
           allowed = {
               'codex-rs/hepta-control-plane/tests/runtime_retirement_dependencies.rs',
               'codex-rs/hepta-agentd/src/plasticity_learning_producer.rs',
+              'codex-rs/hepta-agentd/src/ndu_control.rs',
+              'codex-rs/hepta-agentd/src/ndu_owner_tests.rs',
               'docs/modules/utility.ndu/IMPLEMENTATION_MAP.json',
+              'docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json',
+              'docs/modules/utility.ndu/OPERATOR_RUNBOOK.md',
+              'scripts/hepta-ndu-qualification.py',
+              'scripts/test_hepta_ndu_qualification.py',
+              '.github/workflows/hepta-ndu-recursion.yml',
           }
           changed = set(subprocess.check_output(['git', 'diff', '--cached', '--name-only', '-z']).decode().strip('\0').split('\0')) - {''}
           if not changed <= allowed:
-              raise SystemExit(f'unexpected formatter changes: {sorted(changed - allowed)}')
+              raise SystemExit(f'unexpected repair changes: {sorted(changed - allowed)}')
           if subprocess.check_output(['git', 'diff', '--name-only']):
               raise SystemExit('unstaged changes outside bounded repair')
           PY
           git diff --cached --check
           git config user.name hepta-qualification
           git config user.email qualification@invalid
-          if ! git diff --cached --quiet; then
-            git commit -m 'fix(ndu): format strict regression fixtures and rebind source evidence'
-          fi
+          git commit -m 'fix(ndu): revalidate physical admission deadlines and qualify artifact lifecycle'
           test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$EXPECTED_SHA"
           git push origin "HEAD:refs/heads/$TARGET_BRANCH"
       - name: Retain source snapshot and validate exact closed-world map
@@ -87,7 +99,9 @@ jobs:
           git rev-parse HEAD HEAD^{tree} > "$out/source-identity.txt"
           git status --porcelain > "$out/checkout-status.txt"
           sha256sum "$out/source.tar.gz" > "$out/source.tar.gz.sha256"
-          python3 scripts/hepta-ndu-implementation-map-closed-world.py > "$out/closed-world.json"
+          python3 scripts/hepta-ndu-implementation-map-closed-world.py \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})" > "$out/closed-world.json" 2>&1
           test -z "$(git status --porcelain)"
       - name: Retain bounded repair and source evidence
         if: always()
