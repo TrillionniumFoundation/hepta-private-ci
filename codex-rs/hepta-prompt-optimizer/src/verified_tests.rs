@@ -99,7 +99,7 @@ fn enumerated() -> EnumeratedPromptCandidatesV1 {
         },
         candidates,
     };
-    value.candidates_digest = digest_candidates(value);
+    value.candidates_digest = digest_candidates(&value);
     value.canonical_order_digest = digest_candidate_order(&value);
     value.receipt.receipt_digest = digest_candidate_receipt(
         &value,
@@ -132,7 +132,7 @@ fn priced() -> PricedPromptCandidatesV1 {
                         lower_q32: utility,
                         upper_q32: utility,
                         support_count: 10,
-                        support_audit_digest: digest(&ormat!("support:{index}")),
+                        support_audit_digest: digest(&format!("support:{index}")),
                     },
                     receipt_digest: Digest32::ZERO,
                     authority: AuthorityPosture::DENY_ALL,
@@ -221,7 +221,7 @@ fn forged_realization_binding_is_rejected() {
     value.candidates[0].realization.token_cost += 1;
     assert!(matches!(
         verify_enumerated_prompt_candidates_v2(value),
-        Err(VerifiedPromptErrorV2:IdentityMismatch(
+        Err(VerifiedPromptErrorV2::IdentityMismatch(
             "candidate realization binding"
         ))
     ));
@@ -273,10 +273,8 @@ fn portfolio_state_drift_is_rejected_before_exercise() {
 }
 
 #[test]
-fn solver_disclosure_tamper_is_rejected() {
-    let (mut value, context) = selected();
-    value.optimality = PromptOptimalityDisclosureV1::HeuristicNoCertificate;
-    value.selection_method = PromptSelectionMethodV1::GreedyPrerequisiteBundleV1;
+fn valid_solver_disclosure_is_admitted() {
+    let (value, context) = selected();
     let verified = verify_selected_prompt_portfolio_v2(value, context)
         .unwrap_or_else(|error| panic!("valid disclosure: {error}"));
     assert_eq!(
