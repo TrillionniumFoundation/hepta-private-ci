@@ -120,16 +120,18 @@ impl HeptaEvidenceStore {
                         Ok(u64::from_be_bytes(bytes))
                     })
                     .transpose()?;
-                if signature.as_ref().is_none_or(|value| value.len() != 64)
-                    || generation.is_none_or(|value| value == 0)
-                    || digest.is_none()
-                {
-                    return Err(EvidenceError::InvalidRecord(format!(
-                        "qualification evidence {evidence_id} lacks complete authentication provenance"
-                    )));
-                }
-                let generation = generation.expect("checked positive trust generation");
-                let digest = digest.expect("checked trust digest");
+                let (generation, digest) = match (signature.as_ref(), generation, digest) {
+                    (Some(signature), Some(generation), Some(digest))
+                        if signature.len() == 64 && generation > 0 =>
+                    {
+                        (generation, digest)
+                    }
+                    _ => {
+                        return Err(EvidenceError::InvalidRecord(format!(
+                            "qualification evidence {evidence_id} lacks complete authentication provenance"
+                        )));
+                    }
+                };
                 let current = generation == current_registry_generation
                     && digest == *current_registry_sha256;
                 if !current && accepted_trust_seq.is_none() {
