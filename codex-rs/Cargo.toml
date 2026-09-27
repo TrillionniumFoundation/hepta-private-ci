@@ -200,6 +200,7 @@ edition = "2024"
 license = "Apache-2.0"
 
 [workspace.dependencies]
+async-trait = "0.1.89"
 # Internal
 app_test_support = { path = "app-server/tests/common" }
 codex-analytics = { path = "analytics" }

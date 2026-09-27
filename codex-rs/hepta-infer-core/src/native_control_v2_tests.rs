@@ -145,12 +145,7 @@ struct AuthorityFixture {
     operator_b: SigningKey,
 }
 
-fn trust_key(
-    key_id: &str,
-    signer_id: &str,
-    role: TrustRole,
-    key: &SigningKey,
-) -> TrustKey {
+fn trust_key(key_id: &str, signer_id: &str, role: TrustRole, key: &SigningKey) -> TrustKey {
     TrustKey {
         key_id: key_id.to_string(),
         signer_id: signer_id.to_string(),
@@ -162,12 +157,7 @@ fn trust_key(
     }
 }
 
-fn signature(
-    key_id: &str,
-    signer_id: &str,
-    key: &SigningKey,
-    message: &[u8],
-) -> ControlSignature {
+fn signature(key_id: &str, signer_id: &str, key: &SigningKey, message: &[u8]) -> ControlSignature {
     ControlSignature {
         key_id: key_id.to_string(),
         signer_id: signer_id.to_string(),
@@ -363,10 +353,7 @@ fn compaction_preserves_indeterminate_capacity_and_exact_state() {
         .native_started("request-1", "turn-1".to_string())
         .unwrap();
     let held = control
-        .settle_native(
-            "request-1",
-            indeterminate_output("thread-1", "turn-1"),
-        )
+        .settle_native("request-1", indeterminate_output("thread-1", "turn-1"))
         .unwrap();
     let receipt = control.compact_native_journal().unwrap();
     assert_eq!(receipt.generation, 1);
@@ -480,13 +467,7 @@ fn authorized_settlement_never_persists_raw_output() {
     let paths = TestPaths::new("protected-output");
     let fixture = authority_fixture("request-1");
     let mut control = DurableInferenceControl::open(&paths.journal, 8).unwrap();
-    start_bound(
-        &mut control,
-        &fixture,
-        "request-1",
-        "thread-1",
-        "turn-1",
-    );
+    start_bound(&mut control, &fixture, "request-1", "thread-1", "turn-1");
     let secret = "top secret model output that must not enter the journal";
     let settled = control
         .settle_native_authorized(
@@ -502,7 +483,11 @@ fn authorized_settlement_never_persists_raw_output() {
     drop(control);
 
     let journal = fs::read(&paths.journal).unwrap();
-    assert!(!journal.windows(secret.len()).any(|window| window == secret.as_bytes()));
+    assert!(
+        !journal
+            .windows(secret.len())
+            .any(|window| window == secret.as_bytes())
+    );
     let reopened = DurableInferenceControl::open(&paths.journal, 8).unwrap();
     assert!(
         reopened
@@ -521,13 +506,7 @@ fn signed_reconciliation_releases_indeterminate_without_blind_replay() {
     let paths = TestPaths::new("signed-reconciliation");
     let fixture = authority_fixture("request-1");
     let mut control = DurableInferenceControl::open(&paths.journal, 8).unwrap();
-    start_bound(
-        &mut control,
-        &fixture,
-        "request-1",
-        "thread-1",
-        "turn-1",
-    );
+    start_bound(&mut control, &fixture, "request-1", "thread-1", "turn-1");
     control
         .settle_native_authorized(
             "request-1",
@@ -590,13 +569,7 @@ fn indeterminate_retirement_is_revision_bound_and_dual_controlled() {
     let paths = TestPaths::new("dual-retirement");
     let fixture = authority_fixture("request-1");
     let mut control = DurableInferenceControl::open(&paths.journal, 8).unwrap();
-    start_bound(
-        &mut control,
-        &fixture,
-        "request-1",
-        "thread-1",
-        "turn-1",
-    );
+    start_bound(&mut control, &fixture, "request-1", "thread-1", "turn-1");
     let held = control
         .settle_native_authorized(
             "request-1",
@@ -624,8 +597,18 @@ fn indeterminate_retirement_is_revision_bound_and_dual_controlled() {
     let signed = SignedIndeterminateRetirement {
         retirement,
         approvals: vec![
-            signature("operator-key-a", "operator-a", &fixture.operator_a, &message),
-            signature("operator-key-b", "operator-b", &fixture.operator_b, &message),
+            signature(
+                "operator-key-a",
+                "operator-a",
+                &fixture.operator_a,
+                &message,
+            ),
+            signature(
+                "operator-key-b",
+                "operator-b",
+                &fixture.operator_b,
+                &message,
+            ),
         ],
     };
     let verified =
@@ -656,7 +639,10 @@ fn post_compaction_multi_generation_curve() {
         if (index + 1) % 64 == 0 {
             let receipt = control.compact_native_journal().unwrap();
             assert!(receipt.active_journal_bytes < 4096);
-            assert_ne!(previous_chain.as_deref(), Some(receipt.archive_chain_digest.as_str()));
+            assert_ne!(
+                previous_chain.as_deref(),
+                Some(receipt.archive_chain_digest.as_str())
+            );
             previous_chain = Some(receipt.archive_chain_digest);
             largest_active = largest_active.max(receipt.active_journal_bytes);
             drop(control);

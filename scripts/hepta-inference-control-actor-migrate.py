@@ -1,102 +1,134 @@
 #!/usr/bin/env python3
-"""One-shot exact-tree bootstrap for the inference.control closure."""
+"""Verify the completed inference.control unique-writer actor migration.
+
+The former source-rewrite helper was intentionally retired after migration.
+Future changes are checked against explicit product invariants instead of
+silently rewriting Rust with stale textual anchors.
+"""
 
 from __future__ import annotations
 
 import argparse
-import base64
-import gzip
-import hashlib
-import json
-import os
 from pathlib import Path
-import subprocess
-import sys
-import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-SELF = Path(__file__).resolve()
-PATCH_PAYLOAD = ROOT / ".github/inference-control-closure.patch.gz.b64"
-VERIFIER_PAYLOAD = ROOT / ".github/inference-control-actor-verifier.py.gz.b64"
-EXPECTED_PARENT = "c5bf1fb779537e1285cc6fda8b69f05381589872"
-PATCH_SHA256 = "f5a28e5845bcb80797add43c89770733efcf0ca0106b7f6e47a64eefc5632b08"
-FINAL_SHA256 = "649e67017c21faf9e3055b354bb88b7dd314427d0969c0e06a7c4706d33b5b45"
+HOST = ROOT / "codex-rs/hepta-infer-worker-host/src"
+ACTOR = HOST / "control_actor.rs"
+PORT = HOST / "control_port.rs"
+LIB = HOST / "lib.rs"
+RUN_CONTROL = HOST / "native_run_control.rs"
+APP_SERVER = HOST / "native_app_server.rs"
+WORKER_CLI = HOST / "bin/hepta-infer-worker.rs"
+RECOVERY_CLI = HOST / "bin/hepta-infer-recovery.rs"
+MAINTENANCE_CLI = HOST / "bin/hepta-infer-maintenance.rs"
 
 
-def run(*args: str, input_bytes: bytes | None = None) -> subprocess.CompletedProcess[bytes]:
-    return subprocess.run(
-        args, cwd=ROOT, input=input_bytes, stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE, check=False,
+def require(path: Path, markers: tuple[str, ...], failures: list[str]) -> None:
+    text = path.read_text(encoding="utf-8")
+    for marker in markers:
+        if marker not in text:
+            failures.append(f"{path.relative_to(ROOT)} missing {marker!r}")
+
+
+def forbid(path: Path, markers: tuple[str, ...], failures: list[str]) -> None:
+    text = path.read_text(encoding="utf-8")
+    for marker in markers:
+        if marker in text:
+            failures.append(f"{path.relative_to(ROOT)} retains forbidden {marker!r}")
+
+
+def check() -> None:
+    failures: list[str] = []
+    require(
+        PORT,
+        (
+            "#[async_trait]",
+            "pub trait NativeControlPort: Send + Sync",
+            "impl NativeControlPort for DurableInferenceControl",
+        ),
+        failures,
     )
-
-
-def checked_payload(path: Path, expected: str, label: str) -> bytes:
-    try:
-        encoded = b"".join(path.read_bytes().split())
-        value = gzip.decompress(base64.b64decode(encoded, validate=True))
-    except (OSError, ValueError) as exc:
-        raise SystemExit(f"{label} decode failed: {exc}") from exc
-    observed = hashlib.sha256(value).hexdigest()
-    if observed != expected:
-        raise SystemExit(f"{label} digest mismatch: {observed} != {expected}")
-    return value
-
-
-def apply() -> None:
-    status = run("git", "status", "--porcelain=v1", "--untracked-files=all")
-    if status.returncode != 0 or status.stdout:
-        raise SystemExit("bootstrap requires an exact clean checkout")
-    parent = run("git", "rev-parse", "HEAD^")
-    observed_parent = parent.stdout.decode().strip()
-    if parent.returncode != 0 or observed_parent != EXPECTED_PARENT:
-        raise SystemExit(
-            f"bootstrap parent drift: {observed_parent} != {EXPECTED_PARENT}"
+    require(
+        ACTOR,
+        (
+            "impl NativeControlPort for NativeJournalWriterHandle",
+            "prepare_dispatch_raw",
+            "prepare_authorized_dispatch_raw",
+            "abort_raw",
+            "reject_before_start",
+            "settle_legacy",
+            "NativeReconcilerActor",
+        ),
+        failures,
+    )
+    require(
+        LIB,
+        (
+            "pub mod control_actor;",
+            "pub mod control_port;",
+            "pub use control_actor::NativeJournalWriterActor;",
+            "pub use control_port::NativeControlPort;",
+        ),
+        failures,
+    )
+    for path in (RUN_CONTROL, APP_SERVER):
+        require(path, ("&mut dyn NativeControlPort", ".await"), failures)
+        forbid(
+            path,
+            (
+                "&mut DurableInferenceControl",
+                "use codex_hepta_infer_core::durable_control::DurableInferenceControl;",
+            ),
+            failures,
         )
-
-    patch = checked_payload(PATCH_PAYLOAD, PATCH_SHA256, "closure patch")
-    final = checked_payload(VERIFIER_PAYLOAD, FINAL_SHA256, "permanent verifier")
-    check = run("git", "apply", "--check", "--whitespace=nowarn", "-", input_bytes=patch)
-    if check.returncode != 0:
-        raise SystemExit(check.stderr.decode(errors="replace"))
-    applied = run("git", "apply", "--whitespace=nowarn", "-", input_bytes=patch)
-    if applied.returncode != 0:
-        raise SystemExit(applied.stderr.decode(errors="replace"))
-
-    fd, temporary = tempfile.mkstemp(prefix=SELF.name + ".", dir=SELF.parent)
-    try:
-        with os.fdopen(fd, "wb") as handle:
-            handle.write(final)
-            handle.flush()
-            os.fsync(handle.fileno())
-        os.chmod(temporary, 0o755)
-        os.replace(temporary, SELF)
-    finally:
-        if os.path.exists(temporary):
-            os.unlink(temporary)
-    PATCH_PAYLOAD.unlink()
-    VERIFIER_PAYLOAD.unlink()
-
-    verification = run(sys.executable, str(SELF), "check")
-    if verification.returncode != 0:
-        raise SystemExit(
-            verification.stdout.decode(errors="replace")
-            + verification.stderr.decode(errors="replace")
+    require(
+        WORKER_CLI,
+        ("NativeJournalWriterActor::spawn", "actor.shutdown().await"),
+        failures,
+    )
+    require(
+        RECOVERY_CLI,
+        (
+            "NativeJournalWriterActor::spawn",
+            "NativeReconcilerActor::new",
+            "actor.shutdown().await",
+        ),
+        failures,
+    )
+    require(
+        MAINTENANCE_CLI,
+        (
+            "NativeJournalWriterActor::spawn",
+            ".metrics(",
+            ".compact()",
+            "actor.shutdown().await",
+        ),
+        failures,
+    )
+    for path in (WORKER_CLI, RECOVERY_CLI, MAINTENANCE_CLI):
+        forbid(
+            path,
+            (
+                "DurableInferenceControl::open",
+                "use codex_hepta_infer_core::durable_control::DurableInferenceControl;",
+            ),
+            failures,
         )
-    print(json.dumps({
-        "applied_parent": EXPECTED_PARENT,
-        "patch_sha256": PATCH_SHA256,
-        "verifier_sha256": FINAL_SHA256,
-    }, sort_keys=True))
+    if failures:
+        raise SystemExit("\n".join(failures))
+    print("inference.control actor migration is current")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=("apply", "check"))
+    parser.add_argument("command", choices=("check", "apply"))
     args = parser.parse_args()
-    if args.command == "apply":
-        apply()
-    else:
-        raise SystemExit("one-shot bootstrap has not yet been applied")
+    try:
+        check()
+        if args.command == "apply":
+            print({"changed": [], "status": "migration already materialized; verification only"})
+    except OSError as exc:
+        raise SystemExit(str(exc)) from exc
 
 
 if __name__ == "__main__":

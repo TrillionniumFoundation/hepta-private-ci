@@ -38,7 +38,9 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let marker = PathBuf::from(args.next().ok_or("missing marker")?);
     let stage = parse_stage(&args.next().ok_or("missing stage")?)?;
     if args.next().is_some() || !journal.is_absolute() || !marker.is_absolute() {
-        return Err("journal and marker must be absolute and no extra arguments are allowed".into());
+        return Err(
+            "journal and marker must be absolute and no extra arguments are allowed".into(),
+        );
     }
     let mut control = DurableInferenceControl::open(journal, 8)?;
     control.compact_native_journal_with_failpoint(

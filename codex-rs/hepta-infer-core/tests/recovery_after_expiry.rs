@@ -168,10 +168,7 @@ fn fixture(request_id: &str) -> Fixture {
         payload_digest: "6".repeat(64),
         policy_digest: "7".repeat(64),
     };
-    let manifest_digest = digest_json(
-        b"hepta.inference-control.manifest.v1\0",
-        &manifest,
-    );
+    let manifest_digest = digest_json(b"hepta.inference-control.manifest.v1\0", &manifest);
     let bundle = ExecutionAuthorityBundle {
         schema_version: 1,
         request_id: request_id.to_string(),
@@ -230,24 +227,14 @@ fn fixture(request_id: &str) -> Fixture {
                 &manifest_key,
                 &message,
             ),
-            signature(
-                "quota-key-v1",
-                "quota-authority",
-                &quota_key,
-                &message,
-            ),
+            signature("quota-key-v1", "quota-authority", &quota_key, &message),
             signature(
                 "resource-key-v1",
                 "resource-authority",
                 &resource_key,
                 &message,
             ),
-            signature(
-                "data-key-v1",
-                "data-authority",
-                &data_key,
-                &message,
-            ),
+            signature("data-key-v1", "data-authority", &data_key, &message),
         ],
     };
     let trust_store = ControlTrustStore::new(trust_keys.clone()).unwrap();
@@ -281,12 +268,7 @@ fn trust_key(
     }
 }
 
-fn signature(
-    key_id: &str,
-    signer_id: &str,
-    key: &SigningKey,
-    message: &[u8],
-) -> ControlSignature {
+fn signature(key_id: &str, signer_id: &str, key: &SigningKey, message: &[u8]) -> ControlSignature {
     ControlSignature {
         key_id: key_id.to_string(),
         signer_id: signer_id.to_string(),
@@ -380,13 +362,7 @@ fn fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry() {
     let recovery_plan =
         verify_execution_plan_for_recovery(&fixture.trust_keys, &fixture.signed_bundle).unwrap();
     let mut control = DurableInferenceControl::open(&paths.journal, 8).unwrap();
-    let held = prepare_indeterminate(
-        &mut control,
-        &fixture,
-        "request-1",
-        "thread-1",
-        "turn-1",
-    );
+    let held = prepare_indeterminate(&mut control, &fixture, "request-1", "thread-1", "turn-1");
     assert_eq!(held.state, NativeReservationState::Indeterminate);
     assert!(fixture.live_plan.assert_valid_at(RECOVERY_NOW).is_err());
 
@@ -442,13 +418,7 @@ fn fresh_rotated_dual_control_retirement_releases_after_lease_expiry() {
     let recovery_plan =
         verify_execution_plan_for_recovery(&fixture.trust_keys, &fixture.signed_bundle).unwrap();
     let mut control = DurableInferenceControl::open(&paths.journal, 8).unwrap();
-    let held = prepare_indeterminate(
-        &mut control,
-        &fixture,
-        "request-2",
-        "thread-2",
-        "turn-2",
-    );
+    let held = prepare_indeterminate(&mut control, &fixture, "request-2", "thread-2", "turn-2");
     assert_eq!(held.state, NativeReservationState::Indeterminate);
 
     let retirement = RecoveryIndeterminateRetirement {
@@ -483,13 +453,9 @@ fn fresh_rotated_dual_control_retirement_releases_after_lease_expiry() {
             ),
         ],
     };
-    let verified = verify_recovery_retirement(
-        RECOVERY_NOW,
-        &fixture.trust_keys,
-        &recovery_plan,
-        &signed,
-    )
-    .unwrap();
+    let verified =
+        verify_recovery_retirement(RECOVERY_NOW, &fixture.trust_keys, &recovery_plan, &signed)
+            .unwrap();
     let released = control
         .retire_native_indeterminate_recovery("request-2", &recovery_plan, &verified)
         .unwrap();
@@ -502,10 +468,7 @@ fn fresh_rotated_dual_control_retirement_releases_after_lease_expiry() {
 
 fn dispatch_digest(dispatch: &NativeDispatch) -> String {
     let bytes = serde_json::to_vec(dispatch).unwrap();
-    digest_bytes(
-        b"hepta.inference-control.native-dispatch.v1\0",
-        &bytes,
-    )
+    digest_bytes(b"hepta.inference-control.native-dispatch.v1\0", &bytes)
 }
 
 fn digest_json<T: Serialize>(domain: &[u8], value: &T) -> String {

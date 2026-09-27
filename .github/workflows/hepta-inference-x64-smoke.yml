@@ -11,6 +11,7 @@ on:
       - 'docs/modules/inference.control/**'
       - 'qualification/module-execution-dossiers/detail/inference.control*'
       - 'scripts/hepta-inference-control-current-state.py'
+      - 'scripts/hepta-inference-control-actor-migrate.py'
       - '.github/workflows/hepta-inference-x64-smoke.yml'
   workflow_dispatch:
 
@@ -42,7 +43,7 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
         with:
-          toolchain: '1.92.0'
+          toolchain: '1.95.0'
           components: rustfmt, clippy
 
       - uses: Swatinem/rust-cache@d4324cf56a1073e6b007df902dca36c52c84bc9f
@@ -51,8 +52,10 @@ jobs:
             codex-rs -> target
           key: inference-x64-smoke
 
-      - name: Verify generated state
-        run: python3 scripts/hepta-inference-control-current-state.py check
+      - name: Verify generated state and unique-writer migration
+        run: |
+          python3 scripts/hepta-inference-control-current-state.py check
+          python3 scripts/hepta-inference-control-actor-migrate.py check
 
       - name: Verify pinned dependency graph
         run: cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 >/dev/null

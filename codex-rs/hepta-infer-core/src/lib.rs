@@ -6,11 +6,11 @@
 
 /// Exact signed quota, resource, model identity, reconciliation and retirement contracts.
 pub mod control_contracts;
-/// Fresh post-effect recovery contracts that remain valid after dispatch-lease expiry.
-pub mod recovery_contracts;
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
 mod neuron_feature;
+/// Fresh post-effect recovery contracts that remain valid after dispatch-lease expiry.
+pub mod recovery_contracts;
 
 pub use neuron_feature::NeuronFeatureContractError;
 pub use neuron_feature::NeuronFeatureObservationV1;

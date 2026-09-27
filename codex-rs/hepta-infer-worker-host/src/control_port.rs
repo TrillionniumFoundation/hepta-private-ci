@@ -1,6 +1,15 @@
-//! State-transition port shared by the direct compatibility owner and the
-//! production journal-writer actor.
+//! Asynchronous state-transition port shared by the direct compatibility owner
+//! and the production journal-writer actor.
+//!
+//! The provider/effect path never owns `DurableInferenceControl` directly. All
+//! durable transitions cross this port, which lets production use the unique
+//! writer actor while focused compatibility tests can still use an in-process
+//! durable owner.
 
+use std::error::Error as StdError;
+use std::fmt;
+
+use async_trait::async_trait;
 use codex_hepta_infer_core::control_contracts::ProtectedOutput;
 use codex_hepta_infer_core::control_contracts::VerifiedExecutionPlan;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
@@ -12,115 +21,162 @@ use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 
-/// Synchronous durable transition port. Every method is a short local journal
-/// operation. Provider/network awaits occur outside this interface.
-pub trait NativeControlPort: Send {
-    fn reserve_native(
+#[derive(Debug)]
+pub enum NativeControlPortError {
+    Durable(Error),
+    Backend(String),
+}
+
+impl NativeControlPortError {
+    pub(crate) fn backend(error: impl fmt::Display) -> Self {
+        Self::Backend(error.to_string())
+    }
+}
+
+impl fmt::Display for NativeControlPortError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Durable(error) => write!(formatter, "{error}"),
+            Self::Backend(error) => write!(formatter, "native control backend failed: {error}"),
+        }
+    }
+}
+
+impl StdError for NativeControlPortError {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match self {
+            Self::Durable(error) => Some(error),
+            Self::Backend(_) => None,
+        }
+    }
+}
+
+impl From<Error> for NativeControlPortError {
+    fn from(error: Error) -> Self {
+        Self::Durable(error)
+    }
+}
+
+pub type NativeControlPortResult<T> = Result<T, NativeControlPortError>;
+
+/// Durable transition port. Each method completes one bounded journal command.
+/// Provider and network awaits occur outside the unique writer actor.
+#[async_trait]
+pub trait NativeControlPort: Send + Sync {
+    async fn reserve_native(
         &mut self,
         request: NativeRequest,
         maximum_in_flight: usize,
-    ) -> Result<NativeRunRecord, Error>;
+    ) -> NativeControlPortResult<NativeRunRecord>;
 
-    fn bind_native_execution(
+    async fn bind_native_execution(
         &mut self,
         request_id: &str,
         plan: &VerifiedExecutionPlan,
         now_unix_ms: u64,
-    ) -> Result<NativeRunRecord, Error>;
+    ) -> NativeControlPortResult<NativeRunRecord>;
 
-    fn dispatch_native_with_pre_effect_abort(
+    async fn dispatch_native_with_pre_effect_abort(
         &mut self,
         request_id: &str,
         dispatch: NativeDispatch,
-    ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error>;
+    ) -> NativeControlPortResult<(NativeRunRecord, NativePreEffectAbortToken)>;
 
-    fn dispatch_native_authorized_with_pre_effect_abort(
+    async fn dispatch_native_authorized_with_pre_effect_abort(
         &mut self,
         request_id: &str,
         dispatch: NativeDispatch,
         plan: &VerifiedExecutionPlan,
         now_unix_ms: u64,
-    ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error>;
+    ) -> NativeControlPortResult<(NativeRunRecord, NativePreEffectAbortToken)>;
 
-    fn abort_native_before_effect(
+    async fn abort_native_before_effect(
         &mut self,
         token: NativePreEffectAbortToken,
         reason: String,
-    ) -> Result<NativeRunRecord, Error>;
+    ) -> NativeControlPortResult<NativeRunRecord>;
 
-    fn native_started(
+    async fn native_started(
         &mut self,
         request_id: &str,
         turn_id: String,
-    ) -> Result<NativeRunRecord, Error>;
+    ) -> NativeControlPortResult<NativeRunRecord>;
 
-    fn reject_native_before_start(
+    async fn reject_native_before_start(
         &mut self,
         request_id: &str,
         rejection: NativeDispatchRejection,
-    ) -> Result<NativeRunRecord, Error>;
+    ) -> NativeControlPortResult<NativeRunRecord>;
 
-    fn cancel_native(&mut self, request_id: &str) -> Result<NativeRunRecord, Error>;
+    async fn cancel_native(&mut self, request_id: &str)
+    -> NativeControlPortResult<NativeRunRecord>;
 
-    fn stop_native_before_dispatch(
+    async fn stop_native_before_dispatch(
         &mut self,
         request_id: &str,
         reason: String,
-    ) -> Result<NativeRunRecord, Error>;
+    ) -> NativeControlPortResult<NativeRunRecord>;
 
-    fn settle_native(
+    async fn settle_native(
         &mut self,
         request_id: &str,
         output: NativeRunOutput,
-    ) -> Result<NativeRunRecord, Error>;
+    ) -> NativeControlPortResult<NativeRunRecord>;
 
-    fn settle_native_authorized(
+    async fn settle_native_authorized(
         &mut self,
         request_id: &str,
         plan: &VerifiedExecutionPlan,
         now_unix_ms: u64,
         output: NativeRunOutput,
         protected_output: Option<ProtectedOutput>,
-    ) -> Result<NativeRunRecord, Error>;
+    ) -> NativeControlPortResult<NativeRunRecord>;
 
-    /// Returns an owned snapshot so actor callers never borrow the writer's
-    /// in-memory state across an await.
-    fn native_record(&self, request_id: &str) -> Option<NativeRunRecord>;
+    /// Returns an owned snapshot so callers never borrow writer state across an
+    /// await or provider boundary.
+    async fn native_record(
+        &self,
+        request_id: &str,
+    ) -> NativeControlPortResult<Option<NativeRunRecord>>;
 }
 
+#[async_trait]
 impl NativeControlPort for DurableInferenceControl {
-    fn reserve_native(
+    async fn reserve_native(
         &mut self,
         request: NativeRequest,
         maximum_in_flight: usize,
-    ) -> Result<NativeRunRecord, Error> {
+    ) -> NativeControlPortResult<NativeRunRecord> {
         DurableInferenceControl::reserve_native(self, request, maximum_in_flight)
+            .map_err(Into::into)
     }
 
-    fn bind_native_execution(
+    async fn bind_native_execution(
         &mut self,
         request_id: &str,
         plan: &VerifiedExecutionPlan,
         now_unix_ms: u64,
-    ) -> Result<NativeRunRecord, Error> {
+    ) -> NativeControlPortResult<NativeRunRecord> {
         DurableInferenceControl::bind_native_execution(self, request_id, plan, now_unix_ms)
+            .map_err(Into::into)
     }
 
-    fn dispatch_native_with_pre_effect_abort(
+    async fn dispatch_native_with_pre_effect_abort(
         &mut self,
         request_id: &str,
         dispatch: NativeDispatch,
-    ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error> {
+    ) -> NativeControlPortResult<(NativeRunRecord, NativePreEffectAbortToken)> {
         DurableInferenceControl::dispatch_native_with_pre_effect_abort(self, request_id, dispatch)
+            .map_err(Into::into)
     }
 
-    fn dispatch_native_authorized_with_pre_effect_abort(
+    async fn dispatch_native_authorized_with_pre_effect_abort(
         &mut self,
         request_id: &str,
         dispatch: NativeDispatch,
         plan: &VerifiedExecutionPlan,
         now_unix_ms: u64,
-    ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error> {
+    ) -> NativeControlPortResult<(NativeRunRecord, NativePreEffectAbortToken)> {
         DurableInferenceControl::dispatch_native_authorized_with_pre_effect_abort(
             self,
             request_id,
@@ -128,60 +184,66 @@ impl NativeControlPort for DurableInferenceControl {
             plan,
             now_unix_ms,
         )
+        .map_err(Into::into)
     }
 
-    fn abort_native_before_effect(
+    async fn abort_native_before_effect(
         &mut self,
         token: NativePreEffectAbortToken,
         reason: String,
-    ) -> Result<NativeRunRecord, Error> {
-        DurableInferenceControl::abort_native_before_effect(self, token, reason)
+    ) -> NativeControlPortResult<NativeRunRecord> {
+        DurableInferenceControl::abort_native_before_effect(self, token, reason).map_err(Into::into)
     }
 
-    fn native_started(
+    async fn native_started(
         &mut self,
         request_id: &str,
         turn_id: String,
-    ) -> Result<NativeRunRecord, Error> {
-        DurableInferenceControl::native_started(self, request_id, turn_id)
+    ) -> NativeControlPortResult<NativeRunRecord> {
+        DurableInferenceControl::native_started(self, request_id, turn_id).map_err(Into::into)
     }
 
-    fn reject_native_before_start(
+    async fn reject_native_before_start(
         &mut self,
         request_id: &str,
         rejection: NativeDispatchRejection,
-    ) -> Result<NativeRunRecord, Error> {
+    ) -> NativeControlPortResult<NativeRunRecord> {
         DurableInferenceControl::reject_native_before_start(self, request_id, rejection)
+            .map_err(Into::into)
     }
 
-    fn cancel_native(&mut self, request_id: &str) -> Result<NativeRunRecord, Error> {
-        DurableInferenceControl::cancel_native(self, request_id)
+    async fn cancel_native(
+        &mut self,
+        request_id: &str,
+    ) -> NativeControlPortResult<NativeRunRecord> {
+        DurableInferenceControl::cancel_native(self, request_id).map_err(Into::into)
     }
 
-    fn stop_native_before_dispatch(
+    async fn stop_native_before_dispatch(
         &mut self,
         request_id: &str,
         reason: String,
-    ) -> Result<NativeRunRecord, Error> {
+    ) -> NativeControlPortResult<NativeRunRecord> {
         DurableInferenceControl::stop_native_before_dispatch(self, request_id, reason)
+            .map_err(Into::into)
     }
 
-    fn settle_native(
+    async fn settle_native(
         &mut self,
         request_id: &str,
         output: NativeRunOutput,
-    ) -> Result<NativeRunRecord, Error> {
-        DurableInferenceControl::settle_native(self, request_id, output)
+    ) -> NativeControlPortResult<NativeRunRecord> {
+        DurableInferenceControl::settle_native(self, request_id, output).map_err(Into::into)
     }
 
-    fn settle_native_authorized(
+    async fn settle_native_authorized(
         &mut self,
         request_id: &str,
         plan: &VerifiedExecutionPlan,
         now_unix_ms: u64,
         output: NativeRunOutput,
         protected_output: Option<ProtectedOutput>,
-    ) -> Result<NativeRunRecord, Error> {
+    ) -> NativeControlPortResult<NativeRunRecord> {
         DurableInferenceControl::settle_native_authorized(
             self,
             request_id,
@@ -190,9 +252,13 @@ impl NativeControlPort for DurableInferenceControl {
             output,
             protected_output,
         )
+        .map_err(Into::into)
     }
 
-    fn native_record(&self, request_id: &str) -> Option<NativeRunRecord> {
-        DurableInferenceControl::native_record(self, request_id).cloned()
+    async fn native_record(
+        &self,
+        request_id: &str,
+    ) -> NativeControlPortResult<Option<NativeRunRecord>> {
+        Ok(DurableInferenceControl::native_record(self, request_id).cloned())
     }
 }

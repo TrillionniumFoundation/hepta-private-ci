@@ -33,9 +33,9 @@
     "actorPort": "codex-hepta-infer-worker-host::control_actor::NativeJournalWriterActor"
   },
   "status": {
-    "sourceImplementation": "implemented_with_actor_port_pending_product_driver_migration_and_exact_head_qualification",
-    "productCallerState": "composed_exact_signed_plan_required_direct_writer_session",
-    "productionWriterState": "single_durable_owner_actor_available_direct_app_server_path_not_yet_migrated",
+    "sourceImplementation": "implemented_with_unique_writer_actor_exact_head_qualification_pending",
+    "productCallerState": "composed_exact_signed_plan_required_unique_writer_actor",
+    "productionWriterState": "single_durable_owner_actor_composed_for_worker_recovery_and_maintenance",
     "productionImplementation": false,
     "productExecutionProved": false,
     "targetHostQualification": false,
@@ -123,7 +123,7 @@
       "operation": "checkpoint_archive_generation",
       "state": "source_implemented",
       "nativeSymbol": "DurableInferenceControl::compact_native_journal_with_failpoint",
-      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_c.rs",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
       "tests": [
         "compaction_preserves_indeterminate_capacity_and_exact_state",
         "every_compaction_failpoint_reopens_a_complete_generation",
@@ -143,7 +143,7 @@
     },
     {
       "operation": "exact_plan_native_app_server_execution",
-      "state": "product_composed_direct_writer_session",
+      "state": "product_composed_unique_writer_actor_exact_head_qualification_pending",
       "nativeSymbol": "AppServerModelDriver::run_authorized",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
       "tests": [
@@ -152,7 +152,7 @@
     },
     {
       "operation": "unique_writer_effect_reconciler_actor_boundary",
-      "state": "source_implemented_product_driver_migration_pending",
+      "state": "product_composed_exact_head_qualification_pending",
       "nativeSymbol": "NativeJournalWriterActor",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/control_actor.rs",
       "tests": [
@@ -170,8 +170,8 @@
     },
     {
       "operation": "signed_operator_recovery_cli",
-      "state": "source_implemented",
-      "nativeSymbol": "verify_execution_plan_for_recovery",
+      "state": "product_composed_unique_writer_actor",
+      "nativeSymbol": "NativeReconcilerActor::new",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-recovery.rs",
       "tests": [
         "recovery_after_expiry integration matrix"
@@ -179,8 +179,8 @@
     },
     {
       "operation": "bounded_maintenance_cli",
-      "state": "source_implemented",
-      "nativeSymbol": "compact_native_journal",
+      "state": "product_composed_unique_writer_actor",
+      "nativeSymbol": "control.compact()",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-maintenance.rs",
       "tests": [
         "checkpoint archive and metrics matrix"
@@ -216,7 +216,8 @@
       "cargo test -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --exact",
       "cargo test -p codex-hepta-infer-core --test process_crash_recovery -- --nocapture --test-threads=1",
       "python3 scripts/hepta-inference-control-current-state.py check",
-      "python3 scripts/hepta-inference-control-ownership.py check"
+      "python3 scripts/hepta-inference-control-ownership.py check",
+      "python3 scripts/hepta-inference-control-actor-migrate.py check"
     ],
     "requiredLanes": [
       "source-head",
@@ -225,7 +226,6 @@
     ]
   },
   "repositoryControlledGaps": [
-    "migrate the real App Server driver from a direct mutable writer session to NativeJournalWriterActor commands",
     "obtain green exact-source-head and deterministic base-merge receipts for the final commit",
     "retain native-host process-kill, disk-fault, torn-write, vault and App Server command records as CI artifacts",
     "complete signed output-vault deletion confirmation rather than treating a maintenance receipt as deletion proof",

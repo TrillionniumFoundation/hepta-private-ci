@@ -6,9 +6,9 @@ Exact candidate success is not stored here; it is carried by a CI evidence recei
 
 ## Current source facts
 
-- Source implementation: `implemented_pending_exact_head_qualification`
-- Product caller: `composed_exact_signed_plan_required`
-- Production writer: `single_durable_owner_with_signed_recovery`
+- Source implementation: `implemented_with_unique_writer_actor_exact_head_qualification_pending`
+- Product caller: `composed_exact_signed_plan_required_unique_writer_actor`
+- Production writer: `single_durable_owner_actor_composed_for_worker_recovery_and_maintenance`
 - Production implementation qualified: `false`
 - Product execution proved: `false`
 - Target-host qualification: `false`
@@ -27,22 +27,28 @@ Exact candidate success is not stored here; it is carried by a CI evidence recei
 | Operation | State | Source | Tests |
 | --- | --- | --- | ---: |
 | `verify_execution_plan` | `source_implemented` | `codex-rs/hepta-infer-core/src/control_contracts.rs` | 2 |
+| `post_lease_recovery_verification` | `source_implemented` | `codex-rs/hepta-infer-core/src/recovery_contracts.rs` | 2 |
 | `reserve_and_bind_native_execution` | `source_implemented` | `codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs` | 1 |
 | `write_ahead_dispatch` | `product_composed` | `codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs` | 1 |
 | `protected_terminal_settlement` | `product_composed` | `codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs` | 1 |
-| `signed_terminal_usage_reconciliation` | `source_implemented` | `codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs` | 1 |
-| `dual_control_indeterminate_retirement` | `source_implemented` | `codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs` | 1 |
-| `checkpoint_archive_generation` | `source_implemented` | `codex-rs/hepta-infer-core/src/native_control_v2_control_c.rs` | 4 |
-| `exact_plan_native_app_server_execution` | `product_composed` | `codex-rs/hepta-infer-worker-host/src/native_run_control.rs` | 1 |
+| `signed_terminal_usage_reconciliation` | `source_implemented` | `codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs` | 1 |
+| `dual_control_indeterminate_retirement` | `source_implemented` | `codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs` | 1 |
+| `checkpoint_archive_generation` | `source_implemented` | `codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs` | 4 |
+| `process_kill_and_torn_tail_recovery` | `source_implemented` | `codex-rs/hepta-infer-core/tests/process_crash_recovery.rs` | 2 |
+| `exact_plan_native_app_server_execution` | `product_composed_unique_writer_actor_exact_head_qualification_pending` | `codex-rs/hepta-infer-worker-host/src/native_run_control.rs` | 1 |
+| `unique_writer_effect_reconciler_actor_boundary` | `product_composed_exact_head_qualification_pending` | `codex-rs/hepta-infer-worker-host/src/control_actor.rs` | 1 |
 | `external_encrypted_output` | `product_composed` | `codex-rs/hepta-infer-worker-host/src/unix_output_protector.rs` | 1 |
+| `signed_operator_recovery_cli` | `product_composed_unique_writer_actor` | `codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-recovery.rs` | 1 |
+| `bounded_maintenance_cli` | `product_composed_unique_writer_actor` | `codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-maintenance.rs` | 1 |
 | `native_control_metrics` | `source_implemented` | `codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs` | 1 |
+| `operator_slo_alert_policy` | `documentation_implemented_runtime_export_pending` | `docs/modules/inference.control/SLO_ALERTS.json` | 1 |
 
 ## Repository-controlled gaps
 
 - obtain green exact-source-head and deterministic base-merge receipts for the final commit
-- retain native-host kill, disk-fault, torn-write, vault and App Server command records as CI artifacts
-- publish operator reconciliation/retirement tooling and runbooks
-- register worker-host in every canonical repository ownership projection
+- retain native-host process-kill, disk-fault, torn-write, vault and App Server command records as CI artifacts
+- complete signed output-vault deletion confirmation rather than treating a maintenance receipt as deletion proof
+- export runtime metrics to the selected telemetry backend and qualify alert delivery
 
 ## External evidence gates
 

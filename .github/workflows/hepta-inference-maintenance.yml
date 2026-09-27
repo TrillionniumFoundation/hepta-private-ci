@@ -15,6 +15,7 @@ on:
       - 'docs/modules/inference.control/**'
       - 'qualification/module-execution-dossiers/detail/inference.control*'
       - 'scripts/hepta-inference-control-current-state.py'
+      - 'scripts/hepta-inference-control-actor-migrate.py'
       - 'scripts/hepta-implementation-maps.py'
       - 'scripts/hepta_ci_candidate.py'
       - 'scripts/hepta_ci_exec.py'
@@ -30,6 +31,7 @@ on:
       - 'docs/modules/inference.control/**'
       - 'qualification/module-execution-dossiers/detail/inference.control*'
       - 'scripts/hepta-inference-control-current-state.py'
+      - 'scripts/hepta-inference-control-actor-migrate.py'
       - 'scripts/hepta-implementation-maps.py'
       - 'scripts/hepta_ci_candidate.py'
       - 'scripts/hepta_ci_exec.py'
@@ -68,6 +70,11 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
+        with:
+          toolchain: '1.95.0'
+          components: rustfmt, clippy
 
       - name: Verify GitHub prospective merge identity
         if: matrix.lane == 'base-merge'
@@ -147,13 +154,21 @@ jobs:
             --output "$RECORDS_DIR/commands/01-current-state.json" \
             -- python3 scripts/hepta-inference-control-current-state.py check
 
+      - name: Verify unique-writer product migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECORDS_DIR/commands/01b-actor-migration.json" \
+            -- python3 scripts/hepta-inference-control-actor-migrate.py check
+
       - name: Verify repository implementation maps
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py \
             --output "$RECORDS_DIR/commands/02-implementation-maps.json" \
-            -- python3 scripts/hepta-implementation-maps.py --check
+            -- python3 scripts/hepta-implementation-maps.py verify
 
       - name: Verify actual execution-record and scope regressions
         shell: bash
@@ -289,6 +304,11 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
+        with:
+          toolchain: '1.95.0'
+          components: rustfmt, clippy
+
       - name: Bind native-host tested identity
         shell: bash
         run: |
@@ -311,8 +331,11 @@ jobs:
             --output "$RECORDS_DIR/commands/00-current-state.json" \
             -- python3 scripts/hepta-inference-control-current-state.py check
           python3 scripts/hepta_ci_exec.py \
+            --output "$RECORDS_DIR/commands/00b-actor-migration.json" \
+            -- python3 scripts/hepta-inference-control-actor-migrate.py check
+          python3 scripts/hepta_ci_exec.py \
             --output "$RECORDS_DIR/commands/01-implementation-maps.json" \
-            -- python3 scripts/hepta-implementation-maps.py --check
+            -- python3 scripts/hepta-implementation-maps.py verify
 
       - name: Run native host and all binary targets
         shell: bash

@@ -222,13 +222,46 @@ def verify_source_identity(
     row: dict, roots: list[str], candidate: dict[str, str], *, check_checkout=True
 ) -> list[str]:
     policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
-    if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
+    if policy not in {
+        "legacy_shared_batch",
+        "candidate_or_exact_observation_v1",
+        "exact_ci_receipt_v1",
+    }:
         raise ValueError(f"unknown source identity policy: {policy}")
     source = checked_identity(row.get("sourceBase"), candidate)
     mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
     if mapping_mode not in {"path_only", "exact_blob"}:
         raise ValueError(f"unknown mapping source identity mode: {mapping_mode}")
     paths = evidence_paths(row, roots)
+    if policy == "exact_ci_receipt_v1":
+        if mapping_mode != "path_only":
+            raise ValueError("exact CI receipt maps must use path-only source navigation")
+        if "observedAtHead" in row or "observedSourcePaths" in row:
+            raise ValueError("exact CI receipt maps must not self-assert a source observation")
+        boundary = row.get("claimBoundary") or row.get("completion") or {}
+        forbidden_claims = (
+            "productExecutionProved",
+            "targetHostQualification",
+            "independentAcceptance",
+            "activation",
+            "release",
+        )
+        if row.get("productionImplementation") is True or any(
+            boundary.get(field) is True for field in forbidden_claims
+        ):
+            raise ValueError(
+                "exact CI receipt source navigation cannot self-assert execution or release claims"
+            )
+        checked_paths = sorted(set(paths))
+        for path in checked_paths:
+            if not checked_source_path(ROOT, path).exists():
+                raise ValueError(f"missing current source/evidence: {path}")
+        if check_checkout:
+            require_clean_candidate(candidate, checked_paths)
+        require_tracked_paths(candidate["commit"], checked_paths)
+        if check_checkout:
+            require_clean_candidate(candidate, checked_paths)
+        return checked_paths
     # In exact-blob mode ``sourceBase`` is immutable integration provenance,
     # not the current-source observation. Currentness is proved independently
     # by every mapped HEAD blob plus ``observedAtHead`` over the complete
@@ -1232,6 +1265,7 @@ def verify(
     candidate_bound_maps = 0
     exact_observed_fallback_maps = 0
     provenance_anchored_exact_blob_maps = 0
+    exact_ci_receipt_maps = 0
     for module in modules:
         mid = module["id"]
         try:
@@ -1318,7 +1352,9 @@ def verify(
                 verify_source_identity(row, resolved, candidate, check_checkout=False)
             )
             source_bases.add((row["sourceBase"]["commit"], row["sourceBase"]["tree"]))
-            if row["sourceBase"] == candidate:
+            if row.get("sourceIdentityPolicy") == "exact_ci_receipt_v1":
+                exact_ci_receipt_maps += 1
+            elif row["sourceBase"] == candidate:
                 candidate_bound_maps += 1
             elif mapping_mode == "exact_blob":
                 provenance_anchored_exact_blob_maps += 1
@@ -1436,6 +1472,7 @@ def verify(
                 "candidateBoundMaps": candidate_bound_maps,
                 "exactObservedFallbackMaps": exact_observed_fallback_maps,
                 "provenanceAnchoredExactBlobMaps": provenance_anchored_exact_blob_maps,
+                "exactCiReceiptMaps": exact_ci_receipt_maps,
                 "legacyProvenanceOnlyMaps": [],
                 "sourceObservationCount": len(source_bases),
                 "sourceBaseSemantics": "provenance_anchor_plus_exact_head_blobs_and_current_observation",

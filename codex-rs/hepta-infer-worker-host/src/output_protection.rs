@@ -11,13 +11,8 @@ use codex_hepta_infer_core::control_contracts::ProtectedOutput;
 use codex_hepta_infer_core::control_contracts::VerifiedExecutionPlan;
 
 /// Asynchronous output-protection result.
-pub type NativeOutputProtectionFuture<'a> = Pin<
-    Box<
-        dyn Future<Output = std::result::Result<ProtectedOutput, String>>
-            + Send
-            + 'a,
-    >,
->;
+pub type NativeOutputProtectionFuture<'a> =
+    Pin<Box<dyn Future<Output = std::result::Result<ProtectedOutput, String>> + Send + 'a>>;
 
 /// Host-selected encryption port. Implementations normally call a KMS or an
 /// isolated local vault and return only a protected digest/reference envelope.

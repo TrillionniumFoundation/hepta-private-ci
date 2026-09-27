@@ -183,10 +183,7 @@ pub fn verify_execution_plan_for_recovery(
         authenticated_keys.insert(role, candidate.key_id.clone());
     }
 
-    let manifest_digest = digest_json(
-        b"hepta.inference-control.manifest.v1\0",
-        &bundle.manifest,
-    )?;
+    let manifest_digest = digest_json(b"hepta.inference-control.manifest.v1\0", &bundle.manifest)?;
     let quota_lease_digest = digest_json(
         b"hepta.inference-control.quota-lease.v1\0",
         &bundle.quota_lease,
@@ -363,10 +360,7 @@ pub struct RecoveryIndeterminateRetirement {
 
 impl RecoveryIndeterminateRetirement {
     pub fn signing_bytes(&self) -> Result<Vec<u8>, RecoveryContractError> {
-        signing_bytes(
-            b"hepta.inference-control.recovery-retirement.v1\0",
-            self,
-        )
+        signing_bytes(b"hepta.inference-control.recovery-retirement.v1\0", self)
     }
 }
 
@@ -598,10 +592,7 @@ fn validate_historical_bundle(
     {
         return Err(RecoveryContractError::InvalidExecutionPlan);
     }
-    let manifest_digest = digest_json(
-        b"hepta.inference-control.manifest.v1\0",
-        &bundle.manifest,
-    )?;
+    let manifest_digest = digest_json(b"hepta.inference-control.manifest.v1\0", &bundle.manifest)?;
     if bundle.quota_lease.manifest_digest != manifest_digest
         || bundle.resource_lease.manifest_digest != manifest_digest
     {
@@ -823,12 +814,8 @@ fn validate_reference(value: &str) -> Result<(), RecoveryContractError> {
     Ok(())
 }
 
-fn signing_bytes<T: Serialize>(
-    domain: &[u8],
-    value: &T,
-) -> Result<Vec<u8>, RecoveryContractError> {
-    let payload =
-        serde_json::to_vec(value).map_err(|_| RecoveryContractError::InvalidReceipt)?;
+fn signing_bytes<T: Serialize>(domain: &[u8], value: &T) -> Result<Vec<u8>, RecoveryContractError> {
+    let payload = serde_json::to_vec(value).map_err(|_| RecoveryContractError::InvalidReceipt)?;
     if payload.len() > 8 * 1024 * 1024 {
         return Err(RecoveryContractError::CapacityExceeded);
     }
@@ -837,12 +824,9 @@ fn signing_bytes<T: Serialize>(
     Ok(bytes)
 }
 
-fn digest_json<T: Serialize>(
-    domain: &[u8],
-    value: &T,
-) -> Result<String, RecoveryContractError> {
-    let payload = serde_json::to_vec(value)
-        .map_err(|_| RecoveryContractError::InvalidExecutionPlan)?;
+fn digest_json<T: Serialize>(domain: &[u8], value: &T) -> Result<String, RecoveryContractError> {
+    let payload =
+        serde_json::to_vec(value).map_err(|_| RecoveryContractError::InvalidExecutionPlan)?;
     digest_domain(domain, &payload)
 }
 

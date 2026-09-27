@@ -91,8 +91,7 @@ impl ControlTrustStore {
             validate_id(&candidate.key_id, "trust key")?;
             validate_id(&candidate.signer_id, "trust signer")?;
             if candidate.not_before_authority_epoch == 0
-                || candidate.not_after_authority_epoch
-                    < candidate.not_before_authority_epoch
+                || candidate.not_after_authority_epoch < candidate.not_before_authority_epoch
                 || candidate
                     .revoked_at_authority_epoch
                     .is_some_and(|epoch| epoch < candidate.not_before_authority_epoch)
@@ -158,8 +157,8 @@ impl ControlTrustStore {
         {
             return Err(ContractError::InvalidTrust);
         }
-        let signature =
-            Signature::from_slice(&signed.signature).map_err(|_| ContractError::InvalidSignature)?;
+        let signature = Signature::from_slice(&signed.signature)
+            .map_err(|_| ContractError::InvalidSignature)?;
         key.verifying_key
             .verify_strict(message, &signature)
             .map_err(|_| ContractError::InvalidSignature)
@@ -422,7 +421,10 @@ pub fn verify_execution_plan(
     }
     let signing_bytes = bundle.signing_bytes()?;
     let required = [
-        (TrustRole::ManifestAuthority, bundle.manifest.issuer_id.as_str()),
+        (
+            TrustRole::ManifestAuthority,
+            bundle.manifest.issuer_id.as_str(),
+        ),
         (
             TrustRole::QuotaAuthority,
             bundle.quota_lease.authority_id.as_str(),
@@ -469,14 +471,15 @@ pub fn verify_execution_plan(
         serde_json::to_vec(&bundle.quota_lease).map_err(|_| ContractError::InvalidQuotaLease)?;
     let resource_bytes = serde_json::to_vec(&bundle.resource_lease)
         .map_err(|_| ContractError::InvalidResourceLease)?;
-    let policy_bytes = serde_json::to_vec(&bundle.output_policy)
-        .map_err(|_| ContractError::InvalidDataPolicy)?;
-    let manifest_digest =
-        digest_domain(b"hepta.inference-control.manifest.v1\0", &manifest_bytes)?;
+    let policy_bytes =
+        serde_json::to_vec(&bundle.output_policy).map_err(|_| ContractError::InvalidDataPolicy)?;
+    let manifest_digest = digest_domain(b"hepta.inference-control.manifest.v1\0", &manifest_bytes)?;
     let quota_lease_digest =
         digest_domain(b"hepta.inference-control.quota-lease.v1\0", &quota_bytes)?;
-    let resource_lease_digest =
-        digest_domain(b"hepta.inference-control.resource-lease.v1\0", &resource_bytes)?;
+    let resource_lease_digest = digest_domain(
+        b"hepta.inference-control.resource-lease.v1\0",
+        &resource_bytes,
+    )?;
     let output_policy_digest =
         digest_domain(b"hepta.inference-control.output-policy.v1\0", &policy_bytes)?;
     let bundle_digest = bundle.digest()?;
@@ -562,9 +565,7 @@ pub struct SignedReconciliationReceipt {
 impl ReconciliationReceipt {
     pub fn signing_bytes(&self) -> Result<Vec<u8>, ContractError> {
         let mut bytes = b"hepta.inference-control.reconciliation.v1\0".to_vec();
-        bytes.extend(
-            serde_json::to_vec(self).map_err(|_| ContractError::InvalidReconciliation)?,
-        );
+        bytes.extend(serde_json::to_vec(self).map_err(|_| ContractError::InvalidReconciliation)?);
         Ok(bytes)
     }
 }
@@ -657,9 +658,7 @@ pub struct SignedIndeterminateRetirement {
 impl IndeterminateRetirement {
     pub fn signing_bytes(&self) -> Result<Vec<u8>, ContractError> {
         let mut bytes = b"hepta.inference-control.indeterminate-retirement.v1\0".to_vec();
-        bytes.extend(
-            serde_json::to_vec(self).map_err(|_| ContractError::InvalidRetirement)?,
-        );
+        bytes.extend(serde_json::to_vec(self).map_err(|_| ContractError::InvalidRetirement)?);
         Ok(bytes)
     }
 }
@@ -802,10 +801,7 @@ impl ProtectedOutput {
             .clone()
             .ok_or(ContractError::InvalidDataPolicy)?;
         Ok(Self {
-            output_digest: digest_domain(
-                b"hepta.inference-control.output.v1\0",
-                plaintext_output,
-            )?,
+            output_digest: digest_domain(b"hepta.inference-control.output.v1\0", plaintext_output)?,
             classification: policy.classification,
             storage_mode: policy.storage_mode,
             delete_after_unix_ms: policy.delete_after_unix_ms,
@@ -816,8 +812,7 @@ impl ProtectedOutput {
     }
 
     pub fn journal_marker(&self) -> Result<String, ContractError> {
-        let json =
-            serde_json::to_vec(self).map_err(|_| ContractError::InvalidDataPolicy)?;
+        let json = serde_json::to_vec(self).map_err(|_| ContractError::InvalidDataPolicy)?;
         Ok(format!(
             "hepta-protected-output-v1:{}",
             digest_domain(b"hepta.inference-control.protected-output.v1\0", &json)?
@@ -1201,21 +1196,18 @@ mod tests {
     }
 
     fn trust(keys: &Keys) -> ControlTrustStore {
-        let entry = |key_id: &str,
-                     signer_id: &str,
-                     role: TrustRole,
-                     key: &SigningKey|
-         -> TrustKey {
-            TrustKey {
-                key_id: key_id.to_string(),
-                signer_id: signer_id.to_string(),
-                role,
-                verifying_key: key.verifying_key().to_bytes(),
-                not_before_authority_epoch: 1,
-                not_after_authority_epoch: 9,
-                revoked_at_authority_epoch: None,
-            }
-        };
+        let entry =
+            |key_id: &str, signer_id: &str, role: TrustRole, key: &SigningKey| -> TrustKey {
+                TrustKey {
+                    key_id: key_id.to_string(),
+                    signer_id: signer_id.to_string(),
+                    role,
+                    verifying_key: key.verifying_key().to_bytes(),
+                    not_before_authority_epoch: 1,
+                    not_after_authority_epoch: 9,
+                    revoked_at_authority_epoch: None,
+                }
+            };
         ControlTrustStore::new(vec![
             entry(
                 "manifest-key",
@@ -1432,8 +1424,7 @@ mod tests {
             },
             receipt,
         };
-        let verified =
-            verify_reconciliation_receipt(NOW, &trust, &plan, &signed).unwrap();
+        let verified = verify_reconciliation_receipt(NOW, &trust, &plan, &signed).unwrap();
         assert_eq!(verified.receipt().terminal_sequence, 7);
 
         let mut drifted = signed;
@@ -1475,9 +1466,11 @@ mod tests {
                 approval("operator-key-b", "operator-b", &keys.operator_b),
             ],
         };
-        let verified =
-            verify_indeterminate_retirement(NOW, &trust, &plan, &signed).unwrap();
-        assert_eq!(verified.operator_ids(), &["operator-a".to_string(), "operator-b".to_string()]);
+        let verified = verify_indeterminate_retirement(NOW, &trust, &plan, &signed).unwrap();
+        assert_eq!(
+            verified.operator_ids(),
+            &["operator-a".to_string(), "operator-b".to_string()]
+        );
 
         let mut one_person = signed;
         one_person.approvals[1] = one_person.approvals[0].clone();

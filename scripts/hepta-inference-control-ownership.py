@@ -23,11 +23,9 @@ INFERD = "codex-rs/hepta-inferd"
 MODULE_MARKERS = {"inference.control", "inference-platform"}
 FILES = (
     ROOT / "docs/modules/MODULES.json",
-    ROOT / "qualification/CARGO_BINDINGS.json",
-    ROOT / "qualification/SOURCE_BINDINGS.json",
-    ROOT / "qualification/GITHUB_OWNERSHIP.json",
-    ROOT / "delivery/ownership/PATH_OWNERSHIP.json",
-    ROOT / "delivery/ownership/SOURCE_BINDINGS.json",
+    ROOT / "docs/modules/CARGO_BINDINGS.json",
+    ROOT / "docs/modules/SOURCE_BINDINGS.json",
+    ROOT / "docs/delivery/PATH_OWNERSHIP.json",
 )
 PATH_FIELDS = {
     "path",

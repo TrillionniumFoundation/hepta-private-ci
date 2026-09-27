@@ -12,7 +12,7 @@ use codex_hepta_infer_core::control_contracts::OutputStorageMode;
 use codex_hepta_infer_core::control_contracts::SignedExecutionAuthorityBundle;
 use codex_hepta_infer_core::control_contracts::TrustKey;
 use codex_hepta_infer_core::control_contracts::verify_execution_plan;
-use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_worker_host::NativeJournalWriterActor;
 use codex_hepta_infer_worker_host::NativeOutputProtector;
 use codex_hepta_infer_worker_host::UnixOutputProtector;
 use codex_hepta_infer_worker_host::final_use_authorizer::UnixFinalUseAuthorizer;
@@ -117,7 +117,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         || plan.resource_lease().worker_generation != generation
         || plan.manifest().model_id != model
     {
-        return Err("execution authority bundle does not match CLI request/Agent/model/generation".into());
+        return Err(
+            "execution authority bundle does not match CLI request/Agent/model/generation".into(),
+        );
     }
 
     let output_protector = match output_protector_config {
@@ -145,7 +147,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !journal.is_absolute() {
         return Err("--journal must be absolute".into());
     }
-    let mut control = DurableInferenceControl::open(journal, /*capacity*/ 16_384)?;
+    let actor = NativeJournalWriterActor::spawn(journal, /*capacity*/ 16_384)?;
+    let mut control = actor.handle();
     let admission = NativeAdmission {
         request_id,
         maximum_in_flight: maximum_in_flight.ok_or("--maximum-in-flight is required")?,
@@ -228,7 +231,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         },
     };
     signal_task.abort();
+    drop(control);
+    let shutdown_result = actor.shutdown().await;
     let output = result?;
+    shutdown_result?;
     println!("{}", serde_json::to_string(&output)?);
     if !output.terminal_observed {
         return Err("model outcome is indeterminate; this request was not replayed".into());

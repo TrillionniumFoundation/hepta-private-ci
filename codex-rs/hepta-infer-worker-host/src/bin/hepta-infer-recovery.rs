@@ -1,17 +1,19 @@
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_infer_core::control_contracts::SignedExecutionAuthorityBundle;
 use codex_hepta_infer_core::control_contracts::TrustKey;
-use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::recovery_contracts::SignedRecoveryIndeterminateRetirement;
 use codex_hepta_infer_core::recovery_contracts::SignedRecoveryReconciliationReceipt;
 use codex_hepta_infer_core::recovery_contracts::verify_execution_plan_for_recovery;
 use codex_hepta_infer_core::recovery_contracts::verify_recovery_reconciliation_receipt;
 use codex_hepta_infer_core::recovery_contracts::verify_recovery_retirement;
+use codex_hepta_infer_worker_host::NativeJournalWriterActor;
+use codex_hepta_infer_worker_host::NativeReconcilerActor;
 use serde::Deserialize;
 use serde::de::DeserializeOwned;
 
@@ -31,7 +33,8 @@ enum Operation {
     Retire,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+#[tokio::main(flavor = "current_thread")]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut args = std::env::args().skip(1);
     let operation = match args.next().as_deref() {
         Some("reconcile") => Operation::Reconcile,
@@ -63,10 +66,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     let journal = required_absolute(journal, "--journal")?;
     let trust_store = required_absolute(trust_store, "--trust-store")?;
-    let execution_bundle = required_absolute(
-        execution_bundle,
-        "--execution-authority-bundle",
-    )?;
+    let execution_bundle = required_absolute(execution_bundle, "--execution-authority-bundle")?;
     let evidence = required_absolute(evidence, "--evidence")?;
 
     let trust: TrustStoreDocument = read_owner_only_json(&trust_store, "trust store")?;
@@ -75,48 +75,58 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     }
     let signed_bundle: SignedExecutionAuthorityBundle =
         read_owner_only_json(&execution_bundle, "execution authority bundle")?;
-    let recovery_plan = verify_execution_plan_for_recovery(&trust.keys, &signed_bundle)?;
+    let recovery_plan = Arc::new(verify_execution_plan_for_recovery(
+        &trust.keys,
+        &signed_bundle,
+    )?);
+    let request_id = recovery_plan.request_id().to_string();
     let now_unix_ms = unix_time_ms()?;
-    let mut control = DurableInferenceControl::open(&journal, JOURNAL_CAPACITY)?;
 
-    let record = match operation {
-        Operation::Reconcile => {
-            let signed: SignedRecoveryReconciliationReceipt =
-                read_owner_only_json(&evidence, "reconciliation receipt")?;
-            if signed.receipt.request_id != recovery_plan.request_id() {
-                return Err("reconciliation receipt request does not match execution bundle".into());
+    let actor = NativeJournalWriterActor::spawn(journal, JOURNAL_CAPACITY)?;
+    let reconciler = NativeReconcilerActor::new(actor.handle());
+    let operation_result: Result<_, Box<dyn std::error::Error + Send + Sync>> = async {
+        match operation {
+            Operation::Reconcile => {
+                let signed: SignedRecoveryReconciliationReceipt =
+                    read_owner_only_json(&evidence, "reconciliation receipt")?;
+                if signed.receipt.request_id != recovery_plan.request_id() {
+                    return Err(
+                        "reconciliation receipt request does not match execution bundle".into(),
+                    );
+                }
+                let verified = Arc::new(verify_recovery_reconciliation_receipt(
+                    now_unix_ms,
+                    &trust.keys,
+                    &recovery_plan,
+                    &signed,
+                )?);
+                Ok(reconciler
+                    .reconcile(request_id, Arc::clone(&recovery_plan), verified)
+                    .await?)
             }
-            let verified = verify_recovery_reconciliation_receipt(
-                now_unix_ms,
-                &trust.keys,
-                &recovery_plan,
-                &signed,
-            )?;
-            control.reconcile_native_recovery(
-                recovery_plan.request_id(),
-                &recovery_plan,
-                &verified,
-            )?
-        }
-        Operation::Retire => {
-            let signed: SignedRecoveryIndeterminateRetirement =
-                read_owner_only_json(&evidence, "retirement approval")?;
-            if signed.retirement.request_id != recovery_plan.request_id() {
-                return Err("retirement request does not match execution bundle".into());
+            Operation::Retire => {
+                let signed: SignedRecoveryIndeterminateRetirement =
+                    read_owner_only_json(&evidence, "retirement approval")?;
+                if signed.retirement.request_id != recovery_plan.request_id() {
+                    return Err("retirement request does not match execution bundle".into());
+                }
+                let verified = Arc::new(verify_recovery_retirement(
+                    now_unix_ms,
+                    &trust.keys,
+                    &recovery_plan,
+                    &signed,
+                )?);
+                Ok(reconciler
+                    .retire(request_id, Arc::clone(&recovery_plan), verified)
+                    .await?)
             }
-            let verified = verify_recovery_retirement(
-                now_unix_ms,
-                &trust.keys,
-                &recovery_plan,
-                &signed,
-            )?;
-            control.retire_native_indeterminate_recovery(
-                recovery_plan.request_id(),
-                &recovery_plan,
-                &verified,
-            )?
         }
-    };
+    }
+    .await;
+    drop(reconciler);
+    let shutdown_result = actor.shutdown().await;
+    let record = operation_result?;
+    shutdown_result?;
 
     println!("{}", serde_json::to_string(&record)?);
     Ok(())

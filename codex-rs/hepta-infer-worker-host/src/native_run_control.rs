@@ -3,10 +3,10 @@
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use crate::control_port::NativeControlPort;
 use codex_hepta_infer_core::control_contracts::OutputStorageMode;
 use codex_hepta_infer_core::control_contracts::ProtectedOutput;
 use codex_hepta_infer_core::control_contracts::VerifiedExecutionPlan;
-use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
@@ -51,7 +51,7 @@ impl AppServerModelDriver {
     /// the production CLI.
     pub async fn run(
         &self,
-        control: &mut DurableInferenceControl,
+        control: &mut dyn NativeControlPort,
         admission: NativeAdmission,
         prompt: String,
         context_query: Option<String>,
@@ -74,7 +74,7 @@ impl AppServerModelDriver {
     /// effect unless `run_authorized_with_output_protector` is used.
     pub async fn run_authorized(
         &self,
-        control: &mut DurableInferenceControl,
+        control: &mut dyn NativeControlPort,
         admission: NativeAdmission,
         prompt: String,
         context_query: Option<String>,
@@ -99,7 +99,7 @@ impl AppServerModelDriver {
     /// Production execution with a host-selected KMS/vault output protector.
     pub async fn run_authorized_with_output_protector(
         &self,
-        control: &mut DurableInferenceControl,
+        control: &mut dyn NativeControlPort,
         admission: NativeAdmission,
         prompt: String,
         context_query: Option<String>,
@@ -127,7 +127,7 @@ impl AppServerModelDriver {
     /// not replace an independently signed execution plan.
     pub async fn run_intelligence(
         &self,
-        control: &mut DurableInferenceControl,
+        control: &mut dyn NativeControlPort,
         admission: NativeAdmission,
         prompt: String,
         context_query: Option<String>,
@@ -149,7 +149,7 @@ impl AppServerModelDriver {
     /// Exact-plan production spelling for an Agentd intelligence handoff.
     pub async fn run_intelligence_authorized(
         &self,
-        control: &mut DurableInferenceControl,
+        control: &mut dyn NativeControlPort,
         admission: NativeAdmission,
         prompt: String,
         context_query: Option<String>,
@@ -175,7 +175,7 @@ impl AppServerModelDriver {
 
     async fn run_bound(
         &self,
-        control: &mut DurableInferenceControl,
+        control: &mut dyn NativeControlPort,
         admission: NativeAdmission,
         prompt: String,
         context_query: Option<String>,
@@ -206,13 +206,13 @@ impl AppServerModelDriver {
             model: self.config.model.clone(),
             payload_digest,
         };
-        let mut record = control.reserve_native(request, admission.maximum_in_flight)?;
+        let mut record = control
+            .reserve_native(request, admission.maximum_in_flight)
+            .await?;
         if let Some(authority) = authority {
-            record = control.bind_native_execution(
-                &record.request.request_id,
-                authority.plan,
-                unix_time_ms()?,
-            )?;
+            record = control
+                .bind_native_execution(&record.request.request_id, authority.plan, unix_time_ms()?)
+                .await?;
         }
         if let Some(reason) = &record.pre_dispatch_stop {
             return Err(format!("request stopped before dispatch: {reason}").into());
@@ -235,7 +235,9 @@ impl AppServerModelDriver {
             if authority.is_none()
                 && let Some(reconciled) = self.reconcile_existing(&record, &prompt).await?
             {
-                let settled = control.settle_native(&record.request.request_id, reconciled)?;
+                let settled = control
+                    .settle_native(&record.request.request_id, reconciled)
+                    .await?;
                 return settled.observation.ok_or_else(|| {
                     "durable reconciliation omitted its normalized observation".into()
                 });
@@ -266,30 +268,35 @@ impl AppServerModelDriver {
             };
             match authority {
                 Some(authority) => {
-                    control.settle_native_authorized(
-                        &record.request.request_id,
-                        authority.plan,
-                        unix_time_ms()?,
-                        output.clone(),
-                        None,
-                    )?;
+                    control
+                        .settle_native_authorized(
+                            &record.request.request_id,
+                            authority.plan,
+                            unix_time_ms()?,
+                            output.clone(),
+                            None,
+                        )
+                        .await?;
                 }
                 None => {
-                    control.settle_native(&record.request.request_id, output.clone())?;
+                    control
+                        .settle_native(&record.request.request_id, output.clone())
+                        .await?;
                 }
             }
             return Ok(output);
         }
 
         if let Some(authority) = authority
-            && authority.plan.output_policy().storage_mode
-                == OutputStorageMode::ExternalEncrypted
+            && authority.plan.output_policy().storage_mode == OutputStorageMode::ExternalEncrypted
             && authority.output_protector.is_none()
         {
-            control.stop_native_before_dispatch(
-                &record.request.request_id,
-                "external-encrypted output policy requires a host output protector".to_string(),
-            )?;
+            control
+                .stop_native_before_dispatch(
+                    &record.request.request_id,
+                    "external-encrypted output policy requires a host output protector".to_string(),
+                )
+                .await?;
             return Err("external-encrypted output policy requires a host output protector".into());
         }
 
@@ -307,11 +314,11 @@ impl AppServerModelDriver {
         {
             Ok(output) => {
                 if !output.terminal_observed && cancellation.is_cancelled() {
-                    control.cancel_native(&request_id)?;
+                    control.cancel_native(&request_id).await?;
                 }
                 match authority {
                     None => {
-                        let settled = control.settle_native(&request_id, output)?;
+                        let settled = control.settle_native(&request_id, output).await?;
                         settled.observation.ok_or_else(|| {
                             "durable execution settlement omitted its normalized observation".into()
                         })
@@ -328,11 +335,7 @@ impl AppServerModelDriver {
                                 .output_protector
                                 .ok_or("missing native output protector")?;
                             match protector
-                                .protect(
-                                    authority.plan,
-                                    output.output.as_bytes(),
-                                    now_unix_ms,
-                                )
+                                .protect(authority.plan, output.output.as_bytes(), now_unix_ms)
                                 .await
                             {
                                 Ok(protected) => Some(protected),
@@ -349,20 +352,24 @@ impl AppServerModelDriver {
                                         terminal_observed: false,
                                         owner_authority: NativeOwnerAuthority::Unverified,
                                         stop_reason: Some(
-                                            format!("output protection failed after effect: {error}")
-                                                .chars()
-                                                .take(1024)
-                                                .collect(),
+                                            format!(
+                                                "output protection failed after effect: {error}"
+                                            )
+                                            .chars()
+                                            .take(1024)
+                                            .collect(),
                                         ),
                                         codex_terminal_correlation_digest: None,
                                     };
-                                    control.settle_native_authorized(
-                                        &request_id,
-                                        authority.plan,
-                                        now_unix_ms,
-                                        quarantine,
-                                        None,
-                                    )?;
+                                    control
+                                        .settle_native_authorized(
+                                            &request_id,
+                                            authority.plan,
+                                            now_unix_ms,
+                                            quarantine,
+                                            None,
+                                        )
+                                        .await?;
                                     return Err(format!(
                                         "output protection failed after effect; execution quarantined: {error}"
                                     )
@@ -372,13 +379,15 @@ impl AppServerModelDriver {
                         } else {
                             None
                         };
-                        control.settle_native_authorized(
-                            &request_id,
-                            authority.plan,
-                            now_unix_ms,
-                            output,
-                            protected_output,
-                        )?;
+                        control
+                            .settle_native_authorized(
+                                &request_id,
+                                authority.plan,
+                                now_unix_ms,
+                                output,
+                                protected_output,
+                            )
+                            .await?;
                         Ok(live_output)
                     }
                 }
@@ -386,11 +395,14 @@ impl AppServerModelDriver {
             Err(error) => {
                 if control
                     .native_record(&request_id)
+                    .await?
                     .is_some_and(|record| record.state == NativeReservationState::Reserved)
                 {
                     // Only Reserved proves turn/start could not have happened.
                     let reason: String = error.to_string().chars().take(1024).collect();
-                    control.stop_native_before_dispatch(&request_id, reason)?;
+                    control
+                        .stop_native_before_dispatch(&request_id, reason)
+                        .await?;
                 }
                 Err(error)
             }

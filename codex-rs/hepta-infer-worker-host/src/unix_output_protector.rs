@@ -151,11 +151,7 @@ impl UnixOutputProtector {
     }
 
     #[cfg(unix)]
-    async fn request_protection(
-        &self,
-        header: &[u8],
-        plaintext: &[u8],
-    ) -> Result<VaultResponse> {
+    async fn request_protection(&self, header: &[u8], plaintext: &[u8]) -> Result<VaultResponse> {
         validate_vault_socket(&self.vault_socket, self.vault_uid)?;
         let header_len = u32::try_from(header.len())?;
         let plaintext_len = u64::try_from(plaintext.len())?;
@@ -188,11 +184,7 @@ impl UnixOutputProtector {
     }
 
     #[cfg(not(unix))]
-    async fn request_protection(
-        &self,
-        _header: &[u8],
-        _plaintext: &[u8],
-    ) -> Result<VaultResponse> {
+    async fn request_protection(&self, _header: &[u8], _plaintext: &[u8]) -> Result<VaultResponse> {
         Err("inference output Unix vault is unsupported on this platform".into())
     }
 }

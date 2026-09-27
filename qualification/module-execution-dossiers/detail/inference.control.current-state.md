@@ -12,15 +12,20 @@ This projection records source facts and required evidence. It is not an accepta
 - indeterminate release requires a signed terminal receipt or revision-bound dual-control retirement
 - the active journal never stores plaintext output on the exact-plan production path
 - checkpoint installation preserves one locked durable writer and verifies content-addressed history
+- post-effect recovery re-verifies historical execution identity and requires fresh rotated recovery authority
+- a pre-effect capability is consumed before the external effect and cannot be recreated after restart
 
 ## Required exact-candidate commands
 
 - `cargo fmt --all -- --check`
 - `cargo test -p codex-hepta-infer-core`
-- `cargo test -p codex-hepta-infer-worker-host`
+- `cargo test -p codex-hepta-infer-worker-host --all-targets --all-features`
 - `cargo clippy -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets --all-features -- -D warnings`
 - `cargo test -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --exact`
+- `cargo test -p codex-hepta-infer-core --test process_crash_recovery -- --nocapture --test-threads=1`
 - `python3 scripts/hepta-inference-control-current-state.py check`
+- `python3 scripts/hepta-inference-control-ownership.py check`
+- `python3 scripts/hepta-inference-control-actor-migrate.py check`
 
 ## Required lanes
 

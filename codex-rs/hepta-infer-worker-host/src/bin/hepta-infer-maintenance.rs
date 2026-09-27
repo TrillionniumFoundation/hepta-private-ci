@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_worker_host::NativeJournalWriterActor;
 
 const JOURNAL_CAPACITY: usize = 16_384;
 
@@ -12,7 +12,8 @@ enum Operation {
     Compact,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+#[tokio::main(flavor = "current_thread")]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut args = std::env::args().skip(1);
     let operation = match args.next().as_deref() {
         Some("status") => Operation::Status,
@@ -39,19 +40,23 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !journal.is_absolute() {
         return Err("--journal must be absolute".into());
     }
-    let mut control = DurableInferenceControl::open(journal, JOURNAL_CAPACITY)?;
-    match operation {
-        Operation::Status => {
-            println!(
-                "{}",
-                serde_json::to_string_pretty(&control.native_metrics(unix_time_ms()?))?
-            );
-        }
-        Operation::Compact => {
-            let receipt = control.compact_native_journal()?;
-            println!("{}", serde_json::to_string_pretty(&receipt)?);
+
+    let actor = NativeJournalWriterActor::spawn(journal, JOURNAL_CAPACITY)?;
+    let control = actor.handle();
+    let operation_result: Result<String, Box<dyn std::error::Error + Send + Sync>> = async {
+        match operation {
+            Operation::Status => Ok(serde_json::to_string_pretty(
+                &control.metrics(unix_time_ms()?).await?,
+            )?),
+            Operation::Compact => Ok(serde_json::to_string_pretty(&control.compact().await?)?),
         }
     }
+    .await;
+    drop(control);
+    let shutdown_result = actor.shutdown().await;
+    let output = operation_result?;
+    shutdown_result?;
+    println!("{output}");
     Ok(())
 }
 

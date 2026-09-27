@@ -77,7 +77,10 @@ fn sigkill_at_every_maintenance_boundary_recovers_one_complete_generation() {
             .unwrap();
         assert!(status.success(), "failed to SIGKILL child at {stage}");
         let child_status = child.wait().unwrap();
-        assert!(!child_status.success(), "fault child unexpectedly succeeded at {stage}");
+        assert!(
+            !child_status.success(),
+            "fault child unexpectedly succeeded at {stage}"
+        );
 
         let reopened = DurableInferenceControl::open(&paths.journal, 8).unwrap();
         let request_id = format!("request-{stage}");
@@ -142,7 +145,10 @@ fn wait_for_marker(marker: &Path, child: &mut std::process::Child) {
         if let Some(status) = child.try_wait().unwrap() {
             panic!("fault child exited before marker with {status}");
         }
-        assert!(Instant::now() < deadline, "timed out waiting for fault child marker");
+        assert!(
+            Instant::now() < deadline,
+            "timed out waiting for fault child marker"
+        );
         thread::sleep(Duration::from_millis(10));
     }
 }
