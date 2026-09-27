@@ -20,6 +20,8 @@ use codex_hepta_supervisor::SupervisorError;
 use codex_hepta_supervisor::run_supervisord_with_fleet_start_admission;
 use sha2::Digest;
 use sha2::Sha256;
+use std::fs::File;
+use std::fs::OpenOptions;
 use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
@@ -32,6 +34,7 @@ const CAPACITY_TTL_MS: u64 = 60_000;
 const CAPACITY_REFRESH_INTERVAL_MS: u64 = 20_000;
 const CAPACITY_REFRESH_INTERVAL: Duration = Duration::from_secs(20);
 const MAX_MEMORY_PRESSURE_BASIS_POINTS: u16 = 5_000;
+const PRODUCT_OWNER_LOCK: &str = "runtime-fleet-product-owner.lock";
 const HOST_ID_ENV: &str = "HEPTA_FLEET_HOST_ID";
 const FAILURE_DOMAIN_ENV: &str = "HEPTA_FLEET_FAILURE_DOMAIN_ID";
 const HOST_GENERATION_ENV: &str = "HEPTA_FLEET_HOST_GENERATION";
@@ -44,6 +47,11 @@ pub(crate) async fn run_supervisord_product(
 ) -> Result<(), SupervisorError> {
     let registry = FleetRegistry::open_existing(fleet_root.clone())?;
     let state_root = registry.layout().state_root().to_path_buf();
+    // Acquire the named-product ownership boundary before the first capacity or
+    // expiry mutation and hold it until the daemon exits. The inner daemon lock
+    // remains authoritative for its control socket; this earlier lock prevents
+    // a losing second product instance from performing even one Fleet write.
+    let _product_owner = FleetProductOwnerGuard::acquire(&state_root)?;
 
     #[cfg(target_os = "linux")]
     let identity = Some(LocalFleetIdentityV1::discover()?);
@@ -143,6 +151,50 @@ fn perform_maintenance(
 
 fn map_owner_error(error: DurableFleetError) -> SupervisorError {
     SupervisorError::Invalid(format!("runtime.fleet owner operation failed: {error}"))
+}
+
+struct FleetProductOwnerGuard {
+    _file: File,
+}
+
+impl FleetProductOwnerGuard {
+    fn acquire(state_root: &Path) -> Result<Self, SupervisorError> {
+        let path = state_root.join(PRODUCT_OWNER_LOCK);
+        let file = open_product_owner_lock(&path)?;
+        file.try_lock().map_err(|error| {
+            SupervisorError::Invalid(format!(
+                "another hepta-supervisord owns runtime.fleet product maintenance: {error}"
+            ))
+        })?;
+        Ok(Self { _file: file })
+    }
+}
+
+#[cfg(unix)]
+fn open_product_owner_lock(path: &Path) -> Result<File, SupervisorError> {
+    use std::os::unix::fs::OpenOptionsExt;
+    use std::os::unix::fs::PermissionsExt;
+
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .mode(0o600)
+        .open(path)?;
+    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
+    Ok(file)
+}
+
+#[cfg(not(unix))]
+fn open_product_owner_lock(path: &Path) -> Result<File, SupervisorError> {
+    OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(path)
+        .map_err(Into::into)
 }
 
 #[derive(Clone, Debug)]
