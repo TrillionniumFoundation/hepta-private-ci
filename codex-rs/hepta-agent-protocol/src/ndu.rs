@@ -655,3 +655,7 @@ mod layout_tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "ndu_observer_contract_tests.rs"]
+mod observer_contract_tests;

@@ -1,6 +1,9 @@
 //! Real normal-binary/UDS/local-disk qualification; no external clock or
 //! off-host rollback oracle, trained artifact or learning-benefit claim.
 #![cfg(unix)]
+#[cfg(target_os = "linux")]
+#[path = "support/ndu_observer.rs"]
+mod ndu_observer;
 mod support;
 
 use anyhow::Result;
@@ -193,6 +196,8 @@ async fn normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery() -
         &Digest32::of_bytes(&bytes).to_string(),
     )?;
     let (client, health) = harness.wait_ready(&agent, 1).await?;
+    #[cfg(target_os = "linux")]
+    ndu_observer::verify(&agent.layout.agentd_control_socket(), &agent.agent_id, 1).await?;
     ensure!(
         matches!(
             NduProjectionStoreV1::open(&store),
@@ -317,6 +322,21 @@ async fn normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery() -
         .supervisor
         .restart(&agent.agent_id, Instant::now())?;
     let (restarted, new_health) = harness.wait_new_spawn(&agent, 1).await?;
+    #[cfg(target_os = "linux")]
+    {
+        let Response::Context {
+            host_generation, ..
+        } = restarted.ndu_control(Request::Context).await?
+        else {
+            bail!("restarted owner did not expose its generation");
+        };
+        ndu_observer::verify(
+            &agent.layout.agentd_control_socket(),
+            &agent.agent_id,
+            host_generation,
+        )
+        .await?;
+    }
     ensure!(
         new_health.process_id != health.process_id,
         "process did not restart"

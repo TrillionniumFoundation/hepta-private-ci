@@ -209,6 +209,7 @@ def commands(suite: str, sha: str, tree: str) -> list[tuple[str, Path, list[str]
         ("map-integrity-tests", ROOT, ["python3", "scripts/test_hepta_ndu_map_integrity.py"]),
         ("source-policy-tests", ROOT, ["python3", "scripts/test_hepta_ndu_source_policy.py"]),
         ("evidence-transport-tests", ROOT, ["python3", "scripts/test_hepta_ndu_evidence.py"]),
+        ("operational-observer-tests", ROOT, ["python3", "scripts/test_hepta_ndu_observer.py"]),
         ("lock", ROOT, ["python3", "scripts/verify_cargo_lock.py"]),
         ("legacy-policy", ROOT, ["python3", "scripts/hepta-ndu-source-policy.py"]),
         (

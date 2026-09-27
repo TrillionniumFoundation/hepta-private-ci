@@ -768,7 +768,7 @@
   "selectedProductionWriterState": "not_established",
   "currentSourceEvidence": {
     "baselineMainCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "branch": "work/utility-ndu-abcd-convergence-20260928",
+    "branch": "work/utility-ndu-recovery-observability-20260928",
     "sourceBinding": "exact_typed_path_object_manifest_v1",
     "qualificationBinding": "suite receipts contain actual source and synthetic commit/tree identities",
     "productionActivation": false
@@ -847,7 +847,15 @@
   "sourceObjects": [
     {
       "path": ".github/workflows/hepta-ndu-recursion.yml",
-      "object": "e0014f6336a39e369978a457afe9911ebd597692"
+      "object": "77cee8bece4bd75fbfb146f56ab67c9c65719597"
+    },
+    {
+      "path": ".github/workflows/hepta-ndu-runtime-acceptance.yml",
+      "object": "ae94f6a77176156f391ea964aefcd48a3bbe0bef"
+    },
+    {
+      "path": "BUILD.bazel",
+      "object": "6e6e07f68595be4d41eac1530345f69c4afa2c8e"
     },
     {
       "path": "codex-rs/Cargo.lock",
@@ -858,8 +866,24 @@
       "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"
     },
     {
+      "path": "codex-rs/hepta-agent-protocol/BUILD.bazel",
+      "object": "e11d0c3f553c9196ba4af1a46177d47f14bfb4bf"
+    },
+    {
       "path": "codex-rs/hepta-agent-protocol/src/ndu.rs",
-      "object": "697f116598a1d66f5d9e86aaefc36300ab828ea8"
+      "object": "549e5b0234cc6c5a8793733b28aa69f427905f01"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/ndu_observer_contract_tests.rs",
+      "object": "6f3ea58ecfd05736cb79593d8bfa122587f4341a"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/tests/fixtures/ndu-observer-wire.json",
+      "object": "9b37b16cfc743d2d1d0737aec8686da5c028671b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "object": "eea0ae7f96b0245765fed98efc1b4dd8c33179bc"
     },
     {
       "path": "codex-rs/hepta-agentd/src/client.rs",
@@ -907,7 +931,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
-      "object": "5ef00486cda475a62639931f475986470fafc469"
+      "object": "b5dc3f4ff05c2ec1ef68c11fbc750ab2b78cb503"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/ndu_observer.rs",
+      "object": "4725604f28d2d1968bec49f4a992394e2528399a"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
@@ -935,7 +963,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "82abe41eb641b17bca3b571555c5b7cb4c28aa5c"
+      "object": "2ba3a22c85452c9a5427515311140c5c50111c44"
     },
     {
       "path": "codex-rs/hepta-ndu/src/bin/ndu-mounted-filesystem-qualification.rs",
@@ -1027,7 +1055,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner_binding.rs",
-      "object": "0efa3c2aa0e0fde87e437bb0835d2ee4cfeaa780"
+      "object": "9ded2734c6e254095cbed939feb8f5e7cb5cf69c"
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner_digests.rs",
@@ -1059,11 +1087,15 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store.rs",
-      "object": "756c1a1788ba109caf8fd19e8b76db410203906b"
+      "object": "81b94f37ba10e8e8ddcf23c1160566eb12b10760"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store_process_kill_tests.rs",
       "object": "51e47c70900f1ad7138c5d52375812395d6bd2e2"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_store_recovery_tests.rs",
+      "object": "565f3b80818b80b9ae38910b1526b7abb8c9f453"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
@@ -1123,15 +1155,23 @@
     },
     {
       "path": "docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json",
-      "object": "30f9b5dfa25f9a26429e7baf6b7d90a5d809859b"
+      "object": "84075d5358cdf1f9afeb4a8a54d34b7679f050db"
     },
     {
       "path": "docs/modules/utility.ndu/OPERATOR_RUNBOOK.md",
       "object": "e580c05249fb851e9fc3ec8fb5f3a6e3add1c0b3"
     },
     {
+      "path": "docs/modules/utility.ndu/RECOVERY_OBSERVABILITY_2026-09-28.md",
+      "object": "fc5ba9f3b3a5bce8acfab80e065b94be0060ff57"
+    },
+    {
       "path": "docs/modules/utility.ndu/TECHNICAL.md",
       "object": "d37f43842d3b5963210950288c62a6e8f6ea102e"
+    },
+    {
+      "path": "docs/modules/utility.ndu/operations",
+      "object": "59a3503e90f6fcf519bace1381f9e4c124e15d75"
     },
     {
       "path": "docs/readiness/NDU_SYSTEM_EXECUTION.md",
@@ -1151,7 +1191,7 @@
     },
     {
       "path": "scripts/hepta-ndu-qualification.py",
-      "object": "ec66ee8eaf572b9382bf0d443a47790357e633bd"
+      "object": "370f04b9c6b805060cb799bfbfb4e2ebd550a507"
     },
     {
       "path": "scripts/hepta-ndu-source-policy.py",
@@ -1159,15 +1199,19 @@
     },
     {
       "path": "scripts/hepta_ndu_evidence.py",
-      "object": "7b80a53470211c223f37a42779890f9d68459923"
+      "object": "8d4457ca2a4c75ee20dced3a9f36afb6ae86ca1d"
     },
     {
       "path": "scripts/hepta_ndu_map_integrity.py",
       "object": "85ffd4debca8f1b8ff2fb77b658b9e0986174306"
     },
     {
+      "path": "scripts/hepta_ndu_observer.py",
+      "object": "776eab5a8738a99fa080d4fc319221a4020503de"
+    },
+    {
       "path": "scripts/test_hepta_ndu_evidence.py",
-      "object": "ff5854771998cce7d6ee9e50f23d437b6d8a7809"
+      "object": "4cbac5540d0be7c00a533b8548af304b137c75fa"
     },
     {
       "path": "scripts/test_hepta_ndu_map_integrity.py",
@@ -1176,6 +1220,10 @@
     {
       "path": "scripts/test_hepta_ndu_mounted_filesystem.py",
       "object": "6c5303e675498715c3793fe1682b4de36347a68d"
+    },
+    {
+      "path": "scripts/test_hepta_ndu_observer.py",
+      "object": "208900a0bb8e95abf11cdf662d0a5406785a8437"
     },
     {
       "path": "scripts/test_hepta_ndu_qualification.py",

@@ -79,6 +79,15 @@ trait ProjectionPersistenceV1: Send + Sync {
     fn sync_temp(&self, path: &Path) -> io::Result<()>;
     fn rename(&self, from: &Path, to: &Path) -> io::Result<()>;
     fn sync_parent(&self, root: &Path) -> io::Result<()>;
+
+    /// A visible image may be a rename whose directory sync was interrupted.
+    /// Reopen must establish durability before authorizing no-write replay.
+    /// This separate seam lets recovery faults be injected without conflating
+    /// them with a later mutation's file-sync or directory-sync cut.
+    fn confirm_recovered(&self, journal: &File, root: &Path) -> io::Result<()> {
+        journal.sync_all()?;
+        FsProjectionPersistenceV1.sync_parent(root)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -219,12 +228,21 @@ impl NduProjectionStoreV1 {
                 let capacity = usize::try_from(metadata.len())
                     .map_err(|_| NduProjectionStoreError::BackupTooLarge)?;
                 let mut bytes = Vec::with_capacity(capacity);
-                let mut bounded = file.take(max_bytes.saturating_add(1));
+                let mut bounded = (&file).take(max_bytes.saturating_add(1));
                 bounded.read_to_end(&mut bytes)?;
                 if bytes.len() > MAX_BACKUP_BYTES {
                     return Err(NduProjectionStoreError::BackupTooLarge);
                 }
-                NduProjectionJournalV1::reopen(&bytes)?
+                let journal = NduProjectionJournalV1::reopen(&bytes)?;
+                // Reading a correctly hashed image proves visibility, not
+                // durability. In particular, an exact replay performs no I/O.
+                // Do not let a lost rename acknowledgement become a durable
+                // acknowledgement merely by closing and reopening the store.
+                if persistence.confirm_recovered(&file, &root).is_err() {
+                    crate::operational_metrics::process_metrics().record_store_indeterminate();
+                    return Err(NduProjectionStoreError::Indeterminate);
+                }
+                journal
             }
             Err(error) if error.kind() == io::ErrorKind::NotFound => {
                 let journal = NduProjectionJournalV1::new();
@@ -468,7 +486,7 @@ fn open_lock(path: &Path) -> io::Result<File> {
     }
 }
 
-fn open_regular(path: &Path, create: bool, exclusive: bool) -> io::Result<File> {
+pub(crate) fn open_regular(path: &Path, create: bool, exclusive: bool) -> io::Result<File> {
     let mut options = OpenOptions::new();
     options.read(true).write(create);
     if exclusive {
@@ -515,7 +533,7 @@ fn validate_regular(file: &File) -> io::Result<()> {
     Ok(())
 }
 
-fn open_directory(root: &Path) -> Result<File, NduProjectionStoreError> {
+pub(crate) fn open_directory(root: &Path) -> Result<File, NduProjectionStoreError> {
     #[cfg(unix)]
     {
         use rustix::fs::Mode;
@@ -665,3 +683,7 @@ mod tests;
 #[cfg(all(test, unix))]
 #[path = "projection_store_process_kill_tests.rs"]
 mod process_kill_tests;
+
+#[cfg(all(test, unix))]
+#[path = "projection_store_recovery_tests.rs"]
+mod recovery_tests;

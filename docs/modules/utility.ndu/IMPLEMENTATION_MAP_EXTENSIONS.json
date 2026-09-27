@@ -286,6 +286,12 @@
     }
   ],
   "supportingSources": [
+    ".github/workflows/hepta-ndu-runtime-acceptance.yml",
+    "BUILD.bazel",
+    "codex-rs/hepta-agent-protocol/BUILD.bazel",
+    "codex-rs/hepta-agent-protocol/src/ndu_observer_contract_tests.rs",
+    "codex-rs/hepta-agent-protocol/tests/fixtures/ndu-observer-wire.json",
+    "codex-rs/hepta-agentd/BUILD.bazel",
     "codex-rs/hepta-agentd/src/lib.rs",
     "codex-rs/hepta-agentd/src/ndu_control.rs",
     "codex-rs/hepta-agentd/src/ndu_owner.rs",
@@ -293,6 +299,7 @@
     "codex-rs/hepta-agentd/src/ndu_process_bootstrap_tests.rs",
     "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
     "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+    "codex-rs/hepta-agentd/tests/support/ndu_observer.rs",
     "codex-rs/hepta-control-plane/tests/runtime_retirement_dependencies.rs",
     "codex-rs/hepta-ndu/src/bin/ndu-mounted-filesystem-qualification.rs",
     "codex-rs/hepta-ndu/src/bin/ndu-named-host-qualification.rs",
@@ -308,15 +315,20 @@
     "codex-rs/hepta-ndu/src/model.rs",
     "codex-rs/hepta-ndu/src/operational_metrics.rs",
     "codex-rs/hepta-ndu/src/preference_receipts.rs",
+    "codex-rs/hepta-ndu/src/projection_store_recovery_tests.rs",
     "codex-rs/hepta-ndu/src/recursive.rs",
     "codex-rs/hepta-ndu/src/recursive_tests.rs",
     "codex-rs/hepta-ndu/src/scoring.rs",
     "codex-rs/hepta-ndu/src/scoring_tests.rs",
     "docs/modules/utility.ndu/OPERATOR_RUNBOOK.md",
+    "docs/modules/utility.ndu/RECOVERY_OBSERVABILITY_2026-09-28.md",
     "docs/modules/utility.ndu/TECHNICAL.md",
+    "docs/modules/utility.ndu/operations",
     "scripts/hepta-ndu-mounted-filesystem.py",
     "scripts/hepta-ndu-qualification.py",
+    "scripts/hepta_ndu_observer.py",
     "scripts/test_hepta_ndu_mounted_filesystem.py",
+    "scripts/test_hepta_ndu_observer.py",
     "scripts/test_hepta_ndu_qualification.py"
   ]
 }

@@ -1,0 +1,11 @@
+[Unit]
+Description=Collect the current supervised NDU owner every 30 seconds
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=30s
+AccuracySec=1s
+Unit=ndu-observer.service
+
+[Install]
+WantedBy=timers.target

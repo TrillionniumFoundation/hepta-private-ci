@@ -1,0 +1,58 @@
+# Review thresholds and install explicitly; this file is not live alert evidence.
+groups:
+  - name: hepta-ndu-owner
+    rules:
+      - alert: NduObservationFailed
+        expr: hepta_ndu_observer_up == 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: NDU owner cannot be observed through the expected generation
+      - alert: NduObservationStale
+        expr: time() - hepta_ndu_observer_collection_timestamp_seconds > 90
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: NDU collection timer or textfile publication has stopped
+      - alert: NduExpectedObserverMissing
+        expr: hepta_ndu_observer_expected unless on (job, instance, agent, generation) hepta_ndu_observer_up
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: An explicitly enrolled NDU observer has never produced a sample
+      - alert: NduStorageNotReady
+        expr: hepta_ndu_storage_ready == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: NDU durable writer is fenced or unavailable
+      - alert: NduStorageReadinessUnknown
+        expr: hepta_ndu_storage_readiness_known == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: NDU owner contention prevents an authoritative readiness observation
+      - alert: NduForbiddenMemoryFallback
+        expr: hepta_ndu_memory_fallback_total > 0
+        labels:
+          severity: critical
+        annotations:
+          summary: NDU reported a forbidden ephemeral fallback
+      - alert: NduUnreconciledBackupObservation
+        expr: hepta_ndu_backup_age_seconds_known == 0
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: No independently acknowledged NDU backup age is available
+      - alert: NduStorageFailure
+        expr: increase(hepta_ndu_persistence_failures_total[5m]) > 0 or increase(hepta_ndu_reopen_failures_total[5m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          summary: NDU persistence or reopen failed; reconcile rather than replay blindly

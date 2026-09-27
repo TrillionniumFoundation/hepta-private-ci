@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import tarfile
 import tempfile
+import subprocess
 import unittest
 from unittest.mock import patch
 import hepta_ndu_evidence as evidence
@@ -129,5 +130,62 @@ class EvidenceTests(unittest.TestCase):
         put = next(call for call in calls if call[1] == "put-object")
         self.assertIn("--if-none-match", put)
         self.assertIn("--checksum-sha256", put)
+
+    def test_lost_put_ack_and_exact_retries_reconcile_without_overwrite(self):
+        archive = self.root / "archive"; archive.write_bytes(b"sealed fixture")
+        kwargs = dict(bucket="ndu-test-bucket", key="ndu-evidence/fixture", kms="arn:aws:kms:us-east-1:123456789012:key/test", account="123456789012")
+        for failure in (subprocess.TimeoutExpired("aws", 120), subprocess.CalledProcessError(1, "aws", stderr="412 PreconditionFailed"), None):
+            calls = []
+            def aws(*args):
+                calls.append(args)
+                if args[1] == "get-caller-identity": return {"Account": kwargs["account"]}
+                if args[1] == "get-bucket-versioning": return {"Status": "Enabled"}
+                if args[1] == "put-object":
+                    if failure is not None: raise failure
+                    return {}  # Acknowledgement missing the version is unresolved too.
+                if args[1] == "head-object": return {"VersionId": "retained-v1"}
+                self.assertEqual(args[args.index("--version-id") + 1], "retained-v1")
+                Path(args[-1]).write_bytes(b"sealed fixture")
+                return {"VersionId": "retained-v1", "ServerSideEncryption": "aws:kms", "SSEKMSKeyId": kwargs["kms"]}
+            with patch.object(evidence, "aws", side_effect=aws):
+                first = evidence.publish(archive, **kwargs)
+                second = evidence.publish(archive, **kwargs)
+            self.assertEqual(first, second)
+            self.assertTrue(first["reconciledExistingVersion"])
+            self.assertEqual(len([call for call in calls if call[1] == "put-object"]), 2)
+            self.assertTrue(all("--if-none-match" in call for call in calls if call[1] == "put-object"))
+            self.assertFalse(list(self.root.glob("ndu-readback-*")))
+            self.assertFalse(archive.with_name("archive.readback").exists())
+
+    def test_unknown_publication_never_becomes_absence_or_success(self):
+        archive = self.root / "archive"; archive.write_bytes(b"sealed fixture")
+        kwargs = dict(bucket="ndu-test-bucket", key="ndu-evidence/fixture", kms="arn:aws:kms:us-east-1:123456789012:key/test", account="123456789012")
+        for head in (None, {}):
+            calls = []
+            def aws(*args):
+                calls.append(args[1])
+                if args[1] == "get-caller-identity": return {"Account": kwargs["account"]}
+                if args[1] == "get-bucket-versioning": return {"Status": "Enabled"}
+                if args[1] == "head-object" and head is not None: return head
+                raise subprocess.TimeoutExpired("aws", 120)
+            with patch.object(evidence, "aws", side_effect=aws), self.assertRaisesRegex(RuntimeError, "NDU-PUB-003"):
+                evidence.publish(archive, **kwargs)
+            self.assertEqual(calls.count("put-object"), 1)
+            self.assertNotIn("delete-object", calls)
+
+    def test_reconciliation_rejects_conflicting_bytes_version_or_kms(self):
+        archive = self.root / "archive"; archive.write_bytes(b"sealed fixture")
+        kwargs = dict(bucket="ndu-test-bucket", key="ndu-evidence/fixture", kms="arn:aws:kms:us-east-1:123456789012:key/test", account="123456789012")
+        for corruption in ("bytes", "version", "kms", "encryption"):
+            def aws(*args):
+                if args[1] == "get-caller-identity": return {"Account": kwargs["account"]}
+                if args[1] == "get-bucket-versioning": return {"Status": "Enabled"}
+                if args[1] == "put-object": raise subprocess.CalledProcessError(1, "aws")
+                if args[1] == "head-object": return {"VersionId": "v1"}
+                Path(args[-1]).write_bytes(b"other" if corruption == "bytes" else b"sealed fixture")
+                return {"VersionId": "other" if corruption == "version" else "v1", "ServerSideEncryption": "other" if corruption == "encryption" else "aws:kms", "SSEKMSKeyId": "other" if corruption == "kms" else kwargs["kms"]}
+            with patch.object(evidence, "aws", side_effect=aws), self.assertRaisesRegex(ValueError, "NDU-PUB-004"):
+                evidence.publish(archive, **kwargs)
+            self.assertFalse(list(self.root.glob("ndu-readback-*")))
 
 if __name__ == "__main__": unittest.main()

@@ -1,3 +1,14 @@
+## Recovery/observability follow-up (2026-09-28)
+
+The isolated branch `work/utility-ndu-recovery-observability-20260928` inherits
+`9c70d28ecacd5b95d5267ef42ca92305e1622285` and adds recovery fsync acknowledgement,
+owner-binding path hardening, exact S3 publication reconciliation and a real UDS
+metrics observer with shared Rust/Python wire tests. See
+`RECOVERY_OBSERVABILITY_2026-09-28.md` for scope and external acceptance gates.
+The inherited twelve-suite success in run `36338190108` is not a pass for changed
+source. Current source and merge identities/results are in the new run receipts.
+No online history truncation, live alert installation or cloud success is claimed.
+
 # utility.ndu status and claim boundary
 
 This page is the short interpretation guide for the status fields used by the `utility.ndu` documentation set. It does not grant activation, effect authority, production acceptance, promotion, signing, or release authority.

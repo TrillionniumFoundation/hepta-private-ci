@@ -18,6 +18,7 @@ import re
 import stat
 import subprocess
 import tarfile
+import tempfile
 
 MANIFEST = "evidence-manifest.json"
 MAX_FILE = 64 * 1024 * 1024
@@ -185,17 +186,34 @@ def publish(path: Path, bucket: str, key: str, kms: str, account: str) -> dict:
         raise ValueError("unexpected AWS account")
     if aws("s3api", "get-bucket-versioning", "--bucket", bucket, "--expected-bucket-owner", account).get("Status") != "Enabled":
         raise ValueError("versioned evidence bucket required")
-    result = aws("s3api", "put-object", "--bucket", bucket, "--key", key, "--body", str(path), "--if-none-match", "*", "--server-side-encryption", "aws:kms", "--ssekms-key-id", kms, "--checksum-algorithm", "SHA256", "--checksum-sha256", base64.b64encode(bytes.fromhex(sha)).decode(), "--expected-bucket-owner", account)
-    version = result.get("VersionId")
+    reconciled = False
+    try:
+        result = aws("s3api", "put-object", "--bucket", bucket, "--key", key, "--body", str(path), "--if-none-match", "*", "--server-side-encryption", "aws:kms", "--ssekms-key-id", kms, "--checksum-algorithm", "SHA256", "--checksum-sha256", base64.b64encode(bytes.fromhex(sha)).decode(), "--expected-bucket-owner", account)
+        version = result.get("VersionId")
+    except (OSError, subprocess.SubprocessError, ValueError):
+        # A timeout or 412 does not prove absence. Never issue an unconditional
+        # overwrite or another PUT in this invocation. Reconcile the exact key
+        # and read an identified version; only byte-for-byte success can settle.
+        version = None
     if not isinstance(version, str) or not version or version == "null":
-        raise ValueError("upload acknowledged without immutable version")
-    target = path.with_name(path.name + ".readback")
-    if target.exists():
-        raise ValueError("refuse to overwrite readback")
-    result = aws("s3api", "get-object", "--bucket", bucket, "--key", key, "--version-id", version, "--expected-bucket-owner", account, str(target))
-    if digest(bounded_read(target)) != sha or result.get("VersionId") != version or result.get("ServerSideEncryption") != "aws:kms" or result.get("SSEKMSKeyId") != kms:
-        raise ValueError("versioned KMS read-after-write verification failed")
-    return {"schema": "hepta.ndu.evidence-publication.v1", "bucket": bucket, "key": key, "versionId": version, "sha256": sha, "kmsKeyArn": kms, "readbackVerified": True, "productionActivation": False}
+        try:
+            head = aws("s3api", "head-object", "--bucket", bucket, "--key", key, "--expected-bucket-owner", account)
+            version = head.get("VersionId")
+        except (OSError, subprocess.SubprocessError, ValueError) as error:
+            raise RuntimeError("NDU-PUB-003: publication outcome unresolved; preserve the same key and bytes") from error
+        if not isinstance(version, str) or not version or version == "null":
+            raise RuntimeError("NDU-PUB-003: no identified version to reconcile")
+        reconciled = True
+    # A fixed .readback name made even successful retries fail after a prior
+    # readback. Private per-attempt space also avoids aliasing another attempt.
+    with tempfile.TemporaryDirectory(prefix="ndu-readback-", dir=path.parent) as temporary:
+        target = Path(temporary) / "version"
+        result = aws("s3api", "get-object", "--bucket", bucket, "--key", key, "--version-id", version, "--expected-bucket-owner", account, str(target))
+        if digest(bounded_read(target)) != sha or result.get("VersionId") != version or result.get("ServerSideEncryption") != "aws:kms" or result.get("SSEKMSKeyId") != kms:
+            raise ValueError("NDU-PUB-004: versioned KMS readback conflicts with requested bytes or identity")
+    # Version identity and readback do not establish Object Lock/retention.
+    return {"schema": "hepta.ndu.evidence-publication.v1", "bucket": bucket, "key": key, "versionId": version, "sha256": sha, "kmsKeyArn": kms, "readbackVerified": True, "reconciledExistingVersion": reconciled, "productionActivation": False}
+
 
 
 def main() -> None:
