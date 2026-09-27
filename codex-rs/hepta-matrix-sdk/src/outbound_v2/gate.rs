@@ -29,6 +29,19 @@ pub(super) struct EnteredSend {
     pub(super) _proof: Arc<EnteredUseToken>,
 }
 
+impl EnteredSend {
+    fn indeterminate(proof: Arc<EnteredUseToken>) -> Self {
+        Self {
+            // Once the kernel final-use boundary has been crossed, a later
+            // persistence, freshness or adapter-construction fault must never
+            // be returned as a pre-entry failure. Conservatively preserve the
+            // same transaction as an unknown effect and reconcile it.
+            result: Err(MatrixTransportError::ResponseLost),
+            _proof: proof,
+        }
+    }
+}
+
 impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
     FinalSendGate<'_, T, A>
 {
@@ -74,11 +87,13 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
         }
         let proof = Arc::new(entered);
 
-        // Crossing the kernel check is not yet physical I/O. Persist the exact
-        // non-constructible proof under the live random claim, then re-read all
-        // volatile boundaries after this await before constructing the SDK
-        // future. A failed/expired persistence path cannot enter transport.
-        tokio::time::timeout_at(
+        // Crossing the kernel check is a monotone audit boundary. The network
+        // has not necessarily been entered yet, but any result after this line
+        // must carry the proof back to the caller so the claim cannot be
+        // released as a pre-entry cancel/revoke. A timeout may also mean the
+        // durable entered-use write committed while its acknowledgement was
+        // lost, so that path is necessarily indeterminate.
+        let persisted = tokio::time::timeout_at(
             self.deadline,
             self.store.record_outbox_entered_use(
                 self.claim,
@@ -87,29 +102,43 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
                 self.clock.now_ms()?,
             ),
         )
-        .await
-        .map_err(|_| OutboxDispatchError::LeaseExpired)?
-        .map_err(store_error)?;
-        self.preflight(
-            claimed_epoch,
-            claimed_revision,
-            grant_expires_at_ms,
-            binding,
-        )?;
+        .await;
+        match persisted {
+            Ok(Ok(())) => {}
+            Ok(Err(_)) | Err(_) => return Ok(EnteredSend::indeterminate(proof)),
+        }
+        if self
+            .preflight(
+                claimed_epoch,
+                claimed_revision,
+                grant_expires_at_ms,
+                binding,
+            )
+            .is_err()
+        {
+            return Ok(EnteredSend::indeterminate(proof));
+        }
 
-        let permit = MatrixSendPermit::new(
+        let permit = match MatrixSendPermit::new(
             Arc::clone(&proof),
             binding,
             self.expected_identity,
             self.record,
-        )
-        .map_err(|_| OutboxDispatchError::Authority)?;
-        self.preflight(
-            claimed_epoch,
-            claimed_revision,
-            grant_expires_at_ms,
-            binding,
-        )?;
+        ) {
+            Ok(permit) => permit,
+            Err(_) => return Ok(EnteredSend::indeterminate(proof)),
+        };
+        if self
+            .preflight(
+                claimed_epoch,
+                claimed_revision,
+                grant_expires_at_ms,
+                binding,
+            )
+            .is_err()
+        {
+            return Ok(EnteredSend::indeterminate(proof));
+        }
         let mut send = self.transport.send_authorized(self.record, permit);
 
         // Recheck every continuation poll: DNS, TLS and encryption may yield
