@@ -4,6 +4,7 @@ on:
     branches: [work/ui-native-qualified-integration-20260928]
     paths:
       - scripts/hepta_ui_native_integrate_20260928.py
+      - apps/hepta-native/tools/canonicalize_source_objects_once.py
       - .github/workflows/hepta-ui-native-integrate-20260928.yml
 permissions:
   contents: read
@@ -36,6 +37,7 @@ jobs:
           git config user.name ui-native-candidate
           git config user.email ui-native-candidate@users.noreply.github.com
           python3 scripts/hepta_ui_native_integrate_20260928.py
+          python3 apps/hepta-native/tools/canonicalize_source_objects_once.py
       - name: Format and exercise the actual standalone worker implementation
         run: |
           set -euo pipefail
@@ -63,6 +65,7 @@ jobs:
           git diff --cached --check
           git commit -m 'docs(ui.native): bind inventory-inclusive source and generated indexes'
           python3 apps/hepta-native/tools/prepare_current_source.py
+          python3 scripts/hepta-module-docs.py verify
           python3 scripts/hepta-module-docs.py refresh-derived --check
           python3 scripts/hepta-module-docs.py refresh-indexes --check
           cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
