@@ -74,7 +74,10 @@ class MeasurementTests(unittest.TestCase):
 
     def exercise_native(self, variant='valid'):
         with tempfile.TemporaryDirectory() as directory:
-            executable = Path(directory) / 'memory-test'
+            # The harness resolves cargo's executable path before executing it.
+            # macOS aliases /var to /private/var; compare canonical identity,
+            # while retaining the independent content-drift assertion below.
+            executable = Path(directory).resolve() / 'memory-test'
             executable.write_bytes(b'synthetic-native-executable-not-a-measurement')
             artifact = {'reason': 'compiler-artifact', 'target': {'name': 'codex_hepta_memory'},
                         'profile': {'test': True}, 'executable': str(executable)}
