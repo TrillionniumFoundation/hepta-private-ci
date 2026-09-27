@@ -1,6 +1,7 @@
 name: ui.native one-shot effect-broker remediation
 
 on:
+  workflow_dispatch:
   push:
     branches: [work/ui-native-remediation-20260927]
     paths:
@@ -40,6 +41,24 @@ jobs:
           printf '%s  %s\n' "$PATCH_SHA256" /tmp/ui-native-effect-broker.patch | sha256sum --check --strict
           git apply --check --3way /tmp/ui-native-effect-broker.patch
           git apply --3way --index /tmp/ui-native-effect-broker.patch
+      - name: Apply the audited single-site Clippy correction
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("apps/hepta-native/src/platform.rs")
+          old = "digest.as_slice() == &expected"
+          new = "digest.as_slice() == expected"
+          source = path.read_text(encoding="utf-8")
+          matches = source.count(old)
+          if matches != 1:
+              raise SystemExit(
+                  f"expected exactly one audited Clippy correction site in {path}, found {matches}"
+              )
+          path.write_text(source.replace(old, new, 1), encoding="utf-8")
+          PY
+          git add -- apps/hepta-native/src/platform.rs
       - name: Install Linux native prerequisites
         run: |
           set -euo pipefail
@@ -58,6 +77,7 @@ jobs:
             -p codex-hepta-native-gateway \
             -p codex-hepta-contracts \
             -p codex-hepta-private-state
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml -- --check
           python3 -m py_compile apps/hepta-native/tools/prepare_current_source.py
           git add -- apps/hepta-native
       - name: Clippy with warnings denied
@@ -65,11 +85,14 @@ jobs:
           set -euo pipefail
           cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml \
             --locked --all-targets --all-features -- -D warnings
-      - name: Full app tests
+      - name: Full app and owner-integration tests
         run: |
           set -euo pipefail
           cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml \
             --locked --all-targets
+          cargo +1.95.0 test \
+            --manifest-path tests/owner_integration/Cargo.toml \
+            --locked --test ui_native_surface
       - name: Release binaries
         run: |
           set -euo pipefail
