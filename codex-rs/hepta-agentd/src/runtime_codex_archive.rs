@@ -11,6 +11,9 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Mutex;
+use std::sync::MutexGuard;
+use std::sync::OnceLock;
 
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
@@ -38,6 +41,13 @@ struct RuntimeCodexArchiveEntryV1 {
     manifest: RuntimeCodexJobManifestV1,
     receipt: RuntimeCodexExecutionReceiptV1,
     witness_digest: String,
+}
+
+fn archive_lock() -> Result<MutexGuard<'static, ()>, AgentdError> {
+    static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+    LOCK.get_or_init(|| Mutex::new(()))
+        .lock()
+        .map_err(|_| AgentdError::Protocol("runtime.codex archive lock is poisoned".to_string()))
 }
 
 pub(super) fn archive_root_for(journal_root: &Path) -> Result<PathBuf, AgentdError> {
@@ -87,13 +97,16 @@ pub(super) fn compact_terminal_operations(
     executor: &ProcessRuntimeCodexExecutorV1,
     owner: &RuntimeCodexOwnerV1,
 ) -> Result<usize, AgentdError> {
+    // Per-run locks permit unrelated physical executions to proceed in
+    // parallel, but archive publication and live-directory deletion are one
+    // global metadata transaction. Serialize that transaction explicitly.
+    let _archive_guard = archive_lock()?;
     let mut entries = operation_directories(executor.journal_root())?;
-    if entries.len() <= ARCHIVE_HIGH_WATERMARK {
+    let mut live_count = entries.len();
+    if live_count <= ARCHIVE_HIGH_WATERMARK {
         return Ok(0);
     }
-    let archive_count = std::fs::read_dir(executor.archive_root())?
-        .collect::<Result<Vec<_>, _>>()?
-        .len();
+    let mut archive_count = archive_entry_count(executor.archive_root())?;
     if archive_count >= MAX_ARCHIVED_IDENTITIES {
         return Err(AgentdError::Protocol(
             "runtime.codex terminal archive identity capacity is exhausted".to_string(),
@@ -102,8 +115,14 @@ pub(super) fn compact_terminal_operations(
     entries.sort();
     let mut archived = 0usize;
     for directory in entries {
-        if operation_directories(executor.journal_root())?.len() <= ARCHIVE_LOW_WATERMARK {
+        if live_count <= ARCHIVE_LOW_WATERMARK {
             break;
+        }
+        if archive_count >= MAX_ARCHIVED_IDENTITIES {
+            return Err(AgentdError::Protocol(
+                "runtime.codex terminal archive identity capacity was exhausted during compaction"
+                    .to_string(),
+            ));
         }
         let paths = persistence::OperationPaths::for_directory(&directory);
         let manifest = persistence::read_manifest(&paths.manifest)?;
@@ -135,6 +154,12 @@ pub(super) fn compact_terminal_operations(
         }
         std::fs::remove_dir_all(&directory)?;
         sync_directory(executor.journal_root())?;
+        live_count = live_count.checked_sub(1).ok_or_else(|| {
+            AgentdError::Protocol("runtime.codex live-operation counter underflow".to_string())
+        })?;
+        archive_count = archive_count.checked_add(1).ok_or_else(|| {
+            AgentdError::Protocol("runtime.codex archive counter overflow".to_string())
+        })?;
         archived = archived
             .checked_add(1)
             .ok_or_else(|| AgentdError::Protocol("archive counter overflow".to_string()))?;
@@ -156,6 +181,24 @@ fn operation_directories(root: &Path) -> Result<Vec<PathBuf>, AgentdError> {
         directories.push(entry.path());
     }
     Ok(directories)
+}
+
+fn archive_entry_count(root: &Path) -> Result<usize, AgentdError> {
+    let mut count = 0usize;
+    for entry in std::fs::read_dir(root)? {
+        let entry = entry?;
+        let file_type = entry.file_type()?;
+        if file_type.is_symlink() || !file_type.is_file() {
+            return Err(AgentdError::Protocol(format!(
+                "unexpected runtime.codex archive entry: {}",
+                entry.path().display()
+            )));
+        }
+        count = count.checked_add(1).ok_or_else(|| {
+            AgentdError::Protocol("runtime.codex archive count overflow".to_string())
+        })?;
+    }
+    Ok(count)
 }
 
 fn archive_path(executor: &ProcessRuntimeCodexExecutorV1, run_id: &str) -> PathBuf {

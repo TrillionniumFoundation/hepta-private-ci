@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail closed when runtime.agentd gains an unreviewed RunStart admission path."""
+"""Fail closed when runtime.agentd gains an unreviewed authority path."""
 
 from __future__ import annotations
 
@@ -66,6 +66,22 @@ def token_locations(
     return locations
 
 
+def require_markers(
+    text: str, markers: Iterable[str], label: str, errors: list[str]
+) -> None:
+    for marker in markers:
+        if marker not in text:
+            errors.append(f"{label} lost required marker: {marker}")
+
+
+def reject_markers(
+    text: str, markers: Iterable[str], label: str, errors: list[str]
+) -> None:
+    for marker in markers:
+        if marker in text:
+            errors.append(f"{label} regained forbidden marker: {marker}")
+
+
 def validate(root: Path = SOURCE_ROOT) -> list[str]:
     sources = rust_sources(root)
     errors: list[str] = []
@@ -81,29 +97,101 @@ def validate(root: Path = SOURCE_ROOT) -> list[str]:
                 )
 
     objective = (root / "objective_runtime.rs").read_text(encoding="utf-8")
-    required = (
-        "verify_current_run_start(agentd, record)?.admit_compatibility()?",
-        "let verified = verify_current_run_start(agentd, &record)?;",
-        "verified.admit().await?",
+    require_markers(
+        objective,
+        (
+            "verify_current_run_start(agentd, record)?.admit_compatibility()?",
+            "let verified = verify_current_run_start(agentd, &record)?;",
+            "verified.admit().await?",
+        ),
+        "objective admission",
+        errors,
     )
-    for marker in required:
-        if marker not in objective:
-            errors.append(f"objective admission lost sealed witness marker: {marker}")
-    for forbidden in (
-        "agentd.start_current_run_start_record(&record)",
-        "agentd.start_canonical_intelligence(&record)",
-    ):
-        if forbidden in objective:
-            errors.append(f"objective admission regained raw bypass: {forbidden}")
+    reject_markers(
+        objective,
+        (
+            "agentd.start_current_run_start_record(&record)",
+            "agentd.start_canonical_intelligence(&record)",
+        ),
+        "objective admission",
+        errors,
+    )
 
     authority = (root / "run_start_authority.rs").read_text(encoding="utf-8")
-    for forbidden in (
-        "#[derive(Clone",
-        "impl Clone for VerifiedRunStartV1",
-        "pub struct VerifiedRunStartV1",
-    ):
-        if forbidden in authority:
-            errors.append(f"sealed witness became forgeable or copyable: {forbidden}")
+    reject_markers(
+        authority,
+        (
+            "#[derive(Clone",
+            "impl Clone for VerifiedRunStartV1",
+            "pub struct VerifiedRunStartV1",
+        ),
+        "sealed RunStart witness",
+        errors,
+    )
+
+    neuron = (root / "neuron_runtime.rs").read_text(encoding="utf-8")
+    require_markers(
+        neuron,
+        (
+            "pub struct AgentdDurableNeuronInvocationHandleV1",
+            "trait DurableNeuronInvocationOwnerPortV1: Send + Sync",
+            "Arc<Mutex<AgentdNeuronOwner<W, P>>>",
+            "runtime.configuration_digest()",
+            "runtime.current_anchor()",
+            "fn verify_invocation(",
+        ),
+        "durable Neuron owner",
+        errors,
+    )
+    reject_markers(
+        neuron,
+        (
+            "pub trait AgentdDurableNeuronInvocationOwnerV1",
+            "pub owner_digest:",
+            "pub owner_revision:",
+            "pub generation:",
+            "pub agent_id:",
+            "pub fn new(\n        agent_id: AgentId,\n        generation: u64,\n        owner: Arc<dyn",
+        ),
+        "durable Neuron owner",
+        errors,
+    )
+
+    bootstrap = (root / "canonical_runtime_bootstrap.rs").read_text(encoding="utf-8")
+    require_markers(
+        bootstrap,
+        (
+            "neuron_owner: AgentdDurableNeuronInvocationHandleV1",
+            "let before = self.neuron_owner.current_witness(identity)?;",
+            ".verify_invocation(identity, record, &invocation)?;",
+            "let after = self.neuron_owner.current_witness(identity)?;",
+            "if before != after",
+        ),
+        "canonical runtime bootstrap",
+        errors,
+    )
+    reject_markers(
+        bootstrap,
+        (
+            "pub trait AgentdDurableNeuronInvocationOwnerV1",
+            "AgentdNeuronInvocationWitnessV1::new",
+        ),
+        "canonical runtime bootstrap",
+        errors,
+    )
+
+    state_control = (root / "state_control.rs").read_text(encoding="utf-8")
+    require_markers(
+        state_control,
+        (
+            "self.canonical_intelligence_available()",
+            "canonical_runtime_recovering",
+            "canonical_configured && canonical_available",
+        ),
+        "canonical runtime readiness",
+        errors,
+    )
+
     return errors
 
 

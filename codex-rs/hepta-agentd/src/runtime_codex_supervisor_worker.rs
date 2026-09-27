@@ -6,6 +6,7 @@ use codex_hepta_types::{Digest32, StableId};
 use tokio::time::{MissedTickBehavior, interval};
 use tokio_util::sync::CancellationToken;
 
+use super::super::super::archive::read_archived_receipt;
 use super::super::super::persistence::{
     OperationPaths, dispatch_is_fenced, read_manifest, read_receipt_if_present,
     revalidate_external_files, validate_manifest_owner, validate_owner,
@@ -32,6 +33,7 @@ pub(super) async fn run_job(
         identity.spawn_generation,
     )?;
     let run_id = job.input.run_id().to_string();
+    let recovery_input = job.input.clone();
     if lifetime.is_cancelled() {
         job.cancellation.cancel();
     }
@@ -59,15 +61,71 @@ pub(super) async fn run_job(
     match outcome {
         Ok(receipt) => reconcile_receipt(&client, &receipt).await,
         Err(error) => {
+            // Archive publication precedes live-directory deletion. A lost
+            // directory-sync acknowledgement may therefore leave exact
+            // immutable terminal evidence even though the live path is gone.
+            // Observe that evidence first and never relabel it as pre-dispatch.
+            if let Some(receipt) = read_archived_receipt(
+                &executor,
+                &owner,
+                &recovery_input,
+                recovery_input.digest()?,
+            )? {
+                reconcile_receipt(&client, &receipt).await?;
+                eprintln!(
+                    "runtime.codex run {run_id} recovered an archived terminal receipt after execution error: {error}"
+                );
+                return Ok(());
+            }
+
             let stable_id = StableId::new(run_id.clone()).map_err(|invalid| {
                 AgentdError::Protocol(format!("runtime.codex run id became invalid: {invalid}"))
             })?;
-            let dispatch = dispatch_state(&executor, &owner, &stable_id)?;
-            reconcile_error(&client, &run_id, dispatch).await?;
-            eprintln!("runtime.codex run {run_id} reconciled after execution error: {error}");
+            match dispatch_state(&executor, &owner, &stable_id)? {
+                DispatchState::Terminal => {
+                    // A failure after the immutable live receipt was published
+                    // must replay that exact terminal evidence, not downgrade a
+                    // known terminal result to Indeterminate.
+                    let receipt = terminal_receipt(&executor, &owner, &stable_id)?;
+                    reconcile_receipt(&client, &receipt).await?;
+                    eprintln!(
+                        "runtime.codex run {run_id} recovered an existing terminal receipt after execution error: {error}"
+                    );
+                }
+                DispatchState::Fenced => {
+                    // Close canonical admission immediately. Periodic/startup
+                    // reconciliation later replaces this conservative latch
+                    // with the exact durable unresolved counts.
+                    ProcessRuntimeCodexExecutorV1::mark_agentd_supervisor_recovery_required()?;
+                    reconcile_error(&client, &run_id, DispatchState::Fenced).await?;
+                    eprintln!(
+                        "runtime.codex run {run_id} entered reconcile-only recovery after execution error: {error}"
+                    );
+                }
+                DispatchState::Absent => {
+                    reconcile_error(&client, &run_id, DispatchState::Absent).await?;
+                    eprintln!(
+                        "runtime.codex run {run_id} cancelled before durable process admission after execution error: {error}"
+                    );
+                }
+                DispatchState::Prepared => {
+                    reconcile_error(&client, &run_id, DispatchState::Prepared).await?;
+                    eprintln!(
+                        "runtime.codex run {run_id} cancelled before dispatch fencing after execution error: {error}"
+                    );
+                }
+            }
             Ok(())
         }
     }
+}
+
+fn operation_paths(
+    executor: &ProcessRuntimeCodexExecutorV1,
+    run_id: &StableId,
+) -> OperationPaths {
+    let key = Digest32::of_bytes(run_id.as_str().as_bytes()).to_string();
+    OperationPaths::for_directory(&executor.journal_root.join(key))
 }
 
 fn dispatch_state(
@@ -77,8 +135,7 @@ fn dispatch_state(
 ) -> Result<DispatchState, AgentdError> {
     validate_owner(executor, owner)?;
     revalidate_external_files(executor)?;
-    let key = Digest32::of_bytes(run_id.as_str().as_bytes()).to_string();
-    let paths = OperationPaths::for_directory(&executor.journal_root.join(key));
+    let paths = operation_paths(executor, run_id);
     match std::fs::symlink_metadata(&paths.directory) {
         Ok(metadata) if metadata.is_dir() && !metadata.file_type().is_symlink() => {}
         Ok(_) => {
@@ -106,6 +163,29 @@ fn dispatch_state(
     } else {
         Ok(DispatchState::Prepared)
     }
+}
+
+fn terminal_receipt(
+    executor: &ProcessRuntimeCodexExecutorV1,
+    owner: &RuntimeCodexOwnerV1,
+    run_id: &StableId,
+) -> Result<RuntimeCodexExecutionReceiptV1, AgentdError> {
+    validate_owner(executor, owner)?;
+    revalidate_external_files(executor)?;
+    let paths = operation_paths(executor, run_id);
+    let manifest = read_manifest(&paths.manifest)?;
+    validate_manifest_owner(&manifest, owner, executor.worker_artifact_digest)?;
+    if manifest.run_id != run_id.as_str() {
+        return Err(AgentdError::Protocol(
+            "runtime.codex terminal receipt directory has the wrong run identity".to_string(),
+        ));
+    }
+    read_receipt_if_present(&paths.receipt, &manifest)?.ok_or_else(|| {
+        AgentdError::Protocol(
+            "runtime.codex operation was classified terminal without a readable receipt"
+                .to_string(),
+        )
+    })
 }
 
 async fn reconcile_receipt(
@@ -173,7 +253,7 @@ async fn reconcile_error(
                 )
                 .await?;
         }
-        DispatchState::Fenced | DispatchState::Terminal => {
+        DispatchState::Fenced => {
             let current = ensure_dispatched(client, current).await?;
             client
                 .run_observe_terminal(
@@ -183,6 +263,12 @@ async fn reconcile_error(
                     false,
                 )
                 .await?;
+        }
+        DispatchState::Terminal => {
+            return Err(AgentdError::Protocol(
+                "terminal runtime.codex evidence must be reconciled from its immutable receipt"
+                    .to_string(),
+            ));
         }
     }
     Ok(())

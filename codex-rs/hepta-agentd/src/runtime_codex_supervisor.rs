@@ -208,6 +208,26 @@ impl ProcessRuntimeCodexExecutorV1 {
         }
     }
 
+    /// Latch post-dispatch uncertainty immediately when a physical worker loses
+    /// its terminal acknowledgement. This closes new canonical admission even
+    /// while unrelated workers are still draining and before the next periodic
+    /// reconciliation pass can acquire the recovery write gate.
+    pub(crate) fn mark_agentd_supervisor_recovery_required() -> Result<(), AgentdError> {
+        let installed = INSTALLATION.get().ok_or_else(|| {
+            AgentdError::Protocol(
+                "runtime.codex supervisor recovery marker has no installation".to_string(),
+            )
+        })?;
+        increment_atomic(&installed.unresolved, "runtime.codex unresolved counter overflow")?;
+        increment_atomic(
+            &installed.unresolved_post_dispatch,
+            "runtime.codex post-dispatch counter overflow",
+        )?;
+        installed.degraded.store(true, Ordering::Release);
+        installed.status_changed.notify_waiters();
+        Ok(())
+    }
+
     pub(crate) async fn wait_agentd_supervisor_started(
         maximum_wait: Duration,
     ) -> Result<RuntimeCodexSupervisorStatusV1, AgentdError> {
@@ -395,6 +415,13 @@ impl ProcessRuntimeCodexExecutorV1 {
         }
         Ok(())
     }
+}
+
+fn increment_atomic(counter: &AtomicUsize, message: &str) -> Result<(), AgentdError> {
+    counter
+        .fetch_update(Ordering::AcqRel, Ordering::Acquire, |value| value.checked_add(1))
+        .map(|_| ())
+        .map_err(|_| AgentdError::Protocol(message.to_string()))
 }
 
 fn status(installed: &Installation) -> RuntimeCodexSupervisorStatusV1 {
