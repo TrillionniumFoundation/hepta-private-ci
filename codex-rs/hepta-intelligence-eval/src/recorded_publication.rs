@@ -10,6 +10,9 @@ use crate::ProductEvidenceSinkErrorV1;
 use crate::ProductQualificationEvidenceSinkV1;
 use crate::SignedEvaluationDecisionV1;
 
+#[path = "attempt_publication_resume.rs"]
+mod resume;
+
 pub(crate) struct RecordedPublicationSinkV1<'a, J> {
     pub(crate) attempt_id: StableId,
     pub(crate) plan_digest: Digest32,
