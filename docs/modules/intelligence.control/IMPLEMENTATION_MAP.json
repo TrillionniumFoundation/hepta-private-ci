@@ -3,12 +3,12 @@
   "schemaVersion": 3,
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "42b7e5992c9fd676b84eda654d21d3df8b7f9eed",
+    "tree": "c132a72aa9ec81ec35fbc22f2ce4b98ed584f40a"
   },
   "observedAtHead": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "42b7e5992c9fd676b84eda654d21d3df8b7f9eed",
+    "tree": "c132a72aa9ec81ec35fbc22f2ce4b98ed584f40a"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -512,6 +512,34 @@
       "delegatedCallees": [],
       "tests": [],
       "authority": "none"
+    },
+    {
+      "operation": "bind_canonical_recall_for_intelligence_v1",
+      "designOperation": "bind_canonical_recall_for_intelligence_v1",
+      "nativeSymbol": "bind_canonical_recall_for_intelligence_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "state": "source_navigation_only_product_binding_not_proved",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs"
+      ],
+      "authority": "none"
+    },
+    {
+      "operation": "prepare_intelligence_run_with_canonical_recall",
+      "designOperation": "prepare_intelligence_run_with_canonical_recall",
+      "nativeSymbol": "prepare_intelligence_run_with_canonical_recall",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "state": "source_navigation_only_product_binding_not_proved",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs"
+      ],
+      "authority": "none"
     }
   ],
   "productCallers": [
@@ -569,11 +597,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
+      "object": "4dea1b06d8ea3a9ec2e4383cd321b357f9b8f2a6"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
-      "object": "4f25f9d81eef9931f46ebabc01778cec297f5dee"
+      "object": "1ccf03cc994521b1555a75bad475c19b1542b826"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
@@ -589,7 +617,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence",
-      "object": "c382c211dc34b0c3abaf87aec27e7e353bae418e"
+      "object": "77bc3af6c6584c3e6157557ece1522f8bb9a9553"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval",
@@ -597,11 +625,11 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/canonical.rs",
-      "object": "c610f073b47939acf15e7e76aad59883ac13fad4"
+      "object": "50521deb90a5c118995e15209f5799292b4c3c3f"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
-      "object": "25505e9bad9105368fece10afd40e812ae2f4ccf"
+      "object": "e54e92ee4590645ef665e777a1f08c956f7abb9a"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
@@ -617,7 +645,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/lib.rs",
-      "object": "ac161c19df7b828fbca02d39ebfdb6661982e6d4"
+      "object": "c64fa526429bd17616a7b1b1421da6212234a926"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/lib_tests.rs",
@@ -710,6 +738,20 @@
     {
       "path": "docs/modules/intelligence.control/TECHNICAL.md",
       "object": "255133762234bb470a3ee24e1c7c84554f2688c0"
+    }
+  ],
+  "historicalNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "a218f469530f9afc53fbd6758109f79a29912548",
+        "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+      },
+      "observedAtHead": {
+        "commit": "a218f469530f9afc53fbd6758109f79a29912548",
+        "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
     }
   ]
 }

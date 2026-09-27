@@ -56,11 +56,13 @@ use codex_hepta_intelligence::CanonicalPortFailureClassV1;
 use codex_hepta_intelligence::CanonicalPortFailureV1;
 use codex_hepta_intelligence::CanonicalPortInputV1;
 use codex_hepta_intelligence::CanonicalPortReceiptV1;
+use codex_hepta_intelligence::CanonicalRecallIntelligenceInputV1;
 use codex_hepta_intelligence::CanonicalRunOutcomeV1;
 use codex_hepta_intelligence::CanonicalStageV1;
 use codex_hepta_intelligence::CurrentOwnerStateV1;
 use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
 use codex_hepta_intelligence::prepare_intelligence_run;
+use codex_hepta_intelligence::prepare_intelligence_run_with_canonical_recall;
 use codex_hepta_intelligence::validate_current_snapshot;
 use codex_hepta_intelligence_eval::EvaluationRequest;
 use codex_hepta_intuition::CalibratedDecisionRequestV1;
@@ -213,6 +215,9 @@ impl CanonicalFreshnessOracleV1 for FileBackedFreshnessOracleV1 {
 }
 
 pub struct AgentdIntelligenceOwnerInputsV1 {
+    /// Optional explicit canonical retrieval profile; legacy callers remain compatible.
+    /// When present the normal runner must consume it, never discard or fall back.
+    pub canonical_recall: Option<CanonicalRecallIntelligenceInputV1>,
     pub objective_envelope: ObjectiveSourceEnvelopeV1,
     pub objective_profile: ObjectiveAdmissionProfileV1,
     pub objective_context: ObjectiveAdmissionContextV1,
@@ -520,6 +525,84 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
             input,
             "context.compiler",
             receipt.context_digest,
+            CanonicalPortDecisionV1::Continue,
+        )
+    }
+
+    fn compile_context_with_canonical_recall(
+        &mut self,
+        input: &CanonicalPortInputV1,
+        recall: &CanonicalRecallIntelligenceInputV1,
+    ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
+        recall
+            .validate()
+            .map_err(|_| Self::reject(input.stage, "invalid canonical recall"))?;
+        let request = Self::take(&mut self.context_request, input.stage, "context request")?;
+        if recall.run_id != input.run_id
+            || request.objective_digest != input.objective_digest
+            || request.run_snapshot_digest != input.snapshot_digest
+        {
+            return Err(Self::reject(
+                input.stage,
+                "canonical recall context binding",
+            ));
+        }
+        let selected = &recall.packet.selected_events;
+        if recall.packet.abstain.is_some() || selected.is_empty() {
+            return Err(Self::reject(input.stage, "canonical recall abstained"));
+        }
+        for event in selected {
+            let matches = request
+                .items
+                .iter()
+                .filter(|item| {
+                    item.item_id.as_str() == event.event_id.as_str()
+                        && item.role == codex_hepta_context_compiler::ContextRole::UntrustedEvidence
+                        && item.source_digest == event.event_digest.digest()
+                })
+                .count();
+            if matches != 1 {
+                return Err(Self::reject(
+                    input.stage,
+                    "canonical event evidence missing or replaced",
+                ));
+            }
+        }
+        // Evidence outside the frozen selection needs a separately declared profile.
+        if request.items.iter().any(|item| {
+            item.role == codex_hepta_context_compiler::ContextRole::UntrustedEvidence
+                && !selected
+                    .iter()
+                    .any(|event| event.event_id.as_str() == item.item_id.as_str())
+        }) {
+            return Err(Self::reject(input.stage, "unselected canonical evidence"));
+        }
+        let started = Instant::now();
+        let compiled =
+            compile(request).map_err(|_| Self::reject(input.stage, "context compile"))?;
+        Self::within_budget(input, started)?;
+        if compiled.authority.grants_any()
+            || selected.iter().any(|event| {
+                !compiled
+                    .untrusted_evidence_ids
+                    .iter()
+                    .any(|id| id.as_str() == event.event_id.as_str())
+            })
+        {
+            return Err(Self::reject(
+                input.stage,
+                "canonical evidence omitted or authority widened",
+            ));
+        }
+        let output = Digest32::of_parts(&[
+            b"hepta.agentd.canonical-recall-context.v1\0",
+            compiled.context_digest.as_array(),
+            recall.consumer_binding.binding_sha256.digest().as_array(),
+        ]);
+        Self::receipt(
+            input,
+            "context.compiler",
+            output,
             CanonicalPortDecisionV1::Continue,
         )
     }

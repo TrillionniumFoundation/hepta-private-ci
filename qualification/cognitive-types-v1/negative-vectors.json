@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.cognitive-types.negative-vectors.v1",
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "name": "duplicate-selected-event-logical-identity",
+      "contract": "RecallPacketV1",
+      "reason": "same eventId and revision bind two digests",
+      "expectedErrorContains": "DuplicateIdentity(\"selectedEventIdentity\")",
+      "wire": "{\"contract\":\"RecallPacketV1\",\"payload\":{\"abstain\":null,\"activationPaths\":[],\"activeNodes\":[{\"activationPpm\":800000,\"nodeId\":\"node:1\",\"population\":\"semantic_concept\"}],\"confidencePpm\":800000,\"contradictions\":[],\"coveragePpm\":900000,\"cueDigest\":\"5555555555555555555555555555555555555555555555555555555555555555\",\"engramSnapshotDigest\":\"7777777777777777777777777777777777777777777777777777777777777777\",\"eventSnapshotDigest\":\"6666666666666666666666666666666666666666666666666666666666666666\",\"oodPpm\":100000,\"resourceReceipt\":{\"activeNodeCount\":1,\"candidateEventCount\":2,\"nodeCount\":1,\"settlingSteps\":1,\"synapseCount\":0},\"selectedEvents\":[{\"eventDigest\":\"8888888888888888888888888888888888888888888888888888888888888888\",\"eventId\":\"event:1\",\"revision\":1},{\"eventDigest\":\"9999999999999999999999999999999999999999999999999999999999999999\",\"eventId\":\"event:1\",\"revision\":1}]},\"schema\":\"hepta.hnmf.recall-packet.v1\",\"schemaVersion\":1}"
+    },
+    {
+      "name": "duplicate-active-node-logical-identity",
+      "contract": "RecallPacketV1",
+      "reason": "same nodeId binds two activations",
+      "expectedErrorContains": "DuplicateIdentity(\"activeNodeId\")",
+      "wire": "{\"contract\":\"RecallPacketV1\",\"payload\":{\"abstain\":null,\"activationPaths\":[],\"activeNodes\":[{\"activationPpm\":800000,\"nodeId\":\"node:1\",\"population\":\"semantic_concept\"},{\"activationPpm\":800001,\"nodeId\":\"node:1\",\"population\":\"semantic_concept\"}],\"confidencePpm\":800000,\"contradictions\":[],\"coveragePpm\":900000,\"cueDigest\":\"5555555555555555555555555555555555555555555555555555555555555555\",\"engramSnapshotDigest\":\"7777777777777777777777777777777777777777777777777777777777777777\",\"eventSnapshotDigest\":\"6666666666666666666666666666666666666666666666666666666666666666\",\"oodPpm\":100000,\"resourceReceipt\":{\"activeNodeCount\":2,\"candidateEventCount\":1,\"nodeCount\":2,\"settlingSteps\":1,\"synapseCount\":0},\"selectedEvents\":[{\"eventDigest\":\"8888888888888888888888888888888888888888888888888888888888888888\",\"eventId\":\"event:1\",\"revision\":1}]},\"schema\":\"hepta.hnmf.recall-packet.v1\",\"schemaVersion\":1}"
+    },
+    {
+      "name": "conflicting-weight-proposal-logical-identity",
+      "contract": "PlasticityBatchV1",
+      "reason": "same synapse key has two proposed successors",
+      "expectedErrorContains": "DuplicateIdentity(\"weightProposalIdentity\")",
+      "wire": "{\"contract\":\"PlasticityBatchV1\",\"payload\":{\"currentSnapshotImmutable\":true,\"nextGeneration\":2,\"outcomeSignalDigest\":\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\",\"predecessorGeneration\":1,\"productionActivationAllowed\":false,\"thresholdProposals\":[{\"deltaPpm\":-31250,\"newThresholdQ16\":-2048,\"nodeId\":\"node:1\",\"oldThresholdQ16\":0}],\"weightProposals\":[{\"deltaPpm\":15625,\"newWeightQ16\":1024,\"oldWeightQ16\":0,\"relation\":\"associative\",\"sourceNodeId\":\"node:1\",\"targetNodeId\":\"node:2\"},{\"deltaPpm\":31250,\"newWeightQ16\":2048,\"oldWeightQ16\":0,\"relation\":\"associative\",\"sourceNodeId\":\"node:1\",\"targetNodeId\":\"node:2\"}]},\"schema\":\"hepta.hnmf.plasticity-batch.v1\",\"schemaVersion\":1}"
+    },
+    {
+      "name": "conflicting-threshold-proposal-logical-identity",
+      "contract": "PlasticityBatchV1",
+      "reason": "same nodeId has two proposed thresholds",
+      "expectedErrorContains": "DuplicateIdentity(\"thresholdProposalNodeId\")",
+      "wire": "{\"contract\":\"PlasticityBatchV1\",\"payload\":{\"currentSnapshotImmutable\":true,\"nextGeneration\":2,\"outcomeSignalDigest\":\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\",\"predecessorGeneration\":1,\"productionActivationAllowed\":false,\"thresholdProposals\":[{\"deltaPpm\":-31250,\"newThresholdQ16\":-2048,\"nodeId\":\"node:1\",\"oldThresholdQ16\":0},{\"deltaPpm\":-15625,\"newThresholdQ16\":-1024,\"nodeId\":\"node:1\",\"oldThresholdQ16\":0}],\"weightProposals\":[{\"deltaPpm\":31250,\"newWeightQ16\":2048,\"oldWeightQ16\":0,\"relation\":\"associative\",\"sourceNodeId\":\"node:1\",\"targetNodeId\":\"node:2\"}]},\"schema\":\"hepta.hnmf.plasticity-batch.v1\",\"schemaVersion\":1}"
+    },
+    {
+      "name": "duplicate-topology-node-logical-identity",
+      "contract": "TopologyProposalV1",
+      "reason": "same nodeId has two topology definitions",
+      "expectedErrorContains": "DuplicateIdentity(\"topologyNodeId\")",
+      "wire": "{\"contract\":\"TopologyProposalV1\",\"payload\":{\"compatibilityPlanDigest\":\"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\",\"lesionPlanDigest\":\"1111111111111111111111111111111111111111111111111111111111111111\",\"operation\":\"add\",\"predecessorTopologyDigest\":\"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\",\"proposalId\":\"topology-proposal:1\",\"resourceDelta\":{\"edgeDelta\":0,\"nodeDelta\":2,\"residentBytesUpperBoundDelta\":4096},\"rollbackPlanDigest\":\"2222222222222222222222222222222222222222222222222222222222222222\",\"securityReviewDigest\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"state\":\"qualification_required\",\"typedNodesEdges\":{\"edges\":[],\"nodes\":[{\"label\":\"new-node\",\"nodeId\":\"node:3\",\"population\":\"meta_memory\"},{\"label\":\"new-node-z\",\"nodeId\":\"node:3\",\"population\":\"meta_memory\"}]}},\"schema\":\"hepta.hnmf.topology-proposal.v1\",\"schemaVersion\":1}"
+    },
+    {
+      "name": "invalid-json-pointer-escape",
+      "contract": "ModalitySpanRefV1",
+      "reason": "RFC 6901 permits only ~0 and ~1 escapes",
+      "expectedErrorContains": "Invalid(\"JSON pointer escape\")",
+      "wire": "{\"contract\":\"ModalitySpanRefV1\",\"payload\":{\"assetSha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"featureBlobSha256\":null,\"modality\":\"structured_data\",\"preprocessorManifestSha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"privacyClass\":\"agent_private\",\"range\":{\"kind\":\"json_pointer\",\"pointer\":\"/a~2\"},\"redactionMaskSha256\":null,\"spanId\":\"span:1\",\"symbolicProjectionSha256\":null,\"uncertaintyPpm\":10000},\"schema\":\"hepta.hnmf.modality-span-ref.v1\",\"schemaVersion\":1}"
+    },
+    {
+      "name": "retired-synapse-self-loop",
+      "contract": "ForgetPropagationReceiptV1",
+      "reason": "retired references obey the same no-self-loop identity invariant",
+      "expectedErrorContains": "Invalid(\"retired synapse self-loop\")",
+      "wire": "{\"contract\":\"ForgetPropagationReceiptV1\",\"payload\":{\"artifactRevocationRequired\":true,\"eventId\":\"event:1\",\"nextGeneration\":2,\"predecessorGeneration\":1,\"projectionRebuildRequired\":true,\"retiredNodeIds\":[\"node:1\"],\"retiredSynapses\":[{\"relation\":\"associative\",\"sourceNodeId\":\"node:1\",\"targetNodeId\":\"node:1\"}]},\"schema\":\"hepta.hnmf.forget-propagation-receipt.v1\",\"schemaVersion\":1}"
+    }
+  ]
+}

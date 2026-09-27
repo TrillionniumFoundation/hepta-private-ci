@@ -1,6 +1,11 @@
 use std::collections::BTreeMap;
 
 use super::*;
+use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+use codex_hepta_cognitive_types::hnmf_learning::RecallPacketV1;
+use codex_hepta_cognitive_types::hnmf_learning::RecallResourceReceiptV1;
+use codex_hepta_cognitive_types::hnmf_learning::SelectedEventRefV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
@@ -80,6 +85,41 @@ fn request() -> CanonicalIntelligenceRunRequestV1 {
     }
 }
 
+fn contract_id(value: &str) -> ContractIdV1 {
+    ContractIdV1::new(value).expect("contract id")
+}
+
+fn contract_digest(value: &str) -> ContractDigestV1 {
+    ContractDigestV1::from_digest(digest(value)).expect("contract digest")
+}
+
+fn canonical_recall_packet() -> RecallPacketV1 {
+    RecallPacketV1 {
+        cue_digest: contract_digest("recall-cue"),
+        event_snapshot_digest: contract_digest("recall-event-snapshot"),
+        engram_snapshot_digest: contract_digest("recall-engram-snapshot"),
+        selected_events: vec![SelectedEventRefV1 {
+            event_id: contract_id("event:recalled"),
+            revision: 1,
+            event_digest: contract_digest("event:recalled:digest"),
+        }],
+        active_nodes: Vec::new(),
+        activation_paths: Vec::new(),
+        contradictions: Vec::new(),
+        coverage_ppm: 1_000_000,
+        confidence_ppm: 900_000,
+        ood_ppm: 0,
+        abstain: None,
+        resource_receipt: RecallResourceReceiptV1 {
+            candidate_event_count: 1,
+            node_count: 0,
+            synapse_count: 0,
+            active_node_count: 0,
+            settling_steps: 0,
+        },
+    }
+}
+
 #[derive(Clone)]
 struct Oracle {
     states: BTreeMap<StableId, CurrentOwnerStateV1>,
@@ -134,6 +174,7 @@ struct Ports {
     calls: Vec<CanonicalStageV1>,
     abstain: bool,
     wrong_owner: Option<CanonicalStageV1>,
+    consumed_recall: Option<RecallPacketV1>,
 }
 
 impl Ports {
@@ -142,6 +183,7 @@ impl Ports {
             calls: Vec::new(),
             abstain: false,
             wrong_owner: None,
+            consumed_recall: None,
         }
     }
 
@@ -224,6 +266,18 @@ impl CanonicalOwnerPortsV1 for Ports {
         self.receipt(input, "context.compiler", CanonicalPortDecisionV1::Continue)
     }
 
+    fn compile_context_with_canonical_recall(
+        &mut self,
+        input: &CanonicalPortInputV1,
+        recall: &CanonicalRecallIntelligenceInputV1,
+    ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
+        self.consumed_recall = Some(recall.packet.clone());
+        let mut receipt = self.compile_context(input)?;
+        receipt.output_digest =
+            canonical_contract_digest_v1(&recall.packet).expect("recall digest");
+        Ok(receipt)
+    }
+
     fn evaluate_candidate(
         &mut self,
         input: &CanonicalPortInputV1,
@@ -257,6 +311,39 @@ fn canonical_selected_path_has_first_class_ndu_and_all_seven_owners() {
     assert!(!envelope.utility_receipt_digest.is_zero());
     assert!(!envelope.envelope_digest.is_zero());
     assert!(!envelope.authority.grants_any());
+}
+
+#[test]
+fn canonical_recall_is_bound_before_the_product_intelligence_run() {
+    let request = request();
+    let recall = bind_canonical_recall_for_intelligence_v1(
+        request.run_id.clone(),
+        canonical_recall_packet(),
+        Some(digest("legacy-recall-packet")),
+    )
+    .expect("canonical recall binding");
+    let mut oracle = Oracle::new(&request.snapshot);
+    let mut ports = Ports::new();
+    let outcome =
+        prepare_intelligence_run_with_canonical_recall(request, recall, &mut ports, &mut oracle)
+            .expect("canonical recall intelligence run");
+    assert!(matches!(outcome, CanonicalRunOutcomeV1::Ready(_)));
+}
+
+#[test]
+fn canonical_recall_cannot_be_replayed_for_another_run() {
+    let request = request();
+    let recall =
+        bind_canonical_recall_for_intelligence_v1(id("run:other"), canonical_recall_packet(), None)
+            .expect("canonical recall binding");
+    let mut oracle = Oracle::new(&request.snapshot);
+    let mut ports = Ports::new();
+    assert_eq!(
+        prepare_intelligence_run_with_canonical_recall(request, recall, &mut ports, &mut oracle,)
+            .expect_err("cross-run recall must reject"),
+        CanonicalIntelligenceError::CanonicalRecallRunMismatch
+    );
+    assert!(ports.calls.is_empty());
 }
 
 #[test]
@@ -334,4 +421,71 @@ fn legal_candidate_set_rejects_replay_identity_with_duplicate_semantics() {
         build_legal_candidates(value).expect_err("duplicate must reject"),
         CanonicalIntelligenceError::DuplicateCandidate(id("action:one"))
     );
+}
+
+#[test]
+fn canonical_recall_reaches_context_and_changes_product_handoff() {
+    let first = canonical_recall_packet();
+    let mut second = first.clone();
+    second.selected_events[0].event_digest =
+        ContractDigestV1::from_digest(digest("other event revision")).expect("digest");
+    let execute = |packet: RecallPacketV1| {
+        let request = request();
+        let recall =
+            bind_canonical_recall_for_intelligence_v1(request.run_id.clone(), packet.clone(), None)
+                .expect("bind");
+        let mut oracle = Oracle::new(&request.snapshot);
+        let mut ports = Ports::new();
+        let result = prepare_intelligence_run_with_canonical_recall(
+            request,
+            recall,
+            &mut ports,
+            &mut oracle,
+        )
+        .expect("run");
+        assert_eq!(ports.consumed_recall, Some(packet));
+        result
+    };
+    assert_ne!(execute(first), execute(second));
+}
+
+struct LegacyPorts(Ports);
+
+macro_rules! delegate_legacy_port {
+    ($name:ident) => {
+        fn $name(
+            &mut self,
+            input: &CanonicalPortInputV1,
+        ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
+            self.0.$name(input)
+        }
+    };
+}
+
+impl CanonicalOwnerPortsV1 for LegacyPorts {
+    delegate_legacy_port!(validate_objective);
+    delegate_legacy_port!(evaluate_utility);
+    delegate_legacy_port!(collect_neural_signal);
+    delegate_legacy_port!(build_prompt_portfolio);
+    delegate_legacy_port!(decide_intuition);
+    delegate_legacy_port!(compile_context);
+    delegate_legacy_port!(evaluate_candidate);
+}
+
+#[test]
+fn legacy_owner_cannot_silently_ignore_canonical_recall() {
+    let request = request();
+    let recall = bind_canonical_recall_for_intelligence_v1(
+        request.run_id.clone(),
+        canonical_recall_packet(),
+        None,
+    )
+    .expect("bind");
+    let mut oracle = Oracle::new(&request.snapshot);
+    let mut ports = LegacyPorts(Ports::new());
+    assert!(
+        prepare_intelligence_run_with_canonical_recall(request, recall, &mut ports, &mut oracle)
+            .is_err()
+    );
+    assert!(!ports.0.calls.contains(&CanonicalStageV1::ContextCompiled));
 }

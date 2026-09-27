@@ -4155,6 +4155,459 @@
         "unknown_critical_fields_rejected",
         "authority_delta_none"
       ]
+    },
+    {
+      "id": "SharedExperiencePublicationV2",
+      "contractId": "SharedExperiencePublicationV2",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields",
+      "fields": [
+        {
+          "name": "publicationOperationId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "contributionId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "sourceOwnerId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "sourceOwnerEpoch",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "sourceKind",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "sourceRecordId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "sourceRevision",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "sourceRecordSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "semanticContentSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "sourceScopeSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "environmentSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "applicabilitySha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "publicationPolicySha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "policyGeneration",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "destinationScopeIds",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "useGrants",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 131072
+        },
+        {
+          "name": "retentionLineageSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "correctionOfContributionId",
+          "type": "id128",
+          "required": false,
+          "maxBytes": 128
+        },
+        {
+          "name": "observedAtUnixMs",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "expiresAtUnixMs",
+          "type": "u64",
+          "required": false
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "semantic_digest_stable",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "private_source_identity_preserved",
+        "read_train_and_derived_use_permissions_separate",
+        "use_grant_identity_unique",
+        "owner_policy_generation_bound",
+        "source_kind_and_digest_domain_never_reinterpreted"
+      ]
+    },
+    {
+      "id": "SharedExperienceSnapshotV2",
+      "contractId": "SharedExperienceSnapshotV2",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 1048576,
+      "digestScope": "all_semantic_fields",
+      "fields": [
+        {
+          "name": "snapshotId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "generation",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "purposeId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "ownerCuts",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 262144
+        },
+        {
+          "name": "contributionSha256s",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 262144
+        },
+        {
+          "name": "dependencySha256s",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 262144
+        },
+        {
+          "name": "unavailableOwnerIds",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "completeness",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "snapshotManifestSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "deletionFrontierSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "revocationFrontierSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "createdAtUnixMs",
+          "type": "u64",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "semantic_digest_stable",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "multi_owner_cut_exact",
+        "partial_and_unavailable_explicit",
+        "deletion_and_revocation_frontiers_bound",
+        "no_live_database_concatenation"
+      ]
+    },
+    {
+      "id": "SharedExperienceUseReceiptV2",
+      "contractId": "SharedExperienceUseReceiptV2",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "all_semantic_fields",
+      "fields": [
+        {
+          "name": "useOperationId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "publicationSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "grant",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "sourceOwnerId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "sourceRevision",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "consumerId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "observedPolicyGeneration",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "observedRevocationFrontier",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "payloadSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "usedAtUnixMs",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "finalUseObserved",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "disposition",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "semantic_digest_stable",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "permission_class_matches_disposition",
+        "consumer_matches_grant",
+        "successful_use_requires_final_use_observation",
+        "current_policy_and_revocation_frontier_bound"
+      ]
+    },
+    {
+      "id": "SharedExperienceRevocationReceiptV2",
+      "contractId": "SharedExperienceRevocationReceiptV2",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 1048576,
+      "digestScope": "all_semantic_fields",
+      "fields": [
+        {
+          "name": "revocationOperationId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "contributionId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "publicationSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "sourceOwnerId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "sourceRevision",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "predecessorPolicyGeneration",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "nextPolicyGeneration",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "revocationFrontier",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "allUsesRevoked",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "revokedUseGrantIds",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 262144
+        },
+        {
+          "name": "affectedProjectionSha256s",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 262144
+        },
+        {
+          "name": "affectedTrainingDatasetSha256s",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 262144
+        },
+        {
+          "name": "affectedArtifactSha256s",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 262144
+        },
+        {
+          "name": "pendingOfflineOwnerIds",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "sourceUseBlocked",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "trainingUseBlocked",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "artifactAdoptionBlocked",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "influenceStatus",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "influenceProofSha256",
+          "type": "sha256",
+          "required": false,
+          "maxBytes": 64
+        },
+        {
+          "name": "completeness",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "semantic_digest_stable",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "policy_generation_monotonic",
+        "read_train_and_artifact_use_blocked",
+        "partial_revocation_names_offline_owners",
+        "influence_removal_never_claimed_without_proof"
+      ]
     }
   ],
   "subordinateProtocolRegistries": [

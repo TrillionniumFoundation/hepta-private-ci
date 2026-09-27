@@ -90,6 +90,22 @@ The target [HNMF contract](../../hnmf/TECHNICAL.md) and
 [migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
 retain current source, wire and capability states.
 
+The V2 contract source is explicit in `src/shared_experience.rs`:
+`SharedExperiencePublicationV2`, `SharedExperienceSnapshotV2`,
+`SharedExperienceUseReceiptV2` and `SharedExperienceRevocationReceiptV2`. V2 is a
+new contract family; it does not mutate or reinterpret `MemoryEventV1`, existing
+private scopes, source IDs or V1 durable rows. Read, purpose-bound training and
+derived-artifact use are different grants. Revocation blocks all three uses but
+may claim learned-influence removal only with a separate proof digest.
+
+`src/consumer.rs` provides the authority-free `CanonicalConsumerBindingV1`. It
+binds one canonical payload to one operation, named consumer, exact source
+identity, exact source snapshot and, while migration remains active, the exact
+legacy payload digest. `cognitive.read`, `cognitive.store`, `memory.retrieval`,
+`compact.engine` and `intelligence.control` expose consumer-owned wrappers that
+validate this binding while preserving their existing durable owners. These
+wrappers are source convergence, not permission to retire compatibility paths.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:
@@ -117,10 +133,14 @@ Critical protocol schemas:
 - `PlasticityBatchV1`
 - `TopologyProposalV1`
 - `ForgetPropagationReceiptV1`
+- `SharedExperiencePublicationV2`
+- `SharedExperienceSnapshotV2`
+- `SharedExperienceUseReceiptV2`
+- `SharedExperienceRevocationReceiptV2`
 
-The canonical Rust definitions live only in `codex-rs/hepta-cognitive-types/src/hnmf.rs` and `hnmf_learning.rs`. The canonical V1 wire codec is `src/wire.rs`: strict UTF-8 JSON, lexicographically sorted object keys, integer-only numeric fields, exact schema/version/contract identity, encoded-size limits, and deny-unknown deserialization. The HNMF qualification packages are oracles/algorithms and must import these contracts rather than redefine them.
+The canonical Rust definitions live only in `codex-rs/hepta-cognitive-types/src/hnmf.rs`, `hnmf_learning.rs` and `shared_experience.rs`. The canonical V1/V2 wire codec is `src/wire.rs`: strict UTF-8 JSON, lexicographically sorted object keys, integer-only numeric fields, exact schema/version/contract identity, encoded-size limits, and deny-unknown deserialization. The HNMF qualification packages are oracles/algorithms and must import these contracts rather than redefine them.
 
-Exact ModulePort-to-schema sets are machine-bound in `IMPLEMENTATION_MAP.json.portSchemaBindings`. This is registry projection, not proof that each downstream Rust consumer has migrated to the HNMF V1 types. `IMPLEMENTATION_MAP.json` therefore records `nativeConsumerState=registry_bound_shadow_migration`, an explicit legacy-surface inventory, and `canonicalConsumerConvergenceProved=false` until consumer-owned adapters land under their own work packages. Existing Lane C owner-local records such as `MemoryAdmissionCandidateV1`, `MemoryWriteIntentV1` and `MemoryWriteReceiptV1` remain typed-local contracts until a separately registered wire schema is added; they are not silently reinterpreted as `MemoryEventV1`.
+Exact ModulePort-to-schema sets are machine-bound in `IMPLEMENTATION_MAP.json.portSchemaBindings`. Registry projection alone is not a consumer migration. The five named consumers now have source-level exact-binding wrappers, while legacy record and packet surfaces remain present for rollback and historical readability. `IMPLEMENTATION_MAP.json` therefore records source convergence separately from authenticated product composition and keeps `canonicalConsumerConvergenceProved=false` until exact-head and synthetic-merge product execution prove every normal caller and authorize legacy retirement. Existing Lane C owner-local records such as `MemoryAdmissionCandidateV1`, `MemoryWriteIntentV1` and `MemoryWriteReceiptV1` remain typed-local contracts until a separately registered wire schema is added; they are not silently reinterpreted as `MemoryEventV1`.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
@@ -187,7 +207,8 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-cognitive-types/src/lane_c_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c_tests.rs); named case: `generation_vector_digest_binds_every_generation`.
 - [codex-rs/hepta-cognitive-types/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lib_tests.rs); named case: `snapshot_is_canonical_and_authority_free`.
 - [codex-rs/hepta-cognitive-types/src/contract_tests.rs](../../../codex-rs/hepta-cognitive-types/src/contract_tests.rs); CTYPE-01 through CTYPE-04 plus bounds, strict-wire, canonical-order, digest-domain, abstention/revision, Q16/ppm, contextual-binding and bounded arbitrary-byte decoder-smoke tests.
-- [qualification/cognitive-types-v1/verify_vectors.py](../../../qualification/cognitive-types-v1/verify_vectors.py); independent Python canonical-JSON oracle for all 12 registered V1 protocol digests.
+- [qualification/cognitive-types-v1/verify_vectors.py](../../../qualification/cognitive-types-v1/verify_vectors.py); independent Python canonical-JSON oracle for all 12 registered V1 protocol digests and negative semantic vectors.
+- [qualification/cognitive-types-v2/verify_vectors.py](../../../qualification/cognitive-types-v2/verify_vectors.py); independent Python canonical-JSON oracle for the four shared-experience V2 protocol digests and permission/completeness/final-use/influence negative vectors.
 
 In `codex-rs`, run `just test -p codex-hepta-cognitive-types`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.types.md) separately labels target acceptance designs.
 
@@ -276,3 +297,47 @@ The bootstrap source-location obligation for `cognitive.types` is implemented by
 - `codex-rs/hepta-cognitive-types`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+### Canonical consumer and V2 validation boundaries
+
+Logical identity is checked independently of full-value canonical ordering. This
+includes source/revision provenance in addition to selected events, active nodes,
+weight and threshold targets, topology nodes and activation paths. Existing valid
+HNMF V1 golden bytes and digest domains remain unchanged.
+
+The canonical compaction entry compares source citations with event provenance,
+binds retention priority/reason, retains bounded input witnesses, and rebuilds the
+existing deterministic candidate when validating coverage. Removing a binding or
+changing an input cannot preserve a valid candidate wrapper.
+
+`prepare_intelligence_run_with_canonical_recall` passes the actual packet to
+`CanonicalOwnerPortsV1::compile_context_with_canonical_recall`; a legacy port without
+that implementation rejects. The Agentd `prepare_with_canonical_recall` entry uses
+the existing seven-owner runner and real context compiler. Its explicit profile
+maps event ID to context item ID and event digest to source digest, keeps evidence
+untrusted, rejects unselected evidence, and requires selected items to survive the
+context budget. Recall identity participates in the subsequent trace and handoff.
+This explicit entry does not establish that the default daemon profile supplies
+an authenticated, currently valid retrieval result.
+
+Shared-experience V2 publications use `sourceKind`, `sourceRecordId` and
+`sourceRecordSha256`. `canonical_memory_event` and `owner_memory_revision` are
+separate source domains; the local SQLite-owner bridge accepts only the latter.
+Wire envelope version 1 is the encoding version; these new semantic contracts are
+version 2 and do not change HNMF V1 fields, privacy classes or digest domains.
+The local bridge verifies the existing V1 source revision and durable use policy;
+source owner epoch, environment/applicability and retention-lineage assertions
+still require their independently authenticated owners before full V2 composition.
+
+Every destination and grant must fit the original policy, not merely one matching
+grant. The source owner checks current grant expiry and the exact per-policy event
+frontier; it cannot certify training materialization, artifact adoption or influence
+removal on behalf of those owners. Such physical-use observations remain explicit
+consumer/evaluator gates. A rejected attempt after expiry is recordable, but a
+successful use outside the grant interval is invalid. Snapshot owner counts include
+unavailable owners; revocation receipts also bound offline-owner fanout.
+
+HNMF qualification has independent native, reference, consumer and owner jobs for
+source head and, on pull requests, an exact two-parent merge candidate. Check
+outcomes and source/tree identities are retained even when another check fails.
+No failed, skipped or cancelled unit can satisfy the aggregate qualification job.

@@ -14,6 +14,15 @@ use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
+use codex_hepta_cognitive_types::consumer::CanonicalConsumerBindingV1;
+use codex_hepta_cognitive_types::consumer::CanonicalConsumerV1;
+use codex_hepta_cognitive_types::consumer::CanonicalMigrationPostureV1;
+use codex_hepta_cognitive_types::consumer::CanonicalPayloadKindV1;
+use codex_hepta_cognitive_types::consumer::bind_recall_packet_consumer_v1;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+use codex_hepta_cognitive_types::hnmf_learning::RecallPacketV1;
+use codex_hepta_cognitive_types::wire::canonical_contract_digest_v1;
+
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -272,6 +281,69 @@ pub struct CanonicalIntelligenceRunRequestV1 {
     pub budget: CanonicalBudgetV1,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalRecallIntelligenceInputV1 {
+    pub run_id: StableId,
+    pub packet: RecallPacketV1,
+    pub consumer_binding: CanonicalConsumerBindingV1,
+}
+
+impl CanonicalRecallIntelligenceInputV1 {
+    pub fn validate(&self) -> Result<(), CanonicalIntelligenceError> {
+        self.packet
+            .validate()
+            .map_err(|error| CanonicalIntelligenceError::CanonicalRecall(error.to_string()))?;
+        self.consumer_binding
+            .validate()
+            .map_err(|error| CanonicalIntelligenceError::CanonicalRecall(error.to_string()))?;
+        let packet_digest = canonical_contract_digest_v1(&self.packet)
+            .map_err(|error| CanonicalIntelligenceError::CanonicalRecall(error.to_string()))?;
+        if self.consumer_binding.operation_id.as_str() != self.run_id.as_str()
+            || self.consumer_binding.consumer != CanonicalConsumerV1::IntelligenceControl
+            || self.consumer_binding.payload_kind != CanonicalPayloadKindV1::RecallPacket
+            || self.consumer_binding.canonical_payload_sha256.digest() != packet_digest
+            || self.consumer_binding.source_identity_sha256.digest()
+                != self.packet.cue_digest.digest()
+            || self.consumer_binding.source_snapshot_sha256.digest()
+                != self.packet.event_snapshot_digest.digest()
+        {
+            return Err(CanonicalIntelligenceError::CanonicalRecallRunMismatch);
+        }
+        Ok(())
+    }
+}
+
+pub fn bind_canonical_recall_for_intelligence_v1(
+    run_id: StableId,
+    packet: RecallPacketV1,
+    compatibility_payload_digest: Option<Digest32>,
+) -> Result<CanonicalRecallIntelligenceInputV1, CanonicalIntelligenceError> {
+    let operation_id = ContractIdV1::new(run_id.to_string())
+        .map_err(|error| CanonicalIntelligenceError::CanonicalRecall(error.to_string()))?;
+    let migration_posture = if compatibility_payload_digest.is_some() {
+        CanonicalMigrationPostureV1::CompatibilityBound
+    } else {
+        CanonicalMigrationPostureV1::Native
+    };
+    let consumer_binding = bind_recall_packet_consumer_v1(
+        operation_id,
+        CanonicalConsumerV1::IntelligenceControl,
+        &packet,
+        packet.cue_digest.digest(),
+        packet.event_snapshot_digest.digest(),
+        compatibility_payload_digest,
+        migration_posture,
+    )
+    .map_err(|error| CanonicalIntelligenceError::CanonicalRecall(error.to_string()))?;
+    let value = CanonicalRecallIntelligenceInputV1 {
+        run_id,
+        packet,
+        consumer_binding,
+    };
+    value.validate()?;
+    Ok(value)
+}
+
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum CanonicalStageV1 {
     ObjectiveValidated,
@@ -388,6 +460,19 @@ pub trait CanonicalOwnerPortsV1 {
         input: &CanonicalPortInputV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1>;
 
+    /// Compile exact selected-event evidence, not merely the packet's digest.
+    /// Legacy ports fail closed until they implement this binding explicitly.
+    fn compile_context_with_canonical_recall(
+        &mut self,
+        _input: &CanonicalPortInputV1,
+        _recall: &CanonicalRecallIntelligenceInputV1,
+    ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
+        Err(CanonicalPortFailureV1 {
+            class: CanonicalPortFailureClassV1::Rejected,
+            evidence_digest: Digest32::of_bytes(b"canonical recall consumer not installed"),
+        })
+    }
+
     fn evaluate_candidate(
         &mut self,
         input: &CanonicalPortInputV1,
@@ -491,6 +576,8 @@ pub enum CanonicalIntelligenceError {
     EmptyDigest(&'static str),
     AuthorityWidening,
     UnexpectedDecision,
+    CanonicalRecall(String),
+    CanonicalRecallRunMismatch,
     Arithmetic,
 }
 
@@ -662,6 +749,15 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
     ports: &mut P,
     oracle: &mut O,
 ) -> Result<CanonicalRunOutcomeV1, CanonicalIntelligenceError> {
+    prepare_intelligence_run_inner(request, None, ports, oracle)
+}
+
+fn prepare_intelligence_run_inner<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessOracleV1>(
+    request: CanonicalIntelligenceRunRequestV1,
+    recall: Option<&CanonicalRecallIntelligenceInputV1>,
+    ports: &mut P,
+    oracle: &mut O,
+) -> Result<CanonicalRunOutcomeV1, CanonicalIntelligenceError> {
     request.budget.validate()?;
     if request.snapshot.objective_digest() != request.legal_candidates.state_digest {
         return Err(CanonicalIntelligenceError::InvalidCandidateSet(
@@ -736,8 +832,20 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
         AdvisoryDecisionV1::Selected { .. } => {}
     }
 
+    if let Some(recall) = recall {
+        // The predecessor makes the exact canonical payload and compatibility binding
+        // part of every subsequent trace, evaluation and product handoff.
+        predecessor = Digest32::of_parts(&[
+            b"hepta.intelligence.canonical-recall-context.v1\0",
+            predecessor.as_array(),
+            recall.consumer_binding.binding_sha256.digest().as_array(),
+        ]);
+    }
     let context = stage!(CanonicalStageV1::ContextCompiled, |ports: &mut P, input| {
-        ports.compile_context(input)
+        match recall {
+            Some(recall) => ports.compile_context_with_canonical_recall(input, recall),
+            None => ports.compile_context(input),
+        }
     });
     let context_binding = assemble_context(&decision, &context)?;
     let _evaluation = stage!(
@@ -799,6 +907,27 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
         envelope_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
     }))
+}
+
+pub fn prepare_intelligence_run_with_canonical_recall<
+    P: CanonicalOwnerPortsV1,
+    O: CanonicalFreshnessOracleV1,
+>(
+    request: CanonicalIntelligenceRunRequestV1,
+    recall: CanonicalRecallIntelligenceInputV1,
+    ports: &mut P,
+    oracle: &mut O,
+) -> Result<CanonicalRunOutcomeV1, CanonicalIntelligenceError> {
+    recall.validate()?;
+    if recall.run_id != request.run_id {
+        return Err(CanonicalIntelligenceError::CanonicalRecallRunMismatch);
+    }
+    if recall.packet.abstain.is_some() {
+        return Err(CanonicalIntelligenceError::CanonicalRecall(
+            "abstaining recall cannot supply a selected-evidence context".to_owned(),
+        ));
+    }
+    prepare_intelligence_run_inner(request, Some(&recall), ports, oracle)
 }
 
 fn run_stage<P, O, F>(

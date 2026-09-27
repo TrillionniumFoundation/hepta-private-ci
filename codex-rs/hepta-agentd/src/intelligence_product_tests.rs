@@ -639,6 +639,7 @@ fn fixture() -> Fixture {
             },
         },
         inputs: AgentdIntelligenceOwnerInputsV1 {
+            canonical_recall: None,
             objective_envelope: envelope,
             objective_profile: profile,
             objective_context,
@@ -990,3 +991,6 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
 
 #[path = "intelligence_product_signed_tests.rs"]
 mod signed;
+
+#[path = "intelligence_product_canonical_recall_tests.rs"]
+mod canonical_recall_tests;

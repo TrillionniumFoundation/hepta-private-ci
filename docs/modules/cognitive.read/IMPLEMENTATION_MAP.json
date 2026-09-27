@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "42b7e5992c9fd676b84eda654d21d3df8b7f9eed",
+    "tree": "c132a72aa9ec81ec35fbc22f2ce4b98ed584f40a"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -213,15 +213,15 @@
     },
     {
       "path": "codex-rs/hepta-cognitive-read",
-      "object": "e672ff2c0e77cfde0a5dab87422690d120e98c62"
+      "object": "31a254be230f61b58f145dbbc8ac1317637094f6"
     },
     {
       "path": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
-      "object": "7b84d401b71d24f547a8c2de0e4d5c4117253ecb"
+      "object": "1fca61698e75b75844587652f78cd8e813ea863b"
     },
     {
       "path": "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
-      "object": "c0d68c09a48e8862c73cf45555688989cec76dab"
+      "object": "0679bb00d9b88d3d8d305f1b9a8191c364ef5dff"
     },
     {
       "path": "codex-rs/hepta-cognitive-read/src/ids.rs",
@@ -233,7 +233,7 @@
     },
     {
       "path": "codex-rs/hepta-cognitive-read/src/lib.rs",
-      "object": "80b0dc9fe5bb65113c032e76a74a2a4406b72cad"
+      "object": "256d3e6d2bfbd5993faac6149348d6d542732153"
     },
     {
       "path": "codex-rs/hepta-cognitive-read/src/v2.rs",
@@ -320,8 +320,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "42b7e5992c9fd676b84eda654d21d3df8b7f9eed",
+    "tree": "c132a72aa9ec81ec35fbc22f2ce4b98ed584f40a"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
@@ -341,5 +341,19 @@
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
     "codex-rs/hepta-cognitive-read"
+  ],
+  "historicalNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+        "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+      },
+      "observedAtHead": {
+        "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+        "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    }
   ]
 }
