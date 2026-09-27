@@ -1,0 +1,96 @@
+name: NDU one-shot bounded source repair
+on:
+  push:
+    branches: [codex/utility-ndu-production-hardening-20260926]
+    paths: [.github/workflows/hepta-ndu-repair-apply.yml]
+permissions:
+  contents: write
+jobs:
+  repair:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    env:
+      OUT: ${{ runner.temp }}/ndu-source-repair
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify and apply exact reviewed source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          git rev-parse HEAD HEAD^{tree} > "$OUT/input-identity.txt"
+          python3 - <<'PY'
+          import base64, gzip, hashlib, os, subprocess
+          from pathlib import Path
+          data = ''.join(Path(f'scripts/ndu-repair-20260927.part{i}').read_text().strip() for i in (1,2))
+          patch = gzip.decompress(base64.b64decode(data, validate=True))
+          expected = '2c62b6ffb33f1e5fd4bef248f7d8abf03d6f7f9c2c71ee30985bef4580aec922'
+          if hashlib.sha256(patch).hexdigest() != expected:
+              raise SystemExit('reviewed patch checksum mismatch')
+          path = Path(os.environ['OUT']) / 'reviewed.patch'
+          path.write_bytes(patch)
+          subprocess.run(['git','apply','--check','--index','--unidiff-zero',str(path)], check=True)
+          subprocess.run(['git','apply','--index','--unidiff-zero',str(path)], check=True)
+          changed = subprocess.check_output(['git','diff','--cached','--name-only','-z']).decode().split('\0')
+          (Path(os.environ['OUT'])/'paths.txt').write_text('\n'.join(p for p in changed if p)+'\n')
+          PY
+      - name: Format registered Rust packages and bind typed source inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import importlib.util, os, subprocess, sys
+          from pathlib import Path
+          sys.path.insert(0,str(Path('scripts').resolve()))
+          spec=importlib.util.spec_from_file_location('qualification','scripts/hepta-ndu-qualification.py')
+          q=importlib.util.module_from_spec(spec); spec.loader.exec_module(q)
+          cmd=['cargo','fmt']
+          for package in q.CORE+q.PRODUCT: cmd.extend(['--package',package])
+          subprocess.run(cmd,cwd='codex-rs',check=True)
+          paths=(Path(os.environ['OUT'])/'paths.txt').read_text().splitlines()
+          changed=subprocess.check_output(['git','diff','--name-only']).decode().splitlines()
+          if not set(changed).issubset(paths): raise SystemExit('formatter changed unreviewed paths: '+repr(set(changed)-set(paths)))
+          subprocess.run(['git','add','--',*paths],check=True)
+          subprocess.run(['python3','scripts/hepta_ndu_map_integrity.py','--rebind-index'],check=True)
+          subprocess.run(['git','add','docs/modules/utility.ndu/IMPLEMENTATION_MAP.json'],check=True)
+          PY
+          python3 scripts/test_hepta_ndu_map_integrity.py 2>&1 | tee "$OUT/map-integrity-tests.log"
+          python3 scripts/test_hepta_ndu_qualification.py 2>&1 | tee "$OUT/receipt-tests.log"
+          git diff --cached --check
+          git diff --cached --binary > "$OUT/applied.patch"
+          git diff --cached --stat > "$OUT/applied-stat.txt"
+          git -c user.name=hepta-ndu-repair -c user.email=qualification@invalid commit -m 'fix(ndu): close lint regressions, source-object drift and runtime observations'
+          python3 scripts/hepta-ndu-implementation-map-closed-world.py \
+            --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})" \
+            | tee "$OUT/closed-world.json"
+          git rev-parse HEAD HEAD^{tree} > "$OUT/output-identity.txt"
+      - name: Push only this branch without force or credentials in checkout
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=all)"
+          REMOTE="https://github.com/TrillionniumFoundation/hepta-private-ci.git"
+          BRANCH=codex/utility-ndu-production-hardening-20260926
+          HEADER="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          CURRENT=$(git -c "http.extraheader=$HEADER" ls-remote "$REMOTE" "refs/heads/$BRANCH" | cut -f1)
+          test "$CURRENT" = "$INPUT_SHA"
+          git -c "http.extraheader=$HEADER" push "$REMOTE" "HEAD:refs/heads/$BRANCH"
+          printf 'pushed=%s\n' "$(git rev-parse HEAD)" > "$OUT/push-result.txt"
+      - name: Retain input, output, patch and verification receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-source-repair-${{ github.sha }}
+          path: ${{ runner.temp }}/ndu-source-repair
+          if-no-files-found: error
+          retention-days: 30
