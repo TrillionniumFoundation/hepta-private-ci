@@ -60,7 +60,10 @@ jobs:
               '.github/workflows/hepta-kg-abc-execution.yml',
               'scripts/hepta_kg_evidence.py',
               'scripts/test_hepta_kg_measurement.py',
+              'scripts/hepta_kg_execution_audit.py',
+              'scripts/test_hepta_kg_execution_audit.py',
               'qualification/knowledge-graph/EXECUTION_20260927.md',
+              'qualification/knowledge-graph/EXECUTION_POSTFLIGHT_20260927.md',
               'qualification/knowledge-graph/TARGET_HOST.md',
           }
           existing = {item['path'] for item in row['sourceObjects']}
@@ -172,8 +175,10 @@ jobs:
             name="$1"; shift
             set +e
             "$@" 2>&1 | tee "$EVIDENCE/$name.log"
-            status=${PIPESTATUS[0]}
+            statuses=("${PIPESTATUS[@]}")
             set -e
+            status="${statuses[0]}"
+            if [ "${statuses[1]}" -ne 0 ]; then status=93; fi
             if [ "$status" -eq 0 ]; then
               case "$name" in
                 crash-reopen|history-reopen)
@@ -186,7 +191,9 @@ jobs:
             fi
             printf '%s\t%s\n' "$name" "$status" >> "$EVIDENCE/results.tsv"
             if [ "$status" -ne 0 ]; then failed=1; fi
+            return 0
           }
+          run_check execution-audit-tests python3 -m unittest discover -s scripts -p test_hepta_kg_execution_audit.py -v
           run_check measurement-tests python3 -m unittest discover -s scripts -p test_hepta_kg_measurement.py -v
           run_check budget-tests python3 -m unittest discover -s scripts -p test_hepta_knowledge_graph_budget.py -v
           run_check measurement-self-test python3 scripts/hepta-knowledge-graph-target-measure.py --self-test
@@ -232,8 +239,20 @@ jobs:
         if: always()
         shell: bash
         run: |
+          set -euo pipefail
           git diff --exit-code
           git diff --cached --exit-code
+      - name: Audit complete current-candidate execution inventory
+        if: always()
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ needs.bind.outputs.candidate }}
+          PROFILE: ${{ matrix.profile }}
+          LANE: ${{ matrix.lane }}
+        run: |
+          python3 scripts/hepta_kg_execution_audit.py \
+            --directory "$RUNNER_TEMP/kg-evidence" --profile "$PROFILE" --lane "$LANE" \
+            --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA"
       - name: Preserve observed results, not acceptance claims
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
