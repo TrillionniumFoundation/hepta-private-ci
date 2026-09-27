@@ -64,8 +64,8 @@ def verify() -> dict[str, object]:
 
     require(values["run_identity"], "agentd_objective_fence", "generation/fence")
     require(values["run_identity"], "start_bound_run", "composition identity")
-    require(values["run_identity"], "spawn_generation: 41", "spawn/current test")
-    require(values["run_identity"], "agentd_generation: 42", "spawn/current test")
+    require(values["run_identity"], "composition(41, 42)", "spawn/current test")
+    require(values["run_identity"], "current_run_generation", "spawn/current model")
 
     require(values["ingress"], "AgentdRunStartBindingV1", "durable RunStart")
     require(values["ingress"], "attach_runtime_metrics", "profile metrics sidecar")
@@ -92,9 +92,10 @@ def verify() -> dict[str, object]:
     require(values["learning_plan"], "candidate_ids_digest_v2", "candidate identity")
     require(values["learning_plan"], "canonical_candidate_set_digest", "candidate set")
 
-    require(values["canonical_guard"], "GuardedCanonicalOwnerPortsV1", "malicious port guard")
-    require(values["canonical_guard"], "selected candidate is outside", "membership guard")
-    require(values["intelligence_lib"], "GuardedCanonicalOwnerPortsV1", "guard export")
+    require(values["canonical_guard"], "struct GuardedOwnerPorts", "malicious port guard")
+    require(values["canonical_guard"], "selected-candidate-membership", "membership guard")
+    require(values["canonical_guard"], "malicious_selected_candidate_is_rejected", "guard test")
+    require(values["intelligence_lib"], "canonical_guard::prepare_intelligence_run", "guard export")
 
     require(values["metrics"], "IntelligenceStageMetricsSnapshotV1", "stage metrics")
     require(values["metrics"], "late_workers_active", "late worker metrics")
