@@ -1,30 +1,39 @@
 name: Hepta retrieval assertion and delivery closure
+
 on:
   push:
-    branches: [work/memory-retrieval-hardening-20260927]
+    branches: [work/memory-retrieval-completion-20260927]
+
 permissions:
   contents: read
+
 concurrency:
   group: retrieval-assertion-delivery-${{ github.ref }}
   cancel-in-progress: false
+
 env:
   PYTHONDONTWRITEBYTECODE: '1'
+
 jobs:
-  close:
-    if: contains(github.event.head_commit.message, '[retrieval-assertion-delivery-v2]')
-    runs-on: ubuntu-24.04
-    timeout-minutes: 120
+  prepare:
+    name: Apply reviewed assertion and delivery source
+    if: contains(github.event.head_commit.message, '[retrieval-assertion-delivery-v3]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: write
+    outputs:
+      head: ${{ steps.publish.outputs.head }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
+
       - name: Apply exact reviewed patch
         env:
           EXPECTED_HEAD: ${{ github.sha }}
-          BRANCH: work/memory-retrieval-hardening-20260927
+          BRANCH: work/memory-retrieval-completion-20260927
         shell: bash
         run: |
           set -euo pipefail
@@ -36,24 +45,40 @@ jobs:
           mkdir -p "$RUNNER_TEMP/retrieval-assertion-delivery"
           python3 - <<'PY'
           import base64, hashlib, json, os, pathlib, subprocess, zlib
+
           def pairs(rows):
               out = {}
               for key, value in rows:
-                  if key in out: raise ValueError('duplicate payload field')
+                  if key in out:
+                      raise ValueError('duplicate payload field')
                   out[key] = value
               return out
+
           out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'retrieval-assertion-delivery'
-          parts = [pathlib.Path(f'scripts/patches/memory_retrieval_assertion_delivery_v2.part{index:02d}') for index in range(17)]
+          parts = [
+              pathlib.Path(f'scripts/patches/memory_retrieval_assertion_delivery_v2.part{index:02d}')
+              for index in range(17)
+          ]
           if any(not part.is_file() for part in parts):
               raise SystemExit('missing patch transport part')
           payload_bytes = b''.join(part.read_bytes() for part in parts)
-          (out/'payload.b64').write_bytes(payload_bytes)
-          payload = json.loads(base64.b64decode(payload_bytes, validate=True), object_pairs_hook=pairs)
-          if set(payload) != {'schema','sha256','bytes','patch_zlib_base64'} or payload['schema'] != 'hepta.retrieval.closure-patch.v1':
-              raise SystemExit('invalid payload')
-          patch = zlib.decompress(base64.b64decode(payload['patch_zlib_base64'], validate=True))
+          payload = json.loads(
+              base64.b64decode(payload_bytes, validate=True), object_pairs_hook=pairs
+          )
+          if set(payload) != {'schema', 'sha256', 'bytes', 'patch_zlib_base64'}:
+              raise SystemExit('invalid payload fields')
+          if payload['schema'] != 'hepta.retrieval.closure-patch.v1':
+              raise SystemExit('invalid payload schema')
+          patch = zlib.decompress(
+              base64.b64decode(payload['patch_zlib_base64'], validate=True)
+          )
           digest = hashlib.sha256(patch).hexdigest()
-          if len(patch) != payload['bytes'] or len(patch) != 40174 or digest != payload['sha256'] or digest != '62a9878fbb406ab6683669391fb81bca6a8e47cd3aa559e5f05c11c7da17e868':
+          if (
+              len(patch) != payload['bytes']
+              or len(patch) != 40174
+              or digest != payload['sha256']
+              or digest != '62a9878fbb406ab6683669391fb81bca6a8e47cd3aa559e5f05c11c7da17e868'
+          ):
               raise SystemExit('patch identity mismatch')
           expected = {
               'codex-rs/hepta-agentd/src/lib.rs',
@@ -63,26 +88,55 @@ jobs:
               'codex-rs/hepta-memory/src/cognitive_proposition_writer.rs',
               'codex-rs/hepta-memory/src/production_writer.rs',
           }
-          result = subprocess.run(['git','apply','--numstat','-z','-'], input=patch, capture_output=True, check=True)
+          result = subprocess.run(
+              ['git', 'apply', '--numstat', '-z', '-'],
+              input=patch,
+              capture_output=True,
+              check=True,
+          )
           actual = set()
           for row in result.stdout.split(b'\0'):
-              if not row: continue
+              if not row:
+                  continue
               fields = row.decode().split('\t')
-              if len(fields) != 3 or not fields[0].isdigit() or not fields[1].isdigit(): raise SystemExit('invalid patch inventory')
+              if len(fields) != 3 or not fields[0].isdigit() or not fields[1].isdigit():
+                  raise SystemExit('invalid patch inventory')
               actual.add(fields[2])
-          if actual != expected: raise SystemExit(f'patch paths differ: {sorted(actual)}')
-          subprocess.run(['git','apply','--index','--check','-'], input=patch, check=True)
-          subprocess.run(['git','apply','--index','-'], input=patch, check=True)
-          if set(subprocess.check_output(['git','diff','--cached','--name-only'], text=True).splitlines()) != expected:
+          if actual != expected:
+              raise SystemExit(f'patch paths differ: {sorted(actual)}')
+          subprocess.run(['git', 'apply', '--index', '--check', '-'], input=patch, check=True)
+          subprocess.run(['git', 'apply', '--index', '-'], input=patch, check=True)
+          staged = set(
+              subprocess.check_output(['git', 'diff', '--cached', '--name-only'], text=True)
+              .splitlines()
+          )
+          if staged != expected:
               raise SystemExit('staged paths differ')
-          (out/'reviewed.patch').write_bytes(patch)
-          (out/'application.json').write_text(json.dumps({'input_head':os.environ['EXPECTED_HEAD'],'patch_sha256':digest,'paths':sorted(expected),'activation':False,'release':False},sort_keys=True)+'\n')
+          (out / 'reviewed.patch').write_bytes(patch)
+          (out / 'application.json').write_text(
+              json.dumps(
+                  {
+                      'input_head': os.environ['EXPECTED_HEAD'],
+                      'patch_sha256': digest,
+                      'paths': sorted(expected),
+                      'activation': False,
+                      'release': False,
+                  },
+                  sort_keys=True,
+              )
+              + '\n'
+          )
           PY
-      - name: Format and commit source
+
+      - name: Format scoped source and publish non-force commit
+        id: publish
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+          BRANCH: work/memory-retrieval-completion-20260927
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
           files=(
             codex-rs/hepta-agentd/src/lib.rs
             codex-rs/hepta-agentd/src/production_writer_host.rs
@@ -91,62 +145,139 @@ jobs:
             codex-rs/hepta-memory/src/cognitive_proposition_writer.rs
             codex-rs/hepta-memory/src/production_writer.rs
           )
-          rustfmt +1.95.0 --edition 2024 "${files[@]}"
+          rustup run 1.95.0 rustfmt --edition 2024 --config-path codex-rs/rustfmt.toml "${files[@]}"
           git add -- "${files[@]}"
           test -z "$(git diff --name-only)"
           git diff --cached --check
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git commit -m 'feat(memory.retrieval): bind explicit assertion writes and native delivery evidence'
-      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: just,cargo-nextest
-      - name: Locked native verification
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta_ci_v8.py
-          cd codex-rs
-          just test --locked -p codex-hepta-memory -p codex-hepta-agentd -p codex-hepta-learning-ledger -p codex-hepta-infer-core 2>&1 | tee "$RUNNER_TEMP/retrieval-assertion-delivery/tests.log"
-          cargo +1.95.0 clippy --locked -p codex-hepta-memory -p codex-hepta-agentd --all-targets -- -D warnings 2>&1 | tee "$RUNNER_TEMP/retrieval-assertion-delivery/clippy.log"
-          just fmt-check 2>&1 | tee "$RUNNER_TEMP/retrieval-assertion-delivery/format.log"
-          cd ..
-          git diff --check
-          test -z "$(git status --porcelain --untracked-files=normal)"
-      - name: Remove transport, refresh map, and publish
-        env:
-          EXPECTED_HEAD: ${{ github.sha }}
-          BRANCH: work/memory-retrieval-hardening-20260927
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -f .github/workflows/hepta-memory-retrieval-source-export.yml .github/workflows/hepta-memory-retrieval-assertion-delivery.yml scripts/patches/memory_retrieval_assertion_delivery_v1.json
-          for index in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
-            part=$(printf 'scripts/patches/memory_retrieval_assertion_delivery_v2.part%02d' "$index")
-            rm -f "$part"
-          done
-          git add -A -- .github/workflows/hepta-memory-retrieval-source-export.yml .github/workflows/hepta-memory-retrieval-assertion-delivery.yml scripts/patches
-          git commit -m 'chore(memory.retrieval): remove one-shot closure transport'
-          python3 - <<'PY'
-          import importlib.util, json, pathlib, subprocess
-          root=pathlib.Path.cwd(); spec=importlib.util.spec_from_file_location('r',root/'scripts/hepta_memory_retrieval_refresh_map.py'); m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
-          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(); docs=subprocess.check_output(['git','ls-tree','-r','--name-only',head,'--','docs/modules/memory.retrieval'],text=True).splitlines(); m.INPUTS=tuple(m.INPUTS)+tuple(p for p in docs if p!=m.MAP)
-          before=json.loads((root/m.MAP).read_text()); mapping=m.refresh(root,head)
-          if mapping['sourceBase']!=before['sourceBase']: raise SystemExit('sourceBase changed')
-          for field in ('productionImplementation','productExecutionProved','independentAcceptance','activation','release'):
-              if mapping['claimBoundary'][field] is not False: raise SystemExit(f'claim advanced: {field}')
-          (root/m.MAP).write_text(json.dumps(mapping,indent=2)+'\n')
-          PY
-          git add -- docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json
-          git diff --cached --quiet || git commit -m 'docs(memory.retrieval): observe assertion and delivery source without advancing claims'
-          test -z "$(git status --porcelain --untracked-files=normal)"
           test "$(git ls-remote --heads origin "$BRANCH" | cut -f1)" = "$EXPECTED_HEAD"
           git push origin "HEAD:refs/heads/$BRANCH"
-          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/retrieval-assertion-delivery/final-identity.txt"
+          echo "head=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/retrieval-assertion-delivery/source-identity.txt"
+
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: retrieval-assertion-delivery-${{ github.run_id }}
+          name: retrieval-assertion-delivery-source-${{ github.run_id }}
           path: ${{ runner.temp }}/retrieval-assertion-delivery/
+          retention-days: 30
+          if-no-files-found: error
+
+  native:
+    name: Assertion and delivery native (${{ matrix.candidate }})
+    needs: prepare
+    if: needs.prepare.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source-head, base-merge]
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.prepare.outputs.head }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind source and freshly fetched main
+        env:
+          EXPECTED_HEAD: ${{ needs.prepare.outputs.head }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git fetch origin main
+          echo "SOURCE_SHA=$EXPECTED_HEAD" >> "$GITHUB_ENV"
+          echo "BASE_SHA=$(git rev-parse refs/remotes/origin/main)" >> "$GITHUB_ENV"
+          echo "HEPTA_CI_LANE=${{ matrix.candidate }}" >> "$GITHUB_ENV"
+
+      - name: Construct ordered-parent merge candidate
+        if: matrix.candidate == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: '1067'
+          author-name: Hepta retrieval qualification
+          author-email: hepta-qualification@example.invalid
+          message: Retrieval assertion/delivery ordered-parent qualification
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just,cargo-nextest
+
+      - name: Install pinned Rust and native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libssl-dev libdbus-1-dev libxcb1-dev libx11-dev libxkbcommon-dev libzstd-dev
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy --component rust-src
+
+      - name: Prepare existing V8 inputs
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Exact candidate package tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/retrieval-assertion-delivery-native"
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/retrieval-assertion-delivery-native/package.json" \
+            --minimum-tests 10 --timeout-seconds 5400 -- \
+            just test --locked \
+              -p codex-hepta-memory-retrieval \
+              -p codex-hepta-memory \
+              -p codex-hepta-agentd \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-infer-core
+
+      - name: Strict all-target Clippy
+        if: '!cancelled()'
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/retrieval-assertion-delivery-native/clippy.json" \
+            --timeout-seconds 3600 -- \
+            cargo +1.95.0 clippy --locked \
+              -p codex-hepta-memory-retrieval \
+              -p codex-hepta-memory \
+              -p codex-hepta-agentd \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-infer-core \
+              --all-targets -- -D warnings
+
+      - name: Repository formatting and clean source
+        if: '!cancelled()'
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/retrieval-assertion-delivery-native/format.json" -- \
+            just fmt-check
+          cd ..
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/retrieval-assertion-delivery-native/tested-identity.txt"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: retrieval-assertion-delivery-native-${{ matrix.candidate }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/retrieval-assertion-delivery-native/
           retention-days: 30
           if-no-files-found: error
