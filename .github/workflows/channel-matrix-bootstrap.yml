@@ -1,0 +1,52 @@
+name: channel.matrix bootstrap export
+
+on:
+  push:
+    branches: [codex/channel-matrix-convergence-20260925]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: channel-matrix-bootstrap-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Generate pinned lockfile with repository toolchain
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo generate-lockfile
+      - name: Record generated lockfile and exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          mkdir -p "$RUNNER_TEMP/channel-matrix-bootstrap"
+          cp codex-rs/Cargo.lock "$RUNNER_TEMP/channel-matrix-bootstrap/Cargo.lock"
+          git diff -- codex-rs/Cargo.lock > "$RUNNER_TEMP/channel-matrix-bootstrap/Cargo.lock.patch"
+          git status --short > "$RUNNER_TEMP/channel-matrix-bootstrap/status.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/channel-matrix-bootstrap/source-sha.txt"
+          tar --exclude=.git --exclude=target --exclude='*.zip' --exclude='*.tgz' \
+            -czf "$RUNNER_TEMP/channel-matrix-bootstrap/workspace.tgz" .
+          sha256sum "$RUNNER_TEMP/channel-matrix-bootstrap/"* \
+            > "$RUNNER_TEMP/channel-matrix-bootstrap/SHA256SUMS"
+      - name: Upload exact workspace and generated lockfile
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: channel-matrix-bootstrap-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/channel-matrix-bootstrap/
+          if-no-files-found: error
+          retention-days: 1
