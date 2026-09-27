@@ -14,6 +14,7 @@ mod allocation_digest;
 mod allocation_model;
 mod allocation_validation;
 mod capacity_observer;
+mod capacity_refresh;
 mod durable_grant_tx;
 mod durable_grants;
 mod durable_metrics;
