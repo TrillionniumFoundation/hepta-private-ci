@@ -38,6 +38,7 @@ jobs:
           set -euo pipefail
           python3 scripts/apply_context_compiler_v3_source.py
           python3 scripts/apply_context_compiler_full_closure.py
+          python3 scripts/apply_context_compiler_hardening.py
 
       - name: Format workspace
         working-directory: codex-rs
@@ -87,6 +88,7 @@ jobs:
           rm -f scripts/apply_context_compiler_v3_source.py
           rm -f scripts/apply_context_compiler_v3_core.py
           rm -f scripts/apply_context_compiler_full_closure.py
+          rm -f scripts/apply_context_compiler_hardening.py
           rm -f .github/workflows/context-compiler-v3-direct-source.yml
           git config user.name "hepta-closure-bot"
           git config user.email "hepta-closure-bot@users.noreply.github.com"
