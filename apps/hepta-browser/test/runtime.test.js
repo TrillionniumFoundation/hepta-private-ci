@@ -308,7 +308,17 @@ test("global active profile capacity rejects a second worker before start", asyn
 
 test("opens, publishes bounded semantic observation, reconciles, retires journal, and closes", async () => {
   const { host, journal, session, page } = await preparedHost();
-  assert.equal(session.profileOwnerDigest, D4);
+  assert.equal(
+    session.profileOwnerDigest,
+    canonicalDigest({
+      schema: "hepta.browser.profile-owner.v1",
+      profileId: "profile.1",
+      principalId: "principal.1",
+      generation: 1,
+      manifestDigest: D1,
+      grantDigest: D2,
+    }),
+  );
   assert.equal(page.semanticDigest, SEMANTIC_DIGEST);
   assert.deepEqual(page.semanticObservation, SEMANTIC);
   const effect = await host.navigateOrAct(operation());
