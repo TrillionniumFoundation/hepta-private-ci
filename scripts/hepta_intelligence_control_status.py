@@ -32,6 +32,9 @@ SOURCE_FILES = {
 
 DOC_FILES = {
     "technical": ROOT / "docs/modules/intelligence.control/TECHNICAL.md",
+    "current_implementation": ROOT
+    / "docs/modules/intelligence.control/CURRENT_IMPLEMENTATION.md",
+    "current_status": ROOT / "docs/modules/intelligence.control/CURRENT_STATUS.json",
     "implementation_map": ROOT
     / "docs/modules/intelligence.control/IMPLEMENTATION_MAP.json",
     "traceability": ROOT / "docs/modules/intelligence.control/TEST_TRACEABILITY.json",
@@ -66,6 +69,11 @@ def load_sources() -> dict[str, str]:
             fail(f"missing {label}: {path.relative_to(ROOT)}")
         values[label] = path.read_text(encoding="utf-8")
     return values
+
+
+def require_bool(mapping: dict[str, object], key: str, expected: bool, label: str) -> None:
+    if mapping.get(key) is not expected:
+        fail(f"{label}: expected {key}={expected}")
 
 
 def verify() -> dict[str, object]:
@@ -139,6 +147,55 @@ def verify() -> dict[str, object]:
     require(values["runner"], "ObservedOwnerPortsV1", "observed owner ports")
     require(values["runner"], "record_late_worker_completed", "late worker completion")
     require(values["runner"], "run_start.runtime_metrics()", "observed product run")
+
+    require(values["current_implementation"], "Decision-before-ready", "current guide")
+    require(values["current_implementation"], "productionImplementation", "claim boundary")
+    current_status = json.loads(values["current_status"])
+    if current_status.get("schema") != "hepta.intelligence-control-current-status.v1":
+        fail("current status schema mismatch")
+    if current_status.get("module") != "intelligence.control":
+        fail("current status module mismatch")
+    source_state = current_status.get("sourceState")
+    execution_state = current_status.get("executionState")
+    if not isinstance(source_state, dict) or not isinstance(execution_state, dict):
+        fail("current status state objects")
+    for key in (
+        "canonicalCoreImplemented",
+        "daemonObjectiveStartRouteCallsitePresent",
+        "concreteBoundedProviderImplemented",
+        "providerImplementationSetClosed",
+        "atomicEmbeddingProfileComposable",
+        "runnerOnlyActivationRejected",
+        "canonicalCapabilityFailsClosed",
+        "durableRunStartIdentityInherited",
+        "generationFenceUnified",
+        "decisionAcknowledgedBeforeReady",
+        "durableDecisionOutcomeOutboxImplemented",
+        "pendingAppendRestartReconciliationImplemented",
+        "outcomeRestartBindingApiImplemented",
+        "canonicalCandidateMembershipGuardImplemented",
+        "profileOwnedObservabilityImplemented",
+        "physicalTurnSourceBound",
+    ):
+        require_bool(source_state, key, True, "source status")
+    for key in (
+        "standaloneProfileComposed",
+        "physicalOutcomeRouteComposed",
+        "productionImplementation",
+    ):
+        require_bool(source_state, key, False, "source status")
+    for key in (
+        "exactHeadExecuted",
+        "deterministicMergeExecuted",
+        "realProcessAgentdAppServerE2E",
+        "lostAckRestartRevocationE2E",
+        "targetHostHardTerminationQualified",
+        "targetHostLatencyAndRssQualified",
+        "independentSemanticSecurityAcceptance",
+        "activation",
+        "release",
+    ):
+        require_bool(execution_state, key, False, "execution status")
 
     implementation_map = json.loads(values["implementation_map"])
     traceability = json.loads(values["traceability"])
