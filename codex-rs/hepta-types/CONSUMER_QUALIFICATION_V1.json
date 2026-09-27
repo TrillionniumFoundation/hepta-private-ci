@@ -59,6 +59,12 @@
       "mustContain": ["DuplicateKey", "MAX_PLATFORM_TYPES_JSON_DEPTH_V1", "ValidatedRuntimeTopologyCandidateV1"]
     },
     {
+      "id": "wire.rust-manifest-codec",
+      "kind": "product_owned_manifest_json_codec",
+      "path": "codex-rs/hepta-wire/src/platform_manifest_json.rs",
+      "mustContain": ["decode_random_stream_manifest_v1_json", "decode_external_system_manifest_v1_json", "decode_sensor_calibration_manifest_v1_json", "MAX_CANONICAL_I64_DECIMAL_BYTES_V1"]
+    },
+    {
       "id": "utility.ndu.registered-numeric",
       "kind": "registered_owner_evaluation_source_consumer",
       "path": "codex-rs/hepta-ndu/src/owner.rs",

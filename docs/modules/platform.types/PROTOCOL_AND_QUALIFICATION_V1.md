@@ -83,8 +83,10 @@ wrapper only after native shape checks and digest recomputation.
 
 The three manifest protocols use strict JSON transport and HPTC semantic
 commitments. JSON bytes, member order and whitespace are not semantic evidence.
-The product codec bounds raw input, rejects duplicate and unknown fields and
-uses canonical decimal strings for precision-sensitive 64-bit values.
+`platform.wire` owns their Rust transport codecs; each decoder applies raw
+resource limits, duplicate/unknown-field rejection and canonical integer
+parsing before reconstructing the private-field native contract through its
+validated constructor.
 
 Native validation is necessary but not sufficient for product use. Current
 owner boundaries additionally bind:
@@ -130,16 +132,18 @@ responsibilities.
 
 ## 6. Strict transport limits
 
-`platform.wire` owns the Prompt V2 and Topology V1 product codecs. Before Serde
-deserialization it enforces a 64 KiB raw-input bound and maximum nesting depth
-16. Derived structs deny unknown and duplicate fields. Generation strings are
-canonical base-10, at most 20 bytes and range-checked before native admission.
-Missing nullable fields reject rather than silently defaulting.
+`platform.wire` owns product codecs for Prompt V2, Topology V1,
+`RandomStreamManifestV1`, `ExternalSystemManifestV1` and
+`SensorCalibrationManifestV1`. Before Serde deserialization every codec
+enforces a 64 KiB raw-input bound and maximum nesting depth 16. Derived structs
+deny unknown and duplicate fields. Unsigned and signed 64-bit values use
+canonical base-10 strings, with 20-byte transport ceilings and native range
+checks. Missing nullable Prompt fields reject rather than silently defaulting.
 
-Python, Node and Rust consume
-`PLATFORM_TYPES_WIRE_CONFORMANCE_V1.json` and independently recompute the HPTC
-semantic commitment. Raw invalid vectors include duplicate keys, excess depth
-and overlong numeric strings.
+Python, Node and Rust consume the manifest and Prompt/Topology conformance
+vectors and independently recompute the HPTC semantic commitment. Raw invalid
+vectors and Rust codec tests cover duplicate keys, unknown fields, excess depth
+and overlong precision-sensitive integers.
 
 ## 7. Public API, provenance and semver
 

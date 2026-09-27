@@ -18,6 +18,7 @@ EXPECTED = [
     "wire.python",
     "wire.javascript",
     "wire.rust-product-codec",
+    "wire.rust-manifest-codec",
     "utility.ndu.registered-numeric",
     "utility.ndu.random-stream-owner",
     "runtime.codex.prompt-delivery",
