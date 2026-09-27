@@ -1,0 +1,176 @@
+name: context-compiler-source-promotion
+
+on:
+  push:
+    branches:
+      - codex/context-compiler-v3-closure-20260928
+
+permissions:
+  contents: write
+
+concurrency:
+  group: context-compiler-source-promotion
+  cancel-in-progress: false
+
+jobs:
+  promote-ordinary-source:
+    if: ${{ contains(github.event.head_commit.message, '[promote-context-source]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - name: Checkout exact promotion input
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify isolated promotion boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = codex/context-compiler-v3-closure-20260928
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          test ! -e .github/workflows/context-compiler-v3-remediation.yml
+
+      - name: Install native prerequisites and pinned tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev pkg-config
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: clippy,rustfmt
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-deny@0.19.0
+
+      - name: Materialize reviewed direct V3 and recovery source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B scripts/apply_context_compiler_v3_source.py
+          python3 -B scripts/apply_context_compiler_current_closure.py
+          python3 -B scripts/apply_context_compiler_v3_interface_fix.py
+          python3 -B scripts/apply_context_compiler_v3_regressions.py
+          python3 -B scripts/apply_context_compiler_recovery_activation.py
+          python3 -B scripts/apply_context_compiler_recovery_cleanup.py
+          python3 -B scripts/apply_context_compiler_agentd_recovery_v2.py
+          python3 -B scripts/apply_context_compiler_recovery_tests.py
+          python3 -B scripts/apply_context_compiler_recovery_test_cleanup.py
+          python3 -B scripts/apply_context_compiler_qualification_closure.py
+
+      - name: Register deterministic property-test dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B - <<'PY'
+          from pathlib import Path
+          workspace = Path('codex-rs/Cargo.toml')
+          text = workspace.read_text(encoding='utf-8')
+          if 'proptest = ' not in text:
+              anchor = 'pretty_assertions = "1.4.1"\n'
+              if anchor not in text:
+                  raise SystemExit('workspace dependency anchor drifted')
+              text = text.replace(anchor, anchor + 'proptest = "1.9.0"\n', 1)
+          workspace.write_text(text, encoding='utf-8')
+          crate = Path('codex-rs/hepta-context-compiler/Cargo.toml')
+          text = crate.read_text(encoding='utf-8')
+          if '[dev-dependencies]' not in text:
+              text = text.rstrip() + '\n\n[dev-dependencies]\nproptest = { workspace = true }\n'
+          elif 'proptest' not in text.split('[dev-dependencies]', 1)[1]:
+              text = text.replace(
+                  '[dev-dependencies]\n',
+                  '[dev-dependencies]\nproptest = { workspace = true }\n',
+                  1,
+              )
+          crate.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Format, resolve, and regenerate current truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --all
+          cargo metadata --format-version 1 > /dev/null
+          cd ..
+          python3 -B scripts/refresh_context_compiler_current_state.py
+          python3 -B scripts/apply_context_compiler_recovery_state.py
+          python3 -B scripts/generate_context_compiler_module_docs.py --write
+          python3 -B scripts/generate_context_compiler_module_docs.py --check
+          python3 -B scripts/test_context_compiler_state.py
+          python3 -B scripts/test_context_compiler_candidate.py
+          python3 -B scripts/test_context_compiler_execution.py
+
+      - name: Verify generated ordinary source before commit
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-context-compiler \
+            -p codex-hepta-intelligence \
+            -p codex-extension-api \
+            -p codex-core \
+            -p codex-api \
+            -p codex-hepta-agentd \
+            -p codex-hepta-prompt-extension
+          cargo test --locked -p codex-hepta-intelligence --features legacy-prompt-context-v1
+          cargo test --locked -p codex-hepta-agentd --features legacy-prompt-context-v1
+          cargo test --locked -p codex-api context_slot
+          cargo test --locked -p codex-hepta-intelligence prompt_product_v3
+          cargo test --locked -p codex-hepta-agentd registry_race_tests
+          cargo test --locked -p codex-hepta-agentd exact_context_delivery
+          cargo clippy --locked --no-deps \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-context-compiler \
+            -p codex-hepta-intelligence \
+            -p codex-extension-api \
+            -p codex-core \
+            -p codex-api \
+            -p codex-hepta-agentd \
+            -p codex-hepta-prompt-extension \
+            --all-targets -- -D warnings
+          cargo clippy --locked --no-deps \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd \
+            --all-targets --features legacy-prompt-context-v1 -- -D warnings
+          cargo deny --locked check bans licenses sources
+
+      - name: Retire one-shot generators and create ordinary source commit
+        shell: bash
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          rm -f \
+            scripts/apply_context_compiler_v3_source.py \
+            scripts/apply_context_compiler_v3_core.py \
+            scripts/apply_context_compiler_full_closure.py \
+            scripts/apply_context_compiler_hardening.py \
+            scripts/apply_context_compiler_current_closure.py \
+            scripts/apply_context_compiler_v3_interface_fix.py \
+            scripts/apply_context_compiler_v3_regressions.py \
+            scripts/apply_context_compiler_recovery_activation.py \
+            scripts/apply_context_compiler_recovery_cleanup.py \
+            scripts/apply_context_compiler_agentd_recovery.py \
+            scripts/apply_context_compiler_agentd_recovery_v2.py \
+            scripts/apply_context_compiler_recovery_tests.py \
+            scripts/apply_context_compiler_recovery_test_cleanup.py \
+            scripts/apply_context_compiler_qualification_closure.py \
+            scripts/apply_context_compiler_recovery_state.py \
+            scripts/refresh_context_compiler_current_state.py \
+            scripts/remediate_context_compiler_closure.py \
+            .github/context-compiler-materialize-v3.trigger \
+            .github/workflows/context-compiler-v3-source-bundle.yml
+          git add --all
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git config user.name context-compiler-source-promoter
+          git config user.email context-compiler-source-promoter@users.noreply.github.com
+          git commit -m "feat(context.compiler): materialize direct V3 recovery source"
+          git push origin "HEAD:${BRANCH}"
