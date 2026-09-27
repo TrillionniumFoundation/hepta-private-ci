@@ -25,7 +25,9 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Test receipt rejection policy
-        run: python3 -m unittest -v scripts.test_hepta_supervisor_ci
+        run: >-
+          python3 -m unittest -v scripts.test_hepta_supervisor_ci
+          scripts.test_hepta_supervisor_evidence scripts.test_hepta_supervisor_workflow
       - name: Select native and supervisor documentation changes
         id: scope
         env:
@@ -45,7 +47,10 @@ jobs:
                   p.startswith("docs/modules/runtime.supervisor/")
                   or p in {
                       "scripts/hepta_supervisor_ci.py",
+                      "scripts/hepta_supervisor_evidence.py",
                       "scripts/test_hepta_supervisor_ci.py",
+                      "scripts/test_hepta_supervisor_evidence.py",
+                      "scripts/test_hepta_supervisor_workflow.py",
                   }
                   for p in paths
               )
@@ -144,15 +149,21 @@ jobs:
       - name: Check supervisor formatting without mutation
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
         run: python3 scripts/hepta_supervisor_ci.py execute format --records "$RUNNER_TEMP/hepta-supervisor/records"
-      - name: Exercise default authority-denied library
+      - name: Exercise default library lifecycle fixtures
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
         run: python3 scripts/hepta_supervisor_ci.py execute default --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Prove default library and daemon refuse production authority
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci.py execute default-products --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Exercise production-authority library
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
         run: python3 scripts/hepta_supervisor_ci.py execute production --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Exercise real signer daemon pairs and durable writer handoff
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
         run: python3 scripts/hepta_supervisor_ci.py execute products --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Strict default-boundary supervisor lint
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci.py execute lint-default --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Strict supervisor lint
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
         run: python3 scripts/hepta_supervisor_ci.py execute lint --records "$RUNNER_TEMP/hepta-supervisor/records"
