@@ -1,8 +1,10 @@
 use std::error::Error;
 use std::fmt;
 
+use crate::DecodeFeed;
 use crate::DecodedEnvelope;
 use crate::NegotiatedWire;
+use crate::StreamDecodeBatch;
 use crate::StreamDecodeError;
 use crate::StreamingDecoder;
 use crate::WireSession;
@@ -69,6 +71,23 @@ impl NegotiatedStreamingDecoder {
         self.terminal_error.is_some()
     }
 
+    /// Consume a bounded prefix, preserving caller ownership of the suffix.
+    /// A work-budget yield never resets negotiation or poisons the session.
+    pub fn feed(&mut self, chunk: &[u8]) -> DecodeFeed<NegotiatedDecodeBatch> {
+        if let Some(error) = self.terminal_error.clone() {
+            return DecodeFeed::new(
+                NegotiatedDecodeBatch {
+                    frames: Vec::new(),
+                    terminal_error: Some(error),
+                },
+                0,
+            );
+        }
+        let (stream_batch, consumed) = self.stream.feed(chunk).into_parts();
+        DecodeFeed::new(self.admit_stream_batch(stream_batch), consumed)
+    }
+
+    /// Strict compatibility call; the whole input must fit its per-call budget.
     pub fn push_batch(&mut self, chunk: &[u8]) -> NegotiatedDecodeBatch {
         if let Some(error) = self.terminal_error.clone() {
             return NegotiatedDecodeBatch {
@@ -76,8 +95,11 @@ impl NegotiatedStreamingDecoder {
                 terminal_error: Some(error),
             };
         }
-
         let stream_batch = self.stream.push_batch(chunk);
+        self.admit_stream_batch(stream_batch)
+    }
+
+    fn admit_stream_batch(&mut self, stream_batch: StreamDecodeBatch) -> NegotiatedDecodeBatch {
         let (decoded, stream_error) = stream_batch.into_parts();
         let mut admitted = Vec::with_capacity(decoded.len());
         for frame in decoded {
@@ -93,7 +115,6 @@ impl NegotiatedStreamingDecoder {
             }
             admitted.push(frame);
         }
-
         if let Some(error) = stream_error {
             let error = match error {
                 StreamDecodeError::NegotiatedVersionMismatch {
@@ -108,7 +129,6 @@ impl NegotiatedStreamingDecoder {
             };
             return self.fail(admitted, error);
         }
-
         NegotiatedDecodeBatch {
             frames: admitted,
             terminal_error: None,
@@ -233,6 +253,23 @@ impl WireSessionDecoder {
         self.terminal_error.is_some()
     }
 
+    /// Process bounded input; resubmit the unconsumed suffix after each yield.
+    /// Protocol or policy failure preserves the admitted prefix and is fatal.
+    pub fn feed(&mut self, chunk: &[u8]) -> DecodeFeed<WireSessionDecodeBatch> {
+        if let Some(error) = self.terminal_error.clone() {
+            return DecodeFeed::new(
+                WireSessionDecodeBatch {
+                    frames: Vec::new(),
+                    terminal_error: Some(error),
+                },
+                0,
+            );
+        }
+        let (stream_batch, consumed) = self.stream.feed(chunk).into_parts();
+        DecodeFeed::new(self.admit_stream_batch(stream_batch), consumed)
+    }
+
+    /// Strict compatibility call; the whole input must fit its per-call budget.
     pub fn push_batch(&mut self, chunk: &[u8]) -> WireSessionDecodeBatch {
         if let Some(error) = self.terminal_error.clone() {
             return WireSessionDecodeBatch {
@@ -240,8 +277,12 @@ impl WireSessionDecoder {
                 terminal_error: Some(error),
             };
         }
+        let stream_batch = self.stream.push_batch(chunk);
+        self.admit_stream_batch(stream_batch)
+    }
 
-        let (decoded, stream_error) = self.stream.push_batch(chunk).into_parts();
+    fn admit_stream_batch(&mut self, stream_batch: StreamDecodeBatch) -> WireSessionDecodeBatch {
+        let (decoded, stream_error) = stream_batch.into_parts();
         let mut admitted = Vec::with_capacity(decoded.len());
         for frame in decoded {
             if let Err(error) = self.session.admit_envelope(&frame) {
@@ -259,7 +300,7 @@ impl WireSessionDecoder {
     }
 
     /// Lossless convenience alias. Session-policy and stream failures always
-    /// remain visible alongside any valid prefix from the same feed.
+    /// remain visible alongside any valid prefix from the same bounded call.
     #[must_use = "consume the completed prefix and inspect the terminal error"]
     pub fn push(&mut self, chunk: &[u8]) -> WireSessionDecodeBatch {
         self.push_batch(chunk)

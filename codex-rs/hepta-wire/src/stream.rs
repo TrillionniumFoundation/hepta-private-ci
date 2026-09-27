@@ -2,6 +2,7 @@ use std::error::Error;
 use std::fmt;
 use std::io::Read;
 
+use crate::DecodeFeed;
 use crate::DecodeFrameError;
 use crate::DecodedEnvelope;
 use crate::FrameHeader;
@@ -49,9 +50,10 @@ impl StreamDecodeBatch {
 /// declared, bounded frame body. Completed frames use ownership transfer rather
 /// than front-draining a shared `Vec`.
 ///
-/// Two independent budgets apply to every feed: retained/borrowed bytes and
-/// completed frame work. The latter prevents a coalesced chunk of tiny frames
-/// from turning a byte-safe decoder into an unbounded CPU and allocation loop.
+/// Two independent work budgets apply to `feed`: consumed bytes and completed
+/// frames. Exhausting either yields with an explicit consumed count, without
+/// rejecting a valid stream. Strict compatibility `push_batch` additionally
+/// requires that the whole supplied chunk fit its per-call budget.
 #[derive(Debug)]
 pub struct StreamingDecoder {
     buffer: Vec<u8>,
@@ -88,8 +90,8 @@ impl StreamingDecoder {
         }
     }
 
-    /// Configure the per-feed byte budget in maximum-frame units while using
-    /// the production frame-work ceiling.
+    /// Configure the per-feed byte-work budget in maximum-frame units while
+    /// using the production frame-work ceiling.
     pub fn with_max_buffered_frames(frames: usize) -> Result<Self, StreamDecodeError> {
         Self::with_limits(frames, MAX_WIRE_FRAMES_PER_FEED)
     }
@@ -145,8 +147,109 @@ impl StreamingDecoder {
         self.terminal_error = None;
     }
 
-    /// Feed a transport chunk and preserve both a valid decoded prefix and a
-    /// later terminal error from the same chunk.
+    /// Consume a bounded prefix of a borrowed transport chunk.
+    ///
+    /// Process the batch and resubmit `chunk[result.bytes_consumed()..]` on the
+    /// same decoder when no terminal error is present. Resource exhaustion is
+    /// a yield, not poisoning. A nonempty input consumes bytes or reports an
+    /// error. At most one structurally admitted partial frame is retained.
+    pub fn feed(&mut self, chunk: &[u8]) -> DecodeFeed<StreamDecodeBatch> {
+        if let Some(error) = self.terminal_error.clone() {
+            return DecodeFeed::new(
+                StreamDecodeBatch {
+                    frames: Vec::new(),
+                    terminal_error: Some(error),
+                },
+                0,
+            );
+        }
+        let mut decoded = Vec::new();
+        let mut offset = 0;
+        while offset < chunk.len() && offset < self.max_feed_bytes {
+            if decoded.len() >= self.max_frames_per_feed {
+                break;
+            }
+            if self.expected_frame_length.is_none() {
+                let remaining = WIRE_HEADER_BYTES.saturating_sub(self.buffer.len());
+                let copied = remaining
+                    .min(chunk.len() - offset)
+                    .min(self.max_feed_bytes - offset);
+                self.buffer
+                    .extend_from_slice(&chunk[offset..offset + copied]);
+                offset += copied;
+                if self.buffer.len() < WIRE_HEADER_BYTES {
+                    break;
+                }
+                let parsed = match FrameHeader::parse(&self.buffer) {
+                    Ok(header) => header,
+                    Err(error) => {
+                        return DecodeFeed::new(
+                            self.fail(decoded, StreamDecodeError::HeaderParse(error)),
+                            offset,
+                        );
+                    }
+                };
+                let header = match parsed.validate() {
+                    Ok(header) => header,
+                    Err(error) => {
+                        return DecodeFeed::new(
+                            self.fail(decoded, StreamDecodeError::HeaderValidation(error)),
+                            offset,
+                        );
+                    }
+                };
+                if let Some(negotiated) = self.negotiated_version
+                    && header.version() != negotiated
+                {
+                    return DecodeFeed::new(
+                        self.fail(
+                            decoded,
+                            StreamDecodeError::NegotiatedVersionMismatch {
+                                negotiated,
+                                observed: header.version(),
+                                byte_offset: 4,
+                            },
+                        ),
+                        offset,
+                    );
+                }
+                self.buffer
+                    .reserve_exact(header.frame_length().saturating_sub(self.buffer.len()));
+                self.expected_frame_length = Some(header.frame_length());
+            }
+            let Some(expected) = self.expected_frame_length else {
+                continue;
+            };
+            let copied = expected
+                .saturating_sub(self.buffer.len())
+                .min(chunk.len() - offset)
+                .min(self.max_feed_bytes - offset);
+            self.buffer
+                .extend_from_slice(&chunk[offset..offset + copied]);
+            offset += copied;
+            if self.buffer.len() < expected {
+                break;
+            }
+            let frame = std::mem::replace(&mut self.buffer, Vec::with_capacity(WIRE_HEADER_BYTES));
+            self.expected_frame_length = None;
+            match decode_frame(&frame).map_err(StreamDecodeError::Frame) {
+                Ok(envelope) => decoded.push(envelope),
+                Err(error) => return DecodeFeed::new(self.fail(decoded, error), offset),
+            }
+        }
+        DecodeFeed::new(
+            StreamDecodeBatch {
+                frames: decoded,
+                terminal_error: None,
+            },
+            offset,
+        )
+    }
+
+    /// Strict compatibility API requiring consumption of the complete chunk.
+    /// Live transports use `feed` and preserve the unconsumed suffix on yields.
+    /// This API retains its historical pre-copy byte limit and terminal work
+    /// limit; neither kind of limit discards a previously returned batch.
     pub fn push_batch(&mut self, chunk: &[u8]) -> StreamDecodeBatch {
         if let Some(error) = self.terminal_error.clone() {
             return StreamDecodeBatch {
@@ -154,7 +257,6 @@ impl StreamingDecoder {
                 terminal_error: Some(error),
             };
         }
-
         let attempted = match self.buffer.len().checked_add(chunk.len()) {
             Some(value) => value,
             None => {
@@ -176,93 +278,23 @@ impl StreamingDecoder {
                 },
             );
         }
-
-        let mut decoded = Vec::new();
-        let mut offset = 0;
-        while offset < chunk.len() {
-            if decoded.len() >= self.max_frames_per_feed {
-                return self.fail(
-                    decoded,
-                    StreamDecodeError::WorkFrameLimit {
-                        attempted: self.max_frames_per_feed.saturating_add(1),
-                        maximum: self.max_frames_per_feed,
-                        byte_offset: offset,
-                    },
-                );
-            }
-
-            if self.expected_frame_length.is_none() {
-                let header_remaining = WIRE_HEADER_BYTES.saturating_sub(self.buffer.len());
-                if header_remaining > 0 {
-                    let copied = header_remaining.min(chunk.len() - offset);
-                    self.buffer
-                        .extend_from_slice(&chunk[offset..offset + copied]);
-                    offset += copied;
-                }
-                if self.buffer.len() < WIRE_HEADER_BYTES {
-                    break;
-                }
-
-                let parsed = match FrameHeader::parse(&self.buffer) {
-                    Ok(header) => header,
-                    Err(error) => {
-                        return self.fail(decoded, StreamDecodeError::HeaderParse(error));
-                    }
-                };
-                let header = match parsed.validate() {
-                    Ok(header) => header,
-                    Err(error) => {
-                        return self.fail(decoded, StreamDecodeError::HeaderValidation(error));
-                    }
-                };
-                if let Some(negotiated) = self.negotiated_version
-                    && header.version() != negotiated
-                {
-                    return self.fail(
-                        decoded,
-                        StreamDecodeError::NegotiatedVersionMismatch {
-                            negotiated,
-                            observed: header.version(),
-                            byte_offset: 4,
-                        },
-                    );
-                }
-                self.buffer
-                    .reserve_exact(header.frame_length().saturating_sub(self.buffer.len()));
-                self.expected_frame_length = Some(header.frame_length());
-            }
-
-            let Some(expected) = self.expected_frame_length else {
-                continue;
-            };
-            let body_remaining = expected.saturating_sub(self.buffer.len());
-            if body_remaining > 0 {
-                let copied = body_remaining.min(chunk.len() - offset);
-                self.buffer
-                    .extend_from_slice(&chunk[offset..offset + copied]);
-                offset += copied;
-            }
-            if self.buffer.len() < expected {
-                break;
-            }
-
-            let frame = std::mem::replace(&mut self.buffer, Vec::with_capacity(WIRE_HEADER_BYTES));
-            self.expected_frame_length = None;
-            match decode_frame(&frame).map_err(StreamDecodeError::Frame) {
-                Ok(envelope) => decoded.push(envelope),
-                Err(error) => return self.fail(decoded, error),
-            }
+        let (batch, consumed) = self.feed(chunk).into_parts();
+        if batch.terminal_error().is_some() || consumed == chunk.len() {
+            return batch;
         }
-
-        StreamDecodeBatch {
-            frames: decoded,
-            terminal_error: None,
-        }
+        let (frames, _) = batch.into_parts();
+        self.fail(
+            frames,
+            StreamDecodeError::WorkFrameLimit {
+                attempted: self.max_frames_per_feed.saturating_add(1),
+                maximum: self.max_frames_per_feed,
+                byte_offset: consumed,
+            },
+        )
     }
 
-    /// Lossless convenience alias. Unlike the historical `Result<Vec<_>, _>`
-    /// shape, this cannot hide a terminal error that follows valid frames in
-    /// the same transport chunk.
+    /// Lossless compatibility alias. A terminal error remains visible next to
+    /// any successfully decoded prefix from the same bounded call.
     #[must_use = "consume the completed prefix and inspect the terminal error"]
     pub fn push(&mut self, chunk: &[u8]) -> StreamDecodeBatch {
         self.push_batch(chunk)
