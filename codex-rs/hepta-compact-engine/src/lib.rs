@@ -10,6 +10,7 @@
 mod archive_codec;
 mod coordinator;
 mod durable;
+mod fenced_coordinator;
 mod publication;
 #[allow(clippy::too_many_arguments)]
 mod qualified;
@@ -23,14 +24,14 @@ pub use coordinator::CompactionCoordinatorErrorV2;
 pub use coordinator::CompactionPublicationMetricsV2;
 pub use coordinator::CompactionPublicationReceiptV2;
 pub use coordinator::CompactionReopenMetricsV2;
-pub use coordinator::MEMORY_CHECKPOINT_COORDINATOR_CALLER_V2;
-pub use coordinator::MemoryCheckpointCoordinatorV2;
 pub use coordinator::VerifiedCompactionSelectionV2;
 // Read-only receipts and fenced outbox claims are safe to expose. Raw bundle,
 // trust-set and store construction remain unreachable outside this crate.
 pub use durable::DurableCompactionDisposition;
 pub use durable::DurableCompactionError;
 pub use durable::DurableCompactionOutboxEventV1;
+pub use fenced_coordinator::MEMORY_CHECKPOINT_COORDINATOR_CALLER_V2;
+pub use fenced_coordinator::MemoryCheckpointCoordinatorV2;
 pub use publication::CompactionNonceBindingV1;
 pub use publication::CompactionPublicationEvidenceV1;
 pub use publication::CompactionPublicationRequestV1;
