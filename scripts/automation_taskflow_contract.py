@@ -103,7 +103,7 @@ def verify(root: Path = ROOT) -> dict[str, Any]:
         "### 4.5 Design records and failure semantics",
         "AutomationCrossHostRecoveryManifestV1",
         "AgentdAutomationEffectHost",
-        "one slot is reserved for terminal observation",
+        "reserved for terminal observation",
         "owner Agent read from the copied target store",
     ]:
         need(anchor in technical, f"technical guide is missing {anchor}")
