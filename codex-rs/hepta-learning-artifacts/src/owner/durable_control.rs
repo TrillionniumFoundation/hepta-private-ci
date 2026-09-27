@@ -3,7 +3,6 @@
 
 use std::fs;
 use std::fs::File;
-#[cfg(unix)]
 use std::fs::OpenOptions;
 use std::io;
 use std::io::Read;
@@ -19,6 +18,10 @@ use codex_hepta_types::StableId;
 
 const RECORD_NAME: &str = "DRAIN.v1";
 const MAX_RECORD_BYTES: u64 = 4096;
+
+fn invalid_record(message: &'static str) -> io::Error {
+    io::Error::new(io::ErrorKind::InvalidData, message)
+}
 
 #[derive(Debug)]
 pub(super) struct DurableDrain {
@@ -40,7 +43,7 @@ impl DurableDrain {
         }
     }
 
-    fn open_record(&self) -> io::Result<Option<File>> {
+    fn validated_record(&self) -> io::Result<Option<File>> {
         let path = self.directory.join(RECORD_NAME);
         let metadata = match fs::symlink_metadata(&path) {
             Ok(metadata) => metadata,
@@ -48,36 +51,40 @@ impl DurableDrain {
             Err(error) => return Err(error),
         };
         if !metadata.is_file() || metadata.len() > MAX_RECORD_BYTES {
-            return Err(io::Error::new(io::ErrorKind::InvalidData, "invalid drain record"));
+            return Err(invalid_record("invalid drain record"));
         }
-        let file = File::open(path)?;
+        // This is an existing-record reconciliation handle, never a create-only
+        // capability and never used to overwrite bytes. The host protects paths.
+        let mut file = OpenOptions::new().read(true).write(true).open(path)?;
         if !file.metadata()?.is_file() {
-            return Err(io::Error::new(io::ErrorKind::InvalidData, "drain is not a file"));
+            return Err(invalid_record("drain is not a file"));
+        }
+        let mut bytes = Vec::new();
+        (&mut file)
+            .take(MAX_RECORD_BYTES + 1)
+            .read_to_end(&mut bytes)?;
+        if bytes != self.expected {
+            return Err(invalid_record("corrupt or foreign drain record"));
         }
         Ok(Some(file))
     }
 
     pub(super) fn requested(&self) -> io::Result<bool> {
-        let Some(file) = self.open_record()? else {
-            return Ok(false);
-        };
-        let mut bytes = Vec::new();
-        file.take(MAX_RECORD_BYTES + 1).read_to_end(&mut bytes)?;
-        if bytes != self.expected {
-            return Err(io::Error::new(io::ErrorKind::InvalidData, "corrupt or foreign drain record"));
-        }
-        Ok(true)
+        Ok(self.validated_record()?.is_some())
     }
 
     pub(super) fn persist(&self) -> io::Result<()> {
         #[cfg(not(unix))]
         {
-            Err(io::Error::new(io::ErrorKind::Unsupported, "directory durability is not qualified"))
+            Err(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "directory durability is not qualified",
+            ))
         }
         #[cfg(unix)]
         {
             if !fs::symlink_metadata(&self.directory)?.is_dir() {
-                return Err(io::Error::new(io::ErrorKind::InvalidData, "invalid control directory"));
+                return Err(invalid_record("invalid control directory"));
             }
             let mut options = OpenOptions::new();
             options.write(true).create_new(true).mode(0o600);
@@ -87,20 +94,19 @@ impl DurableDrain {
                     file.sync_all()?;
                 }
                 Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
-                    if !self.requested()? {
-                        return Err(io::Error::new(io::ErrorKind::InvalidData, "drain disappeared"));
-                    }
-                    // Re-establish durability after an uncertain previous sync.
-                    self.open_record()?.ok_or_else(|| {
-                        io::Error::new(io::ErrorKind::InvalidData, "drain disappeared")
-                    })?.sync_all()?;
+                    let file = self
+                        .validated_record()?
+                        .ok_or_else(|| invalid_record("drain disappeared"))?;
+                    // Reconcile an uncertain sync on the exact validated handle.
+                    file.sync_all()?;
                 }
                 Err(error) => return Err(error),
             }
             File::open(&self.directory)?.sync_all()?;
-            let parent = self.directory.parent().ok_or_else(|| {
-                io::Error::new(io::ErrorKind::InvalidInput, "control directory has no parent")
-            })?;
+            let parent = self
+                .directory
+                .parent()
+                .ok_or_else(|| invalid_record("control directory has no parent"))?;
             File::open(parent)?.sync_all()
         }
     }
