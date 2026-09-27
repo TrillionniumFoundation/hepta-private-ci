@@ -15,6 +15,7 @@ export class SessionProvider {
   #listeners = new Set();
   #active = false;
   #epoch = 0;
+  #startPromise = null;
   #refreshPromise = null;
 
   constructor({ client, endpointManifest, clock = () => Date.now(), refreshSkewMs = 60_000 }) {
@@ -37,26 +38,52 @@ export class SessionProvider {
   }
 
   async start({ signal } = {}) {
+    if (this.#startPromise) return this.#startPromise;
+    if (this.#active && this.#client.readView().connected) {
+      return this.#client.readView();
+    }
+
     this.#active = true;
     const epoch = ++this.#epoch;
     this.#clearTimer();
-    await this.#client.connect(this.#manifest, { signal });
-    if (!this.#active || epoch !== this.#epoch) {
-      try {
-        await this.#client.close({ signal });
-      } catch {
-        // The provider is already stopped; RuntimeClient closes local authority
-        // before attempting the transport close.
-      }
-      throw uiControlError(
-        UI_CONTROL_ERROR_CODES.ABORTED,
-        "session provider stopped while connection was being established",
-        { retryable: true, details: { requestDispatched: true } },
-      );
+    const attempt = this.#startOnce(epoch, signal);
+    this.#startPromise = attempt;
+    try {
+      return await attempt;
+    } finally {
+      if (this.#startPromise === attempt) this.#startPromise = null;
     }
-    this.#emit("connected");
-    this.#schedule(epoch);
-    return this.#client.readView();
+  }
+
+  async #startOnce(epoch, signal) {
+    try {
+      if (!this.#client.readView().connected) {
+        await this.#client.connect(this.#manifest, { signal });
+      }
+      if (!this.#active || epoch !== this.#epoch) {
+        try {
+          await this.#client.close({ signal });
+        } catch {
+          // The provider is already stopped; RuntimeClient closes local authority
+          // before attempting the transport close.
+        }
+        throw uiControlError(
+          UI_CONTROL_ERROR_CODES.ABORTED,
+          "session provider stopped while connection was being established",
+          { retryable: true, details: { requestDispatched: true } },
+        );
+      }
+      this.#emit("connected");
+      this.#schedule(epoch);
+      return this.#client.readView();
+    } catch (error) {
+      if (this.#active && epoch === this.#epoch) {
+        this.#active = false;
+        ++this.#epoch;
+        this.#clearTimer();
+      }
+      throw error;
+    }
   }
 
   async refresh({ signal } = {}) {
