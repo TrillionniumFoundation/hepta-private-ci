@@ -1,0 +1,90 @@
+[[package]]
+name = "codex-hepta-agentd"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "app_test_support",
+ "codex-app-server",
+ "codex-app-server-client",
+ "codex-app-server-protocol",
+ "codex-arg0",
+ "codex-config",
+ "codex-features",
+ "codex-hepta-agent-protocol",
+ "codex-hepta-authbus",
+ "codex-hepta-automation",
+ "codex-hepta-bellman-operator",
+ "codex-hepta-codex-adapter",
+ "codex-hepta-cognitive-read",
+ "codex-hepta-cognitive-store",
+ "codex-hepta-cognitive-types",
+ "codex-hepta-context-compiler",
+ "codex-hepta-contracts",
+ "codex-hepta-control-plane",
+ "codex-hepta-evidence",
+ "codex-hepta-fleet",
+ "codex-hepta-infer-core",
+ "codex-hepta-infer-worker-host",
+ "codex-hepta-intelligence",
+ "codex-hepta-intelligence-eval",
+ "codex-hepta-intuition",
+ "codex-hepta-learning-artifacts",
+ "codex-hepta-learning-ledger",
+ "codex-hepta-memory",
+ "codex-hepta-memory-extension",
+ "codex-hepta-memory-retrieval",
+ "codex-hepta-ndu",
+ "codex-hepta-neuron",
+ "codex-hepta-objective",
+ "codex-hepta-operations",
+ "codex-hepta-paths",
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-cognitive-types",
+ "codex-hepta-types",
+]
+
+[[package]]
+name = "codex-hepta-cognitive-store"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-cognitive-types",
+ "codex-hepta-memory",
+ "codex-hepta-types",
+]
+
+[[package]]
+name = "codex-hepta-cognitive-types"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-types",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "codex-hepta-compact-engine"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-cognitive-types",
+ "codex-hepta-types",
+]
+
+[[package]]
+name = "codex-hepta-context-compiler"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-contracts",
+ "codex-hepta-types",
+ "codex-hepta-wire",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "codex-hepta-contracts"
+version = "0.0.0"
+dependencies = [
+ "codex-utils-cargo-bin",
+ "ed25519-dalek",
+ "pretty_assertions",
