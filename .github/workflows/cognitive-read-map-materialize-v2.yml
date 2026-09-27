@@ -152,4 +152,4 @@ jobs:
           test -z "$(git status --porcelain)"
           git push origin "HEAD:${GITHUB_REF_NAME}"
 
-# Retriggered after OTEL export and evidence-contract hardening.
+# Retriggered after canonical cargo-fuzz harness qualification was added.
