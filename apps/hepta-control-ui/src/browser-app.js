@@ -3,7 +3,8 @@ import {
   UiControlError,
 } from "./errors.js";
 
-const RECOVERY_STORAGE_KEY = "hepta.ui-control.recovery-state.v1";
+import { captureConfirmation, assertConfirmation, retainedTarget } from "./confirmation.js";
+import { ScopedRecoveryStore } from "./recovery-store.js";
 
 function requiredElement(document, id) {
   const element = document.getElementById(id);
@@ -50,7 +51,10 @@ export function createControlConsole({
   document = globalThis.document,
   client,
   sessionProvider,
-  storage = globalThis.localStorage,
+  storage,
+  locks = globalThis.navigator?.locks,
+  recoveryEndpoint,
+  recoveryNamespace = "default",
   pollIntervalMs = 2_000,
 }) {
   if (!document || !client || !sessionProvider) {
@@ -93,6 +97,14 @@ export function createControlConsole({
   let inFlight = false;
   let pendingAction = null;
   let dialogTrigger = null;
+  let recoveryStore = null;
+  let recoveryReady = false;
+  let recoveryError = null;
+  let refreshing = false;
+  let targetInitialized = false;
+  let targetInventory = null;
+  const recoveryButtons = new Map();
+  const lifecycle = new AbortController();
 
   function announce(message) {
     elements.live.textContent = message;
@@ -115,8 +127,8 @@ export function createControlConsole({
   }
 
   function clearError() {
-    elements.error.hidden = true;
-    elements.error.textContent = "";
+    elements.error.hidden = recoveryError === null;
+    elements.error.textContent = recoveryError ? visibleError(recoveryError) : "";
   }
 
   function reportStorageFailure(cause, operation) {
@@ -134,48 +146,91 @@ export function createControlConsole({
   }
 
   function persistRecovery() {
-    if (!storage) return false;
+    if (!recoveryStore) return false;
     try {
-      const state = client.exportRecoveryState();
-      if (state.operations.length === 0) {
-        storage.removeItem(RECOVERY_STORAGE_KEY);
-      } else {
-        storage.setItem(RECOVERY_STORAGE_KEY, JSON.stringify(state));
-      }
+      // Prepared identities were committed before dispatch. Never replace a
+      // shared whole-ledger value with this tab's partial view.
+      for (const operation of client.readView().completed) recoveryStore.complete(operation);
       return true;
     } catch (error) {
-      reportStorageFailure(error, "persisted");
+      reportStorageFailure(error, "cleaned up");
       return false;
     }
   }
 
-  function restoreRecovery() {
-    if (!storage) return false;
-    let value;
+  async function restoreRecovery(epoch) {
     try {
-      value = storage.getItem(RECOVERY_STORAGE_KEY);
-    } catch (error) {
-      reportStorageFailure(error, "read");
-      return false;
-    }
-    if (!value) return true;
-    try {
-      client.restoreRecoveryState(JSON.parse(value));
-      return true;
-    } catch (error) {
-      try {
-        storage.removeItem(RECOVERY_STORAGE_KEY);
-      } catch {
-        // The original typed storage error below is the actionable signal.
+      // Accessing localStorage itself can throw; resolve it inside this guard.
+      const selectedStorage = storage === undefined ? globalThis.localStorage : storage;
+      if (!selectedStorage || !recoveryEndpoint) {
+        throw new UiControlError(UI_CONTROL_ERROR_CODES.STORAGE,
+          "New mutations require scoped recovery storage; read-only diagnostics remain available.");
       }
-      reportStorageFailure(error, "restored");
-      return false;
+      const identity = client.readView().identityId;
+      const store = await ScopedRecoveryStore.create({
+        storage: selectedStorage, locks, endpoint: recoveryEndpoint,
+        namespace: recoveryNamespace, identityId: identity, protocolVersion: "hepta.ui-control.v1",
+      });
+      assertLifecycleActive(epoch, "opening scoped recovery storage");
+      client.restoreRecoveryState(store.load());
+      client.setRecoveryPersistence(async (record, options) => {
+        if (destroyed || !recoveryReady || client.readView().identityId !== identity) {
+          throw new UiControlError(UI_CONTROL_ERROR_CODES.STORAGE, "Recovery binding is no longer current.",
+            { details: { requestDispatched: false } });
+        }
+        return store.prepare(record, options);
+      });
+      recoveryStore = store;
+      recoveryReady = true;
+      recoveryError = null;
+      // An unscoped predecessor cannot be safely assigned to a new principal.
+      // Retain it for explicit operator migration rather than silently adopting it.
+      if (selectedStorage.getItem("hepta.ui-control.recovery-state.v1") !== null) {
+        reportStorageFailure(null, "migrated from the unscoped predecessor; preserve it for operator recovery");
+      }
+    } catch (cause) {
+      recoveryReady = false;
+      recoveryError = new UiControlError(UI_CONTROL_ERROR_CODES.STORAGE,
+        "New mutations are disabled because scoped recovery storage is unavailable. Read-only diagnostics remain available.",
+        { retryable: true, details: { requestDispatched: false }, cause });
+      if (!destroyed) showError(recoveryError);
     }
+  }
+
+  function restoreFocus() {
+    if (dialogTrigger && dialogTrigger.isConnected !== false && !dialogTrigger.disabled) {
+      dialogTrigger.focus();
+    } else {
+      elements.live.setAttribute?.("tabindex", "-1");
+      elements.live.focus();
+    }
+    dialogTrigger = null;
   }
 
   function renderModules(view) {
     elements.modules.replaceChildren();
-    elements.target.replaceChildren();
+    const modules = view.snapshot?.modules ?? [];
+    if (view.snapshot) {
+      const ids = modules.map(module => module.id);
+      const selected = retainedTarget(elements.target.value, ids, targetInitialized);
+      const inventory = JSON.stringify(ids);
+      if (targetInventory !== inventory) {
+        elements.target.replaceChildren();
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "Choose a target";
+        elements.target.append(placeholder);
+        for (const id of ids) {
+          const option = document.createElement("option");
+          option.value = id;
+          option.textContent = id;
+          elements.target.append(option);
+        }
+        targetInventory = inventory;
+      }
+      elements.target.value = selected;
+      if (ids.length > 0) targetInitialized = true;
+    }
     if (!view.snapshot || view.snapshot.modules.length === 0) {
       const row = document.createElement("tr");
       const cell = document.createElement("td");
@@ -198,19 +253,18 @@ export function createControlConsole({
         row.append(cell);
       }
       elements.modules.append(row);
-      const option = document.createElement("option");
-      option.value = module.id;
-      option.textContent = module.id;
-      elements.target.append(option);
     }
   }
 
   function renderPending(view) {
+    const focusedId = [...recoveryButtons].find(([, button]) => button === document.activeElement)?.[0];
+    recoveryButtons.clear();
     elements.pending.replaceChildren();
     if (view.pending.length === 0) {
       const item = document.createElement("li");
       item.textContent = "No pending operations.";
       elements.pending.append(item);
+      if (focusedId) { elements.live.setAttribute?.("tabindex", "-1"); elements.live.focus(); }
       return;
     }
     for (const operation of view.pending) {
@@ -234,11 +288,12 @@ export function createControlConsole({
           `Recover operation ${redactIdentifier(operation.operationId)}`,
         );
         recover.disabled = destroyed || !view.connected;
+        recoveryButtons.set(operation.operationId, recover);
         recover.addEventListener("click", async () => {
           clearError();
           recover.disabled = true;
           try {
-            const result = await client.recoverOperation(operation.operationId);
+            const result = await client.recoverOperation(operation.operationId, { signal: lifecycle.signal });
             announce(`Recovered ${redactIdentifier(result.operationId)}: ${result.state}.`);
             persistRecovery();
             render();
@@ -251,6 +306,11 @@ export function createControlConsole({
         item.append(text(document, " "), recover);
       }
       elements.pending.append(item);
+    }
+    if (focusedId) {
+      const replacement = recoveryButtons.get(focusedId);
+      if (replacement && !replacement.disabled) replacement.focus();
+      else { elements.live.setAttribute?.("tabindex", "-1"); elements.live.focus(); }
     }
   }
 
@@ -296,18 +356,24 @@ export function createControlConsole({
     renderPending(view);
     renderCompleted(view);
 
-    const hasTarget = elements.target.options.length > 0;
-    const disabled = destroyed || inFlight || view.stale || !view.connected || !hasTarget;
+    const hasTarget = Boolean(elements.target.value);
+    const disabled = destroyed || inFlight || view.stale || !view.connected || !hasTarget || !recoveryReady;
     elements.start.disabled =
       disabled || !view.permissions.includes("hepta://ui.control/runtime.start");
     elements.reconcile.disabled =
       disabled || !view.permissions.includes("hepta://ui.control/runtime.request");
     elements.stop.disabled =
       disabled || !view.permissions.includes("hepta://ui.control/runtime.stop");
-    elements.refresh.disabled = destroyed || inFlight || !view.connected;
+    elements.refresh.disabled = destroyed || refreshing || !view.connected;
+    const metrics = document.getElementById("recovery-metrics");
+    if (metrics) metrics.textContent = `Pending age: ${view.pendingMaxAgeMs ?? 0} ms; ` +
+      `snapshot age: ${view.snapshotAgeMs ?? "unknown"} ms; unknown: ${view.indeterminateCount}; ` +
+      `lookup failures: ${view.recoveryMetrics?.failures ?? 0}; ` +
+      `maximum lookup wait: ${view.recoveryMetrics?.maxLookupWaitMs ?? 0} ms.`;
   }
 
   function openConfirmation(action, trigger) {
+    if (destroyed || inFlight || pendingAction || !recoveryReady) return;
     clearError();
     const view = client.readView();
     if (view.stale || !view.snapshot) {
@@ -330,13 +396,17 @@ export function createControlConsole({
       );
       return;
     }
-    pendingAction = Object.freeze({
+    const prepared = Object.freeze({
       action,
       targetId,
       reason,
       displayedRevision: view.snapshot.revision,
       operationId: `ui:${globalThis.crypto.randomUUID()}`,
+      signal: lifecycle.signal,
     });
+    try {
+      pendingAction = Object.freeze({ ...prepared, confirmation: captureConfirmation(view, prepared) });
+    } catch (error) { showError(error); return; }
     dialogTrigger = trigger;
     elements.dialogTitle.textContent = action === "request_stop"
       ? "Confirm runtime stop request"
@@ -352,11 +422,11 @@ export function createControlConsole({
       `Reason: ${reason}`,
     ].join(". ");
     elements.dialog.showModal();
-    elements.confirm.focus();
+    elements.cancel.focus();
   }
 
   async function submitConfirmed() {
-    if (!pendingAction || inFlight) return;
+    if (!pendingAction || inFlight || destroyed || !recoveryReady) return;
     const action = pendingAction;
     pendingAction = null;
     inFlight = true;
@@ -364,6 +434,7 @@ export function createControlConsole({
     clearError();
     render();
     try {
+      assertConfirmation(action.confirmation, client.readView(), action);
       let result;
       if (action.action === "request_stop") {
         result = await client.requestStop(action);
@@ -385,27 +456,26 @@ export function createControlConsole({
       elements.confirm.disabled = false;
       if (elements.dialog.open) elements.dialog.close();
       render();
-      dialogTrigger?.focus();
-      dialogTrigger = null;
+      restoreFocus();
     }
   }
 
   async function refresh({ propagate = false } = {}) {
-    if (inFlight) return;
-    inFlight = true;
+    if (refreshing || destroyed) return;
+    refreshing = true;
     clearError();
     render();
     let failure = null;
     try {
-      await client.refreshView();
-      await client.recoverPending({ limit: 32 });
+      await client.refreshView({ signal: lifecycle.signal });
+      await client.recoverPending({ limit: 32, concurrency: 4, signal: lifecycle.signal });
       persistRecovery();
       announce(`Runtime view refreshed at ${formatTime(Date.now())}.`);
     } catch (error) {
       failure = error;
-      showError(error);
+      if (!destroyed) showError(error);
     } finally {
-      inFlight = false;
+      refreshing = false;
       render();
     }
     if (failure && propagate) throw failure;
@@ -425,15 +495,13 @@ export function createControlConsole({
   elements.cancel.addEventListener("click", () => {
     pendingAction = null;
     elements.dialog.close();
-    dialogTrigger?.focus();
-    dialogTrigger = null;
+    restoreFocus();
   });
   elements.dialog.addEventListener("cancel", event => {
     event.preventDefault();
     pendingAction = null;
     elements.dialog.close();
-    dialogTrigger?.focus();
-    dialogTrigger = null;
+    restoreFocus();
   });
 
   const unsubscribe = sessionProvider.subscribe(event => {
@@ -464,14 +532,16 @@ export function createControlConsole({
 
   async function startOnce(signal, epoch) {
     clearError();
-    restoreRecovery();
     try {
       await sessionProvider.start({ signal });
       assertLifecycleActive(epoch, "establishing its session");
+      await restoreRecovery(epoch);
+      assertLifecycleActive(epoch, "restoring scoped recovery");
       await refresh({ propagate: true });
       assertLifecycleActive(epoch, "refreshing its first runtime view");
       if (timer === null) {
         timer = setInterval(() => {
+          if (document.visibilityState === "hidden" || globalThis.navigator?.onLine === false) return;
           refresh().catch(showError);
         }, pollIntervalMs);
       }
@@ -512,6 +582,7 @@ export function createControlConsole({
     async destroy() {
       if (destroyed) return;
       destroyed = true;
+      lifecycle.abort();
       started = false;
       lifecycleEpoch += 1;
       if (timer !== null) clearInterval(timer);
