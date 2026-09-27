@@ -1,0 +1,88 @@
+name: Inference worker isolated source preparation
+on:
+  push:
+    branches: [codex/inference-worker-verified-preparation-20260927]
+    paths:
+      - .github/remediation/inference-worker.patch.part*.b64
+      - .github/scripts/inference-worker-prepare.py
+      - .github/workflows/inference-worker-prepare.yml
+permissions:
+  contents: read
+jobs:
+  prepare:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: macos-15
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    env:
+      CARGO_BUILD_JOBS: '2'
+      TMPDIR: /tmp
+      RUST_BACKTRACE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Apply reviewed patch and format only in an isolated worktree
+        run: python3 .github/scripts/inference-worker-prepare.py prepare "$GITHUB_WORKSPACE" "$RUNNER_TEMP/inference-prepared-source"
+      - name: Retain immutable proposed objects without commit or ref mutation
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/inference-worker-prepare.py publish "$RUNNER_TEMP/inference-prepared-source" "$RUNNER_TEMP/inference-proposal"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-proposal-${{ github.sha }}
+          path: ${{ runner.temp }}/inference-proposal/
+          retention-days: 7
+          if-no-files-found: error
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ runner.temp }}/inference-prepared-source/codex-rs/target
+          key: inference-preparation-${{ runner.os }}-rust195-${{ github.sha }}
+          restore-keys: inference-preparation-${{ runner.os }}-rust195-
+      - name: Resolve the actual workspace and V8 dependencies
+        working-directory: ${{ runner.temp }}/inference-prepared-source
+        env:
+          CODEX_REPO_ROOT: ${{ runner.temp }}/inference-prepared-source
+          PYTHONPATH: scripts
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_workspace.py
+          python3 scripts/hepta_ci_v8.py
+          mkdir -p "$RUNNER_TEMP/inference-diagnostics"
+      - name: Exercise kernel facts and shared local owner
+        working-directory: ${{ runner.temp }}/inference-prepared-source/codex-rs
+        run: |
+          set -o pipefail
+          just test --locked --lib -p codex-hepta-contracts -p codex-hepta-infer-core --retries 0 --test-threads=1 2>&1 | tee "$RUNNER_TEMP/inference-diagnostics/kernel-control.log"
+      - name: Exercise the actual worker crate
+        if: ${{ !cancelled() }}
+        working-directory: ${{ runner.temp }}/inference-prepared-source/codex-rs
+        run: |
+          set -o pipefail
+          just test --locked --lib -p codex-hepta-infer-worker-host --retries 0 --test-threads=1 2>&1 | tee "$RUNNER_TEMP/inference-diagnostics/worker.log"
+      - name: Diagnose explicit-feature compilation and owner lint
+        if: ${{ !cancelled() }}
+        working-directory: ${{ runner.temp }}/inference-prepared-source/codex-rs
+        run: |
+          set -o pipefail
+          cargo clippy --locked --all-targets --no-deps -p codex-hepta-contracts -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --features codex-hepta-infer-worker-host/experimental-local-model -- -D warnings 2>&1 | tee "$RUNNER_TEMP/inference-diagnostics/clippy.log"
+      - name: Assert no test mutated proposed source
+        if: ${{ always() }}
+        working-directory: ${{ runner.temp }}/inference-prepared-source
+        run: git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ always() }}
+        with:
+          name: inference-preparation-diagnostics-${{ github.sha }}
+          path: ${{ runner.temp }}/inference-diagnostics/
+          retention-days: 7
+          if-no-files-found: warn
