@@ -1,17 +1,23 @@
+use std::collections::HashSet;
 use std::fs::File;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Mutex;
+use std::sync::OnceLock;
 
 use crate::AuthBusAuthorityError;
+
+static PROCESS_OWNERS: OnceLock<Mutex<HashSet<PathBuf>>> = OnceLock::new();
 
 /// Process-lifetime single-owner fence held on one securely opened inode.
 ///
 /// The file is opened without following the final symlink, validated through
 /// its descriptor and locked non-blockingly. The descriptor remains owned by
-/// this value, so normal exit and process death both release the fence.
+/// this value, so normal exit and process death both release the fence. A local
+/// registry closes the process-associated `fcntl` same-process gap.
 pub(crate) struct OwnerFence {
-    _file: File,
-    _path: PathBuf,
+    file: File,
+    path: PathBuf,
 }
 
 impl OwnerFence {
@@ -28,20 +34,26 @@ impl OwnerFence {
         validate_parent(&path)?;
         let file = open_lock_file(&path)?;
         validate_open_lock_file(&file, &path)?;
-        match rustix::fs::flock(&file, rustix::fs::FlockOperation::NonBlockingLockExclusive) {
-            Ok(()) => {}
-            Err(error) if error == rustix::io::Errno::WOULDBLOCK => {
-                return Err(AuthBusAuthorityError::OwnerAlreadyActive);
-            }
-            Err(error) => return Err(AuthBusAuthorityError::Storage(error.to_string())),
+        claim_process_owner(&path)?;
+        if let Err(error) = acquire_process_lock(&file) {
+            release_process_owner(&path);
+            return Err(error);
         }
         // Ensure the pathname still names the locked inode before exposing the
         // host. Protected owner directories exclude unprivileged replacement.
-        validate_open_lock_file(&file, &path)?;
-        Ok(Self {
-            _file: file,
-            _path: path,
-        })
+        if let Err(error) = validate_open_lock_file(&file, &path) {
+            release_process_lock(&file);
+            release_process_owner(&path);
+            return Err(error);
+        }
+        Ok(Self { file, path })
+    }
+}
+
+impl Drop for OwnerFence {
+    fn drop(&mut self) {
+        release_process_lock(&self.file);
+        release_process_owner(&self.path);
     }
 }
 
@@ -57,8 +69,30 @@ fn lock_path(database_path: &Path) -> Result<PathBuf, AuthBusAuthorityError> {
             "authority database has no file name",
         ))?
         .to_os_string();
-    name.push(".authbus-owner.lock");
+    // Preserve the deployed lock pathname so a new process conflicts with an
+    // older SQLite-backed owner during a rolling upgrade.
+    name.push(".authbus-owner-lock.sqlite");
     Ok(parent.join(name))
+}
+
+fn claim_process_owner(path: &Path) -> Result<(), AuthBusAuthorityError> {
+    let mut owners = PROCESS_OWNERS
+        .get_or_init(|| Mutex::new(HashSet::new()))
+        .lock()
+        .map_err(|_| AuthBusAuthorityError::Storage("owner registry poisoned".into()))?;
+    if !owners.insert(path.to_path_buf()) {
+        return Err(AuthBusAuthorityError::OwnerAlreadyActive);
+    }
+    Ok(())
+}
+
+fn release_process_owner(path: &Path) {
+    if let Ok(mut owners) = PROCESS_OWNERS
+        .get_or_init(|| Mutex::new(HashSet::new()))
+        .lock()
+    {
+        owners.remove(path);
+    }
 }
 
 #[cfg(unix)]
@@ -107,6 +141,35 @@ fn open_lock_file(path: &Path) -> Result<File, AuthBusAuthorityError> {
 fn open_lock_file(_path: &Path) -> Result<File, AuthBusAuthorityError> {
     Err(AuthBusAuthorityError::UnsafeCheckpoint)
 }
+
+#[cfg(unix)]
+fn acquire_process_lock(file: &File) -> Result<(), AuthBusAuthorityError> {
+    match rustix::fs::fcntl_lock(
+        file,
+        rustix::fs::FlockOperation::NonBlockingLockExclusive,
+    ) {
+        Ok(()) => Ok(()),
+        Err(error)
+            if error == rustix::io::Errno::AGAIN || error == rustix::io::Errno::ACCESS =>
+        {
+            Err(AuthBusAuthorityError::OwnerAlreadyActive)
+        }
+        Err(error) => Err(AuthBusAuthorityError::Storage(error.to_string())),
+    }
+}
+
+#[cfg(not(unix))]
+fn acquire_process_lock(_file: &File) -> Result<(), AuthBusAuthorityError> {
+    Err(AuthBusAuthorityError::UnsafeCheckpoint)
+}
+
+#[cfg(unix)]
+fn release_process_lock(file: &File) {
+    let _ = rustix::fs::fcntl_lock(file, rustix::fs::FlockOperation::Unlock);
+}
+
+#[cfg(not(unix))]
+fn release_process_lock(_file: &File) {}
 
 #[cfg(unix)]
 fn validate_open_lock_file(file: &File, path: &Path) -> Result<(), AuthBusAuthorityError> {
