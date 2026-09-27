@@ -20,7 +20,7 @@ concurrency:
 jobs:
   materialize:
     name: materialize and verify product closure
-    runs-on: [self-hosted, linux, x64, rog]
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 120
     steps:
       - name: Check out exact source event
@@ -50,6 +50,17 @@ jobs:
           python3 scripts/finalize-intelligence-control-product.py
           python3 scripts/finalize-intelligence-control-boundaries.py
           git diff --check
+
+      - name: Prepare native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
 
       - name: Format and lock exact dependencies
         working-directory: codex-rs
