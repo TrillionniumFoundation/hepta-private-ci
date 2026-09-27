@@ -183,10 +183,39 @@ def run_offline(root: Path) -> None:
     (root / "model-observation.json").write_bytes(encoded(report) + b"\n")
 
 
+def run_supervised(root: Path) -> dict:
+    """An additional real inference through the shipped bounded pipe transport.
+
+    Independent from the three in-worker calls above. This is a fourth explicit
+    operation, not a retry, benchmark label or durable product admission.
+    """
+    from hepta_retrieval_wire import decode_request
+    from laya_process import ProcessFailure, run_pinned
+    pins = json.loads((root / "pins.json").read_bytes())
+    deadline_ms = time.time_ns() // 1_000_000 + 60_000
+    request_value = decode_request(binary_request(digest(pins), deadline_ms))
+    request_value["operation_id"] = "qualification.laya.process.1"
+    wire = encode_request(request_value)
+    try:
+        result = run_pinned(root / "checkpoint", root / "pins.json", wire,
+                            OwnerDeadline.start(deadline_ms))
+    except ProcessFailure as error:
+        (root / "process-failure.json").write_bytes(encoded(error.observation) + b"\n")
+        raise
+    report = {"schema": "hepta.laya.supervised-smoke.v1",
+              "request_wire_hex": wire.hex(), "reply_wire_hex": result.wire.hex(),
+              "decoded_reply": decode_reply(result.wire, wire),
+              "transport": result.observation, "production_composition": False,
+              "held_out_efficacy": False}
+    (root / "process-observation.json").write_bytes(encoded(report) + b"\n")
+    return report
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--worker", action="store_true")
+    parser.add_argument("--supervised", action="store_true")
     args = parser.parse_args()
     root = args.output.resolve()
     if args.worker:
@@ -210,6 +239,9 @@ def main() -> None:
         # tool, shell or arbitrary model-defined command is exposed to it.
         subprocess.run([sys.executable, str(Path(__file__).resolve()), "--worker", "--output", str(root)],
                        env=environment, check=True, timeout=300)
+        if args.supervised:
+            run_supervised(root)
+            report["process_observation_sha256"] = file_digest(root / "process-observation.json")
         report["success"] = True
         report["observation_sha256"] = file_digest(root / "model-observation.json")
         report["preparation_sha256"] = file_digest(root / "preparation.json")

@@ -60,6 +60,39 @@ missing, boolean, out-of-range or incompatible values fail instead of becoming
 zero cost. The raw binary reply deliberately contains no fabricated memory or
 device attestation. A trusted native driver still has to supply those observations.
 
+## Bounded leaf-process transport
+
+`python/laya_process.py` supervises the existing one-shot binary leaf without
+creating another inference owner, model-selection service or command language.
+The parent delivers one bounded request, drains stdout and stderr concurrently,
+and accepts a full request-bound reply only after observing zero exit status.
+The original `OwnerDeadline` bounds loading and inference; timeout, cancellation,
+pipe overflow, invalid output or nonzero exit never authorizes another attempt.
+Diagnostics retain bounded byte counts and digests, not source text.
+
+The POSIX profile requires non-reaping child observation (`waitid`/`WNOWAIT`).
+It signals the process group before reaping its leader, including when a child
+retains a pipe after the leader exits. Unsupported platforms and an installed
+external child reaper reject before spawn. Failed direct-child cleanup retains
+the unresolved handle in `ProcessFailure`; it is not reported as successful
+termination. Process-group cleanup is not a sandbox or proof that escaped
+children stopped. Device memory, full descendant exit and task success remain
+explicitly unknown. Callers must not infer workspace release from these fields.
+
+The selected interpreter and immutable checkpoint paths are host inputs, never
+model output. The leaf rechecks checkpoint pins. The environment excludes common
+credential and loader/import overrides; this is not filesystem or network
+isolation. OS resource control, protected source revalidation and durable
+cross-process ownership remain responsibilities of the existing native host.
+
+The existing smoke workflow runs source-head and fixed-base merge lanes on
+macOS and Linux. Linux additionally executes a fourth, distinct model request
+through this transport. `process-observation.json` binds both binary frames,
+token usage and observed direct-child termination; it deliberately does not
+claim a production caller, device attestation or held-out efficacy. Unsupported
+Python/platform process APIs are explicit test skips on the macOS lane, not
+successful process tests; the Linux lane exercises the process boundary.
+
 ## Verification and remaining product work
 
 Run the ordinary component checks from the repository root:
@@ -82,7 +115,7 @@ checks observed token usage and exact source/merge identities, and retains
 source/environment/model observations. Its two-source synthetic task is not a
 held-out retrieval benchmark. Read `python/SMOKE.md` for the fixed preparation.
 
-Still required before a product claim: a concrete supervised local driver joined
+Still required before a product claim: the concrete native local driver joined
 to the existing verified inference execution boundary and actual Agentd/Neuron
 consumer; authenticated current source/artifact validation; OS/device resource
 and terminal observation; cross-process durable resource ownership; end-to-end

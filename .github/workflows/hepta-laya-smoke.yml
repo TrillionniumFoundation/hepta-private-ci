@@ -27,12 +27,13 @@ concurrency:
 
 jobs:
   cpu-smoke:
-    name: Laya CPU (${{ matrix.lane }})
-    runs-on: macos-15
+    name: Laya CPU (${{ matrix.os }}, ${{ matrix.lane }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
+        os: [macos-15, ubuntu-24.04]
         lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -74,6 +75,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m venv "$RUNNER_TEMP/laya-env"
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            "$RUNNER_TEMP/laya-env/bin/python" -m pip install --disable-pip-version-check \
+              --report "$RUNNER_TEMP/laya-torch-install.json" 'torch==2.8.0' \
+              --index-url https://download.pytorch.org/whl/cpu
+          fi
           "$RUNNER_TEMP/laya-env/bin/python" -m pip install --disable-pip-version-check --report "$RUNNER_TEMP/laya-install.json" \
             'torch==2.8.0' 'transformers==4.56.2' 'tokenizers==0.22.0' \
             'safetensors==0.6.2' 'huggingface_hub==0.34.4' 'numpy==2.2.6' \
@@ -86,7 +92,9 @@ jobs:
       - name: Real pinned checkpoint load and bounded read-only predictions
         run: |
           set -euo pipefail
-          "$RUNNER_TEMP/laya-env/bin/python" codex-rs/hepta-infer-worker-host/python/laya_smoke.py --output "$RUNNER_TEMP/laya-smoke" 2>&1 | tee "$RUNNER_TEMP/laya-smoke.log"
+          EXTRA=()
+          if [[ "$RUNNER_OS" == "Linux" ]]; then EXTRA+=(--supervised); fi
+          "$RUNNER_TEMP/laya-env/bin/python" codex-rs/hepta-infer-worker-host/python/laya_smoke.py "${EXTRA[@]}" --output "$RUNNER_TEMP/laya-smoke" 2>&1 | tee "$RUNNER_TEMP/laya-smoke.log"
       - name: Require actual model observations on this tested tree
         env:
           TESTED: ${{ steps.merge.outputs.sha || env.SOURCE_SHA }}
@@ -109,16 +117,26 @@ jobs:
           assert observation['weights_parameters'] > 100_000_000
           assert observation['production_composition'] is False
           assert observation['held_out_efficacy'] is False
+          if os.environ['RUNNER_OS'] == 'Linux':
+              process = json.loads((root / 'process-observation.json').read_text())
+              assert process['transport']['eligible_reply'] is True
+              assert process['transport']['direct_child_exit_observed'] is True
+              assert process['transport']['returncode'] == 0
+              assert process['transport']['retry_allowed'] is False
+              assert process['transport']['observed_memory_bytes'] is None
+              assert process['decoded_reply']['input_tokens'] > 0
+              assert process['decoded_reply']['output_tokens'] == 0
           PY
           git diff --exit-code
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ always() }}
         with:
-          name: laya-real-model-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          name: laya-real-model-${{ matrix.os }}-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
           path: |
             ${{ runner.temp }}/laya-identity.txt
             ${{ runner.temp }}/laya-source.tar.gz
             ${{ runner.temp }}/laya-install.json
+            ${{ runner.temp }}/laya-torch-install.json
             ${{ runner.temp }}/laya-environment.txt
             ${{ runner.temp }}/laya-contracts.log
             ${{ runner.temp }}/laya-smoke.log
