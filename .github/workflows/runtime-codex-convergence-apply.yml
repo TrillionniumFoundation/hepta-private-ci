@@ -8,6 +8,7 @@ on:
       - scripts/runtime-codex-converge.py
       - scripts/runtime-codex-converge-phase2.py
       - scripts/runtime-codex-converge-phase3.py
+      - scripts/runtime-codex-converge-phase4.py
       - .github/workflows/runtime-codex-convergence-apply.yml
   pull_request:
     branches:
@@ -17,6 +18,7 @@ on:
       - scripts/runtime-codex-converge.py
       - scripts/runtime-codex-converge-phase2.py
       - scripts/runtime-codex-converge-phase3.py
+      - scripts/runtime-codex-converge-phase4.py
       - .github/workflows/runtime-codex-convergence-apply.yml
       - codex-rs/hepta-agentd/**
   workflow_dispatch:
@@ -42,7 +44,9 @@ jobs:
           ref: runtime-codex/convergence-v1
           persist-credentials: false
       - name: Apply idempotent source migrations
-        run: python3 scripts/runtime-codex-converge-phase3.py
+        run: python3 scripts/runtime-codex-converge-phase4.py
+      - name: Validate fault matrix
+        run: python3 scripts/check-runtime-codex-fault-matrix.py
       - name: Format changed Rust sources
         working-directory: codex-rs
         run: cargo fmt --all
