@@ -54,7 +54,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "--request-id" => request_id = Some(value),
             "--maximum-in-flight" => maximum_in_flight = Some(value.parse()?),
             "--context-query" => context_query = Some(value),
-            "--final-use-authority-config" => final_use_authority_config = Some(PathBuf::from(value)),
+            "--final-use-authority-config" => {
+                final_use_authority_config = Some(PathBuf::from(value))
+            }
             "--intelligence-run-id" => intelligence_run_id = Some(value),
             "--intelligence-revision" => intelligence_revision = Some(value.parse()?),
             "--intelligence-context-digest" => intelligence_context_digest = Some(value),
@@ -141,7 +143,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             }
             None => {
                 driver
-                    .run(&mut control, admission, prompt, context_query, &cancellation)
+                    .run(
+                        &mut control,
+                        admission,
+                        prompt,
+                        context_query,
+                        &cancellation,
+                    )
                     .await
             }
         }

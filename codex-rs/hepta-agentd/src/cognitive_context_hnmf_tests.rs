@@ -76,6 +76,9 @@ async fn fixture(
     let fleet = temp.path().join("fleet");
     std::fs::create_dir_all(&fleet).unwrap();
     let owner = AgentId::parse(format!("00000000-0000-4000-8000-{suffix:012}")).unwrap();
+    // Darwin temp roots can traverse /tmp or /var aliases. Canonicalize
+    // the fixture, not the production owner validation.
+    let fleet = fleet.canonicalize().unwrap();
     let layout = HeptaFleetRoot::parse(fleet).unwrap().layout().agent(&owner);
     let store = CognitiveStore::open(&layout).await.unwrap();
     let access = CognitiveAccess::agent_private(owner.clone());

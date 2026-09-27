@@ -407,13 +407,17 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
         .expect("physical turn start");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
         .expect("durable pre-turn stop");
     assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
+    let authority_entry = source
+        .find("verified_use.enter(&authority_binding)")
+        .expect("physical final-use authority entry");
+    assert!(revalidation < authority_entry);
+    assert!(authority_entry < turn_start);
     assert!(durable_stop < turn_start);
 }
 
@@ -450,8 +454,24 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    #[cfg(target_os = "linux")]
+    let sandbox_exe = Some(
+        core_test_support::find_codex_linux_sandbox_exe()
+            .expect("Linux sandbox helper for the real App Server fixture"),
+    );
+    #[cfg(not(target_os = "linux"))]
+    let sandbox_exe = None;
+    // core_test_support installs arg0 dispatch in this test executable.
+    // Passing the configured helper is not substituting a dummy process.
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        std::env::current_exe()?,
+        sandbox_exe,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;

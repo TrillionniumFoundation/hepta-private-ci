@@ -117,7 +117,9 @@ impl AppServerModelDriver {
             .into());
         }
         if record.state == NativeReservationState::Reserved {
-            return Err("request has not reached durable dispatch; reconcile-only never dispatches".into());
+            return Err(
+                "request has not reached durable dispatch; reconcile-only never dispatches".into(),
+            );
         }
         if let Some(output) = record
             .observation
@@ -130,9 +132,9 @@ impl AppServerModelDriver {
         }
         if let Some(reconciled) = self.reconcile_existing(&record, prompt).await? {
             let settled = control.settle_native(request_id, reconciled)?;
-            return settled.observation.ok_or_else(|| {
-                "durable reconciliation omitted its normalized observation".into()
-            });
+            return settled
+                .observation
+                .ok_or_else(|| "durable reconciliation omitted its normalized observation".into());
         }
         if let Some(output) = record.observation {
             return Ok(output);
@@ -159,9 +161,9 @@ impl AppServerModelDriver {
             codex_terminal_correlation_digest: None,
         };
         let settled = control.settle_native(request_id, output)?;
-        settled.observation.ok_or_else(|| {
-            "durable reconciliation omitted its normalized observation".into()
-        })
+        settled
+            .observation
+            .ok_or_else(|| "durable reconciliation omitted its normalized observation".into())
     }
 
     async fn run_bound(

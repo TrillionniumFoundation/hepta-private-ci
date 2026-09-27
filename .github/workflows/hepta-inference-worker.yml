@@ -32,7 +32,9 @@ concurrency:
 
 jobs:
   source:
-    runs-on: ubuntu-24.04
+    # These are platform-neutral source checks. Native Linux qualification is
+    # still independently mandatory below and is never inferred from this job.
+    runs-on: macos-15
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd

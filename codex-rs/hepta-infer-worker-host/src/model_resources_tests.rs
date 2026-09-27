@@ -4,7 +4,10 @@ use super::*;
 fn aggregate_reservations_precede_allocation_and_unused_guards_refund() {
     let manager = ResourceManager::new(/*generation*/ 3, /*limit_bytes*/ 4096);
     let first = manager.reserve(/*bytes*/ 3072).unwrap();
-    assert!(matches!(manager.reserve(/*bytes*/ 2048), Err(Error::ModelCapacity)));
+    assert!(matches!(
+        manager.reserve(/*bytes*/ 2048),
+        Err(Error::ModelCapacity)
+    ));
     assert_eq!(manager.snapshot().unwrap().reserved_bytes, 3072);
     drop(first);
     assert_eq!(manager.snapshot().unwrap().reserved_bytes, 0);
@@ -28,7 +31,10 @@ fn unknown_physical_outcome_never_refunds_or_reopens_generation() {
             fenced: true,
         }
     );
-    assert!(matches!(manager.reserve(/*bytes*/ 1), Err(Error::GenerationFenced)));
+    assert!(matches!(
+        manager.reserve(/*bytes*/ 1),
+        Err(Error::GenerationFenced)
+    ));
 }
 
 #[test]
@@ -48,6 +54,9 @@ fn aggregate_counter_overflow_does_not_mutate_reservation_state() {
     let manager = ResourceManager::new(/*generation*/ 3, u64::MAX);
     let _live = manager.reserve(u64::MAX).unwrap();
     let before = manager.snapshot().unwrap();
-    assert!(matches!(manager.reserve(/*bytes*/ 1), Err(Error::ArithmeticOverflow)));
+    assert!(matches!(
+        manager.reserve(/*bytes*/ 1),
+        Err(Error::ArithmeticOverflow)
+    ));
     assert_eq!(manager.snapshot().unwrap(), before);
 }

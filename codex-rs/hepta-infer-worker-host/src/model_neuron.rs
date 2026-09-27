@@ -82,7 +82,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         validate_identity(model_id, "model")?;
         validate_request(now_ms, &request.authorization)?;
         validate_neuron_feature_request(&request)?;
-        if self.active_requests.contains_key(&request.authorization.request_id)
+        if self
+            .active_requests
+            .contains_key(&request.authorization.request_id)
             || self.active_requests.len()
                 >= self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS)
         {
@@ -99,7 +101,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             return Err(Error::ModelMismatch);
         }
         if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens
-            || request.authorization.maximum_tokens > request.authorization.reservation_maximum_tokens
+            || request.authorization.maximum_tokens
+                > request.authorization.reservation_maximum_tokens
         {
             return Err(Error::TokenLimit);
         }
@@ -150,7 +153,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             model_id.to_string(),
         );
         let observed = self.driver.run_neuron_features(&loaded.handle, &request);
-        self.active_requests.remove(&request.authorization.request_id);
+        self.active_requests
+            .remove(&request.authorization.request_id);
         loaded.active_requests = loaded
             .active_requests
             .checked_sub(1)

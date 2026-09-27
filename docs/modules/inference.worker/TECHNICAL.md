@@ -1,5 +1,8 @@
 # inference.worker technical development guide
 
+Current remediation boundaries and exact-candidate evidence: [hardening status](../../../codex-rs/hepta-infer-worker-host/HARDENING_STATUS.md).
+Reconcile-only operating procedure: [recovery operations](../../../codex-rs/hepta-infer-worker-host/RECOVERY_OPERATIONS.md).
+
 Current executable behavior, component owners and implementation gaps: [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md).
 
 The native App Server worker now calls the same durable control owner for explicit local-slot admission, persisted dispatch identity, cancellation intent and actual observed settlement. Optional observed tokens remain unknown when absent; restarting a possibly dispatched request never replays it. This does not close economic quota, local weights/device or trusted post-crash provider-reconciliation gaps. The [native host guide](../../readiness/LANE_B_NATIVE_HOST.md#durable-inference-journal) specifies journal limits, CLI requirements and recovery semantics.
@@ -46,7 +49,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `inference.worker`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are subject to the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. Source presence and documentation closure do not assert that the current candidate has passed those checks; read the current source-head and merge-candidate receipts, including failures and skips. This status does not activate `inference.worker`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 

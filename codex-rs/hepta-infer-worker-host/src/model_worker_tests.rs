@@ -17,7 +17,9 @@ struct Driver {
 impl ModelDriver for Driver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
         if self.fail_load {
-            return Err(Error::DriverFailure("load acknowledgement lost".to_string()));
+            return Err(Error::DriverFailure(
+                "load acknowledgement lost".to_string(),
+            ));
         }
         self.loaded += 1;
         Ok(DriverModelHandle {
@@ -61,7 +63,10 @@ impl ModelDriver for Driver {
                 "device did not confirm unload".to_string(),
             ));
         }
-        self.loaded = self.loaded.checked_sub(1).ok_or(Error::ResourceAccounting)?;
+        self.loaded = self
+            .loaded
+            .checked_sub(1)
+            .ok_or(Error::ResourceAccounting)?;
         Ok(())
     }
 }
@@ -165,11 +170,21 @@ fn worker(driver: Driver) -> InferenceWorker<Driver> {
 #[test]
 fn loads_runs_and_unloads_exact_model_tuple() {
     let mut worker = worker(Driver::default());
-    assert!(worker.load_model(/*now_ms*/ 100, manifest()).unwrap().terminal_observed);
+    assert!(
+        worker
+            .load_model(/*now_ms*/ 100, manifest())
+            .unwrap()
+            .terminal_observed
+    );
     let observed = worker.run(/*now_ms*/ 100, "model.1", request()).unwrap();
     assert_eq!(observed.status, ExecutionStatus::Succeeded);
     assert!(observed.terminal_observed);
-    assert!(worker.unload_model(/*_now_ms*/ 100, "model.1").unwrap().terminal_observed);
+    assert!(
+        worker
+            .unload_model(/*_now_ms*/ 100, "model.1")
+            .unwrap()
+            .terminal_observed
+    );
     assert_eq!(worker.resource_snapshot().unwrap().reserved_bytes, 0);
 }
 
@@ -231,7 +246,9 @@ fn neuron_feature_request() -> NeuronFeatureRequest {
 fn executes_authenticated_neuron_feature_tuple_from_loaded_manifest() {
     let mut worker = worker(Driver::default());
     let expected_manifest = manifest();
-    worker.load_model(/*now_ms*/ 100, expected_manifest.clone()).unwrap();
+    worker
+        .load_model(/*now_ms*/ 100, expected_manifest.clone())
+        .unwrap();
     let observed = worker
         .run_neuron_features(/*now_ms*/ 100, "model.1", neuron_feature_request())
         .unwrap();
@@ -274,8 +291,14 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     let receipt = worker
         .run_neuron_features_receipt(/*now_ms*/ 100, "model.1", neuron_feature_request())
         .unwrap();
-    assert_eq!(receipt.runtime_tuple.weights_digest.to_string(), selected.weights_digest);
-    assert_eq!(receipt.runtime_tuple.tokenizer_digest.to_string(), selected.tokenizer_digest);
+    assert_eq!(
+        receipt.runtime_tuple.weights_digest.to_string(),
+        selected.weights_digest
+    );
+    assert_eq!(
+        receipt.runtime_tuple.tokenizer_digest.to_string(),
+        selected.tokenizer_digest
+    );
     assert_eq!(receipt.drive_q24, vec![1 << 24; 5]);
     assert_eq!(
         receipt.status,
@@ -294,10 +317,16 @@ fn aggregate_memory_rejects_second_load_before_driver_entry() {
     let mut second = manifest();
     second.model_id = "model.2".to_string();
     second.maximum_resident_bytes = 2_048;
-    assert_eq!(worker.load_model(/*now_ms*/ 100, second), Err(Error::ModelCapacity));
+    assert_eq!(
+        worker.load_model(/*now_ms*/ 100, second),
+        Err(Error::ModelCapacity)
+    );
     assert_eq!(worker.driver.loaded, 1);
     assert_eq!(worker.resource_snapshot().unwrap().reserved_bytes, 3_072);
-    assert_eq!(worker.run(/*now_ms*/ 100, "model.1", request()), Err(Error::ModelCapacity));
+    assert_eq!(
+        worker.run(/*now_ms*/ 100, "model.1", request()),
+        Err(Error::ModelCapacity)
+    );
     assert_eq!(worker.driver.run_calls, 0);
 }
 
@@ -311,7 +340,10 @@ fn unload_failure_preserves_handle_and_budget_for_cleanup_retry() {
     assert!(worker.unload_model(/*_now_ms*/ 100, "model.1").is_err());
     assert_eq!(worker.models["model.1"].handle.opaque_id, "handle.model.1");
     assert_eq!(worker.resource_snapshot().unwrap().reserved_bytes, 1_024);
-    assert_eq!(worker.run(/*now_ms*/ 100, "model.1", request()), Err(Error::GenerationFenced));
+    assert_eq!(
+        worker.run(/*now_ms*/ 100, "model.1", request()),
+        Err(Error::GenerationFenced)
+    );
     worker.driver.fail_unload = false;
     worker.unload_model(/*_now_ms*/ 20_000, "model.1").unwrap();
     assert_eq!(worker.driver.unload_calls, 2);
@@ -325,7 +357,10 @@ fn revoked_or_expired_grant_does_not_prevent_resource_cleanup() {
     let mut worker = worker(Driver::default());
     worker.load_model(/*now_ms*/ 100, manifest()).unwrap();
     worker.grant.revoked = true;
-    assert_eq!(worker.run(/*now_ms*/ 20_000, "model.1", request()), Err(Error::GrantRevoked));
+    assert_eq!(
+        worker.run(/*now_ms*/ 20_000, "model.1", request()),
+        Err(Error::GrantRevoked)
+    );
     worker.unload_model(/*_now_ms*/ 20_000, "model.1").unwrap();
     assert_eq!(worker.resource_snapshot().unwrap().reserved_bytes, 0);
 }
