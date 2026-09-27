@@ -1,0 +1,13 @@
+diff --git a/codex-rs/Cargo.lock b/codex-rs/Cargo.lock
+index af23f16..7445fc1 100644
+--- a/codex-rs/Cargo.lock
++++ b/codex-rs/Cargo.lock
+@@ -4026,7 +4026,7 @@ dependencies = [
+  "codex-hepta-types",
+  "ed25519-dalek",
+  "pretty_assertions",
+- "rustix",
++ "rustix 1.1.4",
+  "tempfile",
+ ]
+ 
