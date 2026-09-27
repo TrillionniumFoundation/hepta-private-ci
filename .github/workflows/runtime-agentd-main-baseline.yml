@@ -1,0 +1,62 @@
+name: Runtime Agentd main baseline evidence
+
+on:
+  workflow_run:
+    workflows: [blocking-ci]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: runtime-agentd-main-baseline
+  cancel-in-progress: false
+
+jobs:
+  consecutive-green:
+    name: Record three consecutive successful main candidates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout the exact triggering main candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify baseline evaluator regressions
+        run: python3 -B -m unittest -v scripts.qualification.test_runtime_agentd_main_baseline
+
+      - name: Require the latest three completed main blocking candidates
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TRIGGERING_RUN_ID: ${{ github.event.workflow_run.id }}
+          TRIGGERING_SHA: ${{ github.event.workflow_run.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TRIGGERING_SHA"
+          python3 -B scripts/qualification/runtime_agentd_main_baseline.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --workflow blocking-ci.yml \
+            --required-job "CI required" \
+            --count 3 \
+            --triggering-run-id "$TRIGGERING_RUN_ID" \
+            --triggering-sha "$TRIGGERING_SHA" \
+            --output "$RUNNER_TEMP/runtime-agentd-main-baseline.json"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Retain consecutive-main evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-agentd-main-baseline-${{ github.event.workflow_run.id }}
+          path: ${{ runner.temp }}/runtime-agentd-main-baseline.json
+          if-no-files-found: error
+          retention-days: 90
