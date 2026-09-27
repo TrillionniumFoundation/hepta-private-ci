@@ -110,7 +110,7 @@ impl IntuitionPolicyLearningSink {
             .writer
             .lock()
             .map_err(|_| AgentdIntuitionPolicyError::LearningLockPoisoned)?;
-        match writer.append_decision(expected_predecessor, request, evidence, now) {
+        match writer.append_decision(expected_predecessor, request, &evidence, now) {
             Ok(receipt) => Ok(receipt),
             Err(ProductionLedgerError::IndeterminateAfterLedgerCommit {
                 receipt,
@@ -719,10 +719,14 @@ fn validate_legacy_pins(
         return Err(AgentdIntuitionPolicyError::GenerationFence);
     }
     if pins.model_artifact_digest.is_zero() {
-        return Err(AgentdIntuitionPolicyError::InvalidHost("model artifact pin"));
+        return Err(AgentdIntuitionPolicyError::InvalidHost(
+            "model artifact pin",
+        ));
     }
     if pins.scorer_contract_digest.is_zero() {
-        return Err(AgentdIntuitionPolicyError::InvalidHost("scorer contract pin"));
+        return Err(AgentdIntuitionPolicyError::InvalidHost(
+            "scorer contract pin",
+        ));
     }
     if pins.rng_owner_digest.is_some_and(Digest32::is_zero) {
         return Err(AgentdIntuitionPolicyError::InvalidHost("rng owner pin"));
@@ -971,7 +975,11 @@ mod tests {
     #[test]
     fn failed_reconciliation_preserves_the_first_durable_commit() {
         let receipt = String::from("committed:event:7:chain:verified");
-        for failure in ["witness unavailable", "trust changed", "writer lock poisoned"] {
+        for failure in [
+            "witness unavailable",
+            "trust changed",
+            "writer lock poisoned",
+        ] {
             assert_eq!(
                 preserve_known_commit(receipt.clone(), Err(failure)),
                 Err(receipt.clone()),
@@ -1024,7 +1032,11 @@ mod tests {
                 10 => changed.rng_owner_digest = None,
                 _ => unreachable!(),
             }
-            assert_ne!(binding(&changed), original, "pin field {field} was not bound");
+            assert_ne!(
+                binding(&changed),
+                original,
+                "pin field {field} was not bound"
+            );
         }
     }
 }
