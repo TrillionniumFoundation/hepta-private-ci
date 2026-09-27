@@ -1,6 +1,7 @@
 name: Prompt registry operational closure bootstrap
 
-# Re-run on the current exact PR head after the predecessor was cancelled by later pushes.
+# Apply the reviewed source patch quickly; exact-head and synthetic-merge
+# qualification remain separate hard gates and retain all Rust validation.
 on:
   push:
     branches: [codex/prompt-registry-remediation-20260927]
@@ -12,13 +13,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: prompt-registry-operations-bootstrap-${{ github.sha }}
-  cancel-in-progress: false
+  group: prompt-registry-operations-bootstrap-current
+  cancel-in-progress: true
 
 jobs:
   apply:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -34,12 +35,6 @@ jobs:
           git diff --quiet
           git diff --cached --quiet
 
-      - name: Install pinned Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-        with:
-          toolchain: 1.95.0
-          components: rustfmt, clippy
-
       - name: Normalize reviewed bootstrap source
         shell: bash
         run: |
@@ -52,8 +47,10 @@ jobs:
           replacements = {
               "use std::fs::OpenOptions;\n": "#[cfg(unix)]\nuse std::fs::OpenOptions;\n",
               "use std::io::Write;\n": "#[cfg(unix)]\nuse std::io::Write;\n",
+              "use std::path::Path;\nuse std::time::Instant;\n": "use std::path::Path;\n#[cfg(unix)]\nuse std::time::Instant;\n",
               "use std::time::SystemTime;\n": "#[cfg(unix)]\nuse std::time::SystemTime;\n",
               "use std::time::UNIX_EPOCH;\n": "#[cfg(unix)]\nuse std::time::UNIX_EPOCH;\n",
+              "use super::prepare_directory;\n": "#[cfg(unix)]\nuse super::prepare_directory;\n",
               '"codex-rs/hepta-prompt-registry/src/durable.rs::tests",': '"codex-rs/hepta-prompt-registry/src/durable.rs",',
               '"codex-rs/hepta-prompt-registry/src/durable_maintenance.rs::tests",': '"codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",',
               '"codex-rs/hepta-prompt-registry/src/lib_tests.rs::final_use"': '"codex-rs/hepta-prompt-registry/src/lib_tests.rs"',
@@ -68,39 +65,31 @@ jobs:
                   raise SystemExit(f"missing reviewed bootstrap anchor: {old!r}")
               text = text.replace(old, new)
           path.write_text(text, encoding="utf-8")
+          compile(text, str(path), "exec")
           PY
 
       - name: Apply bounded operational closure
-        run: python3 scripts/apply-prompt-registry-operations.py
-
-      - name: Format and test prompt registry
-        working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --package codex-hepta-prompt-registry
-          cargo test --locked -p codex-hepta-prompt-registry -- --nocapture --test-threads=1
-          cargo test --locked -p codex-hepta-prompt-registry operational_ -- --ignored --nocapture --test-threads=1
-          cargo clippy --locked -p codex-hepta-prompt-registry --all-targets --no-deps -- -D warnings
-
-      - name: Validate generated Python and documents
-        shell: bash
-        run: |
-          set -euo pipefail
+          python3 scripts/apply-prompt-registry-operations.py
           python3 - <<'PY'
+          import json
           from pathlib import Path
-          compile(
-              Path("scripts/hepta-prompt-registry-map.py").read_text(encoding="utf-8"),
-              "scripts/hepta-prompt-registry-map.py",
-              "exec",
+
+          generator = Path("scripts/hepta-prompt-registry-map.py")
+          compile(generator.read_text(encoding="utf-8"), str(generator), "exec")
+          profile = json.loads(
+              Path("qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json")
+              .read_text(encoding="utf-8")
           )
+          row = next(item for item in profile["modules"] if item.get("module") == "prompt.registry")
+          if row.get("productTestsExecuted") is not False or row.get("deploymentQualified") is not False:
+              raise SystemExit("operational bootstrap must not assert product qualification")
           PY
-          python3 scripts/hepta-prompt-registry-map.py
-          python3 scripts/hepta-implementation-maps.py migrate --module prompt.registry
-          git checkout -- docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
           git diff --check
 
-      - name: Commit operational closure
+      - name: Commit unqualified operational source
         shell: bash
         run: |
           set -euo pipefail
