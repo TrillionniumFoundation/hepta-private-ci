@@ -146,22 +146,6 @@ fn validate_status_common(status: &Value, expected_kind: &str, qualification_fla
     Ok(QualificationWorkflowIdentity { repository, run_id, run_attempt })
 }
 
-fn validate_backup_publication(backup: &EvidenceBackupPublicationReceiptV1, frontier: &EvidenceRecoveryFrontierV2, now: u64, max_age_ms: u64) -> Result<(), AgentdError> {
-    validate_digest(&backup.snapshot_sha256, "backup snapshot")?;
-    validate_digest(&backup.backend_identity_sha256, "backup backend identity")?;
-    let snapshot_bytes = serde_json::to_vec(&frontier.snapshot)?;
-    if backup.schema_version != BACKUP_PUBLICATION_SCHEMA_VERSION || !backup.durable_acknowledged
-        || backup.store_id != frontier.store_id || backup.frontier_generation != frontier.frontier_generation
-        || backup.snapshot_sha256 != Sha256Digest::for_bytes(&snapshot_bytes)
-        || backup.backend_identity_sha256 != frontier.backend_identity_sha256
-        || backup.published_at_unix_ms > now.saturating_add(MAX_FUTURE_CLOCK_SKEW_MS)
-        || now.saturating_sub(backup.published_at_unix_ms) > max_age_ms
-    {
-        return Err(recovery_required("backup publication receipt is not a current durable witness for the frontier"));
-    }
-    Ok(())
-}
-
 fn qualification_receipt_set_sha256(exact_source: &Sha256Digest, merge_candidate: &Sha256Digest) -> Sha256Digest {
     let mut bytes = b"hepta.kernel.evidence.qualification-receipt-set.v1\0".to_vec();
     push_part(&mut bytes, exact_source.as_str().as_bytes());

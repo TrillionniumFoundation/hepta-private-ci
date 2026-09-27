@@ -9,7 +9,12 @@ use serde_json::Map;
 use serde_json::Value;
 use serde_json::json;
 
+use super::BACKUP_PUBLICATION_SCHEMA_VERSION;
+use super::BACKUP_RESTORE_WITNESS_SCHEMA_VERSION;
+use super::BUILD_PROVENANCE_SCHEMA_VERSION;
 use super::EvidenceBackupPublicationReceiptV1;
+use super::EvidenceBackupRestoreWitnessV1;
+use super::EvidenceBuildProvenanceV1;
 use super::qualification_receipt_set_sha256;
 use super::validate_backup_publication;
 use super::validate_qualification_receipts;
@@ -122,7 +127,7 @@ fn receipt(kind: &str, commit: &str, tree: &str) -> Vec<u8> {
 
 fn frontier() -> EvidenceRecoveryFrontierV2 {
     let snapshot = EvidenceRecoverySnapshotV1 {
-        schema_version: 1,
+        schema_version: 2,
         database_lineage: EVIDENCE_DATABASE_LINEAGE.to_string(),
         migration_set_sha256: Sha256Digest::for_bytes(b"migrations"),
         qualification_max_seq: 4,
@@ -150,6 +155,61 @@ fn frontier() -> EvidenceRecoveryFrontierV2 {
             signer_key_epoch: 1,
             signature_hex: "11".repeat(64),
         }],
+    }
+}
+
+fn backup_manifest(
+    frontier: &EvidenceRecoveryFrontierV2,
+    now: u64,
+) -> EvidenceBackupPublicationReceiptV1 {
+    let snapshot = serde_json::to_vec(&frontier.snapshot).unwrap();
+    let snapshot_sha256 = Sha256Digest::for_bytes(&snapshot);
+    let object_sha256 = Sha256Digest::for_bytes(b"sqlite-backup-object");
+    EvidenceBackupPublicationReceiptV1 {
+        schema_version: BACKUP_PUBLICATION_SCHEMA_VERSION,
+        store_id: frontier.store_id.clone(),
+        frontier_generation: frontier.frontier_generation,
+        snapshot_sha256: snapshot_sha256.clone(),
+        backend_identity_sha256: frontier.backend_identity_sha256.clone(),
+        backup_object_file_name: "kernel-evidence-backup.sqlite".to_string(),
+        backup_object_id: "backup:kernel-evidence:12".to_string(),
+        backup_object_version: "version:12".to_string(),
+        backup_object_length: 20,
+        backup_object_sha256: object_sha256.clone(),
+        storage_backend_identity_sha256: Sha256Digest::for_bytes(b"backup-storage"),
+        storage_acknowledgement_id: "storage-ack:12".to_string(),
+        storage_acknowledgement_sha256: Sha256Digest::for_bytes(b"storage-ack"),
+        build_provenance: EvidenceBuildProvenanceV1 {
+            schema_version: BUILD_PROVENANCE_SCHEMA_VERSION,
+            repository: "example/repo".to_string(),
+            source_commit: frontier.source_commit.clone(),
+            source_tree: frontier.source_tree.clone(),
+            workflow_run_id: 77,
+            workflow_run_attempt: 1,
+            workflow_job: "governed-build".to_string(),
+            workflow_artifact_id: 19,
+            workflow_artifact_url:
+                "https://github.com/example/repo/actions/runs/77/artifacts/19".to_string(),
+            workflow_artifact_sha256: Sha256Digest::for_bytes(b"build-artifact-archive"),
+            builder_principal_id: "builder:release".to_string(),
+            toolchain_sha256: Sha256Digest::for_bytes(b"toolchain"),
+            build_recipe_sha256: Sha256Digest::for_bytes(b"recipe"),
+            build_log_sha256: Sha256Digest::for_bytes(b"build-log"),
+            executable_sha256: frontier.build_artifact_sha256.clone(),
+            executable_length: 4096,
+            built_at_unix_ms: now - 30,
+        },
+        restore_witness: EvidenceBackupRestoreWitnessV1 {
+            schema_version: BACKUP_RESTORE_WITNESS_SCHEMA_VERSION,
+            witness_principal_id: "witness:restore".to_string(),
+            restored_object_sha256: object_sha256,
+            restored_snapshot_sha256: snapshot_sha256,
+            sqlite_integrity_check_sha256: Sha256Digest::for_bytes(b"sqlite-integrity"),
+            restored_at_unix_ms: now - 20,
+            successful: true,
+        },
+        published_at_unix_ms: now - 10,
+        durable_acknowledged: true,
     }
 }
 
@@ -182,41 +242,27 @@ fn failed_dirty_or_unretained_qualification_receipts_are_rejected() {
     let mut failed: Value = serde_json::from_slice(&exact).unwrap();
     failed["checks"]["docs"]["passed"] = json!(false);
     assert!(
-        validate_qualification_receipts(
-            &serde_json::to_vec(&failed).unwrap(),
-            &merge,
-        )
-        .is_err()
+        validate_qualification_receipts(&serde_json::to_vec(&failed).unwrap(), &merge).is_err()
     );
 
     let mut dirty: Value = serde_json::from_slice(&exact).unwrap();
     dirty["candidate"]["dirty"] = json!(true);
     assert!(
-        validate_qualification_receipts(
-            &serde_json::to_vec(&dirty).unwrap(),
-            &merge,
-        )
-        .is_err()
+        validate_qualification_receipts(&serde_json::to_vec(&dirty).unwrap(), &merge).is_err()
     );
 
     let mut no_artifact: Value = serde_json::from_slice(&exact).unwrap();
     no_artifact["artifact"] = Value::Null;
     assert!(
-        validate_qualification_receipts(
-            &serde_json::to_vec(&no_artifact).unwrap(),
-            &merge,
-        )
-        .is_err()
+        validate_qualification_receipts(&serde_json::to_vec(&no_artifact).unwrap(), &merge)
+            .is_err()
     );
 
     let mut self_promoted: Value = serde_json::from_slice(&exact).unwrap();
     self_promoted["releaseApproved"] = json!(true);
     assert!(
-        validate_qualification_receipts(
-            &serde_json::to_vec(&self_promoted).unwrap(),
-            &merge,
-        )
-        .is_err()
+        validate_qualification_receipts(&serde_json::to_vec(&self_promoted).unwrap(), &merge)
+            .is_err()
     );
 }
 
@@ -230,41 +276,26 @@ fn qualification_receipts_require_the_closed_world_check_inventory() {
     let mut missing: Value = serde_json::from_slice(&exact).unwrap();
     missing["checks"].as_object_mut().unwrap().remove("docs");
     assert!(
-        validate_qualification_receipts(
-            &serde_json::to_vec(&missing).unwrap(),
-            &merge,
-        )
-        .is_err()
+        validate_qualification_receipts(&serde_json::to_vec(&missing).unwrap(), &merge).is_err()
     );
 
     let mut extra: Value = serde_json::from_slice(&exact).unwrap();
     extra["checks"]["unreviewed-extra"] = check_record("unreviewed-extra");
     assert!(
-        validate_qualification_receipts(
-            &serde_json::to_vec(&extra).unwrap(),
-            &merge,
-        )
-        .is_err()
+        validate_qualification_receipts(&serde_json::to_vec(&extra).unwrap(), &merge).is_err()
     );
 
     let mut forged_shape: Value = serde_json::from_slice(&exact).unwrap();
     forged_shape["checks"]["docs"]["commandExitCode"] = json!(1);
     assert!(
-        validate_qualification_receipts(
-            &serde_json::to_vec(&forged_shape).unwrap(),
-            &merge,
-        )
-        .is_err()
+        validate_qualification_receipts(&serde_json::to_vec(&forged_shape).unwrap(), &merge)
+            .is_err()
     );
 
     let mut no_log: Value = serde_json::from_slice(&exact).unwrap();
     no_log["checks"]["docs"]["log"] = Value::Null;
     assert!(
-        validate_qualification_receipts(
-            &serde_json::to_vec(&no_log).unwrap(),
-            &merge,
-        )
-        .is_err()
+        validate_qualification_receipts(&serde_json::to_vec(&no_log).unwrap(), &merge).is_err()
     );
 }
 
@@ -280,21 +311,14 @@ fn qualification_receipts_must_share_one_workflow_identity() {
     other_run["artifact"]["url"] =
         json!("https://github.com/example/repo/actions/runs/12346/artifacts/9");
     assert!(
-        validate_qualification_receipts(
-            &exact,
-            &serde_json::to_vec(&other_run).unwrap(),
-        )
-        .is_err()
+        validate_qualification_receipts(&exact, &serde_json::to_vec(&other_run).unwrap()).is_err()
     );
 
     let mut other_attempt: Value = serde_json::from_slice(&merge).unwrap();
     other_attempt["workflow"]["workflowRunAttempt"] = json!("2");
     assert!(
-        validate_qualification_receipts(
-            &exact,
-            &serde_json::to_vec(&other_attempt).unwrap(),
-        )
-        .is_err()
+        validate_qualification_receipts(&exact, &serde_json::to_vec(&other_attempt).unwrap())
+            .is_err()
     );
 }
 
@@ -309,22 +333,14 @@ fn qualification_artifact_and_merge_parent_identity_are_exact() {
     wrong_url["artifact"]["url"] =
         json!("https://github.com/example/repo/actions/runs/12345/artifacts/10");
     assert!(
-        validate_qualification_receipts(
-            &serde_json::to_vec(&wrong_url).unwrap(),
-            &merge,
-        )
-        .is_err()
+        validate_qualification_receipts(&serde_json::to_vec(&wrong_url).unwrap(), &merge)
+            .is_err()
     );
 
     let mut reversed: Value = serde_json::from_slice(&merge).unwrap();
-    reversed["candidate"]["parents"] =
-        json!([commit, "1".repeat(40)]);
+    reversed["candidate"]["parents"] = json!([commit, "1".repeat(40)]);
     assert!(
-        validate_qualification_receipts(
-            &exact,
-            &serde_json::to_vec(&reversed).unwrap(),
-        )
-        .is_err()
+        validate_qualification_receipts(&exact, &serde_json::to_vec(&reversed).unwrap()).is_err()
     );
 }
 
@@ -339,27 +355,82 @@ fn qualification_receipt_set_digest_is_ordered() {
 }
 
 #[test]
-fn backup_publication_must_match_snapshot_backend_generation_and_durability() {
+fn backup_publication_binds_real_object_build_and_restore_witness() {
     let frontier = frontier();
     let now = 1_900_000_000_100;
-    let snapshot = serde_json::to_vec(&frontier.snapshot).unwrap();
-    let valid = EvidenceBackupPublicationReceiptV1 {
-        schema_version: 1,
-        store_id: frontier.store_id.clone(),
-        frontier_generation: frontier.frontier_generation,
-        snapshot_sha256: Sha256Digest::for_bytes(&snapshot),
-        backend_identity_sha256: frontier.backend_identity_sha256.clone(),
-        published_at_unix_ms: now - 10,
-        durable_acknowledged: true,
-    };
-    validate_backup_publication(&valid, &frontier, now, 1_000)
-        .expect("valid durable backup witness");
+    let valid = backup_manifest(&frontier, now);
+    validate_backup_publication(
+        &valid,
+        &frontier,
+        &frontier.build_artifact_sha256,
+        now,
+        1_000,
+    )
+    .expect("valid durable backup, build and restore witness");
 
     let mut invalid = valid.clone();
     invalid.durable_acknowledged = false;
-    assert!(validate_backup_publication(&invalid, &frontier, now, 1_000).is_err());
+    assert!(
+        validate_backup_publication(
+            &invalid,
+            &frontier,
+            &frontier.build_artifact_sha256,
+            now,
+            1_000,
+        )
+        .is_err()
+    );
+
+    invalid = valid.clone();
+    invalid.frontier_generation += 1;
+    assert!(
+        validate_backup_publication(
+            &invalid,
+            &frontier,
+            &frontier.build_artifact_sha256,
+            now,
+            1_000,
+        )
+        .is_err()
+    );
+
+    invalid = valid.clone();
+    invalid.build_provenance.source_commit = "c".repeat(40);
+    assert!(
+        validate_backup_publication(
+            &invalid,
+            &frontier,
+            &frontier.build_artifact_sha256,
+            now,
+            1_000,
+        )
+        .is_err()
+    );
+
+    invalid = valid.clone();
+    invalid.restore_witness.restored_object_sha256 =
+        Sha256Digest::for_bytes(b"another-backup");
+    assert!(
+        validate_backup_publication(
+            &invalid,
+            &frontier,
+            &frontier.build_artifact_sha256,
+            now,
+            1_000,
+        )
+        .is_err()
+    );
 
     invalid = valid;
-    invalid.frontier_generation += 1;
-    assert!(validate_backup_publication(&invalid, &frontier, now, 1_000).is_err());
+    invalid.backup_object_file_name = "../escaped.sqlite".to_string();
+    assert!(
+        validate_backup_publication(
+            &invalid,
+            &frontier,
+            &frontier.build_artifact_sha256,
+            now,
+            1_000,
+        )
+        .is_err()
+    );
 }

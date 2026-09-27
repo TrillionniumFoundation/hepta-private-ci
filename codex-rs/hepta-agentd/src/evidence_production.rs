@@ -35,9 +35,12 @@ use crate::evidence_frontier_signers::EvidenceFrontierSignerTrustV2;
 use crate::evidence_trust::read_owner_file;
 
 const PRODUCTION_CONFIG_SCHEMA_VERSION: u32 = 1;
-const BACKUP_PUBLICATION_SCHEMA_VERSION: u32 = 1;
+const BACKUP_PUBLICATION_SCHEMA_VERSION: u32 = 2;
+const BUILD_PROVENANCE_SCHEMA_VERSION: u32 = 1;
+const BACKUP_RESTORE_WITNESS_SCHEMA_VERSION: u32 = 1;
 const MAX_EXTERNAL_CONTROL_FILE_BYTES: u64 = 2 * 1024 * 1024;
 const MAX_EXECUTABLE_BYTES: u64 = 4 * 1024 * 1024 * 1024;
+const MAX_BACKUP_OBJECT_BYTES: u64 = 4_u64 * 1024 * 1024 * 1024 * 1024;
 const MAX_FRONTIER_AGE_MS: u64 = 30 * 24 * 60 * 60 * 1000;
 const MAX_FUTURE_CLOCK_SKEW_MS: u64 = 5 * 60 * 1000;
 const REQUIRED_QUALIFICATION_CHECKS: [&str; 5] = [
@@ -71,18 +74,6 @@ struct EvidenceProductionConfigV1 {
     frontier_max_age_ms: u64,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct EvidenceBackupPublicationReceiptV1 {
-    schema_version: u32,
-    store_id: String,
-    frontier_generation: u64,
-    snapshot_sha256: Sha256Digest,
-    backend_identity_sha256: Sha256Digest,
-    published_at_unix_ms: u64,
-    durable_acknowledged: bool,
-}
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct QualifiedSourceIdentity {
     source_commit: String,
@@ -95,6 +86,8 @@ struct QualificationWorkflowIdentity {
     run_id: u64,
     run_attempt: u64,
 }
+
+include!("evidence_backup_manifest.rs");
 
 pub(crate) fn is_production_evidence_profile(
     identity: &AgentdIdentity,
@@ -212,7 +205,24 @@ pub(crate) async fn verify_production_evidence_frontier(
         ));
     }
     signer_trust.verify(&frontier)?;
-    validate_backup_publication(&backup, &frontier, now, config.frontier_max_age_ms)?;
+    validate_backup_publication(
+        &backup,
+        &frontier,
+        &build_artifact_sha256,
+        now,
+        config.frontier_max_age_ms,
+    )?;
+    verify_backup_object(
+        &backup,
+        &root,
+        identity,
+        &[
+            signer_trust_file,
+            config.exact_source_receipt_file.as_path(),
+            config.merge_candidate_receipt_file.as_path(),
+            config.backup_publication_receipt_file.as_path(),
+        ],
+    )?;
     if evidence_recovery_ledger_root_v2(&frontier.snapshot) != frontier.ledger_root_sha256 {
         return Err(recovery_required(
             "signed snapshot does not match its ledger root",
