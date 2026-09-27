@@ -1,0 +1,387 @@
+//! Generation-bound numeric registry admission and verifiable V2 receipts.
+//!
+//! The existing V1 registered receipt remains a content-addressed compatibility
+//! receipt. V2 adds a caller-owned monotonic snapshot generation, explicit
+//! definition digests and a full recomputation verifier without changing V1.
+
+use std::error::Error;
+use std::fmt;
+
+use crate::CanonicalDigestError;
+use crate::CanonicalFieldV1;
+use crate::CanonicalValueV1;
+use crate::ContractRegistryV1;
+use crate::Digest32;
+use crate::Generation;
+use crate::NonAuthorizingPosture;
+use crate::NumericConversionError;
+use crate::NumericConversionReceiptV1;
+use crate::NumericSignalSchemaV1;
+use crate::NumericSignalV1;
+use crate::RegistryError;
+use crate::StableId;
+use crate::canonical_digest_v1;
+use crate::rescale_signal_registered;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct RegistrySnapshotIdentityV1 {
+    generation: Generation,
+    registry_digest: Digest32,
+}
+
+impl RegistrySnapshotIdentityV1 {
+    pub fn new(
+        generation: Generation,
+        registry_digest: Digest32,
+    ) -> Result<Self, NumericRegistryV2Error> {
+        if registry_digest.is_zero() {
+            return Err(NumericRegistryV2Error::EmptyDigest("registry"));
+        }
+        Ok(Self {
+            generation,
+            registry_digest,
+        })
+    }
+
+    pub fn from_registry(
+        generation: Generation,
+        registry: &ContractRegistryV1,
+    ) -> Result<Self, NumericRegistryV2Error> {
+        Self::new(generation, registry.registry_digest()?)
+    }
+
+    #[must_use]
+    pub const fn generation(self) -> Generation {
+        self.generation
+    }
+
+    #[must_use]
+    pub const fn registry_digest(self) -> Digest32 {
+        self.registry_digest
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RegisteredNumericConversionReceiptV2 {
+    conversion: NumericConversionReceiptV1,
+    registry_snapshot: RegistrySnapshotIdentityV1,
+    source_profile_definition_digest: Digest32,
+    target_profile_definition_digest: Digest32,
+    normalization_definition_digest: Digest32,
+    conversion_receipt_digest: Digest32,
+    admission_digest: Digest32,
+    authority: NonAuthorizingPosture,
+}
+
+impl RegisteredNumericConversionReceiptV2 {
+    #[must_use]
+    pub fn conversion(&self) -> &NumericConversionReceiptV1 {
+        &self.conversion
+    }
+
+    #[must_use]
+    pub const fn registry_snapshot(&self) -> RegistrySnapshotIdentityV1 {
+        self.registry_snapshot
+    }
+
+    #[must_use]
+    pub const fn source_profile_definition_digest(&self) -> Digest32 {
+        self.source_profile_definition_digest
+    }
+
+    #[must_use]
+    pub const fn target_profile_definition_digest(&self) -> Digest32 {
+        self.target_profile_definition_digest
+    }
+
+    #[must_use]
+    pub const fn normalization_definition_digest(&self) -> Digest32 {
+        self.normalization_definition_digest
+    }
+
+    #[must_use]
+    pub const fn conversion_receipt_digest(&self) -> Digest32 {
+        self.conversion_receipt_digest
+    }
+
+    #[must_use]
+    pub const fn admission_digest(&self) -> Digest32 {
+        self.admission_digest
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> NonAuthorizingPosture {
+        self.authority
+    }
+
+    pub fn verify(
+        &self,
+        source: &NumericSignalV1,
+        target: &NumericSignalSchemaV1,
+        registry: &ContractRegistryV1,
+    ) -> Result<NumericSignalV1, NumericRegistryV2Error> {
+        let (output, expected) = rescale_signal_registered_v2(
+            source,
+            target,
+            registry,
+            self.registry_snapshot.generation,
+        )?;
+        if &expected != self {
+            return Err(NumericRegistryV2Error::ReceiptMismatch);
+        }
+        Ok(output)
+    }
+}
+
+pub fn rescale_signal_registered_v2(
+    source: &NumericSignalV1,
+    target: &NumericSignalSchemaV1,
+    registry: &ContractRegistryV1,
+    generation: Generation,
+) -> Result<(NumericSignalV1, RegisteredNumericConversionReceiptV2), NumericRegistryV2Error> {
+    let source_definition = registry.require_numeric_profile(source.schema.profile)?;
+    let target_definition = registry.require_numeric_profile(target.profile)?;
+    if source.schema.normalization_digest != target.normalization_digest {
+        return Err(NumericRegistryV2Error::Numeric(
+            NumericConversionError::NormalizationMismatch,
+        ));
+    }
+    let normalization_definition =
+        registry.require_normalization(source.schema.normalization_digest)?;
+    let (output, registered_v1) = rescale_signal_registered(source, target, registry)?;
+    let registry_snapshot = RegistrySnapshotIdentityV1::from_registry(generation, registry)?;
+    let conversion_receipt_digest = conversion_receipt_digest(&registered_v1.conversion)?;
+    let source_profile_definition_digest = source_definition.digest();
+    let target_profile_definition_digest = target_definition.digest();
+    let normalization_definition_digest = normalization_definition.digest();
+    let admission_digest = admission_digest_v2(
+        registry_snapshot,
+        source_profile_definition_digest,
+        target_profile_definition_digest,
+        normalization_definition_digest,
+        conversion_receipt_digest,
+    )?;
+    Ok((
+        output,
+        RegisteredNumericConversionReceiptV2 {
+            conversion: registered_v1.conversion,
+            registry_snapshot,
+            source_profile_definition_digest,
+            target_profile_definition_digest,
+            normalization_definition_digest,
+            conversion_receipt_digest,
+            admission_digest,
+            authority: NonAuthorizingPosture::DENY_ALL,
+        },
+    ))
+}
+
+fn conversion_receipt_digest(
+    receipt: &NumericConversionReceiptV1,
+) -> Result<Digest32, NumericRegistryV2Error> {
+    let type_id = StableId::new("platform.types:numeric-conversion-receipt-v1")
+        .map_err(|_| NumericRegistryV2Error::InvalidTypeIdentity)?;
+    let fields = [
+        CanonicalFieldV1 {
+            name: "error_denominator",
+            value: CanonicalValueV1::U128(receipt.absolute_error_bound.denominator),
+        },
+        CanonicalFieldV1 {
+            name: "error_numerator",
+            value: CanonicalValueV1::U128(receipt.absolute_error_bound.numerator),
+        },
+        CanonicalFieldV1 {
+            name: "evidence_digest",
+            value: CanonicalValueV1::Digest(receipt.evidence_digest),
+        },
+        CanonicalFieldV1 {
+            name: "output_digest",
+            value: CanonicalValueV1::Digest(receipt.output_digest),
+        },
+        CanonicalFieldV1 {
+            name: "source_digest",
+            value: CanonicalValueV1::Digest(receipt.source_digest),
+        },
+        CanonicalFieldV1 {
+            name: "source_profile",
+            value: CanonicalValueV1::Text(receipt.source_profile.id()),
+        },
+        CanonicalFieldV1 {
+            name: "target_profile",
+            value: CanonicalValueV1::Text(receipt.target_profile.id()),
+        },
+    ];
+    canonical_digest_v1(&type_id, 1, &fields).map_err(NumericRegistryV2Error::Canonical)
+}
+
+fn admission_digest_v2(
+    snapshot: RegistrySnapshotIdentityV1,
+    source_profile_definition_digest: Digest32,
+    target_profile_definition_digest: Digest32,
+    normalization_definition_digest: Digest32,
+    conversion_receipt_digest: Digest32,
+) -> Result<Digest32, NumericRegistryV2Error> {
+    for (name, digest) in [
+        ("source profile definition", source_profile_definition_digest),
+        ("target profile definition", target_profile_definition_digest),
+        ("normalization definition", normalization_definition_digest),
+        ("conversion receipt", conversion_receipt_digest),
+    ] {
+        if digest.is_zero() {
+            return Err(NumericRegistryV2Error::EmptyDigest(name));
+        }
+    }
+    let type_id = StableId::new("platform.types:numeric-registry-admission-v2")
+        .map_err(|_| NumericRegistryV2Error::InvalidTypeIdentity)?;
+    let fields = [
+        CanonicalFieldV1 {
+            name: "conversion_receipt_digest",
+            value: CanonicalValueV1::Digest(conversion_receipt_digest),
+        },
+        CanonicalFieldV1 {
+            name: "normalization_definition_digest",
+            value: CanonicalValueV1::Digest(normalization_definition_digest),
+        },
+        CanonicalFieldV1 {
+            name: "registry_digest",
+            value: CanonicalValueV1::Digest(snapshot.registry_digest),
+        },
+        CanonicalFieldV1 {
+            name: "registry_generation",
+            value: CanonicalValueV1::U64(snapshot.generation.get()),
+        },
+        CanonicalFieldV1 {
+            name: "source_profile_definition_digest",
+            value: CanonicalValueV1::Digest(source_profile_definition_digest),
+        },
+        CanonicalFieldV1 {
+            name: "target_profile_definition_digest",
+            value: CanonicalValueV1::Digest(target_profile_definition_digest),
+        },
+    ];
+    canonical_digest_v1(&type_id, 2, &fields).map_err(NumericRegistryV2Error::Canonical)
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum NumericRegistryV2Error {
+    Numeric(NumericConversionError),
+    Registry(RegistryError),
+    EmptyDigest(&'static str),
+    InvalidTypeIdentity,
+    ReceiptMismatch,
+    Canonical(CanonicalDigestError),
+}
+
+impl From<NumericConversionError> for NumericRegistryV2Error {
+    fn from(value: NumericConversionError) -> Self {
+        Self::Numeric(value)
+    }
+}
+
+impl From<RegistryError> for NumericRegistryV2Error {
+    fn from(value: RegistryError) -> Self {
+        Self::Registry(value)
+    }
+}
+
+impl fmt::Display for NumericRegistryV2Error {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+
+impl Error for NumericRegistryV2Error {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::IdProfileV1;
+    use crate::NumericProfileDefinitionV1;
+    use crate::NumericProfileV1;
+    use crate::RegistryDefinitionV1;
+    use crate::RegistryKindV1;
+    use crate::SignalUnitV1;
+    use crate::validate_id;
+
+    fn fixture() -> (ContractRegistryV1, NumericSignalV1, NumericSignalSchemaV1) {
+        let normalization = RegistryDefinitionV1::new(
+            RegistryKindV1::Normalization,
+            validate_id("normalization:identity", IdProfileV1::Normalization)
+                .expect("normalization id"),
+            1,
+            "scale=identity;clamp=none",
+        )
+        .expect("normalization");
+        let normalization_digest = normalization.digest();
+        let registry = ContractRegistryV1::new_with_numeric_profiles(
+            vec![normalization],
+            vec![
+                NumericProfileDefinitionV1::canonical(NumericProfileV1::HnmfPpmTowardZero)
+                    .expect("source profile"),
+                NumericProfileDefinitionV1::canonical(
+                    NumericProfileV1::SignedQ24NearestTiesEven,
+                )
+                .expect("target profile"),
+            ],
+        )
+        .expect("registry");
+        let source = NumericSignalV1 {
+            schema: NumericSignalSchemaV1 {
+                profile: NumericProfileV1::HnmfPpmTowardZero,
+                unit: SignalUnitV1::Utility,
+                shape: vec![2],
+                minimum_raw: -1_000_000,
+                maximum_raw: 1_000_000,
+                normalization_digest,
+            },
+            values: vec![250_000, -250_000],
+        };
+        let target = NumericSignalSchemaV1 {
+            profile: NumericProfileV1::SignedQ24NearestTiesEven,
+            ..source.schema.clone()
+        };
+        (registry, source, target)
+    }
+
+    #[test]
+    fn v2_binds_generation_and_every_definition_digest() {
+        let (registry, source, target) = fixture();
+        let generation = Generation::new(7).expect("generation");
+        let (_, receipt) =
+            rescale_signal_registered_v2(&source, &target, &registry, generation)
+                .expect("registered conversion");
+        assert_eq!(receipt.registry_snapshot().generation(), generation);
+        assert!(!receipt.source_profile_definition_digest().is_zero());
+        assert!(!receipt.target_profile_definition_digest().is_zero());
+        assert!(!receipt.normalization_definition_digest().is_zero());
+        assert!(!receipt.conversion_receipt_digest().is_zero());
+        assert_eq!(receipt.authority(), NonAuthorizingPosture::DENY_ALL);
+        receipt.verify(&source, &target, &registry).expect("verified");
+
+        let (_, later) = rescale_signal_registered_v2(
+            &source,
+            &target,
+            &registry,
+            Generation::new(8).expect("generation"),
+        )
+        .expect("later generation");
+        assert_ne!(receipt.admission_digest(), later.admission_digest());
+    }
+
+    #[test]
+    fn v2_verifier_rejects_tampered_receipt() {
+        let (registry, source, target) = fixture();
+        let (_, mut receipt) = rescale_signal_registered_v2(
+            &source,
+            &target,
+            &registry,
+            Generation::new(1).expect("generation"),
+        )
+        .expect("registered conversion");
+        receipt.admission_digest = Digest32::of_bytes(b"tampered");
+        assert_eq!(
+            receipt.verify(&source, &target, &registry),
+            Err(NumericRegistryV2Error::ReceiptMismatch)
+        );
+    }
+}

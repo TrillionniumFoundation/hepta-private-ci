@@ -14,7 +14,9 @@ mod identity;
 mod manifests;
 mod numeric_conversion;
 mod numeric_profile;
+pub mod numeric_registry_v2;
 mod prompt_delivery;
+pub mod prompt_delivery_v2;
 mod registry;
 mod topology;
 
