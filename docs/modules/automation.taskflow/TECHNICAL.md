@@ -160,12 +160,15 @@ Agentd uses separate per-cycle budgets:
 - provider in-flight limit: one, preserving the existing serial provider seam.
 
 Recovery snapshots a bounded set of distinct frontier rows once per cycle.
-Unknown dispatches are selected first by oldest `observed_at_ms`; any remaining
-budget selects admitted/running/indeterminate occurrences by oldest
-`updated_at_ms`. Each selected row is contacted at most once in that cycle, so a
-single in-progress turn cannot consume the full recovery budget. A retryable
-recovery failure consumes an independent backoff budget and blocks new admission
-for that cycle.
+Unknown dispatches are selected first by oldest `observed_at_ms`; admitted,
+running or indeterminate occurrences are selected by oldest `updated_at_ms`.
+When both frontiers are non-empty and the budget exceeds one, one slot is
+reserved for terminal observation and every remaining slot continues to favor
+unknown dispatch. With a one-item budget, unknown dispatch retains priority.
+Each selected row is contacted at most once in that cycle, so neither one
+in-progress turn nor a sustained unknown backlog can consume all terminal
+observation capacity. A retryable recovery failure consumes an independent
+backoff budget and blocks new admission for that cycle.
 
 New due admission remains ordered by canonical `scheduled_for_ms`, task ID and
 occurrence. The scheduler samples a fresh host clock for every occurrence in a
@@ -235,13 +238,16 @@ Cross-host recovery is now explicitly specified by
 - an exact SQLite checkpoint digest exists;
 - an externally enforced host-fence receipt is bound;
 - source and target hosts differ;
-- the target opens schema v19 at exactly source epoch + 1.
+- the target opens schema v19 at exactly source epoch + 1;
+- the owner Agent read from the copied target store exactly matches the manifest owner.
 
 A deserialized manifest re-parses the canonical owner Agent ID and recomputes the
 manifest digest, so a caller cannot legitimize a malformed owner merely by
-recomputing the outer hash. The module does not claim to provide storage
-transport or distributed consensus. The deployment controller owns byte transfer
-and the external host lease. A target tuple mismatch returns `TimerFenced`.
+recomputing the outer hash. Target admission compares the owner read from the
+copied v19 store rather than trusting the manifest to attest to itself. The
+module does not claim to provide storage transport or distributed consensus. The
+deployment controller owns byte transfer and the external host lease. A target
+host, owner, schema, epoch or checkpoint mismatch returns `TimerFenced`.
 
 ## 7. Calendar V2 and timezone evidence
 
