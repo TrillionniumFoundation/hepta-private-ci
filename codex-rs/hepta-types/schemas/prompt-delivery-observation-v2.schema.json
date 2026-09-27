@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hepta.invalid/schemas/platform.types/prompt-delivery-observation-v2.schema.json",
+  "title": "PromptDeliveryObservationV2 strict JSON transport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "compilation_id",
+    "provider_request_digest",
+    "delivered",
+    "rejected_reason",
+    "observed_token_positions",
+    "truncation_observed",
+    "legacy_v1_digest"
+  ],
+  "properties": {
+    "kind": { "const": "prompt_delivery_observation_v2" },
+    "compilation_id": { "$ref": "#/$defs/stableId" },
+    "provider_request_digest": { "$ref": "#/$defs/nonzeroDigest" },
+    "delivered": { "type": "boolean" },
+    "rejected_reason": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/stableId64" }
+      ]
+    },
+    "observed_token_positions": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8192,
+          "items": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+          "x-hepta-invariant": "strictly_increasing"
+        }
+      ]
+    },
+    "truncation_observed": { "type": "boolean" },
+    "legacy_v1_digest": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/nonzeroDigest" }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "delivered": { "const": true } } },
+      "then": { "properties": { "rejected_reason": { "type": "null" } } },
+      "else": { "properties": { "rejected_reason": { "$ref": "#/$defs/stableId64" } } }
+    }
+  ],
+  "$defs": {
+    "stableId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "stableId64": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "nonzeroDigest": { "type": "string", "pattern": "^(?!0{64}$)[0-9a-f]{64}$" }
+  }
+}
