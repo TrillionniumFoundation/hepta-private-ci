@@ -22,6 +22,7 @@ on:
       - codex-rs/justfile
       - MODULE.bazel*
       - docs/modules/context.compiler/**
+      - qualification/context-compiler/**
       - qualification/module-execution-dossiers/detail/context.compiler.md
       - scripts/context_compiler_*.py
       - scripts/test_context_compiler_*.py
@@ -30,6 +31,7 @@ on:
     branches:
       - main
       - codex/context-compiler-full-closure-review-20260927
+      - codex/context-compiler-v3-closure-20260928
   workflow_dispatch:
     inputs:
       base_sha:
@@ -43,15 +45,11 @@ permissions:
   contents: read
 
 concurrency:
-  group: context-compiler-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-env:
-  MATERIALIZATION_PUSH: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[materialize-v3]') }}
+  group: context-compiler-${{ github.event_name }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
 
 jobs:
   identity:
-    if: ${{ env.MATERIALIZATION_PUSH != 'true' }}
     runs-on: ubuntu-24.04
     outputs:
       source: ${{ steps.identity.outputs.source }}
@@ -88,9 +86,40 @@ jobs:
           test "$(git cat-file -t "$SOURCE")" = commit
           test "$BASE" != "$SOURCE"
           printf 'source=%s\nbase=%s\n' "$SOURCE" "$BASE" >> "$GITHUB_OUTPUT"
+      - name: Reject source-writing context qualification machinery
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B - <<'PY'
+          from pathlib import Path
+          forbidden = (
+              'contents: write',
+              'persist-credentials: true',
+              'git push',
+              'git commit',
+              'apply_context_compiler_',
+              'remediate_context_compiler_',
+          )
+          offenders = []
+          for path in sorted(Path('.github/workflows').glob('context-compiler*.yml')):
+              if path.name == 'context-compiler-v3-source-bundle.yml':
+                  # Ephemeral source generation is read-only and is never a qualification receipt.
+                  text = path.read_text(encoding='utf-8')
+                  if 'permissions:\n  contents: read' not in text:
+                      offenders.append(f'{path}: missing contents: read')
+                  for token in ('contents: write', 'persist-credentials: true', 'git push'):
+                      if token in text:
+                          offenders.append(f'{path}: {token}')
+                  continue
+              text = path.read_text(encoding='utf-8')
+              for token in forbidden:
+                  if token in text:
+                      offenders.append(f'{path}: {token}')
+          if offenders:
+              raise SystemExit('source-writing context workflow detected:\n' + '\n'.join(offenders))
+          PY
 
   source-snapshot:
-    if: ${{ env.MATERIALIZATION_PUSH != 'true' }}
     needs: identity
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -104,13 +133,31 @@ jobs:
         shell: bash
         env:
           SOURCE: ${{ needs.identity.outputs.source }}
+          BASE: ${{ needs.identity.outputs.base }}
+          WORKFLOW_REF: ${{ github.workflow_ref }}
+          WORKFLOW_SHA: ${{ github.workflow_sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          RUNNER_IMAGE: ${{ runner.image }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE"
           mkdir -p "$RUNNER_TEMP/context-source"
           git archive --format=tar.gz --output="$RUNNER_TEMP/context-source/source.tar.gz" "$SOURCE"
           printf '%s\n' "$SOURCE" > "$RUNNER_TEMP/context-source/source-sha.txt"
+          printf '%s\n' "$BASE" > "$RUNNER_TEMP/context-source/base-sha.txt"
+          printf '%s\n' "$(git rev-parse HEAD^{tree})" > "$RUNNER_TEMP/context-source/source-tree.txt"
+          printf '%s\n' "$WORKFLOW_REF" > "$RUNNER_TEMP/context-source/workflow-ref.txt"
+          printf '%s\n' "$WORKFLOW_SHA" > "$RUNNER_TEMP/context-source/workflow-sha.txt"
+          printf '%s\n' "$RUN_ID" > "$RUNNER_TEMP/context-source/run-id.txt"
+          printf '%s\n' "$RUN_ATTEMPT" > "$RUNNER_TEMP/context-source/run-attempt.txt"
+          printf '%s\n' "$RUNNER_IMAGE" > "$RUNNER_TEMP/context-source/runner-image.txt"
+          printf '%s\n' "$RUNNER_OS/$RUNNER_ARCH" > "$RUNNER_TEMP/context-source/runner-platform.txt"
           sha256sum "$RUNNER_TEMP/context-source/source.tar.gz" > "$RUNNER_TEMP/context-source/archive-sha256.txt"
+          find "$RUNNER_TEMP/context-source" -type f -print0 | sort -z | xargs -0 sha256sum \
+            > "$RUNNER_TEMP/context-source/artifact-files.sha256"
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: context-source-${{ needs.identity.outputs.source }}-${{ github.run_id }}-${{ github.run_attempt }}
@@ -119,7 +166,6 @@ jobs:
           retention-days: 7
 
   qualification:
-    if: ${{ env.MATERIALIZATION_PUSH != 'true' }}
     needs: identity
     name: context.compiler (${{ matrix.lane }})
     strategy:
@@ -133,6 +179,13 @@ jobs:
       PYTHONDONTWRITEBYTECODE: '1'
       QUALIFICATION_HEAD_SHA: ${{ needs.identity.outputs.source }}
       QUALIFICATION_BASE_SHA: ${{ needs.identity.outputs.base }}
+      QUALIFICATION_WORKFLOW_REF: ${{ github.workflow_ref }}
+      QUALIFICATION_WORKFLOW_SHA: ${{ github.workflow_sha }}
+      QUALIFICATION_RUN_ID: ${{ github.run_id }}
+      QUALIFICATION_RUN_ATTEMPT: ${{ github.run_attempt }}
+      QUALIFICATION_RUNNER_IMAGE: ${{ runner.image }}
+      QUALIFICATION_RUNNER_OS: ${{ runner.os }}
+      QUALIFICATION_RUNNER_ARCH: ${{ runner.arch }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -177,6 +230,15 @@ jobs:
           python3 -B scripts/context_compiler_execution.py \
             --candidate-record "$RUNNER_TEMP/context-evidence/candidate.json" \
             --output-dir "$RUNNER_TEMP/context-evidence"
+      - name: Bind artifact attestation to immutable execution
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -d "$RUNNER_TEMP/context-evidence" ]; then
+            find "$RUNNER_TEMP/context-evidence" -type f -print0 | sort -z | xargs -0 sha256sum \
+              > "$RUNNER_TEMP/context-evidence/artifact-files.sha256"
+          fi
       - name: Retain candidate, partial failures and command receipts
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
@@ -187,8 +249,8 @@ jobs:
           retention-days: 90
 
   required:
-    if: ${{ always() && env.MATERIALIZATION_PUSH != 'true' }}
     name: Context compiler required
+    if: always()
     needs: [identity, qualification]
     runs-on: ubuntu-24.04
     steps:
