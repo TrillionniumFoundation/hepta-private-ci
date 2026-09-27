@@ -128,17 +128,19 @@ impl DurableInferenceControl {
         sync_directory(&archive_dir)?;
         failpoint.hit(NativeMaintenanceStage::AfterArchiveSync)?;
 
+        // Expiry creates deletion work; it is not deletion evidence. Keep every
+        // encrypted reference and key binding in the checkpoint until a
+        // separately authenticated vault-deletion receipt is verified and
+        // journaled. A maintenance receipt must never silently manufacture that
+        // external side effect.
+        let checkpoint_records = self.native.records.clone();
         let mut expired_encrypted_references = Vec::new();
-        let mut checkpoint_records = self.native.records.clone();
-        for record in checkpoint_records.values_mut() {
-            if let Some(protected) = &mut record.protected_output
+        for record in checkpoint_records.values() {
+            if let Some(protected) = &record.protected_output
                 && protected.delete_after_unix_ms <= now_unix_ms
+                && let Some(reference) = &protected.encrypted_reference
             {
-                if let Some(reference) = protected.encrypted_reference.take() {
-                    expired_encrypted_references.push(reference);
-                }
-                protected.ciphertext_digest = None;
-                protected.encryption_key_id = None;
+                expired_encrypted_references.push(reference.clone());
             }
         }
         expired_encrypted_references.sort();
