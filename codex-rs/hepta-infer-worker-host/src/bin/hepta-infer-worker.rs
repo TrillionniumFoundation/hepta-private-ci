@@ -8,10 +8,13 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::control_contracts::ControlTrustStore;
+use codex_hepta_infer_core::control_contracts::OutputStorageMode;
 use codex_hepta_infer_core::control_contracts::SignedExecutionAuthorityBundle;
 use codex_hepta_infer_core::control_contracts::TrustKey;
 use codex_hepta_infer_core::control_contracts::verify_execution_plan;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_worker_host::NativeOutputProtector;
+use codex_hepta_infer_worker_host::UnixOutputProtector;
 use codex_hepta_infer_worker_host::final_use_authorizer::UnixFinalUseAuthorizer;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
@@ -44,6 +47,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut final_use_authority_config = None;
     let mut execution_trust_store = None;
     let mut execution_authority_bundle = None;
+    let mut output_protector_config = None;
     let mut intelligence_run_id = None;
     let mut intelligence_revision = None;
     let mut intelligence_context_digest = None;
@@ -54,7 +58,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON --execution-trust-store ABSOLUTE_JSON --execution-authority-bundle ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin. Four independent execution authorities and an independent final-use authority must authenticate the exact model/runtime/resource/quota/data binding before physical turn/start."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON --execution-trust-store ABSOLUTE_JSON --execution-authority-bundle ABSOLUTE_JSON [--output-protector-config ABSOLUTE_JSON] [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin. Four independent execution authorities and an independent final-use authority must authenticate the exact model/runtime/resource/quota/data binding before physical turn/start. External-encrypted output policies additionally require the UID-bound output-vault configuration."
             );
             return Ok(());
         }
@@ -77,6 +81,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "--execution-authority-bundle" => {
                 execution_authority_bundle = Some(PathBuf::from(value))
             }
+            "--output-protector-config" => output_protector_config = Some(PathBuf::from(value)),
             "--intelligence-run-id" => intelligence_run_id = Some(value),
             "--intelligence-revision" => intelligence_revision = Some(value.parse()?),
             "--intelligence-context-digest" => intelligence_context_digest = Some(value),
@@ -113,6 +118,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         || plan.manifest().model_id != model
     {
         return Err("execution authority bundle does not match CLI request/Agent/model/generation".into());
+    }
+
+    let output_protector = match output_protector_config {
+        Some(path) => Some(UnixOutputProtector::open(&path)?),
+        None => None,
+    };
+    if plan.output_policy().storage_mode == OutputStorageMode::ExternalEncrypted
+        && output_protector.is_none()
+    {
+        return Err("external-encrypted output policy requires --output-protector-config".into());
     }
 
     let final_use_authorizer = UnixFinalUseAuthorizer::open(
@@ -166,6 +181,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             return Err("all four --intelligence-* arguments must be supplied together".into());
         }
     };
+    let output_protector_ref = output_protector
+        .as_ref()
+        .map(|protector| protector as &dyn NativeOutputProtector);
     let result = match intelligence {
         Some(binding) => {
             driver
@@ -176,23 +194,38 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                     context_query,
                     binding,
                     &plan,
-                    None,
+                    output_protector_ref,
                     &cancellation,
                 )
                 .await
         }
-        None => {
-            driver
-                .run_authorized(
-                    &mut control,
-                    admission,
-                    prompt,
-                    context_query,
-                    &plan,
-                    &cancellation,
-                )
-                .await
-        }
+        None => match output_protector_ref {
+            Some(protector) => {
+                driver
+                    .run_authorized_with_output_protector(
+                        &mut control,
+                        admission,
+                        prompt,
+                        context_query,
+                        &plan,
+                        protector,
+                        &cancellation,
+                    )
+                    .await
+            }
+            None => {
+                driver
+                    .run_authorized(
+                        &mut control,
+                        admission,
+                        prompt,
+                        context_query,
+                        &plan,
+                        &cancellation,
+                    )
+                    .await
+            }
+        },
     };
     signal_task.abort();
     let output = result?;
