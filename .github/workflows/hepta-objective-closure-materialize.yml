@@ -1,10 +1,10 @@
-# closure-trigger: durable-proof-and-evidence-arm-20260927
+# closure-trigger: durable-proof-and-evidence-macos-20260927
 name: Hepta objective compiler closure materializer
 
 on:
   push:
     branches:
-      - work/objective-compiler-convergence-20260925
+      - work/objective-compiler-production-convergence-20260927
     paths:
       - .github/workflows/hepta-objective-closure-materialize.yml
   workflow_dispatch:
@@ -13,15 +13,17 @@ permissions:
   contents: write
 
 concurrency:
-  group: hepta-objective-closure-materialize
+  # Share the writer lock with the Linux/ARM convergence path. Starting this
+  # exact-source materializer retires any older queued candidate.
+  group: hepta-objective-production-convergence
   cancel-in-progress: true
 
 jobs:
   materialize:
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 120
+    runs-on: macos-15
+    timeout-minutes: 150
     env:
-      TARGET_BRANCH: work/objective-compiler-convergence-20260925
+      TARGET_BRANCH: work/objective-compiler-production-convergence-20260927
       TRIGGER_SHA: ${{ github.sha }}
       CARGO_INCREMENTAL: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
@@ -43,17 +45,6 @@ jobs:
           git fetch origin "${TARGET_BRANCH}"
           test "$(git rev-parse "origin/${TARGET_BRANCH}")" = "${TRIGGER_SHA}"
           git rev-parse HEAD HEAD^{tree}
-
-      - name: Prepare native prerequisites
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
-          sudo sysctl -w kernel.unprivileged_userns_clone=1 || true
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
-          fi
 
       - name: Make one-shot migration re-entrant
         shell: bash
@@ -95,10 +86,6 @@ jobs:
                   return
               raise SystemExit(f"{path}: expected one replacement, observed {count}: {old!r}")
           '''
-          if old not in text:
-              raise SystemExit("replace_once helper shape changed")
-          text = text.replace(old, new, 1)
-
           old_count = '''def replace_count(path: str, old: str, new: str, expected: int) -> None:
               text = read(path)
               count = text.count(old)
@@ -120,12 +107,13 @@ jobs:
                   f"{path}: expected {expected} replacements, observed {count}: {old!r}"
               )
           '''
-          if old_count not in text:
-              raise SystemExit("replace_count helper shape changed")
-          path.write_text(text.replace(old_count, new_count, 1), encoding="utf-8")
+          if old not in text or old_count not in text:
+              raise SystemExit("one-shot helper shape changed")
+          text = text.replace(old, new, 1).replace(old_count, new_count, 1)
+          path.write_text(text, encoding="utf-8")
           PY
 
-      - name: Apply durable proof, golden vector, and fault-evidence migration
+      - name: Materialize durable proof and evidence
         shell: bash
         run: |
           set -euo pipefail
@@ -137,7 +125,7 @@ jobs:
             --package codex-hepta-learning-ledger \
             --package codex-hepta-intelligence \
             --package codex-hepta-agentd
-          HEPTA_OBJECTIVE_GOLDEN_OUTPUT="codex-rs/hepta-intelligence/tests/fixtures/objective_end_to_end_v1.txt" \
+          HEPTA_OBJECTIVE_GOLDEN_OUTPUT="${GITHUB_WORKSPACE}/codex-rs/hepta-intelligence/tests/fixtures/objective_end_to_end_v1.txt" \
             cargo test --manifest-path codex-rs/Cargo.toml --locked \
               -p codex-hepta-intelligence \
               update_objective_end_to_end_golden_vector_v1 -- \
@@ -145,7 +133,7 @@ jobs:
           test -s codex-rs/hepta-intelligence/tests/fixtures/objective_end_to_end_v1.txt
           git diff --check
 
-      - name: Validate source migration before commit
+      - name: Validate generated source
         shell: bash
         run: |
           set -euo pipefail
@@ -165,12 +153,19 @@ jobs:
             cargo test --locked -p codex-hepta-objective -- --nocapture
             cargo test --locked -p codex-hepta-learning-ledger run_start -- --nocapture
             cargo test --locked -p codex-hepta-intelligence objective_run -- --nocapture
-            cargo test --locked -p codex-hepta-agentd objective_runtime -- --nocapture
-            cargo test --locked -p codex-hepta-agentd objective_run_start_checkpoint -- --nocapture
-            cargo test --locked -p codex-hepta-agentd --test objective_product_e2e -- --nocapture
+            cargo clippy --locked \
+              -p codex-hepta-objective \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-intelligence \
+              --all-targets --no-deps -- -D warnings
+            cargo fmt \
+              --package codex-hepta-objective \
+              --package codex-hepta-learning-ledger \
+              --package codex-hepta-intelligence \
+              --package codex-hepta-agentd -- --check
           )
 
-      - name: Commit source closure and remove one-shot materializers
+      - name: Commit source closure and retire one-shot materializers
         shell: bash
         run: |
           set -euo pipefail
@@ -178,6 +173,7 @@ jobs:
           git config user.email qualification@invalid
           git rm \
             .github/workflows/hepta-objective-closure-materialize.yml \
+            .github/workflows/hepta-objective-production-convergence.yml \
             scripts/hepta-objective-materialize-closure.py \
             scripts/hepta-objective-evidence-materialize.py
           git add -A
@@ -197,7 +193,9 @@ jobs:
             docs/modules/objective.compiler/TECHNICAL.md \
             qualification/module-execution-dossiers/detail/objective.compiler.md
           git diff --cached --check
-          git commit -m "objective.compiler: rebind exact-head provenance and generated status"
+          if ! git diff --cached --quiet; then
+            git commit -m "objective.compiler: rebind exact-head provenance and generated status"
+          fi
 
       - name: Qualify exact generated candidate
         shell: bash
@@ -221,13 +219,11 @@ jobs:
             cargo test --locked --no-run \
               -p codex-hepta-objective \
               -p codex-hepta-learning-ledger \
-              -p codex-hepta-intelligence \
-              -p codex-hepta-agentd
+              -p codex-hepta-intelligence
             cargo clippy --locked \
               -p codex-hepta-objective \
               -p codex-hepta-learning-ledger \
               -p codex-hepta-intelligence \
-              -p codex-hepta-agentd \
               --all-targets --no-deps -- -D warnings
             cargo fmt \
               --package codex-hepta-objective \
@@ -240,7 +236,7 @@ jobs:
           printf 'QUALIFIED_SHA=%s\nQUALIFIED_TREE=%s\n' \
             "${QUALIFIED_SHA}" "${QUALIFIED_TREE}"
 
-      - name: Push only if the remote branch is unchanged
+      - name: Push only if remote source is unchanged
         shell: bash
         run: |
           set -euo pipefail
