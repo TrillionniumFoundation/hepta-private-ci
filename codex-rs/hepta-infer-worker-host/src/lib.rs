@@ -1,17 +1,26 @@
 //! Authority-checked inference worker boundary.
 //!
-//! The legacy boundary validates a pre-existing request, lease and reservation.
-//! The native App Server profile invokes the owning Agent's configured provider
-//! and observes its turn events. Neither profile issues grants, mutates fleet
-//! state, infers success from queue acceptance, promotes or releases artifacts.
+//! `HostedAppServerWorker` is the only default provider-executing profile.
+//! The local model path is experimental and is unavailable unless the
+//! `experimental-local-model` feature is selected. The legacy boundary only
+//! validates a pre-existing request, lease and reservation. No profile issues
+//! grants, mutates fleet state, promotes or releases artifacts.
 
 #![forbid(unsafe_code)]
 
-/// Model-manifest/grant state machine for native driver implementations.
-pub mod model_worker;
-
 pub mod final_use_authorizer;
 pub mod native_app_server;
+pub mod profile;
+
+/// Experimental model-manifest/grant state machine. This module is deliberately
+/// absent from the default public API so a product caller cannot mistake an
+/// injected `ModelDriver` for qualified local-model execution.
+#[cfg(feature = "experimental-local-model")]
+pub mod model_worker;
+
+/// Authority-verified, resource-accounted durable local execution boundary.
+#[cfg(feature = "experimental-local-model")]
+pub mod local_model;
 
 use std::error::Error as StdError;
 use std::fmt;

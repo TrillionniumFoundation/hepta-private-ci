@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.inference-worker-current-status.v1",
+  "generatedFrom": {
+    "sourceHead": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "sourceTree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30",
+    "status": "remediation-candidate-not-yet-qualified"
+  },
+  "profiles": {
+    "HostedAppServerWorker": {
+      "maturity": "production-candidate",
+      "defaultBuild": true,
+      "productionImplementation": false
+    },
+    "LocalModelWorker": {
+      "maturity": "experimental",
+      "defaultBuild": false,
+      "cargoFeature": "experimental-local-model",
+      "productionImplementation": false
+    },
+    "LegacyReceiptBoundary": {
+      "maturity": "validation-only",
+      "executesProvider": false,
+      "productionImplementation": false
+    }
+  },
+  "qualification": {
+    "lastExactHeadRun": {
+      "sourceHead": "a126987b84737dbc2ee2592442a314117bddb4a2",
+      "result": "failed",
+      "claimableAsCurrentPass": false
+    },
+    "lastMergeCandidateRun": {
+      "result": "not-established-for-this-remediation",
+      "claimableAsCurrentPass": false
+    },
+    "linuxResult": "not-qualified",
+    "macosResult": "not-qualified",
+    "libTestResult": "not-qualified",
+    "binaryTestResult": "not-qualified",
+    "allTargetsResult": "not-qualified",
+    "clippyResult": "not-qualified",
+    "realHardwareResult": "not-established",
+    "compositionResult": "repository-mock-composition-only",
+    "independentAcceptanceResult": "not-established"
+  },
+  "reconciliation": {
+    "exactAppServerThreadHistory": "implemented",
+    "missingHistoryResolution": "not-implemented",
+    "trustedTokenUsageReconciliation": "not-implemented",
+    "realProviderTargetHostQualification": "not-complete"
+  },
+  "sourceBlobDigests": {
+    "note": "Filled by exact-candidate qualification; documentation must not convert a missing receipt into a pass."
+  }
+}

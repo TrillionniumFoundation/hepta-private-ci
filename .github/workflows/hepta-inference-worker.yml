@@ -1,0 +1,265 @@
+name: Hepta inference.worker qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-agentd/**"
+      - "docs/modules/inference.worker/**"
+      - "qualification/module-execution-dossiers/detail/inference.worker.md"
+      - ".github/workflows/hepta-inference-worker.yml"
+      - ".github/actions/hepta-synthetic-merge/action.yml"
+  push:
+    branches:
+      - main
+      - "inference-worker-*"
+    paths:
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-agentd/**"
+      - "docs/modules/inference.worker/**"
+      - "qualification/module-execution-dossiers/detail/inference.worker.md"
+      - ".github/workflows/hepta-inference-worker.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-inference-worker-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_BUILD_JOBS: "2"
+  RUST_BACKTRACE: "1"
+  TMPDIR: /tmp
+
+jobs:
+  source-identity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source and derived projections
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta_module_registry.py --strict
+          python3 scripts/hepta-implementation-maps.py verify
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  infer-core:
+    needs: source-identity
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+      - name: Format infer-core
+        working-directory: codex-rs
+        run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-infer-core -- --check
+      - name: Test infer-core library with JUnit receipt
+        working-directory: codex-rs
+        run: cargo nextest run --locked -p codex-hepta-infer-core --lib
+      - name: Test infer-core binary
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-infer-core --bin hepta-infer-control
+      - name: Check all infer-core targets
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-infer-core --all-targets
+      - name: Strict infer-core lint
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-infer-core --all-targets --no-deps -- -D warnings
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: infer-core-junit-${{ matrix.os }}
+          path: codex-rs/target/nextest/default/junit.xml
+          if-no-files-found: error
+      - name: Require clean exact source
+        if: always()
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  infer-worker-host:
+    needs: source-identity
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+      - name: Format inference worker
+        working-directory: codex-rs
+        run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-infer-worker-host -- --check
+      - name: Test default hosted profile with JUnit receipt
+        working-directory: codex-rs
+        run: cargo nextest run --locked -p codex-hepta-infer-worker-host --lib
+      - name: Test explicit experimental local profile
+        working-directory: codex-rs
+        run: cargo nextest run --locked -p codex-hepta-infer-worker-host --lib --features experimental-local-model
+      - name: Test production CLI
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-infer-worker-host --bin hepta-infer-worker
+      - name: Check every worker target and feature
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-infer-worker-host --all-targets --all-features
+      - name: Strict worker lint
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets --all-features --no-deps -- -D warnings
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: infer-worker-junit-${{ matrix.os }}
+          path: codex-rs/target/nextest/default/junit.xml
+          if-no-files-found: error
+      - name: Require clean exact source
+        if: always()
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  agentd:
+    needs: source-identity
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+      - name: Format Agentd
+        working-directory: codex-rs
+        run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd -- --check
+      - name: Test Agentd library separately
+        working-directory: codex-rs
+        run: cargo nextest run --locked -p codex-hepta-agentd --lib
+      - name: Strict Agentd lint
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-agentd --lib --no-deps -- -D warnings
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: agentd-junit-${{ matrix.os }}
+          path: codex-rs/target/nextest/default/junit.xml
+          if-no-files-found: error
+      - name: Require clean exact source
+        if: always()
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  merge-candidate:
+    if: github.event_name == 'pull_request'
+    needs: [infer-core, infer-worker-host, agentd]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Resolve current base
+        id: base
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$(git rev-parse "refs/remotes/origin/${{ github.base_ref }}^{commit}")"
+          printf 'sha=%s\n' "$base" >> "$GITHUB_OUTPUT"
+      - name: Construct deterministic synthetic merge
+        id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.base.outputs.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta inference.worker CI
+          author-email: hepta-inference-worker-ci@users.noreply.github.com
+          message: Synthetic inference.worker merge
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+      - name: Verify exact synthetic merge
+        run: test "$(git rev-parse HEAD)" = "${{ steps.merge.outputs.sha }}"
+      - name: Test infer-core merge candidate
+        working-directory: codex-rs
+        run: cargo nextest run --locked -p codex-hepta-infer-core --lib
+      - name: Test worker merge candidate
+        working-directory: codex-rs
+        run: cargo nextest run --locked -p codex-hepta-infer-worker-host --lib --all-features
+      - name: Test Agentd merge candidate
+        working-directory: codex-rs
+        run: cargo nextest run --locked -p codex-hepta-agentd --lib
+      - name: Check and lint worker merge candidate
+        working-directory: codex-rs
+        run: |
+          cargo check --locked -p codex-hepta-infer-worker-host --all-targets --all-features
+          cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets --all-features --no-deps -- -D warnings
+      - name: Require clean synthetic merge
+        if: always()
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  qualification-result:
+    if: always()
+    needs: [source-identity, infer-core, infer-worker-host, agentd, merge-candidate]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require all applicable jobs
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          needs = json.loads(os.environ["NEEDS"])
+          required = ["source-identity", "infer-core", "infer-worker-host", "agentd"]
+          if os.environ["EVENT"] == "pull_request":
+              required.append("merge-candidate")
+          failed = {name: needs[name]["result"] for name in required if needs[name]["result"] != "success"}
+          if failed:
+              print(json.dumps(failed, indent=2), file=sys.stderr)
+              raise SystemExit(1)
+          PY
