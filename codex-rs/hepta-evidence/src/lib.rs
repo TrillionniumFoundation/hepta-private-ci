@@ -25,6 +25,7 @@ mod qualification;
 mod qualification_commitment;
 mod qualification_paging;
 mod qualification_policy;
+mod qualification_summary;
 mod recovery_frontier;
 mod schema_validation;
 mod store {
@@ -118,6 +119,9 @@ pub use qualification_paging::QualificationEvidencePageV1;
 pub use qualification_policy::EvidenceVerificationProfileV1;
 pub use qualification_policy::EvidenceVerificationRequest;
 pub use qualification_policy::ProfiledVerifyChainRequestV1;
+pub use qualification_summary::EVIDENCE_VERIFICATION_SUMMARY_SCHEMA_VERSION;
+pub use qualification_summary::EvidenceVerificationStateV1;
+pub use qualification_summary::EvidenceVerificationSummaryV1;
 pub use recovery_frontier::EVIDENCE_DATABASE_LINEAGE;
 pub use recovery_frontier::EvidenceRecoverySnapshotV1;
 pub use store::AppendDisposition;
