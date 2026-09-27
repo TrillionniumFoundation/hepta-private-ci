@@ -1,3 +1,4 @@
+import { definitelyNotAccepted } from "./submission-outcome.js";
 import {
   assertCanonicalText,
   assertSafeInteger,
@@ -14,6 +15,8 @@ import {
   isUiControlError,
   uiControlError,
 } from "./errors.js";
+import { assertConfirmation } from "./confirmation.js";
+import { RecoveryScheduler } from "./recovery-scheduler.js";
 import { OperationLedger } from "./operation-ledger.js";
 import {
   ACTIVE_STATUSES,
@@ -56,6 +59,10 @@ export class RuntimeClient {
   #ledger;
   #connectPromise = null;
   #connectionEpoch = 0;
+  #persistBeforeDispatch = null;
+  #recoveryScheduler;
+  #recoveries = new Map();
+  #snapshotObservedAt = null;
 
   constructor({
     transport,
@@ -80,10 +87,21 @@ export class RuntimeClient {
       maxBytes: 128,
     });
     this.#ledger = new OperationLedger({ maxPending, clock });
+    this.#recoveryScheduler = new RecoveryScheduler(clock);
   }
 
   get connected() {
     return this.#session !== null;
+  }
+
+  setRecoveryPersistence(persist) {
+    if (persist !== null && typeof persist !== "function") {
+      throw invalid("recovery persistence must be a function or null");
+    }
+    if (this.#ledger.views().some(entry => entry.state === "submitting")) {
+      throw invalid("cannot replace recovery persistence while a submission is in flight");
+    }
+    this.#persistBeforeDispatch = persist;
   }
 
   async connect(endpointManifest, { signal } = {}) {
@@ -294,6 +312,7 @@ export class RuntimeClient {
         );
       }
       this.#snapshot = validateSnapshotTransition(this.#snapshot, normalized);
+      this.#snapshotObservedAt = this.#clock();
       return this.readView();
     } catch (error) {
       if (
@@ -329,6 +348,10 @@ export class RuntimeClient {
       indeterminateCount: pending.filter(entry => entry.state === "indeterminate").length,
       completed,
       completedCount: completed.length,
+      recoveryMetrics: this.#recoveryScheduler.metrics(),
+      pendingMaxAgeMs: pending.reduce((age, entry) => Math.max(age, this.#clock() - entry.createdAt), 0),
+      snapshotAgeMs: this.#snapshot === null || this.#snapshotObservedAt === null
+        ? null : Math.max(0, this.#clock() - this.#snapshotObservedAt),
     });
   }
 
@@ -363,6 +386,10 @@ export class RuntimeClient {
     }
     assertPlainObject(input, "operation input");
     const operationId = assertStableIdentifier(input.operationId, "operationId");
+    const signal = input.signal;
+    const persist = this.#persistBeforeDispatch;
+    const confirmation = input.confirmation === undefined ? null
+      : Object.freeze({ ...assertPlainObject(input.confirmation, "confirmation") });
     const displayedRevision = assertSafeInteger(
       input.displayedRevision,
       "displayedRevision",
@@ -385,6 +412,8 @@ export class RuntimeClient {
     const action = assertCanonicalText(input.action, "action", { maxBytes: 64 });
     const targetId = assertStableIdentifier(input.targetId, "targetId");
     const reason = assertCanonicalText(input.reason, "reason", { maxBytes: 1024 });
+    const confirmedInput = Object.freeze({ operationId, action, targetId, reason });
+    if (confirmation) assertConfirmation(confirmation, this.readView(), confirmedInput);
     const intent = buildOperationIntent({
       action,
       targetId,
@@ -457,8 +486,34 @@ export class RuntimeClient {
       snapshotDigest: snapshot.semanticDigest,
     });
     try {
-      return await this.#ledger.submit(request, input.signal, (entry, signal) =>
-        this.#transport.request(
+      return await this.#ledger.submit(request, signal, async (entry, dispatchSignal) => {
+        let prepared;
+        const discardRejected = async () => {
+          try { await prepared?.discardRejected?.(); }
+          catch { /* Retaining a recovery record is safer than masking the original outcome. */ }
+        };
+        try {
+        if (persist) {
+          // Reservation already exists in the canonical local ledger. Persist
+          // its recovery identity before the first call to the transport.
+          const record = this.#ledger.exportState().operations.find(item => item.operationId === entry.operationId);
+          prepared = await persist(record, { signal: dispatchSignal });
+        }
+        this.#assertPermission(permission);
+        if (this.#session !== session || this.#persistBeforeDispatch !== persist ||
+            this.#snapshot?.generation !== snapshot.generation ||
+            this.#snapshot?.revision !== snapshot.revision ||
+            this.#snapshot?.semanticDigest !== snapshot.semanticDigest) {
+          throw uiControlError(UI_CONTROL_ERROR_CODES.STALE_REVISION,
+            "The request context changed while saving recovery state.",
+            { retryable: true, details: { requestDispatched: false } });
+        }
+        if (confirmation) assertConfirmation(confirmation, this.readView(), confirmedInput);
+        if (dispatchSignal?.aborted) {
+          throw uiControlError(UI_CONTROL_ERROR_CODES.ABORTED, "Request cancelled before dispatch.",
+            { retryable: true, details: { requestDispatched: false } });
+        }
+        const acknowledgement = await this.#transport.request(
           entry.method,
           Object.freeze({
             protocolVersion: entry.protocolVersion,
@@ -473,9 +528,15 @@ export class RuntimeClient {
             displayedRevision: entry.displayedRevision,
             snapshotDigest: entry.snapshotDigest,
           }),
-          { signal },
-        ),
-      );
+          { signal: dispatchSignal },
+        );
+        if (acknowledgement?.accepted === false) await discardRejected();
+        return acknowledgement;
+        } catch (error) {
+          if (definitelyNotAccepted(error)) await discardRejected();
+          throw error;
+        }
+      });
     } catch (error) {
       this.#invalidateSessionForError(error, session);
       throw error;
@@ -483,7 +544,19 @@ export class RuntimeClient {
   }
 
   async recoverOperation(operationId, { signal } = {}) {
-    this.#assertConnected();
+    this.#assertPermission(UI_CONTROL_PERMISSIONS.READ);
+    const id = assertStableIdentifier(operationId, "operationId");
+    const key = `${this.#connectionEpoch}:${this.#session.sessionId}:${this.#session.connectionGeneration}:${id}`;
+    const existing = this.#recoveries.get(key);
+    if (existing) return existing;
+    const attempt = this.#recoverOperationOnce(id, { signal });
+    this.#recoveries.set(key, attempt);
+    try { return await attempt; }
+    finally { if (this.#recoveries.get(key) === attempt) this.#recoveries.delete(key); }
+  }
+
+  async #recoverOperationOnce(operationId, { signal } = {}) {
+    this.#assertPermission(UI_CONTROL_PERMISSIONS.READ);
     const session = this.#session;
     const id = assertStableIdentifier(operationId, "operationId");
     const completed = this.#ledger.findCompleted(id);
@@ -494,6 +567,7 @@ export class RuntimeClient {
         operationId: id,
       });
     }
+    if (entry.state === "submitting") return publicOperation(entry);
     let observation;
     try {
       observation = await this.#transport.lookup(
@@ -516,8 +590,11 @@ export class RuntimeClient {
         { retryable: true, details: { operationId: id } },
       );
     }
+    const terminal = this.#ledger.findCompleted(id);
+    if (terminal) return publicOperation(terminal);
     assertPlainObject(observation, "operation observation");
-    if (observation.found !== true) return this.#ledger.markMissing(entry);
+    if (observation.found === false) return this.#ledger.markMissing(entry);
+    if (observation.found !== true) throw invalid("operation lookup must explicitly declare found");
 
     const observedId = assertStableIdentifier(
       observation.operationId,
@@ -556,13 +633,10 @@ export class RuntimeClient {
     return this.#ledger.markActive(entry, status, auditTraceId);
   }
 
-  async recoverPending({ signal, limit = 32 } = {}) {
-    const boundedLimit = assertSafeInteger(limit, "limit", { min: 1, max: 128 });
-    const results = [];
-    for (const operation of this.#ledger.views().slice(0, boundedLimit)) {
-      results.push(await this.recoverOperation(operation.operationId, { signal }));
-    }
-    return Object.freeze(results);
+  async recoverPending({ signal, limit = 32, concurrency = 4 } = {}) {
+    this.#assertPermission(UI_CONTROL_PERMISSIONS.READ);
+    return this.#recoveryScheduler.run(this.#ledger.views(),
+      (id, options) => this.recoverOperation(id, options), { signal, limit, concurrency });
   }
 
   reconcile(observation) {
