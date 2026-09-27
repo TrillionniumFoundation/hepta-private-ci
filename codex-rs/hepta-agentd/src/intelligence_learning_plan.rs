@@ -13,6 +13,8 @@ use codex_hepta_intelligence::AdvisoryDecisionV1;
 use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
 use codex_hepta_learning_ledger::ProductionDecisionV2;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::candidate_ids_digest_v2;
+use codex_hepta_learning_ledger::candidate_order_digest_v2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -53,13 +55,15 @@ impl AgentdIntelligenceDecisionPlanV1 {
         evidence_provider: Arc<dyn AgentdIntelligenceDecisionEvidenceProviderV1>,
     ) -> Result<Self, IntelligenceLearningErrorV1> {
         candidate_ids.sort();
+        let candidates_digest = candidate_ids_digest_v2(&candidate_ids);
+        let canonical_order_digest = candidate_order_digest_v2(&candidate_ids);
         if policy_digest.is_zero()
             || candidate_ids.is_empty()
             || candidate_ids.len() > 128
             || candidate_ids.windows(2).any(|pair| pair[0] == pair[1])
             || completeness.candidate_count as usize != candidate_ids.len()
-            || completeness.candidates_digest.is_zero()
-            || completeness.canonical_order_digest.is_zero()
+            || completeness.candidates_digest != candidates_digest
+            || completeness.canonical_order_digest != canonical_order_digest
             || !completeness.complete_for_generator
         {
             return Err(IntelligenceLearningErrorV1::Invalid(
@@ -92,9 +96,8 @@ impl AgentdIntelligenceDecisionPlanV1 {
         };
         if now == 0
             || !self.candidate_ids.contains(candidate_id)
+            || self.candidate_ids != prepared.candidate_ids
             || propensity.raw() == 0
-            || self.completeness.candidates_digest
-                != prepared.envelope.candidate_set_digest
         {
             return Err(IntelligenceLearningErrorV1::Invalid(
                 "prepared Decision binding",
@@ -118,7 +121,7 @@ impl AgentdIntelligenceDecisionPlanV1 {
             run_snapshot_digest,
             prepared.envelope.objective_digest,
             prepared.envelope.envelope_digest,
-            prepared.envelope.candidate_set_digest,
+            self.completeness.candidates_digest,
             prepared.dispatch_proposal_digest,
             prepared.envelope.run_id.clone(),
             self.episode_id.clone(),
@@ -249,7 +252,10 @@ impl AgentdIntelligenceProductProfileV1 {
             .cloned()
             .ok_or(IntelligenceLearningErrorV1::Missing)?;
         let status = plan.append_prepared_decision(&self.learning_host, prepared, now)?;
-        if matches!(status.state, IntelligenceLearningStateV1::Acknowledged { .. }) {
+        if matches!(
+            &status.state,
+            IntelligenceLearningStateV1::Acknowledged { .. }
+        ) {
             self.remove_plan(run_id)?;
         }
         Ok(status)
