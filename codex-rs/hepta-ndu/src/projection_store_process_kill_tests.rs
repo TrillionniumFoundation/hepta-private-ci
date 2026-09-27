@@ -183,7 +183,10 @@ fn process_kill_matrix_reopens_at_every_persistence_cut() {
 
         let reopened = NduProjectionStoreV1::open(&root.0).expect("reopen after process kill");
         assert_eq!(
-            reopened.entries().expect("authoritative reopened journal").len(),
+            reopened
+                .entries()
+                .expect("authoritative reopened journal")
+                .len(),
             expected_records,
             "unexpected journal state after cut {stage}"
         );
@@ -201,9 +204,8 @@ fn disk_full_and_read_only_filesystem_fail_before_commit() {
             errno,
             real: FsProjectionPersistenceV1,
         });
-        let mut store =
-            NduProjectionStoreV1::open_with_persistence(&root.0, persistence)
-                .expect("open errno-injected store");
+        let mut store = NduProjectionStoreV1::open_with_persistence(&root.0, persistence)
+            .expect("open errno-injected store");
         let error = store
             .append_projection(
                 NduProjectionKindV1::Preference,
@@ -218,7 +220,12 @@ fn disk_full_and_read_only_filesystem_fail_before_commit() {
             NduProjectionStoreError::Io(io::Error::from_raw_os_error(errno).kind())
         );
         assert!(!store.is_indeterminate());
-        assert!(store.entries().expect("old state remains authoritative").is_empty());
+        assert!(
+            store
+                .entries()
+                .expect("old state remains authoritative")
+                .is_empty()
+        );
         drop(store);
         assert!(
             NduProjectionStoreV1::open(&root.0)

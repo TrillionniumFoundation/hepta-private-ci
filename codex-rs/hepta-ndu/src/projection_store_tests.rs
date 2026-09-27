@@ -501,3 +501,41 @@ fn symlinked_root_lock_and_journal_paths_fail_closed() {
         NduProjectionStoreError::Symlink
     );
 }
+
+#[test]
+#[cfg(unix)]
+fn real_store_records_busy_restore_reopen_and_indeterminate_failures() {
+    let before = crate::operational_metrics_snapshot_v1();
+    let root = TempRoot::new("observed");
+    let mut store = must(NduProjectionStoreV1::open(&root.0));
+    assert!(matches!(
+        NduProjectionStoreV1::open(&root.0),
+        Err(NduProjectionStoreError::Busy)
+    ));
+    assert!(store.restore_backup(b"truncated").is_err());
+    drop(store);
+    let missing = root.0.join("missing");
+    assert!(NduProjectionStoreV1::open(missing).is_err());
+    let mut store = must(NduProjectionStoreV1::open_with_persistence(
+        &root.0,
+        Arc::new(FaultPersistence {
+            stage: FaultStage::DirectorySync,
+            real: FsProjectionPersistenceV1,
+        }),
+    ));
+    assert_eq!(
+        store.append_projection(
+            NduProjectionKindV1::Preference,
+            digest("observed-id"),
+            digest("objective"),
+            digest("subject"),
+            digest("projection")
+        ),
+        Err(NduProjectionStoreError::Indeterminate)
+    );
+    let after = crate::operational_metrics_snapshot_v1();
+    assert!(after.store_busy > before.store_busy);
+    assert!(after.restore_failures > before.restore_failures);
+    assert!(after.reopen_failures > before.reopen_failures);
+    assert!(after.store_indeterminate > before.store_indeterminate);
+}

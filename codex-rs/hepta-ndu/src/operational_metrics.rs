@@ -14,6 +14,21 @@ use std::time::Duration;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+static PROCESS_METRICS: std::sync::OnceLock<NduOperationalMetricsV1> = std::sync::OnceLock::new();
+
+pub(crate) fn process_metrics() -> &'static NduOperationalMetricsV1 {
+    PROCESS_METRICS.get_or_init(NduOperationalMetricsV1::default)
+}
+
+/// Process-local observations, never authority or a fleet aggregate. Counters
+/// reset on restart. Journal bytes refer to the most recently observed store.
+/// Backup age stays unknown until an independently verified off-host operation
+/// is wired; exporting local bytes is not a backup acknowledgement.
+#[must_use]
+pub fn operational_metrics_snapshot_v1() -> NduOperationalMetricSnapshotV1 {
+    process_metrics().snapshot()
+}
+
 const UNSET_GAUGE: u64 = u64::MAX;
 const MAX_RETENTION_COPIES: u16 = 1024;
 const MAX_BACKUP_AGE_SECONDS: u64 = 366 * 24 * 60 * 60;
@@ -99,6 +114,11 @@ impl NduOperationalMetricsV1 {
         saturating_add(&self.convergence_exhaustions, 1);
     }
 
+    pub(crate) fn record_exhaustion_iterations(&self, iterations: u32) {
+        self.record_convergence_exhaustion();
+        saturating_add(&self.convergence_iterations, u64::from(iterations));
+    }
+
     pub fn record_candidate_rejections(&self, count: usize) {
         saturating_add(
             &self.candidate_rejections,
@@ -119,6 +139,7 @@ impl NduOperationalMetricsV1 {
 
     pub fn record_store_indeterminate(&self) {
         saturating_add(&self.store_indeterminate, 1);
+        self.journal_bytes.store(UNSET_GAUGE, Ordering::Relaxed);
     }
 
     pub fn record_reopen_failure(&self) {
@@ -231,8 +252,7 @@ pub fn validate_backup_policy_v1(policy: &NduBackupPolicyV1) -> Result<(), NduOp
     {
         return Err(NduOperationsError::InvalidPolicy("retention"));
     }
-    if policy.max_backup_age_seconds == 0
-        || policy.max_backup_age_seconds > MAX_BACKUP_AGE_SECONDS
+    if policy.max_backup_age_seconds == 0 || policy.max_backup_age_seconds > MAX_BACKUP_AGE_SECONDS
     {
         return Err(NduOperationsError::InvalidPolicy("maximum backup age"));
     }
@@ -257,8 +277,14 @@ pub fn validate_restore_drill_receipt_v1(
     for (name, digest) in [
         ("source journal head", receipt.source_journal_head_digest),
         ("backup", receipt.backup_digest),
-        ("off-host object version", receipt.off_host_object_version_digest),
-        ("restored journal head", receipt.restored_journal_head_digest),
+        (
+            "off-host object version",
+            receipt.off_host_object_version_digest,
+        ),
+        (
+            "restored journal head",
+            receipt.restored_journal_head_digest,
+        ),
         ("operator identity", receipt.operator_identity_digest),
         ("target host", receipt.target_host_digest),
     ] {

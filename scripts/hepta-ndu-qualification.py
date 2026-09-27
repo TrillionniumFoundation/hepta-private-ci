@@ -41,6 +41,7 @@ def test(package: str, *args: str) -> list[str]:
         "just",
         "test",
         "--locked",
+        "--no-fail-fast",
         "--retries",
         "0",
         "--no-tests",
@@ -111,6 +112,8 @@ def commands(suite: str, sha: str, tree: str) -> list[tuple[str, Path, list[str]
                 ),
             ),
             ("normal-process", rust, test(PRODUCT[0], "--test", "ndu_process_e2e")),
+            ("shared-host-regressions", rust, test(PRODUCT[0], "--lib", "-E",
+                "test(intelligence_product) | test(cognitive_context) | test(cognitive_retrieval_learning) | test(browser_servo) | test(plasticity_runtime) | test(automation_effect_host)")),
         ]
     if suite == "lint":
         packages = [
@@ -184,6 +187,7 @@ def commands(suite: str, sha: str, tree: str) -> list[tuple[str, Path, list[str]
             ROOT,
             ["python3", "scripts/test_hepta_ndu_qualification.py"],
         ),
+        ("map-integrity-tests", ROOT, ["python3", "scripts/test_hepta_ndu_map_integrity.py"]),
         ("lock", ROOT, ["python3", "scripts/verify_cargo_lock.py"]),
         ("legacy-policy", ROOT, ["python3", "scripts/hepta-ndu-source-policy.py"]),
         (

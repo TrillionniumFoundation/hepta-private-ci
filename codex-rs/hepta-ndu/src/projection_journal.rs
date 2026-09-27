@@ -440,8 +440,12 @@ impl NduProjectionJournalV1 {
     }
 
     #[must_use]
+    pub(crate) fn encoded_len(&self) -> usize {
+        12 + self.entries.len() * RECORD_BYTES
+    }
+
     pub fn export_bytes(&self) -> Vec<u8> {
-        let mut bytes = Vec::with_capacity(12 + self.entries.len() * RECORD_BYTES);
+        let mut bytes = Vec::with_capacity(self.encoded_len());
         bytes.extend_from_slice(MAGIC);
         bytes.extend_from_slice(
             &u32::try_from(self.entries.len())

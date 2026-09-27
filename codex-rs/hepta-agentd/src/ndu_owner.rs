@@ -132,8 +132,8 @@ impl AgentdNduOwnerHostV1 {
             },
             bootstrap.policy,
         )?;
-        let admission_replay = NduExternalReplayStoreV2::open(&bootstrap.store_root)
-            .map_err(|error| {
+        let admission_replay =
+            NduExternalReplayStoreV2::open(&bootstrap.store_root).map_err(|error| {
                 AgentdNduOwnerErrorV1::Bootstrap(format!(
                     "external admission replay store: {error}"
                 ))

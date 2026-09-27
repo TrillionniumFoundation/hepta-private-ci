@@ -27,10 +27,8 @@ pub(super) fn production_policy_digest(
         .clone()
         .map(|profile| -> Result<Digest32, NduOwnerError> {
             let canonical = canonical_scalarization_digest(&profile)?;
-            let validated = crate::ValidatedScalarizationProfileV1::try_new(
-                &policy.utility_profile,
-                profile,
-            )?;
+            let validated =
+                crate::ValidatedScalarizationProfileV1::try_new(&policy.utility_profile, profile)?;
             if validated.scalarization_digest() != canonical {
                 return Err(NduOwnerError::InvalidContext("scalarization digest"));
             }

@@ -164,6 +164,33 @@
           "symbol": "disk_full_and_read_only_filesystem_fail_before_commit"
         }
       ]
+    },
+    {
+      "operation": "operational_metrics_snapshot_v1",
+      "nativeSymbol": "codex_hepta_ndu::operational_metrics_snapshot_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/operational_metrics.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "source_implemented_process_observations",
+      "nonClaim": "Process-local counters reset on restart; last-observed journal gauge is not a fleet total; off-host backup age remains unknown.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+          "symbol": "real_evaluation_records_rejections_and_quarantine_observations"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "real_solver_records_success_and_exhaustion_iterations"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "real_store_records_busy_restore_reopen_and_indeterminate_failures"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/ndu_owner_tests.rs",
+          "symbol": "named_host_exposes_read_only_metrics_without_a_final_use_grant"
+        }
+      ]
     }
   ],
   "supportingSources": [

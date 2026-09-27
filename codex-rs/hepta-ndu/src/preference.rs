@@ -172,6 +172,31 @@ pub fn solve_preference_target(
 
 pub(crate) fn solve_preference_target_bound(
     initial: PreferenceState,
+    target: Vec<AxisValue>,
+    eta: FixedQ32,
+    source_context: Option<Digest32>,
+) -> Result<
+    (
+        PreferenceState,
+        NduSolverTerminationReceipt,
+        Vec<NduSolverIterationReceipt>,
+    ),
+    NduError,
+> {
+    let result = solve_preference_target_inner(initial, target, eta, source_context);
+    let metrics = crate::operational_metrics::process_metrics();
+    match &result {
+        Ok((_, receipt, _)) => metrics.record_convergence(receipt.iterations),
+        Err(NduError::IterationExhausted { iterations, .. }) => {
+            metrics.record_exhaustion_iterations(*iterations)
+        }
+        Err(_) => {}
+    }
+    result
+}
+
+fn solve_preference_target_inner(
+    initial: PreferenceState,
     mut target: Vec<AxisValue>,
     eta: FixedQ32,
     source_context: Option<Digest32>,

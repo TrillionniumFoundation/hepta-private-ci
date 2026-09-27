@@ -189,11 +189,7 @@ fn external_admission(
     idempotency_key: &str,
 ) -> TestResult<NduControlRequestV1> {
     let context = host.context()?;
-    let now = u64::try_from(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)?
-            .as_millis(),
-    )?;
+    let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
     let payload_digest = inner
         .canonical_payload_digest_v2()
         .map_err(std::io::Error::other)?;
@@ -424,5 +420,37 @@ fn admitted_failure_requires_reconciliation_before_retry() -> TestResult<()> {
         fixture.host.control(retry, || Ok(())),
         Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-010"))
     ));
+    Ok(())
+}
+
+#[test]
+fn named_host_exposes_read_only_metrics_without_a_final_use_grant() -> TestResult<()> {
+    let fixture = fixture()?;
+    let request = NduControlRequestV1::MetricsV1;
+    assert!(!request.requires_mutation_admission());
+    let first_head = fixture
+        .host
+        .control(NduControlRequestV1::Context, || Ok(()))?;
+    let result = fixture.host.control(request, || Ok(()))?;
+    assert!(matches!(
+        result,
+        NduControlResultV1::MetricsV1 {
+            journal_bytes: Some(_),
+            backup_age_seconds: None,
+            ..
+        }
+    ));
+    let final_head = fixture
+        .host
+        .control(NduControlRequestV1::Context, || Ok(()))?;
+    assert_eq!(first_head, final_head);
+    assert!(
+        fixture
+            .host
+            .control(NduControlRequestV1::MetricsV1, || Err(
+                AgentdNduOwnerErrorV1::NotReady
+            ))
+            .is_err()
+    );
     Ok(())
 }

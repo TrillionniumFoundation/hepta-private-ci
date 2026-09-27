@@ -13,7 +13,7 @@ use crate::UtilityProfile;
 use crate::ValidatedScalarizationProfileV1;
 use crate::canonical_evaluation_policy_digest;
 use crate::canonical_utility_profile_digest;
-use crate::evaluate_candidates_with_policy;
+use crate::evaluator::evaluate_candidates_inner;
 
 const MAX_CONTRIBUTIONS: usize = 4096;
 const MAX_CANDIDATES: usize = 128;
@@ -73,6 +73,28 @@ pub fn evaluate_candidates_with_quarantine(
     evaluation_policy: &EvaluationPolicyV1,
     scalarization: Option<&ScalarizationProfile>,
 ) -> Result<NduEvaluationReceiptV3, NduError> {
+    let started = std::time::Instant::now();
+    let result = evaluate_quarantine_inner(
+        contributions,
+        utility_profile,
+        evaluation_policy,
+        scalarization,
+    );
+    let metrics = crate::operational_metrics::process_metrics();
+    metrics.record_evaluation(started.elapsed());
+    if let Ok(receipt) = &result {
+        metrics.record_candidate_rejections(receipt.evaluation.base.rejected_candidates.len());
+        metrics.record_candidate_quarantines(receipt.quarantined_candidates.len());
+    }
+    result
+}
+
+fn evaluate_quarantine_inner(
+    contributions: ContributionSet,
+    utility_profile: &UtilityProfile,
+    evaluation_policy: &EvaluationPolicyV1,
+    scalarization: Option<&ScalarizationProfile>,
+) -> Result<NduEvaluationReceiptV3, NduError> {
     if contributions.contributions.is_empty() {
         return Err(NduError::EmptyContributions);
     }
@@ -107,7 +129,7 @@ pub fn evaluate_candidates_with_quarantine(
 
     // Validate global policy and the safety fallback first. Any defect in the
     // explicit fallback remains a global error rather than a quarantine.
-    evaluate_candidates_with_policy(
+    evaluate_candidates_inner(
         ContributionSet {
             objective_digest: contributions.objective_digest,
             generation: contributions.generation,
@@ -126,7 +148,7 @@ pub fn evaluate_candidates_with_quarantine(
         }
         let mut probe = abstain.clone();
         probe.extend(candidate.iter().cloned());
-        let result = evaluate_candidates_with_policy(
+        let result = evaluate_candidates_inner(
             ContributionSet {
                 objective_digest: contributions.objective_digest,
                 generation: contributions.generation,
@@ -152,7 +174,7 @@ pub fn evaluate_candidates_with_quarantine(
     }
     quarantined.sort();
 
-    let evaluation = evaluate_candidates_with_policy(
+    let evaluation = evaluate_candidates_inner(
         ContributionSet {
             objective_digest: contributions.objective_digest,
             generation: contributions.generation,
@@ -182,14 +204,10 @@ fn quarantine_reason(error: &NduError) -> Option<CandidateQuarantineReasonV1> {
         NduError::MissingRequiredOrgan { .. } => {
             Some(CandidateQuarantineReasonV1::MissingRequiredOrgan)
         }
-        NduError::MissingAxis { .. }
-        | NduError::UnknownAxis(_)
-        | NduError::DuplicateAxis(_) => {
+        NduError::MissingAxis { .. } | NduError::UnknownAxis(_) | NduError::DuplicateAxis(_) => {
             Some(CandidateQuarantineReasonV1::AxisContractViolation)
         }
-        NduError::AggregationConflict(_) => {
-            Some(CandidateQuarantineReasonV1::AggregationConflict)
-        }
+        NduError::AggregationConflict(_) => Some(CandidateQuarantineReasonV1::AggregationConflict),
         NduError::Arithmetic => Some(CandidateQuarantineReasonV1::ArithmeticFailure),
         _ => None,
     }
@@ -213,7 +231,11 @@ fn quarantine_receipt_digest(
 ) -> Digest32 {
     let mut bytes = b"hepta.ndu.evaluation-receipt.v3\0".to_vec();
     bytes.extend_from_slice(evaluation.evaluation_digest_v2.as_array());
-    bytes.extend_from_slice(&u32::try_from(quarantined.len()).unwrap_or(u32::MAX).to_be_bytes());
+    bytes.extend_from_slice(
+        &u32::try_from(quarantined.len())
+            .unwrap_or(u32::MAX)
+            .to_be_bytes(),
+    );
     for candidate in quarantined {
         let id = candidate.candidate_id.as_str().as_bytes();
         bytes.extend_from_slice(&u32::try_from(id.len()).unwrap_or(u32::MAX).to_be_bytes());

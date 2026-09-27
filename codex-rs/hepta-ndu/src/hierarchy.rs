@@ -103,7 +103,11 @@ pub fn hierarchy_snapshot_digest(
     let mut bytes = b"hepta.ndu.hierarchy-snapshot.v1\0".to_vec();
     push_id(&mut bytes, hierarchy_id);
     bytes.extend_from_slice(&revision.to_be_bytes());
-    bytes.extend_from_slice(&u32::try_from(canonical.len()).unwrap_or(u32::MAX).to_be_bytes());
+    bytes.extend_from_slice(
+        &u32::try_from(canonical.len())
+            .unwrap_or(u32::MAX)
+            .to_be_bytes(),
+    );
     for node in canonical {
         push_id(&mut bytes, &node.subject_id);
         bytes.push(node.subject_class.tag());
@@ -378,12 +382,7 @@ mod tests {
         let snapshot = snapshot();
         let updates = vec![
             update("domain-a", Some("system"), SubjectClass::Domain, "a"),
-            update(
-                "episode-a",
-                Some("agent-a"),
-                SubjectClass::Episode,
-                "b",
-            ),
+            update("episode-a", Some("agent-a"), SubjectClass::Episode, "b"),
         ];
         assert!(matches!(
             validate_staged_updates_against_snapshot(

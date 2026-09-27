@@ -92,6 +92,7 @@ pub use operational_metrics::NduOperationalMetricSnapshotV1;
 pub use operational_metrics::NduOperationalMetricsV1;
 pub use operational_metrics::NduOperationsError;
 pub use operational_metrics::NduRestoreDrillReceiptV1;
+pub use operational_metrics::operational_metrics_snapshot_v1;
 pub use operational_metrics::validate_backup_policy_v1;
 pub use operational_metrics::validate_restore_drill_receipt_v1;
 pub use owner::NduAuthenticatedEvaluationReceiptV1;

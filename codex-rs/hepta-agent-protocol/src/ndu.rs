@@ -8,8 +8,7 @@ use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
 
-const NDU_CONTROL_REQUEST_DIGEST_DOMAIN_V2: &[u8] =
-    b"hepta.agentd.ndu-control-request.v2\0";
+const NDU_CONTROL_REQUEST_DIGEST_DOMAIN_V2: &[u8] = b"hepta.agentd.ndu-control-request.v2\0";
 const NDU_EXTERNAL_ADMISSION_SCHEMA_VERSION: u32 = 2;
 const MAX_NDU_EXTERNAL_ADMISSION_BYTES: usize = 32 * 1024;
 const MAX_NDU_CRITICAL_EXTENSIONS: usize = 16;
@@ -50,6 +49,7 @@ pub struct NduMutationV1 {
 #[serde(tag = "operation", rename_all = "snake_case", deny_unknown_fields)]
 pub enum NduControlRequestV1 {
     Context,
+    MetricsV1,
     Prepare {
         mutation: NduMutationV1,
         expected_head: [u8; 32],
@@ -86,8 +86,7 @@ pub enum NduControlRequestV1 {
 }
 
 impl NduControlRequestV1 {
-    pub const EXTERNAL_ADMISSION_SCHEMA_VERSION_V2: u32 =
-        NDU_EXTERNAL_ADMISSION_SCHEMA_VERSION;
+    pub const EXTERNAL_ADMISSION_SCHEMA_VERSION_V2: u32 = NDU_EXTERNAL_ADMISSION_SCHEMA_VERSION;
     pub const MAX_EXTERNAL_ADMISSION_BYTES_V2: usize = MAX_NDU_EXTERNAL_ADMISSION_BYTES;
     pub const MAX_EXTERNAL_ADMISSION_EXTENSIONS_V2: usize = MAX_NDU_CRITICAL_EXTENSIONS;
 
@@ -99,10 +98,10 @@ impl NduControlRequestV1 {
     pub fn requires_mutation_admission(&self) -> bool {
         match self {
             Self::Prepare { .. } | Self::Apply { .. } => true,
-            Self::ExternalAdmissionV2 { request, .. } => {
-                request.requires_mutation_admission()
+            Self::ExternalAdmissionV2 { request, .. } => request.requires_mutation_admission(),
+            Self::Context | Self::MetricsV1 | Self::Selection { .. } | Self::Outcome { .. } => {
+                false
             }
-            Self::Context | Self::Selection { .. } | Self::Outcome { .. } => false,
         }
     }
 
@@ -237,6 +236,7 @@ fn canonical_ndu_control_request_digest_v2(
     let mut bytes = NDU_CONTROL_REQUEST_DIGEST_DOMAIN_V2.to_vec();
     match request {
         NduControlRequestV1::Context => bytes.push(0),
+        NduControlRequestV1::MetricsV1 => bytes.push(5),
         NduControlRequestV1::Prepare {
             mutation,
             expected_head,
@@ -321,21 +321,15 @@ fn push_mutation(
     Ok(())
 }
 
-fn push_bytes(
-    bytes: &mut Vec<u8>,
-    value: &[u8],
-) -> Result<(), NduExternalAdmissionErrorV2> {
-    let length = u32::try_from(value.len())
-        .map_err(|_| NduExternalAdmissionErrorV2::InvalidPayload)?;
+fn push_bytes(bytes: &mut Vec<u8>, value: &[u8]) -> Result<(), NduExternalAdmissionErrorV2> {
+    let length =
+        u32::try_from(value.len()).map_err(|_| NduExternalAdmissionErrorV2::InvalidPayload)?;
     bytes.extend_from_slice(&length.to_be_bytes());
     bytes.extend_from_slice(value);
     Ok(())
 }
 
-fn validate_text(
-    value: &str,
-    maximum: usize,
-) -> Result<(), NduExternalAdmissionErrorV2> {
+fn validate_text(value: &str, maximum: usize) -> Result<(), NduExternalAdmissionErrorV2> {
     if value.is_empty() || value.len() > maximum || value.chars().any(char::is_control) {
         return Err(NduExternalAdmissionErrorV2::InvalidIdentity);
     }
@@ -369,6 +363,24 @@ pub struct NduCommittedEntryV1 {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "result", rename_all = "snake_case", deny_unknown_fields)]
 pub enum NduControlResultV1 {
+    /// Approximate process-local telemetry; counters reset on restart. This is
+    /// available even when the projection owner is fenced as indeterminate.
+    MetricsV1 {
+        evaluation_count: u64,
+        evaluation_latency_micros_total: u64,
+        evaluation_latency_micros_max: u64,
+        convergence_runs: u64,
+        convergence_iterations: u64,
+        convergence_exhaustions: u64,
+        candidate_rejections: u64,
+        candidate_quarantines: u64,
+        store_busy: u64,
+        store_indeterminate: u64,
+        reopen_failures: u64,
+        restore_failures: u64,
+        journal_bytes: Option<u64>,
+        backup_age_seconds: Option<u64>,
+    },
     Context {
         journal_head: [u8; 32],
         revocation_head: [u8; 32],

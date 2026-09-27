@@ -18,6 +18,8 @@ import re
 import subprocess
 from typing import Any
 
+from hepta_ndu_map_integrity import evidence_paths, executable_test_exists, rust_symbol_exists, verify_manifest
+
 ROOT = Path(__file__).resolve().parents[1]
 PRIMARY = ROOT / "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"
 EXTENSION = ROOT / "docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json"
@@ -81,15 +83,6 @@ def tracked_files(root: str) -> set[str]:
     return {line for line in output.splitlines() if line.endswith(".rs")}
 
 
-def rust_symbol_exists(path: Path, symbol: str) -> bool:
-    terminal = symbol.rsplit("::", 1)[-1]
-    escaped = re.escape(terminal)
-    text = path.read_text(encoding="utf-8")
-    patterns = [
-        rf"\bfn\s+{escaped}\s*(?:<[^>]*>)?\s*\(",
-        rf"\b(?:struct|enum|union|trait|type|const|static|mod)\s+{escaped}\b",
-    ]
-    return any(re.search(pattern, text) for pattern in patterns)
 
 
 def symbol_exists(path: Path, symbol: str) -> bool:
@@ -276,11 +269,14 @@ def main() -> int:
             raise ValueError("closed-world validation requires a clean checkout")
         primary = load(PRIMARY)
         extension = load(EXTENSION)
+        verify_manifest(ROOT, primary.get("sourceObjects"), evidence_paths(ROOT, primary, extension))
     except (
         OSError,
         json.JSONDecodeError,
         DuplicateKey,
         ValueError,
+        KeyError,
+        TypeError,
         subprocess.CalledProcessError,
     ) as error:
         print(json.dumps({"passed": False, "errors": [str(error)]}, indent=2))
@@ -353,7 +349,7 @@ def main() -> int:
             test_path = ROOT / path
             if not test_path.is_file():
                 errors.append(f"mapped test file missing: {path}")
-            elif not symbol_exists(test_path, symbol):
+            elif not executable_test_exists(test_path, symbol):
                 errors.append(f"mapped test symbol missing: {path}::{symbol}")
 
     roots = primary.get("sourceRoot")
@@ -386,7 +382,7 @@ def main() -> int:
         errors.append(f"final candidate identity check failed: {error}")
 
     result = {
-        "schema": "hepta.ndu.closed-world-map-validation.v5",
+        "schema": "hepta.ndu.closed-world-map-validation.v6",
         "module": primary.get("module"),
         "sourceSha": candidate_sha,
         "sourceTree": candidate_tree,

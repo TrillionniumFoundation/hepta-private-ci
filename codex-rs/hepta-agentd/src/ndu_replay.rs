@@ -39,6 +39,8 @@ const MAX_REPLAY_IMAGE_BYTES_V2: u64 = 16 * 1024 * 1024;
 const MAX_REPLAY_CALLER_BYTES_V2: usize = 256;
 const MAX_REPLAY_KEY_BYTES_V2: usize = 128;
 
+type ReplayEntriesV2 = BTreeMap<(String, String), NduExternalReplayBindingV2>;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct NduExternalReplayBindingV2 {
     binding_digest: Digest32,
@@ -49,7 +51,7 @@ struct NduExternalReplayBindingV2 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) enum NduExternalReplayBeginV2 {
     Fresh,
-    Cached(NduControlResultV1),
+    Cached(Box<NduControlResultV1>),
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -104,14 +106,12 @@ pub(crate) struct NduExternalReplayStoreV2 {
     root: PathBuf,
     replay_path: PathBuf,
     temp_path: PathBuf,
-    entries: BTreeMap<(String, String), NduExternalReplayBindingV2>,
+    entries: ReplayEntriesV2,
     indeterminate: bool,
 }
 
 impl NduExternalReplayStoreV2 {
-    pub(crate) fn open(
-        root: impl AsRef<Path>,
-    ) -> Result<Self, NduExternalReplayStoreErrorV2> {
+    pub(crate) fn open(root: impl AsRef<Path>) -> Result<Self, NduExternalReplayStoreErrorV2> {
         if !cfg!(unix) {
             return Err(NduExternalReplayStoreErrorV2::UnsupportedPlatform);
         }
@@ -169,7 +169,7 @@ impl NduExternalReplayStoreV2 {
             }
             return existing_result.map_or_else(
                 || Err(NduExternalReplayStoreErrorV2::Pending),
-                |result| Ok(NduExternalReplayBeginV2::Cached(result)),
+                |result| Ok(NduExternalReplayBeginV2::Cached(Box::new(result))),
             );
         }
         if next.len() >= MAX_REPLAY_ENTRIES_V2 {
@@ -223,23 +223,20 @@ impl NduExternalReplayStoreV2 {
         }
     }
 
-    fn commit(
-        &mut self,
-        next: BTreeMap<(String, String), NduExternalReplayBindingV2>,
-    ) -> Result<(), NduExternalReplayStoreErrorV2> {
+    fn commit(&mut self, next: ReplayEntriesV2) -> Result<(), NduExternalReplayStoreErrorV2> {
         self.require_authoritative()?;
         let entries = entries_from_map(&next);
-        let records = serde_json::to_vec(&entries)
-            .map_err(|_| NduExternalReplayStoreErrorV2::Corrupt)?;
+        let records =
+            serde_json::to_vec(&entries).map_err(|_| NduExternalReplayStoreErrorV2::Corrupt)?;
         let image = NduExternalReplayImageV2 {
             schema: REPLAY_SCHEMA_V2.to_string(),
             records_digest: *Digest32::of_bytes(&records).as_array(),
             entries,
         };
-        let bytes = serde_json::to_vec(&image)
-            .map_err(|_| NduExternalReplayStoreErrorV2::Corrupt)?;
-        let byte_len = u64::try_from(bytes.len())
-            .map_err(|_| NduExternalReplayStoreErrorV2::TooLarge)?;
+        let bytes =
+            serde_json::to_vec(&image).map_err(|_| NduExternalReplayStoreErrorV2::Corrupt)?;
+        let byte_len =
+            u64::try_from(bytes.len()).map_err(|_| NduExternalReplayStoreErrorV2::TooLarge)?;
         if byte_len > MAX_REPLAY_IMAGE_BYTES_V2 {
             return Err(NduExternalReplayStoreErrorV2::TooLarge);
         }
@@ -266,27 +263,22 @@ impl NduExternalReplayStoreV2 {
     }
 }
 
-fn entries_from_map(
-    entries: &BTreeMap<(String, String), NduExternalReplayBindingV2>,
-) -> Vec<NduExternalReplayEntryV2> {
+fn entries_from_map(entries: &ReplayEntriesV2) -> Vec<NduExternalReplayEntryV2> {
     entries
         .iter()
-        .map(|((caller_id, idempotency_key), binding)| NduExternalReplayEntryV2 {
-            caller_id: caller_id.clone(),
-            idempotency_key: idempotency_key.clone(),
-            binding_digest: *binding.binding_digest.as_array(),
-            deadline_unix_ms: binding.deadline_unix_ms,
-            result: binding.result.clone(),
-        })
+        .map(
+            |((caller_id, idempotency_key), binding)| NduExternalReplayEntryV2 {
+                caller_id: caller_id.clone(),
+                idempotency_key: idempotency_key.clone(),
+                binding_digest: *binding.binding_digest.as_array(),
+                deadline_unix_ms: binding.deadline_unix_ms,
+                result: binding.result.clone(),
+            },
+        )
         .collect()
 }
 
-fn load_image(
-    path: &Path,
-) -> Result<
-    Option<BTreeMap<(String, String), NduExternalReplayBindingV2>>,
-    NduExternalReplayStoreErrorV2,
-> {
+fn load_image(path: &Path) -> Result<Option<ReplayEntriesV2>, NduExternalReplayStoreErrorV2> {
     let metadata = match fs::symlink_metadata(path) {
         Ok(metadata) => metadata,
         Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
@@ -301,14 +293,14 @@ fn load_image(
     if metadata.len() > MAX_REPLAY_IMAGE_BYTES_V2 {
         return Err(NduExternalReplayStoreErrorV2::TooLarge);
     }
-    let capacity = usize::try_from(metadata.len())
-        .map_err(|_| NduExternalReplayStoreErrorV2::TooLarge)?;
+    let capacity =
+        usize::try_from(metadata.len()).map_err(|_| NduExternalReplayStoreErrorV2::TooLarge)?;
     let mut bytes = Vec::with_capacity(capacity);
     File::open(path)?
         .take(MAX_REPLAY_IMAGE_BYTES_V2.saturating_add(1))
         .read_to_end(&mut bytes)?;
-    let byte_len = u64::try_from(bytes.len())
-        .map_err(|_| NduExternalReplayStoreErrorV2::TooLarge)?;
+    let byte_len =
+        u64::try_from(bytes.len()).map_err(|_| NduExternalReplayStoreErrorV2::TooLarge)?;
     if byte_len > MAX_REPLAY_IMAGE_BYTES_V2 {
         return Err(NduExternalReplayStoreErrorV2::TooLarge);
     }
@@ -317,8 +309,8 @@ fn load_image(
     if image.schema != REPLAY_SCHEMA_V2 || image.entries.len() > MAX_REPLAY_ENTRIES_V2 {
         return Err(NduExternalReplayStoreErrorV2::Corrupt);
     }
-    let records = serde_json::to_vec(&image.entries)
-        .map_err(|_| NduExternalReplayStoreErrorV2::Corrupt)?;
+    let records =
+        serde_json::to_vec(&image.entries).map_err(|_| NduExternalReplayStoreErrorV2::Corrupt)?;
     if image.records_digest != *Digest32::of_bytes(&records).as_array() {
         return Err(NduExternalReplayStoreErrorV2::Corrupt);
     }
@@ -329,10 +321,10 @@ fn load_image(
         validate_text(&entry.caller_id, MAX_REPLAY_CALLER_BYTES_V2)?;
         validate_text(&entry.idempotency_key, MAX_REPLAY_KEY_BYTES_V2)?;
         let key = (entry.caller_id, entry.idempotency_key);
-        if let Some(previous_key) = &previous {
-            if previous_key >= &key {
-                return Err(NduExternalReplayStoreErrorV2::Corrupt);
-            }
+        if let Some(previous_key) = &previous
+            && previous_key >= &key
+        {
+            return Err(NduExternalReplayStoreErrorV2::Corrupt);
         }
         let binding_digest = Digest32::from_array(entry.binding_digest);
         if binding_digest.is_zero() || entry.deadline_unix_ms == 0 {
@@ -354,10 +346,7 @@ fn load_image(
     Ok(Some(entries))
 }
 
-fn validate_text(
-    value: &str,
-    maximum: usize,
-) -> Result<(), NduExternalReplayStoreErrorV2> {
+fn validate_text(value: &str, maximum: usize) -> Result<(), NduExternalReplayStoreErrorV2> {
     if value.is_empty() || value.len() > maximum || value.chars().any(char::is_control) {
         Err(NduExternalReplayStoreErrorV2::Corrupt)
     } else {
@@ -370,9 +359,7 @@ fn remove_stale_temp(path: &Path) -> Result<(), NduExternalReplayStoreErrorV2> {
         Ok(metadata) if metadata.file_type().is_symlink() => {
             Err(NduExternalReplayStoreErrorV2::Symlink)
         }
-        Ok(metadata) if !metadata.is_file() => {
-            Err(NduExternalReplayStoreErrorV2::NotRegular)
-        }
+        Ok(metadata) if !metadata.is_file() => Err(NduExternalReplayStoreErrorV2::NotRegular),
         Ok(_) => fs::remove_file(path).map_err(Into::into),
         Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(()),
         Err(error) => Err(error.into()),
@@ -416,8 +403,7 @@ mod tests {
         let root = private_root();
         let key = ("control-plane".to_string(), "idem-complete".to_string());
         let digest = Digest32::of_bytes(b"complete-binding");
-        let mut store =
-            NduExternalReplayStoreV2::open(root.path()).expect("open replay store");
+        let mut store = NduExternalReplayStoreV2::open(root.path()).expect("open replay store");
         assert_eq!(
             store
                 .begin(key.clone(), digest, 10_000, 1_000)
@@ -434,15 +420,10 @@ mod tests {
             reopened
                 .begin(key.clone(), digest, 10_000, 1_100)
                 .expect("cached admission"),
-            NduExternalReplayBeginV2::Cached(outcome())
+            NduExternalReplayBeginV2::Cached(Box::new(outcome()))
         );
         assert_eq!(
-            reopened.begin(
-                key,
-                Digest32::of_bytes(b"different-binding"),
-                10_000,
-                1_100,
-            ),
+            reopened.begin(key, Digest32::of_bytes(b"different-binding"), 10_000, 1_100,),
             Err(NduExternalReplayStoreErrorV2::Conflict)
         );
 
@@ -489,8 +470,7 @@ mod tests {
             symlink("missing-target", root.path().join(REPLAY_TEMP_FILE_NAME))
                 .expect("create hostile temp symlink");
             assert_eq!(
-                NduExternalReplayStoreV2::open(root.path())
-                    .expect_err("temp symlink must reject"),
+                NduExternalReplayStoreV2::open(root.path()).expect_err("temp symlink must reject"),
                 NduExternalReplayStoreErrorV2::Symlink
             );
         }

@@ -30,6 +30,10 @@ impl AgentdNduOwnerHostV1 {
                 .map_err(AgentdNduOwnerErrorV1::Admission)?;
         }
 
+        if matches!(&request, NduControlRequestV1::MetricsV1) {
+            live_guard()?;
+            return Ok(metrics_result());
+        }
         let mut owner = self.lock_owner()?;
         live_guard()?;
         if let Some(feed) = &self.feed {
@@ -70,17 +74,15 @@ impl AgentdNduOwnerHostV1 {
                     &extensions,
                 ))
                 .map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-006"))?;
-                let binding_digest = Digest32::of_parts(&[
-                    b"hepta.agentd.ndu-external-replay.v2\0",
-                    &binding_bytes,
-                ]);
+                let binding_digest =
+                    Digest32::of_parts(&[b"hepta.agentd.ndu-external-replay.v2\0", &binding_bytes]);
                 let key = (caller_id, idempotency_key);
                 let mut replay = self.lock_admission_replay()?;
                 match replay
                     .begin(key.clone(), binding_digest, deadline_unix_ms, now)
                     .map_err(replay_store_error)?
                 {
-                    NduExternalReplayBeginV2::Cached(result) => return Ok(result),
+                    NduExternalReplayBeginV2::Cached(result) => return Ok(*result),
                     NduExternalReplayBeginV2::Fresh => {}
                 }
                 drop(replay);
@@ -91,6 +93,7 @@ impl AgentdNduOwnerHostV1 {
 
         let head = owner.journal_head_digest()?;
         let result = match request {
+            NduControlRequestV1::MetricsV1 => Ok(metrics_result()),
             NduControlRequestV1::Context => Ok(NduControlResultV1::Context {
                 journal_head: *head.as_array(),
                 revocation_head: *owner.context().revocation_frontier_digest.as_array(),
@@ -173,6 +176,26 @@ impl AgentdNduOwnerHostV1 {
     }
 }
 
+fn metrics_result() -> NduControlResultV1 {
+    let snapshot = codex_hepta_ndu::operational_metrics_snapshot_v1();
+    NduControlResultV1::MetricsV1 {
+        evaluation_count: snapshot.evaluation_count,
+        evaluation_latency_micros_total: snapshot.evaluation_latency_micros_total,
+        evaluation_latency_micros_max: snapshot.evaluation_latency_micros_max,
+        convergence_runs: snapshot.convergence_runs,
+        convergence_iterations: snapshot.convergence_iterations,
+        convergence_exhaustions: snapshot.convergence_exhaustions,
+        candidate_rejections: snapshot.candidate_rejections,
+        candidate_quarantines: snapshot.candidate_quarantines,
+        store_busy: snapshot.store_busy,
+        store_indeterminate: snapshot.store_indeterminate,
+        reopen_failures: snapshot.reopen_failures,
+        restore_failures: snapshot.restore_failures,
+        journal_bytes: snapshot.journal_bytes,
+        backup_age_seconds: snapshot.backup_age_seconds,
+    }
+}
+
 fn replay_store_error(error: NduExternalReplayStoreErrorV2) -> AgentdNduOwnerErrorV1 {
     let code = match error {
         NduExternalReplayStoreErrorV2::Conflict => "NDU-ADMIT-008",
@@ -251,6 +274,5 @@ fn now_unix_ms() -> Result<u64, AgentdNduOwnerErrorV1> {
         .duration_since(UNIX_EPOCH)
         .map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-004"))?
         .as_millis();
-    u64::try_from(milliseconds)
-        .map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-004"))
+    u64::try_from(milliseconds).map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-004"))
 }

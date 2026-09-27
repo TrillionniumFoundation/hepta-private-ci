@@ -192,6 +192,10 @@ impl AgentdState {
 
     /// Named Agentd-owned producer boundary for governed parameter plasticity.
     /// Callers never receive the mutable writer or a second owner handle.
+    #[expect(
+        dead_code,
+        reason = "Reserved private plasticity ingress has no activated producer in this binary; do not widen visibility to silence dead_code"
+    )]
     pub(crate) async fn submit_parameter_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
@@ -209,6 +213,10 @@ impl AgentdState {
 
     /// Named Agentd-owned producer boundary for governed topology plasticity.
     /// The long-lived owner performs final artifact/ledger/trust/anchor checks.
+    #[expect(
+        dead_code,
+        reason = "Reserved private plasticity ingress has no activated producer in this binary; do not widen visibility to silence dead_code"
+    )]
     pub(crate) async fn submit_topology_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::TopologyPlasticityProductRequestV1,

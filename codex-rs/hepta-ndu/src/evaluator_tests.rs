@@ -422,3 +422,49 @@ fn candidate_support_digest_binds_organ_and_contribution_semantics() {
 
     assert_ne!(first_support, second_support);
 }
+
+#[test]
+fn invalid_scalarization_rejects_singleton_and_abstain_only_frontiers() {
+    for contributions in [
+        vec![contribution("abstain", 0, 0)],
+        vec![contribution("abstain", 0, 0), contribution("work", 2, 0)],
+    ] {
+        let utility = profile();
+        let policy = must(legacy_evaluation_policy(&utility));
+        let invalid = ScalarizationProfile {
+            profile_id: id("invalid-weights"),
+            weights: vec![],
+        };
+        assert_eq!(
+            evaluate_candidates_with_policy(set(contributions), utility, Some(invalid), policy),
+            Err(crate::NduError::IncompleteScalarization),
+        );
+    }
+}
+
+#[test]
+fn real_evaluation_records_rejections_and_quarantine_observations() {
+    let before = crate::operational_metrics_snapshot_v1();
+    let mut unsafe_candidate = contribution("unsafe-observed", 100, 0);
+    unsafe_candidate.feasibility = FeasibilityPosture::HardConstraintViolation;
+    must(evaluate_candidates_with_policy(
+        set(vec![contribution("abstain", 0, 0), unsafe_candidate]),
+        profile(),
+        None,
+        must(legacy_evaluation_policy(&profile())),
+    ));
+    let mut malformed = contribution("malformed-observed", 1, 1);
+    malformed.support_digest = Digest32::ZERO;
+    let quarantined = must(crate::evaluate_candidates_with_quarantine(
+        set(vec![contribution("abstain", 0, 0), malformed]),
+        &profile(),
+        &must(legacy_evaluation_policy(&profile())),
+        None,
+    ));
+    assert_eq!(quarantined.quarantined_candidates.len(), 1);
+    let after = crate::operational_metrics_snapshot_v1();
+    assert!(after.evaluation_count >= before.evaluation_count + 2);
+    assert!(after.candidate_rejections > before.candidate_rejections);
+    assert!(after.candidate_quarantines > before.candidate_quarantines);
+    assert!(after.evaluation_latency_micros_total >= before.evaluation_latency_micros_total);
+}

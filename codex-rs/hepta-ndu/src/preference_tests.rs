@@ -308,3 +308,41 @@ fn eta_outside_registered_bounds_fails() {
         NduError::InvalidEta
     );
 }
+
+#[test]
+fn real_solver_records_success_and_exhaustion_iterations() {
+    let before = crate::operational_metrics_snapshot_v1();
+    let initial = must(PreferenceState::genesis(
+        id("metric-agent"),
+        SubjectClass::Agent,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ZERO,
+        }],
+    ));
+    let target = vec![AxisValue {
+        axis: id("quality"),
+        value: FixedQ32::ONE,
+    }];
+    let (_, receipt, _) = must(solve_preference_target(
+        initial.clone(),
+        target.clone(),
+        FixedQ32::from_raw(1 << 30),
+    ));
+    let exhausted = must_err(solve_preference_target(
+        initial,
+        target,
+        FixedQ32::from_raw(1 << 28),
+    ));
+    assert!(matches!(
+        exhausted,
+        NduError::IterationExhausted { iterations: 64, .. }
+    ));
+    let after = crate::operational_metrics_snapshot_v1();
+    assert!(after.convergence_runs >= before.convergence_runs + 2);
+    assert!(after.convergence_exhaustions > before.convergence_exhaustions);
+    assert!(
+        after.convergence_iterations
+            >= before.convergence_iterations + u64::from(receipt.iterations) + 64
+    );
+}

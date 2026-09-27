@@ -151,3 +151,30 @@ Any missing, cancelled, skipped, stale or identity-mismatched receipt is a stop 
 ## 10. Rollback
 
 Rollback uses an explicitly compatible binary and schema. Fence the active generation, preserve the current journal and receipts, verify the rollback binary digest, reopen without automatic legacy adoption and repeat the restore/non-resurrection checks. Do not roll back across a policy, authority epoch, owner binding or schema boundary without a reviewed migration.
+
+## Implemented observation boundary (2026-09-27)
+
+`NduControlRequestV1::MetricsV1` is a read-only request on the existing private
+control socket. It returns `NduControlResultV1::MetricsV1`; existing lifecycle
+and caller access checks still apply. It does not claim a final-use grant or
+modify the journal. Direct metrics reads do not need a healthy projection
+journal or a current revocation feed, so an indeterminate-store incident does
+not hide its counter behind a journal read. Admission-wrapped requests retain
+all V2 fence, feed, deadline and replay checks.
+
+The implementation records actual V2 and V3 evaluation latency, rejected and
+quarantined candidates, actual solver iterations (including exhaustion), store
+open contention, open/recovery failures, restore failures and ambiguous
+rename/directory-sync failures. Quarantine preflight probes do not increment
+logical evaluation counts. A successful store open or durable publish updates
+the journal-size gauge; an ambiguous publish invalidates it.
+
+These observations are process-local, approximate under concurrent reads and
+reset on restart. Journal bytes describe the most recently observed NDU store,
+not a sum of all stores. Scrapers must bind the process/host generation and must
+not use the counters as authority or durable outcomes. `backup_age_seconds`
+remains null: no external encrypted-backup transport or acknowledgement source
+has been wired. A local `backup_bytes()` export is never counted as off-host
+backup success. The deployment exporter, alert destination, independently
+governed backup service and target-host restore drill still require real
+integration and external receipts.

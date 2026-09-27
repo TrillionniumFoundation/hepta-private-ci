@@ -48,10 +48,10 @@ impl<'a> NduStochasticAdmissionRequestV1<'a> {
         current_registry_view: VerifiedCurrentRegistryViewV1,
         withdrawal_snapshot: DatasetWithdrawalRegistrySnapshotV1,
         lifecycle_snapshot: ArtifactLifecycleJournalSnapshotV2,
-        signed_selection: &SignedArtifactSelectionV1,
-        verified_selection: &VerifiedArtifactSelectionV1,
+        selection: (&SignedArtifactSelectionV1, &VerifiedArtifactSelectionV1),
         now: u64,
     ) -> Result<NduStochasticAdmissionReceiptV1, NduStochasticAdmissionError> {
+        let (signed_selection, verified_selection) = selection;
         if verified_selection.authority().grants_any() {
             return Err(NduStochasticAdmissionError::AuthorityEscalation(
                 "artifact_selection",
@@ -468,13 +468,8 @@ mod tests {
         let witness = digest("current-witness");
         let trust = digest("current-trust");
         let withdrawal_scope = scope().digest();
-        let selection = signed_selection(
-            &manifest,
-            registry_head,
-            witness,
-            trust,
-            withdrawal_scope,
-        );
+        let selection =
+            signed_selection(&manifest, registry_head, witness, trust, withdrawal_scope);
         let selection_digest = signed_selection_digest(&selection);
         let mut journal = selected_journal(&manifest, &selection);
         let selected = validate_selected_lifecycle_v2(

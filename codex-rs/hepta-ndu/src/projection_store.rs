@@ -142,6 +142,20 @@ impl NduProjectionStoreV1 {
         root: impl AsRef<Path>,
         persistence: Arc<dyn ProjectionPersistenceV1>,
     ) -> Result<Self, NduProjectionStoreError> {
+        let result = Self::open_unobserved(root, persistence);
+        let metrics = crate::operational_metrics::process_metrics();
+        match &result {
+            Ok(store) => metrics.set_journal_bytes(store.journal.encoded_len() as u64),
+            Err(NduProjectionStoreError::Busy) => metrics.record_store_busy(),
+            Err(_) => metrics.record_reopen_failure(),
+        }
+        result
+    }
+
+    fn open_unobserved(
+        root: impl AsRef<Path>,
+        persistence: Arc<dyn ProjectionPersistenceV1>,
+    ) -> Result<Self, NduProjectionStoreError> {
         if !cfg!(unix) {
             return Err(NduProjectionStoreError::UnsupportedPlatform);
         }
@@ -325,6 +339,14 @@ impl NduProjectionStoreV1 {
     /// backup. This prevents an older valid backup from deleting a later
     /// revocation or otherwise resurrecting stale selected state.
     pub fn restore_backup(&mut self, bytes: &[u8]) -> Result<(), NduProjectionStoreError> {
+        let result = self.restore_unobserved(bytes);
+        if result.is_err() {
+            crate::operational_metrics::process_metrics().record_restore_failure();
+        }
+        result
+    }
+
+    fn restore_unobserved(&mut self, bytes: &[u8]) -> Result<(), NduProjectionStoreError> {
         self.ensure_authoritative()?;
         if bytes.len() > MAX_BACKUP_BYTES {
             return Err(NduProjectionStoreError::BackupTooLarge);
@@ -428,12 +450,15 @@ fn persist_image(
     // A failed acknowledgement does not prove that replacement did not occur.
     // Preserve the candidate and fence this handle until reopen reconciles disk.
     if persistence.rename(&temp_path, &journal_path).is_err() {
+        crate::operational_metrics::process_metrics().record_store_indeterminate();
         return Err(NduProjectionStoreError::Indeterminate);
     }
-
-    persistence
-        .sync_parent(root)
-        .map_err(|_| NduProjectionStoreError::Indeterminate)
+    if persistence.sync_parent(root).is_err() {
+        crate::operational_metrics::process_metrics().record_store_indeterminate();
+        return Err(NduProjectionStoreError::Indeterminate);
+    }
+    crate::operational_metrics::process_metrics().set_journal_bytes(bytes.len() as u64);
+    Ok(())
 }
 
 #[cfg(test)]

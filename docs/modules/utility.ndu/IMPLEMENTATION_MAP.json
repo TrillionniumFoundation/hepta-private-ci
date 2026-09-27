@@ -81,6 +81,10 @@
         {
           "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
           "symbol": "candidate_support_digest_binds_organ_and_contribution_semantics"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+          "symbol": "invalid_scalarization_rejects_singleton_and_abstain_only_frontiers"
         }
       ],
       "designOperation": "evaluate_candidates_with_policy",
@@ -764,11 +768,10 @@
   "selectedProductionWriterState": "not_established",
   "currentSourceEvidence": {
     "baselineMainCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "implementationCommit": "17c88dc62340574ababb61220dec7b1672469a9d",
-    "branch": "codex/utility-ndu-deterministic-closure",
-    "scope": "residual semantics, bounded persistence and safe revocations, full-journal/selection CAS, authenticated original context, stable durable owner binding, named normal Agentd local process, numeric coefficient payload integrity, independent exact-candidate suites",
-    "exactHeadQualification": "pending_current_candidate_workflows",
-    "namedHostQualification": "pending_current_candidate_receipts"
+    "branch": "codex/utility-ndu-production-hardening-20260926",
+    "sourceBinding": "exact_typed_path_object_manifest_v1",
+    "qualificationBinding": "suite receipts contain actual source and synthetic commit/tree identities",
+    "productionActivation": false
   },
   "productCallers": [
     {
@@ -843,8 +846,20 @@
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/hepta-ndu-recursion.yml",
+      "object": "3d52ea4e8fbfec2dae33b0a75d03930e61c67e85"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "f2c769ddc6f79fd07beba8e7e8f28adb70f79bcd"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"
+    },
+    {
       "path": "codex-rs/hepta-agent-protocol/src/ndu.rs",
-      "object": "07f0823f8a0ea7bd105676c4afc3ae6b932e2861"
+      "object": "6a116d66ce196e7e8e984fe6bc23c44b0dc2da2b"
     },
     {
       "path": "codex-rs/hepta-agentd/src/client.rs",
@@ -852,23 +867,31 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
+      "object": "d2ed9bc10b0b0c217c91aac3f59d9eb9715941fc"
     },
     {
       "path": "codex-rs/hepta-agentd/src/ndu_control.rs",
-      "object": "795a87fd8767049e1430b610dc0167517a20c15b"
+      "object": "8875d158678c24e56e85ebfa9bef00cc54e7b85a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/ndu_owner.rs",
-      "object": "f4b964ac069b81e1bd088381a002c58d55a8f5c4"
+      "object": "9ffa2764153b2ec15c80e77fdabb78904b403395"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ndu_owner_tests.rs",
+      "object": "f8c7f60a7548357d585123f639453cff55797a81"
     },
     {
       "path": "codex-rs/hepta-agentd/src/ndu_process_bootstrap.rs",
       "object": "a52cbc0a820c39a52bc399ed4d5fd410f2970036"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/ndu_replay.rs",
+      "object": "079781277fe6d41431c1e9a6d69b6ee916254159"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "4a5311e0933ac530a622c9fa385fb1ebf91dd40f"
+      "object": "83dcba9e8d01aac819c2161bf0b1bd607e5a4a4f"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
@@ -876,15 +899,31 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
-      "object": "896d06018d1aface62eb1762f534aad0ae04f740"
+      "object": "ce8e29c1764f14714676c93ad337567d0aa96842"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
       "object": "4f5021be9e3e5962372fd99b6578552a98b1d6b6"
     },
     {
+      "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs",
+      "object": "3f22ba16562af3b850853e79de094b316f0877dd"
+    },
+    {
       "path": "codex-rs/hepta-ndu",
-      "object": "016ae6bf33f9c49c2b16be0ff33148b0f4419fda"
+      "object": "0ad8e1ecf67f76f9f14650f76fd110c290610d85"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/bin/ndu-named-host-qualification.rs",
+      "object": "50fc2d7360ac6af8def0ecf7e9bec5ef7837933a"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/bin/ndu-named-host-qualification/fixture.rs",
+      "object": "6e6cd520aff93aa629a8c21035ea9524d15b475d"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/candidate_quarantine.rs",
+      "object": "abec82020ba70cc76762d93c96edd3cf27ea8b60"
     },
     {
       "path": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
@@ -895,20 +934,60 @@
       "object": "748bf8ba2347167f7de8c274c5979ca74e3661c8"
     },
     {
+      "path": "codex-rs/hepta-ndu/src/conditional_moments.rs",
+      "object": "b0ab72d328508013f07aa915e7ab258924d43d7e"
+    },
+    {
       "path": "codex-rs/hepta-ndu/src/covariance.rs",
       "object": "985df3333fc8b7664ac867c53a9f7111e6dd999f"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/covariance_profile.rs",
+      "object": "4c288a14e6f1763515a325d9d7bf21deb7a0c12a"
     },
     {
       "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
       "object": "a0288c9c1f732b51b0f8594c15679cf7d2e532cb"
     },
     {
+      "path": "codex-rs/hepta-ndu/src/error.rs",
+      "object": "4bbfd280d1e686cc153e528caac6bbc95df9531f"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/evaluation_digest.rs",
+      "object": "ac945746587aa1afa97957ed2f4d44ce3270204c"
+    },
+    {
       "path": "codex-rs/hepta-ndu/src/evaluator.rs",
-      "object": "072b84f7abd0cd4276092b0afd24af22a49f4032"
+      "object": "0c151d5387258052cacb4ec2e3b6da076c9312e0"
     },
     {
       "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-      "object": "ff9acf99c15907815e10ca9a3e291de6539e63d9"
+      "object": "a10fe82821bf6442f3229fff26693c409d3178b3"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/fixed.rs",
+      "object": "eb6b1fe339c7ebdfc2d647cebebd899e7a0a507a"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/fixed_tests.rs",
+      "object": "6c21f48c122347250ad4b4e211377c3143f3505f"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/hierarchy.rs",
+      "object": "cf60aa619406cd56f91f2b42f3885fe41d02bbf0"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/lib.rs",
+      "object": "0d22f202de066b436d419aa78fe411ed94d7ebbe"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/model.rs",
+      "object": "aa09d1b00bd62f484f95a464f1523edb009fa9a2"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/operational_metrics.rs",
+      "object": "b8801029fbf1abf6b9a382599a57f95857964cdb"
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner.rs",
@@ -920,7 +999,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner_digests.rs",
-      "object": "fa0b8e75bb4fd66cfaca74ea1dcd3da17d05f102"
+      "object": "56faee6c586c9fb74e8ce45aa76ac197b5fbdc53"
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
@@ -928,15 +1007,19 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference.rs",
-      "object": "3821d2e4990784e152a2fb4d4aaf48956c2d7889"
+      "object": "37385daa37b28b75d780675ab834a2acab6a8cd4"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/preference_receipts.rs",
+      "object": "e471600cd4f0062e2ef39de5c72c57396d171e98"
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-      "object": "c36bb4147e2eece2cb04d3421e3ca3e79a7b3776"
+      "object": "4047371915712fd398c307d6467005995786cd7a"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal.rs",
-      "object": "bdc2bf34fbbe47d89b8d1ae90b25780d840e60d2"
+      "object": "9871814b9eb877471024c059860a542c0b04c8c9"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
@@ -944,11 +1027,15 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store.rs",
-      "object": "fc4d85ada3fdd50fd043afc6c2052ec4c87302bd"
+      "object": "5e62a580fd3bcf6b6a1efa5a9c60ed118d44c56f"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_store_process_kill_tests.rs",
+      "object": "8488d5189af72f91f28515f284ee6ebbc472a9b8"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
-      "object": "07894fe25ba1f8dac8ef6d782da6c5e1f4ac2765"
+      "object": "9e5c9d12d5f2674c97e77801c44134c54487db9a"
     },
     {
       "path": "codex-rs/hepta-ndu/src/protocol.rs",
@@ -959,6 +1046,26 @@
       "object": "23930af9569ad497d76434c840494aef4e54c823"
     },
     {
+      "path": "codex-rs/hepta-ndu/src/recursive.rs",
+      "object": "e471d92e69c160f9f5c82727e1ce6b7a1be0ed2d"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/recursive_tests.rs",
+      "object": "e16311c89ed05083a4d477d8fe8f88ecd4a3ac18"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/scoring.rs",
+      "object": "f47a251bdfc46bf2294bc18049c73b322f47808c"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/scoring_tests.rs",
+      "object": "a4ffc2107eed0402ac36954888b9b58a85ded558"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/validated_scalarization.rs",
+      "object": "99dfe4edb837e17aa04114f77df1ed2e7de87dc4"
+    },
+    {
       "path": "codex-rs/hepta-ndu/src/z_conversion.rs",
       "object": "91e51909b9231686e8218e1f5564c3025859418b"
     },
@@ -967,8 +1074,52 @@
       "object": "69664c267c19eb7c0204367a949e45e66b033f1b"
     },
     {
+      "path": "codex-rs/rust-toolchain.toml",
+      "object": "910c65114ec128a8317ee8257428451f3cd28230"
+    },
+    {
+      "path": "codex-rs/rustfmt.toml",
+      "object": "f9686f9732d3d48311c41c4fd06b40781928b8ec"
+    },
+    {
+      "path": "docs/learning/NDU_FBSDE_SPEC.md",
+      "object": "4c6d6e10b1bf6573290d47614143aa67b541f931"
+    },
+    {
+      "path": "docs/modules/MODULE_DOCS.json",
+      "object": "1ac87f5e5d295510524239da07537ee5b183d3c2"
+    },
+    {
+      "path": "docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json",
+      "object": "cbe96d324c9b16cd5cfe10e38ff2d2b2f82429ac"
+    },
+    {
       "path": "docs/modules/utility.ndu/TECHNICAL.md",
-      "object": "750e8df4c0c8ace41918e9b64065bc5eb1303395"
+      "object": "2a5618b037d68789dfb5d4e58951f3baf555db18"
+    },
+    {
+      "path": "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+      "object": "a6e255c502910c64e7d4a0dc77605a309f63fca4"
+    },
+    {
+      "path": "scripts/hepta-ndu-implementation-map-closed-world.py",
+      "object": "2ba571c9d0314799735c1c41247d0dff8015ff0a"
+    },
+    {
+      "path": "scripts/hepta-ndu-qualification.py",
+      "object": "aaa7b4fcc7740920ab63f0adb1e3b6c68ed9dcce"
+    },
+    {
+      "path": "scripts/hepta_ndu_map_integrity.py",
+      "object": "0aae0a65d7169908374740ae42614192d3f90dfc"
+    },
+    {
+      "path": "scripts/test_hepta_ndu_map_integrity.py",
+      "object": "a5036f59538842eaa95319e0ddc6d5b756ef1581"
+    },
+    {
+      "path": "scripts/test_hepta_ndu_qualification.py",
+      "object": "4b0d6fbdd8fd4c9b14c5fcb9ae3e137e867d8ae8"
     }
   ]
 }
