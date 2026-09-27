@@ -34,7 +34,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/evidence-publication-native"
           echo "RECORDS=$RUNNER_TEMP/evidence-publication-native" >> "$GITHUB_ENV"
           printf '%s\n' "$SOURCE_SHA" "$BASE_SHA" "$LANE" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" > "$RUNNER_TEMP/evidence-publication-native/request.txt"
-          printf '%s\n' 'Native diagnostics only. No independent acceptance, activation or release.' > "$RUNNER_TEMP/evidence-publication-native/SCOPE.txt"
+          printf '%s\n' 'Scoped native diagnostics only. No independent acceptance, activation or release.' > "$RUNNER_TEMP/evidence-publication-native/SCOPE.txt"
       - name: Checkout immutable source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -72,69 +72,64 @@ jobs:
         id: rust
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
+          toolchain: 1.95.0
           components: rustfmt, clippy
       - name: Install pinned nextest
         id: nextest
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: cargo-nextest@0.9.103
-      - name: Record native tool identities
-        if: always() && steps.rust.outcome == 'success' && steps.nextest.outcome == 'success'
+      - name: Execute all scoped checks and retain each command result
+        id: execution
+        if: always() && steps.candidate.outcome == 'success' && steps.setup.outcome == 'success' && steps.rust.outcome == 'success' && steps.nextest.outcome == 'success'
         shell: bash
         run: |
           set -euo pipefail
-          { rustc --version; cargo --version; rustfmt --version; cargo clippy --version; cargo nextest --version; just --version; } | tee "$RECORDS/tools.txt"
-      - name: Check repository formatting on unmodified source
-        id: formatting
-        if: always() && steps.candidate.outcome == 'success' && steps.setup.outcome == 'success' && steps.rust.outcome == 'success'
-        shell: bash
-        run: |
-          set -euo pipefail
-          just fmt-check 2>&1 | tee "$RECORDS/formatting.log"
-      - name: Test the complete evidence package
-        id: evidence
-        if: always() && steps.candidate.outcome == 'success' && steps.nextest.outcome == 'success'
-        shell: bash
-        run: |
-          set -euo pipefail
-          just test --locked -p codex-hepta-evidence 2>&1 | tee "$RECORDS/evidence-tests.log"
-      - name: Test Agentd library and evidence product targets
-        id: agentd
-        if: always() && steps.candidate.outcome == 'success' && steps.nextest.outcome == 'success'
-        shell: bash
-        run: |
-          set -euo pipefail
-          just test --locked -p codex-hepta-agentd --lib \
-            --test kernel_evidence_product --test kernel_evidence_profile \
-            --test kernel_evidence_paging_product --test kernel_evidence_publication_cli \
-            2>&1 | tee "$RECORDS/agentd-tests.log"
-      - name: Strict evidence and Agentd lint
-        id: lint
-        if: always() && steps.candidate.outcome == 'success' && steps.rust.outcome == 'success'
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo clippy --locked -p codex-hepta-evidence -p codex-hepta-agentd --all-targets -- -D warnings \
-            2>&1 | tee "$RECORDS/clippy.log"
-      - name: Compile the actual Agentd binary
-        id: build
-        if: always() && steps.candidate.outcome == 'success' && steps.rust.outcome == 'success'
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo build --locked -p codex-hepta-agentd --bin hepta-agentd \
-            2>&1 | tee "$RECORDS/build.log"
-      - name: Preserve final candidate and individual outcomes
+          { rustc --version; cargo --version; rustfmt --version; cargo clippy --version; cargo nextest --version; just --version; } > "$RECORDS/tools.txt"
+          python3 - <<'PY'
+          import datetime, hashlib, json, os, signal, subprocess
+          from pathlib import Path
+          records = Path(os.environ['RECORDS'])
+          commands = {
+              'formatting': ['just', 'fmt-check'],
+              'evidence-tests': ['just', 'test', '--locked', '-p', 'codex-hepta-evidence'],
+              'agentd-tests': ['just', 'test', '--locked', '-p', 'codex-hepta-agentd', '--lib', '--test', 'kernel_evidence_product', '--test', 'kernel_evidence_profile', '--test', 'kernel_evidence_paging_product', '--test', 'kernel_evidence_publication_cli'],
+              # nextest does not execute Rust documentation/compile-fail tests.
+              'evidence-doctests': ['cargo', 'test', '--manifest-path', 'codex-rs/Cargo.toml', '--locked', '-p', 'codex-hepta-evidence', '--doc'],
+              'clippy': ['cargo', 'clippy', '--manifest-path', 'codex-rs/Cargo.toml', '--locked', '-p', 'codex-hepta-evidence', '-p', 'codex-hepta-agentd', '--all-targets', '--', '-D', 'warnings'],
+              'build': ['cargo', 'build', '--manifest-path', 'codex-rs/Cargo.toml', '--locked', '-p', 'codex-hepta-agentd', '--bin', 'codex-hepta-agentd'],
+          }
+          outcomes = {}
+          for name, command in commands.items():
+              started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+              path = records / f'{name}.log'
+              timed_out = False
+              print(f'::group::{name}', flush=True)
+              with path.open('wb') as log:
+                  with subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True) as process:
+                      try:
+                          code = process.wait(timeout=1200)
+                      except subprocess.TimeoutExpired:
+                          timed_out = True
+                          try:
+                              os.killpg(process.pid, signal.SIGKILL)
+                          except ProcessLookupError:
+                              pass
+                          process.wait()
+                          code = 124
+              payload = {'command': command, 'exitCode': code, 'timedOut': timed_out, 'startedAt': started, 'finishedAt': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'logSha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'source': os.environ['SOURCE_SHA'], 'base': os.environ['BASE_SHA'], 'lane': os.environ['LANE'], 'run': os.environ['GITHUB_RUN_ID'], 'attempt': os.environ['GITHUB_RUN_ATTEMPT']}
+              (records / f'{name}.json').write_text(json.dumps(payload, indent=2) + '\n')
+              outcomes[name] = code
+              print(path.read_text(errors='replace')[-16000:], flush=True)
+              print('::endgroup::', flush=True)
+          (records / 'outcomes.json').write_text(json.dumps(outcomes, indent=2) + '\n')
+          if any(code != 0 for code in outcomes.values()):
+              raise SystemExit('one or more scoped native checks failed')
+          PY
+      - name: Finalize observed results without treating skips as success
         if: always()
         env:
-          CANDIDATE_OUTCOME: ${{ steps.candidate.outcome }}
-          FORMATTING_OUTCOME: ${{ steps.formatting.outcome }}
-          EVIDENCE_OUTCOME: ${{ steps.evidence.outcome }}
-          AGENTD_OUTCOME: ${{ steps.agentd.outcome }}
-          LINT_OUTCOME: ${{ steps.lint.outcome }}
-          BUILD_OUTCOME: ${{ steps.build.outcome }}
+          EXECUTION_OUTCOME: ${{ steps.execution.outcome }}
         shell: bash
         run: |
           set -euo pipefail
@@ -145,16 +140,18 @@ jobs:
           import hashlib, json, os
           from pathlib import Path
           records = Path(os.environ['RECORDS'])
-          outcomes = {name: os.environ.get(name.upper() + '_OUTCOME', '') for name in ['candidate', 'formatting', 'evidence', 'agentd', 'lint', 'build']}
           before, after, status = [records / name for name in ['candidate-before.txt', 'candidate-after.txt', 'source-after.txt']]
           unchanged = before.is_file() and after.is_file() and status.is_file() and before.read_bytes() == after.read_bytes() and not status.read_bytes()
-          passed = all(value == 'success' for value in outcomes.values()) and unchanged
-          payload = {'schemaVersion': 1, 'source': os.environ['SOURCE_SHA'], 'base': os.environ['BASE_SHA'], 'lane': os.environ['LANE'], 'run': os.environ['GITHUB_RUN_ID'], 'attempt': os.environ['GITHUB_RUN_ATTEMPT'], 'outcomes': outcomes, 'sourceUnchanged': unchanged, 'allNativeDiagnosticStepsPassed': passed, 'independentAcceptance': False, 'activation': False, 'release': False}
-          (records / 'RESULT.json').write_text(json.dumps(payload, indent=2) + '\n')
-          lines = [f'{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n' for path in sorted(records.iterdir()) if path.is_file() and path.name != 'SHA256SUMS']
-          (records / 'SHA256SUMS').write_text(''.join(lines))
+          outcome_path = records / 'outcomes.json'
+          outcomes = json.loads(outcome_path.read_text()) if outcome_path.is_file() else {}
+          required = {'formatting', 'evidence-tests', 'agentd-tests', 'evidence-doctests', 'clippy', 'build'}
+          passed = set(outcomes) == required and all(type(code) is int and code == 0 for code in outcomes.values()) and unchanged and os.environ.get('EXECUTION_OUTCOME') == 'success'
+          result = {'schemaVersion': 1, 'source': os.environ['SOURCE_SHA'], 'base': os.environ['BASE_SHA'], 'lane': os.environ['LANE'], 'outcomes': outcomes, 'sourceUnchanged': unchanged, 'allNativeDiagnosticStepsPassed': passed, 'independentAcceptance': False, 'activation': False, 'release': False}
+          (records / 'RESULT.json').write_text(json.dumps(result, indent=2) + '\n')
+          sums = [f'{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n' for path in sorted(records.iterdir()) if path.is_file() and path.name != 'SHA256SUMS']
+          (records / 'SHA256SUMS').write_text(''.join(sums))
           if not passed:
-              raise SystemExit('required native diagnostics failed, were skipped, or changed source')
+              raise SystemExit('native diagnostics failed, were skipped, or changed source')
           PY
       - name: Retain all native diagnostics
         if: always()
@@ -164,50 +161,3 @@ jobs:
           path: ${{ runner.temp }}/evidence-publication-native/
           if-no-files-found: error
           retention-days: 14
-      - name: Generate formatting suggestions only in a separate worktree
-        if: always() && steps.candidate.outcome == 'success' && steps.rust.outcome == 'success'
-        shell: bash
-        run: |
-          set -euo pipefail
-          diagnostic="$RUNNER_TEMP/evidence-publication-format-tree"
-          output="$RUNNER_TEMP/evidence-publication-format"
-          mkdir -p "$output"
-          git worktree add --detach "$diagnostic" HEAD
-          git rev-parse HEAD HEAD^{tree} > "$output/source.txt"
-          set +e
-          cargo fmt --manifest-path "$diagnostic/codex-rs/Cargo.toml" \
-            --package codex-hepta-evidence --package codex-hepta-agentd --package codex-hepta-agent-protocol \
-            > "$output/rustfmt.log" 2>&1
-          format_exit=$?
-          set -e
-          printf '%s\n' "$format_exit" > "$output/formatter-exit.txt"
-          git -C "$diagnostic" diff --binary > "$output/formatting-only.patch"
-          git -C "$diagnostic" diff --name-only -z > "$output/changed-paths.nul"
-          python3 - "$diagnostic" "$output" <<'PY'
-          import hashlib, shutil, sys
-          from pathlib import Path
-          tree, output = map(Path, sys.argv[1:])
-          for name in (output / 'changed-paths.nul').read_bytes().split(b'\0'):
-              if not name:
-                  continue
-              relative = Path(name.decode())
-              if relative.is_absolute() or '..' in relative.parts:
-                  raise RuntimeError('noncanonical formatting path')
-              source, target = tree / relative, output / 'files' / relative
-              if source.is_symlink() or not source.is_file():
-                  raise RuntimeError('invalid formatted source')
-              target.parent.mkdir(parents=True, exist_ok=True)
-              shutil.copyfile(source, target)
-          sums = [f'{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.relative_to(output)}\n' for path in sorted(output.rglob('*')) if path.is_file() and path.name != 'SHA256SUMS']
-          (output / 'SHA256SUMS').write_text(''.join(sums))
-          PY
-          git diff --exit-code
-          git diff --cached --exit-code
-      - name: Retain non-qualifying formatting suggestions
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: kernel-evidence-publication-format-${{ matrix.lane }}-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/evidence-publication-format/
-          if-no-files-found: error
-          retention-days: 7

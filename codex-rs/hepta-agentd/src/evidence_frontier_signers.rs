@@ -53,6 +53,13 @@ impl EvidenceFrontierSignerTrustV2 {
         }
         let mut identities = BTreeSet::new();
         let mut active_principals = BTreeSet::new();
+        let mut key_principals = BTreeMap::new();
+        let revoked_keys = self
+            .signers
+            .iter()
+            .filter(|signer| signer.revoked)
+            .map(|signer| signer.public_key_hex.as_str())
+            .collect::<BTreeSet<_>>();
         for signer in &self.signers {
             StableId::new(signer.principal_id.clone()).map_err(|error| {
                 recovery_required(&format!("invalid frontier signer principal: {error}"))
@@ -77,7 +84,23 @@ impl EvidenceFrontierSignerTrustV2 {
             }
             VerifyingKey::from_bytes(&hex_bytes(&signer.public_key_hex)?)
                 .map_err(|_| recovery_required("invalid frontier signer Ed25519 public key"))?;
+            // A public key cannot manufacture another principal, even when an
+            // earlier alias is revoked. Rotation requires a new key, not a new
+            // spelling of the same authority.
+            if key_principals
+                .insert(signer.public_key_hex.as_str(), signer.principal_id.as_str())
+                .is_some_and(|principal| principal != signer.principal_id)
+            {
+                return Err(recovery_required(
+                    "frontier signing key is registered to multiple principals",
+                ));
+            }
             if !signer.revoked {
+                if revoked_keys.contains(signer.public_key_hex.as_str()) {
+                    return Err(recovery_required(
+                        "revoked frontier signing key cannot be reactivated under another epoch",
+                    ));
+                }
                 active_principals.insert(signer.principal_id.clone());
             }
         }
@@ -152,3 +175,7 @@ fn recovery_required(message: &str) -> AgentdError {
 #[cfg(test)]
 #[path = "evidence_frontier_signers_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "evidence_frontier_signer_identity_tests.rs"]
+mod identity_tests;
