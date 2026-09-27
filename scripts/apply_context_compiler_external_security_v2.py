@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the external-security materializer with a V3-unique method anchor."""
+"""Run the external-security materializer with recovery-stable V3 anchors."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -7,7 +7,8 @@ import runpy
 
 path = Path("scripts/apply_context_compiler_external_security.py")
 text = path.read_text(encoding="utf-8")
-old = '''replace_once(
+
+compile_old = '''replace_once(
     "codex-rs/hepta-agentd/src/prompt_runtime.rs",
     "    ) -> Result<PromptRuntimeStageDisposition, AgentdPromptPipelineError> {\\n"
     "        let compiled = {\\n"
@@ -18,7 +19,7 @@ old = '''replace_once(
     "            let registry = self\\n",
 )
 '''
-new = '''replace_once(
+compile_new = '''replace_once(
     "codex-rs/hepta-agentd/src/prompt_runtime.rs",
     "    pub async fn compile_and_stage_v3<T: PromptExactTokenizerV3>(\\n"
     "        &self,\\n"
@@ -49,8 +50,46 @@ new = '''replace_once(
     "            let registry = self\\n",
 )
 '''
-count = text.count(old)
-if count != 1:
-    raise SystemExit(f"external security patch anchor drifted: observed {count}")
-path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+request_old = '''replace_once(
+    "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
+    "    ) -> Result<(), ExactContextDeliveryError> {\\n"
+    "        self.store.ensure_available()?;\\n"
+    "        request\\n"
+    "            .attempt\\n",
+    "    ) -> Result<(), ExactContextDeliveryError> {\\n"
+    "        self.store.ensure_available()?;\\n"
+    "        self.security\\n"
+    "            .capabilities()\\n"
+    "            .map_err(|_| ExactContextDeliveryError::SecurityCapability)?;\\n"
+    "        request\\n"
+    "            .attempt\\n",
+)
+'''
+request_new = '''replace_once(
+    "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
+    "    pub(crate) async fn observe_final_request(\\n"
+    "        self: Arc<Self>,\\n"
+    "        request: PromptRuntimeFinalRequestV2,\\n"
+    "    ) -> Result<(), ExactContextDeliveryError> {\\n",
+    "    pub(crate) async fn observe_final_request(\\n"
+    "        self: Arc<Self>,\\n"
+    "        request: PromptRuntimeFinalRequestV2,\\n"
+    "    ) -> Result<(), ExactContextDeliveryError> {\\n"
+    "        self.security\\n"
+    "            .capabilities()\\n"
+    "            .map_err(|_| ExactContextDeliveryError::SecurityCapability)?;\\n",
+)
+'''
+
+for label, old, new in (
+    ("compile-and-stage-v3", compile_old, compile_new),
+    ("observe-final-request", request_old, request_new),
+):
+    count = text.count(old)
+    if count != 1:
+        raise SystemExit(f"{label} external-security anchor drifted: observed {count}")
+    text = text.replace(old, new, 1)
+
+path.write_text(text, encoding="utf-8")
 runpy.run_path(str(path), run_name="__main__")
