@@ -1,0 +1,40 @@
+name: Agentd pinned development toolchain
+
+on:
+  pull_request:
+    paths: ['.github/workflows/runtime-agentd-devtoolchain.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  toolchain:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Retain official repository-pinned tools without credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$version" --profile minimal --component rustfmt --component clippy
+          tool=$(rustup which --toolchain "$version" rustc)
+          root=$(dirname "$(dirname "$tool")")
+          out="$RUNNER_TEMP/agentd-devtoolchain"
+          mkdir -p "$out"
+          tar -C "$root" -czf "$out/toolchain.tar.gz" bin lib
+          "$root/bin/rustc" -vV > "$out/compiler.txt"
+          "$root/bin/rustfmt" --version > "$out/formatter.txt"
+          git rev-parse HEAD > "$out/source-sha.txt"
+          (cd "$out" && sha256sum toolchain.tar.gz compiler.txt formatter.txt source-sha.txt > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: agentd-devtoolchain-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/agentd-devtoolchain
+          if-no-files-found: error
+          retention-days: 3
