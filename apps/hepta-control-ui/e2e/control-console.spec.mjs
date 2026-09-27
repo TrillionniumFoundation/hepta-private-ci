@@ -20,9 +20,7 @@ async function loadConsole(page) {
   await expect(page.getByRole("button", { name: "Request start" })).toBeEnabled();
 }
 
-test.beforeEach(async ({ request }) => {
-  await reset(request);
-});
+test.beforeEach(async ({ request }) => { await reset(request); });
 
 test("browser shell exposes a coherent accessible control view with redacted session material", async ({ page }) => {
   await loadConsole(page);
@@ -34,20 +32,18 @@ test("browser shell exposes a coherent accessible control view with redacted ses
   expect(accessibility.violations).toEqual([]);
 });
 
-test("keyboard confirmation traps intent, redacts identifiers, and restores focus on cancel", async ({ page }) => {
+test("keyboard confirmation traps intent, defaults to cancel, redacts identifiers, and restores focus", async ({ page }) => {
   await loadConsole(page);
   await page.getByLabel("Reason").fill("Operator-confirmed maintenance stop.");
   const stop = page.getByRole("button", { name: "Request stop" });
-  await stop.focus();
-  await page.keyboard.press("Enter");
+  await stop.focus(); await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(page.locator("#confirm-summary")).toContainText(/Snapshot digest: [0-9a-f]{12}…[0-9a-f]{8}/);
   await expect(page.locator("#confirm-summary")).toContainText(/Operation ID: ui:[0-9a-f]{5}…[0-9a-f-]{6}/);
   await expect(page.locator("#confirm-summary")).not.toContainText(/[0-9a-f]{64}/);
-  await expect(page.getByRole("button", { name: "Submit request" })).toBeFocused();
+  await expect(page.locator("#confirm-cancel")).toBeFocused();
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog")).toBeHidden();
-  await expect(stop).toBeFocused();
+  await expect(page.getByRole("dialog")).toBeHidden(); await expect(stop).toBeFocused();
 });
 
 test("double activation produces one server operation and renders redacted audit identity", async ({ page, request }) => {
@@ -56,16 +52,13 @@ test("double activation produces one server operation and renders redacted audit
   await page.getByRole("button", { name: "Request start" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.evaluate(() => {
-    const button = document.getElementById("confirm-submit");
-    button.click();
-    button.click();
+    const button = document.getElementById("confirm-submit"); button.click(); button.click();
   });
   await expect(page.getByRole("dialog")).toBeHidden();
   await expect(page.getByText(/audit-ui…[0-9a-f-]{6}/)).toBeVisible();
   await expect(page.getByText(/digest [0-9a-f]{12}…[0-9a-f]{8}/)).toBeVisible();
   const state = await (await request.get("/__test__/state")).json();
-  expect(state.requestCount).toBe(1);
-  expect(state.operations).toHaveLength(1);
+  expect(state.requestCount).toBe(1); expect(state.operations).toHaveLength(1);
   await expect(page.locator("body")).not.toContainText(state.operations[0].operationId);
   await expect(page.locator("body")).not.toContainText(state.operations[0].semanticDigest);
   await expect(page.locator("body")).not.toContainText(state.operations[0].auditTraceId);
@@ -78,21 +71,26 @@ test("server-side stale revision rejection is typed and does not create an opera
   await request.get("/__test__/bump");
   await page.getByRole("button", { name: "Submit request" }).click();
   await expect(page.getByRole("alert")).toContainText("UI_CONTROL_STALE_REVISION");
-  const state = await (await request.get("/__test__/state")).json();
-  expect(state.requestCount).toBe(0);
+  const state = await (await request.get("/__test__/state")).json(); expect(state.requestCount).toBe(0);
 });
 
 test("accepted-but-disconnected operation remains recoverable by operation id", async ({ page, request }) => {
+  // Keep automatic lookup missing until the explicit recovery request.
+  let permitLookup = false;
+  await page.route("**/api/ui-control/v1/operations/*", async route => {
+    if (!permitLookup) await route.fulfill({ status: 200, json: { found: false } });
+    else await route.continue();
+  });
   await loadConsole(page);
   await page.getByLabel("Reason").fill("AMBIGUOUS response-loss qualification.");
   await page.getByRole("button", { name: "Request reconcile" }).click();
   await page.getByRole("button", { name: "Submit request" }).click();
   await expect(page.getByRole("alert")).toContainText("UI_CONTROL_AMBIGUOUS_SUBMISSION");
   await expect(page.getByRole("button", { name: /Recover operation/ })).toBeVisible();
+  permitLookup = true;
   await page.getByRole("button", { name: /Recover operation/ }).click();
-  await expect(page.getByText(/pending/)).toBeVisible();
-  const state = await (await request.get("/__test__/state")).json();
-  expect(state.requestCount).toBe(1);
+  await expect(page.locator("#pending-list")).toContainText("pending");
+  const state = await (await request.get("/__test__/state")).json(); expect(state.requestCount).toBe(1);
 });
 
 test("authenticated terminal observation moves an operation into redacted terminal evidence", async ({ page, request }) => {
@@ -101,14 +99,10 @@ test("authenticated terminal observation moves an operation into redacted termin
   await page.getByRole("button", { name: "Request reconcile" }).click();
   await page.getByRole("button", { name: "Submit request" }).click();
   await expect(page.getByRole("dialog")).toBeHidden();
-
   const before = await (await request.get("/__test__/state")).json();
   const operationId = before.operations[0].operationId;
-  const completion = await request.get(
-    `/__test__/complete?operationId=${encodeURIComponent(operationId)}`,
-  );
+  const completion = await request.get(`/__test__/complete?operationId=${encodeURIComponent(operationId)}`);
   expect(completion.ok()).toBeTruthy();
-
   await page.getByRole("button", { name: "Refresh runtime view" }).click();
   await expect(page.locator("#completed-list")).toContainText(redactedIdentifier(operationId));
   await expect(page.locator("#completed-list")).not.toContainText(operationId);
@@ -116,30 +110,28 @@ test("authenticated terminal observation moves an operation into redacted termin
   await expect(page.locator("#pending-list")).toContainText("No pending operations.");
 });
 
-test("unexpected errors do not reflect raw messages into the operator DOM", async ({ page }) => {
+test("unexpected storage errors remain private and preserve read-only diagnostics", async ({ page }) => {
   await page.addInitScript(() => {
-    Storage.prototype.getItem = function sensitiveStorageFailure() {
-      throw new Error("session-cookie=must-not-appear");
-    };
+    Storage.prototype.getItem = function sensitiveStorageFailure() { throw new Error("session-cookie=must-not-appear"); };
   });
-  await loadConsole(page);
+  await page.goto("/");
+  await expect(page.getByRole("cell", { name: "runtime.agentd" })).toBeVisible();
+  await expect(page.getByRole("alert")).toContainText("UI_CONTROL_STORAGE");
   await expect(page.getByRole("alert")).not.toContainText("session-cookie=must-not-appear");
+  await expect(page.getByRole("button", { name: "Request start" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Refresh runtime view" })).toBeEnabled();
 });
 
-test("local recovery storage denial cannot wedge a submitted control request", async ({ page, request }) => {
+test("local recovery storage denial prevents dispatch without wedging read-only diagnostics", async ({ page, request }) => {
   await page.addInitScript(() => {
-    Storage.prototype.setItem = function deniedStorageWrite() {
-      throw new DOMException("storage denied", "SecurityError");
-    };
+    Storage.prototype.setItem = function deniedStorageWrite() { throw new DOMException("storage denied", "SecurityError"); };
   });
   await loadConsole(page);
-  await page.getByLabel("Reason").fill("Submit while local recovery storage is unavailable.");
+  await page.getByLabel("Reason").fill("Do not dispatch when recovery cannot be persisted.");
   await page.getByRole("button", { name: "Request start" }).click();
   await page.getByRole("button", { name: "Submit request" }).click();
-
   await expect(page.getByRole("dialog")).toBeHidden();
   await expect(page.getByRole("alert")).toContainText("UI_CONTROL_STORAGE");
   await expect(page.getByRole("button", { name: "Refresh runtime view" })).toBeEnabled();
-  const state = await (await request.get("/__test__/state")).json();
-  expect(state.requestCount).toBe(1);
+  const state = await (await request.get("/__test__/state")).json(); expect(state.requestCount).toBe(0);
 });
