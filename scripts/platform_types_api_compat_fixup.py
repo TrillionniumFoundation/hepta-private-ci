@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""One-shot source compatibility convergence for platform.types and named owners."""
+"""One-shot compatibility convergence for platform.types and named owners.
+
+The branch already contains the additive V2 protocol surface. This migration
+restores the frozen V1 public signatures and exhaustive error enums, moves the
+explicit registered-receipt helper behind the public numeric_registry_v2
+module, and leaves all HPTC commitments and V2 verification semantics intact.
+"""
 
 from __future__ import annotations
 
@@ -28,12 +34,14 @@ def replace_all(relative: str, old: str, new: str, expected: int) -> None:
     path.write_text(text.replace(old, new), encoding="utf-8")
 
 
-# Keep the pre-existing exhaustive numeric error enum source-compatible.
-replace_exact(
-    "codex-rs/hepta-types/src/numeric_profile.rs",
-    "    Overflow,\n    RegistryAdmission,\n    CanonicalEncoding,\n",
-    "    Overflow,\n    CanonicalEncoding,\n",
-)
+# NumericConversionError has already been restored to its historical exhaustive
+# variant set. Refuse to run against a branch that reintroduced the temporary
+# RegistryAdmission variant.
+numeric_profile = (
+    ROOT / "codex-rs/hepta-types/src/numeric_profile.rs"
+).read_text(encoding="utf-8")
+if "    RegistryAdmission,\n" in numeric_profile:
+    raise SystemExit("numeric_profile.rs: temporary RegistryAdmission variant returned")
 
 # Keep the pre-existing exhaustive topology error enum source-compatible while
 # retaining canonical-order rejection and the complete HPTC commitment.
@@ -142,8 +150,8 @@ replace_exact(
     "            Err(RuntimeTopologyContractErrorV1::DuplicateRelatedModule(_))\n",
 )
 
-# Restore the historical registered conversion signature and move distinct
-# registry evidence behind an additive explicit helper used by V2 and NDU.
+# Restore the historical registered-conversion signature. The additive helper
+# below retains the explicit V1 registry receipt for V2 and named owners.
 replace_exact(
     "codex-rs/hepta-types/src/numeric_conversion.rs",
     '''/// Production-admission variant. Both native numeric-profile semantics and
@@ -181,8 +189,8 @@ pub fn rescale_signal_registered(
     '''/// Backward-compatible registry validation variant. Both native numeric-profile
 /// semantics and the shared normalization definition must be present in the
 /// exact immutable registry supplied by the caller. The return type remains the
-/// original pure arithmetic receipt; callers that need registry evidence use
-/// `numeric_registry_v2::rescale_signal_registered_receipt_v1` or V2.
+/// original pure arithmetic receipt; callers that need explicit registry
+/// evidence use `numeric_registry_v2::rescale_signal_registered_receipt_v1` or V2.
 pub fn rescale_signal_registered(
     source: &NumericSignalV1,
     target: &NumericSignalSchemaV1,
@@ -202,6 +210,7 @@ replace_exact(
     "fn registered_admission_digest(\n",
     "pub(crate) fn registered_admission_digest(\n",
 )
+
 replace_exact(
     "codex-rs/hepta-types/src/numeric_registry_v2.rs",
     "use crate::NumericConversionReceiptV1;\n",
@@ -262,15 +271,11 @@ replace_exact(
     "    let (output, registered_v1) = rescale_signal_registered(source, target, registry)?;\n",
     "    let (output, registered_v1) =\n        rescale_signal_registered_receipt_v1(source, target, registry)?;\n",
 )
+
 replace_exact(
     "codex-rs/hepta-ndu/src/numeric_admission.rs",
-    "use codex_hepta_types::rescale_signal_registered;\n",
+    "use codex_hepta_types::rescale_signal_registered_receipt_v1;\n",
     "use codex_hepta_types::numeric_registry_v2::rescale_signal_registered_receipt_v1;\n",
-)
-replace_exact(
-    "codex-rs/hepta-ndu/src/numeric_admission.rs",
-    "        let (signal, admission) = rescale_signal_registered(source, &target, &self.registry)?;\n",
-    "        let (signal, admission) =\n            rescale_signal_registered_receipt_v1(source, &target, &self.registry)?;\n",
 )
 replace_all(
     "codex-rs/hepta-types/src/numeric_conversion_tests.rs",
@@ -297,8 +302,8 @@ if "fn registered_compatibility_api_retains_original_receipt_shape()" in text:
 path.write_text(text.rstrip() + compat_test, encoding="utf-8")
 
 # Keep the pre-existing exhaustive NDU owner error enum source-compatible. The
-# new registry object still exposes detailed admission errors directly; the V1
-# owner surface folds them into its existing InvalidContext variant.
+# registry object still exposes detailed admission errors directly; the V1 owner
+# surface folds them into its existing InvalidContext variant.
 replace_exact(
     "codex-rs/hepta-ndu/src/owner.rs",
     "use crate::NduNumericAdmissionErrorV1;\n",
@@ -397,4 +402,4 @@ replace_exact(
 ''',
 )
 
-print("platform.types and named-owner API compatibility fixup: applied")
+print("platform.types V1 API compatibility convergence: applied")
