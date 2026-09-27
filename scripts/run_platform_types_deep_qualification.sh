@@ -84,6 +84,10 @@ truth_check() {
     --output "$OUT/generated-implementation-map.json"
   python3 scripts/platform_types_property_checks.py \
     --report "$OUT/property-report.json"
+  cargo run --locked --manifest-path "$MANIFEST" \
+    --package "$PACKAGE" --bin platform-types-protocol-codegen -- \
+    --json "$OUT/protocol-catalog.json" \
+    --markdown "$OUT/protocol-catalog.md"
   python3 codex-rs/hepta-types/conformance/verify_platform_wire_vectors.py
   node codex-rs/hepta-types/conformance/verify_platform_wire_vectors.mjs
   bash scripts/run_platform_types_consumer_qualification.sh
@@ -164,6 +168,8 @@ EVIDENCE_ARGS=(
   --evidence "bundle-log=$OUT/bundle.log"
   --evidence "generated-map=$OUT/generated-implementation-map.json"
   --evidence "property-report=$OUT/property-report.json"
+  --evidence "protocol-catalog=$OUT/protocol-catalog.json"
+  --evidence "protocol-catalog-markdown=$OUT/protocol-catalog.md"
   --evidence "provenance=$OUT/provenance.json"
   --evidence "rustdoc-base=$OUT/rustdoc-api/base-api.json"
   --evidence "rustdoc-current=$OUT/rustdoc-api/current-api.json"

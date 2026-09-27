@@ -75,6 +75,7 @@ def write_receipt(args: Any) -> None:
     provenance_record, provenance = _object(evidence, "provenance")
     api_record, api_diff = _object(evidence, "rustdoc-diff")
     fuzz_record, fuzz = _object(evidence, "fuzz-summary")
+    catalog_record, catalog = _object(evidence, "protocol-catalog")
 
     if bundle.get("candidateIdentity") != identity:
         raise CandidateBundleError("document bundle candidate mismatch")
@@ -88,6 +89,15 @@ def write_receipt(args: Any) -> None:
         raise CandidateBundleError("rustdoc public API semver gate did not pass")
     if fuzz.get("status") != "passed":
         raise CandidateBundleError("coverage-guided fuzz did not pass")
+    if (
+        catalog.get("schema") != "hepta.platform-types.protocol-catalog.v2"
+        or catalog.get("schemaVersion") != 2
+        or catalog.get("normativeSource")
+        != "codex-rs/hepta-types/src/protocol_catalog_v2.rs"
+        or not isinstance(catalog.get("protocolCount"), int)
+        or catalog["protocolCount"] < 7
+    ):
+        raise CandidateBundleError("Rust-generated protocol catalog is invalid")
     if generated_map.get("schema") != "hepta.platform-types.generated-implementation-map.v1":
         raise CandidateBundleError("generated implementation map schema mismatch")
     if generated_map.get("module") != "platform.types":
@@ -100,8 +110,8 @@ def write_receipt(args: Any) -> None:
         raise CandidateBundleError("generated implementation map digest mismatch")
 
     write_object(args.output, {
-        "schema": "hepta.platform-types.deep-qualification-receipt.v3",
-        "schemaVersion": 3,
+        "schema": "hepta.platform-types.deep-qualification-receipt.v4",
+        "schemaVersion": 4,
         "module": "platform.types",
         "candidateKind": identity["kind"],
         "candidateIdentity": identity,
@@ -121,8 +131,9 @@ def write_receipt(args: Any) -> None:
         "gitProvenanceSha256": provenance_record["sha256"],
         "rustdocSemverDiffSha256": api_record["sha256"],
         "coverageFuzzSha256": fuzz_record["sha256"],
+        "protocolCatalogSha256": catalog_record["sha256"],
         "status": "passed_in_current_job",
-        "scope": "exact Git identity, rustdoc API compatibility, generated map, deterministic properties, coverage-guided fuzz, MSRV, native tests, Miri, and bound docs",
+        "scope": "exact Git identity, Rust-generated protocol catalog, rustdoc API compatibility, generated map, deterministic properties, coverage-guided fuzz, MSRV, native tests, Miri, consumers, and bound docs",
         **_nonclaims(),
         "github": _github(),
     })
