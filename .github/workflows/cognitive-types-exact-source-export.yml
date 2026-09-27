@@ -1,0 +1,52 @@
+name: cognitive-types-exact-source-export
+
+on:
+  push:
+    branches:
+      - 'codex/cognitive-types-full-closure-20260927'
+    paths:
+      - '.github/workflows/cognitive-types-exact-source-export.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Record source identity
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > cognitive-types-source-sha.txt
+          git rev-parse HEAD^{tree} > cognitive-types-source-tree.txt
+
+      - name: Upload audited source slice
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
+        with:
+          name: cognitive-types-source-${{ github.sha }}
+          path: |
+            cognitive-types-source-sha.txt
+            cognitive-types-source-tree.txt
+            codex-rs/hepta-cognitive-types
+            codex-rs/hepta-cognitive-store
+            codex-rs/hepta-cognitive-read
+            codex-rs/hepta-memory-retrieval
+            codex-rs/hepta-compact-engine
+            codex-rs/hepta-intelligence
+            codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs
+            codex-rs/hepta-agentd/Cargo.toml
+            codex-rs/Cargo.toml
+            codex-rs/Cargo.lock
+            docs/modules/cognitive.types
+            qualification/cognitive-types-v1
+          if-no-files-found: error
+          retention-days: 1
