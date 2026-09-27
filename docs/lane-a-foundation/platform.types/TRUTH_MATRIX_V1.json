@@ -69,7 +69,7 @@
     "gitProvenance": "exact HEAD tree, root trees and tracked blob identities",
     "publicApi": "base and candidate rustdoc JSON normalized semver comparison",
     "properties": "deterministic mutation checks plus bounded coverage-guided libFuzzer",
-    "independentReview": "separate exact-current-head governance evidence; excludes PR author and every candidate commit author/committer",
+    "independentReview": "separate exact-current-head governance evidence; excludes PR author and every candidate commit author/committer and is conditionally fanned into blocking-ci CI required",
     "failureDiagnostics": "retained as non-authoritative candidate diagnostics",
     "authoritativeReceipts": "emitted only after truth, catalog, consumers, provenance, API, MSRV, native, Miri, fuzz and bundle outcomes pass"
   },
@@ -109,7 +109,8 @@
     "scripts/run_platform_types_coverage_fuzz.sh",
     "scripts/run_platform_types_deep_qualification.sh",
     ".github/workflows/platform-types-deep-qualification.yml",
-    ".github/workflows/platform-types-independent-review.yml"
+    ".github/workflows/platform-types-independent-review.yml",
+    ".github/workflows/blocking-ci.yml"
   ],
   "nonClaims": [
     "No V1 prompt digest is relabeled as HPTC.",

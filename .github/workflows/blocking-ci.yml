@@ -2,6 +2,8 @@ name: blocking-ci
 
 on:
   pull_request: {}
+  pull_request_review:
+    types: [submitted, edited, dismissed]
   push:
     branches: [main]
 
@@ -11,6 +13,7 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   scope:
@@ -26,6 +29,7 @@ jobs:
       native: ${{ steps.scope.outputs.native }}
       derived: ${{ steps.scope.outputs.derived }}
       full_repo: ${{ steps.scope.outputs.full_repo }}
+      platform_types_review: ${{ steps.scope.outputs.platform_types_review }}
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -46,12 +50,21 @@ jobs:
           python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies
           python3 -m unittest -v scripts.test_hepta_readiness_semantics
           args=(--head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT")
-          if [ "$EVENT_NAME" = "pull_request" ]; then
+          if [ "$EVENT_NAME" = "pull_request" ] || [ "$EVENT_NAME" = "pull_request_review" ]; then
             args+=(--base "$BASE_SHA")
           else
             args+=(--full)
           fi
           python3 scripts/hepta_ci_scope.py "${args[@]}"
+
+          platform_types_review=false
+          if [ "$EVENT_NAME" = "pull_request" ] || [ "$EVENT_NAME" = "pull_request_review" ]; then
+            if git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- | grep -Eq \
+              '^(codex-rs/hepta-types/|codex-rs/hepta-wire/|codex-rs/hepta-ndu/src/(lib\.rs|numeric_admission\.rs|owner\.rs|random_stream_owner\.rs)|codex-rs/hepta-supervisor/src/(lib\.rs|module_runtime\.rs|platform_manifest_admission\.rs)|docs/lane-a-foundation/platform\.types/|docs/modules/platform\.types/|qualification/module-execution-dossiers/detail/platform\.types\.md|scripts/(platform_types_.*\.py|run_platform_types_.*\.sh|test_platform_types_.*\.py|verify_platform_types_consumers\.py)|\.github/workflows/(platform-types-.*\.yml|lane-a-foundation\.yml|blocking-ci\.yml))'; then
+              platform_types_review=true
+            fi
+          fi
+          echo "platform_types_review=$platform_types_review" >> "$GITHUB_OUTPUT"
 
       - name: Regression-test scoped fan-in policy
         shell: bash
@@ -210,6 +223,47 @@ jobs:
           python3 scripts/hepta-docs.py verify
           test -z "$(git status --porcelain --untracked-files=no)"
 
+  platform-types-independent-review:
+    name: platform.types independent current-head approval
+    needs: scope
+    if: needs.scope.outputs.platform_types_review == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Review-gate self-tests
+        run: python3 scripts/test_platform_types_independent_review.py
+      - id: review
+        name: Evaluate current-head independent approval
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          python3 scripts/platform_types_independent_review.py
+          --repository "${{ github.repository }}"
+          --pr-number "${{ github.event.pull_request.number }}"
+          --head-sha "${{ github.event.pull_request.head.sha }}"
+          --output .hepta-evidence/platform-types-review/review.json
+      - id: artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: blocking-ci-platform-types-independent-review-${{ github.event.pull_request.head.sha }}
+          path: .hepta-evidence/platform-types-review/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+      - if: ${{ always() }}
+        shell: bash
+        run: |
+          test "${{ steps.review.outcome }}" = success
+          test "${{ steps.artifact.outcome }}" = success
+
   required:
     timeout-minutes: 30
     name: CI required
@@ -226,6 +280,7 @@ jobs:
       - sdk
       - hepta-scoped
       - lightweight
+      - platform-types-independent-review
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -237,6 +292,7 @@ jobs:
           NEEDS: ${{ toJSON(needs) }}
           NATIVE: ${{ needs.scope.outputs.native }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
+          PLATFORM_TYPES_REVIEW: ${{ needs.scope.outputs.platform_types_review }}
         shell: bash
         run: |
           set -euo pipefail
@@ -246,6 +302,7 @@ jobs:
           import os
           native = os.environ["NATIVE"] == "true"
           full = os.environ["FULL_REPO"] == "true"
+          platform_types_review = os.environ["PLATFORM_TYPES_REVIEW"] == "true"
           allowed = []
           if not (native or full):
               allowed.append("hepta-contract-gate")
@@ -255,6 +312,8 @@ jobs:
               allowed.append("hepta-scoped")
           if not (not native and not full):
               allowed.append("lightweight")
+          if not platform_types_review:
+              allowed.append("platform-types-independent-review")
           print(json.dumps(allowed))
           PY
           )"

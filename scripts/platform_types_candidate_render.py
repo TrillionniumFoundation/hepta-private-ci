@@ -58,6 +58,7 @@ PROVENANCE = DOCS + (
     "scripts/run_platform_types_deep_qualification.sh",
     ".github/workflows/platform-types-deep-qualification.yml",
     ".github/workflows/platform-types-independent-review.yml",
+    ".github/workflows/blocking-ci.yml",
 )
 GENERATED = ("protocol-catalog.json", "protocol-catalog.md")
 

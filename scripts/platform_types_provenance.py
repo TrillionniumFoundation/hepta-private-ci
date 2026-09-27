@@ -37,6 +37,7 @@ PATHS = (
     "scripts/verify_platform_types_consumers.py",
     ".github/workflows/platform-types-*",
     ".github/workflows/lane-a-foundation.yml",
+    ".github/workflows/blocking-ci.yml",
 )
 ROOTS = (
     "codex-rs/hepta-types",
