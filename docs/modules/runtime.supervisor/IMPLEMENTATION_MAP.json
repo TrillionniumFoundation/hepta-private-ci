@@ -141,9 +141,14 @@
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "graceful_stop",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/control_durable_restart_tests.rs",
+          "kind": "durable_restart_cancellation",
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Stages generation-bound graceful stop with in-process retry and no downgrade of fenced cleanup. Stop clears transient restart scheduling, but durable restart supersession and cross-daemon intent/deadline recovery remain open. Process termination is not user-task success.",
+      "sourceSemantics": "Cancels an existing pending main restart through the canonical restart-record writer before companion deferral, lifecycle CAS and graceful signaling; preserves attempts, window origin, eligibility and companion budget. Internal/deferred process stop does not cancel the restart it implements. This is budget cancellation, not a durable Stop operation: no-runtime daemon admission, cross-daemon termination intent/deadlines and release-change supersession remain open. Process termination is not user-task success.",
       "operation": "stop_instance",
       "nativeSymbol": "pub fn stop(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -174,9 +179,14 @@
           "path": "codex-rs/hepta-supervisor/src/matrix_containment_tests.rs",
           "kind": "native_unit_and_launch_faults",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/control_durable_restart_tests.rs",
+          "kind": "durable_restart_cancellation",
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Attempts the owned main process termination before companion control, retains both outcomes and fences already-owned handles even when registry/CAS preparation fails. Adopted signals use kernel lifetime references; failed signals do not acknowledge Killing or Exited. Durable Stop/Kill supersession and target-host execution remain open.",
+      "sourceSemantics": "Attempts durable pending-main-restart cancellation, then owned main termination before companion control. A failed cancellation is reported and fences the retained main handle but cannot suppress emergency termination attempts. Adopted signals use kernel lifetime references; a signal acknowledgement is not observed exit. Complete cross-daemon Kill intent, release-change supersession and target-host execution remain open.",
       "operation": "kill_instance",
       "nativeSymbol": "pub fn kill(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -197,9 +207,19 @@
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "bounded_restart_budget",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/control_durable_restart_tests.rs",
+          "kind": "durable_restart_cancellation",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/restart_budget_recovery_tests.rs",
+          "kind": "restart_window_and_clock_recovery",
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Restarts the current admitted release under generation fencing; automatic crash restarts are separately bounded by the durable restart window/backoff record. The durable pending budget does not yet bind predecessor versus replacement identity, and Stop/Kill supersession across daemon restart is not closed.",
+      "sourceSemantics": "Keeps an unresolved restart claim across budget-window rollover without resetting attempts or original eligibility. Admission, preflight and recovery reject wall-clock rollback before the window origin; internal/deferred Stop preserves the pending claim. Predecessor/replacement identity and complete cross-daemon Stop/Kill operation recovery remain open; budget cancellation alone is not full durable control.",
       "operation": "restart_instance",
       "nativeSymbol": "pub fn restart(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -363,7 +383,7 @@
   ],
   "repositoryControlledGaps": [
     "Native Linux/macOS source-head and deterministic merge-candidate default/production-authority library, product, formatting and strict-lint execution for the exact current candidate.",
-    "Durable Stop/Kill supersession of pending restarts, bound predecessor/replacement identity and cross-daemon control deadlines; in-memory pending controls are insufficient.",
+    "Complete durable Stop/Kill intent and release-change supersession, no-runtime cancellation admission, bound predecessor/replacement identity and cross-daemon control deadlines; admitted pending-budget cancellation is source-integrated but does not close these gaps.",
     "Cross-daemon exit finalization and launch-before-lease crash reconciliation; local same-owner cleanup witnesses are deliberately not reconstructible from absent files.",
     "Unix driver setup failures after OS spawn, pre-adoption hydration/binding failures, rejected/unproven adoption lease disposition and main release-rejection early return before companion recovery.",
     "Directory/inode substitution and complete writer API/permission inventory under the target-host security model.",
@@ -415,9 +435,9 @@
     "codex-rs/hepta-supervisor"
   ],
   "observedAtHead": {
-    "commit": "8454ddc3889f80274b99694eb3fb6f11a73b2230",
-    "tree": "336869de70f217d6db18d1888bbd68aeb29f4be4",
-    "interpretation": "Pinned source snapshot for incremental adopted-lifetime, main/Matrix ownership, same-owner exit cleanup and main-first emergency termination repairs. This is source observation only: Rust compilation, formatting, strict lint, exact-head/merge execution and target-host qualification have not been established by this observation. Cross-daemon controls, restart lineage, deadlines, launch-before-lease crashes and the other listed repository gaps remain open."
+    "commit": "3562f8add133426177574492a9a0dc377e863326",
+    "tree": "f4d66d1fb2358aec45ee02f45ae6f9d85dbe3c0f",
+    "interpretation": "Pinned source observation including durable cancellation of existing pending main restarts, internal/deferred Stop separation, pending-window preservation and clock-validation consistency; see RESTART_CANCELLATION.md. Earlier lifetime/ownership repairs are retained. Eighteen new regression test functions are source only: native compile, format, strict lint, source/merge execution and target-host qualification remain unverified. Full durable controls, restart lineage, deadlines, cross-daemon cleanup and the other listed gates remain open."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
 }
