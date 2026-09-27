@@ -3,28 +3,28 @@ name: context.compiler deterministic source correction
 on:
   push:
     branches:
-      - codex/context-compiler-provider-closure-final-20260927
+      - codex/context-compiler-full-closure-review-20260927
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: context-compiler-deterministic-source-correction
+  group: context-compiler-deterministic-source-correction-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   fix-and-verify:
     if: ${{ !contains(github.event.head_commit.message || '', '[context-source-fixed]') }}
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: codex/context-compiler-provider-closure-final-20260927
+          ref: codex/context-compiler-full-closure-review-20260927
           fetch-depth: 0
 
-      - name: Replace external proptest dependency with deterministic generated corpus
+      - name: Materialize deterministic generated corpus
         shell: bash
         run: |
           set -euo pipefail
@@ -34,96 +34,99 @@ jobs:
           path = Path("codex-rs/hepta-context-compiler/src/provider_closure.rs")
           text = path.read_text()
           import_line = "    use proptest::prelude::*;\n"
-          if text.count(import_line) != 1:
-              raise SystemExit(f"expected one proptest import, found {text.count(import_line)}")
-          text = text.replace(import_line, "", 1)
-
           start_marker = "    proptest! {\n"
           end_marker = "\n\n    #[test]\n    fn generated_unicode_control_corpus_keeps_exact_escaped_identity()"
-          start = text.find(start_marker)
-          end = text.find(end_marker, start)
-          if start < 0 or end < 0:
-              raise SystemExit("generated-property block markers drifted")
 
-          replacement = r'''    #[test]
-          fn generated_segment_maps_are_total_deterministic_and_single_context() {
-              for prefix_len in [0_usize, 1, 2, 17, 255, 2047] {
-                  for suffix_len in [0_usize, 1, 3, 31, 511, 2047] {
-                      for seed in [0_u64, 1, 7, 0x55aa, u32::MAX as u64, u64::MAX] {
-                          let payload = format!("CTX::{seed:016x}::END").into_bytes();
-                          let mut request = vec![b'p'; prefix_len];
-                          request.extend_from_slice(&payload);
-                          request.extend(std::iter::repeat_n(b's', suffix_len));
-                          let first = build_segment_map(
-                              &request,
-                              &payload,
-                              digest("generated-payload"),
-                          )
-                          .expect("generated map");
-                          let second = build_segment_map(
-                              &request,
-                              &payload,
-                              digest("generated-payload"),
-                          )
-                          .expect("deterministic map");
-                          assert_eq!(first, second);
-                          assert_eq!(
-                              first
-                                  .iter()
-                                  .filter(|segment| {
-                                      segment.kind()
-                                          == FinalRequestSegmentKindV2::CanonicalContextBundle
-                                  })
-                                  .count(),
-                              1
-                          );
-                          assert_eq!(
-                              first.last().expect("last segment").end_offset(),
-                              request.len() as u64
-                          );
-                          assert_eq!(
-                              compute_segment_map_digest(&first),
-                              compute_segment_map_digest(&second)
-                          );
+          if import_line in text:
+              text = text.replace(import_line, "", 1)
+              start = text.find(start_marker)
+              end = text.find(end_marker, start)
+              if start < 0 or end < 0:
+                  raise SystemExit("generated-property block markers drifted")
+
+              replacement = r'''    #[test]
+              fn generated_segment_maps_are_total_deterministic_and_single_context() {
+                  for prefix_len in [0_usize, 1, 2, 17, 255, 2047] {
+                      for suffix_len in [0_usize, 1, 3, 31, 511, 2047] {
+                          for seed in [0_u64, 1, 7, 0x55aa, u32::MAX as u64, u64::MAX] {
+                              let payload = format!("CTX::{seed:016x}::END").into_bytes();
+                              let mut request = vec![b'p'; prefix_len];
+                              request.extend_from_slice(&payload);
+                              request.extend(std::iter::repeat_n(b's', suffix_len));
+                              let first = build_segment_map(
+                                  &request,
+                                  &payload,
+                                  digest("generated-payload"),
+                              )
+                              .expect("generated map");
+                              let second = build_segment_map(
+                                  &request,
+                                  &payload,
+                                  digest("generated-payload"),
+                              )
+                              .expect("deterministic map");
+                              assert_eq!(first, second);
+                              assert_eq!(
+                                  first
+                                      .iter()
+                                      .filter(|segment| {
+                                          segment.kind()
+                                              == FinalRequestSegmentKindV2::CanonicalContextBundle
+                                      })
+                                      .count(),
+                                  1
+                              );
+                              assert_eq!(
+                                  first.last().expect("last segment").end_offset(),
+                                  request.len() as u64
+                              );
+                              assert_eq!(
+                                  compute_segment_map_digest(&first),
+                                  compute_segment_map_digest(&second)
+                              );
+                          }
                       }
                   }
               }
-          }
 
-          #[test]
-          fn generated_gap_and_overlap_mutations_fail_closed() {
-              for prefix_len in [2_usize, 3, 17, 255, 511] {
-                  for suffix_len in [1_usize, 2, 19, 255, 511] {
-                      for seed in [0_u32, 1, 7, 0x55aa, u16::MAX as u32, u32::MAX] {
-                          let payload = format!("UNIQUE-CONTEXT-{seed:08x}").into_bytes();
-                          let mut request = vec![b'a'; prefix_len];
-                          request.extend_from_slice(&payload);
-                          request.extend(std::iter::repeat_n(b'z', suffix_len));
-                          let valid = build_segment_map(
-                              &request,
-                              &payload,
-                              digest("mutation-payload"),
-                          )
-                          .expect("valid map");
+              #[test]
+              fn generated_gap_and_overlap_mutations_fail_closed() {
+                  for prefix_len in [2_usize, 3, 17, 255, 511] {
+                      for suffix_len in [1_usize, 2, 19, 255, 511] {
+                          for seed in [0_u32, 1, 7, 0x55aa, u16::MAX as u32, u32::MAX] {
+                              let payload = format!("UNIQUE-CONTEXT-{seed:08x}").into_bytes();
+                              let mut request = vec![b'a'; prefix_len];
+                              request.extend_from_slice(&payload);
+                              request.extend(std::iter::repeat_n(b'z', suffix_len));
+                              let valid = build_segment_map(
+                                  &request,
+                                  &payload,
+                                  digest("mutation-payload"),
+                              )
+                              .expect("valid map");
 
-                          let mut gap = valid.clone();
-                          gap[0].end_offset -= 1;
-                          assert_eq!(
-                              validate_segment_coverage(&gap, request.len() as u64),
-                              Err(ProviderClosureErrorV2::SegmentCoverageInvalid)
-                          );
+                              let mut gap = valid.clone();
+                              gap[0].end_offset -= 1;
+                              assert_eq!(
+                                  validate_segment_coverage(&gap, request.len() as u64),
+                                  Err(ProviderClosureErrorV2::SegmentCoverageInvalid)
+                              );
 
-                          let mut overlap = valid;
-                          overlap[1].start_offset -= 1;
-                          assert_eq!(
-                              validate_segment_coverage(&overlap, request.len() as u64),
-                              Err(ProviderClosureErrorV2::SegmentCoverageInvalid)
-                          );
+                              let mut overlap = valid;
+                              overlap[1].start_offset -= 1;
+                              assert_eq!(
+                                  validate_segment_coverage(&overlap, request.len() as u64),
+                                  Err(ProviderClosureErrorV2::SegmentCoverageInvalid)
+                              );
+                          }
                       }
                   }
-              }
-          }'''
-          path.write_text(text[:start] + replacement + text[end:])
+              }'''
+              text = text[:start] + replacement + text[end:]
+          elif start_marker in text:
+              raise SystemExit("proptest block remains without its import")
+
+          path.write_text(text)
           PY
 
       - name: Preserve terminal observation after provider-terminal conversion
@@ -137,22 +140,31 @@ jobs:
           text = path.read_text()
           old = "        let provider_terminal = provider_terminal(terminal.terminal)?;\n"
           new = "        let provider_terminal = provider_terminal(terminal.terminal.clone())?;\n"
-          if text.count(old) != 1:
-              raise SystemExit(f"expected one terminal ownership site, found {text.count(old)}")
-          path.write_text(text.replace(old, new, 1))
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif new not in text:
+              raise SystemExit("terminal ownership site drifted")
+          path.write_text(text)
           PY
 
-      - name: Format and test corrected crates
+      - name: Refresh workspace lock and format
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
           rustup component add rustfmt
+          cargo metadata --format-version 1 > /dev/null
           cargo fmt --all
-          cargo test --locked -p codex-hepta-context-compiler
-          cargo test --locked -p codex-hepta-agentd exact_context_delivery
 
-      - name: Commit verified source corrections
+      - name: Verify corrected context closure
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-context-compiler
+          cargo test --locked -p codex-hepta-agentd exact_context_delivery --lib
+
+      - name: Commit verified source and lock corrections
         shell: bash
         run: |
           set -euo pipefail
@@ -160,7 +172,12 @@ jobs:
           git config user.name "hepta-ci-bot"
           git config user.email "hepta-ci-bot@users.noreply.github.com"
           git add \
+            codex-rs/Cargo.lock \
             codex-rs/hepta-context-compiler/src/provider_closure.rs \
             codex-rs/hepta-agentd/src/exact_context_delivery.rs
-          git commit -m "fix(context.compiler): compile deterministic corpus and terminal receipt [context-source-fixed]"
-          git push origin HEAD:codex/context-compiler-provider-closure-final-20260927
+          if git diff --cached --quiet; then
+            echo "Source and lock are already materialized."
+            exit 0
+          fi
+          git commit -m "fix(context.compiler): materialize deterministic closure corpus and lock [context-source-fixed]"
+          git push origin HEAD:codex/context-compiler-full-closure-review-20260927
