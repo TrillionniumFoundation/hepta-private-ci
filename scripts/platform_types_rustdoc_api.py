@@ -40,44 +40,94 @@ def _write(path: Path, value: dict[str, Any]) -> None:
 
 
 class _Normalizer:
+    """Turn unstable rustdoc item IDs into path/structural references.
+
+    Rustdoc serializes `Id` as a JSON number while object-map keys are strings.
+    Treating every integer as an item ID is unsafe because rustdoc also contains
+    ordinary numeric values. We therefore resolve IDs only in the schema fields
+    that carry `Id` or `Vec<Id>` values.
+    """
+
+    ID_SINGLE_KEYS = frozenset({"id"})
+    ID_LIST_KEYS = frozenset(
+        {
+            "fields",
+            "foreign_impls",
+            "implementations",
+            "impls",
+            "items",
+            "variants",
+        }
+    )
+    IGNORED_KEYS = frozenset(
+        {"id", "crate_id", "span", "docs", "links", "deprecation"}
+    )
+
     def __init__(self, document: dict[str, Any]) -> None:
         index = document.get("index")
         paths = document.get("paths")
-        root = document.get("root")
+        root = str(document.get("root"))
         if not isinstance(index, dict) or not isinstance(paths, dict) or root not in index:
             raise RustdocApiError("rustdoc JSON is missing root/index/paths")
         self.document = document
-        self.index: dict[str, Any] = index
-        self.paths: dict[str, Any] = paths
-        root_item = index[root]
+        self.index: dict[str, Any] = {str(key): value for key, value in index.items()}
+        self.paths: dict[str, Any] = {str(key): value for key, value in paths.items()}
+        root_item = self.index[root]
         if not isinstance(root_item, dict) or not isinstance(root_item.get("crate_id"), int):
             raise RustdocApiError("rustdoc root has no crate_id")
         self.crate_id = root_item["crate_id"]
+        self.all_paths: dict[str, str] = {}
         self.public_paths: dict[str, str] = {}
-        for item_id, row in paths.items():
-            if not isinstance(row, dict) or row.get("crate_id") != self.crate_id:
+        for raw_item_id, row in self.paths.items():
+            if not isinstance(row, dict):
                 continue
             path = row.get("path")
-            if (
+            if not (
                 isinstance(path, list)
-                and len(path) > 1
+                and path
                 and all(isinstance(part, str) for part in path)
             ):
-                self.public_paths[str(item_id)] = "::".join(path)
+                continue
+            item_id = str(raw_item_id)
+            rendered = "::".join(path)
+            self.all_paths[item_id] = rendered
+            if row.get("crate_id") == self.crate_id and len(path) > 1:
+                # The crate root is intentionally omitted. An additive re-export
+                # changes the root module item but is not a mutation of every
+                # pre-existing public item.
+                self.public_paths[item_id] = rendered
         self.memo: dict[str, Any] = {}
         self.visiting: set[str] = set()
 
     def _label(self, item_id: str) -> str:
-        public = self.public_paths.get(item_id)
+        public = self.all_paths.get(item_id)
         if public is not None:
             return public
         item = self.index.get(item_id)
         if not isinstance(item, dict):
-            return "unknown-item"
+            return f"unresolved-item:{item_id}"
         inner = item.get("inner")
         kind = next(iter(inner), "unknown") if isinstance(inner, dict) else "unknown"
         name = item.get("name")
         return f"private:{kind}:{name or '<anonymous>'}"
+
+    def _reference(self, value: Any) -> Any:
+        if value is None:
+            return None
+        if isinstance(value, bool) or not isinstance(value, (int, str)):
+            return self.normalize(value)
+        item_id = str(value)
+        if item_id not in self.index:
+            # External items can be present in `paths` without a local index
+            # entry. Their fully qualified path is sufficient and stable.
+            return {"item": self._label(item_id)}
+        item = self.index[item_id]
+        if not isinstance(item, dict) or item.get("crate_id") != self.crate_id:
+            return {"item": self._label(item_id)}
+        return {
+            "item": self._label(item_id),
+            "signature": self.item_signature(item_id),
+        }
 
     def item_signature(self, item_id: str) -> Any:
         if item_id in self.memo:
@@ -89,27 +139,28 @@ class _Normalizer:
             return {"missing": item_id}
         self.visiting.add(item_id)
         cleaned = {
-            key: self.normalize(value)
+            key: self.normalize(value, key=key)
             for key, value in item.items()
-            if key not in {"id", "span", "docs", "links", "deprecation"}
+            if key not in self.IGNORED_KEYS
         }
         self.visiting.remove(item_id)
         self.memo[item_id] = cleaned
         return cleaned
 
-    def normalize(self, value: Any) -> Any:
-        if isinstance(value, str) and value in self.index:
-            return {
-                "item": self._label(value),
-                "signature": self.item_signature(value),
-            }
+    def normalize(self, value: Any, *, key: str | None = None) -> Any:
+        if key in self.ID_SINGLE_KEYS:
+            return self._reference(value)
+        if key in self.ID_LIST_KEYS and isinstance(value, list):
+            return [self._reference(item) for item in value]
         if isinstance(value, list):
             return [self.normalize(item) for item in value]
         if isinstance(value, dict):
             return {
-                str(key): self.normalize(item)
-                for key, item in sorted(value.items(), key=lambda pair: str(pair[0]))
-                if key not in {"span", "docs", "links", "deprecation"}
+                str(child_key): self.normalize(item, key=str(child_key))
+                for child_key, item in sorted(
+                    value.items(), key=lambda pair: str(pair[0])
+                )
+                if child_key not in self.IGNORED_KEYS
             }
         return value
 
@@ -129,8 +180,8 @@ class _Normalizer:
         if not items:
             raise RustdocApiError("rustdoc JSON exposed no public paths")
         return {
-            "schema": "hepta.platform-types.rustdoc-public-api.v1",
-            "schemaVersion": 1,
+            "schema": "hepta.platform-types.rustdoc-public-api.v2",
+            "schemaVersion": 2,
             "rustdocFormatVersion": self.document.get("format_version"),
             "crateVersion": self.document.get("crate_version"),
             "itemCount": len(items),
@@ -145,9 +196,9 @@ def snapshot(rustdoc_json: Path) -> dict[str, Any]:
 
 def diff(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
     for name, value in (("old", old), ("new", new)):
-        if value.get("schema") != "hepta.platform-types.rustdoc-public-api.v1":
+        if value.get("schema") != "hepta.platform-types.rustdoc-public-api.v2":
             raise RustdocApiError(f"{name} snapshot schema mismatch")
-        if not isinstance(value.get("items"), list):
+        if value.get("schemaVersion") != 2 or not isinstance(value.get("items"), list):
             raise RustdocApiError(f"{name} snapshot items missing")
     old_by_path = {item["path"]: item for item in old["items"]}
     new_by_path = {item["path"]: item for item in new["items"]}
@@ -172,8 +223,8 @@ def diff(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
             )
     breaking = bool(removed or changed)
     return {
-        "schema": "hepta.platform-types.rustdoc-semver-diff.v1",
-        "schemaVersion": 1,
+        "schema": "hepta.platform-types.rustdoc-semver-diff.v2",
+        "schemaVersion": 2,
         "policy": "fail_closed_on_removed_or_signature_changed_public_rustdoc_items",
         "oldSnapshotSha256": old.get("snapshotSha256"),
         "newSnapshotSha256": new.get("snapshotSha256"),
