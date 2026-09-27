@@ -102,16 +102,20 @@ impl AutomationCrossHostRecoveryManifestV1 {
 
     /// Verify the exact target tuple before opening the copied database for
     /// writes. The deployment controller must have already enforced the
-    /// externally signed host-fence receipt bound into this manifest.
+    /// externally signed host-fence receipt bound into this manifest and must
+    /// read the owner Agent ID from the copied store rather than from the
+    /// manifest itself.
     pub fn admit_target(
         &self,
         target_host_id: &str,
+        observed_owner_agent_id: &AgentId,
         observed_store_schema_version: u32,
         observed_writer_epoch: u64,
         observed_checkpoint_digest: &Sha256Digest,
     ) -> Result<(), AutomationError> {
         self.validate()?;
         if target_host_id != self.target_host_id
+            || observed_owner_agent_id.as_str() != self.owner_agent_id
             || observed_store_schema_version != self.store_schema_version
             || observed_writer_epoch != self.required_target_writer_epoch
             || observed_checkpoint_digest != &self.sqlite_checkpoint_digest
@@ -182,8 +186,11 @@ mod tests {
 
     use super::*;
 
+    fn owner() -> AgentId {
+        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent")
+    }
+
     fn manifest() -> AutomationCrossHostRecoveryManifestV1 {
-        let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent");
         let status = TimerDrainStatus {
             writer_epoch: 7,
             phase: TimerPhase::Draining,
@@ -192,7 +199,7 @@ mod tests {
             uncertain_dispatches: 0,
         };
         AutomationCrossHostRecoveryManifestV1::new(
-            &agent,
+            &owner(),
             "host-a",
             "host-b",
             &status,
@@ -204,14 +211,38 @@ mod tests {
     }
 
     #[test]
-    fn cross_host_manifest_binds_checkpoint_fence_and_next_epoch() {
+    fn cross_host_manifest_binds_owner_checkpoint_fence_and_next_epoch() {
         let manifest = manifest();
         let checkpoint = manifest.sqlite_checkpoint_digest.clone();
         manifest.validate().expect("valid manifest");
         manifest
-            .admit_target("host-b", AUTOMATION_SCHEMA_VERSION, 8, &checkpoint)
+            .admit_target(
+                "host-b",
+                &owner(),
+                AUTOMATION_SCHEMA_VERSION,
+                8,
+                &checkpoint,
+            )
             .expect("target admission");
         assert_eq!(manifest.pending_occurrences, 3);
+    }
+
+    #[test]
+    fn target_owner_drift_is_fenced() {
+        let manifest = manifest();
+        let checkpoint = manifest.sqlite_checkpoint_digest.clone();
+        let wrong_owner =
+            AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c99").expect("wrong owner");
+        assert_eq!(
+            manifest.admit_target(
+                "host-b",
+                &wrong_owner,
+                AUTOMATION_SCHEMA_VERSION,
+                8,
+                &checkpoint,
+            ),
+            Err(AutomationError::TimerFenced)
+        );
     }
 
     #[test]
@@ -227,7 +258,6 @@ mod tests {
 
     #[test]
     fn unresolved_provider_outcome_cannot_cross_hosts() {
-        let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent");
         let status = TimerDrainStatus {
             writer_epoch: 7,
             phase: TimerPhase::Draining,
@@ -237,7 +267,7 @@ mod tests {
         };
         assert!(
             AutomationCrossHostRecoveryManifestV1::new(
-                &agent,
+                &owner(),
                 "host-a",
                 "host-b",
                 &status,
