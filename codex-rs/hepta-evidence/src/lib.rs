@@ -11,6 +11,10 @@ mod frontier_backend;
 mod frontier_backend_file {
     include!("frontier_backend_file.rs");
     mod recovery;
+    mod segmented;
+    pub use segmented::EvidenceFrontierCapacityAlertV1;
+    pub use segmented::EvidenceFrontierCapacityV1;
+    pub use segmented::SegmentedFileEvidenceFrontierBackend;
 }
 mod frontier_v2;
 mod governance_store;
@@ -62,7 +66,10 @@ pub use frontier_backend::EvidenceFrontierBackendError;
 pub use frontier_backend::EvidenceFrontierBackendIdentityV1;
 pub use frontier_backend::EvidenceFrontierDurableAckV1;
 pub use frontier_backend::EvidenceFrontierHistoryRangeV1;
-pub use frontier_backend_file::LockedFileEvidenceFrontierBackend;
+pub use frontier_backend_file::EvidenceFrontierCapacityAlertV1;
+pub use frontier_backend_file::EvidenceFrontierCapacityV1;
+pub use frontier_backend_file::SegmentedFileEvidenceFrontierBackend
+    as LockedFileEvidenceFrontierBackend;
 pub use frontier_v2::EVIDENCE_RECOVERY_FRONTIER_V2_MAX_SIGNATURES;
 pub use frontier_v2::EVIDENCE_RECOVERY_FRONTIER_V2_SCHEMA_VERSION;
 pub use frontier_v2::EvidenceRecoveryFrontierSignatureV2;
