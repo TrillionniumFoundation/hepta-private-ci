@@ -28,12 +28,14 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Bind exact predecessor
+      - name: Bind exact source event
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "834c8aef4cda056c7dc9832a5413085fc9919b27"
-          test "$(git branch --show-current)" = "codex/intelligence-control-product-closure-20260926"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$GITHUB_REF_NAME" = "codex/intelligence-control-product-closure-20260926"
+          git cat-file -e HEAD^\{commit\}
+          git merge-base --is-ancestor a126987b84737dbc2ee2592442a314117bddb4a2 HEAD
           test -f scripts/finalize-intelligence-control-product.py
 
       - name: Compose existing owners without a second control plane
@@ -83,7 +85,7 @@ jobs:
           set -euo pipefail
           git rm .github/workflows/hepta-intelligence-source-finalizer.yml
           git rm scripts/finalize-intelligence-control-product.py
-          allowed='^(\.github/workflows/hepta-intelligence-source-finalizer\.yml|scripts/finalize-intelligence-control-product\.py|codex-rs/Cargo\.lock|codex-rs/hepta-agentd/src/intelligence_.*\.rs|codex-rs/hepta-infer-worker-host/src/(lib|native_intelligence_product|native_run_control|native_run_control_tests)\.rs)$'
+          allowed='^(\.github/workflows/hepta-intelligence-source-finalizer\.yml|scripts/finalize-intelligence-control-product\.py|codex-rs/Cargo\.lock|codex-rs/hepta-agentd/src/intelligence_.*\.rs|codex-rs/hepta-intelligence/(src|tests)/.*\.rs|codex-rs/hepta-operations/src/.*\.rs|codex-rs/hepta-infer-worker-host/src/(lib|native_intelligence_product|native_run_control|native_run_control_tests)\.rs|codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker\.rs)$'
           unexpected="$(git status --short | cut -c4- | grep -Ev "$allowed" || true)"
           if [ -n "$unexpected" ]; then
             printf 'unexpected changed paths:\n%s\n' "$unexpected" >&2
