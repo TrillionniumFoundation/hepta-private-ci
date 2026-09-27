@@ -57,7 +57,7 @@ pub enum NduControlRequestV1 {
     Apply {
         mutation: NduMutationV1,
         expected_head: [u8; 32],
-        grant: SignedFinalUseGrant,
+        grant: Box<SignedFinalUseGrant>,
     },
     Selection {
         objective: [u8; 32],
@@ -541,5 +541,63 @@ mod tests {
         };
         assert!(wrapped.requires_mutation_admission());
         assert!(!admission().requires_mutation_admission());
+    }
+}
+
+#[cfg(test)]
+mod layout_tests {
+    use super::*;
+    use codex_hepta_contracts::FinalUseGrant;
+
+    #[test]
+    fn boxed_grant_preserves_the_v1_wire_shape_and_v2_payload_digest()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let mutation = NduMutationV1 {
+            operation: NduMutationOperationV1::AppendPreference,
+            identity: [1; 32],
+            objective: [2; 32],
+            subject: [3; 32],
+            projection: [4; 32],
+            expected_predecessor: None,
+        };
+        let grant = SignedFinalUseGrant {
+            grant: FinalUseGrant {
+                schema_version: 1,
+                signer_id: "test-issuer".to_string(),
+                authority_epoch: 1,
+                grant_id: "test-grant".to_string(),
+                nonce: [5; 32],
+                binding: FinalUseBinding {
+                    subject_id: "test-subject".to_string(),
+                    destination_id: "utility.ndu".to_string(),
+                    request_sha256: [1; 32],
+                    scope_sha256: [6; 32],
+                    payload_sha256: [7; 32],
+                },
+                not_before_unix_ms: 1000,
+                expires_at_unix_ms: 2000,
+            },
+            signature: vec![8; 64],
+        };
+        let historical_wire = serde_json::json!({
+            "operation": "apply",
+            "mutation": mutation,
+            "expected_head": ([9_u8; 32]),
+            "grant": grant,
+        });
+        let request = NduControlRequestV1::Apply {
+            mutation,
+            expected_head: [9; 32],
+            grant: Box::new(grant),
+        };
+        assert_eq!(serde_json::to_value(&request)?, historical_wire);
+        let decoded: NduControlRequestV1 = serde_json::from_value(historical_wire)?;
+        assert_eq!(decoded, request);
+        assert_eq!(
+            decoded.canonical_payload_digest_v2()?,
+            request.canonical_payload_digest_v2()?
+        );
+        assert!(std::mem::size_of_val(&request) <= 320);
+        Ok(())
     }
 }

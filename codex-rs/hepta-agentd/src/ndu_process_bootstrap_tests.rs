@@ -127,7 +127,7 @@ fn signed_feed_advance_during_admission_rejects_physical_mutation() -> TestResul
         NduControlRequestV1::Apply {
             mutation: mutation.clone(),
             expected_head: journal_head,
-            grant: SignedFinalUseGrant { grant, signature },
+            grant: Box::new(SignedFinalUseGrant { grant, signature }),
         },
         || {
             observations += 1;

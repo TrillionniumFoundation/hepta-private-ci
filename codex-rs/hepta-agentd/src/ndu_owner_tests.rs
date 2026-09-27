@@ -531,7 +531,7 @@ fn external_deadline_is_rechecked_at_mutation_entry_without_effect() -> TestResu
         NduControlRequestV1::Apply {
             mutation: wire,
             expected_head: [0; 32],
-            grant,
+            grant: Box::new(grant),
         },
         "expire-at-effect",
         "expire-at-effect",

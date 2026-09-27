@@ -129,7 +129,7 @@ async fn prepare(
         Request::Apply {
             mutation,
             expected_head,
-            grant: sign(binding, key, nonce, grant_id)?,
+            grant: Box::new(sign(binding, key, nonce, grant_id)?),
         },
         expected_head,
     ))

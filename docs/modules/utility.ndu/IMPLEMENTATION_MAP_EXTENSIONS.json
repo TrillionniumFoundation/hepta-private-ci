@@ -76,6 +76,10 @@
         {
           "path": "codex-rs/hepta-agent-protocol/src/ndu.rs",
           "symbol": "external_admission_preserves_inner_mutation_classification"
+        },
+        {
+          "path": "codex-rs/hepta-agent-protocol/src/ndu.rs",
+          "symbol": "boxed_grant_preserves_the_v1_wire_shape_and_v2_payload_digest"
         }
       ]
     },
@@ -206,7 +210,9 @@
     }
   ],
   "supportingSources": [
+    "codex-rs/hepta-agentd/src/ndu_process_bootstrap_tests.rs",
     "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
+    "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
     "codex-rs/hepta-control-plane/tests/runtime_retirement_dependencies.rs",
     "codex-rs/hepta-ndu/src/bin/ndu-named-host-qualification.rs",
     "codex-rs/hepta-ndu/src/bin/ndu-named-host-qualification/fixture.rs",
