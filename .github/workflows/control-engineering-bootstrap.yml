@@ -1,0 +1,139 @@
+name: control-engineering-bootstrap
+
+on:
+  push:
+    branches:
+      - codex/control-engineering-production-closure-20260928
+    paths:
+      - .github/control-engineering-bootstrap/**
+      - .github/workflows/control-engineering-bootstrap.yml
+
+concurrency:
+  group: control-engineering-bootstrap
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout isolated delivery branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/control-engineering-production-closure-20260928
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify and materialize exact source payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import base64
+          import hashlib
+          import io
+          import json
+          from pathlib import Path, PurePosixPath
+          import shutil
+          import tarfile
+
+          ROOT = Path.cwd().resolve()
+          PARTS = ROOT / ".github/control-engineering-bootstrap"
+          WORKFLOW = ROOT / ".github/workflows/control-engineering-bootstrap.yml"
+          EXPECTED_ARCHIVE = "e5477cdbedf6b1ff4ed7e604826f57c0a1a96c93712b1b0d1832ab3eeb9d471b"
+          MANIFEST_NAME = ".bootstrap/control-engineering-manifest.json"
+
+          part_paths = sorted(PARTS.glob("part-*"))
+          if [path.name for path in part_paths] != [f"part-{index:02d}" for index in range(8)]:
+              raise SystemExit("bootstrap_part_set_mismatch")
+          encoded = "".join(path.read_text(encoding="ascii").strip() for path in part_paths)
+          archive = base64.b64decode(encoded, validate=True)
+          if hashlib.sha256(archive).hexdigest() != EXPECTED_ARCHIVE:
+              raise SystemExit("bootstrap_archive_digest_mismatch")
+
+          with tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz") as bundle:
+              members = bundle.getmembers()
+              names: list[str] = []
+              for member in members:
+                  name = member.name
+                  path = PurePosixPath(name)
+                  if (
+                      not member.isfile()
+                      or path.is_absolute()
+                      or ".." in path.parts
+                      or not path.parts
+                      or path.parts[0] == ".git"
+                      or name.startswith(".github/control-engineering-bootstrap/")
+                      or name == ".github/workflows/control-engineering-bootstrap.yml"
+                  ):
+                      raise SystemExit(f"bootstrap_unsafe_member:{name}")
+                  names.append(name)
+              if len(names) != len(set(names)) or MANIFEST_NAME not in names:
+                  raise SystemExit("bootstrap_member_set_invalid")
+
+              manifest_handle = bundle.extractfile(MANIFEST_NAME)
+              if manifest_handle is None:
+                  raise SystemExit("bootstrap_manifest_missing")
+              manifest = json.loads(manifest_handle.read().decode("utf-8"))
+              if manifest.get("schema") != "hepta.control-engineering-bootstrap.v1":
+                  raise SystemExit("bootstrap_manifest_schema")
+              rows = manifest.get("files")
+              if not isinstance(rows, list) or not rows:
+                  raise SystemExit("bootstrap_manifest_files")
+              expected_names = {MANIFEST_NAME}
+              for row in rows:
+                  if not isinstance(row, dict):
+                      raise SystemExit("bootstrap_manifest_row")
+                  path = row.get("path")
+                  if not isinstance(path, str) or not path:
+                      raise SystemExit("bootstrap_manifest_path")
+                  expected_names.add(path)
+              if set(names) != expected_names:
+                  raise SystemExit("bootstrap_member_manifest_mismatch")
+
+              for row in rows:
+                  relative = str(row["path"])
+                  handle = bundle.extractfile(relative)
+                  if handle is None:
+                      raise SystemExit(f"bootstrap_file_missing:{relative}")
+                  value = handle.read()
+                  if len(value) != int(row["bytes"]):
+                      raise SystemExit(f"bootstrap_file_size:{relative}")
+                  if hashlib.sha256(value).hexdigest() != str(row["sha256"]):
+                      raise SystemExit(f"bootstrap_file_digest:{relative}")
+                  target = (ROOT / relative).resolve()
+                  try:
+                      target.relative_to(ROOT)
+                  except ValueError:
+                      raise SystemExit(f"bootstrap_target_escape:{relative}") from None
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(value)
+
+          shutil.rmtree(PARTS)
+          WORKFLOW.unlink()
+          if PARTS.exists() or WORKFLOW.exists():
+              raise SystemExit("bootstrap_cleanup_failed")
+          print(json.dumps({"archiveSha256": EXPECTED_ARCHIVE, "files": len(rows)}, sort_keys=True))
+          PY
+
+          python3 -m compileall -q tools/hepta-engineering-control/control_engineering_v2
+          git diff --check
+          test ! -e .github/control-engineering-bootstrap
+          test ! -e .github/workflows/control-engineering-bootstrap.yml
+
+      - name: Commit exact implementation tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Source Delivery"
+          git config user.email "hepta-source-delivery@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git commit -m "control.engineering: close merge, quality, and production gates"
+          git push origin HEAD:codex/control-engineering-production-closure-20260928
