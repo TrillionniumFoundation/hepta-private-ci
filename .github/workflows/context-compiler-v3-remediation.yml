@@ -1,0 +1,98 @@
+name: context-compiler-v3-remediation
+
+on:
+  push:
+    branches:
+      - codex/context-compiler-full-closure-review-20260927
+
+permissions:
+  contents: write
+
+concurrency:
+  group: context-compiler-v3-remediation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize-and-verify:
+    if: ${{ contains(github.event.head_commit.message, '[materialize-v3]') }}
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup set profile minimal
+          rustup toolchain install 1.95.0 --component rustfmt --component clippy
+          rustup default 1.95.0
+          rustc -Vv
+          cargo -V
+
+      - name: Materialize registry-owned V3 into the exact provider spine
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply_context_compiler_v3_source.py
+          python3 scripts/apply_context_compiler_full_closure.py
+          python3 scripts/apply_context_compiler_hardening.py
+
+      - name: Register property-test dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          workspace = Path('codex-rs/Cargo.toml')
+          text = workspace.read_text()
+          if 'proptest = ' not in text:
+              text = text.replace('pretty_assertions = "1.4.1"\n', 'pretty_assertions = "1.4.1"\nproptest = "1.9.0"\n', 1)
+          workspace.write_text(text)
+          crate = Path('codex-rs/hepta-context-compiler/Cargo.toml')
+          text = crate.read_text()
+          if '[dev-dependencies]' not in text:
+              text = text.rstrip() + '\n\n[dev-dependencies]\nproptest = { workspace = true }\n'
+          elif 'proptest' not in text.split('[dev-dependencies]', 1)[1]:
+              text = text.replace('[dev-dependencies]\n', '[dev-dependencies]\nproptest = { workspace = true }\n', 1)
+          crate.write_text(text)
+          PY
+
+      - name: Format and refresh lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --all
+          cargo metadata --format-version 1 > /dev/null
+
+      - name: Verify default and compatibility profiles
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-prompt-registry -p codex-hepta-context-compiler -p codex-hepta-intelligence -p codex-extension-api -p codex-core -p codex-hepta-agentd -p codex-hepta-prompt-extension
+          cargo test --locked -p codex-hepta-intelligence --features legacy-prompt-context-v1
+          cargo test --locked -p codex-hepta-agentd --features legacy-prompt-context-v1
+          cargo clippy --locked -p codex-hepta-prompt-registry -p codex-hepta-context-compiler -p codex-hepta-intelligence -p codex-extension-api -p codex-core -p codex-hepta-agentd -p codex-hepta-prompt-extension --all-targets --all-features -- -D warnings
+
+      - name: Commit direct source
+        env:
+          BRANCH: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f scripts/apply_context_compiler_v3_source.py
+          rm -f scripts/apply_context_compiler_v3_core.py
+          rm -f scripts/apply_context_compiler_full_closure.py
+          rm -f scripts/apply_context_compiler_hardening.py
+          rm -f .github/context-compiler-materialize-v3.trigger
+          git config user.name "hepta-closure-bot"
+          git config user.email "hepta-closure-bot@users.noreply.github.com"
+          git add --all
+          git diff --cached --check
+          git commit -m "feat(context.compiler): materialize V3 exact provider proof chain [context-source-fixed] [v3-materialized]"
+          git push origin "HEAD:${BRANCH}"
