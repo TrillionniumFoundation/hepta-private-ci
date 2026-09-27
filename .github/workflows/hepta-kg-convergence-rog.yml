@@ -1,30 +1,29 @@
-name: Apply knowledge.graph convergence on managed self-hosted runner
+name: Execute exact knowledge.graph convergence candidate
 
 on:
-  pull_request:
-    branches: [main]
+  push:
+    branches: [ops/kg-convergence-exact-8c33d2ab]
     paths:
       - '.github/workflows/hepta-kg-convergence-rog.yml'
-      - 'scripts/hepta-kg-g14-docs-finalize.py'
 
 permissions:
   contents: write
 
 concurrency:
-  group: hepta-kg-convergence-managed-${{ github.event.pull_request.number }}
+  group: hepta-kg-exact-controller-8c33d2ab
   cancel-in-progress: true
 
 env:
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-  CANDIDATE_BRANCH: ${{ github.event.pull_request.head.ref }}
+  SOURCE_SHA: 8c33d2abbe4baba89ef054c2d9ff33ae9a425365
+  CANDIDATE_BRANCH: work/product-convergence-20260923
 
 jobs:
   apply:
     if: >-
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
-      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.ref == 'refs/heads/ops/kg-convergence-exact-8c33d2ab' &&
       github.actor != 'github-actions[bot]'
-    runs-on: [self-hosted]
+    runs-on: ubuntu-24.04
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -33,19 +32,15 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Bind exact source and managed runner identity
+      - name: Bind exact source and preserve inputs
         shell: bash
         run: |
           set -euo pipefail
-          case "$RUNNER_NAME" in
-            rog|pocket4|macbook-pro) ;;
-            *) printf 'unexpected managed runner: %s\n' "$RUNNER_NAME" >&2; exit 1 ;;
-          esac
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          test -z "$(git status --porcelain)"
-          EVIDENCE_DIR="$RUNNER_TEMP/kg-convergence-managed"
+          EVIDENCE_DIR="$RUNNER_TEMP/kg-convergence-exact"
           printf 'EVIDENCE_DIR=%s\n' "$EVIDENCE_DIR" >> "$GITHUB_ENV"
           mkdir -p "$EVIDENCE_DIR"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
           git archive --format=tar.gz --output="$EVIDENCE_DIR/input-source.tar.gz" HEAD
           printf '%s\n' "$SOURCE_SHA" > "$EVIDENCE_DIR/input-sha.txt"
           printf '%s\n' "$RUNNER_NAME" > "$EVIDENCE_DIR/runner-name.txt"
@@ -70,7 +65,7 @@ jobs:
           done
           git diff --check
 
-      - name: Format, lock and compile exact candidate
+      - name: Format and compile exact candidate
         working-directory: codex-rs
         shell: bash
         run: |
@@ -102,7 +97,7 @@ jobs:
           capture strict-clippy cargo clippy --locked -p codex-hepta-kg -p codex-hepta-memory --all-targets --no-deps -- -D warnings || failed=1
           exit "$failed"
 
-      - name: Commit and bind the tested source locally
+      - name: Commit and bind tested candidate locally
         id: candidate
         shell: bash
         run: |
@@ -150,7 +145,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --locked --release -p codex-hepta-kg \
+          timeout --signal=TERM 15m cargo test --locked --release -p codex-hepta-kg \
             canonical_cardinality_high_fanout_benchmark_receipt -- --ignored --nocapture \
             2>&1 | tee "$EVIDENCE_DIR/kernel-benchmark-raw.log"
           python3 - "$EVIDENCE_DIR" <<'PY'
@@ -177,7 +172,7 @@ jobs:
           receipt['runnerName'] = os.environ['RUNNER_NAME']
           receipt['runnerOs'] = os.environ['RUNNER_OS']
           receipt['runnerArch'] = os.environ['RUNNER_ARCH']
-          receipt['hostClass'] = 'managed-self-hosted-pre-main-assembly-nonqualifying'
+          receipt['hostClass'] = 'github-hosted-pre-main-assembly-nonqualifying'
           (directory / 'kernel-benchmark.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
           PY
 
@@ -185,8 +180,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: knowledge-graph-managed-assembly-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/kg-convergence-managed
+          name: knowledge-graph-exact-assembly-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kg-convergence-exact
           if-no-files-found: error
           retention-days: 90
 
