@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: runtime-fleet-branch-formatter
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   format-and-wire:
