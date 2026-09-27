@@ -20,6 +20,8 @@ mod unix {
     use codex_hepta_contracts::SignedFinalUseGrant;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
+    use sha2::Digest;
+    use sha2::Sha256;
 
     #[derive(Debug)]
     struct FixedClock(u64);
@@ -85,13 +87,20 @@ mod unix {
         }
     }
 
-    fn signed_grant(issuer: &SigningKey, grant_id: &str, nonce: [u8; 32]) -> SignedFinalUseGrant {
+    fn test_nonce(grant_id: &str) -> [u8; 32] {
+        let mut digest = Sha256::new();
+        digest.update(b"hepta.kernel.authority.test-final-use-nonce.v1\0");
+        digest.update(grant_id.as_bytes());
+        digest.finalize().into()
+    }
+
+    fn signed_grant(issuer: &SigningKey, grant_id: &str) -> SignedFinalUseGrant {
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "security-owner".into(),
             authority_epoch: 9,
             grant_id: grant_id.into(),
-            nonce,
+            nonce: test_nonce(grant_id),
             binding: binding(),
             not_before_unix_ms: 1_000,
             expires_at_unix_ms: 8_000,
@@ -177,8 +186,8 @@ mod unix {
             FinalUseFrontier::for_initial_head(&initial).unwrap(),
         )));
         let authority = open(directory.path(), &issuer, frontier.clone());
-        let grant = signed_grant(&issuer, "durable-pending", [5; 32]);
-        let later = signed_grant(&issuer, "blocked-while-pending", [6; 32]);
+        let grant = signed_grant(&issuer, "durable-pending");
+        let later = signed_grant(&issuer, "blocked-while-pending");
         let revoked = revoked_head(&grant.grant.grant_id);
 
         let (release, worker) = begin_active_dispatch(&authority, &grant);
@@ -217,8 +226,8 @@ mod unix {
             FinalUseFrontier::for_initial_head(&initial).unwrap(),
         )));
         let authority = open(directory.path(), &issuer, frontier.clone());
-        let grant = signed_grant(&issuer, "frontier-first-crash", [7; 32]);
-        let later = signed_grant(&issuer, "blocked-after-repair", [8; 32]);
+        let grant = signed_grant(&issuer, "frontier-first-crash");
+        let later = signed_grant(&issuer, "blocked-after-repair");
         let revoked = revoked_head(&grant.grant.grant_id);
 
         let (release, worker) = begin_active_dispatch(&authority, &grant);
