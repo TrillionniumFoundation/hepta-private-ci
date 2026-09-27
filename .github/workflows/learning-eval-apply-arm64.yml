@@ -1,0 +1,72 @@
+name: learning.eval apply closure ARM64
+
+on:
+  push:
+    branches:
+      - fix/learning-eval-production-closure-20260927
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: learning-eval-apply-arm64-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply-and-check:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+
+      - name: Apply closure migrations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply-learning-eval-p0.py
+          python3 scripts/apply-learning-eval-p1-p2.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd
+          python3 scripts/hepta-learning-eval-status.py verify
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+
+      - name: Compile owner crate
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-intelligence-eval --all-targets
+
+      - name: Commit applied implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            .github/workflows/hepta-lane-e-gap-closure.yml \
+            codex-rs/hepta-intelligence-eval \
+            codex-rs/hepta-agentd/src/intelligence_evaluation.rs \
+            codex-rs/hepta-intelligence/src/plasticity_product.rs \
+            docs/modules/learning.eval \
+            qualification/fixtures/learning-eval-private-api \
+            qualification/module-execution-dossiers/detail/learning.eval.md \
+            scripts/hepta-lane-e-closure.py \
+            scripts/hepta-learning-eval-evidence.py \
+            scripts/hepta-learning-eval-private-api.sh \
+            scripts/hepta-learning-eval-status.py
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name hepta-learning-eval-ci
+          git config user.email hepta-learning-eval-ci@users.noreply.github.com
+          git commit -m "learning.eval: close production durability and evidence gaps"
+          git push origin HEAD:fix/learning-eval-production-closure-20260927
