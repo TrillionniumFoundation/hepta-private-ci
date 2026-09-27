@@ -28,7 +28,7 @@ diff --git a/codex-rs/hepta-matrixd/src/final_use.rs b/codex-rs/hepta-matrixd/sr
              || !(MIN_BROKER_TIMEOUT_MS..=MAX_BROKER_TIMEOUT_MS).contains(&config.request_timeout_ms)
          {
              return Err(MatrixFinalUseBrokerError::InvalidConfiguration);
-@@ -137,7 +139,7 @@
+@@ -137,6 +139,6 @@
              .map_err(|_| MatrixAuthorityError::Unavailable)?;
          let frame = serde_json::to_vec(&MatrixGrantBrokerRequest {
 -            schema_version: BROKER_SCHEMA_VERSION,
@@ -45,7 +45,7 @@ diff --git a/codex-rs/hepta-matrixd/src/final_use.rs b/codex-rs/hepta-matrixd/sr
              || response.grant.grant.binding != request.binding
          {
              return Err(MatrixAuthorityError::Rejected);
-@@ -381,6 +383,8 @@
+@@ -381,4 +383,6 @@
      fn config_constants_remain_bounded() {
 +        assert_eq!(HOST_CONFIG_SCHEMA_VERSION, 1);
 +        assert_eq!(BROKER_WIRE_SCHEMA_VERSION, MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION);
@@ -73,7 +73,7 @@ diff --git a/codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs b/codex-rs/hepta-m
  const FINAL_USE_BROKER_MAX_FRAME_BYTES: usize = 128 * 1024;
  
  #[derive(Clone, Debug)]
-@@ -224,7 +226,7 @@
+@@ -224,6 +226,6 @@
              &layout.matrix_secrets_root().join("final-use.json"),
              &json!({
 -                "schema_version": FINAL_USE_BROKER_SCHEMA_VERSION,
@@ -90,7 +90,7 @@ diff --git a/codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs b/codex-rs/hepta-m
          "final-use broker schema drifted"
      );
      request.request.validate().map_err(anyhow::Error::msg)?;
-@@ -345,7 +347,7 @@
+@@ -345,5 +347,5 @@
      let grant_id = grant.grant_id.clone();
      let response = QualificationGrantBrokerResponse {
 -        schema_version: FINAL_USE_BROKER_SCHEMA_VERSION,
