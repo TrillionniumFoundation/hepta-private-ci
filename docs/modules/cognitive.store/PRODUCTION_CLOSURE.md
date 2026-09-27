@@ -2,7 +2,7 @@
 
 Status: source convergence in progress; exact-candidate qualification, independent acceptance, activation and release remain separate gates.
 
-This document is the current production-ownership decision for `cognitive.store`. It supersedes the former uncompiled `ProductionCognitiveStore` proposal. The repository has exactly one production write façade: `codex_hepta_agentd::AgentdProductionWriterHost`.
+This document is the current production-ownership decision for `cognitive.store`. It supersedes the former uncompiled façade proposal. The repository has exactly one production write façade: `codex_hepta_agentd::AgentdProductionWriterHost`.
 
 ## 1. Canonical ownership
 
