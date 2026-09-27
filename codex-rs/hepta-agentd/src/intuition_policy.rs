@@ -1,10 +1,9 @@
 //! Agentd-owned intuition.policy product boundary.
 //!
 //! The host authenticates generator/evaluator/observer evidence, pins the full
-//! selected policy profile, and prepares the exact durable Decision.  A separate
-//! generator signature is then verified by the sole `LedgerWriter` during
-//! commit.  Prepared values are advisory and cannot be dispatched; only a
-//! committed receipt may cross the physical execution boundary.
+//! selected policy profile, and prepares the exact durable Decision. A separate
+//! generator signature is verified by the sole `LedgerWriter` during commit.
+//! Neither a prepared value nor a committed receipt grants effect authority.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -137,6 +136,8 @@ pub struct PreparedAgentdIntuitionDecisionV3 {
     owner_agent_id: AgentId,
     owner_spawn_generation: u64,
     owner_trust_digest: Digest32,
+    prepared_at: u64,
+    qualification_expires_at: u64,
     prepared_digest: Digest32,
 }
 
@@ -198,6 +199,9 @@ pub enum AgentdIntuitionPolicyError {
     InvalidEpisode,
     SelectedPropensityMissing,
     PreparedOwnerMismatch,
+    PreparedProfileMismatch,
+    PreparedEvidenceExpired,
+    PreparedClockReversed,
     MissingDecisionEvidence,
     UnexpectedDecisionEvidence,
     Qualification(IntuitionQualificationError),
@@ -227,6 +231,9 @@ impl AgentdIntuitionPolicyError {
             Self::InvalidEpisode => "agentd.intuition.invalid_episode",
             Self::SelectedPropensityMissing => "agentd.intuition.selected_propensity_missing",
             Self::PreparedOwnerMismatch => "agentd.intuition.prepared_owner_mismatch",
+            Self::PreparedProfileMismatch => "agentd.intuition.prepared_profile_mismatch",
+            Self::PreparedEvidenceExpired => "agentd.intuition.prepared_evidence_expired",
+            Self::PreparedClockReversed => "agentd.intuition.prepared_clock_reversed",
             Self::MissingDecisionEvidence => "agentd.intuition.missing_decision_evidence",
             Self::UnexpectedDecisionEvidence => "agentd.intuition.unexpected_decision_evidence",
             Self::Qualification(_) => "agentd.intuition.legacy_qualification_rejected",
@@ -368,7 +375,6 @@ impl AgentdIntuitionPolicyHostV1 {
                 return Err(AgentdIntuitionPolicyError::RngOwnerPinMismatch);
             }
         }
-
         let decision = decide_authenticated_intuition_v2(
             request,
             profile,
@@ -420,6 +426,12 @@ impl AgentdIntuitionPolicyHostV1 {
             .ok_or(AgentdIntuitionPolicyError::ProductHostRequired)?;
         validate_current_pins(&product.pins, &request, &profile, &scoring, &assignment)?;
         let generator_id = qualification.completeness.principal_id.clone();
+        let qualification_expires_at = qualification
+            .completeness
+            .expires_at
+            .min(qualification.profile_qualification.expires_at)
+            .min(qualification.runtime.expires_at);
+        validate_prepared_time(now, qualification_expires_at, now)?;
         let decision = decide_authenticated_intuition_v3(
             request.clone(),
             profile,
@@ -446,9 +458,11 @@ impl AgentdIntuitionPolicyHostV1 {
             run_snapshot_digest,
             host_binding_digest,
         )?;
-        let mut bytes = b"hepta.agentd.prepared-intuition.v1\0".to_vec();
+        let mut bytes = b"hepta.agentd.prepared-intuition.v2\0".to_vec();
         bytes.extend_from_slice(host_binding_digest.as_array());
         bytes.extend_from_slice(decision.authentication_digest.as_array());
+        bytes.extend_from_slice(&now.to_be_bytes());
+        bytes.extend_from_slice(&qualification_expires_at.to_be_bytes());
         match &production {
             Some(value) => {
                 bytes.push(1);
@@ -465,6 +479,8 @@ impl AgentdIntuitionPolicyHostV1 {
             owner_agent_id: self.agent_id.clone(),
             owner_spawn_generation: self.spawn_generation,
             owner_trust_digest: self.verifier.trust_digest(),
+            prepared_at: now,
+            qualification_expires_at,
             prepared_digest: Digest32::of_bytes(&bytes),
         })
     }
@@ -491,16 +507,45 @@ impl AgentdIntuitionPolicyHostV1 {
         {
             return Err(AgentdIntuitionPolicyError::PreparedOwnerMismatch);
         }
+        // Two hosts can share identity, generation and trust but select different
+        // profiles. Revalidate every pin before any durable mutation.
+        let current_binding = product_host_binding_digest(
+            &self.agent_id,
+            self.spawn_generation,
+            self.verifier.trust_digest(),
+            &product.pins,
+            prepared.decision.authentication_digest,
+        );
+        if current_binding != prepared.host_binding_digest {
+            return Err(AgentdIntuitionPolicyError::PreparedProfileMismatch);
+        }
+        validate_prepared_time(prepared.prepared_at, prepared.qualification_expires_at, now)?;
 
         let (production_record_id, learning) = match (prepared.production, decision_evidence) {
             (Some(production), Some(evidence)) => {
                 let record_id = production.record_id.clone();
-                let receipt = product.learning.append_decision(
+                let retry_production = production.clone();
+                let retry_evidence = evidence.clone();
+                let receipt = match product.learning.append_decision(
                     expected_ledger_head,
                     production,
                     evidence,
                     now,
-                )?;
+                ) {
+                    Ok(receipt) => receipt,
+                    Err(AgentdIntuitionPolicyError::IndeterminateAfterLedgerCommit { .. }) => {
+                        // One bounded exact replay reconciles the only admitted
+                        // uncertain state: ledger committed, witness not advanced.
+                        // The ledger rejects any record/evidence/predecessor drift.
+                        product.learning.append_decision(
+                            expected_ledger_head,
+                            retry_production,
+                            retry_evidence,
+                            now,
+                        )?
+                    }
+                    Err(error) => return Err(error),
+                };
                 (Some(record_id), Some(receipt))
             }
             (Some(_), None) => return Err(AgentdIntuitionPolicyError::MissingDecisionEvidence),
@@ -529,6 +574,21 @@ impl AgentdIntuitionPolicyHostV1 {
             service_receipt_digest: Digest32::of_bytes(&bytes),
         })
     }
+}
+
+fn validate_prepared_time(
+    prepared_at: u64,
+    qualification_expires_at: u64,
+    now: u64,
+) -> Result<(), AgentdIntuitionPolicyError> {
+    if now < prepared_at {
+        return Err(AgentdIntuitionPolicyError::PreparedClockReversed);
+    }
+    // A freshly signed Decision cannot extend the original qualification lease.
+    if now >= qualification_expires_at {
+        return Err(AgentdIntuitionPolicyError::PreparedEvidenceExpired);
+    }
+    Ok(())
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -883,5 +943,60 @@ mod tests {
             AgentdIntuitionPolicyError::GenerationFence.code(),
             "agentd.intuition.generation_fenced"
         );
+    }
+
+    #[test]
+    fn prepared_time_rejects_expiry_and_clock_rollback() {
+        assert!(validate_prepared_time(150, 200, 150).is_ok());
+        assert!(validate_prepared_time(150, 200, 199).is_ok());
+        assert!(matches!(
+            validate_prepared_time(150, 200, 149),
+            Err(AgentdIntuitionPolicyError::PreparedClockReversed)
+        ));
+        for now in [200, 201, u64::MAX] {
+            assert!(matches!(
+                validate_prepared_time(150, 200, now),
+                Err(AgentdIntuitionPolicyError::PreparedEvidenceExpired)
+            ));
+        }
+    }
+
+    #[test]
+    fn product_host_binding_mutation_covers_every_profile_pin() {
+        let agent = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde").expect("agent");
+        let pins = AgentdIntuitionPolicyPinsV2 {
+            policy_profile_digest: digest("profile"),
+            policy_digest: digest("policy"),
+            policy_generation: PolicyGeneration::new(4).expect("generation"),
+            objective_class_digest: digest("class"),
+            model_artifact_digest: digest("model"),
+            scorer_contract_digest: digest("scorer"),
+            calibration_artifact_digest: digest("calibration"),
+            ood_artifact_digest: digest("ood"),
+            risk_rule_digest: digest("risk"),
+            rng_owner_digest: Some(digest("rng")),
+        };
+        let binding = |value: &AgentdIntuitionPolicyPinsV2| {
+            product_host_binding_digest(&agent, 7, digest("trust"), value, digest("authentication"))
+        };
+        let original = binding(&pins);
+        for field in 0..11 {
+            let mut changed = pins.clone();
+            match field {
+                0 => changed.policy_profile_digest = digest("changed-profile"),
+                1 => changed.policy_digest = digest("changed-policy"),
+                2 => changed.policy_generation = PolicyGeneration::new(5).expect("generation"),
+                3 => changed.objective_class_digest = digest("changed-class"),
+                4 => changed.model_artifact_digest = digest("changed-model"),
+                5 => changed.scorer_contract_digest = digest("changed-scorer"),
+                6 => changed.calibration_artifact_digest = digest("changed-calibration"),
+                7 => changed.ood_artifact_digest = digest("changed-ood"),
+                8 => changed.risk_rule_digest = digest("changed-risk"),
+                9 => changed.rng_owner_digest = Some(digest("changed-rng")),
+                10 => changed.rng_owner_digest = None,
+                _ => unreachable!(),
+            }
+            assert_ne!(binding(&changed), original, "pin field {field} was not bound");
+        }
     }
 }
