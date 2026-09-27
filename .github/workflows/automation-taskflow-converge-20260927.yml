@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: automation-taskflow-schema22-truth-convergence-selected-host
+  group: automation-taskflow-schema22-truth-convergence
   cancel-in-progress: true
 
 jobs:
@@ -41,16 +41,24 @@ jobs:
           git config user.email "hepta-automation-convergence@users.noreply.github.com"
 
       - name: Converge schema, capability and documentation truth
+        id: source
         shell: bash
         run: |
           set -euo pipefail
+          python3 -m py_compile \
+            scripts/automation_taskflow_converge_20260927.py \
+            scripts/automation_taskflow_finalize_20260928.py \
+            scripts/automation_taskflow_selected_host.py
           python3 scripts/automation_taskflow_converge_20260927.py
+          python3 scripts/automation_taskflow_finalize_20260928.py
           python3 scripts/automation_taskflow_contract.py render
           python3 scripts/hepta_transition_lineage.py
           python3 scripts/hepta-document-index.py
           git diff --check
           git add -A
           git commit -m "docs(automation): converge schema-22 product truth"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
 
       - name: Rebind implementation navigation to committed source
         shell: bash
@@ -68,6 +76,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/automation_taskflow_contract.py observe
+          python3 scripts/automation_taskflow_contract.py render
           python3 scripts/hepta_transition_lineage.py
           python3 scripts/hepta-document-index.py
           git diff --check
@@ -78,6 +87,9 @@ jobs:
 
       - name: Verify contract, maps and derived documents
         shell: bash
+        env:
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+          SOURCE_TREE: ${{ steps.source.outputs.tree }}
         run: |
           set -euo pipefail
           python3 scripts/automation_taskflow_contract.py self-test
@@ -86,10 +98,11 @@ jobs:
             scripts/test_verify_automation_taskflow_acceptance.py \
             scripts/test_automation_recovery_sweeps.py \
             scripts/test_automation_taskflow_checkpoint.py \
-            scripts/test_automation_taskflow_commands.py
+            scripts/test_automation_taskflow_commands.py \
+            scripts/test_automation_taskflow_selected_host.py
           python3 scripts/hepta-implementation-maps.py verify \
-            --expected-sha "$(git rev-parse HEAD)" \
-            --expected-tree "$(git rev-parse HEAD^{tree})"
+            --expected-sha "$SOURCE_SHA" \
+            --expected-tree "$SOURCE_TREE"
           python3 scripts/hepta-module-docs.py verify
           python3 scripts/hepta-design-provenance.py verify
           python3 scripts/hepta-transition-state.py verify
@@ -102,7 +115,8 @@ jobs:
           set -euo pipefail
           git rm \
             .github/workflows/automation-taskflow-converge-20260927.yml \
-            scripts/automation_taskflow_converge_20260927.py
+            scripts/automation_taskflow_converge_20260927.py \
+            scripts/automation_taskflow_finalize_20260928.py
           git commit -m "chore(automation): remove one-shot convergence transport"
 
       - name: Push only if remote still names the trigger commit
