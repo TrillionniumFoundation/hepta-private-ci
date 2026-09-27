@@ -12,7 +12,12 @@ use codex_hepta_matrix_store::OutboxRecord;
 use serde::Deserialize;
 use serde::Serialize;
 
-pub const MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION: u32 = 1;
+use crate::content::outbound_payload_digest;
+
+/// Version 2 binds canonical Matrix content, not only the stored text body.
+/// An independently operated broker must reject version-1 proposals rather
+/// than interpret their raw-text digest as a canonical content authorization.
+pub const MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION: u32 = 2;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -42,16 +47,15 @@ pub struct MatrixFinalUseRequest {
     pub generation: u64,
     pub request_digest: String,
     pub scope_digest: String,
+    /// Domain-separated digest of the canonical event type and plaintext JSON.
     pub payload_digest: String,
     pub binding: FinalUseBinding,
 }
 
 impl MatrixFinalUseRequest {
-    /// Recompute every digest and binding from the explicit proposal fields.
-    ///
-    /// An independently operated signer/broker should call this before
-    /// deciding whether to sign. A request-supplied digest is never trusted as
-    /// the definition of its own scope.
+    /// Recompute the proposal's scope/request bindings. The signer still needs
+    /// its independent policy/content approval: self-consistent proposal fields
+    /// do not prove permission or observations of a remote effect.
     pub fn validate(&self) -> Result<(), MatrixAuthorityError> {
         if self.schema_version != MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION
             || !identifier(&self.subject_id, 128)
@@ -71,7 +75,6 @@ impl MatrixFinalUseRequest {
         {
             return Err(MatrixAuthorityError::InvalidBinding);
         }
-
         let scope_digest = scope_digest(
             &self.homeserver_id,
             &self.matrix_user_id,
@@ -88,7 +91,6 @@ impl MatrixFinalUseRequest {
         if self.destination_id != destination_id {
             return Err(MatrixAuthorityError::InvalidBinding);
         }
-
         let request_digest = request_digest(
             &self.operation_id,
             &self.stable_txn_id,
@@ -106,7 +108,6 @@ impl MatrixFinalUseRequest {
         if self.request_digest != request_digest.as_str() {
             return Err(MatrixAuthorityError::InvalidBinding);
         }
-
         let payload_digest = Sha256Digest::parse(self.payload_digest.clone())
             .map_err(|_| MatrixAuthorityError::InvalidBinding)?;
         let expected = FinalUseBinding {
@@ -146,11 +147,7 @@ pub trait MatrixOutboundAuthorizer: Send + Sync {
     }
 
     /// Compatibility adapter for the historical Matrix crash-cut fixtures.
-    ///
-    /// The durable sender does not use this method. It persists the authority
-    /// claim first, refreshes revocations, and then calls `enter_verified_use`
-    /// directly. Keeping this adapter local to channel.matrix avoids restoring
-    /// a removed kernel.authority API.
+    /// The durable sender does not use it. No removed kernel API is restored.
     #[doc(hidden)]
     fn with_verified_use_at_frontier<T>(
         &self,
@@ -161,10 +158,7 @@ pub trait MatrixOutboundAuthorizer: Send + Sync {
     where
         Self: Sized,
     {
-        let frontier = self
-            .authority()
-            .frontier()
-            .map_err(|_| MatrixAuthorityError::Rejected)?;
+        let frontier = self.authority().frontier().map_err(|_| MatrixAuthorityError::Rejected)?;
         self.authority()
             .enter_verified_use(token, expected)
             .map_err(|_| MatrixAuthorityError::Rejected)?;
@@ -172,9 +166,8 @@ pub trait MatrixOutboundAuthorizer: Send + Sync {
     }
 }
 
-/// Let historical Matrix-only crash fixtures call the local compatibility
-/// adapter on the kernel authority value returned by a test authorizer. This
-/// implementation cannot mint a grant and is never a production authorizer.
+/// Matrix-only historical fixtures may consume a kernel token through this
+/// local adapter. It cannot mint grants and is not a production authorizer.
 impl MatrixOutboundAuthorizer for FinalUseAuthority {
     fn authority(&self) -> &FinalUseAuthority {
         self
@@ -210,7 +203,9 @@ pub fn build_matrix_final_use_request(
     {
         return Err(MatrixAuthorityError::InvalidBinding);
     }
-
+    // The legacy ledger digest remains a source-body integrity check. The
+    // signed payload has different, explicitly versioned canonical semantics.
+    let payload_digest = outbound_payload_digest(record)?;
     let scope_digest = scope_digest(
         &identity.homeserver_id,
         &identity.matrix_user_id,
@@ -233,11 +228,8 @@ pub fn build_matrix_final_use_request(
         &identity.matrix_user_id,
         &identity.device_id,
         identity.session_generation,
-        &dispatch.payload_digest,
+        payload_digest.as_str(),
     )?;
-    let payload_digest = Sha256Digest::parse(dispatch.payload_digest.clone())
-        .map_err(|_| MatrixAuthorityError::InvalidBinding)?;
-
     let binding = FinalUseBinding {
         subject_id: subject_id.to_string(),
         destination_id: destination_id.clone(),
@@ -245,7 +237,6 @@ pub fn build_matrix_final_use_request(
         scope_sha256: digest_bytes(scope_digest.as_str())?,
         payload_sha256: digest_bytes(payload_digest.as_str())?,
     };
-
     let request = MatrixFinalUseRequest {
         schema_version: MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION,
         operation_id: dispatch.operation_id.clone(),
@@ -305,7 +296,7 @@ fn request_digest(
     session_generation: u64,
     payload_digest: &str,
 ) -> Result<Sha256Digest, MatrixAuthorityError> {
-    let mut request = b"hepta.matrix.final-use.request.v1\0".to_vec();
+    let mut request = b"hepta.matrix.final-use.request.v2\0".to_vec();
     push_text(&mut request, operation_id)?;
     push_text(&mut request, stable_txn_id)?;
     push_text(&mut request, logical_outbox_id)?;
@@ -339,9 +330,7 @@ fn digest_bytes(value: &str) -> Result<[u8; 32], MatrixAuthorityError> {
     let bytes = value.as_bytes();
     let mut output = [0_u8; 32];
     for (index, slot) in output.iter_mut().enumerate() {
-        let high = hex_nibble(bytes[index * 2])?;
-        let low = hex_nibble(bytes[index * 2 + 1])?;
-        *slot = (high << 4) | low;
+        *slot = (hex_nibble(bytes[index * 2])? << 4) | hex_nibble(bytes[index * 2 + 1])?;
     }
     Ok(output)
 }
@@ -357,120 +346,13 @@ fn hex_nibble(value: u8) -> Result<u8, MatrixAuthorityError> {
 fn identifier(value: &str, maximum: usize) -> bool {
     !value.is_empty()
         && value.len() <= maximum
-        && value
-            .bytes()
-            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
+        && value.bytes().all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
 }
 
 fn bounded_text(value: &str, maximum: usize) -> bool {
-    !value.is_empty()
-        && value.len() <= maximum
-        && !value.chars().any(char::is_control)
+    !value.is_empty() && value.len() <= maximum && !value.chars().any(char::is_control)
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-    use codex_hepta_contracts::AgentId;
-    use codex_hepta_matrix_protocol::MatrixRoomId;
-    use codex_hepta_matrix_protocol::MatrixTransactionId;
-    use codex_hepta_matrix_store::MatrixDispatchState;
-    use codex_hepta_matrix_store::OutboxKind;
-    use codex_hepta_matrix_store::OutboxState;
-
-    #[test]
-    fn binding_changes_for_attempt_destination_and_payload() {
-        let transaction = MatrixTransactionId::parse("txn-one").expect("transaction");
-        let room = MatrixRoomId::parse("!room:example.test").expect("room");
-        let record = OutboxRecord {
-            outbox_id: 1,
-            stable_txn_id: transaction.clone(),
-            room_id: room.clone(),
-            kind: OutboxKind::Final,
-            payload: b"payload".to_vec(),
-            logical_txn_count: 1,
-            binding_revision: 3,
-            generation: 4,
-            state: OutboxState::InFlight,
-            attempts: 1,
-            next_attempt_at_ms: 0,
-            lease_until_ms: Some(10),
-            created_at_ms: 1,
-            updated_at_ms: 2,
-            sent_event_id: None,
-            replaces_event_id: None,
-        };
-        let dispatch = MatrixDispatchRecord {
-            operation_id: format!("matrix.send:{}", transaction.as_str()),
-            stable_txn_id: transaction,
-            logical_outbox_id: "logical-one".to_string(),
-            room_id: room,
-            binding_revision: 3,
-            generation: 4,
-            payload_digest: Sha256Digest::for_bytes(b"payload").as_str().to_string(),
-            authority_epoch: None,
-            grant_id: None,
-            grant_payload_digest: None,
-            state: MatrixDispatchState::Dispatched,
-            accepted_event_id: None,
-            terminal_event_id: None,
-            transport_observation_digest: None,
-            send_observation_digest: None,
-            redaction_observation_digest: None,
-            attempts: 1,
-            prepared_at_ms: 2,
-            updated_at_ms: 2,
-            terminal_observed_at_ms: None,
-        };
-        let identity = MatrixOutboundIdentity {
-            homeserver_id: "https://matrix.example.test".to_string(),
-            matrix_user_id: "@agent:example.test".to_string(),
-            device_id: "DEVICE".to_string(),
-            session_generation: 9,
-        };
-        let first = build_matrix_final_use_request(
-            AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")
-                .expect("agent")
-                .as_str(),
-            &dispatch,
-            &record,
-            &identity,
-        )
-        .expect("binding");
-        first.validate().expect("self-verifying request");
-
-        let mut retry_record = record.clone();
-        retry_record.attempts = 2;
-        let mut retry_dispatch = dispatch.clone();
-        retry_dispatch.attempts = 2;
-        let retry = build_matrix_final_use_request(
-            &first.subject_id,
-            &retry_dispatch,
-            &retry_record,
-            &identity,
-        )
-        .expect("retry binding");
-        assert_ne!(first.request_digest, retry.request_digest);
-        assert_eq!(first.scope_digest, retry.scope_digest);
-        assert_eq!(first.payload_digest, retry.payload_digest);
-
-        let mut other_identity = identity;
-        other_identity.device_id = "OTHER".to_string();
-        let other = build_matrix_final_use_request(
-            &first.subject_id,
-            &dispatch,
-            &record,
-            &other_identity,
-        )
-        .expect("other binding");
-        assert_ne!(first.scope_digest, other.scope_digest);
-        assert_ne!(first.destination_id, other.destination_id);
-
-        let mut forged = first;
-        forged.attempt = forged.attempt.saturating_add(1);
-        assert_eq!(
-            forged.validate(),
-            Err(MatrixAuthorityError::InvalidBinding)
-        );
-    }
-}
+#[path = "authority_tests.rs"]
+mod tests;

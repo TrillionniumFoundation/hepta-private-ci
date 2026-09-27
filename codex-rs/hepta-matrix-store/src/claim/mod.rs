@@ -208,5 +208,6 @@ pub(super) struct ClaimIdentity<'a> {
     pub(super) token_sha256: &'a str,
 }
 
+mod content;
 mod sql;
 mod store;

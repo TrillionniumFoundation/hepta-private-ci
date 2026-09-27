@@ -24,9 +24,11 @@ use crate::authority::build_matrix_final_use_request;
 
 mod clock;
 mod gate;
+mod permit;
 mod retry;
 use clock::DispatchClock;
 use gate::FinalSendGate;
+pub use permit::MatrixSendPermit;
 use retry::*;
 
 const PARKED_RECONCILIATION_AT_MS: u64 = i64::MAX as u64;
@@ -34,12 +36,31 @@ const PARKED_RECONCILIATION_AT_MS: u64 = i64::MAX as u64;
 pub type MatrixSendFuture<'a> =
     Pin<Box<dyn Future<Output = Result<MatrixEventId, MatrixTransportError>> + Send + 'a>>;
 
+/// Lazy Matrix transport driven by the durable sender's final gate.
+/// The concrete SDK rejects unsealed entry. Deterministic fixture transports
+/// may retain the legacy method behind the default sealed adapter.
 pub trait MatrixOutboundTransport: Send + Sync {
     /// Return the exact authenticated Matrix transport/session identity.
     fn identity(&self) -> Result<MatrixOutboundIdentity, MatrixTransportError>;
 
-    /// Construct a lazy physical-adapter future; construction must perform no I/O.
+    /// Legacy fixture seam. The real SDK returns a rejection without I/O.
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a>;
+
+    /// Consume one non-constructible permit. Construction must not perform I/O
+    /// or spawn detached work: physical work stays inside final-gate polling.
+    fn send_authorized<'a>(
+        &'a self,
+        record: &'a OutboxRecord,
+        permit: MatrixSendPermit,
+    ) -> MatrixSendFuture<'a> {
+        match self
+            .identity()
+            .and_then(|identity| permit.validate(record, &identity))
+        {
+            Ok(()) => self.send(record),
+            Err(error) => Box::pin(async move { Err(error) }),
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
@@ -192,6 +213,17 @@ pub async fn dispatch_outbox_once<
                 &identity,
             )
             .map_err(authority_error)?;
+            // Pin full content and authenticated transaction scope before any
+            // grant request. A later retry cannot silently change either.
+            store
+                .pin_outbox_content(
+                    claim,
+                    &request.payload_digest,
+                    &request.scope_digest,
+                    clock.now_ms()?,
+                )
+                .await
+                .map_err(store_error)?;
             let signed = tokio::select! {
                 biased;
                 _ = cancel.cancelled() => return Err(OutboxDispatchError::Canceled),
@@ -238,7 +270,9 @@ pub async fn dispatch_outbox_once<
                         grant_id: signed.grant.grant_id.clone(),
                         request_digest: request.request_digest.clone(),
                         scope_digest: request.scope_digest.clone(),
-                        payload_digest: request.payload_digest.clone(),
+                        // Preserve migration-6 source-body digest semantics.
+                        // Migration 8 separately retains signed canonical content.
+                        payload_digest: prepared.payload_digest.clone(),
                         attempt: record.attempts,
                         expires_at_ms: signed.grant.expires_at_unix_ms,
                         claimed_at_ms: system_time_ms()?,
@@ -314,12 +348,18 @@ pub async fn dispatch_outbox_once<
                             .await
                             .map_err(store_error)?;
                         stats.indeterminate += 1;
-                    } else {
+                    } else if observed.state == MatrixDispatchState::Failed {
                         store
                             .finish_outbox_permanently_rejected(claim, clock.now_ms()?)
                             .await
                             .map_err(store_error)?;
                         stats.permanent_failure += 1;
+                    } else if observed.state.is_terminal() {
+                        // A concurrent sync terminal fact wins over this
+                        // attempt's later rejection; do not invent failure.
+                        close_observed_terminal(store, claim, &observed, &clock, &mut stats).await?;
+                    } else {
+                        return Err(OutboxDispatchError::Store);
                     }
                 }
                 Err(error) => {
@@ -429,15 +469,9 @@ pub async fn run_outbox_sender<
         if cancel.is_cancelled() {
             return Ok(());
         }
-        let stats = dispatch_outbox_once(
-            store,
-            transport,
-            authorizer,
-            config,
-            cancel,
-            system_time_ms()?,
-        )
-        .await?;
+        let stats =
+            dispatch_outbox_once(store, transport, authorizer, config, cancel, system_time_ms()?)
+                .await?;
         if stats.cancelled {
             return Ok(());
         }

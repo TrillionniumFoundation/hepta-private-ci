@@ -3,6 +3,7 @@ load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_r
 
 codex_rust_crate(
     name = "hepta-matrix-sdk",
+    compile_data = ["src/sdk_implementation.rs"],
     crate_name = "codex_hepta_matrix_sdk",
 )
 
