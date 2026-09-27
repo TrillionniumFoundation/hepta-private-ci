@@ -488,6 +488,11 @@ async fn monitor_runtime(
             let _ = ProcessRuntimeCodexExecutorV1::cancel_installed_runs();
             return Err(error);
         }
+        // runtime.codex recovery runs in an independent required task. Refresh
+        // the cached port/admission gates on every monitor pass so either
+        // startup ordering (App Server first or recovery first) converges to
+        // the same readiness state.
+        state.refresh_runtime_codex_readiness()?;
         state.expire_run_deadlines()?;
         if !app_server_ready {
             let observation = tokio::select! {
