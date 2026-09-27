@@ -217,11 +217,20 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
         if Instant::now() >= self.deadline {
             return Err(OutboxDispatchError::LeaseExpired);
         }
-        if !grant_is_live(self.clock.now_ms()?, grant_expires_at_ms) {
+        // The dispatch clock gives monotonic progress from the durable claim
+        // sample, while a fresh wall-clock sample prevents a public/test caller
+        // from extending a signed grant by supplying a stale epoch. Taking the
+        // maximum is fail-closed under either caller-time or wall-time rollback.
+        let now_ms = effective_grant_now(self.clock.now_ms()?, system_time_ms()?);
+        if !grant_is_live(now_ms, grant_expires_at_ms) {
             return Err(OutboxDispatchError::Authority);
         }
         Ok(())
     }
+}
+
+fn effective_grant_now(monotonic_now_ms: u64, wall_now_ms: u64) -> u64 {
+    monotonic_now_ms.max(wall_now_ms)
 }
 
 fn grant_is_live(now_ms: u64, expires_at_ms: u64) -> bool {
@@ -230,6 +239,7 @@ fn grant_is_live(now_ms: u64, expires_at_ms: u64) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use super::effective_grant_now;
     use super::grant_is_live;
 
     #[test]
@@ -237,5 +247,11 @@ mod tests {
         assert!(grant_is_live(41, 42));
         assert!(!grant_is_live(42, 42));
         assert!(!grant_is_live(43, 42));
+    }
+
+    #[test]
+    fn stale_caller_epoch_cannot_extend_a_grant() {
+        assert_eq!(effective_grant_now(10, 50), 50);
+        assert_eq!(effective_grant_now(50, 10), 50);
     }
 }
