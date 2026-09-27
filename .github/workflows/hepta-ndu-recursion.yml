@@ -49,6 +49,11 @@ on:
       - "qualification/module-execution-dossiers/detail/utility.ndu.md"
       - "scripts/verify_cargo_lock.py"
       - "scripts/test_verify_cargo_lock.py"
+      - "scripts/hepta_ndu_evidence.py"
+      - "scripts/test_hepta_ndu_evidence.py"
+      - "scripts/test_hepta_ndu_source_policy.py"
+      - "scripts/hepta-ndu-mounted-filesystem.py"
+      - "scripts/test_hepta_ndu_mounted_filesystem.py"
       - "scripts/hepta-ndu-source-policy.py"
       - ".github/workflows/hepta-ndu-recursion.yml"
   push:
@@ -101,6 +106,11 @@ on:
       - "qualification/module-execution-dossiers/detail/utility.ndu.md"
       - "scripts/verify_cargo_lock.py"
       - "scripts/test_verify_cargo_lock.py"
+      - "scripts/hepta_ndu_evidence.py"
+      - "scripts/test_hepta_ndu_evidence.py"
+      - "scripts/test_hepta_ndu_source_policy.py"
+      - "scripts/hepta-ndu-mounted-filesystem.py"
+      - "scripts/test_hepta_ndu_mounted_filesystem.py"
       - "scripts/hepta-ndu-source-policy.py"
       - ".github/workflows/hepta-ndu-recursion.yml"
   workflow_dispatch:
@@ -113,7 +123,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  resolve:
+    runs-on: ubuntu-22.04
+    outputs:
+      source: ${{ steps.pin.outputs.source }}
+      base: ${{ steps.pin.outputs.base }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - id: pin
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$BASE" ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            BASE=$(git rev-parse refs/remotes/origin/main)
+          fi
+          echo "source=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
   qualify:
+    needs: resolve
     name: NDU ${{ matrix.lane }} / ${{ matrix.suite }}
     runs-on: ubuntu-22.04
     timeout-minutes: 60
@@ -123,8 +156,8 @@ jobs:
         lane: [source-head, synthetic-merge]
         suite: [source, core, callers, product, lint, host]
     env:
-      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+      SOURCE_SHA: ${{ needs.resolve.outputs.source }}
+      BASE_SHA: ${{ needs.resolve.outputs.base }}
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
       CARGO_BUILD_JOBS: "2"
       CARGO_INCREMENTAL: "0"
@@ -143,9 +176,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           if [ '${{ matrix.lane }}' = synthetic-merge ]; then
-            if [ -z "$BASE_SHA" ] || ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
-              BASE_SHA=$(git rev-parse refs/remotes/origin/main)
-            fi
+            test "$(git cat-file -t "$BASE_SHA")" = commit
             TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
             export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
             export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
@@ -186,3 +217,38 @@ jobs:
         env:
           RESULT: ${{ needs.qualify.result }}
         run: test "$RESULT" = success
+  aggregate:
+    needs: [resolve, qualify]
+    runs-on: ubuntu-22.04
+    env:
+      SOURCE_SHA: ${{ needs.resolve.outputs.source }}
+      BASE_SHA: ${{ needs.resolve.outputs.base }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: ndu-*-*-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/ndu-evidence
+      - name: Verify twelve suites, exact identities and every retained checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+          export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
+          export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
+          export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+          MERGE=$(printf '%s\n' 'Qualification only; no selection or release' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")
+          python3 scripts/hepta_ndu_evidence.py aggregate --root "$RUNNER_TEMP/ndu-evidence" --source "$SOURCE_SHA" --base "$BASE_SHA" --merge "$MERGE" --output "$RUNNER_TEMP/ndu-evidence/aggregate.json"
+          python3 scripts/hepta_ndu_evidence.py seal --root "$RUNNER_TEMP/ndu-evidence"
+          python3 scripts/hepta_ndu_evidence.py verify --root "$RUNNER_TEMP/ndu-evidence"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-qualified-evidence-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/ndu-evidence/
+          if-no-files-found: error
+          retention-days: 30

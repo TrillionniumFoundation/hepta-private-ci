@@ -1,0 +1,11 @@
+--- a/codex-rs/hepta-control-plane/src/planner_context.rs
++++ b/codex-rs/hepta-control-plane/src/planner_context.rs
+@@ -239,7 +239,7 @@
+                     kind,
+                     axis: axis.axis.clone(),
+                     value: axis.value,
+-                    origin: if row.candidate_id.as_str() == "abstain" { codex_hepta_ndu::NduFeatureOriginV1::Structural } else { codex_hepta_ndu::NduFeatureOriginV1::Measured },
++                    origin: if contribution.candidate_id.as_str() == "abstain" { codex_hepta_ndu::NduFeatureOriginV1::Structural } else { codex_hepta_ndu::NduFeatureOriginV1::Measured },
+                     source_digest: observed.read_digest,
+                 });
+             }
