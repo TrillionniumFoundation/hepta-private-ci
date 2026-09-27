@@ -2,24 +2,20 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "c3a9d0e49fba11f7160ad3e1204e6eeddcc50a9a",
-    "tree": "9eff84d8761e52e20dd6bb32c3bdca192f0c04b8"
+    "commit": "5a439daaa11b805f6ae7dd2ada4282bddf06021c",
+    "tree": "f2d9c1626ca9dd5f61d5764f98660215cb3cc679"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "intuition.policy",
   "owner": "intelligence-platform",
   "deputy": "learning-platform",
   "technicalGuide": "docs/modules/intuition.policy/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-intuition"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-intuition"
-  ],
+  "declaredRoots": ["codex-rs/hepta-intuition"],
+  "resolvedRoots": ["codex-rs/hepta-intuition"],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "composed_agentd_canonical_intelligence_pending_exact_head",
-  "productionWriterState": "sole_agentd_learning_ledger_writer_composed_pending_exact_head",
+  "productCallerState": "host_and_gate_source_present_canonical_hook_unverified",
+  "productionWriterState": "sole_host_owned_writer_source_present_execution_unverified",
   "productCallers": [
     {
       "name": "authenticated intuition qualification",
@@ -30,11 +26,11 @@
       "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy.rs"
     },
     {
-      "name": "Agentd canonical ObjectiveStart serving gate",
+      "name": "Agentd canonical ObjectiveStart gate source; invocation unverified",
       "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy_serving.rs"
     },
     {
-      "name": "Agentd canonical serving composition",
+      "name": "Agentd canonical serving method; authenticated hook unverified",
       "sourcePath": "codex-rs/hepta-agentd/src/state.rs"
     }
   ],
@@ -43,11 +39,9 @@
       "operation": "decide_calibrated",
       "nativeSymbol": "decide_calibrated",
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated.rs",
-      "state": "legacy_replay_only_feature_gated",
+      "state": "legacy_surface_present_consumer_retirement_unverified",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intuition/src/calibrated_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-intuition/src/calibrated_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "legacy calibrated selection",
       "mappingClass": "owner_native",
@@ -57,11 +51,9 @@
       "operation": "decide_calibrated_v2",
       "nativeSymbol": "decide_calibrated_v2",
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated.rs",
-      "state": "legacy_advisory_compatibility_only_feature_gated",
+      "state": "legacy_advisory_surface_present_consumer_retirement_unverified",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intuition/src/calibrated_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-intuition/src/calibrated_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "legacy bound calibrated selection",
       "mappingClass": "owner_native",
@@ -73,9 +65,7 @@
       "sourcePath": "codex-rs/hepta-intuition/src/qualified.rs",
       "state": "source_implemented_profile_qualified_compatibility_substrate",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intuition/src/qualified_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-intuition/src/qualified_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "canonical profile-qualified selection",
       "mappingClass": "owner_native",
@@ -85,7 +75,7 @@
       "operation": "decide_calibrated_v4",
       "nativeSymbol": "decide_calibrated_v4",
       "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
-      "state": "source_composed_product_contract_pending_exact_head",
+      "state": "source_implemented_product_contract_execution_unverified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intuition/src/production_tests.rs",
@@ -103,9 +93,7 @@
       "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
       "state": "source_implemented_generator_owned_commitment",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intuition/src/production_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-intuition/src/production_tests.rs", "scripts/intuition_golden_vectors.py"],
       "sourcePathExists": true,
       "designOperation": "generator-owned candidate identity digest",
       "mappingClass": "owner_native",
@@ -117,11 +105,33 @@
       "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
       "state": "source_implemented_scorer_owned_commitment",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intuition/src/production_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-intuition/src/production_tests.rs", "scripts/intuition_golden_vectors.py"],
       "sourcePathExists": true,
       "designOperation": "scorer-owned output digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_scoring_commitment_digest_v2",
+      "nativeSymbol": "canonical_scoring_commitment_digest_v2",
+      "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
+      "state": "source_implemented_scorer_owned_commitment",
+      "authority": "none",
+      "tests": ["codex-rs/hepta-intuition/src/production_tests.rs", "scripts/intuition_golden_vectors.py"],
+      "sourcePathExists": true,
+      "designOperation": "scorer identity and output commitment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_assignment_distribution_digest_v2",
+      "nativeSymbol": "canonical_assignment_distribution_digest_v2",
+      "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
+      "state": "source_implemented_assignment_owner_commitment",
+      "authority": "none",
+      "tests": ["codex-rs/hepta-intuition/src/production_tests.rs", "scripts/intuition_golden_vectors.py"],
+      "sourcePathExists": true,
+      "designOperation": "ordered candidate and abstain mass commitment",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -131,9 +141,7 @@
       "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
       "state": "source_implemented_assignment_owner_commitment",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intuition/src/production_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-intuition/src/production_tests.rs", "scripts/intuition_golden_vectors.py"],
       "sourcePathExists": true,
       "designOperation": "assignment distribution, stream, counter and draw digest",
       "mappingClass": "owner_native",
@@ -145,9 +153,7 @@
       "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
       "state": "source_implemented_non_overlapping_owner_envelope",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intuition/src/production_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-intuition/src/production_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "per-decision anti-substitution payload",
       "mappingClass": "owner_native",
@@ -157,59 +163,53 @@
       "operation": "decide_authenticated_intuition_v3",
       "nativeSymbol": "decide_authenticated_intuition_v3",
       "sourcePath": "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs",
-      "state": "source_composed_three_party_admission_pending_exact_head",
+      "state": "source_implemented_three_party_admission_execution_unverified",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs"
-      ],
+      "tests": ["codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs"],
       "sourcePathExists": true,
       "designOperation": "generator evaluator observer authenticated admission",
       "mappingClass": "delegated_product_admission",
-      "delegatedCallees": [
-        "codex-rs/hepta-intuition/src/production.rs"
-      ]
+      "delegatedCallees": ["codex-rs/hepta-intuition/src/production.rs"]
     },
     {
       "operation": "AgentdIntuitionPolicyHostV1::prepare_v3",
       "nativeSymbol": "prepare_v3",
       "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy.rs",
-      "state": "source_composed_full_profile_pins_pending_exact_head",
+      "state": "source_implemented_complete_pins_and_qualification_lifetime_execution_unverified",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-agentd/tests/intuition_policy_product.rs"
+        "codex-rs/hepta-agentd/tests/intuition_policy_product.rs",
+        "codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs",
+        "codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "exact-generation authenticated policy preparation",
       "mappingClass": "product_caller",
-      "delegatedCallees": [
-        "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs"
-      ]
+      "delegatedCallees": ["codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs"]
     },
     {
       "operation": "AgentdIntuitionPolicyHostV1::commit_v3",
       "nativeSymbol": "commit_v3",
       "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy.rs",
-      "state": "source_composed_selected_only_durable_append_pending_exact_head",
+      "state": "source_implemented_pin_revalidation_and_durable_append_execution_unverified",
       "authority": "learning_ledger_writer_only",
       "tests": [
-        "codex-rs/hepta-agentd/tests/intuition_policy_product.rs"
+        "codex-rs/hepta-agentd/tests/intuition_policy_product.rs",
+        "codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs",
+        "codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "selected-only sole LedgerWriter append and generation fence",
+      "designOperation": "complete prepared binding, lifetime fence and selected-only append",
       "mappingClass": "product_caller",
-      "delegatedCallees": [
-        "codex-rs/hepta-learning-ledger/src/production.rs"
-      ]
+      "delegatedCallees": ["codex-rs/hepta-learning-ledger/src/production.rs"]
     },
     {
       "operation": "AgentdState::start_canonical_intelligence",
       "nativeSymbol": "start_canonical_intelligence",
       "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
-      "state": "source_composed_actual_serving_path_pending_exact_head",
+      "state": "serving_method_present_authenticated_hook_materialization_unverified",
       "authority": "run_admission_after_authenticated_decision",
-      "tests": [
-        "codex-rs/hepta-agentd/src/intuition_policy_serving.rs"
-      ],
+      "tests": ["codex-rs/hepta-agentd/src/intuition_policy_serving.rs"],
       "sourcePathExists": true,
       "designOperation": "ObjectiveStart canonical serving composition",
       "mappingClass": "product_caller",
@@ -220,9 +220,11 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Obtain a successful exact-head and deterministic synthetic-merge qualification for the composed Agentd serving path.",
-    "Retain exact-SHA command, host-profile and latency artifacts from the dedicated workflow.",
-    "Complete process-level crash/reopen and rollback qualification without self-issuing independent acceptance."
+    "Commit and inspect the actual canonical serving hook; a queued source-composition action is not implementation evidence.",
+    "Rebind provenance after materialization and verify the current exact source and merge trees without modifying either.",
+    "Complete legacy caller migration and validate the non-default compatibility boundary.",
+    "Obtain real Agentd process/request, crash-interruption, revocation/rollback and combined signature-plus-ledger latency receipts.",
+    "Require authentic independent acceptance instead of treating a template or fixture as a receipt."
   ],
   "externalEvidenceGates": [
     "independent semantic evaluator acceptance",
@@ -230,16 +232,14 @@
     "promotion and release approval"
   ],
   "claimBoundary": {
-    "nativeSourceMappingComplete": true,
+    "nativeSourceMappingComplete": false,
     "sourceRootPresent": true,
     "productionImplementation": false,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
     "release": false,
-    "implementedOperationMappingComplete": true
+    "implementedOperationMappingComplete": false
   },
-  "sourceRoot": [
-    "codex-rs/hepta-intuition"
-  ]
+  "sourceRoot": ["codex-rs/hepta-intuition"]
 }
