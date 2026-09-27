@@ -68,7 +68,9 @@ mod tests {
             (1, 129, 1, 4096),
             (2, 2, usize::MAX, 4096),
         ] {
-            assert!(validate_shape(dimensions.0, dimensions.1, dimensions.2, dimensions.3).is_err());
+            assert!(
+                validate_shape(dimensions.0, dimensions.1, dimensions.2, dimensions.3).is_err()
+            );
         }
     }
 
@@ -83,7 +85,10 @@ mod tests {
                             && minimum > 0
                             && rows > 0
                             && sensors * actions * minimum <= rows;
-                        assert_eq!(validate_shape(sensors, actions, minimum, rows).is_ok(), expected);
+                        assert_eq!(
+                            validate_shape(sensors, actions, minimum, rows).is_ok(),
+                            expected
+                        );
                     }
                 }
             }

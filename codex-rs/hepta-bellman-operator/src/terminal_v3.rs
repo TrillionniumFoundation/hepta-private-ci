@@ -94,9 +94,16 @@ impl<'a> PreparedTerminalCellV3<'a> {
         now: u64,
     ) -> Result<(), TerminalCellError> {
         if now < self.admitted_at {
-            return Err(TerminalCellError::Unsupported("terminal V3 clock regression"));
+            return Err(TerminalCellError::Unsupported(
+                "terminal V3 clock regression",
+            ));
         }
-        verify_freeze(self.owner, self.frozen.dataset(), &self.freeze_evidence, now)?;
+        verify_freeze(
+            self.owner,
+            self.frozen.dataset(),
+            &self.freeze_evidence,
+            now,
+        )?;
         let derived = freeze_terminal_cell_from_owner_v1(
             self.owner,
             self.frozen.dataset(),
@@ -104,7 +111,9 @@ impl<'a> PreparedTerminalCellV3<'a> {
             now,
         )?;
         if terminal_payload(self.owner, &derived) != self.payload {
-            return Err(TerminalCellError::Unsupported("terminal V3 source projection changed"));
+            return Err(TerminalCellError::Unsupported(
+                "terminal V3 source projection changed",
+            ));
         }
         let freeze_plan = freeze_plan(self.frozen.dataset());
         let snapshot = self.owner.snapshot()?;
@@ -112,7 +121,12 @@ impl<'a> PreparedTerminalCellV3<'a> {
             .map_err(|_| TerminalCellError::Unsupported("terminal V3 freeze preimage"))?;
         let verifier = self.owner.verifier();
         let evaluator = verifier
-            .verify(LearningEvidenceRoleV1::Evaluator, &self.freeze_evidence, &freeze_payload, now)
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &self.freeze_evidence,
+                &freeze_payload,
+                now,
+            )
             .map_err(|_| TerminalCellError::Unsupported("terminal V3 evaluator signature"))?;
         let observer = verifier
             .verify(LearningEvidenceRoleV1::Observer, rows, &self.payload, now)
@@ -148,7 +162,9 @@ fn verify_freeze(
 ) -> Result<(), TerminalCellError> {
     let expected = owner.freeze_dataset(freeze_plan(dataset), evidence, now)?;
     if expected != *dataset {
-        return Err(TerminalCellError::Unsupported("terminal V3 owner/dataset mismatch"));
+        return Err(TerminalCellError::Unsupported(
+            "terminal V3 owner/dataset mismatch",
+        ));
     }
     owner.revalidate_dataset_snapshot(dataset, now)?;
     Ok(())

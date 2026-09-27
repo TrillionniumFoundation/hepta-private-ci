@@ -1,0 +1,31 @@
+name: Learning operator portable native tools
+on:
+  push:
+    branches: [codex/learning-operator-full-convergence-20260926]
+    paths: ['.github/workflows/learning-operator-local-tools.yml']
+permissions:
+  contents: read
+jobs:
+  native-tools:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+      - name: Package public toolchain only
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$(rustc --print sysroot)"
+          mkdir -p "$RUNNER_TEMP/operator-tools"
+          rustc --version --verbose > "$RUNNER_TEMP/operator-tools/toolchain.txt"
+          tar -C "$root" --exclude='./share/doc' -czf "$RUNNER_TEMP/operator-tools/rust-toolchain.tar.gz" bin lib
+          sha256sum "$RUNNER_TEMP/operator-tools/rust-toolchain.tar.gz" > "$RUNNER_TEMP/operator-tools/SHA256SUMS"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-operator-portable-tools
+          path: ${{ runner.temp }}/operator-tools/
+          if-no-files-found: error
+          retention-days: 1
