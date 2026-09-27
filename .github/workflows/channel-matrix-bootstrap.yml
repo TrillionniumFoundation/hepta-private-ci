@@ -43,6 +43,8 @@ jobs:
             exit 0
           fi
 
+          orig_baseline="$RUNNER_TEMP/channel-matrix-existing-orig.txt"
+          find . -name '*.orig' -print | sort > "$orig_baseline"
           for part in "$patch_dir"/part-*; do
             candidate="$RUNNER_TEMP/$(basename "$part").patch"
             cat "$part" > "$candidate"
@@ -73,9 +75,15 @@ jobs:
                 rm -f "$reject"
               done < "$reject_list"
             fi
-            # BSD patch leaves one backup per touched path. Remove it before
-            # the current-source documentation patch revisits the same file.
-            find . -name '*.orig' -delete
+
+            # BSD patch may create .orig backups on fuzzy/rejected hunks. Delete
+            # only backups created by this run; vendored tracked .orig files are
+            # part of the exact source tree and must remain untouched.
+            orig_after="$RUNNER_TEMP/channel-matrix-orig-after.txt"
+            find . -name '*.orig' -print | sort > "$orig_after"
+            comm -13 "$orig_baseline" "$orig_after" | while IFS= read -r backup; do
+              test -n "$backup" && rm -f "$backup"
+            done
           done
 
           git rm -r "$patch_dir"
