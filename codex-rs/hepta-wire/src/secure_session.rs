@@ -1003,7 +1003,7 @@ mod construction_tests {
             WireSession::new(
                 downgraded,
                 StableId::new("role.a")?,
-                registry.clone(),
+                registry,
                 transcript
             ),
             Err(WireSessionError::NegotiationResultMismatch)

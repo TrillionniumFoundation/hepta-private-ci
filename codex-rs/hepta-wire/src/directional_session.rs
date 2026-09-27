@@ -88,7 +88,7 @@ impl AuthenticatedWireSession {
         let session_id = session.session_id();
         let send_key = derive_directional_key(&master_key.0, session_id, send_label)?;
         let receive_key = derive_directional_key(&master_key.0, session_id, receive_label)?;
-        debug_assert_ne!(send_key, receive_key);
+        debug_assert!(send_key != receive_key, "directional session keys must differ");
         let outbound = UndirectedAuthenticatedWireSession::new(
             session.clone(),
             UndirectedSessionMacKey::new(send_key)?,
