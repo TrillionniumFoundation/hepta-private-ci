@@ -35,10 +35,9 @@ jobs:
       - name: Generate canonical learning.plasticity implementation truth
         shell: bash
         run: |
-          set -euo pipefail
+          set -euxo pipefail
           test "$(git branch --show-current)" = "learning-plasticity/full-closure-20260927"
           test -z "$(git status --porcelain)"
-          python3 scripts/hepta-implementation-maps.py migrate --module learning.plasticity
 
           python3 - <<'PY'
           import json
