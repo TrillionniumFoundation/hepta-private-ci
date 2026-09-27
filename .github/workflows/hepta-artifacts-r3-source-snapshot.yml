@@ -1,0 +1,36 @@
+name: Learning artifacts r3 source snapshot
+
+on:
+  push:
+    branches:
+      - codex/learning-artifacts-qualified-host-r3-20260927
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Retain only tracked source, never credentials or runner state
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          mkdir -p "${RUNNER_TEMP}/artifact-r3-source"
+          git archive --format=tar.gz HEAD > "${RUNNER_TEMP}/artifact-r3-source/source.tar.gz"
+          git rev-parse HEAD HEAD^{tree} > "${RUNNER_TEMP}/artifact-r3-source/source-identity.txt"
+          sha256sum "${RUNNER_TEMP}/artifact-r3-source/source.tar.gz" > "${RUNNER_TEMP}/artifact-r3-source/archive.sha256"
+          printf '%s\n' 'Source materialization only. No native tests, acceptance, activation or release are certified.' > "${RUNNER_TEMP}/artifact-r3-source/NON_CLAIMS.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: artifact-r3-source-${{ github.sha }}
+          path: ${{ runner.temp }}/artifact-r3-source/
+          if-no-files-found: error
+          retention-days: 1
