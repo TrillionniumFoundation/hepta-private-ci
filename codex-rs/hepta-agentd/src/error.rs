@@ -19,6 +19,11 @@ pub enum AgentdError {
     CognitiveWriteRuntimeUnavailable,
     #[error("agentd protocol error: {0}")]
     Protocol(String),
+    /// Keep indeterminate append receipts available to the in-process recovery
+    /// owner instead of erasing them into a protocol/debug string. Display uses
+    /// the service's stable code and does not disclose signed evidence payloads.
+    #[error(transparent)]
+    IntuitionPolicy(Box<crate::AgentdIntuitionServiceErrorV1>),
     #[error("agentd control overloaded; retry after {retry_after_ms} ms")]
     Overloaded { retry_after_ms: u64 },
     #[error(transparent)]
@@ -35,6 +40,12 @@ pub enum AgentdError {
     ProductionCognitiveMutation(#[from] ProductionCognitiveMutationError),
     #[error(transparent)]
     CognitiveStore(#[from] DurableCognitiveStoreError),
+}
+
+impl From<crate::AgentdIntuitionServiceErrorV1> for AgentdError {
+    fn from(source: crate::AgentdIntuitionServiceErrorV1) -> Self {
+        Self::IntuitionPolicy(Box::new(source))
+    }
 }
 
 #[derive(Debug)]
@@ -91,4 +102,26 @@ pub(crate) fn io_context(
     source: std::io::Error,
 ) -> AgentdError {
     AgentdError::Io(contextual_io_error(operation, path, source))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::AgentdError;
+    use crate::AgentdIntuitionPolicyError;
+    use crate::AgentdIntuitionServiceErrorV1;
+
+    #[test]
+    fn intuition_policy_service_error_keeps_its_type_and_stable_code() {
+        let error = AgentdError::from(AgentdIntuitionServiceErrorV1::Policy(
+            AgentdIntuitionPolicyError::PreparedEvidenceExpired,
+        ));
+        assert_eq!(error.to_string(), "agentd.intuition.prepared_evidence_expired");
+        assert!(matches!(
+            error,
+            AgentdError::IntuitionPolicy(source)
+                if matches!(*source, AgentdIntuitionServiceErrorV1::Policy(
+                    AgentdIntuitionPolicyError::PreparedEvidenceExpired
+                ))
+        ));
+    }
 }
