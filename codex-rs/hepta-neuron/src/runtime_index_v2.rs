@@ -33,6 +33,9 @@ use crate::JournalAnchor;
 use crate::JournalScope;
 use crate::NeuronOperationKeyV2;
 
+#[path = "runtime_index_v2_capacity.rs"]
+mod capacity;
+
 const MAGIC: &[u8; 8] = b"HPTNGI02";
 const SCHEMA_VERSION: u32 = 2;
 const HEADER_BYTES: usize = 200;
@@ -340,7 +343,7 @@ impl FileNeuronRuntimeIndexV2 {
             expected_anchor: expected_anchor.map(AnchorDto::from_anchor),
         };
         let payload = encode_event(self.event_frontier, &event)?;
-        self.check_capacity(framed_bytes(payload.len())?)?;
+        self.check_prepare_capacity(key, expected_anchor, framed_bytes(payload.len())?)?;
         Ok(NeuronRuntimeIndexAdmissionV2::New)
     }
 
@@ -399,7 +402,7 @@ impl FileNeuronRuntimeIndexV2 {
         }
         let pending = self
             .pending
-            .as_ref()
+            .clone()
             .ok_or(NeuronRuntimeIndexError::Pending)?;
         if pending.key != *key
             || pending.expected_anchor != self.frontier
@@ -485,11 +488,12 @@ impl FileNeuronRuntimeIndexV2 {
     }
 
     fn check_capacity(&self, added: u64) -> Result<(), NeuronRuntimeIndexError> {
-        if self
+        let projected = self
             .end_offset
             .checked_add(added)
-            .ok_or(NeuronRuntimeIndexError::Capacity)?
-            > self.context.max_file_bytes
+            .ok_or(NeuronRuntimeIndexError::Capacity)?;
+        if projected > self.context.max_file_bytes
+            || projected > self.context.max_startup_replay_bytes
         {
             return Err(NeuronRuntimeIndexError::Capacity);
         }
