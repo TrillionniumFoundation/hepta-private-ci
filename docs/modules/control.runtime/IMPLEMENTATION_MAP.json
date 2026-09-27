@@ -6,14 +6,10 @@
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/control.runtime/TECHNICAL.md",
   "executionSpecification": "docs/readiness/CONTROL_RUNTIME_EXECUTION.md",
-  "maturityManifest": "docs/modules/control.runtime/MATURITY.json",
-  "currentImplementation": "docs/modules/control.runtime/CURRENT_IMPLEMENTATION.md",
   "sourceRoot": [
     "codex-rs/hepta-control-plane"
   ],
   "authorityDelta": "none",
-  "productCallerState": "read_only_agentd_source_composed_candidate_global_planner_not_composed",
-  "productionWriterState": "planner_store_source_candidate_named_product_writer_not_composed",
   "productCallers": [
     {
       "name": "agentd-cognitive-context",
@@ -37,10 +33,6 @@
       ],
       "state": "source_candidate_implemented_fail_closed_public_guard",
       "authority": "deny_all",
-      "controls": [
-        "reject_non_required_owner_summaries",
-        "delegate_coherent_snapshot_construction"
-      ],
       "tests": [
         {
           "path": "codex-rs/hepta-control-plane/src/planner_guard.rs",
@@ -49,6 +41,10 @@
         {
           "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
           "symbol": "missing_or_stale_required_owner_blocks_global_planning"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_guard.rs",
+          "symbol": "owner_count_is_rejected_before_set_construction_or_duplicate_detection"
         }
       ],
       "designOperation": "collect_snapshot",
@@ -59,7 +55,12 @@
           "symbol": "collect_snapshot"
         }
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "controls": [
+        "reject_non_required_owner_summaries",
+        "bound_raw_owner_collections",
+        "delegate_coherent_snapshot_construction"
+      ]
     },
     {
       "operation": "prepare_plan",
@@ -74,10 +75,6 @@
       ],
       "state": "source_candidate_implemented_fail_closed_public_guard",
       "authority": "deny_all",
-      "controls": [
-        "reject_duplicate_final_payload_digests",
-        "delegate_bounded_resource_preparation"
-      ],
       "tests": [
         {
           "path": "codex-rs/hepta-control-plane/src/planner_guard.rs",
@@ -90,6 +87,18 @@
         {
           "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
           "symbol": "missing_resource_axis_is_unavailable_not_zero_cost"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_guard.rs",
+          "symbol": "raw_candidate_axis_and_payload_limits_precede_normalization"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_guard.rs",
+          "symbol": "owner_age_is_rechecked_after_collection_and_clock_rollback_rejects"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_guard.rs",
+          "symbol": "abstain_cannot_smuggle_an_effect_payload"
         }
       ],
       "designOperation": "prepare_plan",
@@ -100,12 +109,19 @@
           "symbol": "prepare_plan"
         }
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "controls": [
+        "reject_duplicate_final_payload_digests",
+        "bound_raw_candidates_resources_owners_and_payloads",
+        "revalidate_current_owner_age",
+        "reject_effect_bearing_abstain",
+        "delegate_bounded_resource_preparation"
+      ]
     },
     {
       "operation": "bind_ndu_plan_evaluation_v1",
       "nativeSymbol": "codex_hepta_control_plane::bind_ndu_plan_evaluation_v1",
-      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_boundary.rs",
       "inputs": [
         "NduPlanEvaluationInputV1"
       ],
@@ -114,22 +130,35 @@
       ],
       "state": "source_implemented_owner_port_adapter",
       "authority": "deny_all",
-      "ownerBoundary": "utility.ndu computes the opaque evaluation digest; control.runtime binds only the consumed projection",
       "tests": [
         {
           "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
           "symbol": "tampered_ndu_binding_is_rejected"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_boundary.rs",
+          "symbol": "oversized_ndu_projection_rejects_before_duplicate_normalization"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_boundary.rs",
+          "symbol": "evaluated_and_rejected_union_has_one_shared_capacity_bound"
         }
       ],
       "designOperation": "bind_ndu_plan_evaluation_v1",
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "mappingClass": "owner_native_guarded",
+      "delegatedCallees": [
+        {
+          "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+          "symbol": "bind_ndu_plan_evaluation_v1"
+        }
+      ],
+      "sourcePathExists": true,
+      "ownerBoundary": "utility.ndu computes the opaque evaluation digest; control.runtime binds only the consumed projection"
     },
     {
       "operation": "finalize_plan",
       "nativeSymbol": "codex_hepta_control_plane::finalize_plan",
-      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_boundary.rs",
       "inputs": [
         "GlobalStateSnapshotV1",
         "PreparedPlanInputV1",
@@ -139,7 +168,7 @@
       "outputs": [
         "FeasiblePlanReceiptV1"
       ],
-      "state": "source_implemented",
+      "state": "source_candidate_implemented_fail_closed_public_guard",
       "authority": "deny_all",
       "tests": [
         {
@@ -153,17 +182,30 @@
         {
           "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
           "symbol": "evaluation_policy_is_frozen_before_ndu_evaluation"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_boundary.rs",
+          "symbol": "owner_age_expires_at_finalization_and_grant_request_before_snapshot_expiry"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_boundary.rs",
+          "symbol": "clock_rollback_cannot_restore_a_plan_at_either_final_boundary"
         }
       ],
       "designOperation": "finalize_plan",
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "mappingClass": "owner_native_guarded",
+      "delegatedCallees": [
+        {
+          "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+          "symbol": "finalize_plan"
+        }
+      ],
       "sourcePathExists": true
     },
     {
       "operation": "request_execution_grants",
       "nativeSymbol": "codex_hepta_control_plane::request_execution_grants",
-      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_boundary.rs",
       "inputs": [
         "current GlobalStateSnapshotV1",
         "PreparedPlanInputV1",
@@ -175,7 +217,6 @@
       ],
       "state": "source_implemented_request_only",
       "authority": "deny_all",
-      "nonClaim": "GrantRequestSetV1 is not a capability or execution acknowledgement",
       "tests": [
         {
           "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
@@ -192,12 +233,26 @@
         {
           "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
           "symbol": "grant_request_revalidates_snapshot_masks_and_digest"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_boundary.rs",
+          "symbol": "owner_age_expires_at_finalization_and_grant_request_before_snapshot_expiry"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_boundary.rs",
+          "symbol": "clock_rollback_cannot_restore_a_plan_at_either_final_boundary"
         }
       ],
       "designOperation": "request_execution_grants",
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "mappingClass": "owner_native_guarded",
+      "delegatedCallees": [
+        {
+          "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+          "symbol": "request_execution_grants"
+        }
+      ],
+      "sourcePathExists": true,
+      "nonClaim": "GrantRequestSetV1 is not a capability or execution acknowledgement"
     },
     {
       "operation": "PlannerJournalV1",
@@ -212,7 +267,6 @@
       ],
       "state": "source_implemented_owner_local_durability_reference",
       "authority": "none",
-      "nonClaim": "in-memory journal and byte codec; not an activated production store or external-effect ledger",
       "tests": [
         {
           "path": "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
@@ -225,12 +279,33 @@
         {
           "path": "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
           "symbol": "revocation_clears_selection_and_prevents_reselection"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_journal.rs",
+          "symbol": "raw_append_requires_recorded_decision_and_does_not_mutate_on_rejection"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_journal.rs",
+          "symbol": "raw_append_and_idempotent_replay_cannot_bypass_revocation"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_journal.rs",
+          "symbol": "valid_hashes_do_not_admit_selection_before_its_decision"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_journal.rs",
+          "symbol": "valid_hashes_do_not_admit_selection_after_revocation"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_journal.rs",
+          "symbol": "valid_selection_then_revocation_reopens_without_resurrection"
         }
       ],
       "designOperation": "PlannerJournalV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "nonClaim": "in-memory journal and byte codec; not an activated production store, authenticated signature or external-effect ledger"
     },
     {
       "operation": "PlannerStoreV1",
@@ -239,20 +314,18 @@
       "inputs": [
         "owner-authorized existing directory",
         "snapshot and decision receipts",
-        "canonical evidence bodies",
-        "external checkpoint anchors"
+        "owner-supplied evidence bodies",
+        "external checkpoint references"
       ],
       "outputs": [
         "versioned self-validating store image",
-        "exact canonical body lookup",
+        "stored body lookup",
         "selected-plan projection",
-        "monotonic backup image",
-        "externally anchored checkpoint"
+        "backup image with open-state regression checks",
+        "checkpoint reference"
       ],
       "state": "source_candidate_implemented_unqualified_not_product_composed",
       "authority": "none",
-      "durabilityProfile": "unix_v1_temp_write_file_fsync_atomic_rename_directory_fsync_indeterminate_reopen",
-      "nonClaim": "source candidate only; no named product writer, independent acceptance, activation or release",
       "tests": [
         {
           "path": "codex-rs/hepta-control-plane/src/planner_store_tests_unix.rs",
@@ -279,7 +352,9 @@
           "symbol": "PlannerJournalV1"
         }
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "durabilityProfile": "unix_v1_temp_write_file_fsync_atomic_rename_directory_fsync_indeterminate_reopen",
+      "nonClaim": "source candidate only; body coverage is not semantic validation; checkpoint digests are not independent antirollback verification; no named product writer or activation"
     }
   ],
   "canonicalDomainContracts": [
@@ -297,94 +372,6 @@
     "StoredPlannerBodyV1",
     "PlannerCheckpointV1"
   ],
-  "subsystemMaturity": {
-    "plannerKernel": {
-      "state": "source_candidate_implemented",
-      "productionComposed": false,
-      "authority": "deny_all"
-    },
-    "plannerPublicBoundary": {
-      "state": "source_candidate_implemented",
-      "productionComposed": false,
-      "controls": [
-        "exact_required_owner_set",
-        "duplicate_final_payload_rejection"
-      ]
-    },
-    "plannerStore": {
-      "state": "source_candidate_implemented_unqualified",
-      "productionComposed": false,
-      "controls": [
-        "versioned_schema",
-        "single_writer_lock",
-        "framed_self_validating_image",
-        "temp_write_atomic_rename",
-        "file_and_directory_fsync",
-        "crash_failpoints",
-        "last_complete_image_reopen",
-        "legacy_digest_only_migration",
-        "bounded_retention_compaction",
-        "monotonic_backup_restore",
-        "exact_decision_bodies",
-        "external_checkpoint_anchor"
-      ]
-    },
-    "readOnlyAgentdContextCaller": {
-      "state": "source_composed_candidate",
-      "productionComposed": true,
-      "scope": "authenticated_bounded_read_only_context_delivery",
-      "remaining": [
-        "final_use_plan_receipt_binding",
-        "canonical_authenticated_observation_v2",
-        "request_query_retrieval_ranker_binding",
-        "monotonic_lease_domain"
-      ]
-    },
-    "globalPlannerCaller": {
-      "state": "not_composed",
-      "productionComposed": false
-    },
-    "organHost": {
-      "state": "source_candidate_implemented",
-      "productionComposed": false,
-      "remaining": [
-        "dispatch_identity",
-        "partial_fanout_terminal_receipts",
-        "target_deduplication_and_reconciliation"
-      ]
-    },
-    "embodimentReference": {
-      "state": "source_candidate_implemented_reference_only",
-      "productionComposed": false
-    },
-    "authorityConsumer": {
-      "state": "not_composed",
-      "productionComposed": false
-    },
-    "effectExecutor": {
-      "state": "not_composed",
-      "productionComposed": false
-    },
-    "terminalReconciliation": {
-      "state": "not_composed",
-      "productionComposed": false
-    }
-  },
-  "completion": {
-    "specification": "complete",
-    "nativePlanningKernel": "candidate_implemented",
-    "publicBoundaryGuards": "candidate_implemented",
-    "ownerLocalDurabilityReference": "candidate_implemented",
-    "productionDurabilityCandidate": "candidate_implemented_unqualified",
-    "readOnlyAgentdProductCaller": "source_composed_candidate",
-    "globalPlannerProductCaller": "not_established",
-    "productionWriter": "not_established",
-    "canonicalExternalProtocolAdmission": "not_established",
-    "exactHeadQualification": "pending",
-    "independentAcceptanceState": "not_established",
-    "activationState": "not_established",
-    "releaseState": "not_established"
-  },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
     "codex-rs/hepta-control-plane"
@@ -414,17 +401,148 @@
     "tree": "272a97daf69c2e19e68d7cc5b0da18029e93c665"
   },
   "repositoryControlledGaps": [
-    "Bind and revalidate the planner receipt at Agentd final use.",
-    "Replace caller-supplied context counts with canonical authenticated observations.",
-    "Bind request, query, retrieval profile and ranker identity in the context plan.",
-    "Use a declared monotonic lease domain for request-local freshness.",
-    "Compose a named global planner caller and PlannerStoreV1 owner without widening authority.",
-    "Compose independently governed authority, effect execution and terminal reconciliation ports.",
-    "Run exact-head and deterministic synthetic-merge qualification before changing the claim boundary."
+    "Qualify the inherited Agentd integrity implementation against the exact candidate and fixed merge tree.",
+    "Resolve NDU failures from a matching source/command/run-attempt pair; no regression repair is claimed yet.",
+    "Complete semantic owner codecs and independently verified non-regressing checkpoint anchors.",
+    "Complete named global planner, production writer, authority, executor and terminal-result integrations.",
+    "Close organ partial-fanout identity, deduplication and reconciliation.",
+    "Execute the complete target-host crash, capacity, disk-full, partial-write, clock and backup matrix."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
-  ]
+  ],
+  "maturityManifest": "docs/modules/control.runtime/MATURITY.json",
+  "currentImplementation": "docs/modules/control.runtime/CURRENT_IMPLEMENTATION.md",
+  "productCallerState": "read_only_agentd_source_composed_request_integrity_v2_global_planner_not_composed",
+  "productionWriterState": "planner_store_source_candidate_unqualified_named_product_writer_not_composed",
+  "completion": {
+    "specification": "complete",
+    "nativePlanningKernel": "candidate_implemented",
+    "publicBoundaryGuards": "candidate_implemented",
+    "ownerLocalDurabilityReference": "candidate_implemented",
+    "productionDurabilityCandidate": "candidate_implemented_unqualified",
+    "readOnlyAgentdProductCaller": "source_composed_candidate_request_integrity_v2",
+    "plannerExecutionCoordinator": "source_candidate_implemented_not_product_composed",
+    "globalPlannerProductCaller": "not_established",
+    "productionWriter": "not_established",
+    "authorityConsumer": "not_established",
+    "effectExecutor": "not_established",
+    "terminalReconciler": "not_established",
+    "canonicalExternalProtocolAdmission": "not_established",
+    "exactHeadQualification": "pending",
+    "independentAcceptanceState": "not_established",
+    "activationState": "not_established",
+    "releaseState": "not_established"
+  },
+  "subsystemMaturity": {
+    "plannerKernel": {
+      "state": "source_candidate_implemented",
+      "productionComposed": false,
+      "authority": "deny_all",
+      "controls": [
+        "deterministic_bounded_planning",
+        "shared_journal_append_reopen_state_machine"
+      ]
+    },
+    "plannerPublicBoundary": {
+      "state": "source_candidate_implemented",
+      "productionComposed": false,
+      "controls": [
+        "exact_required_owner_set",
+        "duplicate_final_payload_rejection",
+        "sealed_candidate_and_policy_revalidation",
+        "raw_collection_bounds_before_normalization",
+        "effect_free_abstention",
+        "owner_age_revalidation_at_prepare_finalize_and_grant",
+        "clock_rollback_rejection"
+      ]
+    },
+    "plannerStore": {
+      "state": "source_candidate_implemented_unqualified",
+      "productionComposed": false,
+      "controls": [
+        "versioned_schema",
+        "single_writer_lock",
+        "whole_image_self_validation",
+        "temp_write_atomic_rename",
+        "file_and_directory_fsync",
+        "crash_failpoints",
+        "last_complete_image_reopen",
+        "legacy_digest_only_migration",
+        "bounded_retention_compaction",
+        "backup_regression_check_against_open_image",
+        "bounded_full_stored_bodies",
+        "external_checkpoint_reference"
+      ],
+      "remaining": [
+        "semantic_owner_codec_and_body_digest_validation",
+        "independent_non_regressing_anchor_verification",
+        "append_frame_recovery_target_not_implemented_by_whole_image_replacement",
+        "complete_process_crash_disk_full_and_restore_qualification"
+      ]
+    },
+    "plannerExecutionCoordinator": {
+      "state": "source_candidate_implemented_not_product_composed",
+      "productionComposed": false,
+      "controls": [
+        "deny_all_request_set_admission",
+        "independent_authority_port",
+        "final_payload_and_expiry_revalidation",
+        "durable_authority_request_and_grant_evidence",
+        "owner_port_projection_digest_binding",
+        "indeterminate_stop_and_reconciliation_discovery"
+      ],
+      "remaining": [
+        "cryptographic_verification_of_complete_signed_envelopes",
+        "named_product_authority_executor_and_reconciler",
+        "durable_terminal_state_index_and_fair_pending_reconciliation"
+      ]
+    },
+    "readOnlyAgentdContextCaller": {
+      "state": "source_composed_candidate_request_integrity_v2",
+      "productionComposed": true,
+      "scope": "authenticated_bounded_read_only_context_delivery",
+      "controls": [
+        "final_use_plan_receipt_delivery_seal",
+        "canonical_authenticated_record_set",
+        "request_query_retrieval_ranker_binding",
+        "monotonic_process_generation_lease",
+        "bounded_issued_seal_registry"
+      ],
+      "remaining": [
+        "exact_candidate_agentd_product_e2e_and_failure_matrix"
+      ]
+    },
+    "globalPlannerCaller": {
+      "state": "not_composed",
+      "productionComposed": false
+    },
+    "organHost": {
+      "state": "source_candidate_implemented",
+      "productionComposed": false,
+      "remaining": [
+        "dispatch_identity",
+        "partial_fanout_terminal_receipts",
+        "target_deduplication_and_reconciliation"
+      ]
+    },
+    "embodimentReference": {
+      "state": "source_candidate_implemented_reference_only",
+      "productionComposed": false
+    },
+    "authorityConsumer": {
+      "state": "typed_port_and_validation_source_candidate_no_named_product_consumer",
+      "productionComposed": false
+    },
+    "effectExecutor": {
+      "state": "typed_port_and_signed_terminal_validation_source_candidate_no_named_product_executor",
+      "productionComposed": false
+    },
+    "terminalReconciliation": {
+      "state": "typed_port_and_signed_receipt_validation_source_candidate_no_named_product_reconciler",
+      "productionComposed": false
+    }
+  }
 }

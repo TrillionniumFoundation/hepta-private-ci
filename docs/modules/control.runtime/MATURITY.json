@@ -8,7 +8,8 @@
   "sourceObservation": {
     "repository": "TrillionniumFoundation/hepta-private-ci",
     "historicalBaseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "candidateBranch": "codex/control-runtime-full-closure-2026-09-27",
+    "candidateBranch": "codex/control-runtime-exact-recovery-20260927",
+    "inheritedCandidateCommit": "bb27055be5e4ee6f69f8940b9f142cd0f1b78805",
     "exactHeadDerivedByQualification": true,
     "selfAuthenticatingTrackedShaClaim": false
   },
@@ -18,7 +19,11 @@
     "plannerKernel": {
       "state": "source_candidate_implemented",
       "productionComposed": false,
-      "authority": "deny_all"
+      "authority": "deny_all",
+      "controls": [
+        "deterministic_bounded_planning",
+        "shared_journal_append_reopen_state_machine"
+      ]
     },
     "plannerPublicBoundary": {
       "state": "source_candidate_implemented",
@@ -26,7 +31,11 @@
       "controls": [
         "exact_required_owner_set",
         "duplicate_final_payload_rejection",
-        "sealed_candidate_and_policy_revalidation"
+        "sealed_candidate_and_policy_revalidation",
+        "raw_collection_bounds_before_normalization",
+        "effect_free_abstention",
+        "owner_age_revalidation_at_prepare_finalize_and_grant",
+        "clock_rollback_rejection"
       ]
     },
     "plannerStore": {
@@ -35,16 +44,22 @@
       "controls": [
         "versioned_schema",
         "single_writer_lock",
-        "framed_self_validating_image",
+        "whole_image_self_validation",
         "temp_write_atomic_rename",
         "file_and_directory_fsync",
         "crash_failpoints",
         "last_complete_image_reopen",
         "legacy_digest_only_migration",
         "bounded_retention_compaction",
-        "monotonic_backup_restore",
-        "exact_decision_bodies",
-        "external_checkpoint_anchor"
+        "backup_regression_check_against_open_image",
+        "bounded_full_stored_bodies",
+        "external_checkpoint_reference"
+      ],
+      "remaining": [
+        "semantic_owner_codec_and_body_digest_validation",
+        "independent_non_regressing_anchor_verification",
+        "append_frame_recovery_target_not_implemented_by_whole_image_replacement",
+        "complete_process_crash_disk_full_and_restore_qualification"
       ]
     },
     "plannerExecutionCoordinator": {
@@ -55,8 +70,13 @@
         "independent_authority_port",
         "final_payload_and_expiry_revalidation",
         "durable_authority_request_and_grant_evidence",
-        "signed_terminal_observation_validation",
-        "indeterminate_stop_and_signed_reconciliation"
+        "owner_port_projection_digest_binding",
+        "indeterminate_stop_and_reconciliation_discovery"
+      ],
+      "remaining": [
+        "cryptographic_verification_of_complete_signed_envelopes",
+        "named_product_authority_executor_and_reconciler",
+        "durable_terminal_state_index_and_fair_pending_reconciliation"
       ]
     },
     "readOnlyAgentdContextCaller": {
@@ -70,7 +90,9 @@
         "monotonic_process_generation_lease",
         "bounded_issued_seal_registry"
       ],
-      "remaining": []
+      "remaining": [
+        "exact_candidate_agentd_product_e2e_and_failure_matrix"
+      ]
     },
     "globalPlannerCaller": {
       "state": "not_composed",
@@ -103,14 +125,14 @@
     }
   },
   "qualification": {
-    "exactHead": "pending_current_candidate_runs",
-    "syntheticMerge": "pending_current_candidate_runs",
-    "packageTests": "passed_on_predecessor_2f5ae97_rerun_required_current_candidate",
-    "allTargetCompilation": "passed_on_predecessor_2f5ae97_rerun_required_current_candidate",
-    "strictClippy": "passed_on_predecessor_2f5ae97_rerun_required_current_candidate",
-    "formatting": "canonical_rustfmt_applied_current_candidate_run_required",
-    "nduCallerRegression": "pending_current_candidate_runs",
-    "namedHost": "pending_current_candidate_runs"
+    "exactHead": "not_observed_for_final_candidate",
+    "syntheticMerge": "not_observed_for_final_candidate",
+    "packageTests": "not_observed_for_final_candidate",
+    "allTargetCompilation": "not_observed_for_final_candidate",
+    "strictClippy": "not_observed_for_final_candidate",
+    "formatting": "not_observed_for_final_candidate",
+    "nduCallerRegression": "not_observed_for_final_candidate",
+    "namedHost": "not_observed_for_final_candidate"
   },
   "externalGovernance": {
     "independentSemanticReview": false,
@@ -140,11 +162,28 @@
   },
   "nonClaims": [
     "No planner output is a capability.",
-    "The generic execution coordinator is not a named activated Agentd global-planner caller.",
-    "Source-level authority, executor and reconciler ports are not production implementations.",
-    "No source candidate establishes operator acceptance, canary promotion or activation.",
+    "Generic authority/executor/reconciler ports are not named activated production implementations.",
+    "Signature and external-anchor digests are references, not cryptographic verification.",
+    "Whole-image replacement does not implement append-frame tail recovery.",
+    "Source tests, queued workflows and historical artifacts are not current exact-head passes.",
     "No tracked manifest self-authenticates the commit that contains it.",
-    "The Unix durability profile is not a Windows durability qualification.",
+    "The Unix durability profile is not Windows durability qualification.",
     "A read-only Agentd context caller is not a global planner production caller."
+  ],
+  "qualificationHistory": {
+    "inheritedManifestCommit": "bb27055be5e4ee6f69f8940b9f142cd0f1b78805",
+    "priorManifestClaim": "package/all-target/strict-Clippy passed on predecessor 2f5ae97; rerun required",
+    "verifiedDuringThisDelivery": false,
+    "nonClaim": "Preserved historical claim, not execution evidence for this candidate."
+  },
+  "requestedClosureTargets": [
+    "current_NDU_regression_repair_with_matching_source_and_command_log",
+    "source_head_and_fixed_base_synthetic_merge_qualification",
+    "authenticated_Agentd_final_use_integrity",
+    "versioned_framed_production_store_and_independent_antirollback_anchor",
+    "full_canonical_decision_semantics",
+    "named_authority_separated_product_execution_and_terminal_reconciliation",
+    "target_host_overload_crash_partial_write_disk_full_clock_fanout_and_backup_tests",
+    "independent_semantic_review_real_canary_and_rollback_rehearsal"
   ]
 }
