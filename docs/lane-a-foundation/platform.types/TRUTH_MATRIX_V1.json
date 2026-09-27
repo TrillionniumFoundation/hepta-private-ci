@@ -6,13 +6,14 @@
   "publicApiExportCount": 78,
   "publicApiOperationCount": 17,
   "formalTechnicalSupplement": "docs/modules/platform.types/PROTOCOL_AND_QUALIFICATION_V1.md",
+  "currentTechnicalAmendment": "docs/modules/platform.types/TECHNICAL_CURRENT_AMENDMENT_V2.md",
   "normativeProtocolSource": "codex-rs/hepta-types/src/protocol_catalog_v2.rs",
   "currentSpecification": "docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md",
   "implementationMap": "docs/modules/platform.types/IMPLEMENTATION_MAP.json",
   "executionDossier": "qualification/module-execution-dossiers/detail/platform.types.md",
   "states": {
     "source": "implemented",
-    "implementation": "native_contracts_v1_compatibility_v2_hptc_strict_wire_product_owners",
+    "implementation": "native_contracts_v1_compatibility_v2_hptc_all_five_strict_wire_product_owners",
     "durability": "none",
     "qualification": "exact_candidate_pending",
     "activation": "library_and_owner_source_only",
@@ -29,7 +30,7 @@
     "promptDeliveryV2": "HPTC schema 2 with optional exact V1 migration witness",
     "runtimeTopologyCandidateV1": "HPTC V1 binds every semantic candidate and delta field; candidate_digest is derived",
     "manifestProtocols": "strict JSON is transport only; validated native values project to HPTC V1 semantic commitments",
-    "registeredNumericConversionV2": "receipt binds registry generation/digest, profile definitions, normalizer and base conversion receipt and is fully reverified"
+    "registeredNumericConversionV2": "receipt binds registry generation/digest, profile definitions, normalizer and base conversion receipt; owner-current admission additionally requires verify_for_snapshot against an independently pinned snapshot"
   },
   "orderingContracts": {
     "RuntimeTopologyCandidateV1.deltas": "set semantics represented as a strictly increasing StableId sequence; non-canonical order rejects",
@@ -37,15 +38,24 @@
   },
   "transportBoundary": {
     "owner": "platform.wire",
+    "contracts": [
+      "PromptDeliveryObservationV2",
+      "RuntimeTopologyCandidateV1",
+      "RandomStreamManifestV1",
+      "ExternalSystemManifestV1",
+      "SensorCalibrationManifestV1"
+    ],
     "maximumRawBytes": 65536,
     "maximumDepth": 16,
     "duplicateKeys": "reject",
     "unknownFields": "reject",
+    "missingFields": "reject",
     "canonicalU64DecimalBytes": 20,
+    "canonicalI64DecimalBytes": 20,
     "nativeRevalidation": true
   },
   "productOwners": [
-    "utility.ndu registered numeric owner",
+    "utility.ndu registered numeric owner with owner-pinned snapshot verification",
     "utility.ndu random-stream manifest owner",
     "runtime.supervisor topology owner",
     "runtime.supervisor external-system manifest owner",
@@ -59,6 +69,7 @@
     "gitProvenance": "exact HEAD tree, root trees and tracked blob identities",
     "publicApi": "base and candidate rustdoc JSON normalized semver comparison",
     "properties": "deterministic mutation checks plus bounded coverage-guided libFuzzer",
+    "independentReview": "separate exact-current-head governance evidence; excludes PR author and every candidate commit author/committer",
     "failureDiagnostics": "retained as non-authoritative candidate diagnostics",
     "authoritativeReceipts": "emitted only after truth, catalog, consumers, provenance, API, MSRV, native, Miri, fuzz and bundle outcomes pass"
   },
@@ -78,27 +89,35 @@
     "codex-rs/hepta-types/conformance/verify_platform_wire_vectors.py",
     "codex-rs/hepta-types/conformance/verify_platform_wire_vectors.mjs",
     "codex-rs/hepta-types/fuzz/fuzz_targets/canonical_validate.rs",
+    "codex-rs/hepta-wire/src/lib.rs",
     "codex-rs/hepta-wire/src/platform_types_json.rs",
+    "codex-rs/hepta-wire/src/platform_manifest_json.rs",
     "codex-rs/hepta-wire/fuzz/fuzz_targets/platform_types_json.rs",
     "codex-rs/hepta-ndu/src/random_stream_owner.rs",
     "codex-rs/hepta-supervisor/src/platform_manifest_admission.rs",
     "docs/modules/platform.types/NORMATIVE_PROTOCOL_SOURCE_V2.md",
+    "docs/modules/platform.types/TECHNICAL_CURRENT_AMENDMENT_V2.md",
     "scripts/platform_types_public_api.py",
     "scripts/platform_types_implementation_map.py",
     "scripts/platform_types_property_checks.py",
     "scripts/platform_types_provenance.py",
     "scripts/platform_types_rustdoc_api.py",
+    "scripts/platform_types_independent_review.py",
+    "scripts/test_platform_types_independent_review.py",
+    "scripts/verify_platform_types_consumers.py",
     "scripts/run_platform_types_consumer_qualification.sh",
     "scripts/run_platform_types_coverage_fuzz.sh",
     "scripts/run_platform_types_deep_qualification.sh",
-    ".github/workflows/platform-types-deep-qualification.yml"
+    ".github/workflows/platform-types-deep-qualification.yml",
+    ".github/workflows/platform-types-independent-review.yml"
   ],
   "nonClaims": [
     "No V1 prompt digest is relabeled as HPTC.",
-    "No registry generation is authenticated or granted anti-rollback authority by platform.types.",
+    "No registry generation is authenticated, published or advanced by platform.types; verify_for_snapshot only enforces equality with an independently pinned owner snapshot.",
     "No manifest contract executes randomness, inventories a host, drives a sensor or grants authority.",
     "No JSON serialization byte sequence is used as a semantic digest.",
     "No source-tree receipt may qualify a synthetic merge, and no synthetic-merge receipt may qualify a source tree.",
+    "Independent review evidence is not a source qualification receipt.",
     "Failure diagnostics are not qualification receipts.",
     "Production activation, deployment qualification, operator acceptance and release are not claimed."
   ]

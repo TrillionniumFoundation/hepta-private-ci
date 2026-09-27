@@ -12,6 +12,7 @@ from platform_types_candidate_support import (
 
 DOCS = (
     "docs/modules/platform.types/TECHNICAL.md",
+    "docs/modules/platform.types/TECHNICAL_CURRENT_AMENDMENT_V2.md",
     "docs/modules/platform.types/PROTOCOL_AND_QUALIFICATION_V1.md",
     "docs/modules/platform.types/DEEP_QUALIFICATION_V1.md",
     "docs/modules/platform.types/NORMATIVE_PROTOCOL_SOURCE_V2.md",
@@ -25,15 +26,19 @@ PROVENANCE = DOCS + (
     "codex-rs/hepta-types/MANIFEST_V1_CONFORMANCE.json",
     "codex-rs/hepta-types/PLATFORM_TYPES_WIRE_CONFORMANCE_V1.json",
     "codex-rs/hepta-types/CONSUMER_QUALIFICATION_V1.json",
+    "codex-rs/hepta-types/src/lib.rs",
     "codex-rs/hepta-types/src/topology.rs",
     "codex-rs/hepta-types/src/manifests.rs",
     "codex-rs/hepta-types/src/numeric_conversion.rs",
     "codex-rs/hepta-types/src/numeric_registry_v2.rs",
+    "codex-rs/hepta-types/src/prompt_delivery.rs",
     "codex-rs/hepta-types/src/prompt_delivery_v2.rs",
     "codex-rs/hepta-types/src/protocol_catalog_v2.rs",
     "codex-rs/hepta-types/src/bin/platform-types-protocol-codegen.rs",
     "codex-rs/hepta-types/fuzz/fuzz_targets/canonical_validate.rs",
+    "codex-rs/hepta-wire/src/lib.rs",
     "codex-rs/hepta-wire/src/platform_types_json.rs",
+    "codex-rs/hepta-wire/src/platform_manifest_json.rs",
     "codex-rs/hepta-wire/fuzz/fuzz_targets/platform_types_json.rs",
     "codex-rs/hepta-ndu/src/random_stream_owner.rs",
     "codex-rs/hepta-supervisor/src/platform_manifest_admission.rs",
@@ -44,9 +49,15 @@ PROVENANCE = DOCS + (
     "scripts/platform_types_rustdoc_api.py",
     "scripts/platform_types_candidate_bundle.py",
     "scripts/platform_types_candidate_evidence.py",
+    "scripts/platform_types_candidate_render.py",
+    "scripts/platform_types_independent_review.py",
+    "scripts/test_platform_types_independent_review.py",
+    "scripts/verify_platform_types_consumers.py",
+    "scripts/run_platform_types_consumer_qualification.sh",
     "scripts/run_platform_types_coverage_fuzz.sh",
     "scripts/run_platform_types_deep_qualification.sh",
     ".github/workflows/platform-types-deep-qualification.yml",
+    ".github/workflows/platform-types-independent-review.yml",
 )
 GENERATED = ("protocol-catalog.json", "protocol-catalog.md")
 
