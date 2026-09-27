@@ -16,14 +16,18 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[3]
 APP = ROOT / "apps/hepta-native"
 BASE = "7ddbfac88525196e7a4b31387ceae194958275f5"
-BRANCH = "work/ui-native-verified-closure-20260927"
-WRITE_BRANCHES = {"work/ui-native-operational-closure-20260927", BRANCH, "work/ui-native-remediation-20260927", "work/ui-native-closure-20260927"}
+BRANCH = "work/ui-native-acceptance-repair-20260927"
+WRITE_BRANCHES = {"work/ui-native-verified-closure-20260927", "work/ui-native-operational-closure-20260927", BRANCH, "work/ui-native-remediation-20260927", "work/ui-native-closure-20260927"}
 INTEGRATION_ROOTS = (
     ROOT / "codex-rs/hepta-native-gateway",
     ROOT / "codex-rs/hepta-private-state",
 )
 INTEGRATION_FILES = (
     ROOT / "CALLERS.toml",
+    ROOT / "docs/modules/ui.native/TECHNICAL.md",
+    ROOT / "docs/modules/ui.native/REMEDIATION-20260927.md",
+    ROOT / "docs/modules/ui.native/ACCEPTANCE-REPAIR-20260927.md",
+    ROOT / "docs/modules/ui.native/CURRENT_SOURCE.json",
     ROOT / "codex-rs/Cargo.toml",
     ROOT / "codex-rs/Cargo.lock",
     ROOT / "codex-rs/hepta-contracts/Cargo.toml",
@@ -152,6 +156,7 @@ def fingerprint(write):
     else:
         manifest = json.loads(path.read_text(encoding="utf-8"))
         if (manifest.get("schema") != "hepta.ui.native.current-source.v2"
+                or manifest.get("canonicalBranch") != BRANCH
                 or manifest.get("productionQualified") is not False
                 or manifest.get("releaseAuthorized") is not False):
             raise RuntimeError("native source manifest is not a non-promoting v2 identity")

@@ -325,7 +325,10 @@ impl OperationJournal {
         for record in state.operations {
             let digest = retirement_digest(&record.endpoint_id, &record.key)?;
             if let Some(store) = retirement.as_ref().filter(|store| store.contains(&digest)) {
-                if store.read_record(&digest)?.is_some_and(|archived| archived != record) {
+                if store
+                    .read_record(&digest)?
+                    .is_some_and(|archived| archived != record)
+                {
                     return Err(ShellError::State(
                         "active closed record differs from its durable archive".to_owned(),
                     ));
@@ -649,7 +652,10 @@ impl OperationJournal {
     }
 }
 
-pub(crate) fn retirement_digest(endpoint_id: &str, key: &OperationKey) -> Result<String, ShellError> {
+pub(crate) fn retirement_digest(
+    endpoint_id: &str,
+    key: &OperationKey,
+) -> Result<String, ShellError> {
     validate_stable_id(endpoint_id, "retirement.endpoint_id")?;
     validate_stable_id(&key.session_id, "retirement.session_id")?;
     validate_stable_id(&key.operation_id, "retirement.operation_id")?;

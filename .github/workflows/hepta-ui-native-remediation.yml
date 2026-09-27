@@ -2,7 +2,7 @@ name: ui.native remediation qualification
 
 on:
   push:
-    branches: [main, work/ui-native-remediation-20260927, work/ui-native-closure-20260927, work/ui-native-verified-closure-20260927]
+    branches: [work/ui-native-acceptance-repair-20260927, main, work/ui-native-remediation-20260927, work/ui-native-closure-20260927, work/ui-native-verified-closure-20260927]
   pull_request:
     paths:
       - apps/hepta-native/**

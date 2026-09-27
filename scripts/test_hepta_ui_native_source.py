@@ -93,6 +93,13 @@ class SourceIdentityTests(unittest.TestCase):
         path.write_bytes(original)
         self.check()
 
+    def test_stale_candidate_branch_is_rejected(self):
+        path = self.app / 'CURRENT_SOURCE.json'
+        data = json.loads(path.read_text())
+        data['canonicalBranch'] = 'work/stale-candidate'
+        path.write_text(json.dumps(data))
+        with self.assertRaises(RuntimeError): self.check()
+
     def test_unregistered_write_branch_refused(self):
         with patch.dict(os.environ, HEPTA_UI_NATIVE_WRITE_BRANCH='main'):
             with self.assertRaises(RuntimeError): source.require_branch()

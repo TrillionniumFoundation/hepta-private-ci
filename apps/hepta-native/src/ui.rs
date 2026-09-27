@@ -501,6 +501,10 @@ impl HeptaNativeApp {
 
         match self.operation_action {
             PlatformAction::OpenPath | PlatformAction::RevealPath => {
+                ui.label(self.locale.text(
+                    "Unavailable: verified OS resource handoff is not implemented. No path operation will be dispatched.",
+                    "当前不可用：尚未实现已验证资源的 OS 句柄交付；不会派发路径操作。",
+                ));
                 ui.label(self.locale.text("Absolute path", "绝对路径"));
                 ui.text_edit_singleline(&mut self.operation_path);
             }
@@ -567,6 +571,25 @@ impl HeptaNativeApp {
             "Indeterminate operations are never automatically replayed. Reconcile asks the platform adapter for a trustworthy terminal observation.",
             "不确定操作绝不会自动重放。对账只接受平台适配器提供的可信终态观察。",
         ));
+        if ui
+            .add_enabled(
+                !busy,
+                egui::Button::new(self.locale.text(
+                    "Archive closed history (retain last 256)",
+                    "归档已结案历史（保留最近 256 条）",
+                )),
+            )
+            .clicked()
+        {
+            let runtime = Arc::clone(&self.runtime);
+            self.start_task(UiTaskKind::Reconcile, move || {
+                let mut runtime = lock_runtime(&runtime)?;
+                runtime.compact_closed_history(256)?;
+                Ok(UiTaskOutput::Reconcile {
+                    operations: runtime.operation_history(),
+                })
+            });
+        }
         if self.operations.is_empty() {
             ui.label(self.locale.text("No operation receipts.", "暂无操作回执。"));
             return;
@@ -617,7 +640,7 @@ impl HeptaNativeApp {
             self.start_task(UiTaskKind::Reconcile, move || {
                 let mut runtime = lock_runtime(&runtime)?;
                 runtime.close_operation_observation(&key)?;
-                // Retirement preserves the identity, not a fabricated outcome.
+                // Retirement preserves the full closed record, not a fabricated outcome.
                 runtime.compact_closed_history(256)?;
                 Ok(UiTaskOutput::Reconcile {
                     operations: runtime.operation_history(),

@@ -205,21 +205,32 @@ impl RetirementStore {
         let identity_set: HashSet<_> = identities.iter().collect();
         for record in records {
             record.validate()?;
-            if !matches!(record.phase, OperationPhase::Terminal | OperationPhase::ObservationClosed) {
-                return Err(ShellError::State("cannot archive an open observation".to_owned()));
+            if !matches!(
+                record.phase,
+                OperationPhase::Terminal | OperationPhase::ObservationClosed
+            ) {
+                return Err(ShellError::State(
+                    "cannot archive an open observation".to_owned(),
+                ));
             }
             let identity = retirement_digest(&record.endpoint_id, &record.key)?;
             if !identity_set.contains(&identity) {
-                return Err(ShellError::State("archive is not in the retirement transaction".to_owned()));
+                return Err(ShellError::State(
+                    "archive is not in the retirement transaction".to_owned(),
+                ));
             }
             let bytes = serde_json::to_vec(record)?;
             if bytes.len() as u64 > RECORD_BYTES {
-                return Err(ShellError::State("archived record exceeds byte limit".to_owned()));
+                return Err(ShellError::State(
+                    "archived record exceeds byte limit".to_owned(),
+                ));
             }
             let digest = sha256_hex(&bytes);
             if let Some(previous) = self.record_digests.get(&identity) {
                 if previous != &digest {
-                    return Err(ShellError::State("retired observation is immutable".to_owned()));
+                    return Err(ShellError::State(
+                        "retired observation is immutable".to_owned(),
+                    ));
                 }
             }
             if record_digests.insert(identity, digest.clone()).is_some() {
@@ -229,7 +240,9 @@ impl RetirementStore {
             match std::fs::symlink_metadata(&path) {
                 Ok(_) => {
                     if crate::file_input::read_bytes(&path, RECORD_BYTES)? != bytes {
-                        return Err(ShellError::State("archived record content changed".to_owned()));
+                        return Err(ShellError::State(
+                            "archived record content changed".to_owned(),
+                        ));
                     }
                 }
                 Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
@@ -258,13 +271,20 @@ impl RetirementStore {
                 schema: SCHEMA.to_owned(),
                 previous: checkpoint.clone(),
                 digests: chunk.to_vec(),
-                record_digests: chunk.iter().filter_map(|identity| {
-                    record_digests.get(identity).map(|digest| (identity.clone(), digest.clone()))
-                }).collect(),
+                record_digests: chunk
+                    .iter()
+                    .filter_map(|identity| {
+                        record_digests
+                            .get(identity)
+                            .map(|digest| (identity.clone(), digest.clone()))
+                    })
+                    .collect(),
             };
             let bytes = serde_json::to_vec(&segment)?;
             if bytes.len() as u64 > SEGMENT_BYTES {
-                return Err(ShellError::State("retirement segment exceeds byte limit".to_owned()));
+                return Err(ShellError::State(
+                    "retirement segment exceeds byte limit".to_owned(),
+                ));
             }
             let digest = sha256_hex(&bytes);
             let path = self.root.path().join(format!("{digest}.json"));
@@ -296,23 +316,34 @@ impl RetirementStore {
         Ok(())
     }
 
-    pub(crate) fn read_record(&self, identity: &str) -> Result<Option<OperationRecord>, ShellError> {
+    pub(crate) fn read_record(
+        &self,
+        identity: &str,
+    ) -> Result<Option<OperationRecord>, ShellError> {
         self.root.verify()?;
         let Some(digest) = self.record_digests.get(identity) else {
             return Ok(None);
         };
         let bytes = crate::file_input::read_bytes(
-            &self.root.path().join(format!("record-{digest}.json")), RECORD_BYTES,
+            &self.root.path().join(format!("record-{digest}.json")),
+            RECORD_BYTES,
         )?;
         if sha256_hex(&bytes) != *digest {
-            return Err(ShellError::State("archived record digest mismatch".to_owned()));
+            return Err(ShellError::State(
+                "archived record digest mismatch".to_owned(),
+            ));
         }
         let record: OperationRecord = serde_json::from_slice(&bytes)?;
         record.validate()?;
         if retirement_digest(&record.endpoint_id, &record.key)? != identity
-            || !matches!(record.phase, OperationPhase::Terminal | OperationPhase::ObservationClosed)
+            || !matches!(
+                record.phase,
+                OperationPhase::Terminal | OperationPhase::ObservationClosed
+            )
         {
-            return Err(ShellError::State("archived record identity or phase mismatch".to_owned()));
+            return Err(ShellError::State(
+                "archived record identity or phase mismatch".to_owned(),
+            ));
         }
         Ok(Some(record))
     }

@@ -2,7 +2,7 @@ name: ui.native remediation branch formatter
 
 on:
   push:
-    branches: [work/ui-native-closure-20260927]
+    branches: [work/ui-native-acceptance-repair-20260927, work/ui-native-closure-20260927]
     paths:
       - apps/hepta-native/**/*.rs
       - codex-rs/hepta-native-gateway/**/*.rs

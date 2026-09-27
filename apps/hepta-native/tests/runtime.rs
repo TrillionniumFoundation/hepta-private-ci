@@ -788,7 +788,7 @@ fn missing_kernel_authority_fails_closed_before_adapter_entry() {
 }
 
 #[test]
-fn retired_operation_identity_is_rejected_before_permission_or_dispatch() {
+fn retired_receipt_is_returned_without_permission_or_dispatch() {
     let temp = private_tempdir();
     let (final_use, signing, _) = authority_fixture(&temp);
     let platform_state = Arc::new(Mutex::new(PlatformState::default()));
@@ -811,15 +811,23 @@ fn retired_operation_identity_is_rejected_before_permission_or_dispatch() {
         },
         29,
     );
-    assert!(
+    let original = runtime
+        .request_platform_capability(request.clone())
+        .unwrap();
+    assert!(original.terminal_observed);
+    runtime.compact_terminal_history(0).unwrap();
+    render(&mut runtime, 2);
+    assert_eq!(
         runtime
             .request_platform_capability(request.clone())
-            .unwrap()
-            .terminal_observed
+            .unwrap(),
+        original
     );
-    runtime.compact_terminal_history(0).unwrap();
-    let error = runtime.request_platform_capability(request).unwrap_err();
-    assert!(error.to_string().contains("retirement frontier"));
+    let mut drifted = request;
+    drifted.payload = PlatformPayload::CopyText {
+        text: "changed after retirement".to_owned(),
+    };
+    assert!(runtime.request_platform_capability(drifted).is_err());
     let state = platform_state.lock().unwrap();
     assert_eq!(state.permission_calls, 1);
     assert_eq!(state.invoke_calls, 1);
@@ -867,7 +875,10 @@ fn closed_unknown_operation_never_dispatches_again_even_after_retirement() {
     runtime.reconcile_pending().unwrap();
     assert_eq!(state.lock().unwrap().reconcile_calls, 0);
     runtime.compact_closed_history(0).unwrap();
-    assert!(runtime.request_platform_capability(request).is_err());
+    assert_eq!(
+        runtime.request_platform_capability(request).unwrap(),
+        closed
+    );
     assert_eq!(state.lock().unwrap().invoke_calls, 1);
 }
 

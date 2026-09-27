@@ -395,7 +395,11 @@ mod tests {
         let decision = adapter.permission(&payload).unwrap();
         assert!(!decision.allowed);
         let error = adapter.confirmation_resource(&payload).unwrap_err();
-        assert!(error.to_string().contains("mutable path-string launch is disabled"));
+        assert!(
+            error
+                .to_string()
+                .contains("mutable path-string launch is disabled")
+        );
     }
 
     #[test]

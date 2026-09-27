@@ -254,7 +254,8 @@ impl NativeShellRuntime {
 
         // Legacy tombstones have no reconstructable receipt, but still fence
         // the identity. Historical lookup never grants permission to replay.
-        self.journal.ensure_not_retired(&session.endpoint_id, &key)?;
+        self.journal
+            .ensure_not_retired(&session.endpoint_id, &key)?;
         let view = self.require_view()?.clone();
         if request.displayed_revision != view.revision {
             return Err(ShellError::State(

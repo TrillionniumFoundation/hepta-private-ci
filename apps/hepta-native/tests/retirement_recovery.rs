@@ -112,3 +112,136 @@ fn referenced_retirement_directory_cannot_be_deleted_to_reset_capacity() {
     std::fs::remove_dir_all(temp.path().join("operations.json.retirement")).unwrap();
     assert!(OperationJournal::open(&path).is_err());
 }
+
+#[test]
+fn archive_retains_unknown_receipt_across_restart_without_replay() {
+    let temp = private_tempdir();
+    let path = temp.path().join("operations.json");
+    let record = unknown("operation.archived");
+    let mut journal = OperationJournal::open(&path).unwrap();
+    journal.upsert(record.clone()).unwrap();
+    let closed = journal.close_observation(&record.key).unwrap();
+    journal.compact_closed_history(0).unwrap();
+    drop(journal);
+    let mut journal = OperationJournal::open(&path).unwrap();
+    let archived = journal
+        .archived_record(&record.endpoint_id, &record.key)
+        .unwrap()
+        .unwrap();
+    assert_eq!(archived.receipt(), closed);
+    assert_eq!(archived.phase, OperationPhase::ObservationClosed);
+    assert!(archived.terminal_status.is_none());
+    assert!(archived.outcome_digest.is_none());
+    assert_eq!(journal.capacity().active_records, 0);
+    assert!(
+        journal
+            .ensure_not_retired(&record.endpoint_id, &record.key)
+            .is_err()
+    );
+    assert!(journal.upsert(record.clone()).is_err());
+    assert!(
+        journal
+            .archived_record("other.endpoint", &record.key)
+            .unwrap()
+            .is_none()
+    );
+}
+
+#[test]
+fn missing_or_modified_archive_never_becomes_a_new_operation() {
+    for corrupt in [false, true] {
+        let temp = private_tempdir();
+        let path = temp.path().join("operations.json");
+        let record = unknown("operation.archive-integrity");
+        let mut journal = OperationJournal::open(&path).unwrap();
+        journal.upsert(record.clone()).unwrap();
+        journal.close_observation(&record.key).unwrap();
+        journal.compact_closed_history(0).unwrap();
+        drop(journal);
+        let archived = std::fs::read_dir(temp.path().join("operations.json.retirement"))
+            .unwrap()
+            .map(|entry| entry.unwrap().path())
+            .find(|path| {
+                path.file_name()
+                    .unwrap()
+                    .to_string_lossy()
+                    .starts_with("record-")
+            })
+            .unwrap();
+        if corrupt {
+            std::fs::write(archived, b"{}").unwrap();
+        } else {
+            std::fs::remove_file(archived).unwrap();
+        }
+        let mut journal = OperationJournal::open(&path).unwrap();
+        assert!(
+            journal
+                .archived_record(&record.endpoint_id, &record.key)
+                .is_err()
+        );
+        assert!(
+            journal
+                .ensure_not_retired(&record.endpoint_id, &record.key)
+                .is_err()
+        );
+        assert!(journal.upsert(record).is_err());
+    }
+}
+
+#[test]
+fn retirement_failure_keeps_active_evidence_and_fences_the_owner() {
+    let temp = private_tempdir();
+    let path = temp.path().join("operations.json");
+    let record = unknown("operation.archive-fault");
+    let mut journal = OperationJournal::open(&path).unwrap();
+    journal.upsert(record.clone()).unwrap();
+    journal.close_observation(&record.key).unwrap();
+    let closed = journal.find(&record.key).unwrap().clone();
+    let directory = temp.path().join("operations.json.retirement");
+    hepta_native::private_state::PrivateStateRoot::open(directory.clone()).unwrap();
+    // A complete empty head is followed by a conflicting immutable record path.
+    let head = serde_json::json!({"schema":"hepta.native-retirement.v1", "checkpoint":{"head":null,"count":0}});
+    std::fs::write(
+        directory.join("head.json"),
+        serde_json::to_vec(&head).unwrap(),
+    )
+    .unwrap();
+    let digest = sha256_hex(serde_json::to_vec(&closed).unwrap());
+    std::fs::create_dir(directory.join(format!("record-{digest}.json"))).unwrap();
+    assert!(journal.compact_closed_history(0).is_err());
+    assert!(journal.ensure_healthy().is_err());
+    assert_eq!(journal.find(&record.key), Some(&closed));
+    drop(journal);
+    let journal = OperationJournal::open(&path).unwrap();
+    assert_eq!(journal.find(&record.key), Some(&closed));
+    assert_eq!(journal.retired_count(), 0);
+}
+
+#[test]
+fn repeated_restart_compaction_keeps_old_receipts_and_reclaims_capacity() {
+    let temp = private_tempdir();
+    let path = temp.path().join("operations.json");
+    for cycle in 0..3 {
+        let mut journal = OperationJournal::open(&path).unwrap();
+        for index in 0..24 {
+            let record = unknown(&format!("operation.{cycle}.{index}"));
+            journal.upsert(record.clone()).unwrap();
+            journal.close_observation(&record.key).unwrap();
+        }
+        journal.compact_closed_history(0).unwrap();
+        assert_eq!(journal.capacity().active_records, 0);
+        assert_eq!(journal.retired_count(), (cycle + 1) * 24);
+    }
+    let journal = OperationJournal::open(&path).unwrap();
+    for cycle in 0..3 {
+        for index in 0..24 {
+            let record = unknown(&format!("operation.{cycle}.{index}"));
+            let archived = journal
+                .archived_record(&record.endpoint_id, &record.key)
+                .unwrap()
+                .unwrap();
+            assert!(archived.receipt().observation_closed);
+            assert!(!archived.receipt().terminal_observed);
+        }
+    }
+}

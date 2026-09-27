@@ -1,5 +1,11 @@
 # ui.native technical development guide
 
+Current candidate: `work/ui-native-acceptance-repair-20260927`, continuing #1107 at
+`43da94c5fa48675a3e0956a80fac201fa3ce8b34`. See [current acceptance ledger](ACCEPTANCE-REPAIR-20260927.md).
+The authoritative source inventory is `apps/hepta-native/CURRENT_SOURCE.json`;
+CI receipts bind the actual tested HEAD and pinned-main merge separately.
+No queued, skipped, source-only, or historical result is a qualification pass.
+
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
 
 **Module:** `ui.native`

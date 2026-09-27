@@ -1,5 +1,11 @@
 # ui.native remediation implementation and acceptance ledger
 
+Current candidate: `work/ui-native-acceptance-repair-20260927`, continuing #1107 at
+`43da94c5fa48675a3e0956a80fac201fa3ce8b34`. See [current acceptance ledger](ACCEPTANCE-REPAIR-20260927.md).
+The authoritative source inventory is `apps/hepta-native/CURRENT_SOURCE.json`;
+CI receipts bind the actual tested HEAD and pinned-main merge separately.
+No queued, skipped, source-only, or historical result is a qualification pass.
+
 Latest continuation: [operational closure ledger](OPERATIONAL-CLOSURE-20260927.md).
 This earlier ledger is historical scope, not the current candidate qualification result.
 
