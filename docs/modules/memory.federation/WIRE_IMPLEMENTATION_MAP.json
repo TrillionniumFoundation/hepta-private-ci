@@ -1,9 +1,10 @@
 {
   "schema": "hepta.memory-federation.wire-implementation-map.v1",
   "module": "memory.federation",
-  "profile": "authenticated-cross-host-protocol-candidate",
+  "profile": "authenticated-cross-host-protocol-and-host-candidate",
   "owner": "cognitive-platform",
   "securityReviewer": "security-authority",
+  "statusSource": "docs/modules/memory.federation/CAPABILITY_STATE.json",
   "sourceRoot": "codex-rs/hepta-memory-federation-wire",
   "technicalGuide": "docs/modules/memory.federation/WIRE_V1.md",
   "qualificationGuide": "qualification/memory-federation/FULL_CLOSURE.md",
@@ -21,10 +22,10 @@
     {
       "name": "seal_verify_authenticated_frame",
       "source": "codex-rs/hepta-memory-federation-wire/src/protocol.rs",
-      "state": "source_candidate"
+      "state": "source_candidate_private_verified_result"
     },
     {
-      "name": "admit_nonce_once",
+      "name": "admit_nonce_once_with_clock_and_credential_partition",
       "source": "codex-rs/hepta-memory-federation-wire/src/replay.rs",
       "state": "source_candidate"
     },
@@ -32,14 +33,34 @@
       "name": "observe_cancel_and_acknowledge",
       "source": "codex-rs/hepta-memory-federation-wire/src/attempt.rs",
       "state": "source_candidate"
+    },
+    {
+      "name": "persist_restart_surviving_replay_and_attempt_state",
+      "source": "codex-rs/hepta-memory-federation-wire/src/recovery.rs",
+      "state": "source_candidate_backend_not_selected"
+    },
+    {
+      "name": "admit_transport_bound_query_and_cancel",
+      "source": "codex-rs/hepta-memory-federation-wire/src/host.rs",
+      "state": "source_candidate_not_agentd_composed"
+    },
+    {
+      "name": "complete_read_only_query_with_owner_cut",
+      "source": "codex-rs/hepta-memory-federation-wire/src/host.rs",
+      "state": "source_candidate_not_agentd_composed"
     }
   ],
   "qualification": {
     "workflow": ".github/workflows/memory-federation-v2-final-verify.yml",
     "script": "scripts/run_memory_federation_qualification.sh",
     "attestation": "scripts/memory_federation_full_attestation.py",
+    "statusVerifier": "scripts/verify_memory_federation_status.py",
+    "executionGuard": "scripts/memory_federation_execution_guard.py",
     "exactHeadRequired": true,
-    "deterministicCurrentBaseMergeRequired": true
+    "deterministicCurrentBaseMergeRequired": true,
+    "wireLibraryTestsRequired": true,
+    "wireCompileFailDoctestsRequired": true,
+    "strictClippyRequired": true
   },
   "claimBoundary": {
     "sourceCandidate": true,
@@ -53,12 +74,12 @@
     "release": false
   },
   "externalGates": [
-    "selected mutually authenticated transport and peer-certificate binding",
-    "secure credential enrollment, storage, rotation, revocation and recovery",
-    "deployment-specific durable attempt and replay policy",
+    "selected mutually authenticated transport and transport-peer identity binding",
+    "secure host credential enrollment, storage, rotation, revocation and recovery",
+    "deployment-specific durable attempt and replay recovery policy",
     "two independently provisioned real-host fault qualification",
     "target-host latency, capacity, backpressure and cancellation-tail evidence",
     "independent semantic and security acceptance",
-    "operator acceptance, canary, promotion and release"
+    "operator acceptance, canary, promotion and release authority"
   ]
 }

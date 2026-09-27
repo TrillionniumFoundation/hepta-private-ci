@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.memory-federation.capability-state.v1",
+  "schemaVersion": 1,
+  "module": "memory.federation",
+  "owner": "cognitive-platform",
+  "securityReviewer": "security-authority",
+  "generatedStatusDocuments": [
+    "docs/modules/memory.federation/TECHNICAL.md",
+    "docs/modules/memory.federation/V2_HARDENING.md",
+    "docs/modules/memory.federation/WIRE_V1.md",
+    "qualification/memory-federation/FULL_CLOSURE.md"
+  ],
+  "implementationMap": "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
+  "wireImplementationMap": "docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json",
+  "qualificationScript": "scripts/run_memory_federation_qualification.sh",
+  "attestationScript": "scripts/memory_federation_full_attestation.py",
+  "capabilities": {
+    "inProcessV2Engine": "source_hardened_candidate_pending_execution",
+    "agentdProductCaller": "composed_candidate_pending_execution",
+    "boundedDiscovery": "half_budget_reserved_for_admitted_reads",
+    "finalUseRevalidation": "source_hardened_candidate_pending_execution",
+    "legacyV1": "explicit_feature_gate_only",
+    "authenticatedWire": "source_hardened_protocol_candidate_pending_execution",
+    "verifiedFrameType": "private_fields_read_only_accessors",
+    "replayAdmission": "bounded_fail_closed_monotonic_clock_per_credential_partition",
+    "cancellationFence": "restart_surviving_cancel_fences_late_terminal",
+    "crossHostProductTransport": "transport_neutral_host_boundary_source_candidate_not_agentd_composed",
+    "durableAttemptReplayRecovery": "host_store_snapshot_source_candidate_pending_selected_backend",
+    "realHostQualification": "not_executed"
+  },
+  "execution": {
+    "exactHead": "pending_current_head_qualification",
+    "deterministicCurrentBaseMerge": "pending_current_base_merge_qualification",
+    "executionGuard": "source_candidate_pending_execution",
+    "receiptsBindCapabilityState": true
+  },
+  "claims": {
+    "sourceRootPresent": true,
+    "nativeSourceMappingComplete": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "promotion": false,
+    "release": false,
+    "wireSourceCandidate": true,
+    "wireProductComposed": false,
+    "mutuallyAuthenticatedTransportSelected": false,
+    "twoRealHostQualification": false
+  },
+  "externalGates": [
+    "selected mutually authenticated transport and transport-peer identity binding",
+    "secure host credential enrollment, storage, rotation, revocation and recovery",
+    "deployment-specific durable attempt and replay recovery policy",
+    "two independently provisioned real-host fault qualification",
+    "target-host latency, capacity, backpressure and cancellation-tail evidence",
+    "independent semantic and security acceptance",
+    "operator acceptance, canary, promotion and release authority"
+  ]
+}
