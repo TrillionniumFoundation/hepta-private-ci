@@ -39,6 +39,12 @@ impl DurableInferenceControl {
         protected_output: Option<ProtectedOutput>,
     ) -> Result<NativeRunRecord, Error> {
         self.assert_native_plan_identity(request_id, plan)?;
+        if output
+            .observed_output_tokens
+            .is_some_and(|value| value > plan.quota_lease().maximum_output_tokens)
+        {
+            return Err(Error::AssignmentMismatch);
+        }
         let protected = if output.output.is_empty() && !output.terminal_observed {
             None
         } else {
