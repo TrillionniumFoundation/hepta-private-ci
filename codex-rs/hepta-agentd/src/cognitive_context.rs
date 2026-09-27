@@ -1,6 +1,7 @@
 //! Connect the canonical SQLite owner to the newer bounded cognitive read port.
 
 use std::collections::BTreeMap;
+use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -13,8 +14,6 @@ use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_cognitive_store::DurableCognitiveStoreError as CognitiveStoreError;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_control_plane::ObservedContextV1;
-use codex_hepta_control_plane::plan_observed_context;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::DurableCognitiveSnapshot;
@@ -24,7 +23,6 @@ use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_memory::RevalidationStatus;
 use codex_hepta_memory::execute_owner_observation;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
@@ -32,6 +30,11 @@ use crate::CognitiveContextItem;
 use crate::CognitiveContextPlan;
 use crate::CognitiveContextRevalidation;
 use crate::CognitiveContextSnapshot;
+
+#[path = "cognitive_context_planner.rs"]
+mod planner;
+
+use planner::plan_authenticated_context;
 
 const MAX_CONTEXT_JSON_BYTES: usize = crate::MAX_COGNITIVE_CONTEXT_BYTES;
 const CONTEXT_READ_BINDING_DOMAIN: &[u8] = b"hepta.agentd.cognitive-context-read.v1";
@@ -119,6 +122,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         )
         .into());
     }
+    let request_origin = Instant::now();
     let now = now_seconds()?;
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
@@ -356,31 +360,16 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         bind_selected_read(&cut, &selected_read, expected_retrieval_context_digest);
     response.snapshot_digest = selected_read.snapshot_digest().to_string();
     response.read_digest = selected_read_binding.to_string();
-    let encoded_context = serde_json::to_vec(&response)
-        .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-    let now_micros = u64::try_from(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?
-            .as_micros(),
+    let plan = plan_authenticated_context(
+        owner,
+        body_generation,
+        &selected_read,
+        selected_read_binding,
+        &response,
+        request_origin,
+        MAX_CONTEXT_JSON_BYTES,
     )
-    .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
-    let plan = plan_observed_context(ObservedContextV1 {
-        owner_id: StableId::new(owner.as_str())
-            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
-        body_generation: Generation::new(body_generation)
-            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
-        source_snapshot_digest: selected_read.snapshot_digest(),
-        read_digest: selected_read_binding,
-        verified_item_count: response.items.len() as u32,
-        encoded_context: &encoded_context,
-        maximum_context_bytes: MAX_CONTEXT_JSON_BYTES as u32,
-        observed_at_micros: now_micros,
-        expires_at_micros: now_micros.checked_add(1_000_000).ok_or_else(|| {
-            CognitiveStoreError::Invalid("context plan expiry overflow".to_string())
-        })?,
-    })
-    .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
+    .map_err(CognitiveStoreError::Unavailable)?;
     if !plan.read_allowed {
         response.items.clear();
     }
@@ -617,7 +606,6 @@ pub(crate) async fn revalidate_with_retrieval_context(
             .into());
         }
     }
-
     // Ranking is part of the selected context semantics. A registry/model
     // revocation after response publication must close final use even when the
     // underlying memory rows remain unchanged.
