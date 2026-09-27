@@ -1,0 +1,128 @@
+name: Hepta inference worker exact candidate
+
+on:
+  pull_request:
+    paths:
+      - codex-rs/**
+      - docs/modules/inference.worker/**
+      - scripts/hepta_inference_worker_qualification.py
+      - scripts/test_hepta_inference_worker_qualification.py
+      - .github/workflows/hepta-inference-worker-qualified.yml
+      - .github/actions/hepta-synthetic-merge/**
+  push:
+    branches: [main]
+    paths:
+      - codex-rs/**
+      - docs/modules/inference.worker/**
+      - scripts/hepta_inference_worker_qualification.py
+      - scripts/test_hepta_inference_worker_qualification.py
+      - .github/workflows/hepta-inference-worker-qualified.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: inference-worker-qualified-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-candidate:
+    name: inference-worker (${{ matrix.lane }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","merge-candidate"]' || '["source-head"]') }}
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+      RUST_BACKTRACE: "1"
+      TMPDIR: /tmp
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Construct fixed-base synthetic merge
+        id: merge
+        if: matrix.lane == 'merge-candidate'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta inference qualification
+          author-email: hepta-inference-ci@users.noreply.github.com
+          message: Synthetic inference qualification merge
+      - name: Bind tested commit
+        env:
+          TESTED_SHA: ${{ steps.merge.outputs.sha || env.SOURCE_SHA }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          printf 'TESTED_SHA=%s\n' "$TESTED_SHA" >> "$GITHUB_ENV"
+      - name: Check evidence runner and workspace
+        run: |
+          python3 -W error::ResourceWarning -m unittest discover -s scripts -p 'test_hepta_inference_worker_qualification.py' -v
+          python3 scripts/hepta_workspace.py
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve pinned sandboxed V8 prerequisites
+        id: prerequisites
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Qualify inference.control independently
+        if: ${{ !cancelled() && steps.prerequisites.outcome == 'success' }}
+        shell: bash
+        run: >-
+          python3 scripts/hepta_inference_worker_qualification.py
+          --package codex-hepta-infer-core
+          --source-sha "$SOURCE_SHA" --tested-sha "$TESTED_SHA" --base-sha "$BASE_SHA"
+          --lane '${{ matrix.lane }}' --output "$RUNNER_TEMP/inference-evidence/core"
+      - name: Qualify inference.worker default and experimental independently
+        if: ${{ !cancelled() && steps.prerequisites.outcome == 'success' }}
+        shell: bash
+        run: >-
+          python3 scripts/hepta_inference_worker_qualification.py
+          --package codex-hepta-infer-worker-host
+          --source-sha "$SOURCE_SHA" --tested-sha "$TESTED_SHA" --base-sha "$BASE_SHA"
+          --lane '${{ matrix.lane }}' --output "$RUNNER_TEMP/inference-evidence/worker"
+      - name: Qualify Agentd independently
+        if: ${{ !cancelled() && steps.prerequisites.outcome == 'success' }}
+        shell: bash
+        run: >-
+          python3 scripts/hepta_inference_worker_qualification.py
+          --package codex-hepta-agentd
+          --source-sha "$SOURCE_SHA" --tested-sha "$TESTED_SHA" --base-sha "$BASE_SHA"
+          --lane '${{ matrix.lane }}' --output "$RUNNER_TEMP/inference-evidence/agentd"
+      - name: Retain command results, fresh JUnit and exact source identities
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-worker-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}-${{ matrix.os }}
+          path: ${{ runner.temp }}/inference-evidence
+          if-no-files-found: error
+          retention-days: 14
+      - name: Candidate must remain unchanged
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --check
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

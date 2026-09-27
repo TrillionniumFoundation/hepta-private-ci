@@ -1,3 +1,9 @@
+//! Experimental synchronous driver boundary, not a production local inference host.
+//!
+//! Resource observations are driver reports, not device attestations. Operation
+//! history below prevents re-entry only within this instance; durable admission
+//! and crash reconciliation remain owned by inference.control.
+
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeMap;
@@ -17,6 +23,7 @@ use codex_hepta_types::StableId;
 
 const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
+const MAX_REQUEST_HISTORY: usize = 16_384;
 const MAX_TOKENS: u32 = 1_000_000;
 const MAX_NEURON_FEATURES: usize = 512;
 const Q24_STATE_LIMIT: i64 = 8 * (1_i64 << 24);
@@ -137,6 +144,12 @@ pub enum Error {
     FeatureLimit,
     FeatureOutputMismatch,
     FeatureContract,
+    UnboundedDriver,
+    RepairRequired,
+    RequestConflict,
+    RequestIndeterminate,
+    HistoryCapacity,
+    GenerationFenced,
 }
 
 impl fmt::Display for Error {
@@ -147,7 +160,25 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Implementations must retain/reconcile any resource acquired before an error.
+/// An unload success proves physical release, not merely that release was queued.
 pub trait ModelDriver {
+    /// Opt-in bounded loading. There is deliberately no fallback to `load`:
+    /// implementing the old interface does not establish memory enforcement.
+    fn load_with_budget(
+        &mut self,
+        _manifest: &ModelManifest,
+        _maximum_memory_bytes: u64,
+    ) -> Result<DriverModelHandle, Error> {
+        Err(Error::UnboundedDriver)
+    }
+
+    /// Inspect the exact handle after a failed unload; never infer absence from
+    /// a timeout, connection failure, or an empty local registry.
+    fn inspect_model(&mut self, _handle: &DriverModelHandle) -> Result<ModelPresence, Error> {
+        Ok(ModelPresence::Unknown)
+    }
+
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error>;
     fn run(
         &mut self,
@@ -157,11 +188,43 @@ pub trait ModelDriver {
     fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error>;
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ModelPresence {
+    Present,
+    Absent,
+    Unknown,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ModelLifecycle {
+    Ready,
+    RepairRequired,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+enum RequestIdentity {
+    Tokens(String, ModelManifest, WorkerRequest),
+    Features(String, ModelManifest, NeuronFeatureRequest),
+}
+
+#[derive(Clone, Debug)]
+enum RecordedOutput {
+    Tokens(Box<InferenceExecutionObservation>),
+    Features(Box<NeuronFeatureExecutionObservation>),
+}
+
+#[derive(Debug)]
+struct RequestEvidence {
+    identity: RequestIdentity,
+    output: Option<RecordedOutput>,
+}
+
 #[derive(Debug)]
 struct LoadedModel {
     manifest: ModelManifest,
     handle: DriverModelHandle,
     active_requests: usize,
+    lifecycle: ModelLifecycle,
 }
 
 #[derive(Debug)]
@@ -172,6 +235,8 @@ pub struct InferenceWorker<D: ModelDriver> {
     driver: D,
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
+    history: BTreeMap<String, RequestEvidence>,
+    fenced: bool,
 }
 
 impl<D: ModelDriver> InferenceWorker<D> {
@@ -194,6 +259,8 @@ impl<D: ModelDriver> InferenceWorker<D> {
             driver,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
+            history: BTreeMap::new(),
+            fenced: false,
         })
     }
 
@@ -215,12 +282,25 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            self.driver.unload(handle)?;
-            return Err(Error::ModelCapacity);
-        }
+        // This API has no trusted pre-load estimate. Bound this call by the
+        // remaining allowance for the synchronous call, not the original cap.
+        let remaining = self
+            .grant
+            .maximum_memory_bytes
+            .checked_sub(self.resident_memory_bytes()?)
+            .filter(|remaining| *remaining != 0)
+            .ok_or(Error::ModelCapacity)?;
+        let handle = match self.driver.load_with_budget(&manifest, remaining) {
+            Ok(handle) => handle,
+            Err(error) => {
+                // The legacy error type cannot prove that nothing was acquired.
+                self.fenced = true;
+                return Err(error);
+            }
+        };
+        let invalid = validate_identity(&handle.opaque_id, "model handle")
+            .err()
+            .or_else(|| (handle.observed_memory_bytes > remaining).then_some(Error::ModelCapacity));
         let observation = ModelLoadObservation {
             model_id: manifest.model_id.clone(),
             worker_generation: self.generation,
@@ -228,14 +308,22 @@ impl<D: ModelDriver> InferenceWorker<D> {
             observed_memory_bytes: handle.observed_memory_bytes,
             terminal_observed: true,
         };
+        // Register the acquired handle before any fallible cleanup. Retain the
+        // original handle if the driver's release outcome is unknown.
+        let model_id = manifest.model_id.clone();
         self.models.insert(
-            manifest.model_id.clone(),
+            model_id.clone(),
             LoadedModel {
                 manifest,
                 handle,
                 active_requests: 0,
+                lifecycle: ModelLifecycle::Ready,
             },
         );
+        if let Some(error) = invalid {
+            self.unload_model(now_ms, &model_id)?;
+            return Err(error);
+        }
         Ok(observation)
     }
 
@@ -245,6 +333,29 @@ impl<D: ModelDriver> InferenceWorker<D> {
         model_id: &str,
         request: WorkerRequest,
     ) -> Result<InferenceExecutionObservation, Error> {
+        if let Some(previous) = self.history.get(&request.request_id) {
+            let same = match &previous.identity {
+                RequestIdentity::Tokens(previous_model, manifest, previous_request) => {
+                    previous_model == model_id
+                        && previous_request == &request
+                        && self
+                            .models
+                            .get(model_id)
+                            .is_none_or(|current| &current.manifest == manifest)
+                }
+                RequestIdentity::Features(_, _, _) => false,
+            };
+            if !same {
+                return Err(Error::RequestConflict);
+            }
+            return match &previous.output {
+                Some(RecordedOutput::Tokens(output)) => Ok((**output).clone()),
+                Some(RecordedOutput::Features(_)) | None => Err(Error::RequestIndeterminate),
+            };
+        }
+        if self.history.len() >= MAX_REQUEST_HISTORY {
+            return Err(Error::HistoryCapacity);
+        }
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
         validate_request(now_ms, &request)?;
@@ -255,7 +366,11 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+        let other_memory = self.other_resident_memory(model_id)?;
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.lifecycle != ModelLifecycle::Ready {
+            return Err(Error::RepairRequired);
+        }
         if request.model_digest != loaded.manifest.model_digest
             || request.reservation_model_digest != loaded.manifest.model_digest
         {
@@ -284,23 +399,57 @@ impl<D: ModelDriver> InferenceWorker<D> {
             });
         }
 
+        self.history.insert(
+            request.request_id.clone(),
+            RequestEvidence {
+                identity: RequestIdentity::Tokens(
+                    model_id.to_string(),
+                    loaded.manifest.clone(),
+                    request.clone(),
+                ),
+                output: None,
+            },
+        );
         loaded.active_requests = loaded
             .active_requests
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
         self.active_requests
             .insert(request.request_id.clone(), model_id.to_string());
-        let observed = self.driver.run(&loaded.handle, &request);
-        self.active_requests.remove(&request.request_id);
-        loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        let observed = match self.driver.run(&loaded.handle, &request) {
+            Ok(observed) => observed,
+            Err(error) => {
+                loaded.lifecycle = ModelLifecycle::RepairRequired;
+                self.fenced = true;
+                return Err(error);
+            }
+        };
+        if observed.terminal_observed {
+            self.active_requests.remove(&request.request_id);
+            loaded.active_requests = loaded
+                .active_requests
+                .checked_sub(1)
+                .ok_or(Error::ArithmeticOverflow)?;
+        } else {
+            // Unknown execution still owns its slot and model handle.
+            loaded.lifecycle = ModelLifecycle::RepairRequired;
+            self.fenced = true;
+        }
+        loaded.handle.observed_memory_bytes = loaded
+            .handle
+            .observed_memory_bytes
+            .max(observed.observed_memory_bytes);
+        let total = other_memory.checked_add(loaded.handle.observed_memory_bytes);
+        if total.is_none_or(|total| total > self.grant.maximum_memory_bytes) {
+            loaded.lifecycle = ModelLifecycle::RepairRequired;
+            self.fenced = true;
+            return Err(Error::ModelCapacity);
+        }
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
+            loaded.lifecycle = ModelLifecycle::RepairRequired;
             return Err(Error::TokenLimit);
-        }
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            return Err(Error::ModelCapacity);
         }
         let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
             (ExecutionStatus::Indeterminate, None, false)
@@ -317,7 +466,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             }
             (ExecutionStatus::Failed, observed.output_digest, true)
         };
-        Ok(InferenceExecutionObservation {
+        let output = InferenceExecutionObservation {
             request_id: request.request_id,
             reservation_id: request.reservation_id,
             worker_generation: self.generation,
@@ -328,22 +477,31 @@ impl<D: ModelDriver> InferenceWorker<D> {
             consumed_tokens: observed.consumed_tokens,
             observed_memory_bytes: observed.observed_memory_bytes,
             terminal_observed,
-        })
+        };
+        self.history
+            .get_mut(&output.request_id)
+            .ok_or(Error::RequestIndeterminate)?
+            .output = Some(RecordedOutput::Tokens(Box::new(output.clone())));
+        Ok(output)
     }
 
     pub fn unload_model(
         &mut self,
-        now_ms: u64,
+        _now_ms: u64,
         model_id: &str,
     ) -> Result<ModelUnloadObservation, Error> {
-        self.validate_current_grant(now_ms)?;
+        // Revocation/expiry/fencing prohibit new work, never safe cleanup.
         validate_identity(model_id, "model")?;
-        let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if loaded.active_requests != 0 {
             return Err(Error::ActiveRequests);
         }
-        let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        if loaded.lifecycle == ModelLifecycle::RepairRequired {
+            return Err(Error::RepairRequired);
+        }
+        loaded.lifecycle = ModelLifecycle::RepairRequired;
+        self.driver.unload(loaded.handle.clone())?;
+        self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -351,8 +509,62 @@ impl<D: ModelDriver> InferenceWorker<D> {
         })
     }
 
+    /// Reconcile a failed release before retrying it. Unknown remains held.
+    pub fn reconcile_model_cleanup(
+        &mut self,
+        model_id: &str,
+    ) -> Result<ModelUnloadObservation, Error> {
+        validate_identity(model_id, "model")?;
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.active_requests != 0 {
+            return Err(Error::ActiveRequests);
+        }
+        if loaded.lifecycle != ModelLifecycle::RepairRequired {
+            return Err(Error::RepairRequired);
+        }
+        match self.driver.inspect_model(&loaded.handle)? {
+            ModelPresence::Unknown => return Err(Error::RepairRequired),
+            ModelPresence::Present => self.driver.unload(loaded.handle.clone())?,
+            ModelPresence::Absent => {}
+        }
+        self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
+        Ok(ModelUnloadObservation {
+            model_id: model_id.to_string(),
+            worker_generation: self.generation,
+            terminal_observed: true,
+        })
+    }
+
+    pub fn model_lifecycle(&self, model_id: &str) -> Option<ModelLifecycle> {
+        self.models.get(model_id).map(|model| model.lifecycle)
+    }
+
+    pub fn resident_memory_bytes(&self) -> Result<u64, Error> {
+        self.models.values().try_fold(0_u64, |total, model| {
+            total
+                .checked_add(model.handle.observed_memory_bytes)
+                .ok_or(Error::ArithmeticOverflow)
+        })
+    }
+
+    /// A device reset fences this entire instance. It cannot be unfenced by
+    /// changing a request ID or by clearing the in-memory history.
+    pub fn fence_generation(&mut self) {
+        self.fenced = true;
+    }
+
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
+        if self.fenced {
+            return Err(Error::GenerationFenced);
+        }
         validate_grant(now_ms, &self.grant)
+    }
+
+    fn other_resident_memory(&self, model_id: &str) -> Result<u64, Error> {
+        let model = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
+        self.resident_memory_bytes()?
+            .checked_sub(model.handle.observed_memory_bytes)
+            .ok_or(Error::ArithmeticOverflow)
     }
 }
 
@@ -501,6 +713,29 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         model_id: &str,
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureExecutionObservation, Error> {
+        if let Some(previous) = self.history.get(&request.authorization.request_id) {
+            let same = match &previous.identity {
+                RequestIdentity::Features(previous_model, manifest, previous_request) => {
+                    previous_model == model_id
+                        && previous_request == &request
+                        && self
+                            .models
+                            .get(model_id)
+                            .is_none_or(|current| &current.manifest == manifest)
+                }
+                RequestIdentity::Tokens(_, _, _) => false,
+            };
+            if !same {
+                return Err(Error::RequestConflict);
+            }
+            return match &previous.output {
+                Some(RecordedOutput::Features(output)) => Ok((**output).clone()),
+                Some(RecordedOutput::Tokens(_)) | None => Err(Error::RequestIndeterminate),
+            };
+        }
+        if self.history.len() >= MAX_REQUEST_HISTORY {
+            return Err(Error::HistoryCapacity);
+        }
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
         validate_request(now_ms, &request.authorization)?;
@@ -515,12 +750,21 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+        let other_memory = self.other_resident_memory(model_id)?;
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.lifecycle != ModelLifecycle::Ready {
+            return Err(Error::RepairRequired);
+        }
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
             || request.weights_digest != loaded.manifest.weights_digest
         {
             return Err(Error::ModelMismatch);
+        }
+        if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens
+            || request.authorization.maximum_tokens > request.authorization.reservation_maximum_tokens
+        {
+            return Err(Error::TokenLimit);
         }
         let payload_digest = canonical_neuron_feature_payload_digest(&request);
         if request.authorization.payload_digest != payload_digest
@@ -548,6 +792,17 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             });
         }
 
+        self.history.insert(
+            request.authorization.request_id.clone(),
+            RequestEvidence {
+                identity: RequestIdentity::Features(
+                    model_id.to_string(),
+                    loaded.manifest.clone(),
+                    request.clone(),
+                ),
+                output: None,
+            },
+        );
         loaded.active_requests = loaded
             .active_requests
             .checked_add(1)
@@ -556,12 +811,35 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             request.authorization.request_id.clone(),
             model_id.to_string(),
         );
-        let observed = self.driver.run_neuron_features(&loaded.handle, &request);
-        self.active_requests
-            .remove(&request.authorization.request_id);
-        loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        let observed = match self.driver.run_neuron_features(&loaded.handle, &request) {
+            Ok(observed) => observed,
+            Err(error) => {
+                loaded.lifecycle = ModelLifecycle::RepairRequired;
+                self.fenced = true;
+                return Err(error);
+            }
+        };
+        if observed.terminal_observed {
+            self.active_requests.remove(&request.authorization.request_id);
+            loaded.active_requests = loaded
+                .active_requests
+                .checked_sub(1)
+                .ok_or(Error::ArithmeticOverflow)?;
+        } else {
+            // Unknown execution still owns its slot and model handle.
+            loaded.lifecycle = ModelLifecycle::RepairRequired;
+            self.fenced = true;
+        }
+        loaded.handle.observed_memory_bytes = loaded
+            .handle
+            .observed_memory_bytes
+            .max(observed.observed_memory_bytes);
+        let total = other_memory
+            .checked_add(loaded.handle.observed_memory_bytes)
+            .and_then(|total| total.checked_add(observed.transient_allocation_bytes));
+        if total.is_none_or(|total| total > self.grant.maximum_memory_bytes) {
+            loaded.lifecycle = ModelLifecycle::RepairRequired;
+            self.fenced = true;
             return Err(Error::ModelCapacity);
         }
         let status = if !observed.terminal_observed {
@@ -572,7 +850,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         } else {
             ExecutionStatus::Failed
         };
-        Ok(NeuronFeatureExecutionObservation {
+        let output = NeuronFeatureExecutionObservation {
             request_id: request.authorization.request_id,
             reservation_id: request.authorization.reservation_id,
             worker_generation: self.generation,
@@ -588,7 +866,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             queue_age_micros: observed.queue_age_micros,
             latency_micros: observed.latency_micros,
             terminal_observed: observed.terminal_observed,
-        })
+        };
+        self.history
+            .get_mut(&output.request_id)
+            .ok_or(Error::RequestIndeterminate)?
+            .output = Some(RecordedOutput::Features(Box::new(output.clone())));
+        Ok(output)
     }
 }
 
@@ -715,3 +998,7 @@ fn validate_neuron_feature_output(
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "model_worker_hardening_tests.rs"]
+mod hardening_tests;

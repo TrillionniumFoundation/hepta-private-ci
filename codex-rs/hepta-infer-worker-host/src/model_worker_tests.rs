@@ -1,7 +1,7 @@
 use super::*;
 
 #[derive(Debug, Default)]
-struct Driver {
+pub(super) struct Driver {
     fail_terminal: bool,
     indeterminate: bool,
     corrupt_neuron_head: bool,
@@ -9,6 +9,17 @@ struct Driver {
 }
 
 impl ModelDriver for Driver {
+    fn load_with_budget(
+        &mut self,
+        manifest: &ModelManifest,
+        maximum_memory_bytes: u64,
+    ) -> Result<DriverModelHandle, Error> {
+        if maximum_memory_bytes < 1_024 {
+            return Err(Error::ModelCapacity);
+        }
+        self.load(manifest)
+    }
+
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
         Ok(DriverModelHandle {
@@ -41,7 +52,7 @@ impl ModelDriver for Driver {
     }
 
     fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
-        self.loaded = self.loaded.saturating_sub(1);
+        self.loaded = self.loaded.checked_sub(1).ok_or(Error::ArithmeticOverflow)?;
         Ok(())
     }
 }
@@ -85,7 +96,7 @@ impl NeuronFeatureDriver for Driver {
     }
 }
 
-fn grant() -> ResourceGrant {
+pub(super) fn grant() -> ResourceGrant {
     ResourceGrant {
         grant_id: "grant.1".to_string(),
         authority_epoch: 2,
@@ -99,7 +110,7 @@ fn grant() -> ResourceGrant {
     }
 }
 
-fn manifest() -> ModelManifest {
+pub(super) fn manifest() -> ModelManifest {
     ModelManifest {
         model_id: "model.1".to_string(),
         model_digest: "2".repeat(64),
@@ -113,7 +124,7 @@ fn manifest() -> ModelManifest {
     }
 }
 
-fn request() -> WorkerRequest {
+pub(super) fn request() -> WorkerRequest {
     WorkerRequest {
         request_id: "request.1".to_string(),
         reservation_id: "reservation.1".to_string(),
@@ -181,7 +192,7 @@ fn lost_driver_terminality_is_indeterminate() {
     assert_eq!(observed.output_digest, None);
 }
 
-fn neuron_feature_request() -> NeuronFeatureRequest {
+pub(super) fn neuron_feature_request() -> NeuronFeatureRequest {
     let mut value = NeuronFeatureRequest {
         authorization: request(),
         encoder_digest: "a".repeat(64),
