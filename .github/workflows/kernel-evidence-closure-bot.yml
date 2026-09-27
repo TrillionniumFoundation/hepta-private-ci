@@ -1,0 +1,805 @@
+name: Kernel evidence closure worker
+
+on:
+  push:
+    branches:
+      - fix/kernel-evidence-production-closure
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  phase-one:
+    if: ${{ !contains(github.event.head_commit.message, '[kernel-evidence-closure]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out closure branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: fix/kernel-evidence-production-closure
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Apply correctness and policy closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          def read(path: str) -> str:
+              return Path(path).read_text(encoding="utf-8")
+
+          def write(path: str, text: str) -> None:
+              Path(path).write_text(text, encoding="utf-8")
+
+          def replace_exact(path: str, old: str, new: str, count: int = 1) -> None:
+              text = read(path)
+              observed = text.count(old)
+              if observed != count:
+                  raise SystemExit(f"{path}: expected {count} exact matches, observed {observed}")
+              write(path, text.replace(old, new, count))
+
+          def replace_regex(path: str, pattern: str, replacement: str, count: int) -> None:
+              text = read(path)
+              updated, observed = re.subn(pattern, replacement, text, count=count, flags=re.S)
+              if observed != count:
+                  raise SystemExit(f"{path}: expected {count} regex matches, observed {observed}: {pattern}")
+              write(path, updated)
+
+          qualification = "codex-rs/hepta-evidence/src/qualification.rs"
+          profile_marker = "#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]\n#[serde(deny_unknown_fields)]\npub struct QualificationEvidenceEnvelopeV1"
+          profile_code = r'''#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+          #[serde(rename_all = "snake_case")]
+          pub enum EvidenceVerificationProfileV1 {
+              ExactSourceArchitecture,
+              SyntheticMergeArchitecture,
+              MandatoryTestsGeneratorEvaluator,
+              MandatoryTestsReviewed,
+              FixtureEvaluator,
+              HardwareEvaluator,
+              CausalEvaluator,
+              LongitudinalEvaluator,
+              SecurityResourceSecurity,
+              ProviderEffectTerminalObserver,
+              IndependentArchitecture,
+              IndependentArchitectureSecurity,
+              IndependentDurability,
+              IndependentLearning,
+              IndependentSecurity,
+              IndependentOperator,
+              IndependentDocumentation,
+              ConformanceReviewer,
+              AlgorithmFaultReviewer,
+              RuntimeTerminalObserver,
+              OutboxTerminalObserver,
+              ReconciliationTerminalObserver,
+              UnlearningReviewer,
+              OperatorAcceptanceOperator,
+              RegistrySnapshotReviewer,
+          }
+
+          impl EvidenceVerificationProfileV1 {
+              pub fn as_str(self) -> &'static str {
+                  match self {
+                      Self::ExactSourceArchitecture => "exact_source_architecture",
+                      Self::SyntheticMergeArchitecture => "synthetic_merge_architecture",
+                      Self::MandatoryTestsGeneratorEvaluator => "mandatory_tests_generator_evaluator",
+                      Self::MandatoryTestsReviewed => "mandatory_tests_reviewed",
+                      Self::FixtureEvaluator => "fixture_evaluator",
+                      Self::HardwareEvaluator => "hardware_evaluator",
+                      Self::CausalEvaluator => "causal_evaluator",
+                      Self::LongitudinalEvaluator => "longitudinal_evaluator",
+                      Self::SecurityResourceSecurity => "security_resource_security",
+                      Self::ProviderEffectTerminalObserver => "provider_effect_terminal_observer",
+                      Self::IndependentArchitecture => "independent_architecture",
+                      Self::IndependentArchitectureSecurity => "independent_architecture_security",
+                      Self::IndependentDurability => "independent_durability",
+                      Self::IndependentLearning => "independent_learning",
+                      Self::IndependentSecurity => "independent_security",
+                      Self::IndependentOperator => "independent_operator",
+                      Self::IndependentDocumentation => "independent_documentation",
+                      Self::ConformanceReviewer => "conformance_reviewer",
+                      Self::AlgorithmFaultReviewer => "algorithm_fault_reviewer",
+                      Self::RuntimeTerminalObserver => "runtime_terminal_observer",
+                      Self::OutboxTerminalObserver => "outbox_terminal_observer",
+                      Self::ReconciliationTerminalObserver => "reconciliation_terminal_observer",
+                      Self::UnlearningReviewer => "unlearning_reviewer",
+                      Self::OperatorAcceptanceOperator => "operator_acceptance_operator",
+                      Self::RegistrySnapshotReviewer => "registry_snapshot_reviewer",
+                  }
+              }
+
+              pub fn parse(value: &str) -> Result<Self, String> {
+                  match value {
+                      "exact_source_architecture" => Ok(Self::ExactSourceArchitecture),
+                      "synthetic_merge_architecture" => Ok(Self::SyntheticMergeArchitecture),
+                      "mandatory_tests_generator_evaluator" => Ok(Self::MandatoryTestsGeneratorEvaluator),
+                      "mandatory_tests_reviewed" => Ok(Self::MandatoryTestsReviewed),
+                      "fixture_evaluator" => Ok(Self::FixtureEvaluator),
+                      "hardware_evaluator" => Ok(Self::HardwareEvaluator),
+                      "causal_evaluator" => Ok(Self::CausalEvaluator),
+                      "longitudinal_evaluator" => Ok(Self::LongitudinalEvaluator),
+                      "security_resource_security" => Ok(Self::SecurityResourceSecurity),
+                      "provider_effect_terminal_observer" => Ok(Self::ProviderEffectTerminalObserver),
+                      "independent_architecture" => Ok(Self::IndependentArchitecture),
+                      "independent_architecture_security" => Ok(Self::IndependentArchitectureSecurity),
+                      "independent_durability" => Ok(Self::IndependentDurability),
+                      "independent_learning" => Ok(Self::IndependentLearning),
+                      "independent_security" => Ok(Self::IndependentSecurity),
+                      "independent_operator" => Ok(Self::IndependentOperator),
+                      "independent_documentation" => Ok(Self::IndependentDocumentation),
+                      "conformance_reviewer" => Ok(Self::ConformanceReviewer),
+                      "algorithm_fault_reviewer" => Ok(Self::AlgorithmFaultReviewer),
+                      "runtime_terminal_observer" => Ok(Self::RuntimeTerminalObserver),
+                      "outbox_terminal_observer" => Ok(Self::OutboxTerminalObserver),
+                      "reconciliation_terminal_observer" => Ok(Self::ReconciliationTerminalObserver),
+                      "unlearning_reviewer" => Ok(Self::UnlearningReviewer),
+                      "operator_acceptance_operator" => Ok(Self::OperatorAcceptanceOperator),
+                      "registry_snapshot_reviewer" => Ok(Self::RegistrySnapshotReviewer),
+                      _ => Err("unknown owner-controlled evidence verification profile".to_string()),
+                  }
+              }
+
+              pub fn claim_class(self) -> EvidenceClaimClassV1 {
+                  match self {
+                      Self::ExactSourceArchitecture => EvidenceClaimClassV1::ExactSource,
+                      Self::SyntheticMergeArchitecture => EvidenceClaimClassV1::SyntheticMerge,
+                      Self::MandatoryTestsGeneratorEvaluator | Self::MandatoryTestsReviewed => {
+                          EvidenceClaimClassV1::MandatoryTests
+                      }
+                      Self::FixtureEvaluator => EvidenceClaimClassV1::Fixture,
+                      Self::HardwareEvaluator => EvidenceClaimClassV1::Hardware,
+                      Self::CausalEvaluator => EvidenceClaimClassV1::Causal,
+                      Self::LongitudinalEvaluator => EvidenceClaimClassV1::Longitudinal,
+                      Self::SecurityResourceSecurity => EvidenceClaimClassV1::SecurityResource,
+                      Self::ProviderEffectTerminalObserver => EvidenceClaimClassV1::ProviderEffect,
+                      Self::IndependentArchitecture
+                      | Self::IndependentArchitectureSecurity
+                      | Self::IndependentDurability
+                      | Self::IndependentLearning
+                      | Self::IndependentSecurity
+                      | Self::IndependentOperator
+                      | Self::IndependentDocumentation => EvidenceClaimClassV1::IndependentDecision,
+                      Self::ConformanceReviewer => EvidenceClaimClassV1::Conformance,
+                      Self::AlgorithmFaultReviewer => EvidenceClaimClassV1::AlgorithmFault,
+                      Self::RuntimeTerminalObserver => EvidenceClaimClassV1::Runtime,
+                      Self::OutboxTerminalObserver => EvidenceClaimClassV1::Outbox,
+                      Self::ReconciliationTerminalObserver => EvidenceClaimClassV1::Reconciliation,
+                      Self::UnlearningReviewer => EvidenceClaimClassV1::Unlearning,
+                      Self::OperatorAcceptanceOperator => EvidenceClaimClassV1::OperatorAcceptance,
+                      Self::RegistrySnapshotReviewer => EvidenceClaimClassV1::RegistrySnapshot,
+                  }
+              }
+
+              pub fn required_roles(self) -> &'static [EvidenceIssuerRoleV1] {
+                  match self {
+                      Self::ExactSourceArchitecture | Self::SyntheticMergeArchitecture => {
+                          &[EvidenceIssuerRoleV1::Architecture]
+                      }
+                      Self::MandatoryTestsGeneratorEvaluator => &[
+                          EvidenceIssuerRoleV1::Generator,
+                          EvidenceIssuerRoleV1::Evaluator,
+                      ],
+                      Self::MandatoryTestsReviewed => &[
+                          EvidenceIssuerRoleV1::Generator,
+                          EvidenceIssuerRoleV1::Evaluator,
+                          EvidenceIssuerRoleV1::Reviewer,
+                      ],
+                      Self::FixtureEvaluator
+                      | Self::HardwareEvaluator
+                      | Self::CausalEvaluator
+                      | Self::LongitudinalEvaluator => &[EvidenceIssuerRoleV1::Evaluator],
+                      Self::SecurityResourceSecurity | Self::IndependentSecurity => {
+                          &[EvidenceIssuerRoleV1::Security]
+                      }
+                      Self::ProviderEffectTerminalObserver
+                      | Self::RuntimeTerminalObserver
+                      | Self::OutboxTerminalObserver
+                      | Self::ReconciliationTerminalObserver => {
+                          &[EvidenceIssuerRoleV1::TerminalObserver]
+                      }
+                      Self::IndependentArchitecture => &[EvidenceIssuerRoleV1::Architecture],
+                      Self::IndependentArchitectureSecurity => &[
+                          EvidenceIssuerRoleV1::Architecture,
+                          EvidenceIssuerRoleV1::Security,
+                      ],
+                      Self::IndependentDurability => &[EvidenceIssuerRoleV1::Durability],
+                      Self::IndependentLearning => &[EvidenceIssuerRoleV1::Learning],
+                      Self::IndependentOperator | Self::OperatorAcceptanceOperator => {
+                          &[EvidenceIssuerRoleV1::Operator]
+                      }
+                      Self::IndependentDocumentation => &[EvidenceIssuerRoleV1::Documentation],
+                      Self::ConformanceReviewer
+                      | Self::AlgorithmFaultReviewer
+                      | Self::UnlearningReviewer
+                      | Self::RegistrySnapshotReviewer => &[EvidenceIssuerRoleV1::Reviewer],
+                  }
+              }
+          }
+
+          #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+          #[serde(deny_unknown_fields)]
+          pub struct QualificationEvidenceEnvelopeV1'''
+          replace_exact(qualification, profile_marker, profile_code)
+
+          replace_exact(
+              qualification,
+              """pub struct VerifyChainRequestV1 {
+              pub candidate: EvidenceCandidateV1,
+              pub claim_class: EvidenceClaimClassV1,
+              pub required_roles: Vec<EvidenceIssuerRoleV1>,
+              pub now_unix_ms: u64,
+          }""",
+              """pub struct VerifyChainRequestV1 {
+              pub candidate: EvidenceCandidateV1,
+              pub profile: EvidenceVerificationProfileV1,
+              pub now_unix_ms: u64,
+          }""",
+          )
+
+          old_verify_prelude = """        if request.required_roles.len() > 32 {
+                      return Err(EvidenceError::InvalidRecord(
+                          \"qualification verification requires at most 32 roles\".to_string(),
+                      ));
+                  }
+                  if current_trust.len() > QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS {
+                      return Err(EvidenceError::InvalidRecord(
+                          \"qualification verification trust snapshot exceeds 512 bindings\".to_string(),
+                      ));
+                  }
+                  let unique_roles = request
+                      .required_roles
+                      .iter()
+                      .copied()
+                      .collect::<BTreeSet<_>>();
+                  if unique_roles.len() != request.required_roles.len() {
+                      return Err(EvidenceError::InvalidRecord(
+                          \"qualification verification contains duplicate required roles\".to_string(),
+                      ));
+                  }
+
+                  let rows =
+                      load_claim_rows(&self.store.pool, &request.candidate, request.claim_class).await?;"""
+          new_verify_prelude = """        let claim_class = request.profile.claim_class();
+                  let required_roles = request.profile.required_roles();
+                  if required_roles.is_empty() {
+                      return Err(EvidenceError::InvalidRecord(
+                          \"qualification verification profile must require at least one role\".to_string(),
+                      ));
+                  }
+                  if current_trust.len() > QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS {
+                      return Err(EvidenceError::InvalidRecord(
+                          \"qualification verification trust snapshot exceeds 512 bindings\".to_string(),
+                      ));
+                  }
+
+                  let rows = load_claim_rows(&self.store.pool, &request.candidate, claim_class).await?;"""
+          replace_exact(qualification, old_verify_prelude, new_verify_prelude)
+          replace_exact(qualification, "for role in &request.required_roles {", "for role in required_roles {")
+          replace_exact(
+              qualification,
+              "roles_have_distinct_authenticated_identities(&request.required_roles, &active)",
+              "roles_have_distinct_authenticated_identities(required_roles, &active)",
+          )
+
+          identity_replacement = r'''pub(crate) fn roles_have_distinct_identity_pairs(
+              required_roles: &[EvidenceIssuerRoleV1],
+              identities: &BTreeMap<EvidenceIssuerRoleV1, BTreeSet<(String, String)>>,
+          ) -> bool {
+              if required_roles.is_empty() {
+                  return false;
+              }
+
+              fn assign(
+                  index: usize,
+                  roles: &[EvidenceIssuerRoleV1],
+                  identities: &BTreeMap<EvidenceIssuerRoleV1, BTreeSet<(String, String)>>,
+                  used_principals: &mut BTreeSet<String>,
+                  used_signing_identities: &mut BTreeSet<String>,
+              ) -> bool {
+                  if index == roles.len() {
+                      return true;
+                  }
+                  let Some(candidates) = identities.get(&roles[index]) else {
+                      return false;
+                  };
+                  for (principal, signing_identity) in candidates {
+                      if used_principals.contains(principal)
+                          || used_signing_identities.contains(signing_identity)
+                      {
+                          continue;
+                      }
+                      let inserted_principal = used_principals.insert(principal.clone());
+                      let inserted_signing_identity =
+                          used_signing_identities.insert(signing_identity.clone());
+                      debug_assert!(inserted_principal && inserted_signing_identity);
+
+                      let matched = assign(
+                          index + 1,
+                          roles,
+                          identities,
+                          used_principals,
+                          used_signing_identities,
+                      );
+
+                      let removed_principal = used_principals.remove(principal);
+                      let removed_signing_identity =
+                          used_signing_identities.remove(signing_identity);
+                      debug_assert!(removed_principal && removed_signing_identity);
+                      if matched {
+                          return true;
+                      }
+                  }
+                  false
+              }
+
+              assign(
+                  0,
+                  required_roles,
+                  identities,
+                  &mut BTreeSet::<String>::new(),
+                  &mut BTreeSet::<String>::new(),
+              )
+          }
+
+          fn roles_have_distinct_authenticated_identities(
+              required_roles: &[EvidenceIssuerRoleV1],
+              rows: &[StoredQualificationEvidence],
+          ) -> bool {
+              let mut identities = BTreeMap::<EvidenceIssuerRoleV1, BTreeSet<(String, String)>>::new();
+              for row in rows {
+                  identities
+                      .entry(row.envelope.issuer_role)
+                      .or_default()
+                      .insert((
+                          row.issuer_principal_id.clone(),
+                          row.issuer_signing_identity_sha256.as_str().to_string(),
+                      ));
+              }
+              roles_have_distinct_identity_pairs(required_roles, &identities)
+          }
+
+          fn read_u64_blob'''
+          replace_regex(
+              qualification,
+              r"fn roles_have_distinct_authenticated_identities\(.*?\n\}\n\nfn read_u64_blob",
+              identity_replacement,
+              1,
+          )
+
+          lib_rs = "codex-rs/hepta-evidence/src/lib.rs"
+          replace_exact(
+              lib_rs,
+              "pub use qualification::EvidenceReceiptKindV1;\n",
+              "pub use qualification::EvidenceReceiptKindV1;\npub use qualification::EvidenceVerificationProfileV1;\n",
+          )
+
+          tests = "codex-rs/hepta-evidence/src/qualification_tests.rs"
+          replace_exact(
+              tests,
+              "use std::time::SystemTime;\n",
+              "use std::collections::BTreeMap;\nuse std::collections::BTreeSet;\nuse std::time::SystemTime;\n",
+          )
+          replace_exact(
+              tests,
+              "use crate::EvidenceReceiptKindV1;\n",
+              "use crate::EvidenceReceiptKindV1;\nuse crate::EvidenceVerificationProfileV1;\n",
+          )
+
+          test_text = read(tests)
+          replacements = [
+              (
+                  r"claim_class: EvidenceClaimClassV1::MandatoryTests,\n\s*required_roles: vec!\[\n\s*EvidenceIssuerRoleV1::Generator,\n\s*EvidenceIssuerRoleV1::Evaluator,\n\s*\],",
+                  "profile: EvidenceVerificationProfileV1::MandatoryTestsGeneratorEvaluator,",
+              ),
+              (
+                  r"claim_class: EvidenceClaimClassV1::ExactSource,\n\s*required_roles: vec!\[EvidenceIssuerRoleV1::Architecture\],",
+                  "profile: EvidenceVerificationProfileV1::ExactSourceArchitecture,",
+              ),
+              (
+                  r"claim_class: EvidenceClaimClassV1::Hardware,\n\s*required_roles: vec!\[EvidenceIssuerRoleV1::Evaluator\],",
+                  "profile: EvidenceVerificationProfileV1::HardwareEvaluator,",
+              ),
+              (
+                  r"claim_class: EvidenceClaimClassV1::IndependentDecision,\n\s*required_roles: vec!\[EvidenceIssuerRoleV1::Architecture\],",
+                  "profile: EvidenceVerificationProfileV1::IndependentArchitecture,",
+              ),
+              (
+                  r"claim_class: EvidenceClaimClassV1::Conformance,\n\s*required_roles: vec!\[EvidenceIssuerRoleV1::Reviewer\],",
+                  "profile: EvidenceVerificationProfileV1::ConformanceReviewer,",
+              ),
+          ]
+          for pattern, replacement in replacements:
+              test_text, observed = re.subn(pattern, replacement, test_text)
+              if observed == 0:
+                  raise SystemExit(f"{tests}: profile rewrite matched zero occurrences: {pattern}")
+          if "required_roles:" in test_text:
+              raise SystemExit(f"{tests}: caller-controlled required_roles remained")
+          write(tests, test_text)
+
+          new_tests = r'''
+          #[tokio::test]
+          async fn three_role_backtracking_cannot_reuse_outer_principal() {
+              let temp = TempDir::new().expect("temp");
+              let store = HeptaEvidenceStore::open(&config(&temp))
+                  .await
+                  .expect("open evidence");
+              let candidate = candidate('b');
+              let observed = now_ms();
+              let (generator_a, generator_key) = issuer("principal:three-role-a", 61);
+              let (evaluator_a, evaluator_a_key) = issuer("principal:three-role-a", 62);
+              let (evaluator_b, evaluator_b_key) = issuer("principal:three-role-b", 63);
+              let (reviewer_a, reviewer_key) = issuer("principal:three-role-a", 64);
+
+              for (id, role, issuer, key) in [
+                  (
+                      "evidence:three-role-generator-a",
+                      EvidenceIssuerRoleV1::Generator,
+                      &generator_a,
+                      &generator_key,
+                  ),
+                  (
+                      "evidence:three-role-evaluator-a",
+                      EvidenceIssuerRoleV1::Evaluator,
+                      &evaluator_a,
+                      &evaluator_a_key,
+                  ),
+                  (
+                      "evidence:three-role-evaluator-b",
+                      EvidenceIssuerRoleV1::Evaluator,
+                      &evaluator_b,
+                      &evaluator_b_key,
+                  ),
+                  (
+                      "evidence:three-role-reviewer-a",
+                      EvidenceIssuerRoleV1::Reviewer,
+                      &reviewer_a,
+                      &reviewer_key,
+                  ),
+              ] {
+                  let receipt = evidence(
+                      id,
+                      candidate.clone(),
+                      EvidenceClaimClassV1::MandatoryTests,
+                      role,
+                      observed,
+                      None,
+                      json!({"passed": true}),
+                  );
+                  append(&store, issuer, key, &receipt, 1)
+                      .await
+                      .expect("append three-role evidence");
+              }
+
+              let disposition = store
+                  .qualification()
+                  .verify_chain(
+                      &VerifyChainRequestV1 {
+                          candidate,
+                          profile: EvidenceVerificationProfileV1::MandatoryTestsReviewed,
+                          now_unix_ms: observed,
+                      },
+                      &[
+                          trust_binding(&generator_a, EvidenceIssuerRoleV1::Generator),
+                          trust_binding(&evaluator_a, EvidenceIssuerRoleV1::Evaluator),
+                          trust_binding(&evaluator_b, EvidenceIssuerRoleV1::Evaluator),
+                          trust_binding(&reviewer_a, EvidenceIssuerRoleV1::Reviewer),
+                      ],
+                  )
+                  .await
+                  .expect("verify three-role assignment");
+              assert!(matches!(
+                  disposition,
+                  EvidenceDispositionV1::Conflicting { .. }
+              ));
+          }
+
+          #[test]
+          fn identity_assignment_matches_exhaustive_three_role_oracle() {
+              fn oracle(
+                  roles: &[EvidenceIssuerRoleV1],
+                  identities: &BTreeMap<
+                      EvidenceIssuerRoleV1,
+                      BTreeSet<(String, String)>,
+                  >,
+              ) -> bool {
+                  fn search(
+                      index: usize,
+                      roles: &[EvidenceIssuerRoleV1],
+                      identities: &BTreeMap<
+                          EvidenceIssuerRoleV1,
+                          BTreeSet<(String, String)>,
+                      >,
+                      principals: &mut BTreeSet<String>,
+                      keys: &mut BTreeSet<String>,
+                  ) -> bool {
+                      if index == roles.len() {
+                          return true;
+                      }
+                      let Some(options) = identities.get(&roles[index]) else {
+                          return false;
+                      };
+                      for (principal, key) in options {
+                          if principals.contains(principal) || keys.contains(key) {
+                              continue;
+                          }
+                          principals.insert(principal.clone());
+                          keys.insert(key.clone());
+                          let accepted = search(index + 1, roles, identities, principals, keys);
+                          principals.remove(principal);
+                          keys.remove(key);
+                          if accepted {
+                              return true;
+                          }
+                      }
+                      false
+                  }
+
+                  !roles.is_empty()
+                      && search(
+                          0,
+                          roles,
+                          identities,
+                          &mut BTreeSet::new(),
+                          &mut BTreeSet::new(),
+                      )
+              }
+
+              let generator = EvidenceIssuerRoleV1::Generator;
+              let evaluator = EvidenceIssuerRoleV1::Evaluator;
+              let reviewer = EvidenceIssuerRoleV1::Reviewer;
+              let permutations = [
+                  [generator, evaluator, reviewer],
+                  [generator, reviewer, evaluator],
+                  [evaluator, generator, reviewer],
+                  [evaluator, reviewer, generator],
+                  [reviewer, generator, evaluator],
+                  [reviewer, evaluator, generator],
+              ];
+              let universe = [
+                  ("principal:a", "key:one"),
+                  ("principal:a", "key:two"),
+                  ("principal:b", "key:two"),
+                  ("principal:c", "key:three"),
+              ];
+
+              assert!(!crate::qualification::roles_have_distinct_identity_pairs(
+                  &[],
+                  &BTreeMap::new(),
+              ));
+
+              for generator_mask in 1_u8..16 {
+                  for evaluator_mask in 1_u8..16 {
+                      for reviewer_mask in 1_u8..16 {
+                          let mut identities = BTreeMap::new();
+                          for (role, mask) in [
+                              (generator, generator_mask),
+                              (evaluator, evaluator_mask),
+                              (reviewer, reviewer_mask),
+                          ] {
+                              let values = universe
+                                  .iter()
+                                  .enumerate()
+                                  .filter(|(index, _)| mask & (1 << index) != 0)
+                                  .map(|(_, (principal, key))| {
+                                      ((*principal).to_string(), (*key).to_string())
+                                  })
+                                  .collect::<BTreeSet<_>>();
+                              identities.insert(role, values);
+                          }
+                          for roles in permutations {
+                              let expected = oracle(&roles, &identities);
+                              let actual =
+                                  crate::qualification::roles_have_distinct_identity_pairs(
+                                      &roles,
+                                      &identities,
+                                  );
+                              assert_eq!(
+                                  actual,
+                                  expected,
+                                  "identity assignment mismatch for masks {generator_mask}/{evaluator_mask}/{reviewer_mask} and roles {roles:?}",
+                              );
+                          }
+                      }
+                  }
+              }
+          }
+
+          '''
+          marker = "#[tokio::test]\nasync fn current_trust_rotation_or_revocation_invalidates_positive_verification()"
+          replace_exact(tests, marker, new_tests + marker)
+
+          protocol = "codex-rs/hepta-agent-protocol/src/evidence.rs"
+          replace_exact(
+              protocol,
+              "pub const MAX_KERNEL_EVIDENCE_REQUIRED_ROLES: usize = 32;",
+              "pub const MAX_KERNEL_EVIDENCE_PROFILE_BYTES: usize = 64;",
+          )
+          replace_exact(
+              protocol,
+              """pub struct KernelEvidenceVerifyV1 {
+              pub candidate: KernelEvidenceCandidateV1,
+              pub claim_class: String,
+              pub required_roles: Vec<String>,
+          }""",
+              """pub struct KernelEvidenceVerifyV1 {
+              pub candidate: KernelEvidenceCandidateV1,
+              pub verification_profile: String,
+          }""",
+          )
+
+          protocol_lib = "codex-rs/hepta-agent-protocol/src/lib.rs"
+          replace_exact(
+              protocol_lib,
+              "pub use evidence::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES;",
+              "pub use evidence::MAX_KERNEL_EVIDENCE_PROFILE_BYTES;",
+          )
+
+          host = "codex-rs/hepta-agentd/src/evidence_host.rs"
+          replace_exact(
+              host,
+              "use codex_hepta_evidence::EvidenceReceiptKindV1;" if False else "use codex_hepta_evidence::EvidenceIssuerRoleV1;\n",
+              "use codex_hepta_evidence::EvidenceIssuerRoleV1;\nuse codex_hepta_evidence::EvidenceVerificationProfileV1;\n",
+          )
+          old_host = """    let claim_class =
+                  EvidenceClaimClassV1::parse(&request.claim_class).map_err(|error| invalid(&error))?;
+              if request.required_roles.len() > codex_hepta_agent_protocol::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES
+              {
+                  return Err(invalid(\"too many required evidence roles\"));
+              }
+              let required_roles = request
+                  .required_roles
+                  .iter()
+                  .map(|role| EvidenceIssuerRoleV1::parse(role).map_err(|error| invalid(&error)))
+                  .collect::<Result<Vec<_>, _>>()?;"""
+          new_host = """    if request.verification_profile.is_empty()
+                  || request.verification_profile.len()
+                      > codex_hepta_agent_protocol::MAX_KERNEL_EVIDENCE_PROFILE_BYTES
+              {
+                  return Err(invalid(\"invalid evidence verification profile length\"));
+              }
+              let profile = EvidenceVerificationProfileV1::parse(&request.verification_profile)
+                  .map_err(|error| invalid(&error))?;"""
+          replace_exact(host, old_host, new_host)
+          replace_exact(
+              host,
+              """                candidate,
+                              claim_class,
+                              required_roles,
+                              now_unix_ms: current_time_millis()?,""",
+              """                candidate,
+                              profile,
+                              now_unix_ms: current_time_millis()?,""",
+          )
+
+          product = "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+          replace_exact(
+              product,
+              "use codex_hepta_evidence::EvidenceReceiptKindV1;\n",
+              "use codex_hepta_evidence::EvidenceReceiptKindV1;\nuse codex_hepta_evidence::EvidenceVerificationProfileV1;\n",
+          )
+          product_text = read(product)
+          product_patterns = [
+              (
+                  r"claim_class: EvidenceClaimClassV1::ExactSource\.as_str\(\)\.to_string\(\),\n\s*required_roles: vec!\[\"architecture\"\.to_string\(\)\],",
+                  "verification_profile: EvidenceVerificationProfileV1::ExactSourceArchitecture\n                        .as_str()\n                        .to_string(),",
+              ),
+              (
+                  r"claim_class: EvidenceClaimClassV1::IndependentDecision\.as_str\(\)\.to_string\(\),\n\s*required_roles: vec!\[\"architecture\"\.to_string\(\), \"security\"\.to_string\(\)\],",
+                  "verification_profile:\n                        EvidenceVerificationProfileV1::IndependentArchitectureSecurity\n                            .as_str()\n                            .to_string(),",
+              ),
+          ]
+          for pattern, replacement in product_patterns:
+              product_text, observed = re.subn(pattern, replacement, product_text)
+              if observed == 0:
+                  raise SystemExit(f"{product}: profile rewrite matched zero occurrences: {pattern}")
+          if "required_roles:" in product_text:
+              raise SystemExit(f"{product}: caller-controlled required_roles remained")
+          write(product, product_text)
+
+          outbox_tests = "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+          replace_exact(
+              outbox_tests,
+              "INSERT INTO authbus_outbox SELECT randomblob(32), issuer_id, key_epoch, 'fixture:' || x,",
+              "INSERT INTO authbus_outbox SELECT randomblob(32), 'fixture:issuer:' || x, key_epoch, 'fixture:' || x,",
+          )
+
+          technical = "docs/modules/kernel.evidence/TECHNICAL.md"
+          technical_text = read(technical)
+          technical_text = technical_text.replace(
+              "Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome.",
+              "Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Verification callers select only a registered `EvidenceVerificationProfileV1`; each profile fixes both the claim class and a non-empty role set, so callers cannot submit an empty or weakened role policy.",
+          )
+          technical_text = technical_text.replace(
+              "shared-signing-key rejection, current trust/key rotation, authenticated idempotency/replay, independent-decision binding, correction/revocation non-resurrection, reopen corruption, query/traversal bounds, concurrent writers and transactional fault rollback.",
+              "shared-signing-key rejection, a fixed three-role backtracking regression, exhaustive assignment/oracle equivalence, current trust/key rotation, authenticated idempotency/replay, independent-decision binding, correction/revocation non-resurrection, reopen corruption, query/traversal bounds, concurrent writers and transactional fault rollback.",
+          )
+          write(technical, technical_text)
+
+          current = "docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md"
+          current_text = read(current)
+          current_text = current_text.replace(
+              "The native qualification facade is\n`HeptaEvidenceStore::qualification()`. It exposes:",
+              "The native qualification facade is\n`HeptaEvidenceStore::qualification()`. Verification is bound to owner-controlled, non-empty `EvidenceVerificationProfileV1` policies rather than caller-supplied role arrays. It exposes:",
+          )
+          current_text = current_text.replace(
+              "shared-signing-key independence rejection, current trust/key-rotation",
+              "shared-signing-key independence rejection, fixed three-role backtracking and exhaustive assignment-oracle coverage, current trust/key-rotation",
+          )
+          write(current, current_text)
+
+          acceptance = "qualification/kernel-evidence/INDEPENDENT_ACCEPTANCE.md"
+          acceptance_text = read(acceptance)
+          acceptance_text = acceptance_text.replace(
+              "A production/qualification Agentd with an owner-installed evidence trust\nregistry admits the signed receipt through `KernelEvidenceAppend`.",
+              "A production/qualification Agentd with an owner-installed evidence trust\nregistry admits the signed receipt through `KernelEvidenceAppend`. Positive verification uses only an owner-controlled `EvidenceVerificationProfileV1`; the caller cannot provide an empty or ad hoc role list.",
+          )
+          write(acceptance, acceptance_text)
+
+          trace = "qualification/kernel-evidence/TRACEABILITY.md"
+          trace_text = read(trace)
+          trace_text += """
+
+          ## 2026-09 correctness closure
+
+          - `three_role_backtracking_cannot_reuse_outer_principal` fixes and locks the outer-frame state corruption counterexample.
+          - `identity_assignment_matches_exhaustive_three_role_oracle` compares every non-empty subset of a bounded identity universe, across all role permutations, against an independent exhaustive oracle.
+          - `EvidenceVerificationProfileV1` binds claim class and a non-empty role policy; Agentd no longer accepts caller-defined role arrays.
+          - `bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed` now fills global capacity with distinct fixture issuer identities instead of accidentally violating the per-issuer active ceiling.
+          """
+          write(trace, trace_text)
+          PY
+
+          cd codex-rs
+          cargo fmt --all
+          cd ..
+          git diff --check
+
+      - name: Run focused source qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test -p codex-hepta-evidence
+          cargo test -p codex-hepta-agentd --test kernel_evidence_product
+
+      - name: Commit source closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta kernel evidence closure"
+          git config user.email "hepta-kernel-evidence-closure@users.noreply.github.com"
+          git add codex-rs docs qualification
+          git commit -m "kernel.evidence: close verification policy and assignment correctness [kernel-evidence-closure]"
+
+      - name: Refresh implementation map and verify repository gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module kernel.evidence
+          git add docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -m "kernel.evidence: rebind implementation map [kernel-evidence-closure]"
+          fi
+          python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-implementation-maps.py verify
+
+      - name: Remove temporary worker and publish commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/kernel-evidence-closure-bot.yml
+          git commit -m "ci: remove kernel.evidence closure worker [kernel-evidence-closure]"
+          python3 scripts/hepta-implementation-maps.py verify
+          git push origin HEAD:fix/kernel-evidence-production-closure
