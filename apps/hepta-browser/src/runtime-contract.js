@@ -121,6 +121,18 @@ export function indeterminateReceipt(profileId, operationId, semanticDigest, rea
 }
 
 export function admitNewOperation(state, input, now) {
+  // `replayOnly` is an internal non-effect probe. Existing operations are
+  // resolved by BrowserProfileHost before this function. Reaching this point
+  // proves that no operation exists, so fail with the one typed absence result
+  // consumed by Agentd; never authorize or dispatch a new effect.
+  if (input.replayOnly === true) {
+    throw new TypeError(
+      "operation has not crossed the browser effect boundary",
+    );
+  }
+  if (input.replayOnly !== undefined && input.replayOnly !== false) {
+    throw new TypeError("replayOnly must be boolean when supplied");
+  }
   const operationId = stableId(input.operationId, "operationId");
   const typedAction = normalizeBrowserAction(input.typedAction);
   const action = stableId(typedAction.kind, "typedAction.kind");
