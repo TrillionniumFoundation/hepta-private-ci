@@ -67,13 +67,17 @@ function operation(operationId, pageGeneration, typedAction, effectGrant) {
   };
 }
 async function metrics(processId) {
-  const match = /^servo\.pid\.(\d+)\.[A-Za-z0-9-]+$/.exec(processId);
-  const pid = match ? Number(match[1]) : NaN;
+  const pidMatch = /^servo\.pid\.(\d+)\.[A-Za-z0-9-]+$/.exec(processId);
+  const pid = pidMatch ? Number(pidMatch[1]) : NaN;
   if (!Number.isSafeInteger(pid) || pid < 1) throw new Error("invalid Servo process id");
   const status = await readFile(`/proc/${pid}/status`, "utf8");
-  const match = /^VmRSS:\s+(\d+)\s+kB$/m.exec(status);
-  if (!match) throw new Error("VmRSS missing from worker process status");
-  return { pid, rssKiB: Number(match[1]), fdCount: (await readdir(`/proc/${pid}/fd`)).length };
+  const rssMatch = /^VmRSS:\s+(\d+)\s+kB$/m.exec(status);
+  if (!rssMatch) throw new Error("VmRSS missing from worker process status");
+  return {
+    pid,
+    rssKiB: Number(rssMatch[1]),
+    fdCount: (await readdir(`/proc/${pid}/fd`)).length,
+  };
 }
 
 const workerBytes = await readFile(workerPath);

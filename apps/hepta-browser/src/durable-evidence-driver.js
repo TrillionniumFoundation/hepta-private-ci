@@ -26,6 +26,28 @@ function requestIdentity(input) {
   });
 }
 
+function deferSettlement(settlement, handler) {
+  // Attach immediately so a rejected inner settlement is always observed, but
+  // defer durable terminal/egress work until after dispatch() has returned the
+  // admission boundary to its caller. A resolved Promise otherwise schedules
+  // its .then() before the caller's await continuation and silently widens the
+  // live final-use critical section.
+  const captured = Promise.resolve(settlement).then(
+    (value) => ({ ok: true, value }),
+    (error) => ({ ok: false, error }),
+  );
+  return new Promise((resolve, reject) => {
+    setImmediate(() => {
+      captured
+        .then((outcome) => {
+          if (!outcome.ok) throw outcome.error;
+          return handler(outcome.value);
+        })
+        .then(resolve, reject);
+    });
+  });
+}
+
 /**
  * Binds worker admission and operation-scoped network receipts to the same
  * durable operation identity owned by BrowserProfileHost.
@@ -96,7 +118,7 @@ export class DurableEvidenceBrowserDriver {
     await this.#persistEgress(identity, observed);
 
     if (observed.settlement && typeof observed.settlement.then === "function") {
-      const settlement = observed.settlement.then(async (value) => {
+      const settlement = deferSettlement(observed.settlement, async (value) => {
         const terminal = requireRecord(
           value,
           "durable evidence terminal settlement",
