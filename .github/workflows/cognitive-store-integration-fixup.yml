@@ -114,7 +114,7 @@ jobs:
           map_path.write_text(json.dumps(mapping, indent=2, sort_keys=False) + "\n", encoding="utf-8")
 
           fixup_path = root / ".github/workflows/cognitive-store-integration-fixup.yml"
-          fixup_path.unlink()
+          fixup_path.unlink(missing_ok=True)
 
           subprocess.run(
               ["git", "add", "-A", "codex-rs/Cargo.lock",
@@ -163,7 +163,10 @@ jobs:
               for path in sorted(paths)
           ]
           map_path.write_text(json.dumps(mapping, indent=2, sort_keys=False) + "\n", encoding="utf-8")
-          subprocess.run(["git", "add", str(map_path)], check=True)
+          subprocess.run(
+              ["git", "add", "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json"],
+              check=True,
+          )
           PY
 
       - name: Commit exact convergence
@@ -173,7 +176,11 @@ jobs:
           git config user.name 'Hepta Cognitive CI'
           git config user.email 'hepta-cognitive-ci@users.noreply.github.com'
           git diff --cached --check
-          git commit -m 'cognitive.store: finalize exact candidate evidence map'
+          if git diff --cached --quiet; then
+            echo 'Exact convergence already present.'
+          else
+            git commit -m 'cognitive.store: finalize exact candidate evidence map'
+          fi
 
       - name: Verify committed candidate
         shell: bash
