@@ -263,7 +263,8 @@ fn sealed_publication(
             .tokenizer
             .enrollment
             .implementation_digest,
-        maximum_retained_records: u64::try_from(record_ids.len()).expect("record limit"),
+        maximum_retained_records: u32::try_from(record_ids.len())
+            .expect("record limit"),
         maximum_retained_bytes: u64::try_from(record_ids.len()).expect("records") * 64,
         maximum_retained_tokens: u64::try_from(record_ids.len()).expect("records") * 8,
         maximum_payload_bytes: 4_096,
