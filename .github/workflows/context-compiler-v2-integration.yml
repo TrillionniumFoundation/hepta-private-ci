@@ -61,3 +61,6 @@ jobs:
           git add codex-rs
           git commit -m "context.compiler: materialize exact V2 provider closure [context-v2-integrated]"
           git push origin HEAD:revision/context-compiler-v2-provider-closure-2026-09-27
+
+# The resulting source commit is intentionally unqualified. The protected final branch runs
+# .github/workflows/context-compiler-qualification.yml against its exact immutable SHA.
