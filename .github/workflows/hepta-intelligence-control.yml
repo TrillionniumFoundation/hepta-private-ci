@@ -20,7 +20,7 @@ concurrency:
 jobs:
   materialize:
     name: materialize and verify product closure
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, linux, x64, rog]
     timeout-minutes: 120
     steps:
       - name: Check out exact source event
@@ -90,7 +90,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git show "$GITHUB_SHA^:.github/workflows/hepta-intelligence-control.yml" > .github/workflows/hepta-intelligence-control.yml
+          git show d1589e0ca195183455b97531ea5ad917ce9fb003:.github/workflows/hepta-intelligence-control.yml > .github/workflows/hepta-intelligence-control.yml
           git rm -f .github/workflows/hepta-intelligence-source-finalizer.yml
           git rm -f scripts/finalize-intelligence-control-product.py
           git rm -f scripts/finalize-intelligence-control-boundaries.py
