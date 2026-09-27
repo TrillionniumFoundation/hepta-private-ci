@@ -1,238 +1,170 @@
-# intelligence.control product-closure guide
+# intelligence.control product composition
 
-Parent: [`TECHNICAL.md`](TECHNICAL.md). Canonical source root:
-`codex-rs/hepta-intelligence`. Product integration owner:
-`codex-rs/hepta-agentd`.
+Parent: [TECHNICAL.md](TECHNICAL.md). This is the effective product composition
+contract, not an activation or release receipt. The facade remains ephemeral;
+Agentd owns orchestration, App Server owns physical execution, kernel.operations
+owns intent/outbox state and learning.ledger owns authenticated learning facts.
 
-This guide describes the product-closure source introduced after the canonical
-seven-owner façade. It is deliberately narrower than an activation or release
-claim. Exact-head and synthetic-merge execution, real-process provider/App
-Server qualification, target-host measurements and independent acceptance
-remain separate evidence gates.
+## 1. Exact durable identity
 
-## 1. One generation and fence model
-
-A canonical intelligence run has one physical identity derived from the durable
-`RunStartRecordV1`; the cognition runner may not reconstruct or substitute it.
-`AgentdIntelligenceRunIdentityV1::from_run_start` binds:
-
-- authenticated issuer, key epoch, message identity, sequence, expiry, scope,
-  signed body and signature;
-- objective profile and admitted source identity;
-- run, objective, hard-constraint, preference, model, prompt-registry and
-  artifact identities;
-- authority epoch, current lifecycle generation and objective fence;
-- runtime body, objective semantic bytes and ObjectiveFunctionV1 identity;
-- the owner-controlled deadline.
-
-The lifecycle relation is explicit:
+`AgentdIntelligenceRunIdentityV1::from_run_start` derives request/run/body/artifact,
+authority, deadline, generation and fence from the complete durable
+`RunStartRecordV1`. The request digest binds authentication, source/profile,
+objective/model/prompt/artifact identities and semantic bytes.
 
 ```text
-process launch generation = spawn_generation
-Running generation        = spawn_generation + 1
-Draining generation       = spawn_generation + 2
+spawn generation = physical process launch
+Running generation = spawn + 1
+Draining generation = spawn + 2
 ```
 
-`objective_run_fence_digest_v1(agent_id, spawn_generation,
-current_generation)` is the only fence constructor used by ObjectiveStart,
-invocation validation, prepared-run publication and composition-bound
-admission. `AgentRunCoordinator::start_bound_run` rechecks the exact process
-identity before it mutates run state. Compatibility `start_run` remains for
-older noncanonical callers and is not the canonical product admission API.
+`objective_run_fence_digest_v1` is shared by publication, invocation and bound
+coordinator admission. A cognition factory may not replace this identity.
+Compatibility `start_run` is not canonical product admission.
 
-## 2. Host-owned invocation provider
+## 2. Host configuration and the actual route
 
-`HostOwnedAgentdIntelligenceInvocationProviderV1` is the concrete provider. Its
-factory derives all seven owner values from host-owned current sources; request
-bytes cannot provide policy, model, artifact, trust, currentness or run identity.
-The provider overwrites any factory-supplied run identity with the exact durable
-RunStart binding and validates the completed invocation before returning it.
+`with_canonical_intelligence_profile` atomically installs runner and host-owned
+invocation provider. Request bytes cannot install factories, policy owners,
+model state or trust. Runner-only configuration advertises no canonical profile.
 
-Product embeddings should install runner and provider atomically:
+The current daemon route is:
 
-```rust,ignore
-config.with_canonical_intelligence_profile(runner, |identity, record| {
-    // Read the seven current owner sources and return the typed request/inputs.
-    build_current_intelligence_invocation(identity, record)
-})?;
+```text
+signed ObjectiveStart -> durable RunStart
+-> host-owned provider.build -> canonical owner preparation
+-> current RunStart/Fleet check -> bound run admission -> ContextAttached
 ```
 
-The older independent runner/provider setters remain compatibility composition
-seams. A runner alone never advertises `intelligence.canonical_v1`.
+The ordinary CLI does not supply an authorized executable seven-owner factory.
+The current ObjectiveStart caller also does not itself join formal Decision
+publication, physical `run_intelligence` execution and terminal Outcome creation.
+Those are repository-controlled integration obligations, not a completed product
+loop inferred from two endpoint APIs.
 
-The ordinary command-line binary currently configures the signed authority
-runner only. It has no ambient authority to manufacture seven owner inputs and
-therefore does not install a canonical provider or advertise the capability.
-This is intentional fail-closed behavior, not a product-execution claim.
+An actual embedding must obtain every input and signed evaluation from its
+existing authorized owner. No sample implementation may invent live observations,
+self-sign evaluator acceptance or use test-only legacy writes as the product.
 
-## 3. Canonical invariant gate
+## 3. Owner output flow
 
-The pure façade canonicalizes legal candidates before product comparison.
-`validate_canonical_outcome_v1` is the final pure gate and rejects:
+The canonical order remains objective, NDU, neuron, prompt, intuition, context,
+evaluation. NDU evaluates the admitted candidate universe plus its required
+reserved abstain entry. The actual NDU result binds the neuron tick; the actual
+neuron checkpoint binds intuition's state. Nonzero conflicting precomputed
+bindings are rejected, not overwritten. A zero host-template field is filled
+before owner admission and does not become a new permissive wire grammar.
 
-- run or snapshot substitution;
-- candidate-set digest drift;
-- a selected candidate outside the admitted legal set;
-- a selected candidate with zero propensity;
-- a Ready/Abstained/SlowPath outcome whose terminal decision kind disagrees.
+NDU-infeasible candidates cannot remain both legal and unvetoed in intuition.
+Owner errors pass through timing measurement before rejection, so failure
+latency is not silently omitted.
 
-Agentd compares canonical sorted candidate identities, not caller vector order.
-Malicious-port tests cover an out-of-set selection and zero propensity. The
-existing currentness checks still run before and after each owner call and once
-more immediately before dispatch-proposal publication.
+Prompt portfolio receipt linkage is not yet prompt realization delivery.
+Authorized realization contents, roles, permissions and the selected action
+must still produce the actual context and physical request. This remains an
+explicit semantic gap; a linear receipt chain cannot establish an absent
+input dependency or justify fabricated content.
 
-## 4. Formal Decision and Outcome closure
+## 4. Mutable DTO and prepared-object boundaries
 
-The default product path uses only `learning.ledger::LedgerWriter`:
+`validate_canonical_outcome_v1` rebuilds the legal set and verifies run/snapshot,
+nested decision, positive selected propensity and terminal variant. It rehashes
+the advisory decision, context binding and every envelope dependency. Changing
+to another legal member cannot retain the prior decision/envelope digest.
 
-- `append_intelligence_decision_v1` creates an authenticated
-  `ProductionDecisionV2`;
-- `append_intelligence_outcome_v1` creates an authenticated terminal Outcome;
-- no default-build product method calls `append_qualification`.
+`PreparedAgentdIntelligenceRunV1::validate_integrity` additionally compares public
+fields against its private frozen context attachment and run snapshot. The
+formal learning adapters call this gate. It is not a signature or runtime grant.
 
-The legacy runner methods guarded by
-`qualification-legacy-learning-write` remain explicit qualification-only
-surfaces and are reported separately by generated traceability.
+## 5. Formal learning ownership and time
 
-`AgentdIntelligenceLearningHostV1` persists an immutable payload sidecar, syncs
-it and its directory, then commits a `kernel.operations` intent/outbox row.
-Final-use authority is checked immediately before the only product ledger
-writer is called. Recovery reopens the operations store and replays the exact
-payload, operation identity and original ledger predecessor; it never creates a
-new logical event.
+Default-build APIs use only `LedgerWriter`. The durable learning host preserves
+an immutable schema-V2 sidecar, then publishes the existing operations intent.
+Decision, Outcome and their original ledger predecessors remain separate.
+Payload encoding and historical digest domains are retained after the codec
+split into `intelligence_learning_payload.rs`.
 
-Terminal semantics are closed:
+Historical event time is Unix milliseconds, stored unchanged in `now`. Enqueue
+and each actual application use a fresh host verification clock, including
+principal/evidence expiry checks. An event queued before expiry cannot be first
+applied after expiry merely by reusing its historical timestamp. Clock rollback
+remains indeterminate rather than being normalized to an earlier valid instant.
 
-| Product disposition | kernel.operations terminal state | Meaning |
-|---|---|---|
-| `Acknowledged` | `Applied` | LedgerWriter returned an append/idempotent receipt |
-| `Rejected` | `NotApplied` | Typed binding, evidence, CAS or schema rejection |
-| `Revoked` | `Quarantined` | Current evidence/trust is revoked |
-| `Indeterminate` | nonterminal `Indeterminate` | Commit may have happened; exact reconciliation only |
+Exact destination observation precedes requesting new write authority. Historical
+observation is not active learning evidence or effect replay. Complete recovery
+also requires the independent ledger witness; catch-up/acknowledgement of a
+ledger-present but unwitnessed event remains an acceptance gap.
 
-The learning host exposes `OperationBacklogMetrics`, including queued, leased,
-acknowledged, indeterminate and terminal counts.
+## 6. Physical terminal binding
 
-## 5. Physical terminal binding
+The support digest binds run identity, private context attachment, envelope,
+advisory decision, selected candidate/propensity, terminal Agentd phase/revision
+and provider terminal digest. The Outcome must bind the same Decision and episode.
+A model return, queue acknowledgement or nonterminal observation cannot create
+a terminal Outcome.
 
-An Outcome is not accepted merely because a model call returned. The support
-digest from `intelligence_physical_terminal_binding_digest_v1` binds:
+The existing `AppServerModelDriver::run_intelligence` accepts an exact Agentd
+context/envelope binding and preserves durable no-redispatch semantics. The
+embedding must still bind the actual delivered request to the selected context
+and produce independently authenticated terminal learning evidence.
 
-- exact RunStart-derived request/body/artifact/authority/generation/fence;
-- exact context and envelope digests;
-- exact advisory decision, selected candidate and propensity;
-- terminal Agentd run phase and revision;
-- independently observed provider terminal digest.
+## 7. Worker and recovery bounds
 
-The Outcome path verifies that the active authenticated Decision has the same
-episode, run-snapshot digest and selected candidate. Pending or nonterminal
-outcomes cannot close the canonical product episode.
+Each computation retains a slot through actual completion. A worker-owned
+completion guard starts an independent OS-thread watchdog before the work and
+joins it before releasing capacity. Dropping/aborting the request future cannot
+cancel supervision. Explicit hard-timeout policy exits code 70 only after its
+configured grace; Supervisor replacement and durable recovery require separate
+real-process evidence.
 
-## 6. Bounded execution and hard timeout policy
+Cognition and final currentness reads share the remaining monotonic budget.
+Input factory work and synchronous learning grant/file/writer work are not yet
+covered by a complete independent lifetime; they must not be called fully bounded.
 
-The runner retains four bounded blocking-worker slots. A permit remains owned by
-the actual worker after request timeout, so abandoned synchronous work cannot
-silently free capacity and multiply without bound.
+Recovery walks stable `(scope_id, operation_id)` pages. It has a separate budget
+from ordinary dispatch; a one-slot profile alternates. Grant-provider failure
+before authorization may defer only an exact live Prepared claim. Unknown or
+already-dispatching effects remain reconcile-only. See the
+[restart contract](RESTART_RECONCILIATION.md) for state distinctions.
 
-`AgentdIntelligenceTelemetryV1` reports:
+## 8. Files and currentness
 
-- active and peak workers, configured slots and Busy rejections;
-- request timeouts, late completions, hard-timeout trips and worker crashes;
-- run-identity, currentness and canonical rejections;
-- Ready, Abstained and SlowPath totals;
-- last observed authority epoch and manifest-read count;
-- per-stage latency count/total/max and Rejected, Unavailable, TimedOut,
-  Quarantined and Indeterminate failure counts;
-- whether the host-owned invocation provider is attached.
+Sidecar reads verify the opened regular file and cap actual bytes; immutable
+publication uses no-replace hard-link installation. Signed authority manifests
+are read with an actual byte cap and strict Ed25519 verification. Unix reads
+compare opened device/inode and reject group/world-writable objects.
 
-Pure synchronous Rust cannot be killed safely from another in-process task.
-An explicitly configured product runner may therefore use
-`with_hard_timeout_process_exit(grace)`. If a timed-out blocking worker remains
-alive after the bounded grace, Agentd exits with code 70. Supervisor recovery
-creates a fresh fenced process generation; no old in-process authority survives.
-Compatibility and tests do not enable this policy implicitly.
+These are not a complete parent-anchored no-follow/nonblocking open protocol.
+Nor does a valid signature prove that a restored old manifest is current.
+An independently maintained authority rollback floor, parent-directory identity,
+concurrent replacement tests and crash/orphan recovery still need qualification.
 
-`capability_profile_digest` binds authority-file identity, verifier, worker
-capacity, hard-timeout policy and evaluation-trust generation. It is the
-configuration identity for qualification receipts; it is not an activation
-grant.
+## 9. Observability and exact qualification
 
-## 7. Generated implementation truth
+The profile digest uses `hepta.agentd.intelligence-capability-profile.v2`,
+length-prefixed variable fields and full timeout precision. It binds a
+configuration, not deployment authority. Telemetry includes actual worker,
+timeout, stage, currentness, advisory and run-dwell measurements; target-host
+latency/RSS and task-quality evidence remain absent until measured.
 
-`scripts/hepta-intelligence-control-status.py` is the only writer for:
+The tracked implementation/test JSON files are reviewed declarations with
+`CI_EXACT_HEAD` and `pending`, not mutable cached CI facts. The status script
+validates their source/test references. An exact passing projection requires
+all command records, checkout identity, matching raw log hashes, successful exit
+codes and the mapped tests observed passing in their correct package/profile.
+Qualification-only tests remain separate. Native command failures stay failures.
 
-- `IMPLEMENTATION_MAP.json`;
-- `TEST_TRACEABILITY.json`.
+The independent Linux workflow preserves source-head and deterministic merge
+lanes and adds operation-owner tests. Supplementary read-only native diagnostics
+may generate a formatter patch in a separate worktree; they do not alter source,
+self-merge or replace mandatory checks.
 
-Tracked files use the literal `CI_EXACT_HEAD` marker to avoid a self-referential
-commit. Independent intelligence CI regenerates both files after source-head or
-synthetic-merge tests with the exact checkout SHA and asserts that SHA equals
-`git rev-parse HEAD`. Those exact documents and command records are retained as
-artifacts.
+## 10. Acceptance still required
 
-The status matrix separates:
-
-- source presence;
-- daemon route callsite;
-- concrete provider implementation;
-- atomic product composition;
-- default-binary composition;
-- durable product learning and reconciliation;
-- exact-head and synthetic-merge execution;
-- real-process E2E;
-- target-host qualification;
-- independent acceptance, activation and release.
-
-Qualification-only tests and APIs are listed separately and cannot establish a
-default product claim.
-
-## 8. Restart and reconciliation runbook
-
-### Before ContextAttached
-
-A published RunStart with canonical profile enabled is not silently projected
-through compatibility admission. The authenticated ObjectiveStart must be
-retried so the same durable record can derive the same invocation and run
-identity.
-
-### ContextAttached but not dispatched
-
-The exact Agentd run/context record is reused. A physical caller must match the
-run ID, revision, context and envelope before it can advance to Dispatched.
-
-### Possible turn/start with no acknowledgement
-
-The native execution journal reconciles terminal provider evidence. Absence of
-exact terminal evidence produces `Indeterminate`; automatic redispatch is
-forbidden.
-
-### Decision/Outcome append uncertainty
-
-The operations row and immutable payload survive process loss. Restart adopts
-the unsettled operation into the new owner generation and invokes the same
-LedgerWriter request. Ledger record identity and predecessor CAS make an
-already-applied mutation idempotent. Current revocation may instead quarantine
-the operation; it never converts uncertainty into success.
-
-## 9. Remaining external gates
-
-The following are not claimed by this source change:
-
-1. real-process host-owned provider → authenticated ObjectiveStart → physical
-   App Server → terminal Outcome E2E;
-2. target-host latency, RSS, worker saturation and hard-timeout restart
-   measurements;
-3. current exact-head and deterministic synthetic-merge terminal-green receipts;
-4. independent semantic/security review and operator acceptance;
-5. activation, canary promotion or release.
-
-Until those receipts exist, `intelligence.canonical_v1` remains a configured
-profile capability, not a repository-wide default or deployment claim.
-
-## Daemon-owned product-learning service
-
-`AgentdIntelligenceLearningRuntimeConfigV1` composes the durable learning host into the normal Agentd task owner without manufacturing authority. It is accepted only after the all-or-none canonical profile, must bind the unique Running generation, and runs restart reconciliation before bounded prepared-outbox dispatch. The required service is generation-fenced before and after destination work. The default binary remains fail-closed because it does not construct this config.
-
-## Exact learning identity closure
-
-Product Decision/Outcome recovery no longer recognizes semantic lookalikes. The outbox freezes verified principal/controller/credential/key/scope/epoch/authentication identity, reconstructs the exact V2 ledger event during destination observation, and re-verifies that same binding before replay. Dedicated default-profile tests cover signature, principal, credential-chain, key, scope, epoch and controller substitution.
+Complete actual stage-to-context/request materialization and an authorized
+executable host; enforce Decision-before-dispatch and terminal Outcome/witness
+recovery; close factory/learning-I/O supervision and rollback-safe file access;
+execute current source/merge native checks and process crash cuts; measure
+latency, memory, recovery saturation and task quality against baselines; obtain
+independent security/semantic and operator acceptance. None is certified by
+source presence, a test function name or a queued workflow.

@@ -1,142 +1,29 @@
 #!/usr/bin/env python3
-"""Generate intelligence.control implementation and test truth from source.
+"""Validate reviewed intelligence mappings and emit exact execution projections.
 
-Tracked JSON uses a stable `CI_EXACT_HEAD` identity marker to avoid a
-self-referential commit. CI regenerates the same documents after execution with
-its exact checkout SHA and retains them as qualification artifacts.
+Tracked JSON is a source/test contract, not a cache of branch or CI status.
+Symbol presence proves only source presence. A passing projection additionally
+requires every named real command record, its unchanged log, exact checkout
+identity, and observed passes for the explicitly mapped tests. Product E2E,
+independent acceptance and deployment are never inferred from package tests.
 """
-
 from __future__ import annotations
 
 import argparse
+import copy
+import hashlib
 import json
 import os
+from pathlib import Path
 import re
 import subprocess
 import sys
-from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-MODULE_DOCS = ROOT / "docs/modules/intelligence.control"
-IMPLEMENTATION_MAP = MODULE_DOCS / "IMPLEMENTATION_MAP.json"
-TEST_TRACEABILITY = MODULE_DOCS / "TEST_TRACEABILITY.json"
-PLACEHOLDER_HEAD = "CI_EXACT_HEAD"
-
-SOURCE_FILES = {
-    "canonical": "codex-rs/hepta-intelligence/src/canonical.rs",
-    "invariants": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
-    "ingress": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
-    "runner": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
-    "product": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-    "bound": "codex-rs/hepta-agentd/src/lane_b_bound.rs",
-    "learning": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
-    "learning_runtime": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
-    "telemetry": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
-    "state": "codex-rs/hepta-agentd/src/state.rs",
-    "runtime": "codex-rs/hepta-agentd/src/runtime.rs",
-    "objective_runtime": "codex-rs/hepta-agentd/src/objective_runtime.rs",
-    "physical": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
-    "main": "codex-rs/hepta-agentd/src/main.rs",
-}
-
-EXPECTED_SOURCE_FACTS = {
-    "canonicalFacadePresent": ("canonical", "pub fn prepare_intelligence_run"),
-    "canonicalCandidateDigestPresent": ("canonical", "candidate_set_digest"),
-    "selectedMembershipInvariantPresent": (
-        "invariants",
-        "selected candidate membership",
-    ),
-    "rawCandidateOrderCanonicalized": (
-        "invariants",
-        "raw_candidate_order_does_not_change_canonical_identity",
-    ),
-    "maliciousSelectionTestPresent": (
-        "invariants",
-        "malicious_selected_candidate_outside_legal_set_is_rejected",
-    ),
-    "durableRunIdentityPresent": ("ingress", "AgentdIntelligenceRunIdentityV1"),
-    "singleFenceConstructorPresent": ("ingress", "objective_run_fence_digest_v1"),
-    "concreteProviderPresent": (
-        "ingress",
-        "impl<F> AgentdIntelligenceInvocationProviderV1",
-    ),
-    "atomicProfileCompositionPresent": (
-        "runtime",
-        "set_provider_configured(true)",
-    ),
-    "boundCoordinatorAdmissionPresent": ("bound", "start_bound_run"),
-    "spawnCurrentLifecycleTestPresent": (
-        "bound",
-        "running_generation_differs_from_spawn_and_is_admitted",
-    ),
-    "preparedRunInheritsDurableIdentity": (
-        "runner",
-        "request_digest: run_identity.request_digest.to_string()",
-    ),
-    "canonicalOutcomeFinalGatePresent": (
-        "runner",
-        "validate_canonical_outcome_v1",
-    ),
-    "formalDecisionWriterPresent": (
-        "learning",
-        "append_intelligence_decision_v1",
-    ),
-    "formalOutcomeWriterPresent": (
-        "learning",
-        "append_intelligence_outcome_v1",
-    ),
-    "durableLearningOutboxPresent": (
-        "learning",
-        "DurableOperationStore",
-    ),
-    "restartReconciliationPresent": (
-        "learning",
-        "reconcile_unsettled",
-    ),
-    "exactLearningEvidenceBindingPresent": (
-        "learning",
-        "VerifiedEvidenceBindingPayloadV1",
-    ),
-    "exactDestinationEventObservationPresent": (
-        "learning",
-        "record.event == expected",
-    ),
-    "daemonLearningReconcilerPresent": (
-        "learning_runtime",
-        "run_intelligence_learning_runtime_v1",
-    ),
-    "physicalTerminalBindingPresent": (
-        "learning",
-        "intelligence_physical_terminal_binding_digest_v1",
-    ),
-    "explicitLearningTerminalStatesPresent": (
-        "learning",
-        "AgentdIntelligenceLearningDispositionV1",
-    ),
-    "stageTelemetryPresent": (
-        "telemetry",
-        "AgentdIntelligenceStageTelemetrySnapshotV1",
-    ),
-    "workerSaturationTelemetryPresent": ("telemetry", "busy_rejections"),
-    "lateWorkerTelemetryPresent": ("telemetry", "late_worker_completions"),
-    "authorityEpochTelemetryPresent": ("telemetry", "last_authority_epoch"),
-    "runPhaseDwellTelemetryPresent": (
-        "telemetry",
-        "run_phase_dwell_snapshot",
-    ),
-    "hardTimeoutProcessFencePresent": (
-        "runner",
-        "with_hard_timeout_process_exit",
-    ),
-    "capabilityProfileDigestPresent": ("runner", "capability_profile_digest"),
-    "daemonObjectiveRoutePresent": (
-        "objective_runtime",
-        "start_canonical_intelligence",
-    ),
-    "physicalTurnBindingPresent": ("physical", "run_intelligence"),
-}
-
+DOCS = ROOT / "docs/modules/intelligence.control"
+NAMES = ("IMPLEMENTATION_MAP.json", "TEST_TRACEABILITY.json")
+PLACEHOLDER = "CI_EXACT_HEAD"
 REQUIRED_TESTS = {
     "raw_candidate_order_does_not_change_canonical_identity",
     "malicious_selected_candidate_outside_legal_set_is_rejected",
@@ -153,449 +40,237 @@ REQUIRED_TESTS = {
     "persisted_principal_binding_rejects_key_and_credential_substitution",
     "exact_destination_observation_binds_controller_identity",
     "learning_runtime_policy_is_bounded",
+    "final_gate_rehashes_every_envelope_dependency",
+    "final_gate_rejects_positive_propensity_substitution",
+    "membership_gate_rejects_mutated_legal_support",
+    "replay_verification_uses_current_time_not_frozen_event_time",
+    "learning_clock_rollback_is_not_normalized_into_old_time",
+    "recovery_and_dispatch_each_receive_a_bounded_share",
+    "single_slot_alternates_instead_of_starving_new_work",
+    "unsettled_cursor_visits_poison_prefix_and_later_scopes",
+    "unused_claim_deferral_preserves_identity_and_fences_old_claim",
+    "post_dispatch_claim_cannot_be_deferred_for_reexecution",
+    "independent_watchdog_observes_detached_work",
+    "explicit_hard_timeout_terminates_a_real_child_process",
+    "actual_stage_outputs_fill_templates_but_reject_substitution",
+    "utility_universe_rejects_foreign_and_missing_candidates",
 }
-
-TEST_PATTERN = re.compile(
-    r"(?P<attrs>(?:\s*#\[[^\n]+\]\s*)+)(?:async\s+)?fn\s+(?P<name>[A-Za-z0-9_]+)\s*\(",
-    re.MULTILINE,
+REQUIRED_OPERATIONS = {
+    "build_legal_candidates", "prepare_intelligence_run", "decide_boundary",
+    "assemble_context", "validate_current_snapshot", "validate_canonical_outcome_v1",
+    "AgentdIntelligenceRunIdentityV1::from_run_start", "AgentRunCoordinator::start_bound_run",
+    "append_intelligence_decision_v1", "append_intelligence_outcome_v1",
+    "AgentdIntelligenceLearningHostV1::reconcile_unsettled",
+}
+COMMANDS = {
+    "fmt.json": ["cargo", "fmt", "--all", "--", "--check"],
+    "intelligence-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-intelligence"],
+    "operations-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-operations"],
+    "agentd-default-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "--lib"],
+    "agentd-qualification-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "--lib", "--features", "qualification-legacy-learning-write"],
+    "agentd-all-targets.json": ["cargo", "check", "--locked", "-p", "codex-hepta-agentd", "--all-targets"],
+    "clippy.json": ["cargo", "clippy", "--locked", "-p", "codex-hepta-intelligence", "-p", "codex-hepta-agentd", "-p", "codex-hepta-operations", "--all-targets", "--", "-D", "warnings"],
+}
+PACKAGE_RECORDS = {
+    "codex-hepta-intelligence": "intelligence-tests.json",
+    "codex-hepta-agentd": "agentd-default-tests.json",
+    "codex-hepta-operations": "operations-tests.json",
+}
+FALSE_CLAIMS = (
+    "defaultBinaryProfileComposed", "realProcessProviderE2E", "targetHostQualified",
+    "independentAcceptance", "activation", "release", "allRequirementsClosed",
 )
+ANSI = re.compile(r"\x1b\[[0-9;]*m")
 
 
-def git_head() -> str:
-    return subprocess.check_output(
-        ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
-    ).strip()
+def git(*args: str) -> str:
+    return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
 
 
-def read_sources() -> dict[str, str]:
-    sources: dict[str, str] = {}
-    for key, relative in SOURCE_FILES.items():
-        path = ROOT / relative
-        if not path.is_file():
-            raise SystemExit(f"missing required source: {relative}")
-        sources[key] = path.read_text(encoding="utf-8")
-    return sources
+def load_json(path: Path) -> dict[str, Any]:
+    def unique(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"duplicate JSON field: {key}")
+            result[key] = value
+        return result
+    value = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique)
+    if not isinstance(value, dict):
+        raise ValueError(f"expected object: {path}")
+    return value
 
 
-def source_facts(sources: dict[str, str]) -> dict[str, bool]:
-    facts = {
-        name: needle in sources[source]
-        for name, (source, needle) in EXPECTED_SOURCE_FACTS.items()
-    }
-    missing = [name for name, present in facts.items() if not present]
-    if missing:
-        raise SystemExit("missing intelligence.control source facts: " + ", ".join(missing))
-    config_text = (ROOT / "codex-rs/hepta-agentd/src/config.rs").read_text(
-        encoding="utf-8"
-    )
-    facts["atomicProfileCompositionPresent"] = (
-        "with_canonical_intelligence_profile" in config_text
-        and "HostOwnedAgentdIntelligenceInvocationProviderV1::new" in config_text
-    )
-    main_text = sources["main"]
-    facts["defaultBinaryCanonicalProfileComposed"] = (
-        "with_canonical_intelligence_profile" in main_text
-    )
-    state_control = (
-        ROOT / "codex-rs/hepta-agentd/src/state_control.rs"
-    ).read_text(encoding="utf-8")
-    facts["capabilityAllOrNoneGuardPresent"] = (
-        "canonical_intelligence_enabled()" in state_control
-    )
-    return facts
+def source_text(relative: str) -> str:
+    path = (ROOT / relative).resolve()
+    if not path.is_relative_to(ROOT) or not path.is_file():
+        raise ValueError(f"unavailable source: {relative}")
+    git("ls-files", "--error-unmatch", "--", relative)
+    return path.read_text(encoding="utf-8")
 
 
-def discover_tests() -> list[dict[str, Any]]:
-    roots = [
-        ROOT / "codex-rs/hepta-intelligence/src",
-        ROOT / "codex-rs/hepta-agentd/src",
-        ROOT / "codex-rs/hepta-infer-worker-host/src",
-    ]
-    tests: list[dict[str, Any]] = []
-    for root in roots:
-        for path in sorted(root.glob("*.rs")):
-            text = path.read_text(encoding="utf-8")
-            for match in TEST_PATTERN.finditer(text):
-                attrs = match.group("attrs")
-                if "test" not in attrs:
-                    continue
-                prefix = text[max(0, match.start() - 600) : match.start()]
-                tests.append(
-                    {
-                        "name": match.group("name"),
-                        "sourcePath": str(path.relative_to(ROOT)),
-                        "qualificationOnly": (
-                            "qualification-legacy-learning-write" in prefix
-                            or "qualification-legacy-learning-write" in attrs
-                        ),
-                        "ignored": "ignore" in attrs,
-                    }
-                )
-    tests.sort(key=lambda value: (value["sourcePath"], value["name"]))
-    discovered = {value["name"] for value in tests}
-    missing = sorted(REQUIRED_TESTS - discovered)
-    if missing:
-        raise SystemExit("missing required intelligence.control tests: " + ", ".join(missing))
-    return tests
-
-
-def identity(source_head: str, execution_status: str, lane: str) -> dict[str, Any]:
-    return {
-        "policy": "ci_exact_head_artifact_v1",
-        "commit": source_head,
-        "lane": lane,
-        "executionStatus": execution_status,
-        "commitMustEqualCheckoutHead": True,
-    }
-
-
-def operation(
-    name: str,
-    source_path: str,
-    state: str,
-    tests: list[dict[str, Any]],
-) -> dict[str, Any]:
-    needle = name.split("::")[-1]
-    matching = [test["name"] for test in tests if needle in test["name"]]
-    return {
-        "operation": name,
-        "sourcePath": source_path,
-        "state": state,
-        "authority": "none" if "append_intelligence" not in name else "ledger_writer_only",
-        "tests": matching,
-    }
-
-
-def implementation_document(
-    source_head: str,
-    execution_status: str,
-    lane: str,
-    facts: dict[str, bool],
-    tests: list[dict[str, Any]],
-) -> dict[str, Any]:
-    exact_passed = execution_status == "passed"
-    return {
-        "schema": "hepta.module-implementation-map.v4",
-        "schemaVersion": 4,
-        "module": "intelligence.control",
-        "owner": "intelligence-platform",
-        "deputy": "qualification-plane",
-        "sourceIdentity": identity(source_head, execution_status, lane),
-        "generatedBy": "scripts/hepta-intelligence-control-status.py",
-        "declaredRoots": ["codex-rs/hepta-intelligence"],
-        "integrationRoots": [
-            "codex-rs/hepta-agentd",
-            "codex-rs/hepta-infer-worker-host",
-            "codex-rs/hepta-learning-ledger",
-            "codex-rs/hepta-operations",
-        ],
-        "statusMatrix": {
-            "documentationDepthClosed": True,
-            "sourceImplementation": all(
-                value
-                for name, value in facts.items()
-                if name != "defaultBinaryCanonicalProfileComposed"
-            ),
-            "routeCallsitePresent": facts["daemonObjectiveRoutePresent"],
-            "providerImplementationPresent": facts["concreteProviderPresent"],
-            "atomicProfileCompositionPresent": facts[
-                "atomicProfileCompositionPresent"
-            ],
-            "defaultBinaryProfileComposed": facts[
-                "defaultBinaryCanonicalProfileComposed"
-            ],
-            "durableRunIdentityPresent": facts["durableRunIdentityPresent"],
-            "formalProductLearningWriterPresent": facts[
-                "formalDecisionWriterPresent"
-            ]
-            and facts["formalOutcomeWriterPresent"],
-            "durableLearningOutboxPresent": facts[
-                "durableLearningOutboxPresent"
-            ],
-            "restartReconciliationPresent": facts[
-                "restartReconciliationPresent"
-            ],
-            "exactAuthenticatedRecoveryPresent": facts[
-                "exactLearningEvidenceBindingPresent"
-            ]
-            and facts["exactDestinationEventObservationPresent"],
-            "daemonLearningReconcilerPresent": facts[
-                "daemonLearningReconcilerPresent"
-            ],
-            "physicalTerminalBindingPresent": facts[
-                "physicalTerminalBindingPresent"
-            ],
-            "observabilityPresent": facts["stageTelemetryPresent"],
-            "hardTimeoutProcessFencePresent": facts[
-                "hardTimeoutProcessFencePresent"
-            ],
-            "sourceTestsPresent": bool(tests),
-            "exactHeadExecuted": exact_passed and lane == "source-head",
-            "syntheticMergeExecuted": exact_passed and lane == "base-merge",
-            "realProcessProviderE2E": False,
-            "targetHostQualified": False,
-            "independentAcceptance": False,
-            "activation": False,
-            "release": False,
-        },
-        "sourceFacts": facts,
-        "canonicalOperations": [
-            operation(
-                "prepare_intelligence_run",
-                "codex-rs/hepta-intelligence/src/canonical.rs",
-                "source_implemented",
-                tests,
-            ),
-            operation(
-                "validate_canonical_outcome_v1",
-                "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
-                "source_implemented_final_product_gate",
-                tests,
-            ),
-            operation(
-                "AgentdIntelligenceRunIdentityV1::from_run_start",
-                "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
-                "source_implemented_single_identity",
-                tests,
-            ),
-            operation(
-                "AgentRunCoordinator::start_bound_run",
-                "codex-rs/hepta-agentd/src/lane_b_bound.rs",
-                "source_implemented_composition_fenced",
-                tests,
-            ),
-            operation(
-                "append_intelligence_decision_v1",
-                "codex-rs/hepta-agentd/src/intelligence_learning.rs",
-                "source_implemented_ledger_writer_only",
-                tests,
-            ),
-            operation(
-                "append_intelligence_outcome_v1",
-                "codex-rs/hepta-agentd/src/intelligence_learning.rs",
-                "source_implemented_physical_terminal_bound",
-                tests,
-            ),
-            operation(
-                "AgentdIntelligenceLearningHostV1::reconcile_unsettled",
-                "codex-rs/hepta-agentd/src/intelligence_learning.rs",
-                "source_implemented_exact_replay",
-                tests,
-            ),
-        ],
-        "capabilityBoundary": {
-            "capabilityId": "intelligence.canonical_v1",
-            "advertisedOnlyWhenRunnerAndProviderPresent": facts[
-                "capabilityAllOrNoneGuardPresent"
-            ],
-            "capabilityProfileDigestSource": "AgentdIntelligenceProductRunnerV1::capability_profile_digest",
-            "defaultCliAdvertises": facts["defaultBinaryCanonicalProfileComposed"],
-        },
-        "qualificationOnlySurfaces": [
-            "AgentdIntelligenceProductRunnerV1::append_decision",
-            "AgentdIntelligenceProductRunnerV1::append_outcome",
-            "AgentdIntelligenceProductRunnerV1::reconcile_ledger_append",
-        ],
-        "remainingExternalGates": [
-            "real-process host-owned provider plus ObjectiveStart plus App Server E2E",
-            "target-host latency RSS and hard-timeout process-restart qualification",
-            "independent semantic and security acceptance",
-            "operator canary promotion and release",
-        ],
-    }
-
-
-def traceability_document(
-    source_head: str,
-    execution_status: str,
-    lane: str,
-    facts: dict[str, bool],
-    tests: list[dict[str, Any]],
-) -> dict[str, Any]:
-    ordinary = [test for test in tests if not test["qualificationOnly"]]
-    qualification = [test for test in tests if test["qualificationOnly"]]
-
-    def names(*needles: str) -> list[str]:
-        return sorted(
-            {
-                test["name"]
-                for test in tests
-                if any(needle in test["name"] for needle in needles)
-            }
+def validate_declarations() -> tuple[dict[str, Any], dict[str, Any]]:
+    implementation, trace = (load_json(DOCS / name) for name in NAMES)
+    for value in (implementation, trace):
+        identity = value["sourceIdentity"]
+        if identity["commit"] != PLACEHOLDER or identity["lane"] != "tracked" or identity["executionStatus"] != "pending":
+            raise ValueError("tracked mappings cannot retain a mutable candidate or a pass")
+        if value["module"] != "intelligence.control":
+            raise ValueError("wrong module mapping")
+    status = implementation["statusMatrix"]
+    for field in FALSE_CLAIMS:
+        if status.get(field) is not False:
+            raise ValueError(f"this source-only mapping cannot establish {field}")
+    if status["exactHeadExecuted"] or status["syntheticMergeExecuted"]:
+        raise ValueError("tracked execution claims must remain pending")
+    paths: set[str] = set()
+    for binding in implementation["sourceBindings"]:
+        text = source_text(binding["sourcePath"])
+        paths.add(binding["sourcePath"])
+        for symbol in binding["symbols"]:
+            if symbol not in text:
+                raise ValueError(f"missing source symbol {symbol}: {binding['sourcePath']}")
+    operations = {row["operation"] for row in implementation["canonicalOperations"]}
+    if not REQUIRED_OPERATIONS.issubset(operations):
+        raise ValueError("required canonical operation mapping omitted")
+    default_tests = trace["ordinaryProductTests"]
+    qualification = trace["qualificationOnlyTests"]
+    seen: set[tuple[str, str]] = set()
+    for test in default_tests + qualification:
+        text = source_text(test["sourcePath"])
+        key = (test["sourcePath"], test["name"])
+        if key in seen or test["package"] not in PACKAGE_RECORDS:
+            raise ValueError(f"duplicate or unknown package test: {key}")
+        seen.add(key)
+        pattern = re.compile(
+            r"(?P<attrs>(?:\s*#\[[^\n]+\]\s*)+)(?:async\s+)?fn\s+"
+            + re.escape(test["name"]) + r"\s*\(", re.MULTILINE,
         )
-
-    return {
-        "schema": "hepta.intelligence-control-test-traceability.v2",
-        "schemaVersion": 2,
-        "module": "intelligence.control",
-        "sourceIdentity": identity(source_head, execution_status, lane),
-        "generatedBy": "scripts/hepta-intelligence-control-status.py",
-        "canonicalFacade": "prepare_intelligence_run",
-        "namedProductRoute": "ObjectiveRuntimeHost::submit -> AgentdState::start_canonical_intelligence -> AgentdIntelligenceProductRunnerV1::prepare_for_composition -> AgentRunCoordinator::start_bound_run",
-        "requirements": [
-            {
-                "requirement": "generation_fence_single_source",
-                "sourceFacts": [
-                    "durableRunIdentityPresent",
-                    "singleFenceConstructorPresent",
-                    "boundCoordinatorAdmissionPresent",
-                ],
-                "tests": names("running_generation", "forged_generation_or_fence"),
-            },
-            {
-                "requirement": "canonical_candidate_membership_and_order",
-                "sourceFacts": [
-                    "selectedMembershipInvariantPresent",
-                    "rawCandidateOrderCanonicalized",
-                ],
-                "tests": names(
-                    "raw_candidate_order",
-                    "malicious_selected_candidate",
-                    "zero_propensity",
-                    "duplicate_candidate",
-                ),
-            },
-            {
-                "requirement": "seven_owner_currentness_and_revocation",
-                "sourceFacts": ["canonicalOutcomeFinalGatePresent"],
-                "tests": names(
-                    "seven_owners",
-                    "generation_change",
-                    "key_rotation",
-                    "revocation",
-                    "current_owner",
-                ),
-            },
-            {
-                "requirement": "durable_decision_outcome_closure",
-                "sourceFacts": [
-                    "formalDecisionWriterPresent",
-                    "formalOutcomeWriterPresent",
-                    "durableLearningOutboxPresent",
-                    "restartReconciliationPresent",
-                    "exactLearningEvidenceBindingPresent",
-                    "exactDestinationEventObservationPresent",
-                    "daemonLearningReconcilerPresent",
-                    "physicalTerminalBindingPresent",
-                ],
-                "tests": names(
-                    "operation_ids",
-                    "evidence_payload",
-                    "persisted_evidence_binding",
-                    "persisted_principal_binding",
-                    "exact_destination_observation",
-                    "decision_outcome",
-                    "learning_runtime_policy",
-                ),
-            },
-            {
-                "requirement": "bounded_execution_observability",
-                "sourceFacts": [
-                    "stageTelemetryPresent",
-                    "workerSaturationTelemetryPresent",
-                    "lateWorkerTelemetryPresent",
-                    "runPhaseDwellTelemetryPresent",
-                    "hardTimeoutProcessFencePresent",
-                ],
-                "tests": names(
-                    "worker_timeout",
-                    "stage_failure_classes",
-                    "run_phase_dwell",
-                    "same_phase_idempotent",
-                    "total_budget_timeout",
-                ),
-            },
-            {
-                "requirement": "physical_turn_no_redispatch",
-                "sourceFacts": ["physicalTurnBindingPresent"],
-                "tests": names("intelligence_handoff", "lost_ack", "reconcile"),
-            },
-        ],
-        "ordinaryProductTests": ordinary,
-        "qualificationOnlyTests": qualification,
-        "claimBoundary": {
-            "sourceTestsPresent": bool(tests),
-            "exactHeadExecuted": execution_status == "passed" and lane == "source-head",
-            "deterministicMergeExecuted": execution_status == "passed"
-            and lane == "base-merge",
-            "targetHostQualified": False,
-            "realProcessProviderE2E": False,
-            "activation": False,
-            "release": False,
-        },
-        "sourceFacts": facts,
-    }
+        matches = list(pattern.finditer(text))
+        if len(matches) != 1 or "test" not in matches[0]["attrs"] or "ignore" in matches[0]["attrs"]:
+            raise ValueError(f"missing, ambiguous or ignored mapped test: {key}")
+        if test["executionStatus"] != "pending":
+            raise ValueError("source declarations are not test executions")
+    default_names = {row["name"] for row in default_tests}
+    if not REQUIRED_TESTS.issubset(default_names):
+        raise ValueError(f"required default regressions omitted: {sorted(REQUIRED_TESTS - default_names)}")
+    all_names = {row["name"] for row in default_tests + qualification}
+    requirements = {row["id"]: row for row in trace["requirements"]}
+    for row in trace["requirements"]:
+        if not row["tests"] or not set(row["tests"]).issubset(all_names):
+            raise ValueError(f"invalid requirement-to-test mapping: {row['id']}")
+    for operation in implementation["canonicalOperations"]:
+        if operation["sourcePath"] not in paths or not operation["requirements"]:
+            raise ValueError(f"unbound operation: {operation['operation']}")
+        if not set(operation["requirements"]).issubset(requirements):
+            raise ValueError("unknown operation requirement")
+    return implementation, trace
 
 
-def encoded(value: dict[str, Any]) -> str:
-    return json.dumps(value, indent=2, sort_keys=False) + "\n"
+def validate_command_record(path: Path, command: list[str], head: str, lane: str) -> tuple[dict[str, Any], str]:
+    record = load_json(path)
+    if record.get("command") != command or record.get("tested_sha") != head or record.get("lane") != lane:
+        raise ValueError(f"command/source/lane mismatch: {path.name}")
+    if record.get("status") != "passed" or record.get("command_exit_code") != 0 or record.get("exit_code") != 0:
+        raise ValueError(f"command did not pass: {path.name}")
+    if record.get("timed_out") is not False or record.get("output_limit_exceeded") is not False:
+        raise ValueError(f"incomplete command: {path.name}")
+    before, after = record.get("before"), record.get("after")
+    if not isinstance(before, dict) or before != after or before.get("commit") != head or before.get("dirty") is not False:
+        raise ValueError(f"dirty or changed checkout: {path.name}")
+    if lane == "source-head" and record.get("source_sha") != head:
+        raise ValueError("wrong source head")
+    if lane == "base-merge" and before.get("parents") != [record.get("base_sha"), record.get("source_sha")]:
+        raise ValueError("wrong merge parents")
+    log_name = record.get("log_file")
+    if not isinstance(log_name, str) or Path(log_name).name != log_name:
+        raise ValueError("invalid command log path")
+    log = path.parent / log_name
+    if log.is_symlink() or not log.is_file():
+        raise ValueError("command log missing or symlinked")
+    raw = log.read_bytes()
+    if len(raw) != record.get("log_bytes") or hashlib.sha256(raw).hexdigest() != record.get("log_sha256"):
+        raise ValueError("command log digest mismatch")
+    text = ANSI.sub("", raw.decode("utf-8", errors="replace"))
+    if command[1] == "test" and (record.get("observed_failed_tests") != 0 or record.get("observed_passed_tests", 0) < 1):
+        raise ValueError("no actual passing test summary")
+    return record, text
 
 
-def write_pair(directory: Path, implementation: dict[str, Any], trace: dict[str, Any]) -> None:
+def observed_test_name(text: str, name: str) -> str:
+    passed = set(re.findall(r"^test\s+([A-Za-z0-9_:]+)\s+\.\.\.\s+ok\s*$", text, re.MULTILINE))
+    matches = {value for value in passed if value == name or value.endswith("::" + name)}
+    if len(matches) != 1:
+        raise ValueError(f"mapped test not uniquely observed passing: {name}")
+    return next(iter(matches))
+
+
+def project_execution(implementation: dict[str, Any], trace: dict[str, Any], head: str, lane: str, status: str, records: Path | None) -> tuple[dict[str, Any], dict[str, Any]]:
+    implementation, trace = copy.deepcopy(implementation), copy.deepcopy(trace)
+    identity = {"policy": "ci_exact_head_artifact_v2", "commit": head, "lane": lane, "executionStatus": status, "commitMustEqualCheckoutHead": True}
+    for value in (implementation, trace):
+        value["sourceIdentity"] = identity.copy()
+    if status == "passed":
+        if records is None:
+            raise ValueError("a pass requires the real command-record directory")
+        executed = {name: validate_command_record(records / name, command, head, lane) for name, command in COMMANDS.items()}
+        for rows, legacy in ((trace["ordinaryProductTests"], False), (trace["qualificationOnlyTests"], True)):
+            for test in rows:
+                record_name = "agentd-qualification-tests.json" if legacy else PACKAGE_RECORDS[test["package"]]
+                record, text = executed[record_name]
+                test["observedTestName"] = observed_test_name(text, test["name"])
+                test["executionStatus"] = "passed"
+                test["commandRecord"] = record_name
+                test["logSha256"] = record["log_sha256"]
+        matrix = implementation["statusMatrix"]
+        matrix["exactHeadExecuted"] = lane == "source-head"
+        matrix["syntheticMergeExecuted"] = lane == "base-merge"
+    for binding in implementation["sourceBindings"]:
+        binding["sourceBlob"] = git("rev-parse", f"{head}:{binding['sourcePath']}")
+    # Source binding and package execution never assert completion of the open
+    # product, authority, file-system, performance or independent-evidence gaps.
+    return implementation, trace
+
+
+def write_pair(directory: Path, values: tuple[dict[str, Any], dict[str, Any]]) -> None:
     directory.mkdir(parents=True, exist_ok=True)
-    (directory / "IMPLEMENTATION_MAP.json").write_text(
-        encoded(implementation), encoding="utf-8"
-    )
-    (directory / "TEST_TRACEABILITY.json").write_text(encoded(trace), encoding="utf-8")
-
-
-def check_file(path: Path, expected: str) -> None:
-    actual = path.read_text(encoding="utf-8") if path.is_file() else ""
-    if actual == expected:
-        return
-    print(f"generated document is stale: {path.relative_to(ROOT)}", file=sys.stderr)
-    raise SystemExit(1)
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--source-head")
-    parser.add_argument(
-        "--execution-status", choices=("pending", "passed", "failed"), default="pending"
-    )
-    parser.add_argument("--lane", choices=("tracked", "source-head", "base-merge"), default="tracked")
-    parser.add_argument("--output-dir", type=Path)
-    parser.add_argument("--write-tracked", action="store_true")
-    parser.add_argument("--check-tracked", action="store_true")
-    return parser.parse_args()
+    for name, value in zip(NAMES, values):
+        (directory / name).write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> None:
-    args = parse_args()
-    current_head = git_head()
-    if args.lane == "tracked":
-        source_head = PLACEHOLDER_HEAD
-        execution_status = "pending"
-    else:
-        source_head = args.source_head or os.environ.get("GITHUB_SHA") or current_head
-        if source_head != current_head:
-            raise SystemExit(
-                f"source identity mismatch: requested {source_head}, checkout {current_head}"
-            )
-        execution_status = args.execution_status
-    sources = read_sources()
-    facts = source_facts(sources)
-    tests = discover_tests()
-    implementation = implementation_document(
-        source_head, execution_status, args.lane, facts, tests
-    )
-    trace = traceability_document(source_head, execution_status, args.lane, facts, tests)
-
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source-head")
+    parser.add_argument("--execution-status", choices=("pending", "passed", "failed"), default="pending")
+    parser.add_argument("--lane", choices=("tracked", "source-head", "base-merge"), default="tracked")
+    parser.add_argument("--command-records", type=Path)
+    parser.add_argument("--output-dir", type=Path)
+    parser.add_argument("--write-tracked", action="store_true")
+    parser.add_argument("--check-tracked", action="store_true")
+    args = parser.parse_args()
+    values = validate_declarations()
+    if args.lane != "tracked":
+        head = args.source_head or os.environ.get("TESTED_SHA") or git("rev-parse", "HEAD")
+        if head != git("rev-parse", "HEAD") or git("status", "--porcelain", "--untracked-files=normal"):
+            raise ValueError("execution projection requires the unchanged exact checkout")
+        records = args.command_records
+        values = project_execution(*values, head, args.lane, args.execution_status, records)
+    elif args.execution_status != "pending":
+        raise ValueError("tracked mappings cannot claim execution")
     if args.write_tracked:
-        write_pair(MODULE_DOCS, implementation, trace)
-    if args.check_tracked:
-        check_file(IMPLEMENTATION_MAP, encoded(implementation))
-        check_file(TEST_TRACEABILITY, encoded(trace))
+        if args.lane != "tracked":
+            raise ValueError("exact execution artifacts cannot overwrite tracked declarations")
+        write_pair(DOCS, values)
     if args.output_dir:
-        write_pair(args.output_dir, implementation, trace)
-    if not (args.write_tracked or args.check_tracked or args.output_dir):
-        json.dump(
-            {"implementation": implementation, "traceability": trace},
-            sys.stdout,
-            indent=2,
-        )
-        sys.stdout.write("\n")
+        if args.output_dir.resolve().is_relative_to(ROOT):
+            raise ValueError("execution artifacts must be outside the source checkout")
+        write_pair(args.output_dir, values)
+    if not (args.check_tracked or args.write_tracked or args.output_dir):
+        print(json.dumps({"implementation": values[0], "traceability": values[1]}, indent=2))
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except (OSError, ValueError, KeyError, TypeError, subprocess.CalledProcessError) as error:
+        raise SystemExit(f"intelligence mapping rejected: {error}") from error
