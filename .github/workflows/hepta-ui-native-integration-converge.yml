@@ -1,0 +1,872 @@
+name: ui.native one-shot integration convergence
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [work/ui-native-integration-convergence-20260927]
+    paths:
+      - .github/workflows/hepta-ui-native-integration-converge.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ui-native-integration-convergence-20260927
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+  CARGO_TARGET_DIR: ${{ github.workspace }}/apps/hepta-native/target
+  CANDIDATE_BRANCH: work/ui-native-integration-convergence-20260927
+  ANCESTOR_SHA: 709aab0b61f2484b7f5c1efadee96fb14fc5cd31
+
+jobs:
+  converge:
+    runs-on: macos-15
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.CANDIDATE_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind one-shot input to the reviewed lineage
+        run: |
+          set -euo pipefail
+          test "$(git branch --show-current)" = "$CANDIDATE_BRANCH"
+          git merge-base --is-ancestor "$ANCESTOR_SHA" HEAD
+          test "$(git diff --name-only "$ANCESTOR_SHA"...HEAD)" = ".github/workflows/hepta-ui-native-integration-converge.yml"
+
+      - name: Materialize candidate, task supervisor, release gates and canonical docs
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          import re
+
+          ROOT = Path.cwd()
+          OLD = "work/ui-native-acceptance-repair-20260927"
+          VERIFIED = "work/ui-native-verified-closure-20260927"
+          NEW = "work/ui-native-integration-convergence-20260927"
+
+          def read(path: str) -> str:
+              return (ROOT / path).read_text(encoding="utf-8")
+
+          def write(path: str, text: str) -> None:
+              (ROOT / path).write_text(text, encoding="utf-8")
+
+          def replace_once(text: str, old: str, new: str, label: str) -> str:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{label}: expected one match, found {count}")
+              return text.replace(old, new, 1)
+
+          def regex_once(text: str, pattern: str, replacement: str, label: str) -> str:
+              updated, count = re.subn(pattern, replacement, text, count=1, flags=re.S)
+              if count != 1:
+                  raise SystemExit(f"{label}: expected one regex match, found {count}")
+              return updated
+
+          # Repair the global document validator blocker without weakening the validator.
+          path = "docs/modules/kernel.authority/TECHNICAL.md"
+          text = read(path)
+          text = replace_once(
+              text,
+              "](../../../codex-rs/hepta-private-state)",
+              "](../../../codex-rs/hepta-private-state/src/lib.rs)",
+              "kernel.authority private-state file link",
+          )
+          write(path, text)
+
+          # Supervise UI workers, permit only pre-admission cancellation, drain at exit,
+          # join completed workers, and publish update activation only after a clean close.
+          path = "apps/hepta-native/src/ui.rs"
+          text = read(path)
+          text = replace_once(
+              text,
+              "use std::sync::mpsc::Receiver;\nuse std::sync::mpsc::TryRecvError;\nuse std::time::Duration;",
+              "use std::sync::mpsc::Receiver;\nuse std::sync::mpsc::RecvTimeoutError;\nuse std::sync::mpsc::TryRecvError;\nuse std::thread::JoinHandle;\nuse std::time::Duration;",
+              "ui imports",
+          )
+          text = replace_once(
+              text,
+              '''struct PendingUiTask {
+    kind: UiTaskKind,
+    receiver: Receiver<Result<UiTaskOutput, String>>,
+}
+''',
+              '''const UI_SHUTDOWN_GRACE: Duration = Duration::from_secs(120);
+
+struct PendingUiTask {
+    kind: UiTaskKind,
+    receiver: Receiver<Result<UiTaskOutput, String>>,
+    handle: Option<JoinHandle<()>>,
+    cancellation: Arc<AtomicBool>,
+}
+
+impl PendingUiTask {
+    fn request_cancel_before_admission(&self) {
+        self.cancellation.store(true, Ordering::Release);
+    }
+
+    fn join_worker(&mut self) -> Result<(), String> {
+        let Some(handle) = self.handle.take() else {
+            return Ok(());
+        };
+        handle
+            .join()
+            .map_err(|_| "native worker panicked before reaching a recoverable boundary".to_owned())
+    }
+
+    fn drain_for_shutdown(&mut self, timeout: Duration) -> Result<(), String> {
+        match self.receiver.recv_timeout(timeout) {
+            Ok(_) | Err(RecvTimeoutError::Disconnected) => self.join_worker(),
+            Err(RecvTimeoutError::Timeout) => Err(format!(
+                "native worker did not reach a recoverable boundary within {timeout:?}"
+            )),
+        }
+    }
+}
+
+fn task_cancelled(cancellation: &AtomicBool) -> Result<(), ShellError> {
+    if cancellation.load(Ordering::Acquire) {
+        Err(ShellError::State(
+            "native task cancelled before admission".to_owned(),
+        ))
+    } else {
+        Ok(())
+    }
+}
+''',
+              "pending task supervisor",
+          )
+          text = replace_once(
+              text,
+              '''fn spawn_ui_task<F>(kind: UiTaskKind, task: F) -> std::io::Result<PendingUiTask>
+where
+    F: FnOnce() -> Result<UiTaskOutput, ShellError> + Send + 'static,
+{
+    let (sender, receiver) = mpsc::channel();
+    let handle = std::thread::Builder::new()
+        .name(kind.thread_name().to_owned())
+        .spawn(move || {
+            let outcome = task().map_err(|error| error.to_string());
+            let _ = sender.send(outcome);
+        })?;
+    drop(handle);
+    Ok(PendingUiTask { kind, receiver })
+}
+''',
+              '''fn spawn_ui_task<F>(kind: UiTaskKind, task: F) -> std::io::Result<PendingUiTask>
+where
+    F: FnOnce(&AtomicBool) -> Result<UiTaskOutput, ShellError> + Send + 'static,
+{
+    let (sender, receiver) = mpsc::channel();
+    let cancellation = Arc::new(AtomicBool::new(false));
+    let worker_cancellation = Arc::clone(&cancellation);
+    let handle = std::thread::Builder::new()
+        .name(kind.thread_name().to_owned())
+        .spawn(move || {
+            let outcome = task(worker_cancellation.as_ref()).map_err(|error| error.to_string());
+            let _ = sender.send(outcome);
+        })?;
+    Ok(PendingUiTask {
+        kind,
+        receiver,
+        handle: Some(handle),
+        cancellation,
+    })
+}
+''',
+              "spawn supervised task",
+          )
+          text = replace_once(
+              text,
+              "    activate_update_on_exit: Arc<AtomicBool>,\n    update_manifest_path: String,",
+              "    activate_update_on_exit: Arc<AtomicBool>,\n    update_activation_requested: bool,\n    update_manifest_path: String,",
+              "update activation request field",
+          )
+          text = replace_once(
+              text,
+              "            activate_update_on_exit,\n            update_manifest_path: String::new(),",
+              "            activate_update_on_exit,\n            update_activation_requested: false,\n            update_manifest_path: String::new(),",
+              "update activation request initialization",
+          )
+          text = replace_once(
+              text,
+              '''    fn start_task<F>(&mut self, kind: UiTaskKind, task: F)
+    where
+        F: FnOnce() -> Result<UiTaskOutput, ShellError> + Send + 'static,
+''',
+              '''    fn start_task<F>(&mut self, kind: UiTaskKind, task: F)
+    where
+        F: FnOnce(&AtomicBool) -> Result<UiTaskOutput, ShellError> + Send + 'static,
+''',
+              "start task signature",
+          )
+          text = replace_once(
+              text,
+              '''        self.pending_task = None;
+        match outcome {
+''',
+              '''        let mut task = self
+            .pending_task
+            .take()
+            .expect("polled native task must remain registered");
+        if let Err(error) = task.join_worker() {
+            self.last_error = Some(error);
+            return;
+        }
+        match outcome {
+''',
+              "join task after result",
+          )
+          replacements = [
+              (
+                  '''        self.start_task(UiTaskKind::Refresh, move || {
+            let mut runtime = lock_runtime(&runtime)?;
+            let (presentation, status) = runtime.refresh_runtime_view()?;
+''',
+                  '''        self.start_task(UiTaskKind::Refresh, move |cancellation| {
+            task_cancelled(cancellation)?;
+            let mut runtime = lock_runtime(&runtime)?;
+            task_cancelled(cancellation)?;
+            let (presentation, status) = runtime.refresh_runtime_view()?;
+''',
+                  "refresh cancellation fence",
+              ),
+              (
+                  '''        self.start_task(UiTaskKind::Reconcile, move || {
+            let mut runtime = lock_runtime(&runtime)?;
+            let _ = runtime.reconcile_pending()?;
+''',
+                  '''        self.start_task(UiTaskKind::Reconcile, move |cancellation| {
+            task_cancelled(cancellation)?;
+            let mut runtime = lock_runtime(&runtime)?;
+            task_cancelled(cancellation)?;
+            let _ = runtime.reconcile_pending()?;
+''',
+                  "reconcile cancellation fence",
+              ),
+              (
+                  '''            self.start_task(UiTaskKind::Reconcile, move || {
+                let mut runtime = lock_runtime(&runtime)?;
+                runtime.compact_closed_history(256)?;
+''',
+                  '''            self.start_task(UiTaskKind::Reconcile, move |cancellation| {
+                task_cancelled(cancellation)?;
+                let mut runtime = lock_runtime(&runtime)?;
+                task_cancelled(cancellation)?;
+                runtime.compact_closed_history(256)?;
+''',
+                  "compaction cancellation fence",
+              ),
+              (
+                  '''            self.start_task(UiTaskKind::Reconcile, move || {
+                let mut runtime = lock_runtime(&runtime)?;
+                runtime.close_operation_observation(&key)?;
+''',
+                  '''            self.start_task(UiTaskKind::Reconcile, move |cancellation| {
+                task_cancelled(cancellation)?;
+                let mut runtime = lock_runtime(&runtime)?;
+                task_cancelled(cancellation)?;
+                runtime.close_operation_observation(&key)?;
+''',
+                  "observation close cancellation fence",
+              ),
+              (
+                  '''                self.start_task(UiTaskKind::Execute, move || {
+                    let mut runtime = lock_runtime(&runtime)?;
+                    let receipt = runtime.request_platform_capability(request)?;
+''',
+                  '''                self.start_task(UiTaskKind::Execute, move |cancellation| {
+                    task_cancelled(cancellation)?;
+                    let mut runtime = lock_runtime(&runtime)?;
+                    task_cancelled(cancellation)?;
+                    let receipt = runtime.request_platform_capability(request)?;
+''',
+                  "effect admission cancellation fence",
+              ),
+          ]
+          for old, new, label in replacements:
+              text = replace_once(text, old, new, label)
+
+          text = replace_once(
+              text,
+              '''    fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
+        if let Ok(mut runtime) = self.runtime.try_lock() {
+            let _ = runtime.close();
+            self.connected = false;
+        }
+    }
+''',
+              '''    fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
+        let mut shutdown_error = None;
+        if let Some(mut task) = self.pending_task.take() {
+            // Cancellation is intentionally limited to the pre-admission fence.
+            // Once an external effect may have entered the OS adapter, shutdown
+            // drains to a durable boundary rather than pretending it can abort it.
+            task.request_cancel_before_admission();
+            if let Err(error) = task.drain_for_shutdown(UI_SHUTDOWN_GRACE) {
+                shutdown_error = Some(error);
+            }
+        }
+        if shutdown_error.is_none() {
+            match self.runtime.lock() {
+                Ok(mut runtime) => {
+                    if let Err(error) = runtime.close() {
+                        shutdown_error = Some(error.to_string());
+                    } else {
+                        self.connected = false;
+                    }
+                }
+                Err(_) => {
+                    shutdown_error = Some("native runtime worker lock is poisoned".to_owned());
+                }
+            }
+        }
+        match shutdown_error {
+            Some(error) => {
+                eprintln!("hepta-native shutdown failed: {error}");
+                self.activate_update_on_exit.store(false, Ordering::SeqCst);
+            }
+            None => self.activate_update_on_exit.store(
+                self.update_activation_requested,
+                Ordering::SeqCst,
+            ),
+        }
+    }
+''',
+              "bounded exit drain",
+          )
+          text = replace_once(
+              text,
+              '''        let pending = spawn_ui_task(UiTaskKind::Refresh, move || {
+            wait.recv()
+''',
+              '''        let mut pending = spawn_ui_task(UiTaskKind::Refresh, move |_cancellation| {
+            wait.recv()
+''',
+              "worker test closure",
+          )
+          text = replace_once(
+              text,
+              '''        assert_eq!(
+            outcome.unwrap_err(),
+            "native-shell state violation: worker-finished"
+        );
+    }
+
+    #[test]
+    fn locale_selection_covers_chinese_and_safe_english_fallback() {
+''',
+              '''        assert_eq!(
+            outcome.unwrap_err(),
+            "native-shell state violation: worker-finished"
+        );
+        pending.join_worker().unwrap();
+    }
+
+    #[test]
+    fn shutdown_drain_joins_a_completed_worker() {
+        let mut pending = spawn_ui_task(UiTaskKind::Refresh, |_cancellation| {
+            Err::<UiTaskOutput, ShellError>(ShellError::State("done".to_owned()))
+        })
+        .unwrap();
+        pending
+            .drain_for_shutdown(Duration::from_secs(2))
+            .unwrap();
+        assert!(pending.handle.is_none());
+    }
+
+    #[test]
+    fn shutdown_drain_is_bounded_and_can_finish_after_timeout() {
+        let (release, wait) = mpsc::channel();
+        let mut pending = spawn_ui_task(UiTaskKind::Refresh, move |_cancellation| {
+            wait.recv()
+                .map_err(|error| ShellError::State(error.to_string()))?;
+            Err::<UiTaskOutput, ShellError>(ShellError::State("done".to_owned()))
+        })
+        .unwrap();
+        let error = pending
+            .drain_for_shutdown(Duration::from_millis(10))
+            .unwrap_err();
+        assert!(error.contains("recoverable boundary"));
+        release.send(()).unwrap();
+        pending
+            .drain_for_shutdown(Duration::from_secs(2))
+            .unwrap();
+        assert!(pending.handle.is_none());
+    }
+
+    #[test]
+    fn locale_selection_covers_chinese_and_safe_english_fallback() {
+''',
+              "shutdown supervisor tests",
+          )
+          write(path, text)
+
+          path = "apps/hepta-native/src/ui/update_views.rs"
+          text = read(path)
+          text = replace_once(
+              text,
+              "                    self.activate_update_on_exit.store(true, Ordering::SeqCst);",
+              "                    self.update_activation_requested = true;",
+              "defer update activation publication",
+          )
+          text = replace_once(
+              text,
+              '''                self.start_task(UiTaskKind::StageUpdate, move || {
+                    let pending =
+                        updater.verify_and_stage(manifest, &package_path, protocol_version)?;
+''',
+              '''                self.start_task(UiTaskKind::StageUpdate, move |cancellation| {
+                    task_cancelled(cancellation)?;
+                    let pending =
+                        updater.verify_and_stage(manifest, &package_path, protocol_version)?;
+''',
+              "update staging cancellation fence",
+          )
+          write(path, text)
+
+          # Make the new branch the only writable/canonical ui.native candidate.
+          path = "apps/hepta-native/tools/prepare_current_source.py"
+          text = read(path)
+          text = replace_once(text, f'BRANCH = "{OLD}"', f'BRANCH = "{NEW}"', "canonical branch")
+          text = regex_once(
+              text,
+              r'WRITE_BRANCHES = \{[^\n]+\}',
+              '''WRITE_BRANCHES = {
+    "work/ui-native-verified-closure-20260927",
+    "work/ui-native-operational-closure-20260927",
+    "work/ui-native-acceptance-repair-20260927",
+    "work/ui-native-remediation-20260927",
+    "work/ui-native-closure-20260927",
+    BRANCH,
+}''',
+              "metadata write branch set",
+          )
+          text = replace_once(
+              text,
+              '    ROOT / "docs/modules/ui.native/ACCEPTANCE-REPAIR-20260927.md",\n',
+              '    ROOT / "docs/modules/ui.native/ACCEPTANCE-REPAIR-20260927.md",\n'
+              '    ROOT / "docs/modules/ui.native/INTEGRATION-CONVERGENCE-20260927.md",\n'
+              '    ROOT / "docs/modules/ui.native/RELEASE_GATES.json",\n'
+              '    ROOT / "scripts/hepta_ui_native_release_gates.py",\n'
+              '    ROOT / "scripts/test_hepta_ui_native_release_gates.py",\n',
+              "integration convergence identity inputs",
+          )
+          write(path, text)
+
+          # Freeze normal qualification/current-source automation onto the one candidate.
+          for path in [
+              ".github/workflows/hepta-ui-native-remediation.yml",
+              ".github/workflows/hepta-ui-native-remediation-format.yml",
+              ".github/workflows/hepta-ui-native-current-source.yml",
+          ]:
+              text = read(path)
+              if OLD not in text:
+                  raise SystemExit(f"{path}: old candidate trigger missing")
+              text = text.replace(OLD, NEW)
+              if path.endswith("hepta-ui-native-remediation.yml"):
+                  text = text.replace("name: ui.native remediation qualification", "name: ui.native convergence qualification", 1)
+                  text = text.replace("name: ui.native remediation required", "name: ui.native convergence required", 1)
+                  text = text.replace("ui-native-remediation-${{", "ui-native-convergence-${{", 1)
+                  text = replace_once(
+                      text,
+                      '''          check python_tests python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v
+          python3 scripts/hepta_ui_native_evidence.py inventory --out native-evidence/inventory.json
+''',
+                      '''          check python_tests python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v
+          check release_gates python3 scripts/hepta_ui_native_release_gates.py audit
+          python3 scripts/hepta_ui_native_evidence.py inventory --out native-evidence/inventory.json
+''',
+                      "qualification release-gate audit",
+                  )
+              write(path, text)
+
+          # Create a machine-audited boundary for evidence that repository CI cannot issue.
+          gates = {
+              "schema": "hepta.ui.native.release-gates.v1",
+              "canonicalBranch": NEW,
+              "sourceManifest": "apps/hepta-native/CURRENT_SOURCE.json",
+              "releaseAuthorized": False,
+              "gates": [
+                  {"id": "six_subject_exact_and_merge_qualification", "status": "pending_ci", "externalAuthority": False, "evidence": None},
+                  {"id": "signed_linux_installer", "status": "pending_external_evidence", "externalAuthority": True, "evidence": None},
+                  {"id": "signed_windows_installer_identity", "status": "pending_external_evidence", "externalAuthority": True, "evidence": None},
+                  {"id": "signed_macos_installer_and_notarization", "status": "pending_external_evidence", "externalAuthority": True, "evidence": None},
+                  {"id": "installed_update_crash_cuts_and_rollback", "status": "pending_external_evidence", "externalAuthority": True, "evidence": None},
+                  {"id": "signing_key_custody_rotation_and_revocation", "status": "pending_external_evidence", "externalAuthority": True, "evidence": None},
+                  {"id": "ordinary_user_keyring_and_desktop_session", "status": "pending_external_evidence", "externalAuthority": True, "evidence": None},
+                  {"id": "keyboard_screen_reader_zh_ime_focus_dpi_multimonitor", "status": "pending_external_evidence", "externalAuthority": True, "evidence": None},
+                  {"id": "long_running_installed_product_measurements", "status": "pending_external_evidence", "externalAuthority": True, "evidence": None},
+                  {"id": "independent_release_approval", "status": "pending_external_evidence", "externalAuthority": True, "evidence": None},
+              ],
+          }
+          write("docs/modules/ui.native/RELEASE_GATES.json", json.dumps(gates, indent=2) + "\n")
+
+          release_script = r'''#!/usr/bin/env python3
+"""Audit ui.native release gates without manufacturing external evidence."""
+import argparse
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+PATH = ROOT / "docs/modules/ui.native/RELEASE_GATES.json"
+EXPECTED = {
+    "six_subject_exact_and_merge_qualification",
+    "signed_linux_installer",
+    "signed_windows_installer_identity",
+    "signed_macos_installer_and_notarization",
+    "installed_update_crash_cuts_and_rollback",
+    "signing_key_custody_rotation_and_revocation",
+    "ordinary_user_keyring_and_desktop_session",
+    "keyboard_screen_reader_zh_ime_focus_dpi_multimonitor",
+    "long_running_installed_product_measurements",
+    "independent_release_approval",
+}
+
+
+def fail(message: str) -> None:
+    raise SystemExit("FAIL_UI_NATIVE_RELEASE_GATES: " + message)
+
+
+def load() -> dict:
+    data = json.loads(PATH.read_text(encoding="utf-8"))
+    if data.get("schema") != "hepta.ui.native.release-gates.v1":
+        fail("schema")
+    if data.get("canonicalBranch") != "work/ui-native-integration-convergence-20260927":
+        fail("canonical branch")
+    rows = data.get("gates")
+    if not isinstance(rows, list):
+        fail("gate rows")
+    ids = [row.get("id") for row in rows]
+    if len(ids) != len(set(ids)) or set(ids) != EXPECTED:
+        fail("gate closure")
+    return data
+
+
+def audit() -> int:
+    data = load()
+    if data.get("releaseAuthorized") is not False:
+        fail("repository candidate must not self-authorize release")
+    for row in data["gates"]:
+        if row.get("status") not in {"pending_ci", "pending_external_evidence"}:
+            fail(f"unadmitted status for {row['id']}")
+        if row.get("evidence") is not None:
+            fail(f"unverified evidence attached to {row['id']}")
+        if type(row.get("externalAuthority")) is not bool:
+            fail(f"external authority type for {row['id']}")
+    print(json.dumps({
+        "status": "PASS_UI_NATIVE_RELEASE_GATE_BOUNDARY",
+        "releaseAuthorized": False,
+        "pending": len(data["gates"]),
+    }, sort_keys=True))
+    return 0
+
+
+def verify_release() -> int:
+    data = load()
+    if data.get("releaseAuthorized") is not True:
+        fail("release authorization is absent")
+    for row in data["gates"]:
+        if row.get("status") != "qualified" or not isinstance(row.get("evidence"), dict):
+            fail(f"gate is not qualified: {row['id']}")
+        evidence = row["evidence"]
+        if not isinstance(evidence.get("sha256"), str) or len(evidence["sha256"]) != 64:
+            fail(f"content-addressed evidence missing: {row['id']}")
+        if not isinstance(evidence.get("issuer"), str) or not evidence["issuer"]:
+            fail(f"evidence issuer missing: {row['id']}")
+    print(json.dumps({"status": "PASS_UI_NATIVE_RELEASE_GATES"}, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("command", choices=["audit", "verify-release"])
+    args = parser.parse_args()
+    raise SystemExit(audit() if args.command == "audit" else verify_release())
+'''
+          write("scripts/hepta_ui_native_release_gates.py", release_script)
+
+          release_test = r'''import json
+import subprocess
+import sys
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / "scripts/hepta_ui_native_release_gates.py"
+
+
+class UiNativeReleaseGateTests(unittest.TestCase):
+    def test_candidate_audit_keeps_release_false(self):
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT), "audit"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        payload = json.loads(result.stdout)
+        self.assertFalse(payload["releaseAuthorized"])
+        self.assertEqual(payload["pending"], 10)
+
+    def test_release_verification_rejects_missing_external_evidence(self):
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT), "verify-release"],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("release authorization is absent", result.stderr)
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+          write("scripts/test_hepta_ui_native_release_gates.py", release_test)
+
+          ledger = f'''# ui.native integration convergence — 2026-09-27
+
+## Candidate identity
+
+The only writable integration candidate is `{NEW}`. It descends linearly from
+`709aab0b61f2484b7f5c1efadee96fb14fc5cd31`; its deterministic qualification
+base remains `a126987b84737dbc2ee2592442a314117bddb4a2`. This ledger grants no
+production, signing, acceptance, promotion or release authority.
+
+## Branch disposition
+
+| Branch | Disposition |
+| --- | --- |
+| `{OLD}` | absorbed parent; superseded as writable candidate |
+| `work/ui-native-operational-closure-20260927` | linear ancestor; historical evidence only |
+| `work/ui-native-release-hardening-20260927` | linear ancestor; historical evidence only |
+| `work/ui-native-full-closure-20260927` | PR base/ancestor; superseded |
+| `{VERIFIED}` | historical protocol ledger; superseded |
+| `work/ui-native-closure-20260927` | historical staging branch; superseded |
+| `work/ui-native-current-source-20260925` | historical source ancestor; superseded |
+| `codex/ui-native-production-convergence-20260926` | historical proposal; not a current candidate |
+| `tmp/ui-native-full-convergence-staging-20260926` | staging history; not a current candidate |
+| `work/ui-native-remediation-20260927` | diverged proposal-only line at `90de4574abc10020c16f54849aa0482140f7d3f5`; its effect-broker patch requires separate application and native verification before absorption |
+
+Branches are retained for auditability. No old branch may be used to claim a
+new pass, and no queued, skipped, cancelled or historical result counts for this
+candidate.
+
+## Runtime shutdown invariant
+
+The GUI owns one supervised worker. Shutdown requests cooperative cancellation
+only before admission. Once an operation may have entered an owner or OS
+boundary, shutdown waits for the worker to reach a recoverable boundary, joins
+it, and then closes the runtime. Update activation is published to the outer
+process only after both drain and close succeed; timeout, panic, poison or close
+failure clears activation and emits an explicit diagnostic.
+
+## Deliberately closed and still-open OS boundaries
+
+Mutable path-string open/reveal remains disabled. The existing resource snapshot
+is identity evidence, not an OS-bound capability handoff. Notification launchers
+without a queryable operation-bound broker remain indeterminate and are never
+blindly replayed. The diverged effect-broker proposal is not treated as source
+until separately applied and tested.
+
+Retirement-v2 segments preserve complete closed records and replay fencing. The
+current open path reconstructs all retired identities in memory; therefore a
+million-record installed-product claim remains blocked on a persistent,
+rebuildable disk index plus current-candidate scale receipts.
+
+## Qualification and release boundary
+
+The normal workflow must produce six successful subjects: Linux/macOS/Windows ×
+exact head/deterministic merge. Each subject runs identity checks, generated
+projection checks, strict formatting and Clippy, app/owner tests, release builds,
+unsigned packaging and packaged crash profiles. Missing, skipped or cancelled
+subjects fail the aggregate.
+
+`RELEASE_GATES.json` separately records signed installers, notarization,
+installer identity, installed update/rollback crash cuts, key custody,
+ordinary-user keyring/desktop sessions, physical accessibility/IME/focus/DPI/
+multi-monitor work, longitudinal measurements and independent approval. These
+must be supplied by their real external issuers; repository CI cannot fabricate
+them.
+'''
+          write("docs/modules/ui.native/INTEGRATION-CONVERGENCE-20260927.md", ledger)
+
+          # Collapse conflicting candidate/document statements onto one source of truth.
+          path = "docs/modules/ui.native/TECHNICAL.md"
+          text = read(path).replace(OLD, NEW)
+          text = replace_once(
+              text,
+              '''**Canonical candidate:** `work/ui-native-verified-closure-20260927`
+
+**Current protocol/evidence ledger:** [Verified closure](VERIFIED-CLOSURE-20260927.md).
+Request binding v2 and journal v6 with segmented retirement are the current candidate protocols.
+The [operational closure](OPERATIONAL-CLOSURE-20260927.md) is inherited history, not a current pass.
+The previous current-source branch remains an integration ancestor, not a current pass.
+''',
+              f'''**Canonical candidate:** `{NEW}`
+
+**Current protocol/evidence ledger:** [Integration convergence](INTEGRATION-CONVERGENCE-20260927.md).
+Request binding v2, journal v6, archived receipts and retirement-v2 segments are the current protocols.
+All earlier closure, verified, remediation and production-convergence branches are historical inputs,
+not current passes or writable candidates.
+''',
+              "technical canonical candidate block",
+          )
+          text = regex_once(
+              text,
+              r'Journal v3 supports v2 opening.*?requires an explicit future migration\.\n',
+              '''Journal v6 opens v2-v6 only under explicit schema and integrity checks; v4-v6 carry checksums and migration occurs only on a persisted change. The active journal remains bounded at 4096 records and 8 MiB. Closed terminal or observation-closed records are written as complete immutable record objects and then referenced from sorted, content-addressed retirement-v2 segments before the durable checkpoint is published and before the active copy is removed. Missing, corrupt or conflicting segment/archive state fails closed. Legacy inline tombstones retain their 32768-entry compatibility ceiling.
+
+The segment chain is the replay-fencing authority, but the current open path rebuilds its identity and record maps linearly in total retired history. Million-record startup/RSS claims therefore remain a production gate until a rebuildable persistent index and exact installed-product scale receipts exist; deleting history or weakening replay fencing is not an optimization.
+''',
+              "technical journal v6 semantics",
+          )
+          write(path, text)
+
+          path = "apps/hepta-native/DEVELOPMENT.md"
+          text = read(path).replace(OLD, NEW)
+          text = replace_once(
+              text,
+              '''Current candidate: `work/ui-native-verified-closure-20260927`. See
+[the current protocol and evidence ledger](../../docs/modules/ui.native/VERIFIED-CLOSURE-20260927.md)
+for request binding v2, journal v6, segmented retirement, migration and release gates.
+Historical commands below remain valid unless that ledger explicitly supersedes a protocol.
+''',
+              '''The superseded verified-closure ledger remains historical context only. The current
+protocol, branch disposition and release boundary are in
+[the integration convergence ledger](../../docs/modules/ui.native/INTEGRATION-CONVERGENCE-20260927.md).
+''',
+              "development duplicate candidate block",
+          )
+          text = text.replace(VERIFIED, NEW)
+          text = regex_once(
+              text,
+              r'Journal schema v3 retains.*?silent resurrection\.\n',
+              '''Journal schema v6 reads v2-v6 with explicit integrity rules and keeps at most 4096 active records and 8 MiB in the active file. Closed records are durably archived in complete content-addressed record files and retirement-v2 segments before active removal, so exact duplicates can recover the original receipt while semantic drift remains a conflict. Legacy inline tombstones keep a 32768-entry compatibility ceiling; the segmented store itself preserves append-only replay fencing.
+
+Current startup still reconstructs segmented retirement identities in memory. Treat million-record startup, RSS and lookup targets as an open installed-product qualification gate until the persistent rebuildable index and its fault/scale receipts land; never delete retirement history to regain capacity.
+''',
+              "development journal v6 semantics",
+          )
+          text = replace_once(
+              text,
+              '''Open/reveal/notification launchers are bounded to four concurrent child
+processes and a one-second observation window. A timeout kills/reaps the child
+where possible but remains **indeterminate**, because process termination does
+not prove the OS did not accept the request. Such an operation is not replayed.
+Clipboard may become terminal only after immediate readback matches. Windows
+notification remains disabled until a packaged AppUserModelID/WinRT identity is
+available; a generic command launch is not treated as notification success.
+''',
+              '''Open/reveal remains disabled because the current adapter cannot hand the already-opened resource capability to the OS without reopening a mutable path. Notification launchers are bounded to four concurrent child processes and a one-second observation window. A timeout kills/reaps the child where possible but remains **indeterminate**, because process termination does not prove the OS did not accept the request. Such an operation is not replayed. Clipboard may become terminal only after immediate readback matches. Windows notification remains disabled until a packaged AppUserModelID/WinRT identity is available; a generic command launch is not treated as notification success.
+''',
+              "development OS effect truth",
+          )
+          write(path, text)
+          PY
+
+          chmod +x scripts/hepta_ui_native_release_gates.py
+          python3 -m py_compile \
+            apps/hepta-native/tools/prepare_current_source.py \
+            scripts/hepta_ui_native_release_gates.py \
+            scripts/test_hepta_ui_native_release_gates.py
+          python3 scripts/hepta_ui_native_release_gates.py audit
+          python3 -m unittest -v scripts.test_hepta_ui_native_release_gates
+
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+
+      - name: Format and validate generated document projections
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-native-gateway \
+            -p codex-hepta-contracts \
+            -p codex-hepta-private-state
+          python3 scripts/hepta-module-docs.py refresh-derived
+          python3 scripts/hepta-module-docs.py refresh-indexes
+          python3 scripts/hepta-module-docs.py verify
+          git diff --check
+
+      - name: Strict native lint, tests and release binaries
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
+          cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --all-targets --all-features -- -D warnings
+          cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --all-targets
+          cargo +1.95.0 clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-native-gateway \
+            -p codex-hepta-contracts \
+            -p codex-hepta-private-state \
+            --all-targets --all-features --no-deps -- -D warnings
+          cargo +1.95.0 test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-native-gateway \
+            -p codex-hepta-contracts \
+            -p codex-hepta-private-state \
+            --all-targets --all-features
+          cargo +1.95.0 build --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --release --bins
+
+      - name: Commit reviewed source and document convergence
+        id: source
+        run: |
+          set -euo pipefail
+          git config user.name ui-native-convergence
+          git config user.email ui-native-convergence@users.noreply.github.com
+          git add --all
+          git diff --cached --check
+          git commit -m 'fix(ui.native): converge supervised runtime and candidate truth'
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Regenerate exact source, implementation and module identities
+        env:
+          HEPTA_UI_NATIVE_WRITE_BRANCH: ${{ env.CANDIDATE_BRANCH }}
+        run: |
+          set -euo pipefail
+          python3 apps/hepta-native/tools/prepare_current_source.py --write-fingerprints
+          python3 apps/hepta-native/tools/prepare_current_source.py --sync-metadata
+          python3 scripts/hepta-module-docs.py refresh-derived
+          python3 scripts/hepta-module-docs.py refresh-indexes
+          git add --all
+          git diff --cached --check
+          git commit -m 'docs(ui.native): bind integration convergence identities'
+
+      - name: Verify clean exact candidate before publication
+        run: |
+          set -euo pipefail
+          python3 apps/hepta-native/tools/prepare_current_source.py
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta-module-docs.py refresh-indexes --check
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/test_hepta_module_registry.py
+          python3 scripts/hepta_ui_native_release_gates.py audit
+          python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
+          git diff --exit-code
+
+      - name: Retire one-shot materializer and publish candidate
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/hepta-ui-native-integration-converge.yml
+          git commit -m 'chore(ui.native): retire integration convergence materializer'
+          git push origin "HEAD:refs/heads/$CANDIDATE_BRANCH"
+          {
+            echo '### ui.native integration convergence'
+            echo
+            echo "Source commit: \`${{ steps.source.outputs.sha }}\`"
+            echo "Published candidate: \`$(git rev-parse HEAD)\`"
+            echo
+            echo 'Release authority remains false; external gates are recorded in RELEASE_GATES.json.'
+          } >> "$GITHUB_STEP_SUMMARY"
