@@ -2,48 +2,30 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "5fcb7b2067d0e6b98b9bc143329ed84b28ac34fd",
-    "tree": "9b9bf10e190fb63fd49ac6f389ad6f8e07f7dac9"
+    "commit": "88dfa09120ecd856611d106dec485df3aa153e55",
+    "tree": "2864fd85609cb26bea0374bdf9fe9fc778958e87"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.evidence",
   "owner": "qualification-plane",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/kernel.evidence/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-evidence"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-evidence"
-  ],
-  "sourceRoot": [
-    "codex-rs/hepta-evidence"
-  ],
+  "declaredRoots": ["codex-rs/hepta-evidence"],
+  "resolvedRoots": ["codex-rs/hepta-evidence"],
+  "sourceRoot": ["codex-rs/hepta-evidence"],
   "sourceRootPresent": true,
-  "productionImplementation": true,
+  "productionImplementation": false,
   "productCallerState": "agentd_development_and_fail_closed_production_composed",
   "productionWriterState": "agentd_authenticated_evidence_writer_fail_closed_in_production",
   "productCallerBindingPolicy": "closed_world",
   "productCallerBindings": [
-    {
-      "callerPath": "codex-rs/hepta-agentd/src/evidence_host.rs",
-      "mustContain": "EvidenceHost"
-    },
-    {
-      "callerPath": "codex-rs/hepta-agentd/src/evidence_production.rs",
-      "mustContain": "verify_production_evidence_frontier"
-    }
+    {"callerPath": "codex-rs/hepta-agentd/src/evidence_host.rs", "mustContain": "EvidenceHost"},
+    {"callerPath": "codex-rs/hepta-agentd/src/evidence_production.rs", "mustContain": "verify_production_evidence_frontier"}
   ],
   "productionWriterBindingPolicy": "closed_world",
   "productionWriterBindings": [
-    {
-      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
-      "mustContain": "append_receipt"
-    },
-    {
-      "sourcePath": "codex-rs/hepta-agentd/src/evidence_production.rs",
-      "mustContain": "kernel.evidence recovery_required"
-    }
+    {"sourcePath": "codex-rs/hepta-evidence/src/qualification.rs", "mustContain": "append_receipt"},
+    {"sourcePath": "codex-rs/hepta-agentd/src/evidence_production_checks.rs", "mustContain": "kernel.evidence recovery_required"}
   ],
   "exactSourceEvidenceMode": "lane_a_runtime_head_tree_and_registered_callers",
   "operations": [
@@ -53,10 +35,7 @@
       "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
       "state": "source_implemented_product_composed",
       "authority": "authenticated_append_only_evidence_writer",
-      "tests": [
-        "codex-rs/hepta-evidence/src/qualification_tests.rs",
-        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
-      ],
+      "tests": ["codex-rs/hepta-evidence/src/qualification_tests.rs", "codex-rs/hepta-evidence/tests/verified_trust_boundary.rs", "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"],
       "sourcePathExists": true
     },
     {
@@ -65,21 +44,16 @@
       "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
       "state": "source_implemented_product_composed",
       "authority": "read_only_exact_candidate_query",
-      "tests": [
-        "codex-rs/hepta-evidence/src/qualification_tests.rs",
-        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
-      ],
+      "tests": ["codex-rs/hepta-evidence/src/qualification_tests.rs", "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"],
       "sourcePathExists": true
     },
     {
       "operation": "query_claim_page",
       "nativeSymbol": "HeptaEvidenceStore::query_qualification_claim_page",
       "sourcePath": "codex-rs/hepta-evidence/src/qualification_paging.rs",
-      "state": "source_implemented_product_composed",
+      "state": "source_implemented_qualification_only",
       "authority": "read_only_stable_cursor_query",
-      "tests": [
-        "codex-rs/hepta-evidence/src/qualification_paging_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-evidence/src/qualification_paging_tests.rs"],
       "sourcePathExists": true
     },
     {
@@ -88,10 +62,7 @@
       "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
       "state": "source_implemented_product_composed",
       "authority": "read_only_current_trust_verification",
-      "tests": [
-        "codex-rs/hepta-evidence/src/qualification_tests.rs",
-        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
-      ],
+      "tests": ["codex-rs/hepta-evidence/src/identity_assignment.rs", "codex-rs/hepta-evidence/src/qualification_tests.rs", "codex-rs/hepta-evidence/tests/verified_trust_boundary.rs", "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"],
       "sourcePathExists": true
     },
     {
@@ -99,18 +70,20 @@
       "nativeSymbol": "HeptaEvidenceStore::recovery_snapshot",
       "sourcePath": "codex-rs/hepta-evidence/src/recovery_frontier.rs",
       "state": "source_implemented_product_consumed",
-      "authority": "read_only_recovery_snapshot",
-      "tests": [
-        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
-      ],
+      "authority": "read_only_legacy_v1_transactional_snapshot",
+      "tests": ["codex-rs/hepta-evidence/src/recovery_snapshot_tests.rs", "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "authenticated_recovery_snapshot",
+      "nativeSymbol": "HeptaEvidenceStore::authenticated_recovery_snapshot",
+      "sourcePath": "codex-rs/hepta-evidence/src/recovery_frontier.rs",
+      "state": "source_implemented_product_consumed",
+      "authority": "read_only_v2_full_admission_transactional_snapshot",
+      "tests": ["codex-rs/hepta-evidence/src/recovery_snapshot_tests.rs"],
       "sourcePathExists": true,
       "delegatedCallees": [
-        {
-          "sourcePath": "codex-rs/hepta-agentd/src/evidence_production.rs",
-          "nativeSymbol": "verify_production_evidence_frontier",
-          "role": "fail_closed_product_restore_verifier",
-          "path": "codex-rs/hepta-agentd/src/evidence_production.rs"
-        }
+        {"sourcePath": "codex-rs/hepta-agentd/src/evidence_production.rs", "nativeSymbol": "verify_production_evidence_frontier", "role": "fail_closed_product_restore_verifier", "path": "codex-rs/hepta-agentd/src/evidence_production.rs"}
       ]
     },
     {
@@ -119,9 +92,7 @@
       "sourcePath": "codex-rs/hepta-evidence/src/frontier_v2.rs",
       "state": "source_implemented_product_consumed",
       "authority": "deterministic_signed_recovery_identity",
-      "tests": [
-        "codex-rs/hepta-evidence/src/frontier_v2_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-evidence/src/frontier_v2_tests.rs"],
       "sourcePathExists": true
     },
     {
@@ -130,34 +101,25 @@
       "sourcePath": "codex-rs/hepta-evidence/src/frontier_backend.rs",
       "state": "source_implemented_product_consumed",
       "authority": "authenticated_external_latest_frontier_read",
-      "tests": [
-        "codex-rs/hepta-evidence/src/frontier_backend_tests.rs",
-        "codex-rs/hepta-evidence/src/frontier_backend_file_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-evidence/src/frontier_backend_tests.rs", "codex-rs/hepta-evidence/src/frontier_backend_file_tests.rs"],
       "sourcePathExists": true
     },
     {
       "operation": "frontier_compare_and_swap",
       "nativeSymbol": "EvidenceFrontierBackend::compare_and_swap",
       "sourcePath": "codex-rs/hepta-evidence/src/frontier_backend.rs",
-      "state": "source_implemented_product_consumed",
+      "state": "source_implemented_qualification_only",
       "authority": "monotonic_generation_cas_with_durable_acknowledgement",
-      "tests": [
-        "codex-rs/hepta-evidence/src/frontier_backend_file_tests.rs",
-        "codex-rs/hepta-evidence/tests/frontier_backend_multiprocess.rs"
-      ],
+      "tests": ["codex-rs/hepta-evidence/src/frontier_backend_file_tests.rs", "codex-rs/hepta-evidence/tests/frontier_backend_multiprocess.rs"],
       "sourcePathExists": true
     },
     {
       "operation": "frontier_get_history",
       "nativeSymbol": "EvidenceFrontierBackend::get_history",
       "sourcePath": "codex-rs/hepta-evidence/src/frontier_backend.rs",
-      "state": "source_implemented_product_consumed",
+      "state": "source_implemented_qualification_only",
       "authority": "read_only_hash_chained_audit_history",
-      "tests": [
-        "codex-rs/hepta-evidence/src/frontier_backend_tests.rs",
-        "codex-rs/hepta-evidence/src/frontier_backend_file_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-evidence/src/frontier_backend_tests.rs", "codex-rs/hepta-evidence/src/frontier_backend_file_tests.rs"],
       "sourcePathExists": true
     },
     {
@@ -166,9 +128,7 @@
       "sourcePath": "codex-rs/hepta-evidence/src/frontier_backend.rs",
       "state": "source_implemented_product_consumed",
       "authority": "pinned_external_backend_identity_verification",
-      "tests": [
-        "codex-rs/hepta-evidence/src/frontier_backend_file_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-evidence/src/frontier_backend_file_tests.rs"],
       "sourcePathExists": true
     },
     {
@@ -177,9 +137,7 @@
       "sourcePath": "codex-rs/hepta-evidence/src/frontier_acceptance.rs",
       "state": "source_implemented_product_consumed",
       "authority": "immutable_local_generation_acceptance",
-      "tests": [
-        "codex-rs/hepta-evidence/src/frontier_acceptance_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-evidence/src/frontier_acceptance_tests.rs"],
       "sourcePathExists": true
     },
     {
@@ -188,10 +146,7 @@
       "sourcePath": "codex-rs/hepta-agentd/src/evidence_production.rs",
       "state": "source_implemented_product_composed",
       "authority": "fail_closed_production_admission",
-      "tests": [
-        "codex-rs/hepta-agentd/src/evidence_production_tests.rs",
-        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
-      ],
+      "tests": ["codex-rs/hepta-agentd/src/evidence_production_tests.rs", "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"],
       "sourcePathExists": true
     },
     {
@@ -200,9 +155,7 @@
       "sourcePath": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
       "state": "source_implemented_qualification_only",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-evidence/src/provider_effect_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-evidence/src/provider_effect_tests.rs"],
       "sourcePathExists": true
     },
     {
@@ -211,37 +164,37 @@
       "sourcePath": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
       "state": "source_implemented_qualification_only",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-evidence/src/provider_effect_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-evidence/src/provider_effect_tests.rs"],
       "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Obtain successful exact-source and deterministic-merge qualification receipts for the final PR head and retain their artifact digests.",
-    "Complete final Rust, general CI, architecture and convergence regression runs; local Python unit results do not qualify the full candidate.",
-    "A repository administrator must preserve existing requirements and enforce the stable CI required and Kernel evidence convergence required fan-ins; the active integration cannot administer branch protection."
+    "Run formatting, strict Clippy, evidence and Agentd native suites and builds on the final source and fixed-base merge; queued checks are not results.",
+    "Persist newly admitted original signature material and its trust-generation provenance; historical V1 rows cannot recreate absent signatures.",
+    "Close the snapshot-to-acceptance writer race and implement fenced durable pending publication, CAS indeterminate-outcome reconciliation and startup recovery.",
+    "Complete independently rooted monotonic trust rotation; the present production fix pins one admitted digest for one process generation.",
+    "Wire cursor paging and bounded verification summaries through the Agentd wire protocol and remove path-derived legacy/production selection from public composition.",
+    "Bind real backup object bytes, storage acknowledgement and restore results, and bind the executable to a governed build provenance record.",
+    "Implement bounded long-term journal segmentation, archiving, observability and capacity qualification.",
+    "Refresh STATUS_SOURCE.json and all five generated projections to the same final code anchor, then validate guide, contract and source inventories. The older status anchor is not current-head qualification.",
+    "Preserve protected-branch CI and architecture requirements; independent administration and deployment gates cannot be self-issued."
   ],
   "externalEvidenceGates": [
     "independent exact-candidate semantic and security acceptance",
-    "deployed external rollback-domain backend, signer ceremony, durable backup publication and witnessed restore drill",
+    "deployed external rollback-domain backend, signer ceremony, real durable backup publication and witnessed restore drill",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
-    "nativeSourceMappingComplete": true,
+    "nativeSourceMappingComplete": false,
     "sourceRootPresent": true,
-    "productionImplementation": true,
+    "productionImplementation": false,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
     "release": false,
-    "implementedOperationMappingComplete": true
+    "implementedOperationMappingComplete": false
   },
   "productCallers": [
-    {
-      "sourcePath": "codex-rs/hepta-agentd/src/evidence_host.rs",
-      "nativeSymbol": "EvidenceHost",
-      "state": "named_agentd_host_with_explicit_development_and_fail_closed_production_modes"
-    }
+    {"sourcePath": "codex-rs/hepta-agentd/src/evidence_host.rs", "nativeSymbol": "EvidenceHost", "state": "named_agentd_host_with_explicit_development_and_fail_closed_production_modes"}
   ]
 }
