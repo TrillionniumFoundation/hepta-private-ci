@@ -162,8 +162,6 @@ impl PlannerStoreV1 {
         };
         let path = generation_path(directory, 1);
         if path.exists() {
-            // An interrupted create may be retried, but an unrelated file may
-            // not be silently converted into this store.
             let mut file = open_regular(&path)?;
             let mut previous = [0_u8; HEADER_BYTES];
             file.read_exact(&mut previous)?;
@@ -272,7 +270,11 @@ impl PlannerStoreV1 {
             .checked_add(frame.len() as u64)
             .filter(|length| *length <= MAX_PLANNER_STORE_BYTES)
             .ok_or(PlannerStoreError::LimitExceeded)?;
-        let next = PlannerCheckpointV1 { sequence, root, ..previous };
+        let next = PlannerCheckpointV1 {
+            sequence,
+            root,
+            ..previous
+        };
         // Any error after the first byte, including an uncertain anchor reply,
         // requires reopen/reconciliation. Never continue on a dirty writer.
         self.poisoned = true;
@@ -281,7 +283,10 @@ impl PlannerStoreV1 {
         let signed = self.anchor.compare_exchange(Some(previous), next)?;
         verify_checkpoint(&self.verifying_key, &signed, next)?;
         self.identities.insert(identity, self.records.len());
-        self.records.push(Record { identity, payload: payload.to_vec() });
+        self.records.push(Record {
+            identity,
+            payload: payload.to_vec(),
+        });
         self.committed_bytes = length;
         self.checkpoint = signed;
         self.poisoned = false;
@@ -300,7 +305,9 @@ impl PlannerStoreV1 {
     pub fn compact(&mut self) -> Result<PlannerCheckpointV1, PlannerStoreError> {
         self.revalidate_anchor()?;
         let previous = self.checkpoint.checkpoint;
-        let generation = previous.generation.checked_add(1)
+        let generation = previous
+            .generation
+            .checked_add(1)
             .ok_or(PlannerStoreError::LimitExceeded)?;
         let mut bytes = header(previous.store_id, generation, previous.root);
         let mut root = Digest32::of_bytes(&bytes);
@@ -309,7 +316,11 @@ impl PlannerStoreV1 {
             bytes.extend_from_slice(&encoded);
             root = next;
         }
-        let next = PlannerCheckpointV1 { generation, root, ..previous };
+        let next = PlannerCheckpointV1 {
+            generation,
+            root,
+            ..previous
+        };
         let path = generation_path(&self.directory, generation);
         self.poisoned = true;
         atomic_replace(&self.directory, &path, &bytes)?;
@@ -327,14 +338,22 @@ impl PlannerStoreV1 {
     pub fn backup(&self) -> Result<PlannerBackupV1, PlannerStoreError> {
         self.revalidate_anchor()?;
         let mut file = open_regular(&generation_path(
-            &self.directory, self.checkpoint.checkpoint.generation,
+            &self.directory,
+            self.checkpoint.checkpoint.generation,
         ))?;
+        scan(&mut file, self.checkpoint.checkpoint)?;
+        file.seek(SeekFrom::Start(0))?;
         let mut bytes = Vec::new();
-        file.by_ref().take(MAX_PLANNER_STORE_BYTES + 1).read_to_end(&mut bytes)?;
+        Read::by_ref(&mut file)
+            .take(MAX_PLANNER_STORE_BYTES + 1)
+            .read_to_end(&mut bytes)?;
         if bytes.len() as u64 != self.committed_bytes {
             return Err(PlannerStoreError::RollbackOrTruncation);
         }
-        Ok(PlannerBackupV1 { checkpoint: self.checkpoint.clone(), bytes })
+        Ok(PlannerBackupV1 {
+            checkpoint: self.checkpoint.clone(),
+            bytes,
+        })
     }
 
     /// Restore only the independently current generation. An older, correctly
@@ -351,7 +370,8 @@ impl PlannerStoreV1 {
             return Err(PlannerStoreError::LimitExceeded);
         }
         let lock = lock_directory(directory)?;
-        let current = anchor.current(expected.store_id)?
+        let current = anchor
+            .current(expected.store_id)?
             .ok_or(PlannerStoreError::AnchorUnavailable)?;
         verify_checkpoint(&verifying_key, &current, expected)?;
         let path = generation_path(directory, expected.generation);
@@ -359,8 +379,6 @@ impl PlannerStoreV1 {
             return Err(PlannerStoreError::Invalid("restore destination is not empty"));
         }
         atomic_replace(directory, &path, &backup.bytes)?;
-        // Validate before returning a usable store; a corrupt backup never
-        // changes the external checkpoint and cannot become a successful open.
         let mut file = open_regular(&path)?;
         scan(&mut file, expected)?;
         drop(file);
@@ -389,9 +407,18 @@ impl PlannerStoreV1 {
         let mut removed = 0;
         for entry in entries {
             let name = entry.file_name();
-            let Some(name) = name.to_str() else { continue };
-            let Some(number) = name.strip_prefix("generation-").and_then(|v| v.strip_suffix(".hcp")) else { continue };
-            let Ok(generation) = number.parse::<u64>() else { continue };
+            let Some(name) = name.to_str() else {
+                continue;
+            };
+            let Some(number) = name
+                .strip_prefix("generation-")
+                .and_then(|value| value.strip_suffix(".hcp"))
+            else {
+                continue;
+            };
+            let Ok(generation) = number.parse::<u64>() else {
+                continue;
+            };
             if generation < current.generation && current.generation - generation >= keep {
                 reject_symlink(&entry.path())?;
                 fs::remove_file(entry.path())?;
@@ -406,7 +433,9 @@ impl PlannerStoreV1 {
         if self.poisoned {
             return Err(PlannerStoreError::Poisoned);
         }
-        let current = self.anchor.current(self.checkpoint.checkpoint.store_id)?
+        let current = self
+            .anchor
+            .current(self.checkpoint.checkpoint.store_id)?
             .ok_or(PlannerStoreError::AnchorUnavailable)?;
         verify_checkpoint(&self.verifying_key, &current, self.checkpoint.checkpoint)
     }
@@ -420,8 +449,11 @@ fn verify_checkpoint(
     if signed.checkpoint != expected {
         return Err(PlannerStoreError::AnchorMismatch);
     }
-    key.verify_strict(expected.digest().as_array(), &Signature::from_bytes(&signed.signature))
-        .map_err(|_| PlannerStoreError::InvalidSignature)
+    key.verify_strict(
+        expected.digest().as_array(),
+        &Signature::from_bytes(&signed.signature),
+    )
+    .map_err(|_| PlannerStoreError::InvalidSignature)
 }
 
 fn generation_path(directory: &Path, generation: u64) -> PathBuf {
@@ -436,7 +468,12 @@ fn header(store_id: Digest32, generation: u64, predecessor: Digest32) -> Vec<u8>
     bytes
 }
 
-fn frame(previous: Digest32, sequence: u64, identity: Digest32, payload: &[u8]) -> (Vec<u8>, Digest32) {
+fn frame(
+    previous: Digest32,
+    sequence: u64,
+    identity: Digest32,
+    payload: &[u8],
+) -> (Vec<u8>, Digest32) {
     let mut contents = sequence.to_be_bytes().to_vec();
     contents.extend_from_slice(identity.as_array());
     contents.extend_from_slice(payload);
@@ -450,14 +487,21 @@ fn frame(previous: Digest32, sequence: u64, identity: Digest32, payload: &[u8]) 
     (bytes, root)
 }
 
-fn scan(file: &mut File, expected: PlannerCheckpointV1) -> Result<(Vec<Record>, u64), PlannerStoreError> {
-    if expected.sequence > MAX_PLANNER_STORE_RECORDS as u64 || file.metadata()?.len() > MAX_PLANNER_STORE_BYTES {
+fn scan(
+    file: &mut File,
+    expected: PlannerCheckpointV1,
+) -> Result<(Vec<Record>, u64), PlannerStoreError> {
+    if expected.sequence > MAX_PLANNER_STORE_RECORDS as u64
+        || file.metadata()?.len() > MAX_PLANNER_STORE_BYTES
+    {
         return Err(PlannerStoreError::LimitExceeded);
     }
     file.seek(SeekFrom::Start(0))?;
     let mut head = [0_u8; HEADER_BYTES];
-    file.read_exact(&mut head).map_err(|_| PlannerStoreError::RollbackOrTruncation)?;
-    if &head[..8] != MAGIC || &head[8..40] != expected.store_id.as_array()
+    file.read_exact(&mut head)
+        .map_err(|_| PlannerStoreError::RollbackOrTruncation)?;
+    if &head[..8] != MAGIC
+        || &head[8..40] != expected.store_id.as_array()
         || head[40..48] != expected.generation.to_be_bytes()
     {
         return Err(PlannerStoreError::Invalid("store schema, identity or generation"));
@@ -467,18 +511,23 @@ fn scan(file: &mut File, expected: PlannerCheckpointV1) -> Result<(Vec<Record>, 
     let mut identities = BTreeMap::new();
     for sequence in 1..=expected.sequence {
         let mut size = [0_u8; 4];
-        file.read_exact(&mut size).map_err(|_| PlannerStoreError::RollbackOrTruncation)?;
+        file.read_exact(&mut size)
+            .map_err(|_| PlannerStoreError::RollbackOrTruncation)?;
         let length = u32::from_be_bytes(size) as usize;
         if !(73..=MAX_PLANNER_ENVELOPE_BYTES + 72).contains(&length) {
             return Err(PlannerStoreError::Invalid("frame length"));
         }
         let mut bytes = vec![0_u8; length];
-        file.read_exact(&mut bytes).map_err(|_| PlannerStoreError::RollbackOrTruncation)?;
+        file.read_exact(&mut bytes)
+            .map_err(|_| PlannerStoreError::RollbackOrTruncation)?;
         if bytes[..8] != sequence.to_be_bytes() {
             return Err(PlannerStoreError::Invalid("frame sequence"));
         }
-        let identity = Digest32::from_array(bytes[8..40].try_into()
-            .map_err(|_| PlannerStoreError::Invalid("frame identity"))?);
+        let identity = Digest32::from_array(
+            bytes[8..40]
+                .try_into()
+                .map_err(|_| PlannerStoreError::Invalid("frame identity"))?,
+        );
         if identity.is_zero() || identities.insert(identity, ()).is_some() {
             return Err(PlannerStoreError::IdentityConflict);
         }
@@ -488,7 +537,10 @@ fn scan(file: &mut File, expected: PlannerCheckpointV1) -> Result<(Vec<Record>, 
             return Err(PlannerStoreError::Invalid("frame checksum"));
         }
         root = next;
-        records.push(Record { identity, payload: payload.to_vec() });
+        records.push(Record {
+            identity,
+            payload: payload.to_vec(),
+        });
     }
     if root != expected.root {
         return Err(PlannerStoreError::AnchorMismatch);
@@ -527,8 +579,17 @@ fn lock_directory(directory: &Path) -> Result<File, PlannerStoreError> {
     if !directory.is_dir() {
         return Err(PlannerStoreError::Invalid("planner directory"));
     }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if fs::metadata(directory)?.permissions().mode() & 0o077 != 0 {
+            return Err(PlannerStoreError::Invalid("planner directory must be private"));
+        }
+    }
     let path = directory.join("writer.lock");
-    if path.exists() { reject_symlink(&path)?; }
+    if path.exists() {
+        reject_symlink(&path)?;
+    }
     let mut options = OpenOptions::new();
     options.read(true).write(true).create(true).truncate(false);
     #[cfg(unix)]
@@ -538,7 +599,7 @@ fn lock_directory(directory: &Path) -> Result<File, PlannerStoreError> {
     }
     let file = options.open(&path)?;
     match file.try_lock() {
-        Ok(()) => {},
+        Ok(()) => {}
         Err(TryLockError::WouldBlock) => return Err(PlannerStoreError::Locked),
         Err(TryLockError::Error(error)) => return Err(PlannerStoreError::Io(error)),
     }
@@ -547,8 +608,14 @@ fn lock_directory(directory: &Path) -> Result<File, PlannerStoreError> {
     Ok(file)
 }
 
-fn atomic_replace(directory: &Path, destination: &Path, bytes: &[u8]) -> Result<(), PlannerStoreError> {
-    if bytes.len() as u64 > MAX_PLANNER_STORE_BYTES { return Err(PlannerStoreError::LimitExceeded); }
+fn atomic_replace(
+    directory: &Path,
+    destination: &Path,
+    bytes: &[u8],
+) -> Result<(), PlannerStoreError> {
+    if bytes.len() as u64 > MAX_PLANNER_STORE_BYTES {
+        return Err(PlannerStoreError::LimitExceeded);
+    }
     let temporary = directory.join("generation.pending");
     if temporary.exists() {
         reject_symlink(&temporary)?;
