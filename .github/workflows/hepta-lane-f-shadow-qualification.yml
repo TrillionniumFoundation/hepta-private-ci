@@ -2,229 +2,216 @@ name: Hepta Lane F shadow qualification
 
 on:
   pull_request:
-    paths:
-      - "codex-rs/hepta-neuron/**"
-      - "codex-rs/hepta-intuition/**"
-      - "codex-rs/hepta-prompt-optimizer/**"
-      - "codex-rs/hepta-plasticity/**"
-      - "codex-rs/hepta-intelligence/**"
-      - "codex-rs/hepta-agentd/**"
-      - "docs/modules/learning.plasticity/**"
-      - "scripts/hepta-plasticity-exact-head.py"
-      - "scripts/test_plasticity_mutation_grammar_contract.py"
-      - "qualification/lane-f-shadow/**"
-      - ".github/workflows/hepta-lane-f-shadow-qualification.yml"
+    types: [opened, synchronize, reopened]
   push:
     branches:
-      - main
-    paths:
-      - "codex-rs/hepta-neuron/**"
-      - "codex-rs/hepta-intuition/**"
-      - "codex-rs/hepta-prompt-optimizer/**"
-      - "codex-rs/hepta-plasticity/**"
-      - "codex-rs/hepta-intelligence/**"
-      - "codex-rs/hepta-agentd/**"
-      - "docs/modules/learning.plasticity/**"
-      - "scripts/hepta-plasticity-exact-head.py"
-      - "scripts/test_plasticity_mutation_grammar_contract.py"
-      - "qualification/lane-f-shadow/**"
-      - ".github/workflows/hepta-lane-f-shadow-qualification.yml"
-  workflow_dispatch:
+      - learning-plasticity/full-closure-20260927
 
 permissions:
   contents: read
 
 concurrency:
-  group: lane-f-shadow-${{ github.event.pull_request.number || github.ref }}
+  group: learning-plasticity-map-sync-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  exact-head:
-    name: Deterministic authority-free vertical
+  sync-learning-plasticity-map:
+    if: >-
+      github.actor != 'github-actions[bot]' &&
+      ((github.event_name == 'pull_request' && github.head_ref == 'learning-plasticity/full-closure-20260927') ||
+       (github.event_name == 'push' && github.ref == 'refs/heads/learning-plasticity/full-closure-20260927'))
+    permissions:
+      contents: write
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 10
     steps:
-      - name: Check out exact source
+      - name: Check out exact closure branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          persist-credentials: false
+          ref: learning-plasticity/full-closure-20260927
           fetch-depth: 0
+          persist-credentials: true
 
-      - name: Verify exact source and clean tree
-        env:
-          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Generate canonical learning.plasticity implementation truth
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git branch --show-current)" = "learning-plasticity/full-closure-20260927"
           test -z "$(git status --porcelain)"
+          python3 scripts/hepta-implementation-maps.py migrate --module learning.plasticity
 
-      - name: Generate and verify exact dependency lock
-        shell: bash
-        run: |
-          set -euo pipefail
-          printf '/qualification/lane-f-shadow/Cargo.lock\n' >> .git/info/exclude
-          cp codex-rs/Cargo.lock qualification/lane-f-shadow/Cargo.lock
-          cp qualification/lane-f-shadow/Cargo.lock "$RUNNER_TEMP/lane-f-seed.lock"
-          cargo metadata --format-version 1 --manifest-path qualification/lane-f-shadow/Cargo.toml >/dev/null
-          python3 qualification/lane-f-shadow/verify_lock.py \
-            "$RUNNER_TEMP/lane-f-seed.lock" \
-            qualification/lane-f-shadow/Cargo.lock
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
 
-      - name: Record exact-head contract, tests, lint and format
-        env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
-          HEPTA_CI_LANE: source-head
-        shell: bash
-        run: |
-          set -euo pipefail
-          RECEIPTS="$RUNNER_TEMP/learning-plasticity-exact-head"
-          mkdir -p "$RECEIPTS"
-          trap 'rm -f qualification/lane-f-shadow/Cargo.lock' EXIT
-          python3 scripts/hepta_ci_exec.py \
-            --output "$RECEIPTS/grammar-contract.json" -- \
-            python3 scripts/test_plasticity_mutation_grammar_contract.py
-          python3 scripts/hepta_ci_exec.py \
-            --output "$RECEIPTS/cargo-test.json" --minimum-tests 1 -- \
-            cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
-          python3 scripts/hepta_ci_exec.py \
-            --output "$RECEIPTS/cargo-clippy.json" -- \
-            cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
-          python3 scripts/hepta_ci_exec.py \
-            --output "$RECEIPTS/cargo-fmt.json" -- \
-            cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
-          python3 scripts/hepta_ci_exec.py \
-            --output "$RECEIPTS/git-diff-check.json" -- \
-            bash -lc 'git diff --check && test -z "$(git status --porcelain --untracked-files=no)"'
-          rm qualification/lane-f-shadow/Cargo.lock
-          trap - EXIT
-          python3 scripts/hepta-plasticity-exact-head.py \
-            --lane source-head \
-            --source-sha "$SOURCE_SHA" \
-            --tested-sha "$TESTED_SHA" \
-            --receipt-dir "$RECEIPTS" \
-            --output-json "$RECEIPTS/exact-head-status.json" \
-            --output-md "$RECEIPTS/exact-head-status.md"
+          path = Path("docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json")
+          row = json.loads(path.read_text(encoding="utf-8"))
+          row["productCallerState"] = (
+              "control_engineering_iteration_coordinator_source_implemented_"
+              "iteration_envelope_frozen_coverage_observer_bound_replay_safe_"
+              "named_agentd_producer_submission_not_target_host_qualified"
+          )
+          row["productionWriterState"] = (
+              "agentd_parameter_topology_anchor_fence_journal_plus_"
+              "control_engineering_protected_terminal_journal_and_final_use_"
+              "runtime_topology_executor_source_implemented_target_host_unproved"
+          )
+          row["productCallerBindingPolicy"] = "closed_world"
+          row["productCallerBindings"] = [
+              {
+                  "callerPath": "codex-rs/hepta-agentd/src/control_engineering_iteration.rs",
+                  "mustContain": "lookup_exact_replay",
+              }
+          ]
+          row["productCallers"] = [
+              {
+                  "nativeSymbol": "ControlEngineeringIterationBootstrapV1::run",
+                  "sourcePath": "codex-rs/hepta-agentd/src/control_engineering_iteration.rs",
+                  "state": "source_composed_replay_safe_named_agentd_submission",
+              }
+          ]
 
-      - name: Retain exact-head evidence page
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: learning-plasticity-exact-head-${{ github.event.pull_request.head.sha || github.sha }}
-          path: ${{ runner.temp }}/learning-plasticity-exact-head
-          if-no-files-found: error
-          include-hidden-files: true
-          retention-days: 14
+          by_name = {operation["operation"]: operation for operation in row["operations"]}
+          order = [operation["operation"] for operation in row["operations"]]
 
-  synthetic-merge:
-    name: Deterministic vertical on merge candidate
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    steps:
-      - name: Check out source
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false
-          fetch-depth: 0
+          bootstrap = by_name["agentd_process_bootstrap"]
+          bootstrap["state"] = (
+              "source_implemented_nofollow_cloexec_identity_recheck_parent_fsync_"
+              "external_device_mount_snapshot_profile_not_target_host_qualified"
+          )
+          bootstrap["tests"] = [
+              "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs::tests::component_walk_rejects_parent_traversal",
+              "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs::tests::secure_leaf_rejects_symbolic_link",
+              "codex-rs/hepta-agentd/src/plasticity_process_bootstrap_legacy.rs::tests::descriptor_digest_rejects_byte_substitution",
+              "codex-rs/hepta-agentd/src/plasticity_process_bootstrap_legacy.rs::tests::mutable_owner_hardlink_alias_is_rejected",
+          ]
 
-      - name: Build deterministic merge commit
-        id: merge
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
-          [[ "$TREE" =~ ^[0-9a-f]{40}$ ]]
-          export GIT_AUTHOR_NAME="Hepta Lane F Shadow CI"
-          export GIT_AUTHOR_EMAIL="hepta-lane-f-shadow-ci@users.noreply.github.com"
-          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
-          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
-          export GIT_AUTHOR_DATE="2000-01-01T00:00:00Z"
-          export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
-          SHA="$(printf 'Synthetic Lane F shadow merge for PR %s\n' "$PR_NUMBER" | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
-          git checkout --detach "$SHA"
-          printf 'sha=%s\n' "$SHA" >> "$GITHUB_OUTPUT"
+          runtime = by_name["agentd_plasticity_runtime_owner"]
+          runtime["state"] = (
+              "source_implemented_separate_fair_parameter_topology_queues_"
+              "deadlines_cancellation_byte_work_budgets_blocking_owner_metrics_"
+              "restart_reconcile_not_target_host_qualified"
+          )
+          runtime["tests"] = [
+              "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::runtime_limits_are_bounded",
+              "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::logical_deadline_must_advance",
+              "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently",
+          ]
 
-      - name: Select exact-tree native execution
-        id: execution
-        env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta_ci_candidate.py \
-            --source "$SOURCE_SHA" \
-            --tested "${{ steps.merge.outputs.sha }}" \
-            --base "$BASE_SHA" \
-            --lane synthetic-merge \
-            --github-output "$GITHUB_OUTPUT"
+          additions = [
+              {
+                  "operation": "generator_coverage_receipt",
+                  "nativeSymbol": "build_generator_coverage_receipt_v1",
+                  "sourcePath": "codex-rs/hepta-plasticity/src/generator_coverage_v1.rs",
+                  "state": "source_implemented_expected_actual_signals_scales_grammar_artifact_window_owner_frontier_omissions_bound",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-plasticity/src/generator_coverage_v1.rs::tests::complete_coverage_is_deterministic_and_profile_bound",
+                      "codex-rs/hepta-plasticity/src/generator_coverage_v1.rs::tests::empty_signal_and_scale_profiles_have_distinct_terminal_dispositions",
+                  ],
+                  "sourcePathExists": True,
+                  "designOperation": "build_generator_coverage_receipt_v1",
+                  "mappingClass": "owner_native",
+                  "delegatedCallees": [],
+              },
+              {
+                  "operation": "generator_coverage_verification",
+                  "nativeSymbol": "verify_generator_coverage_against_profile_v1",
+                  "sourcePath": "codex-rs/hepta-plasticity/src/generator_coverage_v1.rs",
+                  "state": "source_implemented_exact_profile_owner_frontier_recomputation",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-plasticity/src/generator_coverage_v1.rs::tests::every_coverage_binding_changes_the_digest"
+                  ],
+                  "sourcePathExists": True,
+                  "designOperation": "verify_generator_coverage_against_profile_v1",
+                  "mappingClass": "owner_native",
+                  "delegatedCallees": [],
+              },
+              {
+                  "operation": "control_engineering_iteration_coordinator",
+                  "nativeSymbol": "control_engineering_iteration_channel_v1",
+                  "sourcePath": "codex-rs/hepta-agentd/src/control_engineering_iteration.rs",
+                  "state": "source_implemented_iteration_envelope_freeze_observer_coverage_exact_replay_before_product_named_producer_submission",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-agentd/src/control_engineering_iteration.rs::tests::exact_replay_returns_original_before_product_and_drift_conflicts"
+                  ],
+                  "sourcePathExists": True,
+                  "designOperation": "coordinate_iteration_plasticity_v1",
+                  "mappingClass": "host_adapter",
+                  "delegatedCallees": [],
+              },
+              {
+                  "operation": "control_engineering_terminal_journal",
+                  "nativeSymbol": "DurableIterationTerminalJournalV1::append",
+                  "sourcePath": "codex-rs/hepta-agentd/src/control_engineering_terminal_journal.rs",
+                  "state": "source_implemented_checksum_chain_protected_length_footer_replay_conflict_capacity_lock_and_crash_tail_recovery",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-agentd/src/control_engineering_terminal_journal.rs::tests::protected_journal_reopens_replays_and_preserves_chain",
+                      "codex-rs/hepta-agentd/src/control_engineering_terminal_journal.rs::tests::complete_frame_with_corrupt_prefix_length_is_not_truncated",
+                      "codex-rs/hepta-agentd/src/control_engineering_terminal_journal.rs::tests::complete_frame_mutation_corpus_fails_closed",
+                  ],
+                  "sourcePathExists": True,
+                  "designOperation": "append_iteration_terminal_receipt_v1",
+                  "mappingClass": "host_adapter",
+                  "delegatedCallees": [],
+              },
+              {
+                  "operation": "agentd_fair_plasticity_scheduler",
+                  "nativeSymbol": "PlasticityRuntimeHandleV1::propose_parameter_until",
+                  "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+                  "state": "source_implemented_separate_fair_queues_deadline_cancellation_byte_work_budgets_blocking_owner_metrics",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::runtime_limits_are_bounded",
+                      "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::logical_deadline_must_advance",
+                  ],
+                  "sourcePathExists": True,
+                  "designOperation": "schedule_plasticity_submission_v1",
+                  "mappingClass": "host_adapter",
+                  "delegatedCallees": [],
+              },
+              {
+                  "operation": "plasticity_rollback_domain_profile",
+                  "nativeSymbol": "verify_plasticity_rollback_domain_profile_v1",
+                  "sourcePath": "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs",
+                  "state": "source_implemented_nofollow_identity_recheck_parent_fsync_external_device_mount_snapshot_profile",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs::tests::secure_leaf_rejects_symbolic_link",
+                      "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs::tests::component_walk_rejects_parent_traversal",
+                  ],
+                  "sourcePathExists": True,
+                  "designOperation": "verify_plasticity_rollback_domain_profile_v1",
+                  "mappingClass": "host_adapter",
+                  "delegatedCallees": [],
+              },
+          ]
+          for operation in additions:
+              if operation["operation"] not in by_name:
+                  order.append(operation["operation"])
+              by_name[operation["operation"]] = operation
+          row["operations"] = [by_name[name] for name in order]
 
-      - name: Generate and verify exact dependency lock
-        if: steps.execution.outputs.run_native == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${{ steps.merge.outputs.sha }}"
-          printf '/qualification/lane-f-shadow/Cargo.lock\n' >> .git/info/exclude
-          cp codex-rs/Cargo.lock qualification/lane-f-shadow/Cargo.lock
-          cp qualification/lane-f-shadow/Cargo.lock "$RUNNER_TEMP/lane-f-seed.lock"
-          cargo metadata --format-version 1 --manifest-path qualification/lane-f-shadow/Cargo.toml >/dev/null
-          python3 qualification/lane-f-shadow/verify_lock.py \
-            "$RUNNER_TEMP/lane-f-seed.lock" \
-            qualification/lane-f-shadow/Cargo.lock
+          row["repositoryControlledGaps"] = [
+              "Select the implemented control.engineering iteration coordinator in the final process bootstrap/inbox profile and obtain exact target-host execution receipts.",
+              "Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification, Lane F qualification and live-runtime structural-canary qualification for this final source/document head.",
+              "Execute target-host rollback-domain verification with externally pinned device, mount and snapshot identities plus operator crash/recovery telemetry.",
+          ]
+          path.write_text(json.dumps(row, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          PY
 
-      - name: Record merge-candidate contract, tests, lint and format
-        if: steps.execution.outputs.run_native == 'true'
-        env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-          TESTED_SHA: ${{ steps.merge.outputs.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEPTA_CI_LANE: base-merge
-        shell: bash
-        run: |
-          set -euo pipefail
-          RECEIPTS="$RUNNER_TEMP/learning-plasticity-synthetic-merge"
-          mkdir -p "$RECEIPTS"
-          trap 'rm -f qualification/lane-f-shadow/Cargo.lock' EXIT
-          python3 scripts/hepta_ci_exec.py \
-            --output "$RECEIPTS/grammar-contract.json" -- \
-            python3 scripts/test_plasticity_mutation_grammar_contract.py
-          python3 scripts/hepta_ci_exec.py \
-            --output "$RECEIPTS/cargo-test.json" --minimum-tests 1 -- \
-            cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
-          python3 scripts/hepta_ci_exec.py \
-            --output "$RECEIPTS/cargo-clippy.json" -- \
-            cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
-          python3 scripts/hepta_ci_exec.py \
-            --output "$RECEIPTS/cargo-fmt.json" -- \
-            cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
-          python3 scripts/hepta_ci_exec.py \
-            --output "$RECEIPTS/git-diff-check.json" -- \
-            bash -lc 'git diff --check && test -z "$(git status --porcelain --untracked-files=no)"'
-          rm qualification/lane-f-shadow/Cargo.lock
-          trap - EXIT
-          python3 scripts/hepta-plasticity-exact-head.py \
-            --lane base-merge \
-            --source-sha "$SOURCE_SHA" \
-            --tested-sha "$TESTED_SHA" \
-            --receipt-dir "$RECEIPTS" \
-            --output-json "$RECEIPTS/exact-head-status.json" \
-            --output-md "$RECEIPTS/exact-head-status.md"
+          python3 scripts/hepta-implementation-maps.py migrate --module learning.plasticity
+          python3 scripts/hepta-implementation-maps.py sync-plasticity-status
 
-      - name: Retain merge-candidate evidence page
-        if: steps.execution.outputs.run_native == 'true'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: learning-plasticity-synthetic-merge-${{ steps.merge.outputs.sha }}
-          path: ${{ runner.temp }}/learning-plasticity-synthetic-merge
-          if-no-files-found: error
-          include-hidden-files: true
-          retention-days: 14
+          git config user.name "Hepta Implementation Map Bot"
+          git config user.email "hepta-implementation-map@users.noreply.github.com"
+          git add \
+            docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json \
+            docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md \
+            docs/modules/learning.plasticity/CURRENT_STATE.json
+          test -n "$(git diff --cached --name-only)"
+          git commit -m "docs(plasticity): synchronize full-closure implementation truth"
+          git push origin HEAD:learning-plasticity/full-closure-20260927
