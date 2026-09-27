@@ -53,6 +53,10 @@ impl CanonicalRuntimeInstallationTokenV1 {
 pub struct AgentdNeuronInvocationSealV1 {
     owner_binding_digest: Digest32,
     invocation_digest: Digest32,
+    objective_digest: Digest32,
+    predecessor_digest: Digest32,
+    input_binding_digest: Digest32,
+    output_digest: Digest32,
 }
 
 impl std::fmt::Debug for AgentdNeuronInvocationSealV1 {
@@ -61,6 +65,9 @@ impl std::fmt::Debug for AgentdNeuronInvocationSealV1 {
             .debug_struct("AgentdNeuronInvocationSealV1")
             .field("owner_binding_digest", &self.owner_binding_digest)
             .field("invocation_digest", &self.invocation_digest)
+            .field("objective_digest", &self.objective_digest)
+            .field("predecessor_digest", &self.predecessor_digest)
+            .field("output_digest", &self.output_digest)
             .finish_non_exhaustive()
     }
 }
@@ -73,6 +80,66 @@ impl AgentdNeuronInvocationSealV1 {
     pub fn invocation_digest(&self) -> Digest32 {
         self.invocation_digest
     }
+
+    pub fn output_digest(&self) -> Digest32 {
+        self.output_digest
+    }
+
+    pub(crate) fn matches_sparse_invocation(
+        &self,
+        config: &SparseConfig,
+        tick: &SparseTick,
+        previous: Option<&SparseCheckpoint>,
+        objective_digest: Digest32,
+        predecessor_digest: Digest32,
+    ) -> bool {
+        self.objective_digest == objective_digest
+            && self.predecessor_digest == predecessor_digest
+            && tick.objective_digest == objective_digest
+            && tick.ndu_digest == predecessor_digest
+            && sparse_invocation_binding_digest(config, tick, previous)
+                .is_ok_and(|observed| observed == self.input_binding_digest)
+    }
+}
+
+fn sparse_invocation_binding_digest(
+    config: &SparseConfig,
+    tick: &SparseTick,
+    previous: Option<&SparseCheckpoint>,
+) -> Result<Digest32, AgentdError> {
+    let config_digest = config.digest().map_err(|error| {
+        AgentdError::Invalid(format!("canonical Neuron config is invalid: {error}"))
+    })?;
+    let previous_digest = previous.map_or(Digest32::ZERO, SparseCheckpoint::digest);
+    let mut bytes = b"hepta.runtime-agentd.neuron-sparse-input.v1\0".to_vec();
+    for digest in [
+        config_digest,
+        tick.scope_digest,
+        tick.objective_digest,
+        tick.ndu_digest,
+        tick.body_digest,
+        tick.input_digest,
+        previous_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    bytes.extend_from_slice(&tick.sequence.to_be_bytes());
+    bytes.extend_from_slice(&tick.monotonic_micros.to_be_bytes());
+    let drive_len = u64::try_from(tick.drive_q24.len()).map_err(|_| {
+        AgentdError::Invalid("canonical Neuron drive length exceeds u64".to_string())
+    })?;
+    bytes.extend_from_slice(&drive_len.to_be_bytes());
+    for value in &tick.drive_q24 {
+        bytes.extend_from_slice(&value.to_be_bytes());
+    }
+    let prediction_len = u64::try_from(tick.prediction_q24.len()).map_err(|_| {
+        AgentdError::Invalid("canonical Neuron prediction length exceeds u64".to_string())
+    })?;
+    bytes.extend_from_slice(&prediction_len.to_be_bytes());
+    for value in &tick.prediction_q24 {
+        bytes.extend_from_slice(&value.to_be_bytes());
+    }
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 /// Current durable Neuron owner required by the canonical Agentd profile.
@@ -210,6 +277,7 @@ where
                 ));
             }
         }
+        let input_binding_digest = sparse_invocation_binding_digest(config, tick, previous)?;
         let (next, receipt) = sparse_tick(config, tick, previous).map_err(|error| {
             AgentdError::Invalid(format!("canonical Neuron invocation was rejected: {error}"))
         })?;
@@ -219,22 +287,23 @@ where
                     .to_string(),
             ));
         }
-        let previous_digest = previous.map_or(Digest32::ZERO, SparseCheckpoint::digest);
         let invocation_digest = Digest32::of_parts(&[
-            b"hepta.runtime-agentd.neuron-invocation-seal.v1\0",
+            b"hepta.runtime-agentd.neuron-invocation-seal.v2\0",
             self.binding_digest.as_array(),
             record.snapshot.run_id.as_str().as_bytes(),
             record.snapshot.objective_digest.as_array(),
             record.runtime_body_digest.as_array(),
-            config_digest.as_array(),
-            previous_digest.as_array(),
-            receipt.input_digest.as_array(),
-            receipt.checkpoint_before.as_array(),
+            tick.ndu_digest.as_array(),
+            input_binding_digest.as_array(),
             receipt.checkpoint_after.as_array(),
         ]);
         Ok(AgentdNeuronInvocationSealV1 {
             owner_binding_digest: self.binding_digest,
             invocation_digest,
+            objective_digest: tick.objective_digest,
+            predecessor_digest: tick.ndu_digest,
+            input_binding_digest,
+            output_digest: receipt.checkpoint_after,
         })
     }
 }
@@ -251,6 +320,16 @@ impl AgentdIntelligenceInvocationProviderV1 for NeuronSealedInvocationProviderV1
         record: &RunStartRecordV1,
     ) -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
         let invocation = self.inner.build(identity, record)?;
+        invocation.validate(identity, record)?;
+        Ok(invocation)
+    }
+
+    fn seal_neuron(
+        &self,
+        identity: &AgentdIdentity,
+        record: &RunStartRecordV1,
+        invocation: &AgentdIntelligenceInvocationV1,
+    ) -> Result<Option<AgentdNeuronInvocationSealV1>, AgentdError> {
         let seal = self.neuron.seal(
             identity,
             record,
@@ -260,12 +339,13 @@ impl AgentdIntelligenceInvocationProviderV1 for NeuronSealedInvocationProviderV1
         )?;
         if seal.owner_binding_digest() != self.neuron.binding_digest()
             || seal.invocation_digest().is_zero()
+            || seal.output_digest().is_zero()
         {
             return Err(AgentdError::Protocol(
                 "canonical Neuron owner returned a mismatched invocation seal".to_string(),
             ));
         }
-        Ok(invocation)
+        Ok(Some(seal))
     }
 }
 
@@ -365,5 +445,80 @@ impl AgentdCanonicalRuntimeBootstrapV1 {
                 CanonicalRuntimeInstallationTokenV1::new(),
             )?;
         Ok(configured)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use codex_hepta_types::Generation;
+
+    fn digest(label: &str) -> Digest32 {
+        Digest32::of_bytes(label.as_bytes())
+    }
+
+    fn config() -> SparseConfig {
+        SparseConfig {
+            model_digest: digest("model"),
+            normalization_digest: digest("normalization"),
+            generation: Generation::new(1).expect("generation"),
+            width: 5,
+            top_k: 1,
+            temporal_decay_q24: 0,
+            inhibition_gain_q24: 0,
+            inhibition: Vec::new(),
+            activity_decay_q24: 0,
+            target_activity_q24: 0,
+            threshold_rate_q24: 0,
+            threshold_min_q24: -1,
+            threshold_max_q24: 1,
+            eligibility_decay_q24: 0,
+        }
+    }
+
+    fn tick() -> SparseTick {
+        SparseTick {
+            scope_digest: digest("scope"),
+            objective_digest: digest("objective"),
+            ndu_digest: digest("ndu"),
+            body_digest: digest("body"),
+            input_digest: digest("input"),
+            sequence: 0,
+            monotonic_micros: 1,
+            drive_q24: vec![0; 5],
+            prediction_q24: vec![0; 5],
+        }
+    }
+
+    #[test]
+    fn opaque_neuron_seal_rejects_raw_tuple_drift() {
+        let config = config();
+        let tick = tick();
+        let input_binding_digest =
+            sparse_invocation_binding_digest(&config, &tick, None).expect("binding");
+        let seal = AgentdNeuronInvocationSealV1 {
+            owner_binding_digest: digest("owner"),
+            invocation_digest: digest("invocation"),
+            objective_digest: tick.objective_digest,
+            predecessor_digest: tick.ndu_digest,
+            input_binding_digest,
+            output_digest: digest("output"),
+        };
+        assert!(seal.matches_sparse_invocation(
+            &config,
+            &tick,
+            None,
+            tick.objective_digest,
+            tick.ndu_digest,
+        ));
+        let mut drifted = tick.clone();
+        drifted.input_digest = digest("drifted");
+        assert!(!seal.matches_sparse_invocation(
+            &config,
+            &drifted,
+            None,
+            tick.objective_digest,
+            tick.ndu_digest,
+        ));
     }
 }
