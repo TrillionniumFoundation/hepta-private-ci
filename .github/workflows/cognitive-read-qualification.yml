@@ -1,6 +1,12 @@
 name: Cognitive read qualification
 
 on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/scripts/cognitive_read_converge.py.xz.b64.*"
+      - ".github/workflows/cognitive-read-qualification.yml"
   push:
     branches:
       - work/cognitive-read-production-convergence-20260927
@@ -12,23 +18,25 @@ permissions:
   contents: write
 
 concurrency:
-  group: cognitive-read-bootstrap-${{ github.ref_name }}
+  group: cognitive-read-bootstrap-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 env:
   RUST_MIN_STACK: "8388608"
   TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   converge:
     name: Apply and seal cognitive.read convergence
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.ref == 'work/cognitive-read-production-convergence-20260927'
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 180
     steps:
       - name: Check out exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: true
 
@@ -41,8 +49,9 @@ jobs:
           set -euo pipefail
           git config user.name 'Cognitive Read Convergence'
           git config user.email 'cognitive-read-convergence@users.noreply.github.com'
-          test "$(git branch --show-current)" = "$TARGET_BRANCH" || git switch -C "$TARGET_BRANCH"
-          git show HEAD^:.github/workflows/cognitive-read-qualification.yml \
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git switch -C "$TARGET_BRANCH"
+          git show a16fa81bfec716037332ed30ab3c4e82d91c8636:.github/workflows/cognitive-read-qualification.yml \
             > .github/workflows/cognitive-read-qualification.yml
           cat .github/scripts/cognitive_read_converge.py.xz.b64.* \
             | base64 --decode \
