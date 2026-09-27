@@ -16,6 +16,7 @@ const BIDI_OR_INVISIBLE = /[\u061c\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]
 const CONTROL_CHARACTER = /[\u0000-\u001f\u007f-\u009f]/u;
 const STABLE_IDENTIFIER = /^[A-Za-z0-9._:-]+$/u;
 const SHA256 = /^[0-9a-f]{64}$/u;
+const ARRAY_INDEX = /^(0|[1-9][0-9]*)$/u;
 
 export const DEFAULT_CANONICAL_LIMITS = Object.freeze({
   maxDepth: 16,
@@ -119,10 +120,14 @@ function readPlainObject(value, label) {
     throw invalid(`${label} must be a plain object`, { label });
   }
   const descriptors = Object.getOwnPropertyDescriptors(value);
-  for (const [key, descriptor] of Object.entries(descriptors)) {
+  for (const key of Reflect.ownKeys(value)) {
+    if (typeof key !== "string") {
+      throw invalid(`${label} cannot contain symbol keys`, { label });
+    }
     if (FORBIDDEN_KEYS.has(key)) {
       throw invalid(`${label} contains a forbidden object key`, { label, key });
     }
+    const descriptor = descriptors[key];
     if (!("value" in descriptor) || descriptor.get || descriptor.set) {
       throw invalid(`${label} cannot contain accessors`, { label, key });
     }
@@ -162,6 +167,50 @@ function resolveCanonicalLimits(limits) {
   });
 }
 
+function normalizeArray(value, state, depth, label) {
+  if (value.length > state.limits.maxArrayLength) {
+    throw invalid(`${label} exceeds maximum array length`, { label });
+  }
+  const descriptors = Object.getOwnPropertyDescriptors(value);
+  const ownKeys = Reflect.ownKeys(value);
+  for (const key of ownKeys) {
+    if (typeof key !== "string") {
+      throw invalid(`${label} cannot contain symbol keys`, { label });
+    }
+    if (key === "length") continue;
+    if (
+      !ARRAY_INDEX.test(key) ||
+      !Number.isSafeInteger(Number(key)) ||
+      Number(key) >= value.length ||
+      String(Number(key)) !== key
+    ) {
+      throw invalid(`${label} cannot contain non-index properties`, { label, key });
+    }
+  }
+
+  state.entries += value.length;
+  if (state.entries > state.limits.maxEntries) {
+    throw invalid(`${label} exceeds maximum entry count`, { label });
+  }
+
+  const output = [];
+  for (let index = 0; index < value.length; index += 1) {
+    const key = String(index);
+    const descriptor = descriptors[key];
+    if (!descriptor) {
+      throw invalid(`${label} cannot contain sparse array holes`, { label, index });
+    }
+    if (!("value" in descriptor) || descriptor.get || descriptor.set) {
+      throw invalid(`${label} cannot contain accessors`, { label, index });
+    }
+    if (!descriptor.enumerable) {
+      throw invalid(`${label} cannot contain hidden array elements`, { label, index });
+    }
+    output.push(normalize(descriptor.value, state, depth + 1, `${label}[${index}]`));
+  }
+  return output;
+}
+
 function normalize(value, state, depth, label) {
   if (depth > state.limits.maxDepth) {
     throw invalid(`${label} exceeds maximum nesting depth`, { label });
@@ -185,16 +234,7 @@ function normalize(value, state, depth, label) {
   }
 
   if (Array.isArray(value)) {
-    if (value.length > state.limits.maxArrayLength) {
-      throw invalid(`${label} exceeds maximum array length`, { label });
-    }
-    state.entries += value.length;
-    if (state.entries > state.limits.maxEntries) {
-      throw invalid(`${label} exceeds maximum entry count`, { label });
-    }
-    return value.map((entry, index) =>
-      normalize(entry, state, depth + 1, `${label}[${index}]`),
-    );
+    return normalizeArray(value, state, depth, label);
   }
 
   if (typeof value === "object") {
