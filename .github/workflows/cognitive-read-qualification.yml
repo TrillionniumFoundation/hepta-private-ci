@@ -22,7 +22,7 @@ env:
 jobs:
   converge:
     name: Apply and seal cognitive.read convergence
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 180
     steps:
       - name: Check out exact branch head
