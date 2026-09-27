@@ -17,7 +17,7 @@ concurrency:
 jobs:
   migrate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -25,6 +25,7 @@ jobs:
           ref: work/kernel-authority-convergence-20260925
           fetch-depth: 0
           persist-credentials: true
+
       - name: Bind Agentd effect ownership to protected authority time
         shell: bash
         run: |
@@ -45,9 +46,12 @@ jobs:
               "        _untrusted_now_ms: u64,\n"
               "    ) -> Result<TaskFlowStepReceipt, AgentdError> {"
           )
-          if text.count(execute_old) != 1:
-              raise SystemExit('execute time parameter anchor drifted')
-          text = text.replace(execute_old, execute_new, 1)
+          if execute_old in text:
+              if text.count(execute_old) != 1:
+                  raise SystemExit('execute time parameter anchor is ambiguous')
+              text = text.replace(execute_old, execute_new, 1)
+          elif text.count(execute_new) != 1:
+              raise SystemExit('execute protected-time signature is missing or duplicated')
 
           reconcile_old = (
               "        attempt: u32,\n"
@@ -59,19 +63,28 @@ jobs:
               "        _untrusted_now_ms: u64,\n"
               "    ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {"
           )
-          if text.count(reconcile_old) != 1:
-              raise SystemExit('reconcile time parameter anchor drifted')
-          text = text.replace(reconcile_old, reconcile_new, 1)
+          if reconcile_old in text:
+              if text.count(reconcile_old) != 1:
+                  raise SystemExit('reconcile time parameter anchor is ambiguous')
+              text = text.replace(reconcile_old, reconcile_new, 1)
+          elif text.count(reconcile_new) != 1:
+              raise SystemExit('reconcile protected-time signature is missing or duplicated')
 
           fence_anchor = '        let fence = self.current_fence(&run, now_ms)?;'
-          if text.count(fence_anchor) != 2:
-              raise SystemExit('effect fence time anchors drifted')
-          text = text.replace(
-              fence_anchor,
-              '        let now_ms = self.protected_effect_now_ms()?;\n' + fence_anchor,
+          protected_fence = (
+              '        let now_ms = self.protected_effect_now_ms()?;\n'
+              + fence_anchor
           )
+          protected_count = text.count(protected_fence)
+          if protected_count == 0:
+              if text.count(fence_anchor) != 2:
+                  raise SystemExit('effect fence time anchors drifted')
+              text = text.replace(fence_anchor, protected_fence)
+          elif protected_count != 2:
+              raise SystemExit('protected effect fence anchors are incomplete or duplicated')
 
           refresh_anchor = '    fn refresh_revocations(&self) -> Result<(), AgentdError> {'
+          helper_marker = '    fn protected_effect_now_ms(&self) -> Result<u64, AgentdError> {'
           helper = ''.join([
               '    /// Compatibility callers may still transport a wall-clock sample, but\n',
               '    /// final effect ownership, TaskFlow lease validation and durable settlement\n',
@@ -84,26 +97,69 @@ jobs:
               '        })\n',
               '    }\n\n',
           ])
-          if text.count(refresh_anchor) != 1:
-              raise SystemExit('revocation refresh anchor drifted')
-          text = text.replace(refresh_anchor, helper + refresh_anchor, 1)
+          if helper_marker not in text:
+              if text.count(refresh_anchor) != 1:
+                  raise SystemExit('revocation refresh anchor drifted')
+              text = text.replace(refresh_anchor, helper + refresh_anchor, 1)
+          elif text.count(helper_marker) != 1:
+              raise SystemExit('protected effect clock helper is duplicated')
+
           path.write_text(text, encoding='utf-8')
           PY
           cd codex-rs
           cargo fmt -p codex-hepta-agentd
           cd ..
           git diff --check
-          git diff --exit-code --quiet && {
-            echo 'migration produced no changes' >&2
-            exit 1
-          }
-      - name: Commit exact migration
+
+      - name: Commit source migration and bind immutable source anchor
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'kernel-authority-migration'
           git config user.email 'kernel-authority-migration@users.noreply.github.com'
-          git add codex-rs/hepta-agentd/src/automation_effect_host.rs
-          test "$(git diff --cached --name-only)" = 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
-          git commit -m 'fix(kernel-authority): use protected time for Agentd effects'
+
+          if ! git diff --exit-code --quiet -- codex-rs/hepta-agentd/src/automation_effect_host.rs; then
+            git add codex-rs/hepta-agentd/src/automation_effect_host.rs
+            test "$(git diff --cached --name-only)" = 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
+            git commit -m 'fix(kernel-authority): use protected time for Agentd effects'
+          fi
+
+          source_commit="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse 'HEAD^{tree}')"
+          SOURCE_COMMIT="$source_commit" SOURCE_TREE="$source_tree" python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path('qualification/kernel-authority/status_manifest.json')
+          value = json.loads(path.read_text(encoding='utf-8'))
+          value['sourceAnchor'] = {
+              'commit': os.environ['SOURCE_COMMIT'],
+              'tree': os.environ['SOURCE_TREE'],
+          }
+          path.write_text(json.dumps(value, indent=2) + '\n', encoding='utf-8')
+          PY
+          python3 scripts/kernel_authority_status.py write
+          python3 scripts/kernel_authority_status.py check
+          python3 qualification/kernel-authority/generate_status.py --check
+          python3 qa/b4-no-bypass/test_kernel_authority_extension_api.py
+          python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py
+          git diff --check
+
+      - name: Retire migration authority and publish generated truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/kernel-authority-agentd-time-migration.yml
+          git add \
+            qualification/kernel-authority/status_manifest.json \
+            docs/modules/kernel.authority/IMPLEMENTATION_MAP.json \
+            docs/modules/kernel.authority/CURRENT_STATE.json \
+            docs/modules/kernel.authority/CURRENT_STATE.md \
+            docs/modules/kernel.authority/CURRENT_IMPLEMENTATION.md \
+            docs/modules/kernel.authority/TRACEABILITY.md \
+            docs/modules/kernel.authority/STATUS.md \
+            qualification/module-execution-dossiers/detail/kernel.authority.status.json
+          git diff --cached --check
+          git commit -m 'docs(kernel-authority): rebind generated truth after protected-time migration'
           git push origin HEAD:work/kernel-authority-convergence-20260925
