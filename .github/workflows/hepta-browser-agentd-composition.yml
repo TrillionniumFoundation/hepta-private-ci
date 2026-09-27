@@ -60,11 +60,12 @@ jobs:
           set -euo pipefail
           for test_file in apps/hepta-browser/test/*.test.js; do
             echo "::group::browser-node-test $test_file"
-            timeout 90s node --test "$test_file"
+            timeout --kill-after=5s 90s node --test "$test_file"
             echo "::endgroup::"
           done
-          node --check apps/hepta-browser/src/*.js
-          for script in apps/hepta-browser/scripts/*.js; do node --check "$script"; done
+          for script in apps/hepta-browser/src/*.js apps/hepta-browser/scripts/*.js apps/hepta-browser/scripts/*.mjs; do
+            test ! -f "$script" || node --check "$script"
+          done
 
       - name: Verify Agentd Browser formatting
         shell: bash
@@ -99,6 +100,42 @@ jobs:
             --bin hepta-agentd-browser \
             --bin hepta-agentd-browser-service \
             --no-deps -- -D warnings
+
+      - name: Retain exact source and non-mutating native diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/browser-composition-evidence"
+          mkdir -p "$evidence/formatted"
+          git rev-parse HEAD HEAD^{tree} > "$evidence/source-identity.txt"
+          node --version >> "$evidence/source-identity.txt"
+          rustfmt --version >> "$evidence/source-identity.txt" 2>&1 || true
+          git archive --format=tar.gz --output="$evidence/exact-source.tar.gz" HEAD \
+            apps/hepta-browser codex-rs .github/workflows docs/modules/browser.servo \
+            third_party/servo-patches qualification/module-execution-dossiers/detail/browser.servo.md
+          for source in \
+            codex-rs/hepta-agentd/src/browser_servo_persistent.rs \
+            codex-rs/hepta-agentd/src/bin/hepta-agentd-browser-service.rs \
+            apps/hepta-browser/servo-worker/src/main.rs; do
+            mkdir -p "$evidence/formatted/$(dirname "$source")"
+            if rustfmt --edition 2024 --config skip_children=true --emit stdout "$source" \
+              > "$evidence/formatted/$source" 2> "$evidence/formatted/$source.stderr"; then
+              printf '%s\tformatted-diagnostic-only\n' "$source" >> "$evidence/format-status.tsv"
+            else
+              printf '%s\tformat-diagnostic-failed\n' "$source" >> "$evidence/format-status.tsv"
+            fi
+          done
+          sha256sum "$evidence/exact-source.tar.gz" > "$evidence/archive.sha256"
+
+      - name: Upload source-bound diagnostics even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: browser-composition-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/browser-composition-evidence
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Verify source stayed clean
         if: always()
