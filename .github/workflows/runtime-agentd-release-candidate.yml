@@ -34,7 +34,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
 
@@ -48,7 +48,7 @@ jobs:
           toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
           rustup toolchain install "$toolchain" --profile minimal --component clippy
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           workspaces: codex-rs
           shared-key: runtime-agentd-release-candidate-v1
@@ -163,12 +163,15 @@ jobs:
 
           out = Path(os.environ["OUT"])
           bundle = out / f"runtime-agentd-{os.environ['EXPECTED_SHA']}.tar.gz"
-          digest = hashlib.sha256(bundle.read_bytes()).hexdigest()
+          value = hashlib.sha256()
+          with bundle.open("rb") as stream:
+              for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                  value.update(chunk)
           summary = {
               "schema": "hepta.runtime-agentd.release-candidate-summary.v1",
               "source_sha": os.environ["EXPECTED_SHA"],
               "bundle": bundle.name,
-              "bundle_sha256": digest,
+              "bundle_sha256": value.hexdigest(),
               "bundle_bytes": bundle.stat().st_size,
               "production_activation": False,
               "release_created": False,
@@ -181,12 +184,12 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=all)"
 
       - name: Attest retained candidate bundle provenance
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: ${{ runner.temp }}/runtime-agentd-release-candidate/runtime-agentd-${{ inputs.candidate_sha }}.tar.gz
 
       - name: Attest provenance summary
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: ${{ runner.temp }}/runtime-agentd-release-candidate/provenance-summary.json
 
