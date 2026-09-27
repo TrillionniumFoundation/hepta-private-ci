@@ -1,0 +1,52 @@
+name: Control runtime convergence bootstrap
+
+on:
+  push:
+    branches:
+      - codex/control-runtime-convergence-20260928
+    paths:
+      - scripts/control_runtime_convergence_bootstrap.py
+      - .github/workflows/control-runtime-convergence-bootstrap.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/control-runtime-convergence-20260928
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply exact source transformations
+        run: python3 scripts/control_runtime_convergence_bootstrap.py
+      - name: Format changed Rust packages
+        working-directory: codex-rs
+        run: |
+          cargo fmt --package codex-hepta-ndu --package codex-hepta-control-plane --package codex-hepta-agentd --package codex-hepta-agent-protocol
+      - name: Validate maturity documents
+        run: |
+          python3 -m json.tool docs/modules/control.runtime/IMPLEMENTATION_MAP.json >/dev/null
+          python3 -m json.tool docs/readiness/CONTROL_RUNTIME_MATURITY.json >/dev/null
+      - name: Run focused regressions
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-ndu --lib preference::tests
+          cargo test --locked -p codex-hepta-control-plane --lib planner
+          cargo test --locked -p codex-hepta-control-plane --lib planner_context
+          cargo test --locked -p codex-hepta-agentd --lib cognitive_context
+          cargo clippy --locked --all-targets -p codex-hepta-ndu -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-agent-protocol -- -D warnings
+      - name: Commit converged candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git config user.name "hepta-control-runtime-bot"
+          git config user.email "control-runtime@invalid"
+          git add -A
+          git commit -m "control.runtime: close request-integrity and maturity gaps"
+          git push origin HEAD:codex/control-runtime-convergence-20260928
