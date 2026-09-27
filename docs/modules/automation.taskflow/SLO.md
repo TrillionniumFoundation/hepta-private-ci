@@ -1,38 +1,55 @@
 # automation.taskflow runtime SLO contract
 
-This schema-v19 SLO applies to the durable V1 scheduler, recovery lanes, external-effect bridge and the bounded Neural Circuit runtime slice. These objectives govern operations; they do not weaken durable correctness.
+Current source and evidence states: [CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md).
+These schema-21 objectives do not weaken durable V1 correctness and are not
+measurements of an activated deployment.
 
-| Signal | Default objective | Breach action |
+| Signal | Default objective / bound | Breach or boundary |
 |---|---:|---|
-| App Server/provider dispatch response | 5 s | classify as unknown after the seam; preserve identity and reconcile |
-| Unknown-result reconciliation | 5 min | alert and retain quarantine; no blind redispatch |
-| Scheduler lease | 30 s | expiry permits only the reviewed reclaim path; never proves provider absence |
-| Writer-epoch fence propagation | 1 s | mark host fenced and stop admission |
-| Distinct recovery rows per cycle | 8 | continue next cycle; each selected row is contacted at most once |
-| Terminal-observation liveness | at least 1 slot when both recovery frontiers are non-empty and budget > 1 | preserve unknown priority but never permit sustained unknown backlog to starve admitted terminal observation |
-| New admissions per cycle | 16 | continue next cycle; preserve scheduled-age ordering |
-| Provider calls in flight | 1 | apply backpressure rather than opening parallel authority paths |
-| Consecutive proven pre-admission failures | 3 | fail-stop automation after bounded exponential backoff |
-| Consecutive recovery transport failures | 3 | block admission during retry; fail-stop after the independent bounded budget |
+| App Server admission response | 5 s | after possible contact preserve unknown; never infer absence |
+| Configured external provider response | exact host configuration, at most its accepted 30 s limit | separate from scheduler timeout; retain ambiguous attempt |
+| Unknown-result reconciliation age | 5 min objective | alert and retain quarantine, not blind redispatch |
+| Scheduler lease | 30 s | expiry alone never proves absence |
+| Writer-epoch fence propagation | 1 s objective | retain rejection and stop new owner work |
+| Recovery keys reserved per cycle | 8 | independent persistent sweeps; bounded exact-ID reads |
+| Terminal-observation allocation | at least one slot with both lanes populated and budget > 1 | transient unknown errors do not consume the reserved terminal attempt |
+| New admission budget per cycle | 16 | fresh clock and cancellation check before each new claim |
+| Scheduler contacts in flight | 1 | not a global claim about all external control requests |
+| Consecutive pre-admission failures | 3 | first failure yields; capped exponential backoff; bounded fail-stop |
+| Consecutive recovery transport failures | 3 | no admission in failed cycle; independent recovery budget |
+
+## Polling progress and known limits
+
+Schema 20 stores two permanent keyset cursors with a frozen upper identity and
+monotone sweep generation. Schema 21 indexes the sparse unknown frontier.
+Reservation is timer-fenced and advances polling state before observation;
+it does not alter occurrence business timestamps or create terminal evidence.
+A crash after reservation may delay a key until the next sweep, never authorize
+an effect. Settled keys are re-read by exact identity and disappear from work.
+
+The finite-frontier guarantee does not bound latency under arbitrary overload,
+backdated identities or unlimited arrivals inside a frozen interval. A budget of
+one explicitly keeps unknown-first priority. Record these limitations in load
+results rather than converting a slot-allocation test into a global liveness claim.
 
 ## Measurement
 
-Each receipt must bind exact commit, host, owner Agent, writer epoch, command,
-start/end time and result. Latency histograms separate queue admission,
-provider response, turn terminal observation and TaskFlow reconciliation.
+Retain exact candidate/tree, owner, writer epoch, host/configuration identity,
+actual command, start/end time and result. Separate admission, provider response,
+turn observation, TaskFlow reconciliation and polling-reservation latency.
+Track oldest unresolved age, per-key revisit interval, ready-backlog age, skipped
+or settled keys, retry class, cancellation-to-last-new-claim delay, SQLite busy
+work and recovery query work. Keep business age separate from polling age.
+
+No unbounded-history startup or selected-host SLO claim follows from the bounded
+Python checkpoint inspector. Native occurrence/TaskFlow startup scans and actual
+long-retention product recovery require their own capacity measurements.
 
 ## Error budgets
 
-- `DispatchUnknown` is a correctness state, not a retry budget event.
-- Schema corruption and fencing have zero tolerance and fail closed.
-- Temporary transport/storage errors consume the appropriate admission or
-  recovery retry budget; the budgets are independent.
-- A failed recovery attempt admits no new work in the same cycle.
-- Occurrence-local conflicts are isolated per cycle; repeated conflict reaches
-  fail-stop rather than spinning forever.
-- With a one-item recovery budget, unknown dispatch retains priority. With a
-  larger budget and both frontiers populated, one terminal-observation slot is
-  reserved and all remaining capacity continues to favor unknown dispatch.
-- New-admission backlog age is measured from canonical `scheduled_for_ms`.
-  Unknown-dispatch recovery age is measured from `observed_at_ms`; admitted turn
-  observation age is measured from the durable occurrence `updated_at_ms`.
+`DispatchUnknown` is a correctness state, not retry allowance. Schema corruption,
+wrong identity and stale fencing have zero tolerance. Retryable pre-contact and
+read-only recovery failures consume separate budgets; deterministic exponential
+backoff is currently implemented, not jitter. A failed recovery cycle admits no
+new work. Cancellation is checked before each new claim while already-started
+work retains its acknowledgment/uncertainty. Unresolved effects survive retirement.

@@ -1,19 +1,23 @@
 # automation.taskflow technical development guide
 
-Current executable behavior, owner boundaries and release gates are defined by
-this guide together with [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md),
-[the schema v19 migration runbook](MIGRATION_V19_RUNBOOK.md),
-[the runtime SLO contract](SLO.md), and
+Current capability declarations and unresolved work are generated in
+[CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md) and `CURRENT_STATE.json`
+from `IMPLEMENTATION_MAP.json` and `SCHEMA_CONTRACT.json`. This guide explains
+implementation semantics; neither prose nor source navigation proves execution.
+See also [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md),
+[the migration runbook](MIGRATION_V19_RUNBOOK.md), [runtime SLOs](SLO.md) and
 [release qualification](RELEASE_QUALIFICATION.md).
 
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0  
 **Lane:** `LANE-B-RUNTIME`  
-**Durable store schema:** **v19**  
+**Durable store schema:** **v21**  
 **TaskFlow definition schema:** v1  
 **Neural Circuit candidate schema:** v1  
 **Neural Circuit runtime-adapter schema:** v1  
-**Status:** V1 durable owner and Agentd product composition implemented; selected-host
-qualification and independent acceptance remain separate release gates.
+**Status:** V1 durable owner and configured Agentd product composition are
+source-present. Exact-head/native/merged-tree execution, durable Circuit product
+integration, cross-host operation and selected-runtime evidence remain distinct
+unfinished work. No deployment or independent acceptance is asserted.
 
 ## 1. Module responsibility
 
@@ -24,297 +28,312 @@ qualification and independent acceptance remain separate release gates.
 - occurrence lease, generation and timer-writer fencing;
 - TaskFlow definition, run, step and durable outbox state;
 - provider-attempt and reconciliation evidence for authorized effects;
-- terminal projection after the owning observer has supplied trusted evidence;
-- bounded Neural Circuit choice/organ/wait execution up to an existing TaskFlow
-  wait or final-use-authorized effect boundary.
+- terminal projection after the owning observer supplies trusted evidence;
+- two persistent bounded recovery-sweep records, separate from business state.
 
-It does **not** own model inference, organ implementations, provider credentials,
-final-use grant issuance, topology activation, deployment, or release authority.
-There is one scheduler owner, one TaskFlow ledger and one external-effect seam.
+The bounded Neural Circuit library adapter produces choice/organ/wait traces up
+to a wait or effect boundary. It is not yet the durable product interpreter.
+TaskFlow does not own model inference, organ implementations, provider credentials,
+final-use grant issuance, topology activation, deployment or release authority.
+There is one scheduler owner, one TaskFlow ledger and one authorized-effect seam.
 The inert `hepta-taskflow-runtime` command is not a second daemon.
 
 ## 2. Executable source topology
 
-| Responsibility | Source owner | Product composition |
+| Responsibility | Source owner | Composition boundary |
 |---|---|---|
 | Schedule registration and Calendar V2 | `schedule_v2.rs`, `store.rs` | Agentd typed control method and client |
 | Due occurrence claim | `store.rs`, `lifecycle.rs` | Agentd automation service |
-| Bounded admission batch | `scheduler.rs` | Agentd scheduler loop |
+| Cancellation-aware bounded admission | `scheduler.rs` | Agentd scheduler loop |
 | App Server queue admission | `hepta-agentd/src/automation.rs` | `thread/queue/reconcile(AllowIfAbsent)` |
-| Queue/turn reconciliation | `hepta-agentd/src/automation_recovery.rs` | same stable client and payload digest |
-| TaskFlow run/step ledger | `taskflow.rs`, `taskflow_step.rs` | owner-local SQLite transaction path |
+| Queue/turn reconciliation | `hepta-agentd/src/automation_recovery.rs` | exact client/payload identity; bounded read-only requests |
+| Persistent fair polling | `recovery_sweeps.rs` | timer-fenced key reservation and exact owner reads |
+| TaskFlow run/step ledger | `taskflow.rs`, `taskflow_step.rs` | existing owner-local SQLite transactions |
 | Authorized downstream effect | `authorized_effect.rs` | `AgentdAutomationEffectHost` and typed control API |
-| Timer quiesce/handoff | `timer_lifecycle.rs` | Agentd drain and owner management |
-| Neural Circuit candidate compiler | `neural_circuit.rs` | compiles to the existing TaskFlow definition owner |
-| Neural Circuit activation adapter | `neural_circuit_runtime.rs` | returns wait/effect boundaries; creates no authority |
-| Cross-host recovery contract | `cross_host_recovery.rs` | deployment controller must supply external fence receipt |
+| Timer quiesce/handoff | `timer_lifecycle.rs` | existing owner management |
+| Neural Circuit candidate compiler | `neural_circuit.rs` | compiles to the existing TaskFlow definition format |
+| Neural Circuit activation adapter | `neural_circuit_runtime/` | library trace/boundary output; durable product continuation remains open |
+| Cross-host recovery contract | `cross_host_recovery.rs` | manifest validation; real external-fence controller remains open |
+| Backup and staged restore | `scripts/automation_taskflow_checkpoint.py` | operator-invoked, create-only; never changes authority or writer epoch |
 
-The implementation map is the machine-readable inventory. Source presence is not
-selected-host execution proof; execution proof is retained as a workflow receipt
-bound to an exact commit and command set.
+The implementation map is the machine-readable source inventory. Source presence
+is not selected-host execution. Qualification receipts bind the actual candidate,
+command, working directory, toolchain output, result and retained log.
 
-## 3. Durable schema v19
+## 3. Durable schema v21 and retained history
 
-The canonical SQLite file remains `automation_1.sqlite3`. `AutomationStore::open`
-runs the SQLx migrator, reconciles only the explicitly admitted historical
-migration IDs, verifies the exact schema and owner, protects the database file,
-and reads the durable timer writer epoch.
-
-Schema v19 is the convergence head:
+The SQLite file remains `automation_1.sqlite3`. `AutomationStore::open` runs the
+SQLx migrator, reconciles only explicitly admitted historical migration IDs,
+verifies the owner/schema, protects the database file and reads the timer epoch.
 
 | Migration | Durable addition | Compatibility rule |
 |---|---|---|
-| 17 | destination-owned kernel operation dedupe receipt | immutable and non-deletable receipt in the same transaction as the destination effect |
-| 18 | timer lifecycle, writer epoch and drain guard | `active → draining → active`, or fenced epoch advance from `draining`; unresolved dispatches prohibit handoff |
-| 19 | converged owner schema | preserves both displaced migration histories and maps only recognized legacy version/checksum pairs before normal SQLx validation |
+| 17 | destination-owned kernel operation dedupe | immutable receipt committed with the destination effect; published SQL is retained |
+| 18 | timer lifecycle, epoch and drain guard | epoch advance only from draining; unresolved timer dispatch prohibits handoff |
+| 19 | converged owner schema | only recognized legacy version/checksum pairs are remapped before normal SQLx checks |
+| 20 | two permanent recovery keyset sweeps | polling progress is not occurrence state, absence evidence or dispatch authority |
+| 21 | indexed sparse unknown frontier | preserves migration 20's checksum and selects the indexed dispatch key |
 
-No migration deletes V1 schedule, occurrence, TaskFlow, dispatch or terminal
-history. An older binary that does not understand schema v19 must not replace or
-open the writer. Rollback is a new, compatible writer epoch over the same v19
-store, not restoration of an old database image over a live owner.
+The historical SQL in migrations 17 and 18 retains its earlier intermediate
+metadata updates; migration 19 converges them, followed by 20 and 21. Do not
+rewrite published migration bytes to make their filename and intermediate update
+look alike. `SCHEMA_CONTRACT.json` pins their Git blob identities.
+
+No migration deletes V1 schedules, occurrences, TaskFlow runs, provider attempts,
+terminal history or recorded identities. An older binary that cannot interpret
+schema 21 must not open the upgraded writer. Compatible rollback uses a fresh
+writer epoch over the current compatible store, not an old live database image.
 
 ### 3.1 Migration invariants
 
-1. Backup and checkpoint evidence are captured before mutation.
-2. The owner Agent ID is immutable.
-3. A recognized legacy checksum remap is metadata convergence, not arbitrary
-   acceptance of unknown SQL.
-4. Migrations run to completion before the timer or control plane becomes ready.
-5. Startup verifies tables, indexes, triggers, owner metadata and timer epoch.
-6. Unknown checksum, missing object, invalid trigger or lower schema fails closed.
-7. A partially copied database is never promoted by filename alone.
+1. Capture a consistent backup and independently retain its digest before mutation.
+2. The owner Agent ID and historical effect identities remain immutable.
+3. Recognized checksum remapping is reviewed metadata convergence, not permission
+   to accept unknown SQL or hand-edit `_sqlx_migrations`.
+4. Native migration and integrity verification complete before admission is ready.
+5. Missing lifecycle/sweep rows are corruption, not a fresh initialization request.
+6. A copied filename or checkpoint digest alone never authorizes another writer.
+7. Old binaries remain stopped; backup retention does not permit resurrection.
 
-The complete operator procedure is in `MIGRATION_V19_RUNBOOK.md`.
+The operator procedure and executable backup/staging commands are in
+`MIGRATION_V19_RUNBOOK.md`; that historical filename is retained for navigation.
 
 ## 4. Execution model
 
 A schedule revision freezes recurrence, timezone profile, tzdb digest, local-time
-policy and bounded recurrence. Claiming a due instant creates or reclaims one
-stable occurrence and one stable App Server client identity. The TaskFlow run and
-step intent are persisted before any queue or provider contact.
+policy and bounded recurrence. Claiming creates or reclaims one stable occurrence
+and App Server client identity. TaskFlow run/step intent and dispatch uncertainty
+are durable before crossing the queue boundary.
 
-Queue admission is not terminal execution. `AutomationTick::Submitted` means only
-that Core queue admission has a verified stable receipt. Terminal state is
-published after queue/turn reconciliation and TaskFlow reconciliation.
+Queue admission is not terminal execution. `AutomationTick::Submitted` means a
+verified Core admission receipt, not successful task execution. Terminal state
+follows owning-observer evidence and TaskFlow reconciliation.
 
 ### 4.1 Neural Circuit target and legacy boundary
 
-Existing V1 TaskFlow definitions remain bounded acyclic graphs with Activity,
-Wait, Effect and success/failure terminal nodes. Their namespace, definition
-digests, state transitions and persisted runs are unchanged.
+V1 TaskFlow definitions remain bounded acyclic graphs with Activity, Wait, Effect
+and success/failure terminal nodes. Their namespace, digests and persisted
+interpretation are not silently changed by the Circuit extension.
 
-A Neural Circuit candidate is a versioned bounded control program compiled onto
-that existing definition owner. The candidate binds:
-
-- exact predecessor digest;
-- route-policy, parameter-bundle and resource-profile digests;
-- declared capabilities;
-- node roles and admitted edges;
-- a canonical circuit digest and compiled TaskFlow definition digest.
-
-The runtime adapter adds the smallest executable vertical slice without creating
-a second ledger:
+A Neural Circuit candidate binds the exact predecessor, routing policy, parameter
+bundle, resource-profile digest, declared capabilities, roles, edges and compiled
+TaskFlow definition digest. The library adapter implements this limited slice:
 
 ```text
-event ingress
-→ DecisionCell request
-→ durable-choice-compatible recorded choice
+event digest validation
+→ DecisionCell request and in-memory recorded choice
 → organ port
-→ wait/join
-→ budget and depth enforcement
-→ bounded in-cell feedback or cancellation
-→ terminal receipt / existing effect boundary
+→ wait/join adapter
+→ local step/depth/cost/feedback checks
+→ terminal / wait / effect boundary output
 ```
 
-Feedback does not add a structural cycle to the V1 graph. It is a bounded round
-inside one DecisionCell activation and is included in the trace digest. A route
-must select an already admitted outgoing edge. Capability widening still
-requires separately governed topology and authority admission.
+Feedback is bounded inside a DecisionCell and does not introduce a cycle into
+V1 definitions. A route must choose an admitted outgoing edge. Structural or
+capability changes remain separately governed next-generation candidates.
 
-Before any DecisionCell or organ sees an event, runtime v1 recomputes the
-canonical event-ingress digest from the event ID, payload digest and causal
-parent. Every trace then binds that event digest, the admitted circuit digest and
-a canonical digest of the exact step, depth, feedback and cost profile. Terminal,
-wait and effect-boundary receipts therefore cannot be relabeled as executions
-under different event identity or runtime limits.
+Runtime v1 recomputes the event digest from event ID, payload digest and causal
+parent before invoking a port. Traces bind that digest, the circuit digest and
+the exact local runtime profile. These bindings prevent relabeling a returned
+trace under different input/limits; they do not authenticate an external source,
+persist an activation or establish a model/organ execution receipt by themselves.
 
-An Effect node returns `CircuitEffectBoundaryV1`; it never calls a provider. The
-existing TaskFlow authorized-effect path owns grant verification, provider
-identity, dispatch evidence and reconciliation. A pending Wait node similarly
-returns a boundary for the existing durable run owner to checkpoint.
+An Effect returns `CircuitEffectBoundaryV1` and does not dispatch a provider.
+Wait Pending also returns a boundary. Durable checkpoint/continuation through
+the existing TaskFlow owner, and actual product consumers of those boundaries,
+remain repository implementation work rather than external acceptance paperwork.
 
-### 4.2 Recorded-choice identity
+### 4.2 Recorded-choice identity and durability requirement
 
-Each DecisionCell request binds circuit, event, node, activation number, feedback
-round and remaining cost. The receipt binds the selected successor or feedback
-digest and the source decision digest. The enclosing trace also binds the exact
-runtime-profile digest. Route replay uses the recorded choice; it does not ask a
-changed policy to reinterpret historical execution.
+A DecisionCell request binds circuit, event, node, activation number, feedback
+round and remaining cost. The returned choice binds the successor or feedback
+and source-decision digest; the trace also binds the runtime profile.
+
+The current adapter initializes an in-memory accumulator for each invocation.
+It does not load historical choices, conserve reservations across reboot or resume
+a pending Wait/Effect. Port cost is checked after a port returns. Consequently,
+returned trace bounds are not proof of pre-call physical resource reservation.
+
+The required product chain remains:
+
+```text
+durable ingress and activation identity
+→ conserved reservation before owner work
+→ exact DecisionCell/organ owner result
+→ durable recorded choice and next-step intent
+→ Wait/Effect continuation through existing TaskFlow ownership
+→ terminal observation, reconciliation and budget settlement
+```
+
+A historical committed choice must be replayed without asking a changed policy
+again. Cross-owner crash cuts must reconcile the same activation/result, never
+repeat a possibly completed cell update or effect. Implement this on the existing
+owner, not a second store, daemon or scheduler. The scope is not reduced to the
+present in-memory adapter.
 
 ### 4.3 Bounded admission and recovery
 
-Agentd uses separate per-cycle budgets:
+Agentd uses separate recovery and admission budgets. Recovery first reserves a
+bounded set of exact keys through `AutomationStore::reserve_recovery_selection`.
+The two permanent sweeps advance under timer fencing/CAS and retain a frozen upper
+key for each sweep. Business `updated_at_ms` is not repurposed as polling progress.
 
-- recovery budget: historical unknown or admitted work;
-- admission budget: new due occurrences;
-- provider in-flight limit: one, preserving the existing serial provider seam.
+Unknown work keeps priority. With both lanes populated and budget greater than
+one, capacity is reserved for terminal observation. A one-item budget explicitly
+retains unknown-first behavior. Each lane rotates independently across reopen;
+a long-running oldest task does not continually hide all newer selected keys.
 
-Recovery snapshots a bounded set of distinct frontier rows once per cycle.
-Unknown dispatches are selected first by oldest `observed_at_ms`; admitted,
-running or indeterminate occurrences are selected by oldest `updated_at_ms`.
-When both frontiers are non-empty and the budget exceeds one, one slot is
-reserved for terminal observation and every remaining slot continues to favor
-unknown dispatch. With a one-item budget, unknown dispatch retains priority.
-Each selected row is contacted at most once in that cycle, so neither one
-in-progress turn nor a sustained unknown backlog can consume all terminal
-observation capacity. A retryable recovery failure consumes an independent
-backoff budget and blocks new admission for that cycle.
+Selected keys are re-read through `uncertain_dispatch_exact` and
+`pending_occurrence_work_exact`, never intersected with an unrelated bounded
+prefix. A key that settled since reservation is simply no longer work; it does
+not become a new absence proof. A crash after reservation delays an observation
+until another sweep but does not change occurrence or provider state.
 
-New due admission remains ordered by canonical `scheduled_for_ms`, task ID and
-occurrence. The scheduler samples a fresh host clock for every occurrence in a
-batch and stops immediately on an unknown dispatch so the next cycle reconciles
-the same identity. Separate recovery and admission budgets prevent either lane
-from permanently starving the other while retaining old-work priority within
-each lane.
+Transient unknown-query failures are retained while the reserved terminal lane
+is attempted. The batch still fails, and no new admission occurs that cycle.
+Fatal identity/corruption/fence errors stop immediately. Read-only queue/turn RPCs
+have deadlines; timeout never proves absence. Terminal-history pagination retains
+its durable exact-CAS continuation.
+
+This is finite-frontier progress, not a latency guarantee under arbitrary overload,
+backdated identities or unlimited arrivals within a frozen key interval. Target
+capacity and long-running operational liveness still need measured qualification.
+
+Admission remains ordered by scheduled instant and stable occurrence identity.
+`tick_batch_cancellable` samples cancellation before every new claim and samples
+a fresh host clock per occurrence. An already-started tick retains its durable
+acknowledgment or exact uncertainty. The first proven pre-admission failure yields
+to cross-cycle host backoff; unknown dispatch stops the batch for reconciliation.
 
 ### 4.4 External-effect product path
 
-The repository contains a real Agentd external-effect host. When configured, the
-host:
+The configured `AgentdAutomationEffectHost` loads protected provider/authority and
+revocation configuration, checks owning scope, binds exact payload bytes to the
+signed final-use grant, persists attempt evidence, executes the HTTP adapter and
+reconciles a pending outcome by its stable provider identity.
 
-1. loads protected host, authority-key and revocation configuration;
-2. verifies owner Agent and generation;
-3. constructs the provider request and exact payload digest;
-4. claims a signed final-use grant against destination, scope and payload;
-5. persists provider-attempt evidence before contact;
-6. executes through the registered HTTP provider adapter;
-7. returns a typed Agentd receipt;
-8. reconciles pending outcomes by the stable provider key after restart.
+Host schema v1 retains its original provider-visible key: provider scope,
+destination, run and step. The generic bridge's key profile is not silently
+substituted for it. Local step attempt and payload bytes are excluded from the
+logical key; changed payload under the same logical effect must conflict, not
+become a new effect. Unknown outcome never grants redispatch permission.
 
-The async `ProviderEffectTaskFlowDriver` remains a reusable bridge. Product
-closure is established by the Agentd host's authorized-effect entrypoint, not by
-pretending every reusable bridge has a direct caller. Deployment still requires
-an independently provisioned authority, provider endpoint and trusted terminal
-observer.
+Product-source composition is established by the named host, not by declaring that
+every reusable bridge has a direct caller. Independently provisioned issuer trust,
+provider contract and terminal observer plus actual selected-host execution remain
+required. The host's configurable provider timeout is distinct from the scheduler's
+App Server admission timeout.
 
 ### 4.5 Design records and failure semantics
 
-Errors are classified separately from their durable evidence:
-
 | Class | Examples | Runtime action |
 |---|---|---|
-| Fence | generation mismatch, timer writer epoch mismatch, access denial | mark generation fenced and stop |
-| Fail-stop | corrupt schema, invalid runtime policy, impossible invariant | make automation unavailable; no new work |
-| Retry | storage or transport temporarily unavailable before admission | bounded exponential backoff with jitter supplied by the host policy |
-| Reconcile | provider or queue outcome may be unknown | preserve identity and query; never blind redispatch |
-| Isolate | occurrence-local state conflict | stop the current batch, back off, retain evidence; fail-stop after bounded recurrence |
+| Fence | stale generation/epoch, access denial | stop at the owning boundary; preserve uncertain evidence |
+| Fail-stop | corrupt schema, invalid policy/invariant | make automation unavailable; no new work |
+| Retry | proven pre-admission storage/transport failure | yield to bounded exponential host backoff |
+| Reconcile | queue/provider contact may have happened | retain exact identity; query, never blind redispatch |
+| Isolate | occurrence-local state conflict | preserve evidence and stop the batch; bounded recurrence may fail-stop |
 
-A timeout after the admission seam is always `DispatchUnknown`. Lease expiry is
-not proof that a provider did not execute. A terminal receipt cannot be inferred
-from absence of a response.
+TaskFlow errors retain their categories through the scheduler and recovery path;
+corruption/fencing must not be erased by a wildcard conversion to ordinary retry.
+The current retry policy is capped deterministic exponential backoff, not jittered
+backoff. Lease expiry, parent cancellation and missing replies are not absence
+proofs. Compensation remains a separately authorized action, not an undo operation.
 
 ## 5. Runtime policy and SLOs
 
-`AutomationRuntimePolicyV1` is bounded and versioned. The default policy uses an
-8-item recovery budget, 16-item admission budget, one provider in flight, three
-consecutive pre-admission failures, and 250–5000 ms exponential backoff.
+The default `AutomationRuntimePolicyV1` has an eight-key recovery budget, sixteen
+new admissions, serialized scheduler contact, three consecutive pre-admission
+failures and 250–5000 ms retry backoff. Agentd uses the policy's dispatch/lease
+values. This local serialization is not a claim that all independently invoked
+external-effect control calls share a global one-call semaphore.
 
-The normative service objectives are in `SLO.md`. They bind dispatch timeout,
-unknown-result reconciliation, lease expiry and writer-epoch fencing. SLO misses
-produce evidence and operational alerts; they never weaken identity or authority
-checks.
+`SLO.md` defines operational objectives, evidence and known limits. A configured
+threshold or test definition is not measured compliance. Breaches retain evidence
+and trigger operations work; they do not relax identity, revocation or authority.
 
 ## 6. Timer lifecycle and cross-host recovery
 
-The local timer lifecycle remains `active`, `draining`, `retired` with a monotone
-writer epoch. Same-store handoff advances the epoch and returns a successor that
-remains draining until its consumer is installed.
+The local lifecycle is `active`, `draining`, `retired`, with monotone writer epoch.
+A same-store handoff advances the epoch; the successor remains draining until its
+consumer is installed. Historical unresolved effects must not be erased.
 
-Cross-host recovery is now explicitly specified by
-`AutomationCrossHostRecoveryManifestV1`. Export is admitted only when:
+`AutomationCrossHostRecoveryManifestV1` binds source/target hosts, owner Agent,
+checkpoint, external fence digest, schema and exactly the next epoch. Target
+validation compares the owner Agent read from the copied target store, not a
+self-attested manifest owner. Invalid owner/schema/epoch/checkpoint rejects.
 
-- the source timer is draining and `can_handoff()`;
-- no leased or unknown provider outcome remains;
-- an exact SQLite checkpoint digest exists;
-- an externally enforced host-fence receipt is bound;
-- source and target hosts differ;
-- the target opens schema v19 at exactly source epoch + 1;
-- the owner Agent read from the copied target store exactly matches the manifest owner.
+The manifest does not copy bytes, authenticate an external fence or establish
+physical source-host isolation. A real controller must verify current external
+fencing, transport the exact checkpoint and drive native target admission. That
+product integration and a two-host fault/recovery exercise remain open.
 
-A deserialized manifest re-parses the canonical owner Agent ID and recomputes the
-manifest digest, so a caller cannot legitimize a malformed owner merely by
-recomputing the outer hash. Target admission compares the owner read from the
-copied v19 store rather than trusting the manifest to attest to itself. The
-module does not claim to provide storage transport or distributed consensus. The
-deployment controller owns byte transfer and the external host lease. A target
-host, owner, schema, epoch or checkpoint mismatch returns `TimerFenced`.
+The Python checkpoint utility supplies a consistent WAL-aware backup and a
+create-only staged copy. It keeps source schema and epoch unchanged, requires
+an independently retained manifest digest and never starts a target. Its output
+is not `admit_target`, a writer lease or an external-fence receipt.
 
-## 7. Calendar V2 and timezone evidence
+## 7. Calendar V2 and selected-runtime evidence
 
-Calendar V2 persists the timezone ID, tzdb digest, transition profile, start/end,
-DST gap policy, DST overlap policy and bounded recurrence. Source tests cover gap
-and overlap behavior and schedule-revision identity.
+Calendar V2 persists timezone ID, tzdb digest, transition profile, start/end,
+DST gap/overlap policies and recurrence bounds. Source tests cover these semantics.
 
-A selected deployment must additionally retain:
+Selected-host proof must bind the profile actually consumed by the native run to
+the verified IANA source, deployed zones and runtime configuration. Merely hashing
+a host tzdb directory or copying environment identity strings into an artifact
+does not prove the run used them. Provider endpoint/contract, loaded final-use
+trust, live revocation frontier, terminal observer and native Rust/SQLx SQLite
+identity require the same actual-use binding.
 
-- operating-system and tzdata package identity;
-- IANA release or source digest used to build the supplied transition profile;
-- gap/overlap vectors for the deployed zones;
-- multi-scheduler race results under the selected SQLite/filesystem host;
-- restore and capacity results.
+The checkpoint inspector reports its Python SQLite identity explicitly; that is
+not the native Agentd SQLite identity. Synthetic DST vectors and owner fixtures
+remain distinct from selected-runtime execution and independent acceptance.
 
-A synthetic digest named “tzdb” is test evidence, not proof of a current authentic
-IANA database.
+## 8. Verification and reproducible evidence
 
-## 8. Verification and CI
+The focused workflow remains read-only on relevant PR/main candidates and is
+included in `CI required`. It invokes `automation_taskflow_commands.py` and the
+existing `hepta_ci_exec.py` recorder, retaining actual argv/cwd, source commit/tree,
+time interval, exit result, log digest, toolchain output and observed test counts.
+Not reached or compile-dependent commands remain `not_run`; interrupted/running
+records never count as passed. Formatting is check-only and native tests stay
+locked. Native, structural, migration, product and Bazel gates are retained.
 
-The focused workflow runs on relevant pull requests and pushes to `main`. It
-performs:
+The contract checker verifies schema/migration bytes, current status projections,
+source navigation and exact observed-source identity. It deliberately does not
+report an algorithm, native run or product as verified from source markers alone.
 
-- schema/document drift verification and unit tests;
-- `cargo fmt --check`;
-- `cargo check` and strict Clippy;
-- automation package tests, migration convergence, structural qualification and
-  Neural Circuit runtime tests;
-- Agentd library and product-control tests;
-- TaskFlow Bazel qualification targets;
-- exact commit/tree and command receipt retention.
+Developer updates use two ordinary commits: commit source/semantic declarations,
+then `python3 scripts/automation_taskflow_contract.py observe` to refresh existing
+source objects without changing capability flags. `render` updates only derived
+status files. Neither writer command is part of read-only qualification.
 
-The workflow is a repository-controlled gate. Branch protection must name its
-result if the hosting platform requires explicit required-check registration;
-workflow source alone cannot mutate that administrative setting.
+The new checkpoint tests execute real SQLite backup/staging, an abrupt Python
+child-process cut and retained-history inspection. They do not execute native
+AutomationStore restart or fix its still-unbounded full-history startup verifiers.
+Current source-head and deterministic-merge native receipts are both required.
 
-## 9. Release truth table
+## 9. Release truth
 
-| Claim | Current status |
-|---|---|
-| Schema v19 source and migration convergence | implemented |
-| V1 durable schedules, occurrences, TaskFlow and recovery | implemented |
-| Bounded batch admission and separate recovery budget | implemented |
-| Agentd Calendar V2 product control | implemented |
-| Agentd authorized external-effect product host | implemented when configured |
-| Minimal Neural Circuit vertical slice | implemented to wait/effect boundary |
-| Cross-host recovery manifest and fail-closed target admission | implemented |
-| Cross-host byte transport / distributed lease | external deployment owner |
-| Selected-host current IANA tzdb qualification | required evidence |
-| Independently accepted provider and authority configuration | required evidence |
-| Activation, promotion and release | externally governed; not asserted here |
+Use the generated [current implementation](CURRENT_IMPLEMENTATION.md), not a
+hand-maintained checklist that combines source presence with test execution.
+Native source-head, native deterministic merge, selected-runtime execution,
+independent acceptance, activation, promotion and release are separate states.
+See `RELEASE_QUALIFICATION.md` for the evidence chain and remaining source work.
 
 ## 10. Compatibility rules
 
-- V1 TaskFlow definitions and database records are never rewritten as circuits.
-- Existing `AutomationTick` variants retain their public meaning.
-- The batch API is a bounded repetition of the same V1 `tick` operation.
-- Neural Circuit Effect nodes return to the existing authorized-effect seam.
-- A structural successor cannot widen capabilities.
-- Historical choices, provider keys and occurrence identities survive policy and
-  binary upgrades.
-- No old binary may become writer over schema v19.
+V1 definitions and records are never rewritten as richer circuits. Existing tick
+variants retain their meaning; batching repeats the same durable tick boundary.
+Capability widening requires separate admission. Historical occurrence, client,
+provider, grant and reconciliation identities survive binary/policy updates.
+No old binary becomes writer over schema 21, and no backup replaces a live owner.
 
 ## 11. Completion criteria
 
-Repository-controlled implementation is complete only when source, mapping,
-documentation, tests and exact-head receipts agree. Deployment completion also
-requires the selected-host and independent evidence listed in
-`RELEASE_QUALIFICATION.md`. No self-authored document or CI run may substitute
-for an independent acceptance signature.
+Completion requires agreement between source, generated declarations, native tests,
+product callers and successful exact-head/merged-tree receipts. The durable Circuit,
+cross-host controller, actual selected-runtime bindings and native startup capacity
+work remain part of the requested implementation scope. They are not reclassified
+as mere external signatures. Deployment and independent acceptance add further
+requirements and cannot be self-issued by these source changes.

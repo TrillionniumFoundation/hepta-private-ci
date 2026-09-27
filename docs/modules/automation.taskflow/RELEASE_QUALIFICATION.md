@@ -1,56 +1,73 @@
 # automation.taskflow release qualification
 
+Canonical source declarations: [CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md).
+The current store schema is 21. V1 TaskFlow and provider identities are unchanged.
+A source-present test, read-only gate definition or signed intent is not evidence
+that the exact candidate executed successfully.
+
 ## Repository-controlled gates
 
-- [x] schema v19 code and migrations
-- [x] migration convergence tests
-- [x] durable V1 occurrence and TaskFlow recovery
-- [x] bounded batch scheduling and separate recovery/admission budgets
-- [x] formal error disposition and SLO contract
-- [x] Agentd Calendar V2 product control
-- [x] Agentd external-effect host wired through `ProviderEffectTaskFlowDriver`, final-use authority and the attested HTTP provider adapter
-- [x] minimal Neural Circuit runtime vertical slice
-- [x] fail-closed cross-host recovery manifest and target-admission fence
-- [x] crash-point, deterministic property sweep and same-store multi-scheduler race tests
-- [x] workspace-wide Rust formatting is enforced with `cargo fmt --all -- --check`
-- [x] PR/main focused workflow and retained exact command receipt
-- [ ] exact PR workflow receipt is successful for the final candidate
+The repository has durable schedules/occurrences, the TaskFlow causal chain,
+fenced recovery sweeps, cancellation-aware batching, error categories, Calendar
+V2 control and a configured authorized-effect host. It also has limited Circuit
+and cross-host manifest adapters. Their product limits remain explicit.
+
+Required qualification retains check-only formatting, locked compile, strict
+Clippy, native/structural/migration tests, Agentd product tests and Bazel targets.
+Both exact source-head and deterministic-merge execution must reach terminal
+success. The command recorder retains actual records, working directory, tree,
+time, output digest, toolchain output and nonzero minimum test observations.
+`not_run`, running, interrupted, failed or missing records cannot count as success.
+
+The canonical contract checker validates facts and generated projections without
+requiring unfinished capabilities to become `true`. A passing source-fact check
+is not whole-module completion. Its output keeps native/product execution and
+release false. Developer `render`/`observe` commands are not CI repair steps.
+
+## Remaining repository source/product work
+
+Durable Circuit ingress/activation, committed-choice replay, conserved budgets and
+Wait/Effect continuation must be connected to the existing TaskFlow owner and
+actual product ports. The cross-host manifest still needs authenticated source
+fencing, transport/controller integration and a two-host recovery exercise.
+Selected-runtime evidence must bind what the native process actually consumed.
+Native startup validation and long-retention capacity must also be completed.
+These are source obligations, not merely externally supplied signatures.
+
+The checkpoint CLI provides consistent backup and staged restore without changing
+schema, epoch, occurrence, provider or authority state. Its Python SQLite identity
+and child-process tests do not prove native migration or physical source fencing.
 
 ## Selected-host qualification lane
 
-`.github/workflows/automation-taskflow-selected-host.yml` is the only repository-defined selected-host qualification lane. It requires an immutable candidate SHA, a named target profile, a self-hosted runner carrying the `hepta-automation-selected-host` label, and an expected digest for the host's IANA tzdb tree. It fails closed when the checked-out commit, tzdb digest, source map, format, compilation, strict Clippy or any qualification test differs from the declared inputs.
+`.github/workflows/automation-taskflow-selected-host.yml` identifies an immutable
+candidate, target profile and explicitly selected host. Its current metadata-only
+identity fields and source fixtures are insufficient to close the actual-use
+binding requirement. Do not count a tzdb directory hash as proof that Calendar V2
+consumed its transition profile, or Python's SQLite version as native SQLx identity.
 
-The lane exercises:
+The finished lane must bind loaded provider endpoint/contract, terminal observer,
+final-use trust, current revocation frontier, used timezone profile and native
+runtime implementation to the same actual execution. It must also retain DST,
+concurrent scheduler, restore, real cross-host and capacity outcomes for that
+configuration. A successful source test remains its own evidence class.
 
-- Calendar V2 DST gap/overlap vectors against the candidate source;
-- concurrent scheduler claim fencing;
-- crash/reopen preservation of unknown dispatch identity;
-- deterministic runtime-policy and Neural Circuit bound sweeps;
-- cross-host recovery target admission;
-- the Agentd `ProviderEffectTaskFlowDriver` product host and reconciliation tests;
-- exact host, SQLite, runner, tzdb, commit and tree identity.
+## Independent acceptance and deployment
 
-A successful run emits `hepta.automation-taskflow.selected-host-receipt.v1`. That receipt is a qualification candidate, not an independent acceptance signature.
+An acceptance envelope must bind exact commit/tree, successful focused and
+selected-runtime receipts, target profile, provider/observer identities, trust
+roots and current revocation frontier. The acceptance principal and provisioned
+key must be independent of the implementation principal. A CI environment
+approval, self-authored document or implementation signature is not a substitute.
 
-## Evidence that remains external
-
-For an activated deployment, the exact candidate still needs:
-
-- provider endpoint and terminal-observer identity bound to the selected target profile;
-- independently provisioned final-use issuer keys and monotonic revocation head;
-- protected provider/authority configuration provenance;
-- backup/restore and real cross-host checkpoint-transfer evidence;
-- capacity measurements at the declared admission and recovery budgets;
-- an acceptance signature by a principal distinct from the implementation principal.
-
-## Independent acceptance
-
-The acceptance envelope must bind the exact commit/tree, focused-CI receipt, selected-host receipt, target profile, provider/observer identities, final-use trust roots and revocation frontier. Repository CI, an environment approval, self-authored documentation or the implementation principal's own signature cannot satisfy this gate.
-
-Until that independently signed envelope is attached and verified:
+Externally provisioned trust/credentials, physical fencing and independent
+operational acceptance remain required in addition to the repository source work.
+Independent acceptance does not silently activate, promote or release anything.
+Until the exact evidence chain is verified, source-state projections retain:
 
 ```text
-deploymentQualified = false
+deploymentQualificationComplete = false
+productExecutionProved = false
 independentAcceptance = false
 activation = false
 promotion = false
