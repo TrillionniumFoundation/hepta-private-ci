@@ -107,9 +107,12 @@ for symbol in [
     )
 replace(
     "codex-rs/hepta-intelligence/src/lib.rs",
-    "pub use prompt_delivery::compile_prompt_registry_v2;\n\nmod pipeline;",
+    "pub use prompt_delivery::compile_prompt_registry_v2;\n"
+    "pub use prompt_delivery::prepare_prompt_registry_delivery_v2;\n\n"
+    "mod pipeline;",
     "#[cfg(feature = \"legacy-prompt-context-v1\")]\n"
-    "pub use prompt_delivery::compile_prompt_registry_v2;\n\n"
+    "pub use prompt_delivery::compile_prompt_registry_v2;\n"
+    "pub use prompt_delivery::prepare_prompt_registry_delivery_v2;\n\n"
     "pub use prompt_product_v3::PreparedPromptDeliveryV3;\n"
     "pub use prompt_product_v3::PromptExactTokenizerV3;\n"
     "pub use prompt_product_v3::PromptExecutionProfileV3;\n"
