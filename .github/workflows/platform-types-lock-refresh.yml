@@ -1,4 +1,4 @@
-name: platform.types lock refresh bootstrap
+name: platform.types lock verification
 
 on:
   pull_request:
@@ -19,151 +19,87 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: platform-types-lock-refresh-${{ github.event.pull_request.number || github.ref }}
+  group: platform-types-lock-verify-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
   PLATFORM_TYPES_MSRV: "1.95.0"
 
 jobs:
-  refresh:
-    name: Refresh exact platform.types Cargo lock
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+  verify:
+    name: Verify exact platform.types Cargo lock
     runs-on: ubuntu-22.04
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
-      - name: Converge compatibility source and authoritative lock
-        id: refresh
+      - name: Verify canonical source and authoritative lock
         shell: bash
         env:
-          HEAD_REF: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVIDENCE: ${{ runner.temp }}/platform-types-lock-verify
         run: |
           set -euo pipefail
           repo_root="$(git rev-parse --show-toplevel)"
-          evidence="$repo_root/.hepta-evidence/platform-types-lock-refresh"
-          mkdir -p "$evidence"
-          exec > >(tee "$evidence/run.log") 2>&1
+          rm -rf "$EVIDENCE"
+          mkdir -p "$EVIDENCE"
+          exec > >(tee "$EVIDENCE/run.log") 2>&1
 
-          candidate_paths=(
-            codex-rs/Cargo.lock
-            codex-rs/hepta-types/src/numeric_conversion.rs
-            codex-rs/hepta-types/src/numeric_registry_v2.rs
-            codex-rs/hepta-types/src/numeric_conversion_tests.rs
-            codex-rs/hepta-types/src/numeric_profile.rs
-            codex-rs/hepta-types/src/topology.rs
-            codex-rs/hepta-types/src/bin/platform-types-protocol-codegen.rs
-            codex-rs/hepta-types/src/prompt_delivery_v2.rs
-            codex-rs/hepta-types/src/protocol_catalog_v2.rs
-            codex-rs/hepta-types/tests/manifest_protocol_consumer.rs
-            codex-rs/hepta-wire/src/platform_types_json.rs
-            codex-rs/hepta-wire/src/platform_manifest_json.rs
-            codex-rs/hepta-ndu/src/numeric_admission.rs
-            codex-rs/hepta-ndu/src/owner.rs
-            codex-rs/hepta-ndu/src/owner_tests.rs
-            codex-rs/hepta-ndu/src/random_stream_owner.rs
-            scripts/platform_types_api_compat_fixup.py
-            scripts/platform_types_bootstrap_fixup.py
-          )
-          allowed_path_pattern='^(codex-rs/Cargo\.lock|codex-rs/hepta-types/src/numeric_conversion\.rs|codex-rs/hepta-types/src/numeric_registry_v2\.rs|codex-rs/hepta-types/src/numeric_conversion_tests\.rs|codex-rs/hepta-types/src/numeric_profile\.rs|codex-rs/hepta-types/src/topology\.rs|codex-rs/hepta-types/src/bin/platform-types-protocol-codegen\.rs|codex-rs/hepta-types/src/prompt_delivery_v2\.rs|codex-rs/hepta-types/src/protocol_catalog_v2\.rs|codex-rs/hepta-types/tests/manifest_protocol_consumer\.rs|codex-rs/hepta-wire/src/platform_types_json\.rs|codex-rs/hepta-wire/src/platform_manifest_json\.rs|codex-rs/hepta-ndu/src/numeric_admission\.rs|codex-rs/hepta-ndu/src/owner\.rs|codex-rs/hepta-ndu/src/owner_tests\.rs|codex-rs/hepta-ndu/src/random_stream_owner\.rs|scripts/platform_types_api_compat_fixup\.py|scripts/platform_types_bootstrap_fixup\.py)$'
+          test "$(git -C "$repo_root" rev-parse HEAD)" = "$EXPECTED_SHA"
+          test ! -e "$repo_root/scripts/platform_types_api_compat_fixup.py"
+          test ! -e "$repo_root/scripts/platform_types_bootstrap_fixup.py"
 
           rustup toolchain install "$PLATFORM_TYPES_MSRV" --profile minimal \
             --component rustfmt
-          cargo "+$PLATFORM_TYPES_MSRV" --version | tee "$evidence/cargo-version.txt"
-          rustc "+$PLATFORM_TYPES_MSRV" --version --verbose | tee "$evidence/rustc-version.txt"
+          cargo "+$PLATFORM_TYPES_MSRV" --version | tee "$EVIDENCE/cargo-version.txt"
+          rustc "+$PLATFORM_TYPES_MSRV" --version --verbose \
+            | tee "$EVIDENCE/rustc-version.txt"
 
-          if [[ -f "$repo_root/scripts/platform_types_api_compat_fixup.py" ]]; then
-            python3 "$repo_root/scripts/platform_types_api_compat_fixup.py"
-            git -C "$repo_root" rm -- scripts/platform_types_api_compat_fixup.py
-          fi
-          if [[ -f "$repo_root/scripts/platform_types_bootstrap_fixup.py" ]]; then
-            python3 "$repo_root/scripts/platform_types_bootstrap_fixup.py"
-            git -C "$repo_root" rm -- scripts/platform_types_bootstrap_fixup.py
-          fi
-
-          cargo "+$PLATFORM_TYPES_MSRV" fmt \
+          cargo "+$PLATFORM_TYPES_MSRV" fmt --check \
             --manifest-path "$repo_root/codex-rs/Cargo.toml" \
-            --package codex-hepta-types --package codex-hepta-wire --package codex-hepta-ndu
-          cargo "+$PLATFORM_TYPES_MSRV" generate-lockfile \
-            --manifest-path "$repo_root/codex-rs/Cargo.toml"
-
-          git -C "$repo_root" status --short --untracked-files=no \
-            | tee "$evidence/status-before-validation.txt"
-          git -C "$repo_root" diff --binary -- "${candidate_paths[@]}" \
-            > "$evidence/working-tree.patch"
-          git -C "$repo_root" diff --cached --binary -- "${candidate_paths[@]}" \
-            > "$evidence/index.patch"
-
-          unexpected="$(
-            git -C "$repo_root" status --porcelain --untracked-files=no |
-              cut -c4- |
-              grep -Ev "$allowed_path_pattern" || true
-          )"
-          if [[ -n "$unexpected" ]]; then
-            printf 'compatibility/lock convergence changed unexpected tracked paths:\n%s\n' "$unexpected" >&2
-            exit 1
-          fi
-
-          git -C "$repo_root" diff --check
-          git -C "$repo_root" diff --cached --check
+            --package codex-hepta-types \
+            --package codex-hepta-wire \
+            --package codex-hepta-ndu
           python3 "$repo_root/scripts/platform_types_public_api.py"
           cargo "+$PLATFORM_TYPES_MSRV" metadata \
             --manifest-path "$repo_root/codex-rs/Cargo.toml" \
-            --locked --no-deps > "$evidence/metadata.json"
+            --locked --no-deps > "$EVIDENCE/metadata.json"
           cargo "+$PLATFORM_TYPES_MSRV" check \
-            -p codex-hepta-types -p codex-hepta-wire -p codex-hepta-ndu \
             --manifest-path "$repo_root/codex-rs/Cargo.toml" \
-            --locked
+            --locked \
+            -p codex-hepta-types -p codex-hepta-wire -p codex-hepta-ndu \
+            --all-targets
           cargo "+$PLATFORM_TYPES_MSRV" test \
-            -p codex-hepta-types -p codex-hepta-wire -p codex-hepta-ndu \
             --manifest-path "$repo_root/codex-rs/Cargo.toml" \
-            --locked
+            --locked \
+            -p codex-hepta-types -p codex-hepta-wire -p codex-hepta-ndu \
+            --all-targets
+
+          git -C "$repo_root" diff --check
+          test -z "$(git -C "$repo_root" status --porcelain --untracked-files=normal)"
 
           {
-            git -C "$repo_root" diff --stat -- "${candidate_paths[@]}"
-            git -C "$repo_root" diff --cached --stat -- "${candidate_paths[@]}"
-          } | tee "$evidence/diff-stat.txt"
-          : > "$evidence/candidate-files.sha256"
-          for path in "${candidate_paths[@]}"; do
-            if [[ -f "$repo_root/$path" ]]; then
-              sha256sum "$repo_root/$path" >> "$evidence/candidate-files.sha256"
-            else
-              printf 'DELETED  %s\n' "$path" >> "$evidence/candidate-files.sha256"
-            fi
-          done
-          cat "$evidence/candidate-files.sha256"
+            printf 'candidate_sha=%s\n' "$(git -C "$repo_root" rev-parse HEAD)"
+            printf 'candidate_tree=%s\n' "$(git -C "$repo_root" rev-parse HEAD^{tree})"
+            printf 'cargo_lock_blob=%s\n' "$(git -C "$repo_root" rev-parse HEAD:codex-rs/Cargo.lock)"
+            printf 'cargo_lock_sha256=%s\n' "$(sha256sum "$repo_root/codex-rs/Cargo.lock" | cut -d' ' -f1)"
+            printf 'status=passed\n'
+          } | tee "$EVIDENCE/receipt.env"
 
-          if git -C "$repo_root" diff --quiet --exit-code \
-            && git -C "$repo_root" diff --cached --quiet --exit-code; then
-            echo "V1 API compatibility and Cargo.lock are already canonical"
-            exit 0
-          fi
-
-          # The path set above has already been checked fail-closed. Stage all
-          # remaining tracked mutations together so staged one-shot deletions
-          # cannot be lost or re-addressed through an absent pathspec.
-          git -C "$repo_root" add -A
-          git -C "$repo_root" status --short | tee "$evidence/status-staged.txt"
-          git -C "$repo_root" config user.name "Hepta platform.types compatibility bot"
-          git -C "$repo_root" config user.email "hepta-platform-types-ci@users.noreply.github.com"
-          git -C "$repo_root" commit -m "fix(platform.types): preserve V1 public API compatibility"
-          git -C "$repo_root" push origin "HEAD:${HEAD_REF}"
-
-      - name: Preserve compatibility/lock diagnostics
+      - name: Preserve lock-verification evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: platform-types-lock-refresh-${{ github.event.pull_request.head.sha || github.sha }}
+          name: platform-types-lock-verify-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
-            .hepta-evidence/platform-types-lock-refresh/
+            ${{ runner.temp }}/platform-types-lock-verify/
             codex-rs/Cargo.lock
           include-hidden-files: true
           if-no-files-found: error
