@@ -14,8 +14,8 @@
   "resolvedRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
-  "stateOwnerDisposition": "Owns live provider client handles; persistent request/slot/observation facts remain in the inference.control journal. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes.",
-  "terminalObserverDisposition": "The hosted native-app-server profile observes real matching turn events; the local manifest driver remains injected and does not prove physical weights/device behavior.",
+  "stateOwnerDisposition": "Owns live provider client handles and experimental process-local resource counters; persistent request/slot/observation facts remain in inference.control. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes. Local resources are not yet durably composed.",
+  "terminalObserverDisposition": "The hosted native-app-server profile observes matching turn events and exact thread-history reconciliation. The feature-gated local driver is injected; its observations do not prove physical weights/device behavior.",
   "operations": [
     {
       "designOperation": "load_model",
@@ -34,7 +34,7 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Validates supplied manifest and resource-grant bindings before invoking the injected driver; physical artifact/device loading remains that driver owner's responsibility.",
+      "sourceSemantics": "Experimental-local-model feature only outside unit tests. Validates unverified local policy and manifest shape, reserves aggregate resident capacity before driver entry, and retains/fences uncertain allocation. This is not a verified grant, real artifact loader, OS/device enforcement or production caller.",
       "operation": "load_model",
       "nativeSymbol": "pub fn load_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
@@ -77,7 +77,7 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Reserves through durable inference.control, calls the actual private Agent/App Server once, and commits matching terminal/output/optional-token observations before returning. Reopen and duplicate paths consume the journal without invoking the provider again.",
+      "sourceSemantics": "Reserves through durable inference.control, calls the private Agent/App Server once, and commits matching terminal/output/optional-token observations. Reopen is exact-history reconcile-only; duplicate requests never issue another turn/start. Missing-history resolution and later trusted usage reconciliation remain open.",
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -100,7 +100,7 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Drains and unloads only the exact admitted generation and releases acquired resources.",
+      "sourceSemantics": "Experimental cleanup borrows the retained handle, refuses active requests, preserves handle/capacity and fences on unload failure, and releases resident capacity only after observed success. Cleanup remains legal after expiry/revocation; it never unfences the generation. Physical drain is still the driver owner's obligation.",
       "operation": "unload",
       "nativeSymbol": "pub fn unload_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
@@ -108,13 +108,17 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Implement a local model driver that acquires and proves actual weights, device and memory grants before claiming isolated local inference.",
-    "Implement trusted provider reconciliation for dispatch-unknown/reopened runs and later missing token usage; do not infer zero usage or safe replay from transport loss."
+    "Complete kernel-verified local resource grants/manifests/input/handle boundaries and a live async cancellation/deadline driver; current local policy and clock remain unverified and experimental.",
+    "Compose local exact operation identity, grant witness, physical handle dispatch, duplicate conflict and restart reconciliation through the existing inference.control owner; process-local accounting is not durable deduplication.",
+    "Implement/prove actual local weights, tokenizer, runtime, device and OS-observed aggregate memory enforcement before claiming isolated inference.",
+    "Exact App Server thread-history reconciliation is implemented. Missing-history resolution and later trusted token-usage reconciliation remain open; unknown usage and transport loss never imply zero usage or safe replay.",
+    "Obtain successful exact-head and merge-candidate qualification and resolve inherited derived-projection and owner/lifecycle failures; source presence and a workflow definition are not passing evidence."
   ],
   "externalEvidenceGates": [
     "identified real weights/tokenizer/runtime/device",
     "isolated deployed worker process and authenticated control channel",
-    "OOM/device-reset/load-kill target qualification"
+    "OOM/device-reset/load-kill target qualification",
+    "real-provider terminal/usage evidence and target-host authority/revocation distribution"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,

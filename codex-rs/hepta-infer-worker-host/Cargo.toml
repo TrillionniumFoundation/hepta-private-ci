@@ -13,6 +13,11 @@ doctest = false
 [lints]
 workspace = true
 
+[features]
+default = []
+# Compatibility experiments only; this does not authorize local model execution.
+experimental-local-model = []
+
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
 codex-app-server-client = { workspace = true }
