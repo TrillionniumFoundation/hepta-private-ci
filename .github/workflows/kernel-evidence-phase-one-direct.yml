@@ -111,6 +111,28 @@ jobs:
               'write(host, host_text)',
           ])
           script = script[:start_index] + structural_host_patch + script[end_index:]
+
+          # The branch already carries the semantic outbox fixture repair. The
+          # canonical closure script expects the predecessor text so that it can
+          # rewrite it itself; normalize only that exact fixture before execution.
+          outbox = Path('codex-rs/hepta-evidence/src/authbus_outbox_tests.rs')
+          outbox_text = outbox.read_text(encoding='utf-8')
+          pre_fixed = (
+              "INSERT INTO authbus_outbox SELECT randomblob(32), "
+              "'fixture-issuer:' || x, key_epoch, 'fixture:' || x,"
+          )
+          predecessor = (
+              "INSERT INTO authbus_outbox SELECT randomblob(32), "
+              "issuer_id, key_epoch, 'fixture:' || x,"
+          )
+          if pre_fixed in outbox_text:
+              outbox.write_text(
+                  outbox_text.replace(pre_fixed, predecessor, 1),
+                  encoding='utf-8',
+              )
+          elif predecessor not in outbox_text:
+              raise SystemExit('unrecognized outbox capacity fixture state')
+
           subprocess.run(['bash', '-lc', script], check=True)
           PY
 
