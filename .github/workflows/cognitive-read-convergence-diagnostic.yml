@@ -79,3 +79,5 @@ jobs:
         if: always()
         shell: bash
         run: test '${{ steps.patch.outputs.code }}' = '0'
+
+# Retrigger after the diagnostic workflow existed on the branch.
