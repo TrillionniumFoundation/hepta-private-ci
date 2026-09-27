@@ -50,6 +50,7 @@ SOURCE_MARKERS = {
     "codex-rs/hepta-matrix-store/migrations/0009_matrix_legacy_content_holds.sql": ("CREATE TABLE matrix_dispatch_legacy_content_holds", "message.attempts > 0", "matrix_dispatch_legacy_content_holds_no_insert", "matrix_dispatch_legacy_content_holds_no_delete"),
     "codex-rs/hepta-matrix-store/migrations/0010_matrix_entered_use_proofs.sql": ("CREATE TABLE matrix_dispatch_use_entries", "matrix_dispatch_use_entries_no_update", "matrix_dispatch_succeeded_requires_entered_use"),
     "codex-rs/hepta-matrix-store/migrations/0011_matrix_legacy_hold_remediation.sql": ("INSERT INTO matrix_dispatch_ledger", "9223372036854775807", "matrix_dispatch_legacy_hold_no_reactivate"),
+    "codex-rs/hepta-matrix-store/migrations/0012_matrix_terminal_any_entered_attempt.sql": ("entry.attempt <= NEW.attempts", "matrix_dispatch_succeeded_requires_authority_claim", "matrix_dispatch_redacted_requires_authority_claim"),
     "codex-rs/state/src/capability_random.rs": ("pub fn random_capability_bytes() -> [u8; 32]", "Uuid::new_v4()"),
 }
 DENIED_CLAIMS = (
