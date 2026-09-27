@@ -21,10 +21,6 @@ use crate::PlasticityRuntimeHandleV1;
 /// writers, anchor stores, trust roots or authoritative owner stores.
 #[derive(Clone)]
 pub(crate) struct AgentdLearningPlasticityProducerV1 {
-    #[expect(
-        dead_code,
-        reason = "Reserved private plasticity ingress has no activated producer in this binary; do not widen visibility to silence dead_code"
-    )]
     handle: PlasticityRuntimeHandleV1,
 }
 
@@ -33,10 +29,6 @@ impl AgentdLearningPlasticityProducerV1 {
         Self { handle }
     }
 
-    #[expect(
-        dead_code,
-        reason = "Reserved private plasticity ingress has no activated producer in this binary; do not widen visibility to silence dead_code"
-    )]
     pub(crate) async fn submit_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
@@ -45,10 +37,6 @@ impl AgentdLearningPlasticityProducerV1 {
         self.handle.propose_parameter(request, now).await
     }
 
-    #[expect(
-        dead_code,
-        reason = "Reserved private plasticity ingress has no activated producer in this binary; do not widen visibility to silence dead_code"
-    )]
     pub(crate) async fn submit_topology(
         &self,
         request: TopologyPlasticityProductRequestV1,
