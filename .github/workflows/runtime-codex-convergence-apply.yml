@@ -6,6 +6,7 @@ on:
       - runtime-codex/convergence-v1
     paths:
       - scripts/runtime-codex-converge.py
+      - scripts/runtime-codex-converge-phase2.py
       - .github/workflows/runtime-codex-convergence-apply.yml
   pull_request:
     branches:
@@ -13,6 +14,7 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - scripts/runtime-codex-converge.py
+      - scripts/runtime-codex-converge-phase2.py
       - .github/workflows/runtime-codex-convergence-apply.yml
       - codex-rs/hepta-agentd/**
   workflow_dispatch:
@@ -30,15 +32,15 @@ jobs:
       github.event_name != 'pull_request' ||
       github.head_ref == 'runtime-codex/convergence-v1'
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
           ref: runtime-codex/convergence-v1
           persist-credentials: false
-      - name: Apply idempotent source migration
-        run: python3 scripts/runtime-codex-converge.py
+      - name: Apply idempotent source migrations
+        run: python3 scripts/runtime-codex-converge-phase2.py
       - name: Format changed Rust sources
         working-directory: codex-rs
         run: cargo fmt --all
