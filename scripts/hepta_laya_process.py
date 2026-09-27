@@ -53,24 +53,36 @@ class ProcessUnavailable(RuntimeError):
 
     A retained child means cleanup has not been observed. Keep this exception (or
     transfer the handle to the existing supervisor) until reconcile_cleanup has
-    observed leader exit. Error messages never include child diagnostics, model
+    successfully signalled the pinned process group and observed leader exit. This
+    is bounded trusted-process cleanup, not proof of hostile-child containment.
+    Error messages never include child diagnostics, model
     inputs, environment values or credentials.
     """
 
-    def __init__(self, reason: str, *, spawned: bool, child=None, cleanup_error=False):
+    def __init__(self, reason: str, *, spawned: bool, child=None, cleanup_error=False,
+                 group_signalled=False):
         super().__init__(reason)
         self.spawned = spawned
         self.child = child
         self.cleanup_error = cleanup_error
+        self.group_signalled = group_signalled
 
     def reconcile_cleanup(self) -> bool:
         if self.child is None:
             return not self.cleanup_error
-        if _exited(self.child):
-            _reap(self.child)
-            self.child = None
-            # Reaping a leader does not retroactively prove a failed group signal.
-            return not self.cleanup_error
+        try:
+            # A failed signal must retain the unreaped leader: its PID pins the
+            # process-group number until the missing signal can be retried.
+            if not self.group_signalled:
+                _signal_group(self.child)
+                self.group_signalled = True
+            if _exited(self.child):
+                _reap(self.child)
+                self.child = None
+                self.cleanup_error = False
+                return True
+        except OSError:
+            self.cleanup_error = True
         return False
 
 
@@ -141,6 +153,15 @@ def run_process(frame: bytes, *, command: Sequence[str], cwd: Path,
     if cancelled() is not False:
         raise ProcessUnavailable("cancelled before spawn", spawned=False)
     guard.check()
+    # Allocate bookkeeping before acquiring a child. All remaining fallible I/O
+    # setup belongs inside the cleanup owner, including selector construction.
+    output = bytearray()
+    diagnostics = hashlib.sha256()
+    selector = None
+    diagnostic_bytes = 0
+    offset = 0
+    group_signalled = False
+    child_exited = False
     started = time.monotonic_ns()
     try:
         child = subprocess.Popen(list(command), cwd=cwd, env=dict(env), shell=False,
@@ -149,15 +170,8 @@ def run_process(frame: bytes, *, command: Sequence[str], cwd: Path,
                                  start_new_session=True, bufsize=0)
     except OSError as error:
         raise ProcessUnavailable("leaf spawn failed", spawned=False) from error
-    selector = selectors.DefaultSelector()
-    output = bytearray()
-    diagnostics = hashlib.sha256()
-    diagnostic_bytes = 0
-    offset = 0
-    group_signalled = False
-    child_exited = False
-    usage = None
     try:
+        selector = selectors.DefaultSelector()
         for stream, events, name in ((child.stdin, selectors.EVENT_WRITE, "stdin"),
                                      (child.stdout, selectors.EVENT_READ, "stdout"),
                                      (child.stderr, selectors.EVENT_READ, "stderr")):
@@ -227,20 +241,25 @@ def run_process(frame: bytes, *, command: Sequence[str], cwd: Path,
                     group_signalled = True
             except OSError:
                 cleanup_error = True
-            limit = time.monotonic() + CLEANUP_SECONDS
-            try:
-                while not _exited(child) and time.monotonic() < limit:
-                    time.sleep(0.01)
-                if _exited(child):
-                    _reap(child)
-            except OSError:
-                cleanup_error = True
+            if group_signalled:
+                limit = time.monotonic() + CLEANUP_SECONDS
+                try:
+                    while not _exited(child) and time.monotonic() < limit:
+                        time.sleep(0.01)
+                    if _exited(child):
+                        _reap(child)
+                except OSError:
+                    cleanup_error = True
+            # Do not reap after failed group signalling, even if the leader
+            # already exited. Its identity is needed for safe reconciliation.
         retained = child if child.returncode is None else None
         reason = str(error) if isinstance(error, ProcessUnavailable) else "leaf transport unavailable"
         raise ProcessUnavailable(reason, spawned=True, child=retained,
-                                 cleanup_error=cleanup_error) from error
+                                 cleanup_error=cleanup_error,
+                                 group_signalled=group_signalled) from error
     finally:
-        selector.close()
+        if selector is not None:
+            selector.close()
         for stream in (child.stdin, child.stdout, child.stderr):
             if stream is not None and not stream.closed:
                 stream.close()

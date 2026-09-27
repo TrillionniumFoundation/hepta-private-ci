@@ -139,8 +139,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/laya-process.json" --minimum-tests 57 -- python3 -m unittest -v scripts.tests.test_hepta_laya_process scripts.tests.test_hepta_laya_deadline scripts.tests.test_hepta_retrieval_wire
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/ci-wiring.json" --minimum-tests 8 -- python3 -m unittest -v scripts.tests.test_hepta_multiscale_ci
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/laya-process.json" --minimum-tests 64 -- python3 -m unittest -v scripts.tests.test_hepta_laya_process scripts.tests.test_hepta_laya_deadline scripts.tests.test_hepta_retrieval_wire
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/ci-wiring.json" --minimum-tests 9 -- python3 -m unittest -v scripts.tests.test_hepta_multiscale_ci
       - name: Run actual owner tests without unrelated product prerequisites
         shell: bash
         run: |

@@ -250,6 +250,27 @@ Caller-supplied digests are bindings, not signed credentials or model attestatio
 An unknown operation without a trusted reconciliation result remains blocked;
 changing request IDs, deleting the journal or swapping a backup is not recovery.
 
+
+The native semantic worker resolves an existing non-Reserved operation by its
+original immutable request bytes, principal, reservation and token budget. A
+replacement worker's generation, grant digest, resource ceiling and slot limit
+do not rewrite that past admission. Completed replies, unknown dispatches and
+NotDispatched records are returned without loading or invoking a model, including
+after request expiry. This is historical observation, not permission to consume
+expired sources or artifacts. A caller cannot substitute a new workspace, source,
+objective, reservation, budget or principal. Reserved work still requires the
+original admission; changing workers does not implicitly transfer its dispatch
+ownership. Cancellation of an unknown operation persists intent but keeps its
+original fence and unresolved outcome. The owner remains responsible for trusted
+reconciliation and final-use currentness.
+
+`semantic_worker_tests.rs` exercises these paths against a reopened real journal
+with an explicitly synthetic, counted driver. The existing multiscale workflow
+executes that exact unit-test namespace in both candidate lanes, with a four-test
+minimum and retained command output. These tests do not exercise a live model,
+selected Agentd startup or external effects. Existing worker integration tests,
+strict all-target lint and formatting remain separate checks.
+
 The Python worker's deadline budget begins before model loading. A monotonic
 elapsed limit complements absolute wall expiry, and observed clock regression
 poisons the local guard. It never retries. This guard cannot preempt a stuck
@@ -262,6 +283,7 @@ python3 -m unittest -v scripts.tests.test_hepta_laya_deadline
 cd codex-rs
 just test --locked -p codex-hepta-infer-core --lib durable_control::semantic::tests
 just test --locked -p codex-hepta-infer-worker-host --test semantic_owner_recovery
+just test --locked -p codex-hepta-infer-worker-host --lib model_worker::semantic_worker::tests
 just test --locked -p codex-hepta-infer-core --run-ignored only --no-capture --test-threads 1 --retries 0 -E 'test(semantic_journal_retained_history_curve)'
 ```
 
@@ -305,7 +327,15 @@ prevent inherited pipe holders from stalling result collection. A bounded cleanu
 that has not observed leader exit retains the child in `ProcessUnavailable`;
 the caller must keep or transfer that handle to its existing supervisor and use
 `reconcile_cleanup`, rather than dropping ownership. Failure to signal a group
-remains incomplete cleanup even when the leader was reaped.
+keeps the leader **unreaped**, even after it exits, so the PID/PGID remains
+pinned. Reconciliation retries the missing signal before reaping. Temporary
+wait/reap failure keeps the same handle; successful signalling is not repeated,
+and a reaped PID is never signalled through the retained error. Cleanup does
+not settle an inference operation or grant permission to release durable quota.
+
+Bookkeeping allocation happens before spawn; selector construction and pipe
+registration happen inside the cleanup owner. Failure during initialization
+cannot orphan a spawned child. Diagnostic and callback errors remain redacted.
 
 The function requires Linux and exclusive child-reaping ownership. A custom
 SIGCHLD disposition is rejected; the host must also ensure no competing thread
@@ -325,11 +355,14 @@ python3 -m unittest -v scripts.tests.test_hepta_laya_process \
 python3 -m unittest -v scripts.tests.test_hepta_multiscale_ci
 ```
 
-Its twenty process cases cover valid output and host resource observations,
+Its twenty-seven process cases cover valid output and host resource observations,
 stdin EOF, both output floods, redacted diagnostics, failed/truncated/rebound
 replies, hanging and pipe-holding children, cancellation before/after spawn,
 environment rejection, reaping order, retained handles, failed group signalling
-and clock regression. These are OS-process/transport regressions, not real-model
+and clock regression, selector allocation and registration failure, diagnostic
+initialization, callback exceptions and temporary wait/reap failures. The process
+and combined process/deadline/wire test floors are 27 and 64 respectively; the CI
+wiring floor is nine. These are OS-process/transport regressions, not real-model
 quality, organ credit, browser-task or stateful topology evidence.
 
 The existing maintenance workflow now pins the repository Rust toolchain,

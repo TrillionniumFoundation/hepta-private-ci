@@ -189,13 +189,138 @@ os._exit(0)
         self.assertIsNone(caught.exception.child)
         self.assertTrue(caught.exception.reconcile_cleanup())
 
-    def test_reaped_leader_does_not_hide_failed_group_signal(self):
+    def test_failed_group_signal_keeps_pid_pinned_until_reconciled(self):
         with patch.object(process, "_signal_group", side_effect=PermissionError("denied")):
             with self.assertRaises(process.ProcessUnavailable) as caught:
                 self.run_leaf(PRELUDE + "sys.stdout.buffer.write(reply)")
+        error = caught.exception
+        # If this assertion fails on the old implementation its leader has
+        # already been reaped; this fixture has no descendant left to clean up.
+        self.assertIsNotNone(error.child)
+        self.addCleanup(self.finish_cleanup, error)
+        self.assertIsNone(error.child.returncode)
+        self.assertTrue(error.cleanup_error)
+        self.assertFalse(error.group_signalled)
+        pid = error.child.pid
+        with patch.object(process, "_signal_group", side_effect=PermissionError("still denied")):
+            self.assertFalse(error.reconcile_cleanup())
+            self.assertEqual(error.child.pid, pid)
+            self.assertIsNone(error.child.returncode)
+        self.finish_cleanup(error)
+        with patch.object(process, "_signal_group") as signal_group:
+            self.assertTrue(error.reconcile_cleanup())
+            signal_group.assert_not_called()
+        self.assertFalse(error.cleanup_error)
+
+    def finish_cleanup(self, error):
+        limit = time.monotonic() + 2
+        while not error.reconcile_cleanup() and time.monotonic() < limit:
+            time.sleep(0.01)
+        self.assertTrue(error.reconcile_cleanup(), "retained test child must be reaped")
+        self.assertIsNone(error.child)
+
+    def test_selector_allocation_failure_after_spawn_keeps_cleanup_owner(self):
+        children = []
+        real_spawn = process.subprocess.Popen
+        def spawn(*args, **kwargs):
+            child = real_spawn(*args, **kwargs)
+            children.append(child)
+            return child
+        try:
+            with patch.object(process.subprocess, "Popen", spawn):
+                with patch.object(process.selectors, "DefaultSelector", side_effect=OSError("PRIVATE")):
+                    with self.assertRaises(process.ProcessUnavailable) as caught:
+                        self.run_leaf("import time; time.sleep(60)")
+            self.assertEqual(len(children), 1)
+            self.assertTrue(caught.exception.spawned)
+            self.assertNotIn("PRIVATE", str(caught.exception))
+            self.assertIsNone(caught.exception.child)
+            self.assertIsNotNone(children[0].returncode)
+            self.assertTrue(caught.exception.reconcile_cleanup())
+        finally:
+            # This also cleans the demonstrably leaked child when run against
+            # the old implementation, without signalling an already reaped PID.
+            for child in children:
+                if child.returncode is None:
+                    process._signal_group(child)
+                    child.wait(timeout=2)
+                for stream in (child.stdin, child.stdout, child.stderr):
+                    stream.close()
+
+    def test_pipe_registration_failure_after_spawn_reaps_child(self):
+        with patch.object(process.selectors.DefaultSelector, "register", side_effect=OSError("PRIVATE")):
+            with self.assertRaises(process.ProcessUnavailable) as caught:
+                self.run_leaf("import time; time.sleep(60)")
+        self.assertTrue(caught.exception.spawned)
         self.assertIsNone(caught.exception.child)
-        self.assertTrue(caught.exception.cleanup_error)
-        self.assertFalse(caught.exception.reconcile_cleanup())
+        self.assertNotIn("PRIVATE", str(caught.exception))
+        self.assertTrue(caught.exception.reconcile_cleanup())
+
+    def test_hash_initialization_failure_has_no_process_to_lose(self):
+        # Build the frame before injecting the allocation failure so the test
+        # specifically exercises transport setup, not request encoding.
+        frame = self.frame()
+        decoded = wire.decode_request(frame)
+        with patch.object(process, "decode_request", return_value=decoded):
+            with patch.object(process.hashlib, "sha256", side_effect=MemoryError("PRIVATE")):
+                with patch.object(process.subprocess, "Popen") as spawn:
+                    with self.assertRaises(MemoryError):
+                        self.run_leaf("pass", frame=frame)
+                    spawn.assert_not_called()
+
+    def test_reconcile_does_not_resignal_after_successful_group_termination(self):
+        decisions = iter((False, True))
+        with patch.object(process, "_reap", side_effect=OSError("temporary wait failure")):
+            with self.assertRaises(process.ProcessUnavailable) as caught:
+                self.run_leaf("import time;time.sleep(60)", cancelled=lambda: next(decisions))
+        error = caught.exception
+        self.assertIsNotNone(error.child)
+        self.addCleanup(self.finish_cleanup, error)
+        self.assertTrue(error.group_signalled)
+        with patch.object(process, "_signal_group", side_effect=AssertionError("must not signal again")):
+            self.finish_cleanup(error)
+        self.assertFalse(error.cleanup_error)
+
+    def test_cleanup_wait_failure_keeps_the_same_unreaped_leader(self):
+        decisions = iter((False, True))
+        with patch.object(process, "CLEANUP_SECONDS", 0), patch.object(process, "_exited", return_value=False):
+            with self.assertRaises(process.ProcessUnavailable) as caught:
+                self.run_leaf("import time;time.sleep(60)", cancelled=lambda: next(decisions))
+        error = caught.exception
+        self.addCleanup(self.finish_cleanup, error)
+        pid = error.child.pid
+        with patch.object(process, "_exited", side_effect=OSError("temporary wait failure")):
+            self.assertFalse(error.reconcile_cleanup())
+        self.assertEqual(error.child.pid, pid)
+        self.assertIsNone(error.child.returncode)
+        self.finish_cleanup(error)
+
+    def test_cancel_callback_exception_cannot_lose_spawned_child(self):
+        with patch.object(process, "_signal_group", wraps=process._signal_group) as signal_group:
+            decisions = iter((False, RuntimeError("PRIVATE")))
+            def cancelled():
+                value = next(decisions)
+                if isinstance(value, Exception):
+                    raise value
+                return value
+            with self.assertRaises(process.ProcessUnavailable) as caught:
+                self.run_leaf("import time;time.sleep(60)", cancelled=cancelled)
+            signal_group.assert_called_once()
+        self.assertTrue(caught.exception.spawned)
+        self.assertIsNone(caught.exception.child)
+        self.assertNotIn("PRIVATE", str(caught.exception))
+
+    def test_failed_cleanup_signal_preserves_a_live_child_for_later_termination(self):
+        decisions = iter((False, True))
+        with patch.object(process, "_signal_group", side_effect=PermissionError("denied")):
+            with self.assertRaises(process.ProcessUnavailable) as caught:
+                self.run_leaf("import time;time.sleep(60)", cancelled=lambda: next(decisions))
+        error = caught.exception
+        self.addCleanup(self.finish_cleanup, error)
+        self.assertIsNotNone(error.child)
+        self.assertIsNone(error.child.returncode)
+        self.assertFalse(error.group_signalled)
+        self.finish_cleanup(error)
 
     def test_clock_failure_after_spawn_reaps_without_publishing(self):
         calls = [0]

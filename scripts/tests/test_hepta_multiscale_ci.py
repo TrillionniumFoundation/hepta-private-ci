@@ -58,8 +58,8 @@ class MultiscaleCiTests(unittest.TestCase):
 
     def test_real_process_suite_is_run_and_records_are_retained(self):
         tests = step(self.multiscale, "Bind identity and test without model weights")
-        self.assertIn("--minimum-tests 20 -- python3 -m unittest -v scripts.tests.test_hepta_laya_process", tests)
-        self.assertIn("--minimum-tests 8 -- python3 -m unittest -v scripts.tests.test_hepta_multiscale_ci", tests)
+        self.assertIn("--minimum-tests 27 -- python3 -m unittest -v scripts.tests.test_hepta_laya_process", tests)
+        self.assertIn("--minimum-tests 9 -- python3 -m unittest -v scripts.tests.test_hepta_multiscale_ci", tests)
         records = step(self.multiscale, "Retain protocol execution records")
         self.assertIn("${{ runner.temp }}/laya-process.*", records)
         self.assertIn("${{ runner.temp }}/multiscale-ci.*", records)
@@ -70,8 +70,21 @@ class MultiscaleCiTests(unittest.TestCase):
                      "scripts/tests/test_hepta_multiscale_ci.py"):
             self.assertEqual(self.maintenance.count(f"      - '{path}'"), 2)
         tests = step(self.maintenance, "Run real subprocess and binary-protocol regressions")
-        self.assertIn("--minimum-tests 57", tests)
+        self.assertIn("--minimum-tests 64", tests)
         self.assertIn("scripts.tests.test_hepta_laya_process", tests)
+
+    def test_generation_recovery_executes_real_worker_unit_tests(self):
+        command = step(self.multiscale, "Semantic worker generation recovery")
+        self.assertIn("--minimum-tests 4 -- just test --locked", command)
+        self.assertIn("-p codex-hepta-infer-worker-host --lib model_worker::semantic_worker::tests", command)
+        self.assertIn("worker-generation-recovery.json", command)
+        self.assertIn("if: always() && steps.scope.outputs.inference == 'true'", command)
+        source = ROOT / "codex-rs/hepta-infer-worker-host/src/semantic_worker.rs"
+        tests = source.with_name("semantic_worker_tests.rs").read_text()
+        self.assertIn('#[path = "semantic_worker_tests.rs"]', source.read_text())
+        self.assertEqual(len(re.findall(r"#\[test\]", tests)), 4)
+        records = step(self.multiscale, "Retain worker execution records")
+        self.assertIn("${{ runner.temp }}/worker-*", records)
 
     def test_repository_toolchain_and_test_tools_are_explicit(self):
         toolchain = step(self.maintenance, "Install repository-pinned Rust toolchain")
