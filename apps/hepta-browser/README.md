@@ -17,9 +17,38 @@ Typed runtime actions are closed-world and bounded. Current action kinds are `na
 
 `BrowserProfileHost` serializes profile mutations and reserves an operation identity before dispatch. Final-use authority is expressed as `authority.withVerifiedUse(request, callback)`: durable intent fsync and local worker dispatch execute inside that fence. A concurrent retry therefore cannot race a revocation or dispatch the same operation twice.
 
+Authority entry is one-shot and explicitly closed when verification fails, times out,
+or returns without invoking its consumer. A rejected Promise is not cancellation:
+a retained late callback cannot dispatch after the profile lock is released or
+another operation has started. The callback checks both the wall deadline and
+its original monotonic entry budget, including a stalled event loop. The shorter
+profile, effect-grant and operation expiry bounds dispatch without rewriting the
+original request digest. Driver calls reject expired work at actual invocation;
+there is no one-millisecond grace period after a slow durable intent write.
+
 After a dispatch may have crossed the worker boundary, exceptions and timeouts become `indeterminate`. They never delete the operation identity and never authorize redispatch. Reconciliation observes the original identity and is intentionally allowed after the original profile/effect deadline has expired; expiry prevents a new effect, not recovery of an old one.
 
 `FileBrowserOperationJournal` is append-only, checksum-bound, size-bounded, fsynced and mode-0600 on Unix. A process restart can use `reconcilePersistedOperation()` without issuing another effect. Terminal operations are bounded in memory while durable tombstones remain available for replay.
+
+The V1 journal now uses the same monotonic reducer for memory, writes and replay.
+Every non-outcome field is immutable; equal request/semantic hashes do not permit
+changing the principal, target, epoch or deadline. Dispatch retries retain the
+latest outcome without adding bytes. A terminal result cannot return to unknown
+or become a different terminal result. Input scalars are copied before queuing.
+Incomplete final records reject without repair-by-append. Valid legacy V1
+observations that accidentally included public receipt fields remain readable:
+the original checksum is checked first, and only fixed non-authorizing presentation
+fields are projected away. A positive authority flag is never accepted.
+
+Durable acknowledgment follows file sync and parent-directory sync, including
+newly created ancestors. A possible write, sync or close failure poisons that
+live handle: queued writes, ordinary reads and deduplication cannot turn uncertain
+persistence into success. Pure semantic rejection before I/O does not poison
+unrelated work. This is not a cross-process lock or rollback-independent recovery
+frontier. The V1 reader still scans bounded history; indexed recovery, compaction,
+owner fencing, directory race isolation and generation retirement remain the
+separately implemented Browser convergence profile's integration work.
+
 
 ## Worker boundary
 
@@ -35,6 +64,30 @@ Run from the repository root:
 node --test apps/hepta-browser/test/*.test.js
 ```
 
-The focused suite covers canonical URL/proposal parsing, typed actions, proposal-to-effect bridging, duplicate-dispatch exclusion, post-dispatch failures, deadline-expired reconciliation, final-use fencing, durable recovery, journal tamper rejection, bounded retention, private framing, artifact binding and the Linux sandbox command posture.
+The focused suite covers canonical URL/proposal parsing, typed actions,
+proposal-to-effect bridging, duplicate-dispatch exclusion, post-dispatch failures,
+deadline-expired reconciliation, final-use fencing, late authority callbacks,
+monotonic terminal replay, file/directory/close fault injection, caller mutation,
+legacy presentation compatibility, durable recovery, journal tamper rejection,
+bounded retention, private framing, artifact binding and the Linux sandbox command
+posture. Run the complete suite rather than only newly added cases.
 
 For the module completion boundary and remaining Servo artifact gates, see `docs/modules/browser.servo/TECHNICAL.md`, `docs/modules/browser.servo/SERVO_WORKER.md` and `qualification/module-execution-dossiers/detail/browser.servo.md`.
+
+### Unified-candidate verification scope
+
+The existing Browser Agentd composition workflow runs the **complete** Browser
+JavaScript suite plus Agentd formatting, native FinalUse tests, compile and strict
+lint on source-head and fixed-base merge candidates. It retains exact identity and
+logs; a passing subset is not a successful workflow. It uses the normal `just test`
+entry point, does not change source in CI and does not grant execution authority.
+
+`test/authority-deadline.test.js` exercises the actual host with controlled
+verifier/driver callbacks. Those tests prove local rejection/ordering behavior,
+not actual Servo effects, OS isolation, arbitrary computer control or independent
+user-task completion. Journal durability/monotonicity and real-worker tests remain
+separate obligations, never skipped to certify these timing changes. The Browser
+convergence line owns its richer durable journal, replay and worker-atomic target
+profile; it must be integrated as a compatible implementation, not partially
+copied or inferred from these callback fixes. Laya output remains a proposal and
+cannot mint the final-use authority consumed by this host.

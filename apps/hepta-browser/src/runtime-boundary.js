@@ -1,6 +1,17 @@
 export async function callWithDeadline({ call, payload, now, deadlineMs, timeoutCapMs, abortable, timeoutName }) {
-  const remaining = Math.max(1, deadlineMs - now());
+  const startedAt = now();
+  if (!Number.isSafeInteger(startedAt) || !Number.isSafeInteger(deadlineMs)
+      || !Number.isSafeInteger(timeoutCapMs) || timeoutCapMs < 1) {
+    throw new TypeError("browser call requires a valid clock and bounded deadline");
+  }
+  const remaining = deadlineMs - startedAt;
+  if (remaining <= 0) {
+    const error = new Error(`${timeoutName} deadline expired before entry`);
+    error.name = timeoutName === "browser driver" ? "BrowserDriverTimeoutError" : "BrowserAuthorityTimeoutError";
+    throw error;
+  }
   const timeoutMs = Math.min(timeoutCapMs, remaining);
+  const monotonicEnd = performance.now() + timeoutMs;
   const controller = abortable ? new AbortController() : null;
   let timer;
   const timeout = new Promise((_, reject) => {
@@ -13,7 +24,18 @@ export async function callWithDeadline({ call, payload, now, deadlineMs, timeout
   });
   try {
     return await Promise.race([
-      Promise.resolve().then(() => call(payload, controller ? { signal: controller.signal } : undefined)),
+      Promise.resolve().then(() => {
+        const current = now();
+        if (!Number.isSafeInteger(current) || current < startedAt) {
+          throw new TypeError("browser call clock is invalid or regressed");
+        }
+        if (current >= deadlineMs || performance.now() >= monotonicEnd) {
+          const error = new Error(`${timeoutName} deadline expired before entry`);
+          error.name = timeoutName === "browser driver" ? "BrowserDriverTimeoutError" : "BrowserAuthorityTimeoutError";
+          throw error;
+        }
+        return call(payload, controller ? { signal: controller.signal } : undefined);
+      }),
       timeout,
     ]);
   } finally {

@@ -244,12 +244,20 @@ export class BrowserProfileHost {
         throw new TypeError("profile operation capacity is exhausted");
       }
 
+      // A final-use token cannot outlive the narrower profile/effect window.
+      // Keep the original request deadline in its digest; this local bound only
+      // restricts admission and is never a rewritten historical operation.
+      const dispatchDeadlineMs = Math.min(
+        requestSemantics.deadlineMs,
+        state.expiresAtMs,
+        state.effectGrants.get(requestSemantics.effectGrantDigest).expiresAtMs,
+      );
       let entry = null;
       try {
         const observed = requireRecord(
           await this.#withVerifiedUse(
             Object.freeze({ ...requestSemantics, requestDigest }),
-            requestSemantics.deadlineMs,
+            dispatchDeadlineMs,
             async (verified) => {
               requireRecord(verified, "verified-use witness");
               if (verified.authorized !== true) {
@@ -290,7 +298,7 @@ export class BrowserProfileHost {
               // cannot slip between final validation and effect dispatch.
               await this.#journal.recordDispatch(this.#durableRecord(state, entry));
               state.operations.set(operationId, entry);
-              return this.#callDriver("dispatch", semantics, requestSemantics.deadlineMs);
+              return this.#callDriver("dispatch", semantics, dispatchDeadlineMs);
             },
           ),
           "driver dispatch observation",
@@ -440,7 +448,15 @@ export class BrowserProfileHost {
             : "reconcile_error",
         );
       }
-      await this.#journal.recordObservation({ ...durable, ...receipt });
+      // Persist only outcome fields. Public presentation/authority flags are
+      // not new durable facts and cannot alter an operation's immutable record.
+      await this.#journal.recordObservation({
+        ...durable,
+        status: receipt.status,
+        outcomeDigest: receipt.outcomeDigest,
+        terminalObserved: receipt.terminalObserved,
+        observationReason: receipt.observationReason,
+      });
       return receipt;
     });
   }
@@ -644,9 +660,30 @@ export class BrowserProfileHost {
     let finishConsumer;
     const consumerFinished = new Promise((resolve) => { finishConsumer = resolve; });
     let enteredOnce = false;
+    let entryOpen = true;
+    const entryStartedAtMs = this.#clock();
+    futureDeadline(deadlineMs, entryStartedAtMs, "authority entry deadline");
+    const entryMonotonicEnd = performance.now() + Math.min(
+      this.#driverCallTimeoutMs,
+      deadlineMs - entryStartedAtMs,
+    );
 
-    const authorityCall = Promise.resolve().then(() =>
+    let authorityCall;
+    const startAuthorityCall = () => Promise.resolve().then(() =>
       this.#authority.withVerifiedUse(request, async (verified) => {
+        // A timed-out Promise does not cancel its producer. Close the callback
+        // itself before releasing the profile lock so a late verifier cannot
+        // dispatch into a closed/replaced profile or duplicate a later attempt.
+        if (!entryOpen) {
+          throw new TypeError("final-use authority entry is closed");
+        }
+        const now = this.#clock();
+        if (!Number.isSafeInteger(now) || now < entryStartedAtMs) {
+          throw new TypeError("authority entry clock is invalid or regressed");
+        }
+        if (now >= deadlineMs || performance.now() >= entryMonotonicEnd) {
+          throw new TypeError("final-use authority entry deadline expired");
+        }
         if (enteredOnce) {
           throw new TypeError("final-use authority invoked the consumer more than once");
         }
@@ -663,20 +700,35 @@ export class BrowserProfileHost {
     // verified-use consumer has started, its driver operation owns its own
     // deadline; racing a second authority timer here can misclassify a driver
     // timeout as an authority failure.
-    const first = await callWithDeadline({
-      call: () =>
-        Promise.race([
-          authorityCall.then((value) => ({ kind: "completed", value })),
-          entered.then(() => ({ kind: "entered" })),
-        ]),
-      payload: null,
-      now: this.#clock,
-      deadlineMs,
-      timeoutCapMs: this.#driverCallTimeoutMs,
-      abortable: false,
-      timeoutName: "browser authority",
-    });
-    if (first.kind === "completed") return first.value;
+    let first;
+    try {
+      first = await callWithDeadline({
+        call: () => {
+          // Attach the observer in the same turn that starts verification. If
+          // the deadline wrapper rejects before entry, no orphan verification
+          // Promise (or unhandled rejection) is created.
+          authorityCall = startAuthorityCall();
+          return Promise.race([
+            authorityCall.then((value) => ({ kind: "completed", value })),
+            entered.then(() => ({ kind: "entered" })),
+          ]);
+        },
+        payload: null,
+        now: this.#clock,
+        deadlineMs,
+        timeoutCapMs: this.#driverCallTimeoutMs,
+        abortable: false,
+        timeoutName: "browser authority",
+      });
+    } finally {
+      entryOpen = false;
+    }
+    if (first.kind === "completed") {
+      if (!enteredOnce) {
+        throw new TypeError("final-use authority completed without consumer entry");
+      }
+      return first.value;
+    }
 
     await consumerFinished;
     // After the local consumer settles, bound only the authority-side
