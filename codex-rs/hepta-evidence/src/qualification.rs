@@ -42,7 +42,8 @@ pub(crate) const QUALIFICATION_COLUMNS: &str =
     "seq, evidence_id, schema_version, candidate_id, source_commit, source_tree,
      claim_class, receipt_kind, issuer_role, issuer_principal_id, issuer_key_epoch,
      issuer_signing_identity_sha256, auth_message_id, auth_sequence,
-     auth_expires_at_ms, payload_sha256, envelope_sha256,
+     auth_expires_at_ms, auth_signature, trust_registry_generation,
+     trust_registry_sha256, payload_sha256, envelope_sha256,
      predecessor_evidence_id, target_evidence_id, observed_at_ms, expires_at_ms,
      asset_count, envelope_json, recorded_at_ms";
 
@@ -400,10 +401,17 @@ pub struct EvidenceReferenceV1 {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
 pub enum EvidenceDispositionV1 {
-    Supported { evidence: Vec<EvidenceReferenceV1> },
+    Supported {
+        evidence: Vec<EvidenceReferenceV1>,
+    },
     Missing,
-    Expired { evidence: Vec<EvidenceReferenceV1> },
-    Conflicting { evidence: Vec<EvidenceReferenceV1>, reason: String },
+    Expired {
+        evidence: Vec<EvidenceReferenceV1>,
+    },
+    Conflicting {
+        evidence: Vec<EvidenceReferenceV1>,
+        reason: String,
+    },
 }
 
 #[derive(Clone, Debug)]
@@ -416,6 +424,9 @@ struct StoredQualificationEvidence {
     auth_message_id: String,
     auth_sequence: u64,
     auth_expires_at_ms: u64,
+    auth_signature: Option<Vec<u8>>,
+    trust_registry_generation: Option<u64>,
+    trust_registry_sha256: Option<Sha256Digest>,
     payload_sha256: Sha256Digest,
     envelope_sha256: Sha256Digest,
 }
@@ -447,12 +458,83 @@ impl HeptaEvidenceStore {
     pub fn qualification(&self) -> QualificationEvidenceStore<'_> {
         QualificationEvidenceStore { store: self }
     }
+
+    /// Production accepts only rows that retain the original AuthBus signature
+    /// and are bound to either the currently signed V2 registry or an immutable
+    /// trust generation already accepted with an external frontier.
+    pub async fn verify_production_qualification_provenance(
+        &self,
+        current_registry_generation: u64,
+        current_registry_sha256: &Sha256Digest,
+    ) -> Result<(), EvidenceError> {
+        if current_registry_generation == 0 {
+            return Err(EvidenceError::InvalidRecord(
+                "production qualification provenance requires a positive trust generation"
+                    .to_string(),
+            ));
+        }
+        let rows = sqlx::query(
+            "SELECT evidence_id, auth_signature, trust_registry_generation,
+                    trust_registry_sha256
+             FROM qualification_evidence ORDER BY seq ASC LIMIT 1000001",
+        )
+        .fetch_all(&self.pool)
+        .await
+        .map_err(classify_sqlx_error)?;
+        if rows.len() > 1_000_000 {
+            return Err(EvidenceError::Unavailable(
+                "qualification provenance scan exceeds one million rows".to_string(),
+            ));
+        }
+        for row in rows {
+            let evidence_id: String = row.try_get("evidence_id").map_err(classify_sqlx_error)?;
+            let signature: Option<Vec<u8>> = row
+                .try_get("auth_signature")
+                .map_err(classify_sqlx_error)?;
+            let generation = read_optional_u64_blob(&row, "trust_registry_generation")?;
+            let digest = row
+                .try_get::<Option<String>, _>("trust_registry_sha256")
+                .map_err(classify_sqlx_error)?
+                .map(Sha256Digest::parse)
+                .transpose()
+                .map_err(EvidenceError::Corrupt)?;
+            if signature.as_ref().is_none_or(|value| value.len() != 64)
+                || generation.is_none()
+                || digest.is_none()
+            {
+                return Err(EvidenceError::InvalidRecord(format!(
+                    "qualification evidence {evidence_id} lacks complete authentication provenance"
+                )));
+            }
+            let generation = generation.expect("checked trust generation");
+            let digest = digest.expect("checked trust digest");
+            if generation == current_registry_generation && digest == *current_registry_sha256 {
+                continue;
+            }
+            let accepted: i64 = sqlx::query_scalar(
+                "SELECT COUNT(*) FROM evidence_trust_acceptance
+                 WHERE registry_generation = ? AND registry_sha256 = ?",
+            )
+            .bind(generation.to_be_bytes().to_vec())
+            .bind(digest.as_str())
+            .fetch_one(&self.pool)
+            .await
+            .map_err(classify_sqlx_error)?;
+            if accepted != 1 {
+                return Err(EvidenceError::InvalidRecord(format!(
+                    "qualification evidence {evidence_id} references an unaccepted trust generation"
+                )));
+            }
+        }
+        Ok(())
+    }
 }
 
 impl QualificationEvidenceStore<'_> {
     /// Only an owner-registry-resolved, store/role-bound issuer is accepted in
     /// product builds. Raw IssuerRegistration is a unit-test-only adapter.
-    /// Replay advancement and the immutable insert share BEGIN IMMEDIATE.
+    /// Replay advancement, complete authentication provenance, and immutable
+    /// evidence insertion share one BEGIN IMMEDIATE transaction.
     pub async fn append_receipt<I: EvidenceIssuerView + ?Sized>(
         &self,
         authority: &I,
@@ -466,18 +548,36 @@ impl QualificationEvidenceStore<'_> {
         let envelope_sha256 = Sha256Digest::for_bytes(&envelope_bytes);
         let issuer = authority.registration();
         let signing_identity_sha256 = Sha256Digest::for_bytes(issuer.verifying_key.as_bytes());
+        let trust_registry_generation = authority.trust_registry_generation();
+        let trust_registry_sha256 = authority.trust_registry_sha256().cloned();
+        if trust_registry_generation.is_some() != trust_registry_sha256.is_some() {
+            return Err(EvidenceError::InvalidRecord(
+                "qualification issuer trust provenance is incomplete".to_string(),
+            ));
+        }
         let expected_scope = qualification_append_scope_digest();
         let expected_subject = qualification_subject(&envelope.candidate, envelope.issuer_role)?;
-        let mut transaction = self.store.pool.begin_with("BEGIN IMMEDIATE")
-            .await.map_err(classify_sqlx_error)?;
+        let mut transaction = self
+            .store
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(classify_sqlx_error)?;
         authority.validate_for(self.store, envelope.issuer_role)?;
         let now = u64::try_from(now_millis()?)
             .map_err(|_| EvidenceError::Unavailable("clock predates Unix epoch".into()))?;
         let authenticated = message
-            .authenticate(issuer, expected_scope, Digest32::of_bytes(&envelope_bytes), now)
-            .map_err(|error| EvidenceError::InvalidRecord(format!(
-                "qualification issuer authentication failed: {error}"
-            )))?;
+            .authenticate(
+                issuer,
+                expected_scope,
+                Digest32::of_bytes(&envelope_bytes),
+                now,
+            )
+            .map_err(|error| {
+                EvidenceError::InvalidRecord(format!(
+                    "qualification issuer authentication failed: {error}"
+                ))
+            })?;
         if authenticated.claims().subject_id != expected_subject {
             return Err(EvidenceError::InvalidRecord(
                 "qualification issuer subject does not bind candidate and role".to_string(),
@@ -488,12 +588,17 @@ impl QualificationEvidenceStore<'_> {
                 "qualification evidence observation is in the future".to_string(),
             ));
         }
-        if envelope.expires_unix_ms.is_some_and(|expires| expires <= now) {
+        if envelope
+            .expires_unix_ms
+            .is_some_and(|expires| expires <= now)
+        {
             return Err(EvidenceError::InvalidRecord(
                 "qualification evidence is already expired".to_string(),
             ));
         }
-        if let Some(existing) = load_evidence_by_id(&mut transaction, envelope.evidence_id.as_str()).await? {
+        if let Some(existing) =
+            load_evidence_by_id(&mut transaction, envelope.evidence_id.as_str()).await?
+        {
             if existing.envelope == *envelope
                 && existing.issuer_principal_id == issuer.issuer_id.as_str()
                 && existing.issuer_key_epoch == issuer.key_epoch.get()
@@ -501,6 +606,9 @@ impl QualificationEvidenceStore<'_> {
                 && existing.auth_message_id == message.claims.message_id.as_str()
                 && existing.auth_sequence == message.claims.sequence
                 && existing.auth_expires_at_ms == message.claims.expires_at_ms
+                && existing.auth_signature.as_deref() == Some(message.signature.as_slice())
+                && existing.trust_registry_generation == trust_registry_generation
+                && existing.trust_registry_sha256 == trust_registry_sha256
                 && existing.payload_sha256 == payload_sha256
                 && existing.envelope_sha256 == envelope_sha256
             {
@@ -508,17 +616,32 @@ impl QualificationEvidenceStore<'_> {
                 transaction.commit().await.map_err(classify_sqlx_error)?;
                 return Ok(envelope.evidence_id.clone());
             }
-            return Err(EvidenceError::IdempotencyConflict { record_id: envelope.evidence_id.to_string() });
+            return Err(EvidenceError::IdempotencyConflict {
+                record_id: envelope.evidence_id.to_string(),
+            });
         }
-        // Ordinary appends do not scan the complete candidate evidence set.
         if envelope.claim_class == EvidenceClaimClassV1::IndependentDecision {
-            let digest = candidate_evidence_set_digest_in_transaction(&mut transaction, &envelope.candidate).await?;
-            validate_independent_decision(envelope, issuer, &signing_identity_sha256, &digest, now)?;
+            let digest = candidate_evidence_set_digest_in_transaction(
+                &mut transaction,
+                &envelope.candidate,
+            )
+            .await?;
+            validate_independent_decision(
+                envelope,
+                issuer,
+                &signing_identity_sha256,
+                &digest,
+                now,
+            )?;
         }
         validate_lineage_references(&mut transaction, envelope, issuer).await?;
-        advance_replay(&mut transaction, &authenticated).await.map_err(|error| {
-            EvidenceError::InvalidRecord(format!("qualification issuer replay admission failed: {error}"))
-        })?;
+        advance_replay(&mut transaction, &authenticated)
+            .await
+            .map_err(|error| {
+                EvidenceError::InvalidRecord(format!(
+                    "qualification issuer replay admission failed: {error}"
+                ))
+            })?;
         let envelope_json = String::from_utf8(envelope_bytes)
             .map_err(|error| EvidenceError::Serialization(error.to_string()))?;
         sqlx::query(
@@ -526,10 +649,12 @@ impl QualificationEvidenceStore<'_> {
                 evidence_id, schema_version, candidate_id, source_commit, source_tree,
                 claim_class, receipt_kind, issuer_role, issuer_principal_id,
                 issuer_key_epoch, issuer_signing_identity_sha256, auth_message_id,
-                auth_sequence, auth_expires_at_ms, payload_sha256, envelope_sha256,
-                predecessor_evidence_id, target_evidence_id, observed_at_ms, expires_at_ms,
+                auth_sequence, auth_expires_at_ms, auth_signature,
+                trust_registry_generation, trust_registry_sha256,
+                payload_sha256, envelope_sha256, predecessor_evidence_id,
+                target_evidence_id, observed_at_ms, expires_at_ms,
                 asset_count, envelope_json, recorded_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         )
         .bind(envelope.evidence_id.as_str())
         .bind(i64::from(envelope.schema_version))
@@ -545,17 +670,38 @@ impl QualificationEvidenceStore<'_> {
         .bind(message.claims.message_id.as_str())
         .bind(message.claims.sequence.to_be_bytes().to_vec())
         .bind(message.claims.expires_at_ms.to_be_bytes().to_vec())
+        .bind(message.signature.to_vec())
+        .bind(
+            trust_registry_generation
+                .map(u64::to_be_bytes)
+                .map(|bytes| bytes.to_vec()),
+        )
+        .bind(trust_registry_sha256.as_ref().map(Sha256Digest::as_str))
         .bind(payload_sha256.as_str())
         .bind(envelope_sha256.as_str())
-        .bind(envelope.predecessor_evidence_id.as_ref().map(EvidenceId::as_str))
+        .bind(
+            envelope
+                .predecessor_evidence_id
+                .as_ref()
+                .map(EvidenceId::as_str),
+        )
         .bind(envelope.target_evidence_id.as_ref().map(EvidenceId::as_str))
         .bind(envelope.observed_unix_ms.to_be_bytes().to_vec())
-        .bind(envelope.expires_unix_ms.map(u64::to_be_bytes).map(|bytes| bytes.to_vec()))
-        .bind(i64::try_from(envelope.asset_digests.len())
-            .map_err(|_| EvidenceError::InvalidRecord("asset count overflow".into()))?)
+        .bind(
+            envelope
+                .expires_unix_ms
+                .map(u64::to_be_bytes)
+                .map(|bytes| bytes.to_vec()),
+        )
+        .bind(
+            i64::try_from(envelope.asset_digests.len())
+                .map_err(|_| EvidenceError::InvalidRecord("asset count overflow".into()))?,
+        )
         .bind(envelope_json)
         .bind(now_millis()?)
-        .execute(&mut *transaction).await.map_err(classify_sqlx_error)?;
+        .execute(&mut *transaction)
+        .await
+        .map_err(classify_sqlx_error)?;
         authority.validate_for(self.store, envelope.issuer_role)?;
         transaction.commit().await.map_err(classify_sqlx_error)?;
         Ok(envelope.evidence_id.clone())
@@ -567,7 +713,12 @@ impl QualificationEvidenceStore<'_> {
         claim_class: EvidenceClaimClassV1,
     ) -> Result<Vec<EvidenceReferenceV1>, EvidenceError> {
         candidate.validate().map_err(EvidenceError::InvalidRecord)?;
-        let mut connection = self.store.pool.acquire().await.map_err(classify_sqlx_error)?;
+        let mut connection = self
+            .store
+            .pool
+            .acquire()
+            .await
+            .map_err(classify_sqlx_error)?;
         let rows = load_claim_rows(&mut connection, candidate, claim_class).await?;
         Ok(rows.into_iter().map(|row| row.reference()).collect())
     }
@@ -582,13 +733,20 @@ impl QualificationEvidenceStore<'_> {
         T: EvidenceTrustSnapshotView + ?Sized,
     {
         let request = request.as_verification_request();
-        request.candidate.validate().map_err(EvidenceError::InvalidRecord)?;
+        request
+            .candidate
+            .validate()
+            .map_err(EvidenceError::InvalidRecord)?;
         if request.required_roles.is_empty() || request.required_roles.len() > 32 {
             return Err(EvidenceError::InvalidRecord(
                 "qualification verification requires between one and 32 roles".to_string(),
             ));
         }
-        let unique_roles = request.required_roles.iter().copied().collect::<BTreeSet<_>>();
+        let unique_roles = request
+            .required_roles
+            .iter()
+            .copied()
+            .collect::<BTreeSet<_>>();
         if unique_roles.len() != request.required_roles.len() {
             return Err(EvidenceError::InvalidRecord(
                 "qualification verification contains duplicate required roles".to_string(),
@@ -601,14 +759,30 @@ impl QualificationEvidenceStore<'_> {
                 "qualification verification trust snapshot exceeds 512 bindings".to_string(),
             ));
         }
-        // Claim lineage and decision evidence-set are from ONE SQLite snapshot.
-        let mut transaction = self.store.pool.begin().await.map_err(classify_sqlx_error)?;
-        let rows = load_claim_rows(&mut transaction, &request.candidate, request.claim_class).await?;
-        let expected_decision_evidence_set = if request.claim_class == EvidenceClaimClassV1::IndependentDecision {
-            Some(candidate_evidence_set_digest_in_transaction(&mut transaction, &request.candidate).await?)
-        } else {
-            None
-        };
+        let mut transaction = self
+            .store
+            .pool
+            .begin()
+            .await
+            .map_err(classify_sqlx_error)?;
+        let rows = load_claim_rows(
+            &mut transaction,
+            &request.candidate,
+            request.claim_class,
+        )
+        .await?;
+        let expected_decision_evidence_set =
+            if request.claim_class == EvidenceClaimClassV1::IndependentDecision {
+                Some(
+                    candidate_evidence_set_digest_in_transaction(
+                        &mut transaction,
+                        &request.candidate,
+                    )
+                    .await?,
+                )
+            } else {
+                None
+            };
         transaction.commit().await.map_err(classify_sqlx_error)?;
         current_trust.validate_store(self.store)?;
         if rows.is_empty() {
@@ -641,23 +815,34 @@ impl QualificationEvidenceStore<'_> {
             {
                 continue;
             }
-            if row.envelope.expires_unix_ms.is_some_and(|expires| expires <= request.now_unix_ms) {
+            if row
+                .envelope
+                .expires_unix_ms
+                .is_some_and(|expires| expires <= request.now_unix_ms)
+            {
                 expired.push(row.reference());
                 continue;
             }
             if !bindings.iter().any(|binding| binding.matches(&row)) {
                 return Ok(EvidenceDispositionV1::Conflicting {
                     evidence: vec![row.reference()],
-                    reason: "evidence issuer trust is stale, revoked, role-mismatched, or key-rotated".to_string(),
+                    reason:
+                        "evidence issuer trust is stale, revoked, role-mismatched, or key-rotated"
+                            .to_string(),
                 });
             }
             if row.envelope.claim_class == EvidenceClaimClassV1::IndependentDecision {
-                let receipt: IndependentDecisionReceiptV1 = serde_json::from_value(row.envelope.payload.clone())
-                    .map_err(|error| EvidenceError::Corrupt(format!("independent decision payload is invalid: {error}")))?;
+                let receipt: IndependentDecisionReceiptV1 =
+                    serde_json::from_value(row.envelope.payload.clone()).map_err(|error| {
+                        EvidenceError::Corrupt(format!(
+                            "independent decision payload is invalid: {error}"
+                        ))
+                    })?;
                 if expected_decision_evidence_set.as_ref() != Some(&receipt.evidence_set_digest) {
                     return Ok(EvidenceDispositionV1::Conflicting {
                         evidence: vec![row.reference()],
-                        reason: "independent decision evidence-set digest is stale or unbound".to_string(),
+                        reason: "independent decision evidence-set digest is stale or unbound"
+                            .to_string(),
                     });
                 }
                 match receipt.decision {
@@ -687,21 +872,32 @@ impl QualificationEvidenceStore<'_> {
         }
         if !roles_have_distinct_authenticated_identities(&request.required_roles, &active)? {
             return Ok(EvidenceDispositionV1::Conflicting {
-                evidence: active.iter().map(StoredQualificationEvidence::reference).collect(),
-                reason: "required independent roles cannot be assigned to distinct authenticated principals and signing identities".to_string(),
+                evidence: active
+                    .iter()
+                    .map(StoredQualificationEvidence::reference)
+                    .collect(),
+                reason: "required independent roles cannot be assigned to distinct authenticated principals and signing identities"
+                    .to_string(),
             });
         }
         Ok(EvidenceDispositionV1::Supported {
-            evidence: active.iter().map(StoredQualificationEvidence::reference).collect(),
+            evidence: active
+                .iter()
+                .map(StoredQualificationEvidence::reference)
+                .collect(),
         })
     }
 }
 
-pub fn qualification_envelope_bytes(envelope: &QualificationEvidenceEnvelopeV1) -> Result<Vec<u8>, EvidenceError> {
+pub fn qualification_envelope_bytes(
+    envelope: &QualificationEvidenceEnvelopeV1,
+) -> Result<Vec<u8>, EvidenceError> {
     envelope.validate().map_err(EvidenceError::InvalidRecord)?;
     let bytes = canonical_json(envelope)?;
     if bytes.len() > QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES {
-        return Err(EvidenceError::InvalidRecord("qualification evidence exceeds 256 KiB".to_string()));
+        return Err(EvidenceError::InvalidRecord(
+            "qualification evidence exceeds 256 KiB".to_string(),
+        ));
     }
     Ok(bytes)
 }
@@ -710,7 +906,10 @@ pub fn qualification_append_scope_digest() -> Digest32 {
     Digest32::of_bytes(b"hepta:kernel.evidence:qualification-append:v1")
 }
 
-pub fn qualification_subject(candidate: &EvidenceCandidateV1, role: EvidenceIssuerRoleV1) -> Result<StableId, EvidenceError> {
+pub fn qualification_subject(
+    candidate: &EvidenceCandidateV1,
+    role: EvidenceIssuerRoleV1,
+) -> Result<StableId, EvidenceError> {
     candidate.validate().map_err(EvidenceError::InvalidRecord)?;
     let mut bytes = b"hepta:kernel.evidence:qualification-subject:v1\0".to_vec();
     push_part(&mut bytes, candidate.candidate_id.as_bytes());
@@ -718,22 +917,37 @@ pub fn qualification_subject(candidate: &EvidenceCandidateV1, role: EvidenceIssu
     push_part(&mut bytes, candidate.source_tree.as_bytes());
     push_part(&mut bytes, role.as_str().as_bytes());
     let digest = Sha256Digest::for_bytes(&bytes);
-    StableId::new(format!("kernel.evidence:{}", digest.as_str())).map_err(|error| EvidenceError::InvalidRecord(error.to_string()))
+    StableId::new(format!("kernel.evidence:{}", digest.as_str()))
+        .map_err(|error| EvidenceError::InvalidRecord(error.to_string()))
 }
 
-pub fn evidence_set_digest(evidence: &[EvidenceReferenceV1]) -> Result<Sha256Digest, EvidenceError> {
+pub fn evidence_set_digest(
+    evidence: &[EvidenceReferenceV1],
+) -> Result<Sha256Digest, EvidenceError> {
     let mut ordered = evidence.to_vec();
-    ordered.sort_by(|left, right| left.evidence_id.cmp(&right.evidence_id)
-        .then(left.envelope_sha256.as_str().cmp(right.envelope_sha256.as_str())));
+    ordered.sort_by(|left, right| {
+        left.evidence_id.cmp(&right.evidence_id).then(
+            left.envelope_sha256
+                .as_str()
+                .cmp(right.envelope_sha256.as_str()),
+        )
+    });
     Ok(Sha256Digest::for_bytes(&canonical_json(&ordered)?))
 }
 
-pub(crate) async fn verify_qualification_evidence_rows(pool: &SqlitePool) -> Result<(), EvidenceError> {
+pub(crate) async fn verify_qualification_evidence_rows(
+    pool: &SqlitePool,
+) -> Result<(), EvidenceError> {
     let rows = sqlx::query(&format!(
         "SELECT {QUALIFICATION_COLUMNS} FROM qualification_evidence ORDER BY seq ASC LIMIT 1000001"
-    )).fetch_all(pool).await.map_err(classify_sqlx_error)?;
+    ))
+    .fetch_all(pool)
+    .await
+    .map_err(classify_sqlx_error)?;
     if rows.len() > 1_000_000 {
-        return Err(EvidenceError::Corrupt("qualification evidence exceeds startup integrity scan bound".to_string()));
+        return Err(EvidenceError::Corrupt(
+            "qualification evidence exceeds startup integrity scan bound".to_string(),
+        ));
     }
     let mut decoded = Vec::with_capacity(rows.len());
     for row in rows {
@@ -747,17 +961,37 @@ async fn validate_lineage_references(
     envelope: &QualificationEvidenceEnvelopeV1,
     issuer: &IssuerRegistration,
 ) -> Result<(), EvidenceError> {
-    for (label, reference) in [("predecessor", envelope.predecessor_evidence_id.as_ref()), ("target", envelope.target_evidence_id.as_ref())] {
-        let Some(reference) = reference else { continue; };
-        let row = load_evidence_by_id(transaction, reference.as_str()).await?
-            .ok_or_else(|| EvidenceError::InvalidRecord(format!("qualification {label} evidence does not exist")))?;
-        if row.envelope.candidate != envelope.candidate || row.envelope.claim_class != envelope.claim_class {
-            return Err(EvidenceError::InvalidRecord(format!("qualification {label} evidence belongs to another candidate or claim class")));
+    for (label, reference) in [
+        ("predecessor", envelope.predecessor_evidence_id.as_ref()),
+        ("target", envelope.target_evidence_id.as_ref()),
+    ] {
+        let Some(reference) = reference else {
+            continue;
+        };
+        let row = load_evidence_by_id(transaction, reference.as_str())
+            .await?
+            .ok_or_else(|| {
+                EvidenceError::InvalidRecord(format!(
+                    "qualification {label} evidence does not exist"
+                ))
+            })?;
+        if row.envelope.candidate != envelope.candidate
+            || row.envelope.claim_class != envelope.claim_class
+        {
+            return Err(EvidenceError::InvalidRecord(format!(
+                "qualification {label} evidence belongs to another candidate or claim class"
+            )));
         }
         let owner_scoped = envelope.receipt_kind == EvidenceReceiptKindV1::Correction
-            || (envelope.receipt_kind == EvidenceReceiptKindV1::Revocation && envelope.issuer_role != EvidenceIssuerRoleV1::Security);
-        if owner_scoped && (row.issuer_principal_id != issuer.issuer_id.as_str() || row.envelope.issuer_role != envelope.issuer_role) {
-            return Err(EvidenceError::InvalidRecord(format!("qualification {label} evidence cannot be corrected or revoked by another principal or role")));
+            || (envelope.receipt_kind == EvidenceReceiptKindV1::Revocation
+                && envelope.issuer_role != EvidenceIssuerRoleV1::Security);
+        if owner_scoped
+            && (row.issuer_principal_id != issuer.issuer_id.as_str()
+                || row.envelope.issuer_role != envelope.issuer_role)
+        {
+            return Err(EvidenceError::InvalidRecord(format!(
+                "qualification {label} evidence cannot be corrected or revoked by another principal or role"
+            )));
         }
     }
     Ok(())
@@ -770,11 +1004,17 @@ fn validate_independent_decision(
     expected_evidence_set_digest: &Sha256Digest,
     now: u64,
 ) -> Result<(), EvidenceError> {
-    if envelope.claim_class != EvidenceClaimClassV1::IndependentDecision || envelope.receipt_kind == EvidenceReceiptKindV1::Revocation {
+    if envelope.claim_class != EvidenceClaimClassV1::IndependentDecision
+        || envelope.receipt_kind == EvidenceReceiptKindV1::Revocation
+    {
         return Ok(());
     }
     let receipt: IndependentDecisionReceiptV1 = serde_json::from_value(envelope.payload.clone())
-        .map_err(|error| EvidenceError::InvalidRecord(format!("independent decision payload does not match IndependentDecisionReceiptV1: {error}")))?;
+        .map_err(|error| {
+            EvidenceError::InvalidRecord(format!(
+                "independent decision payload does not match IndependentDecisionReceiptV1: {error}"
+            ))
+        })?;
     if receipt.decision_id != envelope.evidence_id.as_str()
         || receipt.candidate_id != envelope.candidate.candidate_id
         || receipt.role.evidence_role() != envelope.issuer_role
@@ -784,16 +1024,29 @@ fn validate_independent_decision(
         || envelope.expires_unix_ms != Some(receipt.expires_unix_ms)
         || receipt.expires_unix_ms <= now
     {
-        return Err(EvidenceError::InvalidRecord("independent decision identity, role, candidate or expiry is not bound to authenticated admission".to_string()));
+        return Err(EvidenceError::InvalidRecord(
+            "independent decision identity, role, candidate or expiry is not bound to authenticated admission"
+                .to_string(),
+        ));
     }
-    if receipt.decision == IndependentDecisionV1::Accept && *expected_evidence_set_digest == evidence_set_digest(&[])? {
-        return Err(EvidenceError::InvalidRecord("independent acceptance requires a non-empty exact evidence set".to_string()));
+    if receipt.decision == IndependentDecisionV1::Accept
+        && *expected_evidence_set_digest == evidence_set_digest(&[])?
+    {
+        return Err(EvidenceError::InvalidRecord(
+            "independent acceptance requires a non-empty exact evidence set".to_string(),
+        ));
     }
     if receipt.conditions.len() > MAX_INDEPENDENT_CONDITIONS
-        || receipt.conditions.iter().any(|condition| condition.is_empty() || condition.len() > 4096)
-        || receipt.conditions.iter().map(String::len).sum::<usize>() > MAX_INDEPENDENT_CONDITIONS_BYTES
+        || receipt
+            .conditions
+            .iter()
+            .any(|condition| condition.is_empty() || condition.len() > 4096)
+        || receipt.conditions.iter().map(String::len).sum::<usize>()
+            > MAX_INDEPENDENT_CONDITIONS_BYTES
     {
-        return Err(EvidenceError::InvalidRecord("independent decision conditions exceed registered bounds".to_string()));
+        return Err(EvidenceError::InvalidRecord(
+            "independent decision conditions exceed registered bounds".to_string(),
+        ));
     }
     Ok(())
 }
@@ -807,15 +1060,29 @@ async fn candidate_evidence_set_digest_in_transaction(
          WHERE candidate_id = ? AND source_commit = ? AND source_tree = ?
            AND claim_class != 'independent_decision' ORDER BY seq ASC LIMIT ?"
     ))
-    .bind(&candidate.candidate_id).bind(&candidate.source_commit).bind(&candidate.source_tree)
-    .bind(i64::try_from(MAX_DECISION_EVIDENCE_REFERENCES + 1)
-        .map_err(|_| EvidenceError::InvalidRecord("independent evidence-set bound overflow".into()))?)
-    .fetch_all(&mut **transaction).await.map_err(classify_sqlx_error)?;
+    .bind(&candidate.candidate_id)
+    .bind(&candidate.source_commit)
+    .bind(&candidate.source_tree)
+    .bind(
+        i64::try_from(MAX_DECISION_EVIDENCE_REFERENCES + 1).map_err(|_| {
+            EvidenceError::InvalidRecord("independent evidence-set bound overflow".into())
+        })?,
+    )
+    .fetch_all(&mut **transaction)
+    .await
+    .map_err(classify_sqlx_error)?;
     if rows.len() > MAX_DECISION_EVIDENCE_REFERENCES {
-        return Err(EvidenceError::InvalidRecord("independent decision evidence set exceeds bounded verification capacity".to_string()));
+        return Err(EvidenceError::InvalidRecord(
+            "independent decision evidence set exceeds bounded verification capacity".to_string(),
+        ));
     }
-    let references = rows.iter().map(decode_row).collect::<Result<Vec<_>, _>>()?
-        .iter().map(StoredQualificationEvidence::reference).collect::<Vec<_>>();
+    let references = rows
+        .iter()
+        .map(decode_row)
+        .collect::<Result<Vec<_>, _>>()?
+        .iter()
+        .map(StoredQualificationEvidence::reference)
+        .collect::<Vec<_>>();
     evidence_set_digest(&references)
 }
 
@@ -829,48 +1096,82 @@ async fn load_claim_rows(
          WHERE candidate_id = ? AND source_commit = ? AND source_tree = ? AND claim_class = ?
          ORDER BY seq ASC LIMIT ?"
     ))
-    .bind(&candidate.candidate_id).bind(&candidate.source_commit).bind(&candidate.source_tree)
+    .bind(&candidate.candidate_id)
+    .bind(&candidate.source_commit)
+    .bind(&candidate.source_tree)
     .bind(claim_class.as_str())
-    .bind(i64::try_from(QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS + 1)
-        .map_err(|_| EvidenceError::InvalidRecord("query bound overflow".into()))?)
-    .fetch_all(connection).await.map_err(classify_sqlx_error)?;
+    .bind(
+        i64::try_from(QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS + 1)
+            .map_err(|_| EvidenceError::InvalidRecord("query bound overflow".into()))?,
+    )
+    .fetch_all(connection)
+    .await
+    .map_err(classify_sqlx_error)?;
     if rows.len() > QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS {
-        return Err(EvidenceError::InvalidRecord("qualification claim query exceeds 512 references".to_string()));
+        return Err(EvidenceError::InvalidRecord(
+            "qualification claim query exceeds 512 references".to_string(),
+        ));
     }
     rows.iter().map(decode_row).collect()
 }
 
-async fn load_evidence_by_id(transaction: &mut Transaction<'_, Sqlite>, evidence_id: &str) -> Result<Option<StoredQualificationEvidence>, EvidenceError> {
-    let row = sqlx::query(&format!("SELECT {QUALIFICATION_COLUMNS} FROM qualification_evidence WHERE evidence_id = ?"))
-        .bind(evidence_id).fetch_optional(&mut **transaction).await.map_err(classify_sqlx_error)?;
+async fn load_evidence_by_id(
+    transaction: &mut Transaction<'_, Sqlite>,
+    evidence_id: &str,
+) -> Result<Option<StoredQualificationEvidence>, EvidenceError> {
+    let row = sqlx::query(&format!(
+        "SELECT {QUALIFICATION_COLUMNS} FROM qualification_evidence WHERE evidence_id = ?"
+    ))
+    .bind(evidence_id)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(classify_sqlx_error)?;
     row.as_ref().map(decode_row).transpose()
 }
 
 fn decode_row(row: &SqliteRow) -> Result<StoredQualificationEvidence, EvidenceError> {
     let envelope_json: String = row.try_get("envelope_json").map_err(classify_sqlx_error)?;
     if envelope_json.len() > QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES {
-        return Err(EvidenceError::Corrupt("stored qualification envelope exceeds 256 KiB".to_string()));
+        return Err(EvidenceError::Corrupt(
+            "stored qualification envelope exceeds 256 KiB".to_string(),
+        ));
     }
-    let envelope: QualificationEvidenceEnvelopeV1 = serde_json::from_str(&envelope_json)
-        .map_err(|error| EvidenceError::Corrupt(format!("qualification evidence envelope cannot be decoded: {error}")))?;
-    envelope.validate().map_err(|error| EvidenceError::Corrupt(format!("qualification envelope invalid: {error}")))?;
+    let envelope: QualificationEvidenceEnvelopeV1 =
+        serde_json::from_str(&envelope_json).map_err(|error| {
+            EvidenceError::Corrupt(format!(
+                "qualification evidence envelope cannot be decoded: {error}"
+            ))
+        })?;
+    envelope.validate().map_err(|error| {
+        EvidenceError::Corrupt(format!("qualification envelope invalid: {error}"))
+    })?;
     let canonical = canonical_json(&envelope)?;
     if canonical.as_slice() != envelope_json.as_bytes() {
-        return Err(EvidenceError::Corrupt("qualification evidence envelope is not canonical JSON".to_string()));
+        return Err(EvidenceError::Corrupt(
+            "qualification evidence envelope is not canonical JSON".to_string(),
+        ));
     }
     let payload_sha256 = Sha256Digest::for_bytes(&canonical_json(&envelope.payload)?);
     let stored_payload: String = row.try_get("payload_sha256").map_err(classify_sqlx_error)?;
     if payload_sha256.as_str() != stored_payload {
-        return Err(EvidenceError::Corrupt("qualification evidence payload digest differs from canonical payload".to_string()));
+        return Err(EvidenceError::Corrupt(
+            "qualification evidence payload digest differs from canonical payload".to_string(),
+        ));
     }
     let envelope_sha256 = Sha256Digest::for_bytes(&canonical);
-    let stored_envelope: String = row.try_get("envelope_sha256").map_err(classify_sqlx_error)?;
+    let stored_envelope: String = row
+        .try_get("envelope_sha256")
+        .map_err(classify_sqlx_error)?;
     if envelope_sha256.as_str() != stored_envelope {
-        return Err(EvidenceError::Corrupt("qualification evidence envelope digest differs from canonical envelope".to_string()));
+        return Err(EvidenceError::Corrupt(
+            "qualification evidence envelope digest differs from canonical envelope".to_string(),
+        ));
     }
     let row_evidence_id: String = row.try_get("evidence_id").map_err(classify_sqlx_error)?;
     if row_evidence_id != envelope.evidence_id.as_str() {
-        return Err(EvidenceError::Corrupt("qualification evidence row identity differs from envelope".to_string()));
+        return Err(EvidenceError::Corrupt(
+            "qualification evidence row identity differs from envelope".to_string(),
+        ));
     }
     let row_schema: i64 = row.try_get("schema_version").map_err(classify_sqlx_error)?;
     let row_candidate: String = row.try_get("candidate_id").map_err(classify_sqlx_error)?;
@@ -879,8 +1180,12 @@ fn decode_row(row: &SqliteRow) -> Result<StoredQualificationEvidence, EvidenceEr
     let row_claim: String = row.try_get("claim_class").map_err(classify_sqlx_error)?;
     let row_kind: String = row.try_get("receipt_kind").map_err(classify_sqlx_error)?;
     let row_role: String = row.try_get("issuer_role").map_err(classify_sqlx_error)?;
-    let row_predecessor: Option<String> = row.try_get("predecessor_evidence_id").map_err(classify_sqlx_error)?;
-    let row_target: Option<String> = row.try_get("target_evidence_id").map_err(classify_sqlx_error)?;
+    let row_predecessor: Option<String> = row
+        .try_get("predecessor_evidence_id")
+        .map_err(classify_sqlx_error)?;
+    let row_target: Option<String> = row
+        .try_get("target_evidence_id")
+        .map_err(classify_sqlx_error)?;
     let row_observed = read_u64_blob(row, "observed_at_ms")?;
     let row_expires = read_optional_u64_blob(row, "expires_at_ms")?;
     let row_asset_count: i64 = row.try_get("asset_count").map_err(classify_sqlx_error)?;
@@ -891,31 +1196,73 @@ fn decode_row(row: &SqliteRow) -> Result<StoredQualificationEvidence, EvidenceEr
         || row_claim != envelope.claim_class.as_str()
         || row_kind != envelope.receipt_kind.as_str()
         || row_role != envelope.issuer_role.as_str()
-        || row_predecessor.as_deref() != envelope.predecessor_evidence_id.as_ref().map(EvidenceId::as_str)
+        || row_predecessor.as_deref()
+            != envelope
+                .predecessor_evidence_id
+                .as_ref()
+                .map(EvidenceId::as_str)
         || row_target.as_deref() != envelope.target_evidence_id.as_ref().map(EvidenceId::as_str)
         || row_observed != envelope.observed_unix_ms
         || row_expires != envelope.expires_unix_ms
         || row_asset_count != i64::try_from(envelope.asset_digests.len()).unwrap_or(-1)
     {
-        return Err(EvidenceError::Corrupt("qualification evidence projection differs from canonical envelope".to_string()));
+        return Err(EvidenceError::Corrupt(
+            "qualification evidence projection differs from canonical envelope".to_string(),
+        ));
+    }
+    let auth_signature: Option<Vec<u8>> = row
+        .try_get("auth_signature")
+        .map_err(classify_sqlx_error)?;
+    if auth_signature
+        .as_ref()
+        .is_some_and(|signature| signature.len() != 64)
+    {
+        return Err(EvidenceError::Corrupt(
+            "qualification AuthBus signature has invalid width".to_string(),
+        ));
+    }
+    let trust_registry_generation =
+        read_optional_u64_blob(row, "trust_registry_generation")?;
+    let trust_registry_sha256 = row
+        .try_get::<Option<String>, _>("trust_registry_sha256")
+        .map_err(classify_sqlx_error)?
+        .map(Sha256Digest::parse)
+        .transpose()
+        .map_err(EvidenceError::Corrupt)?;
+    if trust_registry_generation.is_some() != trust_registry_sha256.is_some() {
+        return Err(EvidenceError::Corrupt(
+            "qualification trust provenance is incomplete".to_string(),
+        ));
     }
     Ok(StoredQualificationEvidence {
         seq: row.try_get("seq").map_err(classify_sqlx_error)?,
         envelope,
-        issuer_principal_id: row.try_get("issuer_principal_id").map_err(classify_sqlx_error)?,
+        issuer_principal_id: row
+            .try_get("issuer_principal_id")
+            .map_err(classify_sqlx_error)?,
         issuer_key_epoch: read_u64_blob(row, "issuer_key_epoch")?,
-        issuer_signing_identity_sha256: Sha256Digest::parse(row.try_get::<String, _>("issuer_signing_identity_sha256").map_err(classify_sqlx_error)?).map_err(EvidenceError::Corrupt)?,
-        auth_message_id: row.try_get("auth_message_id").map_err(classify_sqlx_error)?,
+        issuer_signing_identity_sha256: Sha256Digest::parse(
+            row.try_get::<String, _>("issuer_signing_identity_sha256")
+                .map_err(classify_sqlx_error)?,
+        )
+        .map_err(EvidenceError::Corrupt)?,
+        auth_message_id: row
+            .try_get("auth_message_id")
+            .map_err(classify_sqlx_error)?,
         auth_sequence: read_u64_blob(row, "auth_sequence")?,
         auth_expires_at_ms: read_u64_blob(row, "auth_expires_at_ms")?,
+        auth_signature,
+        trust_registry_generation,
+        trust_registry_sha256,
         payload_sha256,
         envelope_sha256,
     })
 }
 
-/// Commitment to all stored admission semantics, not merely the public envelope.
-/// This does not recreate a historical signature that was not stored by V1.
-pub(crate) fn authenticated_row_sha256(row: &SqliteRow) -> Result<Sha256Digest, EvidenceError> {
+/// Commitment to the complete retained authenticated admission semantics.
+pub(crate) fn authenticated_row_sha256(
+    row: &SqliteRow,
+) -> Result<Sha256Digest, EvidenceError> {
     let decoded = decode_row(row)?;
     let recorded_at_ms: i64 = row.try_get("recorded_at_ms").map_err(classify_sqlx_error)?;
     let payload = canonical_json(&(
@@ -927,76 +1274,137 @@ pub(crate) fn authenticated_row_sha256(row: &SqliteRow) -> Result<Sha256Digest, 
         &decoded.auth_message_id,
         decoded.auth_sequence,
         decoded.auth_expires_at_ms,
+        &decoded.auth_signature,
+        decoded.trust_registry_generation,
+        &decoded.trust_registry_sha256,
         &decoded.payload_sha256,
         &decoded.envelope_sha256,
         recorded_at_ms,
     ))?;
-    let mut bytes = b"hepta.evidence.authenticated-admission-commitment.v2\0".to_vec();
+    let mut bytes = b"hepta.evidence.authenticated-admission-commitment.v3\0".to_vec();
     push_part(&mut bytes, &payload);
     Ok(Sha256Digest::for_bytes(&bytes))
 }
 
 fn verify_rows_integrity(rows: &[StoredQualificationEvidence]) -> Result<(), EvidenceError> {
-    let by_id = rows.iter().map(|row| (row.envelope.evidence_id.clone(), row)).collect::<BTreeMap<_, _>>();
+    let by_id = rows
+        .iter()
+        .map(|row| (row.envelope.evidence_id.clone(), row))
+        .collect::<BTreeMap<_, _>>();
     for row in rows {
-        for (label, reference) in [("predecessor", row.envelope.predecessor_evidence_id.as_ref()), ("target", row.envelope.target_evidence_id.as_ref())] {
-            let Some(reference) = reference else { continue; };
-            let referenced = by_id.get(reference).ok_or_else(|| EvidenceError::Corrupt(format!("qualification {label} reference is missing from bounded chain")))?;
-            if referenced.seq >= row.seq || referenced.envelope.candidate != row.envelope.candidate || referenced.envelope.claim_class != row.envelope.claim_class {
-                return Err(EvidenceError::Corrupt(format!("qualification {label} reference violates lineage")));
+        for (label, reference) in [
+            ("predecessor", row.envelope.predecessor_evidence_id.as_ref()),
+            ("target", row.envelope.target_evidence_id.as_ref()),
+        ] {
+            let Some(reference) = reference else {
+                continue;
+            };
+            let referenced = by_id.get(reference).ok_or_else(|| {
+                EvidenceError::Corrupt(format!(
+                    "qualification {label} reference is missing from bounded chain"
+                ))
+            })?;
+            if referenced.seq >= row.seq
+                || referenced.envelope.candidate != row.envelope.candidate
+                || referenced.envelope.claim_class != row.envelope.claim_class
+            {
+                return Err(EvidenceError::Corrupt(format!(
+                    "qualification {label} reference violates lineage"
+                )));
             }
             let owner_scoped = row.envelope.receipt_kind == EvidenceReceiptKindV1::Correction
-                || (row.envelope.receipt_kind == EvidenceReceiptKindV1::Revocation && row.envelope.issuer_role != EvidenceIssuerRoleV1::Security);
-            if owner_scoped && (referenced.issuer_principal_id != row.issuer_principal_id || referenced.envelope.issuer_role != row.envelope.issuer_role) {
-                return Err(EvidenceError::Corrupt(format!("qualification {label} reference crosses principal or role authority")));
+                || (row.envelope.receipt_kind == EvidenceReceiptKindV1::Revocation
+                    && row.envelope.issuer_role != EvidenceIssuerRoleV1::Security);
+            if owner_scoped
+                && (referenced.issuer_principal_id != row.issuer_principal_id
+                    || referenced.envelope.issuer_role != row.envelope.issuer_role)
+            {
+                return Err(EvidenceError::Corrupt(format!(
+                    "qualification {label} reference crosses principal or role authority"
+                )));
             }
         }
         let mut cursor = row;
         let mut visited = BTreeSet::new();
         for edge_count in 0..=QUALIFICATION_EVIDENCE_MAX_CHAIN_EDGES {
             if !visited.insert(cursor.envelope.evidence_id.clone()) {
-                return Err(EvidenceError::Corrupt("qualification evidence predecessor cycle detected".to_string()));
+                return Err(EvidenceError::Corrupt(
+                    "qualification evidence predecessor cycle detected".to_string(),
+                ));
             }
-            let Some(predecessor) = cursor.envelope.predecessor_evidence_id.as_ref() else { break; };
+            let Some(predecessor) = cursor.envelope.predecessor_evidence_id.as_ref() else {
+                break;
+            };
             if edge_count == QUALIFICATION_EVIDENCE_MAX_CHAIN_EDGES {
-                return Err(EvidenceError::Corrupt("qualification evidence predecessor traversal exhausted".to_string()));
+                return Err(EvidenceError::Corrupt(
+                    "qualification evidence predecessor traversal exhausted".to_string(),
+                ));
             }
-            cursor = by_id.get(predecessor).ok_or_else(|| EvidenceError::Corrupt("qualification evidence predecessor chain is incomplete".to_string()))?;
+            cursor = by_id.get(predecessor).ok_or_else(|| {
+                EvidenceError::Corrupt(
+                    "qualification evidence predecessor chain is incomplete".to_string(),
+                )
+            })?;
         }
     }
     Ok(())
 }
 
-fn roles_have_distinct_authenticated_identities(required_roles: &[EvidenceIssuerRoleV1], rows: &[StoredQualificationEvidence]) -> Result<bool, EvidenceError> {
+fn roles_have_distinct_authenticated_identities(
+    required_roles: &[EvidenceIssuerRoleV1],
+    rows: &[StoredQualificationEvidence],
+) -> Result<bool, EvidenceError> {
     let mut identities = BTreeMap::<EvidenceIssuerRoleV1, BTreeSet<(String, String)>>::new();
     for row in rows {
-        identities.entry(row.envelope.issuer_role).or_default().insert((
-            row.issuer_principal_id.clone(), row.issuer_signing_identity_sha256.as_str().to_string(),
-        ));
+        identities
+            .entry(row.envelope.issuer_role)
+            .or_default()
+            .insert((
+                row.issuer_principal_id.clone(),
+                row.issuer_signing_identity_sha256.as_str().to_string(),
+            ));
     }
-    distinct_identity_assignment(required_roles, &identities, DEFAULT_ASSIGNMENT_BUDGET)
-        .map_err(|_| EvidenceError::Unavailable("qualification independence search exhausted its bounded work budget".to_string()))
+    distinct_identity_assignment(required_roles, &identities, DEFAULT_ASSIGNMENT_BUDGET).map_err(
+        |_| {
+            EvidenceError::Unavailable(
+                "qualification independence search exhausted its bounded work budget".to_string(),
+            )
+        },
+    )
 }
 
 fn read_u64_blob(row: &SqliteRow, column: &str) -> Result<u64, EvidenceError> {
     let bytes: Vec<u8> = row.try_get(column).map_err(classify_sqlx_error)?;
-    let bytes: [u8; 8] = bytes.try_into().map_err(|_| EvidenceError::Corrupt(format!("{column} has invalid width")))?;
+    let bytes: [u8; 8] = bytes
+        .try_into()
+        .map_err(|_| EvidenceError::Corrupt(format!("{column} has invalid width")))?;
     Ok(u64::from_be_bytes(bytes))
 }
 
-fn read_optional_u64_blob(row: &SqliteRow, column: &str) -> Result<Option<u64>, EvidenceError> {
+fn read_optional_u64_blob(
+    row: &SqliteRow,
+    column: &str,
+) -> Result<Option<u64>, EvidenceError> {
     let bytes: Option<Vec<u8>> = row.try_get(column).map_err(classify_sqlx_error)?;
-    bytes.map(|bytes| {
-        let bytes: [u8; 8] = bytes.try_into().map_err(|_| EvidenceError::Corrupt(format!("{column} has invalid width")))?;
-        Ok(u64::from_be_bytes(bytes))
-    }).transpose()
+    bytes
+        .map(|bytes| {
+            let bytes: [u8; 8] = bytes
+                .try_into()
+                .map_err(|_| EvidenceError::Corrupt(format!("{column} has invalid width")))?;
+            Ok(u64::from_be_bytes(bytes))
+        })
+        .transpose()
 }
 
 fn validate_git_identity(value: &str, label: &str) -> Result<(), String> {
     if !matches!(value.len(), 40 | 64)
-        || !value.bytes().all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
     {
-        return Err(format!("{label} must be a 40- or 64-character lowercase hexadecimal object id"));
+        return Err(format!(
+            "{label} must be a 40- or 64-character lowercase hexadecimal object id"
+        ));
     }
     Ok(())
 }
