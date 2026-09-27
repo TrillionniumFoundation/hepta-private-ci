@@ -74,10 +74,22 @@ jobs:
           cargo "+$PLATFORM_TYPES_MSRV" generate-lockfile \
             --manifest-path "$repo_root/codex-rs/Cargo.toml"
 
+          git -C "$repo_root" status --short --untracked-files=no \
+            | tee "$evidence/status-before-validation.txt"
+          git -C "$repo_root" diff --binary -- \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-types \
+            codex-rs/hepta-wire/src/platform_types_json.rs \
+            codex-rs/hepta-wire/src/platform_manifest_json.rs \
+            codex-rs/hepta-ndu \
+            scripts/platform_types_api_compat_fixup.py \
+            scripts/platform_types_bootstrap_fixup.py \
+            > "$evidence/candidate.patch"
+
           unexpected="$(
             git -C "$repo_root" status --porcelain --untracked-files=no |
               cut -c4- |
-              grep -Ev '^(codex-rs/Cargo\.lock|codex-rs/hepta-types/src/numeric_conversion\.rs|codex-rs/hepta-types/src/numeric_registry_v2\.rs|codex-rs/hepta-types/src/numeric_conversion_tests\.rs|codex-rs/hepta-types/src/numeric_profile\.rs|codex-rs/hepta-types/src/topology\.rs|codex-rs/hepta-types/src/bin/platform-types-protocol-codegen\.rs|codex-rs/hepta-types/src/prompt_delivery_v2\.rs|codex-rs/hepta-types/src/protocol_catalog_v2\.rs|codex-rs/hepta-types/tests/manifest_protocol_consumer\.rs|codex-rs/hepta-wire/src/platform_types_json\.rs|codex-rs/hepta-ndu/src/numeric_admission\.rs|codex-rs/hepta-ndu/src/owner\.rs|codex-rs/hepta-ndu/src/owner_tests\.rs|codex-rs/hepta-ndu/src/random_stream_owner\.rs|scripts/platform_types_api_compat_fixup\.py|scripts/platform_types_bootstrap_fixup\.py)$' || true
+              grep -Ev '^(codex-rs/Cargo\.lock|codex-rs/hepta-types/src/numeric_conversion\.rs|codex-rs/hepta-types/src/numeric_registry_v2\.rs|codex-rs/hepta-types/src/numeric_conversion_tests\.rs|codex-rs/hepta-types/src/numeric_profile\.rs|codex-rs/hepta-types/src/topology\.rs|codex-rs/hepta-types/src/bin/platform-types-protocol-codegen\.rs|codex-rs/hepta-types/src/prompt_delivery_v2\.rs|codex-rs/hepta-types/src/protocol_catalog_v2\.rs|codex-rs/hepta-types/tests/manifest_protocol_consumer\.rs|codex-rs/hepta-wire/src/platform_types_json\.rs|codex-rs/hepta-wire/src/platform_manifest_json\.rs|codex-rs/hepta-ndu/src/numeric_admission\.rs|codex-rs/hepta-ndu/src/owner\.rs|codex-rs/hepta-ndu/src/owner_tests\.rs|codex-rs/hepta-ndu/src/random_stream_owner\.rs|scripts/platform_types_api_compat_fixup\.py|scripts/platform_types_bootstrap_fixup\.py)$' || true
           )"
           if [[ -n "$unexpected" ]]; then
             printf 'compatibility/lock convergence changed unexpected tracked paths:\n%s\n' "$unexpected" >&2
@@ -110,6 +122,7 @@ jobs:
             codex-rs/hepta-types/src/protocol_catalog_v2.rs \
             codex-rs/hepta-types/tests/manifest_protocol_consumer.rs \
             codex-rs/hepta-wire/src/platform_types_json.rs \
+            codex-rs/hepta-wire/src/platform_manifest_json.rs \
             codex-rs/hepta-ndu/src/numeric_admission.rs \
             codex-rs/hepta-ndu/src/owner.rs \
             codex-rs/hepta-ndu/src/owner_tests.rs \
@@ -128,6 +141,7 @@ jobs:
             "$repo_root/codex-rs/hepta-types/src/protocol_catalog_v2.rs" \
             "$repo_root/codex-rs/hepta-types/tests/manifest_protocol_consumer.rs" \
             "$repo_root/codex-rs/hepta-wire/src/platform_types_json.rs" \
+            "$repo_root/codex-rs/hepta-wire/src/platform_manifest_json.rs" \
             "$repo_root/codex-rs/hepta-ndu/src/numeric_admission.rs" \
             "$repo_root/codex-rs/hepta-ndu/src/owner.rs" \
             "$repo_root/codex-rs/hepta-ndu/src/random_stream_owner.rs" \
@@ -152,6 +166,7 @@ jobs:
             codex-rs/hepta-types/src/protocol_catalog_v2.rs \
             codex-rs/hepta-types/tests/manifest_protocol_consumer.rs \
             codex-rs/hepta-wire/src/platform_types_json.rs \
+            codex-rs/hepta-wire/src/platform_manifest_json.rs \
             codex-rs/hepta-ndu/src/numeric_admission.rs \
             codex-rs/hepta-ndu/src/owner.rs \
             codex-rs/hepta-ndu/src/owner_tests.rs \
