@@ -117,16 +117,20 @@ fn parse_headers(bytes: &[u8], body_start: usize) -> Result<Headers, ShellError>
     let text = std::str::from_utf8(bytes)
         .map_err(|_| ShellError::Backend("invalid HTTP headers".into()))?;
     let invalid = || ShellError::Backend("invalid or ambiguous native HTTP framing".into());
-    let mut lines = text.split("\r\n");
-    let mut status = lines.next().ok_or_else(invalid)?.split_ascii_whitespace();
-    if status.next() != Some("HTTP/1.1") {
+    if bytes.len() > MAX_HEADERS_BYTES || body_start != bytes.len() + 4 {
         return Err(invalid());
     }
-    let code: u16 = status
-        .next()
-        .ok_or_else(invalid)?
-        .parse()
-        .map_err(|_| invalid())?;
+    let mut lines = text.split("\r\n");
+    let status = lines.next().ok_or_else(invalid)?;
+    let status = status.strip_prefix("HTTP/1.1 ").ok_or_else(invalid)?;
+    let (digits, reason) = status.split_once(' ').ok_or_else(invalid)?;
+    if digits.len() != 3
+        || !digits.bytes().all(|byte| byte.is_ascii_digit())
+        || !reason.bytes().all(|byte| (0x20..=0x7e).contains(&byte))
+    {
+        return Err(invalid());
+    }
+    let code: u16 = digits.parse().map_err(|_| invalid())?;
     if !(100..=599).contains(&code) {
         return Err(invalid());
     }
@@ -138,9 +142,16 @@ fn parse_headers(bytes: &[u8], body_start: usize) -> Result<Headers, ShellError>
         if name.is_empty() || !name.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-') {
             return Err(invalid());
         }
-        let value = value.trim();
+        if !value
+            .bytes()
+            .all(|byte| byte == b'\t' || (0x20..=0x7e).contains(&byte))
+        {
+            return Err(invalid());
+        }
+        let value = value.trim_matches([' ', '\t']);
         if name.eq_ignore_ascii_case("content-length") {
-            if !value.bytes().all(|b| b.is_ascii_digit())
+            if value.is_empty()
+                || !value.bytes().all(|b| b.is_ascii_digit())
                 || length
                     .replace(value.parse::<usize>().map_err(|_| invalid())?)
                     .is_some()

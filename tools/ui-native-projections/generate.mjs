@@ -42,7 +42,8 @@ const API_OPERATIONS = [
   {
     id: "confirm_running_update",
     path: "apps/hepta-native/src/updater.rs",
-    symbol: "pub fn confirm_running_process(",
+    symbol: "pub(crate) fn confirm_running_process(",
+    visibility: "crate",
     boundary: "active_digest_and_runtime_health_confirmation",
   },
 ];
@@ -193,7 +194,7 @@ export function buildProjections(root = REPO_ROOT) {
   if (!main.includes("fn run(")) {
     throw new Error("production bootstrap marker fn run( is missing");
   }
-  if (!updater.includes("pub fn confirm_running_process(")) {
+  if (!updater.includes("pub(crate) fn confirm_running_process(")) {
     throw new Error("runtime update confirmation is missing");
   }
 

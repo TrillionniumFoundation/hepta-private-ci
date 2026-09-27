@@ -64,3 +64,10 @@ test("test registry is source-discovered and has no duplicate paths", () => {
 test("committed projections are exactly reproducible", () => {
   assert.doesNotThrow(() => verifyGenerated());
 });
+
+test("running update confirmation remains a crate-private boundary", () => {
+  const api = buildProjections().get("api-registry.json");
+  const operation = api.operations.find((item) => item.id === "confirm_running_update");
+  assert.equal(operation.symbol, "pub(crate) fn confirm_running_process(");
+  assert.equal(operation.visibility, "crate");
+});

@@ -12,6 +12,9 @@ import shutil
 import stat
 import tempfile
 import zipfile
+import tomllib
+
+from archive_safety import SCHEMA, extract_verified_archive, validate_archive
 
 APP = Path(__file__).resolve().parents[1]
 BINARIES = ("hepta-native", "hepta-native-updater", "hepta-native-credential")
@@ -88,63 +91,6 @@ def write_deterministic_zip(root: Path, archive: Path) -> None:
             output.writestr(info, path.read_bytes())
 
 
-def _validated_members(source: zipfile.ZipFile) -> list[zipfile.ZipInfo]:
-    members = source.infolist()
-    names = [member.filename for member in members]
-    if len(names) != len(set(names)):
-        raise ValueError("package archive contains duplicate paths")
-    roots = set()
-    for member in members:
-        path = PurePosixPath(member.filename)
-        if path.is_absolute() or not path.parts or ".." in path.parts:
-            raise ValueError(f"unsafe archive path: {member.filename}")
-        roots.add(path.parts[0])
-        mode = member.external_attr >> 16
-        if stat.S_ISLNK(mode) or (mode and not stat.S_ISREG(mode)):
-            raise ValueError(
-                f"package archive contains a non-regular entry: {member.filename}"
-            )
-    if len(roots) != 1:
-        raise ValueError("package archive must contain exactly one top-level root")
-    return members
-
-
-def validate_archive(archive: Path) -> dict:
-    with zipfile.ZipFile(archive) as source:
-        members = _validated_members(source)
-        names = [member.filename for member in members]
-        manifests = [
-            name for name in names if name.endswith("/unsigned-package-manifest.json")
-        ]
-        if len(manifests) != 1:
-            raise ValueError("package archive must contain one manifest")
-        manifest = json.loads(source.read(manifests[0]))
-        prefix = str(PurePosixPath(manifests[0]).parent)
-        for relative, expected in manifest["binarySha256"].items():
-            observed = sha256(source.read(f"{prefix}/{relative}"))
-            if observed != expected:
-                raise ValueError(f"packaged binary digest mismatch: {relative}")
-        return manifest
-
-
-def extract_verified_archive(archive: Path, destination: Path) -> Path:
-    validate_archive(archive)
-    if destination.exists():
-        shutil.rmtree(destination)
-    destination.mkdir(parents=True)
-    with zipfile.ZipFile(archive) as source:
-        members = _validated_members(source)
-        root_name = PurePosixPath(members[0].filename).parts[0]
-        for member in members:
-            relative = PurePosixPath(member.filename)
-            target = destination.joinpath(*relative.parts)
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(source.read(member))
-            mode = (member.external_attr >> 16) & 0o777
-            if mode:
-                target.chmod(mode)
-    return destination / root_name
-
 
 def build_package(
     platform: str, architecture: str, release_dir: Path, out_dir: Path
@@ -158,8 +104,12 @@ def build_package(
     ):
         raise ValueError("architecture must be a bounded stable identifier")
     staging = out_dir / "staging"
-    if staging.exists():
-        shutil.rmtree(staging)
+    if staging.exists() or staging.is_symlink():
+        raise ValueError("package staging directory must be new for each build")
+    if out_dir.exists() and any(out_dir.iterdir()):
+        raise ValueError("package output directory must be empty")
+    if out_dir.resolve() != out_dir.absolute():
+        raise ValueError("package output path must not traverse symlinks")
     staging.mkdir(parents=True)
     root, relative_paths = package_layout(platform, staging)
     root.mkdir(parents=True)
@@ -171,7 +121,8 @@ def build_package(
         binary_digests[relative] = file_sha256(destination)
     copy_platform_metadata(platform, root)
     manifest = {
-        "schema": "hepta.ui-native-unsigned-package.v1",
+        "schema": SCHEMA,
+        "version": tomllib.loads((APP / "Cargo.toml").read_text(encoding="utf-8"))["package"]["version"],
         "platform": platform,
         "architecture": architecture,
         "unsignedDevelopmentArtifact": True,
@@ -179,6 +130,10 @@ def build_package(
         "notarizationObserved": False,
         "releaseAuthorized": False,
         "binarySha256": binary_digests,
+        "fileSha256": {
+            path.relative_to(root).as_posix(): file_sha256(path)
+            for path in sorted(root.rglob("*")) if path.is_file()
+        },
     }
     manifest_path = root / "unsigned-package-manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
@@ -205,7 +160,7 @@ def build_package(
 
 def self_test() -> None:
     with tempfile.TemporaryDirectory(prefix="hepta-native-package-") as raw:
-        temp = Path(raw)
+        temp = Path(raw).resolve()
         for platform in sorted(PLATFORMS):
             release = temp / platform / "release"
             release.mkdir(parents=True)
@@ -251,7 +206,7 @@ def main() -> None:
         args.platform,
         args.architecture,
         args.release_dir.resolve(),
-        args.out_dir.resolve(),
+        args.out_dir.absolute(),
     )
     print(json.dumps(receipt, indent=2))
 

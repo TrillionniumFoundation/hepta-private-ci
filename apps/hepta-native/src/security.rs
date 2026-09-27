@@ -14,7 +14,6 @@ use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::VerifiedUseToken;
 use ed25519_dalek::Signature;
-use ed25519_dalek::Verifier as _;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
@@ -139,6 +138,7 @@ pub struct TrustedKeySet {
 #[serde(deny_unknown_fields)]
 struct KeySetFile {
     schema: String,
+    #[serde(deserialize_with = "deserialize_unique_key_ids")]
     keys: BTreeMap<String, String>,
     #[serde(default)]
     revoked_key_ids: BTreeSet<String>,
@@ -162,6 +162,7 @@ impl TrustedKeySet {
         }
         let revoked_key_ids = file.revoked_key_ids;
         let mut keys = BTreeMap::new();
+        let mut key_material = BTreeSet::new();
         for (key_id, encoded) in file.keys {
             validate_stable_id(&key_id, "trusted key id")?;
             let decoded = STANDARD
@@ -172,6 +173,11 @@ impl TrustedKeySet {
             })?;
             let key = VerifyingKey::from_bytes(&key_bytes)
                 .map_err(|error| ShellError::Security(error.to_string()))?;
+            if key.is_weak() || !key_material.insert(key_bytes) {
+                return Err(ShellError::Security(
+                    "trusted native keys cannot be weak or alias another key id".to_owned(),
+                ));
+            }
             keys.insert(key_id, key);
         }
         Ok(Self {
@@ -200,7 +206,7 @@ impl TrustedKeySet {
             .map_err(|error| ShellError::Security(error.to_string()))?;
         let signature = Signature::from_slice(&signature_bytes)
             .map_err(|error| ShellError::Security(error.to_string()))?;
-        key.verify(message, &signature)
+        key.verify_strict(message, &signature)
             .map_err(|error| ShellError::Security(error.to_string()))
     }
 }
@@ -402,4 +408,34 @@ pub fn now_unix_ms() -> Result<u64, ShellError> {
         .map_err(|error| ShellError::State(error.to_string()))?;
     u64::try_from(duration.as_millis())
         .map_err(|_| ShellError::State("system clock exceeds u64 milliseconds".to_owned()))
+}
+
+fn deserialize_unique_key_ids<'de, D>(deserializer: D) -> Result<BTreeMap<String, String>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    struct UniqueKeyIds;
+
+    impl<'de> serde::de::Visitor<'de> for UniqueKeyIds {
+        type Value = BTreeMap<String, String>;
+
+        fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            formatter.write_str("a map of unique native signing key ids")
+        }
+
+        fn visit_map<M>(self, mut map: M) -> Result<Self::Value, M::Error>
+        where
+            M: serde::de::MapAccess<'de>,
+        {
+            let mut keys = BTreeMap::new();
+            while let Some((key, value)) = map.next_entry::<String, String>()? {
+                if keys.insert(key, value).is_some() {
+                    return Err(serde::de::Error::custom("duplicate native signing key id"));
+                }
+            }
+            Ok(keys)
+        }
+    }
+
+    deserializer.deserialize_map(UniqueKeyIds)
 }

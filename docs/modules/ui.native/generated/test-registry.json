@@ -2,8 +2,8 @@
   "schema": "hepta.ui.native.test-registry.v1",
   "sourceDiscovery": {
     "root": "apps/hepta-native/tests",
-    "fileCount": 13,
-    "manifestDigest": "c94722cd128d52220b4f9433311dba48a23f68a06b49de78bfcb21160e3e1a1f"
+    "fileCount": 15,
+    "manifestDigest": "c11762af47d726b79d13b737ac20f78dae43439acf114e483b54a86b34f3e707"
   },
   "files": [
     {
@@ -39,6 +39,10 @@
       "role": "integration_test"
     },
     {
+      "path": "apps/hepta-native/tests/remediation_regressions.rs",
+      "role": "integration_test"
+    },
+    {
       "path": "apps/hepta-native/tests/runtime.rs",
       "role": "integration_test"
     },
@@ -48,6 +52,10 @@
     },
     {
       "path": "apps/hepta-native/tests/session_store.rs",
+      "role": "integration_test"
+    },
+    {
+      "path": "apps/hepta-native/tests/trusted_key_regressions.rs",
       "role": "integration_test"
     },
     {

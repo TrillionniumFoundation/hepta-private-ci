@@ -47,7 +47,8 @@
     {
       "id": "confirm_running_update",
       "path": "apps/hepta-native/src/updater.rs",
-      "symbol": "pub fn confirm_running_process(",
+      "symbol": "pub(crate) fn confirm_running_process(",
+      "visibility": "crate",
       "boundary": "active_digest_and_runtime_health_confirmation"
     }
   ]

@@ -104,20 +104,13 @@ impl SystemPlatformAdapter {
 
     fn launcher_observation(
         &self,
-        action: PlatformAction,
-        status: std::process::ExitStatus,
+        _action: PlatformAction,
+        _status: std::process::ExitStatus,
     ) -> PlatformObservation {
-        if status.success() {
-            PlatformObservation::indeterminate()
-        } else {
-            PlatformObservation {
-                terminal_status: Some(TerminalStatus::Failed),
-                outcome_digest: Some(sha256_hex(format!(
-                    "hepta.platform-launch.v1:{action}:exit:{:?}",
-                    status.code()
-                ))),
-            }
-        }
+        // A launcher can apply the effect and then fail. Neither zero nor a
+        // nonzero exit proves the terminal state of the external application.
+        // Only a queryable, operation-bound platform receipt may resolve it.
+        PlatformObservation::indeterminate()
     }
 }
 
@@ -431,3 +424,7 @@ mod tests {
         let _ = std::fs::remove_file(outside);
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "platform_terminality_tests.rs"]
+mod terminality_tests;
