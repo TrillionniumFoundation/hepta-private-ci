@@ -26,6 +26,7 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=all)"
           python3 - <<'PY'
           from pathlib import Path
+          import ast
           import subprocess
           runner=Path('scripts/hepta-ndu-qualification.py')
           text=runner.read_text()
@@ -39,20 +40,22 @@ jobs:
           tests=Path('scripts/test_hepta_ndu_qualification.py')
           text=tests.read_text()
           marker='    def test_valid_measurement_and_honest_performance_failure(self):\n'
-          addition='''    def test_just_recipe_owns_fail_fast_and_runner_keeps_strict_filters(self):
-                  command = runner.test("codex-hepta-ndu")
-                  self.assertEqual(command[:2], ["just", "test"])
-                  self.assertNotIn("--no-fail-fast", command)
-                  self.assertIn("--locked", command)
-                  self.assertEqual(command[command.index("--no-tests") + 1], "fail")
-                  self.assertEqual(command[command.index("--retries") + 1], "0")
-                  recipe = (runner.ROOT / "justfile").read_text()
-                  self.assertIn("cargo nextest run --no-fail-fast", recipe)
-
-          '''
-          addition='\n'.join(line[8:] if line.startswith('        ') else line for line in addition.split('\n'))
+          body=[
+              'command = runner.test("codex-hepta-ndu")',
+              'self.assertEqual(command[:2], ["just", "test"])',
+              'self.assertNotIn("--no-fail-fast", command)',
+              'self.assertIn("--locked", command)',
+              'self.assertEqual(command[command.index("--no-tests") + 1], "fail")',
+              'self.assertEqual(command[command.index("--retries") + 1], "0")',
+              'recipe = (runner.ROOT / "justfile").read_text()',
+              'self.assertIn("cargo nextest run --no-fail-fast", recipe)',
+          ]
+          addition='    def test_just_recipe_owns_fail_fast_and_runner_keeps_strict_filters(self):\n'
+          addition+=''.join('        '+line+'\n' for line in body)+'\n'
           assert text.count(marker)==1
-          tests.write_text(text.replace(marker,addition+marker))
+          updated=text.replace(marker,addition+marker)
+          ast.parse(updated)
+          tests.write_text(updated)
           paths=[str(runner),str(integrity),str(tests)]
           subprocess.run(['git','add','--',*paths],check=True)
           subprocess.run(['python3',str(integrity),'--rebind-index'],check=True)
