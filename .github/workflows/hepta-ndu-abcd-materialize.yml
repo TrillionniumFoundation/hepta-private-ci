@@ -50,10 +50,27 @@ jobs:
           git config user.email qualification@invalid
           git commit -s -m 'fix(ndu): materialize lexical scanner, strict lint, and real EROFS recovery'
           test -z "$(git status --porcelain --untracked-files=all)"
-          python3 scripts/hepta-ndu-implementation-map-closed-world.py --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-ndu-implementation-map-closed-world.py --source-commit "$(git rev-parse HEAD)" --source-tree "$(git rev-parse HEAD^{tree})"
           git push origin "HEAD:$GITHUB_REF_NAME"
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "base=$BASE" >> "$GITHUB_OUTPUT"
+      - name: Export exact materialized source
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/ndu-materialized"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/ndu-materialized/source.tar.gz"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/ndu-materialized/IDENTITY"
+          git diff > "$RUNNER_TEMP/ndu-materialized/uncommitted.diff"
+          cd "$RUNNER_TEMP/ndu-materialized"
+          sha256sum source.tar.gz > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ndu-abcd-a-materialized-source-${{ github.sha }}
+          path: ${{ runner.temp }}/ndu-materialized/
+          if-no-files-found: error
+          retention-days: 7
   verify:
     needs: materialize
     runs-on: ubuntu-22.04
