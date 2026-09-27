@@ -1,4 +1,4 @@
-name: Temporary neuron runtime exact source export
+name: Temporary neuron runtime lock and formatting repair
 
 on:
   push:
@@ -6,44 +6,65 @@ on:
       - codex/neuron-runtime-durable-closure-v1
     paths:
       - .github/workflows/neuron-runtime-source-export.yml
-  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: neuron-runtime-source-export-${{ github.ref }}
+  group: neuron-runtime-repair-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  export:
+  repair:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: codex/neuron-runtime-durable-closure-v1
           fetch-depth: 0
-          persist-credentials: false
-      - name: Bind exact identity
+          persist-credentials: true
+      - name: Bind dependency and apply pinned formatting
         shell: bash
         run: |
           set -euo pipefail
-          git rev-parse HEAD HEAD^{tree} | tee source-identity.txt
-          git status --porcelain=v1
-      - name: Retain editable source snapshot
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: neuron-runtime-source-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            source-identity.txt
-            justfile
-            codex-rs
-            docs/modules/neuron.runtime
-            docs/readiness/NEURON_RUNTIME_EXECUTION.md
-            qualification/module-execution-dossiers/detail/neuron.runtime.md
-            scripts/ci
-            .github/workflows/neuron-runtime-source-synthesis.yml
-          if-no-files-found: error
-          include-hidden-files: true
-          retention-days: 1
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('codex-rs/Cargo.lock')
+          text = path.read_text()
+          package = 'name = "codex-hepta-infer-worker-host"'
+          start = text.index(package)
+          end = text.index('[[package]]', start)
+          block = text[start:end]
+          dependency = ' "codex-hepta-neuron",\n'
+          if dependency not in block:
+              needle = ' "codex-hepta-infer-core",\n'
+              if needle not in block:
+                  raise SystemExit('infer worker lock block is not the expected shape')
+              block = block.replace(needle, needle + dependency, 1)
+              text = text[:start] + block + text[end:]
+              path.write_text(text)
+          PY
+          cd codex-rs
+          cargo fmt \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-infer-worker-host \
+            --package codex-hepta-neuron \
+            --package codex-hepta-agentd
+          cd ..
+          git rm -- .github/workflows/neuron-runtime-source-export.yml
+          git diff --check
+      - name: Commit exact repair and remove applicator
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo 'expected lock/format/applicator changes are absent' >&2
+            exit 1
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all
+          git commit -m 'fix(neuron): bind durable provider dependency and format'
+          git push origin HEAD:codex/neuron-runtime-durable-closure-v1
