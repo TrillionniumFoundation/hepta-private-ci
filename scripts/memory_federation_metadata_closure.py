@@ -35,6 +35,7 @@ def patch_state_sources() -> None:
         + '    "scripts/memory_federation_core_closure.py",\n'
         + '    "scripts/memory_federation_runtime_closure.py",\n'
         + '    "scripts/memory_federation_metadata_closure.py",\n'
+        + '    "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",\n'
     )
     if additions not in text:
         if text.count(anchor) != 1:
