@@ -9,6 +9,7 @@ on:
       - 'codex-rs/hepta-*/**'
       - 'docs/lane-e/**'
       - 'docs/modules/learning.operator/**'
+      - 'docs/modules/learning.eval/**'
       - 'qualification/lane-e/**'
 
 permissions:
@@ -27,7 +28,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 1
+          fetch-depth: 0
           persist-credentials: false
       - name: Preserve immutable tracked source for reproducible diagnosis
         env:
@@ -49,7 +50,7 @@ jobs:
           import pathlib
           import subprocess
           commands = [
-              ['python3', 'scripts/hepta-module-execution-dossiers.py', 'verify'],
+              ['python3', 'scripts/hepta-implementation-dossiers.py', 'verify'],
               ['python3', 'scripts/hepta-implementation-maps.py', 'verify'],
               ['python3', 'scripts/hepta-lane-e-closure.py', 'self-test'],
               ['python3', 'scripts/hepta-lane-e-closure.py', 'verify'],
@@ -68,6 +69,13 @@ jobs:
           (root / 'results.json').write_text(json.dumps(results, indent=2) + '\n')
           raise SystemExit(int(any(result['exit_code'] != 0 for result in results)))
           PY
+      - name: Produce review-only map refresh diff
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module learning.operator --module learning.eval
+          git diff --binary > "$RUNNER_TEMP/operator-diagnostics/map-refresh.patch"
       - name: Upload diagnostics even when source gates reject
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -75,4 +83,50 @@ jobs:
           name: learning-operator-diagnostics-${{ github.event.pull_request.head.sha }}
           path: ${{ runner.temp }}/operator-diagnostics/
           if-no-files-found: error
-          retention-days: 3
+          retention-days: 7
+
+  rust-diagnose:
+    if: github.head_ref == 'codex/learning-operator-full-convergence-20260926' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      CARGO_BUILD_JOBS: 2
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+      - name: Compile and exercise exact-source operator independently of navigation gates
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/operator-rust"
+          git rev-parse HEAD > "$RUNNER_TEMP/operator-rust/source-sha.txt"
+          rustc --version --verbose > "$RUNNER_TEMP/operator-rust/toolchain.txt"
+          cargo test --locked -p codex-hepta-bellman-operator -p codex-hepta-intelligence-eval 2>&1 | tee "$RUNNER_TEMP/operator-rust/tests.log"
+      - name: Capture formatting corrections for explicit review only
+        if: always()
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/operator-rust"
+          cargo fmt -p codex-hepta-bellman-operator -p codex-hepta-intelligence-eval
+          git diff --binary > "$RUNNER_TEMP/operator-rust/format.patch"
+          cp "$(rustup which rustfmt)" "$RUNNER_TEMP/operator-rust/rustfmt"
+          git diff --exit-code
+      - name: Upload executable diagnostics (not a qualification receipt)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-operator-rust-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/operator-rust/
+          if-no-files-found: error
+          retention-days: 7
