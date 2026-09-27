@@ -17,3 +17,7 @@ include!("native_control_v2_helpers.rs");
 #[cfg(test)]
 #[path = "native_control_v2_tests.rs"]
 mod v2_tests;
+
+#[cfg(test)]
+#[path = "native_control_v2_economic_tests.rs"]
+mod economic_tests;
