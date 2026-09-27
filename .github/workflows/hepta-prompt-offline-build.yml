@@ -17,22 +17,20 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-      - name: Check exact optimizer candidate
+      - name: Fetch exact target dependencies
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          cargo check --locked --all-targets -p codex-hepta-prompt-optimizer
-      - name: Retain compiler and public dependency sources only
+          cargo fetch --locked --target x86_64-unknown-linux-gnu
+      - name: Retain public dependency sources and pinned test tools only
         working-directory: codex-rs
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/prompt-offline-inputs"
           mkdir -p "$out"
           git rev-parse HEAD HEAD^{tree} > "$out/identity.txt"
-          rustc -Vv > "$out/native-rustc-version.txt"
-          rustup toolchain install 1.95.0-x86_64-unknown-linux-gnu --force-non-host --profile minimal --component rustfmt --component clippy
-          sysroot="$HOME/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu"
-          tar --exclude='./share/doc' --exclude='./lib/rustlib/src' -C "$sysroot" -czf "$out/toolchain.tar.gz" .
+          curl --fail --location --proto '=https' --tlsv1.2 https://get.nexte.st/0.9.103/linux -o "$out/nextest.tar.gz"
+          curl --fail --location --proto '=https' --tlsv1.2 https://github.com/casey/just/releases/download/1.51.0/just-1.51.0-x86_64-unknown-linux-musl.tar.gz -o "$out/just.tar.gz"
           cargo_home="${CARGO_HOME:-$HOME/.cargo}"
           paths=()
           for path in registry/src registry/cache registry/index git/db git/checkouts; do
@@ -41,6 +39,7 @@ jobs:
           test "${#paths[@]}" -gt 0
           tar -C "$cargo_home" -czf "$out/dependencies.tar.gz" "${paths[@]}"
           sha256sum "$out"/*.tar.gz > "$out/checksums.txt"
+          git diff --exit-code
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: prompt-offline-inputs-${{ github.sha }}
