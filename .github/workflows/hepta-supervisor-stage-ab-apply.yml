@@ -1,0 +1,182 @@
+name: Apply runtime supervisor Stage A+B repair
+
+on:
+  push:
+    branches:
+      - fix/runtime-supervisor-remediation-20260927
+    paths:
+      - ".github/runtime-supervisor-stage-a.py.bz2.b64"
+      - ".github/runtime-supervisor-stage-b.py.bz2.b64.00"
+      - ".github/runtime-supervisor-stage-b.py.bz2.b64.01"
+      - ".github/workflows/hepta-supervisor-stage-ab-apply.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-supervisor-stage-ab-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: contains(github.event.head_commit.message, 'stage A+B remediation trigger')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out exact trigger
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Reconstruct and apply fail-closed transformations
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          python3 - <<'PY'
+          import base64
+          import bz2
+          import hashlib
+          from pathlib import Path
+
+          stage_a_encoded = Path(
+              ".github/runtime-supervisor-stage-a.py.bz2.b64"
+          ).read_bytes()
+          stage_b_encoded = b"".join(
+              Path(path).read_bytes()
+              for path in (
+                  ".github/runtime-supervisor-stage-b.py.bz2.b64.00",
+                  ".github/runtime-supervisor-stage-b.py.bz2.b64.01",
+              )
+          )
+          stage_a = bz2.decompress(base64.b64decode(stage_a_encoded))
+          stage_b = bz2.decompress(base64.b64decode(stage_b_encoded))
+          expected = {
+              "stage_a": "a925f113ed31468bb5d848ab0b01370dd9d6d87b301f3b7fbf4e2792ab8a1b05",
+              "stage_b": "a870d15e6629c9f417baaa902380eb893b9edb97ef438a2e6a333e4c935a2feb",
+          }
+          actual = {
+              "stage_a": hashlib.sha256(stage_a).hexdigest(),
+              "stage_b": hashlib.sha256(stage_b).hexdigest(),
+          }
+          if actual != expected:
+              raise SystemExit(f"repair payload digest mismatch: {actual}")
+          Path(".github/runtime-supervisor-stage-a.py").write_bytes(stage_a)
+          Path(".github/runtime-supervisor-stage-b.py").write_bytes(stage_b)
+          PY
+          python3 .github/runtime-supervisor-stage-a.py
+          python3 .github/runtime-supervisor-stage-b.py
+          rm .github/runtime-supervisor-stage-a.py
+          rm .github/runtime-supervisor-stage-b.py
+          rm .github/runtime-supervisor-stage-a.py.bz2.b64
+          rm .github/runtime-supervisor-stage-b.py.bz2.b64.00
+          rm .github/runtime-supervisor-stage-b.py.bz2.b64.01
+          rm .github/workflows/hepta-supervisor-stage-a-apply.yml
+          rm .github/workflows/hepta-supervisor-stage-ab-apply.yml
+          git diff --check
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          channel="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$channel" --profile minimal --component rustfmt,clippy
+          echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
+
+      - name: Format only the supervisor package
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-supervisor
+          cargo fmt --package codex-hepta-supervisor -- --check
+
+      - name: Reject unexpected transformed paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import subprocess
+
+          allowed_exact = {
+              ".github/runtime-supervisor-stage-a.py",
+              ".github/runtime-supervisor-stage-a.py.bz2.b64",
+              ".github/runtime-supervisor-stage-b.py.bz2.b64.00",
+              ".github/runtime-supervisor-stage-b.py.bz2.b64.01",
+              ".github/workflows/hepta-supervisor-stage-a-apply.yml",
+              ".github/workflows/hepta-supervisor-stage-ab-apply.yml",
+          }
+          paths = subprocess.check_output(
+              ["git", "status", "--porcelain=v1"], text=True
+          ).splitlines()
+          changed = []
+          for line in paths:
+              path = line[3:]
+              if " -> " in path:
+                  path = path.split(" -> ", 1)[1]
+              changed.append(path)
+          unexpected = [
+              path
+              for path in changed
+              if path not in allowed_exact
+              and not path.startswith("codex-rs/hepta-supervisor/")
+          ]
+          if unexpected:
+              raise SystemExit(f"unexpected transformed paths: {unexpected}")
+          if not any(path.startswith("codex-rs/hepta-supervisor/") for path in changed):
+              raise SystemExit("repair did not change supervisor source")
+          PY
+          git diff --check
+
+      - name: Execute focused lineage and containment tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-supervisor --lib \
+            main_recovery_fault_contains_owned_companion_before_returning
+          cargo test --locked -p codex-hepta-supervisor --lib \
+            restart_lineage::tests
+
+      - name: Execute complete default and production libraries
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-supervisor --lib
+          cargo test --locked -p codex-hepta-supervisor \
+            --features production-authority --lib
+
+      - name: Execute strict default and production lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-supervisor --all-targets -- -D warnings
+          cargo clippy --locked -p codex-hepta-supervisor --all-targets \
+            --features production-authority -- -D warnings
+
+      - name: Commit only the verified repair
+        shell: bash
+        env:
+          BRANCH: fix/runtime-supervisor-remediation-20260927
+        run: |
+          set -euo pipefail
+          remote="$(git ls-remote origin "refs/heads/${BRANCH}" | awk '{print $1}')"
+          test "$remote" = "$GITHUB_SHA"
+          git diff --check
+          test -n "$(git status --porcelain)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A \
+            codex-rs/hepta-supervisor \
+            .github/runtime-supervisor-stage-a.py \
+            .github/runtime-supervisor-stage-a.py.bz2.b64 \
+            .github/runtime-supervisor-stage-b.py.bz2.b64.00 \
+            .github/runtime-supervisor-stage-b.py.bz2.b64.01 \
+            .github/workflows/hepta-supervisor-stage-a-apply.yml \
+            .github/workflows/hepta-supervisor-stage-ab-apply.yml
+          git commit -m "runtime.supervisor: bind restart lineage and companion containment"
+          git push origin "HEAD:${BRANCH}"
