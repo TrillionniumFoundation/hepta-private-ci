@@ -128,15 +128,6 @@ impl PlannerJournalV1 {
         operation_identity_digest: Digest32,
         receipt: &FeasiblePlanReceiptV1,
     ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
-        if !self.entries.iter().any(|entry| {
-            entry.kind == PlannerJournalKindV1::Decision
-                && entry.payload_digest == receipt.receipt_digest()
-        }) {
-            return Err(PlannerJournalError::DecisionNotRecorded);
-        }
-        if self.revoked_digests().contains(&receipt.receipt_digest()) {
-            return Err(PlannerJournalError::RevokedPlan);
-        }
         self.append(
             PlannerJournalKindV1::SelectedPlan,
             operation_identity_digest,
@@ -175,6 +166,30 @@ impl PlannerJournalV1 {
         selected.filter(|digest| !revoked.contains(digest))
     }
 
+    /// One transition validator serves typed selection, raw append and reopen.
+    /// A valid hash chain does not establish valid state-machine history.
+    fn validate_transition(
+        &self,
+        kind: PlannerJournalKindV1,
+        payload_digest: Digest32,
+    ) -> Result<(), PlannerJournalError> {
+        if kind == PlannerJournalKindV1::SelectedPlan {
+            if !self.entries.iter().any(|entry| {
+                entry.kind == PlannerJournalKindV1::Decision
+                    && entry.payload_digest == payload_digest
+            }) {
+                return Err(PlannerJournalError::DecisionNotRecorded);
+            }
+            if self.entries.iter().any(|entry| {
+                entry.kind == PlannerJournalKindV1::Revocation
+                    && entry.payload_digest == payload_digest
+            }) {
+                return Err(PlannerJournalError::RevokedPlan);
+            }
+        }
+        Ok(())
+    }
+
     pub fn append(
         &mut self,
         kind: PlannerJournalKindV1,
@@ -184,6 +199,8 @@ impl PlannerJournalV1 {
         if identity_digest.is_zero() || payload_digest.is_zero() {
             return Err(PlannerJournalError::EmptyDigest);
         }
+        // Check current revocation even for an otherwise idempotent selection.
+        self.validate_transition(kind, payload_digest)?;
         if let Some((existing_kind, existing_payload)) = self.identities.get(&identity_digest) {
             if *existing_kind == kind && *existing_payload == payload_digest {
                 return self
@@ -314,17 +331,9 @@ impl PlannerJournalV1 {
             if journal.identities.contains_key(&identity_digest) {
                 return Err(PlannerJournalError::DuplicateSerializedIdentity);
             }
-            journal
-                .identities
-                .insert(identity_digest, (kind, payload_digest));
-            journal.entries.push(PlannerJournalEntryV1 {
-                sequence,
-                kind,
-                identity_digest,
-                payload_digest,
-                predecessor_entry_digest,
-                entry_digest,
-            });
+            // Replaying through append validates predecessor state as well as
+            // framing. A correctly rehashed illegal history must still reject.
+            journal.append(kind, identity_digest, payload_digest)?;
         }
         Ok(journal)
     }
@@ -392,3 +401,109 @@ fn read_digest(bytes: &[u8], offset: &mut usize) -> Result<Digest32, PlannerJour
 #[cfg(test)]
 #[path = "planner_journal_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+mod transition_tests {
+    use super::*;
+
+    fn digest(value: &[u8]) -> Digest32 {
+        Digest32::of_bytes(value)
+    }
+
+    // Build cryptographically self-consistent bytes without using the writer.
+    // This is intentionally a malformed-history fixture, not a trusted journal.
+    fn encoded_history(kinds: &[PlannerJournalKindV1]) -> Vec<u8> {
+        let mut bytes = MAGIC.to_vec();
+        bytes.extend_from_slice(&(kinds.len() as u32).to_be_bytes());
+        let payload = digest(b"decision");
+        let mut predecessor = Digest32::ZERO;
+        for (index, kind) in kinds.iter().enumerate() {
+            let sequence = index as u64 + 1;
+            let identity = digest(&sequence.to_be_bytes());
+            let entry = digest_entry(sequence, *kind, identity, payload, predecessor);
+            bytes.extend_from_slice(&sequence.to_be_bytes());
+            bytes.push(kind.tag());
+            bytes.extend_from_slice(identity.as_array());
+            bytes.extend_from_slice(payload.as_array());
+            bytes.extend_from_slice(predecessor.as_array());
+            bytes.extend_from_slice(entry.as_array());
+            predecessor = entry;
+        }
+        bytes
+    }
+
+    #[test]
+    fn raw_append_requires_recorded_decision_and_does_not_mutate_on_rejection() {
+        let mut journal = PlannerJournalV1::new();
+        let before = journal.export_bytes();
+        assert_eq!(
+            journal.append(
+                PlannerJournalKindV1::SelectedPlan,
+                digest(b"selection"),
+                digest(b"missing-decision"),
+            ),
+            Err(PlannerJournalError::DecisionNotRecorded)
+        );
+        assert_eq!(journal.export_bytes(), before);
+    }
+
+    #[test]
+    fn raw_append_and_idempotent_replay_cannot_bypass_revocation() {
+        let mut journal = PlannerJournalV1::new();
+        let payload = digest(b"decision");
+        let selection = digest(b"selection");
+        journal
+            .append(PlannerJournalKindV1::Decision, digest(b"record"), payload)
+            .expect("record decision");
+        journal
+            .append(PlannerJournalKindV1::SelectedPlan, selection, payload)
+            .expect("initial selection");
+        journal.revoke(digest(b"revocation"), payload).expect("revoke");
+        let before = journal.export_bytes();
+        for identity in [selection, digest(b"new-selection")] {
+            assert_eq!(
+                journal.append(PlannerJournalKindV1::SelectedPlan, identity, payload),
+                Err(PlannerJournalError::RevokedPlan)
+            );
+        }
+        assert_eq!(journal.export_bytes(), before);
+        assert_eq!(journal.selected_plan_digest(), None);
+    }
+
+    #[test]
+    fn valid_hashes_do_not_admit_selection_before_its_decision() {
+        let bytes = encoded_history(&[
+            PlannerJournalKindV1::SelectedPlan,
+            PlannerJournalKindV1::Decision,
+        ]);
+        assert_eq!(
+            PlannerJournalV1::reopen(&bytes),
+            Err(PlannerJournalError::DecisionNotRecorded)
+        );
+    }
+
+    #[test]
+    fn valid_hashes_do_not_admit_selection_after_revocation() {
+        let bytes = encoded_history(&[
+            PlannerJournalKindV1::Decision,
+            PlannerJournalKindV1::Revocation,
+            PlannerJournalKindV1::SelectedPlan,
+        ]);
+        assert_eq!(
+            PlannerJournalV1::reopen(&bytes),
+            Err(PlannerJournalError::RevokedPlan)
+        );
+    }
+
+    #[test]
+    fn valid_selection_then_revocation_reopens_without_resurrection() {
+        let bytes = encoded_history(&[
+            PlannerJournalKindV1::Decision,
+            PlannerJournalKindV1::SelectedPlan,
+            PlannerJournalKindV1::Revocation,
+        ]);
+        let reopened = PlannerJournalV1::reopen(&bytes).expect("legal history");
+        assert_eq!(reopened.export_bytes(), bytes);
+        assert_eq!(reopened.selected_plan_digest(), None);
+    }
+}
