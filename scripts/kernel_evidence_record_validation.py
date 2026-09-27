@@ -19,7 +19,7 @@ MAX_LOG_BYTES = 64 * 1024 * 1024
 DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 EXPECTED_COMMANDS = {
     "evidence-tests.json": ["bash", "-lc", "cd codex-rs && cargo test -p codex-hepta-evidence"],
-    "agentd-product-test.json": ["bash", "-lc", "cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product"],
+    "agentd-product-test.json": ["bash", "-lc", "cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product --test kernel_evidence_profile"],
     "lane-a-truth.json": ["python3", "scripts/verify_lane_a_foundation.py", "verify"],
     "docs.json": ["python3", "scripts/hepta-docs.py", "verify"],
     "implementation-maps.json": ["python3", "scripts/hepta-implementation-maps.py", "verify"],

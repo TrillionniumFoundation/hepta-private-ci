@@ -2,7 +2,19 @@ name: Kernel evidence qualification
 
 on:
   workflow_call:
+    inputs:
+      base_sha:
+        description: Explicit full base commit; defaults to the source first parent outside PRs
+        required: false
+        type: string
+        default: ''
   workflow_dispatch:
+    inputs:
+      base_sha:
+        description: Explicit full base commit; defaults to the source first parent
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -19,10 +31,30 @@ jobs:
     timeout-minutes: 90
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha || '' }}
       HEPTA_CI_LANE: source-head
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
+      - name: Initialize exact source diagnostics before checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/kernel-evidence/source"
+          mkdir -p "$records"
+          printf 'KERNEL_EVIDENCE_RECORDS=%s\n' "$records" >> "$GITHUB_ENV"
+          python3 - "$records/runner.json" <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          Path(sys.argv[1]).write_text(json.dumps({
+              "phase": "initialized", "qualificationGranted": False,
+              "sourceCommit": os.environ.get("SOURCE_SHA"),
+              "repository": os.environ.get("GITHUB_REPOSITORY"),
+              "runId": os.environ.get("GITHUB_RUN_ID"),
+              "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+              "job": os.environ.get("GITHUB_JOB"),
+          }, indent=2) + "\n", encoding="utf-8")
+          PY
+
       - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -30,13 +62,14 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Initialize exact-source diagnostics
+      - name: Resolve immutable source and base
+        id: candidate
         shell: bash
         run: |
-          set -euo pipefail
-          records="$RUNNER_TEMP/kernel-evidence/source"
-          mkdir -p "$records"
-          printf 'KERNEL_EVIDENCE_RECORDS=%s\n' "$records" >> "$GITHUB_ENV"
+          python3 scripts/kernel_evidence_candidate.py \
+            --source "$SOURCE_SHA" --base "$BASE_SHA" \
+            --diagnostic "$KERNEL_EVIDENCE_RECORDS/candidate-plan.json" \
+            --github-env "$GITHUB_ENV" --github-output "$GITHUB_OUTPUT"
 
       - uses: ./.github/actions/setup-ci
 
@@ -59,13 +92,13 @@ jobs:
             --minimum-tests 1 --output "$KERNEL_EVIDENCE_RECORDS/evidence-tests.json" -- \
             bash -lc 'cd codex-rs && cargo test -p codex-hepta-evidence'
 
-      - name: Test Agentd kernel evidence product
+      - name: Test Agentd kernel evidence product and production profile
         if: always()
         shell: bash
         run: |
           python3 scripts/hepta_ci_exec.py \
             --minimum-tests 1 --output "$KERNEL_EVIDENCE_RECORDS/agentd-product-test.json" -- \
-            bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product'
+            bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product --test kernel_evidence_profile'
 
       - name: Verify Lane-A truth
         if: always()
@@ -91,7 +124,7 @@ jobs:
             --output "$KERNEL_EVIDENCE_RECORDS/implementation-maps.json" -- \
             python3 scripts/hepta-implementation-maps.py verify
 
-      - name: Build exact-source machine-readable status
+      - name: Build exact source machine-readable status
         if: always()
         shell: bash
         run: |
@@ -100,17 +133,17 @@ jobs:
             --kind kernel_evidence_exact_source \
             --output "$KERNEL_EVIDENCE_RECORDS/STATUS.json"
 
-      - name: Upload exact-source diagnostics and receipts
+      - name: Upload exact source diagnostics and receipts
         id: source-artifact
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: kernel-evidence-source-${{ github.event.pull_request.head.sha || github.sha }}
+          name: kernel-evidence-source-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/kernel-evidence/source/
           if-no-files-found: error
           retention-days: 90
 
-      - name: Record exact-source artifact digest
+      - name: Record exact source artifact digest
         if: always() && steps.source-artifact.outcome == 'success'
         env:
           ARTIFACT_ID: ${{ steps.source-artifact.outputs.artifact-id }}
@@ -127,47 +160,67 @@ jobs:
             --artifact-digest "$ARTIFACT_DIGEST" \
             --require-qualified
 
-      - name: Upload exact-source canonical status
+      - name: Upload exact source canonical status
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: kernel-evidence-source-status-${{ github.event.pull_request.head.sha || github.sha }}
+          name: kernel-evidence-source-status-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/kernel-evidence/source/STATUS.with-artifact.json
           if-no-files-found: error
           retention-days: 90
 
   merge-candidate:
     name: Kernel evidence deterministic merge
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
-      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha || '' }}
       HEPTA_CI_LANE: base-merge
     steps:
-      - name: Check out source
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Initialize deterministic-merge diagnostics
+      - name: Initialize deterministic merge diagnostics before checkout
         shell: bash
         run: |
           set -euo pipefail
           records="$RUNNER_TEMP/kernel-evidence/merge"
           mkdir -p "$records"
           printf 'KERNEL_EVIDENCE_RECORDS=%s\n' "$records" >> "$GITHUB_ENV"
+          python3 - "$records/runner.json" <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          Path(sys.argv[1]).write_text(json.dumps({
+              "phase": "initialized", "qualificationGranted": False,
+              "sourceCommit": os.environ.get("SOURCE_SHA"),
+              "repository": os.environ.get("GITHUB_REPOSITORY"),
+              "runId": os.environ.get("GITHUB_RUN_ID"),
+              "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+              "job": os.environ.get("GITHUB_JOB"),
+          }, indent=2) + "\n", encoding="utf-8")
+          PY
+
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Resolve immutable source and base
+        id: candidate
+        shell: bash
+        run: |
+          python3 scripts/kernel_evidence_candidate.py \
+            --source "$SOURCE_SHA" --base "$BASE_SHA" \
+            --diagnostic "$KERNEL_EVIDENCE_RECORDS/candidate-plan.json" \
+            --github-env "$GITHUB_ENV" --github-output "$GITHUB_OUTPUT"
 
       - name: Construct deterministic synthetic merge
         id: merge
         uses: ./.github/actions/hepta-synthetic-merge
         with:
-          base-sha: ${{ github.event.pull_request.base.sha }}
-          source-sha: ${{ github.event.pull_request.head.sha }}
-          pr-number: ${{ github.event.pull_request.number }}
+          base-sha: ${{ steps.candidate.outputs.base-sha }}
+          source-sha: ${{ steps.candidate.outputs.source-sha }}
+          pr-number: ${{ github.event.pull_request.number || '0' }}
           author-name: Hepta kernel evidence CI
           author-email: hepta-kernel-evidence-ci@users.noreply.github.com
           message: Synthetic kernel evidence merge
@@ -197,13 +250,13 @@ jobs:
             --minimum-tests 1 --output "$KERNEL_EVIDENCE_RECORDS/evidence-tests.json" -- \
             bash -lc 'cd codex-rs && cargo test -p codex-hepta-evidence'
 
-      - name: Test Agentd kernel evidence product
+      - name: Test Agentd kernel evidence product and production profile
         if: always()
         shell: bash
         run: |
           python3 scripts/hepta_ci_exec.py \
             --minimum-tests 1 --output "$KERNEL_EVIDENCE_RECORDS/agentd-product-test.json" -- \
-            bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product'
+            bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product --test kernel_evidence_profile'
 
       - name: Verify Lane-A truth
         if: always()
@@ -229,7 +282,7 @@ jobs:
             --output "$KERNEL_EVIDENCE_RECORDS/implementation-maps.json" -- \
             python3 scripts/hepta-implementation-maps.py verify
 
-      - name: Build deterministic-merge machine-readable status
+      - name: Build deterministic merge machine-readable status
         if: always()
         shell: bash
         run: |
@@ -238,17 +291,17 @@ jobs:
             --kind kernel_evidence_synthetic_merge \
             --output "$KERNEL_EVIDENCE_RECORDS/STATUS.json"
 
-      - name: Upload deterministic-merge diagnostics and receipts
+      - name: Upload deterministic merge diagnostics and receipts
         id: merge-artifact
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: kernel-evidence-merge-${{ steps.merge.outputs.sha }}
+          name: kernel-evidence-merge-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/kernel-evidence/merge/
           if-no-files-found: error
           retention-days: 90
 
-      - name: Record deterministic-merge artifact digest
+      - name: Record deterministic merge artifact digest
         if: always() && steps.merge-artifact.outcome == 'success'
         env:
           ARTIFACT_ID: ${{ steps.merge-artifact.outputs.artifact-id }}
@@ -265,11 +318,11 @@ jobs:
             --artifact-digest "$ARTIFACT_DIGEST" \
             --require-qualified
 
-      - name: Upload deterministic-merge canonical status
+      - name: Upload deterministic merge canonical status
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: kernel-evidence-merge-status-${{ steps.merge.outputs.sha }}
+          name: kernel-evidence-merge-status-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/kernel-evidence/merge/STATUS.with-artifact.json
           if-no-files-found: error
           retention-days: 90
@@ -281,17 +334,12 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Require every applicable qualification lane
+      - name: Require both qualification lanes for every supported event
         env:
-          EVENT_NAME: ${{ github.event_name }}
           SOURCE_RESULT: ${{ needs.source-head.result }}
           MERGE_RESULT: ${{ needs.merge-candidate.result }}
         shell: bash
         run: |
           set -euo pipefail
           test "$SOURCE_RESULT" = success
-          if [ "$EVENT_NAME" = pull_request ]; then
-            test "$MERGE_RESULT" = success
-          else
-            test "$MERGE_RESULT" = skipped
-          fi
+          test "$MERGE_RESULT" = success

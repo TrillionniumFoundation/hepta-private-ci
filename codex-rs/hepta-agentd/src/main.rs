@@ -9,6 +9,8 @@ use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
 use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
+mod evidence_cli_profile;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum EvidenceModeArg {
     Development,
@@ -221,8 +223,14 @@ fn main() -> anyhow::Result<()> {
                     evidence_frontier_signer_trust,
                 ) {
                     (Some(descriptor), Some(signer_trust)) => {
+                        let descriptor = PathBuf::from(descriptor);
+                        evidence_cli_profile::require_production_descriptor(
+                            &config.identity().home_root,
+                            &descriptor,
+                        )
+                        .map_err(anyhow::Error::msg)?;
                         config = config.with_evidence_recovery_frontier_files(
-                            descriptor.into(),
+                            descriptor,
                             signer_trust.into(),
                         );
                     }
