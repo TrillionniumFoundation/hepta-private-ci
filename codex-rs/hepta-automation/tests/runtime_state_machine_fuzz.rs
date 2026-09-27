@@ -186,8 +186,7 @@ fn execute(seed: u64) -> Result<CircuitRuntimeOutcomeV1, NeuralCircuitRuntimeErr
     .expect("event");
     let mut decision = FuzzDecision {
         seed: mutated,
-        feedbacks_remaining: u16::try_from((mutated >> 12) % 7)
-            .expect("bounded feedback plan"),
+        feedbacks_remaining: u16::try_from((mutated >> 12) % 7).expect("bounded feedback plan"),
         calls: 0,
     };
     let mut organ = FuzzOrgan { seed: mutated };

@@ -333,12 +333,7 @@ fn recorded_choice(
 ) -> Result<CircuitRecordedChoiceV1, NeuralCircuitRuntimeError> {
     let receipt_digest = digest_value(
         b"hepta.neural-circuit.recorded-choice.v1\0",
-        &(
-            request,
-            kind,
-            &selected_node,
-            &source_decision_digest,
-        ),
+        &(request, kind, &selected_node, &source_decision_digest),
     )?;
     Ok(CircuitRecordedChoiceV1 {
         activation: request.activation,
@@ -357,10 +352,8 @@ fn runtime_trace(
     profile: &CircuitRuntimeProfileV1,
     accumulator: RuntimeAccumulator,
 ) -> Result<CircuitRuntimeTraceV1, NeuralCircuitRuntimeError> {
-    let runtime_profile_digest = digest_value(
-        b"hepta.neural-circuit.runtime-profile.v1\0",
-        profile,
-    )?;
+    let runtime_profile_digest =
+        digest_value(b"hepta.neural-circuit.runtime-profile.v1\0", profile)?;
     let trace_digest = digest_value(
         b"hepta.neural-circuit.runtime-trace.v1\0",
         &(

@@ -125,9 +125,7 @@ where
                 tick @ AutomationTick::RetryScheduled { .. } => {
                     consecutive_retries = consecutive_retries.saturating_add(1);
                     ticks.push(tick);
-                    if consecutive_retries
-                        >= policy.max_consecutive_pre_admission_failures
-                    {
+                    if consecutive_retries >= policy.max_consecutive_pre_admission_failures {
                         return Ok(AutomationBatchReport {
                             ticks,
                             stop_reason: AutomationBatchStopReason::RetryBudgetExhausted,

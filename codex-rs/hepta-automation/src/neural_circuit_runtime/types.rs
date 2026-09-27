@@ -2,10 +2,10 @@ use codex_hepta_contracts::Sha256Digest;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::TaskFlowError;
 use super::runtime::digest_value;
 use super::runtime::validate_digest;
 use super::runtime::validate_text;
+use crate::TaskFlowError;
 
 pub const NEURAL_CIRCUIT_RUNTIME_SCHEMA_VERSION: u32 = 1;
 const MAX_RUNTIME_STEPS: u32 = 4_096;

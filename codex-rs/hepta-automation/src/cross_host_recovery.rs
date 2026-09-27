@@ -163,10 +163,7 @@ impl AutomationCrossHostRecoveryManifestV1 {
 }
 
 fn validate_host_id(value: &str) -> Result<(), AutomationError> {
-    if value.is_empty()
-        || value.len() > MAX_HOST_ID_BYTES
-        || value.chars().any(char::is_control)
-    {
+    if value.is_empty() || value.len() > MAX_HOST_ID_BYTES || value.chars().any(char::is_control) {
         return Err(AutomationError::Invalid);
     }
     Ok(())
@@ -250,10 +247,7 @@ mod tests {
         let mut manifest = manifest();
         manifest.owner_agent_id = "not-an-agent-id".to_string();
         manifest.manifest_digest = manifest.compute_digest().expect("recomputed digest");
-        assert!(matches!(
-            manifest.validate(),
-            Err(AutomationError::Corrupt)
-        ));
+        assert!(matches!(manifest.validate(), Err(AutomationError::Corrupt)));
     }
 
     #[test]

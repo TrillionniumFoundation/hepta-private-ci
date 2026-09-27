@@ -951,12 +951,9 @@ mod tests {
             &payload_digest,
         )
         .expect("schema-v1 provider intent");
-        let expected = ProviderEffectKey::for_operation(
-            "provider/fixture-v1",
-            "legacy-run",
-            "legacy-step",
-        )
-        .expect("legacy provider key");
+        let expected =
+            ProviderEffectKey::for_operation("provider/fixture-v1", "legacy-run", "legacy-step")
+                .expect("legacy provider key");
         let replacement = ProviderEffectKey::for_logical_effect(
             "provider:fixture",
             "taskflow:legacy-run:legacy-step",
@@ -969,13 +966,15 @@ mod tests {
                 .expect("NotFound remains quarantined"),
             AuthorizedProviderEffectLookup::Unresolved
         );
-        assert!(agentd_schema_v1_provider_lookup(
-            &provider_intent,
-            ProviderEffectLookup::Conflict {
-                observed_payload_sha256: Some(Sha256Digest::for_bytes(b"different-payload")),
-            },
-        )
-        .is_err());
+        assert!(
+            agentd_schema_v1_provider_lookup(
+                &provider_intent,
+                ProviderEffectLookup::Conflict {
+                    observed_payload_sha256: Some(Sha256Digest::for_bytes(b"different-payload")),
+                },
+            )
+            .is_err()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

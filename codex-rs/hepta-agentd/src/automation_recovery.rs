@@ -90,11 +90,8 @@ pub(crate) async fn reconcile_batch(
     }
     let uncertain_candidates = store.uncertain_dispatches(limit).await?;
     let pending_candidates = store.pending_occurrence_work(limit).await?;
-    let (uncertain_slots, pending_slots) = recovery_slot_allocation(
-        limit,
-        uncertain_candidates.len(),
-        pending_candidates.len(),
-    );
+    let (uncertain_slots, pending_slots) =
+        recovery_slot_allocation(limit, uncertain_candidates.len(), pending_candidates.len());
 
     let mut processed = 0;
     for dispatch in uncertain_candidates.into_iter().take(uncertain_slots) {

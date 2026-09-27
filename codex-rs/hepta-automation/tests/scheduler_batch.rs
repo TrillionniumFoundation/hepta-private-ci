@@ -142,10 +142,7 @@ async fn bounded_batch_drains_only_its_admission_budget() {
         .await
         .expect("second batch");
     assert_eq!(second.ticks.len(), 3);
-    assert!(matches!(
-        second.ticks.last(),
-        Some(AutomationTick::Idle)
-    ));
+    assert!(matches!(second.ticks.last(), Some(AutomationTick::Idle)));
     assert_eq!(second.stop_reason, AutomationBatchStopReason::Idle);
 }
 

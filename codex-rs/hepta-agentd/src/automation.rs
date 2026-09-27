@@ -310,8 +310,7 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
         {
             Ok(_) => recovery_transient_budget.reset(),
             Err(error) => match classify_recovery_error(&error) {
-                AutomationFailureDisposition::Fence
-                | AutomationFailureDisposition::FailStop => {
+                AutomationFailureDisposition::Fence | AutomationFailureDisposition::FailStop => {
                     return stop_after_recovery_error(error, &state, &cancellation).await;
                 }
                 AutomationFailureDisposition::Reconcile
@@ -381,9 +380,7 @@ fn classify_recovery_error(error: &AgentdError) -> AutomationFailureDisposition 
     match error {
         AgentdError::GenerationFenced(_) => AutomationFailureDisposition::Fence,
         AgentdError::Automation(error) => classify_automation_error(error),
-        AgentdError::Io(_) | AgentdError::Overloaded { .. } => {
-            AutomationFailureDisposition::Retry
-        }
+        AgentdError::Io(_) | AgentdError::Overloaded { .. } => AutomationFailureDisposition::Retry,
         AgentdError::Protocol(message) if transient_recovery_protocol_error(message) => {
             AutomationFailureDisposition::Retry
         }
@@ -619,9 +616,7 @@ mod tests {
             );
         }
         assert_eq!(
-            classify_recovery_error(&AgentdError::Automation(
-                AutomationError::DispatchUnknown
-            )),
+            classify_recovery_error(&AgentdError::Automation(AutomationError::DispatchUnknown)),
             AutomationFailureDisposition::Reconcile
         );
         assert_eq!(
@@ -631,15 +626,11 @@ mod tests {
             AutomationFailureDisposition::Fence
         );
         assert_eq!(
-            classify_recovery_error(&AgentdError::Automation(
-                AutomationError::AccessDenied
-            )),
+            classify_recovery_error(&AgentdError::Automation(AutomationError::AccessDenied)),
             AutomationFailureDisposition::Fence
         );
         assert_eq!(
-            classify_recovery_error(&AgentdError::Automation(
-                AutomationError::TimerFenced
-            )),
+            classify_recovery_error(&AgentdError::Automation(AutomationError::TimerFenced)),
             AutomationFailureDisposition::Fence
         );
         assert_eq!(

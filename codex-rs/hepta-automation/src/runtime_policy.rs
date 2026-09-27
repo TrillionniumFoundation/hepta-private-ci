@@ -91,8 +91,7 @@ impl AutomationRuntimePolicyV1 {
         if !(1..=MAX_CYCLE_BUDGET).contains(&self.recovery_budget_per_cycle)
             || !(1..=MAX_CYCLE_BUDGET).contains(&self.admission_budget_per_cycle)
             || self.max_provider_in_flight != 1
-            || !(1..=MAX_RETRY_FAILURES)
-                .contains(&self.max_consecutive_pre_admission_failures)
+            || !(1..=MAX_RETRY_FAILURES).contains(&self.max_consecutive_pre_admission_failures)
             || self.base_retry_backoff_ms == 0
             || self.max_retry_backoff_ms < self.base_retry_backoff_ms
         {
@@ -113,9 +112,7 @@ impl AutomationRuntimePolicyV1 {
 
 /// Classify one owner error without weakening its durable semantics.
 #[must_use]
-pub const fn classify_automation_error(
-    error: &AutomationError,
-) -> AutomationFailureDisposition {
+pub const fn classify_automation_error(error: &AutomationError) -> AutomationFailureDisposition {
     match error {
         AutomationError::AccessDenied | AutomationError::TimerFenced => {
             AutomationFailureDisposition::Fence
