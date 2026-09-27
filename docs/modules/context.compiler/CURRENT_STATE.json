@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "module": "context.compiler",
+  "integrationBranch": "codex/context-compiler-full-closure-review-20260927",
+  "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
+  "runtimeSourceAnchor": "0acd6e0c9889e67beeb25e1b1885de6807daa3ca",
+  "runtimeSourceTree": "10942d07697d1d18f9ee3a86041f4ecf110657fb",
+  "maturity": {
+    "sourceExists": true,
+    "compiledModuleReachability": "partial",
+    "productCallPath": "partial",
+    "exactHeadExecution": "unverified",
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  },
+  "status": {
+    "coreImplementation": "complete",
+    "productComposition": "partial",
+    "v2ProviderClosure": "incomplete",
+    "currentHeadQualification": "absent"
+  },
+  "implementedThisFollowup": [
+    "Responses context placement is checked in the actual exact-body observer before the host callback: one complete developer/input_text string, no metadata-only, wrong-role, schema-slot, duplicate-key, duplicate-occurrence, or concatenated-text acceptance.",
+    "The observer reserves the exact attempt and request digest before await. Concurrent entry, cancellation during proof, poisoned state, and indeterminate/abandoned terminal observations do not re-arm dispatch.",
+    "Exclusive attachment expiry is checked both before and after expensive host preparation. A post-preparation expiry refuses transport and leaves durable reconciliation to the existing owner.",
+    "Nineteen Rust regression functions are present and registered, including 256 generated Unicode/control-string cases. Their execution is not asserted.",
+    "Read-only source-head and deterministic synthetic-merge candidate tooling rejects dirty/substituted source, aliases, non-commit objects, duplicate or reordered parents, and source self-certification."
+  ],
+  "sourceBindings": [
+    {
+      "path": "codex-rs/codex-api/src/context_slot.rs",
+      "symbol": "verify_responses_developer_context",
+      "moduleRoot": "codex-rs/codex-api/src/lib.rs",
+      "moduleDeclaration": "mod context_slot;",
+      "productCaller": "codex-rs/ext/hepta-prompt/src/exact_body.rs"
+    },
+    {
+      "path": "codex-rs/ext/hepta-prompt/src/exact_body.rs",
+      "symbol": "begin_body",
+      "moduleRoot": "codex-rs/ext/hepta-prompt/src/lib.rs",
+      "moduleDeclaration": "mod exact_body;",
+      "productCaller": "codex-rs/ext/hepta-prompt/src/exact_body.rs"
+    }
+  ],
+  "dormantSource": [
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/context_authority.rs",
+      "reason": "Registry-owned V3 authority exists as a file but is not yet registered by the crate root at the runtime source anchor."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_product_v3.rs",
+      "reason": "V3 product materialization is not yet the current compiled product path."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_product_v3.rs",
+      "reason": "The active Agentd path still uses prompt_runtime plus exact_context_delivery; this file is not counted as active delivery."
+    }
+  ],
+  "knownOpenItems": [
+    "Complete and compile direct V3 authority/product integration and default-off legacy gating on this branch; dormant files and migration scripts are not implementation evidence.",
+    "Replace provisional product-owned admission records with independently controlled current registry/authority verification.",
+    "Provision and independently qualify immutable tokenizer binary, interpreter/runtime, vocabulary, normalization and provider/model interpretation; move stdin I/O inside the tokenizer timeout and close artifact replacement races.",
+    "Revalidate revocation after tokenization at the durable send-authorization linearization point. The new expiry guard does not close the registry revocation race.",
+    "Complete crash/reopen recovery of exact preparation/attempt evidence and independent late-terminal reconciliation; preserve nonterminal Indeterminate history and handle uncertain fsync with fencing.",
+    "Bind terminal acknowledgement to exact attempt identity before permitting reuse of the turn observer; an identity-free terminal notification is not independent reconciliation.",
+    "Complete raw-content Debug/error redaction across all holders and qualify typed slots beyond the current developer-only profile.",
+    "Execute all native regressions, full affected product tests, strict lint, formatting, dependency and source/document checks on the final source and synthetic-merge objects.",
+    "Measure named-host p50/p95/p99, allocation and peak memory, concurrency, cold/warm tokenizer and revocation races; no target-host performance is claimed.",
+    "Obtain independent security acceptance and operator-controlled activation/release; repository changes do not grant these authorities."
+  ],
+  "designReferences": [
+    {
+      "path": "docs/modules/context.compiler/design-baseline/TECHNICAL.md",
+      "blobSha": "ffe234853d9be0666ce1980607227a4b1f05997a"
+    },
+    {
+      "path": "docs/modules/context.compiler/design-baseline/IMPLEMENTATION_MAP.json",
+      "blobSha": "ccd04f04efde519b7deaf020e49d631dc09ffdf2"
+    },
+    {
+      "path": "docs/modules/context.compiler/design-baseline/context.compiler.md",
+      "blobSha": "4cbb4f33e5ab1984ca851f3dcbb3c1c22b361f15"
+    },
+    {
+      "path": "docs/modules/context.compiler/design-baseline/CURRENT_PRODUCT_PATH.md",
+      "blobSha": "3e0574772391b71b247c25514507826860543a83"
+    },
+    {
+      "path": "docs/modules/context.compiler/design-baseline/MODULE_MANIFEST.json",
+      "blobSha": "938477695f05fbf08818e3387f73964c1442c04a"
+    }
+  ],
+  "qualification": {
+    "workflow": ".github/workflows/context-compiler-qualification.yml",
+    "requiredLanes": [
+      "source-head",
+      "synthetic-merge"
+    ],
+    "localPythonTestsPassed": 20,
+    "localPythonScope": "Candidate identity and execution-summary parser only; not native Rust or provider qualification.",
+    "nativeRegressionsAdded": 19,
+    "nativeRegressionsExecutedLocally": false,
+    "targetHostQualified": false
+  }
+}

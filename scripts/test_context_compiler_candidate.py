@@ -101,6 +101,14 @@ class CandidateTests(unittest.TestCase):
             with self.subTest(field=field), self.assertRaises(ValueError):
                 candidate.verify(self.root, record)
 
+        record = candidate.prepare(self.root, self.source, self.base, "synthetic-merge")
+        substituted = self.git("commit-tree", record["testedTreeSha"], "-p", self.base,
+                               "-p", self.source, "-m", "substituted metadata")
+        self.git("checkout", "-q", "--detach", substituted)
+        record["testedHeadSha"] = substituted
+        with self.assertRaises(ValueError):
+            candidate.verify(self.root, record)
+
     def test_source_record_cannot_self_assert_acceptance(self):
         for field in ["executionPassed", "independentAcceptance"]:
             record = self.source_record()

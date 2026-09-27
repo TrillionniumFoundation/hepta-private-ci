@@ -118,6 +118,11 @@ def verify(root: Path, record: dict[str, Any]) -> None:
         tree = git(root, "merge-tree", "--write-tree", *parents).splitlines()[0]
         if tree != record["testedTreeSha"]:
             raise ValueError("candidate is not the recomputed merge tree")
+        expected_commit = git(root, "commit-tree", tree, "-p", record["baseSha"],
+                              "-p", record["sourceHeadSha"],
+                              stdin=f"context.compiler qualification\nbase={record['baseSha']}\nsource={record['sourceHeadSha']}\n")
+        if expected_commit != record["testedHeadSha"]:
+            raise ValueError("candidate merge metadata is not deterministic")
     else:
         raise ValueError("unsupported candidate lane")
 

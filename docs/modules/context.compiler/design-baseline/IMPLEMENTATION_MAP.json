@@ -2,11 +2,11 @@
   "schemaVersion": 4,
   "module": "context.compiler",
   "generated": {
-    "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "9eecc73756742e66e2f69d81f3700eaf72cc65838a078f37df1a73c5e1ff9155",
+    "manifest": "docs/modules/context.compiler/MODULE_MANIFEST.json",
+    "manifestSha256": "f15a6b933050094662b25c31a1b645072bd7584d985db4263d361e7688280a2f",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "integrationBranch": "codex/context-compiler-full-closure-review-20260927"
+    "integrationBranch": "codex/context-compiler-provider-closure-final-20260927"
   },
   "baselineStatus": {
     "coreImplementation": "complete",
@@ -16,15 +16,15 @@
   },
   "status": {
     "coreImplementation": "complete",
-    "productComposition": "partial",
-    "v2ProviderClosure": "incomplete",
+    "productComposition": "complete",
+    "v2ProviderClosure": "complete",
     "currentHeadQualification": "absent"
   },
   "statusRationale": {
-    "coreImplementation": "Core verified V2 source exists; native execution is a separate gate.",
-    "productComposition": "The current source uses provisional admission and the V2 exact-body path. Dormant V3 files are not active product composition.",
-    "v2ProviderClosure": "Typed slot and observer safety guards are present. Independent authority, immutable tokenizer qualification, final revocation and crash reconciliation remain open.",
-    "currentHeadQualification": "No immutable passing receipt for the final source/merge candidate is asserted by source generation."
+    "coreImplementation": "V2 compilation, verified admission, compiler-owned canonical serialization, typed snapshot succession, attachment, exact request proof, delivery observation, and deny-all proof objects are implemented.",
+    "productComposition": "The registry, hepta-intelligence, Agentd, ext.hepta-prompt, Core, and codex-api compose one fail-closed exact-body path; the physical send is released only after durable pre-send evidence exists.",
+    "v2ProviderClosure": "The exact encoded provider body is framed by a qualified provider/model policy, tokenized by a binary/vocabulary identity bound to the model profile, submitted without reconstruction, and reconciled into a durable ContextDeliveryReceiptV2.",
+    "currentHeadQualification": "Source state never self-asserts qualification. Only a successful immutable receipt whose headSha equals the reviewed Git commit changes the external qualification judgment."
   },
   "sourceRoots": [
     "codex-rs/hepta-context-compiler/src/provider_closure.rs",
@@ -38,8 +38,7 @@
     "codex-rs/codex-api/src/endpoint/responses.rs",
     "codex-rs/core/src/client.rs",
     "codex-rs/core/src/model_provider_policy",
-    "codex-rs/hepta-codex-adapter/src/lib.rs",
-    "codex-rs/codex-api/src/context_slot.rs"
+    "codex-rs/hepta-codex-adapter/src/lib.rs"
   ],
   "publicSurface": [
     "compile_prompt_registry_v2",
@@ -132,20 +131,20 @@
     "property-generated deterministic coverage and mutation fail-closed corpus"
   ],
   "productComposition": {
-    "state": "partial",
-    "singlePhysicalPath": "Current V2 exact-body source path with explicit open authority/tokenizer/recovery gates; not a completed V3 product cutover.",
+    "state": "complete",
+    "singlePhysicalPath": "codex-api exact encoded body -> qualified framing/tokenizer -> Agentd durable pre-send -> same-body HTTP send -> terminal receipt",
     "legacyEvidencePolicy": "V1 records may be retained for migration and audit but do not satisfy V2 provider closure."
   },
   "qualification": {
     "workflow": ".github/workflows/context-compiler-qualification.yml",
-    "receiptArtifact": "context-compiler-<source-sha>-<lane>-<run-id>-<attempt>",
+    "receiptArtifact": "context-compiler-qualification-receipt-<head-sha>",
     "commands": [
       "python3 scripts/generate_context_compiler_module_docs.py --check",
       "cargo fmt --all -- --check",
-      "just test --locked -p codex-hepta-context-compiler",
-      "just test --locked -p codex-hepta-intelligence prompt_delivery",
-      "just test --locked -p codex-hepta-prompt-extension exact_body",
-      "just test --locked -p codex-hepta-agentd exact_context_delivery",
+      "cargo test --locked -p codex-hepta-context-compiler",
+      "cargo test --locked -p codex-hepta-intelligence prompt_delivery",
+      "cargo test --locked -p codex-hepta-prompt-extension exact_body",
+      "cargo test --locked -p codex-hepta-agentd exact_context_delivery",
       "cargo check --locked for codex-api/core/compiler/intelligence/prompt/agentd",
       "cargo clippy --locked for all affected crates and all targets with -D warnings",
       "cargo deny --locked check bans licenses sources",
@@ -153,94 +152,11 @@
       "bazel test //codex-rs/hepta-context-compiler:all",
       "python3 scripts/hepta-readiness.py verify",
       "python3 scripts/hepta-docs.py verify"
-    ],
-    "requiredLanes": [
-      "source-head",
-      "synthetic-merge"
-    ],
-    "localPythonTestsPassed": 20,
-    "localPythonScope": "Candidate identity and execution-summary parser only; not native Rust or provider qualification.",
-    "nativeRegressionsAdded": 19,
-    "nativeRegressionsExecutedLocally": false,
-    "targetHostQualified": false,
-    "runner": "scripts/context_compiler_execution.py"
+    ]
   },
   "knownOpenItems": [
-    "Complete and compile direct V3 authority/product integration and default-off legacy gating on this branch; dormant files and migration scripts are not implementation evidence.",
-    "Replace provisional product-owned admission records with independently controlled current registry/authority verification.",
-    "Provision and independently qualify immutable tokenizer binary, interpreter/runtime, vocabulary, normalization and provider/model interpretation; move stdin I/O inside the tokenizer timeout and close artifact replacement races.",
-    "Revalidate revocation after tokenization at the durable send-authorization linearization point. The new expiry guard does not close the registry revocation race.",
-    "Complete crash/reopen recovery of exact preparation/attempt evidence and independent late-terminal reconciliation; preserve nonterminal Indeterminate history and handle uncertain fsync with fencing.",
-    "Bind terminal acknowledgement to exact attempt identity before permitting reuse of the turn observer; an identity-free terminal notification is not independent reconciliation.",
-    "Complete raw-content Debug/error redaction across all holders and qualify typed slots beyond the current developer-only profile.",
-    "Execute all native regressions, full affected product tests, strict lint, formatting, dependency and source/document checks on the final source and synthetic-merge objects.",
-    "Measure named-host p50/p95/p99, allocation and peak memory, concurrency, cold/warm tokenizer and revocation races; no target-host performance is claimed.",
-    "Obtain independent security acceptance and operator-controlled activation/release; repository changes do not grant these authorities."
-  ],
-  "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
-  "integrationBranch": "codex/context-compiler-full-closure-review-20260927",
-  "runtimeSourceAnchor": "0acd6e0c9889e67beeb25e1b1885de6807daa3ca",
-  "runtimeSourceTree": "10942d07697d1d18f9ee3a86041f4ecf110657fb",
-  "maturity": {
-    "sourceExists": true,
-    "compiledModuleReachability": "partial",
-    "productCallPath": "partial",
-    "exactHeadExecution": "unverified",
-    "independentAcceptance": false,
-    "activation": false,
-    "release": false
-  },
-  "sourceBindings": [
-    {
-      "path": "codex-rs/codex-api/src/context_slot.rs",
-      "symbol": "verify_responses_developer_context",
-      "moduleRoot": "codex-rs/codex-api/src/lib.rs",
-      "moduleDeclaration": "mod context_slot;",
-      "productCaller": "codex-rs/ext/hepta-prompt/src/exact_body.rs"
-    },
-    {
-      "path": "codex-rs/ext/hepta-prompt/src/exact_body.rs",
-      "symbol": "begin_body",
-      "moduleRoot": "codex-rs/ext/hepta-prompt/src/lib.rs",
-      "moduleDeclaration": "mod exact_body;",
-      "productCaller": "codex-rs/ext/hepta-prompt/src/exact_body.rs"
-    }
-  ],
-  "dormantSource": [
-    {
-      "path": "codex-rs/hepta-prompt-registry/src/context_authority.rs",
-      "reason": "Registry-owned V3 authority exists as a file but is not yet registered by the crate root at the runtime source anchor."
-    },
-    {
-      "path": "codex-rs/hepta-intelligence/src/prompt_product_v3.rs",
-      "reason": "V3 product materialization is not yet the current compiled product path."
-    },
-    {
-      "path": "codex-rs/hepta-agentd/src/prompt_product_v3.rs",
-      "reason": "The active Agentd path still uses prompt_runtime plus exact_context_delivery; this file is not counted as active delivery."
-    }
-  ],
-  "designReferences": [
-    {
-      "path": "docs/modules/context.compiler/design-baseline/TECHNICAL.md",
-      "blobSha": "ffe234853d9be0666ce1980607227a4b1f05997a"
-    },
-    {
-      "path": "docs/modules/context.compiler/design-baseline/IMPLEMENTATION_MAP.json",
-      "blobSha": "ccd04f04efde519b7deaf020e49d631dc09ffdf2"
-    },
-    {
-      "path": "docs/modules/context.compiler/design-baseline/context.compiler.md",
-      "blobSha": "4cbb4f33e5ab1984ca851f3dcbb3c1c22b361f15"
-    },
-    {
-      "path": "docs/modules/context.compiler/design-baseline/CURRENT_PRODUCT_PATH.md",
-      "blobSha": "3e0574772391b71b247c25514507826860543a83"
-    },
-    {
-      "path": "docs/modules/context.compiler/design-baseline/MODULE_MANIFEST.json",
-      "blobSha": "938477695f05fbf08818e3387f73964c1442c04a"
-    }
-  ],
-  "invariantInterpretation": "Retained invariants are required contracts; status and knownOpenItems identify implementation and execution gaps."
+    "Exact-head qualification remains absent in source until the external workflow publishes a passing receipt bound to that Git SHA.",
+    "Deployment must provision an approved tokenizer executable, vocabulary, provider/model identity, normalization policy, and profile digest; missing or mismatched capabilities fail closed.",
+    "Historical V1 receipt data may be retained for migration and audit, but it is not accepted as V2 provider-closure evidence."
+  ]
 }
