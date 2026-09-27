@@ -4,8 +4,7 @@ use codex_hepta_learning_ledger::{AuthenticatedPrincipalV1, LearningEvidenceRole
     LearningEvidenceTrustV1, TrustedLearningSignerV1};
 use ed25519_dalek::SigningKey;
 
-#[path = "canonical_fixture.rs"]
-mod fixture;
+use crate::canonical::fixture;
 use fixture::{digest, id, FixtureSource};
 
 fn case() -> (tempfile::TempDir, DurablePromptRegistry, EnumeratedPromptCandidatesV1, Arc<FixtureSource>) {

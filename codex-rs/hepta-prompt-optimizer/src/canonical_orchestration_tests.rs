@@ -1,8 +1,7 @@
 use super::*;
 use std::sync::Arc;
 
-#[path = "canonical_fixture.rs"]
-mod fixture;
+use super::fixture;
 
 #[test]
 fn orchestrator_reaches_verified_selection_with_real_owner_evidence() {

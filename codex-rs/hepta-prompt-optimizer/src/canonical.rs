@@ -11,5 +11,9 @@ mod body;
 pub use body::*;
 
 #[cfg(test)]
+#[path = "canonical_fixture.rs"]
+mod fixture;
+
+#[cfg(test)]
 #[path = "canonical_orchestration_tests.rs"]
 mod orchestration_tests;
