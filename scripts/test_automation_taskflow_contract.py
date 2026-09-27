@@ -18,6 +18,10 @@ class AutomationTaskFlowContractTests(unittest.TestCase):
         self.assertEqual(result["storeSchemaVersion"], 19)
         self.assertEqual(result["migrationVersions"], [17, 18, 19])
         self.assertTrue(result["repositoryControlledClosure"])
+        self.assertTrue(result["boundedRecoveryFairnessVerified"])
+        self.assertTrue(result["canonicalCircuitIngressVerified"])
+        self.assertTrue(result["runtimeProfileReceiptBindingVerified"])
+        self.assertTrue(result["crossHostOwnerBindingVerified"])
         self.assertTrue(result["externalReleaseGatesRemainFalse"])
 
     def test_failure_is_explicit(self) -> None:
