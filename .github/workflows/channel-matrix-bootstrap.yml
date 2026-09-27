@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   export:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     timeout-minutes: 45
     steps:
       - name: Checkout exact branch head
@@ -131,7 +131,7 @@ jobs:
             -czf "$out/workspace.tgz" .
           (
             cd "$out"
-            sha256sum Cargo.lock.before Cargo.lock Cargo.lock.patch \
+            shasum -a 256 Cargo.lock.before Cargo.lock Cargo.lock.patch \
               cargo-check.log cargo-test.log cargo-fmt.log check-status.txt \
               source-sha.txt status.txt workspace.tgz > SHA256SUMS
           )
