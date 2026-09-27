@@ -462,6 +462,8 @@ mod tests {
     use codex_hepta_contracts::SignedFinalUseGrant;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
+    use sha2::Digest;
+    use sha2::Sha256;
 
     use super::*;
 
@@ -486,6 +488,13 @@ mod tests {
             revocation_revision: revision,
             state_sha256: [marker; 32],
         }
+    }
+
+    fn test_nonce(label: &str) -> [u8; 32] {
+        let mut digest = Sha256::new();
+        digest.update(b"hepta.kernel.authority.agentd-test-nonce.v1\0");
+        digest.update(label.as_bytes());
+        digest.finalize().into()
     }
 
     #[test]
@@ -560,7 +569,7 @@ mod tests {
             signer_id: "owner".to_string(),
             authority_epoch: 7,
             grant_id: "grant-one".to_string(),
-            nonce: [4; 32],
+            nonce: test_nonce("restored-local-authority-snapshot"),
             binding: binding.clone(),
             not_before_unix_ms: now.saturating_sub(1_000),
             expires_at_unix_ms: now + 60_000,
