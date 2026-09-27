@@ -16,6 +16,8 @@
 
 This stable document is the implementation guide for `intuition.policy`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+**Current evidence boundary (2026-09-27):** V4 product semantics, V2 owner-separated commitments, authenticated V3 admission, complete Agentd pins, prepare/commit fencing and durable host tests exist in source. A pending composition script is not proof that the canonical serving hook is committed. A workflow definition or a queued run is not a passing execution receipt. Use the current implementation dossier and exact command artifacts to distinguish these states; no production acceptance or promotion is asserted here.
+
 ## 1. Identity, mission and ownership
 
 Select or abstain over a complete legal candidate set without bypassing deterministic validation.
@@ -42,7 +44,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `intuition.policy`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate. Dedicated inventory, focused tests, all-target compilation, strict lint and exact-head qualification remain execution requirements, not facts implied by source presence. This status does not activate `intuition.policy`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -70,12 +72,14 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
-The bounded components are:
+The bounded target components are:
 
 - `legal-candidate validator`
 - `scoring head`
 - `confidence calibrator`
 - `OOD and abstention router`
+
+The current native policy crate authenticates and selects over owner-produced scores and calibration/OOD artifacts. It does not itself train or execute the scorer or produce calibration artifacts. The target component list is retained as an integration design, not a claim that those upstream owners have been absorbed.
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -143,7 +147,7 @@ Critical protocol schemas:
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Rust types and canonical JSON must represent identical semantics. Required tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes. The current deterministic V2 commitment fixture additionally has an independently implemented Python encoder; it does not establish coverage for every protocol or assignment mode.
 
 ## 6. Data authority, persistence and migrations
 
@@ -202,6 +206,8 @@ Read-only policy library; inject the complete legal candidate set and exact cali
 Current operating and state-format references:
 
 - [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs).
+- `codex-rs/hepta-intuition/src/production.rs` for bounded product semantics and stable error codes.
+- `codex-rs/hepta-agentd/src/intuition_policy.rs` for prepared profile/time fencing and the sole writer boundary.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -211,8 +217,13 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-intuition/src/calibrated_tests.rs](../../../codex-rs/hepta-intuition/src/calibrated_tests.rs); named case: `v2_binds_same_outcome_to_its_actual_assignment_and_artifact_metadata`.
 - [codex-rs/hepta-intuition/src/lib_tests.rs](../../../codex-rs/hepta-intuition/src/lib_tests.rs); named case: `hard_veto_cannot_be_overridden`.
+- `codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs`: signed host append, idempotent replay and durable reopen.
+- `codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs`: cross-profile prepared values, evidence expiry and clock rollback before append.
+- `scripts/intuition_golden_vectors.py`: five independent Python digest encodings and 512 seeded owner-separation mutations over the deterministic fixture.
 
 In `codex-rs`, run `just test -p codex-hepta-intuition`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) separately labels target acceptance designs.
+
+`hepta-intuition-qualification.yml` has read-only permissions. `scripts/intuition_qualify_exact.py` writes records outside the checkout, captures actual exit codes and log hashes, retains interrupted/failed records, and verifies unchanged source. Its source and synthetic-merge lanes are independent. No qualification job formats, migrates, commits, pushes or signs acceptance. Registering its aggregate check in repository branch protection is a separate administration operation.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -305,6 +316,32 @@ For `intuition.policy`, this document grants no runtime, production, model, prov
 - `claim_evidence_mismatch`
 - `cross_owner_write`
 - `unbounded_resource_or_retry`
+
+## Current production qualification candidate (2026-09-26)
+
+Updated on 2026-09-27 without discarding the target design above. The current product selector is `decide_calibrated_v4`; its authenticated entrance is `decide_authenticated_intuition_v3`. Historical V1/V2 and qualified V3 remain compatibility substrates, not independent product authority. Default-feature retirement is not complete merely because a root re-export is gated; internal legacy consumers must also be inventoried and migrated.
+
+`Ppm` admits only `[0, 1_000_000]`; `PolicyGeneration` is nonzero. Product receipts retain original risk and an explicit profile-rule reason. Candidate identity, scored outputs and assignment distribution have separate V2 encodings; scoring and assignment commitments compose those owner-bound digests rather than mixing assignment probabilities into scorer output.
+
+Generator evidence binds completeness; evaluator evidence binds profile/calibration/OOD qualification; observer evidence binds scoring and assignment. `AgentdIntuitionPolicyPinsV2` fixes the full profile, policy, generation, objective class, model, scorer, artifacts, risk rule and optional RNG owner. `commit_v3` recomputes the current complete host binding before append, including when two hosts share Agent ID, spawn generation and trust. It rejects prepared time rollback and the earliest original qualification expiry, even when a later Decision signature remains valid. The prepared digest now uses the V2 domain and includes its preparation/expiry times; historical durable Decision encodings are unchanged.
+
+The service preserves its durable receipt when the post-commit admission check returns either `false` or an error. A committed Decision is not execution authorization. The selected host delegates persistence to one `IntuitionPolicyLearningSink`/`LedgerWriter`; exact replay must retain the original record, signed evidence and predecessor. An indeterminate result cannot be downgraded to an uncommitted failure or interpreted as permission to dispatch.
+
+The intended canonical product sequence is:
+
+```text
+signed ObjectiveStart / durable RunStart
+  -> bounded canonical invocation
+  -> authenticated V3 qualification and V4 policy semantics
+  -> complete current host pins and prepared lifetime checks
+  -> selected-only durable Decision through the sole LedgerWriter
+  -> current-run/generation revalidation
+  -> downstream admission under its own effect authority
+```
+
+A direct host test does not prove this entire sequence. Materializing `start_canonical_intelligence` calls, compiling the resulting module tree, invoking the real Agentd process, testing revocation/rollback and interruption recovery, and measuring combined signature-plus-ledger latency are distinct obligations. Until their exact-source receipts exist, these remain unqualified rather than inferred complete.
+
+Independent evaluator acceptance, operator target-host acceptance, canary authorization, promotion and release remain unsigned external gates. `qualification/intuition.policy/ACCEPTANCE_TEMPLATE.json` is a template, not a valid acceptance receipt.
 
 <!-- BEGIN GENERATED EXACT REGISTRY PROJECTION -->
 ### Exact closed-world registry projection
@@ -406,4 +443,4 @@ The bootstrap source-location obligation for `intuition.policy` is implemented b
 
 - `codex-rs/hepta-intuition`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate has qualification definitions in `.github/workflows/hepta-consolidated-source.yml` and the independent `.github/workflows/hepta-intuition-qualification.yml`. Actual closed-world inventory, package tests, all-target compilation, strict Clippy and clean-tree results must be read from an exact-source execution artifact, not inferred from these filenames. This section records the source location and evidence requirements only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
