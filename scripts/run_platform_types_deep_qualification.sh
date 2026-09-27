@@ -35,6 +35,7 @@ esac
 
 MSRV="${PLATFORM_TYPES_MSRV:-1.95.0}"
 MIRI_TOOLCHAIN="${PLATFORM_TYPES_MIRI:-nightly-2026-09-20}"
+FUZZ_TOOLCHAIN="${PLATFORM_TYPES_FUZZ_TOOLCHAIN:-$MIRI_TOOLCHAIN}"
 OUT="${PLATFORM_TYPES_EVIDENCE_ROOT:-$ROOT/.hepta-evidence/platform-types-deep/$CANDIDATE_KIND}"
 MANIFEST="$ROOT/codex-rs/Cargo.toml"
 PACKAGE="codex-hepta-types"
@@ -83,6 +84,9 @@ truth_check() {
     --output "$OUT/generated-implementation-map.json"
   python3 scripts/platform_types_property_checks.py \
     --report "$OUT/property-report.json"
+  python3 codex-rs/hepta-types/conformance/verify_platform_wire_vectors.py
+  node codex-rs/hepta-types/conformance/verify_platform_wire_vectors.mjs
+  bash scripts/run_platform_types_consumer_qualification.sh
   git diff --check
   test -z "$(git status --porcelain --untracked-files=no)"
 }
@@ -124,6 +128,11 @@ miri_check() {
     --package "$PACKAGE" --lib
 }
 
+fuzz_check() {
+  PLATFORM_TYPES_FUZZ_TOOLCHAIN="$FUZZ_TOOLCHAIN" \
+    bash scripts/run_platform_types_coverage_fuzz.sh "$OUT/coverage-fuzz"
+}
+
 bundle_check() {
   python3 scripts/platform_types_candidate_bundle.py render \
     "${IDENTITY_ARGS[@]}" \
@@ -136,10 +145,11 @@ run_step api api_check
 run_step msrv msrv_check
 run_step native native_check
 run_step miri miri_check
+run_step fuzz fuzz_check
 run_step bundle bundle_check
 
 OUTCOME_ARGS=()
-for name in truth provenance api msrv native miri bundle; do
+for name in truth provenance api msrv native miri fuzz bundle; do
   OUTCOME_ARGS+=(--outcome "$name=${OUTCOMES[$name]}")
 done
 
@@ -150,6 +160,7 @@ EVIDENCE_ARGS=(
   --evidence "msrv-log=$OUT/msrv.log"
   --evidence "native-log=$OUT/native.log"
   --evidence "miri-log=$OUT/miri.log"
+  --evidence "fuzz-log=$OUT/fuzz.log"
   --evidence "bundle-log=$OUT/bundle.log"
   --evidence "generated-map=$OUT/generated-implementation-map.json"
   --evidence "property-report=$OUT/property-report.json"
@@ -157,6 +168,7 @@ EVIDENCE_ARGS=(
   --evidence "rustdoc-base=$OUT/rustdoc-api/base-api.json"
   --evidence "rustdoc-current=$OUT/rustdoc-api/current-api.json"
   --evidence "rustdoc-diff=$OUT/rustdoc-api/diff.json"
+  --evidence "fuzz-summary=$OUT/coverage-fuzz/summary.json"
   --evidence "bundle-manifest=$OUT/document-bundle/manifest.json"
 )
 
@@ -171,7 +183,7 @@ DIAGNOSTICS_CODE="${PIPESTATUS[0]}"
 set -u
 
 ALL_PASSED=true
-for name in truth provenance api msrv native miri bundle; do
+for name in truth provenance api msrv native miri fuzz bundle; do
   if [[ "${OUTCOMES[$name]}" != success ]]; then
     ALL_PASSED=false
   fi
@@ -201,7 +213,7 @@ fi
 {
   printf 'candidate_kind=%s\n' "$CANDIDATE_KIND"
   printf 'expected_sha=%s\n' "$EXPECTED_SHA"
-  for name in truth provenance api msrv native miri bundle; do
+  for name in truth provenance api msrv native miri fuzz bundle; do
     printf '%s=%s\n' "$name" "${OUTCOMES[$name]}"
   done
   printf 'diagnostics=%s\n' "$([[ "$DIAGNOSTICS_CODE" -eq 0 ]] && echo success || echo failure)"

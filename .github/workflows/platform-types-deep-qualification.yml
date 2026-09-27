@@ -6,6 +6,8 @@ on:
       - "codex-rs/Cargo.*"
       - "codex-rs/hepta-types/**"
       - "codex-rs/hepta-wire/**"
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-supervisor/**"
       - "docs/lane-a-foundation/platform.types/**"
       - "docs/modules/platform.types/**"
       - "qualification/module-execution-dossiers/detail/platform.types.md"
@@ -30,12 +32,14 @@ env:
   PLATFORM_TYPES_MSRV: "1.95.0"
   PLATFORM_TYPES_MIRI: "nightly-2026-09-20"
   PLATFORM_TYPES_RUSTDOC_TOOLCHAIN: "nightly-2026-09-20"
+  PLATFORM_TYPES_FUZZ_TOOLCHAIN: "nightly-2026-09-20"
+  PLATFORM_TYPES_CARGO_FUZZ_VERSION: "0.12.0"
 
 jobs:
   source:
     name: Qualify exact platform.types source head
     runs-on: ubuntu-24.04
-    timeout-minutes: 150
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -71,7 +75,7 @@ jobs:
     name: Qualify deterministic platform.types merge candidate
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
-    timeout-minutes: 150
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:

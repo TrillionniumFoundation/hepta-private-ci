@@ -39,8 +39,8 @@ def write_diagnostics(args: Any) -> None:
     identity = exact_identity(args)
     outcomes = _outcomes(args)
     write_object(args.output, {
-        "schema": "hepta.platform-types.deep-diagnostics.v1",
-        "schemaVersion": 1,
+        "schema": "hepta.platform-types.deep-diagnostics.v2",
+        "schemaVersion": 2,
         "module": "platform.types",
         "candidateKind": identity["kind"],
         "candidateIdentity": identity,
@@ -74,6 +74,7 @@ def write_receipt(args: Any) -> None:
     map_record, generated_map = _object(evidence, "generated-map")
     provenance_record, provenance = _object(evidence, "provenance")
     api_record, api_diff = _object(evidence, "rustdoc-diff")
+    fuzz_record, fuzz = _object(evidence, "fuzz-summary")
 
     if bundle.get("candidateIdentity") != identity:
         raise CandidateBundleError("document bundle candidate mismatch")
@@ -85,6 +86,8 @@ def write_receipt(args: Any) -> None:
         raise CandidateBundleError("Git provenance did not pass for this candidate")
     if api_diff.get("status") != "passed" or api_diff.get("breaking") is not False:
         raise CandidateBundleError("rustdoc public API semver gate did not pass")
+    if fuzz.get("status") != "passed":
+        raise CandidateBundleError("coverage-guided fuzz did not pass")
     if generated_map.get("schema") != "hepta.platform-types.generated-implementation-map.v1":
         raise CandidateBundleError("generated implementation map schema mismatch")
     if generated_map.get("module") != "platform.types":
@@ -97,23 +100,29 @@ def write_receipt(args: Any) -> None:
         raise CandidateBundleError("generated implementation map digest mismatch")
 
     write_object(args.output, {
-        "schema": "hepta.platform-types.deep-qualification-receipt.v2",
-        "schemaVersion": 2,
+        "schema": "hepta.platform-types.deep-qualification-receipt.v3",
+        "schemaVersion": 3,
         "module": "platform.types",
         "candidateKind": identity["kind"],
         "candidateIdentity": identity,
         "candidateIdentitySha256": identity_sha256(identity),
         "generatedAtUtc": utc_now(),
         "outcomes": outcomes,
-        "toolchains": {"msrv": args.msrv_toolchain, "miri": args.miri_toolchain},
+        "toolchains": {
+            "msrv": args.msrv_toolchain,
+            "miri": args.miri_toolchain,
+            "fuzz": fuzz.get("toolchain"),
+            "cargoFuzz": fuzz.get("cargoFuzzVersion"),
+        },
         "evidence": evidence,
         "documentBundleSha256": bundle_record["sha256"],
         "propertyReportSha256": property_record["sha256"],
         "generatedImplementationMapSha256": map_record["sha256"],
         "gitProvenanceSha256": provenance_record["sha256"],
         "rustdocSemverDiffSha256": api_record["sha256"],
+        "coverageFuzzSha256": fuzz_record["sha256"],
         "status": "passed_in_current_job",
-        "scope": "exact Git identity, rustdoc API compatibility, generated map, properties, MSRV, native tests, Miri, and bound docs",
+        "scope": "exact Git identity, rustdoc API compatibility, generated map, deterministic properties, coverage-guided fuzz, MSRV, native tests, Miri, and bound docs",
         **_nonclaims(),
         "github": _github(),
     })

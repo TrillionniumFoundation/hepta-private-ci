@@ -1,5 +1,5 @@
 [package]
-name = "codex-hepta-wire-platform-types-fuzz"
+name = "codex-hepta-types-fuzz"
 version = "0.0.0"
 publish = false
 edition = "2021"
@@ -9,11 +9,11 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = "0.4"
-codex-hepta-wire = { path = ".." }
+codex-hepta-types = { path = ".." }
 
 [[bin]]
-name = "platform_types_json"
-path = "fuzz_targets/platform_types_json.rs"
+name = "canonical_validate"
+path = "fuzz_targets/canonical_validate.rs"
 test = false
 doc = false
 bench = false
