@@ -46,7 +46,7 @@ jobs:
           compressed = base64.b64decode(encoded, validate=True)
           if len(compressed) != manifest['compressedBytes'] or hashlib.sha256(compressed).hexdigest() != manifest['compressedSha256']:
               raise SystemExit('compressed patch identity mismatch')
-          decoder = lzma.LZMADecompressor(memlimit=64 * 1024 * 1024)
+          decoder = lzma.LZMADecompressor(memlimit=128 * 1024 * 1024)
           patch = decoder.decompress(compressed, max_length=100001)
           if not decoder.eof or decoder.unused_data or len(patch) != manifest['patchBytes'] or hashlib.sha256(patch).hexdigest() != manifest['patchSha256']:
               raise SystemExit('bounded patch identity mismatch')
