@@ -84,6 +84,21 @@ fn request() -> NeuronFeatureRequestV1 {
 }
 
 fn receipt(request: &NeuronFeatureRequestV1) -> NeuronFeatureReceiptV1 {
+    receipt_with_status(request, NeuronFeatureTerminalStatusV1::Succeeded)
+}
+
+fn receipt_with_status(
+    request: &NeuronFeatureRequestV1,
+    status: NeuronFeatureTerminalStatusV1,
+) -> NeuronFeatureReceiptV1 {
+    let (drive_q24, prediction_q24) = match status {
+        NeuronFeatureTerminalStatusV1::Succeeded => {
+            (vec![1_i64 << 24, 0, 0, 0, 0], vec![0; 5])
+        }
+        NeuronFeatureTerminalStatusV1::Failed
+        | NeuronFeatureTerminalStatusV1::Cancelled
+        | NeuronFeatureTerminalStatusV1::Indeterminate => (Vec::new(), Vec::new()),
+    };
     checked(build_neuron_feature_receipt_v1(
         request,
         NeuronModelRuntimeTupleV1 {
@@ -99,13 +114,13 @@ fn receipt(request: &NeuronFeatureRequestV1) -> NeuronFeatureReceiptV1 {
         NeuronFeatureObservationV1 {
             encoder_digest: request.encoder_digest,
             head_digest: request.head_digest,
-            drive_q24: vec![1_i64 << 24, 0, 0, 0, 0],
-            prediction_q24: vec![0; 5],
+            drive_q24,
+            prediction_q24,
             observed_memory_bytes: 4096,
             transient_allocation_bytes: 512,
             queue_age_micros: 3,
             latency_micros: 9,
-            status: NeuronFeatureTerminalStatusV1::Succeeded,
+            status,
         },
     ))
 }
@@ -259,6 +274,164 @@ fn complete_frame_corruption_fails_closed() {
     checked(file.sync_all());
     drop(file);
 
+    assert!(matches!(
+        FileNeuronFeatureExecutionStoreV1::open_existing(&fixture.file, context()),
+        Err(NeuronFeatureStoreError::Corrupt)
+    ));
+}
+
+#[test]
+fn indeterminate_survives_restart_and_resolves_without_redispatch() {
+    for status in [
+        NeuronFeatureTerminalStatusV1::Succeeded,
+        NeuronFeatureTerminalStatusV1::Failed,
+        NeuronFeatureTerminalStatusV1::Cancelled,
+    ] {
+        let fixture = Fixture::new();
+        let request = request();
+        let unknown = receipt_with_status(&request, NeuronFeatureTerminalStatusV1::Indeterminate);
+        let mut store = checked(FileNeuronFeatureExecutionStoreV1::create(
+            &fixture.file,
+            context(),
+        ));
+        checked(store.reserve(request.clone()));
+        checked(store.mark_dispatched(&request));
+        let unresolved = checked(store.observe(&request, unknown.clone()));
+        let bytes = checked(fs::read(&fixture.file));
+        assert_eq!(checked(store.observe(&request, unknown.clone())), unresolved);
+        assert_eq!(checked(fs::read(&fixture.file)), bytes);
+        drop(store);
+
+        let mut store = checked(FileNeuronFeatureExecutionStoreV1::open_existing(
+            &fixture.file,
+            context(),
+        ));
+        assert_eq!(checked(store.unresolved()), vec![unresolved.clone()]);
+        assert_eq!(checked(store.unresolved_count()), 1);
+        assert_eq!(checked(store.reserve(request.clone())), unresolved);
+        assert_eq!(
+            store.mark_dispatched(&request),
+            Err(NeuronFeatureStoreError::InvalidTransition)
+        );
+        let terminal = checked(store.observe(&request, receipt_with_status(&request, status)));
+        let bytes = checked(fs::read(&fixture.file));
+        assert_eq!(
+            store.observe(&request, unknown),
+            Err(NeuronFeatureStoreError::Conflict)
+        );
+        assert_eq!(checked(fs::read(&fixture.file)), bytes);
+        drop(store);
+
+        let store = checked(FileNeuronFeatureExecutionStoreV1::open_existing(
+            &fixture.file,
+            context(),
+        ));
+        assert_eq!(checked(store.get(&request.request_id)), Some(terminal));
+        assert_eq!(checked(store.unresolved_count()), 0);
+    }
+}
+
+#[test]
+fn unknown_resolution_sync_loss_is_recovered_not_reexecuted() {
+    let fixture = Fixture::new();
+    let request = request();
+    let mut store = checked(FileNeuronFeatureExecutionStoreV1::create(
+        &fixture.file,
+        context(),
+    ));
+    checked(store.reserve(request.clone()));
+    checked(store.mark_dispatched(&request));
+    checked(store.observe(
+        &request,
+        receipt_with_status(&request, NeuronFeatureTerminalStatusV1::Indeterminate),
+    ));
+    store.fail_next_append_after_sync();
+    let expected = receipt(&request);
+    assert_eq!(
+        store.observe(&request, expected.clone()),
+        Err(NeuronFeatureStoreError::Indeterminate)
+    );
+    drop(store);
+    let mut store = checked(FileNeuronFeatureExecutionStoreV1::open_existing(
+        &fixture.file,
+        context(),
+    ));
+    let bytes = checked(fs::read(&fixture.file));
+    assert_eq!(
+        checked(store.observe(&request, expected.clone())).receipt,
+        Some(expected)
+    );
+    assert_eq!(checked(fs::read(&fixture.file)), bytes);
+    assert_eq!(checked(store.unresolved_count()), 0);
+}
+
+#[test]
+fn wrong_generation_cannot_create_unreplayable_history() {
+    let fixture = Fixture::new();
+    let mut store = checked(FileNeuronFeatureExecutionStoreV1::create(
+        &fixture.file,
+        context(),
+    ));
+    let mut request = request();
+    request.generation = checked(Generation::new(8));
+    let bytes = checked(fs::read(&fixture.file));
+    assert_eq!(
+        store.reserve(request),
+        Err(NeuronFeatureStoreError::ContextMismatch)
+    );
+    assert_eq!(checked(fs::read(&fixture.file)), bytes);
+    drop(store);
+    let store = checked(FileNeuronFeatureExecutionStoreV1::open_existing(
+        &fixture.file,
+        context(),
+    ));
+    assert_eq!(checked(store.unresolved_count()), 0);
+}
+
+#[test]
+fn resolution_rejects_model_replacement_in_writer_and_replay() {
+    let fixture = Fixture::new();
+    let request = request();
+    let mut store = checked(FileNeuronFeatureExecutionStoreV1::create(
+        &fixture.file,
+        context(),
+    ));
+    checked(store.reserve(request.clone()));
+    checked(store.mark_dispatched(&request));
+    let unknown = receipt_with_status(&request, NeuronFeatureTerminalStatusV1::Indeterminate);
+    checked(store.observe(&request, unknown.clone()));
+    let mut runtime = unknown.runtime_tuple;
+    runtime.device_digest = digest("replacement-device");
+    let changed = checked(build_neuron_feature_receipt_v1(
+        &request,
+        runtime,
+        NeuronFeatureObservationV1 {
+            encoder_digest: request.encoder_digest,
+            head_digest: request.head_digest,
+            drive_q24: Vec::new(),
+            prediction_q24: Vec::new(),
+            observed_memory_bytes: 4096,
+            transient_allocation_bytes: 512,
+            queue_age_micros: 3,
+            latency_micros: 9,
+            status: NeuronFeatureTerminalStatusV1::Failed,
+        },
+    ));
+    let bytes = checked(fs::read(&fixture.file));
+    assert_eq!(
+        store.observe(&request, changed.clone()),
+        Err(NeuronFeatureStoreError::Conflict)
+    );
+    assert_eq!(checked(fs::read(&fixture.file)), bytes);
+    // Bypass only the writer reducer to exercise validation of a checksummed,
+    // structurally valid but semantically invalid event during reopen.
+    let event = Event::ResolveIndeterminateV1 {
+        request_id: request.request_id.to_string(),
+        request_digest: checked(neuron_feature_request_digest_v1(&request)).to_string(),
+        receipt: ReceiptDto::from_receipt(&changed),
+    };
+    checked(store.append_payload(&checked(encode_event(&event))));
+    drop(store);
     assert!(matches!(
         FileNeuronFeatureExecutionStoreV1::open_existing(&fixture.file, context()),
         Err(NeuronFeatureStoreError::Corrupt)

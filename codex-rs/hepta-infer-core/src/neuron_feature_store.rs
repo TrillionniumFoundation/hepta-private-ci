@@ -83,10 +83,7 @@ pub enum NeuronFeatureExecutionStateV1 {
 impl NeuronFeatureExecutionStateV1 {
     #[must_use]
     pub const fn terminal(self) -> bool {
-        matches!(
-            self,
-            Self::Succeeded | Self::Failed | Self::Cancelled | Self::Indeterminate
-        )
+        matches!(self, Self::Succeeded | Self::Failed | Self::Cancelled)
     }
 }
 
@@ -300,6 +297,9 @@ impl FileNeuronFeatureExecutionStoreV1 {
         request: &NeuronFeatureRequestV1,
     ) -> Result<NeuronFeatureAdmissionV1, NeuronFeatureStoreError> {
         self.ensure_healthy()?;
+        if request.generation != self.context.generation {
+            return Err(NeuronFeatureStoreError::ContextMismatch);
+        }
         let request_digest = request_digest(request)?;
         if let Some(record) = self.records.get(&request.request_id) {
             return if record.request_digest == request_digest && record.request == *request {
@@ -385,21 +385,36 @@ impl FileNeuronFeatureExecutionStoreV1 {
         if current.request_digest != digest || current.request != *request {
             return Err(NeuronFeatureStoreError::Conflict);
         }
+        // Retransmitting an observation is idempotent even while its outcome
+        // remains unknown. It cannot consume journal capacity a second time.
+        if current.receipt.as_ref() == Some(&receipt) {
+            return Ok(current.clone());
+        }
         if current.state.terminal() {
-            return if current.receipt.as_ref() == Some(&receipt) {
-                Ok(current.clone())
-            } else {
-                Err(NeuronFeatureStoreError::Conflict)
-            };
+            return Err(NeuronFeatureStoreError::Conflict);
         }
-        if current.state != NeuronFeatureExecutionStateV1::Dispatched {
-            return Err(NeuronFeatureStoreError::InvalidTransition);
-        }
-        let payload = encode_event(&Event::Observe {
-            request_id: request.request_id.to_string(),
-            request_digest: digest.to_string(),
-            receipt: ReceiptDto::from_receipt(&receipt),
-        })?;
+        let event = match current.state {
+            NeuronFeatureExecutionStateV1::Dispatched => Event::Observe {
+                request_id: request.request_id.to_string(),
+                request_digest: digest.to_string(),
+                receipt: ReceiptDto::from_receipt(&receipt),
+            },
+            NeuronFeatureExecutionStateV1::Indeterminate => {
+                validate_resolution(current, &receipt)?;
+                Event::ResolveIndeterminateV1 {
+                    request_id: request.request_id.to_string(),
+                    request_digest: digest.to_string(),
+                    receipt: ReceiptDto::from_receipt(&receipt),
+                }
+            }
+            NeuronFeatureExecutionStateV1::Reserved
+            | NeuronFeatureExecutionStateV1::Succeeded
+            | NeuronFeatureExecutionStateV1::Failed
+            | NeuronFeatureExecutionStateV1::Cancelled => {
+                return Err(NeuronFeatureStoreError::InvalidTransition);
+            }
+        };
+        let payload = encode_event(&event)?;
         if payload.len() > self.context.max_receipt_bytes {
             return Err(NeuronFeatureStoreError::Capacity);
         }
@@ -504,9 +519,26 @@ impl FileNeuronFeatureExecutionStoreV1 {
     }
 }
 
-fn request_digest(
-    request: &NeuronFeatureRequestV1,
-) -> Result<Digest32, NeuronFeatureStoreError> {
+fn validate_resolution(
+    current: &NeuronFeatureExecutionRecordV1,
+    receipt: &NeuronFeatureReceiptV1,
+) -> Result<(), NeuronFeatureStoreError> {
+    let previous = current
+        .receipt
+        .as_ref()
+        .ok_or(NeuronFeatureStoreError::InvalidTransition)?;
+    if current.state != NeuronFeatureExecutionStateV1::Indeterminate
+        || receipt.status == NeuronFeatureTerminalStatusV1::Indeterminate
+        || receipt.runtime_tuple != previous.runtime_tuple
+        || receipt.encoder_digest != previous.encoder_digest
+        || receipt.head_digest != previous.head_digest
+    {
+        return Err(NeuronFeatureStoreError::Conflict);
+    }
+    Ok(())
+}
+
+fn request_digest(request: &NeuronFeatureRequestV1) -> Result<Digest32, NeuronFeatureStoreError> {
     neuron_feature_request_digest_v1(request).map_err(|_| NeuronFeatureStoreError::InvalidRecord)
 }
 

@@ -6,6 +6,13 @@ enum Event {
         request_id: String,
         request_digest: String,
     },
+    // A critical additive event: old readers reject it instead of silently
+    // treating an unresolved historical observation as a final outcome.
+    ResolveIndeterminateV1 {
+        request_id: String,
+        request_digest: String,
+        receipt: ReceiptDto,
+    },
     Observe {
         request_id: String,
         request_digest: String,
@@ -61,6 +68,26 @@ fn apply_event(
                 return Err(NeuronFeatureStoreError::Corrupt);
             }
             record.state = NeuronFeatureExecutionStateV1::Dispatched;
+        }
+        Event::ResolveIndeterminateV1 {
+            request_id,
+            request_digest,
+            receipt,
+        } => {
+            let request_id = parse_id(&request_id)?;
+            let request_digest = parse_digest(&request_digest)?;
+            let record = records
+                .get_mut(&request_id)
+                .ok_or(NeuronFeatureStoreError::Corrupt)?;
+            if record.request_digest != request_digest {
+                return Err(NeuronFeatureStoreError::Corrupt);
+            }
+            let receipt = receipt.into_receipt()?;
+            verify_neuron_feature_receipt_v1(&record.request, &receipt)
+                .map_err(|_| NeuronFeatureStoreError::Corrupt)?;
+            validate_resolution(record, &receipt).map_err(|_| NeuronFeatureStoreError::Corrupt)?;
+            record.state = state_from_status(receipt.status);
+            record.receipt = Some(receipt);
         }
         Event::Observe {
             request_id,
