@@ -26,6 +26,8 @@ INPUTS = (
     "scripts/hepta-ndu-implementation-map-closed-world.py",
     "scripts/hepta_ndu_map_integrity.py",
     "scripts/test_hepta_ndu_map_integrity.py",
+    "scripts/hepta-ndu-source-policy.py",
+    "scripts/test_hepta_ndu_source_policy.py",
     ".github/workflows/hepta-ndu-recursion.yml",
 )
 
@@ -101,6 +103,10 @@ def verify_manifest(root: Path, objects: list[dict], expected: set[str]) -> None
             raise ValueError(f"source object drift: {name}")
 
 
+RAW_STRING = re.compile(r'(?:br|cr|r)(#*)"')
+CHARACTER = re.compile(r"'(?:[^'\\\n]|\\(?:u\{[0-9a-fA-F_]+\}|x[0-9a-fA-F]{2}|.))'")
+
+
 def code_only(text: str) -> str:
     """Mask comments and string/char literals without treating lifetimes as chars."""
     out = list(text)
@@ -118,9 +124,9 @@ def code_only(text: str) -> str:
                 elif text.startswith("*/", i): depth -= 1; i += 2
                 else: i += 1
             if depth: raise ValueError("unterminated Rust block comment")
-        elif (raw := re.match(r'(?:br|cr|r)(#*)"', text[i:])):
+        elif (raw := RAW_STRING.match(text, i)):
             end = '"' + raw.group(1)
-            closing = text.find(end, i + len(raw.group(0)))
+            closing = text.find(end, raw.end())
             if closing < 0: raise ValueError("unterminated Rust raw string")
             i = closing + len(end)
         elif text[i] == '"':
@@ -130,7 +136,7 @@ def code_only(text: str) -> str:
                 elif text[i] == '"': i += 1; break
                 else: i += 1
             else: raise ValueError("unterminated Rust string")
-        elif text[i] == "'" and (char := re.match(r"'(?:[^'\\\n]|\\(?:u\{[0-9a-fA-F_]+\}|x[0-9a-fA-F]{2}|.))'", text[i:])):
+        elif text[i] == "'" and (char := CHARACTER.match(text, i)):
             i += len(char.group(0))
         else:
             i += 1
@@ -163,7 +169,11 @@ def executable_test_exists(path: Path, symbol: str) -> bool:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--rebind-index", action="store_true", required=True)
+    parser.add_argument("--candidate-branch", required=True)
+    parser.add_argument("--baseline-main", required=True)
     args = parser.parse_args()
+    if not re.fullmatch(r"[0-9a-f]{40}", args.baseline_main):
+        parser.error("baseline main must be an exact commit SHA")
     root = Path(__file__).resolve().parents[1]
     primary = json.loads((root / PRIMARY).read_text())
     extension = json.loads((root / EXTENSION).read_text())
@@ -173,8 +183,8 @@ def main() -> None:
         for name in sorted(evidence_paths(root, primary, extension))
     ]
     primary["currentSourceEvidence"] = {
-        "baselineMainCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-        "branch": "codex/utility-ndu-production-hardening-20260926",
+        "baselineMainCommit": args.baseline_main,
+        "branch": args.candidate_branch,
         "sourceBinding": "exact_typed_path_object_manifest_v1",
         "qualificationBinding": "suite receipts contain actual source and synthetic commit/tree identities",
         "productionActivation": False,

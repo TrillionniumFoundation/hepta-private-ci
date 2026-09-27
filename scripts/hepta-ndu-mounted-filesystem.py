@@ -98,7 +98,10 @@ def one_fault(binary: Path, fault: str, output: Path) -> dict:
     directory = Path(tempfile.mkdtemp(prefix="ndu-fs-", dir="/tmp"))
     mount = directory / "mount"
     mount.mkdir(mode=0o700)
+    view = directory / "view"
+    view.mkdir(mode=0o700)
     mounted = False
+    bound = False
     process = None
     record = {"fault": fault, "passed": False, "phases": [], "cleanupPassed": False}
     started = time.monotonic_ns()
@@ -112,8 +115,14 @@ def one_fault(binary: Path, fault: str, output: Path) -> dict:
             if filesystem != "tmpfs" or os.stat(mount).st_dev == os.stat(directory).st_dev:
                 raise RuntimeError("the private fault mount was not independently established")
             record["filesystem"] = filesystem
+            # A per-mount read-only bind can be changed while the writer owns a
+            # writable lock FD; a superblock remount may correctly return EBUSY.
+            # It still exercises real EROFS in the production file-create path.
+            command(privilege + ["mount", "--bind", str(mount), str(view)])
+            bound = True
+            record["readOnlyBoundary"] = "vfs-bind-mount"
             process = subprocess.Popen(
-                [str(binary), str(mount), fault], stdin=subprocess.PIPE,
+                [str(binary), str(view), fault], stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE, stderr=stderr, bufsize=0,
             )
             record["phases"].append(expect_phase(process, "READY"))
@@ -122,11 +131,8 @@ def one_fault(binary: Path, fault: str, output: Path) -> dict:
                 record["filledBytes"] = fill_to_enospc(filler)
                 record["observedErrno"] = errno.ENOSPC
             elif fault == "erofs":
-                # util-linux remounts an existing mount by target. Supplying the
-                # original pseudo source together with ``-t tmpfs`` is rejected
-                # on Ubuntu's mount helper even though the target is valid.
-                command(privilege + ["mount", "-o", "remount,ro", str(mount)])
-                probe_erofs(mount / "read-only-probe")
+                command(privilege + ["mount", "-o", "remount,bind,ro,nodev,nosuid,noexec", str(view)])
+                probe_erofs(view / "read-only-probe")
                 record["observedErrno"] = errno.EROFS
             else:
                 raise ValueError("unregistered fault")
@@ -135,7 +141,7 @@ def one_fault(binary: Path, fault: str, output: Path) -> dict:
             if fault == "enospc":
                 filler.unlink()
             else:
-                command(privilege + ["mount", "-o", "remount,rw", str(mount)])
+                command(privilege + ["mount", "-o", "remount,bind,rw,nodev,nosuid,noexec", str(view)])
             send_phase(process, "RECOVER")
             record["phases"].append(expect_phase(process, "RECOVERED"))
             record["exitCode"] = process.wait(timeout=10)
@@ -144,6 +150,8 @@ def one_fault(binary: Path, fault: str, output: Path) -> dict:
             record["passed"] = True
         except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as error:
             record["error"] = str(error)
+            if isinstance(error, subprocess.CalledProcessError):
+                record["commandStderr"] = (error.stderr or "")[:4096]
         finally:
             if process is not None:
                 if process.poll() is None:
@@ -152,10 +160,13 @@ def one_fault(binary: Path, fault: str, output: Path) -> dict:
                 process.stdin.close()
                 process.stdout.close()
             try:
+                if bound:
+                    command(privilege + ["umount", str(view)])
                 if mounted:
                     command(privilege + ["umount", str(mount)])
                 # Never recursively delete an unconfirmed mount. Once unmounted,
                 # this is only the empty directory created by this invocation.
+                view.rmdir()
                 mount.rmdir()
                 directory.rmdir()
                 record["cleanupPassed"] = True

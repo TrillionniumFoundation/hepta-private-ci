@@ -516,7 +516,7 @@ mod tests {
             policy.clone(),
             policy.clone(),
             policy.clone(),
-            policy.clone(),
+            policy,
         ];
         changed[0].off_host_destination_digest = Digest32::of_bytes(b"other-destination");
         changed[1].encryption_profile_digest = Digest32::of_bytes(b"other-encryption");

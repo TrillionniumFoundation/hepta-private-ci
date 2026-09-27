@@ -205,6 +205,7 @@ def commands(suite: str, sha: str, tree: str) -> list[tuple[str, Path, list[str]
         ),
         ("mounted-filesystem-orchestrator-tests", ROOT, ["python3", "scripts/test_hepta_ndu_mounted_filesystem.py"]),
         ("map-integrity-tests", ROOT, ["python3", "scripts/test_hepta_ndu_map_integrity.py"]),
+        ("source-policy-tests", ROOT, ["python3", "scripts/test_hepta_ndu_source_policy.py"]),
         ("lock", ROOT, ["python3", "scripts/verify_cargo_lock.py"]),
         ("legacy-policy", ROOT, ["python3", "scripts/hepta-ndu-source-policy.py"]),
         (

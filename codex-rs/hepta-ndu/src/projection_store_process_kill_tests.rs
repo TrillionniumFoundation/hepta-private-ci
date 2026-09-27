@@ -34,8 +34,10 @@ impl TempRoot {
             "hepta-ndu-process-kill-{label}-{}-{nonce}",
             std::process::id()
         ));
-        fs::create_dir(&path).expect("create process-kill root");
-        Self(path)
+        match fs::create_dir(&path) {
+            Ok(()) => Self(path),
+            Err(error) => panic!("create process-kill root at {}: {error}", path.display()),
+        }
     }
 }
 

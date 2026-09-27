@@ -768,7 +768,7 @@
   "selectedProductionWriterState": "not_established",
   "currentSourceEvidence": {
     "baselineMainCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "branch": "codex/utility-ndu-production-hardening-20260926",
+    "branch": "work/utility-ndu-abcd-convergence-20260928",
     "sourceBinding": "exact_typed_path_object_manifest_v1",
     "qualificationBinding": "suite receipts contain actual source and synthetic commit/tree identities",
     "productionActivation": false
@@ -859,7 +859,7 @@
     },
     {
       "path": "codex-rs/hepta-agent-protocol/src/ndu.rs",
-      "object": "3c3ab92e520bf9881ed56d9f235af0302f89be24"
+      "object": "0dc9ff07eaa86185cf81dc009fcdb07d4f09d718"
     },
     {
       "path": "codex-rs/hepta-agentd/src/client.rs",
@@ -927,11 +927,11 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs",
-      "object": "3f22ba16562af3b850853e79de094b316f0877dd"
+      "object": "0b1bd2fbde36f1e93fb47a2ae8319824a3cf3c8e"
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "d7bbfaa0e0616f17038c1d2614a4461d6fefc630"
+      "object": "2fcfffc144d4c740bdb75916020022a2c9ba4817"
     },
     {
       "path": "codex-rs/hepta-ndu/src/bin/ndu-mounted-filesystem-qualification.rs",
@@ -1011,7 +1011,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/operational_metrics.rs",
-      "object": "097c0219ca9772f5cdf6f04107c90e34bfcac632"
+      "object": "a9d1f99821f907997066d95e856679f743c902fa"
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner.rs",
@@ -1055,7 +1055,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store_process_kill_tests.rs",
-      "object": "8488d5189af72f91f28515f284ee6ebbc472a9b8"
+      "object": "51e47c70900f1ad7138c5d52375812395d6bd2e2"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
@@ -1139,15 +1139,19 @@
     },
     {
       "path": "scripts/hepta-ndu-mounted-filesystem.py",
-      "object": "02bde463a177cabd375017df6e3e31127718cdcd"
+      "object": "7317c7f9d7875ff586e2e682cd1133cdc69ba450"
     },
     {
       "path": "scripts/hepta-ndu-qualification.py",
-      "object": "f02a0455f1127ad8d8a0e02ee15ace75fc6696c7"
+      "object": "89a1e8ec9359f18be5b4cf4a84281a1fd464b198"
+    },
+    {
+      "path": "scripts/hepta-ndu-source-policy.py",
+      "object": "bf314d777b595f60a1240c93fe05b179c914c6a2"
     },
     {
       "path": "scripts/hepta_ndu_map_integrity.py",
-      "object": "110b8a4f8a97fa498221b7f9715f8d5f5d301a8d"
+      "object": "8c1b843497146b00906cf777c120d70a20123d18"
     },
     {
       "path": "scripts/test_hepta_ndu_map_integrity.py",
@@ -1160,6 +1164,10 @@
     {
       "path": "scripts/test_hepta_ndu_qualification.py",
       "object": "5341bae3da5236591967ecf08ea6d91b09955003"
+    },
+    {
+      "path": "scripts/test_hepta_ndu_source_policy.py",
+      "object": "bfaea8577f4f5daa18cf2e90d68368ab61df3045"
     }
   ]
 }
