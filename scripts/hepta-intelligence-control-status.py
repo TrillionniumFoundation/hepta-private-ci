@@ -29,8 +29,10 @@ SOURCE_FILES = {
     "canonical": "codex-rs/hepta-intelligence/src/canonical.rs",
     "invariants": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
     "ingress": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+    "rollback": "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
     "runner": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
     "product": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+    "config": "codex-rs/hepta-agentd/src/config.rs",
     "bound": "codex-rs/hepta-agentd/src/lane_b_bound.rs",
     "learning": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
     "learning_runtime": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
@@ -62,6 +64,22 @@ EXPECTED_SOURCE_FACTS = {
     "concreteProviderPresent": (
         "ingress",
         "impl<F> AgentdIntelligenceInvocationProviderV1",
+    ),
+    "authorityRollbackGuardPresent": (
+        "rollback",
+        "pub struct IntelligenceAuthorityRollbackGuardV1",
+    ),
+    "authorityRollbackReopenTestPresent": (
+        "rollback",
+        "guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen",
+    ),
+    "boundedAuthorityManifestReadPresent": (
+        "product",
+        "fn read_authority_file_bounded",
+    ),
+    "canonicalProfileRequiresRollbackPresent": (
+        "config",
+        "fn require_canonical_intelligence_runner",
     ),
     "atomicProfileCompositionPresent": (
         "runtime",
@@ -185,12 +203,9 @@ def source_facts(sources: dict[str, str]) -> dict[str, bool]:
     missing = [name for name, present in facts.items() if not present]
     if missing:
         raise SystemExit("missing intelligence.control source facts: " + ", ".join(missing))
-    config_text = (ROOT / "codex-rs/hepta-agentd/src/config.rs").read_text(
-        encoding="utf-8"
-    )
     facts["atomicProfileCompositionPresent"] = (
-        "with_canonical_intelligence_profile" in config_text
-        and "HostOwnedAgentdIntelligenceInvocationProviderV1::new" in config_text
+        "with_canonical_intelligence_profile" in sources["config"]
+        and "HostOwnedAgentdIntelligenceInvocationProviderV1::new" in sources["config"]
     )
     facts["defaultBinaryCanonicalProfileComposed"] = (
         "with_canonical_intelligence_profile" in sources["main"]
@@ -285,6 +300,11 @@ def implementation_document(
                 "defaultBinaryCanonicalProfileComposed"
             ],
             "durableRunIdentityPresent": facts["durableRunIdentityPresent"],
+            "authorityManifestAntiRollbackPresent": facts[
+                "authorityRollbackGuardPresent"
+            ]
+            and facts["boundedAuthorityManifestReadPresent"]
+            and facts["canonicalProfileRequiresRollbackPresent"],
             "formalProductLearningWriterPresent": facts[
                 "formalDecisionWriterPresent"
             ]
@@ -349,6 +369,14 @@ def implementation_document(
                 requirements,
             ),
             operation(
+                "IntelligenceAuthorityRollbackGuardV1",
+                "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
+                "pub struct IntelligenceAuthorityRollbackGuardV1",
+                "source_implemented_durable_anti_rollback",
+                "none",
+                requirements,
+            ),
+            operation(
                 "AgentRunCoordinator::start_bound_run",
                 "codex-rs/hepta-agentd/src/lane_b_bound.rs",
                 "pub fn start_bound_run",
@@ -401,6 +429,9 @@ def implementation_document(
             "capabilityId": "intelligence.canonical_v1",
             "advertisedOnlyWhenRunnerAndProviderPresent": facts[
                 "capabilityAllOrNoneGuardPresent"
+            ],
+            "durableAuthorityRollbackRequired": facts[
+                "canonicalProfileRequiresRollbackPresent"
             ],
             "capabilityProfileDigestSource": "AgentdIntelligenceProductRunnerV1::capability_profile_digest",
             "defaultCliAdvertises": facts["defaultBinaryCanonicalProfileComposed"],
