@@ -1,93 +1,19 @@
-name: runtime.fleet one-shot convergence
+name: runtime.fleet retired source-repair workflow
 
+# Source repairs belong in ordinary reviewed commits. This workflow deliberately
+# has no push/PR trigger, checkout, source mutation, credentials, or write grant.
 on:
-  push:
-    branches:
-      - codex/runtime-fleet-durable-owner-v1-2026-09-27
-    paths:
-      - ".github/workflows/runtime-fleet-one-shot-format.yml"
-      - "scripts/runtime_fleet_hardening.py"
-      - "scripts/runtime_fleet_hardening_fixups.py"
-      - "codex-rs/hepta-fleet/**"
-      - "codex-rs/hepta-supervisor/**"
   workflow_dispatch:
 
 permissions:
-  contents: write
-
-concurrency:
-  group: runtime-fleet-one-shot-format
-  cancel-in-progress: true
+  contents: read
 
 jobs:
-  harden-test-and-push:
-    if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 75
+  retired:
+    runs-on: ubuntu-24.04
     steps:
-      - name: Check out feature branch
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: codex/runtime-fleet-durable-owner-v1-2026-09-27
-          fetch-depth: 0
-
-      - name: Verify checked-out branch head
-        shell: bash
+      - name: Reject retired source-repair entry point
         run: |
-          set -euo pipefail
-          test "$(git branch --show-current)" = "codex/runtime-fleet-durable-owner-v1-2026-09-27"
-          git diff --check
-
-      - name: Apply runtime.fleet hardening
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/runtime_fleet_hardening.py
-          python3 scripts/runtime_fleet_hardening_fixups.py
-
-      - name: Apply and verify repository rustfmt
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo fmt --all
-          cargo fmt --all -- --check
-
-      - name: Run focused runtime.fleet tests
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test -p codex-hepta-fleet --all-targets
-          cargo test -p codex-hepta-supervisor --all-targets
-          cargo check -p codex-hepta-supervisor --bin hepta-supervisord
-
-      - name: Run strict focused lint
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo clippy -p codex-hepta-fleet --all-targets --all-features -- -D warnings
-          cargo clippy -p codex-hepta-supervisor --all-targets --all-features -- -D warnings
-
-      - name: Check bounded patch scope
-        shell: bash
-        run: |
-          set -euo pipefail
-          git diff --check
-          unexpected="$(git status --porcelain | awk '{print $2}' | grep -Ev '^(codex-rs/hepta-fleet/|codex-rs/hepta-supervisor/)' || true)"
-          if [ -n "$unexpected" ]; then
-            printf 'unexpected changed paths:\n%s\n' "$unexpected" >&2
-            exit 1
-          fi
-
-      - name: Commit and push verified hardening
-        shell: bash
-        run: |
-          set -euo pipefail
-          if git diff --quiet; then
-            echo "No source changes remain."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add codex-rs/hepta-fleet codex-rs/hepta-supervisor
-          git commit -m "runtime.fleet: close replay and revocation gaps"
-          git push origin HEAD:codex/runtime-fleet-durable-owner-v1-2026-09-27
+          echo 'This source-writing workflow is retired.' >&2
+          echo 'Commit repairs normally and run runtime.fleet focused qualification on the exact SHA.' >&2
+          exit 1
