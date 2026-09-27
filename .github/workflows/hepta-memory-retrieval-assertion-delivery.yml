@@ -6,7 +6,7 @@ permissions:
   contents: read
 concurrency:
   group: retrieval-assertion-delivery-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 env:
   PYTHONDONTWRITEBYTECODE: '1'
 jobs:
