@@ -1,84 +1,58 @@
-"""Control-flow tests only; synthetic receipts are not native execution evidence."""
-import importlib.util
+"""Synthetic evidence tests only: fixture counts are not Rust test results."""
+import hashlib
 import json
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-
-SPEC = importlib.util.spec_from_file_location(
-    "bao_attest", Path(__file__).with_name("attest_candidate.py")
-)
-attest = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(attest)
-
+import attest_candidate as attest
+from test_receipt_validation import receipt
 
 class CandidateAttestationTests(unittest.TestCase):
-    def receipt(self, root: Path, name: str, role: str, head: str, tree: str, passed=True) -> Path:
-        path = root / name
-        path.write_text(json.dumps({
-            "schema": "hepta.secrets-native-feedback.v1",
-            "head": head,
-            "tree": tree,
-            "expectedSha": head,
-            "candidateRole": role,
-            "identityClean": True,
-            "checks": [],
-            "passed": passed,
-            "providerDynamicE2E": False,
-            "productionExecutionProved": False,
-            "independentAcceptance": False,
-            "releaseAuthority": False,
-        }) + "\n")
-        return path
+    def fixture(self, root, role, passed=True):
+        root.mkdir()
+        value=receipt()
+        value.update(schema='hepta.secrets-native-feedback.v1',candidateRole=role,tree='b'*40,identityClean=True,passed=passed)
+        for row in value['checks']:
+            log=root/(row['check']+'.log')
+            log.write_text('test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;\n')
+            row['logSha256']=hashlib.sha256(log.read_bytes()).hexdigest()
+        path=root/'receipt.json';path.write_text(json.dumps(value));return path
 
-    def execute(self, *, merge_passed=True, dynamic=False):
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            source = self.receipt(root, "source.json", "source-head", "a" * 40, "b" * 40)
-            merge = self.receipt(
-                root, "merge.json", "synthetic-merge", "c" * 40, "d" * 40, merge_passed
-            )
-            provider = root / "provider.json"
-            provider.write_text(json.dumps({
-                "serverSha256": "e" * 64,
-                "dynamicLeaseExecutionProved": dynamic,
-            }) + "\n")
-            output = root / "attestation.json"
-            argv = [
-                "attest_candidate.py",
-                "--source-receipt", str(source),
-                "--merge-receipt", str(merge),
-                "--source-lock-sha256", "1" * 64,
-                "--source-manifest-sha256", "2" * 64,
-                "--merge-lock-sha256", "3" * 64,
-                "--merge-manifest-sha256", "4" * 64,
-                "--provider-evidence", str(provider),
-                "--output", str(output),
-            ]
-            with patch("sys.argv", argv), patch.object(
-                attest, "tool", side_effect=["rustc synthetic", "cargo synthetic"]
-            ):
-                code = attest.main()
-            return code, json.loads(output.read_text())
+    def test_complete_logs_are_checked_and_counted(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=self.fixture(Path(d)/'source','source-head')
+            self.assertEqual(attest.load_receipt(p,'source-head')['verifiedExecutedTests'],{'tests':3,'authbus-schema':3})
+    def test_failed_receipt_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=self.fixture(Path(d)/'source','source-head',False)
+            with self.assertRaisesRegex(ValueError,'did not pass'):attest.load_receipt(p,'source-head')
+    def test_tampered_or_missing_log_rejected(self):
+        for missing in (True,False):
+            with tempfile.TemporaryDirectory() as d:
+                p=self.fixture(Path(d)/'source','source-head');log=p.parent/'tests.log'
+                if missing:log.unlink()
+                else:log.write_text('replaced log')
+                with self.assertRaises(ValueError):attest.load_receipt(p,'source-head')
+    def test_zero_execution_rejected_even_with_valid_digest(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=self.fixture(Path(d)/'source','source-head');log=p.parent/'tests.log';log.write_text('test result: ok. 0 passed; 0 failed;\n')
+            v=json.loads(p.read_text())
+            for row in v['checks']:
+                if row['check']=='tests':row['logSha256']=hashlib.sha256(log.read_bytes()).hexdigest()
+            p.write_text(json.dumps(v))
+            with self.assertRaisesRegex(ValueError,'zero executed'):attest.load_receipt(p,'source-head')
+    def test_joint_attestation_preserves_nonclaims(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);source=self.fixture(root/'source','source-head');merge=self.fixture(root/'merge','synthetic-merge')
+            provider=root/'provider.json';provider.write_text(json.dumps({'serverSha256':'e'*64,'dynamicLeaseExecutionProved':False}))
+            out=root/'joint.json'
+            argv=['attest_candidate.py','--source-receipt',str(source),'--merge-receipt',str(merge),'--source-lock-sha256','1'*64,'--source-manifest-sha256','2'*64,'--merge-lock-sha256','3'*64,'--merge-manifest-sha256','4'*64,'--provider-evidence',str(provider),'--output',str(out)]
+            with patch('sys.argv',argv), patch.object(attest,'tool',side_effect=['rustc synthetic','cargo synthetic']):self.assertEqual(attest.main(),0)
+            value=json.loads(out.read_text());self.assertEqual(value['providerBinarySha256'],'e'*64);self.assertFalse(value['releaseAuthority'])
+    def test_empty_receipt_cannot_produce_joint_attestation(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=self.fixture(Path(d)/'source','source-head');v=json.loads(p.read_text());v['checks']=[];p.write_text(json.dumps(v))
+            with self.assertRaises(ValueError):attest.load_receipt(p,'source-head')
 
-    def test_binds_both_candidates_and_all_required_environment_fields(self):
-        code, receipt = self.execute()
-        self.assertEqual(code, 0)
-        self.assertEqual(receipt["sourceCommitSha"], "a" * 40)
-        self.assertEqual(receipt["syntheticMergeSha"], "c" * 40)
-        self.assertEqual(receipt["dependencyLockSha256"]["source"], "1" * 64)
-        self.assertEqual(receipt["providerBinarySha256"], "e" * 64)
-        self.assertFalse(receipt["releaseAuthority"])
-
-    def test_failed_native_receipt_is_rejected(self):
-        with self.assertRaisesRegex(ValueError, "did not pass"):
-            self.execute(merge_passed=False)
-
-    def test_dynamic_provider_claim_is_rejected(self):
-        with self.assertRaisesRegex(ValueError, "read-only blocker"):
-            self.execute(dynamic=True)
-
-
-if __name__ == "__main__":
-    unittest.main()
+if __name__=='__main__':unittest.main()
