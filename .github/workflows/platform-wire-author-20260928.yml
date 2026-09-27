@@ -7,20 +7,19 @@ on:
       - '.wire-source-authoring/**'
       - '.github/workflows/platform-wire-author-20260928.yml'
 
-# This isolated authoring branch publishes ordinary source commits only.
-# It is not a qualification workflow and is never copied into the candidate.
-# Candidate qualification workflows retain contents: read and test committed trees.
+# Source authoring only: this workflow and its patch inputs are never merged
+# into the candidate. Candidate qualification remains strictly read-only.
 permissions:
   contents: write
 
 concurrency:
   group: author-platform-wire-reviewed-source-20260928
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   publish:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
     env:
       EXPECTED_PARENT: 263c604a2be4bcdfa0d4928edc5551cf0b47fdc0
       CANDIDATE_BRANCH: codex/platform-wire-final-convergence-20260925
@@ -61,20 +60,21 @@ jobs:
           path: candidate
           fetch-depth: 1
           persist-credentials: true
-      - name: Apply reviewed source delta without qualification or permission changes
+      - name: Apply reviewed native, test and document changes
         working-directory: candidate
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_PARENT"
           test "$(git ls-remote origin "refs/heads/$CANDIDATE_BRANCH" | cut -f1)" = "$EXPECTED_PARENT"
-          git apply --check "$RUNNER_TEMP/wire-reviewed.patch"
-          git apply --index "$RUNNER_TEMP/wire-reviewed.patch"
+          # Workflow edits are published separately through the authorized API,
+          # never by elevating this source-authoring token's permissions.
+          git apply --exclude='.github/workflows/*' --check "$RUNNER_TEMP/wire-reviewed.patch"
+          git apply --exclude='.github/workflows/*' --index "$RUNNER_TEMP/wire-reviewed.patch"
           git diff --cached --check
           python3 - <<'PY'
           import subprocess
-          expected = '''.github/workflows/lane-a-foundation.yml
-          codex-rs/Cargo.lock
+          expected = '''codex-rs/Cargo.lock
           codex-rs/hepta-native-gateway/src/http_accept.rs
           codex-rs/hepta-wire/Cargo.toml
           codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs
@@ -104,13 +104,19 @@ jobs:
               raise SystemExit('source deletion is not authorized by this patch')
           subprocess.run(['git','diff','--cached','--stat'],check=True)
           PY
-      - name: Format changed Rust source as an ordinary source-authoring operation
+      - name: Format changed Rust files before the source commit
         working-directory: candidate
         shell: bash
         run: |
           set -euo pipefail
           toolchain="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
-          rustup toolchain install "$toolchain" --profile minimal --component rustfmt
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -fsS https://sh.rustup.rs -o "$RUNNER_TEMP/rustup-init.sh"
+            sh "$RUNNER_TEMP/rustup-init.sh" -y --profile minimal --default-toolchain "$toolchain" --component rustfmt
+            export PATH="$HOME/.cargo/bin:$PATH"
+          else
+            rustup toolchain install "$toolchain" --profile minimal --component rustfmt
+          fi
           git diff --cached --name-only -- '*.rs' > "$RUNNER_TEMP/wire-rust-paths"
           while IFS= read -r path; do
             rustfmt +"$toolchain" --edition 2024 --config skip_children=true "$path"
