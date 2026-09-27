@@ -31,6 +31,7 @@ mod store {
     mod runtime;
 }
 mod summary;
+mod trust_acceptance;
 mod verified_trust;
 
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER;
@@ -125,6 +126,9 @@ pub use store::StoredReceipt;
 pub use summary::EvidenceSummary;
 pub use summary::GovernanceEvidenceSummary;
 pub use summary::ProviderEvidenceSummary;
+pub use trust_acceptance::EvidenceProductionAcceptanceDispositionV1;
+pub use trust_acceptance::EvidenceTrustAcceptanceDisposition;
+pub use trust_acceptance::EvidenceTrustGenerationAcceptanceV1;
 pub use verified_trust::EvidenceIssuerView;
 pub use verified_trust::EvidenceTrustSnapshotView;
 pub use verified_trust::VerifiedEvidenceIssuer;
