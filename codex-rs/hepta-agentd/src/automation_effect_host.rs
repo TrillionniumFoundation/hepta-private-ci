@@ -44,6 +44,7 @@ use codex_hepta_contracts::ProviderEffectLookup;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
+use codex_hepta_contracts::VerifiedFinalUseRevocationHead;
 use codex_model_provider::HttpProviderEffectAdapter;
 use codex_model_provider::HttpProviderEffectConfig;
 use codex_model_provider::HttpProviderEffectContractAttestation;
@@ -230,14 +231,17 @@ impl AgentdAutomationEffectHost {
         let now_unix_ms = authority_trust.now_unix_ms().map_err(|error| {
             AgentdError::Protocol(format!("sample protected final-use clock: {error}"))
         })?;
-        revocation_feed_verifier
-            .verify(&signed_update, now_unix_ms)
-            .map_err(|error| {
-                AgentdError::GenerationFenced(format!(
-                    "initial signed final-use revocation feed rejected: {error}"
-                ))
-            })?;
-        let initial_revocations = signed_update.update.head.clone();
+        let verified_initial_head = VerifiedFinalUseRevocationHead::verify(
+            &revocation_feed_verifier,
+            &signed_update,
+            now_unix_ms,
+        )
+        .map_err(|error| {
+            AgentdError::GenerationFenced(format!(
+                "initial signed final-use revocation feed rejected: {error}"
+            ))
+        })?;
+        let initial_revocations = verified_initial_head.head().clone();
         let initial_frontier =
             FinalUseFrontier::for_initial_head(&initial_revocations).map_err(|error| {
                 AgentdError::Invalid(format!("invalid initial final-use frontier: {error}"))
