@@ -126,6 +126,7 @@ pub enum Error {
     RequestCapacity,
     ModelAlreadyLoaded,
     ModelNotLoaded,
+    ModelQuarantined,
     ModelMismatch,
     PayloadMismatch,
     TokenLimit,
@@ -147,6 +148,10 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Trusted execution adapter. Returning an error does not prove non-execution.
+/// The worker retains the active request until a valid terminal observation;
+/// the durable inference owner must reconcile that identity across restarts.
+/// An unload error leaves the model quarantined, not absent or retryable.
 pub trait ModelDriver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error>;
     fn run(
@@ -162,6 +167,13 @@ struct LoadedModel {
     manifest: ModelManifest,
     handle: DriverModelHandle,
     active_requests: usize,
+    lifecycle: ModelLifecycle,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ModelLifecycle {
+    Ready,
+    UnloadUncertain,
 }
 
 #[derive(Debug)]
@@ -234,6 +246,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 manifest,
                 handle,
                 active_requests: 0,
+                lifecycle: ModelLifecycle::Ready,
             },
         );
         Ok(observation)
@@ -256,6 +269,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.lifecycle != ModelLifecycle::Ready {
+            return Err(Error::ModelQuarantined);
+        }
         if request.model_digest != loaded.manifest.model_digest
             || request.reservation_model_digest != loaded.manifest.model_digest
         {
@@ -290,10 +306,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
             .ok_or(Error::ArithmeticOverflow)?;
         self.active_requests
             .insert(request.request_id.clone(), model_id.to_string());
-        let observed = self.driver.run(&loaded.handle, &request);
-        self.active_requests.remove(&request.request_id);
-        loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        // Driver errors, missing terminality and invalid observations all retain
+        // the same slot/identity. A new ID cannot replenish this worker's budget.
+        let observed = self.driver.run(&loaded.handle, &request)?;
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
@@ -317,6 +332,10 @@ impl<D: ModelDriver> InferenceWorker<D> {
             }
             (ExecutionStatus::Failed, observed.output_digest, true)
         };
+        if terminal_observed {
+            self.active_requests.remove(&request.request_id);
+            loaded.active_requests = loaded.active_requests.saturating_sub(1);
+        }
         Ok(InferenceExecutionObservation {
             request_id: request.request_id,
             reservation_id: request.reservation_id,
@@ -338,12 +357,18 @@ impl<D: ModelDriver> InferenceWorker<D> {
     ) -> Result<ModelUnloadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
-        let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.lifecycle != ModelLifecycle::Ready {
+            return Err(Error::ModelQuarantined);
+        }
         if loaded.active_requests != 0 {
             return Err(Error::ActiveRequests);
         }
-        let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        // Retain the exact handle and fence further use before a fallible
+        // teardown. Its error cannot establish that capacity was reclaimed.
+        loaded.lifecycle = ModelLifecycle::UnloadUncertain;
+        self.driver.unload(loaded.handle.clone())?;
+        self.models.remove(model_id);
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -516,11 +541,19 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.lifecycle != ModelLifecycle::Ready {
+            return Err(Error::ModelQuarantined);
+        }
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
             || request.weights_digest != loaded.manifest.weights_digest
         {
             return Err(Error::ModelMismatch);
+        }
+        if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens
+            || request.authorization.maximum_tokens > request.authorization.reservation_maximum_tokens
+        {
+            return Err(Error::TokenLimit);
         }
         let payload_digest = canonical_neuron_feature_payload_digest(&request);
         if request.authorization.payload_digest != payload_digest
@@ -556,11 +589,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             request.authorization.request_id.clone(),
             model_id.to_string(),
         );
-        let observed = self.driver.run_neuron_features(&loaded.handle, &request);
-        self.active_requests
-            .remove(&request.authorization.request_id);
-        loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        let observed = self.driver.run_neuron_features(&loaded.handle, &request)?;
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
         }
@@ -572,6 +601,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         } else {
             ExecutionStatus::Failed
         };
+        if observed.terminal_observed {
+            self.active_requests
+                .remove(&request.authorization.request_id);
+            loaded.active_requests = loaded.active_requests.saturating_sub(1);
+        }
         Ok(NeuronFeatureExecutionObservation {
             request_id: request.authorization.request_id,
             reservation_id: request.authorization.reservation_id,

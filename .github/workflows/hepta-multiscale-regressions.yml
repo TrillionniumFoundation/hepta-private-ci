@@ -64,6 +64,15 @@ jobs:
           printf 'Tested commit: `%s`\n\nThese are protocol/optimizer tests, not real Laya efficacy.\n' "$TESTED_SHA" >> "$GITHUB_STEP_SUMMARY"
       - uses: ./.github/actions/check-clean-worktree
         if: always()
+      - name: Retain protocol execution records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: multiscale-protocols-${{ matrix.lane }}-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/multiscale-python.*
+            ${{ runner.temp }}/existing-scope.*
+          if-no-files-found: error
 
   native-recovery:
     name: Multiscale owner recovery (${{ matrix.lane }})
@@ -124,3 +133,90 @@ jobs:
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/multiscale-native.json" --minimum-tests 2 -- just test --locked -p codex-hepta-automation --test convergence_recovery
       - uses: ./.github/actions/check-clean-worktree
         if: always()
+      - name: Retain owner execution records
+        if: always() && steps.scope.outputs.lifecycle == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: multiscale-recovery-${{ matrix.lane }}-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/multiscale-native.*
+          if-no-files-found: error
+
+  native-worker:
+    name: Multiscale worker lifecycle (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Construct exact prospective merge
+        if: matrix.lane == 'base-merge'
+        id: synthetic
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
+      - name: Bind identity and select worker scope
+        id: scope
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          FULL_SCOPE: ${{ github.event_name != 'pull_request' }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          args=(--head "$SOURCE_SHA" --github-output "$GITHUB_OUTPUT")
+          if [ "$FULL_SCOPE" = "true" ]; then args+=(--full); else args+=(--base "$BASE_SHA"); fi
+          python3 scripts/hepta_ci_scope.py "${args[@]}"
+      - uses: ./.github/actions/setup-ci
+        if: steps.scope.outputs.inference == 'true'
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        if: steps.scope.outputs.inference == 'true'
+        with:
+          toolchain: "1.95.0"
+          components: rustfmt, clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        if: steps.scope.outputs.inference == 'true'
+        with:
+          tool: nextest@0.9.103
+      - name: Worker lifecycle regressions
+        if: steps.scope.outputs.inference == 'true'
+        working-directory: codex-rs
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/worker-tests.json" --minimum-tests 12 -- just test --locked -p codex-hepta-infer-worker-host --test model_worker_lifecycle
+      - name: Worker strict lint
+        if: always() && steps.scope.outputs.inference == 'true'
+        working-directory: codex-rs
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/worker-clippy.json" -- cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+      - name: Worker formatting
+        if: always() && steps.scope.outputs.inference == 'true'
+        working-directory: codex-rs
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/worker-format.json" -- cargo fmt --package codex-hepta-infer-worker-host -- --check
+      - uses: ./.github/actions/check-clean-worktree
+        if: always()
+      - name: Retain worker execution records
+        if: always() && steps.scope.outputs.inference == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: multiscale-worker-${{ matrix.lane }}-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/worker-*
+          if-no-files-found: error
