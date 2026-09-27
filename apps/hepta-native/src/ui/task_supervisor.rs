@@ -5,9 +5,14 @@
 //! durable protocol; a shutdown timeout never detaches or replays that task.
 
 use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::MutexGuard;
+use std::sync::TryLockError;
 use std::sync::atomic::AtomicU8;
 use std::sync::atomic::Ordering;
 use std::thread::JoinHandle;
+use std::time::Duration;
+use std::time::Instant;
 
 const WAITING: u8 = 0;
 const ADMITTED: u8 = 1;
@@ -19,26 +24,47 @@ pub(crate) struct TaskAdmission(Arc<AtomicU8>);
 impl TaskAdmission {
     /// Linearization point between cancellation and entry into a runtime owner.
     pub(crate) fn begin(&self) -> Result<(), &'static str> {
-        match self.0.compare_exchange(
-            WAITING,
-            ADMITTED,
-            Ordering::AcqRel,
-            Ordering::Acquire,
-        ) {
+        match self.0.compare_exchange(WAITING, ADMITTED, Ordering::AcqRel, Ordering::Acquire) {
             Ok(_) => Ok(()),
             Err(CANCELLED) => Err("native task cancelled before runtime admission"),
             Err(_) => Err("native task admission may only be consumed once"),
         }
     }
 
+    /// Taking the mutex is not admission: the caller must still consume begin().
+    /// A cancelled or timed-out waiter never enters the runtime owner.
+    pub(crate) fn wait_lock<'a, T>(
+        &self,
+        mutex: &'a Mutex<T>,
+        maximum: Duration,
+    ) -> Result<MutexGuard<'a, T>, &'static str> {
+        let started = Instant::now();
+        loop {
+            match self.0.load(Ordering::Acquire) {
+                WAITING => {}
+                CANCELLED => return Err("native task cancelled before runtime admission"),
+                _ => return Err("cannot wait for an owner after runtime admission"),
+            }
+            if started.elapsed() >= maximum {
+                return Err("native runtime lock deadline exceeded before admission");
+            }
+            match mutex.try_lock() {
+                Ok(guard) => return Ok(guard),
+                Err(TryLockError::Poisoned(_)) => {
+                    return Err("native runtime worker lock is poisoned");
+                }
+                Err(TryLockError::WouldBlock) => {
+                    std::thread::sleep(Duration::from_millis(2).min(
+                        maximum.saturating_sub(started.elapsed()),
+                    ));
+                }
+            }
+        }
+    }
+
     fn cancel(&self) {
         // An admitted operation is deliberately not interrupted.
-        let _ = self.0.compare_exchange(
-            WAITING,
-            CANCELLED,
-            Ordering::AcqRel,
-            Ordering::Acquire,
-        );
+        let _ = self.0.compare_exchange(WAITING, CANCELLED, Ordering::AcqRel, Ordering::Acquire);
     }
 }
 
@@ -58,8 +84,6 @@ impl<T: Send + 'static> SupervisedTask<T> {
         let handle = std::thread::Builder::new()
             .name(name.to_owned())
             .spawn(move || {
-                // Wake on both return and unwind. UI polling additionally keeps a
-                // slow watchdog because the wake can precede thread termination.
                 struct WakeOnDrop<W: FnOnce()>(Option<W>);
                 impl<W: FnOnce()> Drop for WakeOnDrop<W> {
                     fn drop(&mut self) {
@@ -71,10 +95,7 @@ impl<T: Send + 'static> SupervisedTask<T> {
                 let _wake = WakeOnDrop(Some(wake));
                 work(worker_admission)
             })?;
-        Ok(Self {
-            handle: Some(handle),
-            admission,
-        })
+        Ok(Self { handle: Some(handle), admission })
     }
 
     pub(crate) fn cancel_before_admission(&self) {
@@ -87,9 +108,7 @@ impl<T: Send + 'static> SupervisedTask<T> {
             return None;
         }
         self.handle.take().map(|handle| {
-            handle
-                .join()
-                .map_err(|_| "native worker panicked; completion is not established")
+            handle.join().map_err(|_| "native worker panicked; completion is not established")
         })
     }
 }
