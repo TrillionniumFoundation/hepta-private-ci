@@ -1,4 +1,4 @@
-name: learning.eval P0 closure autofix
+name: learning.eval production closure autofix
 
 on:
   push:
@@ -10,13 +10,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: learning-eval-p0-autofix-${{ github.ref }}
+  group: learning-eval-production-autofix-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   patch-and-verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -34,8 +34,12 @@ jobs:
           toolchain: 1.95.0
           components: clippy,rustfmt
 
-      - name: Apply production-boundary patch
-        run: python3 scripts/apply-learning-eval-p0.py
+      - name: Apply complete learning.eval closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply-learning-eval-p0.py
+          python3 scripts/apply-learning-eval-p1-p2.py
 
       - name: Format touched Rust crates
         run: >-
@@ -44,12 +48,14 @@ jobs:
           --package codex-hepta-intelligence
           --package codex-hepta-agentd
 
-      - name: Verify closed world and private API
+      - name: Verify generated state and closed world
         shell: bash
         run: |
           set -euo pipefail
+          python3 scripts/hepta-learning-eval-status.py verify
           python3 scripts/hepta-lane-e-closure.py self-test
           python3 scripts/hepta-lane-e-closure.py verify
+          bash scripts/hepta-learning-eval-private-api.sh
 
       - name: Compile migrated consumers
         working-directory: codex-rs
@@ -80,8 +86,19 @@ jobs:
           intelligence_evaluation
           --test-threads=1
 
-      - name: Prove low-level API is externally private
-        run: bash scripts/hepta-learning-eval-private-api.sh
+      - name: Run injected durability and capacity tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/learning-eval
+          cd codex-rs
+          just test --locked -p codex-hepta-intelligence-eval qualification_sink_file --test-threads=1
+          just test --locked -p codex-hepta-intelligence-eval attempt_journal --test-threads=1
+          HEPTA_LEARNING_EVAL_CAPACITY_REPORT=../.hepta-evidence/learning-eval/capacity.json \
+            just test --locked -p codex-hepta-intelligence-eval \
+            checkpoint_compacts_fence_history_and_emits_capacity_measurement \
+            --test-threads=1
+          test -s ../.hepta-evidence/learning-eval/capacity.json
 
       - name: Strict lint migrated boundary
         working-directory: codex-rs
@@ -92,7 +109,7 @@ jobs:
           -p codex-hepta-agentd
           --all-targets -- -D warnings
 
-      - name: Commit verified patch
+      - name: Commit verified implementation
         shell: bash
         run: |
           set -euo pipefail
@@ -105,12 +122,14 @@ jobs:
             qualification/fixtures/learning-eval-private-api \
             qualification/module-execution-dossiers/detail/learning.eval.md \
             scripts/hepta-lane-e-closure.py \
-            scripts/hepta-learning-eval-private-api.sh
+            scripts/hepta-learning-eval-evidence.py \
+            scripts/hepta-learning-eval-private-api.sh \
+            scripts/hepta-learning-eval-status.py
           if git diff --cached --quiet; then
-            echo "verified patch already committed"
+            echo "verified implementation already committed"
             exit 0
           fi
           git config user.name hepta-learning-eval-ci
           git config user.email hepta-learning-eval-ci@users.noreply.github.com
-          git commit -m "learning.eval: close low-level admission boundary"
+          git commit -m "learning.eval: close production durability and evidence gaps"
           git push origin HEAD:fix/learning-eval-production-closure-20260927
