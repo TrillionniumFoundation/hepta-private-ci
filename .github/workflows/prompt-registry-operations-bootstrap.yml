@@ -98,4 +98,6 @@ jobs:
           git add -A
           git diff --cached --check
           git commit -m "prompt.registry: add operational checkpoint and qualification"
-          git push --force-with-lease="refs/heads/${GITHUB_REF_NAME}:${GITHUB_SHA}" origin "HEAD:refs/heads/${GITHUB_REF_NAME}"
+          git fetch --no-tags origin "+refs/heads/${GITHUB_REF_NAME}:refs/remotes/origin/${GITHUB_REF_NAME}"
+          test "$(git rev-parse "refs/remotes/origin/${GITHUB_REF_NAME}")" = "${GITHUB_SHA}"
+          git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}"
