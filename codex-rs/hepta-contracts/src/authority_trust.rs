@@ -29,6 +29,12 @@ use std::sync::Arc;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+/// Repository-wide upper bound for production authority clock uncertainty.
+/// Deployment evidence may select a stricter bound but cannot raise this cap.
+pub const MAX_PRODUCTION_CLOCK_UNCERTAINTY_MS: u64 = 60_000;
+const AUTHORITY_LEASE_KEY_ROLE: &str = "authority-lease-owner";
+const FINAL_USE_ISSUER_KEY_ROLE: &str = "final-use-issuer";
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum AuthorityTrustError {
     Invalid,
@@ -163,6 +169,7 @@ impl ProductionAuthorityTrustEvidence {
             || !self.state_directory_validated
             || !self.kms_or_hsm_custody
             || self.maximum_clock_uncertainty_ms == 0
+            || self.maximum_clock_uncertainty_ms > MAX_PRODUCTION_CLOCK_UNCERTAINTY_MS
         {
             return Err(AuthorityTrustError::Invalid);
         }
@@ -267,7 +274,9 @@ where
     pub fn validate(&self) -> Result<(), AuthorityTrustError> {
         self.evidence.validate()?;
         self.key_custody_evidence.validate()?;
-        if self.clock.production_trust_domain() != self.evidence.trust_domain
+        let now_unix_ms = self.clock.now_unix_ms()?;
+        if now_unix_ms == 0
+            || self.clock.production_trust_domain() != self.evidence.trust_domain
             || self.frontier_store.production_trust_domain() != self.evidence.trust_domain
             || self.key_custody.production_trust_domain() != self.evidence.trust_domain
             || self.key_custody_evidence.trust_domain.as_str()
@@ -276,6 +285,7 @@ where
                 != self.key_custody_evidence.provider_id.as_str()
             || self.key_custody.key_role() != self.key_custody_evidence.key_role.as_str()
             || self.clock.maximum_uncertainty_ms() == 0
+            || self.clock.maximum_uncertainty_ms() > MAX_PRODUCTION_CLOCK_UNCERTAINTY_MS
             || self.clock.maximum_uncertainty_ms() > self.evidence.maximum_clock_uncertainty_ms
             || self.evidence.key_custody_attestation_sha256
                 != self.key_custody_evidence.custody_receipt_sha256
@@ -364,6 +374,9 @@ impl AuthorityLeaseRegistry {
         bundle
             .validate()
             .map_err(|_| AuthorityLeaseError::InvalidTrust)?;
+        if bundle.key_custody_evidence.key_role.as_str() != AUTHORITY_LEASE_KEY_ROLE {
+            return Err(AuthorityLeaseError::InvalidTrust);
+        }
         let clock: Arc<dyn AuthorityClock> = bundle.clock.clone();
         let frontier_store: Arc<dyn AuthorityFrontierStore<AuthorityLeaseFrontier>> =
             bundle.frontier_store.clone();
@@ -440,7 +453,7 @@ where
     bundle
         .validate()
         .map_err(|_| FinalUseError::InvalidTrust)?;
-    if bundle.key_custody_evidence.key_role.as_str() != "final-use-issuer"
+    if bundle.key_custody_evidence.key_role.as_str() != FINAL_USE_ISSUER_KEY_ROLE
         || final_use_issuer_trust_sha256(issuer_keys)?
             != bundle.key_custody_evidence.active_key_set_sha256
     {
