@@ -2,32 +2,9 @@ name: runtime.codex required
 
 on:
   workflow_call: {}
-  push:
-    branches:
-      - main
-    paths:
-      - "codex-rs/app-server/**"
-      - "codex-rs/core/**"
-      - "codex-rs/hepta-codex-adapter/**"
-      - "codex-rs/hepta-infer-core/**"
-      - "codex-rs/hepta-infer-worker-host/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/hepta-agent-protocol/**"
-      - "docs/modules/runtime.codex/**"
-      - "qualification/module-execution-dossiers/detail/runtime.codex.md"
-      - "scripts/runtime_codex_qualification.py"
-      - ".github/workflows/runtime-codex-required.yml"
-      - ".github/workflows/blocking-ci.yml"
-  workflow_dispatch: {}
 
 permissions:
   contents: read
-  id-token: write
-  attestations: write
-
-concurrency:
-  group: runtime-codex-required-${{ github.event.pull_request.number || github.ref }}-${{ github.workflow }}
-  cancel-in-progress: true
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -114,12 +91,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Attest exact-head receipt
-        if: github.workflow == 'runtime.codex required' && github.event_name == 'push' && steps.qualify.outcome == 'success'
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
-        with:
-          subject-path: .hepta-evidence/runtime-codex/exact-head/receipt.json
-
       - name: Enforce exact-head result
         if: always()
         shell: bash
@@ -133,7 +104,7 @@ jobs:
 
   synthetic-merge:
     name: runtime.codex synthetic-merge
-    if: github.event_name == 'pull_request' || github.event.before != '0000000000000000000000000000000000000000'
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000')
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
@@ -221,12 +192,6 @@ jobs:
           path: .hepta-evidence/runtime-codex/synthetic-merge/
           if-no-files-found: error
           retention-days: 30
-
-      - name: Attest synthetic-merge receipt
-        if: github.workflow == 'runtime.codex required' && github.event_name == 'push' && steps.qualify.outcome == 'success'
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
-        with:
-          subject-path: .hepta-evidence/runtime-codex/synthetic-merge/receipt.json
 
       - name: Enforce synthetic-merge result
         if: always()
