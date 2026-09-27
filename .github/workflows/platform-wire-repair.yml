@@ -1,4 +1,4 @@
-name: platform.wire one-shot repair
+name: platform.wire read-only source consistency
 
 on:
   push:
@@ -10,6 +10,7 @@ on:
       - 'codex-rs/Cargo.lock'
       - 'codex-rs/hepta-wire/**'
       - 'docs/modules/MODULES.json'
+      - 'docs/modules/platform.wire/**'
       - 'scripts/generate_lane_a_workflow_paths.py'
       - 'scripts/test_generate_lane_a_workflow_paths.py'
   pull_request:
@@ -20,190 +21,51 @@ on:
       - 'codex-rs/Cargo.lock'
       - 'codex-rs/hepta-wire/**'
       - 'docs/modules/MODULES.json'
+      - 'docs/modules/platform.wire/**'
       - 'scripts/generate_lane_a_workflow_paths.py'
       - 'scripts/test_generate_lane_a_workflow_paths.py'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: platform-wire-one-shot-repair-${{ github.ref }}
+  group: platform-wire-source-consistency-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  repair:
-    if: >-
-      (github.event_name == 'push' && github.ref_name == 'codex/platform-wire-final-convergence-20260925') ||
-      (github.event_name == 'pull_request' &&
-       github.event.pull_request.head.repo.full_name == github.repository &&
-       github.event.pull_request.head.ref == 'codex/platform-wire-final-convergence-20260925')
+  verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 10
     env:
-      HEAD_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
       EXPECTED_SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-      CARGO_INCREMENTAL: '0'
-      CARGO_BUILD_JOBS: '2'
-      CARGO_PROFILE_TEST_DEBUG: '0'
-      CARGO_PROFILE_DEV_DEBUG: '0'
+      PYTHONDONTWRITEBYTECODE: '1'
     steps:
-      - name: Check out the writable branch head
+      - name: Check out immutable source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ env.HEAD_REF }}
+          ref: ${{ env.EXPECTED_SOURCE_SHA }}
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
-      - name: Verify exact source identity
+      # Source authoring belongs in ordinary reviewed commits. This workflow
+      # never updates a lockfile, rewrites source, formats files, or pushes refs.
+      - name: Verify source identity and generated path contract
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
-          git diff --quiet
-          git diff --cached --quiet
-
-      - name: Synchronize lock, evidence regression, generated paths and formatting
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          lock_path = Path('codex-rs/Cargo.lock')
-          lock_text = lock_path.read_text(encoding='utf-8')
-          old_lock = '''[[package]]
-          name = "codex-hepta-wire"
-          version = "0.0.0"
-          dependencies = [
-           "codex-hepta-types",
-          ]
-          '''
-          new_lock = '''[[package]]
-          name = "codex-hepta-wire"
-          version = "0.0.0"
-          dependencies = [
-           "codex-hepta-types",
-           "serde_json",
-          ]
-          '''
-          if old_lock in lock_text:
-              if lock_text.count(old_lock) != 1:
-                  raise SystemExit('ambiguous codex-hepta-wire lock entry')
-              lock_path.write_text(lock_text.replace(old_lock, new_lock), encoding='utf-8')
-          elif new_lock not in lock_text:
-              raise SystemExit('unexpected codex-hepta-wire lock entry')
-
-          test_path = Path('codex-rs/hepta-wire/src/stream_tests.rs')
-          test_text = test_path.read_text(encoding='utf-8')
-          test_name = 'fn many_small_frames_transfer_ownership_without_retaining_suffix()'
-          anchor = '''#[test]
-          fn many_small_frames_stop_at_the_explicit_work_budget() -> Result<(), Box<dyn Error>> {
-          '''
-          regression = '''#[test]
-          fn many_small_frames_transfer_ownership_without_retaining_suffix() -> Result<(), Box<dyn Error>> {
-              let frame =
-                  WireEnvelopeV2::new(stable("s")?, stable("p")?, Generation::new(1)?, vec![1])?.encode();
-              let count = 128;
-              let chunk = frame.repeat(count);
-              let mut decoder = StreamingDecoder::new();
-              let batch = decoder.push_batch(&chunk);
-              assert_eq!(batch.frames().len(), count);
-              assert_eq!(batch.terminal_error(), None);
-              assert_eq!(decoder.buffered_len(), 0);
-              assert!(!decoder.is_poisoned());
-              Ok(())
-          }
-
-          '''
-          if test_name not in test_text:
-              if anchor not in test_text:
-                  raise SystemExit('stream regression insertion anchor missing')
-              test_path.write_text(test_text.replace(anchor, regression + anchor), encoding='utf-8')
-
-          workflow_path = Path('.github/workflows/lane-a-foundation.yml')
-          workflow = workflow_path.read_text(encoding='utf-8')
-          if 'BEGIN GENERATED LANE A MODULE PATHS' not in workflow:
-              old_paths = '''    paths:
-                - "codex-rs/hepta-*/**"
-                - "codex-rs/kernel-*/**"
-                - "docs/contracts/**"
-                - "docs/lane-a-foundation/**"
-                - "docs/modules/platform.types/**"
-                - "docs/modules/platform.wire/**"
-          '''
-              new_paths = '''    paths:
-                # BEGIN GENERATED LANE A MODULE PATHS
-                # END GENERATED LANE A MODULE PATHS
-                - "docs/modules/MODULES.json"
-                - "docs/contracts/**"
-                - "docs/lane-a-foundation/**"
-          '''
-              if old_paths not in workflow:
-                  raise SystemExit('Lane A path bootstrap anchor missing')
-              workflow = workflow.replace(old_paths, new_paths, 1)
-          script_anchor = '''      - "scripts/lane_a_foundation_core.py"
-                - "scripts/lane_a_foundation_lib.py"
-          '''
-          script_paths = '''      - "scripts/lane_a_foundation_core.py"
-                - "scripts/lane_a_foundation_lib.py"
-                - "scripts/generate_lane_a_workflow_paths.py"
-                - "scripts/test_generate_lane_a_workflow_paths.py"
-          '''
-          if 'scripts/generate_lane_a_workflow_paths.py' not in workflow:
-              if script_anchor not in workflow:
-                  raise SystemExit('Lane A generator trigger anchor missing')
-              workflow = workflow.replace(script_anchor, script_paths, 1)
-          verify_anchor = '''          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-                python3 scripts/verify_lane_a_foundation.py self-test
-          '''
-          verify_paths = '''          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-                python3 scripts/generate_lane_a_workflow_paths.py check
-                python3 -m unittest discover -s scripts -p 'test_generate_lane_a_workflow_paths.py'
-                python3 scripts/verify_lane_a_foundation.py self-test
-          '''
-          if "test_generate_lane_a_workflow_paths.py'" not in workflow:
-              if workflow.count(verify_anchor) != 2:
-                  raise SystemExit('Lane A verification insertion anchors missing')
-              workflow = workflow.replace(verify_anchor, verify_paths)
-          workflow_path.write_text(workflow, encoding='utf-8')
-          PY
-          python3 scripts/generate_lane_a_workflow_paths.py write
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-wire
-          git diff --check
-
-      - name: Verify Lane A truth before committing
-        shell: bash
-        run: |
-          set -euo pipefail
           python3 scripts/generate_lane_a_workflow_paths.py check
           python3 -m unittest discover -s scripts -p 'test_generate_lane_a_workflow_paths.py'
-          python3 scripts/verify_lane_a_foundation.py self-test
-          python3 scripts/verify_lane_a_foundation.py verify
           python3 scripts/platform_wire_status.py self-test
           python3 scripts/platform_wire_status.py check-doc
 
-      - name: Commit the atomic repair to the branch
+      - name: Reject source or untracked-file drift
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
-          git add .github/workflows/lane-a-foundation.yml codex-rs/Cargo.lock codex-rs/hepta-wire \
-            scripts/generate_lane_a_workflow_paths.py scripts/test_generate_lane_a_workflow_paths.py
-          if git diff --cached --quiet; then
-            echo 'No repair changes were required.'
-            exit 0
-          fi
-          git config user.name 'Hepta Platform Wire CI'
-          git config user.email 'hepta-platform-wire-ci@users.noreply.github.com'
-          git commit -m 'fix(platform.wire): synchronize qualification source'
-          git push origin "HEAD:$HEAD_REF"
-
-      - name: Validate the repaired checkout
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/generate_lane_a_workflow_paths.py check
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-wire -- --check
-          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --no-run
-          git diff --quiet
-          git diff --cached --quiet
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
