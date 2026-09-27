@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: prompt-registry-product-e2e-apply-${{ github.ref }}
+  group: prompt-registry-product-e2e-apply-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
