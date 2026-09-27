@@ -122,7 +122,7 @@ def one_fault(binary: Path, fault: str, output: Path) -> dict:
                 record["filledBytes"] = fill_to_enospc(filler)
                 record["observedErrno"] = errno.ENOSPC
             elif fault == "erofs":
-                command(privilege + ["mount", "-o", "remount,ro", str(mount)])
+                command(privilege + ["mount", "-t", "tmpfs", "-o", "remount,ro", "ndu-qualification", str(mount)])
                 probe_erofs(mount / "read-only-probe")
                 record["observedErrno"] = errno.EROFS
             else:
@@ -132,7 +132,7 @@ def one_fault(binary: Path, fault: str, output: Path) -> dict:
             if fault == "enospc":
                 filler.unlink()
             else:
-                command(privilege + ["mount", "-o", "remount,rw", str(mount)])
+                command(privilege + ["mount", "-t", "tmpfs", "-o", "remount,rw", "ndu-qualification", str(mount)])
             send_phase(process, "RECOVER")
             record["phases"].append(expect_phase(process, "RECOVERED"))
             record["exitCode"] = process.wait(timeout=10)

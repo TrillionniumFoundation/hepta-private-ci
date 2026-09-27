@@ -243,7 +243,6 @@ fn canonical_ndu_control_request_digest_v2(
         } => {
             bytes.push(1);
             push_mutation(&mut bytes, mutation)?;
-            require_digest(expected_head)?;
             bytes.extend_from_slice(expected_head);
         }
         NduControlRequestV1::Apply {
@@ -253,7 +252,6 @@ fn canonical_ndu_control_request_digest_v2(
         } => {
             bytes.push(2);
             push_mutation(&mut bytes, mutation)?;
-            require_digest(expected_head)?;
             bytes.extend_from_slice(expected_head);
             let signing_bytes = grant
                 .grant
@@ -474,9 +472,9 @@ mod tests {
     fn payload_digest_binds_the_exact_inner_request() {
         let mut value = admission();
         if let NduControlRequestV1::ExternalAdmissionV2 { request, .. } = &mut value {
-            *request = Box::new(NduControlRequestV1::Outcome {
+            **request = NduControlRequestV1::Outcome {
                 identity: nonzero(9),
-            });
+            };
         } else {
             panic!("admission fixture changed")
         }
