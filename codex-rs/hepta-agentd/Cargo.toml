@@ -12,10 +12,15 @@ doctest = false
 
 [features]
 # Production mutation authority is supplied by the independently recovered
-# Agentd production host, never by a Cargo feature. This feature only enables
-# the qualification witness and fail-closed startup seam.
+# Agentd production host, never by a Cargo feature. These default-off features
+# expose only qualification witnesses that remain outside production authority.
 default = []
 qualification-cognitive-write = []
+# Legacy intelligence-ledger qualification remains source-compatible while the
+# fixture is migrated into the dedicated qualification host. The exact feature
+# edge is reviewed by verify_cargo_workspace_manifests.py and is never enabled
+# by default or by the cognitive.read product qualification.
+qualification-legacy-learning-write = ["codex-hepta-learning-ledger/qualification-legacy-write"]
 
 [[bin]]
 name = "codex-hepta-agentd"
