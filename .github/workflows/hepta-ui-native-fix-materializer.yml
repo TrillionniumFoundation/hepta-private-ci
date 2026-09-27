@@ -11,18 +11,19 @@ permissions:
 
 concurrency:
   group: ui-native-integration-convergence-executor-20260927
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   CARGO_TERM_COLOR: always
   CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
   CARGO_TARGET_DIR: ${{ github.workspace }}/apps/hepta-native/target
   CANDIDATE_BRANCH: work/ui-native-integration-convergence-20260927
   ANCESTOR_SHA: 709aab0b61f2484b7f5c1efadee96fb14fc5cd31
 
 jobs:
   converge:
-    runs-on: macos-15
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 180
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -69,6 +70,17 @@ jobs:
           python3 scripts/hepta_ui_native_release_gates.py audit
           python3 -m unittest -v scripts.test_hepta_ui_native_release_gates
           git diff --check
+
+      - name: Install Linux native prerequisites
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
+            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
+            libgl1-mesa-dev libssl-dev desktop-file-utils \
+            xvfb xauth dbus-x11 gnome-keyring xdotool x11-utils \
+            python3-cryptography fonts-noto-cjk
 
       - name: Install pinned Rust toolchain
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
