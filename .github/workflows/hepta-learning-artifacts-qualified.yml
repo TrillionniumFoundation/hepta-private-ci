@@ -1,0 +1,130 @@
+name: Learning artifacts exact-source qualification
+
+on:
+  push:
+    branches: [main, fix/learning-artifacts-qualified-owner-20260927]
+  pull_request:
+    branches: [main]
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-artifacts-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  source:
+    name: learning-artifacts-source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Retain exact source and Git object inventory
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p .hepta-evidence/learning-artifacts/source
+          git rev-parse HEAD HEAD^{tree} > .hepta-evidence/learning-artifacts/source/identity.txt
+          git ls-tree -r -t -z HEAD > .hepta-evidence/learning-artifacts/source/tree.bin
+          git archive --format=tar.gz -o .hepta-evidence/learning-artifacts/source/source.tar.gz HEAD \
+            codex-rs/hepta-learning-artifacts codex-rs/hepta-types codex-rs/hepta-contracts \
+            codex-rs/hepta-agentd/src/cognitive_ranker.rs codex-rs/Cargo.toml codex-rs/Cargo.lock \
+            scripts docs/modules docs/lane-e qualification/lane-e .github/workflows justfile
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-artifacts-source-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/learning-artifacts/source/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Lane E source verification (never regenerated in verification)
+        run: |
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+
+  native:
+    name: learning-artifacts-native
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Install native test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install pinned Rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Bind source
+        id: source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p .hepta-evidence/learning-artifacts/native
+          git rev-parse HEAD HEAD^{tree} > .hepta-evidence/learning-artifacts/native/identity.txt
+      - name: Locked all-target build
+        id: build
+        run: |
+          set -euo pipefail
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-learning-artifacts --all-targets 2>&1 | tee .hepta-evidence/learning-artifacts/native/build.log
+      - name: Complete artifact suite including process-kill recovery
+        id: tests
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-learning-artifacts --no-tests=fail --status-level all --final-status-level all 2>&1 | tee .hepta-evidence/learning-artifacts/native/tests.log
+      - name: Strict all-target lint
+        id: lint
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-learning-artifacts --all-targets -- -D warnings 2>&1 | tee .hepta-evidence/learning-artifacts/native/lint.log
+      - name: Artifact formatting
+        id: format
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts -- --check
+      - name: Retain command outcomes, not a release receipt
+        if: ${{ always() }}
+        env:
+          OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          mkdir -p .hepta-evidence/learning-artifacts/native
+          printf '%s\n' "$OUTCOMES" > .hepta-evidence/learning-artifacts/native/steps.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ always() }}
+        with:
+          name: learning-artifacts-native-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-artifacts/native/
+          if-no-files-found: error
+
+  required:
+    name: Learning artifacts required
+    needs: [source, native]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Reject failed, cancelled, missing or skipped qualifications
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          results = json.loads(os.environ['RESULTS'])
+          assert set(results) == {'source', 'native'}, results
+          assert all(row['result'] == 'success' for row in results.values()), results
+          PY
