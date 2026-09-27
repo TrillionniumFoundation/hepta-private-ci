@@ -31,7 +31,7 @@ env:
 jobs:
   converge:
     name: Apply, qualify, and seal cognitive.read convergence
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
       - name: Check out exact branch head
@@ -179,7 +179,7 @@ jobs:
           python3 scripts/hepta-implementation-maps.py verify \
             --expected-sha "$expected_sha" \
             --expected-tree "$(git rev-parse HEAD^{tree})"
-          python3 -m unittest scripts/test_hepta_implementation_maps.py
+          PYTHONPATH=scripts python3 -m unittest scripts/test_hepta_implementation_maps.py
           cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
           cargo check --manifest-path codex-rs/Cargo.toml --locked \
             -p codex-hepta-cognitive-read \
