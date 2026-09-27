@@ -29,6 +29,7 @@ use codex_hepta_types::Digest32;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdIntelligenceOwnerInputsV1;
+use crate::AgentdNeuronInvocationSealV1;
 use crate::AgentdSignedEvaluationV2;
 
 type RequestOwnerV1 = dyn Fn(&AgentdIdentity, &RunStartRecordV1) -> Result<CanonicalIntelligenceRunRequestV1, AgentdError>
@@ -331,4 +332,17 @@ pub trait AgentdIntelligenceInvocationProviderV1: Send + Sync {
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
     ) -> Result<AgentdIntelligenceInvocationV1, AgentdError>;
+
+    /// Product-only extension point for the typed bootstrap. Compatibility
+    /// providers return no seal and retain the historical pure sparse stage;
+    /// the canonical bootstrap overrides this method with a non-forgeable,
+    /// owner-issued one-shot result that the runner carries to the stage.
+    fn seal_neuron(
+        &self,
+        _identity: &AgentdIdentity,
+        _record: &RunStartRecordV1,
+        _invocation: &AgentdIntelligenceInvocationV1,
+    ) -> Result<Option<AgentdNeuronInvocationSealV1>, AgentdError> {
+        Ok(None)
+    }
 }
