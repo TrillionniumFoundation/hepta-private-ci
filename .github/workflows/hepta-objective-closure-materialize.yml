@@ -1,4 +1,4 @@
-# closure-trigger: durable-proof-and-evidence-desktop-group-r4-20260927
+# closure-trigger: durable-proof-and-evidence-pocket4-r5-20260927
 name: Hepta objective compiler closure materializer
 
 on:
@@ -18,9 +18,7 @@ concurrency:
 
 jobs:
   materialize:
-    runs-on:
-      group: trillionnium-android-gpu
-      labels: [self-hosted, linux, x64]
+    runs-on: [self-hosted, linux, x64, pocket4]
     timeout-minutes: 150
     env:
       TARGET_BRANCH: work/objective-compiler-production-convergence-20260927
