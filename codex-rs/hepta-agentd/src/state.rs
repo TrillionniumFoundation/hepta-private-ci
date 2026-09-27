@@ -569,17 +569,16 @@ impl AgentdState {
 
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
         self.intelligence_product.get().is_some()
-            && self
-                .intelligence_invocation
-                .get()
-                .is_some_and(|provider| !provider.profile_digest().is_zero())
+            && self.intelligence_invocation.get().is_some_and(|provider| {
+                !provider.profile_digest().is_zero() && provider.learning_host().is_some()
+            })
     }
 
     /// Prepare the exact durable Objective through the configured canonical
-    /// seven-owner composition, then atomically freeze its run/context identity
-    /// into the sole Agentd run coordinator. None is explicit compatibility
-    /// mode: both the runner and host-owned invocation provider must be present
-    /// before canonical execution is attempted or advertised.
+    /// seven-owner composition, durably acknowledge its exact learning Decision,
+    /// then atomically freeze the run/context identity into the sole Agentd run
+    /// coordinator. A pending, rejected, revoked or indeterminate Decision can
+    /// never become a physical-turn binding or an advertised ready run.
     pub(crate) async fn start_canonical_intelligence(
         &self,
         record: &RunStartRecordV1,
@@ -595,10 +594,20 @@ impl AgentdState {
                 "canonical intelligence provider profile is incomplete".to_string(),
             ));
         }
+        let learning_host = provider.learning_host().ok_or_else(|| {
+            AgentdError::Invalid(
+                "canonical intelligence product profile has no durable learning owner".to_string(),
+            )
+        })?;
 
         let invocation = provider.build(&self.identity, record)?;
         invocation.validate(&self.identity, record)?;
-        let (request, inputs, run_start) = invocation.into_parts();
+        let (request, inputs, run_start, decision_plan) = invocation.into_parts();
+        let decision_plan = decision_plan.ok_or_else(|| {
+            AgentdError::Invalid(
+                "canonical intelligence invocation has no product Decision plan".to_string(),
+            )
+        })?;
 
         // Freeze only the small immutable composition while holding the run
         // lock. Owner execution is allowed to block without monopolizing run
@@ -620,12 +629,34 @@ impl AgentdState {
 
         match outcome {
             crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
-                // Owner preparation is asynchronous. Revalidate the durable
-                // signed Objective and Fleet fence again after it completes,
-                // twice as the compatibility path does at its final boundary.
+                // The policy Decision is a product fact, not an inference-side
+                // convenience. Persist it before publishing ContextAttached so
+                // no physical caller can observe a ready run without a durable,
+                // restart-reconcilable Decision.
+                let decision_now = self.require_current_run_start(record)?;
+                let decision_status = decision_plan
+                    .append_prepared_decision(&learning_host, &prepared, decision_now)
+                    .map_err(|error| {
+                        AgentdError::Protocol(format!(
+                            "canonical intelligence Decision append failed: {error}"
+                        ))
+                    })?;
+                if !matches!(
+                    &decision_status.state,
+                    crate::IntelligenceLearningStateV1::Acknowledged { .. }
+                ) {
+                    return Err(AgentdError::Protocol(format!(
+                        "canonical intelligence Decision is not durably acknowledged: {:?}",
+                        decision_status.state
+                    )));
+                }
+
+                // Owner preparation and learning acknowledgement are both
+                // asynchronous. Revalidate the signed Objective/Fleet fence
+                // twice again immediately before the run mutation.
                 let first_now = self.require_current_run_start(record)?;
                 let second_now = self.require_current_run_start(record)?;
-                let now_ms = first_now.max(second_now);
+                let now_ms = decision_now.max(first_now).max(second_now);
                 let snapshot = prepared.run_snapshot();
                 let attachment = prepared.context_attachment();
                 let mut runs = self.runs.lock().map_err(poisoned_state)?;
