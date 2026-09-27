@@ -115,7 +115,10 @@ mod tests {
         let error = AgentdError::from(AgentdIntuitionServiceErrorV1::Policy(
             AgentdIntuitionPolicyError::PreparedEvidenceExpired,
         ));
-        assert_eq!(error.to_string(), "agentd.intuition.prepared_evidence_expired");
+        assert_eq!(
+            error.to_string(),
+            "agentd.intuition.prepared_evidence_expired"
+        );
         assert!(matches!(
             error,
             AgentdError::IntuitionPolicy(source)

@@ -153,10 +153,15 @@ fn require_decision_parity(
                 propensity,
             },
             ProductionDispositionV1::Selected(authenticated_id),
-        ) if candidate_id == authenticated_id => propensities
-            .iter()
-            .find(|row| &row.candidate_id == authenticated_id)
-            .is_some_and(|row| row.probability == *propensity),
+        ) if candidate_id == authenticated_id && propensity.raw() > 0 => {
+            let mut matching = propensities
+                .iter()
+                .filter(|row| &row.candidate_id == authenticated_id);
+            matching
+                .next()
+                .is_some_and(|row| row.probability == *propensity)
+                && matching.next().is_none()
+        }
         (AdvisoryDecisionV1::Abstained, ProductionDispositionV1::Abstained(_)) => true,
         (AdvisoryDecisionV1::SlowPath, ProductionDispositionV1::SlowPath(_)) => true,
         _ => false,
@@ -198,13 +203,51 @@ mod tests {
     }
 
     #[test]
+    fn decision_parity_rejects_zero_missing_duplicate_and_changed_propensity() {
+        let candidate = id("candidate:one");
+        let selected = ProductionDispositionV1::Selected(candidate.clone());
+        let canonical = AdvisoryDecisionV1::Selected {
+            candidate_id: candidate.clone(),
+            propensity: ProbabilityQ32::ONE,
+        };
+        let row = CalibratedCandidatePropensityV1 {
+            candidate_id: candidate.clone(),
+            probability: ProbabilityQ32::ONE,
+        };
+        assert!(!require_decision_parity(&canonical, &selected, &[]));
+        assert!(!require_decision_parity(
+            &canonical,
+            &selected,
+            &[row.clone(), row],
+        ));
+        let zero_row = CalibratedCandidatePropensityV1 {
+            candidate_id: candidate.clone(),
+            probability: ProbabilityQ32::ZERO,
+        };
+        assert!(!require_decision_parity(
+            &canonical,
+            &selected,
+            std::slice::from_ref(&zero_row),
+        ));
+        let zero_canonical = AdvisoryDecisionV1::Selected {
+            candidate_id: candidate,
+            propensity: ProbabilityQ32::ZERO,
+        };
+        assert!(!require_decision_parity(
+            &zero_canonical,
+            &selected,
+            &[zero_row],
+        ));
+    }
+
+    #[test]
     fn terminal_outcome_parity_preserves_disposition_class() {
+        let authenticated =
+            ProductionDispositionV1::SlowPath(ProductionSlowPathReasonV1::ProfileRiskRule);
         assert!(
             require_outcome_parity(
                 &AgentdIntelligenceProductOutcomeV1::SlowPath,
-                &ProductionDispositionV1::SlowPath(
-                    ProductionSlowPathReasonV1::ProfileRiskRule,
-                ),
+                &authenticated,
                 &[],
             )
             .is_ok()
@@ -212,9 +255,7 @@ mod tests {
         assert!(
             require_outcome_parity(
                 &AgentdIntelligenceProductOutcomeV1::Abstained,
-                &ProductionDispositionV1::SlowPath(
-                    ProductionSlowPathReasonV1::ProfileRiskRule,
-                ),
+                &authenticated,
                 &[],
             )
             .is_err()

@@ -18,8 +18,8 @@ fn prepared_decision_rejects_every_changed_host_pin_before_writing() {
     let ledger = DurableLedger::create(open_rw(&ledger_path), binding, 64).expect("ledger");
     let witness = LedgerWitnessStore::create(open_rw(&witness_path), binding).expect("witness");
     let parent = File::open(directory.path()).expect("parent");
-    let writer = LedgerWriter::from_durable(ledger, witness, activated, &parent, &parent)
-        .expect("writer");
+    let writer =
+        LedgerWriter::from_durable(ledger, witness, activated, &parent, &parent).expect("writer");
     let learning = Arc::new(IntuitionPolicyLearningSink::new(writer));
     let pins = AgentdIntuitionPolicyPinsV2 {
         policy_profile_digest: canonical_policy_profile_digest_v1(&profile).expect("profile"),
@@ -99,9 +99,7 @@ fn prepared_decision_rejects_every_changed_host_pin_before_writing() {
     // A later-valid Decision signature must not extend the original three-party
     // qualification, whose earliest expiry is 200.
     decision_evidence.expires_at = 400;
-    decision_evidence.signature = keys[0]
-        .sign(&decision_evidence.signing_bytes())
-        .to_bytes();
+    decision_evidence.signature = keys[0].sign(&decision_evidence.signing_bytes()).to_bytes();
 
     for field in 0..10 {
         let mut changed = pins.clone();
@@ -162,19 +160,93 @@ fn prepared_decision_rejects_every_changed_host_pin_before_writing() {
             Err(AgentdIntuitionPolicyError::PreparedEvidenceExpired)
         ));
     }
+    // Missing/forged evidence and stale daemon generation are rejected before
+    // any append. The final receipt's sequence below proves no rejected attempt
+    // created a hidden Decision.
+    assert!(matches!(
+        host.commit_v3(
+            &agent_id,
+            SPAWN_GENERATION,
+            prepared.clone(),
+            Digest32::ZERO,
+            None,
+            NOW,
+        ),
+        Err(AgentdIntuitionPolicyError::MissingDecisionEvidence)
+    ));
+    assert!(matches!(
+        host.commit_v3(
+            &agent_id,
+            SPAWN_GENERATION + 1,
+            prepared.clone(),
+            Digest32::ZERO,
+            Some(decision_evidence.clone()),
+            NOW,
+        ),
+        Err(AgentdIntuitionPolicyError::GenerationFence)
+    ));
+    let mut forged = decision_evidence.clone();
+    forged.signature[0] ^= 1;
+    assert!(matches!(
+        host.commit_v3(
+            &agent_id,
+            SPAWN_GENERATION,
+            prepared.clone(),
+            Digest32::ZERO,
+            Some(forged),
+            NOW,
+        ),
+        Err(AgentdIntuitionPolicyError::Learning(_))
+    ));
+    let wrong_role = sign_evidence(
+        &verifier,
+        &principals[1],
+        &keys[1],
+        LearningEvidenceRoleV1::Evaluator,
+        "evidence:commit-boundary:wrong-role",
+        &payload,
+    );
+    assert!(matches!(
+        host.commit_v3(
+            &agent_id,
+            SPAWN_GENERATION,
+            prepared.clone(),
+            Digest32::ZERO,
+            Some(wrong_role),
+            NOW,
+        ),
+        Err(AgentdIntuitionPolicyError::Learning(_))
+    ));
+    let replay_prepared = prepared.clone();
     let committed = host
         .commit_v3(
             &agent_id,
             SPAWN_GENERATION,
             prepared,
             Digest32::ZERO,
-            Some(decision_evidence),
+            Some(decision_evidence.clone()),
             199,
         )
         .expect("unchanged host and valid evidence lifetime");
+    let first = committed.learning.expect("durable receipt");
     assert_eq!(
-        committed.learning.expect("durable receipt").sequence.get(),
+        first.sequence.get(),
         1,
         "a rejected prepare/commit attempt must not append a Decision"
     );
+    let replay = host
+        .commit_v3(
+            &agent_id,
+            SPAWN_GENERATION,
+            replay_prepared,
+            Digest32::ZERO,
+            Some(decision_evidence),
+            199,
+        )
+        .expect("exact retry after all rejected attempts");
+    let replay = replay.learning.expect("replay receipt");
+    assert_eq!(replay.disposition, AppendDisposition::IdempotentReplay);
+    assert_eq!(replay.sequence, first.sequence);
+    assert_eq!(replay.event_digest, first.event_digest);
+    assert_eq!(replay.chain_digest, first.chain_digest);
 }
