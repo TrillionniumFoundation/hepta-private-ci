@@ -1,0 +1,129 @@
+name: cognitive-types-exact-qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/hepta-cognitive-read/tests/canonical_consumer_v1.rs"
+      - "codex-rs/hepta-cognitive-store/src/canonical_adapter.rs"
+      - "codex-rs/hepta-cognitive-store/src/lib.rs"
+      - "codex-rs/hepta-cognitive-store/tests/canonical_consumer_v1.rs"
+      - "codex-rs/hepta-memory-retrieval/tests/canonical_consumer_v1.rs"
+      - "codex-rs/hepta-compact-engine/tests/canonical_consumer_v1.rs"
+      - "codex-rs/hepta-intelligence/tests/canonical_consumer_v1.rs"
+      - "docs/modules/cognitive.types/**"
+      - "qualification/cognitive-types-v1/**"
+      - "scripts/cognitive-types-qualification-receipt.py"
+      - ".github/workflows/cognitive-types-exact-qualification.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/hepta-cognitive-read/tests/canonical_consumer_v1.rs"
+      - "codex-rs/hepta-cognitive-store/src/canonical_adapter.rs"
+      - "codex-rs/hepta-cognitive-store/src/lib.rs"
+      - "codex-rs/hepta-cognitive-store/tests/canonical_consumer_v1.rs"
+      - "codex-rs/hepta-memory-retrieval/tests/canonical_consumer_v1.rs"
+      - "codex-rs/hepta-compact-engine/tests/canonical_consumer_v1.rs"
+      - "codex-rs/hepta-intelligence/tests/canonical_consumer_v1.rs"
+      - "docs/modules/cognitive.types/**"
+      - "qualification/cognitive-types-v1/**"
+      - "scripts/cognitive-types-qualification-receipt.py"
+      - ".github/workflows/cognitive-types-exact-qualification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_INCREMENTAL: 0
+  CARGO_TERM_COLOR: always
+
+concurrency:
+  group: cognitive-types-exact-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-head:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact pull-request head or pushed commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run exact-head qualification and write receipt
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python3 scripts/cognitive-types-qualification-receipt.py \
+            --candidate-kind exact-head \
+            --output qualification-out/cognitive-types-exact-head.json \
+            --command 'cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types -- --check' \
+            --command 'cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets' \
+            --command 'cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D warnings' \
+            --command 'cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types' \
+            --command 'python3 qualification/cognitive-types-v1/verify_vectors.py' \
+            --command 'python3 qualification/cognitive-types-v1/verify_domain_vectors.py' \
+            --command 'node qualification/cognitive-types-v1/verify_domain_vectors.mjs' \
+            --command 'cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-read --test canonical_consumer_v1' \
+            --command 'cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-store --test canonical_consumer_v1' \
+            --command 'cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-memory-retrieval --test canonical_consumer_v1' \
+            --command 'cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-compact-engine --test canonical_consumer_v1' \
+            --command 'cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-intelligence --test canonical_consumer_v1'
+
+      - name: Upload exact-head receipt
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: cognitive-types-exact-head-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qualification-out/cognitive-types-exact-head.json
+          if-no-files-found: error
+          retention-days: 30
+
+  synthetic-merge:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out GitHub synthetic merge candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run synthetic-merge qualification and write receipt
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python3 scripts/cognitive-types-qualification-receipt.py \
+            --candidate-kind synthetic-merge \
+            --output qualification-out/cognitive-types-synthetic-merge.json \
+            --command 'cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types -- --check' \
+            --command 'cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets' \
+            --command 'cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D warnings' \
+            --command 'cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types' \
+            --command 'python3 qualification/cognitive-types-v1/verify_vectors.py' \
+            --command 'python3 qualification/cognitive-types-v1/verify_domain_vectors.py' \
+            --command 'node qualification/cognitive-types-v1/verify_domain_vectors.mjs' \
+            --command 'cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-read --test canonical_consumer_v1' \
+            --command 'cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-store --test canonical_consumer_v1' \
+            --command 'cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-memory-retrieval --test canonical_consumer_v1' \
+            --command 'cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-compact-engine --test canonical_consumer_v1' \
+            --command 'cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-intelligence --test canonical_consumer_v1'
+
+      - name: Upload synthetic-merge receipt
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: cognitive-types-synthetic-merge-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qualification-out/cognitive-types-synthetic-merge.json
+          if-no-files-found: error
+          retention-days: 30
