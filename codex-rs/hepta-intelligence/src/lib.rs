@@ -7,6 +7,7 @@
 #![forbid(unsafe_code)]
 
 mod canonical;
+mod canonical_guard;
 
 pub use canonical::AdvisoryDecisionReceiptV1;
 pub use canonical::AdvisoryDecisionV1;
@@ -36,8 +37,8 @@ pub use canonical::OwnerBindingV1;
 pub use canonical::assemble_context;
 pub use canonical::build_legal_candidates;
 pub use canonical::decide_boundary;
-pub use canonical::prepare_intelligence_run;
 pub use canonical::validate_current_snapshot;
+pub use canonical_guard::prepare_intelligence_run;
 
 mod evaluated_shadow;
 mod ndu_stochastic_admission;
