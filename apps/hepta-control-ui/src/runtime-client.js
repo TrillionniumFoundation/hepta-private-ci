@@ -45,6 +45,8 @@ export class RuntimeClient {
   #session = null;
   #snapshot = null;
   #ledger;
+  #connectPromise = null;
+  #connectionEpoch = 0;
 
   constructor({
     transport,
@@ -71,10 +73,63 @@ export class RuntimeClient {
   }
 
   async connect(endpointManifest, { signal } = {}) {
+    if (this.#session !== null) {
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.ALREADY_CONNECTED,
+        "ui.control client is already connected",
+        { details: { sessionId: this.#session.sessionId } },
+      );
+    }
+    if (this.#connectPromise) return this.#connectPromise;
+
+    const epoch = ++this.#connectionEpoch;
+    const attempt = this.#connectOnce(endpointManifest, signal, epoch);
+    this.#connectPromise = attempt;
+    try {
+      return await attempt;
+    } finally {
+      if (this.#connectPromise === attempt) this.#connectPromise = null;
+    }
+  }
+
+  async #connectOnce(endpointManifest, signal, epoch) {
     const rawSession = await this.#transport.connect(endpointManifest, { signal });
-    this.#session = normalizeSession(rawSession, this.#protocolVersion, this.#clock());
+    let normalized;
+    try {
+      normalized = normalizeSession(rawSession, this.#protocolVersion, this.#clock());
+    } catch (error) {
+      await this.#discardUnadoptedSession(rawSession);
+      throw error;
+    }
+
+    if (epoch !== this.#connectionEpoch || this.#session !== null) {
+      await this.#discardUnadoptedSession(normalized);
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.ABORTED,
+        "ui.control connection was superseded before it became authoritative",
+        {
+          retryable: true,
+          details: {
+            requestDispatched: true,
+            sessionId: normalized.sessionId,
+            connectionGeneration: normalized.connectionGeneration,
+          },
+        },
+      );
+    }
+
+    this.#session = normalized;
     this.#snapshot = null;
     return this.readView();
+  }
+
+  async #discardUnadoptedSession(session) {
+    try {
+      await this.#transport.close(session, {});
+    } catch {
+      // Local authority was never adopted. Backend cleanup is best effort and
+      // must not resurrect or replace the current client session.
+    }
   }
 
   async refreshSession({ signal } = {}) {
@@ -160,31 +215,59 @@ export class RuntimeClient {
   }
 
   async revokeSession({ signal } = {}) {
-    if (!this.#session) return;
     const session = this.#session;
+    ++this.#connectionEpoch;
     this.#session = null;
     this.#snapshot = null;
-    if (typeof this.#transport.revoke === "function") {
+    if (session && typeof this.#transport.revoke === "function") {
       await this.#transport.revoke(session, { signal });
     }
   }
 
   async refreshView({ signal } = {}) {
     this.#assertPermission(UI_CONTROL_PERMISSIONS.READ);
+    const session = this.#session;
     const snapshot = await this.#transport.readSnapshot(
       {
-        sessionId: this.#session.sessionId,
-        connectionGeneration: this.#session.connectionGeneration,
+        sessionId: session.sessionId,
+        connectionGeneration: session.connectionGeneration,
       },
       { signal },
     );
+    if (this.#session !== session) {
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.STALE_GENERATION,
+        "authenticated session changed while the runtime view was in flight",
+        {
+          retryable: true,
+          details: {
+            previousSessionId: session.sessionId,
+            currentSessionId: this.#session?.sessionId ?? null,
+          },
+        },
+      );
+    }
     await this.applySnapshot(snapshot);
     return this.readView();
   }
 
   async applySnapshot(snapshot) {
     this.#assertConnected();
-    const normalized = await normalizeSnapshot(snapshot, this.#session);
+    const session = this.#session;
+    const normalized = await normalizeSnapshot(snapshot, session);
+    if (this.#session !== session) {
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.STALE_GENERATION,
+        "authenticated session changed while the runtime snapshot was being verified",
+        {
+          retryable: true,
+          details: {
+            previousSessionId: session.sessionId,
+            currentSessionId: this.#session?.sessionId ?? null,
+          },
+        },
+      );
+    }
     this.#snapshot = validateSnapshotTransition(this.#snapshot, normalized);
     return this.readView();
   }
@@ -441,6 +524,7 @@ export class RuntimeClient {
   async close({ signal } = {}) {
     const session = this.#session;
     const recoveryState = this.exportRecoveryState();
+    ++this.#connectionEpoch;
     this.#session = null;
     this.#snapshot = null;
     if (session) {
