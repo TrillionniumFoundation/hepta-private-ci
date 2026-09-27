@@ -7,6 +7,7 @@ on:
     paths:
       - 'scripts/hepta-inference-control-ownership.py'
       - 'scripts/hepta-inference-control-current-state.py'
+      - 'scripts/hepta-inference-control-actor-migrate.py'
       - 'docs/modules/inference.control/CURRENT_STATE_SOURCE.json'
       - '.github/workflows/hepta-inference-branch-sync.yml'
   workflow_dispatch:
@@ -32,15 +33,19 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
         with:
-          toolchain: '1.92.0'
+          toolchain: '1.95.0'
           components: rustfmt
 
       - name: Synchronize machine-generated projections
         shell: bash
         run: |
           set -euo pipefail
+          python3 scripts/hepta-inference-control-actor-migrate.py apply
           python3 scripts/hepta-inference-control-ownership.py sync
           python3 scripts/hepta-inference-control-current-state.py sync
+          # Refresh the workspace package dependency graph before the locked
+          # qualification lanes read it. This does not build or qualify code.
+          cargo metadata --manifest-path codex-rs/Cargo.toml --format-version 1 >/dev/null
           cargo fmt --manifest-path codex-rs/Cargo.toml --all
 
       - name: Commit exact generated result
@@ -53,17 +58,51 @@ jobs:
           fi
           git config user.name 'hepta-inference-sync[bot]'
           git config user.email 'hepta-inference-sync@users.noreply.github.com'
+          while IFS= read -r path; do
+            case "$path" in
+              codex-rs/*|\
+              docs/modules/MODULES.json|\
+              docs/modules/CARGO_BINDINGS.json|\
+              docs/modules/SOURCE_BINDINGS.json|\
+              docs/delivery/PATH_OWNERSHIP.json|\
+              docs/modules/inference.control/CURRENT_STATE_SOURCE.json|\
+              docs/modules/inference.control/CURRENT_STATE.json|\
+              docs/modules/inference.control/IMPLEMENTATION_MAP.json|\
+              docs/modules/inference.control/TECHNICAL_STATUS.generated.md|\
+              qualification/module-execution-dossiers/detail/inference.control.current-state.md|\
+              scripts/hepta-implementation-maps.py|\
+              scripts/hepta-inference-control-actor-migrate.py|\
+              scripts/hepta-inference-control-ownership.py|\
+              scripts/test_hepta_implementation_source_identity.py|\
+              .github/workflows/hepta-inference-maintenance.yml|\
+              .github/workflows/hepta-inference-x64-smoke.yml|\
+              .github/inference-control-closure.patch.gz.b64|\
+              .github/inference-control-actor-verifier.py.gz.b64)
+                ;;
+              *)
+                echo "unexpected generated path: $path" >&2
+                exit 1
+                ;;
+            esac
+          done < <({ git diff --name-only; git ls-files --others --exclude-standard; } | sort -u)
           git add \
+            .github/workflows/hepta-inference-maintenance.yml \
+            .github/workflows/hepta-inference-x64-smoke.yml \
+            .github/inference-control-closure.patch.gz.b64 \
+            .github/inference-control-actor-verifier.py.gz.b64 \
+            codex-rs \
             docs/modules/MODULES.json \
-            qualification/CARGO_BINDINGS.json \
-            qualification/SOURCE_BINDINGS.json \
-            qualification/GITHUB_OWNERSHIP.json \
-            delivery/ownership/PATH_OWNERSHIP.json \
-            delivery/ownership/SOURCE_BINDINGS.json \
+            docs/modules/CARGO_BINDINGS.json \
+            docs/modules/SOURCE_BINDINGS.json \
+            docs/delivery/PATH_OWNERSHIP.json \
+            docs/modules/inference.control/CURRENT_STATE_SOURCE.json \
             docs/modules/inference.control/CURRENT_STATE.json \
             docs/modules/inference.control/IMPLEMENTATION_MAP.json \
             docs/modules/inference.control/TECHNICAL_STATUS.generated.md \
             qualification/module-execution-dossiers/detail/inference.control.current-state.md \
-            codex-rs
+            scripts/hepta-implementation-maps.py \
+            scripts/hepta-inference-control-actor-migrate.py \
+            scripts/hepta-inference-control-ownership.py \
+            scripts/test_hepta_implementation_source_identity.py
           git commit -m 'inference.control: synchronize generated ownership and formatting'
           git push origin HEAD:codex/inference-control-v2-closure-20260927
