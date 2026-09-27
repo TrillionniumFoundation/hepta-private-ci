@@ -9,3 +9,7 @@ pub use codex_hepta_kg as knowledge_graph;
 #[path = "canonical_body.rs"]
 mod body;
 pub use body::*;
+
+#[cfg(test)]
+#[path = "canonical_orchestration_tests.rs"]
+mod orchestration_tests;

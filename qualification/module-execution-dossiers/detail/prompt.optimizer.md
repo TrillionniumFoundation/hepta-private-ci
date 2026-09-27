@@ -1,56 +1,98 @@
 # prompt.optimizer: implementation design
 
 Parent: `docs/modules/prompt.optimizer/TECHNICAL.md`. Lane: `LANE-F-ADAPTIVE-POLICY`.
-Status: canonical candidate enumeration, evidence-qualified pricing, constraint-aware portfolio selection and delivery-boundary exercise are implemented at source level alongside the compatibility and local-shadow paths. Cross-owner context/delivery/ledger adapters are source-composed; the real Codex dispatch callsite and independent causal acceptance remain open as listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+The active API is the verified canonical pipeline. Source implementation,
+compiled tests, product execution and independent causal acceptance are separate
+facts. Compatibility calculators are not substitutes for evidence admission.
 
 ## 1. Source and work envelope
 
-Roots: `codex-rs/hepta-prompt-optimizer`.
-Packages: `PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW`.
-
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+Exclusive root: `codex-rs/hepta-prompt-optimizer`. Bootstrap package:
+`PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW`. Registry, graph, runtime, context and learning
+owners retain their existing write domains. No new authority or execution spine
+is introduced. Removed `policy*.rs` files were outside the Rust module tree;
+Git history retains their provenance without a competing current API.
 
 ## 2. Public operations and contract details
 
-`enumerate_factors(registry_snapshot, objective, model_profile) -> PromptCandidateSetReceiptV1`; `price_factors(candidates, causal_estimates, costs) -> PromptPricingReceiptV1`; `select_portfolio(prices, interactions, budget) -> PromptPortfolioReceiptV1`; `exercise(portfolio, registered_boundary, state) -> PromptExerciseDecisionV1`. It is read-only over the registry and cannot rewrite factor semantics or task objectives.
+`canonical::enumerate_factors_v1` returns a sealed candidate phase from the
+registry. `canonical::price_factors_v1` requires independently signed exact-context
+pricing. `canonical::select_portfolio_v1` accepts sealed pricing and signed graph
+admission. `canonical::exercise_v1` accepts only a sealed selection and rechecks
+current owners and the host exercise policy. `build_verified_prompt_portfolio_v1`
+composes the first three phases through a host-installed evidence source.
+
+Raw DTOs have no conversion into verified phases; their fields do not establish
+provenance. The arithmetic engine is private. Compatibility entrypoints remain
+under `compat` with temporary root forwarding. Registered V1 wire schemas remain
+in `docs/contracts/PROTOCOL_SCHEMAS.json`; no rich DTO or debug representation is
+a substitute for canonical wire codecs and golden conformance.
 
 ## 3. State records and transaction design
 
-No authoritative registry state. Candidate, pricing, portfolio and exercise receipts bind objective/NDU, model/tokenizer/template, source registry revisions, complete enumerated/truncated set, utility/cost/support, interaction graph, solver and timing boundary. Estimated values carry confidence and applicable task/model scope. Learning evidence is stored by learning.ledger.
+The optimizer owns no durable state. Verified phases retain immutable signed
+inputs and a host evidence-source capability. Candidate structure and digests
+are recomputed; pricing is replayed before selection and exercise; selected
+bindings, costs, utility and receipt digests are rechecked. Persisted raw receipts
+cannot recreate verified phases. Pricing batch signatures bind the exact registry,
+candidate, objective/state/scope, model, generation, grammar, pricing policy,
+realization and individual evidence. Interaction admission additionally binds
+graph identity and missing-pair semantics. Evaluators must be actor/controller
+independent of the generator.
 
 ## 4. Deterministic algorithm and scheduling
 
-Validate compatible admitted factors; retain no-intervention; deterministically truncate before assignment; price supported causal utility minus token, latency, interference and resource costs; enforce conflict/prerequisite relations; run a bounded greedy marginal-gain selector with registered stable tie-breaking; compare no-change and fixed portfolios; exercise only at registered boundaries. Report the heuristic/optimality gap or absence of a certificate. Never use unsupported estimated uplift as proof of utility or mutate context mid-generation.
+The arithmetic selector remains greedy prerequisite-bundle selection with stable
+utility/token/identity ties and `HeuristicNoCertificate`. Cycles fail closed;
+a requires closure with a hard conflict is diagnosed as unsatisfiable. Selected
+pairs require explicit support or an independently signed zero-interaction
+assumption. Empty verified selection means no intervention, not a fabricated
+learning treatment assignment. Directional dominance/supersession pruning,
+required-factor preservation through final truncation and detailed exclusion
+reasons still need implementation and qualification.
 
 ## 5. Capacity and performance profile
 
-Pilot <=128 factors, <=512 interaction edges, <=16 selected factors and explicit token budget; <=128 marginal selection steps. Complete set and omitted-count bounds are recorded. Measure optimization/packing separately from provider latency and report context crowding.
-
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+Limits: 128 factors, 512 queried edges, 16 selected factors, token budget at most
+1,000,000. The upstream realization read must be complete; truncation there is
+rejected. A smaller final candidate limit records omitted count. The audit bounds
+utility by summing positive factor and pair terms while relaxing budget and
+constraints. It reports an absent bound on overflow, not a false certificate.
+These source bounds do not establish target-host latency or capacity.
 
 ## 6. Concrete verification cases
 
-- POPT-01: mutually conflicting factors or missing prerequisites cannot co-occur.
-- POPT-02: unknown support/units yields unavailable pricing, not zero-cost benefit.
-- POPT-03: no-intervention, single-factor, pairwise, full-portfolio and fixed/learned timing arms remain independently evaluable.
-- POPT-04: registry revocation or model-template drift between selection and delivery invalidates the portfolio.
+POPT-01: exact bindings, hard conflicts and prerequisite bundles. POPT-02: invalid
+pricing never creates zero-cost benefit. POPT-03: no-intervention and independent
+causal assignment remain distinct. POPT-04: revocation or model/evidence/trust/
+graph/policy drift invalidates use at the corresponding boundary.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+The verified tests exercise real signatures and tamper/expiry/controller cases.
+The orchestration test calls the actual builder. A downstream compiler test first
+compiles a positive control, then rejects raw substitution, mutation, construction
+and access to the private engine. Compatibility graph tests are part of the
+module tree. Intelligence and Agentd fixtures use real signature admission rather
+than constructing a selected portfolio. Runtime recovery tests remain separate
+from scientific or provider evidence. Exact candidate logs own pass/fail/skip
+facts; test names and compiling source do not certify execution.
 
 ## 7. Integration, rollback and capability ceiling
 
-C1 records actual delivery through Codex before assigning intervention credit. Cross-factor interactions need adequate support, not unmeasured additive claims. Rollback uses compatible non-revoked factor/realization snapshots and a deterministic no-intervention fallback.
-
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+`AgentdPromptOptimizerV1::optimize_and_stage` is the named source consumer through
+enumeration, pricing, selection and existing context/runtime staging. Concrete
+current owner readers, default daemon invocation, final-send proof retention,
+physical provider-terminal-to-ledger qualification, wire conformance and host
+fault/load evidence remain gaps. No stage acknowledgement is reported as provider
+delivery. Unknown outcomes remain indeterminate; the optimizer never self-writes
+observed causal outcomes or credit. Existing App Server/Core ownership is retained.
 
 ## 8. Current native implementation
 
-- **Implemented optimizer entrypoints:** compatibility `optimize` in [codex-rs/hepta-prompt-optimizer/src/lib.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib.rs); strict `calculate_local_shadow` in [local_shadow.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow.rs); canonical `enumerate_factors_v1`, `price_factors_v1`, `select_portfolio_v1` and `exercise_v1` in [canonical.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical.rs).
-- **Candidate and pricing evidence:** the canonical path reads an exact prompt-registry V2 snapshot/model tuple, deterministically selects one compatible realization per factor, binds completeness, requires generator/evaluator-role signed evidence, and subtracts downside plus token, latency, interference, crowding, privacy, instability and future-context-option costs before selection.
-- **Constraint semantics:** knowledge-graph relations bind the generation vector and interaction projection. Required factors are closed transitively and evaluated as bundles, cycles fail closed, conflicts are non-tradable, complement/substitute utility requires independently authenticated pair evidence, and incomplete relation projections are rejected. The solver discloses `HeuristicNoCertificate` rather than claiming global optimality.
-- **Delivery-boundary revalidation:** `exercise_v1` rechecks state, generation vector, exact model tuple, expiry, factor revocation and the exact selected realization binding. [hepta-intelligence/src/prompt_pipeline.rs](../../../codex-rs/hepta-intelligence/src/prompt_pipeline.rs) performs a second exercise check before attachment preparation, materializes exact registry payload bytes and binds their occurrence in the serialized provider payload.
-- **Delivery and learning handoff:** [hepta-codex-adapter/src/lib.rs](../../../codex-rs/hepta-codex-adapter/src/lib.rs) can emit a typed terminal delivery observation only when caller-supplied bytes equal the expected payload digest and terminal disposition is explicit. [hepta-learning-ledger/src/ledger.rs](../../../codex-rs/hepta-learning-ledger/src/ledger.rs) admits prompt-delivery evidence into the durable owner chain and rejects policy self-observation. Neither adapter fabricates provider execution or outcome/credit.
-- **State and recovery:** `prompt.optimizer` remains stateless and owns no registry/graph/ledger mutation. Every canonical optimizer result retains `AuthorityPosture::DENY_ALL`; no receipt grants model/provider/tool/effect authority.
-- **Source tests:** [canonical_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs), [local_shadow_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs), [lib_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib_tests.rs), [hepta-intelligence/src/prompt_pipeline_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs), [hepta-codex-adapter/src/lib_tests.rs](../../../codex-rs/hepta-codex-adapter/src/lib_tests.rs), and learning-ledger prompt-delivery/durable tests. These are source test identities, not independent acceptance receipts.
-- **Remaining repository-controlled work:** wire the prepared prompt attachment and runtime observation contract into the named real Codex model/provider dispatch callsite and cover that exact callsite with executable product tests. Until then `production_implementation=false` and `productCallerState=not_composed` remain truthful.
-- **Remaining external evidence:** independently observed outcomes, conserved credit, longitudinal causal efficacy, operator acceptance, canary, selection, promotion and release remain outside this source package. Signed provenance proves identity/scope, not causal truth. No source change here self-accepts, self-merges or self-releases.
+Active: `canonical.rs`, `canonical_body.rs`, `canonical_admission.rs`,
+`canonical_integrity.rs`, `canonical_audit.rs`. Private arithmetic:
+`canonical_engine.rs`. Compatibility: `compat.rs`, `graph.rs`, `graph_impl.rs`,
+`local_shadow.rs`. Consumers: Agentd `prompt_optimizer_product.rs` and
+`prompt_runtime.rs`, intelligence `prompt_delivery.rs` and `prompt_pipeline.rs`.
+
+`productionImplementation`, `productExecutionProved`, `independentAcceptance`,
+`activation` and `release` remain false until their separate evidence exists.

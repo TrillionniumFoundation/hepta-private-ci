@@ -2,346 +2,335 @@
 
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
 
-**Module:** `prompt.optimizer`
-
-**Owner:** `intelligence-platform`
-
-**Deputy:** `performance`
-
-**Lifecycle:** `target`
-
-**Source status:** `existing_bound`
-
+**Module:** `prompt.optimizer`  
+**Owner / deputy:** `intelligence-platform` / `performance`  
+**Lifecycle:** `target`  
+**Source status:** `existing_bound`  
 **Bootstrap work package:** `PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW`
 
-This stable document is the implementation guide for `prompt.optimizer`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+This guide describes the active source, its trust assumptions and its remaining
+implementation work. Git and exact-candidate CI own current execution facts;
+a source link, test name or completed documentation section is not a pass receipt.
+Canonical JSON registries continue to own module, contract and authority facts.
 
 ## 1. Identity, mission and ownership
 
-Price and select a bounded prompt intervention portfolio without mutating its registry or objectives.
+Price and select a bounded prompt intervention portfolio without mutating the
+prompt registry, objective, knowledge graph or learning ledger. The module is a
+`domain`-plane `optimizer` with `stateless_runtime` state and the architectural
+role `intervention_policy`. Its outputs are proposals, not effect capabilities.
 
-The primary owner `intelligence-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `performance` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
-
-Plane `domain`, kind `optimizer`, state model `stateless_runtime` and architecture role `intervention_policy` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
+The primary owner maintains algorithm correctness, receipt semantics and source
+compatibility. The deputy independently reviews trust boundaries, bounds,
+qualification and performance. Cross-owner composition uses the existing
+intelligence, registry, runtime and ledger owners. It must not create another
+model execution loop, registry writer, authority issuer or learning store.
 
 ## 2. Source binding and implementation status
 
-Declared exclusive target roots:
+The exclusive root is `codex-rs/hepta-prompt-optimizer`.
 
-- `codex-rs/hepta-prompt-optimizer`
+The only supported policy API is `codex_hepta_prompt_optimizer::canonical`.
+[canonical.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical.rs) exports
+[canonical_body.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_body.rs).
+The previous arithmetic implementation is private in
+[canonical_engine.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_engine.rs);
+no external consumer may invoke its raw selector or exercise function.
 
-Existing declared roots at this exact source snapshot:
+Compatibility calculators are grouped under `compat`. Temporary root re-exports
+preserve existing caller source and receipt semantics. They are not equivalent
+to the verified pipeline. The unreachable `policy*.rs` implementation has been
+removed; its former tests must not be counted as current coverage.
 
-- `codex-rs/hepta-prompt-optimizer`
-
-Non-authoritative implementation evidence roots:
-
-None.
-
-Declared roots not yet present:
-
-None.
-
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `prompt.optimizer`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` means that the root exists. `productionImplementation` and
+`productExecutionProved` remain false. The named Agentd consumer is source-level
+composition, not proof of default daemon activation or a completed physical
+provider-to-ledger product run. Read the exact operation and test inventory in
+[IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json).
 
 ## 3. Boundary, responsibilities and non-goals
 
-Direct dependencies:
+Declared domain dependencies remain `platform.types`, `prompt.registry`,
+`utility.ndu`, `memory.retrieval` and `learning.artifacts`. The current native
+arithmetic implementation additionally consumes `hepta-kg` and learning-ledger
+signed evidence. These source dependencies do not transfer domain ownership;
+registry/port reconciliation remains necessary before production qualification.
 
-- `platform.types`
-- `prompt.registry`
-- `utility.ndu`
-- `memory.retrieval`
-- `learning.artifacts`
+Authoritative write domains: none. Explicitly forbidden: `registry_write`,
+`objective_rewrite`, `authority_issuance`. The module never directly performs
+provider, tool, network, filesystem-effect, acceptance, promotion or release
+operations. Host-supplied evidence is not permitted to install its own trust
+root or redefine the current objective.
 
-Authoritative write domains:
-
-None.
-
-Explicitly denied capabilities:
-
-- `registry_write`
-- `objective_rewrite`
-- `authority_issuance`
-
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
-
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+A cryptographic signature authenticates an assertion and its scope; it does not
+prove causal efficacy. Likewise, a graph content digest is not an independent
+attestation that a graph is complete. The embedding is responsible for supplying
+current authenticated owner views, while the optimizer enforces their binding.
 
 ## 4. Internal architecture and component decomposition
 
-The bounded components are:
+The native phase sequence is:
 
-- `authenticated registry snapshot / realization loader`
-- `deterministic candidate enumerator`
-- `independent-evidence verifier and multidimensional pricer`
-- `constraint-aware bounded portfolio solver`
-- `delivery-boundary exercise / revalidation emitter`
+```text
+PromptRegistry + PromptEnumerationRequestV1
+  -> enumerate_factors_v1
+  -> EnumeratedPromptCandidatesV1
+  -> signed completeness + exact-context pricing batch
+  -> price_factors_v1
+  -> PricedPromptCandidatesV1
+  -> signed exact-context graph/pair batch
+  -> select_portfolio_v1
+  -> SelectedPromptPortfolioV1
+  -> current owner views + exercise_v1
+  -> PromptExerciseDecisionV1
+```
 
-The source-level composition path continues outside this owner's root through `hepta-intelligence`: an exercised portfolio is materialized from the exact registry payload, compiled by `context.compiler`, revalidated again before attachment preparation, and bound to terminal delivery observation before learning-ledger admission. Those adapters do not transfer registry, context, runtime or learning ownership into `prompt.optimizer`.
+`build_verified_prompt_portfolio_v1` sequences enumeration, evidence production,
+pricing and selection. `AgentdPromptOptimizerV1::optimize_and_stage` is the named
+consumer that uses the existing `AgentdPromptPipelineOwner`, then invokes context
+compilation and runtime staging. It is implemented in
+[prompt_optimizer_product.rs](../../../codex-rs/hepta-agentd/src/prompt_optimizer_product.rs).
+No request accepts a preconstructed raw portfolio instead of those phases.
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
+Verified phase fields are private. Immutable `Deref` permits reading existing
+field names but supplies neither `DerefMut` nor a raw-to-verified constructor.
+The `Raw*` aliases are explicitly untrusted inspection/transport values. Cloning
+an inspected raw DTO cannot recreate a verified phase. Only a successful native
+admission/selection operation constructs the corresponding verified object.
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
-
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+Admission and integrity helpers are split into
+[canonical_admission.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_admission.rs)
+and [canonical_integrity.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_integrity.rs).
+Candidate bindings, IDs, ordering, counts and receipt digests are recomputed.
+Pricing is replayed against retained signed evidence before selection and exercise.
+Selection accounting and the portfolio receipt digest are recomputed before use.
 
 ## 5. Contracts, ports and compatibility
 
-Produced contracts:
+The four registered output contract names remain `PromptCandidateSetReceiptV1`,
+`PromptPricingReceiptV1`, `PromptPortfolioReceiptV1` and `PromptExerciseDecisionV1`.
+Their public registered field shapes are specified by
+[PROTOCOL_SCHEMAS.json](../../contracts/PROTOCOL_SCHEMAS.json), not inferred from
+the richer in-process arithmetic DTOs or audit structures.
 
-- `ModulePort::prompt.optimizer::context.compiler`
-- `ModulePort::prompt.optimizer::intelligence.control`
-- `PromptCandidateSetReceiptV1`
-- `PromptExerciseDecisionV1`
-- `PromptPortfolioReceiptV1`
-- `PromptPricingReceiptV1`
+The verified pipeline currently operates through in-process Rust types. This
+candidate does not claim that the richer DTOs already implement the registered
+canonical JSON wire format. Canonical encoding, duplicate/unknown-field
+rejection, maximum encoded sizes, round trips and golden conformance vectors
+remain explicit work. Do not serialize a debug representation as a wire receipt
+or silently widen a V1 schema with the wrapper's provenance fields.
 
-Consumed contracts:
+The `PromptPricingAdmissionV1` batch evaluator signature binds the candidate
+receipt, registry snapshot, objective, state, generation, model tuple, grammar,
+scope, pricing policy, exact realization bindings and individual evidence bytes.
+Individual evaluator signatures are retained and verified as well. The independent
+Generator and every relevant Evaluator must have distinct authenticated actors
+and controllers, using the learning-ledger actor-separation validator.
 
-- `DomainRead::learning_artifact_registryV1`
-- `DomainRead::ndu_preference_projectionV1`
-- `DomainRead::ndu_utility_projectionV1`
-- `DomainRead::operator_sensor_core_registryV1`
-- `DomainRead::prompt_factor_lifecycleV1`
-- `DomainRead::prompt_factor_registryV1`
-- `DomainRead::prompt_realization_registryV1`
-- `ModulePort::learning.artifacts::prompt.optimizer`
-- `ModulePort::memory.retrieval::prompt.optimizer`
-- `ModulePort::platform.types::prompt.optimizer`
-- `ModulePort::prompt.registry::prompt.optimizer`
-- `ModulePort::utility.ndu::prompt.optimizer`
-- `NduPreferenceStateV1`
-- `ObjectiveFunctionV1`
-- `PromptFactorV1`
-- `PromptRealizationV1`
+`PromptInteractionAdmissionV1` binds candidate/pricing identity, objective and
+scope, exact model/generation, graph source/generation, ordered pair evidence,
+and the missing-pair policy. Missing interaction values are never silently
+upgraded into measured zero effects: `AssumeZeroWithWitness` is an explicitly
+signed assumption; `RequireExplicit` rejects any selected unsupported pair.
 
-Critical protocol schemas:
-
-- `NduPreferenceStateV1`
-- `ObjectiveFunctionV1`
-- `PromptCandidateSetReceiptV1`
-- `PromptExerciseDecisionV1`
-- `PromptFactorV1`
-- `PromptPortfolioReceiptV1`
-- `PromptPricingReceiptV1`
-- `PromptRealizationV1`
-
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
-
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+`PromptExercisePolicyV1` contains actual allowed boundaries and wait valuation,
+objective/scope/state/generation/model bindings and a half-open validity window.
+The request's policy digest and wait value must match this host-owned policy.
 
 ## 6. Data authority, persistence and migrations
 
-Owned authoritative or rebuildable domains:
+The optimizer owns no durable state or schema. Database migration, writer locks,
+fsync, outboxes and backup restoration are not implemented here. They belong to
+the registry, graph, runtime and learning owners. In-process verified handles
+retain immutable admitted evidence and a host-installed evidence-source handle;
+raw bytes on disk cannot independently restore verified state.
 
-None.
-
-Read-only data dependencies:
-
-- `learning_artifact_registry`
-- `ndu_preference_projection`
-- `ndu_utility_projection`
-- `operator_sensor_core_registry`
-- `prompt_factor_lifecycle`
-- `prompt_factor_registry`
-- `prompt_realization_registry`
-
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
-
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+The caller must reconstruct a verified phase from current authenticated owner
+inputs after restart. An old receipt digest, debug dump or copied registry
+snapshot is not sufficient. Historical learning facts and scientific support
+remain the responsibility of `learning.ledger` and its authenticated readers.
+No optimizer adapter may grant itself registry write or observation authority.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/prompt.optimizer.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.optimizer.md).
+`PromptEvidenceSourceV1: Send + Sync` is installed by the trusted embedding. Its
+`current` operation must reread the relevant authority, graph and policy owners;
+it must not indefinitely replay an untrusted request-supplied snapshot. Pricing
+and interaction methods return signed owner evidence rather than anonymous
+numeric scores. Source identity, trust digest and scope are pinned during pricing.
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+Selection and exercise reread the source and reject trust rotation, source drift,
+objective/scope mismatch or pricing-policy drift. Exercise also rejects graph
+and exercise-policy replacement. These are synchronous bounded source calls;
+blocking I/O requires owner-side deadline and cancellation enforcement. The trait
+alone does not establish a production input adapter or timing guarantee.
+
+The Agentd consumer uses the existing registry owner and context compiler. Default
+daemon wiring, final physical-send validation after staging, and a coherent
+provider-terminal-to-ledger execution receipt must be qualified at those owners.
+A sequence of successful pure functions is not a substitute for that boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/prompt.optimizer.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.optimizer.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+The verified API distinguishes integrity, evidence, objective, scope, source,
+trust, graph and policy failures. It has explicit variants for expired evidence,
+unsatisfiable constraints, missing pair support, unavailable, timed out, corrupt,
+indeterminate and quarantined inputs. Do not turn these conditions into positive
+zero-cost utility or silently select an unverified compatibility result.
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+The private arithmetic engine still maps some registry-read failures into
+`RejectStale`. Complete owner-error classification is remaining work; the new
+variants alone do not prove that every dependency error is mapped precisely.
+
+No-intervention is represented by an empty verified selection. It is not a
+canonical learning-ledger `abstain` assignment or evidence of randomized treatment.
+Agentd returns `NoIntervention` without fabricating delivery. Rollback rebuilds a
+selection using compatible, non-revoked registry bytes and current evidence.
+A runtime dispatch with unknown outcome remains indeterminate until its owner
+reconciles it; the optimizer never fabricates terminal delivery or negative proof.
 
 ## 9. Security, privacy and threat controls
 
-Owned threat entries:
+Owned threats: `prompt_candidate_selection_bias`, `prompt_factor_interference`.
+Every generated proposal remains `AuthorityPosture::DENY_ALL`.
 
-- `prompt_candidate_selection_bias`
-- `prompt_factor_interference`
+Candidate integrity checks bind factor ID, realization ID, exact realization
+content digest and the full model/tokenizer/template/tool/context/locale tuple.
+Pricing batch signatures prevent individually signed estimates from being moved
+to another candidate realization, registry cut or pricing policy. The host
+verifier's objective and scope must match the current candidate context.
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+The portfolio lifetime is capped by requested validity, realization expiry,
+completeness/pricing/pair/batch evidence expiry, host exercise-policy expiry and
+retained graph support end times. Exercise rechecks current trust and graph;
+a valid old signature cannot override current revocation configuration.
 
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+The host must authenticate the evidence-source implementation and supply reliable
+clock values. Generator code, hard-filter and truncation-policy expected identities
+still require stronger host pinning; nonzero digests alone are not qualification.
+Final-send freshness, caller authentication and concrete trust distribution are
+not self-certified by the presence of the generic source trait.
+
+Audit output uses IDs and digests rather than raw prompt text, credentials or
+private training examples. The runtime and registry still own retention/deletion.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.optimizer.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not target-host measurements. The canonical source path enforces the 128-factor, 16-selected-factor, 512-interaction-edge and explicit token-budget ceilings in [codex-rs/hepta-prompt-optimizer/src/canonical.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical.rs); compatibility limits remain in [codex-rs/hepta-prompt-optimizer/src/lib.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib.rs) and [codex-rs/hepta-prompt-optimizer/src/local_shadow.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow.rs). Host latency and production capacity remain unqualified until a real caller profile is selected.
+Canonical bounds are 128 retained factors, 16 selected factors, 512 queried
+interaction edges and a token budget of at most 1,000,000. The legacy compatibility
+limits differ and must not be used to describe canonical capacity.
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+Enumeration presently demands a complete registry realization read within its
+128-entry read bound before selecting one lowest-token compatible realization
+per factor. An upstream truncated registry read returns `RegistryReadIncomplete`.
+A smaller requested candidate limit may subsequently truncate the per-factor
+set and records omitted count. This is not the retired policy path's 4096-to-128
+streaming enumeration. Pagination/completeness and required-factor preservation
+across final truncation still need dedicated capacity qualification.
+
+The selector remains deterministic greedy prerequisite-bundle search with
+`HeuristicNoCertificate`. It closes prerequisites atomically, detects requires
+cycles and rejects a requires closure containing a hard conflict. Some directed
+relations still use the engine's conservative symmetric exclusion semantics;
+directional pruning, richer reasons and an explicit semantic migration remain
+work rather than an undocumented change of contract.
+
+The audit reports a valid relaxed upper bound: sum of all positive priced factor
+utilities plus all positive supplied pair terms, ignoring budget and constraints.
+The gap is that bound minus the incumbent. Checked wide arithmetic yields no
+bound rather than a false finite certificate if the registered range overflows.
+This bound may be loose. Solver rounds are currently unavailable (`None`), not
+inferred from selected-factor count. Swap/beam/exact-oracle improvements,
+precomputed closures, incremental marginals, bitsets and target-host benchmarks
+are not yet claimed.
 
 ## 11. Observability and operations
 
-Read-only optimizer library; provide admitted candidates, cost/support data and exact frozen registry/model profiles. Preserve the no-intervention candidate and report heuristic limits. Publishing a portfolio or timing decision neither mutates context mid-generation nor establishes observed prompt delivery or causal uplift.
+[canonical_audit.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_audit.rs)
+records candidate/completeness/omission, source/trust/scope, pricing and interaction
+attestations, pricing policy, graph generation, portfolio identity, oldest evidence
+age, validity, token allocation, incumbent and relaxed upper bound/gap. Its digest
+is recomputable and is separate from registered V1 wire receipt shape.
 
-Current operating and state-format references:
-
-- [codex-rs/hepta-prompt-optimizer/src/lib.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib.rs) retains the compatibility optimizer.
-- [codex-rs/hepta-prompt-optimizer/src/local_shadow.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow.rs) retains the strict authority-free local shadow calculator.
-- [codex-rs/hepta-prompt-optimizer/src/canonical.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical.rs) implements candidate enumeration, authenticated evidence pricing, graph-constrained portfolio selection and exercise-time revalidation.
-- [codex-rs/hepta-intelligence/src/prompt_pipeline.rs](../../../codex-rs/hepta-intelligence/src/prompt_pipeline.rs) composes exercised portfolios into context compilation, exact payload materialization, serialization proof and delivery preparation.
-- [codex-rs/hepta-codex-adapter/src/lib.rs](../../../codex-rs/hepta-codex-adapter/src/lib.rs) validates a runtime-supplied terminal prompt-delivery observation against the exact submitted bytes.
-- [codex-rs/hepta-learning-ledger/src/ledger.rs](../../../codex-rs/hepta-learning-ledger/src/ledger.rs) admits prompt-delivery evidence into the durable learning event chain while forbidding policy self-observation.
-
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+Per-candidate diagnostics currently distinguish `Selected` and `HeuristicExcluded`.
+They must not be described as a complete causal rejection taxonomy. Unavailable
+pricing currently fails admission; a persisted per-factor unavailable-pricing
+report, detailed conflict/budget/revocation reasons and exact solver termination
+telemetry remain outstanding. No operation claims observed causal uplift.
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Use `just test` from the repository. Native qualification includes:
 
-- [codex-rs/hepta-prompt-optimizer/src/lib_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib_tests.rs); named case: `illegal_and_unadmitted_candidates_are_never_selected`.
-- [codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs); named case: `legacy_v1_surface_keeps_its_original_selection_limit`.
-- [codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs); covers deterministic realization enumeration, signed completeness/evaluator evidence, multidimensional pricing, prerequisite-bundle selection, relation evidence and exercise-time revocation/model drift.
-- [codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs); covers exercise → context compilation → exact payload materialization → serialization/attachment preparation and stale-revocation rejection.
-- [codex-rs/hepta-codex-adapter/src/lib_tests.rs](../../../codex-rs/hepta-codex-adapter/src/lib_tests.rs); covers exact submitted-byte binding and terminal delivery disposition validation.
-- [codex-rs/hepta-learning-ledger/src/ledger_tests.rs](../../../codex-rs/hepta-learning-ledger/src/ledger_tests.rs) and [durable_tests.rs](../../../codex-rs/hepta-learning-ledger/src/durable_tests.rs); cover learning-owner prompt-delivery admission and durable replay.
+```sh
+just test --locked --lib -p codex-hepta-prompt-optimizer
+just test --locked --lib -p codex-hepta-intelligence -E 'test(prompt_)'
+just test --locked --lib -p codex-hepta-agentd -E 'test(prompt_runtime)'
+```
 
-In `codex-rs`, run `just test -p codex-hepta-prompt-optimizer`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.optimizer.md) separately labels target acceptance designs.
+Compile relevant all-target consumers and run strict Clippy and changed-source
+format checks separately. The workflow
+[hepta-prompt-optimizer-hardening.yml](../../../.github/workflows/hepta-prompt-optimizer-hardening.yml)
+uses exact source and deterministic synthetic-merge lanes, retains command logs
+and binds their Git identity. It is read-only and never pushes formatter output.
+Zero executed tests, failed commands and missing evidence are not passes.
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+[canonical_verified_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_verified_tests.rs)
+contains actual signed admission and negative cases for candidate/realization,
+batch signature, individual estimate substitution, objective/scope, shared
+controller, pricing replay, expiry, missing-pair assumption, graph/policy drift
+and altered portfolio utility. Private engine unit tests remain arithmetic-only.
+
+Intelligence and Agentd prompt fixtures now obtain sealed portfolios through the
+real generator/evaluator signature checks rather than public struct literals.
+They use deterministic test keys and are not production trust configuration.
+The runtime crash, retry and indeterminate-outcome tests remain separate from
+scientific evidence and real provider execution. Wire goldens, external compile-
+fail API tests, default daemon ingress, final-send freshness and end-to-end ledger
+qualification remain necessary. Source inventories must distinguish compiled
+files and listed test binaries from merely present files.
 
 ## 13. Implementation sequence and work packages
 
-Applicable work packages:
+Applicable packages are `PIM-0-PROMPT-INTERVENTION-CONTRACTS`,
+`PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW` and `PIM-3-FACTOR-EVOLUTION`.
+Source development and runtime activation have different predecessors. Ordinary
+authorized edits use the actual Git baseline, owner scope, focused tests and
+normal protected review; they do not require unrelated deployment authority.
 
-- `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
-- `PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW`
-- `PIM-3-FACTOR-EVOLUTION`
-
-The bootstrap package is `PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
-
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Close trust and boundary correctness before increasing optimizer complexity.
+Next priorities are final dispatch proof retention, concrete owner-source/default
+daemon composition, canonical wire conformance, exact public/test inventory,
+complete error/relation semantics and bounded solver/observability improvements.
+`PIM-3` next-snapshot evolution and independent causal acceptance do not become
+complete merely because this library compiles.
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+No shadow, fixture or source-only caller is a deployed production caller.
+Activation requires the named embedding, authenticated owners, final dispatch
+boundary, correct terminal observation, ledger admission, resource profile and
+operator acceptance. Signing evidence grants no provider or tool authority.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+`compat::optimize`, `compat::optimize_with_factor_graph` and
+`compat::local_shadow::calculate_local_shadow` retain historical semantics and
+root forwarding exports only for migration. Do not route canonical failure through
+these calculators as a trust bypass. Remove root forwarding only after all named
+callers migrate and rollback/interoperability evidence has been reviewed.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. The current source candidate now contains the canonical optimizer operations and a source-level cross-owner composition path through context compilation, delivery observation contracts and durable learning-ledger admission. This is still not `production_implementation`: that fact additionally requires a named real product caller at the Codex dispatch boundary plus executable product tests over that callsite. Qualification requires current exact-candidate evidence. Independent causal acceptance, activation, selection, promotion and release remain separate externally governed states.
+Documentation completion requires accurate current API descriptions, canonical
+registry references, usable local links and a verified operation/test inventory.
+Source implementation requires compiling active modules and executable tests.
+Product implementation additionally requires concrete current owner inputs and
+the complete real invocation/dispatch/observation/learning path. Empirical causal
+acceptance, activation, promotion and release remain separately governed.
 
-For `prompt.optimizer`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
-
-### Work-package execution envelopes
-
-#### `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
-
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
-- Owner/deputy: `intelligence-platform` / `cognitive-platform`.
-- Allowed write paths:
-- `codex-rs/hepta-prompt-registry/**`
-- `codex-rs/hepta-prompt-optimizer/**`
-- `codex-rs/hepta-types/**`
-- Development predecessors:
-- `OBJ-0-OBJECTIVE-CONTRACTS`
-- `LRN-0-CAUSAL-LEARNING-CONTRACTS`
-- `NDU-0-PREFERENCE-UTILITY-CONTRACTS`
-- Activation predecessors:
-- `OBJ-0-OBJECTIVE-CONTRACTS`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-#### `PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW`
-
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
-- Owner/deputy: `intelligence-platform` / `performance`.
-- Allowed write paths:
-- `codex-rs/hepta-prompt-optimizer/**`
-- Development predecessors:
-- `PIM-1-PROMPT-FACTOR-REGISTRY`
-- `NDU-1-DETERMINISTIC-UTILITY-BASELINE`
-- `MEM-2-RETRIEVAL`
-- `LRN-1-DURABLE-EPISODE-LEDGER`
-- `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
-- Activation predecessors:
-- `PIM-1-PROMPT-FACTOR-REGISTRY`
-- `NDU-1-DETERMINISTIC-UTILITY-BASELINE`
-- `MEM-2-RETRIEVAL`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-#### `PIM-3-FACTOR-EVOLUTION`
-
-- State: `planned`; priority: `3`; parallel class: `contract_coordinated`.
-- Owner/deputy: `intelligence-platform` / `cognitive-platform`.
-- Allowed write paths:
-- `codex-rs/hepta-prompt-registry/**`
-- `codex-rs/hepta-prompt-optimizer/**`
-- `qa/learning/prompt-factor-evolution/**`
-- Development predecessors:
-- `LONG-3-UNLEARNING-NON-RESURRECTION`
-- `PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW`
-- `PIM-1-PROMPT-FACTOR-REGISTRY`
-- `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
-- Activation predecessors:
-- `LONG-3-UNLEARNING-NON-RESURRECTION`
-- `PIM-1-PROMPT-FACTOR-REGISTRY`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- `factor_discovery_from_residual`
-- `split_merge_retire`
-- `model_specific_realization`
-- `causal_ablation`
-- `next_snapshot_only`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
+This guide grants no runtime, production-writer, model, provider, tool, network,
+filesystem, secret, Matrix, fleet, independent-acceptance, promotion or release
+authority. `productionImplementation`, `productExecutionProved`,
+`independentAcceptance`, `activation` and `release` remain false.
 
 <!-- BEGIN GENERATED EXACT REGISTRY PROJECTION -->
 ### Exact closed-world registry projection
@@ -412,25 +401,28 @@ This generated projection binds `prompt.optimizer` to the current canonical cont
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
-The canonical readiness overlay binds `prompt.optimizer` to primary lane `LANE-F-ADAPTIVE-POLICY`. The following implementation-level specifications are mandatory alongside Sections 1–15:
+The canonical readiness overlay binds `prompt.optimizer` to primary lane
+`LANE-F-ADAPTIVE-POLICY`. Mandatory specifications alongside Sections 1–15:
 
 - [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
 - [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
 
-Owned readiness protocols:
+Owned readiness protocols: None. Consumed readiness protocols: None.
 
-- None.
-
-Consumed readiness protocols:
-
-- None.
-
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
+Ordinary authorized coding identifies the Git baseline, relevant contracts, owned
+paths, mandatory fixtures, deterministic fallback and rollback. A runtime
+coordinator admitting an envelope verifies its current `CanonicalSourceReceiptV1`,
+frozen contract/readiness digest, expiry and zero authority delta. This is not a
+separate permission gate for ordinary repository work and changes no activation,
+acceptance, selection, promotion or release facts.
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation for `prompt.optimizer` is implemented by work package `PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW` in:
-
-- `codex-rs/hepta-prompt-optimizer`
-
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The bootstrap source-location obligation for `prompt.optimizer` is materialized
+by `PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW` at `codex-rs/hepta-prompt-optimizer`.
+The source is subject to `.github/workflows/hepta-consolidated-source.yml` and the
+focused hardening workflow described above. Exact Git identity, actual executed
+test counts, all-target checks, strict lint, source inventory and failure logs
+must be read from those candidate runs; this section does not cache pass claims.
+It grants no production, effect, acceptance, selection, promotion, merge or
+release authority.
