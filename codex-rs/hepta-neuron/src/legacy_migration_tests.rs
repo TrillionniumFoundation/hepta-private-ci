@@ -200,12 +200,10 @@ fn record(native: &SparseConfig, config: &NeuronRuntimeConfigV1) -> NeuronLegacy
     ));
     let checkpoint_bytes =
         u64::try_from(checkpoint.bounded_encoded_bytes()).expect("bounded checkpoint bytes");
-    let journal_bytes_written = u64::try_from(304_usize + 16 * config.state_width)
-        .expect("bounded journal bytes");
-    let write_amplification_ppm = checked(write_amplification(
-        journal_bytes_written,
-        checkpoint_bytes,
-    ));
+    let journal_bytes_written =
+        u64::try_from(304_usize + 16 * config.state_width).expect("bounded journal bytes");
+    let write_amplification_ppm =
+        checked(write_amplification(journal_bytes_written, checkpoint_bytes));
     let resource_receipt = NeuronResourceReceiptV1 {
         execution_micros: 10,
         transient_allocation_bytes: model_output.transient_allocation_bytes,
@@ -289,7 +287,10 @@ fn acknowledged_legacy(
         8,
     ));
     let receipt = checked(journal.commit(Digest32::ZERO, &record.sparse_tick));
-    assert_eq!(receipt.checkpoint_after, record.next_anchor.checkpoint_digest);
+    assert_eq!(
+        receipt.checkpoint_after,
+        record.next_anchor.checkpoint_digest
+    );
     let mut witness = checked(FileAnchorWitnessStore::open(
         fixture.file("witness"),
         scope(),

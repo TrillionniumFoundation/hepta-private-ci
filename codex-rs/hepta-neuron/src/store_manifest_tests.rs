@@ -52,30 +52,28 @@ fn anchor(sequence: u64) -> JournalAnchor {
 }
 
 fn bootstrap() -> NeuronStoreManifestV1 {
-    checked(NeuronStoreManifestV1::bootstrap(
-        NeuronStoreBootstrapV1 {
-            generation: checked(Generation::new(7)),
-            scope: JournalScope {
-                scope_digest: digest("scope"),
-                objective_digest: digest("objective"),
-            },
-            runtime_config_digest: digest("runtime-config"),
-            key_epoch: 1,
-            key_receipt_digest: None,
-            deletion_epoch: 1,
-            deletion_receipt_digest: None,
-            predecessor_manifest_digest: None,
-            journal_file_name: "journal-0000.bin".to_owned(),
-            journal_header_digest: digest("journal-header-0"),
-            journal_header_bytes: 136,
-            witness_file_name: "witness-0000.bin".to_owned(),
-            witness_header_digest: digest("witness-header-0"),
-            witness_header_bytes: 112,
-            operation_file_name: "operations.bin".to_owned(),
-            operation_header_digest: digest("operation-header"),
-            operation_header_bytes: 256,
+    checked(NeuronStoreManifestV1::bootstrap(NeuronStoreBootstrapV1 {
+        generation: checked(Generation::new(7)),
+        scope: JournalScope {
+            scope_digest: digest("scope"),
+            objective_digest: digest("objective"),
         },
-    ))
+        runtime_config_digest: digest("runtime-config"),
+        key_epoch: 1,
+        key_receipt_digest: None,
+        deletion_epoch: 1,
+        deletion_receipt_digest: None,
+        predecessor_manifest_digest: None,
+        journal_file_name: "journal-0000.bin".to_owned(),
+        journal_header_digest: digest("journal-header-0"),
+        journal_header_bytes: 136,
+        witness_file_name: "witness-0000.bin".to_owned(),
+        witness_header_digest: digest("witness-header-0"),
+        witness_header_bytes: 112,
+        operation_file_name: "operations.bin".to_owned(),
+        operation_header_digest: digest("operation-header"),
+        operation_header_bytes: 256,
+    }))
 }
 
 #[test]
@@ -91,13 +89,7 @@ fn atomic_manifest_round_trip_and_frontier_replacement_are_exact() {
         manifest
     );
 
-    let advanced = checked(manifest.advance_completed_frontier(
-        None,
-        anchor(1),
-        520,
-        224,
-        4096,
-    ));
+    let advanced = checked(manifest.advance_completed_frontier(None, anchor(1), 520, 224, 4096));
     checked(write_neuron_store_manifest_v1(
         &fixture.manifest(),
         &advanced,
@@ -112,13 +104,7 @@ fn atomic_manifest_round_trip_and_frontier_replacement_are_exact() {
 
 #[test]
 fn paired_rollover_publishes_one_seeded_chain_and_bounded_replay_plan() {
-    let first = checked(bootstrap().advance_completed_frontier(
-        None,
-        anchor(1),
-        520,
-        224,
-        4096,
-    ));
+    let first = checked(bootstrap().advance_completed_frontier(None, anchor(1), 520, 224, 4096));
     let rolled = checked(first.rollover_pair(
         "journal-0001.bin".to_owned(),
         digest("journal-header-1"),
@@ -132,16 +118,12 @@ fn paired_rollover_publishes_one_seeded_chain_and_bounded_replay_plan() {
     let journal = rolled
         .segments
         .iter()
-        .find(|segment| {
-            segment.kind == NeuronStoreSegmentKindV1::Journal && segment.ordinal == 1
-        })
+        .find(|segment| segment.kind == NeuronStoreSegmentKindV1::Journal && segment.ordinal == 1)
         .expect("journal successor");
     let witness = rolled
         .segments
         .iter()
-        .find(|segment| {
-            segment.kind == NeuronStoreSegmentKindV1::Witness && segment.ordinal == 1
-        })
+        .find(|segment| segment.kind == NeuronStoreSegmentKindV1::Witness && segment.ordinal == 1)
         .expect("witness successor");
     assert_eq!(journal.seed_anchor, Some(anchor(1)));
     assert_eq!(journal.frontier_anchor, Some(anchor(1)));
@@ -171,25 +153,13 @@ fn paired_rollover_publishes_one_seeded_chain_and_bounded_replay_plan() {
 
 #[test]
 fn migration_is_explicit_and_never_reinterprets_v1_bytes() {
-    let manifest = checked(bootstrap().advance_completed_frontier(
-        None,
-        anchor(1),
-        520,
-        224,
-        4096,
-    ));
+    let manifest = checked(bootstrap().advance_completed_frontier(None, anchor(1), 520, 224, 4096));
     let target = digest("population-v2-config");
     let transformer = digest("transformer-receipt");
     let prepared = checked(manifest.prepare_v2_migration(target, transformer));
     assert_eq!(prepared.migration.durable_version(), 1);
     assert_eq!(
-        prepared.advance_completed_frontier(
-            Some(anchor(1)),
-            anchor(2),
-            904,
-            336,
-            8192,
-        ),
+        prepared.advance_completed_frontier(Some(anchor(1)), anchor(2), 904, 336, 8192,),
         Err(NeuronStoreManifestError::MigrationState)
     );
 
@@ -221,30 +191,28 @@ fn migration_is_explicit_and_never_reinterprets_v1_bytes() {
 
 #[test]
 fn restore_fences_deleted_or_old_key_backups() {
-    let manifest = checked(NeuronStoreManifestV1::bootstrap(
-        NeuronStoreBootstrapV1 {
-            generation: checked(Generation::new(9)),
-            scope: JournalScope {
-                scope_digest: digest("scope"),
-                objective_digest: digest("objective"),
-            },
-            runtime_config_digest: digest("runtime-config"),
-            key_epoch: 3,
-            key_receipt_digest: Some(digest("key-rotation-receipt")),
-            deletion_epoch: 4,
-            deletion_receipt_digest: Some(digest("deletion-rebuild-receipt")),
-            predecessor_manifest_digest: Some(digest("predecessor-manifest")),
-            journal_file_name: "journal-0000.bin".to_owned(),
-            journal_header_digest: digest("journal-header"),
-            journal_header_bytes: 136,
-            witness_file_name: "witness-0000.bin".to_owned(),
-            witness_header_digest: digest("witness-header"),
-            witness_header_bytes: 112,
-            operation_file_name: "operations.bin".to_owned(),
-            operation_header_digest: digest("operation-header"),
-            operation_header_bytes: 256,
+    let manifest = checked(NeuronStoreManifestV1::bootstrap(NeuronStoreBootstrapV1 {
+        generation: checked(Generation::new(9)),
+        scope: JournalScope {
+            scope_digest: digest("scope"),
+            objective_digest: digest("objective"),
         },
-    ));
+        runtime_config_digest: digest("runtime-config"),
+        key_epoch: 3,
+        key_receipt_digest: Some(digest("key-rotation-receipt")),
+        deletion_epoch: 4,
+        deletion_receipt_digest: Some(digest("deletion-rebuild-receipt")),
+        predecessor_manifest_digest: Some(digest("predecessor-manifest")),
+        journal_file_name: "journal-0000.bin".to_owned(),
+        journal_header_digest: digest("journal-header"),
+        journal_header_bytes: 136,
+        witness_file_name: "witness-0000.bin".to_owned(),
+        witness_header_digest: digest("witness-header"),
+        witness_header_bytes: 112,
+        operation_file_name: "operations.bin".to_owned(),
+        operation_header_digest: digest("operation-header"),
+        operation_header_bytes: 256,
+    }));
     checked(manifest.verify_restore_frontier(4, 3, digest("runtime-config")));
     assert_eq!(
         manifest.verify_restore_frontier(5, 3, digest("runtime-config")),

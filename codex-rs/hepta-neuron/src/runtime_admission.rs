@@ -236,11 +236,26 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             abstention.push(AbstainReasonV1::CalibrationExpiredLegacy);
         } else {
             for (condition, reason) in [
-                (tick.confidence_ppm < profile.minimum_confidence_ppm, AbstainReasonV1::LowConfidence),
-                (tick.ood_ppm > profile.maximum_ood_ppm, AbstainReasonV1::OutOfDomain),
-                (tick.sparsity_ppm < profile.minimum_active_ppm, AbstainReasonV1::SparseCollapse),
-                (tick.sparsity_ppm > profile.maximum_active_ppm, AbstainReasonV1::DenseCollapse),
-                (tick.resource_receipt.saturation_count > profile.maximum_projection_count, AbstainReasonV1::ProjectionLimit),
+                (
+                    tick.confidence_ppm < profile.minimum_confidence_ppm,
+                    AbstainReasonV1::LowConfidence,
+                ),
+                (
+                    tick.ood_ppm > profile.maximum_ood_ppm,
+                    AbstainReasonV1::OutOfDomain,
+                ),
+                (
+                    tick.sparsity_ppm < profile.minimum_active_ppm,
+                    AbstainReasonV1::SparseCollapse,
+                ),
+                (
+                    tick.sparsity_ppm > profile.maximum_active_ppm,
+                    AbstainReasonV1::DenseCollapse,
+                ),
+                (
+                    tick.resource_receipt.saturation_count > profile.maximum_projection_count,
+                    AbstainReasonV1::ProjectionLimit,
+                ),
             ] {
                 if condition {
                     abstention.push(reason);
@@ -251,10 +266,22 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         let envelope = &self.config.resource_envelope;
         let mut degradation = Vec::new();
         for (condition, reason) in [
-            (resource.execution_micros > envelope.p99_latency_micros, DegradationReasonV1::LatencyEnvelope),
-            (resource.transient_allocation_bytes > envelope.transient_allocation_bytes, DegradationReasonV1::AllocationEnvelope),
-            (resource.checkpoint_bytes > envelope.checkpoint_bytes, DegradationReasonV1::CheckpointEnvelope),
-            (resource.write_amplification_ppm > envelope.write_amplification_ppm, DegradationReasonV1::WriteAmplificationEnvelope),
+            (
+                resource.execution_micros > envelope.p99_latency_micros,
+                DegradationReasonV1::LatencyEnvelope,
+            ),
+            (
+                resource.transient_allocation_bytes > envelope.transient_allocation_bytes,
+                DegradationReasonV1::AllocationEnvelope,
+            ),
+            (
+                resource.checkpoint_bytes > envelope.checkpoint_bytes,
+                DegradationReasonV1::CheckpointEnvelope,
+            ),
+            (
+                resource.write_amplification_ppm > envelope.write_amplification_ppm,
+                DegradationReasonV1::WriteAmplificationEnvelope,
+            ),
         ] {
             if condition {
                 degradation.push(reason);
@@ -267,7 +294,9 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         } else {
             Ok(NeuronCommitDispositionV1::CommittedReady)
         };
-        disposition.map(Some).map_err(|_| NeuronRuntimeError::InvalidInput)
+        disposition
+            .map(Some)
+            .map_err(|_| NeuronRuntimeError::InvalidInput)
     }
 }
 
