@@ -5,6 +5,10 @@
 //! terminal occurrence is published only after a persisted turn reports a
 //! terminal status and the durable TaskFlow step/run have been reconciled.
 
+use std::collections::BTreeSet;
+use std::time::Duration;
+use std::time::Instant;
+
 use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
 use codex_app_server_client::RemoteAppServerEndpoint;
@@ -22,6 +26,8 @@ use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_automation::AutomationDispatchUncertainty;
+use codex_hepta_automation::AutomationError;
+use codex_hepta_automation::AutomationFailureDisposition;
 use codex_hepta_automation::AutomationOccurrenceTerminalState;
 use codex_hepta_automation::AutomationOccurrenceWork;
 use codex_hepta_automation::AutomationQueueReceipt;
@@ -37,6 +43,7 @@ use crate::AgentdState;
 const TURN_PAGE_SIZE: u32 = 100;
 const MAX_TURN_PAGES: usize = 16;
 const RECOVERY_RUN_LEASE_MS: u64 = 30_000;
+const RECOVERY_READ_TIMEOUT: Duration = Duration::from_secs(5);
 
 enum TurnLookup {
     Found(Turn),
@@ -44,40 +51,10 @@ enum TurnLookup {
     Exhausted,
 }
 
-fn recovery_slot_allocation(
-    limit: usize,
-    uncertain_count: usize,
-    pending_count: usize,
-) -> (usize, usize) {
-    if limit == 0 || (uncertain_count == 0 && pending_count == 0) {
-        return (0, 0);
-    }
-    if uncertain_count == 0 {
-        return (0, pending_count.min(limit));
-    }
-    if pending_count == 0 {
-        return (uncertain_count.min(limit), 0);
-    }
-    if limit == 1 {
-        return (1, 0);
-    }
-
-    // Unknown dispatch remains the risk-priority frontier. One slot is reserved
-    // for terminal observation so a sustained unknown backlog cannot starve
-    // already-admitted work forever.
-    let uncertain_slots = uncertain_count.min(limit - 1);
-    let pending_slots = pending_count.min(limit - uncertain_slots);
-    (uncertain_slots, pending_slots)
-}
-
-/// Reconcile a bounded snapshot of distinct durable frontiers.
-///
-/// Unknown dispatches retain priority. When both frontiers are non-empty and
-/// the budget exceeds one, at least one slot is reserved for admitted terminal
-/// observation. Both frontiers are selected before any unknown dispatch is
-/// mutated, so an occurrence that moves from unknown to admitted is not
-/// immediately observed a second time in the same cycle. Each selected row is
-/// therefore contacted at most once per batch.
+/// Reconcile persistent, independently rotating recovery frontiers. A transient
+/// unknown-lane failure does not suppress the reserved terminal lane, but the
+/// batch still returns that failure so Agentd cannot admit new work this cycle.
+/// Fencing, identity and corruption failures stop immediately.
 pub(crate) async fn reconcile_batch(
     store: &AutomationStore,
     state: &AgentdState,
@@ -88,21 +65,68 @@ pub(crate) async fn reconcile_batch(
     if limit == 0 {
         return Ok(0);
     }
-    let uncertain_candidates = store.uncertain_dispatches(limit).await?;
-    let pending_candidates = store.pending_occurrence_work(limit).await?;
-    let (uncertain_slots, pending_slots) =
-        recovery_slot_allocation(limit, uncertain_candidates.len(), pending_candidates.len());
-
+    let started = Instant::now();
+    let selection = store.reserve_recovery_selection(limit).await?;
     let mut processed = 0;
-    for dispatch in uncertain_candidates.into_iter().take(uncertain_slots) {
-        reconcile_unknown_dispatch(store, state, identity, dispatch, now_ms).await?;
+    let mut first_error = None;
+    let mut observed = BTreeSet::new();
+    for key in selection.uncertain {
+        observed.insert(key);
+        let Some(dispatch) = store.uncertain_dispatch_exact(key.0, key.1).await? else {
+            continue;
+        };
+        let current_ms = recovery_time(now_ms, started)?;
+        retain_recovery_result(
+            reconcile_unknown_dispatch(store, state, identity, dispatch, current_ms).await,
+            &mut first_error,
+        )?;
         processed += 1;
     }
-    for work in pending_candidates.into_iter().take(pending_slots) {
-        reconcile_work(store, state, identity, work, now_ms).await?;
+    for key in selection.pending {
+        if !observed.insert(key) {
+            continue;
+        }
+        let Some(work) = store.pending_occurrence_work_exact(key.0, key.1).await? else {
+            continue;
+        };
+        let current_ms = recovery_time(now_ms, started)?;
+        retain_recovery_result(
+            reconcile_work(store, state, identity, work, current_ms).await,
+            &mut first_error,
+        )?;
         processed += 1;
     }
-    Ok(processed)
+    match first_error {
+        Some(error) => Err(error),
+        None => Ok(processed),
+    }
+}
+
+fn recovery_time(now_ms: u64, started: Instant) -> Result<u64, AgentdError> {
+    let elapsed = u64::try_from(started.elapsed().as_millis())
+        .map_err(|_| AutomationError::Invalid)?;
+    now_ms.checked_add(elapsed).ok_or_else(|| AutomationError::Invalid.into())
+}
+
+fn retain_recovery_result(
+    result: Result<(), AgentdError>,
+    first_error: &mut Option<AgentdError>,
+) -> Result<(), AgentdError> {
+    if let Err(error) = result {
+        match crate::automation::classify_recovery_error(&error) {
+            AutomationFailureDisposition::Fence | AutomationFailureDisposition::FailStop => {
+                return Err(error);
+            }
+            AutomationFailureDisposition::Retry
+            | AutomationFailureDisposition::Reconcile
+            | AutomationFailureDisposition::Isolate => {
+                if first_error.is_none() {
+                    *first_error = Some(error);
+                }
+            }
+        }
+    }
+    Ok(())
 }
 
 async fn reconcile_unknown_dispatch(
@@ -436,10 +460,8 @@ async fn pending_exact(
     occurrence: u64,
 ) -> Result<AutomationOccurrenceWork, AgentdError> {
     store
-        .pending_occurrence_work(1024)
+        .pending_occurrence_work_exact(task_id, occurrence)
         .await?
-        .into_iter()
-        .find(|work| work.occurrence.task_id == task_id && work.occurrence.occurrence == occurrence)
         .ok_or_else(|| {
             AgentdError::Protocol(
                 "automation occurrence is not in the recovery frontier".to_string(),
@@ -493,9 +515,10 @@ async fn reconcile_queue(
     client_user_message_id: &str,
     expected_payload_sha256: &str,
 ) -> Result<ThreadQueueReconcileResponse, AgentdError> {
-    client
-        .request_handle()
-        .request_typed(ClientRequest::ThreadQueueReconcile {
+    let handle = client.request_handle();
+    tokio::time::timeout(
+        RECOVERY_READ_TIMEOUT,
+        handle.request_typed(ClientRequest::ThreadQueueReconcile {
             request_id: RequestId::Integer(1),
             params: ThreadQueueReconcileParams {
                 thread_id: thread_id.to_string(),
@@ -504,11 +527,15 @@ async fn reconcile_queue(
                 expected_payload_sha256: expected_payload_sha256.to_string(),
                 mode: ThreadQueueReconcileMode::ReconcileOnly,
             },
-        })
-        .await
-        .map_err(|error| {
-            AgentdError::Protocol(format!("automation queue reconcile failed: {error}"))
-        })
+        }),
+    )
+    .await
+    .map_err(|_| AgentdError::Protocol(
+        "automation queue reconcile failed: read deadline exceeded".to_string(),
+    ))?
+    .map_err(|error| {
+        AgentdError::Protocol(format!("automation queue reconcile failed: {error}"))
+    })
 }
 
 async fn find_turn(
@@ -518,10 +545,11 @@ async fn find_turn(
     start_cursor: Option<&str>,
 ) -> Result<TurnLookup, AgentdError> {
     let mut cursor = start_cursor.map(str::to_owned);
+    let handle = client.request_handle();
     for page_index in 0..MAX_TURN_PAGES {
-        let response: ThreadTurnsListResponse = client
-            .request_handle()
-            .request_typed(ClientRequest::ThreadTurnsList {
+        let response: ThreadTurnsListResponse = tokio::time::timeout(
+            RECOVERY_READ_TIMEOUT,
+            handle.request_typed(ClientRequest::ThreadTurnsList {
                 request_id: RequestId::Integer(i64::try_from(page_index + 2).unwrap_or(i64::MAX)),
                 params: ThreadTurnsListParams {
                     thread_id: thread_id.to_string(),
@@ -530,8 +558,12 @@ async fn find_turn(
                     sort_direction: Some(SortDirection::Desc),
                     items_view: Some(TurnItemsView::NotLoaded),
                 },
-            })
+            }),
+        )
             .await
+            .map_err(|_| AgentdError::Protocol(
+                "automation turn observation failed: read deadline exceeded".to_string(),
+            ))?
             .map_err(|error| {
                 AgentdError::Protocol(format!("automation turn observation failed: {error}"))
             })?;
@@ -593,18 +625,16 @@ fn observation_digest(value: &impl serde::Serialize) -> Result<Sha256Digest, Age
 }
 
 fn taskflow_error(error: codex_hepta_automation::TaskFlowError) -> AgentdError {
-    AgentdError::Protocol(format!("automation TaskFlow recovery failed: {error}"))
+    use codex_hepta_automation::TaskFlowError;
+    AgentdError::Automation(match error {
+        TaskFlowError::StaleFence => AutomationError::AccessDenied,
+        TaskFlowError::Corrupt(_) => AutomationError::Corrupt,
+        TaskFlowError::Invalid(_) => AutomationError::Invalid,
+        TaskFlowError::Conflict(_) | TaskFlowError::InvalidTransition(_) => AutomationError::Conflict,
+        TaskFlowError::Unavailable => AutomationError::Unavailable,
+    })
 }
 
 #[cfg(test)]
-mod tests {
-    use super::recovery_slot_allocation;
-
-    #[test]
-    fn recovery_slots_reserve_terminal_progress_under_unknown_pressure() {
-        assert_eq!(recovery_slot_allocation(8, 100, 100), (7, 1));
-        assert_eq!(recovery_slot_allocation(8, 2, 100), (2, 6));
-        assert_eq!(recovery_slot_allocation(8, 100, 0), (8, 0));
-        assert_eq!(recovery_slot_allocation(1, 100, 100), (1, 0));
-    }
-}
+#[path = "automation_recovery_review_tests.rs"]
+mod review_tests;
