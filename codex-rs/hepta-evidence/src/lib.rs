@@ -8,7 +8,10 @@ mod authbus_store;
 mod canonical;
 mod frontier_acceptance;
 mod frontier_backend;
-mod frontier_backend_file;
+mod frontier_backend_file {
+    include!("frontier_backend_file.rs");
+    mod recovery;
+}
 mod frontier_v2;
 mod governance_store;
 mod governance_validation;
