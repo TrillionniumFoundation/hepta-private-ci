@@ -7,6 +7,7 @@
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
+#[cfg(unix)]
 use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
@@ -19,7 +20,9 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::VerifiedUseToken;
 use serde::Deserialize;
 use serde::Serialize;
+#[cfg(target_os = "linux")]
 use sha2::Digest;
+#[cfg(target_os = "linux")]
 use sha2::Sha256;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
@@ -165,6 +168,8 @@ impl UnixFinalUseAuthorizer {
     #[cfg(unix)]
     async fn request_grant(&self, binding: &FinalUseBinding) -> Result<IssuerResponse> {
         validate_issuer_socket(&self.issuer_socket, self.issuer_uid)?;
+        #[cfg(not(target_os = "linux"))]
+        debug_assert!(self.issuer_process_identity.is_none());
         let request = IssuerRequest {
             schema_version: AUTHORITY_PORT_SCHEMA_VERSION,
             operation: AUTHORITY_PORT_OPERATION.to_string(),
@@ -394,7 +399,10 @@ fn read_bounded(path: &Path, maximum: usize) -> Result<Vec<u8>> {
 
 #[cfg(target_os = "linux")]
 fn canonical_proc_text(mut value: Vec<u8>) -> Vec<u8> {
-    while value.last().is_some_and(u8::is_ascii_whitespace) {
+    while value
+        .last()
+        .is_some_and(|byte| byte.is_ascii_whitespace())
+    {
         value.pop();
     }
     value
@@ -506,7 +514,9 @@ fn validate_protected_directory_chain(path: &Path) -> Result<()> {
     let mut current = Some(path);
     while let Some(directory) = current {
         let metadata = std::fs::symlink_metadata(directory)?;
-        if !metadata.is_dir() || metadata.mode() & 0o022 != 0 {
+        let writable_by_others = metadata.mode() & 0o022 != 0;
+        let trusted_sticky_ancestor = metadata.uid() == 0 && metadata.mode() & 0o1000 != 0;
+        if !metadata.is_dir() || (writable_by_others && !trusted_sticky_ancestor) {
             return Err(format!(
                 "final-use authority socket directory is writable by an unsafe principal: {}",
                 directory.display()
