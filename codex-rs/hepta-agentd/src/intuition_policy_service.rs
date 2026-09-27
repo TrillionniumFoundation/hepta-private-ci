@@ -2,8 +2,8 @@
 //!
 //! Both phases revalidate the Fleet generation and normal Agentd admission
 //! boundary. Commit validates the generation again after durable append; if the
-//! generation changed, the receipt is returned only as an indeterminate recovery
-//! token and must never be dispatched.
+//! generation changed or the final admission check failed, the receipt is
+//! returned only as an indeterminate recovery token and must never be dispatched.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -77,6 +77,15 @@ impl From<AgentdIntuitionPolicyError> for AgentdIntuitionServiceErrorV1 {
     }
 }
 
+/// Once append has succeeded, no subsequent failure may erase its recovery token.
+/// In particular an admission I/O error is not proof that append never happened.
+fn retain_committed_receipt<T, E>(admission: Result<bool, E>, receipt: T) -> Result<T, T> {
+    match admission {
+        Ok(true) => Ok(receipt),
+        Ok(false) | Err(_) => Err(receipt),
+    }
+}
+
 impl AgentdState {
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn prepare_intuition_policy_v3(
@@ -136,9 +145,40 @@ impl AgentdState {
             decision_evidence,
             now,
         )?;
-        if !self.automation_admission_ready()? {
-            return Err(AgentdIntuitionServiceErrorV1::GenerationChangedAfterCommit { receipt });
-        }
-        Ok(receipt)
+        retain_committed_receipt(self.automation_admission_ready(), receipt).map_err(|receipt| {
+            AgentdIntuitionServiceErrorV1::GenerationChangedAfterCommit { receipt }
+        })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::retain_committed_receipt;
+
+    #[test]
+    fn intuition_policy_post_commit_rejection_preserves_exact_receipt() {
+        let receipt = String::from("durable:sequence:7:chain:verified");
+        assert_eq!(
+            retain_committed_receipt::<_, ()>(Ok(false), receipt.clone()),
+            Err(receipt)
+        );
+    }
+
+    #[test]
+    fn intuition_policy_post_commit_check_error_is_not_an_uncommitted_failure() {
+        let receipt = String::from("durable:sequence:8:chain:verified");
+        assert_eq!(
+            retain_committed_receipt(Err("generation-store-unavailable"), receipt.clone()),
+            Err(receipt)
+        );
+    }
+
+    #[test]
+    fn intuition_policy_post_commit_success_retains_the_same_receipt() {
+        let receipt = String::from("durable:sequence:9:chain:verified");
+        assert_eq!(
+            retain_committed_receipt::<_, ()>(Ok(true), receipt.clone()),
+            Ok(receipt)
+        );
     }
 }
