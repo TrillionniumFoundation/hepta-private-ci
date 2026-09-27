@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   export:
-    runs-on: ubuntu-24.04
+    runs-on: windows-latest
     timeout-minutes: 10
     steps:
       - name: Check out exact head
@@ -24,6 +24,7 @@ jobs:
           persist-credentials: false
 
       - name: Record source identity
+        shell: bash
         run: |
           set -euo pipefail
           git rev-parse HEAD > cognitive-types-source-sha.txt
