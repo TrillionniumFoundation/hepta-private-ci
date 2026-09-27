@@ -22,6 +22,12 @@ import {
 
 const MAX_COMPLETED = 1024;
 
+function compareAscii(left, right) {
+  if (left < right) return -1;
+  if (left > right) return 1;
+  return 0;
+}
+
 export class OperationLedger {
   #pending = new Map();
   #completed = new Map();
@@ -37,7 +43,7 @@ export class OperationLedger {
     return Object.freeze(
       [...this.#pending.values()]
         .map(publicOperation)
-        .sort((left, right) => left.operationId.localeCompare(right.operationId)),
+        .sort((left, right) => compareAscii(left.operationId, right.operationId)),
     );
   }
 
@@ -46,7 +52,7 @@ export class OperationLedger {
       [...this.#completed.values()]
         .map(publicOperation)
         .sort((left, right) =>
-          right.updatedAt - left.updatedAt || left.operationId.localeCompare(right.operationId),
+          right.updatedAt - left.updatedAt || compareAscii(left.operationId, right.operationId),
         ),
     );
   }
@@ -109,6 +115,8 @@ export class OperationLedger {
         error.code === UI_CONTROL_ERROR_CODES.STALE_REVISION ||
         error.code === UI_CONTROL_ERROR_CODES.PERMISSION_DENIED ||
         error.code === UI_CONTROL_ERROR_CODES.SESSION_EXPIRED ||
+        error.code === UI_CONTROL_ERROR_CODES.SESSION_REVOKED ||
+        error.code === UI_CONTROL_ERROR_CODES.PROTOCOL_MISMATCH ||
         (error.code === UI_CONTROL_ERROR_CODES.ABORTED &&
           error.details.requestDispatched === false);
       if (definitelyNotAccepted) {
@@ -164,13 +172,40 @@ export class OperationLedger {
   reconcile(observation) {
     assertPlainObject(observation, "terminal observation");
     const operationId = assertStableIdentifier(observation.operationId, "operationId");
+    const semanticDigest = assertSha256(observation.semanticDigest, "semanticDigest");
+    if (observation.terminalObserved !== true || !TERMINAL_STATUSES.has(observation.status)) {
+      throw invalid("reconciliation requires a registered terminal observation", {
+        operationId,
+        status: observation.status,
+      });
+    }
+    const auditTraceId = observation.auditTraceId === undefined || observation.auditTraceId === null
+      ? null
+      : assertStableIdentifier(observation.auditTraceId, "auditTraceId");
+    const outcomeDigest = observation.outcomeDigest === undefined || observation.outcomeDigest === null
+      ? null
+      : assertSha256(observation.outcomeDigest, "outcomeDigest", { allowZero: true });
+
     const entry = this.#pending.get(operationId);
     if (!entry) {
       const completed = this.#completed.get(operationId);
-      if (completed) return publicOperation(completed);
-      throw invalid("terminal observation references an unknown operation", { operationId });
+      if (!completed) {
+        throw invalid("terminal observation references an unknown operation", { operationId });
+      }
+      if (
+        !constantTimeEqual(semanticDigest, completed.semanticDigest) ||
+        observation.status !== completed.terminalStatus ||
+        (auditTraceId !== null && auditTraceId !== completed.auditTraceId) ||
+        (outcomeDigest !== null && !constantTimeEqual(outcomeDigest, completed.outcomeDigest ?? ""))
+      ) {
+        throw uiControlError(
+          UI_CONTROL_ERROR_CODES.OPERATION_CONFLICT,
+          "terminal replay conflicts with the completed operation identity",
+          { details: { operationId } },
+        );
+      }
+      return publicOperation(completed);
     }
-    const semanticDigest = assertSha256(observation.semanticDigest, "semanticDigest");
     if (!constantTimeEqual(semanticDigest, entry.semanticDigest)) {
       throw uiControlError(
         UI_CONTROL_ERROR_CODES.OPERATION_CONFLICT,
@@ -178,20 +213,10 @@ export class OperationLedger {
         { details: { operationId } },
       );
     }
-    if (observation.terminalObserved !== true || !TERMINAL_STATUSES.has(observation.status)) {
-      throw invalid("reconciliation requires a registered terminal observation", {
-        operationId,
-        status: observation.status,
-      });
-    }
     entry.state = "terminal";
     entry.terminalStatus = observation.status;
-    entry.auditTraceId = observation.auditTraceId === undefined || observation.auditTraceId === null
-      ? entry.auditTraceId
-      : assertStableIdentifier(observation.auditTraceId, "auditTraceId");
-    entry.outcomeDigest = observation.outcomeDigest === undefined || observation.outcomeDigest === null
-      ? null
-      : assertSha256(observation.outcomeDigest, "outcomeDigest", { allowZero: true });
+    entry.auditTraceId = auditTraceId ?? entry.auditTraceId;
+    entry.outcomeDigest = outcomeDigest;
     entry.updatedAt = this.#clock();
     entry.promise = Promise.resolve(publicOperation(entry));
     this.#pending.delete(operationId);
@@ -205,12 +230,15 @@ export class OperationLedger {
       operations: Object.freeze(
         [...this.#pending.values()]
           .map(entry => Object.freeze({
+            protocolVersion: entry.protocolVersion,
+            method: entry.method,
             operationId: entry.operationId,
             semanticDigest: entry.semanticDigest,
-            method: entry.method,
             action: entry.action,
             targetId: entry.targetId,
             reason: entry.reason,
+            sessionId: entry.sessionId,
+            connectionGeneration: entry.connectionGeneration,
             generation: entry.generation,
             displayedRevision: entry.displayedRevision,
             snapshotDigest: entry.snapshotDigest,
@@ -219,7 +247,7 @@ export class OperationLedger {
             createdAt: entry.createdAt,
             updatedAt: entry.updatedAt,
           }))
-          .sort((left, right) => left.operationId.localeCompare(right.operationId)),
+          .sort((left, right) => compareAscii(left.operationId, right.operationId)),
       ),
     });
   }
@@ -243,12 +271,21 @@ export class OperationLedger {
         throw invalid("recovery state contains a duplicate operation id", { operationId });
       }
       const entry = {
+        protocolVersion: assertCanonicalText(operation.protocolVersion, "protocolVersion", {
+          maxBytes: 128,
+        }),
+        method: assertCanonicalText(operation.method, "method", { maxBytes: 64 }),
         operationId,
         semanticDigest: assertSha256(operation.semanticDigest, "semanticDigest"),
-        method: assertCanonicalText(operation.method, "method", { maxBytes: 64 }),
         action: assertCanonicalText(operation.action, "action", { maxBytes: 64 }),
         targetId: assertStableIdentifier(operation.targetId, "targetId"),
         reason: assertCanonicalText(operation.reason, "reason", { maxBytes: 1024 }),
+        sessionId: assertStableIdentifier(operation.sessionId, "sessionId"),
+        connectionGeneration: assertSafeInteger(
+          operation.connectionGeneration,
+          "connectionGeneration",
+          { min: 1 },
+        ),
         generation: assertSafeInteger(operation.generation, "generation", { min: 1 }),
         displayedRevision: assertSafeInteger(operation.displayedRevision, "displayedRevision", {
           min: 1,
