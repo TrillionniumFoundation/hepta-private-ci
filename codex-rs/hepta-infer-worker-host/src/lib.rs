@@ -7,11 +7,14 @@
 
 #![forbid(unsafe_code)]
 
-/// Model-manifest/grant state machine for native driver implementations.
+/// Experimental injected-driver state machine. This feature does not establish
+/// trusted model bytes, device isolation, durable recovery or production use.
+#[cfg(feature = "experimental-local-worker")]
 pub mod model_worker;
 
 pub mod final_use_authorizer;
 pub mod native_app_server;
+pub mod profiles;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -72,6 +75,8 @@ pub struct InferenceReceipt {
     pub reservation_id: StableId,
     pub status: TerminalStatus,
     pub output_digest: Option<Digest32>,
+    /// Legacy v1 field. Zero does not distinguish absent observation from an
+    /// observed zero. Do not use this validation receipt for provider billing.
     pub consumed_tokens: u32,
     pub request_digest: Digest32,
     pub receipt_digest: Digest32,
@@ -116,6 +121,8 @@ pub fn request_digest(request: &InferenceRequest) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
+/// Legacy validation-only boundary; supplied observations are not driver or
+/// device attestations. The v1 digest and numeric-usage encoding are preserved.
 pub fn execute(
     now_ms: u64,
     request: InferenceRequest,

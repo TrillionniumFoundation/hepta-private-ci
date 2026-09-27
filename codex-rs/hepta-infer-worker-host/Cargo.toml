@@ -10,6 +10,11 @@ name = "codex_hepta_infer_worker_host"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+# This enables an injected-driver component, not a production local-model host.
+experimental-local-worker = []
+
 [lints]
 workspace = true
 
