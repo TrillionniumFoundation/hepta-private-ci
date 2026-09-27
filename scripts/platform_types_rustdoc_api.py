@@ -44,7 +44,7 @@ class _Normalizer:
 
     Rustdoc serializes `Id` as a JSON number while object-map keys are strings.
     Treating every integer as an item ID is unsafe because rustdoc also contains
-    ordinary numeric values. We therefore resolve IDs only in the schema fields
+    ordinary numeric values. IDs are therefore resolved only in schema fields
     that carry `Id` or `Vec<Id>` values.
     """
 
@@ -59,8 +59,11 @@ class _Normalizer:
             "variants",
         }
     )
-    IGNORED_KEYS = frozenset(
+    ITEM_IGNORED_KEYS = frozenset(
         {"id", "crate_id", "span", "docs", "links", "deprecation"}
+    )
+    NESTED_IGNORED_KEYS = frozenset(
+        {"crate_id", "span", "docs", "links", "deprecation"}
     )
 
     def __init__(self, document: dict[str, Any]) -> None:
@@ -141,7 +144,7 @@ class _Normalizer:
         cleaned = {
             key: self.normalize(value, key=key)
             for key, value in item.items()
-            if key not in self.IGNORED_KEYS
+            if key not in self.ITEM_IGNORED_KEYS
         }
         self.visiting.remove(item_id)
         self.memo[item_id] = cleaned
@@ -160,7 +163,7 @@ class _Normalizer:
                 for child_key, item in sorted(
                     value.items(), key=lambda pair: str(pair[0])
                 )
-                if child_key not in self.IGNORED_KEYS
+                if child_key not in self.NESTED_IGNORED_KEYS
             }
         return value
 
