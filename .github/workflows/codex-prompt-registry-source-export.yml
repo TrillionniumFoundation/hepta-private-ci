@@ -1,4 +1,4 @@
-name: Codex prompt registry remediation apply
+name: Codex prompt registry strict V4 apply
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: prompt-registry-remediation-apply-v2-${{ github.ref }}
+  group: prompt-registry-strict-v4-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -24,21 +24,15 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: true
           fetch-depth: 0
-      - name: Apply exact-anchor source migrations
+
+      - name: Apply reviewed strict V4 storage patch
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/apply-prompt-registry-v4-remediation.py
-          python3 scripts/apply-prompt-runtime-closure.py
-          python3 scripts/apply-prompt-publisher-factor-anchor.py
-          python3 scripts/apply-prompt-publisher-closure.py
-          python3 scripts/apply-prompt-publisher-lifecycle.py
-          if [[ -f scripts/apply-prompt-registry-operations.py ]]; then
-            python3 scripts/apply-prompt-registry-operations.py
-          fi
           python3 scripts/apply-prompt-registry-schema-v4.py
           git diff --check
-      - name: Commit applied source migration
+
+      - name: Commit applied storage contract
         shell: bash
         run: |
           set -euo pipefail
@@ -47,6 +41,8 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add codex-rs docs qualification
+          git add \
+            codex-rs/hepta-prompt-registry/src/durable.rs \
+            codex-rs/hepta-prompt-registry/src/durable_payloads.rs
           git commit -m "prompt.registry: apply strict V4 storage contract [prompt-registry-apply]"
           git push origin "HEAD:${GITHUB_REF_NAME}"
