@@ -19,6 +19,7 @@ use super::Access;
 use super::DurableRegistryError;
 use super::StoredPayload;
 use super::StoredV2;
+use super::StoredV4 as StoredStateV4;
 use super::map_precommit_io;
 use super::open_private;
 use crate::PromptRegistry;
@@ -42,9 +43,19 @@ pub(super) struct PayloadReference {
 #[serde(deny_unknown_fields)]
 pub(super) struct StoredV3 {
     pub schema: u32,
-    // Existing V2 semantic image, hydrated before its unchanged restore checks.
+    // Legacy V3 (and transitional V4) embedded the V2 semantic image.
     // Embedded payloads must be empty; there is only one physical payload copy.
     pub state: StoredV2,
+    pub payload_references: Vec<PayloadReference>,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct StoredV4 {
+    pub schema: u32,
+    // Strict V4 requires the embedded semantic image to declare schema 4 and
+    // requires relations to be present rather than defaulted.
+    pub state: StoredStateV4,
     pub payload_references: Vec<PayloadReference>,
 }
 
@@ -74,18 +85,45 @@ impl PayloadState {
         self.references.values().cloned().collect()
     }
 
-    pub fn hydrate(
+    pub fn hydrate_v3(
         directory: &File,
         mut stored: StoredV3,
     ) -> Result<(Self, StoredV2), DurableRegistryError> {
-        if !matches!(stored.schema, 3 | 4)
-            || stored.state.schema != super::STORE_SCHEMA
-            || !stored.state.payloads.is_empty()
-            || stored.payload_references.len() > crate::MAX_RECORDS
-        {
+        if stored.schema != 3 && stored.schema != 4 {
             return Err(DurableRegistryError::Corrupt);
         }
-        let mut ordered = stored.payload_references;
+        let payloads = Self::hydrate_payloads(
+            directory,
+            &mut stored.state.payloads,
+            stored.payload_references,
+        )?;
+        Ok((payloads, stored.state))
+    }
+
+    pub fn hydrate_v4(
+        directory: &File,
+        mut stored: StoredV4,
+    ) -> Result<(Self, StoredStateV4), DurableRegistryError> {
+        if stored.schema != 4 || stored.state.schema != super::STORE_SCHEMA_V4 {
+            return Err(DurableRegistryError::Corrupt);
+        }
+        let payloads = Self::hydrate_payloads(
+            directory,
+            &mut stored.state.payloads,
+            stored.payload_references,
+        )?;
+        Ok((payloads, stored.state))
+    }
+
+    fn hydrate_payloads(
+        directory: &File,
+        embedded_payloads: &mut Vec<StoredPayload>,
+        payload_references: Vec<PayloadReference>,
+    ) -> Result<Self, DurableRegistryError> {
+        if !embedded_payloads.is_empty() || payload_references.len() > crate::MAX_RECORDS {
+            return Err(DurableRegistryError::Corrupt);
+        }
+        let mut ordered = payload_references;
         ordered.sort_by_key(|reference| reference.offset);
         let mut committed_end = MAGIC.len() as u64;
         let mut references = BTreeMap::new();
@@ -117,19 +155,16 @@ impl PayloadState {
             if Digest32::of_bytes(&payload).into_array() != reference.digest {
                 return Err(DurableRegistryError::Corrupt);
             }
-            stored.state.payloads.push(StoredPayload {
+            embedded_payloads.push(StoredPayload {
                 realization_id: reference.realization_id.clone(),
                 payload,
             });
         }
-        Ok((
-            Self {
-                references,
-                committed_end,
-                initialized: true,
-            },
-            stored.state,
-        ))
+        Ok(Self {
+            references,
+            committed_end,
+            initialized: true,
+        })
     }
 
     /// Only called after full V2 semantic/configuration validation succeeded.

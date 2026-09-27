@@ -3,8 +3,9 @@
 //! The pure PromptRegistry remains the deterministic domain core. This wrapper
 //! applies a mutation to a clone and publishes atomic metadata only after new
 //! immutable payload extents are durable. Existing payload bytes are not rewritten
-//! on metadata changes. V1/V2 storage migrates at open; validated V3 reopen does
-//! not rewrite metadata. Hot state and metadata remain size-dependent.
+//! on metadata changes. V1/V2/V3 storage migrates at open into the strict V4
+//! metadata contract; validated V4 reopen does not rewrite metadata. Hot state
+//! and metadata remain size-dependent.
 
 #[cfg(test)]
 use std::cell::Cell;
@@ -58,7 +59,8 @@ use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 #[path = "durable_payloads.rs"]
 mod payloads;
 
-const STORE_SCHEMA: u32 = 2;
+const LEGACY_STORE_SCHEMA_V2: u32 = 2;
+const STORE_SCHEMA_V4: u32 = 4;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
 const LEGACY_CONTEXT_PROFILE_DOMAIN: &[u8] = b"hepta.prompt-registry.legacy-context-profile.v1";
 const MIGRATION_REASON_DOMAIN: &[u8] = b"hepta.prompt-registry.migration.v1-v2";
@@ -85,15 +87,19 @@ impl DurablePromptRegistry {
         maximum_records: usize,
     ) -> Result<Self, DurableRegistryError> {
         let (mut store, stored) = Store::open(directory)?;
-        let registry = match stored {
-            Some(StoredAny::V2(stored)) => restore_v2(stored, maximum_records)?,
-            Some(StoredAny::V1(stored)) => migrate_v1(stored, maximum_records)?,
-            None => PromptRegistry::new(maximum_records).map_err(DurableRegistryError::Core)?,
+        let (registry, requires_v4_publication) = match stored {
+            Some(StoredAny::V4(stored)) => (restore_v4(stored, maximum_records)?, false),
+            Some(StoredAny::V2(stored)) => (migrate_v2(stored, maximum_records)?, true),
+            Some(StoredAny::V1(stored)) => (migrate_v1(stored, maximum_records)?, true),
+            None => (
+                PromptRegistry::new(maximum_records).map_err(DurableRegistryError::Core)?,
+                true,
+            ),
         };
-        if store.payloads.is_initialized() {
-            store.payloads.discard_unselected_tail(&store.root)?;
-        } else {
+        if requires_v4_publication || !store.payloads.is_initialized() {
             store.persist(&registry)?;
+        } else {
+            store.payloads.discard_unselected_tail(&store.root)?;
         }
         Ok(Self {
             registry,
@@ -507,6 +513,24 @@ struct StoredV2 {
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
+struct StoredV4 {
+    schema: u32,
+    registry_digest: [u8; 32],
+    revision: u64,
+    lifecycle_frontier: u64,
+    revocation_frontier: u64,
+    maximum_records: usize,
+    factors: Vec<StoredFactor>,
+    realizations: Vec<StoredRealization>,
+    bindings: Vec<StoredBindingV2>,
+    payloads: Vec<StoredPayload>,
+    relations: Vec<StoredRelation>,
+    supersessions: Vec<StoredSupersession>,
+    lifecycle_events: Vec<StoredLifecycleEvent>,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 struct StoredV1 {
     schema: u32,
     revision: u64,
@@ -624,21 +648,34 @@ struct StoredLifecycleEvent {
 
 #[cfg(test)]
 fn stored_v2(registry: &PromptRegistry) -> StoredV2 {
-    let mut stored = stored_metadata(registry);
-    stored.payloads = registry
-        .realization_payloads
-        .iter()
-        .map(|(id, payload)| StoredPayload {
-            realization_id: id.to_string(),
-            payload: payload.to_vec(),
-        })
-        .collect();
-    stored
+    let current = stored_metadata(registry);
+    StoredV2 {
+        schema: LEGACY_STORE_SCHEMA_V2,
+        registry_digest: current.registry_digest,
+        revision: current.revision,
+        lifecycle_frontier: current.lifecycle_frontier,
+        revocation_frontier: current.revocation_frontier,
+        maximum_records: current.maximum_records,
+        factors: current.factors,
+        realizations: current.realizations,
+        bindings: current.bindings,
+        payloads: registry
+            .realization_payloads
+            .iter()
+            .map(|(id, payload)| StoredPayload {
+                realization_id: id.to_string(),
+                payload: payload.to_vec(),
+            })
+            .collect(),
+        relations: current.relations,
+        supersessions: current.supersessions,
+        lifecycle_events: current.lifecycle_events,
+    }
 }
 
-fn stored_metadata(registry: &PromptRegistry) -> StoredV2 {
-    StoredV2 {
-        schema: STORE_SCHEMA,
+fn stored_metadata(registry: &PromptRegistry) -> StoredV4 {
+    StoredV4 {
+        schema: STORE_SCHEMA_V4,
         registry_digest: registry.snapshot_digest().into_array(),
         revision: registry.revision.get(),
         lifecycle_frontier: registry.lifecycle_frontier,
@@ -736,11 +773,38 @@ fn stored_event(event: &LifecycleEvent) -> StoredLifecycleEvent {
     }
 }
 
-fn restore_v2(
+fn migrate_v2(
     stored: StoredV2,
     maximum_records: usize,
 ) -> Result<PromptRegistry, DurableRegistryError> {
-    if stored.schema != STORE_SCHEMA || stored.maximum_records == 0 || maximum_records == 0 {
+    if stored.schema != LEGACY_STORE_SCHEMA_V2 {
+        return Err(DurableRegistryError::Corrupt);
+    }
+    restore_v4(
+        StoredV4 {
+            schema: STORE_SCHEMA_V4,
+            registry_digest: stored.registry_digest,
+            revision: stored.revision,
+            lifecycle_frontier: stored.lifecycle_frontier,
+            revocation_frontier: stored.revocation_frontier,
+            maximum_records: stored.maximum_records,
+            factors: stored.factors,
+            realizations: stored.realizations,
+            bindings: stored.bindings,
+            payloads: stored.payloads,
+            relations: stored.relations,
+            supersessions: stored.supersessions,
+            lifecycle_events: stored.lifecycle_events,
+        },
+        maximum_records,
+    )
+}
+
+fn restore_v4(
+    stored: StoredV4,
+    maximum_records: usize,
+) -> Result<PromptRegistry, DurableRegistryError> {
+    if stored.schema != STORE_SCHEMA_V4 || stored.maximum_records == 0 || maximum_records == 0 {
         return Err(DurableRegistryError::Corrupt);
     }
     let revision = Revision::new(stored.revision).map_err(|_| DurableRegistryError::Corrupt)?;
@@ -1396,6 +1460,7 @@ fn decode_role(value: u8) -> Result<PromptRoleV2, DurableRegistryError> {
 enum StoredAny {
     V1(StoredV1),
     V2(StoredV2),
+    V4(StoredV4),
 }
 
 struct Store {
@@ -1452,12 +1517,39 @@ impl Store {
             2 => StoredAny::V2(
                 serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?,
             ),
-            3 | 4 => {
-                let manifest =
+            3 => {
+                let manifest: payloads::StoredV3 =
                     serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?;
-                let (payloads, state) = payloads::PayloadState::hydrate(&store.root, manifest)?;
+                let (payloads, state) =
+                    payloads::PayloadState::hydrate_v3(&store.root, manifest)?;
                 store.payloads = payloads;
                 StoredAny::V2(state)
+            }
+            4 => {
+                let state_schema = value
+                    .get("state")
+                    .and_then(|state| state.get("schema"))
+                    .and_then(serde_json::Value::as_u64)
+                    .ok_or(DurableRegistryError::Corrupt)?;
+                if state_schema == u64::from(LEGACY_STORE_SCHEMA_V2) {
+                    let manifest: payloads::StoredV3 =
+                        serde_json::from_value(value)
+                            .map_err(|_| DurableRegistryError::Corrupt)?;
+                    let (payloads, state) =
+                        payloads::PayloadState::hydrate_v3(&store.root, manifest)?;
+                    store.payloads = payloads;
+                    StoredAny::V2(state)
+                } else if state_schema == u64::from(STORE_SCHEMA_V4) {
+                    let manifest: payloads::StoredV4 =
+                        serde_json::from_value(value)
+                            .map_err(|_| DurableRegistryError::Corrupt)?;
+                    let (payloads, state) =
+                        payloads::PayloadState::hydrate_v4(&store.root, manifest)?;
+                    store.payloads = payloads;
+                    StoredAny::V4(state)
+                } else {
+                    return Err(DurableRegistryError::Corrupt);
+                }
             }
             _ => return Err(DurableRegistryError::Corrupt),
         };
@@ -1466,7 +1558,7 @@ impl Store {
 
     fn persist(&mut self, registry: &PromptRegistry) -> Result<(), DurableRegistryError> {
         let successor = self.payloads.successor(registry)?;
-        let bytes = serde_json::to_vec(&payloads::StoredV3 {
+        let bytes = serde_json::to_vec(&payloads::StoredV4 {
             schema: 4,
             state: stored_metadata(registry),
             payload_references: successor.references(),
