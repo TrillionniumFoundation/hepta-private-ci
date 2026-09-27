@@ -59,7 +59,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           git diff --check
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/multiscale-python.json" --minimum-tests 52 -- python3 -m unittest -v scripts.tests.test_hepta_multiscale_scope scripts.tests.test_hepta_laya_retrieval scripts.tests.test_hepta_laya_experiment
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/multiscale-python.json" --minimum-tests 53 -- python3 -m unittest -v scripts.tests.test_hepta_multiscale_scope scripts.tests.test_hepta_laya_retrieval scripts.tests.test_hepta_laya_experiment scripts.tests.test_hepta_laya_immutability
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/existing-scope.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_ci_scope
           printf 'Tested commit: `%s`\n\nThese are protocol/optimizer tests, not real Laya efficacy.\n' "$TESTED_SHA" >> "$GITHUB_STEP_SUMMARY"
       - uses: ./.github/actions/check-clean-worktree
@@ -108,6 +108,8 @@ jobs:
         if: steps.scope.outputs.lifecycle == 'true'
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         if: steps.scope.outputs.lifecycle == 'true'
+        with:
+          toolchain: "1.95.0"
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         if: steps.scope.outputs.lifecycle == 'true'
         with:

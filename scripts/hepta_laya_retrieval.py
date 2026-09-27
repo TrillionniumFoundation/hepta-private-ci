@@ -176,9 +176,12 @@ def score(request: Request, port: PredictionPort, *, now_ms: Callable[[], int],
     if current(request) is not True:
         raise Rejected("source or bundle withdrawn before inference")
     state, questions, labels = encode(request)
+    input_digest = digest({"state": state, "questions": questions})
     start = time.perf_counter_ns()
     raw = port.predict(state, questions)
     elapsed_us = (time.perf_counter_ns() - start) // 1000
+    if digest({"state": state, "questions": questions}) != input_digest:
+        raise Rejected("model mutated the bound input")
     # Never turn timeout, exception, drift or withdrawal into an empty success.
     if now_ms() >= request.deadline_ms:
         raise Rejected("deadline exceeded; inference cost must still be reconciled")
@@ -206,7 +209,7 @@ def score(request: Request, port: PredictionPort, *, now_ms: Callable[[], int],
         "bundle_digest": request.bundle_digest,
         "generation": request.generation,
         "workspace_id": request.workspace_id,
-        "model_input_digest": digest({"state": state, "questions": questions}),
+        "model_input_digest": input_digest,
         "labels": labels,
         "prediction_ppm": probabilities,
         "selected_source": labels[selected],
