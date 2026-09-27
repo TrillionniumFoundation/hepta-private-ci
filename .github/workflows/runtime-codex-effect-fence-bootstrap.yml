@@ -36,17 +36,21 @@ jobs:
       - name: Apply exact reviewed transforms
         run: |
           set -euo pipefail
-          # The effect-fence transformer replaces marker-inclusive regions.
-          # Normalize its helper to consume the end marker before running it.
+          # Both transformers replace marker-inclusive regions. Normalize their
+          # helpers to consume the end marker before running them.
           python3 - <<'PY'
           from pathlib import Path
-          path = Path('scripts/runtime_codex_effect_fence_bootstrap.py')
-          source = path.read_text()
-          old = 'return text[:first] + replacement + text[stop:]'
-          new = 'return text[:first] + replacement + text[stop + len(end):]'
-          if source.count(old) != 1:
-              raise SystemExit('unexpected effect-fence transformer helper')
-          path.write_text(source.replace(old, new, 1))
+          for filename in (
+              'scripts/runtime_codex_effect_fence_bootstrap.py',
+              'scripts/runtime_codex_rejection_settlement_bootstrap.py',
+          ):
+              path = Path(filename)
+              source = path.read_text()
+              old = 'return text[:first] + replacement + text[stop:]'
+              new = 'return text[:first] + replacement + text[stop + len(end):]'
+              if source.count(old) != 1:
+                  raise SystemExit(f'unexpected transformer helper: {filename}')
+              path.write_text(source.replace(old, new, 1))
           PY
           python3 scripts/runtime_codex_effect_fence_bootstrap.py
           python3 scripts/runtime_codex_rejection_settlement_bootstrap.py
