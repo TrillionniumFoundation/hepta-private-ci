@@ -53,14 +53,17 @@ impl ReadView {
             ));
         }
         let mut agents = BTreeMap::new();
+        let mut ownership_ready = true;
         for (agent_id, record) in snapshot.agents {
-            let status = status_from(epoch, &record, supervisor.snapshot(&agent_id))?;
+            let runtime = supervisor.snapshot(&agent_id);
+            ownership_ready &= crate::recovery::process_ownership_ready(&record, runtime.as_ref())?;
+            let status = status_from(epoch, &record, runtime)?;
             agents.insert(agent_id, status);
         }
         let observation = Arc::new(Observation {
             captured_at,
             epoch: epoch.clone(),
-            ready: !supervisor.any_production_recovery_required(),
+            ready: ownership_ready && !supervisor.any_production_recovery_required(),
             agents,
         });
         let mut current = self.current.write().map_err(|_| {

@@ -287,6 +287,134 @@ impl<D: ProcessDriver> Supervisor<D> {
                 "Matrix lease identity differs from agent {agent_id}"
             )));
         }
+        let spec = MatrixAdoptSpec {
+            agent_id: agent_id.clone(),
+            agent_generation: lease.attached_agent_generation,
+            binding_revision: lease.binding_revision,
+            binding_digest: lease.binding_digest.clone(),
+            release_id: lease.release_id.clone(),
+            process_incarnation: lease.process_incarnation.clone(),
+            plane_epoch: lease.plane_epoch,
+            control_socket: record.layout.matrixd_control_socket().to_path_buf(),
+            identity: lease.identity.clone(),
+        };
+        match self
+            .driver
+            .adopt_matrixd(&spec)
+            .map_err(|error| driver_error(agent_id, error))?
+        {
+            Adoption::Adopted(process) => {
+                // The driver has proved the lease's exact OS lifetime and
+                // protocol identity. Own it before fallible semantic hydration.
+                // No tick/observer can see this owner while recovery holds &mut.
+                slot.matrix.configured = true;
+                slot.matrix.runtime = Some(MatrixRuntime {
+                    process,
+                    identity: lease.identity.clone(),
+                    attached_agent_generation: lease.attached_agent_generation,
+                    release_id: lease.release_id.clone(),
+                    binding_revision: lease.binding_revision,
+                    binding_digest: lease.binding_digest.clone(),
+                    process_incarnation: lease.process_incarnation.clone(),
+                    plane_epoch: lease.plane_epoch,
+                    phase: MatrixRuntimePhase::Stopping { deadline: now },
+                    healthy: false,
+                    fenced: false,
+                });
+                let admission = self.validate_adopted_matrix(slot, record, agent_id, &lease, now);
+                match admission {
+                    Ok(Some(health_deadline)) => {
+                        let runtime = slot.matrix.runtime.as_mut().ok_or_else(|| {
+                            SupervisorError::Invalid("adopted Matrix owner is absent".to_string())
+                        })?;
+                        runtime.phase = MatrixRuntimePhase::AwaitingHealth {
+                            deadline: health_deadline,
+                        };
+                        slot.matrix.degraded = false;
+                        slot.matrix.restart_exhausted = false;
+                        slot.event(
+                            record.lifecycle.generation,
+                            SupervisorEventKind::MatrixOrphanAdopted,
+                        );
+                    }
+                    outcome => {
+                        let fault = outcome.err();
+                        let message = fault.as_ref().map_or_else(
+                            || "Matrix orphan is attached to a non-running main generation".to_string(),
+                            ToString::to_string,
+                        );
+                        // Rejected serving eligibility never discards ownership.
+                        // Keep the lease even after a successful signal: only an
+                        // observed exit may enter the existing removal witness.
+                        if let Some(runtime) = slot.matrix.runtime.as_mut() {
+                            runtime.fenced = true;
+                        }
+                        let termination = self.kill_matrix_now(agent_id, slot);
+                        self.degrade_matrix(
+                            agent_id,
+                            slot,
+                            record.lifecycle.generation,
+                            message,
+                            now,
+                        );
+                        slot.event(
+                            record.lifecycle.generation,
+                            SupervisorEventKind::MatrixOrphanRejected,
+                        );
+                        if let Err(signal) = &termination {
+                            slot.event(
+                                record.lifecycle.generation,
+                                SupervisorEventKind::DriverFault(bounded_message(signal.to_string())),
+                            );
+                        }
+                        return match fault {
+                            Some(error) => Err(error),
+                            None => termination,
+                        };
+                    }
+                }
+            }
+            Adoption::Missing => {
+                remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;
+                self.degrade_matrix(
+                    agent_id,
+                    slot,
+                    record.lifecycle.generation,
+                    "Matrix companion orphan is missing".to_string(),
+                    now,
+                );
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::MatrixOrphanMissing,
+                );
+            }
+            Adoption::Rejected => {
+                // A rejected identity is not an absent process. Retain the
+                // lease so both companion and main replacement remain blocked.
+                self.degrade_matrix(
+                    agent_id,
+                    slot,
+                    record.lifecycle.generation,
+                    "Matrix companion orphan failed exact adoption".to_string(),
+                    now,
+                );
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::MatrixOrphanRejected,
+                );
+            }
+        }
+        Ok(())
+    }
+
+    fn validate_adopted_matrix(
+        &self,
+        slot: &AgentSlot<D::Process>,
+        record: &AgentRecord,
+        agent_id: &AgentId,
+        lease: &MatrixProcessLease,
+        now: Instant,
+    ) -> Result<Option<Instant>, SupervisorError> {
         let binding = load_binding(record, agent_id)?.ok_or_else(|| {
             SupervisorError::CorruptLease(
                 "Matrix lease exists without a public binding".to_string(),
@@ -321,108 +449,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 && !runtime.fenced
                 && runtime.release_id == lease.release_id
         });
-        let health_deadline = deadline(now, self.config.health_timeout)?;
-        let spec = MatrixAdoptSpec {
-            agent_id: agent_id.clone(),
-            agent_generation: lease.attached_agent_generation,
-            binding_revision: lease.binding_revision,
-            binding_digest: lease.binding_digest.clone(),
-            release_id: lease.release_id.clone(),
-            process_incarnation: lease.process_incarnation.clone(),
-            plane_epoch: lease.plane_epoch,
-            control_socket: record.layout.matrixd_control_socket().to_path_buf(),
-            identity: lease.identity.clone(),
-        };
-        match self
-            .driver
-            .adopt_matrixd(&spec)
-            .map_err(|error| driver_error(agent_id, error))?
-        {
-            Adoption::Adopted(process) if agent_is_exact => {
-                slot.matrix.configured = true;
-                slot.matrix.runtime = Some(MatrixRuntime {
-                    process,
-                    identity: lease.identity,
-                    attached_agent_generation: lease.attached_agent_generation,
-                    release_id: lease.release_id,
-                    binding_revision: lease.binding_revision,
-                    binding_digest: lease.binding_digest,
-                    process_incarnation: lease.process_incarnation,
-                    plane_epoch: lease.plane_epoch,
-                    phase: MatrixRuntimePhase::AwaitingHealth {
-                        deadline: health_deadline,
-                    },
-                    healthy: false,
-                    fenced: false,
-                });
-                slot.matrix.degraded = false;
-                slot.matrix.restart_exhausted = false;
-                slot.event(
-                    record.lifecycle.generation,
-                    SupervisorEventKind::MatrixOrphanAdopted,
-                );
-            }
-            Adoption::Adopted(process) => {
-                // Serving eligibility is not ownership. Retain the proven
-                // process and its lease until terminal observation and cleanup.
-                slot.matrix.configured = true;
-                slot.matrix.runtime = Some(MatrixRuntime {
-                    process,
-                    identity: lease.identity,
-                    attached_agent_generation: lease.attached_agent_generation,
-                    release_id: lease.release_id,
-                    binding_revision: lease.binding_revision,
-                    binding_digest: lease.binding_digest,
-                    process_incarnation: lease.process_incarnation,
-                    plane_epoch: lease.plane_epoch,
-                    phase: MatrixRuntimePhase::Stopping { deadline: now },
-                    healthy: false,
-                    fenced: true,
-                });
-                let termination = self.kill_matrix_now(agent_id, slot);
-                self.degrade_matrix(
-                    agent_id,
-                    slot,
-                    record.lifecycle.generation,
-                    "Matrix orphan was attached to a non-running agent generation".to_string(),
-                    now,
-                );
-                slot.event(
-                    record.lifecycle.generation,
-                    SupervisorEventKind::MatrixOrphanRejected,
-                );
-                termination?;
-            }
-            Adoption::Missing => {
-                remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;
-                self.degrade_matrix(
-                    agent_id,
-                    slot,
-                    record.lifecycle.generation,
-                    "Matrix companion orphan is missing".to_string(),
-                    now,
-                );
-                slot.event(
-                    record.lifecycle.generation,
-                    SupervisorEventKind::MatrixOrphanMissing,
-                );
-            }
-            Adoption::Rejected => {
-                remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;
-                self.degrade_matrix(
-                    agent_id,
-                    slot,
-                    record.lifecycle.generation,
-                    "Matrix companion orphan failed exact adoption".to_string(),
-                    now,
-                );
-                slot.event(
-                    record.lifecycle.generation,
-                    SupervisorEventKind::MatrixOrphanRejected,
-                );
-            }
+        if !agent_is_exact {
+            return Ok(None);
         }
-        Ok(())
+        deadline(now, self.config.health_timeout).map(Some)
     }
 
     pub(crate) fn defer_agent_action_for_matrix(

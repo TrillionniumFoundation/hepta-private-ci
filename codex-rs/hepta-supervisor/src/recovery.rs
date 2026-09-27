@@ -22,6 +22,7 @@ use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
 use crate::lease::ProcessLeaseRemoval;
 use crate::lease::read_lease;
+use crate::lease::read_matrix_lease;
 use crate::lease::remove_lease;
 use crate::lease::validate_lease;
 use crate::lease::write_lease;
@@ -43,6 +44,10 @@ mod control_tests;
 #[cfg(test)]
 #[path = "launch_failure_tests.rs"]
 mod launch_tests;
+
+#[cfg(test)]
+#[path = "recovery_ownership_tests.rs"]
+mod ownership_tests;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn restore_release_state(
@@ -128,6 +133,13 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));
         }
         let record = self.record(agent_id)?;
+        // An unowned or still-terminating companion is not proof of absence.
+        // Do not start another main generation over unresolved paired ownership.
+        if slot.matrix.runtime.is_some()
+            || read_matrix_lease(record.layout.matrixd_process_lease())?.is_some()
+        {
+            return Err(SupervisorError::UnresolvedLease(agent_id.clone()));
+        }
         control_intent::reconcile_absent(
             record.layout.run_root(),
             agent_id,
@@ -270,6 +282,26 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         slot.matrix.apply_restart_recovery(now);
+        // Evaluate both owners before returning either error. A main release,
+        // control-journal, driver or lifecycle fault cannot skip the companion.
+        let main = self.recover_main_slot(agent_id, slot, record, now);
+        let companion = self.recover_matrix_companion(agent_id, slot, record, now);
+        if let Err(error) = &companion {
+            slot.event(
+                record.lifecycle.generation,
+                SupervisorEventKind::DriverFault(bounded_message(error.to_string())),
+            );
+        }
+        main.and(companion)
+    }
+
+    fn recover_main_slot(
+        &mut self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        record: &AgentRecord,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
         let Some(lease) = read_lease(record.layout.run_root())? else {
             let terminal_lifecycle = if is_live_lifecycle(record.lifecycle.lifecycle) {
                 let generation = self.transition_without_runtime(
@@ -289,7 +321,6 @@ impl<D: ProcessDriver> Supervisor<D> {
                 terminal_lifecycle,
             )
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            self.recover_matrix_companion(agent_id, slot, record, now)?;
             return Ok(());
         };
         validate_lease(
@@ -415,32 +446,39 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.event(record.lifecycle.generation, SupervisorEventKind::OrphanMissing);
             }
             Adoption::Rejected => {
-                remove_lease(record.layout.run_root(), &lease)?;
-                let terminal_lifecycle = if is_live_lifecycle(record.lifecycle.lifecycle) {
+                // Failed identity proof grants neither signal authority nor
+                // evidence of absence. Keep the exact lease and any unresolved
+                // control intent; Failed is a lifecycle fence, not an exit.
+                if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(
                         agent_id,
                         slot,
                         record.lifecycle.generation,
                         AgentLifecycle::Failed,
                     )?;
-                    AgentLifecycle::Failed
-                } else {
-                    record.lifecycle.lifecycle
-                };
-                control_intent::reconcile_absent(
-                    record.layout.run_root(),
-                    agent_id,
-                    terminal_lifecycle,
-                )
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                }
                 slot.event(record.lifecycle.generation, SupervisorEventKind::OrphanRejected);
             }
         }
-        // A main-process signal failure must not skip companion adoption.
-        self.recover_matrix_companion(agent_id, slot, record, now)?;
         if let Some(error) = control_fault {
             return Err(error);
         }
         Ok(())
     }
+}
+
+/// Observational readiness only. Neither an absent handle nor a rejected
+/// handshake proves that an on-disk lease no longer represents a live process.
+#[cfg(any(unix, test))]
+pub(crate) fn process_ownership_ready(
+    record: &AgentRecord,
+    snapshot: Option<&crate::AgentSupervisorSnapshot>,
+) -> Result<bool, SupervisorError> {
+    let Some(snapshot) = snapshot else {
+        return Ok(false);
+    };
+    Ok(!snapshot.runtime_fenced
+        && (snapshot.active || read_lease(record.layout.run_root())?.is_none())
+        && (snapshot.matrix.active
+            || read_matrix_lease(record.layout.matrixd_process_lease())?.is_none()))
 }

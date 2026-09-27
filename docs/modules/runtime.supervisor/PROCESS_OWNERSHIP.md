@@ -51,8 +51,10 @@ Matrix launch computes fallible deadlines before spawn, installs the acquired
 handle before publication, and retains a failed publication under a private
 same-owner Matrix lease-removal witness. A mismatched but exactly adopted
 companion is fenced and retained; a kill acknowledgement no longer deletes its
-lease or discards its handle. Current binding/release validation before adoption
-is still a separate recovery gap and is not relaxed by this change.
+lease or discards its handle. Recovery now installs the exact driver-proven
+process before validating the current binding/release. Missing, corrupt or stale
+binding/release metadata prevents serving, but cannot drop the acquired handle.
+The original OS-lifetime and handshake proof is not weakened.
 
 Matrix fencing invalidates readiness before a signal is attempted. A failed kill
 remains retryable even if the main Agent later looks healthy. Fenced companions
@@ -62,16 +64,42 @@ sync does not cause repeated signaling or polling. Normal missing leases reject;
 only a retained failed-publication witness allows initial absence. Changed,
 corrupt or reappearing leases do not authorize cleanup.
 
+## Rejected identity is not process absence
+
+`Adoption::Rejected` retains both the main and Matrix process leases. It does
+not signal the unproven process and does not reconcile a durable termination
+intent as completed. The main lifecycle may become Failed and the existing
+OrphanRejected event is retained; this event is not evidence of process exit.
+For compatibility, identity rejection alone is reported by that event rather
+than changing the legacy TickReport contract. The retained lease is the
+replacement fence, not the event buffer.
+
+Before starting a main generation, the owner now checks for both an in-memory
+Matrix owner and an unresolved Matrix lease. Either blocks replacement. The
+normal Matrix start path already rejects an unresolved Matrix lease.
+
+Read-view publication separately checks physical lease presence against the
+captured owner handles. An unowned main/Matrix lease, or a fenced main runtime,
+prevents ready=true. A failed lease read invalidates publication through the
+existing error path. This is a read-only observation, not an authority token or
+a new mutation gate, and retains the existing two-second cache freshness bound.
+It does not promise that every unrelated readiness or quarantine condition is
+covered, nor replace final-use control validation.
+
 ## Failure-domain separation
 
 Explicit Kill collects main and companion results independently. It attempts the
-main signal before entering the companion driver. Main registry/CAS failure
+main signal before entering the companion driver. The initial registry read is
+now a collected error, not a question-mark early return. Main registry/CAS failure
 fences the already-owned process and still attempts both terminations, while
 returning failure rather than claiming durable completion. Generation fencing
 also invalidates serving state before attempting main then companion signals.
-Main tick failure still advances companion containment and retains a bounded
-secondary fault. These synchronous operations do not establish per-Agent latency
-isolation or a deadline guarantee under stuck kernel/filesystem calls.
+Within recover_slot, the main and Matrix recovery attempts are evaluated
+independently before either result is returned. Main release conversion, control
+journal parsing, driver and lifecycle failures therefore do not skip Matrix
+ownership recovery. If both fail, the main error remains primary and a bounded
+Matrix diagnostic is retained. These synchronous operations do not establish
+per-Agent latency isolation or a deadline guarantee under stuck kernel/filesystem calls.
 
 ## Regression source
 
@@ -97,14 +125,54 @@ just test --locked -p codex-hepta-supervisor --lib matrix::tick::tests::containm
 just test --locked -p codex-hepta-supervisor --lib matrix::lease_removal::tests
 ```
 
+## Paired recovery regression source
+
+`recovery_ownership_tests.rs`, included as `recovery::ownership_tests`, adds ten
+filesystem-backed regression functions with explicit injected process outcomes:
+
+| Test boundary | Required observation |
+| --- | --- |
+| Rejected main identity | Original lease and unresolved control intent remain; no signal or spawn |
+| Rejected Matrix identity | Original lease remains and blocks main replacement; no signal |
+| Main release rejection and failed kills | Both acquired owners and leases remain |
+| Main control parse failure | Matrix still reaches exact driver adoption/containment |
+| Main driver failure | Matrix still reaches exact driver adoption/containment |
+| Invalid Matrix binding | Validation occurs after ownership acquisition; failed kill retains owner |
+| Kill acknowledgement followed by exit | Lease is retained before exit and finalized only after observation |
+| Proven missing Matrix | Distinct absence disposition permits exact lease cleanup |
+| Repeated Matrix recovery | Existing retained owner is not replaced |
+| Rejected ownership readiness | Persisted unowned lease prevents ready=true |
+
+The existing
+`matrix::tick::tests::containment::failed_registry_preparation_preserves_and_terminates_both_owned_handles`
+regression covers the emergency Kill ordering repair. It is not disabled or
+replaced by a source-text assertion.
+
+```sh
+cd codex-rs
+just test --locked -p codex-hepta-supervisor --lib recovery::ownership_tests
+just test --locked -p codex-hepta-supervisor --lib matrix::tick::tests::containment
+```
+
+These commands and source tests have not been executed by this continuation.
+The editing environment has no Rust compiler, Cargo or rustfmt. Exact source
+blob checks and Git patch roundtrips establish only source-delivery integrity.
+Complete default/production product tests, strict lint and format checks on the
+actual final source and ordered-parent merge remain mandatory.
+
 ## Still requiring implementation or qualification
 
-Internal driver setup failures after OS spawn, pre-adoption hydration or
-binding failures, rejected/unproven adoption lease disposition, daemon death
-before a recoverable lease, directory-inode replacement, durable Stop/Kill
-supersession, restart predecessor/replacement identity, cross-daemon deadlines
-and exit finalization remain separate gaps. The local launch/cleanup witnesses
-do not close any cross-daemon requirement. Matrix stop retry/deadline semantics
+Internal driver setup failures after OS spawn, hydration in Supervisor::recover
+before recover_slot, main lease/control validation before main adoption, daemon
+death before a recoverable launch record, directory-inode replacement, durable
+Stop/Kill release-change/no-runtime supersession, restart predecessor/replacement
+identity, cross-daemon deadlines and exit finalization remain separate gaps.
+Matrix recovery now owns a successfully proven child before semantic hydration;
+this does not establish a durable main-fault Matrix quarantine across reopen.
+The previously prepared Stage A+B transformation is not source closure or an accepted v2
+restart-lineage implementation. Its replacement-exit, original predecessor
+control/deadline and durable Matrix-quarantine boundaries still require repair.
+The local launch/cleanup witnesses do not close any cross-daemon requirement. Matrix stop retry/deadline semantics
 must also be qualified independently from the fenced hard-kill path.
 
 Current exact-head/source-merge Rust, formatting, strict lint and full product
