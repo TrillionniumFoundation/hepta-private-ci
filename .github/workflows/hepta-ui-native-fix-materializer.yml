@@ -93,6 +93,7 @@ jobs:
           python3 scripts/hepta-module-docs.py refresh-derived
           python3 scripts/hepta-module-docs.py refresh-indexes
           python3 scripts/hepta-module-docs.py verify
+          python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v
           git diff --check
 
       - name: Strict native lint, tests and release binaries
@@ -124,8 +125,11 @@ jobs:
           git config user.email ui-native-convergence@users.noreply.github.com
           git rm \
             .github/workflows/hepta-ui-native-fix-materializer.yml \
+            .github/workflows/hepta-ui-native-slim-materializer.yml \
             .github/materializers/hepta-ui-native-integration-converge.yml.txt \
-            scripts/hepta_ui_native_converge.py
+            .github/materializers/ui-native-convergence.patch.gz.b64 \
+            scripts/hepta_ui_native_converge.py \
+            scripts/materialize_ui_native_convergence.py
           git add --all
           git diff --cached --check
           git commit -m 'fix(ui.native): converge supervised runtime and candidate truth'
