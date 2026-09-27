@@ -138,11 +138,39 @@ impl DurableInferenceControl {
 
     /// Commit the write-ahead dispatch while issuing a one-shot local proof
     /// that this exact process can still prove the external effect was not sent.
+    /// If a signed execution plan was bound, the historical host entrypoint is
+    /// automatically upgraded to an immediate expiry/provider/generation gate.
     pub fn dispatch_native_with_pre_effect_abort(
         &mut self,
         request_id: &str,
         dispatch: NativeDispatch,
     ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error> {
+        if let Some(binding) = self
+            .native
+            .records
+            .get(request_id)
+            .and_then(|record| record.execution_binding.as_ref())
+        {
+            let now_unix_ms: u64 = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .map_err(|_| Error::InvalidTime)?
+                .as_millis()
+                .try_into()
+                .map_err(|_| Error::ArithmeticOverflow)?;
+            let request = &self
+                .native
+                .records
+                .get(request_id)
+                .ok_or(Error::RequestNotFound)?
+                .request;
+            if binding.valid_until_unix_ms <= now_unix_ms
+                || binding.provider_id != dispatch.model_provider
+                || binding.worker_generation != request.worker_generation
+                || binding.model_id != request.model
+            {
+                return Err(Error::AssignmentMismatch);
+            }
+        }
         let record = self.dispatch_native(request_id, dispatch)?;
         Ok((
             record.clone(),
