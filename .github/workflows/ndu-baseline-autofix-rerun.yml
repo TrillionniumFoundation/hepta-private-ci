@@ -1,0 +1,79 @@
+name: NDU baseline autofix rerun
+
+on:
+  push:
+    branches:
+      - codex/utility-ndu-production-hardening-20260926
+    paths:
+      - ".github/workflows/ndu-baseline-autofix-rerun.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/utility-ndu-production-hardening-20260926
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Reuse the audited exact repair block
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          workflow = Path('.github/workflows/ndu-baseline-autofix.yml').read_text(encoding='utf-8')
+          marker = "          python3 - <<'PY'\n"
+          start = workflow.index(marker) + len(marker)
+          end = workflow.index("\n          PY\n", start)
+          source = textwrap.dedent(workflow[start:end])
+          exec(compile(source, 'ndu-baseline-autofix.py', 'exec'), {})
+          PY
+
+      - name: Canonically format the exact qualification packages
+        shell: bash
+        run: |
+          cd codex-rs
+          cargo fmt \
+            --package codex-hepta-ndu \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-learning-artifacts \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-shadow-qualification \
+            --package codex-hepta-agentd \
+            --package codex-hepta-agent-protocol \
+            --package codex-hepta-contracts \
+            --package codex-hepta-control-plane
+
+      - name: Validate Python 3.10 lockfile fallback tests
+        run: python3 scripts/test_verify_cargo_lock.py
+
+      - name: Commit exact repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git config user.name "hepta-qualification"
+          git config user.email "qualification@invalid"
+          git add \
+            codex-rs/hepta-agent-protocol/src/ndu.rs \
+            codex-rs/hepta-agentd/src \
+            codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs \
+            codex-rs/hepta-ndu/src \
+            scripts/verify_cargo_lock.py \
+            scripts/test_verify_cargo_lock.py
+          if git diff --cached --quiet; then
+            echo "no repairs required"
+            exit 0
+          fi
+          git commit -m "fix(ndu): restore strict source and lint qualification"
+          git push origin HEAD:codex/utility-ndu-production-hardening-20260926
