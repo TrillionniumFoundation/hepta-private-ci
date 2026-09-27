@@ -16,6 +16,7 @@ import subprocess
 PRIMARY = "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"
 EXTENSION = "docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json"
 INPUTS = (
+    "justfile",
     EXTENSION,
     "docs/modules/MODULE_DOCS.json",
     "codex-rs/Cargo.toml", "codex-rs/Cargo.lock",

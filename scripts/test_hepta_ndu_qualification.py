@@ -58,6 +58,16 @@ class ReceiptValidationTests(unittest.TestCase):
             self.path, "a" * 40, "b" * 40, "source-head"
         )
 
+    def test_just_recipe_owns_fail_fast_and_runner_keeps_strict_filters(self):
+        command = runner.test("codex-hepta-ndu")
+        self.assertEqual(command[:2], ["just", "test"])
+        self.assertNotIn("--no-fail-fast", command)
+        self.assertIn("--locked", command)
+        self.assertEqual(command[command.index("--no-tests") + 1], "fail")
+        self.assertEqual(command[command.index("--retries") + 1], "0")
+        recipe = (runner.ROOT / "justfile").read_text()
+        self.assertIn("cargo nextest run --no-fail-fast", recipe)
+
     def test_valid_measurement_and_honest_performance_failure(self):
         self.assertTrue(self.validate(self.fixture)["performancePassed"])
         self.fixture["hotPath"].update(p99Micros=6000, targetPass=False)

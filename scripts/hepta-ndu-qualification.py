@@ -41,7 +41,6 @@ def test(package: str, *args: str) -> list[str]:
         "just",
         "test",
         "--locked",
-        "--no-fail-fast",
         "--retries",
         "0",
         "--no-tests",
