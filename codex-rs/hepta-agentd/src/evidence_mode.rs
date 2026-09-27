@@ -127,10 +127,12 @@ static EVIDENCE_RUNTIME_POLICY: OnceLock<EvidenceRuntimePolicy> = OnceLock::new(
 pub fn configure_evidence_runtime_policy(
     policy: EvidenceRuntimePolicy,
 ) -> Result<(), AgentdError> {
-    policy.validate_startup()?;
-    EVIDENCE_RUNTIME_POLICY.set(policy).map_err(|_| {
+    // Latch the requested policy before validation can fail. Ignoring a
+    // production error must not expose the default development path.
+    EVIDENCE_RUNTIME_POLICY.set(policy.clone()).map_err(|_| {
         AgentdError::Invalid("kernel.evidence runtime policy is already configured".to_string())
-    })
+    })?;
+    policy.validate_startup()
 }
 
 pub(crate) fn evidence_runtime_policy() -> EvidenceRuntimePolicy {

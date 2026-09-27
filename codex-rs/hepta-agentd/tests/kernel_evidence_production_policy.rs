@@ -6,6 +6,7 @@ use codex_hepta_agentd::EvidenceProductionAdmissionFiles;
 use codex_hepta_agentd::EvidenceRecoveryFrontierV2;
 use codex_hepta_agentd::EvidenceRuntimeMode;
 use codex_hepta_agentd::EvidenceRuntimePolicy;
+use codex_hepta_agentd::configure_evidence_runtime_policy;
 use codex_hepta_agentd::evidence_ledger_root;
 use codex_hepta_agentd::evidence_recovery_frontier_v2_signing_bytes;
 use codex_hepta_contracts::Sha256Digest;
@@ -157,4 +158,23 @@ fn syntactically_complete_files_cannot_claim_live_production_authority() {
 #[test]
 fn explicit_development_remains_available() {
     EvidenceRuntimePolicy::development().validate_startup().expect("development");
+}
+
+#[test]
+fn rejected_production_policy_cannot_be_replaced_with_development() {
+    let home = tempfile::tempdir().expect("absolute test directory");
+    let policy = EvidenceRuntimePolicy::production(EvidenceProductionAdmissionFiles {
+        backend_identity_file: home.path().join("backend.json"),
+        build_identity_file: home.path().join("build.json"),
+        qualification_status_file: home.path().join("status.json"),
+        backup_publication_file: home.path().join("backup.json"),
+        local_rollback_domain_id: "rollback:local-evidence".to_string(),
+    })
+    .expect("file syntax");
+    let error = configure_evidence_runtime_policy(policy)
+        .expect_err("missing live backend must reject production");
+    assert!(error.to_string().contains("live authenticated frontier backend"));
+    let downgrade = configure_evidence_runtime_policy(EvidenceRuntimePolicy::development())
+        .expect_err("rejected production request must remain latched");
+    assert!(downgrade.to_string().contains("already configured"));
 }

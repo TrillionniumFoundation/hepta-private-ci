@@ -45,8 +45,10 @@ authority. The existing implementation did not call an authenticated latest
 frontier service, verify a live durable acknowledgement, or fence every append
 through publication. `EvidenceRuntimePolicy::validate_startup` now rejects that
 file-only production configuration, both at process policy installation and at
-EvidenceHost entry before opening or migrating a database. Development is not
-silently selected after a production error.
+EvidenceHost entry before opening or migrating a database. The requested process policy is latched before startup validation. Even a caller
+that ignores a production admission error cannot obtain the default development
+policy or install a development replacement. EvidenceHost independently rejects
+the latched production policy before database I/O.
 
 Production therefore remains deliberately unavailable in this revision. There
 is no boolean, environment, or force override. Replacing this guard requires a
@@ -60,7 +62,7 @@ The common fixture is `SQLITE_RUNTIME_CASES.json`: 29 forbidden and 9 allowed
 SQL cases. The new native SQLx integration suite (`runtime_authorizer`) exercises
 all five simultaneous pool connections, pool reopen, immutable writes, pragma
 changes, real migration/schema validation, identity recovery, AUTOINCREMENT,
-idempotence, transactions, and missing-file refusal. Two production guard tests
+idempotence, transactions, and missing-file refusal. Three production guard tests
 were added to the existing `kernel_evidence_production_policy` test target so the
 qualification lane already names the target that contains them.
 
