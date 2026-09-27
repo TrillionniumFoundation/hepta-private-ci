@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/runtime-fleet-one-shot-format.yml"
       - "scripts/runtime_fleet_hardening.py"
+      - "scripts/runtime_fleet_hardening_fixups.py"
       - "codex-rs/hepta-fleet/**"
       - "codex-rs/hepta-supervisor/**"
   workflow_dispatch:
@@ -42,6 +43,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/runtime_fleet_hardening.py
+          python3 scripts/runtime_fleet_hardening_fixups.py
 
       - name: Apply and verify repository rustfmt
         working-directory: codex-rs
