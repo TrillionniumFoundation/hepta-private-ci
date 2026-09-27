@@ -47,8 +47,16 @@ jobs:
           $ErrorActionPreference = 'Stop'
           git add .github/workflows/hepta-lane-e-gap-closure.yml codex-rs/hepta-intelligence-eval codex-rs/hepta-agentd/src/intelligence_evaluation.rs codex-rs/hepta-intelligence/src/plasticity_product.rs docs/modules/learning.eval qualification/fixtures/learning-eval-private-api qualification/module-execution-dossiers/detail/learning.eval.md scripts/hepta-lane-e-closure.py scripts/hepta-learning-eval-evidence.py scripts/hepta-learning-eval-private-api.sh scripts/hepta-learning-eval-status.py
           git diff --cached --check
-          if ((git diff --cached --quiet); $LASTEXITCODE -eq 0) { exit 0 }
+          $changed = @(git diff --cached --name-only)
+          if ($changed.Count -eq 0) { exit 0 }
           git config user.name hepta-learning-eval-ci
           git config user.email hepta-learning-eval-ci@users.noreply.github.com
           git commit -m "learning.eval: materialize production closure"
-          git push origin HEAD:fix/learning-eval-production-closure-20260927
+          for ($attempt = 1; $attempt -le 3; $attempt++) {
+            git pull --rebase origin fix/learning-eval-production-closure-20260927
+            if ($LASTEXITCODE -ne 0) { throw "rebase failed on attempt $attempt" }
+            git push origin HEAD:fix/learning-eval-production-closure-20260927
+            if ($LASTEXITCODE -eq 0) { exit 0 }
+            Start-Sleep -Seconds (5 * $attempt)
+          }
+          throw 'failed to push materialized learning.eval closure after three attempts'
