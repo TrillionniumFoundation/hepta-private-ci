@@ -68,6 +68,20 @@ fn validate_runtime_policy(interval: Duration, max_batch: u32) -> Result<(), Age
     Ok(())
 }
 
+/// Split one bounded service iteration between destination-first reconciliation
+/// and newly prepared outbox work.  For batches larger than one, both classes
+/// always receive capacity.  A one-item batch alternates priority so a permanent
+/// indeterminate prefix cannot starve queued Decision/Outcome operations.
+fn split_learning_budget(max_batch: u32, reconcile_first: bool) -> (u32, u32) {
+    debug_assert!(max_batch > 0);
+    if max_batch == 1 {
+        return if reconcile_first { (1, 0) } else { (0, 1) };
+    }
+    let reconcile = (max_batch / 2).max(1);
+    let dispatch = max_batch.saturating_sub(reconcile).max(1);
+    (reconcile, dispatch)
+}
+
 pub(crate) async fn run_intelligence_learning_runtime_v1(
     host: Arc<AgentdIntelligenceLearningHostV1>,
     state: Arc<AgentdState>,
@@ -76,6 +90,7 @@ pub(crate) async fn run_intelligence_learning_runtime_v1(
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
     validate_runtime_policy(interval, max_batch)?;
+    let mut reconcile_first = true;
     loop {
         if !state.automation_admission_ready()? {
             tokio::select! {
@@ -94,15 +109,31 @@ pub(crate) async fn run_intelligence_learning_runtime_v1(
             )));
         }
 
-        let reconciled = host
-            .reconcile_unsettled(max_batch)
-            .await
-            .map_err(learning_error)?;
-        let reconciled = u32::try_from(reconciled.len()).unwrap_or(max_batch);
-        let mut remaining = max_batch.saturating_sub(reconciled);
-        while remaining > 0 {
+        let (reconcile_budget, dispatch_budget) =
+            split_learning_budget(max_batch, reconcile_first);
+        reconcile_first = !reconcile_first;
+
+        let mut reconciled = 0_u32;
+        if reconcile_budget > 0 {
+            reconciled = u32::try_from(
+                host.reconcile_unsettled(reconcile_budget)
+                    .await
+                    .map_err(learning_error)?
+                    .len(),
+            )
+            .unwrap_or(reconcile_budget)
+            .min(reconcile_budget);
+        }
+
+        // Unused reconciliation capacity may be borrowed by queued operations,
+        // but the configured dispatch share is never consumed by old unsettled
+        // rows.  This keeps recovery destination-first without permitting an
+        // indefinitely unresolved prefix to starve new durable work.
+        let mut remaining_dispatch = dispatch_budget
+            .saturating_add(reconcile_budget.saturating_sub(reconciled));
+        while remaining_dispatch > 0 {
             match host.dispatch_next().await.map_err(learning_error)? {
-                Some(_) => remaining -= 1,
+                Some(_) => remaining_dispatch -= 1,
                 None => break,
             }
         }
@@ -144,5 +175,21 @@ mod tests {
         assert!(validate_runtime_policy(Duration::from_secs(3601), 1).is_err());
         assert!(validate_runtime_policy(Duration::from_secs(1), 0).is_err());
         assert!(validate_runtime_policy(Duration::from_secs(1), 257).is_err());
+    }
+
+    #[test]
+    fn reconciliation_cannot_consume_the_entire_multi_item_batch() {
+        for batch in 2..=MAX_RECONCILE_BATCH {
+            let (reconcile, dispatch) = split_learning_budget(batch, true);
+            assert!(reconcile > 0);
+            assert!(dispatch > 0);
+            assert_eq!(reconcile + dispatch, batch);
+        }
+    }
+
+    #[test]
+    fn a_single_slot_alternates_recovery_and_new_work() {
+        assert_eq!(split_learning_budget(1, true), (1, 0));
+        assert_eq!(split_learning_budget(1, false), (0, 1));
     }
 }
