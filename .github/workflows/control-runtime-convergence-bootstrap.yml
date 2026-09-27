@@ -14,7 +14,9 @@ permissions:
 jobs:
   apply:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-24.04
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -36,8 +38,7 @@ jobs:
         working-directory: codex-rs
         run: |
           cargo test --locked -p codex-hepta-ndu --lib preference::tests
-          cargo test --locked -p codex-hepta-control-plane --lib planner
-          cargo test --locked -p codex-hepta-control-plane --lib planner_context
+          cargo test --locked -p codex-hepta-control-plane --all-targets
           cargo test --locked -p codex-hepta-agentd --lib cognitive_context
           cargo clippy --locked --all-targets -p codex-hepta-ndu -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-agent-protocol -- -D warnings
       - name: Commit converged candidate
@@ -48,5 +49,5 @@ jobs:
           git config user.name "hepta-control-runtime-bot"
           git config user.email "control-runtime@invalid"
           git add -A
-          git commit -m "control.runtime: close request-integrity and maturity gaps"
+          git commit -m "control.runtime: close integrity, durability, and execution gaps"
           git push origin HEAD:codex/control-runtime-convergence-20260928
