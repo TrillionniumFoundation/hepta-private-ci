@@ -2,9 +2,15 @@
 //!
 //! These encodings bind supplied measurements, not their empirical validity.
 //! Publication and independent selection remain learning.artifacts duties.
+use crate::ModelExecutionObservationV1;
+use crate::ModelSemanticIdentityV2;
+use crate::NeuronModelOutputV1;
 use crate::NeuronRuntimeConfigV1;
 use crate::NeuronRuntimeError;
+use crate::NeuronTickInputV1;
+use crate::runtime_types::validate_model_output;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 pub const NEURON_CALIBRATION_SUMMARY_SCHEMA_V1: &str = "hepta.neuron.calibration-summary.v1";
 pub const NEURON_OOD_SUMMARY_SCHEMA_V1: &str = "hepta.neuron.ood-summary.v1";
@@ -66,6 +72,73 @@ impl NeuronRuntimeConfigV1 {
         self.evidence_payload(NEURON_OOD_SUMMARY_SCHEMA_V1.as_bytes())
     }
 
+    /// Project the product model result into a semantic identity and a separate
+    /// execution observation.  This is the required input for HPTNGS02's
+    /// `model_semantic_digest` and `model_observation_digest` fields.
+    ///
+    /// V1 receipts remain byte-compatible for historical replay, but callers
+    /// must not treat their legacy telemetry-bearing digest as semantic identity.
+    pub fn project_model_binding_v2(
+        &self,
+        input: &NeuronTickInputV1,
+        output: &NeuronModelOutputV1,
+    ) -> Result<(ModelSemanticIdentityV2, ModelExecutionObservationV1), NeuronRuntimeError> {
+        validate_model_output(self, output)?;
+        let expected_quantization_id = derived_runtime_id("quantization", self.quantization_digest)?;
+        let expected_backend_id = derived_runtime_id("runtime", self.runtime_digest)?;
+        if output.runtime_receipt.quantization_id != expected_quantization_id
+            || output.runtime_receipt.backend_id != expected_backend_id
+        {
+            return Err(NeuronRuntimeError::ModelBindingMismatch);
+        }
+        let semantic = ModelSemanticIdentityV2 {
+            model_id: output.runtime_receipt.model_id.clone(),
+            model_manifest_digest: output.runtime_receipt.model_manifest_digest,
+            weights_digest: output.runtime_receipt.weights_digest,
+            tokenizer_digest: output.runtime_receipt.tokenizer_digest,
+            preprocessor_digest: output.runtime_receipt.preprocessor_digest,
+            quantization_id: output.runtime_receipt.quantization_id.clone(),
+            quantization_digest: output.runtime_receipt.quantization_digest,
+            backend_id: output.runtime_receipt.backend_id.clone(),
+            runtime_digest: output.runtime_receipt.runtime_digest,
+            device_identity_digest: output.runtime_receipt.device_identity_digest,
+            encoder_digest: output.encoder_digest,
+            head_digest: output.head_digest,
+            artifact_use_digest: self.semantic_digest()?,
+        };
+        let observation = ModelExecutionObservationV1 {
+            latency_micros: output.runtime_receipt.latency_micros,
+            queue_age_micros: output.queue_age_micros,
+            resident_bytes: output.runtime_receipt.resident_bytes,
+            transient_allocation_bytes: output.transient_allocation_bytes,
+            observed_at_monotonic_micros: input.monotonic_time_micros,
+        };
+        semantic
+            .semantic_digest()
+            .map_err(|_| NeuronRuntimeError::ModelBindingMismatch)?;
+        observation
+            .observation_digest()
+            .map_err(|_| NeuronRuntimeError::ModelOutputMismatch)?;
+        Ok((semantic, observation))
+    }
+
+    /// Convenience projection for the two independent durable digest columns.
+    pub fn project_model_binding_digests_v2(
+        &self,
+        input: &NeuronTickInputV1,
+        output: &NeuronModelOutputV1,
+    ) -> Result<(Digest32, Digest32), NeuronRuntimeError> {
+        let (semantic, observation) = self.project_model_binding_v2(input, output)?;
+        Ok((
+            semantic
+                .semantic_digest()
+                .map_err(|_| NeuronRuntimeError::ModelBindingMismatch)?,
+            observation
+                .observation_digest()
+                .map_err(|_| NeuronRuntimeError::ModelOutputMismatch)?,
+        ))
+    }
+
     fn evidence_payload(&self, domain: &[u8]) -> Result<Vec<u8>, NeuronRuntimeError> {
         self.calibration.validate(self.generation)?;
         let mut bytes = domain.to_vec();
@@ -98,4 +171,9 @@ impl NeuronRuntimeConfigV1 {
         }
         Ok(bytes)
     }
+}
+
+fn derived_runtime_id(prefix: &str, digest: Digest32) -> Result<StableId, NeuronRuntimeError> {
+    StableId::new(format!("{prefix}:{digest}"))
+        .map_err(|_| NeuronRuntimeError::ModelBindingMismatch)
 }
