@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "partially_composed_execution_pending",
+  "productCallerState": "named_product_source_composed_execution_pending",
   "productionWriterState": "not_applicable_stateless",
   "canonicalSurface": {
     "modulePath": "codex_hepta_prompt_optimizer::canonical",
@@ -26,12 +26,30 @@
       "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
       "codex-rs/hepta-prompt-optimizer/src/canonical_verified.rs",
       "codex-rs/hepta-prompt-optimizer/src/canonical_solver.rs",
-      "codex-rs/hepta-prompt-optimizer/src/canonical_runtime.rs"
+      "codex-rs/hepta-prompt-optimizer/src/canonical_runtime.rs",
+      "codex-rs/hepta-prompt-optimizer/src/canonical_codec.rs"
     ],
     "rawWireSourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical_raw.rs",
     "authority": "deny_all",
     "uniqueActivePipeline": true,
-    "verifiedTypeStateRequired": true
+    "verifiedTypeStateRequired": true,
+    "strictRegisteredV1Codecs": true
+  },
+  "namedProductCaller": {
+    "sourcePath": "codex-rs/hepta-agentd/src/bin/prompt_optimizer_product.rs",
+    "nativeSymbol": "run_agentd_canonical_prompt_product_v1",
+    "terminalLedgerSymbol": "append_agentd_prompt_terminal_to_ledger_v1",
+    "state": "source_composed_execution_pending",
+    "chain": [
+      "enumerate_factors_v1",
+      "price_factors_v1",
+      "select_portfolio_v1",
+      "exercise_v1",
+      "context.compiler",
+      "Agentd PromptRuntimeHost",
+      "Codex physical provider terminal",
+      "learning.ledger"
+    ]
   },
   "operations": [
     {
@@ -41,10 +59,12 @@
       "state": "source_implemented_product_source_composed",
       "authority": "none",
       "tests": [
-        "enumeration_selects_lowest_cost_compatible_realization_per_factor"
+        "enumeration_selects_lowest_cost_compatible_realization_per_factor",
+        "candidate_order_and_binding_tamper_are_detected"
       ],
       "productCallers": [
-        "codex-rs/hepta-agentd/src/prompt_runtime.rs::AgentdPromptPipelineOwner::enumerate_candidates"
+        "codex-rs/hepta-agentd/src/prompt_runtime.rs::AgentdPromptPipelineOwner::enumerate_candidates",
+        "codex-rs/hepta-agentd/src/bin/prompt_optimizer_product.rs::run_agentd_canonical_prompt_product_v1"
       ],
       "sourcePathExists": true,
       "mappingClass": "owner_native"
@@ -53,12 +73,19 @@
       "operation": "price_factors_v1",
       "nativeSymbol": "canonical::price_factors_v1",
       "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical_verified.rs",
-      "state": "source_implemented_product_orchestrator_pending",
+      "state": "source_implemented_product_source_composed",
       "authority": "none",
       "tests": [
-        "incomplete_candidate_completeness_cannot_be_authenticated_for_pricing"
+        "incomplete_candidate_completeness_cannot_be_authenticated_for_pricing",
+        "generator_and_evaluator_under_same_controller_are_rejected",
+        "objective_mismatch_is_rejected_before_evidence_use",
+        "pricing_evidence_cannot_rebind_to_another_realization",
+        "expired_pricing_is_unavailable_not_zero_cost_benefit",
+        "pricing_receipt_utility_tamper_is_detected_by_type_state"
       ],
-      "productCallers": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/prompt_optimizer_product.rs::run_agentd_canonical_prompt_product_v1"
+      ],
       "sourcePathExists": true,
       "mappingClass": "owner_native"
     },
@@ -66,13 +93,16 @@
       "operation": "select_portfolio_v1",
       "nativeSymbol": "canonical::select_portfolio_v1",
       "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical_solver.rs",
-      "state": "source_implemented_product_orchestrator_pending",
+      "state": "source_implemented_product_source_composed",
       "authority": "none",
       "tests": [
         "prerequisite_bundle_can_select_negative_prerequisite_for_positive_bundle",
-        "hard_conflict_cannot_be_outweighed_by_positive_numeric_utility"
+        "hard_conflict_cannot_be_outweighed_by_positive_numeric_utility",
+        "sealed_canonical_pipeline_reaches_exercise_with_exact_certificate"
       ],
-      "productCallers": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/prompt_optimizer_product.rs::run_agentd_canonical_prompt_product_v1"
+      ],
       "sourcePathExists": true,
       "mappingClass": "owner_native"
     },
@@ -83,15 +113,38 @@
       "state": "source_implemented_product_source_composed",
       "authority": "none",
       "tests": [
-        "revocation_after_selection_rejects_exercise_at_delivery_boundary"
+        "revocation_after_selection_rejects_exercise_at_delivery_boundary",
+        "exercise_rejects_graph_and_trust_drift_with_typed_reasons",
+        "policy_context_mismatch_cannot_be_hidden_behind_a_digest"
       ],
       "productCallers": [
         "codex-rs/hepta-intelligence/src/prompt_pipeline.rs::compile_exercised_prompt_context_v1",
         "codex-rs/hepta-intelligence/src/prompt_delivery.rs::compile_prompt_registry_v2",
-        "codex-rs/hepta-agentd/src/prompt_runtime.rs::AgentdPromptPipelineOwner::compile_and_stage"
+        "codex-rs/hepta-agentd/src/prompt_runtime.rs::AgentdPromptPipelineOwner::compile_and_stage",
+        "codex-rs/hepta-agentd/src/bin/prompt_optimizer_product.rs::run_agentd_canonical_prompt_product_v1"
       ],
       "sourcePathExists": true,
       "mappingClass": "owner_native"
+    }
+  ],
+  "registeredCodecs": [
+    {
+      "contracts": [
+        "PromptCandidateSetReceiptV1",
+        "PromptPricingReceiptV1",
+        "PromptPortfolioReceiptV1",
+        "PromptExerciseDecisionV1"
+      ],
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical_codec.rs",
+      "tests": [
+        "candidate_json_v1_is_canonical_and_round_trips",
+        "unknown_and_missing_critical_fields_are_rejected",
+        "candidate_order_and_bounds_are_closed",
+        "pricing_portfolio_and_exercise_codecs_reject_semantic_drift",
+        "oversized_payload_is_rejected_before_parse"
+      ],
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144
     }
   ],
   "compatibilitySurface": [
@@ -124,9 +177,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Compose price_factors_v1 and select_portfolio_v1 through one authenticated Agentd product callsite.",
-    "Run strict codec, tamper, replay, expiry, trust-rotation, graph-drift and product-terminal regressions.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the production claim."
+    "Complete exact-head and deterministic synthetic-merge compilation and tests for the current candidate.",
+    "Complete executable Agentd product tests over physical provider terminal and learning-ledger admission.",
+    "Record target-host capacity and fault measurements before changing the production claim."
   ],
   "externalEvidenceGates": [
     "independent semantic and causal review",
