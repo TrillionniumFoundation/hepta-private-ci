@@ -1,6 +1,6 @@
 # memory.retrieval API and trust boundaries
 
-Status: source candidate; Rust execution, independent acceptance and production activation are separate gates. Read this with `TECHNICAL.md`, `IMPLEMENTATION_MAP.json` and `ADR/0001-semantic-admission.md`.
+Status: source candidate; Rust execution, independent acceptance and production activation are separate gates. Read this with `TECHNICAL.md`, `IMPLEMENTATION_MAP.json`, `ADR/0001-semantic-admission.md` and `ADR/0003-signed-lifecycle-delivery.md`.
 
 ## Owner boundaries
 
@@ -16,10 +16,13 @@ Status: source candidate; Rust execution, independent acceptance and production 
 | `observe_retrieval_assignment` | Matching cue, policy, generation-bound input and recall | Enumerated/legal/selected identities. Deterministic propensity is not evidence of counterfactual overlap. |
 | `execute_owner_observation` | SQLite observation and coherent read cut plus current execution context | Owner adaptation followed by recall and assignment. A changed cut, revision or policy is rejected. |
 | `LeasedMemoryRetrievalProviderV1::install` | Signed current publication for the configured Agent/body | Validates context/signature/lease and independent challenged frontier before installation. Identical reinstall does not renew the monotonic lease. |
-| `LeasedMemoryRetrievalProviderV1::current` | Exact Agent ID and launched body generation | Re-observes the frontier, verifies signature/currentness, rejects revocation/rollback/expiry, returns the frozen context. |
+| `LeasedMemoryRetrievalProviderV1::current` | Exact Agent ID and launched body generation | Compatibility payload accessor delegating to atomic acquisition; verifies currentness and rejects revocation/rollback/expiry. |
+| `CurrentMemoryRetrievalContext::acquire_context` | Exact Agent/body from trusted host composition | Atomically returns context, lifecycle digest and optional absolute lease. The signed provider returns its publication digest and signed deadline under one mutex. The legacy default is payload-only with no product lease; it is not signed evidence. |
 | `LeasedMemoryRetrievalProviderV1::from_loopback_frontier` | Protected endpoint, context/frontier public-key pins and time bounds | Constructs the real bounded client; does not create the remote owner or authority keys. |
 
-`read_with_retrieval_context_and_learning` is the named Agentd caller, not a public application API. It records the delivered subset separately from the selected set. Published context is not proof of native turn/start attachment or successful downstream use.
+`read_with_retrieval_context_and_learning` is the named Agentd caller, not a public application API. It binds lifecycle and host mode, bounds the operation deadline by the signed lease, and revalidates after ledger append and awaited final-use ranking. Same-payload publication renewal invalidates the old read. Published context and ledger preparation are not proof of native turn/start attachment or successful downstream use.
+
+The runtime has explicit compatibility, shadow, canary and required routing. Shadow observes but does not publish HNMF selections as exposure; only the actual HNMF-delivered subset is attributed to the treatment. Mode policy, bootstrap, isolated resource budgets and independent rollout acceptance are documented in `CANARY_AND_ROLLBACK.md`.
 
 ## Version and semantic migration
 

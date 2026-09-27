@@ -42,27 +42,25 @@ jobs:
           REQUESTED_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          MAIN_SHA="$(git rev-parse origin/main)"
-          BASE_SHA="${REQUESTED_BASE:-$MAIN_SHA}"
-          if [ "$BASE_SHA" = "$SOURCE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
-            BASE_SHA="$(git rev-parse "$SOURCE_SHA^1")"
-          fi
-          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
-          echo "source_sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
-          echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
-          echo "main_sha=$MAIN_SHA" >> "$GITHUB_OUTPUT"
           mkdir -p "$RUNNER_TEMP/retrieval-source"
+          python3 scripts/hepta_memory_retrieval_candidate.py refs --source "$SOURCE_SHA" \
+            | tee "$RUNNER_TEMP/retrieval-source/refs.env" >> "$GITHUB_OUTPUT"
+          BASE_SHA="$(sed -n 's/^base_sha=//p' "$RUNNER_TEMP/retrieval-source/refs.env")"
+          MAIN_SHA="$(sed -n 's/^main_sha=//p' "$RUNNER_TEMP/retrieval-source/refs.env")"
           git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/retrieval-source/identity.txt"
           printf '%s\n' "$BASE_SHA" > "$RUNNER_TEMP/retrieval-source/base.txt"
           printf '%s\n' "$MAIN_SHA" > "$RUNNER_TEMP/retrieval-source/current-main.txt"
+          printf '%s\n' "$REQUESTED_BASE" > "$RUNNER_TEMP/retrieval-source/event-base-provenance.txt"
           git archive --format=tar.gz HEAD > "$RUNNER_TEMP/retrieval-source/source.tar.gz"
           sha256sum "$RUNNER_TEMP/retrieval-source/source.tar.gz" > "$RUNNER_TEMP/retrieval-source/SHA256SUMS"
-      - name: Test verifier and SLO rejection behavior
+      - name: Test candidate, verifier, retention and SLO rejection behavior
         run: >-
           python3 -m unittest -v
+          scripts.tests.test_hepta_memory_retrieval_candidate
           scripts.tests.test_hepta_memory_retrieval_qualification
           scripts.tests.test_hepta_memory_retrieval_slo
+          scripts.tests.test_hepta_memory_retrieval_archive
+          scripts.tests.test_hepta_memory_retrieval_refresh_map
       - name: Require current source-object closure
         env:
           SOURCE_SHA: ${{ steps.identity.outputs.source_sha }}
@@ -117,14 +115,7 @@ jobs:
               TESTED_SHA="$SOURCE_SHA"
               ;;
             base-merge)
-              TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
-              export GIT_AUTHOR_NAME='Memory retrieval qualification'
-              export GIT_AUTHOR_EMAIL='qualification@users.noreply.github.com'
-              export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
-              export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
-              export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z'
-              export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
-              TESTED_SHA="$(printf 'Deterministic memory retrieval qualification\n' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+              TESTED_SHA="$(python3 scripts/hepta_memory_retrieval_candidate.py merge --base "$BASE_SHA" --source "$SOURCE_SHA")"
               ;;
             current-main)
               TESTED_SHA="$MAIN_SHA"
