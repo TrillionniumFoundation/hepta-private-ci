@@ -46,10 +46,23 @@ impl EvidenceFrontierBackendIdentityV1 {
     }
 }
 
+/// A positive, ordered history window containing at most 4096 generations.
+///
+/// Callers must use `new`; public fields would let them bypass the resource
+/// limit enforced by the constructor. Backends may inspect the validated bounds
+/// with the accessors, but cannot accept an unchecked external struct literal.
+///
+/// ```compile_fail
+/// use codex_hepta_evidence::EvidenceFrontierHistoryRangeV1;
+/// let _ = EvidenceFrontierHistoryRangeV1 {
+///     first_generation: 0,
+///     last_generation: u64::MAX,
+/// };
+/// ```
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct EvidenceFrontierHistoryRangeV1 {
-    pub first_generation: u64,
-    pub last_generation: u64,
+    pub(crate) first_generation: u64,
+    pub(crate) last_generation: u64,
 }
 
 impl EvidenceFrontierHistoryRangeV1 {
@@ -74,6 +87,14 @@ impl EvidenceFrontierHistoryRangeV1 {
             first_generation,
             last_generation,
         })
+    }
+
+    pub fn first_generation(self) -> u64 {
+        self.first_generation
+    }
+
+    pub fn last_generation(self) -> u64 {
+        self.last_generation
     }
 }
 
