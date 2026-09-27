@@ -5,6 +5,14 @@
 //! material. A composition owner derives those inputs from the already-durable
 //! RunStart record and the current owner generation.
 
+use std::panic::AssertUnwindSafe;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
+use std::sync::mpsc;
+use std::time::Duration;
+
 use codex_hepta_intelligence::CanonicalIntelligenceRunRequestV1;
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
@@ -228,19 +236,151 @@ impl AgentdIntelligenceInvocationV1 {
     }
 }
 
+const MIN_INVOCATION_TIMEOUT: Duration = Duration::from_millis(1);
+const MAX_INVOCATION_TIMEOUT: Duration = Duration::from_secs(300);
+const MAX_INVOCATION_FACTORY_CALLS: usize = 64;
+const DEFAULT_INVOCATION_FACTORY_CALLS: usize = 4;
+const DEFAULT_INVOCATION_TIMEOUT: Duration = Duration::from_secs(30);
+
+/// Bounded execution policy for the host-owned seven-owner invocation factory.
+///
+/// The factory runs on a dedicated OS thread. A timed-out call keeps its slot
+/// until the real thread exits; dropping the ObjectiveStart future cannot free
+/// capacity or disarm an explicitly configured hard-timeout observer.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct AgentdIntelligenceInvocationPolicyV1 {
+    pub timeout: Duration,
+    pub max_in_flight: usize,
+    pub hard_timeout_process_exit_grace: Option<Duration>,
+}
+
+impl Default for AgentdIntelligenceInvocationPolicyV1 {
+    fn default() -> Self {
+        Self {
+            timeout: DEFAULT_INVOCATION_TIMEOUT,
+            max_in_flight: DEFAULT_INVOCATION_FACTORY_CALLS,
+            hard_timeout_process_exit_grace: None,
+        }
+    }
+}
+
+impl AgentdIntelligenceInvocationPolicyV1 {
+    fn validate(self) -> Result<(), AgentdError> {
+        if !(MIN_INVOCATION_TIMEOUT..=MAX_INVOCATION_TIMEOUT).contains(&self.timeout)
+            || !(1..=MAX_INVOCATION_FACTORY_CALLS).contains(&self.max_in_flight)
+            || self
+                .hard_timeout_process_exit_grace
+                .is_some_and(|grace| {
+                    !(MIN_INVOCATION_TIMEOUT..=MAX_INVOCATION_TIMEOUT).contains(&grace)
+                })
+        {
+            return Err(AgentdError::Invalid(
+                "canonical intelligence invocation policy is outside bounded limits".to_string(),
+            ));
+        }
+        Ok(())
+    }
+}
+
+struct InvocationFactoryPermit {
+    active: Arc<AtomicUsize>,
+}
+
+impl Drop for InvocationFactoryPermit {
+    fn drop(&mut self) {
+        self.active.fetch_sub(1, Ordering::AcqRel);
+    }
+}
+
 /// Concrete host-owned provider backed by one typed factory.
 ///
-/// The factory supplies the seven owner values. The provider itself overwrites
-/// the run identity with the exact durable RunStart binding, validates the final
-/// invocation and only then returns it to Agentd.
+/// The factory supplies the seven owner values. The provider overwrites the run
+/// identity with the exact durable RunStart binding, validates the completed
+/// invocation and only then returns it to Agentd. Factory execution is bounded
+/// independently from the caller future.
 pub struct HostOwnedAgentdIntelligenceInvocationProviderV1<F> {
-    factory: F,
+    factory: Arc<F>,
+    policy: AgentdIntelligenceInvocationPolicyV1,
+    active: Arc<AtomicUsize>,
 }
 
 impl<F> HostOwnedAgentdIntelligenceInvocationProviderV1<F> {
     #[must_use]
-    pub const fn new(factory: F) -> Self {
-        Self { factory }
+    pub fn new(factory: F) -> Self {
+        Self {
+            factory: Arc::new(factory),
+            policy: AgentdIntelligenceInvocationPolicyV1::default(),
+            active: Arc::new(AtomicUsize::new(0)),
+        }
+    }
+
+    pub fn with_policy(
+        factory: F,
+        policy: AgentdIntelligenceInvocationPolicyV1,
+    ) -> Result<Self, AgentdError> {
+        policy.validate()?;
+        Ok(Self {
+            factory: Arc::new(factory),
+            policy,
+            active: Arc::new(AtomicUsize::new(0)),
+        })
+    }
+
+    #[must_use]
+    pub const fn policy(&self) -> AgentdIntelligenceInvocationPolicyV1 {
+        self.policy
+    }
+
+    #[must_use]
+    pub fn active_factory_calls(&self) -> usize {
+        self.active.load(Ordering::Acquire)
+    }
+
+    fn acquire_factory_slot(&self) -> Result<InvocationFactoryPermit, AgentdError> {
+        loop {
+            let current = self.active.load(Ordering::Acquire);
+            if current >= self.policy.max_in_flight {
+                return Err(AgentdError::Protocol(
+                    "canonical intelligence invocation factory is saturated".to_string(),
+                ));
+            }
+            if self
+                .active
+                .compare_exchange_weak(current, current + 1, Ordering::AcqRel, Ordering::Acquire)
+                .is_ok()
+            {
+                return Ok(InvocationFactoryPermit {
+                    active: Arc::clone(&self.active),
+                });
+            }
+        }
+    }
+
+    fn arm_hard_timeout_observer(&self, finished: Arc<AtomicBool>) -> Result<(), AgentdError> {
+        let Some(grace) = self.policy.hard_timeout_process_exit_grace else {
+            return Ok(());
+        };
+        let timeout = self.policy.timeout;
+        std::thread::Builder::new()
+            .name("agentd-intelligence-invocation-watchdog".to_string())
+            .spawn(move || {
+                std::thread::sleep(timeout);
+                if finished.load(Ordering::Acquire) {
+                    return;
+                }
+                std::thread::sleep(grace);
+                if !finished.load(Ordering::Acquire) {
+                    // EX_SOFTWARE. Supervisor recovery establishes a fresh
+                    // generation; the old process cannot keep serving authority.
+                    std::process::exit(70);
+                }
+            })
+            .map(|_| ())
+            .map_err(|error| {
+                AgentdError::Protocol(format!(
+                    "canonical intelligence invocation watchdog failed to start: {error}"
+                ))
+            })
     }
 }
 
@@ -252,19 +392,57 @@ where
             &RunStartRecordV1,
         ) -> Result<AgentdIntelligenceInvocationV1, AgentdError>
         + Send
-        + Sync,
+        + Sync
+        + 'static,
 {
     fn build(
         &self,
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
     ) -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
-        let mut invocation = (self.factory)(identity, record)?;
-        invocation.inputs.run_identity = Some(AgentdIntelligenceRunIdentityV1::from_run_start(
-            identity, record,
-        )?);
-        invocation.validate(identity, record)?;
-        Ok(invocation)
+        let permit = self.acquire_factory_slot()?;
+        let durable_identity = AgentdIntelligenceRunIdentityV1::from_run_start(identity, record)?;
+        let factory = Arc::clone(&self.factory);
+        let identity = identity.clone();
+        let record = record.clone();
+        let finished = Arc::new(AtomicBool::new(false));
+        let worker_finished = Arc::clone(&finished);
+        let (sender, receiver) = mpsc::sync_channel(1);
+
+        std::thread::Builder::new()
+            .name("agentd-intelligence-invocation-factory".to_string())
+            .spawn(move || {
+                let _permit = permit;
+                let result = std::panic::catch_unwind(AssertUnwindSafe(|| {
+                    let mut invocation = (factory)(&identity, &record)?;
+                    invocation.inputs.run_identity = Some(durable_identity);
+                    invocation.validate(&identity, &record)?;
+                    Ok(invocation)
+                }))
+                .unwrap_or_else(|_| {
+                    Err(AgentdError::Protocol(
+                        "canonical intelligence invocation factory panicked".to_string(),
+                    ))
+                });
+                worker_finished.store(true, Ordering::Release);
+                let _ = sender.send(result);
+            })
+            .map_err(|error| {
+                AgentdError::Protocol(format!(
+                    "canonical intelligence invocation worker failed to start: {error}"
+                ))
+            })?;
+        self.arm_hard_timeout_observer(Arc::clone(&finished))?;
+
+        match receiver.recv_timeout(self.policy.timeout) {
+            Ok(result) => result,
+            Err(mpsc::RecvTimeoutError::Timeout) => Err(AgentdError::Protocol(
+                "canonical intelligence invocation factory timed out".to_string(),
+            )),
+            Err(mpsc::RecvTimeoutError::Disconnected) => Err(AgentdError::Protocol(
+                "canonical intelligence invocation factory disconnected".to_string(),
+            )),
+        }
     }
 }
 
@@ -280,4 +458,52 @@ pub trait AgentdIntelligenceInvocationProviderV1: Send + Sync {
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
     ) -> Result<AgentdIntelligenceInvocationV1, AgentdError>;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn invocation_policy_rejects_unbounded_values() {
+        let invalid = AgentdIntelligenceInvocationPolicyV1 {
+            timeout: Duration::ZERO,
+            max_in_flight: 0,
+            hard_timeout_process_exit_grace: None,
+        };
+        assert!(invalid.validate().is_err());
+        let invalid = AgentdIntelligenceInvocationPolicyV1 {
+            timeout: Duration::from_secs(301),
+            max_in_flight: 1,
+            hard_timeout_process_exit_grace: None,
+        };
+        assert!(invalid.validate().is_err());
+        let invalid = AgentdIntelligenceInvocationPolicyV1 {
+            timeout: Duration::from_secs(1),
+            max_in_flight: 65,
+            hard_timeout_process_exit_grace: None,
+        };
+        assert!(invalid.validate().is_err());
+    }
+
+    #[test]
+    fn invocation_factory_slot_is_owned_until_real_worker_retirement() {
+        let provider = HostOwnedAgentdIntelligenceInvocationProviderV1::with_policy(
+            |_identity: &AgentdIdentity, _record: &RunStartRecordV1| {
+                unreachable!("factory is not called by this admission test")
+            },
+            AgentdIntelligenceInvocationPolicyV1 {
+                timeout: Duration::from_secs(1),
+                max_in_flight: 1,
+                hard_timeout_process_exit_grace: None,
+            },
+        )
+        .expect("bounded provider");
+        let permit = provider.acquire_factory_slot().expect("first slot");
+        assert_eq!(provider.active_factory_calls(), 1);
+        assert!(provider.acquire_factory_slot().is_err());
+        drop(permit);
+        assert_eq!(provider.active_factory_calls(), 0);
+        assert!(provider.acquire_factory_slot().is_ok());
+    }
 }
