@@ -32,6 +32,7 @@ mod qualification;
 mod qualification_commitment;
 mod qualification_paging;
 mod qualification_policy;
+mod qualification_provenance;
 mod qualification_summary;
 mod recovery_frontier;
 mod schema_validation;
@@ -190,3 +191,6 @@ mod authbus_outbox_quarantine_tests;
 #[cfg(test)]
 #[path = "qualification_tests.rs"]
 mod qualification_tests;
+#[cfg(test)]
+#[path = "qualification_provenance_tests.rs"]
+mod qualification_provenance_tests;
