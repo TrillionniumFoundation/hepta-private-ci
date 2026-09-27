@@ -10,12 +10,12 @@ permissions:
 
 concurrency:
   group: context-compiler-v3-remediation-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   materialize-and-verify:
     if: ${{ contains(github.event.head_commit.message, '[materialize-v3]') }}
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -90,6 +90,10 @@ jobs:
           rm -f scripts/apply_context_compiler_full_closure.py
           rm -f scripts/apply_context_compiler_hardening.py
           rm -f .github/context-compiler-materialize-v3.trigger
+          rm -f .github/workflows/context-compiler-v3-direct-source.yml
+          rm -f .github/workflows/context-compiler-property-fix.yml
+          rm -f .github/workflows/context-compiler-one-shot-remediation.yml
+          rm -f .github/workflows/context-compiler-v3-remediation.yml
           git config user.name "hepta-closure-bot"
           git config user.email "hepta-closure-bot@users.noreply.github.com"
           git add --all
