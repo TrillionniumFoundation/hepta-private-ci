@@ -298,16 +298,25 @@ impl AgentdIntelligenceInvocationV1 {
     }
 }
 
+/// Private supertrait prevents external crates from fabricating a provider that
+/// reports a profile/learning owner while omitting bounded registry or metrics.
+pub(crate) mod provider_sealed {
+    pub trait Sealed {}
+}
+
 /// Composition seam for the seven canonical intelligence owners.
 ///
 /// Implementations are host-owned and must derive current stage inputs from
 /// their authoritative owners. Request/wire callers cannot provide this object
 /// and therefore cannot substitute policy, model, artifact, trust, learning or
 /// currentness inputs.
-pub trait AgentdIntelligenceInvocationProviderV1: Send + Sync {
+#[allow(private_bounds)]
+pub trait AgentdIntelligenceInvocationProviderV1:
+    provider_sealed::Sealed + Send + Sync
+{
     /// Stable digest of the host-owned provider profile. The default is
     /// deliberately invalid so capability advertisement fails closed for
-    /// incomplete legacy implementations.
+    /// incomplete internal implementations.
     fn profile_digest(&self) -> Digest32 {
         Digest32::ZERO
     }
@@ -318,8 +327,8 @@ pub trait AgentdIntelligenceInvocationProviderV1: Send + Sync {
         None
     }
 
-    /// Product-profile metrics. Legacy providers default to no metrics and can
-    /// therefore never satisfy canonical product readiness.
+    /// Product-profile metrics. Incomplete providers default to no metrics and
+    /// can therefore never satisfy canonical product readiness.
     fn runtime_metrics(&self) -> Option<Arc<AgentdIntelligenceRuntimeMetricsV1>> {
         None
     }
@@ -329,6 +338,14 @@ pub trait AgentdIntelligenceInvocationProviderV1: Send + Sync {
     /// bounded registry and is not product-ready.
     fn pending_invocations(&self) -> Result<Option<usize>, AgentdError> {
         Ok(None)
+    }
+
+    /// Closed readiness predicate used by composition and capability gates.
+    fn product_ready(&self) -> Result<bool, AgentdError> {
+        Ok(!self.profile_digest().is_zero()
+            && self.learning_host().is_some()
+            && self.runtime_metrics().is_some()
+            && self.pending_invocations()?.is_some())
     }
 
     fn build(
