@@ -4,6 +4,8 @@
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fs;
+use std::fs::File;
+use std::io::Read;
 use std::os::unix::fs::PermissionsExt;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -54,6 +56,12 @@ fn now_ms() -> TestResult<u64> {
     Ok(u64::try_from(
         SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis(),
     )?)
+}
+
+fn test_material() -> TestResult<[u8; 32]> {
+    let mut material = [0_u8; 32];
+    File::open("/dev/urandom")?.read_exact(&mut material)?;
+    Ok(material)
 }
 
 async fn fixture(
@@ -121,7 +129,7 @@ impl Authorizer {
     fn new() -> TestResult<Self> {
         let directory = TempDir::new()?;
         fs::set_permissions(directory.path(), fs::Permissions::from_mode(0o700))?;
-        let key = SigningKey::from_bytes(&[91; 32]);
+        let key = SigningKey::from_bytes(&test_material()?);
         let authority = FinalUseAuthority::open_state_dir(
             directory.path(),
             "matrix-poll-test".to_string(),
@@ -155,8 +163,7 @@ impl MatrixOutboundAuthorizer for Authorizer {
             tokio::time::sleep(self.delay).await;
             let sequence = self.sequence.fetch_add(1, Ordering::SeqCst) + 1;
             let now = now_ms().map_err(|_| MatrixAuthorityError::Unavailable)?;
-            let mut nonce = [0_u8; 32];
-            nonce[..8].copy_from_slice(&sequence.to_be_bytes());
+            let nonce = test_material().map_err(|_| MatrixAuthorityError::Unavailable)?;
             let grant = FinalUseGrant {
                 schema_version: 1,
                 signer_id: "matrix-poll-test".to_string(),
