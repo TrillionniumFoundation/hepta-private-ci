@@ -1,3 +1,10 @@
+use std::fs;
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::path::PathBuf;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
+
 use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
 use codex_hepta_intelligence_eval::CrossFoldPlanV1;
 use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
@@ -11,7 +18,43 @@ use codex_hepta_intelligence_eval::freeze_cross_fold_plan;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
-use tempfile::NamedTempFile;
+
+static NEXT_TEMP: AtomicU64 = AtomicU64::new(0);
+
+struct TempFile {
+    path: PathBuf,
+}
+
+impl TempFile {
+    fn new(label: &str) -> Self {
+        let path = std::env::temp_dir().join(format!(
+            "hepta-learning-eval-{label}-{}-{}",
+            std::process::id(),
+            NEXT_TEMP.fetch_add(1, Ordering::Relaxed)
+        ));
+        OpenOptions::new()
+            .create_new(true)
+            .read(true)
+            .write(true)
+            .open(&path)
+            .expect("create temporary file");
+        Self { path }
+    }
+
+    fn reopen(&self) -> File {
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&self.path)
+            .expect("reopen temporary file")
+    }
+}
+
+impl Drop for TempFile {
+    fn drop(&mut self) {
+        let _ = fs::remove_file(&self.path);
+    }
+}
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid test id")
@@ -69,14 +112,11 @@ fn frozen_plan() -> codex_hepta_intelligence_eval::CrossFoldPlanReceiptV1 {
 
 #[test]
 fn compaction_replays_nonempty_holdout_journal_without_semantic_drift() {
-    let source_file = NamedTempFile::new().expect("source file");
-    let compacted_file = NamedTempFile::new().expect("compacted file");
+    let source_file = TempFile::new("source");
+    let compacted_file = TempFile::new("compacted");
     let binding = digest("compaction-binding-with-record");
-    let store = LockedFileFinalHoldoutCasStoreV1::create(
-        source_file.reopen().expect("open source"),
-        binding,
-    )
-    .expect("create source store");
+    let store = LockedFileFinalHoldoutCasStoreV1::create(source_file.reopen(), binding)
+        .expect("create source store");
     let fence = HoldoutWriterFenceV1 {
         owner_id: id("owner"),
         generation: 1,
@@ -95,7 +135,7 @@ fn compaction_replays_nonempty_holdout_journal_without_semantic_drift() {
         .expect("load source state")
         .expect("source state exists");
     let (mut compacted, compaction_receipt) = source_store
-        .compact_into(compacted_file.reopen().expect("open compacted target"))
+        .compact_into(compacted_file.reopen())
         .expect("compact source");
     compaction_receipt
         .validate_integrity()
@@ -110,7 +150,7 @@ fn compaction_replays_nonempty_holdout_journal_without_semantic_drift() {
     drop(compacted);
 
     let mut recovered = LockedFileFinalHoldoutCasStoreV1::recover(
-        compacted_file.reopen().expect("reopen compacted target"),
+        compacted_file.reopen(),
         binding,
         Some(source_anchor),
     )
