@@ -1,0 +1,47 @@
+name: runtime.fleet one-shot rustfmt
+
+on:
+  push:
+    branches:
+      - codex/runtime-fleet-durable-owner-v1-2026-09-27
+    paths:
+      - ".github/workflows/runtime-fleet-one-shot-format.yml"
+      - "codex-rs/hepta-fleet/**"
+      - "codex-rs/hepta-supervisor/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-fleet-one-shot-format
+  cancel-in-progress: false
+
+jobs:
+  format-and-push:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/runtime-fleet-durable-owner-v1-2026-09-27
+          fetch-depth: 0
+
+      - name: Apply repository rustfmt
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Commit exact formatting change
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            exit 0
+          fi
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add codex-rs/hepta-fleet codex-rs/hepta-supervisor
+          git commit -m "runtime.fleet: apply repository rustfmt"
+          git push origin HEAD:codex/runtime-fleet-durable-owner-v1-2026-09-27
