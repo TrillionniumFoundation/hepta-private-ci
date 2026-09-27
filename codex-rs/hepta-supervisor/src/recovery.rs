@@ -17,6 +17,7 @@ use crate::SupervisorError;
 use crate::SupervisorEventKind;
 use crate::control::pending;
 use crate::control::pending::PendingControl;
+use crate::control_intent;
 use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
 use crate::lease::ProcessLeaseRemoval;
@@ -127,6 +128,19 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));
         }
         let record = self.record(agent_id)?;
+        control_intent::reconcile_absent(
+            record.layout.run_root(),
+            agent_id,
+            record.lifecycle.lifecycle,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        if control_intent::has_unresolved(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        {
+            return Err(SupervisorError::Invalid(format!(
+                "agent {agent_id} has an unresolved durable termination intent"
+            )));
+        }
         if read_lease(record.layout.run_root())?.is_some() {
             return Err(SupervisorError::UnresolvedLease(agent_id.clone()));
         }
@@ -229,7 +243,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     if let Some(runtime) = slot.runtime.as_mut() {
                         runtime.generation = failed.generation;
                     }
-                    slot.event(failed.generation, SupervisorEventKind::Lifecycle(AgentLifecycle::Failed));
+                    slot.event(
+                        failed.generation,
+                        SupervisorEventKind::Lifecycle(AgentLifecycle::Failed),
+                    );
                 }
                 Err(fault) => slot.event(
                     starting.generation,
@@ -254,7 +271,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         slot.matrix.apply_restart_recovery(now);
         let Some(lease) = read_lease(record.layout.run_root())? else {
-            if is_live_lifecycle(record.lifecycle.lifecycle) {
+            let terminal_lifecycle = if is_live_lifecycle(record.lifecycle.lifecycle) {
                 let generation = self.transition_without_runtime(
                     agent_id,
                     slot,
@@ -262,7 +279,16 @@ impl<D: ProcessDriver> Supervisor<D> {
                     AgentLifecycle::Failed,
                 )?;
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
-            }
+                AgentLifecycle::Failed
+            } else {
+                record.lifecycle.lifecycle
+            };
+            control_intent::reconcile_absent(
+                record.layout.run_root(),
+                agent_id,
+                terminal_lifecycle,
+            )
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             self.recover_matrix_companion(agent_id, slot, record, now)?;
             return Ok(());
         };
@@ -272,6 +298,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             record.lifecycle.generation,
             record.lifecycle.lifecycle,
         )?;
+        let durable_control = control_intent::recover_pending(
+            record.layout.run_root(),
+            agent_id,
+            lease.spawn_generation,
+            &lease.identity,
+            now,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let spec = AdoptSpec {
             agent_id: agent_id.clone(),
             registry_generation: record.lifecycle.generation,
@@ -284,7 +318,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         // Compute fallible deadlines before taking ownership of a live child.
         // Registry lifecycle records desired state, not an acknowledged signal.
-        let (phase, recovery_control) = match record.lifecycle.lifecycle {
+        let (phase, lifecycle_control) = match record.lifecycle.lifecycle {
             AgentLifecycle::Starting => (
                 RuntimePhase::AwaitingHealth {
                     deadline: deadline(now, self.config.health_timeout)?,
@@ -313,6 +347,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 }),
             ),
         };
+        let recovery_control = durable_control.or(lifecycle_control);
         let mut control_fault = None;
         match self
             .driver
@@ -360,31 +395,45 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             Adoption::Missing => {
                 remove_lease(record.layout.run_root(), &lease)?;
-                let generation = if is_live_lifecycle(record.lifecycle.lifecycle) {
+                let terminal_lifecycle = if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(
                         agent_id,
                         slot,
                         record.lifecycle.generation,
                         AgentLifecycle::Failed,
-                    )?
+                    )?;
+                    AgentLifecycle::Failed
                 } else {
-                    record.lifecycle.generation
+                    record.lifecycle.lifecycle
                 };
-                slot.event(generation, SupervisorEventKind::OrphanMissing);
+                control_intent::reconcile_absent(
+                    record.layout.run_root(),
+                    agent_id,
+                    terminal_lifecycle,
+                )
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                slot.event(record.lifecycle.generation, SupervisorEventKind::OrphanMissing);
             }
             Adoption::Rejected => {
                 remove_lease(record.layout.run_root(), &lease)?;
-                let generation = if is_live_lifecycle(record.lifecycle.lifecycle) {
+                let terminal_lifecycle = if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(
                         agent_id,
                         slot,
                         record.lifecycle.generation,
                         AgentLifecycle::Failed,
-                    )?
+                    )?;
+                    AgentLifecycle::Failed
                 } else {
-                    record.lifecycle.generation
+                    record.lifecycle.lifecycle
                 };
-                slot.event(generation, SupervisorEventKind::OrphanRejected);
+                control_intent::reconcile_absent(
+                    record.layout.run_root(),
+                    agent_id,
+                    terminal_lifecycle,
+                )
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                slot.event(record.lifecycle.generation, SupervisorEventKind::OrphanRejected);
             }
         }
         // A main-process signal failure must not skip companion adoption.
