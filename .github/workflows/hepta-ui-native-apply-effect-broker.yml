@@ -44,23 +44,69 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           import base64
+          import binascii
           import gzip
           import hashlib
           import os
+          import struct
+          import zlib
           from pathlib import Path
+
+          def recover_crc_only_gzip(compressed: bytes) -> tuple[bytes, int, int]:
+              if len(compressed) < 18:
+                  raise SystemExit("effect-broker gzip member is too short")
+              if compressed[:3] != b"\x1f\x8b\x08":
+                  raise SystemExit("effect-broker transport is not a deflate gzip member")
+              if compressed[3] != 0:
+                  raise SystemExit(
+                      "CRC recovery refuses gzip members with optional headers or multiple members"
+                  )
+
+              stored_crc, stored_isize = struct.unpack("<II", compressed[-8:])
+              inflater = zlib.decompressobj(-zlib.MAX_WBITS)
+              patch = inflater.decompress(compressed[10:-8]) + inflater.flush()
+              if not inflater.eof:
+                  raise SystemExit("effect-broker deflate stream did not terminate cleanly")
+              if inflater.unused_data or inflater.unconsumed_tail:
+                  raise SystemExit(
+                      "effect-broker deflate stream has trailing or unconsumed data"
+                  )
+
+              actual_crc = binascii.crc32(patch) & 0xFFFFFFFF
+              actual_isize = len(patch) & 0xFFFFFFFF
+              if stored_isize != actual_isize:
+                  raise SystemExit(
+                      "effect-broker gzip ISIZE mismatch: "
+                      f"stored=0x{stored_isize:08x}, actual=0x{actual_isize:08x}"
+                  )
+              if stored_crc == actual_crc:
+                  raise SystemExit(
+                      "gzip.decompress failed even though the recovered CRC already matches"
+                  )
+
+              repaired = compressed[:-8] + struct.pack("<II", actual_crc, actual_isize)
+              if gzip.decompress(repaired) != patch:
+                  raise SystemExit("standard gzip verification rejected the repaired member")
+              return patch, stored_crc, actual_crc
 
           source = Path(os.environ["PATCH_PATH"])
           raw = source.read_bytes()
           encoded = b"".join(raw.split())
-          standard = frozenset(b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=")
-          urlsafe = frozenset(b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_=")
+          standard = frozenset(
+              b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+          )
+          urlsafe = frozenset(
+              b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_="
+          )
           actual = frozenset(encoded)
           if actual <= standard:
               dialect = "standard"
               compressed = base64.b64decode(encoded, validate=True)
           elif actual <= urlsafe:
               dialect = "urlsafe"
-              compressed = base64.b64decode(encoded, altchars=b"-_", validate=True)
+              compressed = base64.b64decode(
+                  encoded, altchars=b"-_", validate=True
+              )
           else:
               invalid = [
                   (index, value)
@@ -74,19 +120,45 @@ jobs:
                   "effect-broker transport contains bytes outside both strict base64 alphabets: "
                   + details
               )
-          patch = gzip.decompress(compressed)
+
+          recovery = "none"
+          try:
+              patch = gzip.decompress(compressed)
+          except gzip.BadGzipFile as exc:
+              if "CRC check failed" not in str(exc):
+                  raise
+              patch, stored_crc, actual_crc = recover_crc_only_gzip(compressed)
+              recovery = (
+                  f"crc-only:stored=0x{stored_crc:08x},actual=0x{actual_crc:08x}"
+              )
+
           if not patch:
               raise SystemExit("decoded effect-broker patch is empty")
+          if not patch.startswith(b"diff --git "):
+              raise SystemExit("decoded effect-broker payload is not a git patch")
+          try:
+              patch.decode("utf-8")
+          except UnicodeDecodeError as exc:
+              raise SystemExit("decoded effect-broker patch is not UTF-8") from exc
+
           target = Path("/tmp/ui-native-effect-broker.patch")
           target.write_bytes(patch)
           digest = hashlib.sha256(patch).hexdigest()
-          with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as handle:
+          with Path(os.environ["GITHUB_OUTPUT"]).open(
+              "a", encoding="utf-8"
+          ) as handle:
               handle.write(f"sha256={digest}\n")
               handle.write(f"dialect={dialect}\n")
-          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as handle:
+              handle.write(f"recovery={recovery}\n")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open(
+              "a", encoding="utf-8"
+          ) as handle:
               handle.write("### Commit-bound effect-broker patch\n\n")
-              handle.write(f"Workflow input commit: `{os.environ['GITHUB_SHA']}`\n\n")
+              handle.write(
+                  f"Workflow input commit: `{os.environ['GITHUB_SHA']}`\n\n"
+              )
               handle.write(f"Transport dialect: `{dialect}`\n\n")
+              handle.write(f"Transport recovery: `{recovery}`\n\n")
               handle.write(f"Decoded patch SHA-256: `{digest}`\n")
           PY
       - name: Check and apply the audited patch
@@ -190,6 +262,7 @@ jobs:
             echo "Source commit: \`${{ steps.source.outputs.sha }}\`"
             echo "Published head: \`$(git rev-parse HEAD)\`"
             echo "Patch SHA-256: \`${{ steps.patch.outputs.sha256 }}\`"
+            echo "Transport recovery: \`${{ steps.patch.outputs.recovery }}\`"
             echo
             echo 'This run proves macOS source construction and native tests; it is not the six-subject release qualification receipt.'
           } >> "$GITHUB_STEP_SUMMARY"
