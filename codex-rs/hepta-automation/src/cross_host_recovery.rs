@@ -84,7 +84,7 @@ impl AutomationCrossHostRecoveryManifestV1 {
         validate_digest(&self.external_fence_receipt_digest)?;
         if self.schema_version != AUTOMATION_CROSS_HOST_RECOVERY_SCHEMA_VERSION
             || self.store_schema_version != AUTOMATION_SCHEMA_VERSION
-            || self.owner_agent_id.is_empty()
+            || AgentId::parse(&self.owner_agent_id).is_err()
             || self.source_host_id == self.target_host_id
             || self.source_writer_epoch == 0
             || self.required_target_writer_epoch
@@ -182,8 +182,7 @@ mod tests {
 
     use super::*;
 
-    #[test]
-    fn cross_host_manifest_binds_checkpoint_fence_and_next_epoch() {
+    fn manifest() -> AutomationCrossHostRecoveryManifestV1 {
         let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent");
         let status = TimerDrainStatus {
             writer_epoch: 7,
@@ -192,22 +191,38 @@ mod tests {
             leased_occurrences: 0,
             uncertain_dispatches: 0,
         };
-        let checkpoint = Sha256Digest::for_bytes(b"checkpoint");
-        let manifest = AutomationCrossHostRecoveryManifestV1::new(
+        AutomationCrossHostRecoveryManifestV1::new(
             &agent,
             "host-a",
             "host-b",
             &status,
-            checkpoint.clone(),
+            Sha256Digest::for_bytes(b"checkpoint"),
             Sha256Digest::for_bytes(b"external-fence"),
             42,
         )
-        .expect("manifest");
+        .expect("manifest")
+    }
+
+    #[test]
+    fn cross_host_manifest_binds_checkpoint_fence_and_next_epoch() {
+        let manifest = manifest();
+        let checkpoint = manifest.sqlite_checkpoint_digest.clone();
         manifest.validate().expect("valid manifest");
         manifest
             .admit_target("host-b", AUTOMATION_SCHEMA_VERSION, 8, &checkpoint)
             .expect("target admission");
         assert_eq!(manifest.pending_occurrences, 3);
+    }
+
+    #[test]
+    fn recomputed_digest_does_not_legitimize_an_invalid_owner_agent_id() {
+        let mut manifest = manifest();
+        manifest.owner_agent_id = "not-an-agent-id".to_string();
+        manifest.manifest_digest = manifest.compute_digest().expect("recomputed digest");
+        assert!(matches!(
+            manifest.validate(),
+            Err(AutomationError::Corrupt)
+        ));
     }
 
     #[test]
