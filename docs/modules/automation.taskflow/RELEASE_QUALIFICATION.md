@@ -12,6 +12,7 @@
 - [x] minimal Neural Circuit runtime vertical slice
 - [x] fail-closed cross-host recovery manifest and target-admission fence
 - [x] crash-point, deterministic property sweep and same-store multi-scheduler race tests
+- [x] workspace-wide Rust formatting is enforced with `cargo fmt --all -- --check`
 - [x] PR/main focused workflow and retained exact command receipt
 - [ ] exact PR workflow receipt is successful for the final candidate
 
