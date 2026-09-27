@@ -17,7 +17,6 @@ use crate::ManagedProcess;
 use crate::MatrixAdoptSpec;
 use crate::MatrixSpawnSpec;
 use crate::ProcessDriver;
-use crate::ProcessState;
 use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEventKind;
@@ -38,6 +37,9 @@ use crate::runtime::MatrixRuntimePhase;
 use crate::runtime::bounded_message;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
+
+#[path = "matrix_tick.rs"]
+mod tick;
 
 const MAX_MATRIX_BINDING_BYTES: u64 = 65_536;
 static MATRIX_INCARNATION_SEQUENCE: AtomicU64 = AtomicU64::new(1);
@@ -424,13 +426,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             runtime.phase,
             MatrixRuntimePhase::Stopping { .. } | MatrixRuntimePhase::Killing
         ) {
-            runtime.phase = MatrixRuntimePhase::Stopping {
-                deadline: deadline(now, self.config.stop_grace)?,
-            };
+            let stop_deadline = deadline(now, self.config.stop_grace)?;
             runtime
                 .process
                 .request_stop()
                 .map_err(|error| driver_error(agent_id, error))?;
+            runtime.phase = MatrixRuntimePhase::Stopping {
+                deadline: stop_deadline,
+            };
             event_generation = Some(runtime.attached_agent_generation);
         }
         if let Some(generation) = event_generation {
@@ -459,197 +462,6 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         if let Some(generation) = event_generation {
             slot.event(generation, SupervisorEventKind::MatrixKillRequested);
-        }
-        Ok(())
-    }
-
-    pub(crate) fn tick_matrix_companion(
-        &mut self,
-        agent_id: &AgentId,
-        slot: &mut AgentSlot<D::Process>,
-        now: Instant,
-    ) -> Result<(), SupervisorError> {
-        if let Some(mut runtime) = slot.matrix.runtime.take() {
-            let exact_agent = slot.runtime.as_ref().is_some_and(|agent| {
-                agent.healthy
-                    && matches!(agent.phase, crate::runtime::RuntimePhase::Running)
-                    && agent.spawn_generation == runtime.attached_agent_generation
-            });
-            if !exact_agent && !runtime.fenced {
-                runtime
-                    .process
-                    .kill()
-                    .map_err(|error| driver_error(agent_id, error))?;
-                runtime.phase = MatrixRuntimePhase::Killing;
-                runtime.fenced = true;
-                slot.event(
-                    runtime.attached_agent_generation,
-                    SupervisorEventKind::MatrixKillRequested,
-                );
-            }
-            let observation = runtime
-                .process
-                .poll(self.config.driver_poll_batch)
-                .map_err(|error| driver_error(agent_id, error))?;
-            for mut log in observation
-                .logs
-                .into_iter()
-                .take(self.config.driver_poll_batch)
-            {
-                log.bytes.truncate(self.config.max_log_bytes);
-                slot.logs.push(log);
-            }
-            if let ProcessState::Exited(exit) = observation.state {
-                let record = self.record(agent_id)?;
-                let lease = MatrixProcessLease {
-                    schema_version: MATRIX_PROCESS_LEASE_SCHEMA_VERSION,
-                    agent_id: agent_id.clone(),
-                    attached_agent_generation: runtime.attached_agent_generation,
-                    release_id: runtime.release_id,
-                    binding_revision: runtime.binding_revision,
-                    binding_digest: runtime.binding_digest,
-                    process_incarnation: runtime.process_incarnation,
-                    plane_epoch: runtime.plane_epoch,
-                    identity: runtime.identity,
-                };
-                remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;
-                slot.event(
-                    runtime.attached_agent_generation,
-                    SupervisorEventKind::MatrixExited(exit),
-                );
-                let should_restart = slot.deferred_agent_action.is_none()
-                    && (slot.matrix.restart_after_exit || exact_agent);
-                slot.matrix.restart_after_exit = false;
-                if should_restart {
-                    self.degrade_matrix(
-                        agent_id,
-                        slot,
-                        runtime.attached_agent_generation,
-                        "Matrix companion exited while its agent remained healthy".to_string(),
-                        now,
-                    );
-                }
-            } else {
-                let ProcessState::Running { healthy, .. } = observation.state else {
-                    unreachable!("Matrix exited state returned above")
-                };
-                runtime.healthy = healthy;
-                match runtime.phase {
-                    MatrixRuntimePhase::AwaitingHealth { .. } if healthy => {
-                        runtime.phase = MatrixRuntimePhase::Running;
-                        slot.matrix.degraded = false;
-                        slot.matrix.retry_at = None;
-                        slot.matrix.restart_exhausted = false;
-                        slot.matrix.last_error = None;
-                        slot.event(
-                            runtime.attached_agent_generation,
-                            SupervisorEventKind::MatrixHealthy,
-                        );
-                    }
-                    MatrixRuntimePhase::Running if !healthy => {
-                        runtime.phase = MatrixRuntimePhase::Unhealthy {
-                            deadline: deadline(now, self.config.health_timeout)?,
-                        };
-                        slot.matrix.degraded = true;
-                        slot.matrix.last_error =
-                            Some("Matrix health probe lost readiness".to_string());
-                        slot.event(
-                            runtime.attached_agent_generation,
-                            SupervisorEventKind::MatrixDegraded(
-                                "Matrix health probe lost readiness".to_string(),
-                            ),
-                        );
-                    }
-                    MatrixRuntimePhase::Unhealthy { .. } if healthy => {
-                        runtime.phase = MatrixRuntimePhase::Running;
-                        slot.matrix.degraded = false;
-                        slot.matrix.retry_at = None;
-                        slot.matrix.restart_exhausted = false;
-                        slot.matrix.last_error = None;
-                        slot.event(
-                            runtime.attached_agent_generation,
-                            SupervisorEventKind::MatrixHealthy,
-                        );
-                    }
-                    MatrixRuntimePhase::AwaitingHealth { deadline: limit } if now >= limit => {
-                        runtime.phase = MatrixRuntimePhase::Stopping {
-                            deadline: deadline(now, self.config.stop_grace)?,
-                        };
-                        runtime
-                            .process
-                            .request_stop()
-                            .map_err(|error| driver_error(agent_id, error))?;
-                        slot.matrix.restart_after_exit = true;
-                        slot.matrix.degraded = true;
-                        slot.matrix.last_error = Some("Matrix health deadline expired".to_string());
-                        slot.event(
-                            runtime.attached_agent_generation,
-                            SupervisorEventKind::MatrixStopRequested,
-                        );
-                    }
-                    MatrixRuntimePhase::Unhealthy { deadline: limit } if now >= limit => {
-                        runtime.phase = MatrixRuntimePhase::Stopping {
-                            deadline: deadline(now, self.config.stop_grace)?,
-                        };
-                        runtime
-                            .process
-                            .request_stop()
-                            .map_err(|error| driver_error(agent_id, error))?;
-                        slot.matrix.restart_after_exit = true;
-                        slot.matrix.degraded = true;
-                        slot.matrix.last_error = Some("Matrix unhealthy grace expired".to_string());
-                        slot.event(
-                            runtime.attached_agent_generation,
-                            SupervisorEventKind::MatrixStopRequested,
-                        );
-                    }
-                    MatrixRuntimePhase::Stopping { deadline: limit } if now >= limit => {
-                        runtime.phase = MatrixRuntimePhase::Killing;
-                        runtime
-                            .process
-                            .kill()
-                            .map_err(|error| driver_error(agent_id, error))?;
-                        slot.event(
-                            runtime.attached_agent_generation,
-                            SupervisorEventKind::MatrixKillRequested,
-                        );
-                    }
-                    MatrixRuntimePhase::AwaitingHealth { .. }
-                    | MatrixRuntimePhase::Running
-                    | MatrixRuntimePhase::Unhealthy { .. }
-                    | MatrixRuntimePhase::Stopping { .. }
-                    | MatrixRuntimePhase::Killing => {}
-                }
-                slot.matrix.runtime = Some(runtime);
-            }
-        }
-
-        if slot.matrix.runtime.is_none() {
-            if let Some(action) = slot.deferred_agent_action.take() {
-                let applies_to_runtime = slot
-                    .runtime
-                    .as_ref()
-                    .is_some_and(|runtime| runtime.spawn_generation == action.spawn_generation);
-                let lifecycle_allows_action = match action.kind {
-                    DeferredAgentActionKind::Drain => matches!(
-                        self.record(agent_id)?.lifecycle.lifecycle,
-                        AgentLifecycle::Running | AgentLifecycle::Draining
-                    ),
-                    DeferredAgentActionKind::Stop => true,
-                };
-                if applies_to_runtime && lifecycle_allows_action {
-                    match action.kind {
-                        DeferredAgentActionKind::Drain => self.drain_slot(agent_id, slot, now)?,
-                        DeferredAgentActionKind::Stop => self.stop_slot(agent_id, slot, now)?,
-                    }
-                    return Ok(());
-                }
-            }
-            let retry_due = !slot.matrix.restart_exhausted
-                && slot.matrix.retry_at.is_none_or(|retry_at| now >= retry_at);
-            if retry_due {
-                self.start_matrix_companion(agent_id, slot, now);
-            }
         }
         Ok(())
     }

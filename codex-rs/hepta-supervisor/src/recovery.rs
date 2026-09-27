@@ -48,7 +48,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             .active_release
             .as_ref()
             .map(|release| release.command().clone());
-        Ok(())
+        // Storage/identity/clock faults here are fatal startup faults, not
+        // recoverable process faults. Stage Matrix state before adoption.
+        self.prepare_matrix_restart_recovery(agent_id, slot, record)
     }
 
     fn resolve_persisted_release(
@@ -196,6 +198,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         record: &AgentRecord,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        slot.matrix.apply_restart_recovery(now);
         let Some(lease) = read_lease(record.layout.run_root())? else {
             if is_live_lifecycle(record.lifecycle.lifecycle) {
                 let generation = self.transition_without_runtime(

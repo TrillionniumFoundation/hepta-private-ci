@@ -192,5 +192,48 @@ class FileTests(unittest.TestCase):
                 read_regular(self.path, 64)
 
 
+class CompanionRequirementTests(unittest.TestCase):
+    def test_new_rust_cases_are_required_in_both_library_profiles(self):
+        import re
+        from scripts.hepta_supervisor_ci import PACKAGE, PLANS, REQUIRED_BINARY_TESTS
+        root = Path(__file__).resolve().parents[1] / "codex-rs/hepta-supervisor/src"
+        names = set()
+        for filename, prefix in (
+            ("restart_state_tests.rs", "restart_state::tests::"),
+            ("matrix_tick_tests.rs", "matrix::tick::tests::"),
+        ):
+            text = (root / filename).read_text()
+            names.update(prefix + name for name in re.findall(r"#\[test\]\s+fn (\w+)", text))
+        self.assertEqual(len(names), 14)
+        for profile in ("default", "production"):
+            required = set(REQUIRED_BINARY_TESTS[profile][PACKAGE])
+            self.assertTrue(names <= required, names - required)
+            self.assertGreaterEqual(PLANS[profile][0], len(required))
+
+    def test_missing_companion_case_cannot_hide_behind_unchanged_total(self):
+        from scripts.hepta_supervisor_ci import PACKAGE, REQUIRED_BINARY_TESTS
+        for profile in ("default", "production"):
+            required = REQUIRED_BINARY_TESTS[profile]
+            log = transcript(required)
+            count = len(required[PACKAGE])
+            for name in required[PACKAGE]:
+                if name.startswith(("restart_state::", "matrix::tick::")):
+                    altered = log.replace(name.encode(), (name + "_unrelated").encode())
+                    with self.subTest(profile=profile, name=name), self.assertRaises(ValueError):
+                        validate_transcript(altered, required, count)
+
+    def test_new_companion_cases_must_come_from_the_library_binary(self):
+        from scripts.hepta_supervisor_ci import PACKAGE, REQUIRED_BINARY_TESTS
+        required = REQUIRED_BINARY_TESTS["default"]
+        log = transcript(required)
+        count = len(required[PACKAGE])
+        for name in required[PACKAGE]:
+            if name.startswith(("restart_state::", "matrix::tick::")):
+                altered = log.replace(f"{PACKAGE} {name}".encode(),
+                                      f"{PACKAGE}::fixture {name}".encode())
+                with self.subTest(name=name), self.assertRaises(ValueError):
+                    validate_transcript(altered, required, count)
+
+
 if __name__ == "__main__":
     unittest.main()
