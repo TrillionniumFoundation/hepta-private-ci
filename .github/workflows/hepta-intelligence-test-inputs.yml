@@ -1,0 +1,69 @@
+name: intelligence.control test tool inputs
+on:
+  pull_request:
+    paths: ['.github/workflows/hepta-intelligence-test-inputs.yml']
+permissions:
+  contents: read
+jobs:
+  inputs:
+    if: github.event.pull_request.number == 1022
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Retrieve checksum-pinned test entry points
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/intelligence-test-inputs"
+          mkdir -p "$out/bin"
+          cd "$out"
+          curl --fail --location --max-time 120 --output just.tar.gz https://github.com/casey/just/releases/download/1.51.0/just-1.51.0-x86_64-unknown-linux-musl.tar.gz
+          curl --fail --location --max-time 120 --output nextest.tar.gz https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz
+          printf '%s\n' 'c8f085ca3e885723c341d06243fc291b5abfdc8bbe3b2c076b117de490387b59  just.tar.gz' 'b6b5daad02ddef2d0e1f1114c4cd708f2960fd421a415693f995cef3bef90036  nextest.tar.gz' | shasum -a 256 --check
+          tar -xOzf just.tar.gz just > bin/just
+          tar -xOzf nextest.tar.gz cargo-nextest > bin/cargo-nextest
+          chmod 0755 bin/*
+          tar -czf test-tools.tar.gz bin
+          shasum -a 256 test-tools.tar.gz > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-test-tools-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/intelligence-test-inputs/test-tools.tar.gz
+            ${{ runner.temp }}/intelligence-test-inputs/SHA256SUMS
+          retention-days: 3
+          compression-level: 0
+      - name: Export existing verified Linux V8 pair
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, os, shutil
+          from pathlib import Path
+          from codex_package.targets import TARGET_SPECS
+          from codex_package.v8 import resolve_codex_v8_cargo_env
+          pair = resolve_codex_v8_cargo_env(TARGET_SPECS['x86_64-unknown-linux-gnu'])
+          if set(pair) != {'RUSTY_V8_ARCHIVE', 'RUSTY_V8_SRC_BINDING_PATH'}:
+              raise RuntimeError('expected verified V8 archive and binding')
+          root = Path(os.environ['RUNNER_TEMP']) / 'intelligence-v8-inputs'
+          root.mkdir()
+          lines = []
+          for name, source in sorted(pair.items()):
+              target = root / Path(source).name
+              shutil.copyfile(source, target)
+              lines.append(f'{hashlib.sha256(target.read_bytes()).hexdigest()}  {target.name}\n')
+          (root / 'SHA256SUMS').write_text(''.join(lines))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-test-v8-${{ github.run_id }}
+          path: ${{ runner.temp }}/intelligence-v8-inputs/*
+          retention-days: 3
+          compression-level: 0
