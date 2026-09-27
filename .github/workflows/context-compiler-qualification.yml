@@ -43,11 +43,15 @@ permissions:
   contents: read
 
 concurrency:
-  group: context-compiler-${{ github.event_name }}-${{ github.event.pull_request.head.sha || github.sha }}
-  cancel-in-progress: false
+  group: context-compiler-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MATERIALIZATION_PUSH: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[materialize-v3]') }}
 
 jobs:
   identity:
+    if: ${{ env.MATERIALIZATION_PUSH != 'true' }}
     runs-on: ubuntu-24.04
     outputs:
       source: ${{ steps.identity.outputs.source }}
@@ -86,6 +90,7 @@ jobs:
           printf 'source=%s\nbase=%s\n' "$SOURCE" "$BASE" >> "$GITHUB_OUTPUT"
 
   source-snapshot:
+    if: ${{ env.MATERIALIZATION_PUSH != 'true' }}
     needs: identity
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -114,6 +119,7 @@ jobs:
           retention-days: 7
 
   qualification:
+    if: ${{ env.MATERIALIZATION_PUSH != 'true' }}
     needs: identity
     name: context.compiler (${{ matrix.lane }})
     strategy:
@@ -181,8 +187,8 @@ jobs:
           retention-days: 90
 
   required:
+    if: ${{ always() && env.MATERIALIZATION_PUSH != 'true' }}
     name: Context compiler required
-    if: always()
     needs: [identity, qualification]
     runs-on: ubuntu-24.04
     steps:
