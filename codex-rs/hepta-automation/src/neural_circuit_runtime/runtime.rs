@@ -52,6 +52,7 @@ where
             return Ok(CircuitRuntimeOutcomeV1::Terminal(terminal_receipt(
                 candidate,
                 event,
+                profile,
                 &current,
                 CircuitTerminalStateV1::Cancelled,
                 accumulator,
@@ -176,7 +177,7 @@ where
                     .observation_digests
                     .push(observation_digest.clone());
                 if receipt.state == CircuitWaitStateV1::Pending {
-                    let trace = runtime_trace(candidate, event, accumulator)?;
+                    let trace = runtime_trace(candidate, event, profile, accumulator)?;
                     let boundary_digest = digest_value(
                         b"hepta.neural-circuit.wait-boundary.v1\0",
                         &(&current, &observation_digest, &trace.trace_digest),
@@ -206,7 +207,7 @@ where
                         node.node_id
                     ))
                 })?;
-                let trace = runtime_trace(candidate, event, accumulator)?;
+                let trace = runtime_trace(candidate, event, profile, accumulator)?;
                 let boundary_digest = digest_value(
                     b"hepta.neural-circuit.effect-boundary.v1\0",
                     &(
@@ -230,6 +231,7 @@ where
                 return Ok(CircuitRuntimeOutcomeV1::Terminal(terminal_receipt(
                     candidate,
                     event,
+                    profile,
                     &current,
                     CircuitTerminalStateV1::Succeeded,
                     accumulator,
@@ -239,6 +241,7 @@ where
                 return Ok(CircuitRuntimeOutcomeV1::Terminal(terminal_receipt(
                     candidate,
                     event,
+                    profile,
                     &current,
                     CircuitTerminalStateV1::Failed,
                     accumulator,
@@ -351,13 +354,19 @@ fn recorded_choice(
 fn runtime_trace(
     candidate: &NeuralCircuitCandidateV1,
     event: &CircuitEventIngressV1,
+    profile: &CircuitRuntimeProfileV1,
     accumulator: RuntimeAccumulator,
 ) -> Result<CircuitRuntimeTraceV1, NeuralCircuitRuntimeError> {
+    let runtime_profile_digest = digest_value(
+        b"hepta.neural-circuit.runtime-profile.v1\0",
+        profile,
+    )?;
     let trace_digest = digest_value(
         b"hepta.neural-circuit.runtime-trace.v1\0",
         &(
             &event.event_digest,
             &candidate.circuit_digest,
+            &runtime_profile_digest,
             accumulator.steps,
             accumulator.depth,
             accumulator.consumed_cost_units,
@@ -368,6 +377,7 @@ fn runtime_trace(
     Ok(CircuitRuntimeTraceV1 {
         event_digest: event.event_digest.clone(),
         circuit_digest: candidate.circuit_digest.clone(),
+        runtime_profile_digest,
         steps: accumulator.steps,
         depth: accumulator.depth,
         consumed_cost_units: accumulator.consumed_cost_units,
@@ -380,11 +390,12 @@ fn runtime_trace(
 fn terminal_receipt(
     candidate: &NeuralCircuitCandidateV1,
     event: &CircuitEventIngressV1,
+    profile: &CircuitRuntimeProfileV1,
     terminal_node_id: &str,
     state: CircuitTerminalStateV1,
     accumulator: RuntimeAccumulator,
 ) -> Result<CircuitTerminalReceiptV1, NeuralCircuitRuntimeError> {
-    let trace = runtime_trace(candidate, event, accumulator)?;
+    let trace = runtime_trace(candidate, event, profile, accumulator)?;
     let receipt_digest = digest_value(
         b"hepta.neural-circuit.terminal-receipt.v1\0",
         &(terminal_node_id, state, &trace.trace_digest),
