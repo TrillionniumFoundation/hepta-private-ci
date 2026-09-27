@@ -1,4 +1,4 @@
-name: ui.control node-test diagnostics
+name: ui.control qualification diagnostics
 
 on:
   push:
@@ -6,6 +6,15 @@ on:
       - "work/ui-control-*"
     paths:
       - "apps/hepta-control-ui/**"
+      - "docs/modules/ui.control/**"
+      - "qualification/ui-control/**"
+      - "qualification/module-execution-dossiers/detail/ui.control.md"
+      - "scripts/ui-control-artifacts.mjs"
+      - "scripts/ui-control-status.mjs"
+      - "scripts/hepta-lane-b-path-guard.py"
+      - "scripts/test_hepta_lane_b_path_guard.py"
+      - "scripts/hepta-lane-b-truth.py"
+      - "scripts/test_hepta_lane_b_truth.py"
       - ".github/workflows/ui-control-node-diagnostics.yml"
   workflow_dispatch:
 
@@ -13,12 +22,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: ui-control-node-diagnostics-${{ github.ref }}
+  group: ui-control-qualification-diagnostics-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  node-tests:
-    name: isolate node test failures
+  qualification-diagnostics:
+    name: isolate generated-truth qualification failures
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -34,41 +43,73 @@ jobs:
         with:
           node-version: 22
 
-      - name: Run every Node test independently and retain output
-        shell: bash
-        run: |
-          set -u
-          mkdir -p ui-control-node-diagnostics
-          failed=0
-          tests=(
-            control.test.js
-            canonical-profile.test.js
-            runtime-client.test.js
-            runtime-client-lifecycle.test.js
-            browser-app-lifecycle.test.js
-            http-transport.test.js
-            session-provider.test.js
-            recovery-safety.test.js
-            runtime-recovery-integration.test.js
-          )
-          for test_file in "${tests[@]}"; do
-            echo "=== ${test_file} ==="
-            if node --test "apps/hepta-control-ui/test/${test_file}" \
-              > "ui-control-node-diagnostics/${test_file}.log" 2>&1; then
-              echo "PASS ${test_file}"
-            else
-              echo "FAIL ${test_file}"
-              failed=1
-            fi
-          done
-          printf '%s\n' "$failed" > ui-control-node-diagnostics/failed
-          exit "$failed"
+      - id: artifacts
+        name: Generated technical artifacts
+        continue-on-error: true
+        run: node scripts/ui-control-artifacts.mjs --check
 
-      - name: Upload exact test diagnostics
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: ui-control-node-diagnostics-${{ github.sha }}
-          path: ui-control-node-diagnostics/
-          if-no-files-found: error
-          retention-days: 7
+      - id: status
+        name: Generated status and gate map
+        continue-on-error: true
+        run: node scripts/ui-control-status.mjs --check
+
+      - id: path_self
+        name: Lane B path guard self-test
+        continue-on-error: true
+        run: python3 scripts/hepta-lane-b-path-guard.py self-test
+
+      - id: path_unit
+        name: Lane B path guard unit tests
+        continue-on-error: true
+        run: python3 -m unittest scripts/test_hepta_lane_b_path_guard.py
+
+      - id: path_verify
+        name: Lane B path guard verification
+        continue-on-error: true
+        run: python3 scripts/hepta-lane-b-path-guard.py verify
+
+      - id: truth_self
+        name: Lane B truth self-test
+        continue-on-error: true
+        run: python3 scripts/hepta-lane-b-truth.py self-test
+
+      - id: truth_unit
+        name: Lane B truth unit tests
+        continue-on-error: true
+        run: python3 -m unittest scripts/test_hepta_lane_b_truth.py
+
+      - id: truth_verify
+        name: Lane B truth verification
+        continue-on-error: true
+        run: python3 scripts/hepta-lane-b-truth.py verify
+
+      - name: Fail on any diagnostic failure
+        shell: bash
+        env:
+          ARTIFACTS: ${{ steps.artifacts.outcome }}
+          STATUS: ${{ steps.status.outcome }}
+          PATH_SELF: ${{ steps.path_self.outcome }}
+          PATH_UNIT: ${{ steps.path_unit.outcome }}
+          PATH_VERIFY: ${{ steps.path_verify.outcome }}
+          TRUTH_SELF: ${{ steps.truth_self.outcome }}
+          TRUTH_UNIT: ${{ steps.truth_unit.outcome }}
+          TRUTH_VERIFY: ${{ steps.truth_verify.outcome }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' \
+            "artifacts=$ARTIFACTS" \
+            "status=$STATUS" \
+            "path_self=$PATH_SELF" \
+            "path_unit=$PATH_UNIT" \
+            "path_verify=$PATH_VERIFY" \
+            "truth_self=$TRUTH_SELF" \
+            "truth_unit=$TRUTH_UNIT" \
+            "truth_verify=$TRUTH_VERIFY"
+          test "$ARTIFACTS" = success
+          test "$STATUS" = success
+          test "$PATH_SELF" = success
+          test "$PATH_UNIT" = success
+          test "$PATH_VERIFY" = success
+          test "$TRUTH_SELF" = success
+          test "$TRUTH_UNIT" = success
+          test "$TRUTH_VERIFY" = success
