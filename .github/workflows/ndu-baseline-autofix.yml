@@ -1,4 +1,4 @@
-name: NDU baseline autofix
+name: NDU exact-head regression repair
 
 on:
   push:
@@ -11,330 +11,121 @@ permissions:
   contents: write
 
 jobs:
-  fix:
+  repair:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-22.04
-    timeout-minutes: 30
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
     steps:
-      - name: Check out exact branch
+      - name: Check out exact remediation branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: codex/utility-ndu-production-hardening-20260926
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Apply exact lint-boundary repairs
+      - name: Apply fail-closed protocol and host repairs
         shell: bash
         run: |
+          set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
 
-          def replace_once(path: str, old: str, new: str) -> None:
+          def replace_exact(path: str, old: str, new: str, expected: int = 1) -> None:
               target = Path(path)
               text = target.read_text(encoding="utf-8")
               count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f"{path}: expected one occurrence, found {count}: {old!r}")
-              target.write_text(text.replace(old, new, 1), encoding="utf-8")
-
-          def replace_all(path: str, old: str, new: str, minimum: int = 1) -> None:
-              target = Path(path)
-              text = target.read_text(encoding="utf-8")
-              count = text.count(old)
-              if count < minimum:
-                  raise SystemExit(f"{path}: expected at least {minimum} occurrences, found {count}: {old!r}")
+              if count != expected:
+                  raise SystemExit(
+                      f"{path}: expected {expected} occurrence(s), found {count}: {old!r}"
+                  )
               target.write_text(text.replace(old, new), encoding="utf-8")
 
-          replace_once(
-              "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs",
-              "    pub fn admit_with_artifact_lifecycle_v2(\n",
-              '''    #[expect(
-                  clippy::too_many_arguments,
-                  reason = "independent currentness, withdrawal, lifecycle, signed-selection, evaluator and time evidence remain explicit at this trust boundary"
-              )]
-              pub fn admit_with_artifact_lifecycle_v2(
-              ''',
+          # A zero journal head is the canonical genesis state. It must be bound
+          # into the admission digest, not rejected as an absent identity.
+          replace_exact(
+              "codex-rs/hepta-agent-protocol/src/ndu.rs",
+              "            require_digest(expected_head)?;\n            bytes.extend_from_slice(expected_head);\n",
+              "            bytes.extend_from_slice(expected_head);\n",
+              expected=2,
+          )
+          replace_exact(
+              "codex-rs/hepta-agent-protocol/src/ndu.rs",
+              "            *request = Box::new(NduControlRequestV1::Outcome {\n                identity: nonzero(9),\n            });\n",
+              "            **request = NduControlRequestV1::Outcome {\n                identity: nonzero(9),\n            };\n",
           )
 
-          replace_once(
-              "codex-rs/hepta-agentd/src/browser_servo.rs",
-              "struct DecodedFrame {\n    sequence: u64,\n",
-              '''struct DecodedFrame {
-                  #[expect(
-                      dead_code,
-                      reason = "the decoded sequence remains part of the authenticated frame shape while response ordering is enforced by the transport state"
-                  )]
-                  sequence: u64,
-              ''',
+          # Preserve the JSON wire shape while reducing the in-memory enum
+          # variant. Box<T> is serde-transparent here and the consumer borrows it.
+          replace_exact(
+              "codex-rs/hepta-agent-protocol/src/lib.rs",
+              "    AutomationExecuteEffect {\n        intent: AuthorizedEffectIntent,\n        wire_payload_hex: String,\n        signed_grant: SignedFinalUseGrant,\n        command_id: String,\n    },\n",
+              "    AutomationExecuteEffect {\n        intent: AuthorizedEffectIntent,\n        wire_payload_hex: String,\n        signed_grant: Box<SignedFinalUseGrant>,\n        command_id: String,\n    },\n",
+          )
+          replace_exact(
+              "codex-rs/hepta-agent-protocol/src/lib.rs",
+              "            method: AgentdMethod::AutomationExecuteEffect {\n                intent,\n                wire_payload_hex,\n                signed_grant,\n                command_id,\n            },\n",
+              "            method: AgentdMethod::AutomationExecuteEffect {\n                intent,\n                wire_payload_hex,\n                signed_grant: Box::new(signed_grant),\n                command_id,\n            },\n",
+          )
+          replace_exact(
+              "codex-rs/hepta-agent-protocol/src/lib.rs",
+              "                plan: snapshot.plan.clone(),\n",
+              "                plan: snapshot.plan,\n",
+          )
+          replace_exact(
+              "codex-rs/hepta-agent-protocol/src/lib.rs",
+              "        let cancel = AgentdRequest::run_cancel(\n            14,\n            3,\n            snapshot.run_id.clone(),\n            2,\n",
+              "        let cancel = AgentdRequest::run_cancel(\n            14,\n            3,\n            snapshot.run_id,\n            2,\n",
           )
 
-          replace_once(
-              "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
-              "    pub(crate) fn append(\n",
-              '''    #[expect(
-                  dead_code,
-                  reason = "retained compatibility entry for callers that do not yet publish delivery evidence"
-              )]
-              pub(crate) fn append(
-              ''',
+          # util-linux cannot reliably infer a synthetic tmpfs source from only
+          # the target on hosted runners. Supply the exact source/type for a real
+          # remount; no mock errno or skipped read-only observation is accepted.
+          replace_exact(
+              "scripts/hepta-ndu-mounted-filesystem.py",
+              "                command(privilege + [\"mount\", \"-o\", \"remount,ro\", str(mount)])\n",
+              "                command(privilege + [\"mount\", \"-t\", \"tmpfs\", \"-o\", \"remount,ro\", \"ndu-qualification\", str(mount)])\n",
           )
-          replace_once(
-              "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
-              "    pub(crate) fn append_with_delivery(\n",
-              '''    #[expect(
-                  dead_code,
-                  reason = "retained compatibility entry while production callers use the policy-bound delivery path"
-              )]
-              #[expect(
-                  clippy::too_many_arguments,
-                  reason = "the compatibility entry preserves the established evidence-bearing call shape"
-              )]
-              pub(crate) fn append_with_delivery(
-              ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
-              "    #[allow(clippy::too_many_arguments)]\n    pub(crate) fn append_with_delivery_policy(\n",
-              '''    #[expect(
-                  clippy::too_many_arguments,
-                  reason = "each argument binds a distinct durable retrieval-delivery evidence field"
-              )]
-              pub(crate) fn append_with_delivery_policy(
-              ''',
-          )
-
-          replace_once(
-              "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
-              "pub(crate) struct AgentdLearningPlasticityProducerV1 {\n    handle: PlasticityRuntimeHandleV1,\n",
-              '''pub(crate) struct AgentdLearningPlasticityProducerV1 {
-                  #[expect(
-                      dead_code,
-                      reason = "the named producer is attached before the production learning ingress is activated"
-                  )]
-                  handle: PlasticityRuntimeHandleV1,
-              ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
-              "    pub(crate) async fn submit_parameter(\n",
-              '''    #[expect(
-                  dead_code,
-                  reason = "named parameter-plasticity ingress is retained for the production activation boundary"
-              )]
-              pub(crate) async fn submit_parameter(
-              ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
-              "    pub(crate) async fn submit_topology(\n",
-              '''    #[expect(
-                  dead_code,
-                  reason = "named topology-plasticity ingress is retained for the production activation boundary"
-              )]
-              pub(crate) async fn submit_topology(
-              ''',
-          )
-
-          replace_once(
-              "codex-rs/hepta-agentd/src/state.rs",
-              "    pub(crate) async fn submit_parameter_plasticity_v1(\n",
-              '''    #[expect(
-                  dead_code,
-                  reason = "the state-owned producer seam is intentionally dormant until governed learning activation"
-              )]
-              pub(crate) async fn submit_parameter_plasticity_v1(
-              ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/state.rs",
-              "    pub(crate) async fn submit_topology_plasticity_v1(\n",
-              '''    #[expect(
-                  dead_code,
-                  reason = "the state-owned producer seam is intentionally dormant until governed learning activation"
-              )]
-              pub(crate) async fn submit_topology_plasticity_v1(
-              ''',
-          )
-
-          replace_once(
-              "codex-rs/hepta-agentd/src/automation_effect_host.rs",
-              "#[derive(Clone, Debug)]\npub(crate) enum AgentdAutomationEffectReconcileOutcome {\n",
-              '''#[expect(
-                  clippy::large_enum_variant,
-                  reason = "the observed receipt remains inline to preserve the established reconciliation API and avoid a second allocation at the effect boundary"
-              )]
-              #[derive(Clone, Debug)]
-              pub(crate) enum AgentdAutomationEffectReconcileOutcome {
-              ''',
-          )
-
-          replace_once(
-              "codex-rs/hepta-agentd/src/cognitive_context.rs",
-              "pub(crate) async fn read_with_retrieval_context_and_learning(\n",
-              '''#[expect(
-                  clippy::too_many_arguments,
-                  reason = "the context compiler keeps owner, generation, retrieval, learning and request identities explicit"
-              )]
-              pub(crate) async fn read_with_retrieval_context_and_learning(
-              ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/cognitive_context.rs",
-              "pub(crate) async fn revalidate_with_retrieval_context(\n",
-              '''#[expect(
-                  clippy::too_many_arguments,
-                  reason = "revalidation binds the complete previously published context and current retrieval authority"
-              )]
-              pub(crate) async fn revalidate_with_retrieval_context(
-              ''',
-          )
-
-          replace_once(
-              "codex-rs/hepta-agentd/src/intelligence_product.rs",
-              "#[derive(Clone, Debug, Eq, PartialEq)]\npub enum AgentdIntelligenceProductOutcomeV1 {\n",
-              '''#[expect(
-                  clippy::large_enum_variant,
-                  reason = "the prepared run remains inline in the stable product outcome API"
-              )]
-              #[derive(Clone, Debug, Eq, PartialEq)]
-              pub enum AgentdIntelligenceProductOutcomeV1 {
-              ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/intelligence_product.rs",
-              "#[derive(Clone, Debug, Eq, PartialEq)]\npub enum AgentdIntelligenceAdmittedOutcomeV1 {\n",
-              '''#[expect(
-                  clippy::large_enum_variant,
-                  reason = "the admitted prepared run and receipt remain one atomic stable API value"
-              )]
-              #[derive(Clone, Debug, Eq, PartialEq)]
-              pub enum AgentdIntelligenceAdmittedOutcomeV1 {
-              ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/intelligence_product.rs",
-              "#[derive(Debug)]\npub enum AgentdIntelligenceLedgerError {\n",
-              '''#[expect(
-                  clippy::large_enum_variant,
-                  reason = "indeterminate recovery carries the complete pending append without lossy indirection"
-              )]
-              #[derive(Debug)]
-              pub enum AgentdIntelligenceLedgerError {
-              ''',
-          )
-
-          replace_once(
-              "codex-rs/hepta-agentd/src/plasticity_host.rs",
-              "pub fn propose_agentd_plasticity_v1(\n",
-              '''#[expect(
-                  clippy::too_many_arguments,
-                  reason = "the host callsite keeps each independent owner, evidence, writer, anchor and clock boundary explicit"
-              )]
-              pub fn propose_agentd_plasticity_v1(
-              ''',
-          )
-
-          replay = "codex-rs/hepta-agentd/src/ndu_replay.rs"
-          replace_all(
-              replay,
-              "BTreeMap<(String, String), NduExternalReplayBindingV2>",
-              "NduExternalReplayMapV2",
-              minimum=3,
-          )
-          replace_once(
-              replay,
-              '''struct NduExternalReplayBindingV2 {
-                  binding_digest: Digest32,
-                  deadline_unix_ms: u64,
-                  result: Option<NduControlResultV1>,
-              }
-
-              ''',
-              '''struct NduExternalReplayBindingV2 {
-                  binding_digest: Digest32,
-                  deadline_unix_ms: u64,
-                  result: Option<NduControlResultV1>,
-              }
-
-              type NduExternalReplayMapV2 =
-                  BTreeMap<(String, String), NduExternalReplayBindingV2>;
-
-              ''',
-          )
-          replace_once(
-              replay,
-              "    Cached(NduControlResultV1),\n",
-              "    Cached(Box<NduControlResultV1>),\n",
-          )
-          replace_once(
-              replay,
-              "|result| Ok(NduExternalReplayBeginV2::Cached(result)),\n",
-              "|result| Ok(NduExternalReplayBeginV2::Cached(Box::new(result))),\n",
-          )
-          replace_once(
-              replay,
-              "            NduExternalReplayBeginV2::Cached(outcome())\n",
-              "            NduExternalReplayBeginV2::Cached(Box::new(outcome()))\n",
-          )
-          replace_once(
-              replay,
-              '''        if let Some(previous_key) = &previous {
-                  if previous_key >= &key {
-                      return Err(NduExternalReplayStoreErrorV2::Corrupt);
-                  }
-              }
-              ''',
-              '''        if let Some(previous_key) = &previous
-                  && previous_key >= &key
-              {
-                  return Err(NduExternalReplayStoreErrorV2::Corrupt);
-              }
-              ''',
-          )
-
-          replace_once(
-              "codex-rs/hepta-agentd/src/ndu_control.rs",
-              "                    NduExternalReplayBeginV2::Cached(result) => return Ok(result),\n",
-              "                    NduExternalReplayBeginV2::Cached(result) => return Ok(*result),\n",
+          replace_exact(
+              "scripts/hepta-ndu-mounted-filesystem.py",
+              "                command(privilege + [\"mount\", \"-o\", \"remount,rw\", str(mount)])\n",
+              "                command(privilege + [\"mount\", \"-t\", \"tmpfs\", \"-o\", \"remount,rw\", \"ndu-qualification\", str(mount)])\n",
           )
           PY
 
-      - name: Canonically format the exact qualification packages
+      - name: Canonically format touched Rust packages
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-agent-protocol --package codex-hepta-agentd
+
+      - name: Verify protocol tests and strict Clippy
         working-directory: codex-rs
         shell: bash
         run: |
-          cargo fmt \
-            --package codex-hepta-ndu \
-            --package codex-hepta-intelligence-eval \
-            --package codex-hepta-intelligence \
-            --package codex-hepta-learning-artifacts \
-            --package codex-hepta-learning-ledger \
-            --package codex-hepta-shadow-qualification \
-            --package codex-hepta-agentd \
-            --package codex-hepta-agent-protocol \
-            --package codex-hepta-contracts \
-            --package codex-hepta-control-plane
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agent-protocol --lib
+          cargo clippy --locked --all-targets --no-deps -p codex-hepta-agent-protocol -- -D warnings
 
-      - name: Validate Python 3.10 lockfile fallback tests
-        run: python3 scripts/test_verify_cargo_lock.py
+      - name: Verify deadline and production-bootstrap regressions
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd --lib external_deadline_is_rechecked_at_mutation_entry_without_effect
+          cargo test --locked -p codex-hepta-agentd --lib production_bootstrap_uses_one_clock_and_external_authority_frontier_through_restart
 
-      - name: Commit exact repairs
+      - name: Verify mounted-filesystem qualification contract tests
+        run: python3 scripts/test_hepta_ndu_mounted_filesystem.py
+
+      - name: Commit exact repairs and remove one-shot workflow
         shell: bash
         run: |
           set -euo pipefail
           git diff --check
           git config user.name "hepta-qualification"
           git config user.email "qualification@invalid"
+          git rm .github/workflows/ndu-baseline-autofix.yml
           git add \
+            codex-rs/hepta-agent-protocol/src/lib.rs \
             codex-rs/hepta-agent-protocol/src/ndu.rs \
-            codex-rs/hepta-agentd/src \
-            codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs \
-            codex-rs/hepta-ndu/src \
-            scripts/verify_cargo_lock.py \
-            scripts/test_verify_cargo_lock.py
-          if git diff --cached --quiet; then
-            echo "no repairs required"
-            exit 0
-          fi
-          git commit -m "fix(ndu): restore strict source and lint qualification"
+            scripts/hepta-ndu-mounted-filesystem.py
+          git commit -m "fix(ndu): restore product lint and mounted-host qualification"
           git push origin HEAD:codex/utility-ndu-production-hardening-20260926
