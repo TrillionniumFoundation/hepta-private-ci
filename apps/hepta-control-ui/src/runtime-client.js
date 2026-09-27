@@ -11,6 +11,7 @@ import {
 } from "./control.js";
 import {
   UI_CONTROL_ERROR_CODES,
+  isUiControlError,
   uiControlError,
 } from "./errors.js";
 import { OperationLedger } from "./operation-ledger.js";
@@ -30,6 +31,14 @@ import {
 } from "./snapshot.js";
 
 export { UI_CONTROL_PERMISSIONS, UI_CONTROL_PROTOCOL_VERSION } from "./runtime-contract.js";
+
+const SESSION_INVALIDATING_ERROR_CODES = new Set([
+  UI_CONTROL_ERROR_CODES.SESSION_EXPIRED,
+  UI_CONTROL_ERROR_CODES.SESSION_REVOKED,
+  UI_CONTROL_ERROR_CODES.SESSION_IDENTITY_CHANGED,
+  UI_CONTROL_ERROR_CODES.STALE_PERMISSION_REVISION,
+  UI_CONTROL_ERROR_CODES.PROTOCOL_MISMATCH,
+]);
 
 function sameStringArray(left, right) {
   return (
@@ -71,9 +80,11 @@ export class RuntimeClient {
   }
 
   async connect(endpointManifest, { signal } = {}) {
-    const rawSession = await this.#transport.connect(endpointManifest, { signal });
-    this.#session = normalizeSession(rawSession, this.#protocolVersion, this.#clock());
+    this.#session = null;
     this.#snapshot = null;
+    const rawSession = await this.#transport.connect(endpointManifest, { signal });
+    const connected = normalizeSession(rawSession, this.#protocolVersion, this.#clock());
+    this.#session = connected;
     return this.readView();
   }
 
@@ -86,72 +97,86 @@ export class RuntimeClient {
       );
     }
     const previous = this.#session;
-    const rawSession = await this.#transport.refresh(previous, { signal });
-    const refreshed = normalizeSession(rawSession, this.#protocolVersion, this.#clock());
-    if (this.#session !== previous) {
-      throw uiControlError(
-        UI_CONTROL_ERROR_CODES.STALE_GENERATION,
-        "authenticated session changed while refresh was in flight",
-        {
-          retryable: true,
-          details: {
-            previousSessionId: previous.sessionId,
-            currentSessionId: this.#session?.sessionId ?? null,
+    let rawSession;
+    try {
+      rawSession = await this.#transport.refresh(previous, { signal });
+    } catch (error) {
+      this.#invalidateSessionForError(error, previous);
+      throw error;
+    }
+
+    let refreshed;
+    try {
+      refreshed = normalizeSession(rawSession, this.#protocolVersion, this.#clock());
+      if (this.#session !== previous) {
+        throw uiControlError(
+          UI_CONTROL_ERROR_CODES.STALE_GENERATION,
+          "authenticated session changed while refresh was in flight",
+          {
+            retryable: true,
+            details: {
+              previousSessionId: previous.sessionId,
+              currentSessionId: this.#session?.sessionId ?? null,
+            },
           },
-        },
-      );
-    }
-    if (refreshed.sessionId !== previous.sessionId) {
-      throw uiControlError(
-        UI_CONTROL_ERROR_CODES.SESSION_REVOKED,
-        "session refresh changed the session identity",
-      );
-    }
-    if (refreshed.identityId !== previous.identityId) {
-      throw uiControlError(
-        UI_CONTROL_ERROR_CODES.SESSION_IDENTITY_CHANGED,
-        "session refresh changed the authenticated operator identity",
-        {
-          details: {
-            sessionId: previous.sessionId,
-            previousIdentityId: previous.identityId,
-            refreshedIdentityId: refreshed.identityId,
+        );
+      }
+      if (refreshed.sessionId !== previous.sessionId) {
+        throw uiControlError(
+          UI_CONTROL_ERROR_CODES.SESSION_REVOKED,
+          "session refresh changed the session identity",
+        );
+      }
+      if (refreshed.identityId !== previous.identityId) {
+        throw uiControlError(
+          UI_CONTROL_ERROR_CODES.SESSION_IDENTITY_CHANGED,
+          "session refresh changed the authenticated operator identity",
+          {
+            details: {
+              sessionId: previous.sessionId,
+              previousIdentityId: previous.identityId,
+              refreshedIdentityId: refreshed.identityId,
+            },
           },
-        },
-      );
-    }
-    if (refreshed.connectionGeneration < previous.connectionGeneration) {
-      throw uiControlError(
-        UI_CONTROL_ERROR_CODES.STALE_GENERATION,
-        "session refresh regressed connection generation",
-      );
-    }
-    if (refreshed.permissionRevision < previous.permissionRevision) {
-      throw uiControlError(
-        UI_CONTROL_ERROR_CODES.STALE_PERMISSION_REVISION,
-        "session refresh regressed permission revision",
-        {
-          details: {
-            previousPermissionRevision: previous.permissionRevision,
-            refreshedPermissionRevision: refreshed.permissionRevision,
+        );
+      }
+      if (refreshed.connectionGeneration < previous.connectionGeneration) {
+        throw uiControlError(
+          UI_CONTROL_ERROR_CODES.STALE_GENERATION,
+          "session refresh regressed connection generation",
+        );
+      }
+      if (refreshed.permissionRevision < previous.permissionRevision) {
+        throw uiControlError(
+          UI_CONTROL_ERROR_CODES.STALE_PERMISSION_REVISION,
+          "session refresh regressed permission revision",
+          {
+            details: {
+              previousPermissionRevision: previous.permissionRevision,
+              refreshedPermissionRevision: refreshed.permissionRevision,
+            },
           },
-        },
-      );
-    }
-    if (
-      refreshed.permissionRevision === previous.permissionRevision &&
-      !sameStringArray(refreshed.permissions, previous.permissions)
-    ) {
-      throw uiControlError(
-        UI_CONTROL_ERROR_CODES.STALE_PERMISSION_REVISION,
-        "session permissions changed without a permission revision change",
-        {
-          details: {
-            permissionRevision: previous.permissionRevision,
+        );
+      }
+      if (
+        refreshed.permissionRevision === previous.permissionRevision &&
+        !sameStringArray(refreshed.permissions, previous.permissions)
+      ) {
+        throw uiControlError(
+          UI_CONTROL_ERROR_CODES.STALE_PERMISSION_REVISION,
+          "session permissions changed without a permission revision change",
+          {
+            details: {
+              permissionRevision: previous.permissionRevision,
+            },
           },
-        },
-      );
+        );
+      }
+    } catch (error) {
+      if (this.#session === previous) this.#invalidateSession(previous);
+      throw error;
     }
+
     const generationChanged =
       refreshed.connectionGeneration !== previous.connectionGeneration;
     this.#session = refreshed;
@@ -162,8 +187,7 @@ export class RuntimeClient {
   async revokeSession({ signal } = {}) {
     if (!this.#session) return;
     const session = this.#session;
-    this.#session = null;
-    this.#snapshot = null;
+    this.#invalidateSession(session);
     if (typeof this.#transport.revoke === "function") {
       await this.#transport.revoke(session, { signal });
     }
@@ -171,20 +195,45 @@ export class RuntimeClient {
 
   async refreshView({ signal } = {}) {
     this.#assertPermission(UI_CONTROL_PERMISSIONS.READ);
-    const snapshot = await this.#transport.readSnapshot(
-      {
-        sessionId: this.#session.sessionId,
-        connectionGeneration: this.#session.connectionGeneration,
-      },
-      { signal },
-    );
-    await this.applySnapshot(snapshot);
+    const session = this.#session;
+    let snapshot;
+    try {
+      snapshot = await this.#transport.readSnapshot(
+        {
+          sessionId: session.sessionId,
+          connectionGeneration: session.connectionGeneration,
+        },
+        { signal },
+      );
+    } catch (error) {
+      this.#invalidateSessionForError(error, session);
+      throw error;
+    }
+    if (this.#session !== session) {
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.STALE_GENERATION,
+        "authenticated session changed while reading the runtime snapshot",
+        { retryable: true },
+      );
+    }
+    await this.#applySnapshotForSession(snapshot, session);
     return this.readView();
   }
 
   async applySnapshot(snapshot) {
     this.#assertConnected();
-    const normalized = await normalizeSnapshot(snapshot, this.#session);
+    return this.#applySnapshotForSession(snapshot, this.#session);
+  }
+
+  async #applySnapshotForSession(snapshot, session) {
+    const normalized = await normalizeSnapshot(snapshot, session);
+    if (this.#session !== session) {
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.STALE_GENERATION,
+        "authenticated session changed while normalizing the runtime snapshot",
+        { retryable: true },
+      );
+    }
     this.#snapshot = validateSnapshotTransition(this.#snapshot, normalized);
     return this.readView();
   }
@@ -335,29 +384,35 @@ export class RuntimeClient {
       displayedRevision,
       snapshotDigest: snapshot.semanticDigest,
     });
-    return this.#ledger.submit(request, input.signal, (entry, signal) =>
-      this.#transport.request(
-        entry.method,
-        Object.freeze({
-          protocolVersion: entry.protocolVersion,
-          operationId: entry.operationId,
-          semanticDigest: entry.semanticDigest,
-          action: entry.action,
-          targetId: entry.targetId,
-          reason: entry.reason,
-          sessionId: entry.sessionId,
-          connectionGeneration: entry.connectionGeneration,
-          generation: entry.generation,
-          displayedRevision: entry.displayedRevision,
-          snapshotDigest: entry.snapshotDigest,
-        }),
-        { signal },
-      ),
-    );
+    try {
+      return await this.#ledger.submit(request, input.signal, (entry, signal) =>
+        this.#transport.request(
+          entry.method,
+          Object.freeze({
+            protocolVersion: entry.protocolVersion,
+            operationId: entry.operationId,
+            semanticDigest: entry.semanticDigest,
+            action: entry.action,
+            targetId: entry.targetId,
+            reason: entry.reason,
+            sessionId: entry.sessionId,
+            connectionGeneration: entry.connectionGeneration,
+            generation: entry.generation,
+            displayedRevision: entry.displayedRevision,
+            snapshotDigest: entry.snapshotDigest,
+          }),
+          { signal },
+        ),
+      );
+    } catch (error) {
+      this.#invalidateSessionForError(error, session);
+      throw error;
+    }
   }
 
   async recoverOperation(operationId, { signal } = {}) {
     this.#assertConnected();
+    const session = this.#session;
     const id = assertStableIdentifier(operationId, "operationId");
     const completed = this.#ledger.findCompleted(id);
     if (completed) return publicOperation(completed);
@@ -367,15 +422,28 @@ export class RuntimeClient {
         operationId: id,
       });
     }
-    const observation = await this.#transport.lookup(
-      Object.freeze({
-        sessionId: this.#session.sessionId,
-        connectionGeneration: this.#session.connectionGeneration,
-        operationId: entry.operationId,
-        semanticDigest: entry.semanticDigest,
-      }),
-      { signal },
-    );
+    let observation;
+    try {
+      observation = await this.#transport.lookup(
+        Object.freeze({
+          sessionId: session.sessionId,
+          connectionGeneration: session.connectionGeneration,
+          operationId: entry.operationId,
+          semanticDigest: entry.semanticDigest,
+        }),
+        { signal },
+      );
+    } catch (error) {
+      this.#invalidateSessionForError(error, session);
+      throw error;
+    }
+    if (this.#session !== session) {
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.STALE_GENERATION,
+        "authenticated session changed while recovering an operation",
+        { retryable: true, details: { operationId: id } },
+      );
+    }
     assertPlainObject(observation, "operation observation");
     if (observation.found !== true) return this.#ledger.markMissing(entry);
 
@@ -441,8 +509,7 @@ export class RuntimeClient {
   async close({ signal } = {}) {
     const session = this.#session;
     const recoveryState = this.exportRecoveryState();
-    this.#session = null;
-    this.#snapshot = null;
+    this.#invalidateSession(session);
     if (session) {
       await this.#transport.close(session, { signal });
     }
@@ -458,13 +525,17 @@ export class RuntimeClient {
       );
     }
     if (this.#session.expiresAt <= this.#clock()) {
+      const expired = this.#session;
+      this.#invalidateSession(expired);
       throw uiControlError(
         UI_CONTROL_ERROR_CODES.SESSION_EXPIRED,
         "ui.control session has expired",
-        { retryable: true, details: { expiresAt: this.#session.expiresAt } },
+        { retryable: true, details: { expiresAt: expired.expiresAt } },
       );
     }
     if (this.#session.revoked) {
+      const revoked = this.#session;
+      this.#invalidateSession(revoked);
       throw uiControlError(
         UI_CONTROL_ERROR_CODES.SESSION_REVOKED,
         "ui.control session is revoked",
@@ -480,6 +551,24 @@ export class RuntimeClient {
         "authenticated session does not grant the requested ui.control permission",
         { details: { permission } },
       );
+    }
+  }
+
+  #invalidateSession(expectedSession) {
+    if (this.#session === expectedSession) {
+      this.#session = null;
+      this.#snapshot = null;
+    }
+  }
+
+  #invalidateSessionForError(error, expectedSession) {
+    if (
+      isUiControlError(error) &&
+      (SESSION_INVALIDATING_ERROR_CODES.has(error.code) ||
+        (error.code === UI_CONTROL_ERROR_CODES.PERMISSION_DENIED &&
+          error.details.status === 403))
+    ) {
+      this.#invalidateSession(expectedSession);
     }
   }
 }
