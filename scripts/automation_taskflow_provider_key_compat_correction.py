@@ -121,6 +121,28 @@ def main() -> None:
             AuthorizedProviderEffectLookup::Unresolved
 """,
     )
+    replace_once(
+        host,
+        """            AuthorizedProviderEffectLookup::Unresolved
+        );
+    }
+
+    #[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]
+""",
+        """            AuthorizedProviderEffectLookup::Unresolved
+        );
+        assert!(agentd_schema_v1_provider_lookup(
+            &provider_intent,
+            ProviderEffectLookup::Conflict {
+                observed_payload_sha256: Some(Sha256Digest::for_bytes(b\"different-payload\")),
+            },
+        )
+        .is_err());
+    }
+
+    #[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]
+""",
+    )
 
     technical = "docs/modules/automation.taskflow/TECHNICAL.md"
     replace_once(
