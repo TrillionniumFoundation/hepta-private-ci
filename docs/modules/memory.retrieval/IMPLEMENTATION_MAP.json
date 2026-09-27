@@ -148,9 +148,11 @@
   ],
   "repositoryControlledGaps": [
     "Obtain green exact-head and ordered-parent synthetic-merge receipts for the exact observed source snapshot, including package tests, all-target Clippy, formatting and clean source.",
-    "Compose and independently qualify an authenticated CurrentMemoryRetrievalContext provider for the real Agentd hnmf-required process profile; the binary now selects the profile explicitly and fails startup when the provider is absent.",
-    "Retain a green exact-head qualification-host receipt and repeat the same checked-in SQLite/revalidation plus 512-candidate/4096-node/32768-synapse/four-step probes on an approved named target host before target-host performance claims.",
-    "Bind and qualify a real current encoder/vector-index owner before enabling the Vector policy channel; no lexical, generic-graph or learned-ranker score may be relabelled as vector evidence."
+    "Compose and independently qualify the signed leased provider and external monotonic frontier owner at the real Agentd process bootstrap. The bounded loopback client is source implemented; the binary still does not bootstrap it automatically.",
+    "Implement and qualify mode-bound shadow/canary dispatch at both Agentd request and final-use boundaries; the current process selectors remain compatibility and hnmf-required.",
+    "Bind and qualify a real current encoder/vector-index owner before enabling the Vector policy channel; no lexical, generic-graph or learned-ranker score may be relabelled as vector evidence.",
+    "Instrument and execute the complete nine-stage Agentd E2E workload matrix with actual allocation, SQLite, CPU/RSS and contention counters against independently approved SLO limits.",
+    "Import the original historical ZIP and new raw E2E samples into independently retained content-addressed storage. The checked-in historical summary is not complete raw-archive retention."
   ],
   "externalEvidenceGates": [
     "independent semantic review and acceptance",
@@ -187,17 +189,29 @@
     "codex-rs/hepta-learning-ledger/src/model.rs",
     "codex-rs/hepta-learning-ledger/src/ledger.rs",
     "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs",
-    "codex-rs/hepta-learning-ledger/src/durable_codec.rs"
+    "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_provider.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_provider_core.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_transport.rs"
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "4058bd91c9a09ca01468d3c8da1e4833bc16eef8",
+    "tree": "70e2c475b941e5a2d71a250c0d026d1495707e11"
   },
   "observedSourcePaths": [
+    ".cargo",
+    ".github/workflows",
+    ".github/workflows/blocking-ci.yml",
+    ".github/workflows/hepta-memory-retrieval-convergence.yml",
     ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+    "MODULE.bazel",
+    "MODULE.bazel.lock",
+    "codex-rs",
+    "codex-rs/.cargo",
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd",
     "codex-rs/hepta-agentd/Cargo.toml",
     "codex-rs/hepta-agentd/src/cognitive_context.rs",
     "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
@@ -210,12 +224,17 @@
     "codex-rs/hepta-agentd/src/config_tests.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-cognitive-read",
+    "codex-rs/hepta-cognitive-store",
+    "codex-rs/hepta-cognitive-types",
+    "codex-rs/hepta-learning-ledger",
     "codex-rs/hepta-learning-ledger/Cargo.toml",
     "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
     "codex-rs/hepta-learning-ledger/src/ledger.rs",
     "codex-rs/hepta-learning-ledger/src/model.rs",
     "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs",
     "codex-rs/hepta-learning-ledger/src/retrieval_assignment_tests.rs",
+    "codex-rs/hepta-memory",
     "codex-rs/hepta-memory-retrieval",
     "codex-rs/hepta-memory/Cargo.toml",
     "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
@@ -226,7 +245,15 @@
     "codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
-    "qualification/memory-retrieval/TARGET_HOST.md"
+    "codex-rs/hepta-types",
+    "codex-rs/rust-toolchain.toml",
+    "docs/modules/memory.retrieval",
+    "justfile",
+    "qualification/memory-retrieval",
+    "qualification/memory-retrieval/TARGET_HOST.md",
+    "scripts",
+    "scripts/hepta_memory_retrieval_qualification.py",
+    "scripts/hepta_memory_retrieval_slo.py"
   ],
   "canonicalCognitiveRecallMigration": {
     "state": "shadow_adapter_source_candidate",
@@ -247,52 +274,28 @@
   ],
   "sourceObjects": [
     {
-      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "object": "494043d2e03a7f738ad1de3a065766a4423cef0b"
+      "path": "codex-rs",
+      "object": "116be5f21a15ef89c031225bb772e47b57f37797"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval",
-      "object": "1726d1438e550f9703186b80317cfa4a9a31af84"
+      "object": "99d8f6e661a84d47a8b501ccd192068c8040e39c"
     },
     {
-      "path": "codex-rs/hepta-memory-retrieval/src/decision.rs",
-      "object": "7d701b3a4db8820a962cd9174ffd6ce9e41f12e1"
+      "path": "scripts",
+      "object": "391289541232a7566f4ce9e0b70b3ea78be837fa"
     },
     {
-      "path": "codex-rs/hepta-memory-retrieval/src/decision_tests.rs",
-      "object": "913279edc53383c07fbb66ac283b127bc1b4a22d"
+      "path": "justfile",
+      "object": "6ac734346c989cad04b754986032e364691233f3"
     },
     {
-      "path": "codex-rs/hepta-memory-retrieval/src/engram.rs",
-      "object": "2d2df3efb3cfcfe0c785c4e1369a68a8712258b0"
+      "path": "MODULE.bazel",
+      "object": "a49ef6c1cf4cf6b12f76296cd488c93f0753905b"
     },
     {
-      "path": "codex-rs/hepta-memory-retrieval/src/engram_tests.rs",
-      "object": "b87318ada8fe56aa720661cd77b79399885417f2"
-    },
-    {
-      "path": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
-      "object": "79402db4a16e3b1255f7b926a879de34b28e42e4"
-    },
-    {
-      "path": "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
-      "object": "7d9ba67c030067ce774544dfd30a431a11b46cc6"
-    },
-    {
-      "path": "codex-rs/hepta-memory-retrieval/src/generator.rs",
-      "object": "dc5ccaee3ffa5fae36a62594627c293e9d7fbfec"
-    },
-    {
-      "path": "codex-rs/hepta-memory-retrieval/src/generator_tests.rs",
-      "object": "0e85cfad1b66c7294981e66b37eb494dffe15fea"
-    },
-    {
-      "path": "codex-rs/hepta-memory-retrieval/src/v2.rs",
-      "object": "69e7c773f9ebaa777783a4965749a0051edf37eb"
-    },
-    {
-      "path": "codex-rs/hepta-memory-retrieval/src/v2_tests.rs",
-      "object": "b7106760e9a336177b4b05973ba9e52ada3d13f7"
+      "path": "MODULE.bazel.lock",
+      "object": "b563f19f51fff22a4cddcb3cd1a043192befbf84"
     },
     {
       "path": "docs/modules/memory.retrieval/TECHNICAL.md",
