@@ -61,6 +61,7 @@ jobs:
           git diff --check
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/multiscale-python.json" --minimum-tests 53 -- python3 -m unittest -v scripts.tests.test_hepta_multiscale_scope scripts.tests.test_hepta_laya_retrieval scripts.tests.test_hepta_laya_experiment scripts.tests.test_hepta_laya_immutability
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/retrieval-wire.json" --minimum-tests 23 -- python3 -m unittest -v scripts.tests.test_hepta_retrieval_wire
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/laya-deadline.json" --minimum-tests 14 -- python3 -m unittest -v scripts.tests.test_hepta_laya_deadline
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/existing-scope.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_ci_scope
           printf 'Tested commit: `%s`\n\nThese are protocol/optimizer tests, not real Laya efficacy.\n' "$TESTED_SHA" >> "$GITHUB_STEP_SUMMARY"
       - uses: ./.github/actions/check-clean-worktree
@@ -74,6 +75,7 @@ jobs:
             ${{ runner.temp }}/multiscale-python.*
             ${{ runner.temp }}/existing-scope.*
             ${{ runner.temp }}/retrieval-wire.*
+            ${{ runner.temp }}/laya-deadline.*
           if-no-files-found: error
 
   native-recovery:
@@ -206,6 +208,15 @@ jobs:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
         run: |
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/worker-wire.json" --minimum-tests 9 -- just test --locked -p codex-hepta-infer-core --lib semantic_retrieval::tests
+      - name: Durable semantic owner and worker recovery
+        if: always() && steps.scope.outputs.inference == 'true'
+        working-directory: codex-rs
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/worker-owner-recovery.json" --minimum-tests 19 -- just test --locked -p codex-hepta-infer-core --lib durable_control::semantic::tests
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/worker-semantic-recovery.json" --minimum-tests 7 -- just test --locked -p codex-hepta-infer-worker-host --test semantic_owner_recovery
       - name: Worker strict lint
         if: always() && steps.scope.outputs.inference == 'true'
         working-directory: codex-rs
