@@ -286,28 +286,49 @@ def run_case(case: Case, output_dir: Path) -> dict[str, Any]:
     }
 
 
+def pilot_claims(results: list[dict[str, Any]]) -> dict[str, bool]:
+    expected = {case.name for case in PILOT_CASES}
+    observed: dict[str, dict[str, Any]] = {}
+    for result in results:
+        name = result.get("name")
+        if not isinstance(name, str) or name not in expected or name in observed:
+            raise QualificationError("pilot case set is incomplete, unknown, or duplicated")
+        if type(result.get("passed")) is not bool:
+            raise QualificationError(f"pilot case {name} has no exact boolean result")
+        observed[name] = result
+    if set(observed) != expected:
+        raise QualificationError("pilot case set is incomplete, unknown, or duplicated")
+
+    def passed(name: str) -> bool:
+        return observed[name]["passed"] is True
+
+    return {
+        "fleetPathExecuted": passed("fleet-create-restart-revoke"),
+        "browserAgentdPathExecuted": passed("browser-agentd-final-use-boundary")
+        and passed("agentd-effect-owner-restart-and-receipt"),
+        "restartRecoveryExercised": passed("fleet-create-restart-revoke")
+        and passed("agentd-effect-owner-restart-and-receipt")
+        and passed("pending-revocation-crash-recovery-matrix"),
+        "revocationExercised": passed("fleet-create-restart-revoke")
+        and passed("pending-revocation-admission-fence")
+        and passed("pending-revocation-crash-recovery-matrix"),
+        "snapshotRollbackExercised": passed("external-frontier-snapshot-rollback")
+        and passed("frontier-ahead-local-commit-failure"),
+        "keyRotationExercised": passed("issuer-key-overlap-and-retirement"),
+        "durableReceiptExercised": passed("agentd-effect-owner-restart-and-receipt"),
+    }
+
+
 def pilot(identity: dict[str, Any], output_dir: Path) -> int:
     results = [run_case(case, output_dir) for case in PILOT_CASES]
-    passed = all(result["passed"] for result in results)
+    claims = pilot_claims(results)
+    passed = all(result["passed"] for result in results) and all(claims.values())
     receipt = {
         "schema": "hepta.kernel-authority-product-pilot.v1",
         "schemaVersion": 1,
         "candidate": identity,
         "scope": "repository-process-pilot",
-        "fleetPathExecuted": any(
-            result["product"] == "runtime.fleet" and result["passed"]
-            for result in results
-        ),
-        "browserAgentdPathExecuted": any(
-            result["product"] in {"browser.servo.agentd", "automation.taskflow.agentd"}
-            and result["passed"]
-            for result in results
-        ),
-        "restartRecoveryExercised": passed,
-        "revocationExercised": passed,
-        "snapshotRollbackExercised": passed,
-        "keyRotationExercised": passed,
-        "durableReceiptExercised": passed,
+        **claims,
         "passed": passed,
         "deploymentActivationProved": False,
         "productionTrustProved": False,
