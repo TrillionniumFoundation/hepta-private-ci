@@ -142,8 +142,16 @@ pub fn decide_with_signed_evidence_v2(
     verifier: &LearningEvidenceVerifierV1,
     now: u64,
 ) -> Result<SignedEvaluationDecisionV1, SignedEvaluationError> {
-    let payload = evaluation_signing_payload_v2(&bundle, &roles)?;
-    let authentication = authenticate(&bundle, evidence, verifier, &payload, now)?;
+    let authentication =
+        authenticate_evaluation_evidence_v2(&bundle, &roles, evidence, verifier, now)?;
+    // Consume the sealed identities at the decision boundary as well as inside
+    // admission. This makes the authenticated principals—not asserted bundle
+    // fields—the final authority for the independent-role invariant.
+    if authentication.generator().principal() != &bundle.generator
+        || authentication.evaluator().principal() != &bundle.evaluator
+    {
+        return Err(SignedEvaluationError::IdentityBinding);
+    }
     if bundle.claim_scope == crate::EvaluationClaimScopeV1::SystemLongitudinal {
         return Err(SignedEvaluationError::MissingLongitudinalTiming);
     }
