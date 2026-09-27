@@ -19,20 +19,19 @@ permissions:
   contents: write
 
 concurrency:
-  group: cognitive-read-one-shot-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: cognitive-read-source-writer-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 env:
-  RUST_MIN_STACK: "8388608"
   PYTHONPATH: scripts
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
 
 jobs:
-  converge:
-    name: Apply, qualify, and seal cognitive.read convergence
-    runs-on: ubuntu-24.04
-    timeout-minutes: 180
+  materialize:
+    name: Materialize and atomically push cognitive.read source candidate
+    runs-on: macos-14
+    timeout-minutes: 90
     steps:
       - name: Check out exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -41,10 +40,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Prepare repository CI tools
-        uses: ./.github/actions/setup-ci
-
-      - name: Configure exact writer identity and final workflow baseline
+      - name: Configure exact writer identity and workflow baseline
         shell: bash
         run: |
           set -euo pipefail
@@ -55,16 +51,28 @@ jobs:
           git show a16fa81bfec716037332ed30ab3c4e82d91c8636:.github/workflows/cognitive-read-qualification.yml \
             > .github/workflows/cognitive-read-qualification.yml
 
-      - name: Assemble reviewed convergence helper
+      - name: Assemble reviewed convergence helper portably
         shell: bash
         run: |
           set -euo pipefail
-          cat .github/scripts/cognitive_read_converge.py.xz.b64.* \
-            | base64 --decode \
-            | xz --decompress > "$RUNNER_TEMP/cognitive_read_converge.py"
+          python3 - <<'PY'
+          import base64
+          import lzma
+          import os
+          from pathlib import Path
+
+          parts = sorted(Path('.github/scripts').glob('cognitive_read_converge.py.xz.b64.*'))
+          if not parts:
+              raise SystemExit('missing cognitive.read convergence payload')
+          encoded = b''.join(path.read_bytes().replace(b'\n', b'').replace(b'\r', b'') for path in parts)
+          decoded = base64.b64decode(encoded, validate=True)
+          target = Path(os.environ['RUNNER_TEMP']) / 'cognitive_read_converge.py'
+          target.write_bytes(lzma.decompress(decoded))
+          print(target)
+          PY
           python3 -m py_compile "$RUNNER_TEMP/cognitive_read_converge.py"
 
-      - name: Apply reviewed source, contract, lock, and workflow closure
+      - name: Apply source, contract, lock, and workflow closure
         shell: bash
         run: |
           set -euo pipefail
@@ -74,59 +82,57 @@ jobs:
 
           def replace_once(path: str, old: str, new: str) -> None:
               target = Path(path)
-              text = target.read_text(encoding="utf-8")
+              text = target.read_text(encoding='utf-8')
               if text.count(old) != 1:
                   raise SystemExit(
-                      f"{path}: expected exactly one generated regression marker, "
-                      f"found {text.count(old)}"
+                      f'{path}: expected exactly one generated regression marker, '
+                      f'found {text.count(old)}'
                   )
-              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+              target.write_text(text.replace(old, new, 1), encoding='utf-8')
 
           replace_once(
-              "codex-rs/hepta-cognitive-read/src/property_tests.rs",
-              "                        record_ids: candidate_ids,\n",
-              "                        record_ids: candidate_ids.clone(),\n",
+              'codex-rs/hepta-cognitive-read/src/property_tests.rs',
+              '                        record_ids: candidate_ids,\n',
+              '                        record_ids: candidate_ids.clone(),\n',
           )
           replace_once(
-              "codex-rs/hepta-cognitive-read/src/golden_vectors.rs",
+              'codex-rs/hepta-cognitive-read/src/golden_vectors.rs',
               '            "{\\n",\n',
               '            "{{\\n",\n',
           )
           replace_once(
-              "codex-rs/hepta-cognitive-read/src/golden_vectors.rs",
+              'codex-rs/hepta-cognitive-read/src/golden_vectors.rs',
               '            "}"\n        ),\n        EXPECTED_CANONICAL_HEX\n',
               '            "}}"\n        ),\n        EXPECTED_CANONICAL_HEX\n',
           )
           replace_once(
-              "codex-rs/hepta-agentd/src/cognitive_context.rs",
-              "        response.omitted_records = record_omissions(\n"
-              "            &mut omitted_records,\n"
-              "            cognitive_context_metrics::OmissionReason::Unclassified,\n"
-              "            expected_omitted - omitted_records,\n"
-              "        );\n",
-              "        let remaining_unclassified =\n"
-              "            expected_omitted.saturating_sub(omitted_records);\n"
-              "        response.omitted_records = record_omissions(\n"
-              "            &mut omitted_records,\n"
-              "            cognitive_context_metrics::OmissionReason::Unclassified,\n"
-              "            remaining_unclassified,\n"
-              "        );\n",
+              'codex-rs/hepta-agentd/src/cognitive_context.rs',
+              '        response.omitted_records = record_omissions(\n'
+              '            &mut omitted_records,\n'
+              '            cognitive_context_metrics::OmissionReason::Unclassified,\n'
+              '            expected_omitted - omitted_records,\n'
+              '        );\n',
+              '        let remaining_unclassified =\n'
+              '            expected_omitted.saturating_sub(omitted_records);\n'
+              '        response.omitted_records = record_omissions(\n'
+              '            &mut omitted_records,\n'
+              '            cognitive_context_metrics::OmissionReason::Unclassified,\n'
+              '            remaining_unclassified,\n'
+              '        );\n',
           )
 
           for path in (
-              ".github/workflows/cognitive-read-qualification.yml",
-              "scripts/run-cognitive-read-qualification.sh",
+              '.github/workflows/cognitive-read-qualification.yml',
+              'scripts/run-cognitive-read-qualification.sh',
           ):
               target = Path(path)
-              if not target.is_file():
-                  continue
-              text = target.read_text(encoding="utf-8")
+              text = target.read_text(encoding='utf-8')
               text = text.replace(
-                  "python3 -m unittest scripts/test_hepta_implementation_maps.py",
-                  "PYTHONPATH=scripts python3 -m unittest "
-                  "scripts/test_hepta_implementation_maps.py",
+                  'python3 -m unittest scripts/test_hepta_implementation_maps.py',
+                  'PYTHONPATH=scripts python3 -m unittest '
+                  'scripts/test_hepta_implementation_maps.py',
               )
-              target.write_text(text, encoding="utf-8")
+              target.write_text(text, encoding='utf-8')
           PY
           python3 -m py_compile \
             scripts/emit-cognitive-read-qualification.py \
@@ -152,9 +158,8 @@ jobs:
           git diff --cached --quiet && { echo 'source convergence produced no changes' >&2; exit 1; }
           git commit -m 'feat(cognitive.read): close bounded product and evidence contracts'
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
 
-      - name: Atomically rebind every affected implementation map
+      - name: Atomically rebind all affected implementation maps
         shell: bash
         run: |
           set -euo pipefail
@@ -166,12 +171,10 @@ jobs:
           git diff --cached --quiet && { echo 'map convergence produced no changes' >&2; exit 1; }
           git commit -m 'docs(cognitive.read): atomically rebind affected implementation maps'
 
-      - name: Verify source, maps, lock, lint, and focused Rust surface
-        id: verify
+      - name: Verify static contracts, exact map identity, and lock consistency
         shell: bash
         run: |
           set -euo pipefail
-          exec > >(tee "$RUNNER_TEMP/cognitive-read-one-shot-verification.log") 2>&1
           expected_sha="$(git rev-parse HEAD)"
           python3 .github/scripts/verify_cargo_workspace_manifests.py
           python3 scripts/verify-cognitive-read-constants.py
@@ -181,37 +184,22 @@ jobs:
             --expected-tree "$(git rev-parse HEAD^{tree})"
           PYTHONPATH=scripts python3 -m unittest scripts/test_hepta_implementation_maps.py
           cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
-          cargo check --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-cognitive-read \
-            -p codex-hepta-agentd \
-            -p codex-hepta-infer-core \
-            -p codex-hepta-infer-worker-host \
-            --all-targets
-          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-cognitive-read \
-            -p codex-hepta-agentd \
-            -p codex-hepta-infer-core \
-            -p codex-hepta-infer-worker-host \
-            --all-targets -- -D warnings
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-cognitive-read --lib
-          cargo check --manifest-path codex-rs/hepta-cognitive-read/fuzz/Cargo.toml \
-            --all-targets
-          rm -f codex-rs/hepta-cognitive-read/fuzz/Cargo.lock
+          cargo metadata --manifest-path codex-rs/Cargo.toml --locked \
+            --format-version=1 --all-features \
+            --filter-platform x86_64-unknown-linux-gnu >/dev/null
+          git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
-      - name: Retain one-shot verification diagnostics
+      - name: Retain materialization diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: cognitive-read-one-shot-verification-${{ env.SOURCE_SHA }}-${{ github.run_id }}
-          path: |
-            ${{ runner.temp }}/cognitive-read-one-shot-verification.log
-            ${{ runner.temp }}/rebound-maps.json
+          name: cognitive-read-materialization-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/rebound-maps.json
           if-no-files-found: warn
           retention-days: 30
 
-      - name: Remove one-shot bootstrap and seal branch
+      - name: Remove bootstrap and seal branch
         id: seal
         shell: bash
         run: |
@@ -229,16 +217,17 @@ jobs:
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
 
-      - name: Push sealed candidate
+      - name: Push sealed source candidate
         shell: bash
         run: |
           set -euo pipefail
           git push origin "HEAD:$TARGET_BRANCH"
           {
-            echo '## cognitive.read one-shot convergence'
+            echo '## cognitive.read source materialization'
             echo
             echo "- source commit: \`${{ steps.source.outputs.sha }}\`"
             echo "- sealed commit: \`${{ steps.seal.outputs.sha }}\`"
             echo "- sealed tree: \`${{ steps.seal.outputs.tree }}\`"
-            echo '- production/activation/release claims remain false.'
+            echo '- Linux compile, Clippy, product E2E, and immutable receipts remain required.'
+            echo '- productionImplementation/productExecutionProved/activation/release remain false.'
           } >> "$GITHUB_STEP_SUMMARY"
