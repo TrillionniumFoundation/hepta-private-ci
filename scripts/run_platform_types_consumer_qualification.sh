@@ -21,8 +21,6 @@ run_step() {
   printf '%s\t%s\t%s\n' "$name" "$rc" "$((SECONDS-start))" >> "$RESULTS"
   if (( rc != 0 )); then failed=1; fi
 }
-# Loading a manifest from the repository root is not enough to select all
-# workspace-local Cargo/Clippy configuration. Use its canonical working directory.
 run_rust() {
   (cd "$ROOT/codex-rs" && "$@")
 }
@@ -33,22 +31,27 @@ run_step rejections-python python3 codex-rs/hepta-types/conformance/verify_rejec
 run_step rejections-node node codex-rs/hepta-types/conformance/verify_rejections.mjs
 run_step manifest-python python3 codex-rs/hepta-types/conformance/verify_manifest_vectors.py
 run_step manifest-node node codex-rs/hepta-types/conformance/verify_manifest_vectors.mjs
+run_step wire-python python3 codex-rs/hepta-types/conformance/verify_platform_wire_vectors.py
+run_step wire-node node codex-rs/hepta-types/conformance/verify_platform_wire_vectors.mjs
 run_step generated-drift python3 codex-rs/hepta-types/bindings/generate_bindings.py --check
 run_step binding-python python3 codex-rs/hepta-types/bindings/verify_generated.py
 run_step binding-node node codex-rs/hepta-types/bindings/verify_generated.mjs
 run_step consumer-compile run_rust cargo check --locked --manifest-path "$MANIFEST" \
-  -p codex-hepta-types -p codex-hepta-ndu -p codex-hepta-codex-adapter \
-  -p codex-hepta-learning-ledger -p codex-hepta-supervisor --lib
+  -p codex-hepta-types -p codex-hepta-wire -p codex-hepta-ndu \
+  -p codex-hepta-codex-adapter -p codex-hepta-learning-ledger \
+  -p codex-hepta-supervisor --lib
 run_step manifest-rust run_rust cargo test --locked --manifest-path "$MANIFEST" \
   -p codex-hepta-types --test manifest_protocol_consumer
 run_step types-tests just test --locked -p codex-hepta-types --all-targets --retries 0
+run_step wire-tests just test --locked -p codex-hepta-wire --lib --retries 0
 run_step ndu-tests just test --locked -p codex-hepta-ndu --lib --retries 0
 run_step prompt-producer just test --locked -p codex-hepta-codex-adapter --lib -E 'test(prompt_delivery)' --retries 0
 run_step prompt-ledger just test --locked -p codex-hepta-learning-ledger --lib -E 'test(runtime_delivery)' --retries 0
 run_step topology-consumer just test --locked -p codex-hepta-supervisor --lib -E 'test(topology_candidate)' --retries 0
+run_step manifest-owners just test --locked -p codex-hepta-supervisor --lib -E 'test(platform_manifest_admission)' --retries 0
 run_step types-lint run_rust cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-types --all-targets -- -D warnings
+run_step wire-lint run_rust cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-wire --lib -- -D warnings
 run_step ndu-lint run_rust cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib -- -D warnings
-# Record attempts and failed checks as diagnostics, never as successful qualification.
 python3 - "$ROOT" "$EVIDENCE" "$INITIAL_HEAD" "$INITIAL_TREE" "$INITIAL_STATUS" <<'RECEIPT'
 import hashlib, json, pathlib, subprocess, sys
 root, evidence = map(pathlib.Path, sys.argv[1:3])
@@ -64,8 +67,8 @@ for row in (evidence / "results.tsv").read_text().splitlines():
 final_head, final_tree = git("rev-parse", "HEAD"), git("rev-parse", "HEAD^{tree}")
 unchanged = (initial_head, initial_tree) == (final_head, final_tree)
 clean = not initial_status and not git("status", "--porcelain", "--untracked-files=normal")
-passed = len(checks) == 19 and all(row["exitCode"] == 0 for row in checks)
-record = {"schema": "hepta.platform-types.consumer-execution.v1", "sourceHead": initial_head,
+passed = len(checks) == 24 and all(row["exitCode"] == 0 for row in checks)
+record = {"schema": "hepta.platform-types.consumer-execution.v2", "sourceHead": initial_head,
           "sourceTree": initial_tree, "finalSourceHead": final_head, "finalSourceTree": final_tree,
           "sourceUnchanged": unchanged, "cleanWorktree": clean,
           "checksPassed": passed, "qualified": passed and clean and unchanged, "checks": checks,

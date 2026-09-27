@@ -15,16 +15,24 @@ EXPECTED = [
     "manifest.python",
     "manifest.javascript",
     "manifest.rust-public-api",
+    "wire.python",
+    "wire.javascript",
+    "wire.rust-product-codec",
     "utility.ndu.registered-numeric",
+    "utility.ndu.random-stream-owner",
     "runtime.codex.prompt-delivery",
     "learning.ledger.prompt-delivery",
     "runtime.supervisor.topology",
+    "runtime.supervisor.manifest-admission",
 ]
 REQUIRED_EXECUTION = [
     "complete_hepta_types_all_targets",
     "complete_utility_ndu_library_tests",
     "manifest_cross_language_conformance",
     "manifest_rust_public_api_consumer",
+    "prompt_topology_wire_cross_language_conformance",
+    "product_owned_strict_wire_codec",
+    "manifest_product_owner_admission",
     "prompt_delivery_producer_tests",
     "prompt_delivery_ledger_tests",
     "runtime_topology_admission_tests",
@@ -36,8 +44,8 @@ def main() -> int:
     value = json.loads(MATRIX.read_text(encoding="utf-8"))
     rows = value.get("consumers")
     if (
-        value.get("schema") != "hepta.platform-types.consumer-qualification.v1"
-        or value.get("schemaVersion") != 1
+        value.get("schema") != "hepta.platform-types.consumer-qualification.v2"
+        or value.get("schemaVersion") != 2
         or value.get("module") != "platform.types"
         or value.get("qualificationScript")
         != "scripts/run_platform_types_consumer_qualification.sh"
@@ -50,12 +58,17 @@ def main() -> int:
     for command in (
         "python3 codex-rs/hepta-types/conformance/verify_manifest_vectors.py",
         "node codex-rs/hepta-types/conformance/verify_manifest_vectors.mjs",
+        "python3 codex-rs/hepta-types/conformance/verify_platform_wire_vectors.py",
+        "node codex-rs/hepta-types/conformance/verify_platform_wire_vectors.mjs",
         'cargo test --locked --manifest-path "$MANIFEST" \\\n  -p codex-hepta-types --test manifest_protocol_consumer',
         "just test --locked -p codex-hepta-types --all-targets",
+        "just test --locked -p codex-hepta-wire --lib",
         "just test --locked -p codex-hepta-ndu --lib",
         "just test --locked -p codex-hepta-codex-adapter --lib -E 'test(prompt_delivery)'",
         "just test --locked -p codex-hepta-learning-ledger --lib -E 'test(runtime_delivery)'",
         "just test --locked -p codex-hepta-supervisor --lib -E 'test(topology_candidate)'",
+        "just test --locked -p codex-hepta-supervisor --lib -E 'test(platform_manifest_admission)'",
+        'cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-wire --lib',
         'cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib',
     ):
         if command not in qualification:
