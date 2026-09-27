@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: automation-taskflow-schema22-truth-convergence-v2
+  group: automation-taskflow-schema22-truth-convergence-v3
   cancel-in-progress: true
 
 jobs:
@@ -85,7 +85,7 @@ jobs:
             git commit -m "docs(automation): bind exact schema-22 source objects"
           fi
 
-      - name: Verify contract, maps and derived documents
+      - name: Verify source-bound truth before transport removal
         shell: bash
         env:
           SOURCE_SHA: ${{ steps.source.outputs.sha }}
@@ -118,6 +118,31 @@ jobs:
             scripts/automation_taskflow_converge_20260927.py \
             scripts/automation_taskflow_finalize_20260928.py
           git commit -m "chore(automation): remove one-shot convergence transport"
+
+      - name: Verify final self-contained tree after transport removal
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+          SOURCE_TREE: ${{ steps.source.outputs.tree }}
+        run: |
+          set -euo pipefail
+          python3 scripts/automation_taskflow_contract.py self-test
+          python3 -m unittest -v \
+            scripts/test_automation_taskflow_contract.py \
+            scripts/test_verify_automation_taskflow_acceptance.py \
+            scripts/test_automation_recovery_sweeps.py \
+            scripts/test_automation_taskflow_checkpoint.py \
+            scripts/test_automation_taskflow_commands.py \
+            scripts/test_automation_taskflow_selected_host.py
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$SOURCE_SHA" \
+            --expected-tree "$SOURCE_TREE"
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-design-provenance.py verify
+          python3 scripts/hepta-transition-state.py verify
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
 
       - name: Push only if remote still names the trigger commit
         env:
