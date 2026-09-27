@@ -33,6 +33,7 @@ export const ACTIVE_STATUSES = new Set([
 
 const KNOWN_PERMISSIONS = new Set(Object.values(UI_CONTROL_PERMISSIONS));
 const FORBIDDEN_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+const SAFE_BACKEND_CODE = /^[A-Za-z0-9._:-]{1,128}$/u;
 
 export function invalid(message, details) {
   return uiControlError(UI_CONTROL_ERROR_CODES.INVALID_INPUT, message, { details });
@@ -181,13 +182,18 @@ export function operationMatches(entry, request) {
 export function validateAcknowledgement(entry, acknowledgement) {
   assertPlainObject(acknowledgement, "acknowledgement");
   if (acknowledgement.accepted !== true) {
+    const backendCode =
+      typeof acknowledgement.errorCode === "string" &&
+      SAFE_BACKEND_CODE.test(acknowledgement.errorCode)
+        ? acknowledgement.errorCode
+        : null;
     throw uiControlError(
       UI_CONTROL_ERROR_CODES.BACKEND_REJECTED,
-      acknowledgement.message || "backend rejected the control request",
+      "backend rejected the control request",
       {
         details: {
           operationId: entry.operationId,
-          backendCode: acknowledgement.errorCode ?? null,
+          backendCode,
         },
       },
     );

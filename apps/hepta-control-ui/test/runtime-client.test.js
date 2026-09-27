@@ -178,6 +178,35 @@ test("same operation id with different semantics fails closed", async () => {
   await first;
 });
 
+test("backend rejection messages are not reflected through typed client errors", async () => {
+  const sensitiveMessage = "session-cookie=must-not-appear";
+  const transport = createTransport({
+    async request() {
+      transport.state.requestCount += 1;
+      return {
+        accepted: false,
+        errorCode: "POLICY_DENIED",
+        message: sensitiveMessage,
+      };
+    },
+  });
+  const { client } = await connectedClient({ transport });
+
+  await assert.rejects(
+    client.submitRequest(operation()),
+    error => {
+      assert.equal(error instanceof UiControlError, true);
+      assert.equal(error.code, UI_CONTROL_ERROR_CODES.BACKEND_REJECTED);
+      assert.equal(error.message, "backend rejected the control request");
+      assert.equal(error.details.backendCode, "POLICY_DENIED");
+      assert.equal(error.message.includes(sensitiveMessage), false);
+      return true;
+    },
+  );
+  assert.equal(client.readView().pendingCount, 0);
+  assert.equal(transport.state.requestCount, 1);
+});
+
 test("accepted-but-timeout remains indeterminate and lookup recovers terminal state", async () => {
   const transport = createTransport({
     async request(method, input) {
@@ -261,7 +290,10 @@ test("session refresh rejects permission revision regression", async () => {
       error instanceof UiControlError &&
       error.code === UI_CONTROL_ERROR_CODES.STALE_PERMISSION_REVISION,
   );
-  assert.equal(client.readView().permissionRevision, 2);
+  const view = client.readView();
+  assert.equal(view.connected, false);
+  assert.equal(view.permissionRevision, null);
+  assert.equal(view.stale, true);
 });
 
 test("session refresh rejects permission drift without a revision change", async () => {
@@ -282,7 +314,10 @@ test("session refresh rejects permission drift without a revision change", async
       error instanceof UiControlError &&
       error.code === UI_CONTROL_ERROR_CODES.STALE_PERMISSION_REVISION,
   );
-  assert.equal(client.readView().permissions.includes(UI_CONTROL_PERMISSIONS.STOP), true);
+  const view = client.readView();
+  assert.equal(view.connected, false);
+  assert.deepEqual(view.permissions, []);
+  assert.equal(view.stale, true);
 });
 
 test("session refresh rejects authenticated identity drift", async () => {
@@ -299,7 +334,10 @@ test("session refresh rejects authenticated identity drift", async () => {
       error instanceof UiControlError &&
       error.code === UI_CONTROL_ERROR_CODES.SESSION_IDENTITY_CHANGED,
   );
-  assert.equal(client.readView().identityId, "operator-1");
+  const view = client.readView();
+  assert.equal(view.connected, false);
+  assert.equal(view.identityId, null);
+  assert.equal(view.stale, true);
 });
 
 test("in-flight refresh cannot resurrect a closed session", async () => {
