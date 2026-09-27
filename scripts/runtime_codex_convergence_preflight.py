@@ -105,6 +105,54 @@ pub(crate) fn inject_runtime_codex_fault(point: RuntimeCodexFaultPoint) {
 ''',
 )
 
+# Use the protocol's byte bound for pre-effect reasons; do not let a verbose
+# upstream error turn a proven local abort into an avoidable owner conflict.
+replace_once(
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "pub use codex_hepta_agent_protocol::AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR;\n",
+    "pub use codex_hepta_agent_protocol::AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR;\npub use codex_hepta_agent_protocol::MAX_RUN_CANCEL_REASON_BYTES;\n",
+)
+replace_once(
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "use codex_hepta_agentd::HealthSnapshot;\n",
+    "use codex_hepta_agentd::HealthSnapshot;\nuse codex_hepta_agentd::MAX_RUN_CANCEL_REASON_BYTES;\n",
+)
+replace_once(
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "async fn abort_before_effect_across_owners(\n",
+    r'''fn bounded_abort_reason(reason: &str) -> String {
+    let mut end = 0;
+    for (index, character) in reason.char_indices() {
+        let next = index.saturating_add(character.len_utf8());
+        if next > MAX_RUN_CANCEL_REASON_BYTES {
+            break;
+        }
+        end = next;
+    }
+    let bounded = &reason[..end];
+    if bounded.trim().is_empty() {
+        "runtime.codex pre-effect stop".to_string()
+    } else {
+        bounded.to_string()
+    }
+}
+
+async fn abort_before_effect_across_owners(
+''',
+)
+replace_once(
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    r'''    thread_lifecycle: &mut EphemeralThreadLifecycle,
+) -> Result<()> {
+    if let (Some(binding), Some(revision)) = (intelligence, *intelligence_revision) {
+''',
+    r'''    thread_lifecycle: &mut EphemeralThreadLifecycle,
+) -> Result<()> {
+    let reason = bounded_abort_reason(&reason);
+    if let (Some(binding), Some(revision)) = (intelligence, *intelligence_revision) {
+''',
+)
+
 """
 if fix.count(marker) != 1:
     raise SystemExit(f"expected one fixer insertion marker, found {fix.count(marker)}")
