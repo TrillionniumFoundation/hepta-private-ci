@@ -116,6 +116,29 @@ jobs:
             --mode '${{ matrix.mode }}' \
             --base-sha '${{ needs.identity.outputs.base }}' \
             --output "$RUNNER_TEMP/authority-evidence/identity.json"
+      - name: Reject stale or cross-candidate identity
+        shell: bash
+        env:
+          MODE: ${{ matrix.mode }}
+          SOURCE: ${{ needs.identity.outputs.source }}
+          BASE: ${{ needs.identity.outputs.base }}
+          IDENTITY_PATH: ${{ runner.temp }}/authority-evidence/identity.json
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess
+          path = pathlib.Path(os.environ["IDENTITY_PATH"])
+          identity = json.loads(path.read_text(encoding="utf-8"))
+          expected = {"schema", "mode", "sourceCommit", "baseCommit", "candidateCommit", "candidateTree", "activationGranted", "releaseGranted"}
+          if set(identity) != expected: raise SystemExit("candidate identity fields drifted")
+          if identity["schema"] != "hepta.kernel-authority-candidate.v1": raise SystemExit("candidate identity schema mismatch")
+          if identity["mode"] != os.environ["MODE"]: raise SystemExit("candidate mode mismatch")
+          if identity["sourceCommit"] != os.environ["SOURCE"]: raise SystemExit("candidate source mismatch")
+          if identity["baseCommit"] != os.environ["BASE"]: raise SystemExit("candidate base mismatch")
+          if identity["candidateCommit"] != subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(): raise SystemExit("candidate commit mismatch")
+          if identity["candidateTree"] != subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(): raise SystemExit("candidate tree mismatch")
+          if identity["activationGranted"] is not False or identity["releaseGranted"] is not False: raise SystemExit("qualification cannot grant activation or release")
+          PY
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
         with:
