@@ -1,35 +1,32 @@
 import { createHash, randomUUID } from "node:crypto";
+import { acquireBrowserJournalLock, BrowserJournalLockedError } from "./journal-owner-lock.js";
 import { constants } from "node:fs";
 import {
+  lstat,
   mkdir,
   open,
-  readFile,
   realpath,
   rename,
   rm,
-  stat,
-  truncate,
-  writeFile,
 } from "node:fs/promises";
-import { dirname, isAbsolute, join, resolve } from "node:path";
+import { dirname, isAbsolute, resolve } from "node:path";
 
 const SCHEMA = "hepta.browser.operation-journal.v2";
-const RECORD_VERSION = 2;
+const LEGACY_SCHEMA = "hepta.browser.operation-journal.v1";
+const RETIRED_SCHEMA = "hepta.browser.retired-profile-generations.v1";
 const GENERATION_SCHEMA = "hepta.browser.profile-generation-retirement.v1";
-const GENERATION_VERSION = 1;
 const MAX_LINE_BYTES = 262_144;
-const DEFAULT_MAX_FILE_BYTES = 64 * 1024 * 1024;
-const DEFAULT_COMPACT_AT_BYTES = 48 * 1024 * 1024;
-const MAX_RECORDS = 65_536;
-const LOCK_TIMEOUT_MS = 5_000;
-const LOCK_RETRY_MS = 20;
-const OWNERLESS_LOCK_STALE_MS = 30_000;
+const MAX_RETIRED_BYTES = 8 * 1024 * 1024;
+const MAX_RETIRED_PROFILES = 65_536;
+const MAX_LIVE_RECORDS = 65_536;
+const MAX_FILE_BYTES = 64 * 1024 * 1024;
+const COMPACT_AT_BYTES = 48 * 1024 * 1024;
 const UTF8 = new TextEncoder();
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const DIGEST = /^[0-9a-f]{64}$/;
 const ZERO_DIGEST = "0".repeat(64);
-
-const RECORD_KEYS = Object.freeze([
+const STATUS = new Set(["indeterminate", "succeeded", "failed"]);
+const RECORD_KEYS = [
   "action",
   "authorityEpoch",
   "deadlineMs",
@@ -52,117 +49,179 @@ const RECORD_KEYS = Object.freeze([
   "terminalEvidenceDigest",
   "terminalObserved",
   "verifiedUseTokenWitnessDigest",
-]);
-const MUTABLE_RECORD_KEYS = new Set([
-  "observationReason",
-  "outcomeDigest",
-  "status",
-  "terminalEvidenceDigest",
-  "terminalObserved",
-]);
-const IMMUTABLE_RECORD_KEYS = Object.freeze(
-  RECORD_KEYS.filter((key) => !MUTABLE_RECORD_KEYS.has(key)),
-);
-const ENVELOPE_KEYS = Object.freeze([
-  "checksum",
-  "record",
-  "schema",
-  "type",
-  "version",
-]);
-const GENERATION_KEYS = Object.freeze(["generation", "profileId"]);
+].sort();
 
-class BrowserJournalSemanticError extends TypeError {
-  constructor(message) {
-    super(message);
-    this.name = "BrowserJournalSemanticError";
-  }
-}
+// Outcomes may advance; every other stored field is immutable even when a
+// caller repeats a valid request/semantic digest while substituting metadata.
+const OBSERVATION_KEYS = new Set([
+  "observationReason", "outcomeDigest", "status", "terminalEvidenceDigest", "terminalObserved",
+]);
+const IMMUTABLE_RECORD_KEYS = RECORD_KEYS.filter((key) => !OBSERVATION_KEYS.has(key));
 
-class BrowserJournalCapacityError extends BrowserJournalSemanticError {
-  constructor(message) {
-    super(message);
-    this.name = "BrowserJournalCapacityError";
-  }
-}
+class JournalSemanticError extends TypeError {}
 
 function requireRecord(value, name) {
-  if (
-    value === null ||
-    typeof value !== "object" ||
-    Array.isArray(value) ||
-    Object.getPrototypeOf(value) !== Object.prototype
-  ) {
-    throw new BrowserJournalSemanticError(`${name} must be a plain object`);
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    throw new TypeError(`${name} must be an object`);
   }
   return value;
 }
 
 function exactKeys(value, expected, name) {
-  const keys = Object.keys(value).sort();
-  const wanted = [...expected].sort();
+  const actual = Object.keys(value).sort();
   if (
-    keys.length !== wanted.length ||
-    keys.some((key, index) => key !== wanted[index])
+    actual.length !== expected.length ||
+    actual.some((key, index) => key !== expected[index])
   ) {
-    throw new BrowserJournalSemanticError(
-      `${name} contains missing or unknown fields`,
-    );
+    throw new TypeError(`${name} contains missing or unknown fields`);
   }
 }
 
 function stableId(value, name) {
   if (typeof value !== "string" || !STABLE_ID.test(value)) {
-    throw new BrowserJournalSemanticError(
-      `${name} must be a bounded stable identifier`,
-    );
-  }
-  return value;
-}
-
-function sha256Digest(value, name, { nullable = false } = {}) {
-  if (nullable && value === null) return null;
-  if (
-    typeof value !== "string" ||
-    !DIGEST.test(value) ||
-    value === ZERO_DIGEST
-  ) {
-    throw new BrowserJournalSemanticError(
-      `${name} must be a non-zero lowercase SHA-256 digest`,
-    );
+    throw new TypeError(`${name} must be a bounded stable identifier`);
   }
   return value;
 }
 
 function positiveInteger(value, name) {
   if (!Number.isSafeInteger(value) || value < 1) {
-    throw new BrowserJournalSemanticError(
-      `${name} must be a positive safe integer`,
-    );
+    throw new TypeError(`${name} must be a positive safe integer`);
   }
   return value;
 }
 
 function nonNegativeInteger(value, name) {
   if (!Number.isSafeInteger(value) || value < 0) {
-    throw new BrowserJournalSemanticError(
-      `${name} must be a non-negative safe integer`,
-    );
+    throw new TypeError(`${name} must be a non-negative safe integer`);
   }
   return value;
 }
 
-function boundedString(value, name, maximumBytes) {
+function digest(value, name, { nullable = false } = {}) {
+  if (nullable && value === null) return null;
   if (
     typeof value !== "string" ||
-    value.length === 0 ||
-    UTF8.encode(value).byteLength > maximumBytes
+    !DIGEST.test(value) ||
+    value === ZERO_DIGEST
   ) {
-    throw new BrowserJournalSemanticError(
-      `${name} must be a non-empty bounded string`,
-    );
+    throw new TypeError(`${name} must be a non-zero lowercase SHA-256 digest`);
   }
   return value;
+}
+
+function matchesWeb(url) {
+  return url.protocol === "http:" || url.protocol === "https:";
+}
+
+function canonicalOrigin(value) {
+  if (typeof value !== "string") {
+    throw new TypeError("destinationOrigin must be a string");
+  }
+  const url = new URL(value);
+  if (
+    !matchesWeb(url) ||
+    url.origin !== value ||
+    url.pathname !== "/" ||
+    url.search ||
+    url.hash
+  ) {
+    throw new TypeError("destinationOrigin must be a canonical HTTP(S) origin");
+  }
+  return value;
+}
+
+function boundedReason(value) {
+  if (
+    typeof value !== "string" ||
+    value.length < 1 ||
+    UTF8.encode(value).byteLength > 512
+  ) {
+    throw new TypeError("observationReason must be a bounded string");
+  }
+  return value;
+}
+
+function normalizedRecord(record) {
+  return Object.freeze(
+    Object.fromEntries(RECORD_KEYS.map((key) => [key, record[key]])),
+  );
+}
+
+function validateDurableRecord(value, type) {
+  const record = requireRecord(value, "journal record");
+  exactKeys(record, RECORD_KEYS, "journal record");
+  stableId(record.profileId, "profileId");
+  stableId(record.principalId, "principalId");
+  positiveInteger(record.generation, "generation");
+  stableId(record.operationId, "operationId");
+  digest(record.requestDigest, "requestDigest");
+  digest(record.semanticDigest, "semanticDigest");
+  stableId(record.processId, "processId");
+  nonNegativeInteger(record.pageGeneration, "pageGeneration");
+  digest(record.documentDigest, "documentDigest", { nullable: true });
+  stableId(record.action, "action");
+  canonicalOrigin(record.destinationOrigin);
+  digest(record.finalPayloadDigest, "finalPayloadDigest");
+  digest(record.profileGrantDigest, "profileGrantDigest");
+  digest(record.effectGrantDigest, "effectGrantDigest");
+  positiveInteger(record.authorityEpoch, "authorityEpoch");
+  positiveInteger(record.deadlineMs, "deadlineMs");
+  digest(
+    record.verifiedUseTokenWitnessDigest,
+    "verifiedUseTokenWitnessDigest",
+  );
+  if (!STATUS.has(record.status)) {
+    throw new TypeError("journal status is not registered");
+  }
+  boundedReason(record.observationReason);
+  const terminalEvidenceDigest = digest(
+    record.terminalEvidenceDigest,
+    "terminalEvidenceDigest",
+    { nullable: true },
+  );
+  if (record.status === "indeterminate") {
+    if (
+      record.terminalObserved !== false ||
+      record.outcomeDigest !== null ||
+      terminalEvidenceDigest !== null
+    ) {
+      throw new TypeError(
+        "indeterminate journal record cannot claim a terminal outcome or evidence",
+      );
+    }
+  } else {
+    if (record.terminalObserved !== true) {
+      throw new TypeError("terminal journal status requires terminalObserved=true");
+    }
+    digest(record.outcomeDigest, "outcomeDigest");
+    if (
+      record.observationReason === "authenticated_persisted_receipt" &&
+      terminalEvidenceDigest === null
+    ) {
+      throw new TypeError(
+        "authenticated persisted terminal observation requires evidence digest",
+      );
+    }
+  }
+  if (terminalEvidenceDigest !== null && record.observationReason !== "authenticated_persisted_receipt") {
+    throw new TypeError("terminal evidence requires authenticated_persisted_receipt");
+  }
+  if (type === "dispatch" && (record.status !== "indeterminate" || record.observationReason !== "dispatching")) {
+    throw new TypeError("dispatch journal record must begin indeterminate dispatching");
+  }
+  return normalizedRecord(record);
+}
+
+function migrateLegacyRecord(value, type) {
+  const record = requireRecord(value, "legacy journal record");
+  if (Object.prototype.hasOwnProperty.call(record, "terminalEvidenceDigest")) {
+    return validateDurableRecord(record, type);
+  }
+  return validateDurableRecord(
+    { ...record, terminalEvidenceDigest: null },
+    type,
+  );
 }
 
 function canonical(value) {
@@ -177,1153 +236,719 @@ function keyOf(record) {
   return `${record.profileId}\u0000${record.generation}\u0000${record.operationId}`;
 }
 
-function freezeRecord(record) {
-  return Object.freeze({ ...record });
+function profilePrefix(profileId, generation) {
+  return `${profileId}\u0000${generation}\u0000`;
 }
 
-function validateDurableRecord(value, recordType) {
-  const record = requireRecord(value, `${recordType} record`);
-  exactKeys(record, RECORD_KEYS, `${recordType} record`);
-  const terminalObserved = record.terminalObserved;
-  if (typeof terminalObserved !== "boolean") {
-    throw new BrowserJournalSemanticError(
-      `${recordType} record terminalObserved must be boolean`,
-    );
-  }
-  const snapshot = {
-    profileId: stableId(record.profileId, "record.profileId"),
-    principalId: stableId(record.principalId, "record.principalId"),
-    generation: positiveInteger(record.generation, "record.generation"),
-    operationId: stableId(record.operationId, "record.operationId"),
-    requestDigest: sha256Digest(record.requestDigest, "record.requestDigest"),
-    semanticDigest: sha256Digest(
-      record.semanticDigest,
-      "record.semanticDigest",
-    ),
-    processId: stableId(record.processId, "record.processId"),
-    pageGeneration: nonNegativeInteger(
-      record.pageGeneration,
-      "record.pageGeneration",
-    ),
-    documentDigest: sha256Digest(
-      record.documentDigest,
-      "record.documentDigest",
-      { nullable: true },
-    ),
-    action: stableId(record.action, "record.action"),
-    destinationOrigin: boundedString(
-      record.destinationOrigin,
-      "record.destinationOrigin",
-      4096,
-    ),
-    finalPayloadDigest: sha256Digest(
-      record.finalPayloadDigest,
-      "record.finalPayloadDigest",
-    ),
-    profileGrantDigest: sha256Digest(
-      record.profileGrantDigest,
-      "record.profileGrantDigest",
-    ),
-    effectGrantDigest: sha256Digest(
-      record.effectGrantDigest,
-      "record.effectGrantDigest",
-    ),
-    authorityEpoch: positiveInteger(
-      record.authorityEpoch,
-      "record.authorityEpoch",
-    ),
-    deadlineMs: positiveInteger(record.deadlineMs, "record.deadlineMs"),
-    verifiedUseTokenWitnessDigest: sha256Digest(
-      record.verifiedUseTokenWitnessDigest,
-      "record.verifiedUseTokenWitnessDigest",
-    ),
-    status: record.status,
-    outcomeDigest: record.outcomeDigest,
-    terminalEvidenceDigest: record.terminalEvidenceDigest,
-    terminalObserved,
-    observationReason: boundedString(
-      record.observationReason,
-      "record.observationReason",
-      512,
-    ),
-  };
-
-  if (recordType === "dispatch") {
-    if (
-      terminalObserved ||
-      snapshot.status !== "indeterminate" ||
-      snapshot.outcomeDigest !== null ||
-      snapshot.terminalEvidenceDigest !== null ||
-      snapshot.observationReason !== "dispatching"
-    ) {
-      throw new BrowserJournalSemanticError(
-        "dispatch record must be the initial indeterminate dispatching state",
-      );
-    }
-  } else if (terminalObserved) {
-    if (snapshot.status !== "succeeded" && snapshot.status !== "failed") {
-      throw new BrowserJournalSemanticError(
-        `${recordType} terminal status is not registered`,
-      );
-    }
-    snapshot.outcomeDigest = sha256Digest(
-      snapshot.outcomeDigest,
-      "record.outcomeDigest",
-    );
-    snapshot.terminalEvidenceDigest = sha256Digest(
-      snapshot.terminalEvidenceDigest,
-      "record.terminalEvidenceDigest",
-      { nullable: true },
-    );
-    if (
-      snapshot.terminalEvidenceDigest !== null &&
-      snapshot.observationReason !== "authenticated_persisted_receipt"
-    ) {
-      throw new BrowserJournalSemanticError(
-        "terminal evidence digest requires authenticated_persisted_receipt",
-      );
-    }
-    if (
-      snapshot.observationReason === "authenticated_persisted_receipt" &&
-      snapshot.terminalEvidenceDigest === null
-    ) {
-      throw new BrowserJournalSemanticError(
-        "authenticated persisted terminal receipt requires evidence digest",
-      );
-    }
-  } else {
-    if (
-      snapshot.status !== "indeterminate" ||
-      snapshot.outcomeDigest !== null ||
-      snapshot.terminalEvidenceDigest !== null
-    ) {
-      throw new BrowserJournalSemanticError(
-        `${recordType} nonterminal record must remain indeterminate`,
-      );
-    }
-  }
-  return freezeRecord(snapshot);
+function sameRecord(left, right) {
+  return canonical(left) === canonical(right);
 }
 
-function validateGenerationMarker(value) {
-  const marker = requireRecord(value, "generation retirement record");
-  exactKeys(marker, GENERATION_KEYS, "generation retirement record");
-  return Object.freeze({
-    profileId: stableId(marker.profileId, "retirement.profileId"),
-    generation: positiveInteger(
-      marker.generation,
-      "retirement.generation",
-    ),
-  });
-}
-
-function immutableRecordEqual(left, right) {
-  return IMMUTABLE_RECORD_KEYS.every((key) => left[key] === right[key]);
-}
-
-function recordEqual(left, right) {
-  return RECORD_KEYS.every((key) => left[key] === right[key]);
-}
-
-function requireImmutableMatch(prior, next) {
-  if (!immutableRecordEqual(prior, next)) {
-    throw new BrowserJournalSemanticError(
-      "journal operation identity was reused with changed immutable semantics",
-    );
+function assertSameSemantics(prior, next, message) {
+  if (IMMUTABLE_RECORD_KEYS.some((key) => prior[key] !== next[key])) {
+    throw new JournalSemanticError(message);
   }
 }
 
-function applyDispatch(records, generations, record) {
-  const retired = generations.get(record.profileId) ?? 0;
-  if (record.generation <= retired) {
-    throw new BrowserJournalSemanticError(
-      "journal dispatch attempts to resurrect a retired profile generation",
-    );
-  }
+function applyTransition(records, type, record) {
   const key = keyOf(record);
   const prior = records.get(key);
-  if (!prior) {
-    if (records.size >= MAX_RECORDS) {
-      throw new BrowserJournalCapacityError(
-        "browser journal record capacity exhausted",
+
+  if (type === "dispatch") {
+    if (!prior) {
+      if (records.size >= MAX_LIVE_RECORDS) {
+        throw new JournalSemanticError(
+          "browser journal live index capacity exhausted",
+        );
+      }
+      records.set(key, record);
+      return true;
+    }
+    assertSameSemantics(
+      prior,
+      record,
+      "journal operation identity was reused with changed semantics",
+    );
+    // A dispatch retry is always a no-op once the immutable identity exists.
+    // In particular it cannot erase a later indeterminate observation or a
+    // terminal tombstone.
+    return false;
+  }
+
+  if (type === "observation") {
+    if (!prior) {
+      throw new JournalSemanticError("journal observation has no dispatch intent");
+    }
+    assertSameSemantics(
+      prior,
+      record,
+      "journal observation changed immutable semantics",
+    );
+    if (sameRecord(prior, record)) return false;
+    if (prior.terminalObserved === true) {
+      throw new JournalSemanticError(
+        "terminal browser operation cannot change or return to indeterminate",
       );
     }
     records.set(key, record);
     return true;
   }
-  requireImmutableMatch(prior, record);
-  // A retry of the original dispatch identity never rolls a later observation
-  // backward and never appends another durable byte.
-  return false;
-}
 
-function applyObservation(records, generations, record) {
-  const retired = generations.get(record.profileId) ?? 0;
-  if (record.generation <= retired) {
-    throw new BrowserJournalSemanticError(
-      "journal observation targets a retired profile generation",
+  if (type === "snapshot") {
+    if (!prior) {
+      if (records.size >= MAX_LIVE_RECORDS) {
+        throw new JournalSemanticError(
+          "browser journal live index capacity exhausted",
+        );
+      }
+      records.set(key, record);
+      return true;
+    }
+    assertSameSemantics(
+      prior,
+      record,
+      "browser journal snapshot conflicts with prior semantics",
     );
-  }
-  const key = keyOf(record);
-  const prior = records.get(key);
-  if (!prior) {
-    throw new BrowserJournalSemanticError(
-      "journal observation has no dispatch intent",
-    );
-  }
-  requireImmutableMatch(prior, record);
-  if (recordEqual(prior, record)) return false;
-  if (prior.terminalObserved) {
-    throw new BrowserJournalSemanticError(
-      "terminal browser outcome is immutable and cannot be replaced or rolled back",
-    );
-  }
-  records.set(key, record);
-  return true;
-}
-
-function applySnapshot(records, generations, record) {
-  const retired = generations.get(record.profileId) ?? 0;
-  if (record.generation <= retired) {
-    throw new BrowserJournalSemanticError(
-      "journal snapshot attempts to resurrect a retired profile generation",
-    );
-  }
-  const key = keyOf(record);
-  const prior = records.get(key);
-  if (!prior) {
-    if (records.size >= MAX_RECORDS) {
-      throw new BrowserJournalCapacityError(
-        "browser journal record capacity exhausted",
+    if (sameRecord(prior, record)) return false;
+    if (prior.terminalObserved === true) {
+      throw new JournalSemanticError(
+        "browser journal snapshot conflicts with terminal state",
       );
     }
     records.set(key, record);
     return true;
   }
-  requireImmutableMatch(prior, record);
-  if (recordEqual(prior, record)) return false;
-  if (prior.terminalObserved) {
-    throw new BrowserJournalSemanticError(
-      "terminal browser snapshot is immutable",
-    );
-  }
-  records.set(key, record);
-  return true;
+
+  throw new TypeError("browser journal record type is unsupported");
 }
 
-function applyGenerationMarker(records, generations, marker) {
-  const current = generations.get(marker.profileId) ?? 0;
-  if (marker.generation <= current) return false;
-  const matching = [...records.entries()].filter(
-    ([, record]) =>
-      record.profileId === marker.profileId &&
-      record.generation <= marker.generation,
-  );
-  if (matching.some(([, record]) => record.terminalObserved !== true)) {
-    throw new BrowserJournalSemanticError(
-      "generation retirement record precedes terminal operation state",
-    );
-  }
-  for (const [key] of matching) records.delete(key);
-  generations.set(marker.profileId, marker.generation);
-  return true;
-}
-
-function generationKey(marker) {
-  return `${marker.profileId}\u0000${marker.generation}`;
-}
-
-function makeEnvelope(type, record, schema = SCHEMA, version = RECORD_VERSION) {
-  const unsigned = { schema, version, type, record };
-  return Object.freeze({ ...unsigned, checksum: checksum(unsigned) });
-}
-
-function validateEnvelope(value) {
-  const envelope = requireRecord(value, "journal envelope");
-  exactKeys(envelope, ENVELOPE_KEYS, "journal envelope");
-  if (typeof envelope.checksum !== "string") {
-    throw new BrowserJournalSemanticError(
-      "browser journal envelope checksum is invalid",
-    );
-  }
-  const unsigned = {
-    schema: envelope.schema,
-    version: envelope.version,
-    type: envelope.type,
-    record: envelope.record,
-  };
-  if (checksum(unsigned) !== envelope.checksum) {
-    throw new BrowserJournalSemanticError("browser journal checksum mismatch");
-  }
-  if (envelope.type === "generation_retired") {
-    if (
-      envelope.schema !== GENERATION_SCHEMA ||
-      envelope.version !== GENERATION_VERSION
-    ) {
-      throw new BrowserJournalSemanticError(
-        "browser journal generation schema is unsupported",
-      );
-    }
-  } else if (
-    envelope.schema !== SCHEMA ||
-    envelope.version !== RECORD_VERSION
-  ) {
-    throw new BrowserJournalSemanticError(
-      "browser journal schema/version is unsupported",
-    );
-  }
-  if (
-    envelope.type !== "dispatch" &&
-    envelope.type !== "observation" &&
-    envelope.type !== "snapshot" &&
-    envelope.type !== "generation_retired"
-  ) {
-    throw new BrowserJournalSemanticError(
-      "browser journal record type is unsupported",
-    );
-  }
-  return envelope;
-}
-
-function parseLine(line) {
-  if (line.length === 0 || UTF8.encode(line).byteLength > MAX_LINE_BYTES) {
-    throw new BrowserJournalSemanticError(
-      "browser journal line is empty or exceeds limit",
-    );
-  }
-  let parsed;
-  try {
-    parsed = JSON.parse(line);
-  } catch {
-    throw new BrowserJournalSemanticError(
-      "browser journal contains malformed JSON",
-    );
-  }
-  return validateEnvelope(parsed);
-}
-
-function hydrateEnvelopes(envelopes) {
-  const records = new Map();
-  const generations = new Map();
-  for (const envelope of envelopes) {
-    if (envelope.type === "generation_retired") {
-      applyGenerationMarker(
-        records,
-        generations,
-        validateGenerationMarker(envelope.record),
-      );
+function assertGenerationHistoryClear(records, profileId, generation) {
+  stableId(profileId, "profileId");
+  positiveInteger(generation, "generation");
+  const sameGenerationPrefix = profilePrefix(profileId, generation);
+  const profileIdPrefix = `${profileId}\u0000`;
+  let sameGenerationHistory = false;
+  let unresolvedOtherGeneration = false;
+  for (const [key, record] of records) {
+    if (!key.startsWith(profileIdPrefix)) continue;
+    if (key.startsWith(sameGenerationPrefix)) {
+      sameGenerationHistory = true;
       continue;
     }
-    const record = validateDurableRecord(envelope.record, envelope.type);
-    if (envelope.type === "dispatch") {
-      applyDispatch(records, generations, record);
-    } else if (envelope.type === "observation") {
-      applyObservation(records, generations, record);
-    } else {
-      applySnapshot(records, generations, record);
+    if (record.terminalObserved !== true) unresolvedOtherGeneration = true;
+  }
+  if (sameGenerationHistory) {
+    throw new JournalSemanticError(
+      "profile generation has durable operation history and cannot be reopened",
+    );
+  }
+  if (unresolvedOtherGeneration) {
+    throw new JournalSemanticError("profile has unresolved durable effects from another generation");
+  }
+  if ([...records.values()].some(record => record.profileId === profileId)) {
+    throw new JournalSemanticError("prior terminal profile generation requires explicit retirement");
+  }
+}
+
+function assertGenerationAvailable(retired, profileId, generation) {
+  stableId(profileId, "profileId");
+  positiveInteger(generation, "generation");
+  const highWater = retired.get(profileId);
+  if (highWater !== undefined && generation <= highWater) {
+    throw new JournalSemanticError("profile generation has already been retired");
+  }
+}
+
+function assertRetirable(records, profileId, generation) {
+  const prefix = profilePrefix(profileId, generation);
+  for (const [key, record] of records) {
+    if (record.profileId === profileId && record.generation !== generation) {
+      throw new JournalSemanticError("retirement must target the sole active profile generation");
+    }
+    if (key.startsWith(prefix) && record.terminalObserved !== true) {
+      throw new JournalSemanticError(
+        "profile generation has unresolved browser effects and cannot be retired",
+      );
     }
   }
-  return { records, generations };
-}
-
-function parseJournalBuffer(bytes, { allowRepairableTail = false } = {}) {
-  if (bytes.length === 0) {
-    return { envelopes: [], validPrefixLength: 0, tornTail: null };
-  }
-  const lastNewline = bytes.lastIndexOf(0x0a);
-  const completeLength = lastNewline === -1 ? 0 : lastNewline + 1;
-  const tornTail = completeLength === bytes.length
-    ? null
-    : bytes.subarray(completeLength);
-  if (tornTail && !allowRepairableTail) {
-    throw new BrowserJournalSemanticError(
-      "browser journal has an incomplete/torn final fragment",
-    );
-  }
-  const complete = bytes.subarray(0, completeLength).toString("utf8");
-  const lines = complete.length === 0
-    ? []
-    : complete.split("\n").filter((line) => line.length > 0);
-  const envelopes = lines.map(parseLine);
-  return { envelopes, validPrefixLength: completeLength, tornTail };
-}
-
-function renderSnapshot(records, generations) {
-  const lines = [];
-  for (const record of [...records.values()].sort((left, right) =>
-    keyOf(left).localeCompare(keyOf(right)))) {
-    lines.push(canonical(makeEnvelope("snapshot", record)));
-  }
-  const markers = [...generations.entries()]
-    .map(([profileId, generation]) => ({ profileId, generation }))
-    .sort((left, right) => generationKey(left).localeCompare(generationKey(right)));
-  for (const marker of markers) {
-    lines.push(
-      canonical(
-        makeEnvelope(
-          "generation_retired",
-          marker,
-          GENERATION_SCHEMA,
-          GENERATION_VERSION,
-        ),
-      ),
-    );
-  }
-  return lines.length === 0 ? "" : `${lines.join("\n")}\n`;
 }
 
 async function syncDirectory(path) {
-  if (process.platform === "win32") return;
-  const directoryFlag = constants.O_DIRECTORY ?? 0;
-  const handle = await open(path, constants.O_RDONLY | directoryFlag);
+  const noFollow = constants.O_NOFOLLOW ?? 0;
+  const handle = await open(path, constants.O_RDONLY | noFollow);
   try {
+    const info = await handle.stat();
+    if (!info.isDirectory()) {
+      throw new TypeError("browser journal durability barrier is not a directory");
+    }
     await handle.sync();
   } finally {
     await handle.close();
   }
 }
 
-async function ensurePrivateDirectory(path) {
-  try {
-    const info = await stat(path);
-    if (!info.isDirectory()) {
-      throw new TypeError("browser journal parent component is not a directory");
-    }
-    return false;
-  } catch (error) {
-    if (error?.code !== "ENOENT") throw error;
-  }
-  const parent = dirname(path);
-  if (parent === path) {
-    throw new TypeError("browser journal parent directory cannot be created");
-  }
-  await ensurePrivateDirectory(parent);
-  try {
-    await mkdir(path, { mode: 0o700 });
-  } catch (error) {
-    if (error?.code !== "EEXIST") throw error;
-  }
-  const info = await stat(path);
-  if (!info.isDirectory()) {
-    throw new TypeError("browser journal parent component is not a directory");
-  }
-  await syncDirectory(path);
-  await syncDirectory(parent);
-  return true;
-}
-
 async function ensureCanonicalPrivateParent(path) {
-  const parent = dirname(path);
-  await ensurePrivateDirectory(parent);
+  const parent = resolve(dirname(path));
+  const missing = [];
+  let cursor = parent;
+  while (true) {
+    try {
+      const metadata = await lstat(cursor);
+      if (!metadata.isDirectory() || metadata.isSymbolicLink()) {
+        throw new TypeError(
+          "browser journal parent must be a regular non-symlink directory",
+        );
+      }
+      break;
+    } catch (error) {
+      if (error?.code !== "ENOENT") throw error;
+      const next = dirname(cursor);
+      if (next === cursor) throw error;
+      missing.push(cursor);
+      cursor = next;
+    }
+  }
+
+  for (const directory of missing.reverse()) {
+    await mkdir(directory, { mode: 0o700 });
+    await syncDirectory(dirname(directory));
+  }
+
+  const metadata = await lstat(parent);
+  if (!metadata.isDirectory() || metadata.isSymbolicLink()) {
+    throw new TypeError(
+      "browser journal parent must be a regular non-symlink directory",
+    );
+  }
+  if (process.platform !== "win32" && (metadata.mode & 0o077) !== 0) {
+    throw new TypeError("browser journal parent directory permissions are too broad");
+  }
   const actual = await realpath(parent);
-  if (actual !== resolve(parent)) {
+  if (actual !== parent) {
     throw new TypeError("browser journal parent path contains a symlink");
   }
-  const info = await stat(parent);
-  if (!info.isDirectory()) {
-    throw new TypeError("browser journal parent is not a directory");
-  }
-  if (process.platform !== "win32" && (info.mode & 0o077) !== 0) {
-    throw new TypeError("browser journal parent permissions are too broad");
-  }
-  if (
-    process.platform !== "win32" &&
-    typeof process.geteuid === "function" &&
-    info.uid !== process.geteuid()
-  ) {
-    throw new TypeError("browser journal parent has the wrong owner");
-  }
-  return parent;
 }
 
-function validatePrivateRegularFile(info, name) {
-  if (!info.isFile()) {
-    throw new TypeError(`${name} is not a regular file`);
+function envelopeLine(type, record) {
+  const validated = validateDurableRecord(
+    record,
+    type === "snapshot" ? "snapshot" : type,
+  );
+  const unsigned = { schema: SCHEMA, version: 2, type, record: validated };
+  const line = `${canonical({ ...unsigned, checksum: checksum(unsigned) })}\n`;
+  if (UTF8.encode(line).byteLength > MAX_LINE_BYTES) {
+    throw new TypeError("browser journal record exceeds line limit");
   }
-  if (process.platform !== "win32") {
-    if ((info.mode & 0o077) !== 0) {
-      throw new TypeError(`${name} permissions are too broad`);
-    }
-    if (info.nlink !== 1) {
-      throw new TypeError(`${name} must have exactly one hard link`);
-    }
-    if (
-      typeof process.geteuid === "function" &&
-      info.uid !== process.geteuid()
-    ) {
-      throw new TypeError(`${name} has the wrong owner`);
-    }
+  return line;
+}
+
+const ADMISSION_SCHEMA = "hepta.browser.worker-admission.v1";
+function validateAdmission(record, records, retired) {
+  const value = requireRecord(record, "worker admission record");
+  exactKeys(value, ["admission", "generation", "operationId", "profileId", "requestDigest", "semanticDigest"], "worker admission record");
+  stableId(value.profileId, "profileId"); positiveInteger(value.generation, "generation"); stableId(value.operationId, "operationId");
+  digest(value.requestDigest, "requestDigest"); digest(value.semanticDigest, "semanticDigest");
+  assertGenerationAvailable(retired, value.profileId, value.generation);
+  const prior = records.get(keyOf(value));
+  if (!prior || prior.requestDigest !== value.requestDigest || prior.semanticDigest !== value.semanticDigest) {
+    throw new JournalSemanticError("worker admission does not bind a durable dispatch identity");
   }
-}
-
-function sameFileIdentity(left, right) {
-  if (process.platform === "win32") return true;
-  return left.dev === right.dev && left.ino === right.ino;
-}
-
-function crashAt(phase) {
-  if (process.env.HEPTA_BROWSER_JOURNAL_CRASH_PHASE === phase) {
-    process.exit(86);
+  const admission = requireRecord(value.admission, "worker admission");
+  exactKeys(admission, ["admittedAt", "durableOrRecoverable", "kind", "operationId", "pageRevision", "semanticDigest", "workerGeneration"], "worker admission");
+  if (admission.kind !== "BrowserEffectAdmissionV1" || admission.operationId !== value.operationId ||
+      admission.semanticDigest !== value.semanticDigest || admission.workerGeneration !== value.generation ||
+      admission.pageRevision !== prior.pageGeneration || admission.durableOrRecoverable !== true ||
+      positiveInteger(admission.admittedAt, "admittedAt") >= prior.deadlineMs) {
+    throw new JournalSemanticError("worker admission receipt drifted from durable semantics");
   }
+  return Object.freeze({
+    admission: Object.freeze({
+      admittedAt: admission.admittedAt, durableOrRecoverable: true,
+      kind: admission.kind, operationId: admission.operationId,
+      pageRevision: admission.pageRevision, semanticDigest: admission.semanticDigest,
+      workerGeneration: admission.workerGeneration,
+    }),
+    generation: value.generation, operationId: value.operationId,
+    profileId: value.profileId, requestDigest: value.requestDigest,
+    semanticDigest: value.semanticDigest,
+  });
 }
-
-function sleep(milliseconds) {
-  return new Promise((resolvePromise) => setTimeout(resolvePromise, milliseconds));
-}
-
-async function linuxProcessStartTicks(pid) {
-  if (process.platform !== "linux") return null;
-  try {
-    const text = await readFile(`/proc/${pid}/stat`, "utf8");
-    const close = text.lastIndexOf(") ");
-    if (close < 0) return null;
-    const fields = text.slice(close + 2).trim().split(/\s+/);
-    return fields[19] ?? null;
-  } catch {
+function storeAdmission(state, record) {
+  const value = validateAdmission(record, state.records, state.retired);
+  const key = keyOf(value);
+  const prior = state.admissions.get(key);
+  if (prior) {
+    if (JSON.stringify(prior) !== JSON.stringify(value)) throw new JournalSemanticError("worker admission is immutable");
     return null;
   }
+  state.admissions.set(key, value);
+  return value;
+}
+function admissionLine(record) {
+  const unsigned = { schema: ADMISSION_SCHEMA, version: 1, type: "admission", record };
+  return `${canonical({ ...unsigned, checksum: checksum(unsigned) })}\n`;
 }
 
-async function processIdentity(pid) {
-  try {
-    process.kill(pid, 0);
-  } catch (error) {
-    if (error?.code === "ESRCH") return null;
-    if (error?.code !== "EPERM") return null;
-  }
-  return { pid, startTicks: await linuxProcessStartTicks(pid) };
-}
+const EGRESS_SCHEMA = "hepta.browser.egress-operation-receipt.v1";
+const EGRESS_KEYS = ["schema", "operationId", "profileGrantDigest", "effectGrantDigest", "destinationOrigin", "status", "admittedAtMs", "completedAtMs", "requestBytes", "responseBytes", "connectionCount", "boundedAbort", "maxRequestBytes", "maxResponseBytes"];
 
-async function lockIsStale(lockPath) {
-  const ownerPath = join(lockPath, "owner.json");
-  try {
-    const bytes = await readFile(ownerPath);
-    if (bytes.length === 0 || bytes.length > 4096) return false;
-    const owner = JSON.parse(bytes.toString("utf8"));
-    if (
-      owner === null ||
-      typeof owner !== "object" ||
-      !Number.isSafeInteger(owner.pid) ||
-      owner.pid < 1 ||
-      typeof owner.token !== "string"
-    ) {
-      return false;
-    }
-    const live = await processIdentity(owner.pid);
-    if (!live) return true;
-    if (
-      typeof owner.startTicks === "string" &&
-      live.startTicks !== null &&
-      owner.startTicks !== live.startTicks
-    ) {
-      return true;
-    }
-    return false;
-  } catch (error) {
-    if (error?.code !== "ENOENT") return false;
-    try {
-      const info = await stat(lockPath);
-      return Date.now() - info.mtimeMs > OWNERLESS_LOCK_STALE_MS;
-    } catch {
-      return false;
-    }
+function storeEgress(state, record) {
+  const value = requireRecord(record, "egress journal record");
+  exactKeys(value, ["generation", "operationId", "profileId", "receipt", "requestDigest", "semanticDigest"], "egress journal record");
+  stableId(value.profileId, "profileId"); positiveInteger(value.generation, "generation"); stableId(value.operationId, "operationId");
+  assertGenerationAvailable(state.retired, value.profileId, value.generation);
+  const operation = state.records.get(keyOf(value));
+  if (!operation || value.requestDigest !== operation.requestDigest || value.semanticDigest !== operation.semanticDigest) {
+    throw new JournalSemanticError("egress receipt does not bind a durable dispatch identity");
   }
+  const receipt = requireRecord(value.receipt, "egress receipt");
+  exactKeys(receipt, [...EGRESS_KEYS, "receiptDigest"].sort(), "egress receipt");
+  const unsigned = Object.fromEntries(EGRESS_KEYS.map(key => [key, receipt[key]]));
+  if (unsigned.schema !== EGRESS_SCHEMA || unsigned.operationId !== operation.operationId ||
+      unsigned.profileGrantDigest !== operation.profileGrantDigest || unsigned.effectGrantDigest !== operation.effectGrantDigest ||
+      unsigned.destinationOrigin !== operation.destinationOrigin || checksum(unsigned) !== receipt.receiptDigest) {
+    throw new JournalSemanticError("egress receipt identity or checksum drifted");
+  }
+  boundedReason(unsigned.status);
+  if (unsigned.status.length > 64 || typeof unsigned.boundedAbort !== "boolean") throw new JournalSemanticError("egress receipt status/abort is invalid");
+  const admitted = positiveInteger(unsigned.admittedAtMs, "egress admittedAtMs");
+  const completed = positiveInteger(unsigned.completedAtMs, "egress completedAtMs");
+  if (admitted >= operation.deadlineMs || completed < admitted) throw new JournalSemanticError("egress receipt time does not bind the original operation");
+  for (const key of ["requestBytes", "responseBytes", "connectionCount"]) nonNegativeInteger(unsigned[key], key);
+  positiveInteger(unsigned.maxRequestBytes, "maxRequestBytes"); positiveInteger(unsigned.maxResponseBytes, "maxResponseBytes");
+  if (unsigned.connectionCount > 64 || unsigned.maxRequestBytes > 16 * 1024 * 1024 || unsigned.maxResponseBytes > 256 * 1024 * 1024 ||
+      (!unsigned.boundedAbort && (unsigned.requestBytes > unsigned.maxRequestBytes || unsigned.responseBytes > unsigned.maxResponseBytes))) {
+    throw new JournalSemanticError("egress receipt exceeds its non-aborted resource budget");
+  }
+  const snapshot = Object.freeze({ generation: value.generation, operationId: value.operationId, profileId: value.profileId,
+    receipt: Object.freeze({ ...unsigned, receiptDigest: receipt.receiptDigest }), requestDigest: value.requestDigest, semanticDigest: value.semanticDigest });
+  const prior = state.egress.get(keyOf(value));
+  if (prior) {
+    if (canonical(prior) !== canonical(snapshot)) throw new JournalSemanticError("durable egress receipt is immutable");
+    return null;
+  }
+  state.egress.set(keyOf(value), snapshot);
+  return snapshot;
 }
-
-async function acquireInterprocessLock(journalPath) {
-  const lockPath = `${journalPath}.owner-lock`;
-  const deadline = Date.now() + LOCK_TIMEOUT_MS;
-  while (true) {
-    const token = randomUUID();
-    try {
-      await mkdir(lockPath, { mode: 0o700 });
-      const identity = await processIdentity(process.pid);
-      const owner = {
-        pid: process.pid,
-        token,
-        startTicks: identity?.startTicks ?? null,
-      };
-      try {
-        await writeFile(
-          join(lockPath, "owner.json"),
-          `${JSON.stringify(owner)}\n`,
-          { mode: 0o600, flag: "wx" },
-        );
-      } catch (error) {
-        await rm(lockPath, { recursive: true, force: true });
-        throw error;
-      }
-      return async () => {
-        let current;
-        try {
-          current = JSON.parse(
-            await readFile(join(lockPath, "owner.json"), "utf8"),
-          );
-        } catch (error) {
-          throw new Error("browser journal owner lock cannot be verified", {
-            cause: error,
-          });
-        }
-        if (current?.token !== token || current?.pid !== process.pid) {
-          throw new Error("browser journal owner lock identity changed");
-        }
-        await rm(lockPath, { recursive: true, force: false });
-      };
-    } catch (error) {
-      if (error?.code !== "EEXIST") throw error;
-      if (await lockIsStale(lockPath)) {
-        const stale = `${lockPath}.stale.${randomUUID()}`;
-        try {
-          await rename(lockPath, stale);
-          await rm(stale, { recursive: true, force: true });
-          continue;
-        } catch (reclaimError) {
-          if (
-            reclaimError?.code !== "ENOENT" &&
-            reclaimError?.code !== "EEXIST"
-          ) {
-            throw reclaimError;
-          }
-        }
-      }
-      if (Date.now() >= deadline) {
-        const locked = new Error(
-          "browser journal interprocess owner lock deadline exceeded",
-        );
-        locked.name = "BrowserJournalLockedError";
-        throw locked;
-      }
-      await sleep(LOCK_RETRY_MS);
-    }
-  }
+function egressLine(record) {
+  const unsigned = { schema: EGRESS_SCHEMA, version: 1, type: "egress", record };
+  return `${canonical({ ...unsigned, checksum: checksum(unsigned) })}\n`;
 }
 
 export class MemoryBrowserOperationJournal {
   durable = false;
   #records = new Map();
-  #retiredGenerations = new Map();
+  #retired = new Map();
+  #admissions = new Map();
+  #egress = new Map();
 
   async assertProfileGenerationAvailable(profileId, generation) {
-    const checkedProfileId = stableId(profileId, "profileId");
-    const checkedGeneration = positiveInteger(generation, "generation");
-    const retired = this.#retiredGenerations.get(checkedProfileId) ?? 0;
-    if (checkedGeneration <= retired) {
-      throw new BrowserJournalSemanticError(
-        "profile generation is retired and cannot be reopened",
-      );
-    }
-    const active = [...this.#records.values()].filter(
-      (record) => record.profileId === checkedProfileId,
-    );
-    if (active.some((record) => record.generation === checkedGeneration)) {
-      throw new BrowserJournalSemanticError(
-        "profile generation already has durable operation history",
-      );
-    }
-    if (active.some((record) => record.terminalObserved !== true)) {
-      throw new BrowserJournalSemanticError(
-        "another profile generation still has unresolved operations",
-      );
-    }
-    if (active.length > 0) {
-      throw new BrowserJournalSemanticError(
-        "prior terminal profile generation requires explicit retirement",
-      );
-    }
+    assertGenerationAvailable(this.#retired, profileId, generation);
+    assertGenerationHistoryClear(this.#records, profileId, generation);
   }
 
   async recordDispatch(record) {
-    const snapshot = validateDurableRecord({ ...record }, "dispatch");
-    applyDispatch(this.#records, this.#retiredGenerations, snapshot);
+    const snapshot = validateDurableRecord(record, "dispatch");
+    assertGenerationAvailable(this.#retired, snapshot.profileId, snapshot.generation);
+    applyTransition(this.#records, "dispatch", snapshot);
   }
 
   async recordObservation(record) {
-    const snapshot = validateDurableRecord({ ...record }, "observation");
-    applyObservation(this.#records, this.#retiredGenerations, snapshot);
+    const snapshot = validateDurableRecord(record, "observation");
+    assertGenerationAvailable(this.#retired, snapshot.profileId, snapshot.generation);
+    applyTransition(this.#records, "observation", snapshot);
+  }
+
+  async recordAdmission(record) {
+    storeAdmission({ records: this.#records, retired: this.#retired, admissions: this.#admissions }, record);
+  }
+  async getAdmission(profileId, generation, operationId) {
+    return this.#admissions.get(`${profileId}\0${generation}\0${operationId}`) ?? null;
+  }
+
+  async recordEgress(record) {
+    storeEgress({ records: this.#records, retired: this.#retired, egress: this.#egress }, record);
+  }
+  async getEgress(profileId, generation, operationId) {
+    return this.#egress.get(`${profileId}\0${generation}\0${operationId}`) ?? null;
   }
 
   async getOperation(profileId, generation, operationId) {
     return (
-      this.#records.get(
-        `${stableId(profileId, "profileId")}\u0000${positiveInteger(
-          generation,
-          "generation",
-        )}\u0000${stableId(operationId, "operationId")}`,
-      ) ?? null
+      this.#records.get(`${profileId}\u0000${generation}\u0000${operationId}`) ??
+      null
     );
   }
 
   async listOperations(profileId, generation) {
-    const prefix = `${stableId(profileId, "profileId")}\u0000${positiveInteger(
-      generation,
-      "generation",
-    )}\u0000`;
+    const prefix = profilePrefix(profileId, generation);
     return [...this.#records.entries()]
       .filter(([key]) => key.startsWith(prefix))
       .map(([, value]) => value);
   }
 
   async retireProfile(profileId, generation) {
-    const marker = validateGenerationMarker({ profileId, generation });
-    const retired = this.#retiredGenerations.get(marker.profileId) ?? 0;
-    if (marker.generation <= retired) return;
-    const matching = [...this.#records.entries()].filter(
-      ([, record]) =>
-        record.profileId === marker.profileId &&
-        record.generation === marker.generation,
-    );
-    if (matching.length === 0) {
-      throw new BrowserJournalSemanticError(
-        "profile generation has no durable operations to retire",
-      );
+    stableId(profileId, "profileId");
+    positiveInteger(generation, "generation");
+    assertRetirable(this.#records, profileId, generation);
+    const prior = this.#retired.get(profileId) ?? 0;
+    if (generation > prior) {
+      if (!this.#retired.has(profileId) && this.#retired.size >= MAX_RETIRED_PROFILES) {
+        throw new JournalSemanticError("retired profile capacity exhausted");
+      }
+      this.#retired.set(profileId, generation);
     }
-    if (matching.some(([, record]) => record.terminalObserved !== true)) {
-      throw new BrowserJournalSemanticError(
-        "profile generation has unresolved operations and cannot retire",
-      );
+    const prefix = profilePrefix(profileId, generation);
+    for (const key of [...this.#records.keys()]) {
+      if (key.startsWith(prefix)) { this.#records.delete(key); this.#admissions.delete(key); this.#egress.delete(key); }
     }
-    const other = [...this.#records.values()].filter(
-      (record) =>
-        record.profileId === marker.profileId &&
-        record.generation !== marker.generation,
-    );
-    if (other.length > 0) {
-      throw new BrowserJournalSemanticError(
-        "profile generation retirement is not the sole active generation",
-      );
-    }
-    for (const [key] of matching) this.#records.delete(key);
-    this.#retiredGenerations.set(marker.profileId, marker.generation);
   }
+}
+
+function validatePrivateFile(info, maximum, label) {
+  if (!info.isFile() || info.size > BigInt(maximum) || info.nlink !== 1n ||
+      (info.mode & 0o077n) !== 0n || info.uid !== BigInt(process.geteuid())) {
+    throw new TypeError(`${label} must be a bounded private singly-linked owner file`);
+  }
+}
+function stamp(info) {
+  return info ? [info.dev, info.ino, info.size, info.mtimeNs, info.ctimeNs].join(":") : "absent";
+}
+async function fileInfo(path) {
+  try { return await lstat(path, { bigint: true }); }
+  catch (error) { if (error?.code === "ENOENT") return null; throw error; }
+}
+function markerLine(profileId, generation) {
+  const record = { profileId: stableId(profileId, "profileId"), generation: positiveInteger(generation, "generation") };
+  const unsigned = { schema: GENERATION_SCHEMA, version: 1, type: "generation_retired", record };
+  return `${canonical({ ...unsigned, checksum: checksum(unsigned) })}\n`;
+}
+function applyRetirement(records, retired, profileId, generation) {
+  stableId(profileId, "profileId"); positiveInteger(generation, "generation");
+  if (generation <= (retired.get(profileId) ?? 0)) return;
+  if (!retired.has(profileId) && retired.size >= MAX_RETIRED_PROFILES) {
+    throw new JournalSemanticError("retired profile generation capacity exhausted");
+  }
+  for (const [key, record] of records) {
+    if (record.profileId === profileId && record.generation <= generation) {
+      if (!record.terminalObserved) throw new TypeError("retirement precedes terminal operation state");
+      records.delete(key);
+    }
+  }
+  retired.set(profileId, generation);
 }
 
 export class FileBrowserOperationJournal {
   durable = true;
   #path;
   #tail = Promise.resolve();
-  #fencedError = null;
+  #faultInjector;
+  #fencedCause = null;
+  #cache = null;
   #maximumFileBytes;
   #compactAtBytes;
+  #stats = { diskReadBytes: 0, fullLoads: 0, cacheHits: 0, appends: 0, compactions: 0 };
 
-  constructor(
-    path,
-    {
-      maximumFileBytes = DEFAULT_MAX_FILE_BYTES,
-      compactAtBytes = DEFAULT_COMPACT_AT_BYTES,
-    } = {},
-  ) {
-    if (typeof path !== "string" || !isAbsolute(path)) {
-      throw new TypeError("browser journal path must be absolute");
-    }
+  constructor(path, { faultInjector = null, maximumFileBytes = MAX_FILE_BYTES, compactAtBytes = COMPACT_AT_BYTES } = {}) {
+    if (typeof path !== "string" || !isAbsolute(path)) throw new TypeError("browser journal path must be absolute");
+    if (faultInjector !== null && typeof faultInjector !== "function") throw new TypeError("faultInjector must be a function or null");
     positiveInteger(maximumFileBytes, "maximumFileBytes");
     positiveInteger(compactAtBytes, "compactAtBytes");
-    if (compactAtBytes > maximumFileBytes) {
-      throw new TypeError("compactAtBytes cannot exceed maximumFileBytes");
-    }
+    if (maximumFileBytes > MAX_FILE_BYTES || compactAtBytes > maximumFileBytes) throw new TypeError("journal capacity exceeds hard bounds");
     this.#path = path;
+    this.#faultInjector = faultInjector;
     this.#maximumFileBytes = maximumFileBytes;
     this.#compactAtBytes = compactAtBytes;
   }
 
+  get statistics() { return Object.freeze({ ...this.#stats }); }
+
   async assertProfileGenerationAvailable(profileId, generation) {
-    const checkedProfileId = stableId(profileId, "profileId");
-    const checkedGeneration = positiveInteger(generation, "generation");
+    stableId(profileId, "profileId"); positiveInteger(generation, "generation");
     return this.#serialize(async () => {
-      const { records, generations } = await this.#loadForOwner();
-      const retired = generations.get(checkedProfileId) ?? 0;
-      if (checkedGeneration <= retired) {
-        throw new BrowserJournalSemanticError(
-          "profile generation is retired and cannot be reopened",
-        );
-      }
-      const active = [...records.values()].filter(
-        (record) => record.profileId === checkedProfileId,
-      );
-      if (active.some((record) => record.generation === checkedGeneration)) {
-        throw new BrowserJournalSemanticError(
-          "profile generation already has durable operation history",
-        );
-      }
-      if (active.some((record) => record.terminalObserved !== true)) {
-        throw new BrowserJournalSemanticError(
-          "another profile generation still has unresolved operations",
-        );
-      }
-      if (active.length > 0) {
-        throw new BrowserJournalSemanticError(
-          "prior terminal profile generation requires explicit retirement",
-        );
-      }
+      const { records, retired } = await this.#load();
+      assertGenerationAvailable(retired, profileId, generation);
+      assertGenerationHistoryClear(records, profileId, generation);
     });
   }
-
-  async recordDispatch(record) {
-    const snapshot = validateDurableRecord({ ...record }, "dispatch");
+  async recordDispatch(record) { return this.#record(record, "dispatch"); }
+  async recordObservation(record) { return this.#record(record, "observation"); }
+  async #record(record, type) {
+    const snapshot = validateDurableRecord(record, type);
     return this.#serialize(async () => {
-      const loaded = await this.#loadForOwner();
-      const changed = applyDispatch(
-        loaded.records,
-        loaded.generations,
-        snapshot,
-      );
-      if (!changed) return;
-      await this.#appendForOwner(makeEnvelope("dispatch", snapshot));
-      await this.#compactIfNeededForOwner();
+      const state = await this.#load();
+      assertGenerationAvailable(state.retired, snapshot.profileId, snapshot.generation);
+      if (!applyTransition(state.records, type, snapshot)) return;
+      await this.#append(envelopeLine(type, snapshot), state);
+      this.#indexRecord(state, snapshot);
+      if (state.size >= this.#compactAtBytes) await this.#rewrite(state);
     });
   }
-
-  async recordObservation(record) {
-    const snapshot = validateDurableRecord({ ...record }, "observation");
+  async recordAdmission(record) {
+    // Freeze the entry-time identity before waiting for another owner.
+    const snapshot = structuredClone(record);
     return this.#serialize(async () => {
-      const loaded = await this.#loadForOwner();
-      const changed = applyObservation(
-        loaded.records,
-        loaded.generations,
-        snapshot,
-      );
-      if (!changed) return;
-      await this.#appendForOwner(makeEnvelope("observation", snapshot));
-      await this.#compactIfNeededForOwner();
+      const state = await this.#load();
+      const value = storeAdmission(state, snapshot);
+      if (value) await this.#append(admissionLine(value), state);
     });
+  }
+  async getAdmission(profileId, generation, operationId) {
+    stableId(profileId, "profileId"); positiveInteger(generation, "generation"); stableId(operationId, "operationId");
+    return this.#serialize(async () => (await this.#load()).admissions.get(`${profileId}\0${generation}\0${operationId}`) ?? null);
+  }
+
+  async recordEgress(record) {
+    const snapshot = structuredClone(record);
+    return this.#serialize(async () => {
+      const state = await this.#load();
+      const value = storeEgress(state, snapshot);
+      if (value) await this.#append(egressLine(value), state);
+    });
+  }
+  async getEgress(profileId, generation, operationId) {
+    stableId(profileId, "profileId"); positiveInteger(generation, "generation"); stableId(operationId, "operationId");
+    return this.#serialize(async () => (await this.#load()).egress.get(`${profileId}\0${generation}\0${operationId}`) ?? null);
   }
 
   async getOperation(profileId, generation, operationId) {
-    const checkedProfileId = stableId(profileId, "profileId");
-    const checkedGeneration = positiveInteger(generation, "generation");
-    const checkedOperationId = stableId(operationId, "operationId");
-    return this.#serialize(async () => {
-      const { records } = await this.#loadForOwner();
-      return (
-        records.get(
-          `${checkedProfileId}\u0000${checkedGeneration}\u0000${checkedOperationId}`,
-        ) ?? null
-      );
-    });
+    stableId(profileId, "profileId"); positiveInteger(generation, "generation"); stableId(operationId, "operationId");
+    return this.#serialize(async () => (await this.#load()).records.get(`${profileId}\0${generation}\0${operationId}`) ?? null);
   }
-
   async listOperations(profileId, generation) {
-    const checkedProfileId = stableId(profileId, "profileId");
-    const checkedGeneration = positiveInteger(generation, "generation");
-    return this.#serialize(async () => {
-      const { records } = await this.#loadForOwner();
-      const prefix = `${checkedProfileId}\u0000${checkedGeneration}\u0000`;
-      return [...records.entries()]
-        .filter(([key]) => key.startsWith(prefix))
-        .map(([, value]) => value);
-    });
+    stableId(profileId, "profileId"); positiveInteger(generation, "generation");
+    return this.#serialize(async () => [...((await this.#load()).byProfile.get(`${profileId}\0${generation}`)?.values() ?? [])]);
   }
-
+  async compact() { return this.#serialize(async () => this.#rewrite(await this.#load())); }
   async retireProfile(profileId, generation) {
-    const marker = validateGenerationMarker({ profileId, generation });
+    stableId(profileId, "profileId"); positiveInteger(generation, "generation");
     return this.#serialize(async () => {
-      const loaded = await this.#loadForOwner();
-      const retired = loaded.generations.get(marker.profileId) ?? 0;
-      if (marker.generation <= retired) return;
-      const matching = [...loaded.records.values()].filter(
-        (record) =>
-          record.profileId === marker.profileId &&
-          record.generation === marker.generation,
-      );
-      if (matching.length === 0) {
-        throw new BrowserJournalSemanticError(
-          "profile generation has no durable operations to retire",
-        );
-      }
-      if (matching.some((record) => record.terminalObserved !== true)) {
-        throw new BrowserJournalSemanticError(
-          "profile generation has unresolved operations and cannot retire",
-        );
-      }
-      const other = [...loaded.records.values()].filter(
-        (record) =>
-          record.profileId === marker.profileId &&
-          record.generation !== marker.generation,
-      );
-      if (other.length > 0) {
-        throw new BrowserJournalSemanticError(
-          "profile generation retirement is not the sole active generation",
-        );
-      }
-      await this.#appendForOwner(
-        makeEnvelope(
-          "generation_retired",
-          marker,
-          GENERATION_SCHEMA,
-          GENERATION_VERSION,
-        ),
-      );
-      applyGenerationMarker(loaded.records, loaded.generations, marker);
-      await this.#rewriteSnapshotForOwner(
-        loaded.records,
-        loaded.generations,
-        "retire",
-      );
-    });
-  }
-
-  async compact() {
-    return this.#serialize(async () => {
-      const { records, generations } = await this.#loadForOwner();
-      await this.#rewriteSnapshotForOwner(records, generations, "compact");
+      const state = await this.#load();
+      if (generation <= (state.retired.get(profileId) ?? 0)) return;
+      assertRetirable(state.records, profileId, generation);
+      if (!state.retired.has(profileId) && state.retired.size >= MAX_RETIRED_PROFILES) throw new JournalSemanticError("retired profile capacity exhausted");
+      // The exact #1064 inline marker is the durable non-resurrection point.
+      // Empty profiles retire too; starting a worker need not have sent effects.
+      await this.#append(markerLine(profileId, generation), state);
+      applyRetirement(state.records, state.retired, profileId, generation);
+      this.#reindex(state);
+      this.#fault("retired_high_water_committed_before_journal_rewrite");
+      await this.#rewrite(state);
     });
   }
 
   async recoverFencedPrefix() {
-    return this.#serialize(
-      async () => {
-        const inspection = await this.#inspectRepairableFinalTailForOwner();
-        if (inspection.tornTail === null) {
-          throw new BrowserJournalSemanticError(
-            "browser journal has no repairable torn final fragment",
-          );
-        }
-        try {
-          const parsed = JSON.parse(inspection.tornTail.toString("utf8"));
-          validateEnvelope(parsed);
-          throw new BrowserJournalSemanticError(
-            "browser journal final bytes contain a valid final record; refusing repair",
-          );
-        } catch (error) {
-          if (
-            error instanceof BrowserJournalSemanticError &&
-            error.message.includes("valid final record")
-          ) {
-            throw error;
-          }
-        }
-        try {
-          await truncate(this.#path, inspection.validPrefixLength);
-          const noFollow = constants.O_NOFOLLOW ?? 0;
-          const handle = await open(
-            this.#path,
-            constants.O_WRONLY | noFollow,
-          );
-          try {
-            await handle.sync();
-          } finally {
-            await handle.close();
-          }
-          await syncDirectory(dirname(this.#path));
-          this.#fencedError = null;
-        } catch (error) {
-          this.#fence(error);
-          throw error;
-        }
-      },
-      { recovery: true },
-    );
+    return this.#serialize(async () => {
+      this.#cache = null;
+      const info = await fileInfo(this.#path);
+      if (!info) throw new JournalSemanticError("no journal prefix to recover");
+      const bytes = await this.#readPrivate(this.#path, this.#maximumFileBytes);
+      if (!bytes.length || bytes.at(-1) === 10) throw new JournalSemanticError("no repairable torn final fragment");
+      await this.#load();
+      this.#fencedCause = null;
+    }, true);
   }
 
-  async #loadForOwner() {
-    try {
-      return await this.#load();
-    } catch (error) {
-      this.#fence(error);
-      throw error;
-    }
-  }
-
-  async #appendForOwner(envelope) {
-    try {
-      await this.#append(envelope);
-    } catch (error) {
-      if (!(error instanceof BrowserJournalSemanticError)) this.#fence(error);
-      throw error;
-    }
-  }
-
-  async #compactIfNeededForOwner() {
-    try {
-      const info = await stat(this.#path);
-      if (info.size >= this.#compactAtBytes) {
-        const { records, generations } = await this.#load();
-        await this.#rewriteSnapshot(records, generations, "compact");
-      }
-    } catch (error) {
-      if (!(error instanceof BrowserJournalSemanticError)) this.#fence(error);
-      throw error;
-    }
-  }
-
-  async #rewriteSnapshotForOwner(records, generations, reason) {
-    try {
-      await this.#rewriteSnapshot(records, generations, reason);
-    } catch (error) {
-      if (!(error instanceof BrowserJournalSemanticError)) this.#fence(error);
-      throw error;
-    }
-  }
-
-  async #load() {
-    await ensureCanonicalPrivateParent(this.#path);
-    const noFollow = constants.O_NOFOLLOW ?? 0;
-    let handle;
-    try {
-      handle = await open(this.#path, constants.O_RDONLY | noFollow);
-    } catch (error) {
-      if (error?.code === "ENOENT") {
-        return { records: new Map(), generations: new Map(), bytesLength: 0 };
-      }
-      throw error;
-    }
-    let bytes;
-    try {
-      const info = await handle.stat();
-      validatePrivateRegularFile(info, "browser journal");
-      if (info.size > this.#maximumFileBytes) {
-        throw new BrowserJournalCapacityError(
-          "browser journal exceeds configured capacity",
-        );
-      }
-      const pathInfo = await stat(this.#path);
-      if (!sameFileIdentity(info, pathInfo)) {
-        throw new TypeError("browser journal changed during secure open");
-      }
-      bytes = await handle.readFile();
-    } finally {
-      await handle.close();
-    }
-    const parsed = parseJournalBuffer(bytes);
-    const hydrated = hydrateEnvelopes(parsed.envelopes);
-    return { ...hydrated, bytesLength: bytes.length };
-  }
-
-  async #append(envelope) {
-    const line = `${canonical(envelope)}\n`;
-    const lineBytes = UTF8.encode(line).byteLength;
-    if (lineBytes > MAX_LINE_BYTES) {
-      throw new BrowserJournalCapacityError(
-        "browser journal record exceeds line limit",
-      );
-    }
-    const parent = await ensureCanonicalPrivateParent(this.#path);
-    const noFollow = constants.O_NOFOLLOW ?? 0;
-    const flags =
-      constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | noFollow;
-    const handle = await open(this.#path, flags, 0o600);
-    try {
-      const info = await handle.stat();
-      validatePrivateRegularFile(info, "browser journal");
-      if (info.size + lineBytes > this.#maximumFileBytes) {
-        throw new BrowserJournalCapacityError(
-          "browser journal capacity exhausted",
-        );
-      }
-      const pathInfo = await stat(this.#path);
-      if (!sameFileIdentity(info, pathInfo)) {
-        throw new TypeError("browser journal changed during append open");
-      }
-      await handle.writeFile(line, "utf8");
-      await handle.sync();
-    } finally {
-      await handle.close();
-    }
-    await syncDirectory(parent);
-  }
-
-  async #rewriteSnapshot(records, generations, reason) {
-    const contents = renderSnapshot(records, generations);
-    const size = UTF8.encode(contents).byteLength;
-    if (size > this.#maximumFileBytes) {
-      throw new BrowserJournalCapacityError(
-        "compacted browser journal exceeds configured capacity",
-      );
-    }
-    const parent = await ensureCanonicalPrivateParent(this.#path);
-    const temporary = `${this.#path}.${reason}.${randomUUID()}.tmp`;
-    const noFollow = constants.O_NOFOLLOW ?? 0;
-    const flags =
-      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow;
-    let renamed = false;
-    try {
-      const handle = await open(temporary, flags, 0o600);
-      try {
-        if (contents.length > 0) await handle.writeFile(contents, "utf8");
-        await handle.sync();
-      } finally {
-        await handle.close();
-      }
-      crashAt("after-temp-fsync");
-      await rename(temporary, this.#path);
-      renamed = true;
-      crashAt("after-rename");
-      await syncDirectory(parent);
-      crashAt("after-directory-fsync");
-    } finally {
-      if (!renamed) await rm(temporary, { force: true });
-    }
-  }
-
-  async #inspectRepairableFinalTailForOwner() {
-    try {
-      return await this.#inspectRepairableFinalTail();
-    } catch (error) {
-      if (!(error instanceof BrowserJournalSemanticError)) this.#fence(error);
-      throw error;
-    }
-  }
-
-  async #inspectRepairableFinalTail() {
-    await ensureCanonicalPrivateParent(this.#path);
-    const noFollow = constants.O_NOFOLLOW ?? 0;
-    const handle = await open(this.#path, constants.O_RDONLY | noFollow);
-    let bytes;
-    try {
-      const info = await handle.stat();
-      validatePrivateRegularFile(info, "browser journal");
-      if (info.size > this.#maximumFileBytes) {
-        throw new BrowserJournalCapacityError(
-          "browser journal exceeds configured capacity",
-        );
-      }
-      bytes = await handle.readFile();
-    } finally {
-      await handle.close();
-    }
-    const parsed = parseJournalBuffer(bytes, { allowRepairableTail: true });
-    hydrateEnvelopes(parsed.envelopes);
-    if (parsed.tornTail && parsed.tornTail.length > MAX_LINE_BYTES) {
-      throw new BrowserJournalCapacityError(
-        "browser journal torn final fragment exceeds line limit",
-      );
-    }
-    return parsed;
-  }
-
-  #fence(error) {
-    if (this.#fencedError !== null) return;
-    const fenced = new Error(
-      `browser journal owner is fenced pending explicit recovery: ${String(
-        error?.message ?? error,
-      )}`,
-      { cause: error },
-    );
-    fenced.name = "BrowserJournalRecoveryRequiredError";
-    this.#fencedError = fenced;
-  }
-
-  #serialize(operation, { recovery = false } = {}) {
+  async #serialize(operation, recovery = false) {
     const run = this.#tail.catch(() => {}).then(async () => {
-      if (!recovery && this.#fencedError !== null) throw this.#fencedError;
-      await ensureCanonicalPrivateParent(this.#path);
-      const release = await acquireInterprocessLock(this.#path);
-      let result;
-      let operationError;
-      try {
-        result = await operation();
-      } catch (error) {
-        operationError = error;
-      }
-      try {
-        await release();
-      } catch (error) {
-        this.#fence(error);
+      if (this.#fencedCause && !recovery) {
+        const error = new Error(`browser journal owner requires recovery (fenced): ${this.#fencedCause.message}`);
+        error.name = "BrowserJournalOwnerFencedError"; error.code = "BROWSER_JOURNAL_OWNER_FENCED";
         throw error;
       }
-      if (operationError !== undefined) throw operationError;
-      return result;
+      let release;
+      try {
+        await ensureCanonicalPrivateParent(this.#path);
+        const parent = await lstat(dirname(this.#path));
+        if (parent.uid !== process.geteuid()) throw new TypeError("browser journal parent has the wrong owner");
+        release = await acquireBrowserJournalLock(this.#path);
+        const result = await operation();
+        const unlock = release; release = null;
+        await unlock();
+        return result;
+      } catch (error) {
+        this.#cache = null;
+        if (!(error instanceof JournalSemanticError) && !(error instanceof BrowserJournalLockedError)) this.#fencedCause ??= error;
+        throw error;
+      } finally {
+        if (release) {
+          try { await release(); }
+          catch (error) { this.#cache = null; this.#fencedCause ??= error; throw error; }
+        }
+      }
     });
     this.#tail = run.catch(() => {});
     return run;
   }
+
+  async #readPrivate(path, maximum) {
+    const handle = await open(path, constants.O_RDONLY | constants.O_NOFOLLOW);
+    try {
+      const info = await handle.stat({ bigint: true });
+      validatePrivateFile(info, maximum, "browser journal");
+      const pathInfo = await fileInfo(path);
+      if (!pathInfo || stamp(pathInfo) !== stamp(info)) throw new Error("journal changed during secure open");
+      const bytes = await handle.readFile();
+      if (bytes.length > maximum) throw new TypeError("browser journal grew beyond capacity");
+      this.#stats.diskReadBytes += bytes.length;
+      return bytes;
+    } finally { await handle.close(); }
+  }
+
+  async #load() {
+    try { return await this.#loadValidated(); }
+    catch (error) { this.#cache = null; this.#fencedCause ??= error; throw error; }
+  }
+  async #loadValidated() {
+    const info = await fileInfo(this.#path);
+    const retiredInfo = await fileInfo(`${this.#path}.retired`);
+    if (info) validatePrivateFile(info, this.#maximumFileBytes, "browser journal");
+    if (retiredInfo) validatePrivateFile(retiredInfo, MAX_RETIRED_BYTES, "legacy retired journal");
+    const identity = stamp(info), legacyIdentity = stamp(retiredInfo);
+    if (this.#cache?.identity === identity && this.#cache.legacyIdentity === legacyIdentity) {
+      this.#stats.cacheHits++;
+      return this.#cache;
+    }
+    this.#stats.fullLoads++;
+    const state = { records: new Map(), retired: new Map(), admissions: new Map(), egress: new Map(), byProfile: new Map(), identity, legacyIdentity, size: 0 };
+    const bytes = info ? await this.#readPrivate(this.#path, this.#maximumFileBytes) : Buffer.alloc(0);
+    state.size = bytes.length;
+    const completeLength = bytes.length === 0 ? 0 : bytes.lastIndexOf(10) + 1;
+    const tail = bytes.subarray(completeLength);
+    if (tail.length > MAX_LINE_BYTES) throw new TypeError("journal torn final fragment exceeds line bound");
+    let rewrite = tail.length !== 0;
+    const text = new TextDecoder("utf-8", { fatal: true }).decode(bytes.subarray(0, completeLength));
+    const lines = text.length ? text.slice(0, -1).split("\n") : [];
+    for (const line of lines) {
+      if (!line.length || Buffer.byteLength(line) > MAX_LINE_BYTES) throw new TypeError("browser journal line is empty or exceeds limit");
+      let envelope;
+      try { envelope = requireRecord(JSON.parse(line), "browser journal envelope"); }
+      catch { throw new TypeError("browser journal contains malformed JSON"); }
+      exactKeys(envelope, ["checksum", "record", "schema", "type", "version"], "browser journal envelope");
+      const { schema, version, type, record } = envelope;
+      if (checksum({ schema, version, type, record }) !== envelope.checksum) throw new TypeError("browser journal checksum mismatch");
+      if (type === "egress" && schema === EGRESS_SCHEMA && version === 1) {
+        storeEgress(state, record);
+        continue;
+      }
+      if (type === "admission" && schema === ADMISSION_SCHEMA && version === 1) {
+        storeAdmission(state, record);
+        continue;
+      }
+      if (type === "generation_retired" && schema === GENERATION_SCHEMA && version === 1) {
+        requireRecord(record, "retirement marker"); exactKeys(record, ["generation", "profileId"], "retirement marker");
+        applyRetirement(state.records, state.retired, record.profileId, record.generation);
+        continue;
+      }
+      if (!["dispatch", "observation", "snapshot"].includes(type)) throw new TypeError("journal record type is unsupported");
+      let normalized;
+      if (schema === SCHEMA && version === 2) normalized = validateDurableRecord(record, type);
+      else if (schema === LEGACY_SCHEMA && version === 1) { normalized = migrateLegacyRecord(record, type); rewrite = true; }
+      else throw new TypeError("browser journal schema/version is unsupported");
+      assertGenerationAvailable(state.retired, normalized.profileId, normalized.generation);
+      applyTransition(state.records, type, normalized);
+    }
+    // Explicit compatibility with the reviewed predecessor's sidecar. It is
+    // never written again; absorb its monotonic facts into the inline journal.
+    // All legacy processes MUST be stopped before the owner-lock upgrade.
+    if (retiredInfo) {
+      const legacy = JSON.parse((await this.#readPrivate(`${this.#path}.retired`, MAX_RETIRED_BYTES)).toString("utf8"));
+      exactKeys(requireRecord(legacy, "legacy retirement"), ["checksum", "profiles", "schema", "version"], "legacy retirement");
+      const { schema, version, profiles } = legacy;
+      if (schema !== RETIRED_SCHEMA || version !== 1 || checksum({ schema, version, profiles }) !== legacy.checksum) throw new TypeError("legacy retirement schema/checksum mismatch");
+      requireRecord(profiles, "legacy retired profiles");
+      if (Object.keys(profiles).length > MAX_RETIRED_PROFILES) throw new TypeError("legacy retired profile capacity exceeded");
+      for (const [id, gen] of Object.entries(profiles)) {
+        if (gen > (state.retired.get(id) ?? 0)) { applyRetirement(state.records, state.retired, id, gen); rewrite = true; }
+      }
+    }
+    this.#reindex(state);
+    if (rewrite) { await this.#rewrite(state); this.#fault("torn_prefix_repaired"); }
+    else this.#cache = state;
+    return state;
+  }
+
+  #indexRecord(state, record) {
+    const id = `${record.profileId}\0${record.generation}`;
+    let group = state.byProfile.get(id);
+    if (!group) { group = new Map(); state.byProfile.set(id, group); }
+    group.set(record.operationId, record);
+  }
+  #reindex(state) {
+    state.byProfile = new Map();
+    for (const record of state.records.values()) this.#indexRecord(state, record);
+    for (const key of state.admissions.keys()) if (!state.records.has(key)) state.admissions.delete(key);
+    for (const key of state.egress.keys()) if (!state.records.has(key)) state.egress.delete(key);
+  }
+  async #publishCache(state) {
+    const info = await fileInfo(this.#path);
+    if (!info) throw new Error("journal disappeared before cache publication");
+    validatePrivateFile(info, this.#maximumFileBytes, "browser journal");
+    state.identity = stamp(info); state.size = Number(info.size); this.#cache = state;
+  }
+  async #append(line, state) {
+    const bytes = Buffer.byteLength(line);
+    if (bytes > MAX_LINE_BYTES) throw new JournalSemanticError("browser journal record exceeds line bound");
+    // The staged transition already exists in the private map. Publishing a
+    // snapshot at capacity includes that transition atomically, not twice.
+    if (state.size + bytes > this.#maximumFileBytes) {
+      if (JSON.parse(line).type === "generation_retired") {
+        const { profileId, generation } = JSON.parse(line).record;
+        applyRetirement(state.records, state.retired, profileId, generation);
+        this.#reindex(state);
+      }
+      await this.#rewrite(state);
+      return;
+    }
+    let created = false, handle;
+    try {
+      try {
+        handle = await open(this.#path, constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW, 0o600);
+        created = true;
+      } catch (error) {
+        if (error?.code !== "EEXIST") throw error;
+        handle = await open(this.#path, constants.O_WRONLY | constants.O_APPEND | constants.O_NOFOLLOW);
+      }
+      const info = await handle.stat({ bigint: true });
+      validatePrivateFile(info, this.#maximumFileBytes, "browser journal");
+      if ((!created && stamp(info) !== state.identity) || (created && state.identity !== "absent")) throw new Error("journal identity changed under owner lock");
+      await handle.writeFile(line, "utf8");
+      await handle.sync();
+      if (created) this.#fault("append_created_fsynced_before_parent_fsync");
+      if (JSON.parse(line).type === "generation_retired") this.#fault("retire_marker_fsynced_before_parent_fsync");
+    } finally { await handle?.close(); }
+    await syncDirectory(dirname(this.#path));
+    this.#stats.appends++;
+    await this.#publishCache(state);
+  }
+  async #rewrite(state) {
+    const body = [...state.records.entries()].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)
+      .map(([, record]) => envelopeLine("snapshot", record)).join("") +
+      [...state.admissions.entries()].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)
+        .map(([, record]) => admissionLine(record)).join("") +
+      [...state.egress.entries()].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)
+        .map(([, record]) => egressLine(record)).join("") +
+      [...state.retired.entries()].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)
+        .map(([id, generation]) => markerLine(id, generation)).join("");
+    if (Buffer.byteLength(body) > this.#maximumFileBytes) throw new JournalSemanticError("browser journal live snapshot capacity exhausted");
+    const temporary = `${this.#path}.compact-${process.pid}-${randomUUID()}`;
+    let renamed = false;
+    try {
+      const handle = await open(temporary, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW, 0o600);
+      try {
+        await handle.writeFile(body, "utf8"); await handle.sync();
+        this.#fault("compact_temp_fsynced_before_rename");
+        this.#crash("after-temp-fsync");
+      } finally { await handle.close(); }
+      await rename(temporary, this.#path); renamed = true;
+      this.#fault("compact_renamed_before_parent_fsync");
+      this.#crash("after-rename");
+      await syncDirectory(dirname(this.#path));
+      this.#crash("after-directory-fsync");
+      this.#stats.compactions++;
+      await this.#publishCache(state);
+    } finally { if (!renamed) await rm(temporary, { force: true }); }
+  }
+  #fault(name) { this.#faultInjector?.(name); }
+  #crash(phase) { if (process.env.HEPTA_BROWSER_JOURNAL_CRASH_PHASE === phase) process.exit(86); }
 }

@@ -211,9 +211,10 @@ test("compaction crash cuts retain a reopenable validated operation", async () =
 
 test("retirement crash cuts never resurrect a terminal profile generation", async () => {
   for (const point of [
-    "retired_temp_fsynced_before_rename",
-    "retired_renamed_before_parent_fsync",
+    "retire_marker_fsynced_before_parent_fsync",
     "retired_high_water_committed_before_journal_rewrite",
+    "compact_temp_fsynced_before_rename",
+    "compact_renamed_before_parent_fsync",
   ]) {
     const { path, journal } = await journalFixture();
     await journal.recordDispatch(record());
@@ -241,11 +242,10 @@ test("retirement crash cuts never resurrect a terminal profile generation", asyn
       /durable operation history|already been retired/,
       point,
     );
-    assert.notEqual(
-      await reopened.getOperation("profile.1", 1, "operation.1"),
-      null,
-      point,
-    );
+    const observation = await reopened.getOperation("profile.1", 1, "operation.1");
+    if (observation !== null) assert.equal(observation.terminalObserved, true, point);
+    await assert.rejects(reopened.recordDispatch(record()), /retired|changed/, point);
+
   }
 });
 
@@ -270,11 +270,11 @@ test("durable history blocks generation resurrection and unresolved cross-genera
       observationReason: "terminal_observed",
     }),
   );
+  await assert.rejects(journal.assertProfileGenerationAvailable("profile.1", 2), /explicit retirement/);
+  await assert.rejects(journal.assertProfileGenerationAvailable("profile.1", 1), /durable operation history/);
+  await journal.retireProfile("profile.1", 1);
   await journal.assertProfileGenerationAvailable("profile.1", 2);
-  await assert.rejects(
-    journal.assertProfileGenerationAvailable("profile.1", 1),
-    /durable operation history/,
-  );
+
 });
 
 test("profile retirement removes records and durably fences generation resurrection", async () => {
