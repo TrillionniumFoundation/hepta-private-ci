@@ -1,0 +1,48 @@
+diff --git a/scripts/hepta-lane-e-closure.py b/scripts/hepta-lane-e-closure.py
+--- a/scripts/hepta-lane-e-closure.py
++++ b/scripts/hepta-lane-e-closure.py
+@@ -29,7 +29,7 @@ EXPECTED_CASES = {
+     *(f"LEDGER-{index:02d}" for index in range(1, 14)),
+-    *(f"OP-{index:02d}" for index in range(1, 5)),
++    *(f"OP-{index:02d}" for index in range(1, 7)),
+     *(f"EVAL-{index:02d}" for index in range(1, 8)),
+     *(f"ART-{index:02d}" for index in range(1, 13)),
+ }
+@@ -83,13 +83,26 @@ EXPECTED_OPERATIONS = {
+     },
+     "learning.operator": {
+         "build_targets",
+-        "validate_applicability_certificate",
+         "build_sensor_core",
+         "evaluate_bellman_reference",
++        "validate_applicability_certificate",
++        "validate_applicability_with_signed_evidence_v2",
++        "fit_tabular_operator",
++        "fit_tabular_operator_strict_v2",
++        "verify_tabular_operator_plan_v2",
++        "fit_tabular_operator_verified_v2",
++        "predict_tabular_operator",
++        "encode_tabular_payload_v1",
++        "load_pinned_tabular_operator_v1",
+         "admit_operator_regularity",
++        "admit_operator_regularity_with_signed_evidence_v2",
+         "fit_transition_model",
++        "verify_world_model_dataset_v2",
++        "fit_transition_model_verified_v2",
+         "predict_transition",
++        "freeze_terminal_cell_from_owner_v1",
++        "fit_terminal_cell_from_owner_v1",
+     },
+     "learning.eval": {
+         "estimate_ope",
+@@ -551,8 +564,8 @@ def verify_learning_eval_production_boundary(findings: Findings) -> None:
+     for token in (
+         "trusted-inprocess-eval = []",
+         "pub mod trusted_inprocess",
+-        "pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;",
+-        "pub(crate) use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;",
++        "pub use signed_evaluation::decide_with_signed_evidence_v2;",
++        "pub use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;",
+     ):
+         findings.require(
+             token in (cargo + "\n" + lib),
