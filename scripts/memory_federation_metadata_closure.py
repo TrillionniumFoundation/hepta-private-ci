@@ -10,6 +10,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def replace_once(text: str, old: str, new: str, label: str) -> str:
+    if text.count(old) != 1:
+        raise SystemExit(f"{label}: expected one replacement, found {text.count(old)}")
+    return text.replace(old, new, 1)
+
+
 def patch_generated_runtime_parent() -> None:
     path = ROOT / "codex-rs/hepta-memory/src/cognitive_runtime.rs"
     text = path.read_text(encoding="utf-8")
@@ -23,6 +29,109 @@ def patch_generated_runtime_parent() -> None:
     if count != 1:
         raise SystemExit(f"generated runtime legacy constants drift: {count}")
     path.write_text(text, encoding="utf-8")
+
+
+def patch_generated_cancellation_and_binding() -> None:
+    telemetry_path = ROOT / "codex-rs/hepta-memory/src/cognitive_runtime_federation/telemetry.rs"
+    telemetry = telemetry_path.read_text(encoding="utf-8")
+    telemetry = replace_once(
+        telemetry,
+        '''        Ok(RegisteredFederationQueryV2 {
+            control: self.clone(),
+            key,
+        })''',
+        '''        Ok(RegisteredFederationQueryV2 {
+            control: self.clone(),
+            key,
+            completed: false,
+        })''',
+        "cancellation registration constructor",
+    )
+    telemetry = replace_once(
+        telemetry,
+        '''pub(super) struct RegisteredFederationQueryV2 {
+    control: FederationProductControl,
+    key: String,
+}
+
+impl Drop for RegisteredFederationQueryV2 {
+    fn drop(&mut self) {
+        if let Ok(mut active) = self.control.inner.active.lock() {
+            active.remove(&self.key);
+        }
+    }
+}''',
+        '''pub(super) struct RegisteredFederationQueryV2 {
+    control: FederationProductControl,
+    key: String,
+    completed: bool,
+}
+
+impl RegisteredFederationQueryV2 {
+    pub(super) fn complete(&mut self) {
+        if let Ok(mut active) = self.control.inner.active.lock() {
+            active.remove(&self.key);
+        }
+        self.completed = true;
+    }
+}
+
+impl Drop for RegisteredFederationQueryV2 {
+    fn drop(&mut self) {
+        if self.completed {
+            return;
+        }
+        let request = self
+            .control
+            .inner
+            .active
+            .lock()
+            .ok()
+            .and_then(|mut active| active.remove(&self.key));
+        if let Some(request) = request {
+            if let Ok(receipt) = observe_cancellation(request, false) {
+                self.control.record_receipt(receipt);
+            }
+        }
+    }
+}''',
+        "cancellation registration drop receipt",
+    )
+    telemetry_path.write_text(telemetry, encoding="utf-8")
+
+    attempt_path = ROOT / "codex-rs/hepta-memory/src/cognitive_runtime_federation/attempt.rs"
+    attempt = attempt_path.read_text(encoding="utf-8")
+    attempt = replace_once(
+        attempt,
+        "    let registration = match control.register_query(&query) {",
+        "    let mut registration = match control.register_query(&query) {",
+        "mutable cancellation registration",
+    )
+    attempt = replace_once(
+        attempt,
+        '''    )
+    .await;
+    drop(registration);
+    let captured = captured.lock().ok().and_then(|mut batch| batch.take());''',
+        '''    )
+    .await;
+    registration.complete();
+    drop(registration);
+    let captured = captured.lock().ok().and_then(|mut batch| batch.take());''',
+        "normal cancellation registration completion",
+    )
+    attempt_path.write_text(attempt, encoding="utf-8")
+
+    extension_path = ROOT / "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+    extension = extension_path.read_text(encoding="utf-8")
+    unused_wrapper = re.compile(
+        r"\nfn federation_source_binding\(\n.*?\n\}\n\n(?=fn federation_source_binding_with_diagnostics\()",
+        re.S,
+    )
+    extension, count = unused_wrapper.subn("\n", extension, count=1)
+    if count != 1:
+        raise SystemExit(f"generated unused federation binding wrapper drift: {count}")
+    extension_path.write_text(extension, encoding="utf-8")
 
 
 def patch_state_sources() -> None:
@@ -104,6 +213,7 @@ def patch_profile() -> None:
 
 def main() -> None:
     patch_generated_runtime_parent()
+    patch_generated_cancellation_and_binding()
     patch_state_sources()
     patch_profile()
     print("memory.federation metadata closure applied")
