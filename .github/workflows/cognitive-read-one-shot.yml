@@ -153,3 +153,5 @@ jobs:
             echo "- sealed tree: \`${{ steps.seal.outputs.tree }}\`"
             echo '- production/activation/release claims remain false.'
           } >> "$GITHUB_STEP_SUMMARY"
+
+# Registered workflow retrigger for the sealed branch candidate.
