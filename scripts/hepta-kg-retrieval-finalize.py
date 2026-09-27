@@ -61,14 +61,21 @@ def main() -> int:
         "// Scratch space for one SQLite read transaction, never shared across requests.\n"
         "// Each immutable scope/generation and its physical support map is materialized\n"
         "// once across generic, causal, procedural and contradiction channels.\n"
+        "type RetrievalGenerationKey = (String, i64);\n"
+        "type PhysicalSupportIndex = BTreeMap<String, (String, i64)>;\n"
+        "type CachedPhysicalSupportIndex = Option<PhysicalSupportIndex>;\n\n"
         "#[derive(Default)]\n"
         "struct RetrievalGenerations {\n"
-        "    generations: BTreeMap<(String, i64), ValidatedKnowledgeGenerationV2>,\n"
-        "    support_indexes: BTreeMap<(String, i64), Option<BTreeMap<String, (String, i64)>>>,\n"
+        "    generations: BTreeMap<RetrievalGenerationKey, ValidatedKnowledgeGenerationV2>,\n"
+        "    support_indexes: BTreeMap<RetrievalGenerationKey, CachedPhysicalSupportIndex>,\n"
         "}\n\n"
         "impl RetrievalGenerations {\n"
         "    fn new() -> Self {\n"
         "        Self::default()\n"
+        "    }\n\n"
+        "    #[cfg(test)]\n"
+        "    fn len(&self) -> usize {\n"
+        "        self.generations.len()\n"
         "    }\n"
         "}\n",
         "request-scoped generation and support cache",
@@ -173,14 +180,12 @@ def main() -> int:
 
             let cache_key = (projection_scope.clone(), generation_number);
             if !generations.generations.contains_key(&cache_key) {
-                let generation = load_canonical_generation_tx(
-                    transaction,
-                    &projection_scope,
-                    generation_number,
-                )
-                .await?;
-                let validated = ValidatedKnowledgeGenerationV2::new(generation).map_err(|error| {
-                    CognitiveStoreError::Corrupt(format!(
+                let generation =
+                    load_canonical_generation_tx(transaction, &projection_scope, generation_number)
+                        .await?;
+                let validated =
+                    ValidatedKnowledgeGenerationV2::new(generation).map_err(|error| {
+                        CognitiveStoreError::Corrupt(format!(
                         "persisted KG generation failed one-time V2 validation: {error}"
                     ))
                 })?;
