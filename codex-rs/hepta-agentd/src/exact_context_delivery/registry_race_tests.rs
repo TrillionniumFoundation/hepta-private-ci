@@ -111,7 +111,7 @@ impl Fixture {
         let context = String::from_utf8(compiled.serialized_payload.clone()).expect("context UTF-8");
         let attachment = PromptRuntimeAttachmentV1::new(
             compiled.compiled.receipt().compilation_id().clone(), compiled.attachment.attachment_digest(),
-            compiled.attachment.payload_digest(), "model".into(), now + 30_000,
+            compiled.attachment.payload_digest(), "model", now + 30_000,
             vec![PromptRuntimeDeveloperFragmentV1::new(context.clone()).expect("fragment")],
         ).expect("attachment");
         let request = PromptRuntimeFinalRequestV2 {
