@@ -1,0 +1,72 @@
+name: Inference worker offline build inputs
+
+on:
+  pull_request:
+    paths: ['.github/workflows/inference-worker-build-support.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: inference-worker-build-inputs-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inputs:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Retain source identity and pinned public build inputs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/inference-build-inputs"
+          mkdir -p "$ROOT/bin"
+          git rev-parse HEAD HEAD^{tree} > "$ROOT/source-identity.txt"
+          shasum -a 256 codex-rs/Cargo.lock > "$ROOT/lock.sha256"
+          VERSION="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$VERSION" --profile minimal
+          rustup toolchain install "$VERSION-x86_64-unknown-linux-gnu" --profile minimal --component rustfmt --component clippy --force-non-host
+          tar -C "$HOME/.rustup/toolchains" -czf "$ROOT/linux-toolchain.tar.gz" "$VERSION-x86_64-unknown-linux-gnu"
+          (cd codex-rs && cargo +"$VERSION" vendor --locked --versioned-dirs "$ROOT/vendor") > "$ROOT/vendor-config.toml"
+          tar -C "$ROOT" -czf "$ROOT/vendor.tar.gz" vendor
+          rm -rf "$ROOT/vendor"
+          export BUILD_INPUT_ROOT="$ROOT"
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, urllib.request
+          root = pathlib.Path(os.environ['BUILD_INPUT_ROOT'])
+          for repo, tag, match in [
+              ('casey/just', '1.51.0', 'x86_64-unknown-linux-musl.tar.gz'),
+              ('nextest-rs/nextest', 'cargo-nextest-0.9.103', 'x86_64-unknown-linux-gnu.tar.gz'),
+          ]:
+              req = urllib.request.Request(f'https://api.github.com/repos/{repo}/releases/tags/{tag}', headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
+              with urllib.request.urlopen(req, timeout=60) as stream:
+                  release = json.load(stream)
+              assets = [a for a in release['assets'] if a['name'].endswith(match)]
+              if len(assets) != 1:
+                  raise RuntimeError(f'exact tool asset unavailable: {repo} {tag}')
+              asset = assets[0]
+              target = root / asset['name']
+              urllib.request.urlretrieve(asset['browser_download_url'], target)
+              digest = 'sha256:' + hashlib.sha256(target.read_bytes()).hexdigest()
+              if asset.get('digest') and digest != asset['digest']:
+                  raise RuntimeError('release asset digest mismatch')
+              (root / (asset['name'] + '.metadata.json')).write_text(json.dumps({'repository': repo, 'tag': tag, 'asset_id': asset['id'], 'sha256': digest}, indent=2) + '\n')
+          PY
+          (cd "$ROOT" && shasum -a 256 *.tar.gz > archives.sha256)
+          git diff --exit-code
+      - name: Upload public tools and pinned dependency sources only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-build-inputs-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/inference-build-inputs/
+          compression-level: 0
+          retention-days: 3
+          if-no-files-found: error
