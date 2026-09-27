@@ -7,12 +7,16 @@ on:
     paths:
       - '.github/workflows/cognitive-store-one-shot-repair.yml'
 
+concurrency:
+  group: cognitive-store-one-shot-repair
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
 jobs:
   repair:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 150
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
