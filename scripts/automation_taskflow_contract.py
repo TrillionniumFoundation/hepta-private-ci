@@ -199,12 +199,15 @@ def verify(root: Path = ROOT) -> dict[str, Any]:
         "externalEffectProductCompositionComplete",
         "neuralCircuitRuntimeVerticalSliceComplete",
         "crossHostRecoveryContractComplete",
+        "selectedHostQualificationPathComplete",
+        "independentAcceptanceVerificationPathComplete",
     ]:
         need(claims.get(key) is True, f"implementation map does not close {key}")
     for key in [
         "deploymentQualificationComplete",
         "independentAcceptance",
         "activation",
+        "promotion",
         "release",
     ]:
         need(

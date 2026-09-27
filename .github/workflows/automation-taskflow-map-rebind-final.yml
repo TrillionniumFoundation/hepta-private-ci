@@ -14,7 +14,11 @@ on:
       - "qualification/module-execution-dossiers/detail/automation.taskflow.md"
       - "scripts/automation_taskflow_contract.py"
       - "scripts/test_automation_taskflow_contract.py"
+      - "scripts/verify_automation_taskflow_acceptance.py"
+      - "scripts/test_verify_automation_taskflow_acceptance.py"
       - ".github/workflows/automation-taskflow-focused.yml"
+      - ".github/workflows/automation-taskflow-selected-host.yml"
+      - ".github/workflows/automation-taskflow-independent-acceptance.yml"
       - ".github/workflows/blocking-ci.yml"
       - ".github/workflows/automation-taskflow-map-rebind-final.yml"
   workflow_dispatch:
@@ -45,6 +49,42 @@ jobs:
           set -euo pipefail
           git config user.name "hepta-automation-ci"
           git config user.email "hepta-automation-ci@users.noreply.github.com"
+          python3 scripts/hepta-implementation-maps.py migrate --module automation.taskflow
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          claims = data.setdefault("claimBoundary", {})
+          claims["selectedHostQualificationPathComplete"] = True
+          claims["independentAcceptanceVerificationPathComplete"] = True
+          for key in (
+              "deploymentQualificationComplete",
+              "independentAcceptance",
+              "activation",
+              "promotion",
+              "release",
+          ):
+              claims[key] = False
+          observed = set(data.get("observedSourcePaths", []))
+          observed.update(
+              {
+                  ".github/workflows/automation-taskflow-focused.yml",
+                  ".github/workflows/automation-taskflow-selected-host.yml",
+                  ".github/workflows/automation-taskflow-independent-acceptance.yml",
+                  "scripts/automation_taskflow_contract.py",
+                  "scripts/test_automation_taskflow_contract.py",
+                  "scripts/verify_automation_taskflow_acceptance.py",
+                  "scripts/test_verify_automation_taskflow_acceptance.py",
+                  "docs/modules/automation.taskflow/INDEPENDENT_ACCEPTANCE.md",
+                  "docs/modules/automation.taskflow/RELEASE_QUALIFICATION.md",
+                  "docs/modules/automation.taskflow/SLO.md",
+              }
+          )
+          data["observedSourcePaths"] = sorted(observed)
+          path.write_text(json.dumps(data, indent=2, sort_keys=False) + "\n", encoding="utf-8")
+          PY
           python3 scripts/hepta-implementation-maps.py migrate --module automation.taskflow
           python3 scripts/automation_taskflow_contract.py verify
           git diff --check
