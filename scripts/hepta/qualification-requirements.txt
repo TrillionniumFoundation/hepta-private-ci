@@ -1,0 +1,7 @@
+# Test-only schema verification dependencies; no production/runtime authority.
+# Pin the complete jsonschema dependency closure for Python 3.12 runners.
+attrs==24.3.0
+jsonschema==4.23.0
+jsonschema-specifications==2024.10.1
+referencing==0.35.1
+rpds-py==0.22.3

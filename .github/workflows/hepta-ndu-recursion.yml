@@ -4,19 +4,12 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-ndu/**"
-      - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"
-      - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs"
+      - "codex-rs/hepta-control-plane/**"
+      - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission*.rs"
+      - "codex-rs/hepta-intelligence-eval/src/ndu_*.rs"
       - "codex-rs/hepta-learning-artifacts/src/pinned.rs"
       - "codex-rs/hepta-learning-ledger/src/signed_evidence.rs"
       - "codex-rs/Cargo.lock"
-      - "codex-rs/hepta-control-plane/src/planner_ndu.rs"
-      - "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs"
-      - "codex-rs/hepta-control-plane/src/planner_context.rs"
-      - "codex-rs/hepta-control-plane/src/planner_context_tests.rs"
       - "docs/modules/utility.ndu/**"
       - "docs/readiness/LANE_D_MATURITY.json"
       - "docs/readiness/NDU_SYSTEM_EXECUTION.md"
@@ -25,25 +18,19 @@ on:
       - "scripts/verify_cargo_lock.py"
       - "scripts/test_verify_cargo_lock.py"
       - "scripts/hepta-ndu-source-policy.py"
+      - "scripts/hepta/*ndu*"
+      - "scripts/hepta/qualification-requirements.txt"
       - ".github/workflows/hepta-ndu-recursion.yml"
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - "codex-rs/hepta-ndu/**"
-      - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"
-      - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs"
+      - "codex-rs/hepta-control-plane/**"
+      - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission*.rs"
+      - "codex-rs/hepta-intelligence-eval/src/ndu_*.rs"
       - "codex-rs/hepta-learning-artifacts/src/pinned.rs"
       - "codex-rs/hepta-learning-ledger/src/signed_evidence.rs"
       - "codex-rs/Cargo.lock"
-      - "codex-rs/hepta-control-plane/src/planner_ndu.rs"
-      - "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs"
-      - "codex-rs/hepta-control-plane/src/planner_context.rs"
-      - "codex-rs/hepta-control-plane/src/planner_context_tests.rs"
       - "docs/modules/utility.ndu/**"
       - "docs/readiness/LANE_D_MATURITY.json"
       - "docs/readiness/NDU_SYSTEM_EXECUTION.md"
@@ -52,6 +39,8 @@ on:
       - "scripts/verify_cargo_lock.py"
       - "scripts/test_verify_cargo_lock.py"
       - "scripts/hepta-ndu-source-policy.py"
+      - "scripts/hepta/*ndu*"
+      - "scripts/hepta/qualification-requirements.txt"
       - ".github/workflows/hepta-ndu-recursion.yml"
   workflow_dispatch:
 
@@ -66,7 +55,7 @@ jobs:
   ndu:
     name: NDU (${{ matrix.lane }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -108,6 +97,19 @@ jobs:
       - name: Reject new legacy NDU evaluator callers
         run: python3 scripts/hepta-ndu-source-policy.py
 
+      - name: Install pinned schema verifier dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "${RUNNER_TEMP}/ndu-schema-venv"
+          "${RUNNER_TEMP}/ndu-schema-venv/bin/python" -m pip install --disable-pip-version-check \
+            --no-deps --only-binary=:all: \
+            --report "${RUNNER_TEMP}/ndu-schema-install.json" \
+            -r scripts/hepta/qualification-requirements.txt
+          "${RUNNER_TEMP}/ndu-schema-venv/bin/python" -m pip check
+          "${RUNNER_TEMP}/ndu-schema-venv/bin/python" -c 'from jsonschema import Draft202012Validator; Draft202012Validator.check_schema({"type": "object"})'
+          echo "${RUNNER_TEMP}/ndu-schema-venv/bin" >> "$GITHUB_PATH"
+
       - name: Install pinned repository test tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
@@ -118,6 +120,7 @@ jobs:
         run: |
           cargo check --locked --all-targets \
             -p codex-hepta-ndu \
+            -p codex-hepta-control-plane \
             -p codex-hepta-intelligence-eval \
             -p codex-hepta-intelligence \
             -p codex-hepta-learning-artifacts \
@@ -127,6 +130,7 @@ jobs:
       - name: Regression tests
         working-directory: codex-rs
         run: |
+          set -euo pipefail
           just test --locked -p codex-hepta-ndu
           cargo test --locked -p codex-hepta-intelligence-eval --lib
           cargo test --locked -p codex-hepta-intelligence --lib ndu_stochastic_admission
@@ -135,16 +139,20 @@ jobs:
           cargo test --locked -p codex-hepta-shadow-qualification value_learning
 
       - name: Control NDU caller regressions
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: |
+          set -euo pipefail
           cargo test --locked -p codex-hepta-control-plane --lib planner_context
           cargo test --locked -p codex-hepta-control-plane --lib planner_ndu
 
       - name: Strict lint
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: |
           cargo clippy --locked --all-targets \
             -p codex-hepta-ndu \
+            -p codex-hepta-control-plane \
             -p codex-hepta-intelligence-eval \
             -p codex-hepta-intelligence \
             -p codex-hepta-learning-artifacts \
@@ -153,6 +161,7 @@ jobs:
             -- -D warnings
 
       - name: Named-host NDU qualification
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         shell: bash
         run: |
@@ -170,13 +179,15 @@ jobs:
           python3 -m json.tool "${RECEIPT}" >/dev/null
           cat "${RECEIPT}"
 
-      - name: Retain named-host NDU receipt
+      - name: Retain named-host receipt and dependency provenance
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ndu-named-host-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
-          path: ${{ runner.temp }}/ndu-named-host-${{ matrix.lane }}.json
-          if-no-files-found: ignore
+          path: |
+            ${{ runner.temp }}/ndu-named-host-${{ matrix.lane }}.json
+            ${{ runner.temp }}/ndu-schema-install.json
+          if-no-files-found: warn
 
       - name: Formatting check without source mutation
         if: always()
@@ -184,6 +195,7 @@ jobs:
         run: |
           cargo fmt \
             --package codex-hepta-ndu \
+            --package codex-hepta-control-plane \
             --package codex-hepta-intelligence-eval \
             --package codex-hepta-intelligence \
             --package codex-hepta-learning-artifacts \
