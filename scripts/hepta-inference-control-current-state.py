@@ -80,6 +80,15 @@ def validate_source(source: dict[str, Any]) -> None:
         require((ROOT / value).exists(), f"missing source evidence root: {value}")
     status = source.get("status") or {}
     for field in (
+        "sourceImplementation",
+        "productCallerState",
+        "productionWriterState",
+    ):
+        require(
+            isinstance(status.get(field), str) and bool(status[field].strip()),
+            f"status {field} must be a nonempty string",
+        )
+    for field in (
         "productionImplementation",
         "productExecutionProved",
         "targetHostQualification",
@@ -96,6 +105,31 @@ def validate_source(source: dict[str, Any]) -> None:
         not status["activation"] or status["independentAcceptance"],
         "activation cannot be true without independent acceptance",
     )
+    repository_gaps = source.get("repositoryControlledGaps")
+    require(
+        isinstance(repository_gaps, list),
+        "repository-controlled gaps must be a list",
+    )
+    require(
+        len(repository_gaps) == len(set(repository_gaps)),
+        "repository-controlled gaps must be unique",
+    )
+    for index, gap in enumerate(repository_gaps):
+        require(
+            isinstance(gap, str) and bool(gap.strip()),
+            f"repository-controlled gap {index} must be a nonempty string",
+        )
+    external_gates = source.get("externalEvidenceGates")
+    require(isinstance(external_gates, list), "external evidence gates must be a list")
+    require(
+        len(external_gates) == len(set(external_gates)),
+        "external evidence gates must be unique",
+    )
+    for index, gate in enumerate(external_gates):
+        require(
+            isinstance(gate, str) and bool(gate.strip()),
+            f"external evidence gate {index} must be a nonempty string",
+        )
     operations = source.get("operations")
     require(isinstance(operations, list) and operations, "operations must be nonempty")
     names: set[str] = set()
@@ -158,6 +192,7 @@ def build_map(source: dict[str, Any]) -> dict[str, Any]:
                 "authority": "none_minted_by_execution_owner",
             }
         )
+    repository_gaps = source["repositoryControlledGaps"]
     return {
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
@@ -208,6 +243,9 @@ def build_map(source: dict[str, Any]) -> dict[str, Any]:
         "claimBoundary": {
             "implementedOperationMappingComplete": True,
             "nativeSourceMappingComplete": True,
+            "repositoryControlledSourceBoundaryGapsClosed": not bool(
+                repository_gaps
+            ),
             "sourceRootPresent": True,
             "productionImplementation": status["productionImplementation"],
             "productExecutionProved": status["productExecutionProved"],
@@ -216,7 +254,7 @@ def build_map(source: dict[str, Any]) -> dict[str, Any]:
             "activation": status["activation"],
             "release": status["release"],
         },
-        "repositoryControlledGaps": source["repositoryControlledGaps"],
+        "repositoryControlledGaps": repository_gaps,
         "externalEvidenceGates": source["externalEvidenceGates"],
     }
 
