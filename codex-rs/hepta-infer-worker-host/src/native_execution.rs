@@ -255,6 +255,11 @@ impl AppServerModelDriver {
             .ok_or("native prepared dispatch missing")?
             .revision;
         let mut owner_abort_required = intelligence.is_some();
+        // Once the exact Agentd effect-entry CAS is attempted, neither the
+        // owner nor the local journal may be downgraded to definitely-unsent.
+        // A lost/mismatched/idempotent acknowledgement is reconcile-only and
+        // never authorizes a physical send.
+        let mut effect_entry_fence_started = false;
         let preparation: Result<(EnteredUseToken, Duration)> = async {
             verify_persisted_dispatch_binding(
                 control,
@@ -272,34 +277,6 @@ impl AppServerModelDriver {
                 &authority_witness,
                 &app_server_version,
             )?;
-            if let Some(binding) = intelligence {
-                let dispatched = owner
-                    .run_mark_dispatched_exact(
-                        binding.run_id.clone(),
-                        binding.expected_revision,
-                        dispatch_digest.clone(),
-                    )
-                    .await?;
-                if dispatched.idempotent {
-                    // A lost acknowledgement can be reconciled; it never grants a
-                    // competing worker permission to stop the winning attempt.
-                    owner_abort_required = false;
-                    return Err("Agentd exact dispatch is already owned by another worker".into());
-                }
-                if dispatched.phase != AgentRunPhase::Dispatched
-                    || dispatched.dispatch_digest.as_deref() != Some(dispatch_digest.as_str())
-                    || dispatched.generation != self.config.generation
-                    || dispatched.terminal_observed
-                    || dispatched.context_digest.as_deref() != Some(binding.context_digest.as_str())
-                    || dispatched.compilation_receipt_digest.as_deref()
-                        != Some(binding.envelope_digest.as_str())
-                {
-                    return Err(
-                        "Agentd did not newly commit this exact intelligence dispatch".into(),
-                    );
-                }
-                intelligence_revision = Some(dispatched.revision);
-            }
             let post_health = owner.health().await?;
             let current_ingress = owner.session_ingress().await?;
             validate_post_authority_fence(
@@ -336,12 +313,55 @@ impl AppServerModelDriver {
             if !entered_use.matches(&authority_binding) {
                 return Err("kernel.authority final-use binding mismatch at entry".into());
             }
+            if let Some(binding) = intelligence {
+                // This is the server-owned, single-winner effect-entry fence.
+                // Set the flag before awaiting the RPC: an unknown ACK must not
+                // run either pre-effect compensation path.
+                effect_entry_fence_started = true;
+                let dispatched = owner
+                    .run_mark_dispatched_exact(
+                        binding.run_id.clone(),
+                        binding.expected_revision,
+                        dispatch_digest.clone(),
+                    )
+                    .await?;
+                if dispatched.idempotent {
+                    return Err(
+                        "Agentd effect-entry fence was already committed; reconcile only".into(),
+                    );
+                }
+                if dispatched.phase != AgentRunPhase::Dispatched
+                    || dispatched.dispatch_digest.as_deref() != Some(dispatch_digest.as_str())
+                    || dispatched.generation != self.config.generation
+                    || dispatched.terminal_observed
+                    || dispatched.context_digest.as_deref() != Some(binding.context_digest.as_str())
+                    || dispatched.compilation_receipt_digest.as_deref()
+                        != Some(binding.envelope_digest.as_str())
+                {
+                    return Err(
+                        "Agentd returned a mismatched fresh effect-entry fence receipt".into(),
+                    );
+                }
+                intelligence_revision = Some(dispatched.revision);
+            }
             Ok((entered_use, send_budget))
         }
         .await;
         let (entered_use, send_budget) = match preparation {
             Ok(value) => value,
             Err(error) => {
+                if effect_entry_fence_started {
+                    // The CAS may have committed. Preserve the local slot and
+                    // App Server history, destroy the process-local abort proof,
+                    // and never send without a fresh non-idempotent ACK.
+                    thread_guard.effect_entered();
+                    drop(pre_effect_abort);
+                    let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                    return Err(format!(
+                        "runtime.codex effect-entry fence requires same-operation reconciliation: {error}"
+                    )
+                    .into());
+                }
                 let reason: String = error.to_string().chars().take(512).collect();
                 let stopped = if owner_abort_required {
                     abort_pre_effect_consistently(
@@ -367,14 +387,17 @@ impl AppServerModelDriver {
         };
         // From here on, a missing acknowledgement is reconcile-only. Recovery
         // cannot recreate the local pre-effect proof that is deliberately lost.
+        // The owner fence is now irreversible. Destroy local abort
+        // authority and retain the thread before any further fallible local
+        // bookkeeping; failures from here are reconcile-only.
+        drop(pre_effect_abort);
+        thread_guard.effect_entered();
         let attempt = attempt
             .prepare_durable(request_receipt.request_digest)?
             .commit_owner(
                 intelligence_revision.unwrap_or(prepared_revision),
                 request_receipt.request_digest,
             )?;
-        drop(pre_effect_abort);
-        thread_guard.effect_entered();
         let attempt = attempt.enter_effect();
         let response = timeout(
             send_budget,

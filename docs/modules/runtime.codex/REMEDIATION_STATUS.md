@@ -1,6 +1,6 @@
 # runtime.codex remediation status and developer handoff
 
-Date: 2026-09-27 (Asia/Tokyo). Branch: `codex/runtime-codex-consolidated-20260927`.
+Date: 2026-09-27 (Asia/Tokyo). Branch: `runtime-codex/closure-20260927`.
 
 **Draft source candidate, not production-ready.** This status supplements the technical guide and supersedes any interpretation that the mere presence of a workflow, an operation mapping, or a test proves qualification. Main and the earlier remediation branches remain unchanged.
 
@@ -28,7 +28,9 @@ At the time this handoff was written, no successful complete native Rust test/Cl
 
 ### Server-owned effect-entry fence
 
-The worker owns an unforgeable live pre-effect abort token, but the new Agentd abort RPC transports serializable run/revision/digest/reason fields. Those fields alone cannot prove to Agentd that no physical send has occurred. Before merge/activation, add a server-owned effect-entry fence, enforced at the same owner that controls the effect, or an equivalent authenticated one-entry protocol. Once the fence may have been committed, abort must be impossible and a lost fence acknowledgement must remain reconcile-only. Add adversarial tests for abort-after-send, fence/abort races, duplicate workers and lost fence acknowledgement. **The current cross-owner P0 is not closed.**
+This source candidate now treats the fresh, non-idempotent Agentd `RunMarkDispatchedExact` CAS as the irreversible server-owned effect-entry fence. Final owner/ingress, context, cancellation, deadline and final-use-token checks all precede that CAS. Agentd accepts `abort-before-effect` only while the run remains `ContextAttached`; after the CAS reaches `Dispatched`, abort is impossible. Only the caller that receives the fresh exact ACK may issue physical `turn/start`. An idempotent response, mismatched response, transport loss or process loss authorizes no send and leaves both the local slot and owner state for same-operation reconciliation.
+
+The source-level P0 design is therefore closed in this candidate, but **qualification is not yet closed**: exact-head and synthetic-merge Rust tests, adversarial duplicate-worker/fence tests and product physical-send-count evidence must pass for the final commit before this statement can be promoted from source design to verified evidence.
 
 ### Owner lifecycle and recovery
 

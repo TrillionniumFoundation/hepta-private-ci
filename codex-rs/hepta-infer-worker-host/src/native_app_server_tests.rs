@@ -750,3 +750,30 @@ fn final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift() {
         .is_err()
     );
 }
+
+#[test]
+fn agentd_effect_entry_cas_is_the_last_fallible_gate_before_physical_send() {
+    let source = include_str!("native_execution.rs");
+    let final_context = source
+        .find("owner.revalidate_cognitive_context(snapshot)")
+        .expect("final context revalidation");
+    let token_entry = source
+        .find("verified_use.enter(&authority_binding)")
+        .expect("final-use token entry");
+    let owner_fence = source
+        .find(".run_mark_dispatched_exact(")
+        .expect("Agentd effect-entry CAS");
+    let proof_destroy = source
+        .find("drop(pre_effect_abort);")
+        .expect("local abort proof destruction");
+    let physical_send = source
+        .find("send_authorized_turn_start(&mut client")
+        .expect("physical turn/start");
+
+    assert!(final_context < token_entry);
+    assert!(token_entry < owner_fence);
+    assert!(owner_fence < proof_destroy);
+    assert!(proof_destroy < physical_send);
+    assert!(source.contains("Agentd effect-entry fence was already committed; reconcile only"));
+    assert!(source.contains("effect-entry fence requires same-operation reconciliation"));
+}

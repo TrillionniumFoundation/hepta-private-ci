@@ -319,6 +319,13 @@ impl AgentRunCoordinator {
         self.mark_dispatched_inner(now_ms, run_id, expected_revision, None)
     }
 
+    /// Irrevocable server-owned runtime.codex effect-entry fence.
+    ///
+    /// Only a fresh, non-idempotent receipt authorizes the caller to attempt
+    /// the physical App Server send. An idempotent receipt is reconciliation,
+    /// never a second-send permit. Once this CAS commits, `abort_before_effect`
+    /// is permanently unavailable; process or acknowledgement loss remains
+    /// same-operation reconciliation.
     pub fn mark_dispatched_exact(
         &mut self,
         now_ms: u64,
@@ -383,25 +390,19 @@ impl AgentRunCoordinator {
         {
             return Ok(receipt(record, /*idempotent*/ true));
         }
-        match record.phase {
-            RunPhase::ContextAttached => {
-                require_revision(record, pre_dispatch_revision)?;
-                if record.dispatch_digest.is_some() {
-                    return Err(AgentRunError::Conflict);
-                }
-                record.dispatch_digest = Some(dispatch_digest.to_string());
-            }
-            RunPhase::Dispatched => {
-                let dispatched_revision = pre_dispatch_revision
-                    .checked_add(1)
-                    .ok_or(AgentRunError::ArithmeticOverflow)?;
-                require_revision(record, dispatched_revision)?;
-                if record.dispatch_digest.as_deref() != Some(dispatch_digest) {
-                    return Err(AgentRunError::Conflict);
-                }
-            }
-            _ => return Err(AgentRunError::InvalidTransition),
+        // ContextAttached is the final abortable owner state. A fresh exact
+        // transition to Dispatched is the server-owned effect-entry fence and
+        // is deliberately irreversible even when the caller later proves that
+        // it crashed before the socket write. That conservative ambiguity is
+        // required to make abort-after-send impossible.
+        if record.phase != RunPhase::ContextAttached {
+            return Err(AgentRunError::InvalidTransition);
         }
+        require_revision(record, pre_dispatch_revision)?;
+        if record.dispatch_digest.is_some() {
+            return Err(AgentRunError::Conflict);
+        }
+        record.dispatch_digest = Some(dispatch_digest.to_string());
         // Precompute before changing state; overflow must leave the owner unchanged.
         let revision = record
             .revision
