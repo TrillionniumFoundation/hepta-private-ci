@@ -12,6 +12,7 @@
     "commitMustEqualCheckoutHead": true
   },
   "generatedBy": "scripts/hepta-intelligence-control-status.py",
+  "requirementMatrix": "docs/modules/intelligence.control/REQUIREMENT_MATRIX.json",
   "declaredRoots": [
     "codex-rs/hepta-intelligence"
   ],
@@ -33,10 +34,15 @@
     "durableLearningOutboxPresent": true,
     "restartReconciliationPresent": true,
     "exactAuthenticatedRecoveryPresent": true,
+    "currentTimeRecoveryPresent": true,
+    "recoveryFairnessPresent": true,
+    "boundedPayloadReadPresent": true,
+    "temporaryGrantRetryPresent": true,
     "daemonLearningReconcilerPresent": true,
     "physicalTerminalBindingPresent": true,
     "observabilityPresent": true,
     "hardTimeoutProcessFencePresent": true,
+    "explicitRequirementTraceabilityPresent": true,
     "sourceTestsPresent": true,
     "exactHeadExecuted": false,
     "syntheticMergeExecuted": false,
@@ -66,7 +72,12 @@
     "restartReconciliationPresent": true,
     "exactLearningEvidenceBindingPresent": true,
     "exactDestinationEventObservationPresent": true,
+    "currentTimeRecoveryPresent": true,
+    "currentEvidenceWindowPresent": true,
+    "boundedPayloadReadPresent": true,
+    "temporaryGrantRetryPresent": true,
     "daemonLearningReconcilerPresent": true,
+    "recoveryFairnessPresent": true,
     "physicalTerminalBindingPresent": true,
     "explicitLearningTerminalStatesPresent": true,
     "stageTelemetryPresent": true,
@@ -79,12 +90,14 @@
     "daemonObjectiveRoutePresent": true,
     "physicalTurnBindingPresent": true,
     "defaultBinaryCanonicalProfileComposed": false,
-    "capabilityAllOrNoneGuardPresent": true
+    "capabilityAllOrNoneGuardPresent": true,
+    "explicitRequirementMatrixPresent": true
   },
   "canonicalOperations": [
     {
       "operation": "prepare_intelligence_run",
       "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "nativeSymbol": "pub fn prepare_intelligence_run",
       "state": "source_implemented",
       "authority": "none",
       "tests": []
@@ -92,13 +105,22 @@
     {
       "operation": "validate_canonical_outcome_v1",
       "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+      "nativeSymbol": "pub fn validate_canonical_outcome_v1",
       "state": "source_implemented_final_product_gate",
       "authority": "none",
-      "tests": []
+      "tests": [
+        "boundary_rehashes_mutable_candidate_receipts",
+        "candidate_permutations_produce_identical_public_outcomes",
+        "malicious_selected_candidate_outside_legal_set_is_rejected",
+        "malicious_selection_cannot_reach_context_or_evaluation",
+        "raw_candidate_order_does_not_change_canonical_identity",
+        "zero_propensity_selection_is_rejected"
+      ]
     },
     {
       "operation": "AgentdIntelligenceRunIdentityV1::from_run_start",
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+      "nativeSymbol": "pub fn from_run_start",
       "state": "source_implemented_single_identity",
       "authority": "none",
       "tests": []
@@ -106,13 +128,18 @@
     {
       "operation": "AgentRunCoordinator::start_bound_run",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_bound.rs",
+      "nativeSymbol": "pub fn start_bound_run",
       "state": "source_implemented_composition_fenced",
       "authority": "none",
-      "tests": []
+      "tests": [
+        "forged_generation_or_fence_is_rejected_before_mutation",
+        "running_generation_differs_from_spawn_and_is_admitted"
+      ]
     },
     {
       "operation": "append_intelligence_decision_v1",
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+      "nativeSymbol": "pub fn append_intelligence_decision_v1",
       "state": "source_implemented_ledger_writer_only",
       "authority": "ledger_writer_only",
       "tests": []
@@ -120,6 +147,7 @@
     {
       "operation": "append_intelligence_outcome_v1",
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+      "nativeSymbol": "pub fn append_intelligence_outcome_v1",
       "state": "source_implemented_physical_terminal_bound",
       "authority": "ledger_writer_only",
       "tests": []
@@ -127,9 +155,36 @@
     {
       "operation": "AgentdIntelligenceLearningHostV1::reconcile_unsettled",
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
-      "state": "source_implemented_exact_replay",
+      "nativeSymbol": "pub async fn reconcile_unsettled",
+      "state": "source_implemented_exact_replay_current_time",
+      "authority": "fresh_final_use_only",
+      "tests": [
+        "evidence_payload_rejects_role_substitution",
+        "exact_destination_observation_binds_controller_identity",
+        "operation_ids_are_kind_separated_and_stable",
+        "persisted_evidence_binding_rejects_signed_identity_substitution",
+        "persisted_principal_binding_rejects_key_and_credential_substitution"
+      ]
+    },
+    {
+      "operation": "run_intelligence_learning_runtime_v1",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+      "nativeSymbol": "run_intelligence_learning_runtime_v1",
+      "state": "source_implemented_fair_bounded_scheduler",
       "authority": "none",
       "tests": []
+    },
+    {
+      "operation": "AppServerModelDriver::run_intelligence",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "nativeSymbol": "pub async fn run_intelligence",
+      "state": "source_implemented_exact_physical_binding",
+      "authority": "existing_app_server_spine",
+      "tests": [
+        "intelligence_handoff_is_committed_to_native_admission_identity",
+        "pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims",
+        "reopened_dispatch_and_completed_duplicate_never_connect_to_provider"
+      ]
     }
   ],
   "capabilityBoundary": {
@@ -144,8 +199,9 @@
     "AgentdIntelligenceProductRunnerV1::reconcile_ledger_append"
   ],
   "remainingExternalGates": [
-    "real-process host-owned provider plus ObjectiveStart plus App Server E2E",
-    "target-host latency RSS and hard-timeout process-restart qualification",
+    "real-process host-owned provider plus ObjectiveStart plus App Server plus learning E2E",
+    "crash injection at outbox publication destination commit acknowledgement and generation adoption",
+    "target-host latency RSS saturation and hard-timeout process-restart qualification",
     "independent semantic and security acceptance",
     "operator canary promotion and release"
   ]
