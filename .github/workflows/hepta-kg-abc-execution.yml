@@ -2,7 +2,7 @@ name: knowledge.graph A-B-C exact candidate execution
 
 on:
   push:
-    branches: [work/kg-abc-execution-20260927]
+    branches: [work/kg-abc-closure-20260928]
   workflow_dispatch:
 
 permissions:
@@ -23,6 +23,7 @@ env:
 jobs:
   bind:
     runs-on: macos-14
+    timeout-minutes: 30
     permissions:
       contents: write
     outputs:
@@ -34,12 +35,12 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Verify immutable candidate and bind source objects
+      - name: Prepare ordinary scoped commits and bind immutable source objects
         id: bind
         shell: bash
         env:
           SOURCE_SHA: ${{ github.sha }}
-          OWN_BRANCH: work/kg-abc-execution-20260927
+          OWN_BRANCH: work/kg-abc-closure-20260928
         run: |
           set -euo pipefail
           test "$GITHUB_REF_NAME" = "$OWN_BRANCH"
@@ -47,15 +48,71 @@ jobs:
           test "$(git ls-remote origin "refs/heads/$OWN_BRANCH" | cut -f1)" = "$SOURCE_SHA"
           git diff --exit-code
           git diff --cached --exit-code
+          git config user.name 'Hepta KG candidate preparation'
+          git config user.email 'hepta-kg-ci@users.noreply.github.com'
 
-          # Candidate generation happens in ordinary commits. Execution never
-          # rewrites prose or runtime claims while trying to validate that same
-          # candidate. This check must therefore be clean before source binding.
+          # Preparation is not executable proof. Format with the repository's
+          # real toolchain, commit the result, then bind that exact source tree.
+          # Execution jobs below only check formatting and never repair source.
+          channel="$(sed -n 's/^channel *= *"\([^"]*\)".*/\1/p' codex-rs/rust-toolchain.toml)"
+          test -n "$channel"
+          rustup toolchain install "$channel" --profile minimal --component rustfmt
+          (
+            cd codex-rs
+            cargo fmt --package codex-hepta-kg --package codex-hepta-memory \
+              --package codex-hepta-agentd --package codex-hepta-prompt-registry \
+              --package codex-hepta-prompt-optimizer
+          )
+          python3 - <<'PY'
+          import subprocess
+          from pathlib import Path
+
+          roots = (
+              'codex-rs/hepta-kg/', 'codex-rs/hepta-memory/',
+              'codex-rs/hepta-agentd/', 'codex-rs/hepta-prompt-registry/',
+              'codex-rs/hepta-prompt-optimizer/',
+          )
+          changed = subprocess.check_output(
+              ['git', 'diff', '--name-only', '-z'], text=True
+          ).split('\0')
+          for path in filter(None, changed):
+              if not path.startswith(roots) or not path.endswith('.rs'):
+                  raise SystemExit(f'formatter changed an unowned path: {path}')
+          guide = Path('docs/modules/knowledge.graph/TECHNICAL.md')
+          marker = '## Indexed query budget and writer selection (2026-09-28)'
+          section = (
+              '\n\n' + marker + '\n\n'
+              'The current indexed-query support-work ceiling, failure semantics, '
+              'reference-equivalence tests and candidate acceptance boundary are '
+              'specified in [QUERY_BUDGET_20260928.md](QUERY_BUDGET_20260928.md). '
+              'Compact `revision_facts_v1` persistence is not incremental '
+              'recalculation. The runtime writer remains complete and bounded; '
+              'see [writer selection and target-host qualification]'
+              '(../../../qualification/knowledge-graph/WRITER_SELECTION.md). '
+              'These documents describe candidate source and requirements, '
+              'not successful execution or release receipts.\n'
+          )
+          text = guide.read_text()
+          if marker not in text:
+              guide.write_text(text.rstrip() + section)
+          elif section.strip() not in text:
+              raise SystemExit('existing query-budget guide section has drifted')
+          PY
           python3 scripts/hepta_kg_documentation_sync.py --check
+          git diff --check
+          git add -u -- codex-rs/hepta-kg codex-rs/hepta-memory \
+            codex-rs/hepta-agentd codex-rs/hepta-prompt-registry \
+            codex-rs/hepta-prompt-optimizer docs/modules/knowledge.graph/TECHNICAL.md
+          if ! git diff --cached --quiet; then
+            git commit \
+              -m 'fix(knowledge.graph): format scoped candidate and link current contracts' \
+              -m 'Preparation only; native execution remains required.' \
+              -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
+          fi
 
-          # The implementation map cannot bind its own future blob. It binds the
-          # exact source/evidence path objects at SOURCE_SHA; a map-only commit
-          # records that manifest without changing any mapped object.
+          # Bind the committed objects, not an uncommitted formatter overlay.
+          # The map cannot bind its own future blob; only its source manifest is
+          # changed in this second ordinary commit. Claim flags remain false.
           python3 - <<'PY'
           import importlib.util
           import json
@@ -69,9 +126,16 @@ jobs:
           maps = importlib.util.module_from_spec(spec)
           spec.loader.exec_module(maps)
           path = Path('docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json')
-          row = json.loads(path.read_text(), object_pairs_hook=maps.unique_keys)
+          original = path.read_text()
+          row = json.loads(original, object_pairs_hook=maps.unique_keys)
           assert row['module'] == 'knowledge.graph'
           assert row['declaredRoots'] == ['codex-rs/hepta-kg']
+          additions = {
+              'docs/modules/knowledge.graph/QUERY_BUDGET_20260928.md',
+              'qualification/knowledge-graph/WRITER_SELECTION.md',
+          }
+          row['compositionRoots'] = sorted(set(row['compositionRoots']) | additions)
+          row['observedSourcePaths'] = sorted(set(row['observedSourcePaths']) | additions)
           current = maps.current_source_base()
           current_objects = maps.current_source_objects(row)
           if current_objects != row['sourceObjects']:
@@ -82,38 +146,37 @@ jobs:
                   set(row['observedSourcePaths'])
                   | {item['path'] for item in current_objects}
               )
-              path.write_text(json.dumps(row, indent=2) + '\n')
           assert row['productionImplementation'] is False
           for key in (
-              'productExecutionProved',
-              'independentAcceptance',
-              'activation',
-              'release',
+              'productExecutionProved', 'independentAcceptance', 'activation', 'release',
           ):
               assert row['claimBoundary'][key] is False
+          updated = json.dumps(row, indent=2) + '\n'
+          if updated != original:
+              path.write_text(updated)
           PY
-
           git diff --check
           git add docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
           if ! git diff --cached --quiet; then
             test "$(git diff --cached --name-only)" = \
               'docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json'
-            git config user.name 'Hepta KG candidate binding'
-            git config user.email 'hepta-kg-ci@users.noreply.github.com'
             git commit \
-              -m 'docs(knowledge.graph): bind immutable candidate source objects' \
+              -m 'docs(knowledge.graph): bind immutable closure source objects' \
               -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
-            git push origin "HEAD:refs/heads/$OWN_BRANCH"
           fi
-
           candidate="$(git rev-parse HEAD)"
           tree="$(git rev-parse HEAD^{tree})"
-          test "$(git ls-remote origin "refs/heads/$OWN_BRANCH" | cut -f1)" = "$candidate"
           python3 scripts/hepta_knowledge_graph_map_verify.py \
-            --expected-sha "$candidate" \
-            --expected-tree "$tree"
+            --expected-sha "$candidate" --expected-tree "$tree"
           git diff --exit-code
           git diff --cached --exit-code
+          # Do not overwrite concurrent work; only a normal fast-forward push is
+          # allowed and only to the exact isolated branch authorized above.
+          test "$(git ls-remote origin "refs/heads/$OWN_BRANCH" | cut -f1)" = "$SOURCE_SHA"
+          if [ "$candidate" != "$SOURCE_SHA" ]; then
+            git push origin "HEAD:refs/heads/$OWN_BRANCH"
+          fi
+          test "$(git ls-remote origin "refs/heads/$OWN_BRANCH" | cut -f1)" = "$candidate"
           echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
 
   execution:
@@ -147,7 +210,7 @@ jobs:
       - name: Set up repository Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: "3.12"
+          python-version: '3.12'
 
       - name: Construct existing deterministic pinned-base merge
         if: matrix.lane == 'base-merge'
@@ -155,7 +218,7 @@ jobs:
         with:
           base-sha: ${{ env.BASE_SHA }}
           source-sha: ${{ needs.bind.outputs.candidate }}
-          pr-number: '1110'
+          pr-number: '1142'
           author-name: Hepta KG CI
           author-email: hepta-kg-ci@users.noreply.github.com
           message: Synthetic merge
@@ -213,8 +276,7 @@ jobs:
             --profile '${{ matrix.profile }}' \
             --lane '${{ matrix.lane }}' \
             --evidence "$RUNNER_TEMP/kg-evidence" \
-            --source-sha "$SOURCE_SHA" \
-            --base-sha "$BASE_SHA"
+            --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA"
 
       - name: Ensure tests did not change tracked source
         if: always()
@@ -233,11 +295,8 @@ jobs:
           LANE: ${{ matrix.lane }}
         run: |
           python3 scripts/hepta_kg_execution_audit.py \
-            --directory "$RUNNER_TEMP/kg-evidence" \
-            --profile "$PROFILE" \
-            --lane "$LANE" \
-            --source-sha "$SOURCE_SHA" \
-            --base-sha "$BASE_SHA"
+            --directory "$RUNNER_TEMP/kg-evidence" --profile "$PROFILE" \
+            --lane "$LANE" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA"
 
       - name: Preserve observed results, not acceptance claims
         if: always()
