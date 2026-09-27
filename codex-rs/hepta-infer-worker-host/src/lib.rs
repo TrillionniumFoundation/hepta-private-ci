@@ -12,6 +12,10 @@
 #[cfg(any(test, feature = "experimental-local-model"))]
 pub mod model_worker;
 
+/// Kernel-verified local preparation only; no physical effect-entry is exposed.
+#[cfg(any(test, feature = "experimental-local-model"))]
+pub mod local_admission;
+
 pub mod final_use_authorizer;
 pub mod native_app_server;
 mod native_diagnostics;
