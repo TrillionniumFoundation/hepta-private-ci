@@ -95,7 +95,9 @@ impl MemoryFederationHostProfile {
         attempt_concurrency: usize,
         revalidation_concurrency: usize,
     ) -> Result<Self, CognitiveStoreError> {
-        if total_budget < Duration::from_millis(1) || total_budget > MAX_PRODUCT_FEDERATION_TOTAL_BUDGET {
+        if total_budget < Duration::from_millis(1)
+            || total_budget > MAX_PRODUCT_FEDERATION_TOTAL_BUDGET
+        {
             return Err(CognitiveStoreError::Invalid(format!(
                 "memory federation total budget must be 1ms..={}ms",
                 MAX_PRODUCT_FEDERATION_TOTAL_BUDGET.as_millis()
@@ -184,6 +186,7 @@ impl Default for MemoryFederationHostProfile {
         }
     }
 }
+
 static PRODUCT_FEDERATION_ATTEMPT_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 /// Sanitized reason why an owning runtime could not open its Cognitive Plane.
@@ -637,25 +640,33 @@ async fn retrieve_federated_product(
         )
         .ok_or_else(|| CognitiveStoreError::Invalid("federation deadline overflow".to_string()))?;
 
-    let discovery = stream::iter(owner_layouts.iter().cloned())
-        .map(|owner_layout| async move {
-            let outcome = FederatedMemoryReader::discover(
-                &owner_layout,
-                consumer_agent_id,
-                request.now_unix_seconds(),
-            )
-            .await;
-            (owner_layout, outcome)
-        })
-        .buffer_unordered(host_profile.discovery_concurrency())
-        .collect::<Vec<_>>();
-    let outcomes = tokio::time::timeout(host_profile.total_budget(), discovery)
-        .await
-        .map_err(|_| {
-            CognitiveStoreError::Unavailable("memory federation discovery timed out".to_string())
-        })?;
+    let (outcomes, timed_out_discoveries) = {
+        let discovery_deadline = tokio::time::Instant::now() + host_profile.total_budget();
+        let discovery = stream::iter(owner_layouts.iter().cloned())
+            .map(|owner_layout| async move {
+                let outcome = FederatedMemoryReader::discover(
+                    &owner_layout,
+                    consumer_agent_id,
+                    request.now_unix_seconds(),
+                )
+                .await;
+                (owner_layout, outcome)
+            })
+            .buffer_unordered(host_profile.discovery_concurrency());
+        futures::pin_mut!(discovery);
+        let mut outcomes = Vec::with_capacity(owner_layouts.len());
+        loop {
+            match tokio::time::timeout_at(discovery_deadline, discovery.next()).await {
+                Ok(Some(outcome)) => outcomes.push(outcome),
+                Ok(None) => break,
+                Err(_) => break,
+            }
+        }
+        let timed_out_discoveries = owner_layouts.len().saturating_sub(outcomes.len());
+        (outcomes, timed_out_discoveries)
+    };
     let mut readers = Vec::new();
-    let mut discovery_failures = 0usize;
+    let mut discovery_failures = timed_out_discoveries;
     for (owner_layout, outcome) in outcomes {
         match outcome {
             Ok(discovered) => {
@@ -1102,8 +1113,7 @@ impl FederationTransportV2 for ProductReaderTransport<'_> {
                 .iter()
                 .map(product_evidence_item)
                 .collect::<Result<Vec<_>, _>>()?;
-            let maximum_results =
-                usize::try_from(query.maximum_results).unwrap_or(usize::MAX);
+            let maximum_results = usize::try_from(query.maximum_results).unwrap_or(usize::MAX);
             let completeness = if items.is_empty() {
                 FederatedCompletenessV2::Empty
             } else if items.len() >= maximum_results {
@@ -1393,6 +1403,7 @@ mod product_nonce_tests {
             requested_peers: 1,
             completed_peers: 0,
             failed_peers: 0,
+            partial_peers: 0,
             truncated_peers: 0,
             omitted_peer_candidates: 0,
             truncated_items: 0,
@@ -1402,6 +1413,7 @@ mod product_nonce_tests {
             requested_peers: 1,
             completed_peers: 1,
             failed_peers: 0,
+            partial_peers: 0,
             truncated_peers: 0,
             omitted_peer_candidates: 0,
             truncated_items: 0,
@@ -1410,6 +1422,87 @@ mod product_nonce_tests {
         merge_product_coverage(&mut aggregate, &attempt, FederatedValidityV2::Revoked);
         assert_eq!(aggregate.completed_peers, 0);
         assert_eq!(aggregate.failed_peers, 1);
+        assert_eq!(aggregate.partial_peers, 0);
+    }
+
+    #[test]
+    fn valid_partial_attempt_preserves_partial_coverage() {
+        let mut aggregate = FederatedCoverageV2 {
+            requested_peers: 1,
+            completed_peers: 0,
+            failed_peers: 0,
+            partial_peers: 0,
+            truncated_peers: 0,
+            omitted_peer_candidates: 0,
+            truncated_items: 0,
+            failures: FederatedFailureCoverageV2::default(),
+        };
+        let attempt = FederatedCoverageV2 {
+            requested_peers: 1,
+            completed_peers: 1,
+            failed_peers: 0,
+            partial_peers: 1,
+            truncated_peers: 0,
+            omitted_peer_candidates: 0,
+            truncated_items: 0,
+            failures: FederatedFailureCoverageV2::default(),
+        };
+        merge_product_coverage(&mut aggregate, &attempt, FederatedValidityV2::Valid);
+        assert_eq!(aggregate.completed_peers, 1);
+        assert_eq!(aggregate.failed_peers, 0);
+        assert_eq!(aggregate.partial_peers, 1);
+    }
+
+    #[test]
+    fn host_profile_accepts_narrow_limits_and_rejects_widening() {
+        let profile = MemoryFederationHostProfile::try_new(
+            Duration::from_millis(250),
+            8,
+            4,
+            2,
+            2,
+            2,
+        )
+        .expect("narrow host profile");
+        assert_eq!(profile.total_budget(), Duration::from_millis(250));
+        assert_eq!(profile.max_owner_candidates(), 8);
+        assert_eq!(profile.max_admitted_peers(), 4);
+        assert_eq!(profile.discovery_concurrency(), 2);
+        assert_eq!(profile.attempt_concurrency(), 2);
+        assert_eq!(profile.revalidation_concurrency(), 2);
+        assert!(
+            MemoryFederationHostProfile::try_new(
+                MAX_PRODUCT_FEDERATION_TOTAL_BUDGET + Duration::from_millis(1),
+                8,
+                4,
+                2,
+                2,
+                2,
+            )
+            .is_err()
+        );
+        assert!(
+            MemoryFederationHostProfile::try_new(
+                Duration::from_millis(250),
+                MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS + 1,
+                4,
+                2,
+                2,
+                2,
+            )
+            .is_err()
+        );
+        assert!(
+            MemoryFederationHostProfile::try_new(
+                Duration::from_millis(250),
+                8,
+                MAX_FEDERATION_SOURCES_PER_AGENT + 1,
+                2,
+                2,
+                2,
+            )
+            .is_err()
+        );
     }
 
     #[test]
