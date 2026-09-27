@@ -142,10 +142,17 @@ export function publicOperation(entry) {
 
 export function operationMatches(entry, request) {
   return (
+    entry.protocolVersion === request.protocolVersion &&
     entry.method === request.method &&
-    entry.semanticDigest === request.semanticDigest &&
+    constantTimeEqual(entry.semanticDigest, request.semanticDigest) &&
     entry.action === request.action &&
-    entry.targetId === request.targetId
+    entry.targetId === request.targetId &&
+    entry.reason === request.reason &&
+    entry.sessionId === request.sessionId &&
+    entry.connectionGeneration === request.connectionGeneration &&
+    entry.generation === request.generation &&
+    entry.displayedRevision === request.displayedRevision &&
+    constantTimeEqual(entry.snapshotDigest, request.snapshotDigest)
   );
 }
 
