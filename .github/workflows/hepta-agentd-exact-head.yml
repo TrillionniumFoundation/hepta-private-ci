@@ -1,12 +1,14 @@
 name: Agentd exact-head engineering
 
 on:
+  workflow_call:
   workflow_dispatch:
   pull_request:
   push:
     branches:
       - main
       - work/runtime-agentd-remediation-20260926
+      - work/runtime-agentd-remediation-20260927
       - work/product-convergence-20260923
       - integrate/agentd-product-sweep-20260829
 
@@ -14,7 +16,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: agentd-exact-${{ github.event.pull_request.number || github.ref }}
+  group: agentd-exact-${{ github.event.pull_request.number || github.ref }}-${{ github.workflow_ref }}
   cancel-in-progress: false
 
 env:
