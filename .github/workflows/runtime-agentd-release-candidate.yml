@@ -1,0 +1,199 @@
+name: Runtime Agentd release-candidate provenance
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact 40-character candidate commit whose bytes will be retained.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: runtime-agentd-release-candidate-${{ inputs.candidate_sha }}
+  cancel-in-progress: false
+
+jobs:
+  build-attest:
+    name: Build and attest runtime.agentd candidate bytes
+    environment: runtime-agentd-release-candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      EXPECTED_SHA: ${{ inputs.candidate_sha }}
+      CARGO_INCREMENTAL: "0"
+    steps:
+      - name: Checkout exact candidate without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install repository Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal --component clippy
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: codex-rs
+          shared-key: runtime-agentd-release-candidate-v1
+
+      - name: Reverify source closure and release surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest -v \
+            scripts.tests.test_hepta_runtime_agentd_closure \
+            scripts.qualification.test_runtime_agentd_target_host
+          python3 -B scripts/hepta_runtime_agentd_closure.py verify \
+            --root "$GITHUB_WORKSPACE" \
+            --expected-sha "$EXPECTED_SHA" \
+            --output "$RUNNER_TEMP/runtime-agentd-source-closure.json"
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta_agentd_trust_boundary.py
+
+      - name: Execute release-candidate owner tests and strict lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd --lib
+          cargo test --locked -p codex-hepta-agentd --test runtime_codex_product_e2e
+          cargo test --locked -p codex-hepta-infer-worker-host --test native_host_process_e2e
+          cargo clippy --locked \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-worker-host \
+            --all-targets -- -D warnings
+
+      - name: Build exact retained binaries
+        working-directory: codex-rs
+        shell: bash
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/runtime-agentd-release-target
+        run: |
+          set -euo pipefail
+          cargo build --locked --release \
+            -p codex-hepta-agentd --bin codex-hepta-agentd \
+            -p codex-hepta-infer-worker-host --bin hepta-infer-worker
+          test -x "$CARGO_TARGET_DIR/release/codex-hepta-agentd"
+          test -x "$CARGO_TARGET_DIR/release/hepta-infer-worker"
+
+      - name: Freeze manifest and immutable artifact bundle
+        shell: bash
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/runtime-agentd-release-target
+          OUT: ${{ runner.temp }}/runtime-agentd-release-candidate
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT/payload"
+          install -m 0755 "$CARGO_TARGET_DIR/release/codex-hepta-agentd" "$OUT/payload/codex-hepta-agentd"
+          install -m 0755 "$CARGO_TARGET_DIR/release/hepta-infer-worker" "$OUT/payload/hepta-infer-worker"
+          cp "$RUNNER_TEMP/runtime-agentd-source-closure.json" "$OUT/payload/source-closure.json"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import platform
+          import subprocess
+
+          root = Path.cwd()
+          out = Path(os.environ["OUT"])
+          payload = out / "payload"
+
+          def digest(path: Path) -> str:
+              value = hashlib.sha256()
+              with path.open("rb") as stream:
+                  for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                      value.update(chunk)
+              return value.hexdigest()
+
+          files = {}
+          for path in sorted(payload.iterdir()):
+              files[path.name] = {
+                  "sha256": digest(path),
+                  "bytes": path.stat().st_size,
+                  "mode": oct(path.stat().st_mode & 0o777),
+              }
+          manifest = {
+              "schema": "hepta.runtime-agentd.release-candidate.v1",
+              "source_sha": subprocess.check_output(
+                  ["git", "rev-parse", "HEAD"], cwd=root, text=True
+              ).strip(),
+              "source_tree": subprocess.check_output(
+                  ["git", "rev-parse", "HEAD^{tree}"], cwd=root, text=True
+              ).strip(),
+              "rustc": subprocess.check_output(["rustc", "-Vv"], text=True).strip(),
+              "host": platform.platform(),
+              "cargo_lock_sha256": digest(root / "codex-rs" / "Cargo.lock"),
+              "workflow_sha256": digest(
+                  root / ".github" / "workflows" / "runtime-agentd-release-candidate.yml"
+              ),
+              "files": files,
+              "production_activation": False,
+              "release_created": False,
+              "deployment_created": False,
+              "independent_acceptance": False,
+          }
+          path = payload / "manifest.json"
+          path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner \
+            -C "$OUT/payload" -czf "$OUT/runtime-agentd-${EXPECTED_SHA}.tar.gz" .
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          out = Path(os.environ["OUT"])
+          bundle = out / f"runtime-agentd-{os.environ['EXPECTED_SHA']}.tar.gz"
+          digest = hashlib.sha256(bundle.read_bytes()).hexdigest()
+          summary = {
+              "schema": "hepta.runtime-agentd.release-candidate-summary.v1",
+              "source_sha": os.environ["EXPECTED_SHA"],
+              "bundle": bundle.name,
+              "bundle_sha256": digest,
+              "bundle_bytes": bundle.stat().st_size,
+              "production_activation": False,
+              "release_created": False,
+              "deployment_created": False,
+          }
+          (out / "provenance-summary.json").write_text(
+              json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          PY
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Attest retained candidate bundle provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: ${{ runner.temp }}/runtime-agentd-release-candidate/runtime-agentd-${{ inputs.candidate_sha }}.tar.gz
+
+      - name: Attest provenance summary
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: ${{ runner.temp }}/runtime-agentd-release-candidate/provenance-summary.json
+
+      - name: Retain exact candidate bytes and manifests
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-agentd-release-candidate-${{ inputs.candidate_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/runtime-agentd-release-candidate/
+          if-no-files-found: error
+          retention-days: 90
