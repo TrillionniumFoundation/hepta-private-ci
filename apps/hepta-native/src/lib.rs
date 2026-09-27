@@ -27,6 +27,8 @@ pub mod fonts;
 pub mod launch_config;
 pub mod startup;
 
+// Snapshot research tests are not a production capability handoff.
+#[cfg(test)]
 mod resource;
 
 mod retirement;

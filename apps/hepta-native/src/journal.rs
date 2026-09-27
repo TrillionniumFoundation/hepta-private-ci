@@ -324,10 +324,13 @@ impl OperationJournal {
         let mut operations = Vec::with_capacity(state.operations.len());
         for record in state.operations {
             let digest = retirement_digest(&record.endpoint_id, &record.key)?;
-            if !retirement
-                .as_ref()
-                .is_some_and(|store| store.contains(&digest))
-            {
+            if let Some(store) = retirement.as_ref().filter(|store| store.contains(&digest)) {
+                if store.read_record(&digest)?.is_some_and(|archived| archived != record) {
+                    return Err(ShellError::State(
+                        "active closed record differs from its durable archive".to_owned(),
+                    ));
+                }
+            } else {
                 operations.push(record);
             }
         }
@@ -340,6 +343,21 @@ impl OperationJournal {
             private_root,
             _lock: lock,
         })
+    }
+
+    /// Read-only historical lookup. Legacy identity-only tombstones return None;
+    /// callers must still enforce ensure_not_retired before starting any effect.
+    pub fn archived_record(
+        &self,
+        endpoint_id: &str,
+        key: &OperationKey,
+    ) -> Result<Option<OperationRecord>, ShellError> {
+        self.ensure_healthy()?;
+        let digest = retirement_digest(endpoint_id, key)?;
+        match &self.retirement {
+            Some(store) => store.read_record(&digest),
+            None => Ok(None),
+        }
     }
 
     pub fn path(&self) -> &Path {
@@ -539,6 +557,7 @@ impl OperationJournal {
 
         let mut next_operations = Vec::with_capacity(self.operations.len() - remaining_to_retire);
         let mut next_retired = self.retired_operation_digests.clone();
+        let mut retiring_records = Vec::new();
         let mut retired_set: HashSet<String> = next_retired.iter().cloned().collect();
         for record in &self.operations {
             if remaining_to_retire > 0
@@ -553,6 +572,7 @@ impl OperationJournal {
                     ));
                 }
                 next_retired.push(digest);
+                retiring_records.push(record.clone());
                 remaining_to_retire -= 1;
             } else {
                 next_operations.push(record.clone());
@@ -567,7 +587,7 @@ impl OperationJournal {
             self.retirement
                 .as_mut()
                 .ok_or_else(|| ShellError::State("retirement store unavailable".to_owned()))?
-                .append(&next_retired)?;
+                .append_records(&next_retired, &retiring_records)?;
             self.persist(&next_operations, &[])
         })();
         if let Err(error) = publication {
@@ -629,7 +649,7 @@ impl OperationJournal {
     }
 }
 
-fn retirement_digest(endpoint_id: &str, key: &OperationKey) -> Result<String, ShellError> {
+pub(crate) fn retirement_digest(endpoint_id: &str, key: &OperationKey) -> Result<String, ShellError> {
     validate_stable_id(endpoint_id, "retirement.endpoint_id")?;
     validate_stable_id(&key.session_id, "retirement.session_id")?;
     validate_stable_id(&key.operation_id, "retirement.operation_id")?;

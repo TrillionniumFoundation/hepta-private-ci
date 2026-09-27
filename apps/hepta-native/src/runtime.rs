@@ -224,10 +224,11 @@ impl NativeShellRuntime {
             crate::model::sha256_hex(serde_json::to_vec(&request.grant.grant.binding)?);
         let grant_digest = crate::model::sha256_hex(serde_json::to_vec(&request.grant)?);
         let key = OperationKey::new(&session, &request.operation_id)?;
-        self.journal
-            .ensure_not_retired(&session.endpoint_id, &key)?;
-
-        if let Some(existing) = self.journal.find(&key).cloned() {
+        let existing = match self.journal.find(&key).cloned() {
+            Some(record) => Some(record),
+            None => self.journal.archived_record(&session.endpoint_id, &key)?,
+        };
+        if let Some(existing) = existing {
             if existing.endpoint_id != session.endpoint_id
                 || existing.subject_id != request.subject_id
                 || existing.displayed_revision != request.displayed_revision
@@ -251,6 +252,9 @@ impl NativeShellRuntime {
             }
         }
 
+        // Legacy tombstones have no reconstructable receipt, but still fence
+        // the identity. Historical lookup never grants permission to replay.
+        self.journal.ensure_not_retired(&session.endpoint_id, &key)?;
         let view = self.require_view()?.clone();
         if request.displayed_revision != view.revision {
             return Err(ShellError::State(
