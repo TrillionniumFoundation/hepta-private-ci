@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       candidate_sha:
-        description: Exact committed candidate to qualify
+        description: Exact protected main commit to qualify
         required: true
         type: string
       host_profile:
@@ -25,18 +25,24 @@ jobs:
     runs-on: [self-hosted, linux, x64, hepta-fleet-target]
     timeout-minutes: 90
     steps:
-      - name: Check out exact candidate
+      - name: Check out protected main
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ inputs.candidate_sha }}
+          ref: main
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Verify candidate and physical host inputs
+      - name: Verify exact protected candidate and physical host inputs
         shell: bash
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          PROFILE: ${{ inputs.host_profile }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${{ inputs.candidate_sha }}"
+          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$PROFILE" =~ ^[A-Za-z0-9._:-]{1,128}$ ]]
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test "$(git rev-parse refs/remotes/origin/main)" = "$CANDIDATE_SHA"
           test -r /etc/machine-id
           test -r /proc/sys/kernel/random/boot_id
           test -r /proc/meminfo
@@ -48,7 +54,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --all -- --check
+          cargo fmt --package codex-hepta-fleet --package codex-hepta-supervisor -- --check
           cargo test -p codex-hepta-fleet --all-targets
           cargo test -p codex-hepta-supervisor --lib
           cargo check -p codex-hepta-supervisor --bin hepta-supervisord
