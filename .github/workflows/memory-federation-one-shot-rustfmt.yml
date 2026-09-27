@@ -50,8 +50,6 @@ jobs:
             .github/workflows/memory-federation-one-shot-rustfmt.yml
             codex-rs/hepta-memory-federation/src/v2.rs
             codex-rs/hepta-memory/src/cognitive_runtime.rs
-            codex-rs/hepta-memory/src/cognitive_runtime_identity_tests.rs
-            codex-rs/hepta-memory/src/lib.rs
           )
           mapfile -t expected_sorted < <(printf '%s\n' "${expected[@]}" | sort)
           test "$(printf '%s\n' "${changed[@]}")" = "$(printf '%s\n' "${expected_sorted[@]}")"
@@ -70,8 +68,6 @@ jobs:
           git add \
             .github/workflows/memory-federation-one-shot-rustfmt.yml \
             codex-rs/hepta-memory-federation/src/v2.rs \
-            codex-rs/hepta-memory/src/cognitive_runtime.rs \
-            codex-rs/hepta-memory/src/cognitive_runtime_identity_tests.rs \
-            codex-rs/hepta-memory/src/lib.rs
+            codex-rs/hepta-memory/src/cognitive_runtime.rs
           git commit -m "style(memory-federation): apply pinned rustfmt diagnostics"
           git push origin "HEAD:$BRANCH"
