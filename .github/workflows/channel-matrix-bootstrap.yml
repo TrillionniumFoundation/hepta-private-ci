@@ -50,12 +50,13 @@ jobs:
             status=0
             patch -p1 -N < "$candidate" >>"$out/patch-apply.log" 2>&1 || status=$?
             if [ "$status" -ne 0 ]; then
-              mapfile -t rejects < <(find . -name '*.rej' -print | sort)
-              if [ "${#rejects[@]}" -eq 0 ]; then
+              reject_list="$RUNNER_TEMP/rejects-$(basename "$part").txt"
+              find . -name '*.rej' -print | sort > "$reject_list"
+              if [ ! -s "$reject_list" ]; then
                 cat "$out/patch-apply.log" >&2
                 exit "$status"
               fi
-              for reject in "${rejects[@]}"; do
+              while IFS= read -r reject; do
                 case "$reject" in
                   ./docs/modules/channel.matrix/*.rej)
                     printf 'prose drift retained for current-source rewrite: %s\n' \
@@ -67,11 +68,15 @@ jobs:
                     exit "$status"
                     ;;
                 esac
-              done
-              rm -f "${rejects[@]}"
+              done < "$reject_list"
+              while IFS= read -r reject; do
+                rm -f "$reject"
+              done < "$reject_list"
             fi
+            # BSD patch leaves one backup per touched path. Remove it before
+            # the current-source documentation patch revisits the same file.
+            find . -name '*.orig' -delete
           done
-          find . -name '*.orig' -delete
 
           git rm -r "$patch_dir"
           git add -A
