@@ -6,20 +6,22 @@ from pathlib import Path
 root = Path(__file__).resolve().parents[1]
 patcher = root / "scripts/runtime_codex_convergence.py"
 content = patcher.read_text(encoding="utf-8")
-old = '''    ''' + "'''fn unix_time_ms() -> Result<u64> {\n" + '''    let elapsed = SystemTime::now()
+old = """    '''fn unix_time_ms() -> Result<u64> {
+    let elapsed = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|_| "system clock is before the Unix epoch")?;
     Ok(u64::try_from(elapsed.as_millis())?)
 }
 ''',
-'''
-new = '''    ''' + "'''fn unix_time_ms() -> Result<u64> {\n" + '''    let elapsed = SystemTime::now()
+"""
+new = """    '''fn unix_time_ms() -> Result<u64> {
+    let elapsed = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|_| "system clock is before the Unix epoch")?;
     u64::try_from(elapsed.as_millis()).map_err(|_| "system clock milliseconds overflow".into())
 }
 ''',
-'''
+"""
 if content.count(old) != 1:
     raise SystemExit(f"expected one exact clock matcher in patcher, found {content.count(old)}")
 patcher.write_text(content.replace(old, new, 1), encoding="utf-8")
@@ -27,7 +29,7 @@ patcher.write_text(content.replace(old, new, 1), encoding="utf-8")
 fixer = root / "scripts/runtime_codex_convergence_fix.py"
 fix = fixer.read_text(encoding="utf-8")
 marker = "# The handoff is already generation-fenced by AgentdClient; the handoff type\n"
-insertion = r'''# Bind the source-order test to the real authorized send helper rather than a
+insertion = r"""# Bind the source-order test to the real authorized send helper rather than a
 # removed direct request_typed call.
 replace_once(
     "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
@@ -44,7 +46,7 @@ replace_once(
 )
 replace_once(
     "codex-rs/hepta-infer-worker-host/src/runtime_codex_state.rs",
-    r''' + "'''" + r'''#[cfg(test)]
+    r'''#[cfg(test)]
 static INJECTED_FAULT: OnceLock<Mutex<Option<RuntimeCodexFaultPoint>>> = OnceLock::new();
 
 pub(crate) fn runtime_codex_checkpoint(point: RuntimeCodexFaultPoint) -> Result<(), String> {
@@ -70,8 +72,8 @@ pub(crate) fn inject_runtime_codex_fault(point: RuntimeCodexFaultPoint) {
         .lock()
         .expect("runtime.codex fault injector lock") = Some(point);
 }
-''' + "'''" + r''',
-    r''' + "'''" + r'''#[cfg(test)]
+''',
+    r'''#[cfg(test)]
 std::thread_local! {
     static INJECTED_FAULT: RefCell<Option<RuntimeCodexFaultPoint>> = const { RefCell::new(None) };
 }
@@ -100,10 +102,10 @@ pub(crate) fn runtime_codex_checkpoint(point: RuntimeCodexFaultPoint) -> Result<
 pub(crate) fn inject_runtime_codex_fault(point: RuntimeCodexFaultPoint) {
     INJECTED_FAULT.with(|fault| *fault.borrow_mut() = Some(point));
 }
-''' + "'''" + r''',
+''',
 )
 
-'''
+"""
 if fix.count(marker) != 1:
     raise SystemExit(f"expected one fixer insertion marker, found {fix.count(marker)}")
 fixer.write_text(fix.replace(marker, insertion + marker, 1), encoding="utf-8")
