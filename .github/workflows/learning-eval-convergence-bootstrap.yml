@@ -8,9 +8,15 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: learning-eval-convergence-bootstrap
+  cancel-in-progress: true
+
 jobs:
   converge:
-    runs-on: ubuntu-24.04
+    # Use the independent ARM pool so the saturated generic x64 queue cannot
+    # block this one-shot source convergence. No self-hosted runner is exposed.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
