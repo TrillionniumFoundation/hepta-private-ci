@@ -136,3 +136,25 @@ fn production_policy_rejects_missing_or_relative_external_admission() {
         .is_err()
     );
 }
+
+#[test]
+fn syntactically_complete_files_cannot_claim_live_production_authority() {
+    let home = tempfile::tempdir().expect("absolute test directory");
+    let policy = EvidenceRuntimePolicy::production(EvidenceProductionAdmissionFiles {
+        backend_identity_file: home.path().join("backend.json"),
+        build_identity_file: home.path().join("build.json"),
+        qualification_status_file: home.path().join("status.json"),
+        backup_publication_file: home.path().join("backup.json"),
+        local_rollback_domain_id: "rollback:local-evidence".to_string(),
+    })
+    .expect("file syntax is valid, but does not confer runtime authority");
+    assert!(policy.validate().is_ok());
+    let error = policy.validate_startup().expect_err("no live backend is installed");
+    assert!(error.to_string().contains("live authenticated frontier backend"));
+    assert!(error.to_string().contains("durable append/publication fence"));
+}
+
+#[test]
+fn explicit_development_remains_available() {
+    EvidenceRuntimePolicy::development().validate_startup().expect("development");
+}

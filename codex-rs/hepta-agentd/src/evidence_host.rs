@@ -50,11 +50,11 @@ impl EvidenceHost {
         trust_file: PathBuf,
         recovery_frontier: Option<(PathBuf, PathBuf)>,
     ) -> Result<Self, AgentdError> {
-        EvidenceTrust::load(&trust_file, identity)?;
         let policy = crate::evidence_mode::evidence_runtime_policy();
-        policy.validate()?;
+        policy.validate_startup()?;
+        EvidenceTrust::load(&trust_file, identity)?;
         let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
-        let store = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
+        let store = HeptaEvidenceStore::open_runtime(&SqliteConfig::from_sqlite_home(home))
             .await
             .map_err(evidence_error)?;
 

@@ -10,6 +10,7 @@ const _: () = assert!(
 );
 
 mod audit;
+mod evidence_authorizer;
 mod extract;
 pub mod log_db;
 mod migrations;

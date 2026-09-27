@@ -96,6 +96,32 @@ impl HeptaEvidenceStore {
         })
     }
 
+    /// Open the kernel.evidence product writer with migration authority retired.
+    ///
+    /// The legacy `open` entrypoint remains available for controlled migration
+    /// and fault-fixture tooling. Product hosts must use this entrypoint: no
+    /// migration-capable connection is retained in the returned runtime store.
+    pub async fn open_runtime(sqlite: &SqliteConfig) -> Result<Self, EvidenceError> {
+        let mut store = Self::open(sqlite).await?;
+        store.pool.close().await;
+        let pool = sqlite
+            .open_durable_evidence_runtime_pool(&store.path)
+            .await
+            .map_err(classify_sqlx_error)?;
+        // Revalidate through the restricted pool, rather than trusting a check
+        // performed through a previous set of connections.
+        if let Err(error) = verify_quick_check(&pool).await {
+            pool.close().await;
+            return Err(error);
+        }
+        if let Err(error) = verify_existing_store(&pool).await {
+            pool.close().await;
+            return Err(error);
+        }
+        store.pool = pool;
+        Ok(store)
+    }
+
     /// Opens only an already-created, fully migrated evidence lineage.
     ///
     /// This path is for diagnostic readers. It never creates the database and

@@ -85,6 +85,26 @@ impl EvidenceRuntimePolicy {
         })
     }
 
+    /// Validate runtime capabilities, not merely the syntax of supplied files.
+    ///
+    /// The current product has no live external frontier transport or durable
+    /// append/publication fence. Local JSON assertions cannot substitute for
+    /// those capabilities, even when signed and placed outside Agent home.
+    /// Keep production unavailable until that product path exists and is
+    /// qualified. There is deliberately no environment or boolean override.
+    pub fn validate_startup(&self) -> Result<(), AgentdError> {
+        self.validate()?;
+        if self.mode.is_production() {
+            return Err(AgentdError::Invalid(
+                "kernel.evidence production unavailable: live authenticated frontier backend \
+                 and durable append/publication fence are not installed; admission files \
+                 alone cannot prove external freshness or durability"
+                    .to_string(),
+            ));
+        }
+        Ok(())
+    }
+
     pub fn validate(&self) -> Result<(), AgentdError> {
         match (self.mode, self.production.as_ref()) {
             (EvidenceRuntimeMode::Development, None) => Ok(()),
@@ -107,7 +127,7 @@ static EVIDENCE_RUNTIME_POLICY: OnceLock<EvidenceRuntimePolicy> = OnceLock::new(
 pub fn configure_evidence_runtime_policy(
     policy: EvidenceRuntimePolicy,
 ) -> Result<(), AgentdError> {
-    policy.validate()?;
+    policy.validate_startup()?;
     EVIDENCE_RUNTIME_POLICY.set(policy).map_err(|_| {
         AgentdError::Invalid("kernel.evidence runtime policy is already configured".to_string())
     })
