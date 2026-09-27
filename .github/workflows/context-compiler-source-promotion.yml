@@ -1,21 +1,21 @@
-name: context-compiler-source-promotion
+name: context-compiler-security-source-promotion
 
 on:
   push:
     branches:
-      - codex/context-compiler-v3-closure-20260928
+      - codex/context-compiler-security-integration-20260928
 
 permissions:
   contents: write
 
 concurrency:
-  group: context-compiler-source-promotion
+  group: context-compiler-security-source-promotion
   cancel-in-progress: false
 
 jobs:
   promote-ordinary-source:
     if: ${{ contains(github.event.head_commit.message, '[promote-context-source]') }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 300
     steps:
       - name: Checkout exact promotion input
@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$GITHUB_REF_NAME" = codex/context-compiler-v3-closure-20260928
+          test "$GITHUB_REF_NAME" = codex/context-compiler-security-integration-20260928
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           test ! -e .github/workflows/context-compiler-v3-remediation.yml
@@ -47,7 +47,7 @@ jobs:
         with:
           tool: cargo-deny@0.19.0
 
-      - name: Materialize reviewed direct V3 and recovery source
+      - name: Materialize reviewed V3, recovery, and external security source
         shell: bash
         run: |
           set -euo pipefail
@@ -61,6 +61,7 @@ jobs:
           python3 -B scripts/apply_context_compiler_recovery_tests.py
           python3 -B scripts/apply_context_compiler_recovery_test_cleanup.py
           python3 -B scripts/apply_context_compiler_qualification_closure.py
+          python3 -B scripts/apply_context_compiler_external_security.py
 
       - name: Register deterministic property-test dependency
         shell: bash
@@ -123,6 +124,10 @@ jobs:
           cargo test --locked -p codex-hepta-agentd --features legacy-prompt-context-v1
           cargo test --locked -p codex-api context_slot
           cargo test --locked -p codex-hepta-intelligence prompt_product_v3
+          cargo test --locked -p codex-hepta-prompt-registry external_authority
+          cargo test --locked -p codex-hepta-agentd context_attempt_
+          cargo test --locked -p codex-hepta-agentd context_tokenizer_custody
+          cargo test --locked -p codex-hepta-agentd context_terminal_attestation
           cargo test --locked -p codex-hepta-agentd registry_race_tests
           cargo test --locked -p codex-hepta-agentd exact_context_delivery
           cargo clippy --locked --no-deps \
@@ -140,6 +145,18 @@ jobs:
             -p codex-hepta-agentd \
             --all-targets --features legacy-prompt-context-v1 -- -D warnings
           cargo deny --locked check bans licenses sources
+
+      - name: Verify external security reachability
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'mod external_authority;' codex-rs/hepta-prompt-registry/src/lib.rs
+          grep -Fq 'mod context_security_runtime;' codex-rs/hepta-agentd/src/lib.rs
+          grep -Fq 'attach_context_security_capabilities_v3' codex-rs/hepta-agentd/src/prompt_runtime.rs
+          grep -Fq 'context_delivery_v3_security_capability_missing' \
+            codex-rs/hepta-agentd/src/exact_context_delivery.rs
+          test -f codex-rs/hepta-context-compiler/src/v2/recovery.rs
+          git diff --check
 
       - name: Retire one-shot generators and create ordinary source commit
         shell: bash
@@ -162,6 +179,7 @@ jobs:
             scripts/apply_context_compiler_recovery_tests.py \
             scripts/apply_context_compiler_recovery_test_cleanup.py \
             scripts/apply_context_compiler_qualification_closure.py \
+            scripts/apply_context_compiler_external_security.py \
             scripts/apply_context_compiler_recovery_state.py \
             scripts/refresh_context_compiler_current_state.py \
             scripts/remediate_context_compiler_closure.py \
@@ -172,5 +190,5 @@ jobs:
           test -n "$(git diff --cached --name-only)"
           git config user.name context-compiler-source-promoter
           git config user.email context-compiler-source-promoter@users.noreply.github.com
-          git commit -m "feat(context.compiler): materialize direct V3 recovery source"
+          git commit -m "feat(context.compiler): materialize externally secured V3 recovery source"
           git push origin "HEAD:${BRANCH}"
