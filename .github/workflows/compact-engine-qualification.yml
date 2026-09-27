@@ -159,10 +159,10 @@ jobs:
         run: test "$SOURCE_RESULT" = success && test "$QUALIFY_RESULT" = success
 
   developer-toolchain:
-    # Explicit development aid only. It neither edits nor qualifies source and
-    # has no write credential. Ordinary source commits do not run this export.
+    # Development aid only: no source mutation and no write credential.
     name: Retain pinned developer tools (not qualification)
-    if: github.event_name == 'push' && startsWith(github.event.head_commit.message, 'ci(compact.engine): retain developer toolchain')
+    if: >-
+      github.event_name == 'push' && startsWith(github.event.head_commit.message, 'ci(compact.engine): retain developer toolchain')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
