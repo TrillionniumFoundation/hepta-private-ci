@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: kernel-authority-agentd-time-migration
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   migrate:
@@ -35,26 +35,30 @@ jobs:
           path = Path('codex-rs/hepta-agentd/src/automation_effect_host.rs')
           text = path.read_text(encoding='utf-8')
 
-          execute_old = '''        command_id: &str,
-                  now_ms: u64,
-              ) -> Result<TaskFlowStepReceipt, AgentdError> {
-          '''
-          execute_new = '''        command_id: &str,
-                  _untrusted_now_ms: u64,
-              ) -> Result<TaskFlowStepReceipt, AgentdError> {
-          '''
+          execute_old = (
+              "        command_id: &str,\n"
+              "        now_ms: u64,\n"
+              "    ) -> Result<TaskFlowStepReceipt, AgentdError> {"
+          )
+          execute_new = (
+              "        command_id: &str,\n"
+              "        _untrusted_now_ms: u64,\n"
+              "    ) -> Result<TaskFlowStepReceipt, AgentdError> {"
+          )
           if text.count(execute_old) != 1:
               raise SystemExit('execute time parameter anchor drifted')
           text = text.replace(execute_old, execute_new, 1)
 
-          reconcile_old = '''        attempt: u32,
-                  now_ms: u64,
-              ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {
-          '''
-          reconcile_new = '''        attempt: u32,
-                  _untrusted_now_ms: u64,
-              ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {
-          '''
+          reconcile_old = (
+              "        attempt: u32,\n"
+              "        now_ms: u64,\n"
+              "    ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {"
+          )
+          reconcile_new = (
+              "        attempt: u32,\n"
+              "        _untrusted_now_ms: u64,\n"
+              "    ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {"
+          )
           if text.count(reconcile_old) != 1:
               raise SystemExit('reconcile time parameter anchor drifted')
           text = text.replace(reconcile_old, reconcile_new, 1)
@@ -68,18 +72,18 @@ jobs:
           )
 
           refresh_anchor = '    fn refresh_revocations(&self) -> Result<(), AgentdError> {'
-          helper = '''    /// Compatibility callers may still transport a wall-clock sample, but
-              /// final effect ownership, TaskFlow lease validation and durable settlement
-              /// are always evaluated against the protected authority clock.
-              fn protected_effect_now_ms(&self) -> Result<u64, AgentdError> {
-                  self.authority_trust.now_unix_ms().map_err(|error| {
-                      AgentdError::Protocol(format!(
-                          "sample protected automation effect clock: {error}"
-                      ))
-                  })
-              }
-
-          '''
+          helper = ''.join([
+              '    /// Compatibility callers may still transport a wall-clock sample, but\n',
+              '    /// final effect ownership, TaskFlow lease validation and durable settlement\n',
+              '    /// are always evaluated against the protected authority clock.\n',
+              '    fn protected_effect_now_ms(&self) -> Result<u64, AgentdError> {\n',
+              '        self.authority_trust.now_unix_ms().map_err(|error| {\n',
+              '            AgentdError::Protocol(format!(\n',
+              '                "sample protected automation effect clock: {error}"\n',
+              '            ))\n',
+              '        })\n',
+              '    }\n\n',
+          ])
           if text.count(refresh_anchor) != 1:
               raise SystemExit('revocation refresh anchor drifted')
           text = text.replace(refresh_anchor, helper + refresh_anchor, 1)
