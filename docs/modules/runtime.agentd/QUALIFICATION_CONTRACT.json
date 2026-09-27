@@ -1,0 +1,189 @@
+{
+  "schema": "hepta.runtime-agentd.qualification-contract.v1",
+  "schemaVersion": 1,
+  "module": "runtime.agentd",
+  "dynamicCandidateFacts": "ci_artifact_only",
+  "productionActivation": false,
+  "requiredCandidateLanes": [
+    "source-head",
+    "base-merge"
+  ],
+  "requiredOperatingSystems": [
+    "linux",
+    "macos"
+  ],
+  "requiredEngineeringSuites": [
+    "owner-libraries",
+    "native-library",
+    "native-process",
+    "daemon-process",
+    "product-process",
+    "strict-clippy",
+    "read-only-profile"
+  ],
+  "requiredTargetHostScenarios": {
+    "drain-under-load": {
+      "destructive": false,
+      "requiredInvariants": [
+        "admission_closed_before_drain",
+        "all_accepted_tasks_joined",
+        "ambiguous_effects_reconcilable",
+        "no_terminal_state_fabricated"
+      ]
+    },
+    "backpressure": {
+      "destructive": false,
+      "requiredInvariants": [
+        "bounded_connections",
+        "bounded_memory",
+        "deterministic_overload_or_timeout",
+        "health_observable"
+      ]
+    },
+    "agentd-crash": {
+      "destructive": true,
+      "requiredInvariants": [
+        "no_duplicate_physical_dispatch",
+        "no_invented_success",
+        "no_invented_negative",
+        "original_operation_reconciled_or_indeterminate"
+      ]
+    },
+    "worker-crash": {
+      "destructive": true,
+      "requiredInvariants": [
+        "no_duplicate_physical_dispatch",
+        "terminal_or_indeterminate_only",
+        "worker_descendants_reaped_or_accounted"
+      ]
+    },
+    "storage-enospc": {
+      "destructive": true,
+      "requiredInvariants": [
+        "no_ack_before_durability",
+        "fail_closed_or_quarantine",
+        "diagnostic_evidence_retained"
+      ]
+    },
+    "storage-readonly": {
+      "destructive": true,
+      "requiredInvariants": [
+        "no_ack_before_durability",
+        "fail_closed_or_quarantine",
+        "diagnostic_evidence_retained"
+      ]
+    },
+    "storage-fsync": {
+      "destructive": true,
+      "requiredInvariants": [
+        "no_ack_before_durability",
+        "ambiguous_write_fences_writer",
+        "diagnostic_evidence_retained"
+      ]
+    },
+    "storage-rename": {
+      "destructive": true,
+      "requiredInvariants": [
+        "no_partial_publication_accepted",
+        "old_or_complete_new_state_only",
+        "diagnostic_evidence_retained"
+      ]
+    },
+    "journal-corruption": {
+      "destructive": true,
+      "requiredInvariants": [
+        "corruption_rejected",
+        "historical_identity_not_resurrected",
+        "no_blind_redispatch"
+      ]
+    },
+    "stale-generation": {
+      "destructive": false,
+      "requiredInvariants": [
+        "old_generation_cannot_mutate_new_owner",
+        "echoed_identity_not_sufficient",
+        "active_workers_cancelled_on_fence"
+      ]
+    },
+    "authority-revocation": {
+      "destructive": false,
+      "requiredInvariants": [
+        "revoked_final_use_rejected",
+        "epoch_substitution_rejected",
+        "purpose_substitution_rejected",
+        "post_claim_fence_rechecked"
+      ]
+    },
+    "capacity-latency": {
+      "destructive": false,
+      "requiredInvariants": [
+        "all_failures_included",
+        "resource_samples_retained",
+        "latency_histograms_retained",
+        "no_monotonic_resource_leak"
+      ]
+    },
+    "soak-recovery": {
+      "destructive": true,
+      "requiredInvariants": [
+        "stable_resource_bounds",
+        "complete_reconciliation_accounting",
+        "terminal_archive_witnesses_valid",
+        "no_identity_resurrection"
+      ]
+    }
+  },
+  "requiredReceiptFields": [
+    "schema",
+    "source_sha",
+    "source_tree",
+    "host_identity",
+    "kernel_or_platform",
+    "effective_configuration_digest",
+    "artifact_digests",
+    "scenario",
+    "started_at_unix_ms",
+    "finished_at_unix_ms",
+    "initial_state_digest",
+    "final_state_digest",
+    "operation_ids",
+    "observed_invariants",
+    "command",
+    "exit_code",
+    "log_sha256",
+    "result",
+    "production_activation"
+  ],
+  "requiredMetrics": [
+    "agentd_control_active_connections",
+    "agentd_control_overload_total",
+    "agentd_operation_latency_seconds",
+    "agentd_stale_generation_rejections_total",
+    "agentd_trust_rejections_total",
+    "agentd_drain_timeout_total",
+    "agentd_task_panic_total",
+    "agentd_indeterminate_runs",
+    "agentd_oldest_indeterminate_age_seconds",
+    "agentd_durable_write_failures_total",
+    "agentd_runtime_codex_active_jobs",
+    "agentd_runtime_codex_unresolved",
+    "agentd_runtime_codex_reconciliations_total",
+    "agentd_runtime_codex_archived_terminal_total"
+  ],
+  "activationGates": [
+    "exact_source_and_merge_ci_success",
+    "target_host_all_required_scenarios_success",
+    "repeated_main_green",
+    "independent_security_acceptance",
+    "release_artifact_provenance",
+    "operator_slo_approval",
+    "rollback_rehearsal"
+  ],
+  "independentDecisions": [
+    "security_acceptance",
+    "operator_acceptance",
+    "promotion",
+    "release",
+    "activation"
+  ]
+}
