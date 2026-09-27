@@ -1,4 +1,4 @@
-name: context.compiler one-shot deterministic remediation
+name: context.compiler bounded remediation
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: context-compiler-one-shot-remediation
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   remediate:
@@ -20,9 +20,8 @@ jobs:
     timeout-minutes: 120
     env:
       TARGET_BRANCH: codex/context-compiler-full-closure-review-20260927
-      REVIEW_BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
     steps:
-      - name: Checkout exact review branch
+      - name: Checkout exact integration branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: codex/context-compiler-full-closure-review-20260927
@@ -35,7 +34,7 @@ jobs:
           git config user.name "hepta-context-remediation"
           git config user.email "hepta-context-remediation@users.noreply.github.com"
 
-      - name: Apply deterministic source, manifest, and map corrections
+      - name: Apply bounded deterministic corrections
         shell: bash
         run: |
           set -euo pipefail
@@ -43,28 +42,15 @@ jobs:
           from __future__ import annotations
 
           import json
-          import os
-          import subprocess
           from pathlib import Path
 
-          root = Path.cwd()
-          branch = os.environ["TARGET_BRANCH"]
-          base = os.environ["REVIEW_BASE_SHA"]
+          branch = "codex/context-compiler-full-closure-review-20260927"
 
-          # Remove the unregistered Bazel-only proptest dependency while retaining
-          # broad deterministic generated-corpus coverage.
-          provider = root / "codex-rs/hepta-context-compiler/src/provider_closure.rs"
+          provider = Path("codex-rs/hepta-context-compiler/src/provider_closure.rs")
           text = provider.read_text(encoding="utf-8")
           import_line = "    use proptest::prelude::*;\n"
-          if text.count(import_line) != 1:
-              raise SystemExit(f"expected one proptest import, found {text.count(import_line)}")
-          text = text.replace(import_line, "", 1)
           start_marker = "    proptest! {\n"
           end_marker = "\n\n    #[test]\n    fn generated_unicode_control_corpus_keeps_exact_escaped_identity()"
-          start = text.find(start_marker)
-          end = text.find(end_marker, start)
-          if start < 0 or end < 0:
-              raise SystemExit("generated property block markers drifted")
           replacement = r'''    #[test]
           fn generated_segment_maps_are_total_deterministic_and_single_context() {
               for prefix_len in [0_usize, 1, 2, 17, 255, 2047] {
@@ -143,296 +129,97 @@ jobs:
                   }
               }
           }'''
-          provider.write_text(text[:start] + replacement + text[end:], encoding="utf-8")
+          if import_line in text:
+              text = text.replace(import_line, "", 1)
+              start = text.find(start_marker)
+              end = text.find(end_marker, start)
+              if start < 0 or end < 0:
+                  raise SystemExit("generated property block markers drifted")
+              text = text[:start] + replacement + text[end:]
+          elif "fn generated_segment_maps_are_total_deterministic_and_single_context()" not in text:
+              raise SystemExit("property corpus is neither source nor materialized form")
+          provider.write_text(text, encoding="utf-8")
 
-          # Preserve the terminal observation after converting the provider terminal.
-          exact = root / "codex-rs/hepta-agentd/src/exact_context_delivery.rs"
+          exact = Path("codex-rs/hepta-agentd/src/exact_context_delivery.rs")
           text = exact.read_text(encoding="utf-8")
           old = "        let provider_terminal = provider_terminal(terminal.terminal)?;\n"
           new = "        let provider_terminal = provider_terminal(terminal.terminal.clone())?;\n"
-          if text.count(old) != 1:
-              raise SystemExit(f"expected one terminal ownership site, found {text.count(old)}")
-          exact.write_text(text.replace(old, new, 1), encoding="utf-8")
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif new not in text:
+              raise SystemExit("provider terminal ownership site drifted")
+          exact.write_text(text, encoding="utf-8")
 
-          # The canonical v3 implementation-map tool owns IMPLEMENTATION_MAP.json.
-          # The module generator owns only the human technical guide and dossier.
-          generator = root / "scripts/generate_context_compiler_module_docs.py"
-          text = generator.read_text(encoding="utf-8")
-          old = '''    return {
-              ROOT / manifest["artifacts"]["technical"]: render_technical(manifest, digest),
-              ROOT / manifest["artifacts"]["implementationMap"]: (
-                  json.dumps(implementation_map(manifest, digest), ensure_ascii=False, indent=2)
-                  + "\\n"
-              ),
-              ROOT / manifest["artifacts"]["executionDossier"]: render_dossier(manifest, digest),
-          }
-          '''
-          new = '''    return {
-              ROOT / manifest["artifacts"]["technical"]: render_technical(manifest, digest),
-              ROOT / manifest["artifacts"]["executionDossier"]: render_dossier(manifest, digest),
-          }
-          '''
-          if text.count(old) != 1:
-              raise SystemExit("render_all ownership block drifted")
-          text = text.replace(old, new, 1)
-          old = '''Edit `MODULE_MANIFEST.json`, regenerate all three truth artifacts, and commit them together. Direct
-          manual edits to this file, `IMPLEMENTATION_MAP.json`, or the execution dossier are rejected by the
-          qualification gate. Any change to the provider encoder, tokenizer ABI, framing policy, snapshot
-          authority, durable state schema, or terminal mapping requires a new exact-head receipt.
-          '''
-          new = '''Edit `MODULE_MANIFEST.json`, regenerate this guide and the execution dossier, and commit them
-          together. `IMPLEMENTATION_MAP.json` is owned by the repository-wide canonical v3 map tool:
-          `python3 scripts/hepta-implementation-maps.py migrate --module context.compiler`. Direct manual
-          edits to generated prose are rejected by the qualification gate. Any change to the provider
-          encoder, tokenizer ABI, framing policy, snapshot authority, durable state schema, or terminal
-          mapping requires a new exact-head receipt.
-          '''
-          if text.count(old) != 1:
-              raise SystemExit("change-discipline block drifted")
-          generator.write_text(text.replace(old, new, 1), encoding="utf-8")
-
-          manifest_path = root / "docs/modules/context.compiler/MODULE_MANIFEST.json"
+          manifest_path = Path("docs/modules/context.compiler/MODULE_MANIFEST.json")
           manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
           manifest["integrationBranch"] = branch
-          manifest["testMatrix"] = [
-              "deterministic generated corpus for complete segment coverage and mutation fail-closed behavior"
-              if item == "property-generated deterministic coverage and mutation fail-closed corpus"
-              else item
-              for item in manifest["testMatrix"]
-          ]
           manifest_path.write_text(
               json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
               encoding="utf-8",
           )
 
-          # Start from the repository's canonical v3 context map rather than the
-          # branch-local incompatible v4 projection, then record the real product callers.
-          baseline = subprocess.check_output(
-              ["git", "show", f"{base}:docs/modules/context.compiler/IMPLEMENTATION_MAP.json"],
-              text=True,
-          )
-          context_map = json.loads(baseline)
-          context_map["productionImplementation"] = False
-          context_map["productCallerState"] = "named_agentd_exact_provider_v2_composed_unqualified"
-          context_map["productionWriterState"] = "none_by_design_stateless_compiler"
-          context_map["productCallers"] = [
-              {
-                  "sourcePath": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
-                  "nativeSymbol": "prepare_prompt_registry_delivery_v2",
-                  "state": "fresh_snapshot_and_preparation_caller",
-              },
-              {
-                  "sourcePath": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
-                  "nativeSymbol": "AgentdExactContextDeliveryOwner",
-                  "state": "effect_bound_exact_provider_v2_caller",
-              },
-              {
-                  "sourcePath": "codex-rs/ext/hepta-prompt/src/exact_body.rs",
-                  "state": "exact_encoded_body_observer",
-              },
-              {
-                  "sourcePath": "codex-rs/codex-api/src/encoded_body_observer.rs",
-                  "state": "physical_send_same_body_boundary",
-              },
-          ]
-
-          operations = context_map["operations"]
-          by_symbol = {op.get("nativeSymbol"): op for op in operations}
-          additions = [
-              (
-                  "verify_admission_snapshot_successor_typed_v2",
-                  "codex-rs/hepta-context-compiler/src/v2.rs",
-                  "codex-rs/hepta-context-compiler/src/v2_tests.rs",
-              ),
-              (
-                  "prepare_delivery_from_successor_v2",
-                  "codex-rs/hepta-context-compiler/src/v2.rs",
-                  "codex-rs/hepta-context-compiler/src/v2_tests.rs",
-              ),
-              (
-                  "record_canonical_context_bundle_v2",
-                  "codex-rs/hepta-context-compiler/src/provider_closure.rs",
-                  "codex-rs/hepta-context-compiler/src/provider_closure.rs",
-              ),
-              (
-                  "prove_final_provider_request_v2",
-                  "codex-rs/hepta-context-compiler/src/provider_closure.rs",
-                  "codex-rs/hepta-context-compiler/src/provider_closure.rs",
-              ),
-              (
-                  "observe_final_provider_delivery_v2",
-                  "codex-rs/hepta-context-compiler/src/provider_closure.rs",
-                  "codex-rs/hepta-context-compiler/src/provider_closure.rs",
-              ),
-          ]
-          for symbol, source, test in additions:
-              if symbol in by_symbol:
-                  continue
-              operations.append(
-                  {
-                      "operation": symbol,
-                      "designOperation": symbol,
-                      "nativeSymbol": symbol,
-                      "sourcePath": source,
-                      "state": "source_implemented_product_composed_unqualified",
-                      "authority": "none",
-                      "tests": [test],
-                      "sourcePathExists": True,
-                      "mappingClass": "owner_native",
-                      "delegatedCallees": [],
-                  }
-              )
-          context_map["repositoryControlledGaps"] = [
-              "Obtain a green exact-head and synthetic-merge qualification receipt for the reviewed commit.",
-              "Provision and qualify the approved tokenizer executable, vocabulary, normalization policy, and provider/model profile on each target host.",
-              "Complete independent security review of admission authority, final-request framing, durable pre-send fencing, and terminal reconciliation.",
-          ]
-          context_map["externalEvidenceGates"] = [
-              "independent semantic and security review",
-              "target-host execution and performance qualification",
-              "operator acceptance, canary, promotion and release",
-          ]
-          context_map["claimBoundary"] = {
-              "nativeSourceMappingComplete": True,
-              "sourceRootPresent": True,
-              "productionImplementation": False,
-              "productExecutionProved": False,
-              "independentAcceptance": False,
-              "activation": False,
-              "release": False,
-              "implementedOperationMappingComplete": True,
-          }
-          context_path = root / "docs/modules/context.compiler/IMPLEMENTATION_MAP.json"
-          context_path.write_text(
-              json.dumps(context_map, ensure_ascii=False, indent=2) + "\n",
-              encoding="utf-8",
-          )
-
-          # Close the exact public-function inventory drift introduced by the
-          # fresh V2 preparation entrypoint.
-          intelligence_path = root / "docs/modules/intelligence.control/IMPLEMENTATION_MAP.json"
-          intelligence = json.loads(intelligence_path.read_text(encoding="utf-8"))
-          if not any(
-              op.get("nativeSymbol") == "prepare_prompt_registry_delivery_v2"
-              for op in intelligence["operations"]
+          qualification = Path(".github/workflows/context-compiler-qualification.yml")
+          text = qualification.read_text(encoding="utf-8")
+          for stale in (
+              "codex/context-compiler-provider-closure-final-20260927",
+              "context-compiler-v3-full-closure",
           ):
-              intelligence["operations"].append(
-                  {
-                      "operation": "prepare_prompt_registry_delivery_v2",
-                      "designOperation": "prepare_prompt_registry_delivery_v2",
-                      "nativeSymbol": "prepare_prompt_registry_delivery_v2",
-                      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
-                      "mappingClass": "owner_native",
-                      "delegatedCallees": [
-                          {
-                              "path": "codex-rs/hepta-context-compiler",
-                              "module": "context.compiler",
-                              "role": "fresh_typed_snapshot_and_delivery_preparation",
-                          }
-                      ],
-                      "state": "source_implemented_exact_provider_path_composed_unqualified",
-                      "authority": "none",
-                      "tests": [
-                          "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs"
-                      ],
-                      "sourcePathExists": True,
-                  }
-              )
-          intelligence_path.write_text(
-              json.dumps(intelligence, ensure_ascii=False, indent=2) + "\n",
-              encoding="utf-8",
-          )
+              text = text.replace(stale, branch)
+          if branch not in text:
+              raise SystemExit("qualification workflow is not bound to the integration branch")
+          qualification.write_text(text, encoding="utf-8")
           PY
 
-          python3 scripts/generate_context_compiler_module_docs.py --write
-          cd codex-rs
-          cargo fmt --all
-          cargo metadata --format-version 1 --no-deps >/dev/null
-          cd ..
-          git diff --check
-
-      - name: Commit source corrections and synchronized lock
+      - name: Regenerate manifest-owned truth artifacts
         shell: bash
         run: |
           set -euo pipefail
+          python3 scripts/generate_context_compiler_module_docs.py
+          python3 scripts/generate_context_compiler_module_docs.py --check
+
+      - name: Refresh lock and format
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup component add rustfmt
+          cargo metadata --format-version 1 > /dev/null
+          cargo fmt --all
+          cargo fmt --all -- --check
+
+      - name: Verify focused closure
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-context-compiler
+          cargo test --locked -p codex-hepta-intelligence prompt_delivery --lib
+          cargo test --locked -p codex-hepta-prompt-extension exact_body --lib
+          cargo test --locked -p codex-hepta-agentd exact_context_delivery --lib
+          cargo check --locked \
+            -p codex-api \
+            -p codex-core \
+            -p codex-hepta-context-compiler \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-prompt-extension \
+            -p codex-hepta-agentd
+
+      - name: Materialize verified corrections
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git rm -f \
+            .github/workflows/context-compiler-one-shot-remediation.yml \
+            .github/workflows/context-compiler-property-fix.yml
           git add \
+            .github/workflows/context-compiler-qualification.yml \
             codex-rs/Cargo.lock \
             codex-rs/hepta-context-compiler/src/provider_closure.rs \
             codex-rs/hepta-agentd/src/exact_context_delivery.rs \
             docs/modules/context.compiler/MODULE_MANIFEST.json \
-            docs/modules/context.compiler/IMPLEMENTATION_MAP.json \
             docs/modules/context.compiler/TECHNICAL.md \
-            docs/modules/intelligence.control/IMPLEMENTATION_MAP.json \
-            qualification/module-execution-dossiers/detail/context.compiler.md \
-            scripts/generate_context_compiler_module_docs.py
-          git commit -m "fix(context.compiler): synchronize exact closure source and lock"
+            docs/modules/context.compiler/IMPLEMENTATION_MAP.json \
+            qualification/module-execution-dossiers/detail/context.compiler.md
+          git commit -m "fix(context.compiler): materialize bounded closure corrections"
           git push origin HEAD:${TARGET_BRANCH}
-
-      - name: Rebind canonical implementation-map observations after shared source changes
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from __future__ import annotations
-
-          import json
-          import subprocess
-          from pathlib import Path
-
-          root = Path.cwd()
-          identity = {
-              "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
-              "tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
-          }
-          changed = 0
-          for path in sorted((root / "docs/modules").glob("*/IMPLEMENTATION_MAP.json")):
-              row = json.loads(path.read_text(encoding="utf-8"))
-              row["sourceBase"] = identity
-              strong = (
-                  row.get("sourceIdentityPolicy") == "candidate_or_exact_observation_v1"
-                  or row.get("mappingSourceIdentityMode") == "exact_blob"
-                  or "observedAtHead" in row
-              )
-              if strong:
-                  row["observedAtHead"] = identity
-                  observed = set(row.get("observedSourcePaths", []))
-                  resolved = row.get("resolvedRoots", row.get("declaredRoots", []))
-                  if isinstance(resolved, str):
-                      resolved = [resolved]
-                  observed.update(resolved)
-                  if any(item == "codex-rs" or item.startswith("codex-rs/") for item in resolved):
-                      observed.update({"codex-rs/Cargo.toml", "codex-rs/Cargo.lock"})
-                  row["observedSourcePaths"] = sorted(observed)
-              path.write_text(
-                  json.dumps(row, ensure_ascii=False, indent=2) + "\n",
-                  encoding="utf-8",
-              )
-              changed += 1
-          print(f"rebound {changed} implementation-map observations")
-          PY
-          git diff --check
-          git add docs/modules/*/IMPLEMENTATION_MAP.json
-          git commit -m "docs(maps): rebind shared source observations after context closure"
-          git push origin HEAD:${TARGET_BRANCH}
-
-      - name: Canonically migrate and refresh all implementation maps
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py migrate
-          git diff --check
-          if ! git diff --quiet; then
-            git add docs/modules/*/IMPLEMENTATION_MAP.json
-            git commit -m "docs(maps): refresh canonical v3 source objects"
-            git push origin HEAD:${TARGET_BRANCH}
-          fi
-
-      - name: Verify deterministic truth and locked workspace metadata
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/generate_context_compiler_module_docs.py --check
-          python3 scripts/hepta-implementation-maps.py verify
-          cd codex-rs
-          cargo metadata --locked --format-version 1 --no-deps >/dev/null
-          cargo fmt --all -- --check
