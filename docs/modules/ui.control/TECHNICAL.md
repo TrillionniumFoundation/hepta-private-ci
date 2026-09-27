@@ -12,6 +12,7 @@ The active convergence branch is `work/ui-control-authoritative-closure-20260927
 |---|---|
 | `clientCore` | `substantially_implemented` |
 | `browserComposition` | `repository_shell_implemented` |
+| `browserCorrelationPrivacy` | `identifiers_redacted_in_dom_exact_in_client_state` |
 | `dependencyLock` | `exact_npm_lock_committed_qualification_pending` |
 | `sessionLifecycle` | `identity_permission_revision_and_shutdown_fenced` |
 | `terminalEvidence` | `authenticated_backend_observation_projection_implemented` |
@@ -66,6 +67,7 @@ The transition validator enforces:
 1. Session identity cannot change during refresh; permission revision cannot regress or conceal permission drift.
 1. Revoke, close, and stopped refresh paths remove local control authority even when transport cleanup fails.
 1. Local recovery storage failure is visible but cannot wedge or authorize a control request.
+1. Session, operation, audit-trace, snapshot, semantic, and outcome correlation identifiers are rendered only in deterministic redacted form; full values remain outside DOM text and attributes.
 1. Control actions are disabled while the displayed view is stale or the session lacks the required permission.
 
 The browser persists only bounded recovery metadata. It never persists credentials, CSRF tokens, backend responses containing secrets, or a claim that a mutation succeeded.
@@ -126,7 +128,7 @@ The client requires an authenticated session with an exact protocol version, exp
 The browser shell provides:
 
 - visible stale, disconnected, pending, terminal, failure, and indeterminate states;
-- operation ID, runtime generation, revision, semantic digest binding, and audit trace display;
+- full runtime generation and revision display plus deterministic redaction of session, operation, audit-trace, snapshot, semantic, and outcome correlation identifiers; exact full identifiers remain in typed client state and transport objects and are not copied into DOM text or attributes;
 - modal confirmation for start, reconcile, and stop requests;
 - duplicate-activation suppression before network dispatch;
 - semantic tables, labels, alerts, live regions, skip navigation, visible focus, reduced-motion support, and focus restoration;
@@ -138,7 +140,7 @@ Automated checks do not replace manual screen-reader/operator acceptance; that r
 
 Stable error codes include `UI_CONTROL_SESSION_EXPIRED`, `UI_CONTROL_PERMISSION_DENIED`, `UI_CONTROL_STALE_GENERATION`, `UI_CONTROL_STALE_REVISION`, `UI_CONTROL_SNAPSHOT_DRIFT`, `UI_CONTROL_PENDING_LIMIT`, `UI_CONTROL_OPERATION_CONFLICT`, `UI_CONTROL_BACKEND_REJECTED`, `UI_CONTROL_ACK_MISMATCH`, and `UI_CONTROL_AMBIGUOUS_SUBMISSION`.
 
-Callers branch on `code` and `retryable`; parsing message text is unsupported.
+Callers branch on `code` and `retryable`; parsing message text is unsupported. Unknown exception messages are replaced by an operator-safe generic error before DOM rendering.
 
 ## 10. Qualification
 

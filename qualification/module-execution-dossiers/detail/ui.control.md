@@ -16,8 +16,8 @@
 - atomic pending reservation and concurrent duplicate promise sharing;
 - durable recovery-state export/restore without authority claims;
 - same-origin CSRF-protected HTTP adapter with no mutation retry;
-- semantic HTML browser shell with start/reconcile/stop confirmation and audit identity display;
-- Chromium, Firefox, WebKit, axe-core, keyboard, focus, stale-revision, duplicate-activation, and accepted-timeout tests;
+- semantic HTML browser shell with start/reconcile/stop confirmation, operator identity visibility, and deterministic DOM redaction for correlation identifiers;
+- Chromium, Firefox, WebKit, axe-core, keyboard, focus, stale-revision, duplicate-activation, accepted-timeout, storage-denial, and privacy-redaction tests;
 - single-manifest generated technical guide, implementation map, and this dossier.
 
 ## Evidence matrix
@@ -34,6 +34,7 @@
 | UI-08 accessibility | Playwright + axe-core | zero automated violations; focus restored |
 | UI-09 package boundary | `api-surface.test.js` | explicit exports; deep imports rejected |
 | UI-10 Lane B cross-owner | `test_hepta_lane_b_path_guard.py` | canonical cross-lane map accepted; escapes rejected |
+| UI-11 browser privacy | `control-console.spec.mjs` | full session/operation/audit/digest material and unknown exception text remain absent from the DOM |
 
 ## Qualification commands
 

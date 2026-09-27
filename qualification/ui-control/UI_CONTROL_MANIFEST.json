@@ -20,6 +20,7 @@
   "status": {
     "clientCore": "substantially_implemented",
     "browserComposition": "repository_shell_implemented",
+    "browserCorrelationPrivacy": "identifiers_redacted_in_dom_exact_in_client_state",
     "dependencyLock": "exact_npm_lock_committed_qualification_pending",
     "sessionLifecycle": "identity_permission_revision_and_shutdown_fenced",
     "terminalEvidence": "authenticated_backend_observation_projection_implemented",
@@ -71,6 +72,7 @@
     "Session identity cannot change during refresh; permission revision cannot regress or conceal permission drift.",
     "Revoke, close, and stopped refresh paths remove local control authority even when transport cleanup fails.",
     "Local recovery storage failure is visible but cannot wedge or authorize a control request.",
+    "Session, operation, audit-trace, snapshot, semantic, and outcome correlation identifiers are rendered only in deterministic redacted form; full values remain outside DOM text and attributes.",
     "Control actions are disabled while the displayed view is stale or the session lacks the required permission."
   ],
   "verification": {

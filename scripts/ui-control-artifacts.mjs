@@ -117,7 +117,7 @@ ${q("SameOriginHttpTransport")} enforces same-origin API paths, credentials-incl
 The browser shell provides:
 
 - visible stale, disconnected, pending, terminal, failure, and indeterminate states;
-- operation ID, runtime generation, revision, semantic digest binding, and audit trace display;
+- full runtime generation and revision display plus deterministic redaction of session, operation, audit-trace, snapshot, semantic, and outcome correlation identifiers; exact full identifiers remain in typed client state and transport objects and are not copied into DOM text or attributes;
 - modal confirmation for start, reconcile, and stop requests;
 - duplicate-activation suppression before network dispatch;
 - semantic tables, labels, alerts, live regions, skip navigation, visible focus, reduced-motion support, and focus restoration;
@@ -129,7 +129,7 @@ Automated checks do not replace manual screen-reader/operator acceptance; that r
 
 Stable error codes include ${q("UI_CONTROL_SESSION_EXPIRED")}, ${q("UI_CONTROL_PERMISSION_DENIED")}, ${q("UI_CONTROL_STALE_GENERATION")}, ${q("UI_CONTROL_STALE_REVISION")}, ${q("UI_CONTROL_SNAPSHOT_DRIFT")}, ${q("UI_CONTROL_PENDING_LIMIT")}, ${q("UI_CONTROL_OPERATION_CONFLICT")}, ${q("UI_CONTROL_BACKEND_REJECTED")}, ${q("UI_CONTROL_ACK_MISMATCH")}, and ${q("UI_CONTROL_AMBIGUOUS_SUBMISSION")}.
 
-Callers branch on ${q("code")} and ${q("retryable")}; parsing message text is unsupported.
+Callers branch on ${q("code")} and ${q("retryable")}; parsing message text is unsupported. Unknown exception messages are replaced by an operator-safe generic error before DOM rendering.
 
 ## 10. Qualification
 
@@ -196,6 +196,7 @@ const map = {
     clientCoreSubstantiallyImplemented: true,
     repositoryBrowserShellImplemented: true,
     repositoryAuthTransportAdaptersImplemented: true,
+    browserCorrelationIdentifiersRedacted: true,
     dependencyLockCommitted: true,
     serverIdempotencyContractDefined: true,
     exactHeadQualificationWorkflowPresent: true,
@@ -239,8 +240,8 @@ const dossier = `# ui.control execution dossier
 - atomic pending reservation and concurrent duplicate promise sharing;
 - durable recovery-state export/restore without authority claims;
 - same-origin CSRF-protected HTTP adapter with no mutation retry;
-- semantic HTML browser shell with start/reconcile/stop confirmation and audit identity display;
-- Chromium, Firefox, WebKit, axe-core, keyboard, focus, stale-revision, duplicate-activation, and accepted-timeout tests;
+- semantic HTML browser shell with start/reconcile/stop confirmation, operator identity visibility, and deterministic DOM redaction for correlation identifiers;
+- Chromium, Firefox, WebKit, axe-core, keyboard, focus, stale-revision, duplicate-activation, accepted-timeout, storage-denial, and privacy-redaction tests;
 - single-manifest generated technical guide, implementation map, and this dossier.
 
 ## Evidence matrix
@@ -257,6 +258,7 @@ const dossier = `# ui.control execution dossier
 | UI-08 accessibility | Playwright + axe-core | zero automated violations; focus restored |
 | UI-09 package boundary | ${q("api-surface.test.js")} | explicit exports; deep imports rejected |
 | UI-10 Lane B cross-owner | ${q("test_hepta_lane_b_path_guard.py")} | canonical cross-lane map accepted; escapes rejected |
+| UI-11 browser privacy | ${q("control-console.spec.mjs")} | full session/operation/audit/digest material and unknown exception text remain absent from the DOM |
 
 ## Qualification commands
 
