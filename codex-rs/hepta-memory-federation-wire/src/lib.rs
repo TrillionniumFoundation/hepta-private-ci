@@ -34,6 +34,8 @@ pub use codec::encode_registered_frame_v1;
 pub use codec::registered_codec_v1;
 pub use credential::CredentialError;
 pub use credential::FEDERATION_MAC_KEY_BYTES;
+pub use credential::MAX_FEDERATION_CREDENTIAL_KEYS;
+pub use credential::MAX_FEDERATION_CREDENTIAL_KEYS_PER_PEER_PAIR;
 pub use credential::PeerCredentialRegistryV1;
 pub use credential::PeerCredentialV1;
 pub use host::AdmittedFederationQueryV1;
@@ -72,6 +74,8 @@ pub use replay::ReplayError;
 mod attempt_tests;
 #[cfg(test)]
 mod client_tests;
+#[cfg(test)]
+mod credential_tests;
 #[cfg(test)]
 mod host_tests;
 #[cfg(test)]
