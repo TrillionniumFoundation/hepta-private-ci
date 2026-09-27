@@ -1,0 +1,37 @@
+name: cognitive-types-native-tools
+on:
+  push:
+    branches: [codex/cognitive-types-production-hardening-20260926]
+    paths: [.github/workflows/cognitive-types-native-tools.yml]
+permissions:
+  contents: read
+jobs:
+  native-tools:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: '1.95.0'
+          components: rustfmt, clippy
+      - name: Export compiler and rustfmt without credentials or Cargo home
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/native-tools"
+          mkdir -p "$out"
+          toolchain=$(rustc --print sysroot)
+          rustc --version --verbose > "$out/rustc.txt"
+          rustfmt --version > "$out/rustfmt.txt"
+          git rev-parse HEAD > "$out/source.txt"
+          tar -C "$toolchain" -czf "$out/rust-toolchain.tar.gz" bin lib
+          sha256sum "$out/rust-toolchain.tar.gz" > "$out/SHA256SUMS"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: cognitive-types-native-tools-${{ github.sha }}
+          path: ${{ runner.temp }}/native-tools
+          if-no-files-found: error
+          retention-days: 3
