@@ -16,6 +16,7 @@ use crate::AgentdIdentity;
 use crate::AgentdIntelligenceDecisionPlanV1;
 use crate::AgentdIntelligenceLearningHostV1;
 use crate::AgentdIntelligenceOwnerInputsV1;
+use crate::AgentdIntelligenceRuntimeMetricsV1;
 use crate::agentd_objective_fence;
 
 /// Exact durable identity inherited by a prepared canonical intelligence run.
@@ -270,6 +271,19 @@ pub trait AgentdIntelligenceInvocationProviderV1: Send + Sync {
     /// provider without it remains a compatibility/source-test profile.
     fn learning_host(&self) -> Option<std::sync::Arc<AgentdIntelligenceLearningHostV1>> {
         None
+    }
+
+    /// Product-profile metrics. Legacy providers default to no metrics and can
+    /// therefore never satisfy canonical product readiness.
+    fn runtime_metrics(&self) -> Option<std::sync::Arc<AgentdIntelligenceRuntimeMetricsV1>> {
+        None
+    }
+
+    /// Bounded number of host-owned invocations waiting for an authenticated
+    /// RunStart. `None` denotes an implementation without an inspectable
+    /// bounded registry and is not product-ready.
+    fn pending_invocations(&self) -> Result<Option<usize>, AgentdError> {
+        Ok(None)
     }
 
     fn build(
