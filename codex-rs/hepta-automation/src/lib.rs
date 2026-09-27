@@ -16,7 +16,12 @@ mod authorized_effect;
 mod automation_taskflow;
 mod cross_host_recovery;
 mod dispatch_recovery;
+#[allow(
+    dead_code,
+    reason = "immutable activation-intent fields remain persisted recovery evidence"
+)]
 mod durable_neural_circuit;
+mod durable_neural_circuit_recovery;
 mod effect_dispatch_ledger;
 mod lifecycle;
 mod model;

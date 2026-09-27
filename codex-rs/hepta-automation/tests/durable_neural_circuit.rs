@@ -3,7 +3,6 @@
 use std::cell::Cell;
 
 use codex_hepta_automation::AutomationStore;
-use codex_hepta_automation::CircuitCancellationV1;
 use codex_hepta_automation::CircuitDecisionCellV1;
 use codex_hepta_automation::CircuitDecisionRequestV1;
 use codex_hepta_automation::CircuitDecisionV1;
@@ -572,12 +571,4 @@ async fn lost_owner_response_blocks_rerun_until_identity_bound_recovery() {
     assert_eq!(recovered.state, DurableCircuitRunStateV1::Terminal);
     assert!(observer.observed_input.is_some());
     reopened.close().await;
-}
-
-struct NeverCancelledForCoverage;
-
-impl CircuitCancellationV1 for NeverCancelledForCoverage {
-    fn is_cancelled(&self) -> bool {
-        false
-    }
 }
