@@ -122,7 +122,10 @@ def one_fault(binary: Path, fault: str, output: Path) -> dict:
                 record["filledBytes"] = fill_to_enospc(filler)
                 record["observedErrno"] = errno.ENOSPC
             elif fault == "erofs":
-                command(privilege + ["mount", "-t", "tmpfs", "-o", "remount,ro", "ndu-qualification", str(mount)])
+                # util-linux remounts an existing mount by target. Supplying the
+                # original pseudo source together with ``-t tmpfs`` is rejected
+                # on Ubuntu's mount helper even though the target is valid.
+                command(privilege + ["mount", "-o", "remount,ro", str(mount)])
                 probe_erofs(mount / "read-only-probe")
                 record["observedErrno"] = errno.EROFS
             else:
@@ -132,7 +135,7 @@ def one_fault(binary: Path, fault: str, output: Path) -> dict:
             if fault == "enospc":
                 filler.unlink()
             else:
-                command(privilege + ["mount", "-t", "tmpfs", "-o", "remount,rw", "ndu-qualification", str(mount)])
+                command(privilege + ["mount", "-o", "remount,rw", str(mount)])
             send_phase(process, "RECOVER")
             record["phases"].append(expect_phase(process, "RECOVERED"))
             record["exitCode"] = process.wait(timeout=10)
