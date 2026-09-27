@@ -296,17 +296,30 @@ mod tests {
         }
     }
 
-    fn append_transition(
-        journal: &mut ArtifactLifecycleJournalV2,
-        manifest: &LearningArtifactManifestV2,
-        event_id: &str,
+    struct TransitionSpec {
+        event_id: &'static str,
         actor_id: StableId,
         role: LifecycleActorRoleV2,
         prior_state: ArtifactLifecycleStateV1,
         next_state: ArtifactLifecycleStateV1,
         evidence: Digest32,
         now: u64,
+    }
+
+    fn append_transition(
+        journal: &mut ArtifactLifecycleJournalV2,
+        manifest: &LearningArtifactManifestV2,
+        transition: TransitionSpec,
     ) {
+        let TransitionSpec {
+            event_id,
+            actor_id,
+            role,
+            prior_state,
+            next_state,
+            evidence,
+            now,
+        } = transition;
         let credential = digest(&format!("{event_id}-credential"));
         journal
             .append(
@@ -382,13 +395,15 @@ mod tests {
             append_transition(
                 &mut journal,
                 manifest,
-                event,
-                actor,
-                role,
-                prior,
-                next,
-                digest(&format!("{event}-evidence")),
-                50,
+                TransitionSpec {
+                    event_id: event,
+                    actor_id: actor,
+                    role,
+                    prior_state: prior,
+                    next_state: next,
+                    evidence: digest(&format!("{event}-evidence")),
+                    now: 50,
+                },
             );
         }
         let selection_digest = signed_selection_digest(selection);
@@ -491,13 +506,15 @@ mod tests {
         append_transition(
             &mut journal,
             &manifest,
-            "revoked",
-            id("revocation-authority"),
-            LifecycleActorRoleV2::RevocationAuthority,
-            ArtifactLifecycleStateV1::Selected,
-            ArtifactLifecycleStateV1::Revoked,
-            digest("revocation-evidence"),
-            60,
+            TransitionSpec {
+                event_id: "revoked",
+                actor_id: id("revocation-authority"),
+                role: LifecycleActorRoleV2::RevocationAuthority,
+                prior_state: ArtifactLifecycleStateV1::Selected,
+                next_state: ArtifactLifecycleStateV1::Revoked,
+                evidence: digest("revocation-evidence"),
+                now: 60,
+            },
         );
         assert_eq!(
             validate_selected_lifecycle_v2(
