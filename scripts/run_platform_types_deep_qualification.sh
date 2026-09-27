@@ -38,6 +38,10 @@ MIRI_TOOLCHAIN="${PLATFORM_TYPES_MIRI:-nightly-2026-09-20}"
 OUT="${PLATFORM_TYPES_EVIDENCE_ROOT:-$ROOT/.hepta-evidence/platform-types-deep/$CANDIDATE_KIND}"
 MANIFEST="$ROOT/codex-rs/Cargo.toml"
 PACKAGE="codex-hepta-types"
+API_BASE_SHA="${PLATFORM_TYPES_API_BASE_SHA:-${BASE_SHA:-}}"
+if [[ -z "$API_BASE_SHA" || "$API_BASE_SHA" =~ ^0+$ ]]; then
+  API_BASE_SHA="$(git rev-parse HEAD^)"
+fi
 
 rm -rf "$OUT"
 mkdir -p "$OUT"
@@ -83,6 +87,17 @@ truth_check() {
   test -z "$(git status --porcelain --untracked-files=no)"
 }
 
+provenance_check() {
+  python3 scripts/platform_types_provenance.py \
+    "${IDENTITY_ARGS[@]}" --output "$OUT/provenance.json"
+}
+
+api_check() {
+  PLATFORM_TYPES_MIRI="$MIRI_TOOLCHAIN" \
+    bash scripts/run_platform_types_rustdoc_semver.sh \
+    "$API_BASE_SHA" "$EXPECTED_SHA" "$OUT/rustdoc-api"
+}
+
 msrv_check() {
   rustup toolchain install "$MSRV" --profile minimal
   rustc "+$MSRV" --version --verbose
@@ -116,24 +131,32 @@ bundle_check() {
 }
 
 run_step truth truth_check
+run_step provenance provenance_check
+run_step api api_check
 run_step msrv msrv_check
 run_step native native_check
 run_step miri miri_check
 run_step bundle bundle_check
 
 OUTCOME_ARGS=()
-for name in truth msrv native miri bundle; do
+for name in truth provenance api msrv native miri bundle; do
   OUTCOME_ARGS+=(--outcome "$name=${OUTCOMES[$name]}")
 done
 
 EVIDENCE_ARGS=(
   --evidence "truth-log=$OUT/truth.log"
+  --evidence "provenance-log=$OUT/provenance.log"
+  --evidence "api-log=$OUT/api.log"
   --evidence "msrv-log=$OUT/msrv.log"
   --evidence "native-log=$OUT/native.log"
   --evidence "miri-log=$OUT/miri.log"
   --evidence "bundle-log=$OUT/bundle.log"
   --evidence "generated-map=$OUT/generated-implementation-map.json"
   --evidence "property-report=$OUT/property-report.json"
+  --evidence "provenance=$OUT/provenance.json"
+  --evidence "rustdoc-base=$OUT/rustdoc-api/base-api.json"
+  --evidence "rustdoc-current=$OUT/rustdoc-api/current-api.json"
+  --evidence "rustdoc-diff=$OUT/rustdoc-api/diff.json"
   --evidence "bundle-manifest=$OUT/document-bundle/manifest.json"
 )
 
@@ -148,7 +171,7 @@ DIAGNOSTICS_CODE="${PIPESTATUS[0]}"
 set -u
 
 ALL_PASSED=true
-for name in truth msrv native miri bundle; do
+for name in truth provenance api msrv native miri bundle; do
   if [[ "${OUTCOMES[$name]}" != success ]]; then
     ALL_PASSED=false
   fi
@@ -178,7 +201,7 @@ fi
 {
   printf 'candidate_kind=%s\n' "$CANDIDATE_KIND"
   printf 'expected_sha=%s\n' "$EXPECTED_SHA"
-  for name in truth msrv native miri bundle; do
+  for name in truth provenance api msrv native miri bundle; do
     printf '%s=%s\n' "$name" "${OUTCOMES[$name]}"
   done
   printf 'diagnostics=%s\n' "$([[ "$DIAGNOSTICS_CODE" -eq 0 ]] && echo success || echo failure)"

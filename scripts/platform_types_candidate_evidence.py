@@ -72,6 +72,8 @@ def write_receipt(args: Any) -> None:
     bundle_record, bundle = _object(evidence, "bundle-manifest")
     property_record, properties = _object(evidence, "property-report")
     map_record, generated_map = _object(evidence, "generated-map")
+    provenance_record, provenance = _object(evidence, "provenance")
+    api_record, api_diff = _object(evidence, "rustdoc-diff")
 
     if bundle.get("candidateIdentity") != identity:
         raise CandidateBundleError("document bundle candidate mismatch")
@@ -79,6 +81,10 @@ def write_receipt(args: Any) -> None:
         raise CandidateBundleError("document bundle overclaims qualification")
     if properties.get("status") != "passed":
         raise CandidateBundleError("property report did not pass")
+    if provenance.get("status") != "passed" or provenance.get("candidateIdentity") != identity:
+        raise CandidateBundleError("Git provenance did not pass for this candidate")
+    if api_diff.get("status") != "passed" or api_diff.get("breaking") is not False:
+        raise CandidateBundleError("rustdoc public API semver gate did not pass")
     if generated_map.get("schema") != "hepta.platform-types.generated-implementation-map.v1":
         raise CandidateBundleError("generated implementation map schema mismatch")
     if generated_map.get("module") != "platform.types":
@@ -91,8 +97,8 @@ def write_receipt(args: Any) -> None:
         raise CandidateBundleError("generated implementation map digest mismatch")
 
     write_object(args.output, {
-        "schema": "hepta.platform-types.deep-qualification-receipt.v1",
-        "schemaVersion": 1,
+        "schema": "hepta.platform-types.deep-qualification-receipt.v2",
+        "schemaVersion": 2,
         "module": "platform.types",
         "candidateKind": identity["kind"],
         "candidateIdentity": identity,
@@ -104,8 +110,10 @@ def write_receipt(args: Any) -> None:
         "documentBundleSha256": bundle_record["sha256"],
         "propertyReportSha256": property_record["sha256"],
         "generatedImplementationMapSha256": map_record["sha256"],
+        "gitProvenanceSha256": provenance_record["sha256"],
+        "rustdocSemverDiffSha256": api_record["sha256"],
         "status": "passed_in_current_job",
-        "scope": "exact source, generated map, properties, MSRV, native tests, Miri, and bound docs",
+        "scope": "exact Git identity, rustdoc API compatibility, generated map, properties, MSRV, native tests, Miri, and bound docs",
         **_nonclaims(),
         "github": _github(),
     })

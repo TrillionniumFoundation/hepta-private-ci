@@ -17,7 +17,9 @@ from lane_a_foundation_lib import (
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTCOMES = frozenset({"success", "failure", "cancelled", "skipped"})
-REQUIRED_OUTCOMES = frozenset({"truth", "msrv", "native", "miri", "bundle"})
+REQUIRED_OUTCOMES = frozenset(
+    {"truth", "provenance", "api", "msrv", "native", "miri", "bundle"}
+)
 
 
 class CandidateBundleError(RuntimeError):
