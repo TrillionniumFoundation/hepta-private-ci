@@ -65,7 +65,10 @@ text = text.replace(marker, product_entry + marker)
 replace_exact(
     "    production_grant_verifier: Option<H7H89ProductionGrantVerifier>,\n) -> Result<(), SupervisorError> {",
     "    production_grant_verifier: Option<H7H89ProductionGrantVerifier>,\n    process_admission: Option<SharedProcessAdmission>,\n) -> Result<(), SupervisorError> {",
-    count=2,
+)
+replace_exact(
+    "    _production_grant_verifier: Option<H7H89ProductionGrantVerifier>,\n) -> Result<(), SupervisorError> {",
+    "    _production_grant_verifier: Option<H7H89ProductionGrantVerifier>,\n    _process_admission: Option<SharedProcessAdmission>,\n) -> Result<(), SupervisorError> {",
 )
 replace_exact(
     "    let driver =\n        UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;\n    let (supervisor, recovery) = Supervisor::recover(",
@@ -75,10 +78,6 @@ replace_exact(
     "DaemonState<UnixProcessDriver>",
     "DaemonState<AdmissionProcessDriver<UnixProcessDriver>>",
     count=2,
-)
-replace_exact(
-    "    _production_grant_verifier: Option<H7H89ProductionGrantVerifier>,\n    process_admission: Option<SharedProcessAdmission>,",
-    "    _production_grant_verifier: Option<H7H89ProductionGrantVerifier>,\n    _process_admission: Option<SharedProcessAdmission>,",
 )
 
 PATH.write_text(text, encoding="utf-8")
