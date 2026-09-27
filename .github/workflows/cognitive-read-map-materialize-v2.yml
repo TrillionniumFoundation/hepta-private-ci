@@ -152,4 +152,4 @@ jobs:
           test -z "$(git status --porcelain)"
           git push origin "HEAD:${GITHUB_REF_NAME}"
 
-# Retriggered after canonical cargo-fuzz harness qualification was added.
+# Retriggered after the exact Agentd legacy qualification edge was registered.
