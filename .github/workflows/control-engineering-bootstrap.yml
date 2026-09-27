@@ -44,7 +44,6 @@ jobs:
 
           ROOT = Path.cwd().resolve()
           PARTS = ROOT / ".github/control-engineering-bootstrap"
-          WORKFLOW = ROOT / ".github/workflows/control-engineering-bootstrap.yml"
           EXPECTED_ARCHIVE = "e5477cdbedf6b1ff4ed7e604826f57c0a1a96c93712b1b0d1832ab3eeb9d471b"
           MANIFEST_NAME = ".bootstrap/control-engineering-manifest.json"
 
@@ -115,16 +114,19 @@ jobs:
                   target.write_bytes(value)
 
           shutil.rmtree(PARTS)
-          WORKFLOW.unlink()
-          if PARTS.exists() or WORKFLOW.exists():
-              raise SystemExit("bootstrap_cleanup_failed")
           print(json.dumps({"archiveSha256": EXPECTED_ARCHIVE, "files": len(rows)}, sort_keys=True))
           PY
+
+          # Workflow files are written separately through the authenticated GitHub
+          # connector. The transient Actions token intentionally lacks workflows:write.
+          git restore --source=HEAD -- .github/workflows/blocking-ci.yml
+          rm -f .github/workflows/control-engineering-projection.yml
+          rm -f .github/workflows/control-engineering-production-acceptance.yml
 
           python3 -m compileall -q tools/hepta-engineering-control/control_engineering_v2
           git diff --check
           test ! -e .github/control-engineering-bootstrap
-          test ! -e .github/workflows/control-engineering-bootstrap.yml
+          test -e .github/workflows/control-engineering-bootstrap.yml
 
       - name: Commit exact implementation tree
         shell: bash
@@ -135,5 +137,6 @@ jobs:
           git add -A
           git diff --cached --check
           test -n "$(git diff --cached --name-only)"
-          git commit -m "control.engineering: close merge, quality, and production gates"
+          test -z "$(git diff --cached --name-only -- '.github/workflows/**')"
+          git commit -m "control.engineering: implement state, evidence, and scale gates"
           git push origin HEAD:codex/control-engineering-production-closure-20260928
