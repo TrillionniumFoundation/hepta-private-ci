@@ -1,0 +1,28 @@
+name: Cognitive store portable finalizer
+
+on:
+  push:
+    branches:
+      - codex/cognitive-store-total-closure-20260927
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-store-portable-finalizer
+  cancel-in-progress: true
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/cognitive-store-total-closure-20260927
+          fetch-depth: 0
+
+      - name: Finalize and publish exact candidate
+        shell: pwsh
+        run: python scripts/finalize_cognitive_store_candidate.py
