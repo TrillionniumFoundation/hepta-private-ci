@@ -42,6 +42,65 @@ class ProcessFailure(RuntimeError):
         super().__init__(reason)
         self.observation = observation
         self.child = child
+        self._cleanup_lock = threading.Lock()
+
+    def reconcile_cleanup(self) -> dict:
+        """Retry cleanup of the retained child, never inference or result delivery.
+
+        This process remains the exclusive child reaper. Do not call poll/wait
+        on ``child`` yourself: losing ownership disables subsequent signalling.
+        A successful direct-child cleanup still does not attest descendants,
+        device resources, operation success or permission to retry the request.
+        """
+        if not self._cleanup_lock.acquire(blocking=False):
+            raise Rejected("cleanup reconciliation already in progress")
+        try:
+            if self.child is not None:
+                _cleanup_owned_child(self.child, self.observation)
+                if self.observation["direct_child_reaped"]:
+                    self.child = None
+            return dict(self.observation)
+        finally:
+            self._cleanup_lock.release()
+
+
+def _cleanup_owned_child(child: subprocess.Popen, observation: dict) -> None:
+    """Keep the unreaped leader as the process-group identity until signalling.
+
+    If signalling fails, DO NOT wait/poll/reap: another process could otherwise
+    reuse that group number before a later cleanup attempt. This is a trusted
+    exclusive-reaper protocol, not protection against a concurrent foreign reaper.
+    """
+    if observation["direct_child_reaped"]:
+        return
+    try:
+        if child.returncode is not None:
+            raise ChildProcessError("child was reaped outside its owner")
+        os.waitid(os.P_PID, child.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+    except ChildProcessError:
+        observation["cleanup_error"] = "ChildOwnershipLost"
+        return
+    except OSError as error:
+        observation["cleanup_error"] = type(error).__name__
+        return
+    try:
+        os.killpg(child.pid, signal.SIGKILL)
+        observation["group_kill_sent"] = True
+    except ProcessLookupError:
+        # No current group exists; the still-owned leader may now be reaped.
+        pass
+    except OSError as error:
+        observation["cleanup_error"] = type(error).__name__
+        return
+    try:
+        observation["returncode"] = child.wait(timeout=CLEANUP_SECONDS)
+        observation["direct_child_exit_observed"] = True
+        observation["direct_child_reaped"] = True
+        observation["cleanup_error"] = None
+    except ChildProcessError:
+        observation["cleanup_error"] = "ChildOwnershipLost"
+    except (subprocess.TimeoutExpired, OSError) as error:
+        observation["cleanup_error"] = type(error).__name__
 
 
 def offline_environment() -> dict[str, str]:
@@ -92,6 +151,7 @@ def _exchange(command: list[str], request_wire: bytes, deadline: OwnerDeadline,
         "request_sha256": hashlib.sha256(request_wire).hexdigest(),
         "operation_id": request["operation_id"], "deadline_ms": request["deadline_ms"],
         "spawned": False, "direct_child_exit_observed": False, "returncode": None,
+        "direct_child_reaped": False,
         "group_kill_sent": False, "cleanup_error": None, "input_bytes_written": 0,
         "stdout_bytes": 0, "stderr_bytes": 0, "stderr_sha256": None,
         "reply_sha256": None, "eligible_reply": False, "retry_allowed": False,
@@ -155,20 +215,11 @@ def _exchange(command: list[str], request_wire: bytes, deadline: OwnerDeadline,
         if child is not None and identity_lost:
             observation["cleanup_error"] = "ChildOwnershipLost"
         if child is not None and not identity_lost:
-            # The child has not been reaped anywhere above. Its PID therefore
-            # cannot name a reused session. Signal before reaping on every path,
-            # even when the leader exited and descendants kept a pipe open.
             try:
-                os.killpg(child.pid, signal.SIGKILL)
-                observation["group_kill_sent"] = True
-            except ProcessLookupError:
-                pass
-            except OSError as error:
-                observation["cleanup_error"] = type(error).__name__
-            try:
-                observation["returncode"] = child.wait(timeout=CLEANUP_SECONDS)
-                observation["direct_child_exit_observed"] = True
-            except (subprocess.TimeoutExpired, OSError) as error:
+                _cleanup_owned_child(child, observation)
+            except BaseException as error:
+                # Even process interruption cannot discard an unresolved child.
+                reason, cause = type(error).__name__, error
                 observation["cleanup_error"] = type(error).__name__
         if child is not None:
             for stream in (child.stdin, child.stdout, child.stderr):
@@ -189,8 +240,8 @@ def _exchange(command: list[str], request_wire: bytes, deadline: OwnerDeadline,
     if reason is not None:
         observation["failure_type"] = reason
         # Never publish partial output or diagnostics containing source text.
-        pending = child if not observation["direct_child_exit_observed"] else None
-        if cause is not None and not isinstance(cause, Exception):
+        pending = child if not observation["direct_child_reaped"] else None
+        if pending is None and cause is not None and not isinstance(cause, Exception):
             raise cause
         raise ProcessFailure(reason, observation, pending) from cause
     observation["reply_sha256"] = hashlib.sha256(output).hexdigest()

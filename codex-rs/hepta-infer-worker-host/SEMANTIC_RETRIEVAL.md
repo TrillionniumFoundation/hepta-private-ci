@@ -75,7 +75,15 @@ It signals the process group before reaping its leader, including when a child
 retains a pipe after the leader exits. Unsupported platforms and an installed
 external child reaper reject before spawn. Failed direct-child cleanup retains
 the unresolved handle in `ProcessFailure`; it is not reported as successful
-termination. Process-group cleanup is not a sandbox or proof that escaped
+termination. If group signalling fails, the leader is deliberately not reaped:
+`ProcessFailure` retains its handle and `reconcile_cleanup` retries only cleanup,
+not the original request. Reconciliation rechecks exclusive child ownership before
+signalling, serializes concurrent cleanup attempts and becomes idempotent after
+reaping. An external reaper loses that permission; stale numeric group IDs are
+never used to compensate. A typed failure retains unresolved cleanup even when
+process interruption caused the failure. Completing cleanup does not retroactively
+publish a reply, declare task success or release unmeasured device resources.
+Process-group cleanup is not a sandbox or proof that escaped
 children stopped. Device memory, full descendant exit and task success remain
 explicitly unknown. Callers must not infer workspace release from these fields.
 
