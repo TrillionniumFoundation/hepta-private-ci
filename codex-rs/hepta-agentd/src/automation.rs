@@ -407,7 +407,7 @@ fn transient_recovery_protocol_error(message: &str) -> bool {
         "automation turn observation failed:",
     ]
     .iter()
-    .any(|prefix| message.starts_with(prefix))
+    .any(|prefix| message.starts_with(*prefix))
 }
 
 /// Applies the scheduler's fail-stop policy to one tick. A durable unknown
