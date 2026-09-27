@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "d43e05399763aefac45b027d31c5ae26a1ad4d54",
-    "tree": "e3f729c1642ecbd735827d34a89e949891015b4d"
+    "commit": "7016ab27bc360d42943927b11ce2acece1f35f7d",
+    "tree": "2be28a0a261ec641e3cc22eb9fb6ee6eab43392b"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
@@ -205,8 +205,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "d43e05399763aefac45b027d31c5ae26a1ad4d54",
-    "tree": "e3f729c1642ecbd735827d34a89e949891015b4d"
+    "commit": "7016ab27bc360d42943927b11ce2acece1f35f7d",
+    "tree": "2be28a0a261ec641e3cc22eb9fb6ee6eab43392b"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-kg-abc-execution.yml",
@@ -256,8 +256,10 @@
     "qualification/knowledge-graph/TARGET_HOST.md",
     "scripts/hepta-knowledge-graph-budget-check.py",
     "scripts/hepta-knowledge-graph-target-measure.py",
+    "scripts/hepta_kg_current_candidate_runner.py",
     "scripts/hepta_kg_evidence.py",
     "scripts/hepta_kg_execution_audit.py",
+    "scripts/hepta_knowledge_graph_map_verify.py",
     "scripts/test_hepta_kg_execution_audit.py",
     "scripts/test_hepta_kg_measurement.py",
     "scripts/test_hepta_knowledge_graph_budget.py"
@@ -277,7 +279,7 @@
   "sourceObjects": [
     {
       "path": ".github/workflows/hepta-kg-abc-execution.yml",
-      "object": "a41f04fcea1fdda479d5cb439a0f715a4809029b"
+      "object": "4acb6aa1d3fd2cb059454ab24b3685351c373150"
     },
     {
       "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
@@ -464,12 +466,20 @@
       "object": "a4b820fb4abb49629951171bc53804dbf24f6497"
     },
     {
+      "path": "scripts/hepta_kg_current_candidate_runner.py",
+      "object": "a8c69c62bfb4d419e6b9aea9702f67a5b21ace46"
+    },
+    {
       "path": "scripts/hepta_kg_evidence.py",
       "object": "57f267d5e6f25571918d746a740d3bc2cc62e6b7"
     },
     {
       "path": "scripts/hepta_kg_execution_audit.py",
       "object": "f91c4f51f0df5078ab3e316f3fb3ceee0de73124"
+    },
+    {
+      "path": "scripts/hepta_knowledge_graph_map_verify.py",
+      "object": "0fe3776232e373547d3f55ffb49477aa725196b8"
     },
     {
       "path": "scripts/test_hepta_kg_execution_audit.py",
