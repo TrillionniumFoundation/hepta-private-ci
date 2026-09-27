@@ -1,50 +1,42 @@
 name: cognitive-types-source-export
-
 on:
   push:
-    branches:
-      - 'codex/cognitive-types-production-hardening-20260926'
-    paths:
-      - '.github/workflows/cognitive-types-source-export.yml'
+    branches: [codex/cognitive-types-production-hardening-20260926]
+    paths: [.github/workflows/cognitive-types-source-export.yml]
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
   export:
     runs-on: macos-15
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
-      - name: Check out exact head
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-
-      - name: Record source identity
+      - name: Export the inspected tree without source writes
         shell: bash
         run: |
           set -euo pipefail
-          git rev-parse HEAD > cognitive-types-source-sha.txt
-          git rev-parse HEAD^{tree} > cognitive-types-source-tree.txt
-
-      - name: Upload audited source slice
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
+          mkdir -p "$RUNNER_TEMP/cognitive-source"
+          git rev-parse HEAD > "$RUNNER_TEMP/cognitive-source/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/cognitive-source/source-tree.txt"
+          git archive --format=tar HEAD codex-rs scripts .github docs qualification justfile MODULE.bazel MODULE.bazel.lock defs.bzl > "$RUNNER_TEMP/cognitive-source/source.tar"
+          shasum -a 256 "$RUNNER_TEMP/cognitive-source/source.tar" > "$RUNNER_TEMP/cognitive-source/source.tar.sha256"
+      - name: Export the repository-pinned Linux formatter for offline source checking
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/cognitive-source"
+          asset=rustfmt-1.95.0-x86_64-unknown-linux-gnu.tar.xz
+          curl --fail --location --retry 2 "https://static.rust-lang.org/dist/$asset" -o "$asset"
+          curl --fail --location --retry 2 "https://static.rust-lang.org/dist/$asset.sha256" -o "$asset.sha256"
+          shasum -a 256 -c "$asset.sha256"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
         with:
-          name: cognitive-types-source-${{ github.sha }}
-          path: |
-            cognitive-types-source-sha.txt
-            cognitive-types-source-tree.txt
-            codex-rs/hepta-cognitive-types
-            codex-rs/hepta-cognitive-store
-            codex-rs/hepta-cognitive-read
-            codex-rs/hepta-memory-retrieval
-            codex-rs/hepta-compact-engine
-            codex-rs/hepta-intelligence
-            codex-rs/Cargo.toml
-            codex-rs/Cargo.lock
-            docs/modules/cognitive.types
-            qualification/cognitive-types-v1
+          name: cognitive-types-owner-source-${{ github.sha }}
+          path: ${{ runner.temp }}/cognitive-source
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 7
