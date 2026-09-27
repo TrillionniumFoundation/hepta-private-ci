@@ -95,10 +95,12 @@ pub struct NeuronFeatureExecutionRecordV1 {
     pub receipt: Option<NeuronFeatureReceiptV1>,
 }
 
+/// Keep fresh admission small while retaining the complete historical result.
+/// The indirection is in-memory only; journal encoding and replay are unchanged.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum NeuronFeatureAdmissionV1 {
     New,
-    Historical(NeuronFeatureExecutionRecordV1),
+    Historical(Box<NeuronFeatureExecutionRecordV1>),
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -303,7 +305,7 @@ impl FileNeuronFeatureExecutionStoreV1 {
         let request_digest = request_digest(request)?;
         if let Some(record) = self.records.get(&request.request_id) {
             return if record.request_digest == request_digest && record.request == *request {
-                Ok(NeuronFeatureAdmissionV1::Historical(record.clone()))
+                Ok(NeuronFeatureAdmissionV1::Historical(Box::new(record.clone())))
             } else {
                 Err(NeuronFeatureStoreError::Conflict)
             };
@@ -321,7 +323,7 @@ impl FileNeuronFeatureExecutionStoreV1 {
         request: NeuronFeatureRequestV1,
     ) -> Result<NeuronFeatureExecutionRecordV1, NeuronFeatureStoreError> {
         match self.admit(&request)? {
-            NeuronFeatureAdmissionV1::Historical(record) => return Ok(record),
+            NeuronFeatureAdmissionV1::Historical(record) => return Ok(*record),
             NeuronFeatureAdmissionV1::New => {}
         }
         let payload = encode_event(&Event::Reserve(RequestDto::from_request(&request)))?;

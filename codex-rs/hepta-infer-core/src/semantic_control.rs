@@ -419,14 +419,28 @@ impl SemanticJournal {
         event: &Event,
         primary: &BTreeMap<String, RequestRecord>,
     ) -> Result<Prepared, Error> {
-        if let Event::Reserve { admission, maximum_in_flight, now_ms }
-            | Event::ReserveResourcesV2 { admission, maximum_in_flight, now_ms, .. } = event
+        if let Event::Reserve {
+            admission,
+            maximum_in_flight,
+            now_ms,
+        }
+        | Event::ReserveResourcesV2 {
+            admission,
+            maximum_in_flight,
+            now_ms,
+            ..
+        } = event
         {
             let resource_limits = match event {
-                Event::ReserveResourcesV2 { resource_limits, .. } => Some(resource_limits.clone()),
+                Event::ReserveResourcesV2 {
+                    resource_limits, ..
+                } => Some(resource_limits.clone()),
                 Event::Reserve { .. } => None,
-                Event::Fence { .. } | Event::Cancel { .. } | Event::Stop { .. }
-                | Event::Complete { .. } | Event::Acknowledge { .. } => return Err(Error::InvalidTransition),
+                Event::Fence { .. }
+                | Event::Cancel { .. }
+                | Event::Stop { .. }
+                | Event::Complete { .. }
+                | Event::Acknowledge { .. } => return Err(Error::InvalidTransition),
             };
             if let Some(limits) = &resource_limits
                 && limits.total_bytes()? != admission.maximum_memory_bytes
@@ -500,7 +514,9 @@ impl SemanticJournal {
             ));
         }
         let id = match event {
-            Event::Reserve { .. } | Event::ReserveResourcesV2 { .. } => return Err(Error::InvalidTransition),
+            Event::Reserve { .. } | Event::ReserveResourcesV2 { .. } => {
+                return Err(Error::InvalidTransition);
+            }
             Event::Fence { request_id, .. }
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
@@ -510,7 +526,9 @@ impl SemanticJournal {
         let old = self.records.get(id).ok_or(Error::RequestNotFound)?;
         let mut next = old.clone();
         match event {
-            Event::Reserve { .. } | Event::ReserveResourcesV2 { .. } => return Err(Error::InvalidTransition),
+            Event::Reserve { .. } | Event::ReserveResourcesV2 { .. } => {
+                return Err(Error::InvalidTransition);
+            }
             Event::Fence {
                 expected_revision,
                 now_ms,

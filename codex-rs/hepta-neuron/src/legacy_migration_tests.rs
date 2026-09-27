@@ -164,7 +164,7 @@ fn record(native: &SparseConfig, config: &NeuronRuntimeConfigV1) -> NeuronLegacy
         drive_q24: vec![Q, Q / 2, 0, 0, 0],
         prediction_q24: vec![0; 5],
     };
-    let (checkpoint, receipt) = checked(sparse_tick(native, &sparse_tick, None));
+    let (checkpoint, receipt) = checked(crate::sparse_tick(native, &sparse_tick, None));
     let runtime_receipt = LocalModelRuntimeReceiptV1 {
         model_id: config.model_id.clone(),
         model_manifest_digest: config.model_manifest_digest,

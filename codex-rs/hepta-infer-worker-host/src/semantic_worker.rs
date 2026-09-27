@@ -117,12 +117,15 @@ impl<D: SemanticRetrievalDriver> InferenceWorker<D> {
         }
         self.validate_current_grant(now_ms)?;
         validate_request(now_ms, &call.authorization)?;
-        call.input.validate_at(now_ms).map_err(|_| Error::FeatureContract)?;
+        call.input
+            .validate_at(now_ms)
+            .map_err(|_| Error::FeatureContract)?;
         if call.input.generation != self.generation {
             return Err(Error::PayloadMismatch);
         }
         if self.active_requests.contains_key(&id)
-            || self.active_requests.len() >= self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS)
+            || self.active_requests.len()
+                >= self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS)
         {
             return Err(Error::RequestCapacity);
         }
@@ -141,37 +144,52 @@ impl<D: SemanticRetrievalDriver> InferenceWorker<D> {
         if memory_limit > self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
         }
-        let workspace_bytes = limits.kv_bytes.checked_add(limits.transient_bytes)
+        let workspace_bytes = limits
+            .kv_bytes
+            .checked_add(limits.transient_bytes)
             .ok_or(Error::ArithmeticOverflow)?;
         // Resident memory was reserved at model load. Reserve the additional
         // workspace before durable admission or physical execution.
         let mut workspace = self.resources.reserve(workspace_bytes)?;
-        let active_count = loaded.active_requests.checked_add(1).ok_or(Error::ArithmeticOverflow)?;
-        let record = control.reserve_semantic_with_resources(
-            now_ms,
-            SemanticAdmissionV1 {
-                request_wire: wire.clone(),
-                principal_id: principal_id.to_string(),
-                reservation_id: call.authorization.reservation_id.clone(),
-                worker_id: self.worker_id.clone(),
-                worker_generation: self.generation,
-                maximum_tokens: call.authorization.maximum_tokens,
-                maximum_memory_bytes: memory_limit,
-                authority_binding_digest: self.grant.semantic_digest.clone(),
-            },
-            self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS),
-            limits.clone(),
-        ).map_err(owner_error)?;
+        let active_count = loaded
+            .active_requests
+            .checked_add(1)
+            .ok_or(Error::ArithmeticOverflow)?;
+        let record = control
+            .reserve_semantic_with_resources(
+                now_ms,
+                SemanticAdmissionV1 {
+                    request_wire: wire.clone(),
+                    principal_id: principal_id.to_string(),
+                    reservation_id: call.authorization.reservation_id.clone(),
+                    worker_id: self.worker_id.clone(),
+                    worker_generation: self.generation,
+                    maximum_tokens: call.authorization.maximum_tokens,
+                    maximum_memory_bytes: memory_limit,
+                    authority_binding_digest: self.grant.semantic_digest.clone(),
+                },
+                self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS),
+                limits.clone(),
+            )
+            .map_err(owner_error)?;
         if call.authorization.cancelled {
             return control.cancel_semantic(&id).map_err(owner_error);
         }
-        control.fence_semantic_dispatch(&id, record.revision, now_ms).map_err(owner_error)?;
+        control
+            .fence_semantic_dispatch(&id, record.revision, now_ms)
+            .map_err(owner_error)?;
         workspace.enter()?;
         loaded.active_requests = active_count;
-        self.active_requests.insert(id.clone(), model_id.to_string());
-        let observed = self.driver.run_semantic_retrieval(&loaded.handle, &wire, &limits);
+        self.active_requests
+            .insert(id.clone(), model_id.to_string());
+        let observed = self
+            .driver
+            .run_semantic_retrieval(&loaded.handle, &wire, &limits);
         self.active_requests.remove(&id);
-        loaded.active_requests = loaded.active_requests.checked_sub(1).ok_or(Error::ResourceAccounting)?;
+        loaded.active_requests = loaded
+            .active_requests
+            .checked_sub(1)
+            .ok_or(Error::ResourceAccounting)?;
         let observed = match observed {
             Ok(observed) if observed.terminal_observed => observed,
             Ok(_) => {
@@ -185,10 +203,13 @@ impl<D: SemanticRetrievalDriver> InferenceWorker<D> {
         };
         // Complete does binding/shape/resource validation and fsync. A failure
         // leaves the durable fence and quarantines the entered workspace guard.
-        let completed = match control.complete_semantic(&id, SemanticCompletionV1 {
-            reply_wire: observed.reply_wire,
-            observed_memory_bytes: observed.observed_memory_bytes,
-        }) {
+        let completed = match control.complete_semantic(
+            &id,
+            SemanticCompletionV1 {
+                reply_wire: observed.reply_wire,
+                observed_memory_bytes: observed.observed_memory_bytes,
+            },
+        ) {
             Ok(completed) => completed,
             Err(error) => {
                 loaded.repair_required = true;

@@ -92,9 +92,7 @@ fn receipt_with_status(
     status: NeuronFeatureTerminalStatusV1,
 ) -> NeuronFeatureReceiptV1 {
     let (drive_q24, prediction_q24) = match status {
-        NeuronFeatureTerminalStatusV1::Succeeded => {
-            (vec![1_i64 << 24, 0, 0, 0, 0], vec![0; 5])
-        }
+        NeuronFeatureTerminalStatusV1::Succeeded => (vec![1_i64 << 24, 0, 0, 0, 0], vec![0; 5]),
         NeuronFeatureTerminalStatusV1::Failed
         | NeuronFeatureTerminalStatusV1::Cancelled
         | NeuronFeatureTerminalStatusV1::Indeterminate => (Vec::new(), Vec::new()),
@@ -150,12 +148,12 @@ fn exact_duplicate_returns_original_full_receipt_after_restart() {
     ));
     assert_eq!(
         checked(reopened.admit(&request)),
-        NeuronFeatureAdmissionV1::Historical(NeuronFeatureExecutionRecordV1 {
+        NeuronFeatureAdmissionV1::Historical(Box::new(NeuronFeatureExecutionRecordV1 {
             request: request.clone(),
             request_digest: checked(neuron_feature_request_digest_v1(&request)),
             state: NeuronFeatureExecutionStateV1::Succeeded,
             receipt: Some(expected),
-        })
+        }))
     );
 }
 
@@ -298,7 +296,10 @@ fn indeterminate_survives_restart_and_resolves_without_redispatch() {
         checked(store.mark_dispatched(&request));
         let unresolved = checked(store.observe(&request, unknown.clone()));
         let bytes = checked(fs::read(&fixture.file));
-        assert_eq!(checked(store.observe(&request, unknown.clone())), unresolved);
+        assert_eq!(
+            checked(store.observe(&request, unknown.clone())),
+            unresolved
+        );
         assert_eq!(checked(fs::read(&fixture.file)), bytes);
         drop(store);
 

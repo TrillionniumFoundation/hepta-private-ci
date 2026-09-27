@@ -67,7 +67,6 @@ fn admission(id: &str) -> SemanticAdmissionV1 {
     }
 }
 
-
 #[test]
 fn resource_tuple_reopens_and_cannot_be_rebound_or_downgraded() {
     let path = JournalPath::new();
@@ -78,21 +77,37 @@ fn resource_tuple_reopens_and_cannot_be_rebound_or_downgraded() {
         transient_bytes: 384,
     };
     let mut owner = path.open();
-    let record = owner.reserve_semantic_with_resources(100, admission("op.v2"), 1, limits.clone())
+    let record = owner
+        .reserve_semantic_with_resources(100, admission("op.v2"), 1, limits.clone())
         .expect("resource admission");
     drop(owner);
     let mut owner = path.open();
-    assert_eq!(owner.semantic_record("op.v2").expect("lookup"), Some(&record));
+    assert_eq!(
+        owner.semantic_record("op.v2").expect("lookup"),
+        Some(&record)
+    );
     let original = fs::read(&path.0).expect("bytes");
-    assert_eq!(owner.reserve_semantic_with_resources(10000, admission("op.v2"), 1, limits.clone())
-        .expect("history"), record);
-    let mut changed = limits.clone();
+    assert_eq!(
+        owner
+            .reserve_semantic_with_resources(10000, admission("op.v2"), 1, limits.clone())
+            .expect("history"),
+        record
+    );
+    let mut changed = limits;
     changed.kv_bytes += 1;
     changed.transient_bytes -= 1;
-    assert!(owner.reserve_semantic_with_resources(101, admission("op.v2"), 1, changed).is_err());
+    assert!(
+        owner
+            .reserve_semantic_with_resources(101, admission("op.v2"), 1, changed)
+            .is_err()
+    );
     assert!(owner.reserve_semantic(101, admission("op.v2"), 1).is_err());
     assert_eq!(fs::read(&path.0).expect("unchanged"), original);
-    assert!(String::from_utf8(original).expect("journal").contains("ReserveResourcesV2"));
+    assert!(
+        String::from_utf8(original)
+            .expect("journal")
+            .contains("ReserveResourcesV2")
+    );
 }
 
 #[test]
@@ -101,11 +116,30 @@ fn invalid_resource_admission_never_mutates_journal() {
     let mut owner = path.open();
     let original = fs::read(&path.0).expect("bytes");
     for limits in [
-        SemanticResourceLimitsV2 { model_id: "model.1".to_string(), resident_bytes: 0, kv_bytes: 0, transient_bytes: 1024 },
-        SemanticResourceLimitsV2 { model_id: "model.1".to_string(), resident_bytes: u64::MAX, kv_bytes: 1, transient_bytes: 0 },
-        SemanticResourceLimitsV2 { model_id: "model.1".to_string(), resident_bytes: 512, kv_bytes: 128, transient_bytes: 383 },
+        SemanticResourceLimitsV2 {
+            model_id: "model.1".to_string(),
+            resident_bytes: 0,
+            kv_bytes: 0,
+            transient_bytes: 1024,
+        },
+        SemanticResourceLimitsV2 {
+            model_id: "model.1".to_string(),
+            resident_bytes: u64::MAX,
+            kv_bytes: 1,
+            transient_bytes: 0,
+        },
+        SemanticResourceLimitsV2 {
+            model_id: "model.1".to_string(),
+            resident_bytes: 512,
+            kv_bytes: 128,
+            transient_bytes: 383,
+        },
     ] {
-        assert!(owner.reserve_semantic_with_resources(100, admission("op.invalid"), 1, limits).is_err());
+        assert!(
+            owner
+                .reserve_semantic_with_resources(100, admission("op.invalid"), 1, limits)
+                .is_err()
+        );
         assert_eq!(fs::read(&path.0).expect("unchanged"), original);
     }
 }

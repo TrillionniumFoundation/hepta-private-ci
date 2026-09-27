@@ -1,10 +1,10 @@
-use super::MechanismOnly;
 use super::*;
 
 use crate::AbstainReasonV1;
 use crate::DegradationReasonV1;
 use crate::NeuronCommitDispositionV1;
 use crate::SparseError;
+use crate::runtime::admission::MechanismOnly;
 
 use std::fs;
 use std::fs::OpenOptions;
