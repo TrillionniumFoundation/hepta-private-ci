@@ -1,0 +1,67 @@
+name: intelligence.control source finalizer
+
+on:
+  push:
+    branches:
+      - codex/intelligence-control-product-closure-20260926
+    paths:
+      - .github/workflows/hepta-intelligence-source-finalizer.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intelligence-control-source-finalizer
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    name: format and refresh lockfile
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact trigger
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind expected predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "f083bdc792a0d11f7f8b885c0c8f4889ae5d32b6"
+          test "$(git branch --show-current)" = "codex/intelligence-control-product-closure-20260926"
+
+      - name: Format sources and refresh lockfile
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all
+          cargo generate-lockfile
+          cargo metadata --locked --no-deps --format-version 1 >/dev/null
+
+      - name: Restrict mutation and self-remove
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/hepta-intelligence-source-finalizer.yml
+          allowed='^(\.github/workflows/hepta-intelligence-source-finalizer\.yml|codex-rs/Cargo\.lock|codex-rs/hepta-agentd/src/intelligence_(conformance_tests|ingress|learning|learning_payload|learning_runtime|learning_tests|product|product_runner)\.rs|codex-rs/hepta-intelligence/src/canonical\.rs)$'
+          unexpected="$(git status --short | cut -c4- | grep -Ev "$allowed" || true)"
+          if [ -n "$unexpected" ]; then
+            printf 'unexpected changed paths:\n%s\n' "$unexpected" >&2
+            exit 1
+          fi
+          test -n "$(git status --short)"
+
+      - name: Commit bounded mechanical closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Intelligence Source Finalizer"
+          git config user.email "hepta-intelligence-source-finalizer@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(intelligence): format sources and refresh lockfile"
+          git push origin HEAD:codex/intelligence-control-product-closure-20260926
