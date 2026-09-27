@@ -12,6 +12,7 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+EXPECTED_CHECK_COUNT = 24
 
 
 class ConsumerExecutionTests(unittest.TestCase):
@@ -80,13 +81,18 @@ class ConsumerExecutionTests(unittest.TestCase):
         self.assertFalse(record["checksPassed"])
         self.assertFalse(record["qualified"])
         checks = {row["name"]: row["exitCode"] for row in record["checks"]}
-        self.assertEqual(len(checks), 19)
+        self.assertEqual(len(checks), EXPECTED_CHECK_COUNT)
         self.assertEqual(checks["consumer-compile"], 19)
         self.assertEqual(checks["manifest-rust"], 0)
+        self.assertEqual(checks["wire-tests"], 0)
         self.assertEqual(checks["topology-consumer"], 0)
+        self.assertEqual(checks["manifest-owners"], 0)
+        self.assertEqual(checks["wire-lint"], 0)
         self.assertEqual(checks["ndu-lint"], 0)
         self.assertIn("verify_manifest_vectors.py", commands)
+        self.assertIn("verify_platform_wire_vectors.py", commands)
         self.assertIn("manifest_protocol_consumer", commands)
+        self.assertIn("codex-hepta-wire", commands)
         self.assertIn("codex-hepta-learning-ledger", commands)
 
     def test_empty_focused_suite_is_not_success(self):
@@ -94,6 +100,11 @@ class ConsumerExecutionTests(unittest.TestCase):
         self.assertNotEqual(process.returncode, 0)
         self.assertFalse(record["checksPassed"])
         self.assertFalse(record["qualified"])
+        checks = {row["name"]: row["exitCode"] for row in record["checks"]}
+        self.assertEqual(len(checks), EXPECTED_CHECK_COUNT)
+        self.assertEqual(checks["topology-consumer"], 4)
+        self.assertEqual(checks["manifest-owners"], 0)
+        self.assertEqual(checks["ndu-lint"], 0)
 
     def test_success_requires_all_checks_and_retains_exact_source(self):
         process, record, _ = self.execute("")
@@ -103,7 +114,7 @@ class ConsumerExecutionTests(unittest.TestCase):
             process.stdout + process.stderr,
         )
         self.assertTrue(record["checksPassed"])
-        self.assertEqual(len(record["checks"]), 19)
+        self.assertEqual(len(record["checks"]), EXPECTED_CHECK_COUNT)
         self.assertEqual(
             record["sourceHead"],
             subprocess.check_output(
