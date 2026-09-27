@@ -12,8 +12,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: automation-taskflow-schema22-truth-convergence
-  cancel-in-progress: false
+  group: automation-taskflow-schema22-truth-convergence-slim
+  cancel-in-progress: true
 
 jobs:
   converge:
