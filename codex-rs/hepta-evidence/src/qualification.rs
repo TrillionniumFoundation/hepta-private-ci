@@ -459,74 +459,19 @@ impl HeptaEvidenceStore {
         QualificationEvidenceStore { store: self }
     }
 
-    /// Production accepts only rows that retain the original AuthBus signature
-    /// and are bound to either the currently signed V2 registry or an immutable
-    /// trust generation already accepted with an external frontier.
+    /// Compatibility entry point for the bounded production provenance verifier.
+    /// Every caller receives the same single-snapshot, enrolled-store-scoped
+    /// checks; legacy callers cannot use another store's trust acceptance.
     pub async fn verify_production_qualification_provenance(
         &self,
         current_registry_generation: u64,
         current_registry_sha256: &Sha256Digest,
     ) -> Result<(), EvidenceError> {
-        if current_registry_generation == 0 {
-            return Err(EvidenceError::InvalidRecord(
-                "production qualification provenance requires a positive trust generation"
-                    .to_string(),
-            ));
-        }
-        let rows = sqlx::query(
-            "SELECT evidence_id, auth_signature, trust_registry_generation,
-                    trust_registry_sha256
-             FROM qualification_evidence ORDER BY seq ASC LIMIT 1000001",
+        self.verify_production_qualification_provenance_bounded(
+            current_registry_generation,
+            current_registry_sha256,
         )
-        .fetch_all(&self.pool)
         .await
-        .map_err(classify_sqlx_error)?;
-        if rows.len() > 1_000_000 {
-            return Err(EvidenceError::Unavailable(
-                "qualification provenance scan exceeds one million rows".to_string(),
-            ));
-        }
-        for row in rows {
-            let evidence_id: String = row.try_get("evidence_id").map_err(classify_sqlx_error)?;
-            let signature: Option<Vec<u8>> = row
-                .try_get("auth_signature")
-                .map_err(classify_sqlx_error)?;
-            let generation = read_optional_u64_blob(&row, "trust_registry_generation")?;
-            let digest = row
-                .try_get::<Option<String>, _>("trust_registry_sha256")
-                .map_err(classify_sqlx_error)?
-                .map(Sha256Digest::parse)
-                .transpose()
-                .map_err(EvidenceError::Corrupt)?;
-            if signature.as_ref().is_none_or(|value| value.len() != 64)
-                || generation.is_none()
-                || digest.is_none()
-            {
-                return Err(EvidenceError::InvalidRecord(format!(
-                    "qualification evidence {evidence_id} lacks complete authentication provenance"
-                )));
-            }
-            let generation = generation.expect("checked trust generation");
-            let digest = digest.expect("checked trust digest");
-            if generation == current_registry_generation && digest == *current_registry_sha256 {
-                continue;
-            }
-            let accepted: i64 = sqlx::query_scalar(
-                "SELECT COUNT(*) FROM evidence_trust_acceptance
-                 WHERE registry_generation = ? AND registry_sha256 = ?",
-            )
-            .bind(generation.to_be_bytes().to_vec())
-            .bind(digest.as_str())
-            .fetch_one(&self.pool)
-            .await
-            .map_err(classify_sqlx_error)?;
-            if accepted != 1 {
-                return Err(EvidenceError::InvalidRecord(format!(
-                    "qualification evidence {evidence_id} references an unaccepted trust generation"
-                )));
-            }
-        }
-        Ok(())
     }
 }
 
@@ -783,7 +728,7 @@ impl QualificationEvidenceStore<'_> {
             } else {
                 None
             };
-        transaction.commit().await.map_err(classify_sqlx_error)?;
+        transaction.commit().await.map_err(classifyx_error)?;
         current_trust.validate_store(self.store)?;
         if rows.is_empty() {
             return Ok(EvidenceDispositionV1::Missing);
@@ -1145,7 +1090,7 @@ fn decode_row(row: &SqliteRow) -> Result<StoredQualificationEvidence, EvidenceEr
     envelope.validate().map_err(|error| {
         EvidenceError::Corrupt(format!("qualification envelope invalid: {error}"))
     })?;
-    let canonical = canonical_json(&envelope)?;
+    let canonical = canonical_json(envelope)?;
     if canonical.as_slice() != envelope_json.as_bytes() {
         return Err(EvidenceError::Corrupt(
             "qualification evidence envelope is not canonical JSON".to_string(),
