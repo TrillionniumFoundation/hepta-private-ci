@@ -1,0 +1,249 @@
+name: Hepta memory retrieval completion
+
+on:
+  push:
+    branches: [work/memory-retrieval-completion-20260927]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: retrieval-completion-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  prepare:
+    name: Apply publication, Vector and deadline closure
+    if: contains(github.event.head_commit.message, 'bind explicit assertion writes and native delivery evidence')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    outputs:
+      head: ${{ steps.publish.outputs.head }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify exact branch and transformer objects
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+          BRANCH: work/memory-retrieval-completion-20260927
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = TrillionniumFoundation/hepta-private-ci
+          test "$GITHUB_REF" = "refs/heads/$BRANCH"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git ls-remote --heads origin "$BRANCH" | cut -f1)" = "$EXPECTED_HEAD"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          test "$(git hash-object scripts/hepta_memory_retrieval_publication_vector.py)" = dee4e7e876e5f2eae16354e41cb9baa9c3d7beef
+          test "$(git hash-object scripts/hepta_memory_retrieval_publication_vector_v4.py)" = da67125d07ff3ab2c2f838df95e88eb8bfb74492
+          test "$(git hash-object scripts/hepta_memory_retrieval_completion.py)" = a578d63b1798c435e5802bb8a07bae1dc1ccc7f9
+          python3 - <<'PY'
+          from pathlib import Path
+          for path in (
+              'scripts/hepta_memory_retrieval_publication_vector.py',
+              'scripts/hepta_memory_retrieval_publication_vector_v4.py',
+              'scripts/hepta_memory_retrieval_completion.py',
+          ):
+              compile(Path(path).read_text(), path, 'exec')
+          PY
+
+      - name: Apply exact source transformations
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/retrieval-completion"
+          python3 scripts/hepta_memory_retrieval_publication_vector_v4.py \
+            > "$RUNNER_TEMP/retrieval-completion/publication-vector.paths"
+          python3 scripts/hepta_memory_retrieval_completion.py \
+            --receipt "$RUNNER_TEMP/retrieval-completion/completion-receipt.json"
+          python3 - <<'PY'
+          import subprocess
+          expected = {
+              'codex-rs/hepta-agentd/src/cognitive_context.rs',
+              'codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs',
+              'codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap.rs',
+              'codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap_tests.rs',
+              'codex-rs/hepta-agentd/src/retrieval_executor.rs',
+              'codex-rs/hepta-learning-ledger/src/model.rs',
+              'docs/modules/memory.retrieval/TECHNICAL.md',
+              'docs/modules/memory.retrieval/API.md',
+              'docs/modules/memory.retrieval/PROCESS_BOOTSTRAP.md',
+          }
+          actual = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
+          if actual != expected:
+              raise SystemExit(f'unexpected completion write set: {sorted(actual)}')
+          PY
+
+      - name: Format scoped source and publish non-force commit
+        id: publish
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+          BRANCH: work/memory-retrieval-completion-20260927
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+          files=(
+            codex-rs/hepta-agentd/src/cognitive_context.rs
+            codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs
+            codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap.rs
+            codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap_tests.rs
+            codex-rs/hepta-agentd/src/retrieval_executor.rs
+            codex-rs/hepta-learning-ledger/src/model.rs
+          )
+          rustup run 1.95.0 rustfmt --edition 2024 --config-path codex-rs/rustfmt.toml "${files[@]}"
+          git add -- "${files[@]}" docs/modules/memory.retrieval/TECHNICAL.md docs/modules/memory.retrieval/API.md docs/modules/memory.retrieval/PROCESS_BOOTSTRAP.md
+          test -z "$(git diff --name-only)"
+          git diff --cached --check
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git commit -m 'fix(memory.retrieval): close publication fences and end-to-end request budget'
+          test "$(git ls-remote --heads origin "$BRANCH" | cut -f1)" = "$EXPECTED_HEAD"
+          git push origin "HEAD:refs/heads/$BRANCH"
+          echo "head=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/retrieval-completion/source-identity.txt"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: retrieval-completion-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/retrieval-completion/
+          retention-days: 30
+          if-no-files-found: error
+
+  native:
+    name: Retrieval completion native (${{ matrix.candidate }})
+    needs: prepare
+    if: needs.prepare.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source-head, base-merge]
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.prepare.outputs.head }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind source and current main
+        env:
+          EXPECTED_HEAD: ${{ needs.prepare.outputs.head }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git fetch origin main
+          echo "SOURCE_SHA=$EXPECTED_HEAD" >> "$GITHUB_ENV"
+          echo "BASE_SHA=$(git rev-parse refs/remotes/origin/main)" >> "$GITHUB_ENV"
+          echo "HEPTA_CI_LANE=${{ matrix.candidate }}" >> "$GITHUB_ENV"
+
+      - name: Construct ordered-parent merge candidate
+        if: matrix.candidate == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: '1067'
+          author-name: Hepta retrieval qualification
+          author-email: hepta-qualification@example.invalid
+          message: Memory retrieval completion ordered-parent qualification
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just,cargo-nextest
+
+      - name: Install pinned native toolchain and prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libssl-dev libdbus-1-dev libxcb1-dev libx11-dev libxkbcommon-dev libzstd-dev
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy --component rust-src
+
+      - name: Prepare V8 build inputs
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Transformer and contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/retrieval-completion-native"
+          python3 -m unittest -v \
+            scripts.tests.test_hepta_memory_retrieval_apply_increment \
+            scripts.tests.test_hepta_memory_retrieval_native_format \
+            scripts.tests.test_hepta_memory_retrieval_qualification \
+            scripts.tests.test_hepta_memory_retrieval_slo \
+            2>&1 | tee "$RUNNER_TEMP/retrieval-completion-native/python-tests.log"
+
+      - name: Exact candidate package tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/retrieval-completion-native/package.json" \
+            --minimum-tests 10 --timeout-seconds 5400 -- \
+            just test --locked \
+              -p codex-hepta-memory-retrieval \
+              -p codex-hepta-memory \
+              -p codex-hepta-agentd \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-infer-core
+
+      - name: Strict all-target Clippy
+        if: '!cancelled()'
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/retrieval-completion-native/clippy.json" \
+            --timeout-seconds 3600 -- \
+            cargo +1.95.0 clippy --locked \
+              -p codex-hepta-memory-retrieval \
+              -p codex-hepta-memory \
+              -p codex-hepta-agentd \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-infer-core \
+              --all-targets -- -D warnings
+
+      - name: Locked metadata, formatting and clean source
+        if: '!cancelled()'
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 metadata --locked --no-deps --format-version 1 > "$RUNNER_TEMP/retrieval-completion-native/metadata.json"
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/retrieval-completion-native/format.json" -- \
+            just fmt-check
+          cd ..
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/retrieval-completion-native/tested-identity.txt"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: retrieval-completion-native-${{ matrix.candidate }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/retrieval-completion-native/
+          retention-days: 30
+          if-no-files-found: error
