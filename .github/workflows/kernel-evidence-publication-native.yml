@@ -68,6 +68,11 @@ jobs:
           test -z "$(git status --porcelain)"
       - uses: ./.github/actions/setup-ci
         id: setup
+      - name: Install pinned repository Python tooling
+        id: uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
       - name: Install pinned repository Rust toolchain
         id: rust
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
@@ -81,11 +86,11 @@ jobs:
           tool: cargo-nextest@0.9.103
       - name: Execute all scoped checks and retain each command result
         id: execution
-        if: always() && steps.candidate.outcome == 'success' && steps.setup.outcome == 'success' && steps.rust.outcome == 'success' && steps.nextest.outcome == 'success'
+        if: always() && steps.candidate.outcome == 'success' && steps.setup.outcome == 'success' && steps.uv.outcome == 'success' && steps.rust.outcome == 'success' && steps.nextest.outcome == 'success'
         shell: bash
         run: |
           set -euo pipefail
-          { rustc --version; cargo --version; rustfmt --version; cargo clippy --version; cargo nextest --version; just --version; } > "$RECORDS/tools.txt"
+          { rustc --version; cargo --version; rustfmt --version; cargo clippy --version; cargo nextest --version; just --version; uv --version; } > "$RECORDS/tools.txt"
           python3 - <<'PY'
           import datetime, hashlib, json, os, signal, subprocess
           from pathlib import Path
