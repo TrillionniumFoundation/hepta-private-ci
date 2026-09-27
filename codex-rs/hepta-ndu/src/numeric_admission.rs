@@ -10,7 +10,7 @@ use codex_hepta_types::NumericSignalV1;
 use codex_hepta_types::RegisteredNumericConversionReceiptV1;
 use codex_hepta_types::RegistryError;
 use codex_hepta_types::SignalUnitV1;
-use codex_hepta_types::rescale_signal_registered;
+use codex_hepta_types::rescale_signal_registered_receipt_v1;
 
 use crate::AxisValue;
 use crate::UtilityProfile;
@@ -140,7 +140,8 @@ impl NduNumericRegistryV1 {
             maximum_raw: i64::MAX,
             normalization_digest: utility_profile.normalization_manifest_digest,
         };
-        let (signal, admission) = rescale_signal_registered(source, &target, &self.registry)?;
+        let (signal, admission) =
+            rescale_signal_registered_receipt_v1(source, &target, &self.registry)?;
         if admission.registry_digest != self.registry_digest {
             return Err(NduNumericAdmissionErrorV1::RegistryDigestMismatch);
         }
