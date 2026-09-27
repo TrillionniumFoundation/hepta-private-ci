@@ -1,5 +1,7 @@
 name: intelligence.control source finalizer
 
+# The job runs only the checked-in deterministic finalizer, native validation,
+# a closed changed-path inventory and one non-force fast-forward push.
 on:
   push:
     branches:
