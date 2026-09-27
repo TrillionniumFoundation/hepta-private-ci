@@ -268,7 +268,7 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
     let mut retry_budget = DispatchRetryBudget::default();
     let mut scheduler_transient_budget = TransientErrorBudget::default();
     let mut recovery_transient_budget = TransientErrorBudget::default();
-    'scheduler: loop {
+    loop {
         tokio::select! {
             biased;
             _ = cancellation.cancelled() => return Ok(()),
@@ -289,54 +289,46 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
             continue;
         }
 
-        // Historical reconciliation has an independent capacity and transient
-        // failure budget. A failed recovery attempt never permits new admission
-        // in the same cycle, so transport loss cannot grow an unresolved
-        // backlog. Identity, ledger and fencing violations still fail closed.
-        for _ in 0..policy.recovery_budget_per_cycle {
-            if cancellation.is_cancelled() {
-                return Ok(());
+        // Historical reconciliation snapshots a bounded set of distinct rows.
+        // A failed batch never permits new admission in the same cycle, so
+        // transport loss cannot grow an unresolved backlog. Identity, ledger
+        // and fencing violations still fail closed.
+        let recovery_now_ms = match unix_time_ms() {
+            Ok(now_ms) => now_ms,
+            Err(error) => {
+                return stop_after_automation_error(error, &state, &cancellation).await;
             }
-            let recovery_now_ms = match unix_time_ms() {
-                Ok(now_ms) => now_ms,
-                Err(error) => {
-                    return stop_after_automation_error(error, &state, &cancellation).await;
+        };
+        match automation_recovery::reconcile_batch(
+            scheduler.store(),
+            &state,
+            state.identity(),
+            recovery_now_ms,
+            usize::from(policy.recovery_budget_per_cycle),
+        )
+        .await
+        {
+            Ok(_) => recovery_transient_budget.reset(),
+            Err(error) => match classify_recovery_error(&error) {
+                AutomationFailureDisposition::Fence
+                | AutomationFailureDisposition::FailStop => {
+                    return stop_after_recovery_error(error, &state, &cancellation).await;
                 }
-            };
-            match automation_recovery::reconcile_one(
-                scheduler.store(),
-                &state,
-                state.identity(),
-                recovery_now_ms,
-            )
-            .await
-            {
-                Ok(true) => recovery_transient_budget.reset(),
-                Ok(false) => {
-                    recovery_transient_budget.reset();
-                    break;
-                }
-                Err(error) => match classify_recovery_error(&error) {
-                    AutomationFailureDisposition::Fence
-                    | AutomationFailureDisposition::FailStop => {
+                AutomationFailureDisposition::Reconcile
+                | AutomationFailureDisposition::Retry
+                | AutomationFailureDisposition::Isolate => {
+                    let consecutive = recovery_transient_budget.observe();
+                    if consecutive >= policy.max_consecutive_pre_admission_failures {
                         return stop_after_recovery_error(error, &state, &cancellation).await;
                     }
-                    AutomationFailureDisposition::Reconcile
-                    | AutomationFailureDisposition::Retry
-                    | AutomationFailureDisposition::Isolate => {
-                        let consecutive = recovery_transient_budget.observe();
-                        if consecutive >= policy.max_consecutive_pre_admission_failures {
-                            return stop_after_recovery_error(error, &state, &cancellation).await;
-                        }
-                        let delay = Duration::from_millis(policy.retry_delay_ms(consecutive));
-                        tokio::select! {
-                            _ = cancellation.cancelled() => return Ok(()),
-                            _ = tokio::time::sleep(delay) => {}
-                        }
-                        continue 'scheduler;
+                    let delay = Duration::from_millis(policy.retry_delay_ms(consecutive));
+                    tokio::select! {
+                        _ = cancellation.cancelled() => return Ok(()),
+                        _ = tokio::time::sleep(delay) => {}
                     }
-                },
-            }
+                    continue;
+                }
+            },
         }
 
         if cancellation.is_cancelled() {
@@ -582,7 +574,7 @@ mod tests {
     #[test]
     fn dispatch_retry_budget_is_bounded_and_progress_resets_it() {
         let task_id =
-            AutomationTaskId::parse("019153a4-3088-7000-a56a-9b1964f75008").expect("task id");
+            AutomationTaskId::parse("019153a4-3088-7000-a56a-9b1964f75008").expect("agent id");
         let retry = AutomationTick::RetryScheduled {
             task_id,
             occurrence: 1,
