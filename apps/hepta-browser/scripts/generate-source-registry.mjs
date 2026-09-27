@@ -46,6 +46,17 @@ function sourcePaths() {
   }
   return paths;
 }
+function relativeStaticImports(source) {
+  const imports = [];
+  const expressions = [
+    /^(?![ \t]*(?:\/\/|\/\*|\*))[ \t]*[^"'`\n]*\bfrom\s+["'](\.[^"']+)["']/gm,
+    /^[ \t]*import\s+["'](\.[^"']+)["']/gm,
+  ];
+  for (const expression of expressions) {
+    for (const match of source.matchAll(expression)) imports.push(match[1]);
+  }
+  return imports;
+}
 function verifyAnchors(paths) {
   const source = read("apps/hepta-browser/src/agentd-service.js");
   const match = source.match(/const SERVICE_METHODS = new Set\(\[(.*?)\]\);/s);
@@ -59,12 +70,14 @@ function verifyAnchors(paths) {
   assertContains("apps/hepta-browser/src/effect-network-driver.js", ["EffectScopedNetworkDriver", "admitOperation"]);
   assertContains("apps/hepta-browser/servo-worker/src/main.rs", ['matches!(kind, "credential" | "upload" | "download")', "typedAction capability is not connected", "dispatch_boundary", "pageGeneration"]);
   assertContains("codex-rs/hepta-agentd/src/bin/hepta-agentd-browser-service.rs", ["open_browser_servo_port_from_file", "while let Some(body)"]);
+  assertContains("apps/hepta-browser/test/deployment-verifier.test.js", ["python3", "py_compile", "verify-deployment-evidence.py"]);
   const tracked = new Set(paths);
   // Static relative imports are the current Browser package's executable
-  // closure. Dynamic/native/runtime closure requires independent qualification.
+  // closure. String literals and comments are deliberately not interpreted as
+  // imports; dynamic/native/runtime closure requires independent qualification.
   for (const path of paths.filter(path => /\.(?:js|mjs)$/.test(path))) {
-    for (const match of read(path).matchAll(/\bfrom\s+["'](\.[^"']+)["']/g)) {
-      const imported = relative(ROOT, resolve(ROOT, dirname(path), match[1]));
+    for (const specifier of relativeStaticImports(read(path))) {
+      const imported = relative(ROOT, resolve(ROOT, dirname(path), specifier));
       if (!tracked.has(imported)) throw new Error(`unmapped local import: ${path} -> ${imported}`);
     }
   }
@@ -109,9 +122,18 @@ function buildRegistry() {
       deploymentQualification: false, operatorAcceptance: false, activation: false, promotion: false, release: false },
   };
 }
-const rendered = `${JSON.stringify(buildRegistry(), null, 2)}\n`;
+const registry = buildRegistry();
+const rendered = `${JSON.stringify(registry, null, 2)}\n`;
 if (process.argv.includes("--check")) {
-  if (readFileSync(OUTPUT, "utf8") !== rendered) {
-    process.stderr.write("browser.servo generated source registry is stale\n"); process.exit(1);
+  let existing;
+  try {
+    existing = JSON.parse(readFileSync(OUTPUT, "utf8"));
+  } catch {
+    process.stderr.write("browser.servo generated source registry is malformed\n");
+    process.exit(1);
+  }
+  if (JSON.stringify(existing) !== JSON.stringify(registry)) {
+    process.stderr.write("browser.servo generated source registry is stale\n");
+    process.exit(1);
   }
 } else writeFileSync(OUTPUT, rendered, "utf8");
