@@ -50,6 +50,14 @@ The existing JSON response from `GET /api/hepta/runtime` remains the default. An
 
 The detailed product payload contract is in [`RUNTIME_CODEX_V3.md`](RUNTIME_CODEX_V3.md). The historical `hepta.codex-operation-intent.v2` payload schema remains closed and product-unbound. `hepta.codex-operation-intent.v3` requires the complete App Server binding and preserves every field used by the domain request digest. Both use HPTA frame version 2; payload schema revision is independent of frame version.
 
+## Durability and activation
+
+The frame, negotiation, registry and session owners are deterministic in-memory protocol components. They do not persist domain authority, final-use grants or external-effect completion. Durable qualification facts are emitted as source-bound workflow receipts; a receipt is current only for the exact source, tree, registry snapshot, command set and workflow run named by that receipt.
+
+A poisoned decoder, authenticated record session or retired key is terminal for its connection/session. Reuse requires a new authenticated transport, fresh transcript, fresh session identifier and a newly admitted registry snapshot. Process restart does not transform an old receipt or old session into current authority.
+
+Source composition is not activation. Product activation remains fail-closed until exact-head, synthetic-merge and protected target-host evidence agree for the same candidate and independent reviewer and operations acceptance are present. `productionImplementation`, `activation` and `release` therefore remain false until those external conditions are satisfied.
+
 ## Negotiation, session and admission invariants
 
 `NegotiatedWire` exposes the selected version, selected-version effective capabilities, common advertised capabilities and required capabilities. Only `negotiate` constructs it. A caller cannot replace the selected version or erase requirements before passing it into a session decoder.
@@ -98,6 +106,12 @@ The Lane A workflow emits exact-head and deterministic synthetic-merge receipts 
 
 Source code cannot issue reviewer, operations or release acceptance for itself.
 
+## Target-only design
+
+The formal target architecture includes authenticated deployment-channel ownership, protected key custody and rotation, target-host execution, rolling and mixed-version operations, canary evidence, independent acceptance and release governance. The repository contains source and workflow machinery for several of these controls, but their external facts cannot be self-issued by this module.
+
+Additional actuation schemas, transport substitutions and authenticated-encryption equivalence profiles remain target-only until they are registered with strict codecs and frozen policies, exercised on the intended host, and independently accepted. No target-only capability may be inferred from frame validity, successful negotiation, source composition, a generated status file or a passing repository-local test.
+
 ## Known limits and non-claims
 
 - V1 payload integrity does not bind metadata.
@@ -125,3 +139,11 @@ Current source/test identities include:
 - schema-v2 lifecycle receipt validation and evidence-derived status self-tests.
 
 These are source/test identities until the exact candidate and required merge/target-host workflows pass and their artifacts are retained. Independent acceptance and release remain separate even after qualification is green.
+
+## Integration prerequisites
+
+A production transport integration must construct one immutable registry snapshot, negotiate a coherent version-scoped capability posture, bind the ordered transcript to an authenticated transport channel, enforce endpoint direction and monotonic sequence/replay policy, and use only session-bound frame admission. Direct any-version decoding is restricted to offline compatibility and qualification tooling.
+
+Every product schema must have a strict codec plus registered schema revision, producer allowlist, runtime-role allowlist, generation policy, canonicalization profile and payload/resource bounds. The product owner must retain final-use authority and revalidate immediately before the physical effect; wire admission never mints that authority.
+
+Activation requires current exact-head, deterministic synthetic-merge and protected target-host receipts for the same source candidate, followed by distinct independent-reviewer and operations acceptance. Rolling upgrade and mixed-version evidence, key-rotation and retirement evidence, canary/rollback evidence and a source-bound release receipt are required before release can be asserted.
