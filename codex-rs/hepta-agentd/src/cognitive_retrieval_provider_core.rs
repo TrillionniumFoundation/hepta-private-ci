@@ -238,7 +238,20 @@ impl LeasedMemoryRetrievalProviderV1 {
 }
 
 impl CurrentMemoryRetrievalContext for LeasedMemoryRetrievalProviderV1 {
-    fn current(&self, owner: &AgentId, body_generation: u64) -> Result<RetrievalExecutionContextV1, String> {
+    fn current(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+    ) -> Result<RetrievalExecutionContextV1, String> {
+        self.acquire_context(owner, body_generation)
+            .map(|(context, _, _)| context)
+    }
+
+    fn acquire_context(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+    ) -> Result<(RetrievalExecutionContextV1, Digest32, Option<u64>), String> {
         if owner != &self.owner || body_generation != self.body_generation {
             return Err("retrieval provider owner/body mismatch".to_string());
         }
@@ -255,7 +268,13 @@ impl CurrentMemoryRetrievalContext for LeasedMemoryRetrievalProviderV1 {
         {
             return Err("retrieval context lease expired or changed".to_string());
         }
-        Ok(pinned.publication.context.clone())
+        // One mutex-protected observation: never combine one publication's
+        // context with a separately sampled successor's epoch or lease.
+        Ok((
+            pinned.publication.context.clone(),
+            pinned.publication.publication_digest(),
+            Some(pinned.publication.expires_unix_ms),
+        ))
     }
 }
 
@@ -285,3 +304,7 @@ fn bind_owner(bytes: &mut Vec<u8>, owner: &AgentId, body_generation: u64) {
 #[cfg(test)]
 #[path = "cognitive_retrieval_provider_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "cognitive_retrieval_signed_delivery_tests.rs"]
+mod signed_delivery_tests;
