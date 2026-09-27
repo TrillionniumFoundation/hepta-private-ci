@@ -1,3 +1,4 @@
+import { definitelyNotAccepted } from "./submission-outcome.js";
 import {
   assertCanonicalText,
   assertSafeInteger,
@@ -101,6 +102,8 @@ export class OperationLedger {
   async #dispatch(entry, signal, dispatch) {
     try {
       const acknowledgement = await dispatch(entry, signal);
+      const terminal = this.#completed.get(entry.operationId);
+      if (terminal) return publicOperation(terminal);
       const validated = validateAcknowledgement(entry, acknowledgement);
       entry.state = validated.status === "indeterminate" ? "indeterminate" : "pending";
       entry.auditTraceId = validated.auditTraceId;
@@ -108,18 +111,10 @@ export class OperationLedger {
       entry.promise = Promise.resolve(publicOperation(entry));
       return publicOperation(entry);
     } catch (cause) {
+      const terminal = this.#completed.get(entry.operationId);
+      if (terminal) return publicOperation(terminal);
       const error = asUiControlError(cause);
-      const definitelyNotAccepted =
-        error.code === UI_CONTROL_ERROR_CODES.BACKEND_REJECTED ||
-        error.code === UI_CONTROL_ERROR_CODES.OPERATION_CONFLICT ||
-        error.code === UI_CONTROL_ERROR_CODES.STALE_REVISION ||
-        error.code === UI_CONTROL_ERROR_CODES.PERMISSION_DENIED ||
-        error.code === UI_CONTROL_ERROR_CODES.SESSION_EXPIRED ||
-        error.code === UI_CONTROL_ERROR_CODES.SESSION_REVOKED ||
-        error.code === UI_CONTROL_ERROR_CODES.PROTOCOL_MISMATCH ||
-        (error.code === UI_CONTROL_ERROR_CODES.ABORTED &&
-          error.details.requestDispatched === false);
-      if (definitelyNotAccepted) {
+      if (definitelyNotAccepted(error)) {
         this.#pending.delete(entry.operationId);
         throw error;
       }
