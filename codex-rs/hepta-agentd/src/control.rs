@@ -24,6 +24,11 @@ use crate::AgentdState;
 use crate::MAX_CONTROL_FRAME_BYTES;
 use crate::error::io_context;
 
+#[path = "control_context_receipts.rs"]
+mod context_receipts;
+
+use context_receipts::ContextPlanReceipts;
+
 const CONNECTION_CAPACITY: usize = 32;
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
 const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
@@ -34,6 +39,7 @@ pub(crate) struct AgentdControlServer {
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
+    context_receipts: Arc<ContextPlanReceipts>,
 }
 
 impl AgentdControlServer {
@@ -53,6 +59,7 @@ impl AgentdControlServer {
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
+            context_receipts: Arc::new(ContextPlanReceipts::default()),
         })
     }
 
@@ -72,9 +79,10 @@ impl AgentdControlServer {
                 continue;
             };
             let state = Arc::clone(&self.state);
+            let receipts = Arc::clone(&self.context_receipts);
             tokio::spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state, receipts)).await;
             });
         }
     }
@@ -93,7 +101,11 @@ impl Drop for AgentdControlServer {
     }
 }
 
-async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {
+async fn serve_connection(
+    stream: UnixStream,
+    state: Arc<AgentdState>,
+    receipts: Arc<ContextPlanReceipts>,
+) -> Result<(), AgentdError> {
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
@@ -113,8 +125,8 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             "unsupported agentd control schema",
         )
     } else {
-        match state
-            .response(request.request_id, request.spawn_generation, request.method)
+        match receipts
+            .response(&state, request.request_id, request.spawn_generation, request.method)
             .await
         {
             Ok(response) => response,
