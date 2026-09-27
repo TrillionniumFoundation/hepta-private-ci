@@ -32,6 +32,7 @@ jobs:
           set -euo pipefail
           git config core.autocrlf false
           git reset --hard HEAD
+          python3 scripts/cognitive_store_repair_preflight.py
           python3 scripts/cognitive_store_one_shot_repair.py apply
           python3 scripts/cognitive_store_one_shot_followup.py
           cargo fmt --manifest-path codex-rs/Cargo.toml \
@@ -45,6 +46,7 @@ jobs:
             .github/workflows/cognitive-store-apply-only.yml \
             .github/workflows/cognitive-store-one-shot-repair.yml \
             .github/workflows/cognitive-store-lock-repair.yml \
+            scripts/cognitive_store_repair_preflight.py \
             scripts/cognitive_store_one_shot_repair.py \
             scripts/cognitive_store_one_shot_followup.py
           git add -A
