@@ -83,6 +83,13 @@ reaping. An external reaper loses that permission; stale numeric group IDs are
 never used to compensate. A typed failure retains unresolved cleanup even when
 process interruption caused the failure. Completing cleanup does not retroactively
 publish a reply, declare task success or release unmeasured device resources.
+Detected child-ownership loss is a permanent per-handle latch: a later successful
+`waitid` cannot renew a numeric PID after an external reaper collected it. Cleanup
+observations exposed by `ProcessFailure` are scalar copies, not mutable owner
+state. Bounded cleanup stage/errno diagnostics distinguish observation, signalling
+and reap failures without retaining exception text or source content. The
+exclusive-reaper precondition remains; this is not an atomic defense against a
+concurrent foreign reaper or a crash-durable cross-process ownership protocol.
 Process-group cleanup is not a sandbox or proof that escaped
 children stopped. Device memory, full descendant exit and task success remain
 explicitly unknown. Callers must not infer workspace release from these fields.

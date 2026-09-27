@@ -39,10 +39,19 @@ class ProcessFailure(RuntimeError):
     Direct-child exit does not prove that all descendants or resources stopped.
     """
     def __init__(self, reason: str, observation: dict, child=None):
-        super().__init__(reason)
-        self.observation = observation
+        # Only bounded codes are retained. Exception text may contain source data.
+        phase = observation.get("cleanup_stage")
+        cleanup = observation.get("cleanup_error")
+        error_number = observation.get("cleanup_errno")
+        super().__init__(f"{reason}; cleanup={cleanup}; stage={phase}; errno={error_number}")
+        self._observation = dict(observation)
         self.child = child
         self._cleanup_lock = threading.Lock()
+
+    @property
+    def observation(self) -> dict:
+        """A scalar-only projection; callers cannot mutate lifecycle decisions."""
+        return dict(self._observation)
 
     def reconcile_cleanup(self) -> dict:
         """Retry cleanup of the retained child, never inference or result delivery.
@@ -56,10 +65,10 @@ class ProcessFailure(RuntimeError):
             raise Rejected("cleanup reconciliation already in progress")
         try:
             if self.child is not None:
-                _cleanup_owned_child(self.child, self.observation)
-                if self.observation["direct_child_reaped"]:
+                _cleanup_owned_child(self.child, self._observation)
+                if self._observation["direct_child_reaped"]:
                     self.child = None
-            return dict(self.observation)
+            return dict(self._observation)
         finally:
             self._cleanup_lock.release()
 
@@ -71,8 +80,13 @@ def _cleanup_owned_child(child: subprocess.Popen, observation: dict) -> None:
     reuse that group number before a later cleanup attempt. This is a trusted
     exclusive-reaper protocol, not protection against a concurrent foreign reaper.
     """
-    if observation["direct_child_reaped"]:
+    if (observation["direct_child_reaped"]
+            or observation.get("cleanup_error") == "ChildOwnershipLost"):
+        # ECHILD/external reaping irrevocably loses this handle's PID identity.
+        # A future successful waitid could name a different, recycled child.
         return
+    observation["cleanup_stage"] = "observe_child"
+    observation["cleanup_errno"] = None
     try:
         if child.returncode is not None:
             raise ChildProcessError("child was reaped outside its owner")
@@ -82,7 +96,9 @@ def _cleanup_owned_child(child: subprocess.Popen, observation: dict) -> None:
         return
     except OSError as error:
         observation["cleanup_error"] = type(error).__name__
+        observation["cleanup_errno"] = error.errno
         return
+    observation["cleanup_stage"] = "signal_group"
     try:
         os.killpg(child.pid, signal.SIGKILL)
         observation["group_kill_sent"] = True
@@ -91,16 +107,21 @@ def _cleanup_owned_child(child: subprocess.Popen, observation: dict) -> None:
         pass
     except OSError as error:
         observation["cleanup_error"] = type(error).__name__
+        observation["cleanup_errno"] = error.errno
         return
+    observation["cleanup_stage"] = "reap_child"
     try:
         observation["returncode"] = child.wait(timeout=CLEANUP_SECONDS)
         observation["direct_child_exit_observed"] = True
         observation["direct_child_reaped"] = True
         observation["cleanup_error"] = None
+        observation["cleanup_stage"] = None
+        observation["cleanup_errno"] = None
     except ChildProcessError:
         observation["cleanup_error"] = "ChildOwnershipLost"
     except (subprocess.TimeoutExpired, OSError) as error:
         observation["cleanup_error"] = type(error).__name__
+        observation["cleanup_errno"] = error.errno if isinstance(error, OSError) else None
 
 
 def offline_environment() -> dict[str, str]:
@@ -152,7 +173,8 @@ def _exchange(command: list[str], request_wire: bytes, deadline: OwnerDeadline,
         "operation_id": request["operation_id"], "deadline_ms": request["deadline_ms"],
         "spawned": False, "direct_child_exit_observed": False, "returncode": None,
         "direct_child_reaped": False,
-        "group_kill_sent": False, "cleanup_error": None, "input_bytes_written": 0,
+        "group_kill_sent": False, "cleanup_error": None, "cleanup_stage": None,
+        "cleanup_errno": None, "input_bytes_written": 0,
         "stdout_bytes": 0, "stderr_bytes": 0, "stderr_sha256": None,
         "reply_sha256": None, "eligible_reply": False, "retry_allowed": False,
         "descendant_exit_verified": False, "observed_memory_bytes": None,

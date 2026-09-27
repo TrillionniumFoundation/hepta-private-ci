@@ -167,7 +167,7 @@ class ProcessTests(unittest.TestCase):
     def test_real_leaf_rejection_is_observed_not_missing_model_success(self):
         # This starts the actual shipped binary leaf, which rejects missing pins.
         with self.assertRaises(ProcessFailure) as caught:
-            run_pinned(Path(self.directory.name) / "checkpoint", Path(self.directory.name) / "pins",
+            run_pinned(Path(self.directory.name).resolve() / "checkpoint", Path(self.directory.name).resolve() / "pins",
                        self.wire, self.deadline)
         self.assertTrue(caught.exception.observation["direct_child_exit_observed"])
         self.assertNotEqual(caught.exception.observation["returncode"], 0)
