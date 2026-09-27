@@ -547,10 +547,7 @@ impl DurableInferenceControl {
             .control_binding
             .as_ref()
             .ok_or(Error::ReservationMismatch)?;
-        let dispatch = record
-            .dispatch
-            .as_ref()
-            .ok_or(Error::AssignmentMismatch)?;
+        let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
         if binding.admission_sha256 != hex_digest(receipt.admission_sha256)
             || binding.manifest_sha256 != hex_digest(receipt.manifest_sha256)
             || native_dispatch_sha256(dispatch)? != receipt.dispatch_sha256
@@ -663,10 +660,7 @@ impl DurableInferenceControl {
             .control_binding
             .as_ref()
             .ok_or(Error::ReservationMismatch)?;
-        let dispatch = record
-            .dispatch
-            .as_ref()
-            .ok_or(Error::AssignmentMismatch)?;
+        let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
         if binding.admission_sha256 != hex_digest(proposal.admission_sha256)
             || binding.manifest_sha256 != hex_digest(proposal.manifest_sha256)
             || native_dispatch_sha256(dispatch)? != proposal.dispatch_sha256
@@ -1126,9 +1120,8 @@ pub(super) fn validate_checkpoint_record(
     record: &NativeRunRecord,
     maximum_in_flight: Option<usize>,
 ) -> Result<(), Error> {
-    let maximum_in_flight = maximum_in_flight.ok_or(Error::CorruptJournal(
-        "native checkpoint maximum in flight",
-    ))?;
+    let maximum_in_flight =
+        maximum_in_flight.ok_or(Error::CorruptJournal("native checkpoint maximum in flight"))?;
     if record.revision == 0 {
         return Err(Error::CorruptJournal("native checkpoint revision"));
     }
@@ -1217,7 +1210,9 @@ fn replay_indeterminate_basis(
         replay_observation_event(replay, record)?;
         return Ok(());
     }
-    Err(Error::CorruptJournal("retirement without indeterminate basis"))
+    Err(Error::CorruptJournal(
+        "retirement without indeterminate basis",
+    ))
 }
 
 fn replay_terminal_basis(

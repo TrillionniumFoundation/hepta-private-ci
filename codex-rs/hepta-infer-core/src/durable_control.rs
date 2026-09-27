@@ -8,26 +8,26 @@ use std::fs::OpenOptions;
 use std::fs::{self};
 use std::io::BufRead;
 use std::io::BufReader;
+use std::io::Cursor;
 use std::io::Read;
 use std::io::Write;
-use std::io::Cursor;
 use std::path::Path;
 use std::path::PathBuf;
 
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::control_contract::ControlContractError;
 use crate::journal_generation::JournalDigest32;
 use crate::journal_generation::JournalFailpointController;
 use crate::journal_generation::JournalGenerationError;
 use crate::journal_generation::JournalGenerationStore;
 use crate::journal_generation::NoJournalFailpoints;
-use crate::control_contract::ControlContractError;
 
-#[path = "native_control.rs"]
-pub mod native;
 #[path = "durable_checkpoint.rs"]
 mod checkpoint;
+#[path = "native_control.rs"]
+pub mod native;
 
 const MAX_RECORDS: usize = 16_384;
 pub(super) const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
@@ -201,7 +201,6 @@ impl From<ControlContractError> for Error {
     }
 }
 
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompactionReceipt {
     pub generation: u64,
@@ -356,7 +355,9 @@ impl DurableInferenceControl {
             return Err(Error::Conflict);
         }
         if self.native.records.contains_key(&request.request_id)
-            || self.archived_request_filter.might_contain(&request.request_id)
+            || self
+                .archived_request_filter
+                .might_contain(&request.request_id)
         {
             return Err(Error::Conflict);
         }

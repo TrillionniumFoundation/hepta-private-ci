@@ -239,7 +239,10 @@ impl ResourceGrantVerifier {
         revoked_grant_ids: BTreeSet<String>,
     ) -> Result<(), LocalModelError> {
         validate_digest(&head_digest, "revocation head")?;
-        let mut state = self.state.lock().map_err(|_| LocalModelError::LockPoisoned)?;
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| LocalModelError::LockPoisoned)?;
         if authority_epoch != state.authority_epoch || revision < state.revocation_revision {
             return Err(LocalModelError::RevocationRollback);
         }
@@ -267,7 +270,10 @@ impl ResourceGrantVerifier {
             return Err(LocalModelError::InvalidSignature);
         }
         {
-            let state = self.state.lock().map_err(|_| LocalModelError::LockPoisoned)?;
+            let state = self
+                .state
+                .lock()
+                .map_err(|_| LocalModelError::LockPoisoned)?;
             if signed.claims.authority_epoch != state.authority_epoch {
                 return Err(LocalModelError::AuthorityEpochMismatch);
             }
@@ -640,10 +646,7 @@ pub trait LocalModelDriver: Send + Sync {
         deadline: Instant,
     ) -> DriverFuture<'a, DriverExecutionObservation>;
 
-    fn inspect<'a>(
-        &'a self,
-        operation_id: &'a str,
-    ) -> DriverFuture<'a, DriverReconciliation>;
+    fn inspect<'a>(&'a self, operation_id: &'a str) -> DriverFuture<'a, DriverReconciliation>;
 
     fn unload<'a>(
         &'a self,
@@ -741,7 +744,10 @@ impl ResourceManager {
     }
 
     pub fn snapshot(&self) -> Result<ResourceSnapshot, LocalModelError> {
-        let state = self.inner.lock().map_err(|_| LocalModelError::LockPoisoned)?;
+        let state = self
+            .inner
+            .lock()
+            .map_err(|_| LocalModelError::LockPoisoned)?;
         Ok(ResourceSnapshot {
             worker_generation: state.worker_generation,
             fenced: state.fenced,
@@ -770,7 +776,10 @@ impl ResourceManager {
         model_id: &str,
         declared_bytes: u64,
     ) -> Result<LoadReservation, LocalModelError> {
-        let mut state = self.inner.lock().map_err(|_| LocalModelError::LockPoisoned)?;
+        let mut state = self
+            .inner
+            .lock()
+            .map_err(|_| LocalModelError::LockPoisoned)?;
         require_live(&state)?;
         if state.models.contains_key(model_id) {
             return Err(LocalModelError::ModelAlreadyLoaded);
@@ -802,7 +811,10 @@ impl ResourceManager {
     }
 
     fn begin_run(&self, transient_bytes: u64) -> Result<RunReservation, LocalModelError> {
-        let mut state = self.inner.lock().map_err(|_| LocalModelError::LockPoisoned)?;
+        let mut state = self
+            .inner
+            .lock()
+            .map_err(|_| LocalModelError::LockPoisoned)?;
         require_live(&state)?;
         if transient_bytes > state.maximum_transient_memory_bytes
             || state.active_requests >= state.maximum_concurrent_requests
@@ -831,7 +843,10 @@ impl ResourceManager {
     }
 
     fn begin_unload(&self, model_id: &str) -> Result<(), LocalModelError> {
-        let mut state = self.inner.lock().map_err(|_| LocalModelError::LockPoisoned)?;
+        let mut state = self
+            .inner
+            .lock()
+            .map_err(|_| LocalModelError::LockPoisoned)?;
         require_live(&state)?;
         let record = state
             .models
@@ -844,12 +859,11 @@ impl ResourceManager {
         Ok(())
     }
 
-    fn mark_model(
-        &self,
-        model_id: &str,
-        next: ModelResourceState,
-    ) -> Result<(), LocalModelError> {
-        let mut state = self.inner.lock().map_err(|_| LocalModelError::LockPoisoned)?;
+    fn mark_model(&self, model_id: &str, next: ModelResourceState) -> Result<(), LocalModelError> {
+        let mut state = self
+            .inner
+            .lock()
+            .map_err(|_| LocalModelError::LockPoisoned)?;
         let record = state
             .models
             .get_mut(model_id)
@@ -859,7 +873,10 @@ impl ResourceManager {
     }
 
     fn complete_unload(&self, model_id: &str) -> Result<(), LocalModelError> {
-        let mut state = self.inner.lock().map_err(|_| LocalModelError::LockPoisoned)?;
+        let mut state = self
+            .inner
+            .lock()
+            .map_err(|_| LocalModelError::LockPoisoned)?;
         let resident_bytes = state
             .models
             .get(model_id)
@@ -879,7 +896,10 @@ impl ResourceManager {
         model_id: &str,
         resident_bytes: u64,
     ) -> Result<(), LocalModelError> {
-        let mut state = self.inner.lock().map_err(|_| LocalModelError::LockPoisoned)?;
+        let mut state = self
+            .inner
+            .lock()
+            .map_err(|_| LocalModelError::LockPoisoned)?;
         let previous = state
             .models
             .get(model_id)
@@ -1002,7 +1022,9 @@ impl Drop for RunReservation {
     fn drop(&mut self) {
         if let Ok(mut state) = self.manager.inner.lock() {
             match (
-                state.reserved_transient_bytes.checked_sub(self.transient_bytes),
+                state
+                    .reserved_transient_bytes
+                    .checked_sub(self.transient_bytes),
                 state.active_requests.checked_sub(1),
             ) {
                 (Some(memory), Some(active)) => {
@@ -1167,10 +1189,7 @@ impl LocalModelWorker {
             attestation_digest: trusted.evidence_digest,
         };
         reservation.commit(handle.resident_bytes)?;
-        self.models
-            .lock()
-            .await
-            .insert(model_id, handle.clone());
+        self.models.lock().await.insert(model_id, handle.clone());
         Ok(handle)
     }
 
@@ -1231,14 +1250,11 @@ impl LocalModelWorker {
         if handle.manifest().manifest().model_id != model_id {
             return Err(LocalModelError::ModelBindingMismatch);
         }
-        let deadline = TrustedDeadline::verify(self.clock.as_ref(), request.deadline_ms, &self.grant)?;
+        let deadline =
+            TrustedDeadline::verify(self.clock.as_ref(), request.deadline_ms, &self.grant)?;
         let payload_digest = local_payload_digest(&request, &input, &handle);
-        let assignment_digest = local_assignment_digest(
-            &self.grant,
-            &handle,
-            &request.request_id,
-            &payload_digest,
-        );
+        let assignment_digest =
+            local_assignment_digest(&self.grant, &handle, &request.request_id, &payload_digest);
         let prepared = self
             .prepare_durable_run(
                 &request,
@@ -1252,7 +1268,8 @@ impl LocalModelWorker {
             PreparedRun::Terminal(record) => Ok(result_from_record(&record)),
             PreparedRun::InspectOnly => {
                 let inspected = self.driver.inspect(&request.request_id).await?;
-                self.finish_reconciliation(&request, &handle, inspected).await
+                self.finish_reconciliation(&request, &handle, inspected)
+                    .await
             }
             PreparedRun::Dispatch => {
                 let _reservation = self
@@ -1337,18 +1354,21 @@ impl LocalModelWorker {
         }
         if cancelled && matches!(record.state, RequestState::Pending | RequestState::Reserved) {
             control.cancel(&request.request_id, record.revision)?;
-            record = control
-                .get(&request.request_id)
-                .cloned()
-                .ok_or_else(|| LocalModelError::Control("cancelled record disappeared".to_string()))?;
+            record = control.get(&request.request_id).cloned().ok_or_else(|| {
+                LocalModelError::Control("cancelled record disappeared".to_string())
+            })?;
             return Ok(PreparedRun::Terminal(record));
         }
         if record.state == RequestState::Pending {
-            control.reserve(now_ms, &request.request_id, record.revision, reservation.clone())?;
-            record = control
-                .get(&request.request_id)
-                .cloned()
-                .ok_or_else(|| LocalModelError::Control("reserved record disappeared".to_string()))?;
+            control.reserve(
+                now_ms,
+                &request.request_id,
+                record.revision,
+                reservation.clone(),
+            )?;
+            record = control.get(&request.request_id).cloned().ok_or_else(|| {
+                LocalModelError::Control("reserved record disappeared".to_string())
+            })?;
         }
         if record.state == RequestState::Reserved {
             if record.reservation.as_ref() != Some(&reservation) {
@@ -1359,7 +1379,10 @@ impl LocalModelWorker {
             control.assign(&request.request_id, record.revision, assignment.clone())?;
             return Ok(PreparedRun::Dispatch);
         }
-        if matches!(record.state, RequestState::Assigned | RequestState::Cancelling) {
+        if matches!(
+            record.state,
+            RequestState::Assigned | RequestState::Cancelling
+        ) {
             if record.assignment.as_ref() != Some(&assignment) {
                 return Err(LocalModelError::Control(
                     "assignment identity conflict".to_string(),
@@ -1646,8 +1669,7 @@ fn validate_run_request(
         || request.maximum_usage_units == 0
         || request.maximum_usage_units > grant.claims().maximum_usage_units
         || request.maximum_transient_memory_bytes == 0
-        || request.maximum_transient_memory_bytes
-            > grant.claims().maximum_transient_memory_bytes
+        || request.maximum_transient_memory_bytes > grant.claims().maximum_transient_memory_bytes
     {
         return Err(LocalModelError::InvalidInput);
     }

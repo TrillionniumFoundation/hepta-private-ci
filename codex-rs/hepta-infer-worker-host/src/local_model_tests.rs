@@ -61,7 +61,11 @@ impl FakeDriver {
             } else {
                 DriverTerminalStatus::Succeeded
             }),
-            output_digest: if cancelled { None } else { Some("c".repeat(64)) },
+            output_digest: if cancelled {
+                None
+            } else {
+                Some("c".repeat(64))
+            },
             consumed_tokens: Some(if cancelled { 0 } else { 4 }),
             usage_units: if self.missing_usage.load(Ordering::SeqCst) {
                 None
@@ -119,10 +123,7 @@ impl LocalModelDriver for FakeDriver {
         })
     }
 
-    fn inspect<'a>(
-        &'a self,
-        operation_id: &'a str,
-    ) -> DriverFuture<'a, DriverReconciliation> {
+    fn inspect<'a>(&'a self, operation_id: &'a str) -> DriverFuture<'a, DriverReconciliation> {
         self.inspect_calls.fetch_add(1, Ordering::SeqCst);
         let result = self
             .terminal
@@ -130,7 +131,10 @@ impl LocalModelDriver for FakeDriver {
             .expect("terminal map lock")
             .get(operation_id)
             .cloned()
-            .map_or(DriverReconciliation::NotFound, DriverReconciliation::Terminal);
+            .map_or(
+                DriverReconciliation::NotFound,
+                DriverReconciliation::Terminal,
+            );
         Box::pin(async move { Ok(result) })
     }
 
@@ -400,13 +404,18 @@ fn forged_signature_and_later_revocation_fail_closed() {
 fn aggregate_load_reservation_is_atomic_and_bounded() {
     let (_verifier, grant) = signed_grant(100);
     let resources = ResourceManager::new(&grant);
-    let first = resources.reserve_load("model.a", 60).expect("first reservation");
+    let first = resources
+        .reserve_load("model.a", 60)
+        .expect("first reservation");
     assert!(matches!(
         resources.reserve_load("model.b", 50),
         Err(LocalModelError::ResourceCapacity)
     ));
     drop(first);
-    assert_eq!(resources.snapshot().expect("snapshot").reserved_load_bytes, 0);
+    assert_eq!(
+        resources.snapshot().expect("snapshot").reserved_load_bytes,
+        0
+    );
 }
 
 #[tokio::test]
@@ -432,12 +441,7 @@ async fn exact_duplicate_returns_durable_receipt_without_second_run() {
         .expect("first run");
     assert_eq!(first.state, LocalExecutionState::Completed);
     let duplicate = worker
-        .run(
-            "model.1",
-            run_request,
-            input,
-            &CancellationToken::new(),
-        )
+        .run("model.1", run_request, input, &CancellationToken::new())
         .await
         .expect("duplicate");
     assert_eq!(duplicate.state, LocalExecutionState::Completed);
@@ -470,12 +474,7 @@ async fn missing_usage_stays_pending_and_is_never_inferred_as_zero() {
     assert_eq!(first.state, LocalExecutionState::UsagePending);
     assert_eq!(first.usage_units, None);
     let second = worker
-        .run(
-            "model.1",
-            run_request,
-            input,
-            &CancellationToken::new(),
-        )
+        .run("model.1", run_request, input, &CancellationToken::new())
         .await
         .expect("reconcile");
     assert_eq!(second.state, LocalExecutionState::UsagePending);
@@ -519,12 +518,7 @@ async fn lost_ack_reopens_through_inspect_without_driver_replay() {
     let reopened = worker(&path, grant, Arc::clone(&driver), observer);
     reopened.load_model(manifest()).await.expect("reload");
     let settled = reopened
-        .run(
-            "model.1",
-            run_request,
-            input,
-            &CancellationToken::new(),
-        )
+        .run("model.1", run_request, input, &CancellationToken::new())
         .await
         .expect("inspect and settle");
     assert_eq!(settled.state, LocalExecutionState::Completed);

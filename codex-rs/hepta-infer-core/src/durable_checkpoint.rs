@@ -203,7 +203,10 @@ pub(super) fn generation_store_for(path: &Path) -> Result<JournalGenerationStore
         return Err(Error::InvalidIdentity("journal file name"));
     }
     let directory = parent.join(format!(".{file_name}.generations"));
-    Ok(JournalGenerationStore::open(directory, "inference-control")?)
+    Ok(JournalGenerationStore::open(
+        directory,
+        "inference-control",
+    )?)
 }
 
 pub(super) fn recover_active_journal(
@@ -289,18 +292,14 @@ pub(super) fn compact_owner(
         }
     };
     let previous_file = owner.file.try_clone()?;
-    let replacement = match replace_locked_journal(
-        &owner.path,
-        previous_file,
-        &snapshot.bytes,
-        failpoints,
-    ) {
-        Ok(value) => value,
-        Err(error) => {
-            owner.poisoned = true;
-            return Err(error);
-        }
-    };
+    let replacement =
+        match replace_locked_journal(&owner.path, previous_file, &snapshot.bytes, failpoints) {
+            Ok(value) => value,
+            Err(error) => {
+                owner.poisoned = true;
+                return Err(error);
+            }
+        };
     owner.file = replacement;
     owner.records = snapshot.records;
     owner.native = snapshot.native;
@@ -429,11 +428,7 @@ fn build_snapshot(
     })
 }
 
-fn push_json_line<T: Serialize>(
-    bytes: &mut Vec<u8>,
-    prefix: &str,
-    value: &T,
-) -> Result<(), Error> {
+fn push_json_line<T: Serialize>(bytes: &mut Vec<u8>, prefix: &str, value: &T) -> Result<(), Error> {
     let json = serde_json::to_vec(value).map_err(|_| Error::CorruptJournal("checkpoint encode"))?;
     let line_bytes = prefix
         .len()
@@ -551,10 +546,7 @@ fn replace_locked_journal(
         .file_name()
         .and_then(|value| value.to_str())
         .ok_or(Error::InvalidIdentity("journal file name"))?;
-    let temp_path = parent.join(format!(
-        ".{file_name}.compact.{}.tmp",
-        std::process::id()
-    ));
+    let temp_path = parent.join(format!(".{file_name}.compact.{}.tmp", std::process::id()));
     let _ = fs::remove_file(&temp_path);
     let mut options = OpenOptions::new();
     options.create_new(true).append(true).read(true);

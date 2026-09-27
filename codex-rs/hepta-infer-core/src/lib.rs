@@ -6,10 +6,10 @@
 
 /// Versioned production-control contracts and cryptographic evidence verifiers.
 pub mod control_contract;
-/// Crash-safe checkpoint and content-addressed archive generation store.
-pub mod journal_generation;
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
+/// Crash-safe checkpoint and content-addressed archive generation store.
+pub mod journal_generation;
 mod neuron_feature;
 
 pub use neuron_feature::NeuronFeatureContractError;

@@ -116,10 +116,7 @@ impl ExecutionManifestV1 {
 
     pub fn digest(&self) -> Result<Digest32, ControlContractError> {
         self.validate()?;
-        domain_digest(
-            b"hepta.inference.control.execution-manifest.v1\0",
-            self,
-        )
+        domain_digest(b"hepta.inference.control.execution-manifest.v1\0", self)
     }
 }
 
@@ -345,7 +342,9 @@ impl AdmissionVerifierV1 {
         .to_string();
         let admission_sha256 = admission.digest(now_unix_ms)?;
         let disposition = match self.digest_by_request.get(&admission.request_id) {
-            Some(previous) if *previous == admission_sha256 => VerificationDispositionV1::Idempotent,
+            Some(previous) if *previous == admission_sha256 => {
+                VerificationDispositionV1::Idempotent
+            }
             Some(_) => return Err(ControlContractError::Equivocation),
             None => {
                 self.digest_by_request
@@ -506,8 +505,7 @@ impl SettlementReceiptV1 {
             || self.authority_epoch == 0
             || self.issued_at_unix_ms == 0
             || self.expires_at_unix_ms <= self.issued_at_unix_ms
-            || self.expires_at_unix_ms - self.issued_at_unix_ms
-                > MAX_SETTLEMENT_LIFETIME_MS
+            || self.expires_at_unix_ms - self.issued_at_unix_ms > MAX_SETTLEMENT_LIFETIME_MS
         {
             return Err(ControlContractError::InvalidAdmission);
         }
@@ -745,8 +743,7 @@ impl IndeterminateRetirementProposalV1 {
         if self.schema_version != INFERENCE_CONTROL_SCHEMA_VERSION
             || self.proposed_at_unix_ms == 0
             || self.expires_at_unix_ms <= self.proposed_at_unix_ms
-            || self.expires_at_unix_ms - self.proposed_at_unix_ms
-                > MAX_RETIREMENT_LIFETIME_MS
+            || self.expires_at_unix_ms - self.proposed_at_unix_ms > MAX_RETIREMENT_LIFETIME_MS
             || now_unix_ms < self.proposed_at_unix_ms
             || now_unix_ms >= self.expires_at_unix_ms
             || self.required_approvals < 2
@@ -974,10 +971,7 @@ fn verify_key<'a>(
     Ok(&candidate.key_id)
 }
 
-fn retirement_receipt_digest(
-    proposal_sha256: Digest32,
-    approval_key_ids: &[String],
-) -> Digest32 {
+fn retirement_receipt_digest(proposal_sha256: Digest32, approval_key_ids: &[String]) -> Digest32 {
     let mut hasher = Sha256::new();
     hasher.update(b"hepta.inference.control.retirement-receipt.v1\0");
     hasher.update(proposal_sha256);
@@ -1171,8 +1165,8 @@ mod tests {
                 .to_vec(),
             admission,
         };
-        let mut verifier = AdmissionVerifierV1::new(vec![trust("admission-a", &key)])
-            .expect("trust");
+        let mut verifier =
+            AdmissionVerifierV1::new(vec![trust("admission-a", &key)]).expect("trust");
         let verified = verifier
             .verify(&signed, "request-1", digest(9), NOW)
             .expect("verified admission");
@@ -1194,15 +1188,22 @@ mod tests {
     #[test]
     fn settlement_verifier_rejects_tampering_and_usage_regression() {
         let key = signing_key(7);
-        let mut verifier = SettlementVerifierV1::new(vec![trust("settlement-a", &key)])
-            .expect("trust");
+        let mut verifier =
+            SettlementVerifierV1::new(vec![trust("settlement-a", &key)]).expect("trust");
         let first = signed_receipt(
             "settlement-a",
             &key,
             receipt(1, SettlementTerminalV1::Indeterminate, 20),
         );
         verifier
-            .verify(&first, "request-1", digest(1), digest(2), digest(3), NOW + 1)
+            .verify(
+                &first,
+                "request-1",
+                digest(1),
+                digest(2),
+                digest(3),
+                NOW + 1,
+            )
             .expect("first receipt");
 
         let regressed = signed_receipt(
@@ -1240,18 +1241,32 @@ mod tests {
     #[test]
     fn exact_settlement_retry_is_idempotent_but_equivocation_is_rejected() {
         let key = signing_key(8);
-        let mut verifier = SettlementVerifierV1::new(vec![trust("settlement-a", &key)])
-            .expect("trust");
+        let mut verifier =
+            SettlementVerifierV1::new(vec![trust("settlement-a", &key)]).expect("trust");
         let signed = signed_receipt(
             "settlement-a",
             &key,
             receipt(4, SettlementTerminalV1::Succeeded, 24),
         );
         verifier
-            .verify(&signed, "request-1", digest(1), digest(2), digest(3), NOW + 1)
+            .verify(
+                &signed,
+                "request-1",
+                digest(1),
+                digest(2),
+                digest(3),
+                NOW + 1,
+            )
             .expect("first");
         let retry = verifier
-            .verify(&signed, "request-1", digest(1), digest(2), digest(3), NOW + 1)
+            .verify(
+                &signed,
+                "request-1",
+                digest(1),
+                digest(2),
+                digest(3),
+                NOW + 1,
+            )
             .expect("retry");
         assert_eq!(retry.disposition(), VerificationDispositionV1::Idempotent);
 
@@ -1324,18 +1339,8 @@ mod tests {
         let proposal = proposal();
         let proposal_sha256 = proposal.digest().expect("proposal digest");
         let approvals = vec![
-            approval(
-                proposal_sha256,
-                "operator-a",
-                "retirement-a",
-                &key_a,
-            ),
-            approval(
-                proposal_sha256,
-                "operator-b",
-                "retirement-b",
-                &key_b,
-            ),
+            approval(proposal_sha256, "operator-a", "retirement-a", &key_a),
+            approval(proposal_sha256, "operator-b", "retirement-b", &key_b),
         ];
         let receipt = verifier
             .verify(
