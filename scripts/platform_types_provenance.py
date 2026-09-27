@@ -33,6 +33,7 @@ PATHS = (
     "scripts/platform_types_*",
     "scripts/run_platform_types_*",
     "scripts/test_platform_types_consumer_qualification.py",
+    "scripts/test_platform_types_independent_review.py",
     "scripts/verify_platform_types_consumers.py",
     ".github/workflows/platform-types-*",
     ".github/workflows/lane-a-foundation.yml",
