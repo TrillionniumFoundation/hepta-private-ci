@@ -4,9 +4,25 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def patch_generated_runtime_parent() -> None:
+    path = ROOT / "codex-rs/hepta-memory/src/cognitive_runtime.rs"
+    text = path.read_text(encoding="utf-8")
+    pattern = re.compile(
+        r"\nconst PRODUCT_FEDERATION_TOTAL_BUDGET: Duration = Duration::from_secs\(2\);\n"
+        r"const MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS: usize = 128;\n"
+        r"const PRODUCT_FEDERATION_PURPOSE: &\[u8\] = b\"hepta\.cognitive\.federated-recall\.product\.v2\";\n"
+        r"static PRODUCT_FEDERATION_ATTEMPT_SEQUENCE: AtomicU64 = AtomicU64::new\(1\);\n"
+    )
+    text, count = pattern.subn("\n", text, count=1)
+    if count != 1:
+        raise SystemExit(f"generated runtime legacy constants drift: {count}")
+    path.write_text(text, encoding="utf-8")
 
 
 def patch_state_sources() -> None:
@@ -66,6 +82,7 @@ def patch_profile() -> None:
 
 
 def main() -> None:
+    patch_generated_runtime_parent()
     patch_state_sources()
     patch_profile()
     print("memory.federation metadata closure applied")
