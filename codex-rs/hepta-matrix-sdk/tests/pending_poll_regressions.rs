@@ -55,6 +55,8 @@ use tokio_util::sync::CancellationToken;
 
 type TestResult<T = ()> = Result<T, Box<dyn Error>>;
 
+static TEST_MATERIAL_SEQUENCE: AtomicU64 = AtomicU64::new(1);
+
 #[derive(Clone, Copy, Eq, PartialEq)]
 enum Interruption {
     None,
@@ -69,6 +71,24 @@ fn now_ms() -> TestResult<u64> {
     Ok(u64::try_from(
         SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis(),
     )?)
+}
+
+// These bytes provide collision-resistant test identities without embedding a
+// reusable key or nonce in source. They are not production entropy and never
+// leave this test process.
+fn next_test_material() -> [u8; 32] {
+    let sequence = TEST_MATERIAL_SEQUENCE.fetch_add(1, Ordering::Relaxed);
+    let unix_nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_or(0, |duration| duration.as_nanos());
+    let process_id = std::process::id();
+    let mixed_sequence = sequence.wrapping_mul(0x9e37_79b9_7f4a_7c15).to_be_bytes();
+    let mut material = [0_u8; 32];
+    material[..8].copy_from_slice(&sequence.to_be_bytes());
+    material[8..24].copy_from_slice(&unix_nanos.to_be_bytes());
+    material[24..28].copy_from_slice(&process_id.to_be_bytes());
+    material[28..].copy_from_slice(&mixed_sequence[4..]);
+    material
 }
 
 async fn fixture() -> TestResult<(
@@ -126,7 +146,7 @@ impl Authorizer {
     fn new(polls: Arc<AtomicU64>, interruption: Interruption) -> TestResult<Self> {
         let directory = TempDir::new()?;
         fs::set_permissions(directory.path(), fs::Permissions::from_mode(0o700))?;
-        let key = SigningKey::from_bytes(&[92; 32]);
+        let key = SigningKey::from_bytes(&next_test_material());
         let authority = FinalUseAuthority::open_state_dir(
             directory.path(),
             "matrix-pending-test".to_string(),
@@ -177,7 +197,7 @@ impl MatrixOutboundAuthorizer for Authorizer {
     }
 
     fn signed_grant<'a>(&'a self, request: &'a MatrixFinalUseRequest) -> MatrixGrantFuture<'a> {
-        Box::pin(async move { self.sign(request.binding.clone(), [1; 32]) })
+        Box::pin(async move { self.sign(request.binding.clone(), next_test_material()) })
     }
 
     fn refresh_revocations(&self) -> Result<(), MatrixAuthorityError> {
@@ -206,7 +226,7 @@ impl MatrixOutboundAuthorizer for Authorizer {
                     scope_sha256: [3; 32],
                     payload_sha256: [4; 32],
                 };
-                let signed = self.sign(binding.clone(), [5; 32])?;
+                let signed = self.sign(binding.clone(), next_test_material())?;
                 self.authority
                     .claim(&signed, &binding)
                     .map_err(|_| MatrixAuthorityError::Unavailable)?;
