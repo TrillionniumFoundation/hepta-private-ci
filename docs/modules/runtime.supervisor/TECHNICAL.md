@@ -158,7 +158,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The current supervisor serializes one Agent mutation at the owner lock, generation-fences every managed process, and persists crash-relevant state below the Agent run root: the exact process lease, bounded automatic-restart budget, unified release transaction and, for externally authorized transitions, a signed intent.
+The current daemon serializes lifecycle mutations and tick work through one execution permit and the supervisor owner lock. Health, Roster and Snapshot use a bounded immutable observation with a two-second freshness limit, but mutation/tick and whole-fleet refresh still share the lifecycle lane. This is not per-Agent concurrency or a 256-process latency qualification. Persisted state below the Agent run root includes process leases, bounded restart budgets, the release transaction and signed intent. Pending control kinds, deadlines and local exit-cleanup witnesses are not yet durable across daemon restart.
 
 The release transaction is the durable execution journal for both local and signed transitions. Before drain it records source/target release identities, immutable manifest and agentd/matrixd program digests, the exact per-Agent allow/revoke admission-frontier digest, a deterministic compatibility-binding digest over the source/target pair, expected Fleet release-state generation, lifecycle generation, rollback predecessor and optional production grant/authority epoch. Phase is fsynced before each process boundary. A production daemon configured with the external grant/H7 verifier rejects unsigned Upgrade/Rollback RPCs.
 
@@ -170,7 +170,7 @@ Agent drain uses an exact Agentd `Drain` RPC acknowledgement. Agentd closes new 
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
-Unexpected Agent exits use a durable bounded restart window with exponential backoff and a fixed attempt ceiling. A process whose lease publication fails remains tracked and hard-kill quarantined until exit is observed; a failed first cleanup signal cannot discard the only process handle.
+Unexpected Agent exits use a durable bounded restart window with exponential backoff and a fixed attempt ceiling. After a driver returns an owned main or Matrix handle, lease publication failure retains that handle fenced until observed exit and same-owner exact cleanup; a failed first signal cannot discard it. Driver-internal setup failure after OS spawn and daemon death before a recoverable lease remain open. Stop/Kill do not yet durably supersede restart claims, and recovery does not yet prove predecessor versus replacement identity. The in-process retry repairs must not be described as complete cross-daemon recovery.
 
 Rollback and automatic rollback are fresh admissions. Immediately before process start the supervisor re-resolves the release through Fleet, so revoked or no-longer-allowed releases fail closed, then compares current manifest/program digests and the complete allow/revoke admission frontier against the durable transaction. A changed policy frontier is not silently accepted because the predecessor was valid earlier.
 
@@ -395,7 +395,56 @@ This receipt records repository source bindings for the current documentation ca
 | `signed_rollback` | `pub fn apply_production_grant(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
 | `reconcile_signed_intent` | `pub fn resolve_production_recovery(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
 
-- `sourceBase` in the implementation map is historical provenance. The exact source-head or deterministic merge candidate is derived from Git by Lane B verification and is never hard-coded into a self-referential candidate file. The final repository-controlled implementation observation is separately pinned in `IMPLEMENTATION_MAP.json.observedAtHead`; verification accepts it only while every declared `observedSourcePaths` path is unchanged at the candidate head.
-- The daemon product never executes unsigned `Upgrade` or `Rollback`; those wire variants are compatibility rejection surfaces. Ordinary `Supervisor::upgrade/rollback` remain library-level qualification/fault-injection APIs.
+- `sourceBase` in the implementation map is historical provenance. The exact source-head or deterministic merge candidate is derived from Git by Lane B verification and is never hard-coded into a self-referential candidate file. A source-only implementation observation is separately pinned in `IMPLEMENTATION_MAP.json.observedAtHead`; verification accepts it only while every declared `observedSourcePaths` path is unchanged at the candidate head.
+- A daemon configured with the production verifier rejects unsigned `Upgrade` and `Rollback`; default/compatibility behavior and public library writers still require their explicit API inventory and product tests. Ordinary `Supervisor::upgrade/rollback` are public library APIs, not proof of a sealed production writer boundary.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+## 18. Process ownership implementation and remaining closure
+
+The current kernel lifetime design is documented in
+[Process lifetime](PROCESS_LIFETIME.md). Linux adoption retains a pidfd for
+signal/exit observation. macOS adoption retains a kernel audit token plus a
+process exit registration and uses the OS audit-token signal interface. The
+lifetime is acquired before the identity handshake and rechecked after it.
+Unsupported hosts or failed acquisitions reject; there is no adopted bare-PID
+signal fallback. The macOS interface and both platform Rust implementations
+remain subject to native compilation and target-host execution.
+
+[Process ownership](PROCESS_OWNERSHIP.md) defines main/Matrix failed-publication
+retention, same-owner lease-removal witnesses, immutable observed exits and
+main-first emergency termination. Normal missing, foreign, corrupt or
+reappearing leases do not imply successful cleanup. Successful signaling is
+not observed exit, and observed exit is not a completed user task. The local
+cleanup witnesses do not survive daemon restart and cannot be reconstructed
+merely because a file is absent.
+
+The additional test sources are `unix_process_ref_tests.rs` (five actual-process
+lifetime cases), `launch_failure_tests.rs` and `unpublished_lease_tests.rs`
+(seven filesystem/driver cases), `matrix_containment_tests.rs` (eight cases),
+and `matrix_lease_removal_tests.rs` (four cases), all under the declared source
+root. Twenty-four written Rust functions do not mean twenty-four passing tests.
+The local Linux pidfd primitive probe is separate evidence and does not execute
+these sources, a product daemon or a forced same-number PID-reuse experiment.
+
+The current source-only operator caller and signed terminal recovery ceremony
+are in [Production control runbook](PRODUCTION_CONTROL_RUNBOOK.md). Its online
+signed recovery is distinct from the legacy offline abort described in older
+recovery notes. Abort does not establish a successful rollback or undo effects.
+The source caller does not establish independent key provision, writer isolation,
+real product execution or operator acceptance.
+
+| Stage | Source progress and remaining exit boundary |
+| --- | --- |
+| A: process identity and ownership | Lifetime references and main/Matrix retained cleanup are implemented as source. Driver-internal acquisition faults, pre-adoption hydration/binding failures, rejected-adoption lease handling, launch-before-lease daemon crashes, directory identity and native proof remain open. |
+| B: cross-daemon control | Durable Stop/Kill supersession, predecessor/replacement restart linkage, non-resetting deadlines and durable exit reconciliation remain implementation work. Existing in-memory controls and cleanup witnesses do not close it. |
+| C: exact candidate | The guide/map record current source progress and open gaps. Full document projections, Linux/macOS source-head and ordered-parent merge native default/production tests, product tests, formatting and strict lint must actually pass before merge; exact main must then be verified. |
+| D: target hosts and acceptance | Real caller/verifier/process/durable/audit execution, final artifact digests, 256-process mixed load, named Linux/macOS fault/restore/soak results and independent security/operator acceptance remain unproved. |
+
+`IMPLEMENTATION_MAP.sourceBase` remains historical provenance. Its separately
+pinned `observedAtHead` is a source snapshot, not a test result. Actual command,
+profile, exact Git identity, logs and artifact digests belong in execution
+receipts. No source-boundary, product, independent acceptance, activation or
+release flag may be inferred true from this amendment. Keep the normal required
+checks and existing denied-authority posture; missing, queued or skipped
+execution is not a passing result.
