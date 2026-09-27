@@ -42,6 +42,9 @@ MANIFEST_FEATURE_EXCEPTIONS: dict[str, dict[str, tuple[str, ...]]] = {
     "codex-rs/hepta-agentd/Cargo.toml": {
         "default": (),
         "qualification-cognitive-write": (),
+        "qualification-legacy-learning-write": (
+            "codex-hepta-learning-ledger/qualification-legacy-write",
+        ),
     },
     "codex-rs/hepta-automation/Cargo.toml": {
         "default": (),
