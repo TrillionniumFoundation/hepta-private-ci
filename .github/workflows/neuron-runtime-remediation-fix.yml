@@ -1,0 +1,87 @@
+name: Temporary neuron runtime remediation formatter
+
+on:
+  push:
+    branches:
+      - "codex/neuron-runtime-durable-closure-v1"
+    paths:
+      - ".github/workflows/neuron-runtime-remediation-fix.yml"
+
+permissions:
+  contents: write
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  remediate:
+    name: Apply pinned rustfmt and capture conformance diagnostics
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+      - name: Bind branch identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "codex/neuron-runtime-durable-closure-v1"
+          git rev-parse HEAD HEAD^{tree}
+      - name: Apply repository-pinned Rust formatting
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-learning-artifacts \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-neuron \
+            --package codex-hepta-ndu \
+            --package codex-hepta-shadow-qualification
+      - name: Capture repository conformance diagnostics
+        id: conformance
+        shell: bash
+        run: |
+          set -uo pipefail
+          out="$RUNNER_TEMP/neuron-conformance"
+          mkdir -p "$out"
+          overall=0
+          run_check() {
+            name="$1"
+            shift
+            status=0
+            "$@" >"$out/$name.log" 2>&1 || status=$?
+            printf '%s=%s\n' "$name" "$status" | tee -a "$out/status.txt"
+            cat "$out/$name.log"
+            if [ "$status" -ne 0 ]; then
+              overall=1
+            fi
+          }
+          run_check module-documentation ./scripts/ci/check-module-documentation.py
+          run_check neuron-live-consumer ./scripts/ci/check-neuron-live-consumer.sh
+          run_check neuron-qualification-evidence ./scripts/ci/check-neuron-qualification-evidence.py
+          run_check neuron-source-qualification ./scripts/ci/check-neuron-source-qualification.py
+          printf 'overall=%s\n' "$overall" | tee -a "$out/status.txt"
+          echo "overall=$overall" >> "$GITHUB_OUTPUT"
+      - name: Retain conformance diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-remediation-conformance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/neuron-conformance
+          if-no-files-found: error
+          retention-days: 7
+      - name: Commit formatting and remove temporary workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/neuron-runtime-remediation-fix.yml
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add codex-rs .github/workflows/neuron-runtime-remediation-fix.yml
+          git commit -m "neuron.runtime: apply pinned rustfmt"
+          git push origin "HEAD:$GITHUB_REF_NAME"
