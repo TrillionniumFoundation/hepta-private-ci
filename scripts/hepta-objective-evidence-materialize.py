@@ -132,9 +132,20 @@ fn objective_end_to_end_golden_vector_v1_is_stable() {
 #[test]
 #[ignore = "one-shot golden vector recorder"]
 fn update_objective_end_to_end_golden_vector_v1() {
-    let output = std::env::var("HEPTA_OBJECTIVE_GOLDEN_OUTPUT")
+    let configured = std::env::var("HEPTA_OBJECTIVE_GOLDEN_OUTPUT")
         .expect("HEPTA_OBJECTIVE_GOLDEN_OUTPUT");
-    std::fs::write(output, objective_end_to_end_golden_line_v1())
+    let configured = std::path::PathBuf::from(configured);
+    let output = if configured.is_absolute() {
+        configured
+    } else {
+        std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../..")
+            .join(configured)
+    };
+    if let Some(parent) = output.parent() {
+        std::fs::create_dir_all(parent).expect("create golden vector parent");
+    }
+    std::fs::write(&output, objective_end_to_end_golden_line_v1())
         .expect("write golden vector");
 }
 ''',
