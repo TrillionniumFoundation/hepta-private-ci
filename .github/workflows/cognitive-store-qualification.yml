@@ -32,6 +32,8 @@ on:
       - '.github/workflows/cognitive-store-qualification.yml'
   workflow_dispatch:
 
+permissions: {}
+
 concurrency:
   group: cognitive-store-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
@@ -340,6 +342,8 @@ jobs:
     needs: [qualify]
     if: always()
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     steps:
       - name: Require all exact-candidate lanes
         env:
