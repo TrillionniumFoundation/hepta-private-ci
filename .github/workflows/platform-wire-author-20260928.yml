@@ -1,0 +1,146 @@
+name: Publish reviewed platform.wire source 20260928
+
+on:
+  push:
+    branches: [author/platform-wire-reviewed-source-20260928]
+    paths:
+      - '.wire-source-authoring/**'
+      - '.github/workflows/platform-wire-author-20260928.yml'
+
+# This isolated authoring branch publishes ordinary source commits only.
+# It is not a qualification workflow and is never copied into the candidate.
+# Candidate qualification workflows retain contents: read and test committed trees.
+permissions:
+  contents: write
+
+concurrency:
+  group: author-platform-wire-reviewed-source-20260928
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      EXPECTED_PARENT: 263c604a2be4bcdfa0d4928edc5551cf0b47fdc0
+      CANDIDATE_BRANCH: codex/platform-wire-final-convergence-20260925
+      PATCH_SHA256: 96d848b3490958ef1d42816047a2bc19a2be8b431cb945d5e4ac5394e1597f05
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Read immutable reviewed patch inputs
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: authoring
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Decode bounded patch and verify review digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib, lzma, os
+          from pathlib import Path
+          folder = Path('authoring/.wire-source-authoring')
+          encoded = ''.join((folder/f'reviewed.patch.xz.b64.{n}').read_text().strip() for n in (1, 2))
+          compressed = base64.b64decode(encoded, validate=True)
+          decoder = lzma.LZMADecompressor(memlimit=64*1024*1024)
+          patch = decoder.decompress(compressed, max_length=1024*1024)
+          if not decoder.eof or decoder.unused_data or len(patch) >= 1024*1024:
+              raise SystemExit('invalid or oversized patch container')
+          digest = hashlib.sha256(patch).hexdigest()
+          if digest != os.environ['PATCH_SHA256']:
+              raise SystemExit(f'patch review digest mismatch: {digest}')
+          (Path(os.environ['RUNNER_TEMP'])/'wire-reviewed.patch').write_bytes(patch)
+          print(f'verified reviewed source patch {digest}; bytes={len(patch)}')
+          PY
+      - name: Check out exact publication parent
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_PARENT }}
+          path: candidate
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Apply reviewed source delta without qualification or permission changes
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_PARENT"
+          test "$(git ls-remote origin "refs/heads/$CANDIDATE_BRANCH" | cut -f1)" = "$EXPECTED_PARENT"
+          git apply --check "$RUNNER_TEMP/wire-reviewed.patch"
+          git apply --index "$RUNNER_TEMP/wire-reviewed.patch"
+          git diff --cached --check
+          python3 - <<'PY'
+          import subprocess
+          expected = '''.github/workflows/lane-a-foundation.yml
+          codex-rs/Cargo.lock
+          codex-rs/hepta-native-gateway/src/http_accept.rs
+          codex-rs/hepta-wire/Cargo.toml
+          codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs
+          codex-rs/hepta-wire/src/authentication.rs
+          codex-rs/hepta-wire/src/codec_binding.rs
+          codex-rs/hepta-wire/src/directional_session.rs
+          codex-rs/hepta-wire/src/frame.rs
+          codex-rs/hepta-wire/src/frame_header.rs
+          codex-rs/hepta-wire/src/lib.rs
+          codex-rs/hepta-wire/src/managed_session.rs
+          codex-rs/hepta-wire/src/secure_session.rs
+          codex-rs/hepta-wire/src/session.rs
+          codex-rs/hepta-wire/src/session_tests.rs
+          codex-rs/hepta-wire/src/stream.rs
+          codex-rs/hepta-wire/tests/bounded_feed_regressions.rs
+          docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json
+          docs/modules/platform.wire/REMEDIATION_20260928.md
+          docs/modules/platform.wire/SECURITY_AND_QUALIFICATION.md
+          docs/modules/platform.wire/TECHNICAL.md
+          scripts/generate_lane_a_workflow_paths.py
+          scripts/platform_wire_status.py
+          scripts/test_generate_lane_a_workflow_paths.py'''.split()
+          actual = subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if sorted(actual) != sorted(expected):
+              raise SystemExit(f'publication scope mismatch: {actual}')
+          if subprocess.check_output(['git','diff','--cached','--diff-filter=D','--name-only'],text=True).strip():
+              raise SystemExit('source deletion is not authorized by this patch')
+          subprocess.run(['git','diff','--cached','--stat'],check=True)
+          PY
+      - name: Format changed Rust source as an ordinary source-authoring operation
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$toolchain" --profile minimal --component rustfmt
+          git diff --cached --name-only -- '*.rs' > "$RUNNER_TEMP/wire-rust-paths"
+          while IFS= read -r path; do
+            rustfmt +"$toolchain" --edition 2024 --config skip_children=true "$path"
+            git add -- "$path"
+          done < "$RUNNER_TEMP/wire-rust-paths"
+          git diff --cached --check
+          git diff --exit-code
+      - name: Publish ordinary source commit without forcing the ref
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Hepta wire source author'
+          git config user.email 'hepta-wire-source@users.noreply.github.com'
+          git commit -m 'fix(wire): bind session construction and lifecycle, preserve EOF semantics, and restore qualification source truth' -m "Reviewed patch SHA-256: $PATCH_SHA256. This is a source-authoring commit, not a qualification or acceptance receipt. Final-use authority and production/acceptance/release gates remain unchanged."
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          git push origin "HEAD:refs/heads/$CANDIDATE_BRANCH"
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          test "$(git ls-remote origin "refs/heads/$CANDIDATE_BRANCH" | cut -f1)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/wire-source-publication"
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/wire-source-publication/git-identity.txt"
+          git diff HEAD^ HEAD > "$RUNNER_TEMP/wire-source-publication/published.patch"
+          git archive --format=tar.gz --output="$RUNNER_TEMP/wire-source-publication/source.tar.gz" HEAD
+          printf 'published_source=%s\nqualification=not_asserted\nacceptance=false\nrelease=false\n' "$SOURCE_SHA" >> "$GITHUB_STEP_SUMMARY"
+      - name: Retain published source and identity, not a passing test receipt
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-wire-source-publication-${{ github.run_id }}
+          path: ${{ runner.temp }}/wire-source-publication/
+          retention-days: 30
+          if-no-files-found: error
