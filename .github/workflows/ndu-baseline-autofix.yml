@@ -17,7 +17,7 @@ concurrency:
 jobs:
   repair:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, linux, x64, rog]
     timeout-minutes: 60
     steps:
       - name: Check out exact remediation branch
