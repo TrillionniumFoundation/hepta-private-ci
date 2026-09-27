@@ -112,3 +112,50 @@ impl AgentdIntelligenceOutcomePlanV1 {
         )
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use codex_hepta_types::StableId;
+
+    struct NeverSigns;
+
+    impl AgentdIntelligenceOutcomeEvidenceProviderV1 for NeverSigns {
+        fn sign(
+            &self,
+            _outcome: &AuthenticatedOutcomeV1,
+            _now: u64,
+        ) -> Result<SignedLearningEvidenceV1, IntelligenceLearningErrorV1> {
+            Err(IntelligenceLearningErrorV1::Invalid("unused signer"))
+        }
+    }
+
+    fn id(value: &str) -> StableId {
+        StableId::new(value).expect("stable id")
+    }
+
+    fn digest(value: &str) -> Digest32 {
+        Digest32::of_bytes(value.as_bytes())
+    }
+
+    #[test]
+    fn recovered_binding_is_exact_and_requires_no_decision_replay() {
+        let binding = IntelligenceLearningBindingV1::new(
+            id("run.recovered"),
+            digest("snapshot"),
+            digest("objective"),
+            digest("envelope"),
+            digest("candidates"),
+            digest("dispatch"),
+            id("decision.recovered"),
+            id("episode.recovered"),
+            id("candidate.recovered"),
+        )
+        .expect("binding");
+        let plan = AgentdIntelligenceOutcomePlanV1::from_acknowledged_binding(
+            binding.clone(),
+            Arc::new(NeverSigns),
+        );
+        assert_eq!(plan.acknowledged_binding().expect("binding"), binding);
+    }
+}
