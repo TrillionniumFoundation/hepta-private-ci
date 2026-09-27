@@ -80,6 +80,13 @@ summary = {
     "toolchain": sys.argv[2],
     "cargoFuzzVersion": sys.argv[3],
     "runs": {"canonicalValidate": int(sys.argv[4]), "platformTypesJson": int(sys.argv[5])},
+    "wireDecoders": [
+        "PromptDeliveryObservationV2",
+        "RuntimeTopologyCandidateV1",
+        "RandomStreamManifestV1",
+        "ExternalSystemManifestV1",
+        "SensorCalibrationManifestV1",
+    ],
     "targets": records,
     "status": "passed",
     "claimBoundary": "bounded exact-candidate libFuzzer execution; not exhaustive proof",

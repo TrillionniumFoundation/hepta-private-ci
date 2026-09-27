@@ -74,7 +74,7 @@
       "id": "utility.ndu.random-stream-owner",
       "kind": "random_stream_manifest_product_owner",
       "path": "codex-rs/hepta-ndu/src/random_stream_owner.rs",
-      "mustContain": ["admit_ndu_random_stream_manifest_v1", "expected_decision_id", "CounterSpanExceeded"]
+      "mustContain": ["admit_ndu_random_stream_manifest_v1", "expected_decision_id", "root_seed_digest", "owner_rejects_root_seed_substitution", "CounterSpanExceeded"]
     },
     {
       "id": "runtime.codex.prompt-delivery",
