@@ -566,8 +566,13 @@ impl AgentdState {
             && runtime.app_server_ready
             && !runtime.fenced)
     }
+
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
-        self.intelligence_product.get().is_some() && self.intelligence_invocation.get().is_some()
+        self.intelligence_product.get().is_some()
+            && self
+                .intelligence_invocation
+                .get()
+                .is_some_and(|provider| !provider.profile_digest().is_zero())
     }
 
     /// Prepare the exact durable Objective through the configured canonical
@@ -585,9 +590,15 @@ impl AgentdState {
         ) else {
             return Ok(None);
         };
+        if provider.profile_digest().is_zero() {
+            return Err(AgentdError::Invalid(
+                "canonical intelligence provider profile is incomplete".to_string(),
+            ));
+        }
 
         let invocation = provider.build(&self.identity, record)?;
         invocation.validate(&self.identity, record)?;
+        let (request, inputs, run_start) = invocation.into_parts();
 
         // Freeze only the small immutable composition while holding the run
         // lock. Owner execution is allowed to block without monopolizing run
@@ -599,7 +610,7 @@ impl AgentdState {
             .composition()
             .clone();
         let outcome = runner
-            .prepare_for_composition(&composition, invocation.request, invocation.inputs)
+            .prepare_bound_for_composition(&composition, request, inputs, run_start)
             .await
             .map_err(|error| {
                 AgentdError::Protocol(format!(
@@ -619,7 +630,7 @@ impl AgentdState {
                 let attachment = prepared.context_attachment();
                 let mut runs = self.runs.lock().map_err(poisoned_state)?;
                 let admitted = runs
-                    .start_run(
+                    .start_bound_run(
                         now_ms,
                         crate::RunSnapshot {
                             run_id: snapshot.run_id,
@@ -699,7 +710,7 @@ impl AgentdState {
         self.runs
             .lock()
             .map_err(poisoned_state)?
-            .start_revalidated_run_start(now_ms, record)
+            .start_revalidated_bound_run_start(now_ms, record)
             .map_err(run_error)
     }
 
@@ -798,11 +809,12 @@ fn objective_run_scope(identity: &AgentdIdentity) -> Digest32 {
 }
 
 pub(crate) fn objective_run_fence(identity: &AgentdIdentity, current_generation: u64) -> String {
-    let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
-    bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());
-    bytes.extend_from_slice(&current_generation.to_be_bytes());
-    Sha256Digest::for_bytes(&bytes).as_str().to_string()
+    crate::agentd_objective_fence(
+        identity.agent_id.as_str(),
+        identity.spawn_generation,
+        current_generation,
+    )
+    .unwrap_or_default()
 }
 
 fn unix_now_ms() -> Result<u64, AgentdError> {
