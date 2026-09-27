@@ -10,6 +10,7 @@ use crate::ProcessState;
 use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEventKind;
+use crate::control::pending;
 use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
 use crate::lease::remove_lease;
@@ -39,6 +40,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             let outcome = match self.tick_runtime(agent_id, slot, &mut runtime, now) {
                 Ok(outcome) => outcome,
                 Err(error) => {
+                    runtime.healthy = false;
                     slot.runtime = Some(runtime);
                     return Err(error);
                 }
@@ -50,6 +52,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     post_exit_fault = restart_fault;
                 }
             }
+        }
+        if slot.runtime.is_none() {
+            slot.pending_control = None;
         }
         if slot.runtime.is_none()
             && slot.release_change.is_none()
@@ -131,6 +136,8 @@ impl<D: ProcessDriver> Supervisor<D> {
         runtime: &mut AgentRuntime<D::Process>,
         now: Instant,
     ) -> Result<RuntimeTickOutcome, SupervisorError> {
+        // A failed registry read or process probe cannot preserve stale readiness.
+        runtime.healthy = false;
         let registry_generation = self.record(agent_id)?.lifecycle.generation;
         if registry_generation != runtime.generation && !runtime.fenced {
             self.kill_matrix_now(agent_id, slot)?;
@@ -140,6 +147,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .map_err(|error| driver_error(agent_id, error))?;
             runtime.fenced = true;
             runtime.phase = RuntimePhase::Killing;
+            slot.pending_control = None;
             slot.event(
                 runtime.generation,
                 SupervisorEventKind::GenerationFenced {
@@ -147,6 +155,22 @@ impl<D: ProcessDriver> Supervisor<D> {
                     registry: registry_generation,
                 },
             );
+        }
+        let retrying = slot
+            .pending_control
+            .is_some_and(|pending| pending.applies_to(runtime));
+        let control_result = pending::apply(
+            agent_id,
+            runtime,
+            &mut slot.pending_control,
+            now,
+            self.config.stop_grace,
+        );
+        // Poll even when the signal failed: ESRCH on an already exited exact
+        // child must not prevent durable exit/lease reconciliation. Conversely,
+        // a failing probe must not prevent a pending kill from being attempted.
+        if let Ok(Some(event)) = &control_result {
+            slot.events.push(event.clone());
         }
         let observation = runtime
             .process
@@ -162,15 +186,18 @@ impl<D: ProcessDriver> Supervisor<D> {
                 && matches!(runtime.phase, RuntimePhase::Running)
                 && slot.release_change.is_none()
                 && !slot.restart_pending
+                && !retrying
             {
                 self.queue_automatic_restart_before_exit(agent_id, slot, now)
             } else {
                 None
             };
             self.finalize_exit(agent_id, slot, runtime, exit)?;
+            slot.pending_control = None;
             return Ok(RuntimeTickOutcome::Exited { restart_fault });
         }
-        if runtime.fenced {
+        control_result?;
+        if runtime.fenced || retrying {
             return Ok(RuntimeTickOutcome::Keep);
         }
         let ProcessState::Running { healthy, drained } = observation.state else {
@@ -198,34 +225,45 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.restart_not_before = None;
             }
             RuntimePhase::AwaitingHealth { deadline: limit } if now >= limit => {
+                let stop_deadline = deadline(now, self.config.stop_grace)?;
                 let next = self.registry.compare_and_transition(
                     agent_id,
                     runtime.generation,
                     AgentLifecycle::Failed,
                 )?;
                 runtime.generation = next.generation;
-                runtime.phase = RuntimePhase::Stopping {
-                    deadline: deadline(now, self.config.stop_grace)?,
-                };
-                runtime
-                    .process
-                    .request_stop()
-                    .map_err(|error| driver_error(agent_id, error))?;
                 slot.event(
                     next.generation,
                     SupervisorEventKind::Lifecycle(AgentLifecycle::Failed),
                 );
-                slot.event(next.generation, SupervisorEventKind::StopRequested);
+                slot.pending_control = Some(pending::PendingControl::Stop {
+                    spawn_generation: runtime.spawn_generation,
+                    deadline: stop_deadline,
+                });
+                if let Some(event) = pending::apply(
+                    agent_id,
+                    runtime,
+                    &mut slot.pending_control,
+                    now,
+                    self.config.stop_grace,
+                )? {
+                    slot.events.push(event);
+                }
             }
             RuntimePhase::Draining { deadline: limit } if drained || now >= limit => {
-                runtime.phase = RuntimePhase::Stopping {
+                slot.pending_control = Some(pending::PendingControl::Stop {
+                    spawn_generation: runtime.spawn_generation,
                     deadline: deadline(now, self.config.stop_grace)?,
-                };
-                runtime
-                    .process
-                    .request_stop()
-                    .map_err(|error| driver_error(agent_id, error))?;
-                slot.event(runtime.generation, SupervisorEventKind::StopRequested);
+                });
+                if let Some(event) = pending::apply(
+                    agent_id,
+                    runtime,
+                    &mut slot.pending_control,
+                    now,
+                    self.config.stop_grace,
+                )? {
+                    slot.events.push(event);
+                }
             }
             RuntimePhase::Stopping { deadline: limit } if now >= limit => {
                 runtime

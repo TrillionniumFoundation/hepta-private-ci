@@ -17,6 +17,9 @@ use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
 
+#[path = "control_pending.rs"]
+pub(crate) mod pending;
+
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn drain_slot(
         &mut self,
@@ -33,6 +36,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Ok(());
         }
         self.fence_runtime(agent_id, slot)?;
+        let drain_deadline = deadline(now, self.config.drain_timeout)?;
         let lifecycle = self.record(agent_id)?.lifecycle;
         if lifecycle.lifecycle == AgentLifecycle::Running {
             let next = self.registry.compare_and_transition(
@@ -51,19 +55,16 @@ impl<D: ProcessDriver> Supervisor<D> {
                 lifecycle.lifecycle
             )));
         }
-        let generation = {
-            let runtime = active_runtime(agent_id, slot)?;
-            runtime.phase = RuntimePhase::Draining {
-                deadline: deadline(now, self.config.drain_timeout)?,
-            };
-            runtime
-                .process
-                .request_drain()
-                .map_err(|error| driver_error(agent_id, error))?;
-            runtime.generation
-        };
-        slot.event(generation, SupervisorEventKind::DrainRequested);
-        Ok(())
+        let spawn_generation = active_runtime(agent_id, slot)?.spawn_generation;
+        pending::stage(
+            agent_id,
+            slot,
+            pending::PendingControl::Drain {
+                spawn_generation,
+                deadline: drain_deadline,
+            },
+        )?;
+        pending::apply_to_slot(agent_id, slot, now, self.config.stop_grace)
     }
 
     pub(crate) fn stop_slot(
@@ -77,20 +78,18 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Ok(());
         }
         slot.deferred_agent_action = None;
+        let stop_deadline = deadline(now, self.config.stop_grace)?;
         self.prepare_termination(agent_id, slot)?;
-        let generation = {
-            let runtime = active_runtime(agent_id, slot)?;
-            runtime.phase = RuntimePhase::Stopping {
-                deadline: deadline(now, self.config.stop_grace)?,
-            };
-            runtime
-                .process
-                .request_stop()
-                .map_err(|error| driver_error(agent_id, error))?;
-            runtime.generation
-        };
-        slot.event(generation, SupervisorEventKind::StopRequested);
-        Ok(())
+        let spawn_generation = active_runtime(agent_id, slot)?.spawn_generation;
+        pending::stage(
+            agent_id,
+            slot,
+            pending::PendingControl::Stop {
+                spawn_generation,
+                deadline: stop_deadline,
+            },
+        )?;
+        pending::apply_to_slot(agent_id, slot, now, self.config.stop_grace)
     }
 
     pub(crate) fn kill_slot(
@@ -102,17 +101,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.deferred_agent_action = None;
         self.kill_matrix_now(agent_id, slot)?;
         self.prepare_termination(agent_id, slot)?;
-        let generation = {
-            let runtime = active_runtime(agent_id, slot)?;
-            runtime.phase = RuntimePhase::Killing;
-            runtime
-                .process
-                .kill()
-                .map_err(|error| driver_error(agent_id, error))?;
-            runtime.generation
-        };
-        slot.event(generation, SupervisorEventKind::KillRequested);
-        Ok(())
+        let spawn_generation = active_runtime(agent_id, slot)?.spawn_generation;
+        pending::stage(
+            agent_id,
+            slot,
+            pending::PendingControl::Kill { spawn_generation },
+        )?;
+        pending::apply_to_slot(agent_id, slot, Instant::now(), self.config.stop_grace)
     }
 
     pub(crate) fn restart_slot(
@@ -157,11 +152,19 @@ impl<D: ProcessDriver> Supervisor<D> {
         } else {
             self.stop_slot(agent_id, slot, now)
         };
-        result?;
-        slot.restart_pending = true;
-        let generation = active_runtime(agent_id, slot)?.generation;
-        slot.event(generation, SupervisorEventKind::RestartQueued);
-        Ok(())
+        // A driver error after staging control must not lose the durable restart
+        // claim. Earlier preflight failures do not create a new in-memory intent.
+        let retryable_driver_failure = matches!(&result, Err(SupervisorError::Driver { .. }))
+            && slot.runtime.as_ref().is_some_and(|runtime| {
+                slot.pending_control
+                    .is_some_and(|pending| pending.applies_to(runtime))
+            });
+        if result.is_ok() || retryable_driver_failure {
+            slot.restart_pending = true;
+            let generation = active_runtime(agent_id, slot)?.generation;
+            slot.event(generation, SupervisorEventKind::RestartQueued);
+        }
+        result
     }
 
     fn prepare_termination(
@@ -205,12 +208,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             .runtime
             .as_mut()
             .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))?;
+        runtime.healthy = false;
         runtime
             .process
             .kill()
             .map_err(|error| driver_error(agent_id, error))?;
         runtime.fenced = true;
         runtime.phase = RuntimePhase::Killing;
+        slot.pending_control = None;
         slot.event(
             runtime_generation,
             SupervisorEventKind::GenerationFenced {

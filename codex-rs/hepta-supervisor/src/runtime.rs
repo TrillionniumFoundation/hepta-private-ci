@@ -147,6 +147,8 @@ impl<T> BoundedQueue<T> {
 
 pub(crate) struct AgentSlot<P> {
     pub runtime: Option<AgentRuntime<P>>,
+    /// At most one unacknowledged signal, bound to the current spawn generation.
+    pub pending_control: Option<crate::control::pending::PendingControl>,
     pub matrix: MatrixCompanionSlot<P>,
     pub deferred_agent_action: Option<DeferredAgentAction>,
     pub last_command: Option<AgentCommand>,
@@ -172,6 +174,7 @@ impl<P> AgentSlot<P> {
     pub fn new(config: &SupervisorConfig) -> Self {
         Self {
             runtime: None,
+            pending_control: None,
             matrix: MatrixCompanionSlot::new(),
             deferred_agent_action: None,
             last_command: None,
