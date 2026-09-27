@@ -36,7 +36,11 @@ jobs:
           components: clippy,rustfmt
 
       - name: Apply schema-v1 provider identity repair
-        run: python3 scripts/automation_taskflow_provider_key_compat_patch.py source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/automation_taskflow_provider_key_compat_patch.py source
+          python3 scripts/automation_taskflow_provider_key_compat_correction.py
 
       - name: Format and qualify compatibility repair
         shell: bash
@@ -84,7 +88,8 @@ jobs:
             scripts/test_verify_automation_taskflow_acceptance.py
           git rm \
             .github/workflows/automation-taskflow-provider-key-compat.yml \
-            scripts/automation_taskflow_provider_key_compat_patch.py
+            scripts/automation_taskflow_provider_key_compat_patch.py \
+            scripts/automation_taskflow_provider_key_compat_correction.py
           git diff --check
           git add docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json
           git commit -m "docs(automation): rebind provider-key-compatible source identity [automation-map-rebind]"
