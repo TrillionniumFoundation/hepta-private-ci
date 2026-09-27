@@ -50,18 +50,70 @@ impl EvidenceHost {
         recovery_frontier: Option<(PathBuf, PathBuf)>,
     ) -> Result<Self, AgentdError> {
         EvidenceTrust::load(&trust_file, identity)?;
+        let production_profile = recovery_frontier.as_ref().is_some_and(
+            |(frontier_or_config, _)| {
+                crate::evidence_production::is_production_evidence_profile(
+                    identity,
+                    frontier_or_config,
+                )
+            },
+        );
         let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
-        let store = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
-            .await
-            .map_err(evidence_error)?;
-        if let Some((frontier_file, signer_trust_file)) = recovery_frontier {
-            crate::evidence_frontier::verify_evidence_recovery_frontier(
-                identity,
-                &store,
-                &frontier_file,
-                &signer_trust_file,
-            )
-            .await?;
+        let sqlite = SqliteConfig::from_sqlite_home(home);
+        let preflight_snapshot = if production_profile {
+            // Production never bootstraps or migrates an unknown database. A
+            // read-only open first proves that the complete current migration
+            // ledger, schema manifest, row invariants and foreign keys already
+            // exist. The restricted writable open below cannot create or migrate
+            // the lineage, and its authorizer rejects DDL and migration-ledger
+            // mutation. The exact snapshot comparison detects any path swap or
+            // intervening mutation before the host is published.
+            let preflight = HeptaEvidenceStore::open_existing_read_only(&sqlite)
+                .await
+                .map_err(evidence_error)?;
+            let snapshot = preflight.recovery_snapshot().await.map_err(evidence_error)?;
+            preflight.close().await;
+            Some(snapshot)
+        } else {
+            None
+        };
+        let store = if production_profile {
+            HeptaEvidenceStore::open_existing_runtime(&sqlite)
+                .await
+                .map_err(evidence_error)?
+        } else {
+            HeptaEvidenceStore::open(&sqlite)
+                .await
+                .map_err(evidence_error)?
+        };
+        if let Some(expected) = preflight_snapshot {
+            let actual = store.recovery_snapshot().await.map_err(evidence_error)?;
+            if actual != expected {
+                store.close().await;
+                return Err(invalid(
+                    "production evidence database changed between read-only migration preflight and restricted runtime open",
+                ));
+            }
+        }
+        if let Some((frontier_or_config, signer_trust_file)) = recovery_frontier {
+            if production_profile {
+                crate::evidence_production::verify_production_evidence_frontier(
+                    identity,
+                    &store,
+                    &trust_file,
+                    &frontier_or_config,
+                    &signer_trust_file,
+                )
+                .await?;
+            } else {
+                crate::evidence_frontier::verify_evidence_recovery_frontier(
+                    identity,
+                    &store,
+                    &frontier_or_config,
+                    &signer_trust_file,
+                )
+                .await?;
+            }
         }
         Ok(Self { store, trust_file })
     }
