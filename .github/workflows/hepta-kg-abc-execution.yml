@@ -137,10 +137,14 @@ jobs:
               row['sourceBase'] = current
               row['observedAtHead'] = current
               row['sourceObjects'] = current_objects
-              row['observedSourcePaths'] = sorted(
-                  set(row['observedSourcePaths'])
-                  | {item['path'] for item in current_objects}
-              )
+          # Observed paths cover root identities AND their resolved files. A
+          # directory root cannot be replaced by listing only its descendants.
+          row['observedSourcePaths'] = sorted(
+              set(row['observedSourcePaths'])
+              | set(row['declaredRoots'])
+              | set(row['compositionRoots'])
+              | {item['path'] for item in current_objects}
+          )
           assert row['productionImplementation'] is False
           for key in (
               'productExecutionProved', 'independentAcceptance', 'activation', 'release',
