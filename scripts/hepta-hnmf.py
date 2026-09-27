@@ -316,7 +316,7 @@ def verify() -> int:
     )
     need(
         implementation_map.get("sourceBaseSemantics")
-        == "legacy_registry_baseline_only_not_exact_head_evidence"
+        == "current_source_navigation_anchor_not_execution_evidence"
         and implementation_map.get("exactCandidateIdentitySource")
         == "exact_head_and_synthetic_merge_ci_receipts",
         "implementation-map source identity semantics",
