@@ -94,11 +94,38 @@ def storage_receipt(operations: int = 512) -> dict[str, object]:
     }
 
 
+def pilot_results(passed: set[str]) -> list[dict[str, object]]:
+    return [
+        {"name": case.name, "passed": case.name in passed}
+        for case in RUNTIME.PILOT_CASES
+    ]
+
+
 class RuntimeQualificationReceiptTests(unittest.TestCase):
     def write(self, root: Path, name: str, value: dict[str, object]) -> Path:
         path = root / name
         path.write_text(json.dumps(value), encoding="utf-8")
         return path
+
+    def test_pilot_claims_require_the_exact_supporting_cases(self) -> None:
+        all_cases = {case.name for case in RUNTIME.PILOT_CASES}
+        claims = RUNTIME.pilot_claims(pilot_results(all_cases))
+        self.assertTrue(all(claims.values()))
+
+        only_fleet = RUNTIME.pilot_claims(
+            pilot_results({"fleet-create-restart-revoke"})
+        )
+        self.assertTrue(only_fleet["fleetPathExecuted"])
+        self.assertFalse(only_fleet["restartRecoveryExercised"])
+        self.assertFalse(only_fleet["revocationExercised"])
+        self.assertFalse(only_fleet["browserAgentdPathExecuted"])
+
+    def test_pilot_claims_reject_missing_and_duplicate_cases(self) -> None:
+        results = pilot_results({case.name for case in RUNTIME.PILOT_CASES})
+        with self.assertRaises(RUNTIME.QualificationError):
+            RUNTIME.pilot_claims(results[:-1])
+        with self.assertRaises(RUNTIME.QualificationError):
+            RUNTIME.pilot_claims(results + [dict(results[0])])
 
     def test_benchmark_receipt_is_strict_and_rejects_slo_overclaim(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
