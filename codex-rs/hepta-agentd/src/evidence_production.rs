@@ -279,6 +279,7 @@ fn require_authenticated_snapshot(
 // test visibility. No parser, signature, path, artifact or authority check is
 // replaced by the stronger snapshot/trust checks above.
 include!("evidence_production_checks.rs");
+include!("evidence_publication_driver.rs");
 
 #[cfg(test)]
 #[path = "evidence_production_tests.rs"]

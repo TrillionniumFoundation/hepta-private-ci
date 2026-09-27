@@ -10,6 +10,7 @@ use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 mod evidence_cli_profile;
+mod evidence_publication_cli;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum EvidenceModeArg {
@@ -23,6 +24,12 @@ fn main() -> anyhow::Result<()> {
     codex_utils_home_dir::set_process_codex_home_override(codex_home)?;
     codex_arg0::arg0_dispatch_or_else(move |arg0_paths| async move {
         // Helper re-execs must reach arg0 dispatch before daemon-only flags.
+        if matches!(
+            evidence_publication_cli::run_if_requested(config.identity()).await?,
+            evidence_publication_cli::PublicationCliDisposition::Completed
+        ) {
+            return Ok(());
+        }
         let mut args = std::env::args_os().skip(1);
         let mut authbus_trust = None;
         let mut intelligence_authority_file = None;
