@@ -1,0 +1,73 @@
+name: Prepare platform.wire lock source 20260928
+
+on:
+  push:
+    branches: [author/platform-wire-reviewed-source-20260928]
+    paths: ['.github/workflows/platform-wire-lock-source-20260928.yml']
+
+# Ordinary source preparation, not a qualification job. The resulting commit
+# is published to an isolated review ref; it never advances the candidate.
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    env:
+      SOURCE_PARENT: 23c1d896dd399e05ff39a0b62f4b604e57e7a792
+      RESULT_BRANCH: author/platform-wire-lock-result-20260928
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_PARENT }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Apply exactly the reviewed existing-version lock disambiguation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_PARENT"
+          test "$(git hash-object codex-rs/Cargo.lock)" = 18c0450aad08cb52fbb8ebd3dabae590f4bbc7cb
+          python3 - <<'PY'
+          import hashlib, tomllib
+          from pathlib import Path
+          path = Path('codex-rs/Cargo.lock')
+          raw = path.read_bytes()
+          position = raw.index(b'name = "codex-hepta-wire"')
+          start = raw.rfind(b'[[package]]',0,position)
+          end = raw.index(b'[[package]]',position)
+          segment = raw[start:end]
+          assert segment.count(b' "hmac",') == 1 and segment.count(b' "sha2",') == 1
+          segment = segment.replace(b' "hmac",',b' "hmac 0.12.1",').replace(b' "sha2",',b' "sha2 0.10.9",')
+          updated = raw[:start]+segment+raw[end:]
+          assert hashlib.sha256(updated).hexdigest() == '2c8704c45ce4f2f0704e5b685cb71d2f316494fe4a993c6d147191c4ef72600a'
+          before = tomllib.loads(raw.decode())
+          after = tomllib.loads(updated.decode())
+          assert [p for p in before['package'] if p['name'] != 'codex-hepta-wire'] == [p for p in after['package'] if p['name'] != 'codex-hepta-wire']
+          path.write_bytes(updated)
+          PY
+          test "$(git hash-object codex-rs/Cargo.lock)" = 1dc924f2ca5f44adc4358b405e4e4a1405e9d64f
+          git diff --check
+          test "$(git diff --name-only)" = codex-rs/Cargo.lock
+          git diff -- codex-rs/Cargo.lock
+      - name: Publish ordinary source commit only to its isolated review ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Hepta wire source author'
+          git config user.email 'hepta-wire-source@users.noreply.github.com'
+          git add codex-rs/Cargo.lock
+          git commit -m 'fix(wire): disambiguate already-pinned HMAC and SHA-256 lock dependencies'
+          test "$(git rev-parse HEAD^)" = "$SOURCE_PARENT"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          git push origin "HEAD:refs/heads/$RESULT_BRANCH"
+          mkdir -p "$RUNNER_TEMP/wire-lock-source"
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/wire-lock-source/git-identity.txt"
+          git diff HEAD^ HEAD > "$RUNNER_TEMP/wire-lock-source/source.patch"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-wire-lock-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/wire-lock-source/
+          retention-days: 30
+          if-no-files-found: error
