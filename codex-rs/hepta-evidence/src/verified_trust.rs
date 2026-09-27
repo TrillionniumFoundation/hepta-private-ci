@@ -81,6 +81,14 @@ impl TrustPin {
         }
         Ok(())
     }
+
+    fn registry_generation_for_admission(&self) -> Option<u64> {
+        self.monotonic.then_some(self.registry_generation)
+    }
+
+    fn registry_sha256_for_admission(&self) -> Option<&Sha256Digest> {
+        self.monotonic.then_some(&self.registry_sha256)
+    }
 }
 
 /// Fields are private and there is no Deserialize or raw-binding constructor.
@@ -308,6 +316,10 @@ pub trait EvidenceIssuerView: sealed::Sealed {
         store: &HeptaEvidenceStore,
         role: EvidenceIssuerRoleV1,
     ) -> Result<(), EvidenceError>;
+    #[doc(hidden)]
+    fn trust_registry_generation(&self) -> Option<u64>;
+    #[doc(hidden)]
+    fn trust_registry_sha256(&self) -> Option<&Sha256Digest>;
 }
 
 impl sealed::Sealed for VerifiedEvidenceTrustSnapshot {}
@@ -338,6 +350,14 @@ impl EvidenceIssuerView for VerifiedEvidenceIssuer {
             ));
         }
         self.pin.validate(store)
+    }
+
+    fn trust_registry_generation(&self) -> Option<u64> {
+        self.pin.registry_generation_for_admission()
+    }
+
+    fn trust_registry_sha256(&self) -> Option<&Sha256Digest> {
+        self.pin.registry_sha256_for_admission()
     }
 }
 
@@ -482,6 +502,14 @@ impl EvidenceIssuerView for IssuerRegistration {
         _role: EvidenceIssuerRoleV1,
     ) -> Result<(), EvidenceError> {
         Ok(())
+    }
+
+    fn trust_registry_generation(&self) -> Option<u64> {
+        None
+    }
+
+    fn trust_registry_sha256(&self) -> Option<&Sha256Digest> {
+        None
     }
 }
 
