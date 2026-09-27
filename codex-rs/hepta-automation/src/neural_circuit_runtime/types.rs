@@ -63,6 +63,29 @@ impl CircuitEventIngressV1 {
             event_digest,
         })
     }
+
+    pub fn validate(&self) -> Result<(), NeuralCircuitRuntimeError> {
+        validate_text(&self.event_id, "event_id", MAX_EVENT_ID_BYTES)?;
+        validate_digest(&self.payload_digest, "payload_digest")?;
+        if let Some(parent) = self.causal_parent_digest.as_ref() {
+            validate_digest(parent, "causal_parent_digest")?;
+        }
+        validate_digest(&self.event_digest, "event_digest")?;
+        let expected = digest_value(
+            b"hepta.neural-circuit.event-ingress.v1\0",
+            &(
+                &self.event_id,
+                &self.payload_digest,
+                &self.causal_parent_digest,
+            ),
+        )?;
+        if self.event_digest != expected {
+            return Err(NeuralCircuitRuntimeError::Invalid(
+                "event_digest does not match the canonical event ingress".to_string(),
+            ));
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
