@@ -1,4 +1,4 @@
-name: Apply knowledge.graph convergence on ROG
+name: Apply knowledge.graph convergence on managed Linux runner
 
 on:
   pull_request:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: hepta-kg-convergence-rog-${{ github.event.pull_request.number }}
+  group: hepta-kg-convergence-managed-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 env:
@@ -24,7 +24,7 @@ jobs:
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.actor != 'github-actions[bot]'
-    runs-on: [self-hosted, linux, x64, rog]
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -33,18 +33,22 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Bind exact source and ROG identity
+      - name: Bind exact source and managed runner identity
         shell: bash
         run: |
           set -euo pipefail
-          test "$RUNNER_NAME" = rog
+          case "$RUNNER_NAME" in
+            rog|pocket4) ;;
+            *) printf 'unexpected managed runner: %s\n' "$RUNNER_NAME" >&2; exit 1 ;;
+          esac
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain)"
-          EVIDENCE_DIR="$RUNNER_TEMP/kg-convergence-rog"
+          EVIDENCE_DIR="$RUNNER_TEMP/kg-convergence-managed"
           printf 'EVIDENCE_DIR=%s\n' "$EVIDENCE_DIR" >> "$GITHUB_ENV"
           mkdir -p "$EVIDENCE_DIR"
           git archive --format=tar.gz --output="$EVIDENCE_DIR/input-source.tar.gz" HEAD
           printf '%s\n' "$SOURCE_SHA" > "$EVIDENCE_DIR/input-sha.txt"
+          printf '%s\n' "$RUNNER_NAME" > "$EVIDENCE_DIR/runner-name.txt"
           uname -a | tee "$EVIDENCE_DIR/host.log"
           python3 scripts/test_hepta_kg_convergence_finalize.py -v 2>&1 \
             | tee "$EVIDENCE_DIR/finalizer-tests.log"
@@ -150,6 +154,7 @@ jobs:
           python3 - "$EVIDENCE_DIR" <<'PY'
           import hashlib
           import json
+          import os
           import pathlib
           import subprocess
           import sys
@@ -167,8 +172,8 @@ jobs:
           receipt['sourceSha'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
           receipt['sourceTree'] = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
           receipt['rawLogSha256'] = hashlib.sha256(raw.encode()).hexdigest()
-          receipt['runnerName'] = 'rog'
-          receipt['hostClass'] = 'rog-pre-main-assembly-nonqualifying'
+          receipt['runnerName'] = os.environ['RUNNER_NAME']
+          receipt['hostClass'] = 'managed-linux-pre-main-assembly-nonqualifying'
           (directory / 'kernel-benchmark.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
           PY
 
@@ -176,8 +181,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: knowledge-graph-rog-assembly-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/kg-convergence-rog
+          name: knowledge-graph-managed-assembly-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kg-convergence-managed
           if-no-files-found: error
           retention-days: 90
 
