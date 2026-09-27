@@ -1,5 +1,7 @@
 //! Signed retrieval publications with a bounded, product-composable transport.
 
+#[path = "cognitive_retrieval_bootstrap.rs"]
+mod bootstrap;
 #[path = "cognitive_retrieval_provider_core.rs"]
 mod implementation;
 #[path = "cognitive_retrieval_transport.rs"]
@@ -11,6 +13,17 @@ pub use implementation::MemoryRetrievalFrontierV1;
 pub use implementation::SignedMemoryRetrievalContextV1;
 
 impl LeasedMemoryRetrievalProviderV1 {
+    /// Load an explicitly pinned host descriptor and its current signed
+    /// publication. This composes the ordinary process; it does not mint keys,
+    /// replace the independent frontier owner or grant activation authority.
+    pub fn load_process_bootstrap(
+        path: &std::path::Path,
+        expected_digest: codex_hepta_types::Digest32,
+        identity: &crate::AgentdIdentity,
+    ) -> Result<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>, String> {
+        bootstrap::load(path, expected_digest, identity)
+    }
+
     /// Compose the real loopback client from protected host configuration.
     /// The separately managed frontier service must retain its monotonic state
     /// outside the Agent home's rollback domain. This function does not create
