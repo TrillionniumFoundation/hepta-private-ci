@@ -101,16 +101,62 @@ jobs:
           git diff --check
 
       - name: Compile runtime.codex owners and reverse consumers
+        id: compile
         working-directory: codex-rs
         shell: bash
         run: |
-          set -euo pipefail
+          set +e
           cargo check --locked --all-targets \
             -p codex-hepta-agent-protocol \
             -p codex-hepta-agentd \
             -p codex-hepta-infer-core \
             -p codex-hepta-infer-worker-host \
-            -p codex-hepta-codex-adapter
+            -p codex-hepta-codex-adapter \
+            >"$RUNNER_TEMP/runtime-codex-compile.log" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/runtime-codex-compile.log"
+          exit "$status"
+
+      - name: Publish exact compile failure diagnostic
+        if: failure() && steps.compile.outcome == 'failure'
+        shell: bash
+        env:
+          TARGET_BRANCH: review/runtime-codex-convergence-20260927
+        run: |
+          set -euo pipefail
+          git reset --hard HEAD
+          python3 - "$RUNNER_TEMP/runtime-codex-compile.log" <<'PY'
+          from pathlib import Path
+          import sys
+
+          source = Path(sys.argv[1])
+          lines = source.read_text(encoding="utf-8", errors="replace").splitlines()
+          selected: set[int] = set(range(max(0, len(lines) - 400), len(lines)))
+          for index, line in enumerate(lines):
+              lowered = line.lower()
+              if "error[" in lowered or "error:" in lowered or "could not compile" in lowered:
+                  selected.update(range(max(0, index - 12), min(len(lines), index + 36)))
+          output = [
+              "runtime.codex exact compile diagnostic",
+              "source branch: review/runtime-codex-convergence-20260927",
+              "",
+          ]
+          previous = None
+          for index in sorted(selected):
+              if previous is not None and index > previous + 1:
+                  output.append("... omitted ...")
+              output.append(lines[index])
+              previous = index
+          Path("runtime_codex_compile_failure.txt").write_text(
+              "\n".join(output).rstrip() + "\n", encoding="utf-8"
+          )
+          PY
+          rm -f runtime_codex_patch_failure.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A runtime_codex_compile_failure.txt runtime_codex_patch_failure.txt
+          git commit -m "runtime.codex: retain bootstrap compile failure"
+          git push origin "HEAD:${TARGET_BRANCH}"
 
       - name: Run focused owner and state-machine tests
         working-directory: codex-rs
