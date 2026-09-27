@@ -7,21 +7,21 @@
 use std::sync::Arc;
 
 use codex_hepta_compact_engine::{
-    CompactionPublicationReceiptV2, DurableCompactionOutboxEventV1,
-    MemoryCheckpointCoordinatorV2, VerifiedCompactionPublicationV1,
-    VerifiedCompactionSelectionV2,
+    CompactionPublicationReceiptV2, DurableCompactionOutboxEventV1, MemoryCheckpointCoordinatorV2,
+    VerifiedCompactionPublicationV1, VerifiedCompactionSelectionV2,
 };
 use codex_hepta_types::Digest32;
 use tokio::sync::Mutex;
+use tokio::sync::MutexGuard;
 
 use crate::{AgentdError, AgentdProductionWriterHost};
 
-pub const AGENTD_COMPACTION_SCHEDULER_CALLER_V1: &str =
-    "agentd.runtime.compaction-scheduler.v1";
+pub const AGENTD_COMPACTION_SCHEDULER_CALLER_V1: &str = "agentd.runtime.compaction-scheduler.v1";
 
 #[derive(Clone)]
 pub struct AgentdCompactionCheckpointHostV1 {
     production_writer: Arc<AgentdProductionWriterHost>,
+    owner_id: String,
     coordinator: Arc<Mutex<MemoryCheckpointCoordinatorV2>>,
 }
 
@@ -66,15 +66,33 @@ impl AgentdCompactionCheckpointHostV1 {
             .reconcile_claims(now_unix_seconds)
             .await
             .map_err(compaction_error)?;
+        production_writer
+            .writer()
+            .verify_current_authority()
+            .await?;
         Ok(Self {
             production_writer,
+            owner_id,
             coordinator: Arc::new(Mutex::new(coordinator)),
         })
     }
 
     #[must_use]
     pub fn owner_agent_id(&self) -> &str {
-        self.production_writer.writer().owner_agent_id().as_str()
+        &self.owner_id
+    }
+
+    // Validate after the queue wait, not before it. The returned guard keeps
+    // one host operation serialized while its owner authority is checked.
+    async fn checked_coordinator(
+        &self,
+    ) -> Result<MutexGuard<'_, MemoryCheckpointCoordinatorV2>, AgentdError> {
+        let coordinator = self.coordinator.lock().await;
+        self.production_writer
+            .writer()
+            .verify_current_authority()
+            .await?;
+        Ok(coordinator)
     }
 
     pub async fn renew_owner_lease(
@@ -82,13 +100,8 @@ impl AgentdCompactionCheckpointHostV1 {
         lease_expires_at_unix_seconds: u64,
         now_unix_seconds: u64,
     ) -> Result<(), AgentdError> {
-        self.production_writer
-            .writer()
-            .verify_current_authority()
-            .await?;
-        self.coordinator
-            .lock()
-            .await
+        self.checked_coordinator()
+            .await?
             .renew_lease(lease_expires_at_unix_seconds, now_unix_seconds)
             .await
             .map_err(compaction_error)
@@ -99,13 +112,8 @@ impl AgentdCompactionCheckpointHostV1 {
         manifest_bytes: &[u8],
         now_unix_seconds: u64,
     ) -> Result<Digest32, AgentdError> {
-        self.production_writer
-            .writer()
-            .verify_current_authority()
-            .await?;
-        self.coordinator
-            .lock()
-            .await
+        self.checked_coordinator()
+            .await?
             .install_successor_manifest(manifest_bytes, now_unix_seconds)
             .await
             .map_err(compaction_error)
@@ -118,13 +126,8 @@ impl AgentdCompactionCheckpointHostV1 {
         retain_source_until_unix_seconds: u64,
         now_unix_seconds: u64,
     ) -> Result<CompactionPublicationReceiptV2, AgentdError> {
-        self.production_writer
-            .writer()
-            .verify_current_authority()
-            .await?;
-        self.coordinator
-            .lock()
-            .await
+        self.checked_coordinator()
+            .await?
             .publish_verified_checkpoint(
                 idempotency_key,
                 publication,
@@ -141,16 +144,17 @@ impl AgentdCompactionCheckpointHostV1 {
         purpose_id: &str,
         now_unix_seconds: u64,
     ) -> Result<Option<VerifiedCompactionSelectionV2>, AgentdError> {
+        let coordinator = self.checked_coordinator().await?;
+        let selection = coordinator
+            .recover_current_checkpoint(scope_id, purpose_id, now_unix_seconds)
+            .await
+            .map_err(compaction_error)?;
+        // A historical signature does not outlive current writer authority.
         self.production_writer
             .writer()
             .verify_current_authority()
             .await?;
-        self.coordinator
-            .lock()
-            .await
-            .recover_current_checkpoint(scope_id, purpose_id, now_unix_seconds)
-            .await
-            .map_err(compaction_error)
+        Ok(selection)
     }
 
     pub async fn revoke_checkpoint(
@@ -159,18 +163,9 @@ impl AgentdCompactionCheckpointHostV1 {
         reason_digest: Digest32,
         revoked_at_unix_seconds: u64,
     ) -> Result<Digest32, AgentdError> {
-        self.production_writer
-            .writer()
-            .verify_current_authority()
-            .await?;
-        self.coordinator
-            .lock()
-            .await
-            .revoke_checkpoint(
-                checkpoint_digest,
-                reason_digest,
-                revoked_at_unix_seconds,
-            )
+        self.checked_coordinator()
+            .await?
+            .revoke_checkpoint(checkpoint_digest, reason_digest, revoked_at_unix_seconds)
             .await
             .map_err(compaction_error)
     }
@@ -180,13 +175,8 @@ impl AgentdCompactionCheckpointHostV1 {
         checkpoint_digest: Digest32,
         now_unix_seconds: u64,
     ) -> Result<(), AgentdError> {
-        self.production_writer
-            .writer()
-            .verify_current_authority()
-            .await?;
-        self.coordinator
-            .lock()
-            .await
+        self.checked_coordinator()
+            .await?
             .release_source_retention(checkpoint_digest, now_unix_seconds)
             .await
             .map_err(compaction_error)
@@ -197,13 +187,8 @@ impl AgentdCompactionCheckpointHostV1 {
         now_unix_seconds: u64,
         claim_token: &str,
     ) -> Result<Option<DurableCompactionOutboxEventV1>, AgentdError> {
-        self.production_writer
-            .writer()
-            .verify_current_authority()
-            .await?;
-        self.coordinator
-            .lock()
-            .await
+        self.checked_coordinator()
+            .await?
             .claim_next_outbox(now_unix_seconds, claim_token)
             .await
             .map_err(compaction_error)
@@ -214,27 +199,15 @@ impl AgentdCompactionCheckpointHostV1 {
         event: &DurableCompactionOutboxEventV1,
         delivered_at_unix_seconds: u64,
     ) -> Result<(), AgentdError> {
-        self.production_writer
-            .writer()
-            .verify_current_authority()
-            .await?;
-        self.coordinator
-            .lock()
-            .await
+        self.checked_coordinator()
+            .await?
             .complete_outbox(event, delivered_at_unix_seconds)
             .await
             .map_err(compaction_error)
     }
 
-    pub async fn reconcile_startup(
-        &self,
-        now_unix_seconds: u64,
-    ) -> Result<u64, AgentdError> {
-        self.production_writer
-            .writer()
-            .verify_current_authority()
-            .await?;
-        let coordinator = self.coordinator.lock().await;
+    pub async fn reconcile_startup(&self, now_unix_seconds: u64) -> Result<u64, AgentdError> {
+        let coordinator = self.checked_coordinator().await?;
         coordinator
             .verify_integrity(now_unix_seconds)
             .await

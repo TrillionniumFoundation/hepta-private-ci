@@ -116,20 +116,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo check --locked -p codex-hepta-compact-engine --all-targets 2>&1 | tee "$RUNNER_TEMP/compact-evidence/check.log"
+          cargo check --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets 2>&1 | tee "$RUNNER_TEMP/compact-evidence/check.log"
       - name: Install repository test runners
         run: cargo install --locked just cargo-nextest
       - name: Run repository test entrypoint
         shell: bash
         run: |
           set -euo pipefail
-          just test --locked -p codex-hepta-compact-engine 2>&1 | tee "$RUNNER_TEMP/compact-evidence/test.log"
+          just test --locked -p codex-hepta-compact-engine -p codex-hepta-agentd 2>&1 | tee "$RUNNER_TEMP/compact-evidence/test.log"
       - name: Strict Clippy
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo clippy --locked -p codex-hepta-compact-engine --all-targets -- -D warnings 2>&1 | tee "$RUNNER_TEMP/compact-evidence/clippy.log"
+          cargo clippy --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets -- -D warnings 2>&1 | tee "$RUNNER_TEMP/compact-evidence/clippy.log"
       - name: Format and source cleanliness
         working-directory: codex-rs
         shell: bash
@@ -137,6 +137,34 @@ jobs:
           set -euo pipefail
           cargo fmt --all -- --check 2>&1 | tee "$RUNNER_TEMP/compact-evidence/format.log"
           git diff --exit-code
+      - name: Retain dependency sources for offline diagnosis (not qualification)
+        if: always() && matrix.mode == 'exact-head'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo_home="${CARGO_HOME:-$HOME/.cargo}"
+          mkdir -p "$RUNNER_TEMP/compact-dependencies"
+          paths=()
+          for path in registry/src registry/cache registry/index git/db git/checkouts; do
+            if [ -d "$cargo_home/$path" ]; then paths+=("$path"); fi
+          done
+          test "${#paths[@]}" -gt 0
+          # Only resolver/source caches: never Cargo credentials, configuration,
+          # the checkout .git directory, environment, signing keys or binaries.
+          tar -czf "$RUNNER_TEMP/compact-dependencies/cargo-cache.tar.gz" \
+            -C "$cargo_home" "${paths[@]}"
+          printf 'source=%s\nmode=%s\nnotQualification=true\n' \
+            "$SOURCE_SHA" "$QUALIFICATION_MODE" \
+            > "$RUNNER_TEMP/compact-dependencies/identity.txt"
+          (cd "$RUNNER_TEMP/compact-dependencies" && sha256sum cargo-cache.tar.gz > SHA256SUMS)
+      - name: Upload dependency diagnostic cache
+        if: always() && matrix.mode == 'exact-head'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: compact-engine-dependencies-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/compact-dependencies/
+          if-no-files-found: warn
+          retention-days: 1
       - name: Retain evidence, including failed runs
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
