@@ -73,6 +73,28 @@ jobs:
     uses: ./.github/workflows/hepta-contract-gate.yml
     secrets: inherit
 
+  runtime-agentd-source:
+    name: runtime.agentd exact source candidate
+    needs: scope
+    if: needs.scope.outputs.lifecycle == 'true' || needs.scope.outputs.inference == 'true'
+    uses: ./.github/workflows/runtime-agentd-required.yml
+    with:
+      lane: source-head
+      candidate_sha: ${{ github.event.pull_request.head.sha || github.sha }}
+      source_sha: ${{ github.event.pull_request.head.sha || github.sha }}
+      base_sha: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+
+  runtime-agentd-merge:
+    name: runtime.agentd exact merge candidate
+    needs: scope
+    if: github.event_name == 'pull_request' && (needs.scope.outputs.lifecycle == 'true' || needs.scope.outputs.inference == 'true')
+    uses: ./.github/workflows/runtime-agentd-required.yml
+    with:
+      lane: base-merge
+      candidate_sha: ${{ github.sha }}
+      source_sha: ${{ github.event.pull_request.head.sha }}
+      base_sha: ${{ github.event.pull_request.base.sha }}
+
   bazel:
     name: Bazel
     needs: scope
@@ -217,6 +239,8 @@ jobs:
     needs:
       - scope
       - hepta-contract-gate
+      - runtime-agentd-source
+      - runtime-agentd-merge
       - bazel
       - blob-size-policy
       - cargo-deny
@@ -237,6 +261,9 @@ jobs:
           NEEDS: ${{ toJSON(needs) }}
           NATIVE: ${{ needs.scope.outputs.native }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
+          LIFECYCLE: ${{ needs.scope.outputs.lifecycle }}
+          INFERENCE: ${{ needs.scope.outputs.inference }}
+          EVENT_NAME: ${{ github.event_name }}
         shell: bash
         run: |
           set -euo pipefail
@@ -246,9 +273,15 @@ jobs:
           import os
           native = os.environ["NATIVE"] == "true"
           full = os.environ["FULL_REPO"] == "true"
+          agentd = os.environ["LIFECYCLE"] == "true" or os.environ["INFERENCE"] == "true"
+          pull_request = os.environ["EVENT_NAME"] == "pull_request"
           allowed = []
           if not (native or full):
               allowed.append("hepta-contract-gate")
+          if not agentd:
+              allowed += ["runtime-agentd-source", "runtime-agentd-merge"]
+          elif not pull_request:
+              allowed.append("runtime-agentd-merge")
           if not full:
               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
           if not (native and not full):
