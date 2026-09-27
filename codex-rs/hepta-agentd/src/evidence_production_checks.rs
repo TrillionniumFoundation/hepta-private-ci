@@ -177,6 +177,7 @@ fn current_executable_sha256() -> Result<Sha256Digest, AgentdError> {
     Ok(Sha256Digest::from_sha256_output(hasher.finalize()))
 }
 
+#[cfg(unix)]
 fn read_external_private_file(path: &Path, root: &Path, identity: &AgentdIdentity, maximum_bytes: u64) -> Result<Vec<u8>, AgentdError> {
     use std::os::unix::fs::MetadataExt;
     use std::os::unix::fs::OpenOptionsExt;
@@ -220,6 +221,18 @@ fn read_external_private_file(path: &Path, root: &Path, identity: &AgentdIdentit
         return Err(recovery_required("production evidence control file or external root changed while reading"));
     }
     Ok(bytes)
+}
+
+#[cfg(not(unix))]
+fn read_external_private_file(
+    _path: &Path,
+    _root: &Path,
+    _identity: &AgentdIdentity,
+    _maximum_bytes: u64,
+) -> Result<Vec<u8>, AgentdError> {
+    Err(recovery_required(
+        "production evidence control-file verification currently requires Unix file identity checks",
+    ))
 }
 
 fn required_string(value: Option<&Value>, label: &str) -> Result<String, AgentdError> {

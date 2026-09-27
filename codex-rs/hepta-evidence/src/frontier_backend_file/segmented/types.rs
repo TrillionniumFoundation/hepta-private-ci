@@ -1,12 +1,12 @@
-//! Crash-safe segmented storage for the external evidence frontier journal.
-//!
-//! The predecessor adapter stores one bounded JSONL file. This successor keeps
-//! that file as the active tail for wire compatibility, but automatically seals
-//! bounded immutable segments and links them through self-authenticating metadata.
-//! A small atomic latest index makes startup and CAS independent of lifetime
-//! history size. The index is a cache/pointer, never a replacement for the
-//! segment/record digest chains; stale indexes are reconstructed from the active
-//! tail and the latest sealed segment.
+// Crash-safe segmented storage for the external evidence frontier journal.
+//
+// The predecessor adapter stores one bounded JSONL file. This successor keeps
+// that file as the active tail for wire compatibility, but automatically seals
+// bounded immutable segments and links them through self-authenticating metadata.
+// A small atomic latest index makes startup and CAS independent of lifetime
+// history size. The index is a cache/pointer, never a replacement for the
+// segment/record digest chains; stale indexes are reconstructed from the active
+// tail and the latest sealed segment.
 
 use std::collections::BTreeSet;
 use std::fs::File;
@@ -195,9 +195,7 @@ impl ChainCursor {
         }
     }
 
-    fn after_pointer(
-        pointer: &EvidenceFrontierSegmentPointerV1,
-    ) -> Result<Self, EvidenceFrontierBackendError> {
+    fn after_pointer(pointer: &EvidenceFrontierSegmentPointerV1) -> Result<Self, EvidenceFrontierBackendError> {
         Ok(Self {
             next_audit_sequence: pointer
                 .last_audit_sequence
@@ -208,10 +206,7 @@ impl ChainCursor {
         })
     }
 
-    fn advance(
-        &mut self,
-        record: &EvidenceFrontierAuditRecordV1,
-    ) -> Result<(), EvidenceFrontierBackendError> {
+    fn advance(&mut self, record: &EvidenceFrontierAuditRecordV1) -> Result<(), EvidenceFrontierBackendError> {
         self.next_audit_sequence = self
             .next_audit_sequence
             .checked_add(1)
@@ -228,6 +223,7 @@ struct StorePaths {
     lock: PathBuf,
     index: PathBuf,
 }
+
 
 struct RecoveredPublication {
     frontier_sha256: Sha256Digest,
@@ -278,9 +274,7 @@ impl SegmentedState {
     }
 
     fn archived_records(&self) -> u64 {
-        self.index
-            .as_ref()
-            .map_or(0, |index| index.archived_records)
+        self.index.as_ref().map_or(0, |index| index.archived_records)
     }
 
     fn archived_bytes(&self) -> u64 {
@@ -303,3 +297,4 @@ impl SegmentedState {
 pub struct SegmentedFileEvidenceFrontierBackend {
     legacy: LegacyLockedFileEvidenceFrontierBackend,
 }
+
