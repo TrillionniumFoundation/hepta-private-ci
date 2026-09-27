@@ -53,6 +53,10 @@ jobs:
         working-directory: codex-rs
         shell: bash
         run: |
+          # GitHub invokes bash with errexit. Disable it here so every focused
+          # command runs and the evidence bundle records all independent
+          # statuses before this step returns the aggregate failure code.
+          set +e
           set -uo pipefail
           mkdir -p "$RUNNER_TEMP/runtime-fleet-evidence"
           status=0
