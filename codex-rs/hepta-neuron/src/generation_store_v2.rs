@@ -30,6 +30,9 @@ use crate::JournalScope;
 use crate::NeuronCommitDispositionV1;
 use crate::NeuronOperationKeyV2;
 
+#[path = "generation_store_v2_capacity.rs"]
+mod capacity;
+
 const MAGIC: &[u8; 8] = b"HPTNGS02";
 const SCHEMA_VERSION: u32 = 2;
 const HEADER_BYTES: usize = 212;
@@ -201,6 +204,7 @@ pub struct FileNeuronGenerationStoreV2 {
     witness_frontier: Option<JournalAnchor>,
     event_frontier: Digest32,
     end_offset: u64,
+    pending_ack_bytes: u64,
     poisoned: bool,
     #[cfg(test)]
     failpoint: Option<GenerationStoreFailpointV2>,
@@ -234,6 +238,7 @@ impl FileNeuronGenerationStoreV2 {
             witness_frontier: None,
             event_frontier: Digest32::ZERO,
             end_offset: HEADER_BYTES as u64,
+            pending_ack_bytes: 0,
             poisoned: false,
             #[cfg(test)]
             failpoint: None,
@@ -325,6 +330,7 @@ impl FileNeuronGenerationStoreV2 {
                 .ok_or(GenerationStoreError::Capacity)?;
         }
         let end_offset = file.metadata()?.len();
+        let pending_ack_bytes = capacity::recover_reserved_ack_bytes(&records)?;
         file.sync_data()
             .map_err(|_| GenerationStoreError::Indeterminate)?;
         Ok(Self {
@@ -336,6 +342,7 @@ impl FileNeuronGenerationStoreV2 {
             witness_frontier,
             event_frontier,
             end_offset,
+            pending_ack_bytes,
             poisoned: false,
             #[cfg(test)]
             failpoint: None,
@@ -379,7 +386,7 @@ impl FileNeuronGenerationStoreV2 {
             estimated_checkpoint_bytes,
             estimated_full_receipt_bytes,
         )?;
-        self.check_file_capacity(estimated_frame)?;
+        self.check_new_operation_capacity(key, estimated_frame)?;
         Ok(NeuronGenerationAdmissionV2::New)
     }
 
@@ -413,7 +420,7 @@ impl FileNeuronGenerationStoreV2 {
         }
         let payload = encode_commit_event(self.event_frontier, &record)?;
         let frame_bytes = framed_bytes(payload.len())?;
-        self.check_file_capacity(frame_bytes)?;
+        let pending_ack_bytes = self.check_new_operation_capacity(&record.key, frame_bytes)?;
         self.append_payload(&payload)?;
 
         let index = self.records.len();
@@ -421,6 +428,7 @@ impl FileNeuronGenerationStoreV2 {
         self.local_frontier = Some(record.next_anchor);
         self.event_frontier = event_digest_from_payload(&payload)?;
         self.records.push(record.clone());
+        self.pending_ack_bytes = pending_ack_bytes;
         Ok(NeuronGenerationCommitResultV2::Committed(record))
     }
 
@@ -453,7 +461,12 @@ impl FileNeuronGenerationStoreV2 {
         }
         let payload =
             encode_witness_ack_event(self.event_frontier, key, anchor, record.operation_digest)?;
-        self.check_file_capacity(framed_bytes(payload.len())?)?;
+        let frame_bytes = framed_bytes(payload.len())?;
+        let pending_ack_bytes = self
+            .pending_ack_bytes
+            .checked_sub(frame_bytes)
+            .ok_or(GenerationStoreError::Corrupt)?;
+        self.check_file_capacity(frame_bytes)?;
         self.append_payload(&payload)?;
         let record = self
             .records
@@ -461,6 +474,7 @@ impl FileNeuronGenerationStoreV2 {
             .ok_or(GenerationStoreError::Corrupt)?;
         record.witness_acknowledged = true;
         self.witness_frontier = Some(anchor);
+        self.pending_ack_bytes = pending_ack_bytes;
         self.event_frontier = event_digest_from_payload(&payload)?;
         Ok(())
     }
@@ -487,20 +501,14 @@ impl FileNeuronGenerationStoreV2 {
         &self,
     ) -> Result<Option<NeuronGenerationRecordV2>, GenerationStoreError> {
         self.ensure_healthy()?;
-        Ok(self
-            .records
-            .iter()
-            .find(|record| !record.witness_acknowledged)
-            .cloned())
+        let pending = self.pending_witness_count()?;
+        let index = self.records.len() - pending;
+        Ok(self.records.get(index).cloned())
     }
 
     pub fn pending_witness_count(&self) -> Result<usize, GenerationStoreError> {
         self.ensure_healthy()?;
-        Ok(self
-            .records
-            .iter()
-            .filter(|record| !record.witness_acknowledged)
-            .count())
+        capacity::pending_count(self.records.len(), self.witness_frontier)
     }
 
     pub fn current_anchor(&self) -> Result<Option<JournalAnchor>, GenerationStoreError> {
@@ -592,7 +600,9 @@ impl FileNeuronGenerationStoreV2 {
             .end_offset
             .checked_add(frame_bytes)
             .ok_or(GenerationStoreError::Capacity)?;
-        if projected > self.context.max_file_bytes {
+        if projected > self.context.max_file_bytes
+            || projected > self.context.max_startup_replay_bytes
+        {
             return Err(GenerationStoreError::Capacity);
         }
         Ok(())
@@ -711,11 +721,10 @@ fn apply_event(
                 || record.body_bundle_digest != context.body_bundle_digest
                 || record.expected_anchor != *local_frontier
                 || records.len() >= context.max_records
-                || records
-                    .iter()
-                    .filter(|value| !value.witness_acknowledged)
-                    .count()
+                || capacity::pending_count(records.len(), *witness_frontier)?
                     >= context.max_pending_witness
+                || record.checkpoint_bytes.len() > context.max_checkpoint_bytes
+                || record.full_receipt_bytes.len() > context.max_full_receipt_bytes
                 || tick_index.contains_key(&record.key.tick_id)
                 || operation_digest(&record)? != record.operation_digest
             {
