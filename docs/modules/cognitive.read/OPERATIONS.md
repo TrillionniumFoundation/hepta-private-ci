@@ -6,9 +6,24 @@ This runbook defines the production-facing, low-cardinality signals emitted by t
 
 ## Signal inventory
 
-The in-process counters track requests, selected records, missing IDs, payload bytes, total wire bytes, budget rejections, final-use revalidation failures, stale-cut rejections, alert emissions, and cumulative latency in microseconds. The counter names are intentionally stable and must not use record IDs, owner IDs, query text, content, receipts, or digests as labels.
+Agentd retains saturating in-process counters for deterministic tests and also exports samples through the repository `codex_otel` global metrics client when telemetry is configured. Export failure never changes read behavior. Metric names and tags are intentionally stable and must not contain record IDs, owner IDs, query text, content, receipts, digests, or other high-cardinality values.
 
-Structured log events provide the export boundary:
+| Metric | Instrument | Meaning |
+|---|---|---|
+| `codex.hepta.cognitive_read.requests` | counter | Bounded cognitive-context read attempts. |
+| `codex.hepta.cognitive_read.selected_items` | counter | Records selected into published contexts. |
+| `codex.hepta.cognitive_read.missing_ids` | counter | Requested exact IDs absent from the owner cut. |
+| `codex.hepta.cognitive_read.payload_bytes` | histogram | Receipt-covered canonical payload bytes. |
+| `codex.hepta.cognitive_read.total_bytes` | histogram | Complete canonical bytes including the trailing receipt digest. |
+| `codex.hepta.cognitive_read.budget_rejections` | counter | Candidate records rejected by the complete context-envelope budget. |
+| `codex.hepta.cognitive_read.revalidation_failures` | counter | Final-use candidate revalidation failures; the only tag is bounded `reason`. |
+| `codex.hepta.cognitive_read.stale_cut_rejections` | counter | Owner cuts that changed before publication. |
+| `codex.hepta.cognitive_read.revalidation_alerts` | counter | Bounded threshold alert emissions; the only tag is bounded `reason`. |
+| `codex.hepta.cognitive_read.latency_us` | histogram | End-to-end Agentd cognitive-context composition latency in microseconds. |
+
+The current bounded `reason` values are static program literals such as `candidate_not_current` and `stale_source_cut`; callers cannot supply tag values.
+
+Structured log events remain the incident and forensic boundary:
 
 - `cognitive_context_revalidation_failure` at warning level for a candidate that is not current at final use;
 - `cognitive_context_stale_cut` at warning level when the source cut changes before publication;
@@ -24,6 +39,8 @@ The threshold deliberately emits again at bounded multiples (3, 6, 9, ...) in on
 ## Alert policy
 
 Route `target=hepta.cognitive_read` and `event=cognitive_context_revalidation_alert` into the production error stream. Open an operator incident when at least one such event occurs in five minutes. Escalate immediately when the same Agentd generation also reports source-owner corruption, an unexpected generation transition, or a product request that bypassed final-use revalidation.
+
+Alert on any positive rate for `codex.hepta.cognitive_read.revalidation_alerts`. Also investigate a sustained increase in `revalidation_failures`, `stale_cut_rejections`, or `budget_rejections`, and compare `latency_us`, `payload_bytes`, and `total_bytes` against the exact-candidate benchmark artifact rather than a historical branch result.
 
 Routine candidate rejection remains fail-closed and does not invalidate the canonical store. Repeated rejection is operationally significant because it can indicate a rapidly changing owner cut, stale retrieval bindings, clock or generation skew, or a caller retaining a result longer than its permitted use boundary.
 
