@@ -1,4 +1,4 @@
-name: Temporary neuron runtime lock and formatting repair
+name: Temporary neuron runtime integration applicator
 
 on:
   push:
@@ -15,9 +15,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  repair:
+  apply:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - name: Checkout exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -25,46 +25,41 @@ jobs:
           ref: codex/neuron-runtime-durable-closure-v1
           fetch-depth: 0
           persist-credentials: true
-      - name: Bind dependency and apply pinned formatting
+      - name: Apply reviewed integration patch
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          path = Path('codex-rs/Cargo.lock')
-          text = path.read_text()
-          package = 'name = "codex-hepta-infer-worker-host"'
-          start = text.index(package)
-          end = text.index('[[package]]', start)
-          block = text[start:end]
-          dependency = ' "codex-hepta-neuron",\n'
-          if dependency not in block:
-              needle = ' "codex-hepta-infer-core",\n'
-              if needle not in block:
-                  raise SystemExit('infer worker lock block is not the expected shape')
-              block = block.replace(needle, needle + dependency, 1)
-              text = text[:start] + block + text[end:]
-              path.write_text(text)
-          PY
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}" || {
+            echo "branch advanced before applicator start" >&2
+            exit 1
+          }
+          git apply --check .github/neuron-agentd-integration.patch
+          git apply .github/neuron-agentd-integration.patch
           cd codex-rs
           cargo fmt \
             --package codex-hepta-infer-core \
             --package codex-hepta-infer-worker-host \
             --package codex-hepta-neuron \
             --package codex-hepta-agentd
+          cargo check --locked \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            -p codex-hepta-neuron \
+            -p codex-hepta-agentd \
+            --all-targets
+          cargo test --locked -p codex-hepta-infer-core
+          cargo test --locked -p codex-hepta-infer-worker-host durable_neuron_feature
+          cargo test --locked -p codex-hepta-agentd neuron_runtime
           cd ..
+          git rm -- .github/neuron-agentd-integration.patch
           git rm -- .github/workflows/neuron-runtime-source-export.yml
           git diff --check
-      - name: Commit exact repair and remove applicator
+      - name: Commit verified integration and remove applicator
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet; then
-            echo 'expected lock/format/applicator changes are absent' >&2
-            exit 1
-          fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add --all
-          git commit -m 'fix(neuron): bind durable provider dependency and format'
+          git commit -m 'neuron.runtime: compose durable inference into agentd'
           git push origin HEAD:codex/neuron-runtime-durable-closure-v1
