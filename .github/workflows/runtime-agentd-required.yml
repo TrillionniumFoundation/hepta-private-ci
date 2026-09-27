@@ -44,7 +44,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
 
@@ -91,7 +91,7 @@ jobs:
           node scripts/architecture/ci-source-ownership.mjs
 
       - name: Retain exact source-closure receipt
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: runtime-agentd-source-closure-${{ inputs.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/runtime-agentd-source-closure.json
@@ -116,7 +116,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
 
@@ -128,7 +128,7 @@ jobs:
           toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
           rustup toolchain install "$toolchain" --profile minimal --component clippy
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           workspaces: codex-rs
           shared-key: runtime-agentd-required-v2
@@ -151,7 +151,7 @@ jobs:
 
       - name: Upload evidence including failures
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: runtime-agentd-required-${{ inputs.lane }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.suite }}
           path: ${{ runner.temp }}/runtime-agentd-required-receipt
@@ -171,12 +171,12 @@ jobs:
           ref: ${{ inputs.candidate_sha }}
           persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
 
       - name: Download all independent suite receipts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: runtime-agentd-required-${{ inputs.lane }}-${{ github.run_id }}-${{ github.run_attempt }}-*
           path: ${{ runner.temp }}/runtime-agentd-required-evidence
@@ -202,7 +202,7 @@ jobs:
 
       - name: Retain exact aggregate result
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: runtime-agentd-required-result-${{ inputs.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/runtime-agentd-required-result.json
