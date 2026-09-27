@@ -3,7 +3,11 @@
 //! Compatibility calculators do not authenticate evidence or authorize effects.
 #![forbid(unsafe_code)]
 
+#[cfg(test)]
+extern crate self as codex_hepta_prompt_optimizer;
+
 pub mod canonical;
+mod canonical_engine;
 pub mod compat;
 
 // Preserve source compatibility during caller migration. New callers must name
