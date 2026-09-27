@@ -5,10 +5,14 @@
 
 #![forbid(unsafe_code)]
 
+pub mod contract;
 pub mod hnmf;
 pub mod hnmf_learning;
 pub mod lane_c;
+pub mod registry;
+pub mod strict;
 pub mod wire;
+pub mod write_receipt;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -249,3 +253,7 @@ mod tests;
 #[cfg(test)]
 #[path = "contract_tests.rs"]
 mod contract_tests;
+
+#[cfg(test)]
+#[path = "hardening_tests.rs"]
+mod hardening_tests;
