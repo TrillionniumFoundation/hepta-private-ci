@@ -413,3 +413,21 @@ fn another_cue_at_the_same_generation_cannot_reuse_an_engram_union() {
         Err(EngramErrorV1::Recall(RecallErrorV1::DigestMismatch("engram_cue")))
     ));
 }
+
+#[test]
+fn controlled_recall_preserves_complete_results_and_never_returns_partial_success() {
+    use std::time::Duration;
+    use std::time::Instant;
+
+    let candidates = vec![candidate(1, FixedQ32::ONE.raw()), candidate(2, FixedQ32::ONE.raw() / 2)];
+    let graph = snapshot(&candidates);
+    let expected = recall_with_engram(&cue(), &policy(), candidates.clone(), &graph, &dynamics()).unwrap();
+    let work = RecallWorkControlV1::bounded(Instant::now() + Duration::from_secs(30), 10000);
+    let actual = recall_with_engram_controlled(&cue(), &policy(), candidates.clone(), &graph, &dynamics(), &work).unwrap();
+    assert_eq!(actual, expected);
+    work.cancel();
+    assert_eq!(
+        recall_with_engram_controlled(&cue(), &policy(), candidates, &graph, &dynamics(), &work),
+        Err(EngramErrorV1::Recall(RecallErrorV1::Interrupted(RecallInterruptionV1::Cancelled))),
+    );
+}

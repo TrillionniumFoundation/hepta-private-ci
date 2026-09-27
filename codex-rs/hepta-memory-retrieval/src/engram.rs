@@ -103,7 +103,7 @@ pub struct EngramNodeV1 {
 
 impl EngramNodeV1 {
     fn validate(&self, generation_vector_digest: Digest32) -> Result<(), EngramErrorV1> {
-        if self.support.is_empty() {
+        if self.support.is_empty() || self.support.len() > MAX_GENERATION_BOUND_CANDIDATES {
             return Err(EngramErrorV1::EmptySupport(self.node_id.to_string()));
         }
         if !strictly_sorted_unique(&self.support) {
@@ -661,6 +661,18 @@ pub fn settle_engram(
     snapshot: &EngramSnapshotV1,
     policy: &EngramDynamicsPolicyV1,
 ) -> Result<EngramRecallReceiptV1, EngramErrorV1> {
+    settle_engram_controlled(cue, union, snapshot, policy, &crate::RecallWorkControlV1::compatibility())
+}
+
+/// Host-bounded counterpart; interruption never publishes partial recall.
+pub fn settle_engram_controlled(
+    cue: &MemoryCueV1,
+    union: &CandidateUnionV1,
+    snapshot: &EngramSnapshotV1,
+    policy: &EngramDynamicsPolicyV1,
+    work: &crate::RecallWorkControlV1,
+) -> Result<EngramRecallReceiptV1, EngramErrorV1> {
+    work.checkpoint().map_err(EngramErrorV1::Recall)?;
     cue.validate().map_err(EngramErrorV1::Recall)?;
     union.validate().map_err(EngramErrorV1::Recall)?;
     snapshot.validate()?;
@@ -715,9 +727,10 @@ pub fn settle_engram(
         return empty_receipt(union, snapshot, policy);
     }
 
-    let expanded = expand_nodes(snapshot, &node_map, &seeds, policy)?;
+    let expanded = expand_nodes(snapshot, &node_map, &seeds, policy, work)?;
     let mut direct = BTreeMap::new();
     for node_id in &expanded {
+        work.checkpoint().map_err(EngramErrorV1::Recall)?;
         let node = node_map
             .get(node_id)
             .copied()
@@ -741,6 +754,7 @@ pub fn settle_engram(
         .collect::<BTreeMap<_, _>>();
     let mut incoming_synapses = BTreeMap::new();
     for synapse in &snapshot.synapses {
+        work.checkpoint().map_err(EngramErrorV1::Recall)?;
         if synapse.weight != FixedQ32::ZERO
             && expanded.contains(&synapse.source_node_id)
             && expanded.contains(&synapse.target_node_id)
@@ -755,9 +769,11 @@ pub fn settle_engram(
     let mut last_paths = Vec::new();
     let mut traversed_synapses = 0_usize;
     for _step in 0..policy.maximum_settling_steps {
+        work.checkpoint().map_err(EngramErrorV1::Recall)?;
         let mut raw = BTreeMap::new();
         let mut paths = Vec::new();
         for node_id in &expanded {
+        work.checkpoint().map_err(EngramErrorV1::Recall)?;
             let node = node_map
                 .get(node_id)
                 .copied()
@@ -951,6 +967,7 @@ pub fn settle_engram(
     };
     receipt.receipt_digest = receipt.compute_receipt_digest();
     receipt.validate()?;
+    work.checkpoint().map_err(EngramErrorV1::Recall)?;
     Ok(receipt)
 }
 
@@ -961,12 +978,25 @@ pub fn recall_with_engram(
     engram_snapshot: &EngramSnapshotV1,
     dynamics_policy: &EngramDynamicsPolicyV1,
 ) -> Result<RecallPacketV1, EngramErrorV1> {
+    recall_with_engram_controlled(cue, retrieval_policy, candidates, engram_snapshot, dynamics_policy, &crate::RecallWorkControlV1::compatibility())
+}
+
+/// Host-bounded counterpart; interruption never publishes partial recall.
+pub fn recall_with_engram_controlled(
+    cue: &MemoryCueV1,
+    retrieval_policy: &RetrievalPolicyV1,
+    candidates: Vec<RetrievalChannelCandidateV1>,
+    engram_snapshot: &EngramSnapshotV1,
+    dynamics_policy: &EngramDynamicsPolicyV1,
+    work: &crate::RecallWorkControlV1,
+) -> Result<RecallPacketV1, EngramErrorV1> {
+    work.checkpoint().map_err(EngramErrorV1::Recall)?;
     cue.validate().map_err(EngramErrorV1::Recall)?;
     retrieval_policy.validate().map_err(EngramErrorV1::Recall)?;
     let union =
         build_candidate_union(cue, retrieval_policy, candidates).map_err(EngramErrorV1::Recall)?;
     let admitted = policy_admitted_union(&union, retrieval_policy).map_err(EngramErrorV1::Recall)?;
-    let mut engram = settle_engram(cue, &admitted, engram_snapshot, dynamics_policy)?;
+    let mut engram = settle_engram_controlled(cue, &admitted, engram_snapshot, dynamics_policy, work)?;
     // Account for every observed union record, including records rejected by
     // admission. Rejected records cannot seed dynamics or contribute risk.
     engram.resources.candidate_records =
@@ -1069,6 +1099,7 @@ pub fn recall_with_engram(
     };
     packet.packet_digest = packet.compute_packet_digest();
     packet.validate().map_err(EngramErrorV1::Recall)?;
+    work.checkpoint().map_err(EngramErrorV1::Recall)?;
     Ok(packet)
 }
 
@@ -1111,6 +1142,7 @@ fn expand_nodes(
     node_map: &BTreeMap<StableId, &EngramNodeV1>,
     seeds: &BTreeSet<StableId>,
     policy: &EngramDynamicsPolicyV1,
+    work: &crate::RecallWorkControlV1,
 ) -> Result<BTreeSet<StableId>, EngramErrorV1> {
     let mut selected = seeds.clone();
     let mut frontier = seeds.clone();
@@ -1121,6 +1153,7 @@ fn expand_nodes(
         }
         let mut next = BTreeSet::new();
         for synapse in &snapshot.synapses {
+            work.checkpoint().map_err(EngramErrorV1::Recall)?;
             if synapse.weight == FixedQ32::ZERO {
                 continue;
             }

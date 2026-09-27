@@ -34,14 +34,42 @@ pub fn execute_owner_observation(
     acquired_at_unix_ms: u64,
     lease_expires_unix_ms: u64,
 ) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
-    let mut execution = core::execute_owner_observation(
-        observation,
-        cut,
-        context,
-        request_digest,
-        acquired_at_unix_ms,
-        lease_expires_unix_ms,
-    )?;
+    execute_owner_observation_inner(observation, cut, context, request_digest,
+        acquired_at_unix_ms, lease_expires_unix_ms, /*work*/ None)
+}
+
+/// Execute against the same owner cut with cancellation and a host deadline.
+pub fn execute_owner_observation_controlled(
+    observation: &RetrievalObservation,
+    cut: &DurableCognitiveSnapshot,
+    context: &RetrievalExecutionContextV1,
+    request_digest: Digest32,
+    acquired_at_unix_ms: u64,
+    lease_expires_unix_ms: u64,
+    work: &codex_hepta_memory_retrieval::RecallWorkControlV1,
+) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
+    execute_owner_observation_inner(observation, cut, context, request_digest,
+        acquired_at_unix_ms, lease_expires_unix_ms, Some(work))
+}
+
+fn execute_owner_observation_inner(
+    observation: &RetrievalObservation,
+    cut: &DurableCognitiveSnapshot,
+    context: &RetrievalExecutionContextV1,
+    request_digest: Digest32,
+    acquired_at_unix_ms: u64,
+    lease_expires_unix_ms: u64,
+    work: Option<&codex_hepta_memory_retrieval::RecallWorkControlV1>,
+) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
+    if let Some(work) = work {
+        work.checkpoint().map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
+    }
+    let mut execution = match work {
+        Some(work) => core::execute_owner_observation_controlled(observation, cut, context,
+            request_digest, acquired_at_unix_ms, lease_expires_unix_ms, work),
+        None => core::execute_owner_observation(observation, cut, context,
+            request_digest, acquired_at_unix_ms, lease_expires_unix_ms),
+    }?;
     // Reconstruct the exact bounded union using the same cue identity. This
     // deliberately favors one verifiable algorithm over an approximate score
     // shortcut. It may be fused with the core after differential qualification.
@@ -105,6 +133,9 @@ pub fn execute_owner_observation(
             &execution.recall,
         )
         .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
+    }
+    if let Some(work) = work {
+        work.checkpoint().map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
     }
     Ok(execution)
 }

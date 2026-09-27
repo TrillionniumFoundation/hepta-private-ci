@@ -21,7 +21,10 @@ use codex_hepta_memory::DurableCognitiveSnapshot;
 use codex_hepta_memory::RetrievalCandidateIdentityV1;
 use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_memory::RevalidationStatus;
-use codex_hepta_memory::execute_owner_observation;
+use codex_hepta_memory::execute_owner_observation_controlled;
+use crate::retrieval_executor::RetrievalExecutor;
+use crate::retrieval_executor::RetrievalRequestWork;
+use crate::retrieval_executor::RetrievalWorkClass;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
@@ -105,6 +108,7 @@ pub(crate) async fn read_with_retrieval_context(
     .await
 }
 
+#[cfg(test)]
 pub(crate) async fn read_with_retrieval_context_and_learning(
     store: &CognitiveStore,
     owner: &AgentId,
@@ -116,6 +120,22 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     request_id: Option<u64>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    read_with_retrieval_executor(store, owner, body_generation, query, limit, ranker,
+        current_retrieval, learning_sink, request_id, &RetrievalExecutor::new()).await
+}
+
+pub(crate) async fn read_with_retrieval_executor(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    body_generation: u64,
+    query: &str,
+    limit: u16,
+    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
+    request_id: Option<u64>,
+    executor: &RetrievalExecutor,
+) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
@@ -126,8 +146,10 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
     let delivers_hnmf = current_retrieval.is_some_and(|current| current.delivers_hnmf(owner));
+    let work_class = if delivers_hnmf { RetrievalWorkClass::Delivery } else { RetrievalWorkClass::Shadow };
+    let request_work = executor.begin(work_class);
     let retrieval_context = match current_retrieval {
-        Some(current) => match load_retrieval_context(current, owner, body_generation).await {
+        Some(current) => match load_retrieval_context(current, owner, body_generation, executor, &request_work).await {
             Ok(context) => Some(context),
             Err(error) if delivers_hnmf => return Err(error),
             Err(_) => None, // An unavailable shadow cannot poison compatibility delivery.
@@ -185,17 +207,24 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
             if lease_expires_unix_ms <= acquired_at_unix_ms {
                 return Err(CognitiveContextError::RetrievalContextUnavailable);
             }
-            let execution = execute_owner_observation(
-                &observation,
-                &cut,
-                context,
-                Digest32::of_bytes(query.as_bytes()),
-                acquired_at_unix_ms,
-                lease_expires_unix_ms,
-            )?;
-            Ok(execution)
+            Ok((acquired_at_unix_ms, lease_expires_unix_ms))
         })(),
         None => Err(CognitiveContextError::RetrievalContextUnavailable),
+    };
+    let execution = match (execution, retrieval_context.as_ref()) {
+        (Ok((acquired_at, expires_at)), Some(context)) => {
+            let observation = observation.clone();
+            let cut = cut.clone();
+            let context = context.context.clone();
+            let query_digest = Digest32::of_bytes(query.as_bytes());
+            executor.run(&request_work, move |work| {
+                execute_owner_observation_controlled(&observation, &cut, &context,
+                    query_digest, acquired_at, expires_at, &work)
+                    .map_err(|error| error.to_string())
+            }).await.map_err(|_| CognitiveContextError::RetrievalContextUnavailable)
+        }
+        (Err(error), _) => Err(error),
+        (Ok(_), None) => Err(CognitiveContextError::RetrievalContextUnavailable),
     };
     match execution {
         Ok(execution) => {
@@ -441,7 +470,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     }
     if let (Some(current), Some(expected)) = (current_retrieval, expected_retrieval_context_digest)
     {
-        let actual = load_retrieval_context(current, owner, body_generation)
+        let actual = load_retrieval_context(current, owner, body_generation, executor, &request_work)
             .await?
             .binding_digest();
         if actual != expected {
@@ -521,7 +550,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         .await?;
     if let (Some(current), Some(expected)) = (current_retrieval, expected_retrieval_context_digest)
     {
-        if load_retrieval_context(current, owner, body_generation)
+        if load_retrieval_context(current, owner, body_generation, executor, &request_work)
             .await?
             .binding_digest()
             != expected
@@ -558,6 +587,7 @@ pub(crate) async fn revalidate(
     .await
 }
 
+#[cfg(test)]
 pub(crate) async fn revalidate_with_retrieval_context(
     store: &CognitiveStore,
     owner: &AgentId,
@@ -570,6 +600,25 @@ pub(crate) async fn revalidate_with_retrieval_context(
     body_generation: u64,
     current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+    revalidate_with_retrieval_executor(store, owner, snapshot_digest, read_digest,
+        omitted_records, items, plan, ranker, body_generation, current_retrieval,
+        &RetrievalExecutor::new()).await
+}
+
+pub(crate) async fn revalidate_with_retrieval_executor(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    snapshot_digest: &str,
+    read_digest: &str,
+    omitted_records: u64,
+    items: &[CognitiveContextItem],
+    plan: Option<&CognitiveContextPlan>,
+    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    body_generation: u64,
+    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    executor: &RetrievalExecutor,
+) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+    let request_work = executor.begin(RetrievalWorkClass::Delivery);
     if items.len() > 4 {
         return Err(CognitiveStoreError::Invalid(
             "context revalidation accepts at most four items".to_string(),
@@ -624,7 +673,7 @@ pub(crate) async fn revalidate_with_retrieval_context(
     let retrieval_context_digest =
         match current_retrieval.filter(|reader| reader.delivers_hnmf(owner)) {
             Some(current) => Some(
-                load_retrieval_context(current, owner, body_generation)
+                load_retrieval_context(current, owner, body_generation, executor, &request_work)
                     .await?
                     .binding_digest(),
             ),
@@ -689,7 +738,7 @@ pub(crate) async fn revalidate_with_retrieval_context(
         .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
         .await?;
     if let (Some(current), Some(expected)) = (current_retrieval, retrieval_context_digest) {
-        if load_retrieval_context(current, owner, body_generation)
+        if load_retrieval_context(current, owner, body_generation, executor, &request_work)
             .await?
             .binding_digest()
             != expected
@@ -770,14 +819,22 @@ async fn load_retrieval_context(
     current: &std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>,
     owner: &AgentId,
     body_generation: u64,
+    executor: &RetrievalExecutor,
+    request_work: &RetrievalRequestWork,
 ) -> Result<AcquiredRetrievalContext, CognitiveContextError> {
     let current = std::sync::Arc::clone(current);
     let owner = owner.clone();
     let (context, lifecycle_binding, lease_expires_unix_ms) =
-        tokio::task::spawn_blocking(move || current.acquire_context(&owner, body_generation))
+        executor.run(request_work, move |_| current.acquire_context(&owner, body_generation))
             .await
-            .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)?
             .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)?;
+    if lifecycle_binding.is_zero() {
+        return Err(CognitiveContextError::RetrievalContextUnavailable);
+    }
+    let mut binding = b"hepta.retrieval.executor-lifecycle.v1".to_vec();
+    binding.extend_from_slice(lifecycle_binding.as_array());
+    binding.extend_from_slice(executor.profile_digest().as_array());
+    let lifecycle_binding = Digest32::of_bytes(&binding);
     context
         .validate()
         .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)?;

@@ -470,13 +470,26 @@ pub fn recall_generated_with_engram(
     engram_snapshot: &EngramSnapshotV1,
     dynamics_policy: &EngramDynamicsPolicyV1,
 ) -> Result<GeneratedRecallV1, GeneratorErrorV1> {
+    recall_generated_with_engram_controlled(cue, policy, input, engram_snapshot, dynamics_policy, &crate::RecallWorkControlV1::compatibility())
+}
+
+/// Host-bounded counterpart; interruption never publishes partial recall.
+pub fn recall_generated_with_engram_controlled(
+    cue: &MemoryCueV1,
+    policy: &RetrievalPolicyV1,
+    input: &GeneratedCandidateInputV1,
+    engram_snapshot: &EngramSnapshotV1,
+    dynamics_policy: &EngramDynamicsPolicyV1,
+    work: &crate::RecallWorkControlV1,
+) -> Result<GeneratedRecallV1, GeneratorErrorV1> {
+    work.checkpoint().map_err(GeneratorErrorV1::Recall)?;
     cue.validate().map_err(GeneratorErrorV1::Recall)?;
     input.validate()?;
     ensure_input_generation(cue, input)?;
     ensure_policy_generators(policy, input)?;
     let candidates = input.flattened_candidates()?;
     let packet =
-        crate::recall_with_engram(cue, policy, candidates, engram_snapshot, dynamics_policy)
+        crate::recall_with_engram_controlled(cue, policy, candidates, engram_snapshot, dynamics_policy, work)
             .map_err(|error| GeneratorErrorV1::Engram(error.to_string()))?;
     let mut value = GeneratedRecallV1 {
         packet,

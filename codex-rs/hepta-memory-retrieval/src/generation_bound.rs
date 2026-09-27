@@ -956,6 +956,7 @@ impl UnionBuilder {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum RecallErrorV1 {
+    Interrupted(crate::RecallInterruptionV1),
     Contract(LaneCContractError),
     CanonicalContract(HnmfContractError),
     CanonicalAdapter(&'static str),
