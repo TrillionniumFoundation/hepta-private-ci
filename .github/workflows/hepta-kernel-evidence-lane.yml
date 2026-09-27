@@ -1,0 +1,278 @@
+name: Kernel evidence candidate lane
+
+on:
+  workflow_call:
+    inputs:
+      source-sha:
+        required: true
+        type: string
+      base-sha:
+        default: ''
+        type: string
+      lane:
+        required: true
+        type: string
+      pr-number:
+        default: ''
+        type: string
+    outputs:
+      qualified:
+        value: ${{ jobs.qualify.outputs.qualified }}
+      commit:
+        value: ${{ jobs.qualify.outputs.commit }}
+      tree:
+        value: ${{ jobs.qualify.outputs.tree }}
+      artifact_digest:
+        value: ${{ jobs.qualify.outputs.artifact_digest }}
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    name: ${{ inputs.lane }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      SOURCE_SHA: ${{ inputs.source-sha }}
+      BASE_SHA: ${{ inputs.base-sha }}
+      HEPTA_CI_LANE: ${{ inputs.lane }}
+      SUFFIX: ${{ inputs.source-sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+    outputs:
+      qualified: ${{ steps.lane_status.outputs.qualified }}
+      commit: ${{ steps.candidate_identity.outputs.commit }}
+      tree: ${{ steps.candidate_identity.outputs.tree }}
+      artifact_digest: ${{ steps.records_upload.outputs.artifact-digest }}
+    steps:
+      - name: Initialize evidence diagnostics
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/kernel-evidence-${HEPTA_CI_LANE}"
+          echo "RECORDS=$RUNNER_TEMP/kernel-evidence-${HEPTA_CI_LANE}" >> "$GITHUB_ENV"
+
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.source-sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Construct deterministic merge candidate
+        id: merge
+        if: inputs.lane == 'base-merge'
+        continue-on-error: true
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ inputs.base-sha }}
+          source-sha: ${{ inputs.source-sha }}
+          pr-number: ${{ inputs.pr-number }}
+          author-name: Hepta kernel evidence CI
+          author-email: hepta-kernel-evidence-ci@users.noreply.github.com
+          message: Synthetic kernel evidence merge
+
+      - name: Record and verify candidate identity
+        id: candidate_identity
+        continue-on-error: true
+        env:
+          MERGE_SHA: ${{ steps.merge.outputs.sha }}
+          MERGE_TREE: ${{ steps.merge.outputs.tree }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          commit="$(git rev-parse HEAD)"
+          tree="$(git rev-parse 'HEAD^{tree}')"
+          if [ "$HEPTA_CI_LANE" = source-head ]; then
+            test "$commit" = "$SOURCE_SHA"
+            kind=exact-source
+          elif [ "$HEPTA_CI_LANE" = base-merge ]; then
+            test -n "$MERGE_SHA"
+            test "$commit" = "$MERGE_SHA"
+            test "$tree" = "$MERGE_TREE"
+            kind=synthetic-merge
+          else
+            exit 1
+          fi
+          parents="$(git rev-list --parents -n 1 HEAD | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read().split()[1:]))')"
+          python3 - "$RECORDS/candidate.json" "$commit" "$tree" "$parents" "$kind" <<'PY'
+          import json, pathlib, sys
+          path, commit, tree, parents, kind = sys.argv[1:]
+          pathlib.Path(path).write_text(json.dumps({
+              "schemaVersion": 1,
+              "kind": "kernel_evidence_exact_source" if kind == "exact-source" else "kernel_evidence_synthetic_merge",
+              "commit": commit, "tree": tree, "parents": json.loads(parents),
+          }, indent=2, sort_keys=True) + "\n")
+          PY
+          echo "commit=$commit" >> "$GITHUB_OUTPUT"
+          echo "tree=$tree" >> "$GITHUB_OUTPUT"
+          echo "parents=$parents" >> "$GITHUB_OUTPUT"
+          echo "kind=$kind" >> "$GITHUB_OUTPUT"
+          echo "TESTED_SHA=$commit" >> "$GITHUB_ENV"
+
+      - name: Set up repository CI environment
+        id: setup_ci
+        continue-on-error: true
+        uses: ./.github/actions/setup-ci
+
+      - name: Set up Rust toolchain
+        id: rust_toolchain
+        continue-on-error: true
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Test evidence crate including outbox and frontier regressions
+        id: evidence_tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          python3 scripts/hepta_ci_exec.py --output "$RECORDS/evidence-tests.json" --minimum-tests 1 -- \
+            bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-evidence' \
+            2>&1 | tee "$RECORDS/evidence-tests.log"
+
+      - name: Test Agentd product evidence path
+        id: agentd_product_test
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          python3 scripts/hepta_ci_exec.py --output "$RECORDS/agentd-product-test.json" --minimum-tests 1 -- \
+            bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-agentd --test kernel_evidence_product' \
+            2>&1 | tee "$RECORDS/agentd-product-test.log"
+
+      - name: Test production fail-closed policy
+        id: production_policy_tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          python3 scripts/hepta_ci_exec.py --output "$RECORDS/production-policy-tests.json" --minimum-tests 1 -- \
+            bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-agentd --test kernel_evidence_production_policy' \
+            2>&1 | tee "$RECORDS/production-policy-tests.log"
+
+      - name: Test canonical status and diagnostic verification
+        id: status_tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          python3 scripts/hepta_ci_exec.py --output "$RECORDS/status-tests.json" --minimum-tests 1 -- \
+            python3 -m unittest discover -s scripts/tests -p 'test_kernel_evidence*.py' -v \
+            2>&1 | tee "$RECORDS/status-tests.log"
+
+      - name: Verify Lane-A truth
+        id: lane_a_truth
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          python3 scripts/hepta_ci_exec.py --output "$RECORDS/lane-a-truth.json" -- \
+            python3 scripts/verify_lane_a_foundation.py verify 2>&1 | tee "$RECORDS/lane-a-truth.log"
+
+      - name: Verify technical documentation
+        id: docs
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          python3 scripts/hepta_ci_exec.py --output "$RECORDS/docs.json" -- \
+            python3 scripts/hepta-docs.py verify 2>&1 | tee "$RECORDS/docs.log"
+
+      - name: Verify implementation maps
+        id: implementation_maps
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          python3 scripts/hepta_ci_exec.py --output "$RECORDS/implementation-maps.json" -- \
+            python3 scripts/hepta-implementation-maps.py verify 2>&1 | tee "$RECORDS/implementation-maps.log"
+
+      - name: Record partial diagnostic outcomes
+        if: always()
+        env:
+          STEP_OUTCOMES: ${{ toJSON(steps) }}
+        shell: bash
+        run: |
+          mkdir -p "$RECORDS"
+          python3 - <<'PY'
+          import json, os, pathlib
+          path = pathlib.Path(os.environ["RECORDS"]) / "step-outcomes.json"
+          path.write_text(json.dumps({"sourceCommit": os.environ["SOURCE_SHA"],
+              "lane": os.environ["HEPTA_CI_LANE"], "runId": os.environ["GITHUB_RUN_ID"],
+              "runAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "steps": json.loads(os.environ["STEP_OUTCOMES"])}, indent=2) + "\n")
+          PY
+
+      - name: Upload immutable command records even on failure
+        id: records_upload
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: kernel-evidence-${{ inputs.lane }}-records-${{ env.SUFFIX }}
+          path: ${{ env.RECORDS }}/*
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Build and verify candidate lane receipt
+        id: lane_status
+        if: always()
+        continue-on-error: true
+        env:
+          COMMIT: ${{ steps.candidate_identity.outputs.commit }}
+          TREE: ${{ steps.candidate_identity.outputs.tree }}
+          PARENTS: ${{ steps.candidate_identity.outputs.parents }}
+          KIND: ${{ steps.candidate_identity.outputs.kind }}
+          ARTIFACT_DIGEST: ${{ steps.records_upload.outputs.artifact-digest }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/kernel_evidence_status.py lane \
+            --candidate-kind "$KIND" --lane "$HEPTA_CI_LANE" \
+            --commit "$COMMIT" --tree "$TREE" --parents-json "$PARENTS" \
+            --source-commit "$SOURCE_SHA" --base-commit "$BASE_SHA" \
+            --workflow-run-id "$GITHUB_RUN_ID" --workflow-run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --workflow-ref "$GITHUB_WORKFLOW_REF" --event-name "$GITHUB_EVENT_NAME" \
+            --artifact-name "kernel-evidence-${HEPTA_CI_LANE}-records-${SUFFIX}" \
+            --artifact-digest "$ARTIFACT_DIGEST" --records-dir "$RECORDS" \
+            --output "$RUNNER_TEMP/${HEPTA_CI_LANE}.json" --github-output "$GITHUB_OUTPUT" \
+            --check candidate_identity=${{ steps.candidate_identity.outcome }} \
+            --check setup_ci=${{ steps.setup_ci.outcome }} \
+            --check rust_toolchain=${{ steps.rust_toolchain.outcome }} \
+            --check evidence_tests=${{ steps.evidence_tests.outcome }} \
+            --check agentd_product_test=${{ steps.agentd_product_test.outcome }} \
+            --check production_policy_tests=${{ steps.production_policy_tests.outcome }} \
+            --check status_tests=${{ steps.status_tests.outcome }} \
+            --check lane_a_truth=${{ steps.lane_a_truth.outcome }} \
+            --check docs=${{ steps.docs.outcome }} \
+            --check implementation_maps=${{ steps.implementation_maps.outcome }}
+
+      - name: Upload lane status even on failure
+        id: status_upload
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: kernel-evidence-${{ inputs.lane }}-status-${{ env.SUFFIX }}
+          path: ${{ runner.temp }}/${{ inputs.lane }}.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Enforce complete lane outcome
+        if: always()
+        env:
+          QUALIFIED: ${{ steps.lane_status.outputs.qualified }}
+          RECORDS_UPLOAD: ${{ steps.records_upload.outcome }}
+          STATUS_UPLOAD: ${{ steps.status_upload.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$QUALIFIED" = true
+          test "$RECORDS_UPLOAD" = success
+          test "$STATUS_UPLOAD" = success
