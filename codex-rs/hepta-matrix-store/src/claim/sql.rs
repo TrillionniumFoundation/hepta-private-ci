@@ -116,16 +116,12 @@ pub(super) async fn authority_witness_tx(
     .map(|row| {
         Ok(MatrixOutboxAuthorityWitness {
             authority_epoch: to_u64(row.try_get("authority_epoch").map_err(unavailable)?)?,
-            revocation_revision: to_u64(
-                row.try_get("revocation_revision").map_err(unavailable)?,
-            )?,
+            revocation_revision: to_u64(row.try_get("revocation_revision").map_err(unavailable)?)?,
             grant_id: row.try_get("grant_id").map_err(unavailable)?,
             verified_use_witness_sha256: row
                 .try_get("verified_use_witness_sha256")
                 .map_err(unavailable)?,
-            revocation_head_sha256: row
-                .try_get("revocation_head_sha256")
-                .map_err(unavailable)?,
+            revocation_head_sha256: row.try_get("revocation_head_sha256").map_err(unavailable)?,
         })
     })
     .transpose()
@@ -236,7 +232,10 @@ fn event_detail_digest(
             .unwrap_or(""),
     );
     bytes.extend_from_slice(&retry_after_ms.unwrap_or(0).to_be_bytes());
-    push_text(&mut bytes, event_id.map(MatrixEventId::as_str).unwrap_or(""));
+    push_text(
+        &mut bytes,
+        event_id.map(MatrixEventId::as_str).unwrap_or(""),
+    );
     bytes.extend_from_slice(&recorded_at_ms.to_be_bytes());
     Sha256Digest::for_bytes(&bytes)
 }
@@ -258,9 +257,7 @@ pub(super) fn attempt_event_from_row(
     let failure_class = row
         .try_get::<Option<String>, _>("failure_class")
         .map_err(unavailable)?
-        .map(|value| {
-            MatrixAttemptFailureClass::parse(&value).ok_or(MatrixDurableError::Corrupt)
-        })
+        .map(|value| MatrixAttemptFailureClass::parse(&value).ok_or(MatrixDurableError::Corrupt))
         .transpose()?;
     let event_id = row
         .try_get::<Option<String>, _>("event_id")

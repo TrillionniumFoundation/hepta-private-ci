@@ -1295,7 +1295,9 @@ async fn caller_filled_claim_without_entered_kernel_proof_stays_unqualified() ->
         })
         .await?;
     let claimed = store.claim_outbox(11, 100, 1).await?;
-    let claimed = claimed.first().ok_or("missing claimed qualified dispatch")?;
+    let claimed = claimed
+        .first()
+        .ok_or("missing claimed qualified dispatch")?;
     let prepared = store.prepare_outbox_dispatch(claimed, 11).await?;
     store
         .record_dispatch_authority_claim(
@@ -1523,7 +1525,12 @@ async fn outbound_terminal_observation_rolls_back_with_failed_sync_batch() -> Te
     let claimed = claimed.first().ok_or("missing rollback dispatch")?;
     store.prepare_outbox_dispatch(claimed, 11).await?;
     store
-        .record_outbox_transport_accepted(&txn_id, claimed.attempts, &event("$rollback-outbound")?, 12)
+        .record_outbox_transport_accepted(
+            &txn_id,
+            claimed.attempts,
+            &event("$rollback-outbound")?,
+            12,
+        )
         .await?;
     store
         .mark_outbox_retry(&txn_id, claimed.attempts, 12, 20)

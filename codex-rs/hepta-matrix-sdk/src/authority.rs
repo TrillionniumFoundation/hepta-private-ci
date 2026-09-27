@@ -124,9 +124,8 @@ impl MatrixFinalUseRequest {
     }
 }
 
-pub type MatrixGrantFuture<'a> = Pin<
-    Box<dyn Future<Output = Result<SignedFinalUseGrant, MatrixAuthorityError>> + Send + 'a>,
->;
+pub type MatrixGrantFuture<'a> =
+    Pin<Box<dyn Future<Output = Result<SignedFinalUseGrant, MatrixAuthorityError>> + Send + 'a>>;
 
 /// Independently supplied Matrix final-use authority.
 ///
@@ -158,7 +157,10 @@ pub trait MatrixOutboundAuthorizer: Send + Sync {
     where
         Self: Sized,
     {
-        let frontier = self.authority().frontier().map_err(|_| MatrixAuthorityError::Rejected)?;
+        let frontier = self
+            .authority()
+            .frontier()
+            .map_err(|_| MatrixAuthorityError::Rejected)?;
         self.authority()
             .enter_verified_use(token, expected)
             .map_err(|_| MatrixAuthorityError::Rejected)?;
@@ -346,7 +348,9 @@ fn hex_nibble(value: u8) -> Result<u8, MatrixAuthorityError> {
 fn identifier(value: &str, maximum: usize) -> bool {
     !value.is_empty()
         && value.len() <= maximum
-        && value.bytes().all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
 }
 
 fn bounded_text(value: &str, maximum: usize) -> bool {

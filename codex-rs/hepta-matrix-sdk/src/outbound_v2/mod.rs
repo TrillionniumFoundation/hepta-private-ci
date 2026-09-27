@@ -338,12 +338,18 @@ pub async fn dispatch_outbox_once<
                         .map_err(store_error)?;
                     stats.transport_accepted += 1;
                     if observed.state.is_terminal() {
-                        close_observed_terminal(store, claim, &observed, &clock, &mut stats).await?;
+                        close_observed_terminal(store, claim, &observed, &clock, &mut stats)
+                            .await?;
                     } else {
                         let scheduled_at_ms = clock.now_ms()?;
                         let next = reconciliation_attempt_at(config, record, scheduled_at_ms)?;
                         store
-                            .finish_outbox_transport_accepted(claim, &event_id, scheduled_at_ms, next)
+                            .finish_outbox_transport_accepted(
+                                claim,
+                                &event_id,
+                                scheduled_at_ms,
+                                next,
+                            )
                             .await
                             .map_err(store_error)?;
                         count_retry(&mut stats, next);
@@ -382,7 +388,8 @@ pub async fn dispatch_outbox_once<
                     } else if observed.state.is_terminal() {
                         // A concurrent sync terminal fact wins over this
                         // attempt's later rejection; do not invent failure.
-                        close_observed_terminal(store, claim, &observed, &clock, &mut stats).await?;
+                        close_observed_terminal(store, claim, &observed, &clock, &mut stats)
+                            .await?;
                     } else {
                         return Err(OutboxDispatchError::Store);
                     }
@@ -397,7 +404,8 @@ pub async fn dispatch_outbox_once<
                         .await
                         .map_err(store_error)?;
                     if observed.state.is_terminal() {
-                        close_observed_terminal(store, claim, &observed, &clock, &mut stats).await?;
+                        close_observed_terminal(store, claim, &observed, &clock, &mut stats)
+                            .await?;
                     } else {
                         let scheduled_at_ms = clock.now_ms()?;
                         let next = classified_retry_at(config, record, scheduled_at_ms, error)?;
@@ -494,9 +502,15 @@ pub async fn run_outbox_sender<
         if cancel.is_cancelled() {
             return Ok(());
         }
-        let stats =
-            dispatch_outbox_once(store, transport, authorizer, config, cancel, system_time_ms()?)
-                .await?;
+        let stats = dispatch_outbox_once(
+            store,
+            transport,
+            authorizer,
+            config,
+            cancel,
+            system_time_ms()?,
+        )
+        .await?;
         if stats.cancelled {
             return Ok(());
         }

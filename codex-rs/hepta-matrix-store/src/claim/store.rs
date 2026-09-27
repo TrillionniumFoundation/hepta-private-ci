@@ -62,7 +62,8 @@ impl MatrixDurableStore {
             if current != 1 {
                 return Err(MatrixDurableError::Conflict);
             }
-            if let Some(previous) = active_claim_tx(&mut transaction, identity.stable_txn_id).await?
+            if let Some(previous) =
+                active_claim_tx(&mut transaction, identity.stable_txn_id).await?
             {
                 if previous.attempt >= identity.attempt
                     || previous.lease_until_ms > claim.claimed_at_ms
@@ -174,7 +175,8 @@ impl MatrixDurableStore {
             .await
             .map_err(unavailable)?;
         let identity = claim.identity();
-        let active = require_live_active_claim_tx(&mut transaction, &identity, recorded_at_ms).await?;
+        let active =
+            require_live_active_claim_tx(&mut transaction, &identity, recorded_at_ms).await?;
         if active.phase == "dispatching" {
             return Err(MatrixDurableError::Conflict);
         }
@@ -249,7 +251,8 @@ impl MatrixDurableStore {
             .await
             .map_err(unavailable)?;
         let identity = claim.identity();
-        let active = require_live_active_claim_tx(&mut transaction, &identity, recorded_at_ms).await?;
+        let active =
+            require_live_active_claim_tx(&mut transaction, &identity, recorded_at_ms).await?;
         if active.phase == "claimed" {
             return Err(MatrixDurableError::Conflict);
         }
@@ -314,7 +317,8 @@ impl MatrixDurableStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
-        let active = require_live_active_claim_tx(&mut transaction, &identity, recorded_at_ms).await?;
+        let active =
+            require_live_active_claim_tx(&mut transaction, &identity, recorded_at_ms).await?;
         if active.phase != "dispatching" {
             return Err(MatrixDurableError::Conflict);
         }

@@ -27,9 +27,9 @@ impl MatrixDurableStore {
         for digest in [canonical_content_sha256, scope_sha256] {
             if digest.len() != 64
                 || digest.bytes().all(|byte| byte == b'0')
-                || !digest.bytes().all(|byte| {
-                    byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase()
-                })
+                || !digest
+                    .bytes()
+                    .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
             {
                 return Err(MatrixDurableError::Invalid);
             }
@@ -42,16 +42,20 @@ impl MatrixDurableStore {
         // Validate complete DDL, including the sealed historical hold snapshot.
         // This critical-boundary check does not replace full startup integrity.
         for schema in [CONTENT_SCHEMA, LEGACY_SCHEMA] {
-            for statement in schema.split("\n\n").filter(|sql| sql.starts_with("CREATE ")) {
-                let name = statement.split_whitespace().nth(2)
+            for statement in schema
+                .split("\n\n")
+                .filter(|sql| sql.starts_with("CREATE "))
+            {
+                let name = statement
+                    .split_whitespace()
+                    .nth(2)
                     .ok_or(MatrixDurableError::Corrupt)?;
-                let actual: Option<String> = sqlx::query_scalar(
-                    "SELECT sql FROM sqlite_schema WHERE name = ?",
-                )
-                .bind(name)
-                .fetch_optional(&mut *transaction)
-                .await
-                .map_err(unavailable)?;
+                let actual: Option<String> =
+                    sqlx::query_scalar("SELECT sql FROM sqlite_schema WHERE name = ?")
+                        .bind(name)
+                        .fetch_optional(&mut *transaction)
+                        .await
+                        .map_err(unavailable)?;
                 if actual.as_deref().map(normalized_sql) != Some(normalized_sql(statement)) {
                     return Err(MatrixDurableError::Corrupt);
                 }
@@ -92,13 +96,22 @@ impl MatrixDurableStore {
         .await
         .map_err(unavailable)?;
         if let Some(row) = existing {
-            if row.try_get::<i64, _>("canonicalization_version").map_err(unavailable)? != 1
-                || row.try_get::<String, _>("canonical_content_sha256")
-                    .map_err(unavailable)? != canonical_content_sha256
-                || row.try_get::<String, _>("scope_sha256")
-                    .map_err(unavailable)? != scope_sha256
-                || row.try_get::<String, _>("source_payload_sha256")
-                    .map_err(unavailable)? != raw_digest.as_str()
+            if row
+                .try_get::<i64, _>("canonicalization_version")
+                .map_err(unavailable)?
+                != 1
+                || row
+                    .try_get::<String, _>("canonical_content_sha256")
+                    .map_err(unavailable)?
+                    != canonical_content_sha256
+                || row
+                    .try_get::<String, _>("scope_sha256")
+                    .map_err(unavailable)?
+                    != scope_sha256
+                || row
+                    .try_get::<String, _>("source_payload_sha256")
+                    .map_err(unavailable)?
+                    != raw_digest.as_str()
             {
                 return Err(MatrixDurableError::Conflict);
             }
@@ -149,5 +162,10 @@ impl MatrixDurableStore {
 }
 
 fn normalized_sql(value: &str) -> String {
-    value.trim().trim_end_matches(';').split_whitespace().collect::<Vec<_>>().join(" ")
+    value
+        .trim()
+        .trim_end_matches(';')
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
 }
