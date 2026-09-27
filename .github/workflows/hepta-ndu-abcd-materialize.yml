@@ -21,23 +21,21 @@ jobs:
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-      - name: Apply reviewed patch, normalize source, and bind the staged tree
+      - name: Apply, normalize, verify and publish exact source
         id: source
         shell: bash
         env:
           REQUEST_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/ndu-materialized"
           test "$(git rev-parse HEAD)" = "$REQUEST_SHA"
           test "$(git hash-object scripts/ndu-remediation-stage-a.patch)" = 3c4b7cad3b61da153a8d20599b1941254f6ac386
           BASE=$(git rev-parse origin/main)
           git merge-base --is-ancestor "$BASE" HEAD
           git apply --check scripts/ndu-remediation-stage-a.patch
           git apply scripts/ndu-remediation-stage-a.patch
-          rm scripts/ndu-remediation-stage-a.patch
-          rm .github/workflows/hepta-ndu-abcd-materialize.yml
-          rm .github/workflows/hepta-ndu-abcd-source-export.yml
-          rm .github/workflows/hepta-ndu-final-regression-repair.yml
+          rm scripts/ndu-remediation-stage-a.patch .github/workflows/hepta-ndu-abcd-materialize.yml .github/workflows/hepta-ndu-abcd-source-export.yml .github/workflows/hepta-ndu-final-regression-repair.yml
           cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-ndu
           python3 scripts/test_hepta_ndu_source_policy.py
           python3 scripts/test_hepta_ndu_map_integrity.py
@@ -50,7 +48,7 @@ jobs:
           git config user.email qualification@invalid
           git commit -s -m 'fix(ndu): materialize lexical scanner, strict lint, and real EROFS recovery'
           test -z "$(git status --porcelain --untracked-files=all)"
-          python3 scripts/hepta-ndu-implementation-map-closed-world.py --source-commit "$(git rev-parse HEAD)" --source-tree "$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-ndu-implementation-map-closed-world.py --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})" 2>&1 | tee "$RUNNER_TEMP/ndu-materialized/map-verifier.log"
           git push origin "HEAD:$GITHUB_REF_NAME"
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "base=$BASE" >> "$GITHUB_OUTPUT"
