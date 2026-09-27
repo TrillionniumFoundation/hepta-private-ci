@@ -184,7 +184,7 @@ fn validate_selected(
         ));
     }
     if value.receipt.factor_ids.len() > MAX_CANONICAL_SELECTED_FACTORS
-        || value.receipt.total_token_upper_bound as u64 > MAX_CANONICAL_TOKEN_BUDGET
+        || u64::from(value.receipt.total_token_upper_bound) > MAX_CANONICAL_TOKEN_BUDGET
     {
         return Err(VerifiedPromptErrorV2::BoundExceeded("portfolio bounds"));
     }
@@ -201,6 +201,7 @@ fn validate_selected(
         return Err(VerifiedPromptErrorV2::IdentityMismatch(
             "portfolio verification context",
         ));
+    }
     if value
         .selected
         .windows(2)
@@ -232,7 +233,8 @@ fn validate_selected(
             ));
         }
         token_total = token_total
-            .checked_adj;
+            .checked_add(u64::from(selected.realization.token_cost))
+            .ok_or(VerifiedPromptErrorV2::Arithmetic)?;
     }
     if u32::try_from(token_total).map_err(|_| VerifiedPromptErrorV2::Arithmetic)?
         != value.receipt.total_token_upper_bound
@@ -248,4 +250,3 @@ fn validate_selected(
     }
     Ok(())
 }
-
