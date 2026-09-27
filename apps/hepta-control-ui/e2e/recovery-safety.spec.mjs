@@ -82,6 +82,15 @@ test("response held after server admission survives page loss without a replacem
       // held by the server fixture, not by a Playwright route handler.
       await page.close({ runBeforeUnload: false });
     }
+
+    // Release the fixture response only after the original document is gone.
+    // The acknowledgement can no longer reach that document; the replacement
+    // must recover the already-admitted operation from the durable identity.
+    expect((await request.get("/__test__/release-held")).ok()).toBeTruthy();
+    await expect.poll(async () =>
+      (await (await request.get("/__test__/state")).json()).heldResponseCount,
+    ).toBe(0);
+
     const replacement = await context.newPage();
     await load(replacement);
     await expect(replacement.locator("#pending-list")).toContainText("pending");
