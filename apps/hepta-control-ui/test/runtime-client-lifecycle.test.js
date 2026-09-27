@@ -21,6 +21,17 @@ async function waitFor(predicate, label) {
   throw new Error(`timed out waiting for ${label}`);
 }
 
+function operation(overrides = {}) {
+  return {
+    operationId: "operation-session-boundary",
+    action: "request_reconcile",
+    targetId: "runtime.agentd",
+    displayedRevision: 11,
+    reason: "Reconcile the degraded worker.",
+    ...overrides,
+  };
+}
+
 test("concurrent connect calls share one transport attempt and reconnect fails closed", async () => {
   const gate = deferred();
   let connectCount = 0;
@@ -136,6 +147,35 @@ test("asynchronous snapshot verification cannot write through a closed session",
   );
   assert.equal(client.readView().connected, false);
   assert.equal(client.readView().snapshot, null);
+});
+
+test("operation ids cannot be rebound across authenticated sessions", async () => {
+  const transport = createTransport();
+  const client = new RuntimeClient({ transport });
+  await client.connect({ endpoint: "fixture" });
+  await client.refreshView();
+  await client.submitRequest(operation());
+  assert.equal(transport.state.requestCount, 1);
+
+  await client.close();
+  transport.state.session = session({
+    sessionId: "session-2",
+    connectionGeneration: 2,
+  });
+  transport.state.snapshot = snapshot({
+    sessionId: "session-2",
+    connectionGeneration: 2,
+  });
+  await client.connect({ endpoint: "fixture-2" });
+  await client.refreshView();
+
+  await assert.rejects(
+    client.submitRequest(operation()),
+    error =>
+      error instanceof UiControlError &&
+      error.code === UI_CONTROL_ERROR_CODES.OPERATION_CONFLICT,
+  );
+  assert.equal(transport.state.requestCount, 1);
 });
 
 test("concurrent session-provider starts share one connection without self-closing", async () => {
