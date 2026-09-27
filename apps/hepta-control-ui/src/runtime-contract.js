@@ -181,7 +181,10 @@ export function operationMatches(entry, request) {
 
 export function validateAcknowledgement(entry, acknowledgement) {
   assertPlainObject(acknowledgement, "acknowledgement");
-  if (acknowledgement.accepted !== true) {
+  if (acknowledgement.accepted !== true && acknowledgement.accepted !== false) {
+    throw invalid("acknowledgement must explicitly declare acceptance");
+  }
+  if (acknowledgement.accepted === false) {
     const backendCode =
       typeof acknowledgement.errorCode === "string" &&
       SAFE_BACKEND_CODE.test(acknowledgement.errorCode)
