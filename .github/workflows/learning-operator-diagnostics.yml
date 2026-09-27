@@ -3,7 +3,7 @@ name: Learning operator exact-source diagnostics
 on:
   pull_request:
     branches: [main]
-    paths:
+    paths: &learning_operator_paths
       - '.github/workflows/learning-operator-diagnostics.yml'
       - 'scripts/hepta*'
       - 'codex-rs/hepta-*/**'
@@ -11,36 +11,47 @@ on:
       - 'docs/modules/learning.operator/**'
       - 'docs/modules/learning.eval/**'
       - 'qualification/lane-e/**'
+  push:
+    branches: [codex/learning-operator-full-convergence-20260926]
+    paths: *learning_operator_paths
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: learning-operator-diagnostics-${{ github.event.pull_request.number }}
+  group: learning-operator-diagnostics-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  EXPECTED_BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
 
 jobs:
   diagnose:
-    if: github.head_ref == 'codex/learning-operator-full-convergence-20260926' && github.event.pull_request.head.repo.full_name == github.repository
+    if: >-
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.head_ref == 'codex/learning-operator-full-convergence-20260926' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
       - name: Preserve immutable tracked source for reproducible diagnosis
-        env:
-          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           mkdir -p "$RUNNER_TEMP/operator-diagnostics"
           git rev-parse HEAD > "$RUNNER_TEMP/operator-diagnostics/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/operator-diagnostics/source-tree.txt"
           git archive --format=tar.gz HEAD > "$RUNNER_TEMP/operator-diagnostics/source.tar.gz"
-      - name: Execute all source verifiers independently
+      - name: Execute module source verifiers independently
         shell: bash
         run: |
           set -euo pipefail
@@ -49,17 +60,22 @@ jobs:
           import os
           import pathlib
           import subprocess
+
           commands = [
               ['python3', 'scripts/hepta-implementation-dossiers.py', 'verify'],
-              ['python3', 'scripts/hepta-implementation-maps.py', 'verify'],
               ['python3', 'scripts/hepta-lane-e-closure.py', 'self-test'],
               ['python3', 'scripts/hepta-lane-e-closure.py', 'verify'],
+              ['python3', 'scripts/hepta-implementation-maps.py', 'migrate',
+               '--module', 'learning.operator', '--module', 'learning.eval'],
+              ['git', 'diff', '--exit-code', '--',
+               'docs/modules/learning.operator/IMPLEMENTATION_MAP.json',
+               'docs/modules/learning.eval/IMPLEMENTATION_MAP.json'],
               ['git', 'diff', '--exit-code'],
           ]
           root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'operator-diagnostics'
           results = []
           for index, command in enumerate(commands):
-              result = subprocess.run(command, capture_output=True, text=True, timeout=120)
+              result = subprocess.run(command, capture_output=True, text=True, timeout=180)
               (root / f'{index}.stdout.txt').write_text(result.stdout)
               (root / f'{index}.stderr.txt').write_text(result.stderr)
               print('COMMAND:', ' '.join(command), 'EXIT:', result.returncode, flush=True)
@@ -69,26 +85,34 @@ jobs:
           (root / 'results.json').write_text(json.dumps(results, indent=2) + '\n')
           raise SystemExit(int(any(result['exit_code'] != 0 for result in results)))
           PY
-      - name: Produce review-only map refresh diff
+      - name: Preserve focused map refresh diff
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py migrate --module learning.operator --module learning.eval
-          git diff --binary > "$RUNNER_TEMP/operator-diagnostics/map-refresh.patch"
+          python3 scripts/hepta-implementation-maps.py migrate \
+            --module learning.operator --module learning.eval
+          git diff --binary -- \
+            docs/modules/learning.operator/IMPLEMENTATION_MAP.json \
+            docs/modules/learning.eval/IMPLEMENTATION_MAP.json \
+            > "$RUNNER_TEMP/operator-diagnostics/map-refresh.patch"
       - name: Upload diagnostics even when source gates reject
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: learning-operator-diagnostics-${{ github.event.pull_request.head.sha }}
+          name: learning-operator-diagnostics-${{ env.SOURCE_SHA }}
           path: ${{ runner.temp }}/operator-diagnostics/
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 14
 
   rust-diagnose:
-    if: github.head_ref == 'codex/learning-operator-full-convergence-20260926' && github.event.pull_request.head.repo.full_name == github.repository
+    if: >-
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.head_ref == 'codex/learning-operator-full-convergence-20260926' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 100
     env:
       CARGO_BUILD_JOBS: 2
       CARGO_PROFILE_DEV_DEBUG: 0
@@ -96,55 +120,155 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
           components: rustfmt,clippy
-      - name: Compile and exercise exact-source operator independently of navigation gates
+      - name: Record exact source and toolchain
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           mkdir -p "$RUNNER_TEMP/operator-rust"
           git rev-parse HEAD > "$RUNNER_TEMP/operator-rust/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/operator-rust/source-tree.txt"
           rustc --version --verbose > "$RUNNER_TEMP/operator-rust/toolchain.txt"
-          cargo test --locked -p codex-hepta-bellman-operator -p codex-hepta-intelligence-eval 2>&1 | tee "$RUNNER_TEMP/operator-rust/tests.log"
-      - name: Exercise real evaluated Agentd read consumer
+      - name: Check exact-source formatting
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --locked -p codex-hepta-agentd --lib cognitive_ranker::evaluated_tests -- --nocapture 2>&1 | tee "$RUNNER_TEMP/operator-rust/agentd-evaluated.log"
-          grep -Eq 'test result: ok\. [1-9][0-9]* passed; 0 failed' "$RUNNER_TEMP/operator-rust/agentd-evaluated.log"
-      - name: Capture formatting corrections for explicit review only
-        if: always()
+          cargo fmt -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-agentd \
+            -p codex-hepta-learning-ledger -- --check \
+            2>&1 | tee "$RUNNER_TEMP/operator-rust/fmt.log"
+      - name: Strict lint changed learning surfaces
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/operator-rust"
-          cargo fmt -p codex-hepta-bellman-operator -p codex-hepta-intelligence-eval -p codex-hepta-agentd -p codex-hepta-learning-ledger
-          git diff --binary > "$RUNNER_TEMP/operator-rust/format.patch"
-          git diff --exit-code
-      - name: Preserve pinned formatter with its required runtime libraries
-        if: always()
+          cargo clippy --locked --no-deps \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-agentd \
+            -p codex-hepta-learning-ledger \
+            --all-targets -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/operator-rust/clippy.log"
+      - name: Exercise operator and independent evaluation
+        working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          root="$RUNNER_TEMP/operator-rust/formatter"
-          mkdir -p "$root/bin" "$root/lib"
-          cp "$(rustup which rustfmt)" "$root/bin/rustfmt"
-          sysroot="$(rustc --print sysroot)"
-          find "$sysroot/lib" -maxdepth 1 -name '*.so*' -exec cp -L {} "$root/lib/" \;
-          tar -czf "$RUNNER_TEMP/operator-rust/formatter-toolchain.tar.gz" -C "$root" bin lib
-          rm -rf "$root"
-      - name: Upload executable diagnostics (not a qualification receipt)
+          cargo test --locked \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            2>&1 | tee "$RUNNER_TEMP/operator-rust/tests.log"
+      - name: Exercise evaluated Agentd read consumer
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd --lib \
+            cognitive_ranker::evaluated_tests -- --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/operator-rust/agentd-evaluated.log"
+          grep -Eq 'test result: ok\. [1-9][0-9]* passed; 0 failed' \
+            "$RUNNER_TEMP/operator-rust/agentd-evaluated.log"
+      - name: Exercise owner-derived loop, recovery and resource profile
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd \
+            --test terminal_cell_owner -- --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/operator-rust/owner-loop.log"
+          cargo test --locked -p codex-hepta-agentd \
+            --test terminal_cell_owner \
+            durable_owner_history_and_concurrent_training_profile \
+            -- --ignored --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/operator-rust/resource-profile.log"
+          grep -q 'OWNER_HISTORY_PROFILE' "$RUNNER_TEMP/operator-rust/resource-profile.log"
+      - name: Upload executable diagnostics (not an acceptance receipt)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: learning-operator-rust-${{ github.event.pull_request.head.sha }}
+          name: learning-operator-rust-${{ env.SOURCE_SHA }}
           path: ${{ runner.temp }}/operator-rust/
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 14
+
+  merge-candidate:
+    if: >-
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.head_ref == 'codex/learning-operator-full-convergence-20260926' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      CARGO_BUILD_JOBS: 2
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+      - name: Materialize fixed main merge candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git cat-file -e "$EXPECTED_BASE_SHA^{commit}"
+          mkdir -p "$RUNNER_TEMP/operator-merge"
+          printf '%s\n' "$SOURCE_SHA" > "$RUNNER_TEMP/operator-merge/source-sha.txt"
+          printf '%s\n' "$EXPECTED_BASE_SHA" > "$RUNNER_TEMP/operator-merge/base-sha.txt"
+          git config user.name 'learning-operator-ci'
+          git config user.email 'learning-operator-ci@users.noreply.github.com'
+          git checkout -B learning-operator-fixed-merge "$EXPECTED_BASE_SHA"
+          git merge --no-ff --no-commit "$SOURCE_SHA"
+          git write-tree > "$RUNNER_TEMP/operator-merge/merge-tree.txt"
+          git diff --check "$EXPECTED_BASE_SHA" --
+      - name: Verify fixed merge candidate
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-agentd \
+            -p codex-hepta-learning-ledger -- --check \
+            2>&1 | tee "$RUNNER_TEMP/operator-merge/fmt.log"
+          cargo clippy --locked --no-deps \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-agentd \
+            -p codex-hepta-learning-ledger \
+            --all-targets -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/operator-merge/clippy.log"
+          cargo test --locked \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            2>&1 | tee "$RUNNER_TEMP/operator-merge/tests.log"
+          cargo test --locked -p codex-hepta-agentd --lib \
+            cognitive_ranker::evaluated_tests -- --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/operator-merge/agentd-evaluated.log"
+          cargo test --locked -p codex-hepta-agentd \
+            --test terminal_cell_owner -- --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/operator-merge/owner-loop.log"
+      - name: Upload fixed merge diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-operator-merge-${{ env.SOURCE_SHA }}-${{ env.EXPECTED_BASE_SHA }}
+          path: ${{ runner.temp }}/operator-merge/
+          if-no-files-found: error
+          retention-days: 14
