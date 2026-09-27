@@ -179,7 +179,7 @@
       "designOperation": "authenticated_current_registry_view",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "89fbce16465e9d234317104a7df5fc849db36849"
+      "sourceBlob": "79fcf6381533a9857d2779ba6904f285968fcb29"
     },
     {
       "operation": "owner_writer_fence",
@@ -260,7 +260,7 @@
       "designOperation": "owner_service_open",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "89fbce16465e9d234317104a7df5fc849db36849"
+      "sourceBlob": "79fcf6381533a9857d2779ba6904f285968fcb29"
     },
     {
       "operation": "owner_service_publish",
@@ -278,7 +278,7 @@
       "designOperation": "owner_service_publish",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "89fbce16465e9d234317104a7df5fc849db36849"
+      "sourceBlob": "79fcf6381533a9857d2779ba6904f285968fcb29"
     },
     {
       "operation": "recover_current_registry",
@@ -381,7 +381,7 @@
       "designOperation": "owner_service_drain",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "89fbce16465e9d234317104a7df5fc849db36849"
+      "sourceBlob": "79fcf6381533a9857d2779ba6904f285968fcb29"
     },
     {
       "operation": "owner_service_drain_status",
@@ -399,21 +399,57 @@
       "designOperation": "owner_service_drain_status",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "89fbce16465e9d234317104a7df5fc849db36849"
+      "sourceBlob": "79fcf6381533a9857d2779ba6904f285968fcb29"
+    },
+    {
+      "operation": "owner_service_withdrawal_frontier_install",
+      "nativeSymbol": "LearningArtifactOwnerService::install_withdrawal_frontier",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "owner_service::withdrawal_tests::acknowledged_frontier_survives_reopen_and_rejects_old_startup_input",
+        "owner_service::withdrawal_tests::uncertain_frontier_never_reports_drained_or_reopens_old_frontier",
+        "owner_service::durable_withdrawals::tests::sigkill_each_floor_boundary_reopens_only_exact_complete_records"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_service_withdrawal_frontier_install",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "79fcf6381533a9857d2779ba6904f285968fcb29"
+    },
+    {
+      "operation": "owner_service_withdrawal_durability_status",
+      "nativeSymbol": "LearningArtifactOwnerService::withdrawal_frontier_is_durable",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "owner_service::withdrawal_tests::acknowledged_frontier_survives_reopen_and_rejects_old_startup_input",
+        "owner_service::withdrawal_tests::uncertain_frontier_never_reports_drained_or_reopens_old_frontier",
+        "owner_service::durable_withdrawals::tests::sigkill_each_floor_boundary_reopens_only_exact_complete_records"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_service_withdrawal_durability_status",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "79fcf6381533a9857d2779ba6904f285968fcb29"
     }
   ],
-  "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate; one-way service drain is a source candidate with native execution pending",
+  "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate; one-way service drain is a source candidate with native execution pending; R4 local withdrawal high-water persistence and receipt consistency guards are source candidates; Rust execution and product revocation propagation remain pending",
   "repositoryControlledGaps": [
     "Pass final exact-head and actual-base merge native qualification; skipped or historical jobs are not execution evidence.",
     "Complete named authenticated transport, host lifecycle persistence, operational metrics and independently provisioned trust.",
     "Close directory durability/capability-backed paths and qualify target filesystem power-loss behavior.",
-    "Complete native model/concurrency/fuzz/capacity/migration verification and per-requirement test traceability."
+    "Complete native model/concurrency/fuzz/capacity/migration verification and per-requirement test traceability.",
+    "Qualify withdrawal-floor adoption, reject unsafe binary downgrade and propagate current withdrawals into published registries and pinned product reads."
   ],
   "hostIntegrationRequirements": [
     "Persist ArtifactPublicationTransactionSnapshotV1 under the product writer fence before treating a phase as durable.",
     "Authenticate withdrawal actors and registry-head signatures before constructing typed source evidence.",
     "Operate newest-head discovery, parent-directory fsync, retention/orphan reconciliation and trusted root protection.",
-    "Compose independently selected product loading and routing without granting this crate selection or release authority."
+    "Compose independently selected product loading and routing without granting this crate selection or release authority.",
+    "Follow docs/modules/learning.artifacts/REMEDIATION_R4.md for Unix-only withdrawal floors, exact uncertainty reconciliation and independent backup/restart floors."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -491,7 +527,7 @@
   "sourceObjects": [
     {
       "path": ".github/workflows/hepta-learning-artifacts-qualification.yml",
-      "object": "e6893f1e59a04e4ab2a7b662f63e8f63efa2b967"
+      "object": "d07b08a1dedc84ea0cbca9b62960893a84ecfeed"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
@@ -499,7 +535,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "1bc83cb7d5b618b0d2df747cd416847990aac84b"
+      "object": "b1aaed5a37ccfd6dbaade2dbbe3a6e695a1e587b"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
@@ -523,7 +559,19 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/drain_tests.rs",
-      "object": "35bbb35f6902c4d07b8a5d24c32ad7e9be39b7a1"
+      "object": "534492a4e51505c7c55604c21ba3d9806954639c"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner/durable_control.rs",
+      "object": "3c425a84c4dc1df2a135dcf3467af31c3b558c76"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner/durable_inputs.rs",
+      "object": "87859a421ef2399146716b794f1a95c76d517584"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner/durable_withdrawals.rs",
+      "object": "34fa46634412e028f2f4860ddb230a1f918039b6"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/publication_recovery.rs",
@@ -538,12 +586,20 @@
       "object": "576164157846dcf416c701aa534dca412bd489ae"
     },
     {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner/withdrawal_floor_tests.rs",
+      "object": "457f24b9f8e779713a30bf91d01adbec6f492b18"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner/withdrawal_service_tests.rs",
+      "object": "f14ba97c430b1683dda10ad816140b1badb3d41f"
+    },
+    {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "object": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
-      "object": "89fbce16465e9d234317104a7df5fc849db36849"
+      "object": "79fcf6381533a9857d2779ba6904f285968fcb29"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs",
@@ -582,6 +638,10 @@
       "object": "1a3eb75f5b5161f4431b9993985b544d03db6f0a"
     },
     {
+      "path": "docs/modules/learning.artifacts/REMEDIATION_R4.md",
+      "object": "0fac11bc7ecc46aee1aa0a51221dfc158a8de875"
+    },
+    {
       "path": "docs/modules/learning.artifacts/TECHNICAL.md",
       "object": "c693b6e0a78375b78e70d1243661819446c74fb7"
     },
@@ -590,8 +650,24 @@
       "object": "a8be1b53ed0983bfc383ea7fc2904869663500f6"
     },
     {
+      "path": "scripts/hepta_artifact_receipt_guard.py",
+      "object": "5a7a0221c1871acd7ca41d85702087dbb9cc0c3c"
+    },
+    {
+      "path": "scripts/hepta_artifact_source_binding.py",
+      "object": "1e7c25a96a4ef46d90164d0bdd08ac7ee0788541"
+    },
+    {
       "path": "scripts/test_hepta_artifact_qualification.py",
       "object": "1c3c130795019fab9ab62663fc8ac9f1b26d7c1b"
+    },
+    {
+      "path": "scripts/test_hepta_artifact_receipt_guard.py",
+      "object": "7f805fd791b40a2ed2791a70b2127719715bd26f"
+    },
+    {
+      "path": "scripts/test_hepta_artifact_source_binding.py",
+      "object": "33320c7d523493e53cae89b0f84c80d9654706e6"
     }
   ]
 }

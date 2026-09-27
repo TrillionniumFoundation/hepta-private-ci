@@ -30,6 +30,8 @@ use crate::WithdrawalBoundArtifactAdmissionV3;
 mod durable_control;
 #[path = "owner/durable_inputs.rs"]
 mod durable_inputs;
+#[path = "owner/durable_withdrawals.rs"]
+mod durable_withdrawals;
 #[path = "owner/publication_recovery.rs"]
 mod publication_recovery;
 #[path = "owner/request_identity.rs"]
@@ -37,6 +39,7 @@ mod request_identity;
 
 use durable_control::DurableDrain;
 use durable_inputs::verify_durable_inputs;
+use durable_withdrawals::DurableWithdrawalFloor;
 use publication_recovery::rebuild_transaction;
 use publication_recovery::receipt_from_checkpoint;
 use publication_recovery::validate_request_against_checkpoint;
@@ -67,6 +70,8 @@ pub struct LearningArtifactOwnerService {
     host: LearningArtifactOwnerHost,
     root: PathBuf,
     durable_drain: DurableDrain,
+    durable_withdrawals: DurableWithdrawalFloor,
+    withdrawal_persistence_uncertain: bool,
     withdrawal_registry: DatasetWithdrawalRegistry,
     registry: ArtifactRegistry,
     storage_binding: Digest32,
@@ -86,6 +91,10 @@ impl fmt::Debug for LearningArtifactOwnerService {
             .field("withdrawal_head", &self.withdrawal_registry.head_digest())
             .field("storage_binding", &self.storage_binding)
             .field("recovery_required", &self.recovery_required)
+            .field(
+                "withdrawal_persistence_uncertain",
+                &self.withdrawal_persistence_uncertain,
+            )
             .field("draining", &self.draining)
             .field("drain_durable", &self.drain_durable)
             .field(
@@ -149,10 +158,19 @@ impl LearningArtifactOwnerService {
         let recovery_required = recovery
             .first()
             .map(|checkpoint| checkpoint.operation_id.clone());
+        let durable_withdrawals =
+            DurableWithdrawalFloor::new(&root, &registry_id, scope, config.storage_binding);
+        // The writer fence is already held. Stored bytes may only constrain
+        // (never replace) the independently authenticated startup frontier.
+        durable_withdrawals
+            .persist(&config.withdrawal_registry)
+            .map_err(LearningArtifactOwnerServiceError::ControlIo)?;
         Ok(Self {
             host,
             root,
             durable_drain,
+            durable_withdrawals,
+            withdrawal_persistence_uncertain: false,
             withdrawal_registry: config.withdrawal_registry,
             registry,
             storage_binding: config.storage_binding,
@@ -176,6 +194,7 @@ impl LearningArtifactOwnerService {
         &self,
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
+        self.require_durable_withdrawals()?;
         if let Some(operation_id) = &self.recovery_required {
             return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
                 operation_id.clone(),
@@ -230,11 +249,17 @@ impl LearningArtifactOwnerService {
     /// deployment acceptance are separate; this method does not release a lock.
     #[must_use]
     pub fn is_drained(&self) -> bool {
-        self.draining && !self.drain_persistence_uncertain && self.recovery_required.is_none()
+        self.draining
+            && !self.drain_persistence_uncertain
+            && !self.withdrawal_persistence_uncertain
+            && self.recovery_required.is_none()
     }
 
     /// Install an authenticated newer withdrawal frontier. The service accepts
-    /// only an exact monotonic prefix extension in the same scope.
+    /// only an exact monotonic prefix extension in the same scope. The local
+    /// floor is durable before success. A failed write keeps the newer in-memory
+    /// frontier, fences use, and requires exact reconciliation or a newer prefix.
+    /// The caller still authenticates withdrawal actors and external freshness.
     pub fn install_withdrawal_frontier(
         &mut self,
         next: DatasetWithdrawalRegistry,
@@ -250,6 +275,24 @@ impl LearningArtifactOwnerService {
             return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);
         }
         self.withdrawal_registry = next;
+        self.withdrawal_persistence_uncertain = true;
+        self.durable_withdrawals
+            .persist(&self.withdrawal_registry)
+            .map_err(LearningArtifactOwnerServiceError::ControlIo)?;
+        self.withdrawal_persistence_uncertain = false;
+        Ok(())
+    }
+
+    /// Storage acknowledgement only, not actor authentication or runtime use.
+    #[must_use]
+    pub fn withdrawal_frontier_is_durable(&self) -> bool {
+        !self.withdrawal_persistence_uncertain
+    }
+
+    fn require_durable_withdrawals(&self) -> Result<(), LearningArtifactOwnerServiceError> {
+        if self.withdrawal_persistence_uncertain {
+            return Err(LearningArtifactOwnerServiceError::WithdrawalDurabilityUnknown);
+        }
         Ok(())
     }
 
@@ -262,6 +305,7 @@ impl LearningArtifactOwnerService {
         &mut self,
         request: LearningArtifactPublishRequestV1,
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        self.require_durable_withdrawals()?;
         if let Some(blocked) = &self.recovery_required
             && blocked != &request.operation_id
         {
@@ -414,6 +458,7 @@ pub enum LearningArtifactOwnerServiceError {
     ControlIo(std::io::Error),
     InvalidConfiguration,
     WithdrawalFrontierConflict,
+    WithdrawalDurabilityUnknown,
     RecoveryConflict,
     RecoveryRequired(StableId),
     RequestMismatch,
@@ -446,3 +491,7 @@ impl From<ArtifactPublicationError> for LearningArtifactOwnerServiceError {
 #[cfg(test)]
 #[path = "owner_service_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "owner/withdrawal_service_tests.rs"]
+mod withdrawal_tests;

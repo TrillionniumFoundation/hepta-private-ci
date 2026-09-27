@@ -80,7 +80,7 @@ jobs:
           toolchain: 1.95.0
           components: clippy,rustfmt
       - name: Evidence verifier regression tests
-        run: python3 -m unittest discover -s scripts -p test_hepta_artifact_qualification.py -v
+        run: python3 -m unittest discover -s scripts -p 'test_hepta_artifact_*.py' -v
       - name: Execute every native gate and retain each outcome
         if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.runner.outcome == 'success' && steps.rust.outcome == 'success' }}
         env:
@@ -89,6 +89,16 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_artifact_qualification.py \
+            --source "$SOURCE_SHA" --base "$BASE_SHA" --lane "$LANE" \
+            --out "$RUNNER_TEMP/artifact-evidence"
+      - name: Recompute receipt claims from independently bound source
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.runner.outcome == 'success' && steps.rust.outcome == 'success' }}
+        env:
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_artifact_receipt_guard.py \
             --source "$SOURCE_SHA" --base "$BASE_SHA" --lane "$LANE" \
             --out "$RUNNER_TEMP/artifact-evidence"
       - name: Retain failure or success evidence
