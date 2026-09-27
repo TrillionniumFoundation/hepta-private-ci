@@ -3,7 +3,7 @@ name: Automation TaskFlow qualification repair
 on:
   push:
     branches:
-      - work/automation-taskflow-full-closure-2026-09-27
+      - work/automation-taskflow-repair-runner-2026-09-27
     paths:
       - .github/workflows/automation-taskflow-qualification-repair.yml
 
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: automation-taskflow-qualification-repair-${{ github.ref }}
+  group: automation-taskflow-qualification-repair-refs/heads/work/automation-taskflow-full-closure-2026-09-27
   cancel-in-progress: true
 
 jobs:
