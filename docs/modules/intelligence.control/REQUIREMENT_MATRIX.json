@@ -189,7 +189,7 @@
       ],
       "tests": [
         {
-          "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+          "path": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
           "name": "worker_timeout_is_visible_after_late_completion",
           "class": "product"
         },
@@ -245,6 +245,7 @@
     "running_generation_differs_from_spawn_and_is_admitted",
     "forged_generation_or_fence_is_rejected_before_mutation",
     "recovery_uses_current_time_not_persisted_admission_time",
+    "governed_clock_is_injectable",
     "operation_ids_are_kind_separated_and_stable",
     "evidence_payload_rejects_role_substitution",
     "persisted_evidence_binding_rejects_signed_identity_substitution",
