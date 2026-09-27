@@ -1,6 +1,9 @@
+use codex_hepta_contracts::Sha256Digest;
+
 use crate::CircuitEdgeV1;
 use crate::CircuitNodeRoleV1;
 use crate::CircuitNodeV1;
+use crate::NeuralCircuitCandidateV1;
 
 use super::*;
 

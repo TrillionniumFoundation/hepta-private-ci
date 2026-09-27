@@ -113,6 +113,43 @@ jobs:
       - name: Run real commands and retain their individual outcomes
         run: python3 scripts/automation_taskflow_commands.py --output-dir "$RUNNER_TEMP/automation-taskflow-records"
 
+      - name: Produce read-only failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/automation-taskflow-records"
+          mkdir -p "$records"
+          git archive --format=tar.gz --output="$records/exact-taskflow-source.tar.gz" "$TESTED_SHA" -- \
+            .github/workflows/automation-taskflow-focused.yml \
+            codex-rs/Cargo.toml \
+            codex-rs/Cargo.lock \
+            codex-rs/rust-toolchain.toml \
+            codex-rs/hepta-automation \
+            codex-rs/hepta-agentd/src/automation.rs \
+            codex-rs/hepta-agentd/src/automation_effect_host.rs \
+            codex-rs/hepta-agentd/src/automation_recovery.rs \
+            codex-rs/hepta-agentd/src/automation_recovery_review_tests.rs \
+            codex-rs/hepta-agentd/src/state_control.rs \
+            docs/modules/automation.taskflow \
+            scripts/automation_taskflow_commands.py \
+            scripts/automation_taskflow_contract.py
+
+          format_root="$RUNNER_TEMP/automation-taskflow-format-worktree"
+          cleanup() {
+            git worktree remove --force "$format_root" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+          rm -rf "$format_root"
+          git worktree add --detach "$format_root" "$TESTED_SHA"
+          (
+            cd "$format_root/codex-rs"
+            cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
+          )
+          git -C "$format_root" diff --binary > "$records/rustfmt.patch"
+          cleanup
+          trap - EXIT
+
       - name: Verify qualification did not mutate source
         if: always()
         run: |
