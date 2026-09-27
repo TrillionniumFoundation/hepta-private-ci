@@ -1,9 +1,9 @@
 {
-  "schema": "hepta.module-implementation-map.v3",
-  "schemaVersion": 3,
+  "schema": "hepta.module-implementation-map.v4",
+  "schemaVersion": 4,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "tree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "prompt.optimizer",
@@ -18,41 +18,112 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "partially_composed_execution_pending",
+  "productionWriterState": "not_applicable_stateless",
+  "canonicalSurface": {
+    "modulePath": "codex_hepta_prompt_optimizer::canonical",
+    "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+    "authority": "deny_all",
+    "uniqueActivePipeline": true
+  },
   "operations": [
     {
-      "operation": "optimize",
-      "nativeSymbol": "optimize",
-      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/lib.rs",
+      "operation": "enumerate_factors_v1",
+      "nativeSymbol": "canonical::enumerate_factors_v1",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "state": "source_implemented_product_source_composed",
+      "authority": "none",
+      "tests": [
+        "enumeration_selects_lowest_cost_compatible_realization_per_factor"
+      ],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/prompt_runtime.rs::AgentdPromptPipelineOwner::enumerate_candidates"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native"
+    },
+    {
+      "operation": "price_factors_v1",
+      "nativeSymbol": "canonical::price_factors_v1",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "incomplete_candidate_completeness_cannot_be_authenticated_for_pricing"
+      ],
+      "productCallers": [],
       "sourcePathExists": true,
-      "designOperation": "optimize",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "mappingClass": "owner_native"
+    },
+    {
+      "operation": "select_portfolio_v1",
+      "nativeSymbol": "canonical::select_portfolio_v1",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "prerequisite_bundle_can_select_negative_prerequisite_for_positive_bundle",
+        "hard_conflict_cannot_be_outweighed_by_positive_numeric_utility"
+      ],
+      "productCallers": [],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native"
+    },
+    {
+      "operation": "exercise_v1",
+      "nativeSymbol": "canonical::exercise_v1",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "state": "source_implemented_product_source_composed",
+      "authority": "none",
+      "tests": [
+        "revocation_after_selection_rejects_exercise_at_delivery_boundary"
+      ],
+      "productCallers": [
+        "codex-rs/hepta-intelligence/src/prompt_pipeline.rs::compile_exercised_prompt_context_v1",
+        "codex-rs/hepta-intelligence/src/prompt_delivery.rs::compile_prompt_registry_v2",
+        "codex-rs/hepta-agentd/src/prompt_runtime.rs::AgentdPromptPipelineOwner::compile_and_stage"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native"
+    }
+  ],
+  "compatibilitySurface": [
+    {
+      "operation": "optimize",
+      "nativeSymbol": "compat::optimize",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/compat_legacy.rs",
+      "state": "compatibility_only",
+      "tests": [
+        "illegal_and_unadmitted_candidates_are_never_selected"
+      ]
+    },
+    {
+      "operation": "optimize_with_factor_graph",
+      "nativeSymbol": "compat::optimize_with_factor_graph",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
+      "state": "compatibility_only",
+      "tests": [
+        "graph_conflicts_are_hard_constraints_and_receipt_binds_relation_view"
+      ]
     },
     {
       "operation": "calculate_local_shadow",
-      "nativeSymbol": "calculate_local_shadow",
+      "nativeSymbol": "compat::local_shadow::calculate_local_shadow",
       "sourcePath": "codex-rs/hepta-prompt-optimizer/src/local_shadow.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "calculate_local_shadow",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "state": "qualification_shadow_only",
+      "tests": [
+        "legacy_v1_surface_keeps_its_original_selection_limit"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose price_factors_v1 and select_portfolio_v1 through one authenticated Agentd product callsite.",
+    "Seal cross-crate canonical stage values behind verified type-state and revalidate all semantic digests.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the production claim."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent semantic and causal review",
+    "target-host product execution and capacity qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {

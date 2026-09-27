@@ -1,4 +1,4 @@
-//! Generation-bound knowledge.graph consumer for prompt portfolio selection.
+//! Generation-bound knowledge.graph consumer for the compatibility optimizer.
 
 use std::collections::BTreeSet;
 
@@ -11,11 +11,11 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-use crate::Error;
-use crate::OptimizationRequest;
-use crate::PromptPortfolioReceipt;
-use crate::canonical_factor_pair;
-use crate::optimize_with_factor_graph_constraints;
+use super::Error;
+use super::OptimizationRequest;
+use super::PromptPortfolioReceipt;
+use super::canonical_factor_pair;
+use super::optimize_with_factor_graph_constraints;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct GraphBoundPromptPortfolioReceipt {
@@ -177,3 +177,7 @@ pub fn optimize_with_factor_graph(
     result.validate()?;
     Ok(result)
 }
+
+#[cfg(test)]
+#[path = "graph_tests.rs"]
+mod tests;

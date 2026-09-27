@@ -1,108 +1,112 @@
-# prompt.optimizer registered policy pipeline
+# prompt.optimizer canonical policy pipeline
 
-This document describes the native registered-policy surface implemented in `codex-rs/hepta-prompt-optimizer/src/policy.rs`. It is an implementation addendum to `TECHNICAL.md` and the module execution dossier. The module remains read-only and authority-free: a returned receipt or decision is evidence for a caller, not permission to mutate context, dispatch a provider, or activate an intervention.
+This addendum describes the **active** implementation in
+`codex-rs/hepta-prompt-optimizer/src/canonical.rs`. The former unreferenced
+`policy*.rs` implementation has been removed. Historical score-only and
+local-shadow calculators are isolated under
+`codex_hepta_prompt_optimizer::compat`; they are not registered product policy.
 
-## 1. Native operations
+The module remains read-only and authority-free. Every output is a proposal or
+evidence receipt with `AuthorityPosture::DENY_ALL`; provider, tool, mutation,
+promotion and release authority remain outside this crate.
 
-The target operation names are now native Rust entrypoints:
+## 1. Unique active operations
 
-- `enumerate_factors(registry_snapshot, objective, model_profile)` -> `PromptCandidateSetReceiptV1`
-- `price_factors(candidates, causal_estimates, costs)` -> `Vec<PromptPricingReceiptV1>`
-- `select_portfolio(prices, interactions, budget)` -> `PromptPortfolioReceiptV1`
-- `exercise(portfolio, registered_boundary, state)` -> `PromptExerciseDecisionV1`
+The canonical source owns exactly four policy operations:
 
-Each public V1 type carries the semantic fields registered in `docs/contracts/PROTOCOL_SCHEMAS.json`. Rich diagnostics are emitted by the corresponding `*_audited` operation into companion audit types instead of widening the registered public schema.
+1. `enumerate_factors_v1`
+2. `price_factors_v1`
+3. `select_portfolio_v1`
+4. `exercise_v1`
 
-`optimize` and `local_shadow::calculate_local_shadow` remain compatibility/shadow primitives. They must not be presented as the registered policy pipeline or as globally optimal portfolio solvers.
+`docs/modules/prompt.optimizer/IMPLEMENTATION_MAP.json` records these native
+symbols, their source tests and product callsites. The read-only verifier
+`scripts/verify_prompt_optimizer_map.py` compares that map with the Rust module
+tree and rejects reintroduction of orphan `policy*.rs` files.
 
-## 2. Candidate enumeration and completeness
+## 2. Compatibility surface
 
-`enumerate_factors_audited` validates bounded registry/objective/model inputs, rejects duplicate factor or realization identities, filters admission/legal/scope/model incompatibilities, sorts by stable factor identity, and deterministically truncates to 128 retained factors. The audit binds:
+The following APIs are retained only to avoid breaking existing qualification
+fixtures:
 
-- complete eligible-set digest before truncation;
-- eligible, retained, and omitted counts;
-- per-factor enumeration disposition;
-- factor-to-realization binding;
-- registered token upper bound;
-- realization-context and model-profile digests;
-- registry source-evidence digest.
+- `compat::optimize`
+- `compat::optimize_with_factor_graph`
+- `compat::local_shadow::calculate_local_shadow`
 
-This makes truncation explicit rather than silently treating the retained set as complete.
+Temporary crate-root re-exports preserve source compatibility. New code must
+name `compat` explicitly. None of these APIs authenticates registry, graph or
+learning evidence, and none may be presented as the canonical product pipeline.
 
-## 3. Causal pricing
+## 3. Canonical candidate enumeration
 
-Pricing is no longer just `expected_gain + cost` supplied by the caller. For each supported factor the native pricing path computes:
+`enumerate_factors_v1` reads one exact prompt-registry V2 snapshot and model
+tuple, fails closed on an incomplete owner read, chooses one compatible
+realization per factor deterministically, binds canonical ordering and omitted
+count, and emits a deny-all candidate receipt.
 
-`net expected utility = causal incremental recursive utility - token cost - latency cost - context crowding - instruction interference - privacy - instability - future-context option value - resource cost`.
+The production rule is **complete-owner-read first, deterministic caller cap
+second**. A registry projection truncated at its owner boundary is an error; a
+smaller caller-requested cap is recorded in the canonical candidate receipt.
 
-The public `PromptPricingReceiptV1` contains the registered expected utility, downside, token cost, latency cost, interference, and confidence interval. The audit companion binds the full pricing decomposition, causal-support digest, cost-support digest, model profile, and realization context.
+## 4. Evidence-qualified pricing
 
-Missing causal evidence or cost data is unavailable pricing, never a zero-cost benefit. The audited batch preserves an explicit unavailability reason. Model/realization binding drift and token estimates beyond the registered realization bound also make pricing unavailable.
+`price_factors_v1` consumes generator completeness evidence plus evaluator
+pricing evidence. It subtracts downside and all registered prompt costs from
+incremental utility. Missing, stale, scope-mismatched or unauthenticated evidence
+is not converted into zero-cost benefit.
 
-The optimizer validates and digest-binds caller-supplied evidence but does not itself authenticate remote owner signatures. Authentication of `prompt.registry`, `knowledge.graph`, and `learning.ledger` remains an owner-bound composition adapter requirement and is not claimed by this source-only change.
+The canonical type-state hardening work requires every pricing row to bind the
+exact objective, candidate set, registry snapshot, generation vector, model
+tuple, realization identity/binding and pricing policy. Generator and evaluator
+controllers must be independent.
 
-## 4. Portfolio solver and heuristic disclosure
+## 5. Constraint-aware portfolio selection
 
-The registered selector is a bounded deterministic heuristic and says so explicitly through `PromptOptimalityDisclosureV1::HeuristicNoCertificate`. It does not claim a global knapsack or combinatorial optimum.
+`select_portfolio_v1` consumes a complete generation-bound knowledge projection.
+Prerequisites are closed transitively and evaluated as bundles; conflicts are
+non-tradable; numeric complement/substitute terms require authenticated pair
+support. Incomplete projections and unsatisfiable required closures fail closed.
 
-The selector evaluates the transitive prerequisite closure of a root factor as one package. Therefore a prerequisite with negative standalone utility can still be selected when the dependent package has positive marginal utility. Hard conflicts are non-tradable and cannot be outweighed by numeric utility.
+The bounded solver reports the actual method, rounds, termination reason,
+incumbent value, resource use and either a certificate/gap or
+`HeuristicNoCertificate`. Compatibility heuristics do not determine canonical
+capacity or semantics.
 
-Selection is bounded by:
+## 6. Exercise and delivery revalidation
 
-- at most 128 candidate factors;
-- at most 512 explicit interaction edges;
-- at most 512 hard constraints;
-- at most 16 selected factors;
-- token budget at most 1,000,000;
-- at most 128 selection rounds.
+`exercise_v1` revalidates the exact selected realization set against the current
+registry immediately before delivery. The hardened boundary also revalidates the
+knowledge generation, evidence trust digest/epoch and the minimum validity
+window inherited from registry, evidence and graph support.
 
-Stable tie-breaking is: greater package marginal utility, then lower package token cost, then lower root factor identity.
+Stale, revoked, unavailable, incomplete, corrupt, indeterminate and quarantined
+conditions remain distinct audit reasons even though all unsafe conditions fail
+closed.
 
-## 5. Sparse interactions
+## 7. Product composition
 
-The formal policy graph has an explicit missing-edge policy:
+The required named product path is:
 
-- `AssumeZero`: a missing pair is an explicit zero marginal interaction assumption;
-- `RejectMissing`: every unordered pair must be present.
+```text
+prompt.registry owner snapshot
+→ enumerate_factors_v1
+→ price_factors_v1
+→ select_portfolio_v1
+→ exercise_v1
+→ context.compiler
+→ Agentd/Codex physical provider boundary
+→ terminal PromptDeliveryObservationV1
+→ learning.ledger admission
+```
 
-`AssumeZero` is the sparse-graph path and allows the full 128-factor candidate capacity while still capping explicit supported interactions at 512 edges. The older local shadow calculator keeps its historical complete-pair semantics for compatibility and must not be used to infer the capacity of the registered policy path.
+A caller may not hand-construct an intermediate verified stage. Raw wire values
+must be revalidated into private verified type-state at every cross-crate
+boundary.
 
-## 6. Constraint satisfiability
+## 8. Claim boundary
 
-Before selection, the registered policy path validates constraint endpoints, uniqueness, canonical ordering and support references, then performs structural checks for:
-
-- directed `Requires` cycles;
-- a conflict inside any factor's transitive prerequisite closure.
-
-These fail with `RequiresCycle` or `UnsatisfiableConstraintGraph` instead of silently collapsing to an empty selection. Unknown endpoints and non-canonical/duplicate constraints remain hard errors.
-
-## 7. Decision audit
-
-`PromptPortfolioAuditV1` is a companion audit record, not an extension of the registered `PromptPortfolioReceiptV1` wire shape. It records:
-
-- complete eligible-set digest and omitted count;
-- priced and unavailable-pricing counts;
-- pricing-batch, interaction, and hard-constraint digests;
-- model-profile digest;
-- one disposition for every candidate in the selection graph;
-- selection method and explicit absence of an optimality certificate;
-- the requirement for a registered exercise boundary;
-- an audit digest over the above semantics.
-
-Per-candidate dispositions distinguish selected, unavailable pricing, non-positive package utility, token-budget exclusion, selection-limit exclusion, hard conflict, and heuristic exclusion.
-
-## 8. Exercise boundary and drift invalidation
-
-`exercise` only evaluates a portfolio against a `RegisteredPromptBoundaryV1`. It rejects:
-
-- portfolio/candidate-set digest mismatch;
-- state drift;
-- registry drift;
-- model-profile drift;
-- expiry.
-
-The decision compares exercise-now value with wait value and emits `Exercise`, `Wait`, or `NoChange`. The result remains `AuthorityPosture::DENY_ALL`; an owner-bound adapter is still required before any runtime effect.
-
-## 9. Compatibility and remaining gates
-
-This source change closes the native API/contract/pricing/solver/audit gaps without deleting the two existing compatibility paths. It does **not** claim production composition, authenticated remote owner attestations, product execution, independent acceptance, activation, promotion, or release. Those remain separate qualification and delivery gates.
+Source implementation, source composition and tests do not establish deployed
+activation, target-host capacity, causal efficacy, independent acceptance,
+canary, promotion or release. `productionImplementation` remains false until the
+current exact-head and deterministic merge candidate pass required CI and the
+named product callsite has executable end-to-end evidence.
