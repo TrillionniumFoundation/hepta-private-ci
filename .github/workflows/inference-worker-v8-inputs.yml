@@ -19,6 +19,7 @@ jobs:
           persist-credentials: false
       - name: Reuse the repository artifact resolver without changing source
         env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: |
           set -euo pipefail
