@@ -476,6 +476,28 @@ independent acceptance or deployment receipt. See
 `qualification/kernel-evidence/CONVERGENCE_20260927.md` for the execution scope
 and unresolved administrative and operational gates.
 
+## 19. Production CLI and all-event qualification follow-up
+
+The explicit production CLI now rejects descriptors that would be routed to the
+legacy v1 verifier. Its direct-child, absolute and lexical-canonical checks are
+implemented in `codex-rs/hepta-agentd/src/evidence_cli_profile.rs` and exercised
+by the `kernel_evidence_profile` integration target, included in the governed
+Agentd command. This is a structural hand-off guard, not a replacement for the
+runtime's owner, trust, backend, signature, backup and snapshot checks.
+
+Both qualification lanes are now required for PR, push and manual invocation.
+`scripts/kernel_evidence_candidate.py` binds an explicit full base OID or, outside
+PRs, the exact source's first parent. The resulting merge is evidence about that
+recorded base only, not a later moving branch. Runner diagnostics precede
+checkout, and artifact names include the source and run attempt. Production
+receipt admission retains its governed PR-event requirement; this change does
+not authorize push/manual receipts for deployment.
+
+The follow-up executed 20 real-Git Python candidate tests locally and added
+eight Rust profile regressions that still require compiler/CI execution. No
+qualification, external deployment or release gate advances from those local
+results. See `qualification/kernel-evidence/FOLLOWUP_20260927.md`.
+
 <!-- BEGIN GENERATED KERNEL EVIDENCE STATUS -->
 ## Canonical kernel.evidence status
 
@@ -485,9 +507,9 @@ This block is generated from
 override these facts. Workflow receipts may prove the current candidate, but
 cannot self-issue independent acceptance, deployment, canary or release.
 
-- Source anchor commit: `38e54289c0cbe0177769b4ccaaadcdf90d85ac0d`
-- Source anchor tree: `ac7aa53cca04f1b41155a61786c3c7b2926b3cc0`
-- Canonical status SHA-256: `0994022f978542edeac9b03bde334ca00049f3ecc5cfc7e31e5f1c61d0646c06`
+- Source anchor commit: `2d8505b1f5caf8591dfe01ee72a8e587698b9154`
+- Source anchor tree: `c1d328e88255ccf9cb04b3b1ed658a6f952ba526`
+- Canonical status SHA-256: `e13fe0a31f4cc0b2983ea7ef080862fedfc71d24cd0319e6b7bd5c1ac2f914f7`
 - Workflow run ID: `none`
 - Retained artifact digest: `none`
 

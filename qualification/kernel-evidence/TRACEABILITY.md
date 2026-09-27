@@ -27,8 +27,8 @@ repository CI cannot manufacture.
 | Cross-process generation contention has exactly one winner | `tests/frontier_backend_multiprocess.rs` | eight-process contention executable | `evidence-tests.json` | production throughput qualification |
 | Local acceptance history is immutable and rejects generation rollback | `frontier_acceptance.rs`, migration `0013_recovery_frontier_acceptance.sql` | idempotency, conflict, reopen and rollback tests | `evidence-tests.json` | external latest-frontier witness |
 | Production control files are private, canonical and resistant to symlink/parent replacement | Agentd `evidence_production.rs` | wrong owner/mode/path, identity drift and replacement tests | `agentd-product-test.json` | host hardening review |
-| Exact-source receipt contains exactly five required command records and retained log identities | qualification workflow, `build_kernel_evidence_status.py`, Agentd production parser | missing/extra/failed/malformed check and log tests | `kernel-evidence-source-<SHA>` | independent receipt review |
-| Deterministic merge receipt is from the same repository/run/attempt and has base/source parent order | workflow synthetic-merge job, Agentd production parser | run, artifact URL and parent-order rejection tests | `kernel-evidence-merge-<SHA>` | final-candidate acceptance |
+| Exact-source receipt contains exactly five required command records and retained log identities | qualification workflow, `build_kernel_evidence_status.py`, Agentd production parser | missing/extra/failed/malformed check and log tests | `kernel-evidence-source-<SOURCE_SHA>-<ATTEMPT>` | independent receipt review |
+| Deterministic merge receipt is from the same repository/run/attempt and has base/source parent order | workflow synthetic-merge job, Agentd production parser | run, artifact URL and parent-order rejection tests | `kernel-evidence-merge-<SOURCE_SHA>-<ATTEMPT>` | final-candidate acceptance |
 | Qualification status and artifacts upload even when a command fails | `.github/workflows/hepta-kernel-evidence-qualification.yml` | split steps, `if: always()` diagnostics and fail-closed required fan-in | workflow run | repository required-check policy |
 | `Kernel evidence required` reaches the protected `CI required` fan-in | qualification workflow and `.github/workflows/blocking-ci.yml` | workflow graph inspection | check run on exact PR head | repository administrator must configure protection |
 | Disk-full and actual crash boundaries do not manufacture success | `store/runtime.rs`, AuthBus crash fixtures | disk-full, process exit before ack and reopen recovery | `evidence-tests.json` | operational fault drill |
@@ -61,6 +61,28 @@ reviewer accepted the candidate, a canary passed, or release was approved. A
 green workflow may establish exact-source and merge execution only; it cannot
 advance the external gates by inference.
 
+## Production CLI and all-event qualification follow-up
+
+The explicit production CLI now rejects descriptors that would be routed to the
+legacy v1 verifier. Its direct-child, absolute and lexical-canonical checks are
+implemented in `codex-rs/hepta-agentd/src/evidence_cli_profile.rs` and exercised
+by the `kernel_evidence_profile` integration target, included in the governed
+Agentd command. This is a structural hand-off guard, not a replacement for the
+runtime's owner, trust, backend, signature, backup and snapshot checks.
+
+Both qualification lanes are now required for PR, push and manual invocation.
+`scripts/kernel_evidence_candidate.py` binds an explicit full base OID or, outside
+PRs, the exact source's first parent. The resulting merge is evidence about that
+recorded base only, not a later moving branch. Runner diagnostics precede
+checkout, and artifact names include the source and run attempt. Production
+receipt admission retains its governed PR-event requirement; this change does
+not authorize push/manual receipts for deployment.
+
+The follow-up executed 20 real-Git Python candidate tests locally and added
+eight Rust profile regressions that still require compiler/CI execution. No
+qualification, external deployment or release gate advances from those local
+results. See `qualification/kernel-evidence/FOLLOWUP_20260927.md`.
+
 <!-- BEGIN GENERATED KERNEL EVIDENCE STATUS -->
 ## Canonical kernel.evidence status
 
@@ -70,9 +92,9 @@ This block is generated from
 override these facts. Workflow receipts may prove the current candidate, but
 cannot self-issue independent acceptance, deployment, canary or release.
 
-- Source anchor commit: `38e54289c0cbe0177769b4ccaaadcdf90d85ac0d`
-- Source anchor tree: `ac7aa53cca04f1b41155a61786c3c7b2926b3cc0`
-- Canonical status SHA-256: `0994022f978542edeac9b03bde334ca00049f3ecc5cfc7e31e5f1c61d0646c06`
+- Source anchor commit: `2d8505b1f5caf8591dfe01ee72a8e587698b9154`
+- Source anchor tree: `c1d328e88255ccf9cb04b3b1ed658a6f952ba526`
+- Canonical status SHA-256: `e13fe0a31f4cc0b2983ea7ef080862fedfc71d24cd0319e6b7bd5c1ac2f914f7`
 - Workflow run ID: `none`
 - Retained artifact digest: `none`
 
