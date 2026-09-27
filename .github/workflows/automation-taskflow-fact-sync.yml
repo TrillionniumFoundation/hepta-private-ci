@@ -1,0 +1,79 @@
+name: Automation TaskFlow exact fact synchronization
+
+on:
+  push:
+    branches:
+      - work/automation-taskflow-full-closure-2026-09-27
+    paths:
+      - ".github/workflows/automation-taskflow-fact-sync.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: automation-taskflow-fact-sync-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    steps:
+      - name: Check out current work branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: work/automation-taskflow-full-closure-2026-09-27
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.13"
+
+      - name: Synchronize durable source truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/automation_taskflow_fact_sync.py source
+          git diff --check
+          git config user.name "hepta-automation-ci"
+          git config user.email "hepta-automation-ci@users.noreply.github.com"
+          git add \
+            .github/workflows/automation-taskflow-focused.yml \
+            docs/modules/automation.taskflow/TECHNICAL.md \
+            docs/modules/automation.taskflow/MIGRATION_V19_RUNBOOK.md \
+            docs/modules/automation.taskflow/RELEASE_QUALIFICATION.md \
+            docs/modules/automation.taskflow/SCHEMA_CONTRACT.json \
+            qualification/module-execution-dossiers/detail/automation.taskflow.md \
+            scripts/automation_taskflow_contract.py \
+            scripts/test_automation_taskflow_contract.py
+          git commit -m "docs(automation): bind schema-v1 provider identity compatibility"
+
+      - name: Rebind exact implementation map and verify drift contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module automation.taskflow
+          python3 scripts/automation_taskflow_fact_sync.py map
+          python3 scripts/hepta-implementation-maps.py migrate --module automation.taskflow
+          python3 scripts/automation_taskflow_contract.py verify
+          python3 -m unittest -v \
+            scripts/test_automation_taskflow_contract.py \
+            scripts/test_verify_automation_taskflow_acceptance.py
+          git rm \
+            .github/workflows/automation-taskflow-fact-sync.yml \
+            scripts/automation_taskflow_fact_sync.py
+          git diff --check
+          git add docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json
+          git commit -m "docs(automation): rebind exact schema-v19 implementation truth"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Push exact synchronized branch
+        env:
+          TARGET_BRANCH: work/automation-taskflow-full-closure-2026-09-27
+        run: git push origin "HEAD:${TARGET_BRANCH}"
