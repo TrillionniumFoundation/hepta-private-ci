@@ -8,6 +8,7 @@ import os
 import pathlib
 import shutil
 import sys
+import tempfile
 
 import memory_federation_attestation as base
 
@@ -65,6 +66,7 @@ WIRE_LOCK = pathlib.Path("codex-rs/hepta-memory-federation-wire/Cargo.lock")
 METRICS_NAME = "memory-federation-capacity.json"
 ORIGINAL_EMIT = base.emit_payload
 ORIGINAL_VERIFY = base._verify_payload
+ORIGINAL_SELF_TEST = base.self_test
 
 
 def require_state(value):
@@ -234,8 +236,57 @@ def verify(receipt, value):
     return document
 
 
+def _self_test_metrics():
+    return {
+        "schema": "hepta.memory-federation.capacity-probe.v1",
+        "profile": "logical-host-candidate-not-production-slo",
+        "peerCount": 2,
+        "liveReplayEntries": 2,
+        "liveFillNanos": 1,
+        "livePartitionRejections": 2,
+        "liveCleanupRemoved": 2,
+        "liveCleanupNanos": 1,
+        "durableReplayEntries": 2,
+        "durableReplayPartitionRejections": 2,
+        "durableAttemptEntries": 2,
+        "durableAttemptPartitionRejections": 2,
+        "cancellationCount": 2,
+        "cancellationTotalNanos": 2,
+        "cancellationAverageNanos": 1,
+        "snapshotBytes": 1,
+        "snapshotEncodeNanos": 1,
+        "restoreNanos": 1,
+    }
+
+
+def self_test(args):
+    metrics = _self_test_metrics()
+    require_metrics(metrics)
+    tampered = dict(metrics)
+    tampered["cancellationCount"] += 1
+    try:
+        require_metrics(tampered)
+    except base.AttestationError:
+        pass
+    else:
+        raise base.AttestationError("self-test accepted invalid capacity metrics")
+
+    previous_runner_temp = os.environ.get("RUNNER_TEMP")
+    with tempfile.TemporaryDirectory(prefix="memory-federation-capacity-self-test-") as directory:
+        pathlib.Path(directory, METRICS_NAME).write_bytes(base._canonical_bytes(metrics))
+        os.environ["RUNNER_TEMP"] = directory
+        try:
+            return ORIGINAL_SELF_TEST(args)
+        finally:
+            if previous_runner_temp is None:
+                os.environ.pop("RUNNER_TEMP", None)
+            else:
+                os.environ["RUNNER_TEMP"] = previous_runner_temp
+
+
 base.emit_payload = emit
 base._verify_payload = verify
+base.self_test = self_test
 
 if __name__ == "__main__":
     raise SystemExit(base.main())
