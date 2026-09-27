@@ -2,6 +2,126 @@
 
 use super::*;
 
+struct ObservedOwnerWorkV1<T> {
+    handle: tokio::task::JoinHandle<T>,
+    completion: std::sync::Arc<std::sync::atomic::AtomicU8>,
+    metrics: Option<std::sync::Arc<crate::AgentdIntelligenceRuntimeMetricsV1>>,
+}
+
+impl<T> ObservedOwnerWorkV1<T> {
+    fn mark_timed_out(&self) {
+        if self
+            .completion
+            .compare_exchange(
+                0,
+                1,
+                std::sync::atomic::Ordering::AcqRel,
+                std::sync::atomic::Ordering::Acquire,
+            )
+            .is_ok()
+            && let Some(metrics) = self.metrics.as_ref()
+        {
+            metrics.record_cognition_timeout();
+            metrics.record_late_worker_started();
+        }
+    }
+}
+
+struct ObservedOwnerPortsV1 {
+    inner: AgentdOwnerPortsV1,
+    metrics: Option<std::sync::Arc<crate::AgentdIntelligenceRuntimeMetricsV1>>,
+}
+
+impl ObservedOwnerPortsV1 {
+    fn new(
+        inner: AgentdOwnerPortsV1,
+        metrics: Option<std::sync::Arc<crate::AgentdIntelligenceRuntimeMetricsV1>>,
+    ) -> Self {
+        Self { inner, metrics }
+    }
+
+    fn finish(
+        &self,
+        input: &CanonicalPortInputV1,
+        started: Instant,
+        result: Result<CanonicalPortReceiptV1, CanonicalPortFailureV1>,
+    ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
+        if let Some(metrics) = self.metrics.as_ref() {
+            metrics.observe_stage(
+                input.stage,
+                started.elapsed(),
+                result.as_ref().err().map(|failure| failure.class),
+            );
+        }
+        result
+    }
+}
+
+impl CanonicalOwnerPortsV1 for ObservedOwnerPortsV1 {
+    fn validate_objective(
+        &mut self,
+        input: &CanonicalPortInputV1,
+    ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
+        let started = Instant::now();
+        let result = self.inner.validate_objective(input);
+        self.finish(input, started, result)
+    }
+
+    fn evaluate_utility(
+        &mut self,
+        input: &CanonicalPortInputV1,
+    ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
+        let started = Instant::now();
+        let result = self.inner.evaluate_utility(input);
+        self.finish(input, started, result)
+    }
+
+    fn collect_neural_signal(
+        &mut self,
+        input: &CanonicalPortInputV1,
+    ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
+        let started = Instant::now();
+        let result = self.inner.collect_neural_signal(input);
+        self.finish(input, started, result)
+    }
+
+    fn build_prompt_portfolio(
+        &mut self,
+        input: &CanonicalPortInputV1,
+    ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
+        let started = Instant::now();
+        let result = self.inner.build_prompt_portfolio(input);
+        self.finish(input, started, result)
+    }
+
+    fn decide_intuition(
+        &mut self,
+        input: &CanonicalPortInputV1,
+    ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
+        let started = Instant::now();
+        let result = self.inner.decide_intuition(input);
+        self.finish(input, started, result)
+    }
+
+    fn compile_context(
+        &mut self,
+        input: &CanonicalPortInputV1,
+    ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
+        let started = Instant::now();
+        let result = self.inner.compile_context(input);
+        self.finish(input, started, result)
+    }
+
+    fn evaluate_candidate(
+        &mut self,
+        input: &CanonicalPortInputV1,
+    ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
+        let started = Instant::now();
+        let result = self.inner.evaluate_candidate(input);
+        self.finish(input, started, result)
+    }
+}
+
 impl AgentdIntelligenceProductRunnerV1 {
     pub fn new(
         authority_file: PathBuf,
@@ -38,6 +158,16 @@ impl AgentdIntelligenceProductRunnerV1 {
         Ok(self)
     }
 
+    #[must_use]
+    pub const fn worker_capacity(&self) -> usize {
+        MAX_CANONICAL_OWNER_WORKERS
+    }
+
+    #[must_use]
+    pub fn worker_available(&self) -> usize {
+        self.worker_slots.available_permits()
+    }
+
     // The permit belongs to the worker, not the request future. Aborting a
     // running spawn_blocking task cannot stop its computation; releasing its
     // permit on request timeout would allow unbounded abandoned work.
@@ -56,6 +186,48 @@ impl AgentdIntelligenceProductRunnerV1 {
             let _permit = permit;
             work()
         }))
+    }
+
+    fn spawn_observed_owner_work<F, T>(
+        &self,
+        work: F,
+        metrics: Option<std::sync::Arc<crate::AgentdIntelligenceRuntimeMetricsV1>>,
+    ) -> Result<ObservedOwnerWorkV1<T>, AgentdIntelligenceProductError>
+    where
+        F: FnOnce() -> T + Send + 'static,
+        T: Send + 'static,
+    {
+        let permit = match std::sync::Arc::clone(&self.worker_slots).try_acquire_owned() {
+            Ok(permit) => permit,
+            Err(_) => {
+                if let Some(metrics) = metrics.as_ref() {
+                    metrics.record_worker_busy();
+                }
+                return Err(AgentdIntelligenceProductError::Busy);
+            }
+        };
+        let completion = std::sync::Arc::new(std::sync::atomic::AtomicU8::new(0));
+        let worker_completion = std::sync::Arc::clone(&completion);
+        let worker_metrics = metrics.clone();
+        let handle = tokio::task::spawn_blocking(move || {
+            let _permit = permit;
+            let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(work));
+            let previous = worker_completion.swap(2, std::sync::atomic::Ordering::AcqRel);
+            if previous == 1
+                && let Some(metrics) = worker_metrics.as_ref()
+            {
+                metrics.record_late_worker_completed();
+            }
+            match outcome {
+                Ok(value) => value,
+                Err(payload) => std::panic::resume_unwind(payload),
+            }
+        });
+        Ok(ObservedOwnerWorkV1 {
+            handle,
+            completion,
+            metrics,
+        })
     }
 
     /// Compatibility preparation retained for focused source tests. Product
@@ -80,7 +252,8 @@ impl AgentdIntelligenceProductRunnerV1 {
         request: CanonicalIntelligenceRunRequestV1,
         inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
-        self.prepare_inner(composition, request, inputs, None).await
+        self.prepare_inner(composition, request, inputs, None, None)
+            .await
     }
 
     /// Product preparation inherited from one authenticated durable RunStart.
@@ -90,6 +263,43 @@ impl AgentdIntelligenceProductRunnerV1 {
         request: CanonicalIntelligenceRunRequestV1,
         inputs: AgentdIntelligenceOwnerInputsV1,
         run_start: crate::AgentdRunStartBindingV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        self.prepare_bound_for_composition_inner(
+            composition,
+            request,
+            inputs,
+            run_start,
+            None,
+        )
+        .await
+    }
+
+    /// Product preparation with one explicit profile-owned metrics sink.
+    pub async fn prepare_bound_for_composition_observed(
+        &self,
+        composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+        run_start: crate::AgentdRunStartBindingV1,
+        metrics: std::sync::Arc<crate::AgentdIntelligenceRuntimeMetricsV1>,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        self.prepare_bound_for_composition_inner(
+            composition,
+            request,
+            inputs,
+            run_start,
+            Some(metrics),
+        )
+        .await
+    }
+
+    async fn prepare_bound_for_composition_inner(
+        &self,
+        composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+        run_start: crate::AgentdRunStartBindingV1,
+        metrics: Option<std::sync::Arc<crate::AgentdIntelligenceRuntimeMetricsV1>>,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
         if request.run_id != *run_start.run_id()
             || request.snapshot.objective_digest() != run_start.objective_digest()
@@ -109,7 +319,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                 crate::AgentRunError::MixedSnapshot,
             ));
         }
-        self.prepare_inner(composition, request, inputs, Some(run_start))
+        self.prepare_inner(composition, request, inputs, Some(run_start), metrics)
             .await
     }
 
@@ -119,7 +329,11 @@ impl AgentdIntelligenceProductRunnerV1 {
         request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
         run_start: Option<crate::AgentdRunStartBindingV1>,
+        metrics: Option<std::sync::Arc<crate::AgentdIntelligenceRuntimeMetricsV1>>,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        if let Some(metrics) = metrics.as_ref() {
+            metrics.observe_authority_epoch(request.snapshot.authority_epoch());
+        }
         let mut candidate_ids = request
             .legal_candidates
             .candidates
@@ -135,6 +349,9 @@ impl AgentdIntelligenceProductRunnerV1 {
         candidate_ids.sort();
         intuition_ids.sort();
         if candidate_ids != intuition_ids {
+            if let Some(metrics) = metrics.as_ref() {
+                metrics.record_candidate_set_rejection();
+            }
             return Err(AgentdIntelligenceProductError::CandidateSetMismatch);
         }
 
@@ -160,6 +377,9 @@ impl AgentdIntelligenceProductRunnerV1 {
             None => requested_timeout_micros,
         };
         if timeout_micros == 0 {
+            if let Some(metrics) = metrics.as_ref() {
+                metrics.record_cognition_timeout();
+            }
             return Err(AgentdIntelligenceProductError::TimedOut);
         }
         let compatibility_deadline_ms = started_ms
@@ -180,9 +400,9 @@ impl AgentdIntelligenceProductRunnerV1 {
                 );
                 let owner_id = StableId::new("learning.eval")
                     .map_err(|_| AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
-                let current_owner = oracle
-                    .current(&owner_id)
-                    .map_err(AgentdIntelligenceProductError::Canonical)?;
+                let current_owner = oracle.current(&owner_id).map_err(|error| {
+                    observed_canonical_error(metrics.as_ref(), error)
+                })?;
                 Some(AgentdEvaluationSessionV1 {
                     run_id: request.run_id.clone(),
                     current_owner,
@@ -191,19 +411,34 @@ impl AgentdIntelligenceProductRunnerV1 {
                 })
             }
         };
-        let mut worker = self.spawn_owner_work(move || {
-            let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session);
-            let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
-            prepare_intelligence_run(request, &mut ports, &mut oracle)
+        let ports_metrics = metrics.clone();
+        let mut worker = self.spawn_observed_owner_work(
+            move || {
+                let inner = AgentdOwnerPortsV1::new(inputs, evaluation_session);
+                let mut ports = ObservedOwnerPortsV1::new(inner, ports_metrics);
+                let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
+                prepare_intelligence_run(request, &mut ports, &mut oracle)
+            },
+            metrics.clone(),
+        )?;
+        let joined = match timeout(Duration::from_micros(timeout_micros), &mut worker.handle).await {
+            Ok(joined) => joined,
+            Err(_) => {
+                // Dropping a spawn_blocking JoinHandle detaches the computation;
+                // it does not terminate it. Keep the permit in the worker and
+                // account for the late completion instead of admitting more
+                // abandoned work.
+                worker.mark_timed_out();
+                return Err(AgentdIntelligenceProductError::TimedOut);
+            }
+        };
+        let canonical = joined.map_err(|_| {
+            if let Some(metrics) = metrics.as_ref() {
+                metrics.record_worker_crash();
+            }
+            AgentdIntelligenceProductError::WorkerCrashed
         })?;
-        let outcome = timeout(Duration::from_micros(timeout_micros), &mut worker)
-            .await
-            .map_err(|_| {
-                worker.abort();
-                AgentdIntelligenceProductError::TimedOut
-            })?
-            .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?
-            .map_err(AgentdIntelligenceProductError::Canonical)?;
+        let outcome = canonical.map_err(|error| observed_canonical_error(metrics.as_ref(), error))?;
 
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {
@@ -212,7 +447,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                     self.authority_verifier.clone(),
                 );
                 validate_current_snapshot(&snapshot, &mut oracle)
-                    .map_err(AgentdIntelligenceProductError::Canonical)?;
+                    .map_err(|error| observed_canonical_error(metrics.as_ref(), error))?;
                 let mut bytes = b"hepta.agentd.intelligence-dispatch-proposal.v2\0".to_vec();
                 bytes.extend_from_slice(envelope.envelope_digest.as_array());
                 bytes.extend_from_slice(snapshot.revocation_frontier_digest().as_array());
@@ -221,46 +456,53 @@ impl AgentdIntelligenceProductRunnerV1 {
                 }
                 let dispatch_proposal_digest = Digest32::of_bytes(&bytes);
 
-                let (request_digest, body_digest, artifact_set_digest, authority_epoch, generation, fence_digest, deadline_ms) =
-                    match run_start.as_ref() {
-                        Some(binding) => {
-                            if wall_clock_ms()? >= binding.deadline_ms() {
-                                return Err(AgentdIntelligenceProductError::Run(
-                                    crate::AgentRunError::DeadlineElapsed,
-                                ));
-                            }
-                            (
-                                binding.request_digest().to_string(),
-                                binding.body_digest().to_string(),
-                                binding.artifact_set_digest().to_string(),
-                                binding.authority_epoch(),
-                                binding.generation(),
-                                binding.fence_digest().to_string(),
-                                binding.deadline_ms(),
-                            )
+                let (
+                    request_digest,
+                    body_digest,
+                    artifact_set_digest,
+                    authority_epoch,
+                    generation,
+                    fence_digest,
+                    deadline_ms,
+                ) = match run_start.as_ref() {
+                    Some(binding) => {
+                        if wall_clock_ms()? >= binding.deadline_ms() {
+                            return Err(AgentdIntelligenceProductError::Run(
+                                crate::AgentRunError::DeadlineElapsed,
+                            ));
                         }
-                        None => {
-                            let generation = composition.agentd_generation;
-                            let fence_digest = crate::agentd_objective_fence(
-                                &composition.agent_id,
-                                composition.supervisor_generation,
-                                generation,
-                            )
-                            .map_err(AgentdIntelligenceProductError::Run)?;
-                            let mut body = b"hepta.agentd.intelligence-body.v1\0".to_vec();
-                            body.extend_from_slice(snapshot.digest().as_array());
-                            body.extend_from_slice(&snapshot.body_generation().get().to_be_bytes());
-                            (
-                                envelope.trace_digest.to_string(),
-                                Digest32::of_bytes(&body).to_string(),
-                                snapshot.digest().to_string(),
-                                snapshot.authority_epoch(),
-                                generation,
-                                fence_digest,
-                                compatibility_deadline_ms,
-                            )
-                        }
-                    };
+                        (
+                            binding.request_digest().to_string(),
+                            binding.body_digest().to_string(),
+                            binding.artifact_set_digest().to_string(),
+                            binding.authority_epoch(),
+                            binding.generation(),
+                            binding.fence_digest().to_string(),
+                            binding.deadline_ms(),
+                        )
+                    }
+                    None => {
+                        let generation = composition.agentd_generation;
+                        let fence_digest = crate::agentd_objective_fence(
+                            &composition.agent_id,
+                            composition.supervisor_generation,
+                            generation,
+                        )
+                        .map_err(AgentdIntelligenceProductError::Run)?;
+                        let mut body = b"hepta.agentd.intelligence-body.v1\0".to_vec();
+                        body.extend_from_slice(snapshot.digest().as_array());
+                        body.extend_from_slice(&snapshot.body_generation().get().to_be_bytes());
+                        (
+                            envelope.trace_digest.to_string(),
+                            Digest32::of_bytes(&body).to_string(),
+                            snapshot.digest().to_string(),
+                            snapshot.authority_epoch(),
+                            generation,
+                            fence_digest,
+                            compatibility_deadline_ms,
+                        )
+                    }
+                };
                 let run_snapshot = crate::AgentRunSnapshot {
                     run_id: envelope.run_id.to_string(),
                     request_digest,
@@ -477,4 +719,14 @@ impl AgentdIntelligenceProductRunnerV1 {
             .append_qualification(pending.expected_predecessor, pending.event)
             .map_err(AgentdIntelligenceLedgerError::Ledger)
     }
+}
+
+fn observed_canonical_error(
+    metrics: Option<&std::sync::Arc<crate::AgentdIntelligenceRuntimeMetricsV1>>,
+    error: CanonicalIntelligenceError,
+) -> AgentdIntelligenceProductError {
+    if let Some(metrics) = metrics {
+        metrics.record_canonical_error(&error);
+    }
+    AgentdIntelligenceProductError::Canonical(error)
 }
