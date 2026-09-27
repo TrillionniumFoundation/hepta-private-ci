@@ -24,6 +24,8 @@ use serde_json::json;
 
 use crate::automation_effect_host::AgentdAutomationEffectHost;
 
+const MAX_EFFECT_HOST_BYTES: u64 = 64 * 1024;
+const MAX_REVOCATIONS_BYTES: u64 = 4 * 1024 * 1024;
 const MAX_TERMINAL_PROFILE_BYTES: u64 = 64 * 1024;
 
 #[derive(Debug, Deserialize)]
@@ -45,7 +47,7 @@ fn selected_host_effect_host_uses_exact_protected_inputs() {
     let expected_revocations_sha = required_digest("AUTOMATION_EXPECTED_REVOCATIONS_SHA256");
     let expected_terminal_sha = required_digest("AUTOMATION_EXPECTED_TERMINAL_OBSERVER_SHA256");
 
-    let effect_host_bytes = fs::read(&effect_host_path).expect("read protected effect host file");
+    let effect_host_bytes = read_protected_file(&effect_host_path, MAX_EFFECT_HOST_BYTES);
     assert_eq!(
         Sha256Digest::for_bytes(&effect_host_bytes),
         expected_effect_host_sha
@@ -57,13 +59,13 @@ fn selected_host_effect_host_uses_exact_protected_inputs() {
         .and_then(serde_json::Value::as_str)
         .map(PathBuf::from)
         .expect("effect host revocations path");
-    let revocation_bytes = fs::read(&revocations_path).expect("read protected revocations file");
+    let revocation_bytes = read_protected_file(&revocations_path, MAX_REVOCATIONS_BYTES);
     assert_eq!(
         Sha256Digest::for_bytes(&revocation_bytes),
         expected_revocations_sha
     );
 
-    let terminal_bytes = read_protected_profile(&terminal_profile_path);
+    let terminal_bytes = read_protected_file(&terminal_profile_path, MAX_TERMINAL_PROFILE_BYTES);
     assert_eq!(
         Sha256Digest::for_bytes(&terminal_bytes),
         expected_terminal_sha
@@ -113,6 +115,24 @@ fn selected_host_effect_host_uses_exact_protected_inputs() {
         .expect("load exact selected-host provider/final-use/revocation configuration");
     drop(host);
 
+    // The source files must remain byte-identical across actual product loading;
+    // otherwise the receipt would bind a pre-load snapshot rather than the bytes
+    // consumed by Agentd.
+    assert_eq!(
+        Sha256Digest::for_bytes(&read_protected_file(
+            &effect_host_path,
+            MAX_EFFECT_HOST_BYTES,
+        )),
+        expected_effect_host_sha
+    );
+    assert_eq!(
+        Sha256Digest::for_bytes(&read_protected_file(
+            &revocations_path,
+            MAX_REVOCATIONS_BYTES,
+        )),
+        expected_revocations_sha
+    );
+
     let receipt = json!({
         "schema": "hepta.automation-taskflow.selected-host-effect-rust-receipt.v1",
         "effectHostPath": effect_host_path,
@@ -144,19 +164,13 @@ fn required_digest(name: &str) -> Sha256Digest {
     Sha256Digest::parse(value).unwrap_or_else(|_| panic!("invalid {name}"))
 }
 
-fn read_protected_profile(path: &Path) -> Vec<u8> {
+fn read_protected_file(path: &Path, max_bytes: u64) -> Vec<u8> {
     assert!(path.is_absolute());
-    assert_eq!(
-        path.canonicalize().expect("canonical terminal profile"),
-        path
-    );
-    let metadata = fs::symlink_metadata(path).expect("terminal profile metadata");
+    assert_eq!(path.canonicalize().expect("canonical protected file"), path);
+    let metadata = fs::symlink_metadata(path).expect("protected file metadata");
     assert!(metadata.is_file() && !metadata.file_type().is_symlink());
-    assert!(metadata.len() > 0 && metadata.len() <= MAX_TERMINAL_PROFILE_BYTES);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        assert_eq!(metadata.permissions().mode() & 0o077, 0);
-    }
-    fs::read(path).expect("read terminal observer profile")
+    assert!(metadata.len() > 0 && metadata.len() <= max_bytes);
+    use std::os::unix::fs::PermissionsExt;
+    assert_eq!(metadata.permissions().mode() & 0o077, 0);
+    fs::read(path).expect("read protected selected-host file")
 }

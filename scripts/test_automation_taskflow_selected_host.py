@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import importlib.util
 import json
 import os
 import tempfile
@@ -6,7 +9,13 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock
 
-import automation_taskflow_selected_host as selected
+SPEC = importlib.util.spec_from_file_location(
+    "automation_taskflow_selected_host",
+    Path(__file__).with_name("automation_taskflow_selected_host.py"),
+)
+assert SPEC is not None and SPEC.loader is not None
+selected = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(selected)
 
 
 class SelectedHostEvidenceTests(unittest.TestCase):
