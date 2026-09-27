@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 15
     steps:
-      - name: Check out writable feature branch
+      - name: Check out feature branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: fix/memory-federation-v3-production-closure-20260927
@@ -36,24 +36,30 @@ jobs:
           python3 qualification/memory-federation/bootstrap_v3.py
           python3 qualification/memory-federation/bootstrap_v3_followup.py
 
-      - name: Commit and push source materialization
+      - name: Commit source materialization locally
+        id: source
         shell: bash
         run: |
           set -euo pipefail
+          branch=fix/memory-federation-v3-production-closure-20260927
           git config user.name "Hepta Memory Federation Materializer"
           git config user.email "hepta-memory-federation-materializer@users.noreply.github.com"
+          echo "base_sha=$(git rev-parse origin/$branch)" >> "$GITHUB_OUTPUT"
           git add -A
           if ! git diff --cached --quiet; then
             git commit -m "memory.federation: materialize reviewed v3 closure"
-            git push origin HEAD:fix/memory-federation-v3-production-closure-20260927
           fi
+          echo "source_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "source_tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
 
       - name: Rebind implementation map and derived projections
+        id: rebind
         shell: bash
         run: |
           set -uo pipefail
+          source_sha='${{ steps.source.outputs.source_sha }}'
           mkdir -p qualification/memory-federation/bootstrap-diagnostics
-          log=qualification/memory-federation/bootstrap-diagnostics/v3-rebind.log
+          log=/tmp/memory-federation-v3-rebind.log
           rm -f "$log"
           set +e
           {
@@ -74,15 +80,84 @@ jobs:
           } 2>&1 | tee "$log"
           status=${PIPESTATUS[0]}
           set -e
+
           if [ "$status" -ne 0 ]; then
-            git add "$log"
+            cp "$log" /tmp/memory-federation-v3-rebind.saved.log
+            git reset --hard "$source_sha"
+            mkdir -p qualification/memory-federation/bootstrap-diagnostics
+            cp /tmp/memory-federation-v3-rebind.saved.log \
+              qualification/memory-federation/bootstrap-diagnostics/v3-rebind.log
+            git add qualification/memory-federation/bootstrap-diagnostics/v3-rebind.log
             git commit -m "ci(memory-federation): retain v3 rebind failure"
-            git push origin HEAD:fix/memory-federation-v3-production-closure-20260927
-            exit "$status"
+          else
+            rm -f qualification/memory-federation/bootstrap-diagnostics/v3-rebind.log
+            git add -A
+            if ! git diff --cached --quiet; then
+              git commit -m "ci(memory-federation): finalize v3 projection binding"
+            fi
           fi
-          rm -f "$log"
-          git add -A
-          if ! git diff --cached --quiet; then
-            git commit -m "ci(memory-federation): remove materialization diagnostic"
-          fi
-          git push origin HEAD:fix/memory-federation-v3-production-closure-20260927
+
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "candidate_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "candidate_tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare immutable candidate handoff
+        id: handoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch=fix/memory-federation-v3-production-closure-20260927
+          tag="memory-federation-v3-materialized-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          out=/tmp/memory-federation-v3-handoff
+          mkdir -p "$out"
+
+          git tag "$tag" HEAD
+          set +e
+          git push origin "refs/tags/$tag"
+          tag_status=$?
+          set -e
+
+          git format-patch --stdout --binary "origin/$branch..HEAD" > \
+            "$out/candidate.patch"
+          git bundle create "$out/candidate.bundle" HEAD "^origin/$branch"
+          cat > "$out/manifest.txt" <<EOF
+          schema=hepta.memory-federation.materialized-candidate.v1
+          branch=$branch
+          base_sha=${{ steps.source.outputs.base_sha }}
+          source_sha=${{ steps.source.outputs.source_sha }}
+          source_tree=${{ steps.source.outputs.source_tree }}
+          candidate_sha=${{ steps.rebind.outputs.candidate_sha }}
+          candidate_tree=${{ steps.rebind.outputs.candidate_tree }}
+          rebind_status=${{ steps.rebind.outputs.status }}
+          tag=$tag
+          tag_push_status=$tag_status
+          workflow_run_id=$GITHUB_RUN_ID
+          workflow_run_attempt=$GITHUB_RUN_ATTEMPT
+          EOF
+          sha256sum "$out/candidate.patch" "$out/candidate.bundle" > \
+            "$out/SHA256SUMS"
+
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "tag_status=$tag_status" >> "$GITHUB_OUTPUT"
+          cat "$out/manifest.txt"
+
+      - name: Upload candidate handoff
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: memory-federation-v3-handoff-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/memory-federation-v3-handoff
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Report materialization result
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "candidate tag: ${{ steps.handoff.outputs.tag }}"
+          echo "candidate sha: ${{ steps.rebind.outputs.candidate_sha }}"
+          echo "candidate tree: ${{ steps.rebind.outputs.candidate_tree }}"
+          echo "tag push status: ${{ steps.handoff.outputs.tag_status }}"
+          echo "projection rebind status: ${{ steps.rebind.outputs.status }}"
+          test '${{ steps.handoff.outputs.tag_status }}' = '0'
+          test '${{ steps.rebind.outputs.status }}' = '0'
