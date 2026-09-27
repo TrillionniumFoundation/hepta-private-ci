@@ -1,9 +1,13 @@
+//! Authenticated V3 verification/selection benchmark with V2 owner commitments.
+//! This measures fixture-based signature verification and policy admission only;
+//! it does not measure an Agentd process, signature generation or ledger fsync.
+
 use std::time::Duration;
 use std::time::Instant;
 
 use codex_hepta_intelligence::IntuitionQualificationEvidenceV2;
-use codex_hepta_intelligence::decide_authenticated_intuition_v2;
-use codex_hepta_intuition::AssignmentCommitmentV1;
+use codex_hepta_intelligence::decide_authenticated_intuition_v3;
+use codex_hepta_intuition::AssignmentCommitmentV2;
 use codex_hepta_intuition::AssignmentModeV1;
 use codex_hepta_intuition::CalibratedActionCandidateV1;
 use codex_hepta_intuition::CalibratedDecisionRequestV1;
@@ -13,14 +17,17 @@ use codex_hepta_intuition::CanonicalPolicyProfileV1;
 use codex_hepta_intuition::CanonicalRiskRuleV1;
 use codex_hepta_intuition::LearnedScorerContractV1;
 use codex_hepta_intuition::OodArtifactV1;
+use codex_hepta_intuition::PolicyGeneration;
 use codex_hepta_intuition::RiskClass;
-use codex_hepta_intuition::ScoringCommitmentV1;
+use codex_hepta_intuition::ScoringCommitmentV2;
+use codex_hepta_intuition::canonical_assignment_distribution_digest_v2;
+use codex_hepta_intuition::canonical_candidate_identity_digest_v2;
 use codex_hepta_intuition::canonical_candidate_order_digest_v1;
 use codex_hepta_intuition::canonical_candidate_set_digest_v1;
 use codex_hepta_intuition::canonical_completeness_evidence_payload_v1;
 use codex_hepta_intuition::canonical_profile_qualification_payload_v1;
-use codex_hepta_intuition::canonical_runtime_commitment_payload_v1;
-use codex_hepta_intuition::canonical_scored_outputs_digest_v1;
+use codex_hepta_intuition::canonical_runtime_commitment_payload_v2;
+use codex_hepta_intuition::canonical_scored_outputs_digest_v2;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
@@ -35,6 +42,7 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
 const SAMPLES: usize = 200;
+const WARMUP: usize = 16;
 const P99_BUDGET: Duration = Duration::from_millis(50);
 const MIN_THROUGHPUT_PER_SEC: f64 = 20.0;
 
@@ -75,8 +83,8 @@ fn sign(
 struct Fixture {
     request: CalibratedDecisionRequestV1,
     profile: CanonicalPolicyProfileV1,
-    scoring: ScoringCommitmentV1,
-    assignment: AssignmentCommitmentV1,
+    scoring: ScoringCommitmentV2,
+    assignment: AssignmentCommitmentV2,
     verifier: LearningEvidenceVerifierV1,
     completeness: SignedLearningEvidenceV1,
     profile_qualification: SignedLearningEvidenceV1,
@@ -175,17 +183,21 @@ fn fixture(candidate_count: usize) -> Fixture {
         calibration_artifact_digest,
         ood_artifact_digest,
     };
-    let scoring = ScoringCommitmentV1 {
+    let scoring = ScoringCommitmentV2 {
         model_artifact_digest: model_digest,
         feature_snapshot_digest: digest("feature-snapshot:fast-gate"),
         feature_schema_digest: profile.scorer.feature_schema_digest,
         scorer_contract_digest: profile.scorer.scorer_contract_digest,
-        candidate_set_digest,
-        scored_outputs_digest: canonical_scored_outputs_digest_v1(&request).expect("scores"),
+        candidate_identity_digest: canonical_candidate_identity_digest_v2(&request.candidates)
+            .expect("identity"),
+        scored_outputs_digest: canonical_scored_outputs_digest_v2(&request).expect("scores"),
         policy_digest,
-        policy_generation: 1,
+        policy_generation: PolicyGeneration::new(1).expect("generation"),
     };
-    let assignment = AssignmentCommitmentV1::Deterministic;
+    let assignment = AssignmentCommitmentV2::Deterministic {
+        assignment_distribution_digest: canonical_assignment_distribution_digest_v2(&request)
+            .expect("distribution"),
+    };
 
     let keys = [
         SigningKey::from_bytes(&[11; 32]),
@@ -256,7 +268,7 @@ fn fixture(candidate_count: usize) -> Fixture {
         canonical_completeness_evidence_payload_v1(&request).expect("complete");
     let profile_payload = canonical_profile_qualification_payload_v1(&profile).expect("profile");
     let runtime_payload =
-        canonical_runtime_commitment_payload_v1(&request, &profile, &scoring, &assignment)
+        canonical_runtime_commitment_payload_v2(&request, &profile, &scoring, &assignment)
             .expect("runtime");
     let completeness = sign(
         &verifier,
@@ -304,11 +316,11 @@ fn percentile(sorted: &[Duration], numerator: usize) -> Duration {
 }
 
 fn main() {
-    println!("path,candidates,p50_us,p95_us,p99_us,throughput_per_sec");
+    println!("path,candidates,samples,warmup,p50_us,p95_us,p99_us,throughput_per_sec");
     for count in [1usize, 16, 64, 128] {
         let fixture = fixture(count);
-        for _ in 0..16 {
-            let _ = decide_authenticated_intuition_v2(
+        for _ in 0..WARMUP {
+            let _ = decide_authenticated_intuition_v3(
                 fixture.request.clone(),
                 fixture.profile.clone(),
                 fixture.scoring.clone(),
@@ -328,7 +340,7 @@ fn main() {
         let mut samples = Vec::with_capacity(SAMPLES);
         for _ in 0..SAMPLES {
             let start = Instant::now();
-            let receipt = decide_authenticated_intuition_v2(
+            let receipt = decide_authenticated_intuition_v3(
                 fixture.request.clone(),
                 fixture.profile.clone(),
                 fixture.scoring.clone(),
@@ -352,7 +364,7 @@ fn main() {
         let p99 = percentile(&samples, 99);
         let throughput = SAMPLES as f64 / wall.as_secs_f64();
         println!(
-            "authenticated,{count},{},{},{},{throughput:.2}",
+            "authenticated-v3,{count},{SAMPLES},{WARMUP},{},{},{},{throughput:.2}",
             p50.as_micros(),
             p95.as_micros(),
             p99.as_micros()
