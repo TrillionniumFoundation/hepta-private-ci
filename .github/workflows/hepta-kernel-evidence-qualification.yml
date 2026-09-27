@@ -1,27 +1,16 @@
 name: Kernel evidence qualification
 
+# The required aggregate must exist on every PR. Path filters here can leave a
+# branch-protection check permanently pending for unrelated or dependency diffs.
 on:
   pull_request:
-    paths:
-      - "codex-rs/hepta-evidence/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/hepta-agent-protocol/**"
-      - "docs/modules/kernel.evidence/**"
-      - "docs/lane-a-foundation/kernel.evidence/**"
-      - "docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json"
-      - "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json"
-      - "qualification/kernel-evidence/**"
-      - "qualification/module-execution-dossiers/detail/kernel.evidence.md"
-      - "scripts/lane_a_foundation_core.py"
-      - "scripts/kernel_evidence_status.py"
-      - ".github/workflows/hepta-kernel-evidence-qualification.yml"
-      - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
     branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: kernel-evidence-qualification-${{ github.event.pull_request.number || github.ref }}
@@ -30,523 +19,141 @@ concurrency:
 jobs:
   source-head:
     name: Kernel evidence exact source
-    runs-on: ubuntu-24.04
-    timeout-minutes: 90
-    outputs:
-      qualified: ${{ steps.lane_status.outputs.qualified }}
-      commit: ${{ steps.candidate_identity.outputs.commit }}
-      tree: ${{ steps.candidate_identity.outputs.tree }}
-      artifact_digest: ${{ steps.records_upload.outputs.artifact-digest }}
-    steps:
-      - name: Check out exact source
-        id: checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Record and verify exact source identity
-        id: candidate_identity
-        continue-on-error: true
-        env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          records="$RUNNER_TEMP/kernel-evidence-source"
-          mkdir -p "$records"
-          commit="$(git rev-parse HEAD)"
-          tree="$(git rev-parse HEAD^{tree})"
-          test "$commit" = "$SOURCE_SHA"
-          parents_json="$(git rev-list --parents -n 1 HEAD | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read().split()[1:]))')"
-          python3 - "$records/candidate.json" "$commit" "$tree" "$parents_json" <<'PY'
-          import json, pathlib, sys
-          path, commit, tree, parents = sys.argv[1:]
-          pathlib.Path(path).write_text(json.dumps({
-              "schemaVersion": 1,
-              "kind": "kernel_evidence_exact_source",
-              "commit": commit,
-              "tree": tree,
-              "parents": json.loads(parents),
-          }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-          PY
-          echo "commit=$commit" >> "$GITHUB_OUTPUT"
-          echo "tree=$tree" >> "$GITHUB_OUTPUT"
-          echo "parents_json=$parents_json" >> "$GITHUB_OUTPUT"
-
-      - name: Set up repository CI environment
-        id: setup_ci
-        continue-on-error: true
-        uses: ./.github/actions/setup-ci
-
-      - name: Set up Rust toolchain
-        id: rust_toolchain
-        continue-on-error: true
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
-
-      - name: Test kernel evidence crate
-        id: evidence_tests
-        continue-on-error: true
-        env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-          HEPTA_CI_LANE: source-head
-        shell: bash
-        run: |
-          set -o pipefail
-          records="$RUNNER_TEMP/kernel-evidence-source"
-          mkdir -p "$records"
-          python3 scripts/hepta_ci_exec.py --output "$records/evidence-tests.json" -- \
-            bash -lc 'cd codex-rs && cargo test -p codex-hepta-evidence' \
-            2>&1 | tee "$records/evidence-tests.log"
-
-      - name: Test Agentd kernel evidence product path
-        id: agentd_product_test
-        continue-on-error: true
-        env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-          HEPTA_CI_LANE: source-head
-        shell: bash
-        run: |
-          set -o pipefail
-          records="$RUNNER_TEMP/kernel-evidence-source"
-          mkdir -p "$records"
-          python3 scripts/hepta_ci_exec.py --output "$records/agentd-product-test.json" -- \
-            bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product' \
-            2>&1 | tee "$records/agentd-product-test.log"
-
-      - name: Verify Lane-A truth
-        id: lane_a_truth
-        continue-on-error: true
-        env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-          HEPTA_CI_LANE: source-head
-        shell: bash
-        run: |
-          set -o pipefail
-          records="$RUNNER_TEMP/kernel-evidence-source"
-          mkdir -p "$records"
-          python3 scripts/hepta_ci_exec.py --output "$records/lane-a-truth.json" -- \
-            python3 scripts/verify_lane_a_foundation.py verify \
-            2>&1 | tee "$records/lane-a-truth.log"
-
-      - name: Verify generated documentation
-        id: docs
-        continue-on-error: true
-        env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-          HEPTA_CI_LANE: source-head
-        shell: bash
-        run: |
-          set -o pipefail
-          records="$RUNNER_TEMP/kernel-evidence-source"
-          mkdir -p "$records"
-          python3 scripts/hepta_ci_exec.py --output "$records/docs.json" -- \
-            python3 scripts/hepta-docs.py verify \
-            2>&1 | tee "$records/docs.log"
-
-      - name: Verify implementation maps
-        id: implementation_maps
-        continue-on-error: true
-        env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-          HEPTA_CI_LANE: source-head
-        shell: bash
-        run: |
-          set -o pipefail
-          records="$RUNNER_TEMP/kernel-evidence-source"
-          mkdir -p "$records"
-          python3 scripts/hepta_ci_exec.py --output "$records/implementation-maps.json" -- \
-            python3 scripts/hepta-implementation-maps.py verify \
-            2>&1 | tee "$records/implementation-maps.log"
-
-      - name: Upload exact-source command records
-        id: records_upload
-        if: always()
-        continue-on-error: true
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
-        with:
-          name: kernel-evidence-source-records-${{ github.event.pull_request.head.sha || github.sha }}
-          path: ${{ runner.temp }}/kernel-evidence-source/*
-          if-no-files-found: warn
-          retention-days: 90
-
-      - name: Build exact-source lane status
-        id: lane_status
-        if: always()
-        continue-on-error: true
-        env:
-          CANDIDATE_COMMIT: ${{ steps.candidate_identity.outputs.commit }}
-          CANDIDATE_TREE: ${{ steps.candidate_identity.outputs.tree }}
-          CANDIDATE_PARENTS: ${{ steps.candidate_identity.outputs.parents_json }}
-          ARTIFACT_DIGEST: ${{ steps.records_upload.outputs.artifact-digest }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -n "$CANDIDATE_COMMIT"
-          test -n "$CANDIDATE_TREE"
-          test -n "$CANDIDATE_PARENTS"
-          python3 scripts/kernel_evidence_status.py lane \
-            --candidate-kind exact-source \
-            --lane source-head \
-            --commit "$CANDIDATE_COMMIT" \
-            --tree "$CANDIDATE_TREE" \
-            --parents-json "$CANDIDATE_PARENTS" \
-            --source-commit "$CANDIDATE_COMMIT" \
-            --workflow-run-id "${{ github.run_id }}" \
-            --workflow-run-attempt "${{ github.run_attempt }}" \
-            --workflow-ref "${{ github.workflow_ref }}" \
-            --event-name "${{ github.event_name }}" \
-            --artifact-name "kernel-evidence-source-records-${CANDIDATE_COMMIT}" \
-            --artifact-digest "$ARTIFACT_DIGEST" \
-            --records-dir "$RUNNER_TEMP/kernel-evidence-source" \
-            --output "$RUNNER_TEMP/kernel-evidence-source-status.json" \
-            --github-output "$GITHUB_OUTPUT" \
-            --check candidate_identity=${{ steps.candidate_identity.outcome }} \
-            --check evidence_tests=${{ steps.evidence_tests.outcome }} \
-            --check agentd_product_test=${{ steps.agentd_product_test.outcome }} \
-            --check lane_a_truth=${{ steps.lane_a_truth.outcome }} \
-            --check docs=${{ steps.docs.outcome }} \
-            --check implementation_maps=${{ steps.implementation_maps.outcome }}
-
-      - name: Upload exact-source lane status
-        id: status_upload
-        if: always()
-        continue-on-error: true
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
-        with:
-          name: kernel-evidence-source-status-${{ github.event.pull_request.head.sha || github.sha }}
-          path: ${{ runner.temp }}/kernel-evidence-source-status.json
-          if-no-files-found: warn
-          retention-days: 90
-
-      - name: Enforce exact-source qualification
-        if: always()
-        env:
-          QUALIFIED: ${{ steps.lane_status.outputs.qualified }}
-          RECORDS_UPLOAD: ${{ steps.records_upload.outcome }}
-          STATUS_UPLOAD: ${{ steps.status_upload.outcome }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$QUALIFIED" = true
-          test "$RECORDS_UPLOAD" = success
-          test "$STATUS_UPLOAD" = success
+    uses: ./.github/workflows/hepta-kernel-evidence-lane.yml
+    with:
+      source-sha: ${{ github.event.pull_request.head.sha || github.sha }}
+      base-sha: ${{ github.event.pull_request.base.sha || '' }}
+      lane: source-head
 
   merge-candidate:
     name: Kernel evidence deterministic merge
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 90
-    outputs:
-      qualified: ${{ steps.lane_status.outputs.qualified }}
-      commit: ${{ steps.candidate_identity.outputs.commit }}
-      tree: ${{ steps.candidate_identity.outputs.tree }}
-      artifact_digest: ${{ steps.records_upload.outputs.artifact-digest }}
-    steps:
-      - name: Check out source
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Construct deterministic synthetic merge
-        id: merge
-        continue-on-error: true
-        uses: ./.github/actions/hepta-synthetic-merge
-        with:
-          base-sha: ${{ github.event.pull_request.base.sha }}
-          source-sha: ${{ github.event.pull_request.head.sha }}
-          pr-number: ${{ github.event.pull_request.number }}
-          author-name: Hepta kernel evidence CI
-          author-email: hepta-kernel-evidence-ci@users.noreply.github.com
-          message: Synthetic kernel evidence merge
-
-      - name: Record and verify synthetic merge identity
-        id: candidate_identity
-        continue-on-error: true
-        env:
-          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
-          EXPECTED_TREE: ${{ steps.merge.outputs.tree }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          records="$RUNNER_TEMP/kernel-evidence-merge"
-          mkdir -p "$records"
-          commit="$(git rev-parse HEAD)"
-          tree="$(git rev-parse HEAD^{tree})"
-          test -n "$EXPECTED_SHA"
-          test -n "$EXPECTED_TREE"
-          test "$commit" = "$EXPECTED_SHA"
-          test "$tree" = "$EXPECTED_TREE"
-          parents_json="$(git rev-list --parents -n 1 HEAD | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read().split()[1:]))')"
-          python3 - "$records/candidate.json" "$commit" "$tree" "$parents_json" <<'PY'
-          import json, pathlib, sys
-          path, commit, tree, parents = sys.argv[1:]
-          pathlib.Path(path).write_text(json.dumps({
-              "schemaVersion": 1,
-              "kind": "kernel_evidence_synthetic_merge",
-              "commit": commit,
-              "tree": tree,
-              "parents": json.loads(parents),
-          }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-          PY
-          echo "commit=$commit" >> "$GITHUB_OUTPUT"
-          echo "tree=$tree" >> "$GITHUB_OUTPUT"
-          echo "parents_json=$parents_json" >> "$GITHUB_OUTPUT"
-
-      - name: Set up repository CI environment
-        id: setup_ci
-        continue-on-error: true
-        uses: ./.github/actions/setup-ci
-
-      - name: Set up Rust toolchain
-        id: rust_toolchain
-        continue-on-error: true
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
-
-      - name: Test kernel evidence crate
-        id: evidence_tests
-        continue-on-error: true
-        env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          TESTED_SHA: ${{ steps.merge.outputs.sha }}
-          HEPTA_CI_LANE: base-merge
-        shell: bash
-        run: |
-          set -o pipefail
-          records="$RUNNER_TEMP/kernel-evidence-merge"
-          mkdir -p "$records"
-          python3 scripts/hepta_ci_exec.py --output "$records/evidence-tests.json" -- \
-            bash -lc 'cd codex-rs && cargo test -p codex-hepta-evidence' \
-            2>&1 | tee "$records/evidence-tests.log"
-
-      - name: Test Agentd kernel evidence product path
-        id: agentd_product_test
-        continue-on-error: true
-        env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          TESTED_SHA: ${{ steps.merge.outputs.sha }}
-          HEPTA_CI_LANE: base-merge
-        shell: bash
-        run: |
-          set -o pipefail
-          records="$RUNNER_TEMP/kernel-evidence-merge"
-          mkdir -p "$records"
-          python3 scripts/hepta_ci_exec.py --output "$records/agentd-product-test.json" -- \
-            bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product' \
-            2>&1 | tee "$records/agentd-product-test.log"
-
-      - name: Verify Lane-A truth
-        id: lane_a_truth
-        continue-on-error: true
-        env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          TESTED_SHA: ${{ steps.merge.outputs.sha }}
-          HEPTA_CI_LANE: base-merge
-        shell: bash
-        run: |
-          set -o pipefail
-          records="$RUNNER_TEMP/kernel-evidence-merge"
-          mkdir -p "$records"
-          python3 scripts/hepta_ci_exec.py --output "$records/lane-a-truth.json" -- \
-            python3 scripts/verify_lane_a_foundation.py verify \
-            2>&1 | tee "$records/lane-a-truth.log"
-
-      - name: Verify generated documentation
-        id: docs
-        continue-on-error: true
-        env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          TESTED_SHA: ${{ steps.merge.outputs.sha }}
-          HEPTA_CI_LANE: base-merge
-        shell: bash
-        run: |
-          set -o pipefail
-          records="$RUNNER_TEMP/kernel-evidence-merge"
-          mkdir -p "$records"
-          python3 scripts/hepta_ci_exec.py --output "$records/docs.json" -- \
-            python3 scripts/hepta-docs.py verify \
-            2>&1 | tee "$records/docs.log"
-
-      - name: Verify implementation maps
-        id: implementation_maps
-        continue-on-error: true
-        env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          TESTED_SHA: ${{ steps.merge.outputs.sha }}
-          HEPTA_CI_LANE: base-merge
-        shell: bash
-        run: |
-          set -o pipefail
-          records="$RUNNER_TEMP/kernel-evidence-merge"
-          mkdir -p "$records"
-          python3 scripts/hepta_ci_exec.py --output "$records/implementation-maps.json" -- \
-            python3 scripts/hepta-implementation-maps.py verify \
-            2>&1 | tee "$records/implementation-maps.log"
-
-      - name: Upload synthetic-merge command records
-        id: records_upload
-        if: always()
-        continue-on-error: true
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
-        with:
-          name: kernel-evidence-merge-records-${{ steps.merge.outputs.sha || github.event.pull_request.head.sha }}
-          path: ${{ runner.temp }}/kernel-evidence-merge/*
-          if-no-files-found: warn
-          retention-days: 90
-
-      - name: Build synthetic-merge lane status
-        id: lane_status
-        if: always()
-        continue-on-error: true
-        env:
-          CANDIDATE_COMMIT: ${{ steps.candidate_identity.outputs.commit }}
-          CANDIDATE_TREE: ${{ steps.candidate_identity.outputs.tree }}
-          CANDIDATE_PARENTS: ${{ steps.candidate_identity.outputs.parents_json }}
-          ARTIFACT_DIGEST: ${{ steps.records_upload.outputs.artifact-digest }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -n "$CANDIDATE_COMMIT"
-          test -n "$CANDIDATE_TREE"
-          test -n "$CANDIDATE_PARENTS"
-          python3 scripts/kernel_evidence_status.py lane \
-            --candidate-kind synthetic-merge \
-            --lane base-merge \
-            --commit "$CANDIDATE_COMMIT" \
-            --tree "$CANDIDATE_TREE" \
-            --parents-json "$CANDIDATE_PARENTS" \
-            --source-commit "${{ github.event.pull_request.head.sha }}" \
-            --base-commit "${{ github.event.pull_request.base.sha }}" \
-            --workflow-run-id "${{ github.run_id }}" \
-            --workflow-run-attempt "${{ github.run_attempt }}" \
-            --workflow-ref "${{ github.workflow_ref }}" \
-            --event-name "${{ github.event_name }}" \
-            --artifact-name "kernel-evidence-merge-records-${CANDIDATE_COMMIT}" \
-            --artifact-digest "$ARTIFACT_DIGEST" \
-            --records-dir "$RUNNER_TEMP/kernel-evidence-merge" \
-            --output "$RUNNER_TEMP/kernel-evidence-merge-status.json" \
-            --github-output "$GITHUB_OUTPUT" \
-            --check candidate_identity=${{ steps.candidate_identity.outcome }} \
-            --check evidence_tests=${{ steps.evidence_tests.outcome }} \
-            --check agentd_product_test=${{ steps.agentd_product_test.outcome }} \
-            --check lane_a_truth=${{ steps.lane_a_truth.outcome }} \
-            --check docs=${{ steps.docs.outcome }} \
-            --check implementation_maps=${{ steps.implementation_maps.outcome }}
-
-      - name: Upload synthetic-merge lane status
-        id: status_upload
-        if: always()
-        continue-on-error: true
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
-        with:
-          name: kernel-evidence-merge-status-${{ steps.merge.outputs.sha || github.event.pull_request.head.sha }}
-          path: ${{ runner.temp }}/kernel-evidence-merge-status.json
-          if-no-files-found: warn
-          retention-days: 90
-
-      - name: Enforce synthetic-merge qualification
-        if: always()
-        env:
-          QUALIFIED: ${{ steps.lane_status.outputs.qualified }}
-          RECORDS_UPLOAD: ${{ steps.records_upload.outcome }}
-          STATUS_UPLOAD: ${{ steps.status_upload.outcome }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$QUALIFIED" = true
-          test "$RECORDS_UPLOAD" = success
-          test "$STATUS_UPLOAD" = success
+    uses: ./.github/workflows/hepta-kernel-evidence-lane.yml
+    with:
+      source-sha: ${{ github.event.pull_request.head.sha }}
+      base-sha: ${{ github.event.pull_request.base.sha }}
+      lane: base-merge
+      pr-number: ${{ format('{0}', github.event.pull_request.number) }}
 
   qualification-complete:
     name: Kernel evidence qualification required
     if: always()
     needs: [source-head, merge-candidate]
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      SUFFIX: ${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
-      - name: Check out status generator
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Check out the candidate status verifier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 1
+          fetch-depth: 0
           persist-credentials: false
 
-      - name: Build canonical kernel evidence status
+      - name: Download this attempt's command and lane receipts
+        id: receipts_download
+        if: always()
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: kernel-evidence-*-${{ env.SUFFIX }}
+          path: ${{ runner.temp }}/kernel-evidence-downloaded
+          merge-multiple: false
+          digest-mismatch: error
+
+      - name: Verify receipts and build canonical status
         id: canonical_status
         if: always()
         continue-on-error: true
         env:
-          SOURCE_COMMIT: ${{ needs.source-head.outputs.commit }}
-          SOURCE_TREE: ${{ needs.source-head.outputs.tree }}
-          SOURCE_QUALIFIED: ${{ needs.source-head.outputs.qualified || 'false' }}
-          MERGE_QUALIFIED: ${{ needs.merge-candidate.outputs.qualified || 'false' }}
-          SOURCE_ARTIFACT_DIGEST: ${{ needs.source-head.outputs.artifact_digest }}
-          MERGE_ARTIFACT_DIGEST: ${{ needs.merge-candidate.outputs.artifact_digest }}
+          SOURCE_QUALIFIED: ${{ needs.source-head.result == 'success' && needs.source-head.outputs.qualified == 'true' && steps.receipts_download.outcome == 'success' }}
+          MERGE_QUALIFIED: ${{ needs.merge-candidate.result == 'success' && needs.merge-candidate.outputs.qualified == 'true' && steps.receipts_download.outcome == 'success' }}
+          SOURCE_DIGEST: ${{ needs.source-head.outputs.artifact_digest }}
+          MERGE_DIGEST: ${{ needs.merge-candidate.outputs.artifact_digest }}
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/kernel-evidence-canonical"
+          output="$RUNNER_TEMP/kernel-evidence-canonical"
+          mkdir -p "$output"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          tree="$(git rev-parse 'HEAD^{tree}')"
+          downloads="$RUNNER_TEMP/kernel-evidence-downloaded"
           python3 scripts/kernel_evidence_status.py aggregate \
-            --source-commit "$SOURCE_COMMIT" \
-            --source-tree "$SOURCE_TREE" \
-            --source-qualified "$SOURCE_QUALIFIED" \
-            --merge-qualified "$MERGE_QUALIFIED" \
-            --source-artifact-digest "$SOURCE_ARTIFACT_DIGEST" \
-            --merge-artifact-digest "$MERGE_ARTIFACT_DIGEST" \
-            --workflow-run-id "${{ github.run_id }}" \
-            --workflow-run-attempt "${{ github.run_attempt }}" \
-            --workflow-ref "${{ github.workflow_ref }}" \
-            --event-name "${{ github.event_name }}" \
-            --output "$RUNNER_TEMP/kernel-evidence-canonical/status.json" \
-            --github-output "$GITHUB_OUTPUT"
-          python3 scripts/kernel_evidence_status.py verify \
-            "$RUNNER_TEMP/kernel-evidence-canonical/status.json"
+            --source-commit "$SOURCE_SHA" --source-tree "$tree" --base-commit "$BASE_SHA" \
+            --source-qualified "$SOURCE_QUALIFIED" --merge-qualified "$MERGE_QUALIFIED" \
+            --source-artifact-digest "$SOURCE_DIGEST" --merge-artifact-digest "$MERGE_DIGEST" \
+            --source-status "$downloads/kernel-evidence-source-head-status-${SUFFIX}/source-head.json" \
+            --merge-status "$downloads/kernel-evidence-base-merge-status-${SUFFIX}/base-merge.json" \
+            --records-root "$downloads" \
+            --workflow-run-id "$GITHUB_RUN_ID" --workflow-run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --workflow-ref "$GITHUB_WORKFLOW_REF" --event-name "$GITHUB_EVENT_NAME" \
+            --output "$output/STATUS.json" --github-output "$GITHUB_OUTPUT" \
+            2>&1 | tee "$output/verification.log"
+          python3 scripts/kernel_evidence_status.py verify "$output/STATUS.json"
+          sha256sum "$output/STATUS.json" > "$output/STATUS.sha256"
 
-      - name: Upload canonical kernel evidence status
+      - name: Generate and check all canonical documentation views
+        id: generated_views
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/kernel-evidence-canonical"
+          python3 scripts/kernel_evidence_status.py render "$output/STATUS.json" \
+            --source-root "$GITHUB_WORKSPACE" --output-dir "$output/views"
+          python3 scripts/kernel_evidence_status.py render "$output/STATUS.json" \
+            --source-root "$GITHUB_WORKSPACE" --output-dir "$output/views" --check
+          cat "$output/views/qualification/kernel-evidence/RELEASE_DASHBOARD.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Record aggregate diagnostics even when qualification fails
+        if: always()
+        env:
+          JOB_OUTCOMES: ${{ toJSON(needs) }}
+          STEP_OUTCOMES: ${{ toJSON(steps) }}
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/kernel-evidence-canonical"
+          python3 - <<'PY'
+          import json, os, pathlib
+          path = pathlib.Path(os.environ["RUNNER_TEMP"]) / "kernel-evidence-canonical/diagnostics.json"
+          path.write_text(json.dumps({"sourceCommit": os.environ["SOURCE_SHA"],
+              "runId": os.environ["GITHUB_RUN_ID"], "runAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "jobs": json.loads(os.environ["JOB_OUTCOMES"]),
+              "steps": json.loads(os.environ["STEP_OUTCOMES"])}, indent=2) + "\n")
+          PY
+
+      - name: Upload canonical status and generated views
         id: canonical_upload
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
-          name: kernel-evidence-canonical-status-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/kernel-evidence-canonical/status.json
-          if-no-files-found: warn
-          retention-days: 365
+          name: kernel-evidence-canonical-status-${{ env.SUFFIX }}
+          path: ${{ runner.temp }}/kernel-evidence-canonical/
+          if-no-files-found: error
+          retention-days: 90
 
-      - name: Enforce required qualification lanes
+      - name: Enforce required qualification without accepting skipped lanes
         if: always()
         env:
           SOURCE_RESULT: ${{ needs.source-head.result }}
           MERGE_RESULT: ${{ needs.merge-candidate.result }}
-          EVENT_NAME: ${{ github.event_name }}
           QUALIFIED: ${{ steps.canonical_status.outputs.qualified }}
-          STATUS_UPLOAD: ${{ steps.canonical_upload.outcome }}
+          CANONICAL_RESULT: ${{ steps.canonical_status.outcome }}
+          DOWNLOAD_RESULT: ${{ steps.receipts_download.outcome }}
+          VIEWS_RESULT: ${{ steps.generated_views.outcome }}
+          UPLOAD_RESULT: ${{ steps.canonical_upload.outcome }}
         shell: bash
         run: |
           set -euo pipefail
           test "$SOURCE_RESULT" = success
-          if [[ "$EVENT_NAME" = pull_request ]]; then
-            test "$MERGE_RESULT" = success
-          else
-            test "$MERGE_RESULT" = skipped
-          fi
+          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then test "$MERGE_RESULT" = success; fi
           test "$QUALIFIED" = true
-          test "$STATUS_UPLOAD" = success
+          test "$CANONICAL_RESULT" = success
+          test "$DOWNLOAD_RESULT" = success
+          test "$VIEWS_RESULT" = success
+          test "$UPLOAD_RESULT" = success
