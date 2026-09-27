@@ -1,0 +1,35 @@
+{
+  "schema": "context-runtime-local-checks.v1",
+  "sourceCommit": "c21a781119e9fc241197b61a304698f023c8979b",
+  "scope": "isolated current-state projection and runtime source hash checks, not native compilation or full repository readiness",
+  "pythonTests": {
+    "command": "python3 -B -m unittest discover -s scripts -p 'test_context_compiler_state.py' -v",
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "exitCode": 0,
+    "logPath": "qualification/context-compiler/runtime-state-python-tests.log",
+    "logSha256": "2600f874c8989445536ae3f1fc5a2dee7d92097392bfaa5737255c66ef76a35d"
+  },
+  "subjects": [
+    {
+      "path": "scripts/generate_context_compiler_module_docs.py",
+      "gitBlobSha": "e6aeec8ba37171db5f4aa247142baf03c6ebbf3d",
+      "sha256": "8b74c6566b541b1f8656e3e37b696c10c815ecf4b00f9e41f76882601f454b5b"
+    },
+    {
+      "path": "scripts/test_context_compiler_state.py",
+      "gitBlobSha": "ffaf5289cffdbbd4a532d0ef99108c95dd0f94e1",
+      "sha256": "42465190ba4523dd3676af97fba0790e710c2a02a0150f9fed6817363081722f"
+    }
+  ],
+  "patchWhitespaceCheck": {
+    "command": "git diff --cached --check",
+    "exitCode": 0
+  },
+  "nativeTestsExecuted": false,
+  "rustfmtExecuted": false,
+  "clippyExecuted": false,
+  "fullRepositoryReadinessExecuted": false,
+  "independentAcceptance": false
+}

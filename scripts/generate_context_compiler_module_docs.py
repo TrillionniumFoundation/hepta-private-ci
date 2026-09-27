@@ -50,7 +50,27 @@ def canonical_hash(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
+def validate_runtime_sources(state, root=ROOT):
+    """Verify registered source bytes; this is not an exhaustive Rust call graph."""
+    seen = set()
+    for entry in state.get("runtimeSourceFiles", []):
+        relative = Path(entry["path"])
+        if relative.is_absolute() or ".." in relative.parts or entry["path"] in seen:
+            raise ValueError("invalid or duplicate registered source path")
+        if not re.fullmatch(r"[0-9a-f]{40}", entry["blobSha"]):
+            raise ValueError("registered source needs an exact Git blob")
+        seen.add(entry["path"])
+        target = root / relative
+        if any((root / parent).is_symlink() for parent in (relative, *relative.parents)):
+            raise ValueError("registered source may not traverse a symlink")
+        content = target.read_bytes()
+        actual = hashlib.sha1(f"blob {len(content)}\0".encode() + content).hexdigest()
+        if actual != entry["blobSha"]:
+            raise ValueError(f"registered source drift: {relative}")
+
+
 def validate_bindings(state, root=ROOT):
+    validate_runtime_sources(state, root)
     for reference in state["designReferences"]:
         content = (root / reference["path"]).read_bytes()
         actual = hashlib.sha1(f"blob {len(content)}\0".encode() + content).hexdigest()
@@ -98,6 +118,7 @@ recheck is not a registry revocation check. Full late-terminal recovery and an
 attempt-bound acknowledgement remain open. V3 files listed below are not
 counted as active merely because they exist.
 """
+    graph = state.get("productCallGraph", graph)
     documents = {}
     for kind, title in [
         ("technical", "context.compiler technical development guide"),
@@ -116,8 +137,8 @@ counted as active merely because they exist.
             + "\n## 4. Dormant integration inputs\n\n" + bullets([f"`{item['path']}`: {item['reason']}" for item in state["dormantSource"]])
             + "\n\n## 5. Remaining implementation and qualification gates\n\n" + bullets(state["knownOpenItems"])
             + "\n\n## 6. Verification\n\n"
-            + "20 local Python tests passed (14 real-Git candidate tests and 6 execution-summary parser tests). "
-            + "The 19 newly added Rust regressions were not executed locally. These numbers are not whole-module coverage or target-host qualification.\n\n"
+            + state.get("verificationNarrative", "Execution evidence must be read from the exact-candidate receipts.")
+            + "\n\n"
             + "The canonical workflow uses separate source-head and deterministic synthetic-merge lanes. "
             + "Both must retain passing receipts with source/base/tested commit/tree, run/attempt, command exit codes, nonempty native test counts and log digests. "
             + "Candidate identity is revalidated before and after each command. Pending, skipped, cancelled and missing artifacts are not passes.\n\n"
@@ -138,6 +159,7 @@ counted as active merely because they exist.
         "v2ProviderClosure": "Typed slot and observer safety guards are present. Independent authority, immutable tokenizer qualification, final revocation and crash reconciliation remain open.",
         "currentHeadQualification": "No immutable passing receipt for the final source/merge candidate is asserted by source generation.",
     }
+    rationale.update(state.get("statusRationale", {}))
     baseline = root / "docs/modules/context.compiler/design-baseline"
     for kind, name in (("map", "IMPLEMENTATION_MAP.json"), ("manifest", "MODULE_MANIFEST.json")):
         value = json.loads((baseline / name).read_text(encoding="utf-8"), object_pairs_hook=unique_object)
@@ -150,10 +172,11 @@ counted as active merely because they exist.
             "runtimeSourceAnchor": state["runtimeSourceAnchor"], "runtimeSourceTree": state["runtimeSourceTree"],
             "status": state["status"], "statusRationale": rationale, "maturity": state["maturity"],
             "sourceBindings": state["sourceBindings"], "dormantSource": state["dormantSource"],
+            "runtimeSourceFiles": state.get("runtimeSourceFiles", []),
             "designReferences": state["designReferences"], "knownOpenItems": state["knownOpenItems"],
             "invariantInterpretation": "Retained invariants are required contracts; status and knownOpenItems identify implementation and execution gaps.",
         })
-        value["sourceRoots"] = list(dict.fromkeys(value["sourceRoots"] + [binding["path"] for binding in state["sourceBindings"]]))
+        value["sourceRoots"] = list(dict.fromkeys(value["sourceRoots"] + [binding["path"] for binding in state["sourceBindings"]] + [entry["path"] for entry in state.get("runtimeSourceFiles", [])]))
         value["qualification"].update(state["qualification"])
         value["qualification"]["receiptArtifact"] = "context-compiler-<source-sha>-<lane>-<run-id>-<attempt>"
         value["qualification"]["runner"] = "scripts/context_compiler_execution.py"

@@ -3,7 +3,7 @@
   "module": "context.compiler",
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "9eecc73756742e66e2f69d81f3700eaf72cc65838a078f37df1a73c5e1ff9155",
+    "stateSha256": "734e7ba75c5242ef8a7488ad517369ff6602422a26b12c09346f723b589b020c",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-full-closure-review-20260927"
@@ -21,10 +21,10 @@
     "currentHeadQualification": "absent"
   },
   "statusRationale": {
-    "coreImplementation": "Core verified V2 source exists; native execution is a separate gate.",
-    "productComposition": "The current source uses provisional admission and the V2 exact-body path. Dormant V3 files are not active product composition.",
-    "v2ProviderClosure": "Typed slot and observer safety guards are present. Independent authority, immutable tokenizer qualification, final revocation and crash reconciliation remain open.",
-    "currentHeadQualification": "No immutable passing receipt for the final source/merge candidate is asserted by source generation."
+    "coreImplementation": "Core verified-V2 source exists. No full native test result is asserted for the current head.",
+    "productComposition": "The active V2 exact-body path now includes post-tokenization registry authorization, bounded tokenizer I/O and monotone durable observations. Independent authority/V3 cutover remains incomplete.",
+    "v2ProviderClosure": "Concrete runtime defects are patched in direct source. Immutable tokenizer qualification, provider final-use/cancellation, post-crash proof reconstruction and independent terminal authentication remain open.",
+    "currentHeadQualification": "Only passing receipts for the final source and deterministic merge can establish execution; source generation never self-certifies."
   },
   "sourceRoots": [
     "codex-rs/hepta-context-compiler/src/provider_closure.rs",
@@ -39,7 +39,12 @@
     "codex-rs/core/src/client.rs",
     "codex-rs/core/src/model_provider_policy",
     "codex-rs/hepta-codex-adapter/src/lib.rs",
-    "codex-rs/codex-api/src/context_slot.rs"
+    "codex-rs/codex-api/src/context_slot.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery/framing_json.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery/registry_race_tests.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery/runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery/terminal_state.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery/tokenizer_io.rs"
   ],
   "publicSurface": [
     "compile_prompt_registry_v2",
@@ -159,28 +164,35 @@
       "synthetic-merge"
     ],
     "localPythonTestsPassed": 20,
-    "localPythonScope": "Candidate identity and execution-summary parser only; not native Rust or provider qualification.",
-    "nativeRegressionsAdded": 19,
+    "localPythonScope": "Historical prior follow-up: candidate identity and execution-summary parser; not re-executed by this runtime follow-up.",
+    "nativeRegressionsAdded": 40,
+    "nativeRegressionBreakdown": {
+      "earlierFollowup": 19,
+      "runtimeFollowup": 21
+    },
     "nativeRegressionsExecutedLocally": false,
     "targetHostQualified": false,
+    "runtimeFollowupPythonTestsPassed": 10,
+    "runtimeFollowupPythonScope": "Current-state generation, retained inventories and exact source-blob drift tests only. Not Rust execution.",
     "runner": "scripts/context_compiler_execution.py"
   },
   "knownOpenItems": [
-    "Complete and compile direct V3 authority/product integration and default-off legacy gating on this branch; dormant files and migration scripts are not implementation evidence.",
-    "Replace provisional product-owned admission records with independently controlled current registry/authority verification.",
-    "Provision and independently qualify immutable tokenizer binary, interpreter/runtime, vocabulary, normalization and provider/model interpretation; move stdin I/O inside the tokenizer timeout and close artifact replacement races.",
-    "Revalidate revocation after tokenization at the durable send-authorization linearization point. The new expiry guard does not close the registry revocation race.",
-    "Complete crash/reopen recovery of exact preparation/attempt evidence and independent late-terminal reconciliation; preserve nonterminal Indeterminate history and handle uncertain fsync with fencing.",
-    "Bind terminal acknowledgement to exact attempt identity before permitting reuse of the turn observer; an identity-free terminal notification is not independent reconciliation.",
-    "Complete raw-content Debug/error redaction across all holders and qualify typed slots beyond the current developer-only profile.",
-    "Execute all native regressions, full affected product tests, strict lint, formatting, dependency and source/document checks on the final source and synthetic-merge objects.",
-    "Measure named-host p50/p95/p99, allocation and peak memory, concurrency, cold/warm tokenizer and revocation races; no target-host performance is claimed.",
-    "Obtain independent security acceptance and operator-controlled activation/release; repository changes do not grant these authorities."
+    "Complete and compile direct V3 authority/product integration and default-off legacy gating. This runtime follow-up does not activate the dormant V3 files or run source-migration scripts.",
+    "Replace provisional product-owned admission with independently controlled registry/authority capabilities; the post-tokenization registry re-read is not independent admission authentication.",
+    "Provision and independently qualify the real provider/model tokenizer, immutable executable/interpreter/runtime, vocabulary and normalization. Hash pins detect observed artifact drift but do not exclude adversarial replace-and-restore or attest semantic token accuracy.",
+    "Integrate the transport owner final-use token and cancellation policy with the documented durable authorization linearization point. The registry lock prevents pre-authorization revocation races, not every revocation after a committed authorization.",
+    "Complete post-crash reconstruction/verification of opaque preparation and final-request proofs and independently authenticated late-terminal reconciliation. Digest-only unresolved pre-sends still return RecoveryRequired rather than being fabricated into a delivered receipt.",
+    "Bind terminal acknowledgement to exact attempt identity before reusing the turn observer. An identity-free encoded terminal callback is not independent reconciliation.",
+    "Finish cross-holder raw-content redaction, remaining provider typed slots and full provider-framing policy qualification; the active profile remains developer-only.",
+    "Qualify durable filesystem ownership, rollback resistance, symlink/race resistance and safe retention/retirement beyond bounded JSON state. Schema-2 rollback requires a compatible backup plus external-attempt reconciliation, never deletion of unresolved claims.",
+    "Run pinned Rust formatting, compilation, all native regressions, affected product E2E, strict lint, dependencies and full source/document checks on the final exact source and merge objects. Local source checks do not establish native execution.",
+    "Measure named-host p50/p95/p99, allocation and peak memory, concurrent admission, cold/warm tokenizer and long-lived recovery/backlog capacity.",
+    "Obtain independent security acceptance and operator-controlled activation/release; repository source changes grant none of these authorities."
   ],
   "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
   "integrationBranch": "codex/context-compiler-full-closure-review-20260927",
-  "runtimeSourceAnchor": "0acd6e0c9889e67beeb25e1b1885de6807daa3ca",
-  "runtimeSourceTree": "10942d07697d1d18f9ee3a86041f4ecf110657fb",
+  "runtimeSourceAnchor": "c21a781119e9fc241197b61a304698f023c8979b",
+  "runtimeSourceTree": "9f779326e71a63764cf7a9cc085948b0421f82ec",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "partial",
@@ -204,20 +216,53 @@
       "moduleRoot": "codex-rs/ext/hepta-prompt/src/lib.rs",
       "moduleDeclaration": "mod exact_body;",
       "productCaller": "codex-rs/ext/hepta-prompt/src/exact_body.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
+      "symbol": "AgentdExactContextDeliveryOwner",
+      "moduleRoot": "codex-rs/hepta-agentd/src/lib.rs",
+      "moduleDeclaration": "mod exact_context_delivery;",
+      "productCaller": "codex-rs/hepta-agentd/src/prompt_runtime.rs"
     }
   ],
   "dormantSource": [
     {
       "path": "codex-rs/hepta-prompt-registry/src/context_authority.rs",
-      "reason": "Registry-owned V3 authority exists as a file but is not yet registered by the crate root at the runtime source anchor."
+      "reason": "Registry-owned V3 authority is still not registered by the crate root; it is not active merely because its file exists."
     },
     {
       "path": "codex-rs/hepta-intelligence/src/prompt_product_v3.rs",
-      "reason": "V3 product materialization is not yet the current compiled product path."
+      "reason": "V3 materialization is not yet the current compiled product path."
     },
     {
       "path": "codex-rs/hepta-agentd/src/prompt_product_v3.rs",
-      "reason": "The active Agentd path still uses prompt_runtime plus exact_context_delivery; this file is not counted as active delivery."
+      "reason": "The active Agentd path remains prompt_runtime plus exact_context_delivery; no second delivery owner was activated."
+    }
+  ],
+  "runtimeSourceFiles": [
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/framing_json.rs",
+      "blobSha": "f2dfa529a1faa7233655291d137f517e2227d721"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/registry_race_tests.rs",
+      "blobSha": "01a69dcbc98dfab3fc3bded90fbfd0c3f79dcc02"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/runtime_tests.rs",
+      "blobSha": "9b8c00e140372e4a4fa857ff91b910cbb0b961e5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/terminal_state.rs",
+      "blobSha": "cf7a888f973cc73603ae2871c27fc5dd547bda79"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/tokenizer_io.rs",
+      "blobSha": "15ed735bfff615d8632f6d95166458658e0aea46"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
+      "blobSha": "252313b0041a3fddb17b9509a262e8a9d9be5df5"
     }
   ],
   "designReferences": [
