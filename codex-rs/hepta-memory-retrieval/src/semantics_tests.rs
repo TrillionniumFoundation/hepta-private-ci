@@ -116,11 +116,18 @@ fn snapshot(candidates: &[RetrievalChannelCandidateV1]) -> EngramSnapshotV1 {
 }
 
 fn claim(proposition: &str, polarity: PropositionPolarityV2) -> ContradictionEvidenceV2 {
-    ContradictionEvidenceV2::new(digest(proposition), cue().snapshot_key.vector_digest, polarity)
-        .expect("claim")
+    ContradictionEvidenceV2::new(
+        digest(proposition),
+        cue().snapshot_key.vector_digest,
+        polarity,
+    )
+    .expect("claim")
 }
 
-fn both(policy: &RetrievalPolicyV1, candidates: Vec<RetrievalChannelCandidateV1>) -> [RecallPacketV1; 2] {
+fn both(
+    policy: &RetrievalPolicyV1,
+    candidates: Vec<RetrievalChannelCandidateV1>,
+) -> [RecallPacketV1; 2] {
     let graph = snapshot(&candidates);
     [
         recall(&cue(), policy, candidates.clone()).expect("plain recall"),
@@ -285,8 +292,15 @@ fn zero_contribution_cannot_supply_channel_coverage() {
 
 #[test]
 fn every_zero_weight_synapse_is_inert_including_expansion_and_conflicts() {
-    let candidates = vec![candidate(1, FixedQ32::ONE.raw()), candidate(2, FixedQ32::ONE.raw())];
-    let mut graph = snapshot(&[candidates[0].clone(), candidates[1].clone(), candidate(3, 1)]);
+    let candidates = vec![
+        candidate(1, FixedQ32::ONE.raw()),
+        candidate(2, FixedQ32::ONE.raw()),
+    ];
+    let mut graph = snapshot(&[
+        candidates[0].clone(),
+        candidates[1].clone(),
+        candidate(3, 1),
+    ]);
     let baseline = recall_with_engram(&cue(), &policy(), candidates.clone(), &graph, &dynamics())
         .expect("baseline");
     for relation in [
@@ -299,14 +313,17 @@ fn every_zero_weight_synapse_is_inert_including_expansion_and_conflicts() {
         SynapseRelationV1::Inhibitory,
         SynapseRelationV1::Contradicts,
     ] {
-        graph.synapses = [2, 3].into_iter().map(|target| SynapseV1 {
-            source_node_id: id("memory:0001"),
-            target_node_id: id(&format!("memory:{target:04}")),
-            relation,
-            weight: FixedQ32::ZERO,
-            support_digest: digest("edge-support"),
-            generation_vector_digest: cue().snapshot_key.vector_digest,
-        }).collect();
+        graph.synapses = [2, 3]
+            .into_iter()
+            .map(|target| SynapseV1 {
+                source_node_id: id("memory:0001"),
+                target_node_id: id(&format!("memory:{target:04}")),
+                relation,
+                weight: FixedQ32::ZERO,
+                support_digest: digest("edge-support"),
+                generation_vector_digest: cue().snapshot_key.vector_digest,
+            })
+            .collect();
         graph.snapshot_digest = graph.compute_snapshot_digest();
         let packet = recall_with_engram(&cue(), &policy(), candidates.clone(), &graph, &dynamics())
             .expect("zero edge recall");
@@ -327,8 +344,8 @@ fn confidence_is_activation_weighted_not_node_count_weighted() {
     let mut graph = snapshot(&candidates);
     graph.nodes[1].confidence = ProbabilityQ32::ZERO;
     graph.snapshot_digest = graph.compute_snapshot_digest();
-    let packet = recall_with_engram(&cue(), &policy(), candidates, &graph, &dynamics())
-        .expect("recall");
+    let packet =
+        recall_with_engram(&cue(), &policy(), candidates, &graph, &dynamics()).expect("recall");
     assert_eq!(
         packet.engram.expect("engram").confidence.raw(),
         3 * ProbabilityQ32::ONE.raw() / 4
@@ -346,27 +363,46 @@ fn policy_grid_preserves_permutation_and_resource_accounting() {
                     policy.minimum_total_score = FixedQ32::from_raw(floor);
                     policy.maximum_results = maximum_results;
                     policy.validate().expect("grid policy");
-                    let candidates = (1..=count).map(|number| {
-                        candidate(number, FixedQ32::ONE.raw() / i64::from(number))
-                    }).collect::<Vec<_>>();
-                    let union = build_candidate_union(&cue(), &policy, candidates.clone()).expect("union");
+                    let candidates = (1..=count)
+                        .map(|number| candidate(number, FixedQ32::ONE.raw() / i64::from(number)))
+                        .collect::<Vec<_>>();
+                    let union =
+                        build_candidate_union(&cue(), &policy, candidates.clone()).expect("union");
                     let mut reversed = candidates.clone();
                     reversed.reverse();
                     assert_eq!(
                         union,
-                        build_candidate_union(&cue(), &policy, reversed.clone()).expect("reversed union")
+                        build_candidate_union(&cue(), &policy, reversed.clone())
+                            .expect("reversed union")
                     );
-                    for (left, right) in both(&policy, candidates).into_iter().zip(both(&policy, reversed)) {
+                    for (left, right) in both(&policy, candidates)
+                        .into_iter()
+                        .zip(both(&policy, reversed))
+                    {
                         assert_eq!(left, right);
                         left.validate().expect("packet invariants");
                         assert!(left.selections.len() <= maximum_results as usize);
                         if left.disposition == RecallDispositionV1::Recalled {
-                            assert_eq!(left.selections.len() + left.omitted_count as usize, union.entries.len());
+                            assert_eq!(
+                                left.selections.len() + left.omitted_count as usize,
+                                union.entries.len()
+                            );
                         }
                         if let Some(receipt) = left.engram {
-                            assert_eq!(receipt.resources.candidate_records as usize, union.entries.len());
-                            assert_eq!(receipt.resources.active_nodes as usize, receipt.active_nodes.len());
-                            assert!(receipt.active_nodes.iter().all(|node| node.activation > FixedQ32::ZERO));
+                            assert_eq!(
+                                receipt.resources.candidate_records as usize,
+                                union.entries.len()
+                            );
+                            assert_eq!(
+                                receipt.resources.active_nodes as usize,
+                                receipt.active_nodes.len()
+                            );
+                            assert!(
+                                receipt
+                                    .active_nodes
+                                    .iter()
+                                    .all(|node| node.activation > FixedQ32::ZERO)
+                            );
                         }
                     }
                 }
@@ -410,7 +446,9 @@ fn another_cue_at_the_same_generation_cannot_reuse_an_engram_union() {
     other.request_digest = digest("different-request");
     assert!(matches!(
         settle_engram(&other, &union, &graph, &dynamics()),
-        Err(EngramErrorV1::Recall(RecallErrorV1::DigestMismatch("engram_cue")))
+        Err(EngramErrorV1::Recall(RecallErrorV1::DigestMismatch(
+            "engram_cue"
+        )))
     ));
 }
 
@@ -419,15 +457,29 @@ fn controlled_recall_preserves_complete_results_and_never_returns_partial_succes
     use std::time::Duration;
     use std::time::Instant;
 
-    let candidates = vec![candidate(1, FixedQ32::ONE.raw()), candidate(2, FixedQ32::ONE.raw() / 2)];
+    let candidates = vec![
+        candidate(1, FixedQ32::ONE.raw()),
+        candidate(2, FixedQ32::ONE.raw() / 2),
+    ];
     let graph = snapshot(&candidates);
-    let expected = recall_with_engram(&cue(), &policy(), candidates.clone(), &graph, &dynamics()).unwrap();
+    let expected =
+        recall_with_engram(&cue(), &policy(), candidates.clone(), &graph, &dynamics()).unwrap();
     let work = RecallWorkControlV1::bounded(Instant::now() + Duration::from_secs(30), 10000);
-    let actual = recall_with_engram_controlled(&cue(), &policy(), candidates.clone(), &graph, &dynamics(), &work).unwrap();
+    let actual = recall_with_engram_controlled(
+        &cue(),
+        &policy(),
+        candidates.clone(),
+        &graph,
+        &dynamics(),
+        &work,
+    )
+    .unwrap();
     assert_eq!(actual, expected);
     work.cancel();
     assert_eq!(
         recall_with_engram_controlled(&cue(), &policy(), candidates, &graph, &dynamics(), &work),
-        Err(EngramErrorV1::Recall(RecallErrorV1::Interrupted(RecallInterruptionV1::Cancelled))),
+        Err(EngramErrorV1::Recall(RecallErrorV1::Interrupted(
+            RecallInterruptionV1::Cancelled
+        ))),
     );
 }

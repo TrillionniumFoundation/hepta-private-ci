@@ -44,7 +44,9 @@ impl RetrievalExecutor {
     }
 
     pub(crate) fn profile_digest(&self) -> Digest32 {
-        Digest32::of_bytes(b"hepta.retrieval.executor.v1:delivery=2,800ms;shadow=1,40ms;work=250000;queue=0")
+        Digest32::of_bytes(
+            b"hepta.retrieval.executor.v1:delivery=2,800ms;shadow=1,40ms;work=250000;queue=0",
+        )
     }
 
     pub(crate) async fn run<T, F>(
@@ -56,15 +58,22 @@ impl RetrievalExecutor {
         T: Send + 'static,
         F: FnOnce(RecallWorkControlV1) -> Result<T, String> + Send + 'static,
     {
-        request.control.checkpoint().map_err(|error| error.to_string())?;
+        request
+            .control
+            .checkpoint()
+            .map_err(|error| error.to_string())?;
         let slots = match request.class {
             RetrievalWorkClass::Delivery => &self.delivery,
             RetrievalWorkClass::Shadow => &self.shadow,
         };
-        let permit = Arc::clone(slots).try_acquire_owned()
+        let permit = Arc::clone(slots)
+            .try_acquire_owned()
             .map_err(|_| "retrieval execution capacity exhausted".to_string())?;
         let control = request.control.clone();
-        let mut cancel_on_drop = CancelOnDrop { control: control.clone(), armed: true };
+        let mut cancel_on_drop = CancelOnDrop {
+            control: control.clone(),
+            armed: true,
+        };
         let mut worker = tokio::task::spawn_blocking(move || {
             let _permit = permit;
             control.checkpoint().map_err(|error| error.to_string())?;
@@ -73,8 +82,10 @@ impl RetrievalExecutor {
             Ok(value)
         });
         let observed = tokio::time::timeout_at(
-            tokio::time::Instant::from_std(request.deadline), &mut worker,
-        ).await;
+            tokio::time::Instant::from_std(request.deadline),
+            &mut worker,
+        )
+        .await;
         match observed {
             Ok(result) => {
                 cancel_on_drop.armed = false;

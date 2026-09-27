@@ -11,14 +11,18 @@ async fn cancelled_wait_keeps_the_actual_shadow_worker_charged() {
     let running = Arc::clone(&executor);
     let task = tokio::spawn(async move {
         let request = running.begin(RetrievalWorkClass::Shadow);
-        running.run(&request, move |control| {
-            entered_tx.send(()).unwrap();
-            release_rx.recv_timeout(Duration::from_secs(5)).unwrap();
-            control.checkpoint().map_err(|error| error.to_string())
-        }).await
+        running
+            .run(&request, move |control| {
+                entered_tx.send(()).unwrap();
+                release_rx.recv_timeout(Duration::from_secs(5)).unwrap();
+                control.checkpoint().map_err(|error| error.to_string())
+            })
+            .await
     });
     tokio::task::spawn_blocking(move || entered_rx.recv_timeout(Duration::from_secs(5)))
-        .await.unwrap().unwrap();
+        .await
+        .unwrap()
+        .unwrap();
     task.abort();
     let _ = task.await;
     assert_eq!(executor.shadow.available_permits(), 0);
@@ -30,24 +34,30 @@ async fn cancelled_wait_keeps_the_actual_shadow_worker_charged() {
     release_tx.send(()).unwrap();
     tokio::time::timeout(Duration::from_secs(5), async {
         loop {
-            if executor.shadow.available_permits() == 1 { break; }
+            if executor.shadow.available_permits() == 1 {
+                break;
+            }
             tokio::task::yield_now().await;
         }
-    }).await.unwrap();
+    })
+    .await
+    .unwrap();
 }
 
 #[tokio::test]
 async fn timeout_cannot_return_late_success_or_extend_the_request_budget() {
     let executor = RetrievalExecutor::new();
     let request = executor.begin(RetrievalWorkClass::Shadow);
-    let result = executor.run(&request, |control| {
-        loop {
-            match control.checkpoint() {
-                Ok(()) => std::thread::sleep(Duration::from_millis(1)),
-                Err(error) => return Err::<(), String>(error.to_string()),
+    let result = executor
+        .run(&request, |control| {
+            loop {
+                match control.checkpoint() {
+                    Ok(()) => std::thread::sleep(Duration::from_millis(1)),
+                    Err(error) => return Err::<(), String>(error.to_string()),
+                }
             }
-        }
-    }).await;
+        })
+        .await;
     assert!(result.is_err());
     assert!(executor.run(&request, |_| Ok(())).await.is_err());
 }

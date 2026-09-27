@@ -123,8 +123,15 @@ pub fn execute_owner_observation(
     acquired_at_unix_ms: u64,
     lease_expires_unix_ms: u64,
 ) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
-    execute_owner_observation_inner(observation, cut, context, request_digest,
-        acquired_at_unix_ms, lease_expires_unix_ms, /*work*/ None)
+    execute_owner_observation_inner(
+        observation,
+        cut,
+        context,
+        request_digest,
+        acquired_at_unix_ms,
+        lease_expires_unix_ms,
+        /*work*/ None,
+    )
 }
 
 /// Execute against the same owner cut with cancellation and a host deadline.
@@ -137,8 +144,15 @@ pub fn execute_owner_observation_controlled(
     lease_expires_unix_ms: u64,
     work: &codex_hepta_memory_retrieval::RecallWorkControlV1,
 ) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
-    execute_owner_observation_inner(observation, cut, context, request_digest,
-        acquired_at_unix_ms, lease_expires_unix_ms, Some(work))
+    execute_owner_observation_inner(
+        observation,
+        cut,
+        context,
+        request_digest,
+        acquired_at_unix_ms,
+        lease_expires_unix_ms,
+        Some(work),
+    )
 }
 
 fn execute_owner_observation_inner(
@@ -151,7 +165,8 @@ fn execute_owner_observation_inner(
     work: Option<&codex_hepta_memory_retrieval::RecallWorkControlV1>,
 ) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
     if let Some(work) = work {
-        work.checkpoint().map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
+        work.checkpoint()
+            .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
     }
     context.validate()?;
     if request_digest.is_zero() {
@@ -187,14 +202,22 @@ fn execute_owner_observation_inner(
     .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
     let recall = match work {
         Some(work) => codex_hepta_memory_retrieval::recall_generated_with_engram_controlled(
-            &cue, &context.retrieval_policy, &generated, &context.engram_snapshot,
-            &context.dynamics_policy, work,
+            &cue,
+            &context.retrieval_policy,
+            &generated,
+            &context.engram_snapshot,
+            &context.dynamics_policy,
+            work,
         ),
         None => recall_generated_with_engram(
-            &cue, &context.retrieval_policy, &generated, &context.engram_snapshot,
+            &cue,
+            &context.retrieval_policy,
+            &generated,
+            &context.engram_snapshot,
             &context.dynamics_policy,
         ),
-    }.map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
+    }
+    .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
     let assignment =
         observe_retrieval_assignment(&cue, &context.retrieval_policy, &generated, &recall)
             .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;

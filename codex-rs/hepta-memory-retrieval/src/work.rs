@@ -64,13 +64,19 @@ impl RecallWorkControlV1 {
     pub fn checkpoint(&self) -> Result<(), RecallErrorV1> {
         let reason = if self.state.cancelled.load(Ordering::Acquire) {
             Some(RecallInterruptionV1::Cancelled)
-        } else if self.deadline.is_some_and(|deadline| Instant::now() >= deadline) {
+        } else if self
+            .deadline
+            .is_some_and(|deadline| Instant::now() >= deadline)
+        {
             Some(RecallInterruptionV1::DeadlineExceeded)
-        } else if self.state.remaining.fetch_update(
-            Ordering::AcqRel,
-            Ordering::Acquire,
-            |remaining| remaining.checked_sub(1),
-        ).is_err() {
+        } else if self
+            .state
+            .remaining
+            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |remaining| {
+                remaining.checked_sub(1)
+            })
+            .is_err()
+        {
             Some(RecallInterruptionV1::WorkLimitExceeded)
         } else {
             None

@@ -661,7 +661,13 @@ pub fn settle_engram(
     snapshot: &EngramSnapshotV1,
     policy: &EngramDynamicsPolicyV1,
 ) -> Result<EngramRecallReceiptV1, EngramErrorV1> {
-    settle_engram_controlled(cue, union, snapshot, policy, &crate::RecallWorkControlV1::compatibility())
+    settle_engram_controlled(
+        cue,
+        union,
+        snapshot,
+        policy,
+        &crate::RecallWorkControlV1::compatibility(),
+    )
 }
 
 /// Host-bounded counterpart; interruption never publishes partial recall.
@@ -773,7 +779,7 @@ pub fn settle_engram_controlled(
         let mut raw = BTreeMap::new();
         let mut paths = Vec::new();
         for node_id in &expanded {
-        work.checkpoint().map_err(EngramErrorV1::Recall)?;
+            work.checkpoint().map_err(EngramErrorV1::Recall)?;
             let node = node_map
                 .get(node_id)
                 .copied()
@@ -978,7 +984,14 @@ pub fn recall_with_engram(
     engram_snapshot: &EngramSnapshotV1,
     dynamics_policy: &EngramDynamicsPolicyV1,
 ) -> Result<RecallPacketV1, EngramErrorV1> {
-    recall_with_engram_controlled(cue, retrieval_policy, candidates, engram_snapshot, dynamics_policy, &crate::RecallWorkControlV1::compatibility())
+    recall_with_engram_controlled(
+        cue,
+        retrieval_policy,
+        candidates,
+        engram_snapshot,
+        dynamics_policy,
+        &crate::RecallWorkControlV1::compatibility(),
+    )
 }
 
 /// Host-bounded counterpart; interruption never publishes partial recall.
@@ -995,8 +1008,10 @@ pub fn recall_with_engram_controlled(
     retrieval_policy.validate().map_err(EngramErrorV1::Recall)?;
     let union =
         build_candidate_union(cue, retrieval_policy, candidates).map_err(EngramErrorV1::Recall)?;
-    let admitted = policy_admitted_union(&union, retrieval_policy).map_err(EngramErrorV1::Recall)?;
-    let mut engram = settle_engram_controlled(cue, &admitted, engram_snapshot, dynamics_policy, work)?;
+    let admitted =
+        policy_admitted_union(&union, retrieval_policy).map_err(EngramErrorV1::Recall)?;
+    let mut engram =
+        settle_engram_controlled(cue, &admitted, engram_snapshot, dynamics_policy, work)?;
     // Account for every observed union record, including records rejected by
     // admission. Rejected records cannot seed dynamics or contribute risk.
     engram.resources.candidate_records =
