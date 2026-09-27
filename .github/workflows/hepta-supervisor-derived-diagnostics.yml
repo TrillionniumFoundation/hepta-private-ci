@@ -1,0 +1,113 @@
+name: Runtime supervisor derived diagnostics
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-supervisor/**"
+      - "docs/modules/runtime.supervisor/**"
+      - "docs/modules/MODULE_DOCS.json"
+      - "qualification/lane-b/**"
+      - "scripts/hepta-module-docs.py"
+      - "scripts/hepta-lane-b-truth.py"
+      - "scripts/hepta-docs.py"
+      - ".github/workflows/hepta-supervisor-derived-diagnostics.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-supervisor-derived-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  derive:
+    name: Derive exact repair patch
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Generate candidate-bound derived files and diagnostics
+        id: derive
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p .hepta-evidence
+          python3 - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          path = Path("docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json")
+          value = json.loads(path.read_text(encoding="utf-8"))
+          head = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          tree = subprocess.check_output(
+              ["git", "rev-parse", "HEAD^{tree}"], text=True
+          ).strip()
+          observed = value.setdefault("observedAtHead", {})
+          observed["commit"] = head
+          observed["tree"] = tree
+          observed["interpretation"] = (
+              "Ephemeral CI derivation anchor for the exact checked-out candidate. "
+              "It is used only to generate and verify the retained repair patch; "
+              "the tracked implementation map remains unchanged until review."
+          )
+          path.write_text(
+              json.dumps(value, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          python3 scripts/hepta-module-docs.py refresh-derived
+          python3 scripts/hepta-lane-b-truth.py generate
+          python3 scripts/hepta-docs.py generate-status
+          git diff --check
+          git diff --binary -- \
+            docs/modules/MODULE_DOCS.json \
+            docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json \
+            docs/STATUS.md \
+            qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
+            qualification/lane-b/TEST_TRACEABILITY.json \
+            > .hepta-evidence/runtime-supervisor-derived.patch
+          git status --short > .hepta-evidence/status.txt
+          sha256sum .hepta-evidence/runtime-supervisor-derived.patch \
+            > .hepta-evidence/runtime-supervisor-derived.patch.sha256
+          test -s .hepta-evidence/runtime-supervisor-derived.patch
+
+          set +e
+          python3 scripts/hepta-module-docs.py refresh-derived --check \
+            > .hepta-evidence/module-docs.log 2>&1
+          module_docs_status=$?
+          python3 scripts/hepta-lane-b-truth.py verify \
+            > .hepta-evidence/lane-b.log 2>&1
+          lane_b_status=$?
+          python3 scripts/hepta-docs.py verify \
+            > .hepta-evidence/development-docs.log 2>&1
+          development_status=$?
+          set -e
+          printf 'module_docs=%s\nlane_b=%s\ndevelopment_docs=%s\n' \
+            "$module_docs_status" "$lane_b_status" "$development_status" \
+            > .hepta-evidence/verifier-status.txt
+          test "$module_docs_status" -eq 0
+          test "$lane_b_status" -eq 0
+          test "$development_status" -eq 0
+
+      - name: Retain exact patch and verifier diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-derived-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/*
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
