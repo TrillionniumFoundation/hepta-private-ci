@@ -35,6 +35,7 @@ mkdir -p "$(dirname "${JSON_OUT}")" "$(dirname "${LOG_OUT}")"
 cases=(
   consumer_binding_is_integrity_bound_and_authority_free
   accepted_unknown_is_reconciled_without_duplicate_publish
+  concurrent_identical_commit_is_reconciled_as_idempotent_success
   conflicting_semantics_are_never_overwritten
   consumed_then_terminal_is_replayable_and_exact_retry_is_idempotent
   terminal_without_consumption_and_conflicting_terminal_fail_closed
