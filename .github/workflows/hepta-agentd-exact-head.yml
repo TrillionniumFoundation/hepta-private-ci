@@ -32,6 +32,28 @@ jobs:
         with:
           ref: ${{ env.EXPECTED_SHA }}
           persist-credentials: false
+      - name: Retain exact tracked source independently of test outcome
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          out="$RUNNER_TEMP/agentd-source"
+          mkdir -p "$out"
+          git archive --format=tar HEAD | gzip -n > "$out/source.tar.gz"
+          git cat-file commit HEAD > "$out/source.commit"
+          git rev-parse HEAD > "$out/HEAD_SHA"
+          git rev-parse HEAD^{tree} > "$out/HEAD_TREE"
+          (cd "$out" && sha256sum source.tar.gz source.commit HEAD_SHA HEAD_TREE > SHA256SUMS)
+      - name: Upload source identity without checkout credentials or untracked files
+        if: ${{ always() && steps.source.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: agentd-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/agentd-source
+          if-no-files-found: error
+          retention-days: 14
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
