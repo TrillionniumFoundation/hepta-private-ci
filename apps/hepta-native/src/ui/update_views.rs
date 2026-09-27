@@ -50,7 +50,7 @@ impl HeptaNativeApp {
                         )
                         .clicked()
                 {
-                    self.activate_update_on_exit.store(true, Ordering::SeqCst);
+                    self.shutdown.update_requested = true;
                     self.update_message = Some(
                         self.locale
                             .text(
@@ -59,7 +59,7 @@ impl HeptaNativeApp {
                             )
                             .to_owned(),
                     );
-                    ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
+                    self.request_shutdown(ui.ctx());
                 }
             }
             None => {
@@ -73,7 +73,7 @@ impl HeptaNativeApp {
     }
 
     fn stage_update(&mut self) {
-        let outcome = (|| -> Result<(SignedUpdateManifestV1, PathBuf), ShellError> {
+        let outcome = (|| -> Result<(PathBuf, PathBuf), ShellError> {
             let manifest_path = PathBuf::from(self.update_manifest_path.trim());
             let package_path = PathBuf::from(self.update_package_path.trim());
             if !manifest_path.is_absolute() || !package_path.is_absolute() {
@@ -81,21 +81,17 @@ impl HeptaNativeApp {
                     "update manifest and package paths must be absolute".to_owned(),
                 ));
             }
-            let metadata = std::fs::metadata(&manifest_path)?;
-            if !metadata.is_file() || metadata.len() == 0 || metadata.len() > 64 * 1024 {
-                return Err(ShellError::InvalidInput(
-                    "signed update manifest must be a non-empty regular file <= 64 KiB".to_owned(),
-                ));
-            }
-            let manifest = serde_json::from_slice(&std::fs::read(&manifest_path)?)?;
-            Ok((manifest, package_path))
+            Ok((manifest_path, package_path))
         })();
         match outcome {
-            Ok((manifest, package_path)) => {
+            Ok((manifest_path, package_path)) => {
                 let updater = self.updater.clone();
                 let protocol_version = self.manifest.protocol_version;
                 self.update_message = None;
-                self.start_task(UiTaskKind::StageUpdate, move || {
+                self.start_task(UiTaskKind::StageUpdate, move |admission| {
+                    let manifest: SignedUpdateManifestV1 =
+                        crate::file_input::read_json_file(&manifest_path, 64 * 1024)?;
+                    admission.begin().map_err(|message| ShellError::State(message.to_owned()))?;
                     let pending =
                         updater.verify_and_stage(manifest, &package_path, protocol_version)?;
                     let message = format!(

@@ -1,13 +1,17 @@
+mod operations_view;
+mod shutdown;
+mod task_supervisor;
 mod update_views;
+
+use self::shutdown::Shutdown;
+use self::task_supervisor::SupervisedTask;
+use self::task_supervisor::TaskAdmission;
 
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
-use std::sync::mpsc;
-use std::sync::mpsc::Receiver;
-use std::sync::mpsc::TryRecvError;
 use std::time::Duration;
 
 use codex_hepta_contracts::SignedFinalUseGrant;
@@ -72,6 +76,7 @@ enum UiTaskKind {
     Reconcile,
     Execute,
     StageUpdate,
+    Shutdown,
 }
 
 impl UiTaskKind {
@@ -81,6 +86,7 @@ impl UiTaskKind {
             Self::Reconcile => "hepta-native-reconcile",
             Self::Execute => "hepta-native-effect",
             Self::StageUpdate => "hepta-native-update-stage",
+            Self::Shutdown => "hepta-native-shutdown",
         }
     }
 
@@ -90,12 +96,14 @@ impl UiTaskKind {
             Self::Reconcile => locale.text("Reconciling operations", "正在对账操作"),
             Self::Execute => locale.text("Executing bounded operation", "正在执行受限操作"),
             Self::StageUpdate => locale.text("Verifying and staging update", "正在验证并暂存更新"),
+            Self::Shutdown => locale.text("Closing runtime", "正在关闭运行时"),
         }
     }
 }
 
 #[derive(Debug)]
 enum UiTaskOutput {
+    Shutdown,
     Refresh {
         status: serde_json::Value,
         view_revision: u64,
@@ -116,7 +124,7 @@ enum UiTaskOutput {
 
 struct PendingUiTask {
     kind: UiTaskKind,
-    receiver: Receiver<Result<UiTaskOutput, String>>,
+    worker: SupervisedTask<Result<UiTaskOutput, String>>,
 }
 
 fn lock_runtime(
@@ -127,19 +135,26 @@ fn lock_runtime(
         .map_err(|_| ShellError::State("native runtime worker lock is poisoned".to_owned()))
 }
 
-fn spawn_ui_task<F>(kind: UiTaskKind, task: F) -> std::io::Result<PendingUiTask>
+fn spawn_ui_task<F>(
+    kind: UiTaskKind,
+    repaint: Arc<Mutex<Option<egui::Context>>>,
+    task: F,
+) -> std::io::Result<PendingUiTask>
 where
-    F: FnOnce() -> Result<UiTaskOutput, ShellError> + Send + 'static,
+    F: FnOnce(TaskAdmission) -> Result<UiTaskOutput, ShellError> + Send + 'static,
 {
-    let (sender, receiver) = mpsc::channel();
-    let handle = std::thread::Builder::new()
-        .name(kind.thread_name().to_owned())
-        .spawn(move || {
-            let outcome = task().map_err(|error| error.to_string());
-            let _ = sender.send(outcome);
-        })?;
-    drop(handle);
-    Ok(PendingUiTask { kind, receiver })
+    let worker = SupervisedTask::spawn(
+        kind.thread_name(),
+        move || {
+            if let Ok(context) = repaint.lock()
+                && let Some(context) = context.as_ref()
+            {
+                context.request_repaint();
+            }
+        },
+        move |admission| task(admission).map_err(|error| error.to_string()),
+    )?;
+    Ok(PendingUiTask { kind, worker })
 }
 
 pub struct HeptaNativeApp {
@@ -152,6 +167,8 @@ pub struct HeptaNativeApp {
     view_revision: Option<u64>,
     operations: Vec<PlatformReceipt>,
     pending_task: Option<PendingUiTask>,
+    shutdown: Shutdown,
+    repaint: Arc<Mutex<Option<egui::Context>>>,
     last_error: Option<String>,
     operation_subject_id: String,
     operation_id: String,
@@ -181,6 +198,7 @@ impl HeptaNativeApp {
         updater: UpdateManager,
         activate_update_on_exit: Arc<AtomicBool>,
     ) -> Result<Self, ShellError> {
+        activate_update_on_exit.store(false, Ordering::Release);
         let session = runtime.connect_runtime(&manifest)?;
         SessionReferenceStore::default().save(&session, &manifest.manifest_digest)?;
         let operations = runtime.operation_history();
@@ -195,6 +213,8 @@ impl HeptaNativeApp {
             view_revision: None,
             operations,
             pending_task: None,
+            shutdown: Shutdown::default(),
+            repaint: Arc::new(Mutex::new(None)),
             last_error: None,
             operation_subject_id: "operator.local".to_owned(),
             operation_id: format!("native.ui.{}.{}", std::process::id(), now_unix_ms()?.max(1)),
@@ -229,7 +249,7 @@ impl HeptaNativeApp {
     }
 
     fn confirm_rendered_update(&mut self, ui: &egui::Ui) {
-        if self.status.is_none() || self.view_revision.is_none() || self.last_error.is_some() {
+        if self.is_busy() || self.status.is_none() || self.view_revision.is_none() || self.last_error.is_some() {
             return;
         }
         if let Some(recorder) = self.startup_recorder.take()
@@ -256,9 +276,9 @@ impl HeptaNativeApp {
 
     fn start_task<F>(&mut self, kind: UiTaskKind, task: F)
     where
-        F: FnOnce() -> Result<UiTaskOutput, ShellError> + Send + 'static,
+        F: FnOnce(TaskAdmission) -> Result<UiTaskOutput, ShellError> + Send + 'static,
     {
-        if self.pending_task.is_some() {
+        if self.is_busy() {
             self.last_error = Some(
                 self.locale
                     .text(
@@ -269,7 +289,7 @@ impl HeptaNativeApp {
             );
             return;
         }
-        match spawn_ui_task(kind, task) {
+        match spawn_ui_task(kind, Arc::clone(&self.repaint), task) {
             Ok(pending) => {
                 self.pending_task = Some(pending);
                 self.last_error = None;
@@ -281,22 +301,27 @@ impl HeptaNativeApp {
     }
 
     fn poll_task(&mut self) {
-        let outcome = match self.pending_task.as_ref() {
-            Some(task) => match task.receiver.try_recv() {
-                Ok(outcome) => Some((task.kind, outcome)),
-                Err(TryRecvError::Empty) => None,
-                Err(TryRecvError::Disconnected) => Some((
-                    task.kind,
-                    Err("native worker exited without an outcome".to_owned()),
-                )),
-            },
-            None => None,
-        };
-        let Some((kind, outcome)) = outcome else {
+        let outcome = self.pending_task.as_mut().and_then(|task| {
+            task.worker.poll().map(|outcome| (task.kind, outcome))
+        });
+        let Some((kind, joined)) = outcome else {
             return;
         };
         self.pending_task = None;
+        let outcome = match joined {
+            Ok(outcome) => outcome,
+            Err(error) => {
+                self.shutdown.failure = Some(error.to_owned());
+                self.shutdown.update_requested = false;
+                Err(error.to_owned())
+            }
+        };
         match outcome {
+            Ok(UiTaskOutput::Shutdown) => {
+                self.shutdown.check_deadline(std::time::Instant::now());
+                self.shutdown.runtime_closed = true;
+                self.connected = false;
+            }
             Ok(UiTaskOutput::Refresh {
                 status,
                 view_revision,
@@ -326,6 +351,10 @@ impl HeptaNativeApp {
                 self.last_error = None;
             }
             Err(error) => {
+                if kind == UiTaskKind::Shutdown {
+                    self.shutdown.failure = Some(error.clone());
+                    self.shutdown.update_requested = false;
+                }
                 if kind == UiTaskKind::Refresh {
                     self.view_revision = None;
                     self.operation_binding = None;
@@ -341,13 +370,19 @@ impl HeptaNativeApp {
     }
 
     fn is_busy(&self) -> bool {
-        self.pending_task.is_some()
+        self.pending_task.is_some() || self.shutdown.requested()
     }
 
     fn refresh(&mut self) {
+        if self.is_busy() {
+            return;
+        }
+        self.view_revision = None;
+        self.operation_binding = None;
         let runtime = Arc::clone(&self.runtime);
-        self.start_task(UiTaskKind::Refresh, move || {
+        self.start_task(UiTaskKind::Refresh, move |admission| {
             let mut runtime = lock_runtime(&runtime)?;
+            admission.begin().map_err(|message| ShellError::State(message.to_owned()))?;
             let (presentation, status) = runtime.refresh_runtime_view()?;
             let operations = runtime.operation_history();
             Ok(UiTaskOutput::Refresh {
@@ -360,8 +395,9 @@ impl HeptaNativeApp {
 
     fn reconcile(&mut self) {
         let runtime = Arc::clone(&self.runtime);
-        self.start_task(UiTaskKind::Reconcile, move || {
+        self.start_task(UiTaskKind::Reconcile, move |admission| {
             let mut runtime = lock_runtime(&runtime)?;
+            admission.begin().map_err(|message| ShellError::State(message.to_owned()))?;
             let _ = runtime.reconcile_pending()?;
             Ok(UiTaskOutput::Reconcile {
                 operations: runtime.operation_history(),
@@ -456,311 +492,22 @@ impl HeptaNativeApp {
         }
     }
 
-    fn operations_view(&mut self, ui: &mut egui::Ui) {
-        ui.heading(self.locale.text("Native operations", "原生操作"));
-        if let Ok(runtime) = self.runtime.try_lock() {
-            let capacity = runtime.journal_capacity();
-            ui.label(format!(
-                "active={}/{} pending={} closed={} retired={} segments={}",
-                capacity.active_records,
-                capacity.active_limit,
-                capacity.pending_records,
-                capacity.closed_observations,
-                capacity.retired_identities,
-                capacity.retirement_segments
-            ));
-            if capacity.active_records >= capacity.active_limit * 4 / 5 {
-                ui.label(self.locale.text(
-                    "Journal pressure: reconcile or close observations; NEVER delete the journal to retry.",
-                    "日志容量告警：请对账或结束观察；绝不能删除日志后重试。"
-                ));
-            }
-        }
-        ui.label(self.locale.text(
-            "The shell never signs its own authority. Prepare the exact binding, have the independent authority owner issue a SignedFinalUseGrant, then select that grant file for one final-use operation.",
-            "壳层绝不会自行签发权限。先生成精确 binding，由独立 authority owner 签发 SignedFinalUseGrant，再选择该 grant 文件执行一次 final-use 操作。",
-        ));
-        ui.separator();
 
-        ui.label(self.locale.text("Authority subject", "权限主体"));
-        ui.text_edit_singleline(&mut self.operation_subject_id);
-        ui.label(self.locale.text("Operation ID", "操作 ID"));
-        ui.text_edit_singleline(&mut self.operation_id);
-        egui::ComboBox::from_id_salt("native-operation-action")
-            .selected_text(self.operation_action.to_string())
-            .show_ui(ui, |ui| {
-                for action in [
-                    PlatformAction::OpenPath,
-                    PlatformAction::RevealPath,
-                    PlatformAction::CopyText,
-                    PlatformAction::Notify,
-                ] {
-                    ui.selectable_value(&mut self.operation_action, action, action.to_string());
-                }
-            });
-
-        match self.operation_action {
-            PlatformAction::OpenPath | PlatformAction::RevealPath => {
-                ui.label(self.locale.text(
-                    "Unavailable: verified OS resource handoff is not implemented. No path operation will be dispatched.",
-                    "当前不可用：尚未实现已验证资源的 OS 句柄交付；不会派发路径操作。",
-                ));
-                ui.label(self.locale.text("Absolute path", "绝对路径"));
-                ui.text_edit_singleline(&mut self.operation_path);
-            }
-            PlatformAction::CopyText => {
-                ui.label(self.locale.text("Clipboard text", "剪贴板文本"));
-                ui.text_edit_multiline(&mut self.operation_text);
-            }
-            PlatformAction::Notify => {
-                ui.label(self.locale.text("Notification title", "通知标题"));
-                ui.text_edit_singleline(&mut self.notification_title);
-                ui.label(self.locale.text("Notification body", "通知正文"));
-                ui.text_edit_multiline(&mut self.notification_body);
-            }
-        }
-
-        ui.label(self.locale.text("Signed grant path", "签名 grant 路径"));
-        ui.text_edit_singleline(&mut self.operation_grant_path);
-        let busy = self.is_busy();
-        ui.horizontal(|ui| {
-            if ui
-                .add_enabled(
-                    !busy && self.view_revision.is_some(),
-                    egui::Button::new(
-                        self.locale
-                            .text("Prepare exact binding", "生成精确 binding"),
-                    ),
-                )
-                .clicked()
-            {
-                self.prepare_operation_binding();
-            }
-            if ui
-                .add_enabled(
-                    !busy && self.view_revision.is_some(),
-                    egui::Button::new(
-                        self.locale
-                            .text("Execute with signed grant", "使用签名 grant 执行"),
-                    ),
-                )
-                .clicked()
-            {
-                self.execute_operation();
-            }
-        });
-        if let Some(binding) = &self.operation_binding {
-            ui.label(self.locale.text(
-                "Binding for the independent issuer:",
-                "交给独立签发方的 binding：",
-            ));
-            let mut binding = binding.clone();
-            ui.add(
-                egui::TextEdit::multiline(&mut binding)
-                    .font(egui::TextStyle::Monospace)
-                    .desired_rows(10)
-                    .interactive(false),
-            );
-        }
-        if let Some(message) = &self.operation_message {
-            ui.label(message);
-        }
-
-        ui.separator();
-        ui.label(self.locale.text(
-            "Indeterminate operations are never automatically replayed. Reconcile asks the platform adapter for a trustworthy terminal observation.",
-            "不确定操作绝不会自动重放。对账只接受平台适配器提供的可信终态观察。",
-        ));
-        if ui
-            .add_enabled(
-                !busy,
-                egui::Button::new(self.locale.text(
-                    "Archive closed history (retain last 256)",
-                    "归档已结案历史（保留最近 256 条）",
-                )),
-            )
-            .clicked()
-        {
-            let runtime = Arc::clone(&self.runtime);
-            self.start_task(UiTaskKind::Reconcile, move || {
-                let mut runtime = lock_runtime(&runtime)?;
-                runtime.compact_closed_history(256)?;
-                Ok(UiTaskOutput::Reconcile {
-                    operations: runtime.operation_history(),
-                })
-            });
-        }
-        if self.operations.is_empty() {
-            ui.label(self.locale.text("No operation receipts.", "暂无操作回执。"));
-            return;
-        }
-        let mut close_observation = None;
-        egui::ScrollArea::vertical().show(ui, |ui| {
-            for receipt in self.operations.iter().rev() {
-                ui.group(|ui| {
-                    ui.label(format!("{} · {}", receipt.key.operation_id, receipt.action));
-                    ui.label(format!(
-                        "session={} generation={}",
-                        receipt.key.session_id, receipt.key.session_generation
-                    ));
-                    ui.label(format!(
-                        "terminal={} status={:?}",
-                        receipt.terminal_observed, receipt.terminal_status
-                    ));
-                    ui.label(format!("payload={}", receipt.payload_digest));
-                    if !receipt.terminal_observed && !receipt.may_have_executed {
-                        ui.label(
-                            self.locale
-                                .text("Prepared; not dispatched.", "已准备；尚未派发。"),
-                        );
-                    }
-                    if receipt.observation_closed {
-                        ui.label(self.locale.text(
-                            "Observation closed; outcome UNKNOWN; replay forbidden.",
-                            "已结束观察；执行结果仍未知；禁止重放。",
-                        ));
-                    } else if receipt.can_close_observation
-                        && ui
-                            .add_enabled(
-                                !busy,
-                                egui::Button::new(self.locale.text(
-                                    "End observation (may have executed)",
-                                    "结束观察（可能已执行）",
-                                )),
-                            )
-                            .clicked()
-                    {
-                        close_observation = Some(receipt.key.clone());
-                    }
-                });
-            }
-        });
-        if let Some(key) = close_observation {
-            let runtime = Arc::clone(&self.runtime);
-            self.start_task(UiTaskKind::Reconcile, move || {
-                let mut runtime = lock_runtime(&runtime)?;
-                runtime.close_operation_observation(&key)?;
-                // Retirement preserves the full closed record, not a fabricated outcome.
-                runtime.compact_closed_history(256)?;
-                Ok(UiTaskOutput::Reconcile {
-                    operations: runtime.operation_history(),
-                })
-            });
-        }
-    }
-
-    fn operation_payload(&self) -> Result<PlatformPayload, ShellError> {
-        let payload = match self.operation_action {
-            PlatformAction::OpenPath => PlatformPayload::OpenPath {
-                path: PathBuf::from(self.operation_path.trim()),
-            },
-            PlatformAction::RevealPath => PlatformPayload::RevealPath {
-                path: PathBuf::from(self.operation_path.trim()),
-            },
-            PlatformAction::CopyText => PlatformPayload::CopyText {
-                text: self.operation_text.clone(),
-            },
-            PlatformAction::Notify => PlatformPayload::Notify {
-                title: self.notification_title.clone(),
-                body: self.notification_body.clone(),
-            },
-        };
-        payload.validate()?;
-        Ok(payload)
-    }
-
-    fn prepare_operation_binding(&mut self) {
-        let outcome = (|| -> Result<String, ShellError> {
-            let payload = self.operation_payload()?;
-            let runtime = self.runtime.try_lock().map_err(|_| {
-                ShellError::State("native runtime is busy; retry after the current task".to_owned())
-            })?;
-            let binding = runtime.prepare_platform_binding(
-                self.operation_subject_id.trim(),
-                self.operation_id.trim(),
-                &payload,
-            )?;
-            serde_json::to_string_pretty(&binding).map_err(ShellError::from)
-        })();
-        match outcome {
-            Ok(binding) => {
-                self.operation_binding = Some(binding);
-                self.operation_message = Some(
-                    self.locale
-                        .text(
-                            "Binding prepared. The independent authority owner must choose grant identity, nonce, epoch and lifetime and sign the complete grant.",
-                            "Binding 已生成。独立 authority owner 必须自行选择 grant identity、nonce、epoch 与有效期，并签署完整 grant。",
-                        )
-                        .to_owned(),
-                );
-                self.last_error = None;
-            }
-            Err(error) => {
-                self.operation_binding = None;
-                self.operation_message = None;
-                self.last_error = Some(error.to_string());
-            }
-        }
-    }
-
-    fn execute_operation(&mut self) {
-        let outcome = (|| -> Result<PlatformRequest, ShellError> {
-            let grant_path = PathBuf::from(self.operation_grant_path.trim());
-            if !grant_path.is_absolute() {
-                return Err(ShellError::InvalidInput(
-                    "signed final-use grant path must be absolute".to_owned(),
-                ));
-            }
-            let metadata = std::fs::metadata(&grant_path)?;
-            if !metadata.is_file() || metadata.len() == 0 || metadata.len() > 16 * 1024 {
-                return Err(ShellError::InvalidInput(
-                    "signed final-use grant must be a non-empty regular file <= 16 KiB".to_owned(),
-                ));
-            }
-            let grant: SignedFinalUseGrant = serde_json::from_slice(&std::fs::read(&grant_path)?)?;
-            let displayed_revision = self.view_revision.ok_or_else(|| {
-                ShellError::State("native runtime view is unavailable".to_owned())
-            })?;
-            Ok(PlatformRequest {
-                subject_id: self.operation_subject_id.trim().to_owned(),
-                operation_id: self.operation_id.trim().to_owned(),
-                displayed_revision,
-                payload: self.operation_payload()?,
-                grant,
-            })
-        })();
-        match outcome {
-            Ok(request) => {
-                let runtime = Arc::clone(&self.runtime);
-                self.operation_message = None;
-                self.start_task(UiTaskKind::Execute, move || {
-                    let mut runtime = lock_runtime(&runtime)?;
-                    let receipt = runtime.request_platform_capability(request)?;
-                    let message = format!(
-                        "{}: terminal={} status={:?}",
-                        receipt.key.operation_id,
-                        receipt.terminal_observed,
-                        receipt.terminal_status
-                    );
-                    Ok(UiTaskOutput::Execute {
-                        message,
-                        operations: runtime.operation_history(),
-                    })
-                });
-            }
-            Err(error) => {
-                self.operation_message = None;
-                self.last_error = Some(error.to_string());
-            }
-        }
-    }
 }
 
 impl eframe::App for HeptaNativeApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        if let Ok(mut repaint) = self.repaint.lock()
+            && repaint.is_none()
+        {
+            *repaint = Some(ui.ctx().clone());
+        }
         self.poll_task();
+        if self.shutdown_view(ui) {
+            return;
+        }
         if self.is_busy() {
-            ui.ctx().request_repaint_after(Duration::from_millis(50));
+            ui.ctx().request_repaint_after(Duration::from_millis(250));
         }
         egui::Panel::top("hepta-native-top").show(ui, |ui| {
             self.top_bar(ui);
@@ -779,57 +526,17 @@ impl eframe::App for HeptaNativeApp {
     }
 
     fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
-        if let Ok(mut runtime) = self.runtime.try_lock() {
-            let _ = runtime.close();
-            self.connected = false;
+        let closed = self.shutdown.runtime_closed && self.pending_task.is_none();
+        self.activate_update_on_exit.store(
+            closed && self.shutdown.activation_allowed(),
+            Ordering::Release,
+        );
+        if !closed {
+            eprintln!("hepta-native interrupted exit: runtime close is unconfirmed; update activation denied; recover unknown operations without replay");
         }
     }
 }
 
 #[cfg(test)]
-mod tests {
-    use std::sync::mpsc;
-    use std::time::Duration;
-
-    use super::Locale;
-    use super::UiTaskKind;
-    use super::UiTaskOutput;
-    use super::spawn_ui_task;
-    use crate::error::ShellError;
-
-    #[test]
-    fn worker_slot_returns_before_the_bounded_task_completes() {
-        let (release, wait) = mpsc::channel();
-        let pending = spawn_ui_task(UiTaskKind::Refresh, move || {
-            wait.recv()
-                .map_err(|error| ShellError::State(error.to_string()))?;
-            Err::<UiTaskOutput, ShellError>(ShellError::State("worker-finished".to_owned()))
-        })
-        .unwrap();
-        assert!(matches!(
-            pending.receiver.try_recv(),
-            Err(mpsc::TryRecvError::Empty)
-        ));
-        release.send(()).unwrap();
-        let outcome = pending
-            .receiver
-            .recv_timeout(Duration::from_secs(2))
-            .unwrap();
-        assert_eq!(
-            outcome.unwrap_err(),
-            "native-shell state violation: worker-finished"
-        );
-    }
-
-    #[test]
-    fn locale_selection_covers_chinese_and_safe_english_fallback() {
-        for value in ["zh", "zh_CN.UTF-8", "ZH-tw", " zh_Hans "] {
-            assert_eq!(Locale::from_name(value), Locale::Chinese);
-        }
-        for value in ["", "C", "C.UTF-8", "en_US.UTF-8", "ja_JP.UTF-8"] {
-            assert_eq!(Locale::from_name(value), Locale::English);
-        }
-        assert_eq!(Locale::Chinese.text("English", "中文"), "中文");
-        assert_eq!(Locale::English.text("English", "中文"), "English");
-    }
-}
+#[path = "ui_tests.rs"]
+mod tests;

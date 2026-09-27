@@ -29,6 +29,8 @@ pub struct NativeShellRuntime {
     final_use: Option<Arc<KernelFinalUseGate>>,
     journal: OperationJournal,
     session: Option<SessionIncarnation>,
+    // Rejected sessions remain owned for cleanup, never for authorization.
+    cleanup_pending: Option<SessionIncarnation>,
     view: Option<RuntimeView>,
     last_snapshot_generation: Option<u64>,
     displayed_revision: u64,
@@ -48,6 +50,7 @@ impl NativeShellRuntime {
             final_use,
             journal,
             session: None,
+            cleanup_pending: None,
             view: None,
             last_snapshot_generation: None,
             displayed_revision: 0,
@@ -61,15 +64,9 @@ impl NativeShellRuntime {
     ) -> Result<SessionIncarnation, ShellError> {
         self.journal.ensure_healthy()?;
         manifest.validate()?;
-        // Invalidate presentation before a fallible close; no stale view may
-        // survive a failed reconnect and appear to belong to the next session.
-        self.view = None;
-        self.last_snapshot_generation = None;
-        self.displayed_revision = 0;
-        self.manifest = None;
-        if let Some(previous) = self.session.take() {
-            self.backend.close(&previous)?;
-        }
+        // Close the previous owner before acquiring another. Failure retains
+        // its identity and leaves presentation invalid, so retry cannot skip it.
+        self.close()?;
         let session = self.backend.connect(manifest)?;
         let validation = session.validate().and_then(|()| {
             if session.endpoint_id != manifest.endpoint_id {
@@ -80,7 +77,8 @@ impl NativeShellRuntime {
             Ok(())
         });
         if let Err(error) = validation {
-            if let Err(close_error) = self.backend.close(&session) {
+            self.cleanup_pending = Some(session);
+            if let Err(close_error) = self.close() {
                 return Err(ShellError::Backend(format!(
                     "{error}; rejected session cleanup failed: {close_error}"
                 )));
@@ -90,12 +88,7 @@ impl NativeShellRuntime {
         self.session = Some(session.clone());
         self.manifest = Some(manifest.clone());
         if let Err(error) = self.reconcile_pending() {
-            self.session = None;
-            self.view = None;
-            self.last_snapshot_generation = None;
-            self.displayed_revision = 0;
-            self.manifest = None;
-            if let Err(close_error) = self.backend.close(&session) {
+            if let Err(close_error) = self.close() {
                 return Err(ShellError::Backend(format!(
                     "{error}; failed recovery session cleanup failed: {close_error}"
                 )));
@@ -449,10 +442,18 @@ impl NativeShellRuntime {
         self.last_snapshot_generation = None;
         self.displayed_revision = 0;
         self.manifest = None;
-        if let Some(session) = self.session.take() {
-            self.backend.close(&session)?;
+        // Even a poisoned journal must not prevent transport cleanup, but it
+        // must prevent reporting a clean shutdown to the update handoff.
+        let journal_health = self.journal.ensure_healthy();
+        if let Some(session) = self.cleanup_pending.as_ref() {
+            self.backend.close(session)?;
+            self.cleanup_pending = None;
         }
-        Ok(())
+        if let Some(session) = self.session.as_ref() {
+            self.backend.close(session)?;
+            self.session = None;
+        }
+        journal_health
     }
 
     pub fn session(&self) -> Option<&SessionIncarnation> {
@@ -546,9 +547,15 @@ impl NativeShellRuntime {
     }
 
     fn require_session(&self) -> Result<&SessionIncarnation, ShellError> {
-        self.session
-            .as_ref()
-            .ok_or_else(|| ShellError::State("native shell is not connected".to_owned()))
+        let session = self.session.as_ref().ok_or_else(|| {
+            ShellError::State("native shell is not connected".to_owned())
+        })?;
+        if self.manifest.is_none() {
+            return Err(ShellError::State(
+                "native session is closing; its identity is retained only for cleanup".to_owned(),
+            ));
+        }
+        Ok(session)
     }
 
     fn require_view(&self) -> Result<&RuntimeView, ShellError> {
