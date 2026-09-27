@@ -9,13 +9,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: context-compiler-v3-direct-source
-  cancel-in-progress: true
+  group: context-compiler-v3-direct-source-${{ github.sha }}
+  cancel-in-progress: false
 
 jobs:
   materialize-and-verify:
     if: ${{ contains(github.event.head_commit.message, '[materialize-v3]') }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 180
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -28,7 +28,7 @@ jobs:
         run: |
           set -euo pipefail
           rustup set profile minimal
-          rustup toolchain install 1.95.0 --component rustfmt --component clippy --target x86_64-unknown-linux-gnu
+          rustup toolchain install 1.95.0 --component rustfmt --component clippy
           rustup default 1.95.0
           rustc -Vv
           cargo -V
