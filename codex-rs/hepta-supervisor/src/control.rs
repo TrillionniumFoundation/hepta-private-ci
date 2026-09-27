@@ -156,21 +156,21 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
-        let record = self.record(agent_id)?;
-        let intent = slot
-            .runtime
-            .as_ref()
-            .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))
-            .and_then(|runtime| {
-                control_intent::prepare_kill(
-                    record.layout.run_root(),
-                    agent_id,
-                    runtime.spawn_generation,
-                    &runtime.identity,
-                    record.lifecycle.generation,
-                )
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))
-            });
+        // Registry/intent faults are collected, never propagated before the
+        // already-owned main and companion termination attempts below.
+        let intent = self.record(agent_id).and_then(|record| {
+            let runtime = slot.runtime.as_ref().ok_or_else(|| {
+                SupervisorError::Invalid(format!("agent {agent_id} is not active"))
+            })?;
+            control_intent::prepare_kill(
+                record.layout.run_root(),
+                agent_id,
+                runtime.spawn_generation,
+                &runtime.identity,
+                record.lifecycle.generation,
+            )
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))
+        });
         // Failure to persist the overriding Kill or restart cancellation must
         // be reported, but cannot suppress emergency termination of an already
         // owned main or companion process.
@@ -217,8 +217,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 ))
         };
         let acknowledgement = if intent.is_ok() && main.is_ok() {
-            control_intent::mark_kill_requested(record.layout.run_root())
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))
+            self.record(agent_id).and_then(|record| {
+                control_intent::mark_kill_requested(record.layout.run_root())
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))
+            })
         } else {
             Ok(())
         };
@@ -228,6 +230,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         for fault in [
             intent.as_ref().err(),
             cancellation.as_ref().err(),
+            preparation.as_ref().err(),
             main.as_ref().err(),
             acknowledgement.as_ref().err(),
             companion.as_ref().err(),
