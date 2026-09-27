@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/workflows/cognitive-store-finalizer-windows.yml'
       - 'scripts/finalize_cognitive_store_candidate.py'
+      - 'tools/cognitive-store-host-bootstrap/**'
   workflow_dispatch:
 
 permissions:
