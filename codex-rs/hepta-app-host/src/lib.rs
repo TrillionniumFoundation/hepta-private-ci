@@ -1,0 +1,120 @@
+//! Stable host façade for embedding Codex App Server in Hepta Agentd.
+//!
+//! Agentd supplies already-admitted owner capabilities and process geometry;
+//! this crate alone knows App Server implementation types and startup details.
+
+#![forbid(unsafe_code)]
+
+use std::collections::BTreeMap;
+use std::num::NonZeroUsize;
+use std::path::PathBuf;
+use std::sync::Arc;
+
+use codex_app_server::AppServerRuntimeOptions;
+use codex_app_server::AppServerTransport;
+use codex_app_server::AppServerWebsocketAuthSettings;
+use codex_app_server::RemoteControlStartupMode;
+use codex_app_server::ThreadStoreConfig;
+use codex_arg0::Arg0DispatchPaths;
+use codex_config::LoaderOverrides;
+use codex_features::Feature;
+use codex_hepta_app_bridge::memory::CognitiveRuntime;
+use codex_hepta_app_bridge::memory::ProductionCognitiveMutation;
+use codex_protocol::protocol::SessionSource;
+use codex_utils_absolute_path::AbsolutePathBuf;
+use codex_utils_cli::CliConfigOverrides;
+
+pub use codex_app_server::AppServerDrainHandle;
+pub struct HeptaAppServerHostOptions {
+    pub socket_path: PathBuf,
+    pub home_root: PathBuf,
+    pub turn_queue_capacity: u64,
+    pub cognitive_runtime: CognitiveRuntime,
+    pub production_cognitive_mutation: Option<Arc<dyn ProductionCognitiveMutation>>,
+    pub qualification_turn_writer:
+        Option<codex_hepta_app_bridge::memory_extension::QualificationTurnWriterHost>,
+    pub prompt_runtime_host: Option<codex_hepta_app_bridge::prompt_extension::PromptRuntimeHost>,
+    pub graceful_drain: Option<AppServerDrainHandle>,
+    pub cognitive_write_profile: bool,
+    pub qualification_turn_writer_profile: bool,
+}
+
+impl HeptaAppServerHostOptions {
+    pub fn effective_cognitive_write(&self) -> bool {
+        self.cognitive_write_profile || self.production_cognitive_mutation.is_some()
+    }
+}
+
+pub fn config_overrides(cognitive_write_enabled: bool) -> CliConfigOverrides {
+    CliConfigOverrides {
+        raw_overrides: vec![
+            "features.hepta_governance=true".to_string(),
+            "features.hepta_turn_recovery=true".to_string(),
+            "features.hepta_memory=true".to_string(),
+            "features.hepta_memory_read_only=true".to_string(),
+            format!("features.hepta_cognitive_write={cognitive_write_enabled}"),
+        ],
+    }
+}
+pub fn runtime_options(
+    options: HeptaAppServerHostOptions,
+) -> std::io::Result<AppServerRuntimeOptions> {
+    let cognitive_write_enabled = options.effective_cognitive_write();
+    let turn_queue_capacity = usize::try_from(options.turn_queue_capacity)
+        .map_err(|_| std::io::Error::other("turn queue capacity does not fit this platform"))?;
+    let turn_queue_capacity = NonZeroUsize::new(turn_queue_capacity).ok_or_else(|| {
+        std::io::Error::other("agent manifest contains a zero turn queue capacity")
+    })?;
+    Ok(AppServerRuntimeOptions {
+        remote_control_startup_mode: RemoteControlStartupMode::DisabledEphemeral,
+        install_shutdown_signal_handler: false,
+        graceful_drain: options.graceful_drain,
+        turn_queue_capacity: Some(turn_queue_capacity),
+        required_sqlite_home: Some(AbsolutePathBuf::from_absolute_path(&options.home_root)?),
+        required_thread_store_mode: Some(ThreadStoreConfig::Local),
+        hepta_cognitive_runtime: options.cognitive_runtime,
+        hepta_cognitive_production_mutation: options.production_cognitive_mutation,
+        hepta_local_turn_lifecycle_enabled: false,
+        hepta_local_development_policy: options.qualification_turn_writer_profile.then_some(
+            codex_hepta_app_bridge::memory::LocalDevelopmentLifecyclePolicy::qualification_only(),
+        ),
+        hepta_qualification_turn_writer_enabled: options.qualification_turn_writer_profile,
+        hepta_qualification_turn_writer: options.qualification_turn_writer,
+        hepta_prompt_runtime_host: options.prompt_runtime_host,
+        required_feature_states: BTreeMap::from([(
+            Feature::HeptaCognitiveWrite,
+            cognitive_write_enabled,
+        )]),
+        ..Default::default()
+    })
+}
+pub async fn run(
+    arg0_paths: Arg0DispatchPaths,
+    options: HeptaAppServerHostOptions,
+) -> std::io::Result<()> {
+    let socket_path_raw = options.socket_path.clone();
+    let socket_path = AbsolutePathBuf::from_absolute_path(&socket_path_raw)?;
+    let cognitive_write_enabled = options.effective_cognitive_write();
+    let runtime_options = runtime_options(options)?;
+    codex_app_server::run_main_with_transport_options(
+        arg0_paths,
+        config_overrides(cognitive_write_enabled),
+        LoaderOverrides::default(),
+        true,
+        false,
+        AppServerTransport::UnixSocket { socket_path },
+        SessionSource::Custom("hepta-agentd".to_string()),
+        AppServerWebsocketAuthSettings::default(),
+        runtime_options,
+    )
+    .await
+    .map_err(|error| {
+        std::io::Error::new(
+            error.kind(),
+            format!(
+                "run Codex App Server unix socket transport at {}: {error}",
+                socket_path_raw.display()
+            ),
+        )
+    })
+}

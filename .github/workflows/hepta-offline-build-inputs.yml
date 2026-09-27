@@ -1,9 +1,6 @@
 name: Hepta offline native build inputs
 
 on:
-  push:
-    branches: [work/architecture-scalability-convergence-20260918]
-    paths: [.github/workflows/hepta-offline-build-inputs.yml]
   workflow_dispatch:
 
 permissions:

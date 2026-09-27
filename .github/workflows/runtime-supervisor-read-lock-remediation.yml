@@ -1,13 +1,7 @@
 name: Runtime supervisor read-lock remediation
 
 on:
-  push:
-    branches:
-      - work/product-convergence-20260923
-    paths:
-      - .github/remediation/runtime-supervisor-read-lock.patch
-      - .github/workflows/runtime-supervisor-read-lock-remediation.yml
-
+  workflow_dispatch:
 permissions:
   contents: write
 

@@ -134,6 +134,9 @@ impl TryFrom<SupervisordResponse> for RobrixSupervisordResponse {
                 message,
                 actual,
             },
+            SupervisordPayload::RuntimeModules { .. } => {
+                return Err(RobrixProtocolError::UnsupportedPayload);
+            }
             SupervisordPayload::MutationAccepted { .. }
             | SupervisordPayload::ReleaseSelection { .. }
             | SupervisordPayload::ProductionMutationStatus { .. }
@@ -176,6 +179,8 @@ pub enum RobrixProtocolError {
     InvalidAgentStatus,
     #[error("unsafe Robrix control error")]
     UnsafeError,
+    #[error("supervisord payload is outside the Robrix projection")]
+    UnsupportedPayload,
     #[error("supervisord mutation payload is outside the Robrix projection")]
     MutationPayloadForbidden,
 }

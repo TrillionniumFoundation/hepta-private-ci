@@ -698,8 +698,7 @@ fn validate_pending_recovery(
     if state.receipt.status != ProductionMutationStatus::RecoveryRequired
         || !receipt_matches(request, &state.receipt)
         || state.intent_sha256 != decision.intent_sha256
-        || state.release_transaction_sha256.as_ref()
-            != Some(&decision.release_transaction_sha256)
+        || state.release_transaction_sha256.as_ref() != Some(&decision.release_transaction_sha256)
     {
         return Err(ProductionReleaseControllerError::Conflict(
             "recovery decision does not bind the current quarantined owner state".to_string(),

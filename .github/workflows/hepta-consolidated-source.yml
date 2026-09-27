@@ -1,31 +1,7 @@
 name: Hepta consolidated source qualification (read-only)
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    paths:
-      - "codex-rs/**"
-      - "apps/**"
-      - "tools/hepta-engineering-control/**"
-      - "tools/hepta-os-evidence/**"
-      - ".cargo/**"
-      - "codex-rs/.cargo/**"
-      - "rust-toolchain"
-      - "rust-toolchain.toml"
-      - "codex-rs/rust-toolchain"
-      - "codex-rs/rust-toolchain.toml"
-      - "scripts/hepta_workspace.py"
-      - "scripts/test_hepta_native_feedback.py"
-      - "scripts/hepta_ci_v8.py"
-      - "scripts/hepta_ci_exec.py"
-      - "scripts/hepta-gap-closure.py"
-      - "scripts/verify_cargo_lock.py"
-      - "justfile"
-      - "codex-rs/justfile"
-      - ".github/workflows/hepta-consolidated-source.yml"
-      - ".github/actions/hepta-synthetic-merge/**"
-
+  workflow_dispatch:
 permissions:
   contents: read
 

@@ -46,6 +46,7 @@ impl SupervisordRequest {
         }
         match &self.method {
             SupervisordMethod::Health
+            | SupervisordMethod::RuntimeModules
             | SupervisordMethod::Snapshot { .. }
             | SupervisordMethod::ReleaseSelection { .. }
             | SupervisordMethod::ProductionMutationStatus { .. }
@@ -86,6 +87,8 @@ pub enum SupervisordRequestValidationError {
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SupervisordMethod {
     Health,
+    /// Read-only projection of the restored durable runtime-module owner.
+    RuntimeModules,
     Roster {
         limit: u16,
     },
@@ -343,6 +346,10 @@ pub struct SupervisordResponse {
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SupervisordPayload {
     Health(SupervisordHealth),
+    RuntimeModules {
+        topology_digest: String,
+        active: Vec<SupervisordRuntimeModuleStatus>,
+    },
     Roster {
         agents: Vec<SupervisordAgentStatus>,
     },
@@ -382,6 +389,24 @@ pub struct SupervisordHealth {
     pub process_id: u32,
     pub registered_agents: u16,
     pub observed_faults: u64,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SupervisordRuntimeModuleStatus {
+    pub module_id: String,
+    pub owner_id: String,
+    pub generation: u64,
+    pub implementation_digest: String,
+    pub candidate_artifact_digest: String,
+    pub state_class: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SupervisordRuntimeModules {
+    pub topology_digest: String,
+    pub active: Vec<SupervisordRuntimeModuleStatus>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -689,6 +714,45 @@ mod tests {
         .expect("serialize upgrade");
         bad_release["method"]["release_id"] = json!("../../release");
         assert!(serde_json::from_value::<SupervisordRequest>(bad_release).is_err());
+    }
+
+    #[test]
+    fn runtime_module_projection_is_read_only_strict_and_round_trips() {
+        let request = SupervisordRequest::new(46, SupervisordMethod::RuntimeModules);
+        assert_eq!(request.validate(), Ok(()));
+        assert_eq!(
+            serde_json::to_value(&request).expect("serialize runtime-module request"),
+            json!({
+                "schema_version": 2,
+                "request_id": 46,
+                "method": {"type": "runtime_modules"}
+            })
+        );
+        let response = SupervisordResponse {
+            schema_version: SUPERVISORD_CONTROL_SCHEMA_VERSION,
+            request_id: 46,
+            payload: SupervisordPayload::RuntimeModules {
+                topology_digest: DIGEST.to_owned(),
+                active: vec![SupervisordRuntimeModuleStatus {
+                    module_id: "feature:sample".to_owned(),
+                    owner_id: "owner:sample".to_owned(),
+                    generation: 2,
+                    implementation_digest: DIGEST.to_owned(),
+                    candidate_artifact_digest: DIGEST.to_owned(),
+                    state_class: "stateless".to_owned(),
+                }],
+            },
+        };
+        let bytes = serde_json::to_vec(&response).expect("serialize runtime-module response");
+        assert_eq!(
+            serde_json::from_slice::<SupervisordResponse>(&bytes)
+                .expect("parse runtime-module response"),
+            response
+        );
+        let mut unknown =
+            serde_json::from_slice::<serde_json::Value>(&bytes).expect("runtime-module JSON");
+        unknown["payload"]["active"][0]["authority"] = json!(true);
+        assert!(serde_json::from_value::<SupervisordResponse>(unknown).is_err());
     }
 
     fn status() -> SupervisordAgentStatus {

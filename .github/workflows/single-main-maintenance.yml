@@ -1,8 +1,6 @@
 name: single-main-maintenance
 on:
-  push:
-    branches: [integration/single-main-20260922]
-    paths: [.github/workflows/single-main-maintenance.yml]
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:

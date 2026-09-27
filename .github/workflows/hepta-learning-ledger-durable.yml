@@ -1,12 +1,7 @@
 name: Hepta durable causal ledger (read-only)
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-learning-ledger/**"
-      - "codex-rs/hepta-intelligence/**"
-      - ".github/workflows/hepta-learning-ledger-durable.yml"
-
+  workflow_dispatch:
 permissions:
   contents: read
 

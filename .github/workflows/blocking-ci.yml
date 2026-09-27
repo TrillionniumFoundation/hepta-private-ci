@@ -16,7 +16,7 @@ jobs:
   scope:
     name: Select blocking CI scope
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 10
     outputs:
       inference: ${{ steps.scope.outputs.inference }}
       effects: ${{ steps.scope.outputs.effects }}
@@ -45,6 +45,16 @@ jobs:
           set -euo pipefail
           python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies
           python3 -m unittest -v scripts.test_hepta_readiness_semantics
+          python3 -m unittest -v \
+            scripts.test_hepta_module_manifest \
+            scripts.test_hepta_architecture_graph \
+            scripts.test_hepta_rust_reachability \
+            scripts.test_hepta_module_product_acceptance \
+            scripts.test_hepta_ci_entrypoints
+          python3 scripts/hepta_module_manifest.py --check
+          python3 scripts/hepta_architecture_graph.py --check
+          python3 scripts/hepta_rust_reachability.py --strict
+          python3 scripts/hepta_ci_entrypoints.py
           args=(--head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT")
           if [ "$EVENT_NAME" = "pull_request" ]; then
             args+=(--base "$BASE_SHA")
@@ -206,7 +216,9 @@ jobs:
           git diff --check
           python3 scripts/asciicheck.py README.md
           python3 scripts/readme_toc.py README.md
-          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta_module_manifest.py --check
+          python3 scripts/hepta_architecture_graph.py --check
+          python3 scripts/hepta_rust_reachability.py --strict
           python3 scripts/hepta-docs.py verify
           test -z "$(git status --porcelain --untracked-files=no)"
 

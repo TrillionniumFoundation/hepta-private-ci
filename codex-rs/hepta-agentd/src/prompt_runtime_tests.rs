@@ -1,6 +1,8 @@
 use super::*;
+
+#[path = "prompt_optimizer_evidence_fixture.rs"]
+mod optimizer_evidence_fixture;
 use codex_hepta_prompt_optimizer::canonical::*;
-use codex_hepta_types::AuthorityPosture;
 
 use std::collections::BTreeSet;
 use std::time::SystemTime;
@@ -20,7 +22,6 @@ use codex_hepta_prompt_registry::PromptRoleV2;
 use codex_hepta_prompt_registry::final_use_admission_binding;
 use codex_hepta_prompt_registry::final_use_realization_binding;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
 use codex_hepta_types::PromptDeliveryObservationV1;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
@@ -517,14 +518,16 @@ fn staged_pipeline_fixture() -> (
         .path()
         .join("prompt-witness")
         .join("registry.json");
-    let pipeline = AgentdPromptPipelineOwner::open_state_dirs(
-        &registry_root,
-        Some(&checkpoint),
-        "agent:test:prompt.registry",
-        &runtime_root,
-        64,
-    )
-    .unwrap_or_else(|error| panic!("pipeline owner: {error}"));
+    let pipeline = Arc::new(
+        AgentdPromptPipelineOwner::open_state_dirs(
+            &registry_root,
+            Some(&checkpoint),
+            "agent:test:prompt.registry",
+            &runtime_root,
+            64,
+        )
+        .unwrap_or_else(|error| panic!("pipeline owner: {error}")),
+    );
     let payload = b"Inspect evidence before mutation.";
     let factor = PromptFactor {
         factor_id: id("factor:agentd-product"),
@@ -675,63 +678,44 @@ fn staged_pipeline_fixture() -> (
             .unwrap_or_else(|error| panic!("register realization: {error}"));
     }
 
-    let logical_now = current_unix_ms().unwrap_or_else(|error| panic!("clock: {error}"));
-    let candidates = pipeline
-        .enumerate_candidates(PromptEnumerationRequestV1 {
-            set_id: id("enumeration:agentd-product"),
-            objective_digest: digest("objective:agentd-product"),
-            state_digest: digest("state:agentd-product"),
-            generation_vector_digest: digest("generation:agentd-product"),
-            model_tuple: tuple.clone(),
-            now_unix_ms: logical_now,
-            required_factor_ids: vec![factor.factor_id.clone()],
-            maximum_candidates: 8,
-            selection_grammar_digest: digest("grammar:agentd-product"),
-        })
-        .unwrap_or_else(|error| panic!("enumerate: {error}"));
-    assert_eq!(candidates.candidates[0].realization, realization);
-    let portfolio = SelectedPromptPortfolioV1 {
-        receipt: PromptPortfolioReceiptV1 {
-            portfolio_id: id("portfolio:agentd-product"),
-            candidate_set_digest: candidates.receipt.receipt_digest,
-            factor_ids: vec![factor.factor_id],
-            interaction_digest: digest("interaction"),
-            expected_utility_q32: FixedQ32::ONE,
-            total_token_upper_bound: 4,
-            valid_until_unix_ms: logical_now + 60_000,
-            receipt_digest: digest("portfolio-receipt"),
-            authority: AuthorityPosture::DENY_ALL,
-        },
-        selected: candidates.candidates,
+    let logical_now = wall_now;
+    let valid_until = logical_now + 60_000;
+    let enumeration = PromptEnumerationRequestV1 {
+        set_id: id("enumeration:agentd-product"),
         objective_digest: digest("objective:agentd-product"),
         state_digest: digest("state:agentd-product"),
-        model_tuple: tuple.clone(),
-        model_tuple_digest: tuple.digest(),
         generation_vector_digest: digest("generation:agentd-product"),
-        pricing_set_digest: digest("pricing-set"),
-        graph_generation_digest: digest("graph-generation"),
-        selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
-        optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
-    };
-    let exercise_request = PromptExerciseRequestV1 {
-        decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
-        current_state_digest: portfolio.state_digest,
-        generation_vector_digest: portfolio.generation_vector_digest,
         model_tuple: tuple.clone(),
         now_unix_ms: logical_now,
-        wait_value_q32: FixedQ32::ZERO,
-        policy_digest: digest("exercise-policy"),
+        required_factor_ids: vec![factor.factor_id.clone()],
+        maximum_candidates: 8,
+        selection_grammar_digest: digest("grammar:agentd-product"),
     };
-
-    let disposition = pipeline
-        .compile_and_stage(
-            "thread:product",
-            "turn:product",
-            "gpt-test",
-            wall_now + 60_000,
-            &portfolio,
-            &exercise_request,
-            codex_hepta_intelligence::PromptRegistryCompilationRequestV2 {
+    let candidates = pipeline
+        .enumerate_candidates(enumeration.clone())
+        .unwrap_or_else(|error| panic!("enumerate: {error}"));
+    assert_eq!(candidates.candidates[0].realization, realization);
+    let source = optimizer_evidence_fixture::FixtureSource::for_candidates_at(
+        &candidates,
+        logical_now.saturating_sub(1),
+        valid_until,
+    );
+    let optimizer = crate::AgentdPromptOptimizerV1::new(Arc::clone(&pipeline), source);
+    let outcome = optimizer
+        .optimize_and_stage(crate::AgentdPromptOptimizationRequestV1 {
+            thread_id: "thread:product".to_owned(),
+            turn_id: "turn:product".to_owned(),
+            model: "gpt-test".to_owned(),
+            requested_deadline_ms: valid_until,
+            enumeration,
+            selection: PromptPortfolioRequestV1 {
+                portfolio_id: id("portfolio:agentd-product"),
+                graph_query_id: id("query:agentd-product"),
+                token_budget: 128,
+                maximum_selected_factors: 16,
+                requested_valid_until_unix_ms: valid_until,
+            },
+            compilation: codex_hepta_intelligence::PromptRegistryCompilationRequestV2 {
                 compilation_id: id("compilation:agentd-product"),
                 serialization_id: id("serialization:agentd-product"),
                 attachment_id: id("attachment:agentd-product"),
@@ -750,9 +734,21 @@ fn staged_pipeline_fixture() -> (
                 token_budget: 128,
                 truncation_policy_digest: digest("truncation:agentd-product"),
             },
-        )
-        .unwrap_or_else(|error| panic!("compile and stage: {error}"));
-    assert_eq!(disposition, PromptRuntimeStageDisposition::Inserted);
+        })
+        .unwrap_or_else(|error| panic!("optimize and stage: {error}"));
+    match outcome {
+        crate::AgentdPromptOptimizationOutcomeV1::Staged {
+            portfolio,
+            disposition,
+        } => {
+            assert_eq!(disposition, PromptRuntimeStageDisposition::Inserted);
+            assert_eq!(portfolio.receipt.factor_ids, vec![factor.factor_id]);
+            assert_eq!(portfolio.receipt.valid_until_unix_ms, valid_until);
+        }
+        crate::AgentdPromptOptimizationOutcomeV1::NoIntervention(_) => {
+            panic!("positive verified fixture must stage an intervention")
+        }
+    }
 
     let staged = pipeline
         .prepare_for_provider(PromptRuntimePrepareRequest {
@@ -764,11 +760,11 @@ fn staged_pipeline_fixture() -> (
         .unwrap_or_else(|| panic!("staged attachment missing"));
     assert_eq!(staged.developer_fragments.len(), 1);
     assert_eq!(staged.developer_fragments[0].text.as_bytes(), payload);
-    (temporary, Arc::new(pipeline), authority, signing_key)
+    (temporary, pipeline, authority, signing_key)
 }
 
 #[test]
-fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
+fn named_agentd_optimizer_stages_exact_registry_bytes_for_app_server_host() {
     let (_temporary, pipeline, _authority, _key) = staged_pipeline_fixture();
     let staged = pipeline
         .prepare_for_provider(product_prepare())

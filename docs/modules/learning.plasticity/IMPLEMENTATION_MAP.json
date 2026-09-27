@@ -618,10 +618,47 @@
           "role": "declared_module_dependency_not_callsite_proof"
         }
       ]
+    },
+    {
+      "operation": "coordinate_evaluated_self_iteration",
+      "nativeSymbol": "SelfIterationCoordinatorOwnerV1::run",
+      "sourcePath": "codex-rs/hepta-agentd/src/self_iteration_coordinator.rs",
+      "state": "normal_agentd_task_with_bounded_authority_free_product_port_and_durable_iteration_replay; upstream_product_outcome_trigger_and_external_future_window_evidence_pending",
+      "authority": "deny_all_candidate_submission_only",
+      "tests": [
+        "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently",
+        "codex-rs/hepta-agentd/src/config_tests.rs::config_binds_exact_registered_agent_roots_and_workspace"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "coordinate_evaluated_self_iteration",
+      "mappingClass": "product_composition",
+      "ownerEntrypoint": {
+        "role": "agentd_required_task",
+        "path": "codex-rs/hepta-agentd/src/self_iteration_coordinator.rs",
+        "symbol": "SelfIterationCoordinatorOwnerV1::run",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+          "module": "learning.plasticity",
+          "role": "sole_mutable_plasticity_owner"
+        },
+        {
+          "path": "codex-rs/hepta-learning-artifacts",
+          "module": "learning.artifacts",
+          "role": "durable_iteration_ledger_and_candidate_identity"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval",
+          "module": "learning.eval",
+          "role": "independent_evaluation_validation"
+        }
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Compose a real non-test control.engineering/self-iteration coordinator that submits frozen, independently evaluated next-generation parameter/topology requests through AgentdLearningPlasticityProducerV1; the repository now has process bootstrap, the named producer and lifetime E2E, but IterationEnvelopeV1 still has no production caller.",
+    "Connect the normal product outcome/ledger/dataset/artifact path to the bounded SelfIterationCoordinatorHandleV1 using independently issued evaluator, observer and selector evidence; the coordinator owner and producer port are now normal Agentd composition, but Agentd must not synthesize those independent roles.",
     "Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification, Lane F qualification and the live-runtime structural-canary regression for this final source/document head.",
     "Execute exact unified-candidate descriptor recovery, proposal lifetime and independent live-topology canary tests."
   ],
@@ -654,7 +691,17 @@
     {
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
       "nativeSymbol": "AgentdLearningPlasticityProducerV1",
-      "state": "compiled_producer_trigger_not_product_composed"
+      "state": "normal_self_iteration_coordinator_delegated_producer; independent_candidate_trigger_pending"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/config.rs",
+      "nativeSymbol": "AgentdConfig::with_self_iteration_coordinator",
+      "state": "normal_product_builder_returns_authority_free_producer_and_attaches_sole_owner"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/self_iteration_coordinator.rs",
+      "nativeSymbol": "SelfIterationCoordinatorOwnerV1::run",
+      "state": "normal_required_agentd_task_when_explicitly_configured"
     }
   ],
   "sourceObjects": [
@@ -806,5 +853,10 @@
       "path": "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs",
       "object": "0ba0c909396cfdee1a315e889f7708b785594dc6"
     }
+  ],
+  "observedSourcePaths": [
+    "codex-rs/hepta-agentd/src/self_iteration_coordinator.rs",
+    "codex-rs/hepta-agentd/src/config.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs"
   ]
 }

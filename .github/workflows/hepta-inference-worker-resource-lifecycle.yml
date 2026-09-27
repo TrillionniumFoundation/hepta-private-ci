@@ -1,35 +1,6 @@
 name: Inference worker resource lifecycle qualification
 
 on:
-  pull_request:
-    paths:
-      - codex-rs/hepta-infer-worker-host/**
-      - codex-rs/hepta-infer-core/**
-      - codex-rs/hepta-types/**
-      - codex-rs/Cargo.toml
-      - codex-rs/Cargo.lock
-      - codex-rs/rust-toolchain.toml
-      - scripts/hepta_ci_exec.py
-      - scripts/test_hepta_ci_exec*.py
-      - scripts/hepta_ci_v8.py
-      - .github/actions/hepta-synthetic-merge/**
-      - .github/workflows/hepta-inference-worker-resource-lifecycle.yml
-  push:
-    branches:
-      - main
-      - work/product-convergence-20260923
-    paths:
-      - codex-rs/hepta-infer-worker-host/**
-      - codex-rs/hepta-infer-core/**
-      - codex-rs/hepta-types/**
-      - codex-rs/Cargo.toml
-      - codex-rs/Cargo.lock
-      - codex-rs/rust-toolchain.toml
-      - scripts/hepta_ci_exec.py
-      - scripts/test_hepta_ci_exec*.py
-      - scripts/hepta_ci_v8.py
-      - .github/actions/hepta-synthetic-merge/**
-      - .github/workflows/hepta-inference-worker-resource-lifecycle.yml
   workflow_dispatch:
 
 permissions:

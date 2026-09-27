@@ -260,7 +260,10 @@ fn recovery_audit_boundary_round_trips_and_rejects_incoherent_replay_state() {
     journal.recovery_decision_sha256 = Some(decision.digest().clone());
     journal.recovery_resolution_submitted = true;
     write_journal(&path, &mut journal).expect("publish recovery audit");
-    assert_eq!(read_journal(&path).expect("read journal"), Some(journal.clone()));
+    assert_eq!(
+        read_journal(&path).expect("read journal"),
+        Some(journal.clone())
+    );
 
     let mut incoherent = journal;
     incoherent.status = ProductionReleaseCallerStatusV1::Accepted;

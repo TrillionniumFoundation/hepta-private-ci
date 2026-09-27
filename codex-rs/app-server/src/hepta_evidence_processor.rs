@@ -11,12 +11,12 @@ use codex_app_server_protocol::HeptaHistoricalEvidenceRecord;
 use codex_app_server_protocol::HeptaHistoricalEvidenceState;
 use codex_app_server_protocol::HeptaProviderEvidenceSummary;
 use codex_app_server_protocol::JSONRPCErrorError;
-use codex_hepta_evidence::EvidenceSummary;
-use codex_hepta_evidence::HeptaEvidenceStore;
-use codex_hepta_evidence::HistoricalEvidenceFamily;
-use codex_hepta_evidence::HistoricalEvidenceRecord;
-use codex_hepta_evidence::HistoricalEvidenceSelector;
-use codex_hepta_evidence::HistoricalEvidenceState;
+use codex_hepta_app_bridge::evidence::EvidenceSummary;
+use codex_hepta_app_bridge::evidence::HeptaEvidenceStore;
+use codex_hepta_app_bridge::evidence::HistoricalEvidenceFamily;
+use codex_hepta_app_bridge::evidence::HistoricalEvidenceRecord;
+use codex_hepta_app_bridge::evidence::HistoricalEvidenceSelector;
+use codex_hepta_app_bridge::evidence::HistoricalEvidenceState;
 use codex_rollout::StateDbHandle;
 
 use crate::error_code::internal_error;
@@ -193,7 +193,7 @@ fn summary_response(summary: EvidenceSummary) -> HeptaEvidenceSummaryReadRespons
 
 #[cfg(test)]
 mod tests {
-    use codex_hepta_evidence::HISTORICAL_EVIDENCE_SCHEMA_VERSION;
+    use codex_hepta_app_bridge::evidence::HISTORICAL_EVIDENCE_SCHEMA_VERSION;
     use codex_utils_absolute_path::AbsolutePathBuf;
 
     use crate::error_code::INTERNAL_ERROR_CODE;
@@ -407,12 +407,12 @@ mod tests {
     #[test]
     fn evidence_projection_maps_every_authoritative_count() {
         let response = summary_response(EvidenceSummary {
-            governance: codex_hepta_evidence::GovernanceEvidenceSummary {
+            governance: codex_hepta_app_bridge::evidence::GovernanceEvidenceSummary {
                 decisions: 1,
                 receipts: 2,
                 pending_actions: 3,
             },
-            provider: codex_hepta_evidence::ProviderEvidenceSummary {
+            provider: codex_hepta_app_bridge::evidence::ProviderEvidenceSummary {
                 intents: 4,
                 receipts: 5,
                 pending_attempts: 6,

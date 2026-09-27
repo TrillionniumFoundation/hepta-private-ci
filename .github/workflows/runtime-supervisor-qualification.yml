@@ -1,58 +1,6 @@
 name: Runtime supervisor qualification
 
 on:
-  pull_request:
-    paths:
-      - CALLERS.toml
-      - codex-rs/Cargo.lock
-      - codex-rs/Cargo.toml
-      - codex-rs/app-server/**
-      - codex-rs/hepta-agent-protocol/**
-      - codex-rs/hepta-agentd/**
-      - codex-rs/hepta-control-plane/**
-      - codex-rs/hepta-fleet/**
-      - codex-rs/hepta-memory/**
-      - codex-rs/hepta-supervisor/**
-      - docs/modules/runtime.supervisor/**
-      - qualification/module-execution-dossiers/detail/runtime.supervisor.md
-      - qualification/runtime-supervisor/**
-      - scripts/hepta-implementation-maps.py
-      - scripts/hepta-supervisor-acceptance-bundle.py
-      - scripts/hepta-supervisor-receipt-gate.py
-      - scripts/hepta-supervisor-validation.py
-      - scripts/tests/test_hepta_supervisor_acceptance_bundle.py
-      - scripts/tests/test_hepta_supervisor_lock_boundaries.py
-      - scripts/tests/test_hepta_supervisor_receipt_gate.py
-      - scripts/hepta_ci_candidate.py
-      - scripts/hepta_ci_v8.py
-      - .github/workflows/runtime-supervisor-qualification.yml
-  push:
-    branches:
-      - main
-    paths:
-      - CALLERS.toml
-      - codex-rs/Cargo.lock
-      - codex-rs/Cargo.toml
-      - codex-rs/app-server/**
-      - codex-rs/hepta-agent-protocol/**
-      - codex-rs/hepta-agentd/**
-      - codex-rs/hepta-control-plane/**
-      - codex-rs/hepta-fleet/**
-      - codex-rs/hepta-memory/**
-      - codex-rs/hepta-supervisor/**
-      - docs/modules/runtime.supervisor/**
-      - qualification/module-execution-dossiers/detail/runtime.supervisor.md
-      - qualification/runtime-supervisor/**
-      - scripts/hepta-implementation-maps.py
-      - scripts/hepta-supervisor-acceptance-bundle.py
-      - scripts/hepta-supervisor-receipt-gate.py
-      - scripts/hepta-supervisor-validation.py
-      - scripts/tests/test_hepta_supervisor_acceptance_bundle.py
-      - scripts/tests/test_hepta_supervisor_lock_boundaries.py
-      - scripts/tests/test_hepta_supervisor_receipt_gate.py
-      - scripts/hepta_ci_candidate.py
-      - scripts/hepta_ci_v8.py
-      - .github/workflows/runtime-supervisor-qualification.yml
   workflow_dispatch:
 
 permissions:

@@ -93,9 +93,15 @@ pub enum SignRequest {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "operation", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SignResponse {
-    H7Envelope { envelope: H7SignedArtifactEnvelope },
-    ProductionGrant { grant: H7H89ProductionGrant },
-    ProductionRecovery { decision: ProductionRecoveryDecision },
+    H7Envelope {
+        envelope: H7SignedArtifactEnvelope,
+    },
+    ProductionGrant {
+        grant: H7H89ProductionGrant,
+    },
+    ProductionRecovery {
+        decision: ProductionRecoveryDecision,
+    },
 }
 
 #[derive(Debug, Error)]
@@ -545,8 +551,7 @@ mod tests {
     #[test]
     fn request_boundary_signs_and_verifies_production_recovery() {
         let key = SigningKey::from_bytes(&[11; 32]);
-        let agent = AgentId::parse("00000000-0000-4000-8000-000000000002")
-            .expect("agent");
+        let agent = AgentId::parse("00000000-0000-4000-8000-000000000002").expect("agent");
         let grant_sha256 = digest(2);
         let intent_sha256 = digest(3);
         let release_transaction_sha256 = digest(4);
@@ -574,12 +579,9 @@ mod tests {
         let SignResponse::ProductionRecovery { decision } = response else {
             panic!("wrong response");
         };
-        let verifier = H7H89ProductionGrantVerifier::new(
-            "external-recovery",
-            11,
-            key.verifying_key(),
-        )
-        .expect("recovery verifier");
+        let verifier =
+            H7H89ProductionGrantVerifier::new("external-recovery", 11, key.verifying_key())
+                .expect("recovery verifier");
         verifier
             .verify_recovery(
                 &decision,

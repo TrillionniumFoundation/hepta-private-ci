@@ -4,8 +4,8 @@ use std::sync::Mutex;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_app_server::AppServerDrainHandle;
 use codex_hepta_agent_protocol::DrainSnapshot;
+use codex_hepta_app_host::AppServerDrainHandle;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_contracts::Sha256Digest;

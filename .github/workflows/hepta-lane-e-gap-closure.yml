@@ -1,11 +1,7 @@
 name: Hepta Lane E gap closure
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-
+  workflow_dispatch:
 permissions:
   contents: read
   id-token: write

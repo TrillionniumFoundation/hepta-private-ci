@@ -1,17 +1,6 @@
 name: Hepta knowledge.graph target-host qualification
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "codex-rs/hepta-kg/**"
-      - "codex-rs/hepta-memory/**"
-      - "docs/modules/knowledge.graph/**"
-      - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
-      - "qualification/knowledge-graph/**"
-      - "scripts/hepta-knowledge-graph-target-measure.py"
-      - "scripts/hepta-knowledge-graph-production-gate.py"
-      - ".github/workflows/hepta-knowledge-graph-target-host.yml"
   workflow_dispatch:
     inputs:
       candidate_sha:

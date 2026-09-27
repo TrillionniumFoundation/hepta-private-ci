@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
+`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates the authoritative `module.toml` and regenerates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide's projections.
 
 ### Native source and scope
 
@@ -160,6 +160,8 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The current supervisor serializes one Agent mutation at the owner lock, generation-fences every managed process, and persists crash-relevant state below the Agent run root: the exact process lease, bounded automatic-restart budget, unified release transaction and, for externally authorized transitions, a signed intent.
 
+The ordinary `hepta-supervisord` process also opens the fleet-scoped durable runtime-module supervisor before reporting readiness. That owner stores the complete registry checkpoint, including active and pending generations, selection/canary/handoff evidence, retirements and monotone generation fences, under one exclusive lock and atomic replace-plus-directory-sync transaction. The administrator socket exposes a strict read-only `RuntimeModules` projection so operators and product tests can prove which topology was actually restored; the query cannot register, promote, retire or roll back a candidate. Stateful replacement still requires independently verified selection, canary and writer handoff, and rollback always advances to a fresh generation.
+
 The release transaction is the durable execution journal for both local and signed transitions. Before drain it records source/target release identities, immutable manifest and agentd/matrixd program digests, the exact per-Agent allow/revoke admission-frontier digest, a deterministic compatibility-binding digest over the source/target pair, expected Fleet release-state generation, lifecycle generation, rollback predecessor and optional production grant/authority epoch. Phase is fsynced before each process boundary. A production daemon configured with the external grant/H7 verifier rejects unsigned Upgrade/Rollback RPCs.
 
 Agent drain uses an exact Agentd `Drain` RPC acknowledgement. Agentd closes new App Server admission first and waits for RPC handlers that already crossed the admission gate, so a late `thread/queue/reconcile` handler cannot publish new durable work after drain has been declared terminal. It then requires the running assistant-turn count to reach zero and checks the durable Automation/TaskFlow owner for unclassified `leased`, `claimed`, `admitted` or `running` work. Durable `uncertain`/`indeterminate` effects remain classified unknown for restart reconciliation and are never relabelled as success or failure merely to drain. A supervisord crash after durable Draining replays the idempotent typed request. If the optional automation store is unavailable, graceful drain fails closed and the supervisor may only advance through its bounded timeout/stop escalation.
@@ -215,6 +217,8 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-supervisor/src/supervisor_tests.rs](../../../codex-rs/hepta-supervisor/src/supervisor_tests.rs) — lifecycle fencing, typed drain, bounded restart/recovery, release-transaction crash cuts, upgrade/rollback, revocation and signed recovery.
 - [codex-rs/hepta-supervisor/src/unix_tests.rs](../../../codex-rs/hepta-supervisor/src/unix_tests.rs) — exact process identity, readiness gates and generation-fenced Agentd drain acknowledgement.
 - [codex-rs/hepta-supervisor/src/release_transaction.rs](../../../codex-rs/hepta-supervisor/src/release_transaction.rs) — durable transition integrity, phase recovery, admission-frontier and compatibility-binding digest checks.
+- [codex-rs/hepta-supervisor/src/module_runtime_store.rs](../../../codex-rs/hepta-supervisor/src/module_runtime_store.rs) — exclusive durable topology owner, atomic checkpoint persistence, tamper rejection, generation-fence recovery and fresh-generation rollback.
+- [codex-rs/hepta-supervisor/src/daemon.rs](../../../codex-rs/hepta-supervisor/src/daemon.rs); named case: `daemon_restores_runtime_modules_and_exposes_them_across_restart` — ordinary daemon startup/restart and strict read-only topology projection.
 - [codex-rs/hepta-supervisor/src/signed_authority.rs](../../../codex-rs/hepta-supervisor/src/signed_authority.rs) — production grant and independently signed recovery-decision contracts.
 - [codex-rs/hepta-supervisor/src/daemon_platform_tests.rs](../../../codex-rs/hepta-supervisor/src/daemon_platform_tests.rs); named case: `unsupported_host_rejects_daemon_before_accessing_fleet_state`.
 - [codex-rs/hepta-supervisor/src/signed_intent_publish_tests.rs](../../../codex-rs/hepta-supervisor/src/signed_intent_publish_tests.rs); named case: `cross_directory_publish_rejects_without_changing_either_file`.
@@ -394,10 +398,11 @@ This receipt records repository source bindings for the current documentation ca
 | `signed_upgrade` | `pub fn apply_production_grant(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
 | `signed_rollback` | `pub fn apply_production_grant(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
 | `reconcile_signed_intent` | `pub fn resolve_production_recovery(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
+| `restore_runtime_module_topology` | `async fn run_supervisord_inner(` | `codex-rs/hepta-supervisor/src/daemon.rs` | `codex-rs/hepta-supervisor/src/daemon.rs`, `module_runtime_store.rs` |
 
 - `sourceBase` in the implementation map is historical provenance. The exact source-head or deterministic merge candidate is derived from Git by Lane B verification and is never hard-coded into a self-referential candidate file. The final repository-controlled implementation observation is separately pinned in `IMPLEMENTATION_MAP.json.observedAtHead`; verification accepts it only while every declared `observedSourcePaths` path is unchanged at the candidate head.
 - The daemon product never executes unsigned `Upgrade` or `Rollback`; those wire variants are compatibility rejection surfaces. Ordinary `Supervisor::upgrade/rollback` remain library-level qualification/fault-injection APIs.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+- The normal daemon caller and durable runtime-module owner are listed above. Independent deployment, selector trust distribution, target-host canary evidence and operator acceptance remain separate follow-ups.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
 
 

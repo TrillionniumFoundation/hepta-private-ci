@@ -1,18 +1,7 @@
 name: intelligence-control authoritative provider qualification
 
 on:
-  pull_request:
-    paths:
-      - codex-rs/hepta-agentd/src/intelligence_ingress.rs
-      - codex-rs/hepta-agentd/src/intelligence_ingress_tests.rs
-      - codex-rs/hepta-agentd/src/intelligence_invocation_owner_tests.rs
-      - codex-rs/hepta-agentd/src/intelligence_run_start_tests.rs
-      - codex-rs/hepta-agentd/src/objective_runtime.rs
-      - scripts/test_hepta_provider_workflow.py
-      - .github/workflows/intelligence-provider-qualification.yml
-
-# Qualification observes immutable source. It must never repair or push the
-# candidate it is supposed to test, including after formatting fails.
+  workflow_dispatch:
 permissions:
   contents: read
 

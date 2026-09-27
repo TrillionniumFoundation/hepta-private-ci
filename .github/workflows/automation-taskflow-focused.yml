@@ -1,37 +1,6 @@
 name: automation-taskflow-focused
 
 on:
-  pull_request:
-    paths:
-      - CALLERS.toml
-      - codex-rs/hepta-automation/**
-      - codex-rs/hepta-agent-protocol/**
-      - codex-rs/hepta-agentd/**
-      - codex-rs/hepta-contracts/**
-      - codex-rs/hepta-operations/**
-      - codex-rs/hepta-types/**
-      - codex-rs/Cargo.lock
-      - codex-rs/Cargo.toml
-      - docs/modules/automation.taskflow/**
-      - qualification/module-execution-dossiers/detail/automation.taskflow.md
-      - .github/workflows/automation-taskflow-focused.yml
-  push:
-    branches:
-      - main
-      - work/product-convergence-20260923
-    paths:
-      - CALLERS.toml
-      - codex-rs/hepta-automation/**
-      - codex-rs/hepta-agent-protocol/**
-      - codex-rs/hepta-agentd/**
-      - codex-rs/hepta-contracts/**
-      - codex-rs/hepta-operations/**
-      - codex-rs/hepta-types/**
-      - codex-rs/Cargo.lock
-      - codex-rs/Cargo.toml
-      - docs/modules/automation.taskflow/**
-      - qualification/module-execution-dossiers/detail/automation.taskflow.md
-      - .github/workflows/automation-taskflow-focused.yml
   workflow_dispatch:
 
 permissions:

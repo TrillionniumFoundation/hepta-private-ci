@@ -50,10 +50,11 @@ override these machine status facts.
 | `runtime_topology_execution` | `source_implemented_external_final_use_exact_handoff_migration_owner_and_live_cns_replacement_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 3 |
 | `runtime_topology_recovery` | `source_implemented_external_recovery_final_use_exact_handoff_migration_owner_and_stopped_quarantined_forward_recovery_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 1 |
 | `runtime_structural_canary_fault_rollback` | `qualification_composed_live_apply_with_migration_forced_stopped_host_fault_distinct_recovery_final_use_with_migration_rollforward_and_authenticated_observer_receipt_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 1 |
+| `coordinate_evaluated_self_iteration` | `normal_agentd_task_with_bounded_authority_free_product_port_and_durable_iteration_replay; upstream_product_outcome_trigger_and_external_future_window_evidence_pending` | `codex-rs/hepta-agentd/src/self_iteration_coordinator.rs` | 2 |
 
 ### Repository-controlled gaps
 
-- Compose a real non-test control.engineering/self-iteration coordinator that submits frozen, independently evaluated next-generation parameter/topology requests through AgentdLearningPlasticityProducerV1; the repository now has process bootstrap, the named producer and lifetime E2E, but IterationEnvelopeV1 still has no production caller.
+- Connect the normal product outcome/ledger/dataset/artifact path to the bounded SelfIterationCoordinatorHandleV1 using independently issued evaluator, observer and selector evidence; the coordinator owner and producer port are now normal Agentd composition, but Agentd must not synthesize those independent roles.
 - Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification, Lane F qualification and the live-runtime structural-canary regression for this final source/document head.
 - Execute exact unified-candidate descriptor recovery, proposal lifetime and independent live-topology canary tests.
 
@@ -115,7 +116,7 @@ proposal crate, and that distinction is intentional and now explicit:
 | `codex-rs/hepta-plasticity` native crate | `codex-hepta-types` only; deterministic proposal/generator/topology/registry mechanics stay authority-free |
 | product-workspace adapter | `codex-hepta-intelligence-eval` and `codex-hepta-learning-ledger` authenticate generator/evaluator evidence and independent decisions |
 | Agentd process bootstrap | `--plasticity-bootstrap-descriptor` reconstructs the long-lived owner from independently witnessed artifact/ledger/neuron/NDU/trust/registry inputs; absence of the explicit descriptor leaves plasticity disabled |
-| selected self-iteration coordinator | **Not product-composed yet.** A future non-test `control.engineering`/self-iteration caller must submit already frozen and independently evaluated next-generation requests through `AgentdLearningPlasticityProducerV1`; turn/automation paths must not synthesize this trigger |
+| selected self-iteration coordinator | **Product-composed as an explicit bounded port.** `AgentdConfig::with_self_iteration_coordinator` returns an authority-free producer handle and attaches the sole owner to the normal Agentd task set; the coordinator validates independently evaluated bundles and delegates to the existing plasticity owner. The ordinary product outcome/ledger/dataset/artifact path still does not emit such bundles, and turn/automation paths must not synthesize evaluator, observer or selector evidence. |
 | selected host / learning owner | `AgentdLearningPlasticityProducerV1` exposes the bounded parameter/topology submission boundary; the long-lived owner MUST read current `learning.artifacts` and qualification/evidence frontiers, resolve every dataset/update/modulator/eligibility/mutation-policy/per-parameter evidence digest through `PlasticityOwnerEvidenceResolverV1`, and verify short-lived trusted Observer/Evaluator evidence before durable append |
 | selected host rollback domain | MUST implement `PlasticityAnchorCommitterV1` and monotonic writer-fence issuance outside the registry rollback domain |
 

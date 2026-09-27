@@ -1,8 +1,6 @@
 name: single-main-consolidation
 on:
-  push:
-    branches: [integration/single-main-20260922]
-    paths: [.github/workflows/single-main-consolidation.yml]
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:

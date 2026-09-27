@@ -28,6 +28,7 @@ use crate::daemon_protocol::SupervisordMutationAccepted;
 use crate::daemon_protocol::SupervisordPayload;
 use crate::daemon_protocol::SupervisordRequest;
 use crate::daemon_protocol::SupervisordResponse;
+use crate::daemon_protocol::SupervisordRuntimeModules;
 
 pub struct SupervisordClient {
     socket_path: PathBuf,
@@ -52,6 +53,19 @@ impl SupervisordClient {
     pub async fn health(&self) -> Result<SupervisordHealth, SupervisorError> {
         match self.send(SupervisordMethod::Health).await? {
             SupervisordPayload::Health(health) => Ok(health),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn runtime_modules(&self) -> Result<SupervisordRuntimeModules, SupervisorError> {
+        match self.send(SupervisordMethod::RuntimeModules).await? {
+            SupervisordPayload::RuntimeModules {
+                topology_digest,
+                active,
+            } => Ok(SupervisordRuntimeModules {
+                topology_digest,
+                active,
+            }),
             payload => unexpected(payload),
         }
     }

@@ -17,32 +17,45 @@ from pathlib import PurePosixPath
 from typing import Iterable
 
 GROUPS = frozenset({"inference", "effects", "lifecycle", "learning", "objective"})
+ROOT = Path(__file__).resolve().parents[1]
+CI_MATRIX_PATH = ROOT / "docs/modules/CI_MATRIX.json"
+
+
+def load_ci_matrix(path: Path = CI_MATRIX_PATH) -> tuple[dict[str, frozenset[str]], dict[str, frozenset[str]]]:
+    document = json.loads(path.read_text(encoding="utf-8"))
+    if document.get("schema") != "hepta.module-ci-matrix.v1":
+        raise ValueError(f"unsupported module CI matrix: {path}")
+    package_groups: dict[str, frozenset[str]] = {}
+    module_groups: dict[str, set[str]] = {}
+    for row in document.get("packages", []):
+        package_path = row.get("packagePath")
+        module = row.get("module")
+        groups = row.get("ciGroups")
+        if (
+            not isinstance(package_path, str)
+            or not isinstance(module, str)
+            or not isinstance(groups, list)
+            or any(group not in GROUPS for group in groups)
+        ):
+            raise ValueError(f"invalid module CI matrix row: {row!r}")
+        if package_path in package_groups:
+            raise ValueError(f"duplicate package in module CI matrix: {package_path}")
+        selected = frozenset(groups)
+        package_groups[package_path] = selected
+        module_groups.setdefault(module, set()).update(selected)
+    return package_groups, {
+        module: frozenset(groups) for module, groups in module_groups.items()
+    }
+
+
+PACKAGE_PATH_GROUPS, MODULE_CI_GROUPS = load_ci_matrix()
+# Compatibility alias for tests and callers that still address direct package
+# directory names. The path-keyed map above is authoritative.
 PACKAGE_GROUPS = {
-    "hepta-infer-core": {"inference"},
-    "hepta-operations": {"effects", "lifecycle"},
-    "hepta-automation": {"effects", "lifecycle"},
-    "hepta-contracts": set(GROUPS),
-    "hepta-control-plane": {"lifecycle", "effects", "objective"},
-    "hepta-supervisor": {"lifecycle", "effects"},
-    "hepta-fleet": {"lifecycle"},
-    "hepta-agentd": set(GROUPS),
-    "hepta-types": set(GROUPS),
-    "hepta-learning-ledger": {"learning"},
-    "hepta-learning-artifacts": {"learning"},
-    "hepta-intelligence-eval": {"learning"},
-    "hepta-objective": {"objective", "learning"},
-    "hepta-prompt-optimizer": {"objective", "learning"},
-    "hepta-plasticity": {"learning", "lifecycle"},
-    "hepta-intelligence": {"objective", "learning"},
-    "hepta-intuition": {"objective", "learning"},
-    "hepta-neuron": {"learning"},
-    "hepta-ndu": {"objective", "learning"},
-    "hepta-cognitive-read": {"learning"},
-    "hepta-cognitive-store": {"learning", "lifecycle"},
-    "hepta-memory-retrieval": {"learning"},
-    "hepta-memory-federation": {"learning", "lifecycle"},
-    "hepta-prompt-registry": {"objective", "learning"},
+    PurePosixPath(path).name: set(groups)
+    for path, groups in PACKAGE_PATH_GROUPS.items()
 }
+
 
 DERIVED_ONLY_DOCS = frozenset(
     {
@@ -81,8 +94,16 @@ CANONICAL_DOC_GROUPS = {
 }
 
 
-def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]:
+def select(
+    paths: Iterable[str],
+    *,
+    force_full: bool = False,
+    package_path_groups: dict[str, frozenset[str]] | None = None,
+    module_ci_groups: dict[str, frozenset[str]] | None = None,
+) -> dict[str, bool]:
     selected = set(GROUPS) if force_full else set()
+    package_path_groups = PACKAGE_PATH_GROUPS if package_path_groups is None else package_path_groups
+    module_ci_groups = MODULE_CI_GROUPS if module_ci_groups is None else module_ci_groups
     derived = force_full
     full_repo = force_full
 
@@ -100,6 +121,25 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         if path in DERIVED_ONLY_DOCS or path.startswith(
             "qualification/module-execution-dossiers/detail/"
         ):
+            derived = True
+            continue
+
+        if path == "docs/modules/registry.toml":
+            selected.update(GROUPS)
+            derived = True
+            continue
+        if path.startswith("docs/modules/") and path.endswith("/module.toml"):
+            parts = PurePosixPath(path).parts
+            module_id = parts[2] if len(parts) == 4 else ""
+            selected.update(module_ci_groups.get(module_id, GROUPS))
+            selected.add("lifecycle")
+            derived = True
+            continue
+        if path in {
+            "docs/modules/CARGO_BINDINGS.json",
+            "docs/modules/CI_MATRIX.json",
+        }:
+            selected.add("lifecycle")
             derived = True
             continue
 
@@ -137,11 +177,20 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             selected.update(FILE_GROUPS[path])
             continue
 
+        matched_package = next(
+            (
+                groups
+                for package_path, groups in package_path_groups.items()
+                if path == package_path or path.startswith(package_path + "/")
+            ),
+            None,
+        )
+        if matched_package is not None:
+            selected.update(matched_package)
+            continue
+
         if len(parts) > 2 and parts[0] == "codex-rs":
             package = parts[1]
-            if package in PACKAGE_GROUPS:
-                selected.update(PACKAGE_GROUPS[package])
-                continue
             if package.startswith("hepta-"):
                 # A newly introduced Hepta package stays inside architecture
                 # qualification; workspace manifest/lock edits separately force

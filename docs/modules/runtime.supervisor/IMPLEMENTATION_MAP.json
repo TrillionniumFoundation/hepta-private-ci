@@ -409,6 +409,41 @@
       "nativeSymbol": "pub fn resolve_production_recovery(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true
+    },
+    {
+      "designOperation": "restore_runtime_module_topology",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-supervisor/src/daemon.rs",
+        "symbol": "async fn run_supervisord_inner(",
+        "buildTarget": "hepta-supervisord"
+      },
+      "delegatedCallees": [
+        {
+          "role": "durable_owner",
+          "path": "codex-rs/hepta-supervisor/src/module_runtime_store.rs",
+          "symbol": "pub fn open(",
+          "buildTarget": "codex-hepta-supervisor"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/daemon.rs",
+          "kind": "normal_daemon_restart_and_read_only_topology_projection",
+          "command": "cargo test --locked -p codex-hepta-supervisor runtime_module -- --test-threads=1"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/module_runtime_store.rs",
+          "kind": "durable_generation_replacement_retirement_tamper_and_fresh_generation_rollback",
+          "command": "cargo test --locked -p codex-hepta-supervisor module_runtime_store -- --test-threads=1"
+        }
+      ],
+      "sourceSemantics": "The ordinary supervisord startup opens and exclusively locks the durable runtime-module owner before readiness, restores active generations, pending lifecycle state and monotone generation fences, and exposes only a strict read-only RuntimeModules projection. Restart returns the same topology digest; mutation remains limited to independently verified selection/canary/handoff APIs and cannot be synthesized through this query.",
+      "operation": "restore_runtime_module_topology",
+      "nativeSymbol": "async fn run_supervisord_inner(",
+      "sourcePath": "codex-rs/hepta-supervisor/src/daemon.rs",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
@@ -430,7 +465,7 @@
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
@@ -438,9 +473,9 @@
     "implementedOperationMappingComplete": true
   },
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "independent_signed_cli_source_composed_exact_candidate_execution_pending",
-  "productionWriterState": "supervisor_owner_and_caller_delivery_journals_composed_deployment_not_qualified",
+  "productionImplementation": true,
+  "productCallerState": "normal_supervisord_durable_runtime_module_owner_composed_exact_candidate_execution_pending",
+  "productionWriterState": "normal_supervisord_exclusive_runtime_module_owner_composed_deployment_not_qualified",
   "owner": "runtime-control",
   "deputy": "fleet-runtime",
   "technicalGuide": "docs/modules/runtime.supervisor/TECHNICAL.md",
@@ -457,7 +492,12 @@
     "codex-rs/hepta-agentd",
     "codex-rs/hepta-automation",
     "codex-rs/hepta-fleet",
-    "codex-rs/hepta-supervisor"
+    "codex-rs/hepta-supervisor",
+    "codex-rs/hepta-supervisor/src/daemon.rs",
+    "codex-rs/hepta-supervisor/src/daemon_client.rs",
+    "codex-rs/hepta-supervisor/src/daemon_protocol.rs",
+    "codex-rs/hepta-supervisor/src/module_runtime_store.rs",
+    "codex-rs/hepta-supervisor/src/module_runtime_checkpoint.rs"
   ],
   "observedAtHead": {
     "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
@@ -466,6 +506,12 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-supervisor/src/daemon.rs",
+      "nativeSymbol": "run_supervisord_inner",
+      "role": "normal_product_durable_runtime_module_owner_and_read_only_projection",
+      "buildTarget": "hepta-supervisord"
+    },
     {
       "sourcePath": "codex-rs/hepta-supervisor/src/bin/hepta-supervisor-release-controller.rs",
       "nativeSymbol": "main",

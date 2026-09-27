@@ -49,11 +49,20 @@ fn config_binds_exact_registered_agent_roots_and_workspace() {
     assert_eq!(config.identity().agent_id, agent_id);
     assert_eq!(config.identity().workspace, workspace);
     assert_eq!(config.identity().resources, resources);
-    let runtime_options = crate::app_runtime::app_server_runtime_options(
-        config.identity(),
-        codex_hepta_memory::CognitiveRuntime::Absent,
-    )
-    .expect("manifest resources must become App Server runtime options");
+    let runtime_options =
+        codex_hepta_app_host::runtime_options(codex_hepta_app_host::HeptaAppServerHostOptions {
+            socket_path: config.identity().app_server_socket.clone(),
+            home_root: config.identity().home_root.clone(),
+            turn_queue_capacity: u64::from(config.identity().resources.turn_queue_capacity),
+            cognitive_runtime: codex_hepta_app_bridge::memory::CognitiveRuntime::Absent,
+            production_cognitive_mutation: None,
+            qualification_turn_writer: None,
+            prompt_runtime_host: None,
+            graceful_drain: None,
+            cognitive_write_profile: false,
+            qualification_turn_writer_profile: false,
+        })
+        .expect("manifest resources must become App Server runtime options");
     assert_eq!(
         Some(37),
         runtime_options
@@ -68,6 +77,14 @@ fn config_binds_exact_registered_agent_roots_and_workspace() {
         config.take_production_operations().is_none(),
         "default config must not manufacture production-operation authority"
     );
+    let (mut config, self_iteration) = config
+        .with_self_iteration_coordinator(4)
+        .expect("normal product composition creates one bounded producer port");
+    assert!(
+        config.take_self_iteration_coordinator_bootstrap().is_some(),
+        "Agentd must retain the sole coordinator owner half"
+    );
+    drop(self_iteration);
 
     let duplicate_writer_error = AgentdConfig::load(
         fleet_path.clone(),

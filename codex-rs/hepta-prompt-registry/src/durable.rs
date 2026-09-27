@@ -32,6 +32,8 @@ use crate::Lifecycle;
 use crate::LifecycleEvent;
 use crate::LifecycleEventKind;
 use crate::PromptFactor;
+use crate::PromptFactorRelation;
+use crate::PromptFactorRelationKind;
 use crate::PromptModelTupleV2;
 use crate::PromptRealization;
 use crate::PromptRealizationBindingV2;
@@ -211,6 +213,17 @@ impl DurablePromptRegistry {
         factor: PromptFactor,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
         self.commit(|registry| registry.register_factor(factor))
+    }
+
+    /// Persist one owner-admitted factor relation through the same atomic
+    /// metadata transaction as every other registry mutation. Relations are
+    /// source facts for the read-only knowledge projection, not projection-owned
+    /// records, so restart must preserve their exact evidence and identity.
+    pub fn register_factor_relation(
+        &mut self,
+        relation: PromptFactorRelation,
+    ) -> Result<RegistryReceipt, DurableRegistryError> {
+        self.commit(|registry| registry.register_factor_relation(relation))
     }
 
     #[cfg(test)]
@@ -548,6 +561,8 @@ struct StoredV2 {
     bindings: Vec<StoredBindingV2>,
     payloads: Vec<StoredPayload>,
     supersessions: Vec<StoredSupersession>,
+    #[serde(default)]
+    relations: Vec<StoredRelation>,
     lifecycle_events: Vec<StoredLifecycleEvent>,
 }
 
@@ -639,6 +654,16 @@ struct StoredPayload {
 struct StoredSupersession {
     successor_id: String,
     predecessor_id: String,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct StoredRelation {
+    relation_id: String,
+    left_factor_id: String,
+    right_factor_id: String,
+    kind: u8,
+    evidence_digest: [u8; 32],
 }
 
 #[derive(Deserialize, Serialize)]
@@ -740,7 +765,49 @@ fn stored_metadata(registry: &PromptRegistry) -> StoredV2 {
                 predecessor_id: predecessor_id.to_string(),
             })
             .collect(),
+        relations: registry
+            .relations
+            .values()
+            .map(|relation| StoredRelation {
+                relation_id: relation.relation_id.to_string(),
+                left_factor_id: relation.left_factor_id.to_string(),
+                right_factor_id: relation.right_factor_id.to_string(),
+                kind: relation_kind_code(relation.kind),
+                evidence_digest: relation.evidence_digest.into_array(),
+            })
+            .collect(),
         lifecycle_events: registry.lifecycle_events.iter().map(stored_event).collect(),
+    }
+}
+
+fn decode_relation(stored: StoredRelation) -> Result<PromptFactorRelation, DurableRegistryError> {
+    let evidence_digest = Digest32::from_array(stored.evidence_digest);
+    if evidence_digest.is_zero() {
+        return Err(DurableRegistryError::Corrupt);
+    }
+    Ok(PromptFactorRelation {
+        relation_id: parse_id(stored.relation_id)?,
+        left_factor_id: parse_id(stored.left_factor_id)?,
+        right_factor_id: parse_id(stored.right_factor_id)?,
+        kind: decode_relation_kind(stored.kind)?,
+        evidence_digest,
+    })
+}
+
+const fn relation_kind_code(kind: PromptFactorRelationKind) -> u8 {
+    match kind {
+        PromptFactorRelationKind::Complements => 0,
+        PromptFactorRelationKind::Substitutes => 1,
+        PromptFactorRelationKind::Conflicts => 2,
+    }
+}
+
+fn decode_relation_kind(value: u8) -> Result<PromptFactorRelationKind, DurableRegistryError> {
+    match value {
+        0 => Ok(PromptFactorRelationKind::Complements),
+        1 => Ok(PromptFactorRelationKind::Substitutes),
+        2 => Ok(PromptFactorRelationKind::Conflicts),
+        _ => Err(DurableRegistryError::Corrupt),
     }
 }
 
@@ -834,6 +901,17 @@ fn restore_v2(
         }
     }
 
+    let mut relations = BTreeMap::new();
+    for stored_relation in stored.relations {
+        let relation = decode_relation(stored_relation)?;
+        if relations
+            .insert(relation.relation_id.clone(), relation)
+            .is_some()
+        {
+            return Err(DurableRegistryError::Corrupt);
+        }
+    }
+
     let mut lifecycle_events = Vec::new();
     for stored_event in stored.lifecycle_events {
         let event = decode_event(stored_event)?;
@@ -849,7 +927,7 @@ fn restore_v2(
         realization_bindings,
         realization_payloads,
         realization_supersessions,
-        relations: BTreeMap::new(),
+        relations,
         lifecycle_events,
         revision,
         lifecycle_frontier: stored.lifecycle_frontier,
@@ -993,9 +1071,36 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
             .factors
             .len()
             .saturating_add(registry.realizations.len())
+            .saturating_add(registry.relations.len())
             > registry.maximum_records
     {
         return Err(DurableRegistryError::Corrupt);
+    }
+    let mut relation_shapes = BTreeSet::new();
+    for relation in registry.relations.values() {
+        if relation.evidence_digest.is_zero()
+            || relation.left_factor_id >= relation.right_factor_id
+            || !relation_shapes.insert((
+                relation.left_factor_id.clone(),
+                relation.right_factor_id.clone(),
+                relation.kind,
+            ))
+        {
+            return Err(DurableRegistryError::Corrupt);
+        }
+        for factor_id in [&relation.left_factor_id, &relation.right_factor_id] {
+            let factor = registry
+                .factors
+                .get(factor_id)
+                .ok_or(DurableRegistryError::Corrupt)?;
+            // Relation facts are admitted only while both endpoints are live,
+            // but they remain durable lineage after retirement or revocation.
+            // The exported graph source filters non-live endpoints; reopen must
+            // not erase or reject the historical owner fact.
+            if factor.source != FactorSource::GovernedInternal {
+                return Err(DurableRegistryError::Corrupt);
+            }
+        }
     }
     if registry.revision.get() > 1 && registry.lifecycle_frontier != registry.revision.get() {
         return Err(DurableRegistryError::Corrupt);

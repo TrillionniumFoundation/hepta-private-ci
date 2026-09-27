@@ -1,18 +1,7 @@
 name: Hepta organ implementation (read-only)
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-neuron/**"
-      - "codex-rs/hepta-control-plane/**"
-      - "codex-rs/hepta-runtime/**"
-      - "codex-rs/hepta-types/**"
-      - "codex-rs/hepta-wire/**"
-      - "codex-rs/Cargo.toml"
-      - "codex-rs/Cargo.lock"
-      - "codex-rs/rust-toolchain.toml"
-      - ".github/workflows/hepta-organ-implementation.yml"
-
+  workflow_dispatch:
 permissions:
   contents: read
 

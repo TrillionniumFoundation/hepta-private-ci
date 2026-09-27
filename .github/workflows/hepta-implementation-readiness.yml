@@ -1,28 +1,6 @@
 name: Hepta pre-coding implementation readiness
 
 on:
-  pull_request:
-    paths:
-      - "docs/readiness/**"
-      - "docs/modules/MODULES.json"
-      - "docs/modules/MODULE_DOCS.json"
-      - "docs/modules/SOURCE_BINDINGS.json"
-      - "qualification/module-execution-dossiers/**"
-      - "scripts/hepta-readiness.py"
-      - ".github/workflows/hepta-implementation-readiness.yml"
-      - ".github/actions/hepta-synthetic-merge/action.yml"
-  push:
-    branches:
-      - main
-    paths:
-      - "docs/readiness/**"
-      - "docs/modules/MODULES.json"
-      - "docs/modules/MODULE_DOCS.json"
-      - "docs/modules/SOURCE_BINDINGS.json"
-      - "qualification/module-execution-dossiers/**"
-      - "scripts/hepta-readiness.py"
-      - ".github/workflows/hepta-implementation-readiness.yml"
-      - ".github/actions/hepta-synthetic-merge/action.yml"
   workflow_dispatch:
 
 permissions:

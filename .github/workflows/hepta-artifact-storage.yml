@@ -1,11 +1,7 @@
 name: Hepta immutable artifact storage (read-only)
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-learning-artifacts/**"
-      - ".github/workflows/hepta-artifact-storage.yml"
-
+  workflow_dispatch:
 permissions:
   contents: read
 

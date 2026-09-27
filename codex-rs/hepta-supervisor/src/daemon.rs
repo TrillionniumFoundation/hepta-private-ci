@@ -72,6 +72,8 @@ use crate::AgentRelease;
 #[cfg(any(unix, test))]
 use crate::AgentSupervisorSnapshot;
 #[cfg(unix)]
+use crate::DurableRuntimeModuleSupervisorV1;
+#[cfg(unix)]
 use crate::H7H89ProductionGrant;
 use crate::H7H89ProductionGrantVerifier;
 #[cfg(unix)]
@@ -145,6 +147,9 @@ struct DaemonState<D: ProcessDriver> {
     supervisor_epoch: SupervisorEpoch,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
     observed_faults: AtomicU64,
+    // Opened before the daemon reports readiness. The durable owner restores
+    // active generations, pending transitions and monotone generation fences.
+    runtime_modules: Mutex<DurableRuntimeModuleSupervisorV1>,
 }
 
 /// Runs the one lifecycle-only supervisor daemon for a fleet.
@@ -194,6 +199,12 @@ async fn run_supervisord_inner(
     }
     let layout = registry.layout().clone();
     let _instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
+    let runtime_modules = DurableRuntimeModuleSupervisorV1::open(
+        layout.runtime_module_supervisor_state(),
+    )
+    .map_err(|error| {
+        SupervisorError::Invalid(format!("open durable runtime-module supervisor: {error}"))
+    })?;
     let driver =
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     let (supervisor, recovery) = Supervisor::recover(
@@ -208,6 +219,7 @@ async fn run_supervisord_inner(
         supervisor_epoch: SupervisorEpoch::new(),
         production_grant_verifier,
         observed_faults: AtomicU64::new(recovery.faults.len() as u64),
+        runtime_modules: Mutex::new(runtime_modules),
     });
     let server = SupervisordServer::bind(
         layout.supervisor_socket().to_path_buf(),
@@ -450,6 +462,39 @@ async fn handle_request<D: ProcessDriver>(
                 registered_agents,
                 observed_faults: state.observed_faults.load(Ordering::Relaxed),
             })
+        }
+        SupervisordMethod::RuntimeModules => {
+            let topology = state.runtime_modules.lock().await.topology();
+            let active =
+                topology
+                    .active
+                    .into_iter()
+                    .map(|module| {
+                        crate::daemon_protocol::SupervisordRuntimeModuleStatus {
+                    module_id: module.module_id.to_string(),
+                    owner_id: module.owner_id.to_string(),
+                    generation: module.generation.get(),
+                    implementation_digest: module.implementation_digest.to_string(),
+                    candidate_artifact_digest: module.candidate_artifact_digest.to_string(),
+                    state_class: match module.state_class {
+                        codex_hepta_control_plane::RuntimeModuleStateClassV1::Stateless => {
+                            "stateless"
+                        }
+                        codex_hepta_control_plane::RuntimeModuleStateClassV1::Stateful => {
+                            "stateful"
+                        }
+                        codex_hepta_control_plane::RuntimeModuleStateClassV1::ExternalStateful => {
+                            "external_stateful"
+                        }
+                    }
+                    .to_owned(),
+                }
+                    })
+                    .collect();
+            SupervisordPayload::RuntimeModules {
+                topology_digest: topology.digest.to_string(),
+                active,
+            }
         }
         SupervisordMethod::Roster { limit } => {
             if !(1..=MAX_SUPERVISORD_ROSTER).contains(&limit) {
@@ -1429,7 +1474,11 @@ fn set_lock_owner_only(path: &Path) -> Result<(), SupervisorError> {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::BTreeSet;
+
     use codex_hepta_contracts::AgentId;
+    use codex_hepta_control_plane::RuntimeModuleAbiV1;
+    use codex_hepta_control_plane::RuntimeModuleStateClassV1;
     use codex_hepta_fleet::AgentLifecycle;
     use codex_hepta_fleet::AgentManifest;
     use codex_hepta_fleet::FleetRegistry;
@@ -1437,9 +1486,13 @@ mod tests {
     use codex_hepta_fleet::ResourceBudget;
     use codex_hepta_fleet::WorkspaceBinding;
     use codex_hepta_paths::HeptaFleetRoot;
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::Generation;
+    use codex_hepta_types::StableId;
 
     use super::*;
     use crate::MatrixSupervisorSnapshot;
+    use crate::SupervisordClient;
 
     const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
     const PEER_AGENT_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75dd3";
@@ -1809,6 +1862,72 @@ mod tests {
             .await
             .expect("join recovery daemon")
             .expect("shutdown recovery daemon");
+    }
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn daemon_restores_runtime_modules_and_exposes_them_across_restart() {
+        let temporary = tempfile::tempdir().expect("temporary fleet");
+        let fleet_root =
+            HeptaFleetRoot::parse(temporary.path().join("fleet")).expect("temporary fleet root");
+        let registry = FleetRegistry::initialize(fleet_root.clone()).expect("initialize fleet");
+        let state_path = registry.layout().runtime_module_supervisor_state();
+        {
+            let mut owner = DurableRuntimeModuleSupervisorV1::open(&state_path)
+                .expect("open runtime-module owner");
+            owner
+                .register_bootstrap(RuntimeModuleAbiV1 {
+                    module_id: StableId::new("feature:sample").expect("module id"),
+                    owner_id: StableId::new("owner:sample").expect("owner id"),
+                    generation: Generation::new(1).expect("generation"),
+                    implementation_digest: Digest32::of_bytes(b"sample implementation"),
+                    candidate_artifact_digest: Digest32::of_bytes(b"sample candidate"),
+                    predecessor_generation: None,
+                    rollback_predecessor_digest: Digest32::ZERO,
+                    state_class: RuntimeModuleStateClassV1::Stateless,
+                    dependencies: Vec::new(),
+                    input_ports: Vec::new(),
+                    output_ports: Vec::new(),
+                    authoritative_domains: BTreeSet::new(),
+                    effect_scope: BTreeSet::new(),
+                })
+                .expect("bootstrap runtime module");
+        }
+
+        let mut first_digest = None;
+        for attempt in 0..2 {
+            let cancellation = CancellationToken::new();
+            let daemon = tokio::spawn(run_supervisord_inner(
+                fleet_root.clone(),
+                cancellation.clone(),
+                None,
+            ));
+            let client =
+                SupervisordClient::new(registry.layout().supervisor_socket().to_path_buf())
+                    .expect("client");
+            let deadline = Instant::now() + Duration::from_secs(2);
+            let modules = loop {
+                match client.runtime_modules().await {
+                    Ok(modules) => break modules,
+                    Err(error) => {
+                        assert!(
+                            Instant::now() < deadline,
+                            "attempt {attempt} did not expose restored modules: {error}"
+                        );
+                        tokio::time::sleep(Duration::from_millis(10)).await;
+                    }
+                }
+            };
+            assert_eq!(modules.active.len(), 1);
+            assert_eq!(modules.active[0].module_id, "feature:sample");
+            assert_eq!(modules.active[0].generation, 1);
+            assert_eq!(modules.active[0].state_class, "stateless");
+            if let Some(expected) = &first_digest {
+                assert_eq!(&modules.topology_digest, expected);
+            } else {
+                first_digest = Some(modules.topology_digest.clone());
+            }
+            cancellation.cancel();
+            daemon.await.expect("join daemon").expect("shutdown daemon");
+        }
     }
 }
 

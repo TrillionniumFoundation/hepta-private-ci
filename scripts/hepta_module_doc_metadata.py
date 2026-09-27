@@ -37,7 +37,7 @@ def expected_metadata(root: Path, *, prose_metrics: bool = False) -> dict[Path, 
         row["production_implementation"] = module["production_implementation"]
         # Retained V2 presentation fields are an optional generated cache, not
         # source-selection or product evidence. Ordinary checks only synchronize
-        # machine facts from MODULES.json, their single authoritative source.
+        # machine facts projected from the single module.toml manifest set.
         if prose_metrics:
             row["sha256"] = hashlib.sha256(text.encode("utf-8")).hexdigest()
             row["bytes"] = len(text.encode("utf-8"))

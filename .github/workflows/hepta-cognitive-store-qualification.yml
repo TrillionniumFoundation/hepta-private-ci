@@ -1,44 +1,6 @@
 name: Hepta cognitive.store qualification
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-memory/**"
-      - "codex-rs/hepta-cognitive-store/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/hepta-supervisor/**"
-      - "codex-rs/state/**"
-      - "codex-rs/hepta-contracts/**"
-      - "codex-rs/hepta-cognitive-types/**"
-      - "codex-rs/hepta-cognitive-read/**"
-      - "codex-rs/hepta-kg/**"
-      - "scripts/hepta_ci_exec.py"
-      - "scripts/test_hepta_cognitive_store_workflow.py"
-      - "scripts/hepta-implementation-maps.py"
-      - "codex-rs/Cargo.*"
-      - "docs/modules/cognitive.store/**"
-      - "qualification/module-execution-dossiers/detail/cognitive.store.md"
-      - ".github/actions/hepta-synthetic-merge/**"
-      - ".github/workflows/hepta-cognitive-store-qualification.yml"
-  push:
-    branches: [main]
-    paths:
-      - "codex-rs/hepta-memory/**"
-      - "codex-rs/hepta-cognitive-store/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/hepta-supervisor/**"
-      - "codex-rs/state/**"
-      - "codex-rs/hepta-contracts/**"
-      - "codex-rs/hepta-cognitive-types/**"
-      - "codex-rs/hepta-cognitive-read/**"
-      - "codex-rs/hepta-kg/**"
-      - "scripts/hepta_ci_exec.py"
-      - "scripts/test_hepta_cognitive_store_workflow.py"
-      - "scripts/hepta-implementation-maps.py"
-      - "codex-rs/Cargo.*"
-      - "docs/modules/cognitive.store/**"
-      - "qualification/module-execution-dossiers/detail/cognitive.store.md"
-      - ".github/workflows/hepta-cognitive-store-qualification.yml"
   workflow_dispatch:
 
 permissions:

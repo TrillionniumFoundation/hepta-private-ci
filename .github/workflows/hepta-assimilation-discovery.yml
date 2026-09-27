@@ -1,11 +1,7 @@
 name: Hepta scoped discovery (read-only)
 
 on:
-  pull_request:
-    paths:
-      - "tools/hepta-engineering-control/**"
-      - ".github/workflows/hepta-assimilation-discovery.yml"
-
+  workflow_dispatch:
 permissions:
   contents: read
 

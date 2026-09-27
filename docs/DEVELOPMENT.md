@@ -77,7 +77,7 @@ Read in this order:
 1. `docs/CURRENT.json` — static source-selection policy and explicit prohibition on cached dynamic candidate facts;
 2. this document — global requirements and delivery policy;
 3. `docs/architecture/ARCHITECTURE.json` — non-negotiable architecture invariants;
-4. `docs/modules/MODULES.json`, `docs/contracts/*` and `docs/data/DATA_AUTHORITY.json`;
+4. `docs/modules/registry.toml`, the forty `docs/modules/<module-id>/module.toml` manifests, their generated projections, `docs/contracts/*` and `docs/data/DATA_AUTHORITY.json`;
 5. `docs/delivery/WORK_PACKAGES.json`, `PATH_OWNERSHIP.json` and the three DAGs;
 6. `docs/control-plane/OBJECTIVES.json`, `NDU.json` and `OPTIMIZATION.json`;
 7. `docs/intelligence/PROMPT_INTERVENTIONS.json`, `docs/learning/ALGORITHM_SPECS.json`, `PAPER_TRACEABILITY.json` and the six implementation-level adaptive specifications;
@@ -119,7 +119,7 @@ Historical cleanup remains bound to the exact head/tree and 143-path deletion in
 
 ## 5. Forty-module architecture and team model
 
-`MODULES.json` is authoritative for 40 modules. The V6 foundation remains and the Intelligence responsibilities are decomposed into bounded teams:
+`docs/modules/registry.toml` plus the forty stable `docs/modules/<module-id>/module.toml` files are the single authoritative module manifest set. `MODULES.json`, `SOURCE_BINDINGS.json`, `CARGO_BINDINGS.json`, `CI_MATRIX.json` and `MODULE_DOCS.json` are deterministic projections and must never be hand-edited. The V6 foundation remains and the Intelligence responsibilities are decomposed into bounded teams:
 
 ```text
 objective.compiler
@@ -143,11 +143,11 @@ Each module has a primary owner, deputy, exclusive roots, dependencies, data aut
 
 ## 5A. Closed-world module implementation guides
 
-Every one of the forty registered modules has one stable implementation guide at `docs/modules/<module-id>/TECHNICAL.md`. `docs/modules/MODULE_DOCS.json` indexes each guide and its contracts, protocols, data domains, threats and work packages. Prose digests, byte counts and word counts retained in that index are optional generated presentation caches, not acceptance or source-selection evidence. Normal prose edits do not require refreshing them; exact candidate identity remains bound by Git and CI. Registry ownership, source paths, authority constraints and usable local links remain mandatory. `docs/modules/SOURCE_BINDINGS.json` separates declared target roots from existing implementation evidence, missing roots and the bootstrap package that must materialize each target.
+Every one of the forty registered modules has one stable manifest at `docs/modules/<module-id>/module.toml` and one stable implementation guide at `docs/modules/<module-id>/TECHNICAL.md`. `docs/modules/MODULE_DOCS.json` is the generated guide/contracts/protocol/data/threat/work-package projection. Prose digests, byte counts and word counts retained in that index are optional generated presentation caches, not acceptance or source-selection evidence. Normal prose edits do not require refreshing them; exact candidate identity remains bound by Git and CI. Registry ownership, source paths, authority constraints and usable local links remain mandatory. `docs/modules/SOURCE_BINDINGS.json` separates declared target roots from existing implementation evidence, missing roots and the bootstrap package that must materialize each target.
 
 Source states are deliberately truthful: a module may be `existing_bound`, `existing_legacy_aggregate`, `existing_declared_unbound`, `target_partially_materialized`, `target_unmaterialized` or `external_with_adapter_target`. Documentation readiness never changes a source, activation, acceptance, promotion or release claim. `python3 scripts/hepta-module-docs.py verify` fails unless all forty guides, bindings and registry references are closed.
 
-The module registries expose two separate boolean facts for every module: `source_root_present` records only that a declared source root exists in the exact candidate tree, while `production_implementation` is true only after a named product caller and executable product tests are evidenced. A present source root therefore cannot be read as a production implementation. The two facts are projected identically through `MODULES.json`, `SOURCE_BINDINGS.json` and `MODULE_DOCS.json` and are validated against `docs/readiness/STATUS_MODEL.json`.
+Each module manifest exposes two separate boolean facts: `source_root_present` records only that a declared source root exists in the exact candidate tree, while `production_implementation` is true only after a named product caller and executable product tests are evidenced. A present source root therefore cannot be read as a production implementation. The generator projects the two facts identically through `MODULES.json`, `SOURCE_BINDINGS.json` and `MODULE_DOCS.json`, validates Cargo ownership and CI groups, and checks the result against `docs/readiness/STATUS_MODEL.json`.
 
 ## 5B. Adaptive algorithm closed world
 

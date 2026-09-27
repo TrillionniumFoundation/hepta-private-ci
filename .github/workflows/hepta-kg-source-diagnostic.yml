@@ -1,10 +1,6 @@
 name: Knowledge graph transformed source diagnostic
 
 on:
-  push:
-    branches: [work/product-convergence-20260923]
-    paths:
-      - ".github/workflows/hepta-kg-source-diagnostic.yml"
   workflow_dispatch:
 
 permissions:

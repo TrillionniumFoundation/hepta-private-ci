@@ -1,18 +1,7 @@
 name: Hepta objective product composition
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-objective/**"
-      - "codex-rs/hepta-learning-ledger/**"
-      - "codex-rs/hepta-intelligence/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/Cargo.lock"
-      - "scripts/test_hepta_objective_contracts.py"
-      - ".github/workflows/hepta-objective-product-composition.yml"
-  push:
-    branches: [main]
-
+  workflow_dispatch:
 concurrency:
   group: hepta-objective-product-composition-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true

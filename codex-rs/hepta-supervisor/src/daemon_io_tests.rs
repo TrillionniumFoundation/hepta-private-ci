@@ -42,6 +42,14 @@ async fn received_start_survives_socket_expiry_while_waiting_for_owner()
         supervisor_epoch: SupervisorEpoch::new(),
         production_grant_verifier: None,
         observed_faults: AtomicU64::new(0),
+        runtime_modules: Mutex::new(
+            DurableRuntimeModuleSupervisorV1::open(root.layout().runtime_module_supervisor_state())
+                .map_err(|error| {
+                    SupervisorError::Invalid(format!(
+                        "open durable runtime-module supervisor fixture: {error}"
+                    ))
+                })?,
+        ),
     });
     let snapshot = {
         let owner = state.supervisor.lock().await;

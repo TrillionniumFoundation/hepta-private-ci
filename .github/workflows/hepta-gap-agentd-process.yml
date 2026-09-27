@@ -1,51 +1,7 @@
 name: Hepta Agentd process qualification
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    paths:
-      - CALLERS.toml
-      - codex-rs/Cargo.lock
-      - codex-rs/Cargo.toml
-      - codex-rs/hepta-agentd/**
-      - codex-rs/hepta-agent-protocol/**
-      - codex-rs/hepta-cognitive-read/**
-      - codex-rs/hepta-infer-core/**
-      - codex-rs/hepta-infer-worker-host/**
-      - codex-rs/hepta-fleet/**
-      - codex-rs/hepta-control-plane/**
-      - codex-rs/hepta-automation/**
-      - codex-rs/hepta-supervisor/**
-      - codex-rs/hepta-memory/**
-      - codex-rs/hepta-plasticity/**
-      - codex-rs/hepta-intelligence/**
-      - codex-rs/hepta-learning-artifacts/**
-      - codex-rs/hepta-learning-ledger/**
-      - codex-rs/hepta-ndu/**
-      - codex-rs/hepta-neuron/**
-      - codex-rs/hepta-runtime/**
-      - codex-rs/app-server/**
-      - codex-rs/app-server-client/**
-      - codex-rs/app-server-transport/**
-      - codex-rs/uds/**
-      - docs/modules/runtime.supervisor/**
-      - qualification/module-execution-dossiers/detail/runtime.supervisor.md
-      - .github/scripts/check_ci_results.py
-      - .github/scripts/verify_cargo_workspace_manifests.py
-      - scripts/hepta-implementation-maps.py
-      - scripts/hepta-module-docs.py
-      - scripts/hepta-supervisor-validation.py
-      - scripts/hepta_module_registry.py
-      - scripts/test_hepta_agentd_ci.py
-      - scripts/hepta_ci_candidate.py
-      - scripts/hepta_ci_v8.py
-      - scripts/hepta_workspace.py
-      - scripts/test_hepta_workspace.py
-      - .github/workflows/hepta-gap-agentd-process.yml
-      - .github/workflows/runtime-supervisor-qualification.yml
-
+  workflow_dispatch:
 permissions:
   contents: read
 

@@ -1,11 +1,7 @@
 name: Rebind knowledge.graph implementation map
 
 on:
-  push:
-    branches: [work/product-convergence-20260923]
-    paths:
-      - ".github/workflows/hepta-kg-map-rebind.yml"
-
+  workflow_dispatch:
 permissions:
   contents: write
 

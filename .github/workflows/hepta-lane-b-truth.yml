@@ -1,54 +1,6 @@
 name: Hepta Lane B source closure
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-supervisor/**"
-      - "codex-rs/hepta-fleet/**"
-      - "codex-rs/hepta-agent-protocol/**"
-      - "codex-rs/Cargo.toml"
-      - "codex-rs/Cargo.lock"
-      - "docs/modules/runtime.supervisor/**"
-      - "scripts/hepta-supervisor-validation.py"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/hepta-automation/**"
-      - "codex-rs/hepta-contracts/**"
-      - "codex-rs/hepta-memory/**"
-      - "codex-rs/hepta-retrieval/**"
-      - "docs/memory/**"
-      - "docs/modules/**/IMPLEMENTATION_MAP.json"
-      - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
-      - "qualification/**"
-      - "scripts/hepta-lane-b-*.py"
-      - "scripts/test_hepta_lane_b_*.py"
-      - ".github/workflows/hepta-lane-b-truth.yml"
-      - ".github/workflows/automation-taskflow-focused.yml"
-      - ".github/actions/hepta-synthetic-merge/action.yml"
-  push:
-    branches:
-      - main
-    paths:
-      - "codex-rs/hepta-supervisor/**"
-      - "codex-rs/hepta-fleet/**"
-      - "codex-rs/hepta-agent-protocol/**"
-      - "codex-rs/Cargo.toml"
-      - "codex-rs/Cargo.lock"
-      - "docs/modules/runtime.supervisor/**"
-      - "scripts/hepta-supervisor-validation.py"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/hepta-automation/**"
-      - "codex-rs/hepta-contracts/**"
-      - "codex-rs/hepta-memory/**"
-      - "codex-rs/hepta-retrieval/**"
-      - "docs/memory/**"
-      - "docs/modules/**/IMPLEMENTATION_MAP.json"
-      - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
-      - "qualification/**"
-      - "scripts/hepta-lane-b-*.py"
-      - "scripts/test_hepta_lane_b_*.py"
-      - ".github/workflows/hepta-lane-b-truth.yml"
-      - ".github/workflows/automation-taskflow-focused.yml"
-      - ".github/actions/hepta-synthetic-merge/action.yml"
   workflow_dispatch:
     inputs:
       source_sha:

@@ -122,7 +122,7 @@
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
       "source_root_present": true,
-      "production_implementation": false,
+      "production_implementation": true,
       "declaredRoots": [
         "codex-rs/hepta-supervisor"
       ],
@@ -184,15 +184,21 @@
       "source_root_present": true,
       "production_implementation": false,
       "declaredRoots": [
-        "codex-rs/codex-app-server",
-        "codex-rs/hepta-codex-adapter"
+        "codex-rs/app-server",
+        "codex-rs/hepta-codex-adapter",
+        "codex-rs/hepta-app-bridge",
+        "codex-rs/hepta-app-host"
       ],
       "existingDeclaredRoots": [
-        "codex-rs/codex-app-server",
-        "codex-rs/hepta-codex-adapter"
+        "codex-rs/app-server",
+        "codex-rs/hepta-codex-adapter",
+        "codex-rs/hepta-app-bridge",
+        "codex-rs/hepta-app-host"
       ],
       "sourceEvidenceRoots": [
-        "codex-rs/codex-app-server",
+        "codex-rs/app-server",
+        "codex-rs/hepta-app-bridge",
+        "codex-rs/hepta-app-host",
         "codex-rs/hepta-codex-adapter"
       ],
       "missingDeclaredRoots": [],

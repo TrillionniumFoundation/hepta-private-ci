@@ -1,6 +1,6 @@
 # Hepta module technical guides
 
-This directory contains exactly one stable implementation guide for every module registered in `MODULES.json`. Machine-readable coverage is in `MODULE_DOCS.json`; source reality is in `SOURCE_BINDINGS.json`. Retained guide hashes and word/byte counts are optional generated presentation metadata, not acceptance evidence. Ordinary prose edits need no metadata-only commit. Machine ownership, source reality, authority constraints and local links are still verified. A guide explains implementation and operations but grants no runtime, acceptance, promotion or release authority.
+This directory contains exactly one stable `module.toml` manifest and one implementation guide for each registered module. `registry.toml` plus those forty manifests are the only hand-edited module authority. `MODULES.json`, `SOURCE_BINDINGS.json`, `CARGO_BINDINGS.json`, `CI_MATRIX.json` and `MODULE_DOCS.json` are generated projections. Retained guide hashes and word/byte counts are optional generated presentation metadata, not acceptance evidence. Ordinary prose edits need no metadata-only commit. Machine ownership, source reality, authority constraints and local links are still verified. A guide explains implementation and operations but grants no runtime, acceptance, promotion or release authority.
 
 ## DecisionCell, Neural Circuit and Nervous System placement
 
@@ -14,12 +14,7 @@ implementation states are preserved until explicitly versioned migration.
 
 ## Cargo registry closure
 
-`MODULES.json` is the canonical module identity registry. Compiled Rust package
-identity is discovered from `codex-rs/**/Cargo.toml` and must be explicitly
-bound by `CARGO_BINDINGS.json`; source roots in `MODULES.json` remain the
-documentation and implementation roots. Run
-`python3 scripts/hepta_module_registry.py --pretty` to emit a deterministic
-JSON drift report. An unclaimed `codex-hepta-*` package is a registry error;
+`registry.toml` and each `<module-id>/module.toml` are the canonical module identity and ownership registry. Compiled Rust package identity is discovered from `codex-rs/**/Cargo.toml`, bound by each manifest's `[[cargoPackages]]` entries, and projected into `CARGO_BINDINGS.json`; declared source roots remain in the same manifest. Run `python3 scripts/hepta_module_manifest.py --check` and `python3 scripts/hepta_architecture_graph.py --check` for deterministic projection and physical-graph drift reports. An unclaimed `codex-hepta-*` package is a registry error;
 non-Rust roots (UI, tools and external systems) are reported separately as
 expected missing Cargo packages. Use `--strict` in a qualification job once
 every support package has an explicit ownership decision.
@@ -128,7 +123,7 @@ python3 scripts/hepta-module-docs.py verify
 python3 scripts/hepta-module-docs.py refresh-derived --check
 ```
 
-`MODULES.json` owns repeated module status, lifecycle, bootstrap and technical-path facts. `SOURCE_BINDINGS.json` and `MODULE_DOCS.json` retain their independent evidence/navigation data, but their duplicated status plus contract/domain/work/threat projections are generated with `refresh-derived`; ordinary changes should update the canonical owner and regenerate rather than hand-edit the same fact in three files.
+Each module's `module.toml` owns repeated status, lifecycle, source, Cargo package, CI group, bootstrap and technical-path facts. Update that manifest and run `python3 scripts/hepta_module_manifest.py --write`; never hand-edit its JSON projections. Guide-specific navigation that is not represented in the manifest remains maintained by `hepta-module-docs.py` and its generated presentation caches.
 
 Contract, readiness, source-map and qualification-detail changes additionally run their affected existing verifiers. A qualification detail whose digest is consumed as evidence still requires the existing `refresh-indexes` and `hepta-technical-closure.py verify` path; ordinary guide navigation is not such evidence.
 

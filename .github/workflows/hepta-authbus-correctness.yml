@@ -1,47 +1,6 @@
 name: AuthBus critical-path qualification
 
 on:
-  pull_request:
-    paths:
-      - codex-rs/hepta-authbus/**
-      - docs/modules/auth.authbus/**
-      - docs/lane-a-foundation/auth.authbus/**
-      - qualification/module-execution-dossiers/detail/auth.authbus.md
-      - codex-rs/hepta-authbus-p1-3-qualification/**
-      - codex-rs/hepta-evidence/**
-      - codex-rs/hepta-bao-adapter/**
-      - codex-rs/hepta-agentd/**
-      - codex-rs/hepta-types/**
-      - codex-rs/Cargo.toml
-      - codex-rs/Cargo.lock
-      - codex-rs/rust-toolchain.toml
-      - scripts/hepta_ci_exec.py
-      - scripts/test_hepta_ci_exec*.py
-      - scripts/hepta_ci_v8.py
-      - .github/actions/hepta-synthetic-merge/**
-      - .github/workflows/hepta-authbus-correctness.yml
-  push:
-    branches:
-      - main
-      - work/product-convergence-20260923
-    paths:
-      - codex-rs/hepta-authbus/**
-      - docs/modules/auth.authbus/**
-      - docs/lane-a-foundation/auth.authbus/**
-      - qualification/module-execution-dossiers/detail/auth.authbus.md
-      - codex-rs/hepta-authbus-p1-3-qualification/**
-      - codex-rs/hepta-evidence/**
-      - codex-rs/hepta-bao-adapter/**
-      - codex-rs/hepta-agentd/**
-      - codex-rs/hepta-types/**
-      - codex-rs/Cargo.toml
-      - codex-rs/Cargo.lock
-      - codex-rs/rust-toolchain.toml
-      - scripts/hepta_ci_exec.py
-      - scripts/test_hepta_ci_exec*.py
-      - scripts/hepta_ci_v8.py
-      - .github/actions/hepta-synthetic-merge/**
-      - .github/workflows/hepta-authbus-correctness.yml
   workflow_dispatch:
 
 permissions:

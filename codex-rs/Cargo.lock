@@ -2130,11 +2130,7 @@ dependencies = [
  "codex-git-utils",
  "codex-goal-extension",
  "codex-guardian-v2",
- "codex-hepta-evidence",
- "codex-hepta-governance",
- "codex-hepta-memory",
- "codex-hepta-memory-extension",
- "codex-hepta-prompt-extension",
+ "codex-hepta-app-bridge",
  "codex-history-notes-extension",
  "codex-home",
  "codex-hooks",
@@ -3464,13 +3460,14 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "app_test_support",
- "codex-app-server",
  "codex-app-server-client",
  "codex-app-server-protocol",
  "codex-arg0",
  "codex-config",
  "codex-features",
  "codex-hepta-agent-protocol",
+ "codex-hepta-app-bridge",
+ "codex-hepta-app-host",
  "codex-hepta-authbus",
  "codex-hepta-automation",
  "codex-hepta-bellman-operator",
@@ -3524,6 +3521,31 @@ dependencies = [
  "tokio",
  "tokio-util",
  "wiremock",
+]
+
+[[package]]
+name = "codex-hepta-app-bridge"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-evidence",
+ "codex-hepta-governance",
+ "codex-hepta-memory",
+ "codex-hepta-memory-extension",
+ "codex-hepta-prompt-extension",
+]
+
+[[package]]
+name = "codex-hepta-app-host"
+version = "0.0.0"
+dependencies = [
+ "codex-app-server",
+ "codex-arg0",
+ "codex-config",
+ "codex-features",
+ "codex-hepta-app-bridge",
+ "codex-protocol",
+ "codex-utils-absolute-path",
+ "codex-utils-cli",
 ]
 
 [[package]]
@@ -3828,8 +3850,11 @@ dependencies = [
 name = "codex-hepta-kg"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-prompt-registry",
  "codex-hepta-types",
+ "ed25519-dalek",
+ "tempfile",
 ]
 
 [[package]]

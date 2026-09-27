@@ -497,6 +497,23 @@ impl AgentdConfig {
         self.plasticity_bootstrap.take()
     }
 
+    /// Create the bounded self-iteration product port and attach its sole owner
+    /// half to this Agentd configuration. The returned handle is authority-free:
+    /// it cannot mint evaluator, observer or selector evidence and it owns no
+    /// durable writer. A normal embedding retains the handle and submits only
+    /// independently evaluated candidate bundles after Agentd starts.
+    pub fn with_self_iteration_coordinator(
+        self,
+        capacity: usize,
+    ) -> Result<(Self, crate::SelfIterationCoordinatorHandleV1), AgentdError> {
+        let (handle, bootstrap) = crate::self_iteration_coordinator_channel_v1(capacity)
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+        Ok((
+            self.with_self_iteration_coordinator_bootstrap(bootstrap)?,
+            handle,
+        ))
+    }
+
     /// Attach the authority-free evaluated-candidate coordinator. The embedding
     /// retains its typed producer handle; Agentd consumes this sole owner half.
     pub fn with_self_iteration_coordinator_bootstrap(

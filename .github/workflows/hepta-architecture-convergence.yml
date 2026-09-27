@@ -84,6 +84,19 @@ jobs:
           git diff --check
           printf 'TESTED_SHA=%s\n' "$CANDIDATE" >> "$GITHUB_ENV"
           printf 'HEPTA_CI_LANE=%s\n' "$LANE" >> "$GITHUB_ENV"
+      - name: Verify single-source module truth, Cargo architecture and Rust reachability
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v \
+            scripts.test_hepta_module_manifest \
+            scripts.test_hepta_architecture_graph \
+            scripts.test_hepta_rust_reachability \
+            scripts.test_hepta_module_product_acceptance \
+            scripts.test_hepta_ci_entrypoints
+          python3 scripts/hepta_module_manifest.py --check
+          python3 scripts/hepta_architecture_graph.py --check
+          python3 scripts/hepta_rust_reachability.py --strict
+          python3 scripts/hepta_ci_entrypoints.py
       - name: Select exact-tree native execution
         id: execution
         env:
@@ -195,6 +208,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-catalog.json" --minimum-tests 1 -- just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-fleet module_catalog
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-abi.json" --minimum-tests 1 -- just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-control-plane module_runtime
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-supervisor.json" --minimum-tests 1 -- just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-supervisor module_runtime
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-durable-restart.json" --minimum-tests 1 -- just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-supervisor module_runtime_store
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/writer-handoff-generations.json" --minimum-tests 1 -- just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-supervisor writer_handoff
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-contract.json" --minimum-tests 1 -- just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-types topology
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-proposal.json" --minimum-tests 1 -- just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-plasticity --lib
@@ -204,7 +218,11 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective-contract.json" --minimum-tests 1 -- python3 -m unittest -v scripts.test_hepta_objective_contracts
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective.json" --minimum-tests 1 -- just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-objective
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt-source-inventory.json" -- python3 scripts/hepta_prompt_optimizer_inventory.py --source-only
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt-check.json" -- cargo check --locked --all-targets -p codex-hepta-prompt-optimizer
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt.json" --minimum-tests 1 -- just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-prompt-optimizer
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt-consumers.json" -- cargo check --locked --all-targets -p codex-hepta-intelligence -p codex-hepta-agentd
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt-clippy.json" -- cargo clippy --locked --all-targets -p codex-hepta-prompt-optimizer -- -D warnings
       - name: Converged authority and browser semantics
         if: ${{ !cancelled() && steps.native_resolver.outcome == 'success' && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true' }}
         run: |

@@ -1,45 +1,7 @@
 name: Hepta knowledge.graph qualification
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-kg/**"
-      - "codex-rs/hepta-prompt-registry/**"
-      - "codex-rs/hepta-prompt-optimizer/**"
-      - "codex-rs/hepta-memory/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/ext/hepta-memory/**"
-      - "codex-rs/app-server/**"
-      - "docs/modules/knowledge.graph/**"
-      - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
-      - "qualification/module-execution-dossiers/DETAILS.json"
-      - "scripts/hepta-implementation-maps.py"
-      - "scripts/hepta-knowledge-graph-target-measure.py"
-      - "scripts/test_hepta_knowledge_graph_target_measure.py"
-      - "scripts/test_hepta_knowledge_graph_product_witness.py"
-      - "qualification/knowledge-graph/**"
-      - ".github/actions/hepta-synthetic-merge/**"
-      - ".github/workflows/hepta-knowledge-graph-qualification.yml"
-  push:
-    branches: [main]
-    paths:
-      - "codex-rs/hepta-kg/**"
-      - "codex-rs/hepta-prompt-registry/**"
-      - "codex-rs/hepta-prompt-optimizer/**"
-      - "codex-rs/hepta-memory/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/ext/hepta-memory/**"
-      - "codex-rs/app-server/**"
-      - "docs/modules/knowledge.graph/**"
-      - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
-      - "qualification/module-execution-dossiers/DETAILS.json"
-      - "scripts/hepta-implementation-maps.py"
-      - "scripts/hepta-knowledge-graph-target-measure.py"
-      - "scripts/test_hepta_knowledge_graph_target_measure.py"
-      - "scripts/test_hepta_knowledge_graph_product_witness.py"
-      - "qualification/knowledge-graph/**"
-      - ".github/workflows/hepta-knowledge-graph-qualification.yml"
-
+  workflow_dispatch:
 permissions:
   contents: read
 

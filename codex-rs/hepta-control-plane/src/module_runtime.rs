@@ -179,6 +179,9 @@ pub enum RuntimeModuleRegistryError {
     AuthoritativeWriterConflict(StableId),
     ActiveGenerationConflict,
     RollbackGenerationNotAdvanced,
+    CheckpointDigestMismatch,
+    CheckpointDuplicate,
+    CheckpointInvalid,
 }
 
 impl fmt::Display for RuntimeModuleRegistryError {
@@ -200,6 +203,12 @@ pub struct RuntimeModuleRegistryV1 {
     generation_fences: BTreeMap<StableId, (Generation, Generation)>,
 }
 
+#[path = "module_runtime_checkpoint.rs"]
+mod checkpoint;
+pub use checkpoint::RuntimeModuleActiveReservationV1;
+pub use checkpoint::RuntimeModuleGenerationFenceV1;
+pub use checkpoint::RuntimeModuleRegistryCheckpointV1;
+
 impl RuntimeModuleRegistryV1 {
     pub fn new() -> Self {
         Self::default()
@@ -219,8 +228,18 @@ impl RuntimeModuleRegistryV1 {
     ) -> Result<(), RuntimeModuleRegistryError> {
         abi.validate()?;
         let key = (abi.module_id.clone(), abi.generation);
-        if self.records.contains_key(&key) {
-            return Err(RuntimeModuleRegistryError::DuplicateCandidate);
+        if let Some(existing) = self.records.get(&key) {
+            // A second submission is a duplicate only while the candidate is
+            // still pending admission. Once the generation has entered any
+            // lifecycle state, replay is an epoch rewind attempt and must be
+            // rejected by the generation fence, including after restoration.
+            return Err(
+                if existing.lifecycle == RuntimeModuleLifecycleV1::Registered {
+                    RuntimeModuleRegistryError::DuplicateCandidate
+                } else {
+                    RuntimeModuleRegistryError::InvalidGeneration
+                },
+            );
         }
         // Candidate epochs are monotone even after retirement or quarantine.
         // A removed route is not permission to resurrect an older identity.

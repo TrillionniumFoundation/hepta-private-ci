@@ -1,24 +1,7 @@
 name: Hepta knowledge.graph production policy
 
 on:
-  pull_request:
-    paths:
-      - "qualification/knowledge-graph/PRODUCTION_QUALIFICATION.json"
-      - "qualification/knowledge-graph/ACCEPTANCE_STATE.json"
-      - "qualification/knowledge-graph/TARGET_HOST.md"
-      - "scripts/hepta-knowledge-graph-production-gate.py"
-      - ".github/workflows/hepta-knowledge-graph-production-policy.yml"
-      - ".github/workflows/hepta-knowledge-graph-target-host.yml"
-  push:
-    branches: [main]
-    paths:
-      - "qualification/knowledge-graph/PRODUCTION_QUALIFICATION.json"
-      - "qualification/knowledge-graph/ACCEPTANCE_STATE.json"
-      - "qualification/knowledge-graph/TARGET_HOST.md"
-      - "scripts/hepta-knowledge-graph-production-gate.py"
-      - ".github/workflows/hepta-knowledge-graph-production-policy.yml"
-      - ".github/workflows/hepta-knowledge-graph-target-host.yml"
-
+  workflow_dispatch:
 permissions:
   contents: read
 
