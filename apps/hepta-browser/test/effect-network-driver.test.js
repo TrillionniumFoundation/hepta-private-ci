@@ -194,6 +194,7 @@ for (const method of ["contain", "stop"]) {
     const policy = net.createServer();
     let stopped = false;
     const finish = async () => {
+      if (stopped) return;
       stopped = true;
       await close(policy);
     };
@@ -217,13 +218,16 @@ for (const method of ["contain", "stop"]) {
     await driver.start({ profileId: "profile.1", generation: 1, grantDigest: D1,
       allowedOrigins: ["https://example.com"] });
     const original = EffectScopedEgressBroker.prototype.close;
-    t.mock.method(EffectScopedEgressBroker.prototype, "close", async function (options) {
+    const closeMock = t.mock.method(EffectScopedEgressBroker.prototype, "close", async function (options) {
       await original.call(this, options);
       throw new Error("injected network cleanup failure");
     });
     await assert.rejects(driver[method]({ profileId: "profile.1", generation: 1,
-      processId: PROCESS_ID }), /injected network cleanup failure/);
+      processId: PROCESS_ID }), error => error instanceof AggregateError && error.errors.some(cause => /injected network cleanup failure/.test(cause.message)));
     assert.equal(stopped, true, "gate error must not prevent the process boundary cleanup");
+    assert.equal((await readdir(profileRoot)).some((name) => name.startsWith(".egress-")), true);
+    closeMock.mock.restore();
+    await driver[method]({ profileId: "profile.1", generation: 1, processId: PROCESS_ID });
     assert.equal((await readdir(profileRoot)).some((name) => name.startsWith(".egress-")), false);
   });
 }

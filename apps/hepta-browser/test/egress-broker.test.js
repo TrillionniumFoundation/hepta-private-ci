@@ -259,6 +259,7 @@ test("HTTPS CONNECT binds exact authority, port, and TLS ClientHello SNI before 
   let deniedHits = 0;
   const allowedServer = net.createServer((socket) => {
     allowedHits += 1;
+    socket.resume();
     socket.end("accepted");
   });
   const deniedServer = net.createServer((socket) => {

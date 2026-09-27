@@ -2,7 +2,9 @@ import { createHash } from "node:crypto";
 import { lookup } from "node:dns/promises";
 import http from "node:http";
 import net from "node:net";
-import { unlink } from "node:fs/promises";
+import { lstat, unlink } from "node:fs/promises";
+import { Transform } from "node:stream";
+import { setMaxListeners } from "node:events";
 
 const MAX_DNS_ANSWERS = 16;
 const MAX_PROXY_CONNECTIONS = 64;
@@ -106,33 +108,85 @@ function stripHopByHop(headers) {
   return output;
 }
 
-async function connectPinned(answers, port) {
+async function connectPinned(answers, port, { signal, track }) {
   let lastError;
   for (const answer of answers) {
+    signal.throwIfAborted();
     try {
       return await new Promise((resolve, reject) => {
-        const socket = net.createConnection({
-          host: answer.address,
-          port,
-          family: answer.family,
-        });
-        const timer = setTimeout(() => {
-          socket.destroy(new Error("egress connection timed out"));
-        }, CONNECT_TIMEOUT_MS);
-        socket.once("connect", () => {
+        const socket = track(net.createConnection({
+          host: answer.address, port, family: answer.family,
+        }));
+        let settled = false;
+        const cleanup = () => {
           clearTimeout(timer);
-          resolve({ socket, address: answer.address });
-        });
-        socket.once("error", (error) => {
-          clearTimeout(timer);
+          signal.removeEventListener("abort", abort);
+          socket.off("connect", connected);
+          socket.off("error", failed);
+          socket.off("close", closed);
+        };
+        const failed = (error) => {
+          if (settled) return;
+          settled = true;
+          cleanup();
+          socket.destroy();
           reject(error);
-        });
+        };
+        const abort = () => failed(signal.reason ?? new Error("egress closed"));
+        const closed = () => failed(new Error("egress closed during connect"));
+        const connected = () => {
+          if (signal.aborted) return abort();
+          settled = true;
+          cleanup();
+          resolve({ socket, address: answer.address });
+        };
+        const timer = setTimeout(() => failed(new Error("egress connection timed out")),
+          CONNECT_TIMEOUT_MS);
+        socket.once("connect", connected);
+        socket.once("error", failed);
+        socket.once("close", closed);
+        signal.addEventListener("abort", abort, { once: true });
+        if (signal.aborted) abort();
       });
     } catch (error) {
+      signal.throwIfAborted();
       lastError = error;
     }
   }
   throw lastError ?? new Error("no pinned egress destination connected");
+}
+
+function boundedTransfer(maximum, assertLive) {
+  let bytes = 0;
+  return new Transform({
+    transform(chunk, _encoding, callback) {
+      try {
+        assertLive();
+        bytes += chunk.length;
+        if (bytes > maximum) throw new Error("egress transfer byte budget exhausted");
+        callback(null, chunk);
+      } catch (error) { callback(error); }
+    },
+  });
+}
+
+function boundedResolve(promise, signal) {
+  return new Promise((resolve, reject) => {
+    const abort = () => finish(signal.reason ?? new Error("egress closed during DNS"));
+    const timer = setTimeout(() => finish(new Error("egress DNS deadline exceeded")),
+      CONNECT_TIMEOUT_MS);
+    let done = false;
+    function finish(error, value) {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      signal.removeEventListener("abort", abort);
+      if (error) reject(error); else resolve(value);
+    }
+    signal.addEventListener("abort", abort, { once: true });
+    Promise.resolve(promise).then(value => finish(null, value), finish);
+    if (signal.aborted) abort();
+  });
 }
 
 function bindingDigest(grantDigest, origin, answers) {
@@ -371,6 +425,15 @@ export class GrantScopedEgressBroker {
   #server = null;
   #connections = new Set();
   #observations = [];
+  #state = "new";
+  #abort = new AbortController();
+  #startTask = null;
+  #closeTask = null;
+  #pending = new Set();
+  #socketIdentity = null;
+  #maxRequestBytes;
+  #maxResponseBytes;
+  #transferTimeoutMs;
 
   constructor({
     socketPath,
@@ -378,6 +441,9 @@ export class GrantScopedEgressBroker {
     allowedOrigins,
     allowPrivateNetworkForTests = false,
     resolver = lookup,
+    maxRequestBytes = 1 * 1024 * 1024,
+    maxResponseBytes = 32 * 1024 * 1024,
+    transferTimeoutMs = 120_000,
   }) {
     if (typeof socketPath !== "string" || socketPath.length === 0) {
       throw new TypeError("egress socketPath must be a non-empty string");
@@ -401,6 +467,22 @@ export class GrantScopedEgressBroker {
     if (resolver !== lookup && allowPrivateNetworkForTests !== true) {
       throw new TypeError("custom egress resolver is test-only");
     }
+    for (const [name, value, ceiling] of [
+      ["maxRequestBytes", maxRequestBytes, 16 * 1024 * 1024],
+      ["maxResponseBytes", maxResponseBytes, 256 * 1024 * 1024],
+      ["transferTimeoutMs", transferTimeoutMs, 120_000],
+    ]) {
+      if (!Number.isSafeInteger(value) || value < 1 || value > ceiling) {
+        throw new TypeError(`${name} is outside the egress hard bound`);
+      }
+    }
+    this.#maxRequestBytes = maxRequestBytes;
+    this.#maxResponseBytes = maxResponseBytes;
+    this.#transferTimeoutMs = transferTimeoutMs;
+    setMaxListeners(MAX_PROXY_CONNECTIONS * 4, this.#abort.signal);
+    if (Buffer.byteLength(socketPath) > 107) {
+      throw new TypeError("egress socket path exceeds Linux sockaddr_un bound; select a shorter private profile root");
+    }
     this.#socketPath = socketPath;
     this.#grantDigest = grantDigest;
     this.#allowedOrigins = new Set(allowedOrigins.map(canonicalOrigin));
@@ -413,82 +495,142 @@ export class GrantScopedEgressBroker {
   }
 
   #trackConnection(socket) {
+    if (this.#state === "closing" || this.#state === "closed") {
+      socket.destroy();
+      throw new Error("egress broker is closed");
+    }
+    if (this.#connections.size >= MAX_PROXY_CONNECTIONS * 2) {
+      socket.destroy();
+      throw new Error("egress connection capacity exhausted");
+    }
     this.#connections.add(socket);
+    // Keep an error listener even before a connect promise or pipe is attached.
+    socket.on("error", () => {});
     socket.once("close", () => this.#connections.delete(socket));
     return socket;
   }
 
-  async start() {
-    if (this.#server) throw new TypeError("egress broker is already started");
-    await unlink(this.#socketPath).catch((error) => {
-      if (error?.code !== "ENOENT") throw error;
-    });
-
-    // Freeze exact DNS/IP answers for this profile network-grant generation.
-    // Requests never re-resolve these names, preventing DNS rebinding after admission.
-    const bindings = new Map();
-    for (const origin of this.#allowedOrigins) {
-      const target = new URL(origin);
-      const answers = await resolvePinned(target.hostname, {
-        allowPrivateNetworkForTests: this.#allowPrivateNetworkForTests,
-        resolver: this.#resolver,
-      });
-      bindings.set(
-        origin,
-        Object.freeze({
-          origin,
-          hostname: target.hostname,
-          port: Number(target.port || (target.protocol === "https:" ? 443 : 80)),
-          answers: Object.freeze(answers.map((answer) => Object.freeze({ ...answer }))),
-          bindingDigest: bindingDigest(this.#grantDigest, origin, answers),
-        }),
-      );
+  #live(client = null) {
+    this.#abort.signal.throwIfAborted();
+    if (this.#state !== "running" || client?.destroyed) {
+      throw new Error("egress broker or request has closed");
     }
-    this.#bindings = bindings;
-
-    const server = http.createServer((request, response) => {
-      this.#handleHttp(request, response).catch(() => {
-        if (!response.headersSent) response.writeHead(502);
-        response.end();
-      });
-    });
-    server.maxConnections = MAX_PROXY_CONNECTIONS;
-    server.on("connection", (socket) => this.#trackConnection(socket));
-    server.on("connect", (request, client, head) => {
-      this.#handleConnect(request, client, head).catch(() => {
-        if (!client.destroyed) {
-          client.end("HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n");
-        }
-      });
-    });
-    server.on("clientError", (_error, socket) => {
-      socket.end("HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\n");
-    });
-    await new Promise((resolve, reject) => {
-      server.once("error", reject);
-      server.listen(this.#socketPath, () => {
-        server.off("error", reject);
-        resolve();
-      });
-    });
-    this.#server = server;
   }
 
-  async close() {
-    const server = this.#server;
-    this.#server = null;
-    if (server) {
-      for (const socket of this.#connections) socket.destroy();
-      this.#connections.clear();
-      await new Promise((resolve) => server.close(() => resolve()));
+  #handle(task, failure) {
+    const pending = Promise.resolve().then(task).catch(failure);
+    this.#pending.add(pending);
+    void pending.finally(() => this.#pending.delete(pending)).catch(() => {});
+  }
+
+  start() {
+    if (this.#state !== "new") return Promise.reject(new TypeError("egress broker is already started or closed"));
+    this.#state = "starting";
+    this.#startTask = this.#start();
+    return this.#startTask;
+  }
+
+  async #start() {
+    try {
+      await unlink(this.#socketPath).catch(error => {
+        if (error?.code !== "ENOENT") throw error;
+      });
+      const bindings = new Map();
+      for (const origin of this.#allowedOrigins) {
+        this.#abort.signal.throwIfAborted();
+        const target = new URL(origin);
+        const answers = await boundedResolve(resolvePinned(target.hostname, {
+          allowPrivateNetworkForTests: this.#allowPrivateNetworkForTests,
+          resolver: this.#resolver,
+        }), this.#abort.signal);
+        this.#abort.signal.throwIfAborted();
+        bindings.set(origin, Object.freeze({
+          origin, hostname: target.hostname,
+          port: Number(target.port || (target.protocol === "https:" ? 443 : 80)),
+          answers: Object.freeze(answers.map(answer => Object.freeze({ ...answer }))),
+          bindingDigest: bindingDigest(this.#grantDigest, origin, answers),
+        }));
+      }
+      this.#bindings = bindings;
+      const server = http.createServer({
+        maxHeaderSize: 65_536, headersTimeout: 5_000,
+        requestTimeout: this.#transferTimeoutMs,
+      }, (request, response) => {
+        this.#handle(() => this.#handleHttp(request, response), () => {
+          if (response.destroyed) return;
+          if (!response.headersSent) response.writeHead(502);
+          response.end();
+        });
+      });
+      this.#server = server;
+      server.maxConnections = MAX_PROXY_CONNECTIONS;
+      server.on("connection", socket => {
+        try { this.#trackConnection(socket); } catch { socket.destroy(); }
+      });
+      server.on("connect", (request, client, head) => {
+        this.#handle(() => this.#handleConnect(request, client, head), () => {
+          if (!client.destroyed) client.end("HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n");
+        });
+      });
+      server.on("upgrade", (_request, socket) => socket.destroy());
+      server.on("clientError", (_error, socket) => socket.destroy());
+      await new Promise((resolve, reject) => {
+        server.once("error", reject);
+        server.listen(this.#socketPath, () => {
+          server.off("error", reject);
+          resolve();
+        });
+      });
+      this.#socketIdentity = await lstat(this.#socketPath);
+      this.#abort.signal.throwIfAborted();
+      this.#state = "running";
+    } catch (error) {
+      // close() owns cleanup; never resurrect a cancelled startup.
+      if (this.#state === "starting") this.#state = "failed";
+      throw error;
     }
-    this.#bindings = new Map();
-    await unlink(this.#socketPath).catch((error) => {
-      if (error?.code !== "ENOENT") throw error;
-    });
+  }
+
+  close() {
+    if (this.#closeTask !== null) return this.#closeTask;
+    this.#state = "closing";
+    this.#abort.abort(new Error("egress broker closed"));
+    // Abort pending connects immediately, including sockets not yet connected.
+    for (const socket of this.#connections) socket.destroy();
+    const closing = this.#close();
+    this.#closeTask = closing;
+    void closing.catch(() => { if (this.#closeTask === closing) this.#closeTask = null; });
+    return closing;
+  }
+
+  async #close() {
+    await this.#startTask?.catch(() => {});
+    const server = this.#server;
+    const gone = [...this.#connections].map(socket => new Promise(resolve => {
+      if (socket.closed) return resolve();
+      socket.once("close", resolve);
+      socket.destroy();
+    }));
+    if (server) await new Promise((resolve, reject) => server.close(error => {
+      if (error && error.code !== "ERR_SERVER_NOT_RUNNING") reject(error); else resolve();
+    }));
+    this.#server = null;
+    await Promise.allSettled([...this.#pending]);
+    await Promise.all(gone);
+    this.#bindings.clear();
+    this.#connections.clear();
+    // A wrapper may have moved our socket and installed its own at this name.
+    // Never unlink a replacement endpoint owned by a different generation.
+    try {
+      const current = await lstat(this.#socketPath);
+      if (this.#socketIdentity && current.dev === this.#socketIdentity.dev &&
+          current.ino === this.#socketIdentity.ino) await unlink(this.#socketPath);
+    } catch (error) { if (error?.code !== "ENOENT") throw error; }
+    this.#state = "closed";
   }
 
   #assertOrigin(origin) {
+    this.#live();
     const canonical = canonicalOrigin(origin);
     const binding = this.#bindings.get(canonical);
     if (!this.#allowedOrigins.has(canonical) || !binding) {
@@ -516,32 +658,49 @@ export class GrantScopedEgressBroker {
     if (port !== binding.port || target.hostname !== binding.hostname) {
       throw new Error("HTTP destination drifted from the frozen profile network grant");
     }
-    const connected = await connectPinned(binding.answers, port);
-    const socket = this.#trackConnection(connected.socket);
+    if (target.username || target.password) throw new Error("HTTP credentials are forbidden");
+    const connected = await connectPinned(binding.answers, port, {
+      signal: this.#abort.signal, track: socket => this.#trackConnection(socket),
+    });
+    const socket = connected.socket;
+    try { this.#live(request.socket); } catch (error) { socket.destroy(); throw error; }
     this.#record(binding, target.hostname, port, connected.address, "http");
     const headers = stripHopByHop(request.headers);
     headers.host = target.host;
-    const upstream = http.request({
-      method: request.method,
-      host: connected.address,
-      family: net.isIP(connected.address),
-      port,
-      path: `${target.pathname}${target.search}`,
-      headers,
-      createConnection: () => socket,
-    });
-    upstream.on("response", (upstreamResponse) => {
-      response.writeHead(
-        upstreamResponse.statusCode ?? 502,
-        stripHopByHop(upstreamResponse.headers),
-      );
-      upstreamResponse.pipe(response);
+    headers.connection = "close";
+    // A dedicated agent MUST consume the already checked pinned socket. Do not
+    // let the default agent create a second, unowned outbound connection.
+    const agent = new http.Agent({ keepAlive: false, maxSockets: 1 });
+    agent.createConnection = () => socket;
+    const upstream = http.request({ method: request.method, host: connected.address,
+      port, path: `${target.pathname}${target.search}`, headers, agent,
+      maxHeaderSize: 65_536 });
+    const requestBound = boundedTransfer(this.#maxRequestBytes, () => this.#live(request.socket));
+    const responseBound = boundedTransfer(this.#maxResponseBytes, () => this.#live(request.socket));
+    const cleanup = () => {
+      clearTimeout(timer);
+      requestBound.destroy(); responseBound.destroy(); upstream.destroy(); agent.destroy();
+    };
+    const fail = () => { response.destroy(); cleanup(); };
+    const timer = setTimeout(fail, this.#transferTimeoutMs);
+    requestBound.on("error", fail);
+    responseBound.on("error", fail);
+    request.on("aborted", fail);
+    response.once("close", cleanup);
+    upstream.on("response", upstreamResponse => {
+      try { this.#live(request.socket); } catch { fail(); return; }
+      response.writeHead(upstreamResponse.statusCode ?? 502, stripHopByHop(upstreamResponse.headers));
+      upstreamResponse.on("error", fail);
+      upstreamResponse.pipe(responseBound).pipe(response);
     });
     upstream.on("error", () => {
-      if (!response.headersSent) response.writeHead(502);
-      response.end();
+      if (!response.destroyed) {
+        if (!response.headersSent) response.writeHead(502);
+        response.end();
+      }
+      cleanup();
     });
-    request.pipe(upstream);
+    request.pipe(requestBound).pipe(upstream);
   }
 
   async #handleConnect(request, client, head) {
@@ -561,28 +720,35 @@ export class GrantScopedEgressBroker {
     client.write("HTTP/1.1 200 Connection Established\r\nProxy-Agent: hepta-egress\r\n\r\n");
 
     let upstream = null;
+    let timer = null;
     try {
-      // CONNECT authority alone does not bind a TLS virtual host. Require the
-      // bounded ClientHello to name the granted destination before any upstream
-      // TCP connection can exist.
       const hello = await readBoundTlsClientHello(client, head, target.hostname);
-      const connected = await connectPinned(binding.answers, port);
-      upstream = this.#trackConnection(connected.socket);
+      this.#live(client);
+      const connected = await connectPinned(binding.answers, port, {
+        signal: this.#abort.signal, track: socket => this.#trackConnection(socket),
+      });
+      upstream = connected.socket;
+      this.#live(client);
+      if (hello.length > this.#maxRequestBytes) throw new Error("TLS hello exceeds request budget");
       this.#record(binding, target.hostname, port, connected.address, "connect");
-      client.once("close", () => {
-        if (!upstream.destroyed) upstream.destroy();
-      });
-      upstream.once("close", () => {
-        if (!client.destroyed) client.destroy();
-      });
+      const requestBound = boundedTransfer(this.#maxRequestBytes - hello.length, () => this.#live(client));
+      const responseBound = boundedTransfer(this.#maxResponseBytes, () => this.#live(client));
+      const end = () => {
+        clearTimeout(timer);
+        requestBound.destroy(); responseBound.destroy();
+        client.destroy(); upstream.destroy();
+      };
+      timer = setTimeout(end, this.#transferTimeoutMs);
+      client.once("close", end); upstream.once("close", end);
+      client.once("error", end); upstream.once("error", end);
+      requestBound.once("error", end); responseBound.once("error", end);
       upstream.write(hello);
-      client.pipe(upstream);
-      upstream.pipe(client);
-      upstream.on("error", () => client.destroy());
-      client.on("error", () => upstream.destroy());
+      client.pipe(requestBound).pipe(upstream);
+      upstream.pipe(responseBound).pipe(client);
       client.resume();
     } catch (error) {
-      if (upstream && !upstream.destroyed) upstream.destroy();
+      clearTimeout(timer);
+      upstream?.destroy();
       client.destroy();
       throw error;
     }

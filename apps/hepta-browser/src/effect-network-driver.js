@@ -101,18 +101,29 @@ export class EffectScopedNetworkDriver {
     requireRecord(input, "effect network start input");
     const profileId = stableId(input.profileId, "profileId");
     const generation = positiveInteger(input.generation, "generation");
+    if (this.#sessions.has(profileId)) throw new TypeError("effect network profile still owns resources");
     const observed = requireRecord(
       await this.#driver.start(input, options),
       "effect network start observation",
     );
     let gate = null;
     let policyDir = null;
+    const session = { profileId, generation, processId: observed.processId,
+      policyDir: null, gate: null, closed: false, starting: true };
+    this.#sessions.set(profileId, session);
     try {
-      const profileDir = await this.#findProfileDirectory(profileId, generation);
+      const profileDir = observed.privateProfileDirectory === undefined
+        ? await this.#findProfileDirectory(profileId, generation)
+        : observed.privateProfileDirectory;
+      if (typeof profileDir !== "string" || !profileDir.startsWith(`${resolve(this.#profileRoot)}/`) ||
+          await realpath(profileDir) !== profileDir || !(await lstat(profileDir)).isDirectory()) {
+        throw new TypeError("driver private profile directory is outside the canonical owner root");
+      }
       const publicSocketPath = join(profileDir, ".hepta-egress.sock");
       // Only profileDir is mounted into Servo. This sibling is host-private;
       // keeping the policy socket inside profileDir defeats the effect gate.
       policyDir = await mkdtemp(join(this.#profileRoot, ".egress-"));
+      session.policyDir = policyDir;
       const policySocketPath = join(policyDir, "policy.sock");
       const metadata = await lstat(publicSocketPath);
       if (!metadata.isSocket() || metadata.isSymbolicLink()) {
@@ -129,31 +140,18 @@ export class EffectScopedNetworkDriver {
         maxRequestBytes: this.#maxRequestBytes,
         maxResponseBytes: this.#maxResponseBytes,
       });
+      session.gate = gate;
       await gate.start();
-      this.#sessions.set(profileId, {
-        profileId,
-        generation,
-        processId: observed.processId,
-        profileDir,
-        publicSocketPath,
-        policySocketPath,
-        policyDir,
-        gate,
-        closed: false,
-      });
+      Object.assign(session, { profileDir, publicSocketPath, policySocketPath, starting: false });
       return observed;
     } catch (error) {
-      await gate?.close({ status: "composition_failed" }).catch(() => {});
-      await this.#driver
-        .contain({
-          profileId,
-          generation,
-          processId: observed.processId,
+      try {
+        await this.#closeOwnedSession(session, {
+          profileId, generation, processId: observed.processId,
           reason: "effect_network_composition_failed",
-        })
-        .catch(() => {});
-      if (policyDir !== null) {
-        await rm(policyDir, { recursive: true, force: true });
+        }, "stop");
+      } catch (cleanupError) {
+        throw new AggregateError([error, cleanupError], "Browser network startup cleanup is incomplete");
       }
       throw error;
     }
@@ -208,49 +206,31 @@ export class EffectScopedNetworkDriver {
   }
 
   async contain(input) {
-    const session = this.#session(input, {
-      allowMissing: true,
-      allowClosed: true,
-    });
+    const session = this.#session(input, { allowMissing: true, allowClosed: true });
     if (session === null) return this.#driver.contain(input);
-    let gateError = null;
-    try {
-      await this.#closeGate(session, "contained");
-    } catch (error) {
-      gateError = error;
-    }
-    // Gate cleanup errors must never prevent the underlying process kill.
-    try {
-      const observed = await this.#driver.contain(input);
-      if (gateError !== null) throw gateError;
-      return observed;
-    } finally {
-      await rm(session.policyDir, { recursive: true, force: true });
-    }
+    return this.#closeOwnedSession(session, input, "contain");
   }
 
   async stop(input, options = {}) {
-    const session = this.#session(input, {
-      allowMissing: true,
-      allowClosed: true,
-    });
+    const session = this.#session(input, { allowMissing: true, allowClosed: true });
     if (session === null) return this.#driver.stop(input, options);
-    let gateError = null;
-    try {
-      await this.#closeGate(session, "profile_stopped");
-    } catch (error) {
-      gateError = error;
+    return this.#closeOwnedSession(session, input, "stop", options);
+  }
+
+  async #closeOwnedSession(session, input, method, options) {
+    const results = await Promise.allSettled([
+      this.#closeGate(session, method === "stop" ? "profile_stopped" : "contained"),
+      this.#driver[method](input, options),
+    ]);
+    const failures = results.filter(value => value.status === "rejected").map(value => value.reason);
+    if (failures.length) throw new AggregateError(failures, "Browser network/process close is incomplete");
+    const observed = results[1].value;
+    if (observed?.[method === "stop" ? "stopped" : "contained"] !== true) {
+      throw new TypeError("Browser process cleanup was not observed");
     }
-    try {
-      const observed = await this.#driver.stop(input, options);
-      // Retain a closed session if process stop fails: a later cleanup retry
-      // must not lose the ownership record or admit a new worker implicitly.
-      this.#sessions.delete(session.profileId);
-      if (gateError !== null) throw gateError;
-      return observed;
-    } finally {
-      await rm(session.policyDir, { recursive: true, force: true });
-    }
+    if (session.policyDir !== null) await rm(session.policyDir, { recursive: true, force: true });
+    if (method === "stop") this.#sessions.delete(session.profileId);
+    return { ...observed, networkClosed: true };
   }
 
   #settle(session, operationId, observed) {
@@ -264,8 +244,11 @@ export class EffectScopedNetworkDriver {
 
   async #closeGate(session, status) {
     if (session.closed) return;
-    session.closed = true;
-    await session.gate.close({ status });
+    if (session.closing) return session.closing;
+    const closing = session.gate?.close({ status }) ?? Promise.resolve();
+    session.closing = closing;
+    try { await closing; session.closed = true; }
+    finally { session.closing = null; }
   }
 
   #session(
@@ -289,7 +272,7 @@ export class EffectScopedNetworkDriver {
     if (input.processId !== undefined && input.processId !== session.processId) {
       throw new TypeError("effect network process identity mismatch");
     }
-    if (session.closed && !allowClosed) {
+    if ((session.closed || session.closing || session.starting) && !allowClosed) {
       throw new TypeError("effect network profile is closed");
     }
     return session;
