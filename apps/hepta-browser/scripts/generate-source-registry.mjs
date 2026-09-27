@@ -18,6 +18,7 @@ const EXPECTED_OPERATIONS = Object.freeze([
 ]);
 
 const SOURCE_PATHS = Object.freeze([
+  "apps/hepta-browser/scripts/generate-source-registry.mjs",
   "apps/hepta-browser/src/action.js",
   "apps/hepta-browser/src/agentd-protocol.js",
   "apps/hepta-browser/src/agentd-service-main.js",
@@ -34,12 +35,15 @@ const SOURCE_PATHS = Object.freeze([
   "apps/hepta-browser/servo-worker/Cargo.toml",
   "apps/hepta-browser/servo-worker/Cargo.lock",
   "apps/hepta-browser/servo-worker/src/main.rs",
+  "codex-rs/hepta-agentd/Cargo.toml",
   "codex-rs/hepta-agentd/src/browser_revocation_feed.rs",
   "codex-rs/hepta-agentd/src/browser_servo_persistent.rs",
   "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser-service.rs",
   "third_party/servo-patches/MANIFEST.json",
+  ".github/workflows/blocking-ci.yml",
   ".github/workflows/hepta-browser-agentd-composition.yml",
   ".github/workflows/hepta-browser-servo-worker-dev.yml",
+  ".github/workflows/hepta-browser-servo-independent-rebuild.yml",
   ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
 ]);
 
@@ -93,6 +97,24 @@ function verifyCapabilities() {
     "while let Some(frame)",
     "navigate_or_act requires signed final-use grant",
   ]);
+  assertContains(".github/workflows/blocking-ci.yml", [
+    "browser-servo-source",
+    "npm --prefix apps/hepta-browser run verify:registry",
+  ]);
+  assertContains(".github/workflows/hepta-browser-servo-worker-dev.yml", [
+    "Require the exact reviewed committed dependency lock",
+    "sameRunnerByteIdenticalBuilds",
+    "reproducibleIndependentBuilds': False",
+  ]);
+  assertContains(".github/workflows/hepta-browser-servo-independent-rebuild.yml", [
+    "independentEphemeralRunner",
+    "git ls-files --error-unmatch",
+  ]);
+  assertContains(".github/workflows/hepta-browser-servo-deployment-qualification.yml", [
+    "multi-builder-receipt",
+    "reproducibleIndependentBuilds': True",
+    "independentRunnerBuildCount': 2",
+  ]);
 }
 
 function gitBlob(path) {
@@ -124,6 +146,9 @@ function buildRegistry() {
       { capability: "upload", state: "fail_closed_not_connected" },
       { capability: "download", state: "fail_closed_not_connected" },
       { capability: "persistent_agentd_owner", state: "implemented_inherited_stdio" },
+      { capability: "committed_worker_lock", state: "implemented_required" },
+      { capability: "multi_builder_reproducibility", state: "implemented_deployment_gate" },
+      { capability: "signed_build_provenance", state: "not_implemented_external_gate" },
       { capability: "linux_isolation", state: "implemented_source_target_evidence_required" },
       { capability: "macos_isolation", state: "not_implemented_not_in_current_target" },
       { capability: "windows_isolation", state: "not_implemented_not_in_current_target" },
