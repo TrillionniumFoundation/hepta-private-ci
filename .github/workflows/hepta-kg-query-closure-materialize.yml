@@ -7,11 +7,16 @@ on:
       - scripts/hepta-kg-query-closure-apply.py
 permissions:
   contents: write
+concurrency:
+  group: kg-query-closure-materialization
+  cancel-in-progress: true
 jobs:
   materialize:
     if: github.ref == 'refs/heads/work/kg-verified-query-closure-20260927'
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 20
+    outputs:
+      source-sha: ${{ steps.publish.outputs.sha }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -22,8 +27,10 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = '${{ github.sha }}'
+          test "$(git ls-remote origin refs/heads/work/kg-verified-query-closure-20260927 | cut -f1)" = '${{ github.sha }}'
           git config user.name 'Hepta KG source integration'
           git config user.email 'hepta-kg-ci@users.noreply.github.com'
+          python3 scripts/test_hepta_knowledge_graph_budget.py -v
           python3 scripts/hepta-kg-query-closure-apply.py
           cd codex-rs
           cargo fmt --package codex-hepta-kg --package codex-hepta-memory
@@ -58,6 +65,7 @@ jobs:
           git add -A -- codex-rs/hepta-kg codex-rs/hepta-memory docs/modules/knowledge.graph/TECHNICAL.md qualification/knowledge-graph/TARGET_HOST.md scripts/hepta-knowledge-graph-target-measure.py scripts/hepta-kg-query-closure-apply.py .github/workflows/hepta-knowledge-graph-qualification.yml .github/workflows/hepta-kg-query-closure-materialize.yml
           git commit -m 'feat(knowledge.graph): wire verified transaction-local query cache and validator parity' -m 'Imports reviewed KG-only predecessor changes and retains full-scan equivalence oracle. No production or target-host qualification claim.' -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
       - name: Bind module source map to committed source
+        id: publish
         shell: bash
         run: |
           set -euo pipefail
@@ -73,7 +81,7 @@ jobs:
           identity = module.current_source_base()
           row['sourceBase'] = identity
           row['observedAtHead'] = identity
-          extra = ['codex-rs/hepta-kg/src/indexed_query.rs', 'codex-rs/hepta-kg/src/query_closure_tests.rs', 'codex-rs/hepta-memory/src/cognitive_kg_history_tests.rs', 'qualification/knowledge-graph/QUERY_CLOSURE_20260927.md', 'scripts/hepta-knowledge-graph-target-measure.py']
+          extra = ['codex-rs/hepta-kg/src/indexed_query.rs', 'codex-rs/hepta-kg/src/query_closure_tests.rs', 'codex-rs/hepta-memory/src/cognitive_kg_history_tests.rs', 'qualification/knowledge-graph/QUERY_CLOSURE_20260927.md', 'scripts/hepta-knowledge-graph-target-measure.py', 'scripts/hepta-knowledge-graph-budget-check.py', 'scripts/test_hepta_knowledge_graph_budget.py']
           row['observedSourcePaths'] = sorted(set(row['observedSourcePaths'] + extra))
           for op in row['operations']:
               if op['operation'] == 'query_relations':
@@ -88,17 +96,48 @@ jobs:
           git commit -m 'docs(knowledge.graph): bind exact committed query closure source objects' -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
           test "$(git ls-remote origin refs/heads/work/kg-verified-query-closure-20260927 | cut -f1)" = '${{ github.sha }}'
           git push origin HEAD:refs/heads/work/kg-verified-query-closure-20260927
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           git rev-parse HEAD HEAD^{tree}
-      - name: Export exact source for independent inspection
+      - name: Export focused exact source for independent inspection
+        if: always()
         shell: bash
         run: |
-          git archive --format=tar HEAD | gzip > "$RUNNER_TEMP/kg-source.tar.gz"
+          git diff --binary a126987b84737dbc2ee2592442a314117bddb4a2 > "$RUNNER_TEMP/kg-source.patch"
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/kg-source-identity.txt"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: kg-query-closure-source
           path: |
-            ${{ runner.temp }}/kg-source.tar.gz
+            ${{ runner.temp }}/kg-source.patch
             ${{ runner.temp }}/kg-source-identity.txt
-          if-no-files-found: warn
+          if-no-files-found: error
+  kernel:
+    needs: materialize
+    runs-on: macos-15
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.materialize.outputs.source-sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact prepared source and parser tests
+        run: |
+          test "$(git rev-parse HEAD)" = '${{ needs.materialize.outputs.source-sha }}'
+          git diff --exit-code
+          python3 scripts/test_hepta_knowledge_graph_budget.py -v
+      - name: Check KG formatting
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-kg --package codex-hepta-memory -- --check
+      - name: Test exact KG kernel
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-kg -- --nocapture
+      - name: Lint exact KG kernel
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-kg --all-targets --no-deps -- -D warnings
+      - name: Preserve exact source
+        if: always()
+        run: git diff --exit-code
