@@ -14,6 +14,10 @@ mod verified;
 mod solver;
 #[path = "canonical_runtime.rs"]
 mod runtime;
+#[path = "canonical_codec.rs"]
+mod codec;
+
+pub use codec::*;
 
 pub use raw::MAX_CANONICAL_INTERACTION_EDGES;
 pub use raw::MAX_CANONICAL_PROMPT_FACTORS;
@@ -74,3 +78,7 @@ pub use verified::PromptUnavailablePricingV1;
 pub use verified::enumerate_factors_v1;
 pub use verified::price_factors_v1;
 pub use verified::pricing_evidence_signing_payload_v1;
+
+#[cfg(test)]
+#[path = "canonical_codec_tests.rs"]
+mod codec_tests;
