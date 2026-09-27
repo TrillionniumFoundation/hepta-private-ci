@@ -513,9 +513,15 @@ async fn stop_after_recovery_error(
     state: &AgentdState,
     cancellation: &CancellationToken,
 ) -> Result<(), AgentdError> {
-    if matches!(error, AgentdError::GenerationFenced(_)) {
+    if classify_recovery_error(&error) == AutomationFailureDisposition::Fence {
         state.mark_fenced();
-        return Err(error);
+        if matches!(&error, AgentdError::GenerationFenced(_)) {
+            return Err(error);
+        }
+        return Err(AgentdError::GenerationFenced(
+            "automation recovery owner, timer epoch or generation boundary was violated"
+                .to_string(),
+        ));
     }
     state.mark_automation_unavailable()?;
     wait_for_cancellation(cancellation).await
@@ -629,6 +635,18 @@ mod tests {
         assert_eq!(
             classify_recovery_error(&AgentdError::GenerationFenced(
                 "stale generation".to_string()
+            )),
+            AutomationFailureDisposition::Fence
+        );
+        assert_eq!(
+            classify_recovery_error(&AgentdError::Automation(
+                AutomationError::AccessDenied
+            )),
+            AutomationFailureDisposition::Fence
+        );
+        assert_eq!(
+            classify_recovery_error(&AgentdError::Automation(
+                AutomationError::TimerFenced
             )),
             AutomationFailureDisposition::Fence
         );
