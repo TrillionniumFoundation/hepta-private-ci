@@ -38,12 +38,13 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::authbus_trust::hex_bytes;
-use crate::evidence_trust::EvidenceTrust;
 
 /// These modes have intentionally different trust-refresh semantics.
 enum EvidenceTrustMode {
     Development,
-    Production { admitted_registry_sha256: Sha256Digest },
+    Production {
+        admitted_registry_sha256: Sha256Digest,
+    },
 }
 
 pub(crate) struct EvidenceHost {
@@ -58,147 +59,305 @@ impl EvidenceHost {
         trust_file: PathBuf,
         recovery_frontier: Option<(PathBuf, PathBuf)>,
     ) -> Result<Self, AgentdError> {
-        EvidenceTrust::load(&trust_file, identity)?;
         let production_profile = recovery_frontier.as_ref().is_some_and(|(path, _)| {
             crate::evidence_production::is_production_evidence_profile(identity, path)
         });
         let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
         let sqlite = SqliteConfig::from_sqlite_home(home);
         let preflight_snapshot = if production_profile {
-            let preflight = HeptaEvidenceStore::open_existing_read_only(&sqlite).await.map_err(evidence_error)?;
-            let snapshot = preflight.authenticated_recovery_snapshot().await.map_err(evidence_error)?;
+            let preflight = HeptaEvidenceStore::open_existing_read_only(&sqlite)
+                .await
+                .map_err(evidence_error)?;
+            let snapshot = preflight
+                .authenticated_recovery_snapshot()
+                .await
+                .map_err(evidence_error)?;
             preflight.close().await;
             Some(snapshot)
-        } else { None };
-        let store = if production_profile {
-            HeptaEvidenceStore::open_existing_runtime(&sqlite).await.map_err(evidence_error)?
         } else {
-            HeptaEvidenceStore::open(&sqlite).await.map_err(evidence_error)?
+            None
+        };
+        let store = if production_profile {
+            HeptaEvidenceStore::open_existing_runtime(&sqlite)
+                .await
+                .map_err(evidence_error)?
+        } else {
+            HeptaEvidenceStore::open(&sqlite)
+                .await
+                .map_err(evidence_error)?
         };
         if let Some(expected) = preflight_snapshot {
-            let actual = store.authenticated_recovery_snapshot().await.map_err(evidence_error)?;
+            let actual = store
+                .authenticated_recovery_snapshot()
+                .await
+                .map_err(evidence_error)?;
             if actual != expected {
                 store.close().await;
-                return Err(invalid("production evidence database changed between read-only migration preflight and restricted runtime open"));
+                return Err(invalid(
+                    "production evidence database changed between read-only migration preflight and restricted runtime open",
+                ));
             }
         }
         let trust_mode = match recovery_frontier {
             Some((frontier_or_config, signer_trust_file)) if production_profile => {
-                let admitted_registry_sha256 = crate::evidence_production::verify_production_evidence_frontier(
-                    identity, &store, &trust_file, &frontier_or_config, &signer_trust_file,
-                ).await?;
+                let admitted_registry_sha256 =
+                    crate::evidence_production::verify_production_evidence_frontier(
+                        identity,
+                        &store,
+                        &trust_file,
+                        &frontier_or_config,
+                        &signer_trust_file,
+                    )
+                    .await?;
                 // Refuse a registry replacement between signed admission and host publication.
                 VerifiedEvidenceTrustSnapshot::load_owner_registry(
-                    &store, &trust_file, identity.agent_id.as_str(), Some(&admitted_registry_sha256),
-                ).map_err(evidence_error)?;
-                EvidenceTrustMode::Production { admitted_registry_sha256 }
+                    &store,
+                    &trust_file,
+                    identity.agent_id.as_str(),
+                    Some(&admitted_registry_sha256),
+                )
+                .map_err(evidence_error)?;
+                EvidenceTrustMode::Production {
+                    admitted_registry_sha256,
+                }
             }
             Some((frontier, signer_trust_file)) => {
                 crate::evidence_frontier::verify_evidence_recovery_frontier(
-                    identity, &store, &frontier, &signer_trust_file,
-                ).await?;
+                    identity,
+                    &store,
+                    &frontier,
+                    &signer_trust_file,
+                )
+                .await?;
+                // Development may retain V1 for compatibility, but it still enters
+                // through the same sealed parser used by every operation.
+                VerifiedEvidenceTrustSnapshot::load_owner_registry(
+                    &store,
+                    &trust_file,
+                    identity.agent_id.as_str(),
+                    None,
+                )
+                .map_err(evidence_error)?;
                 EvidenceTrustMode::Development
             }
-            None => EvidenceTrustMode::Development,
+            None => {
+                VerifiedEvidenceTrustSnapshot::load_owner_registry(
+                    &store,
+                    &trust_file,
+                    identity.agent_id.as_str(),
+                    None,
+                )
+                .map_err(evidence_error)?;
+                EvidenceTrustMode::Development
+            }
         };
-        Ok(Self { store, trust_file, trust_mode })
+        Ok(Self {
+            store,
+            trust_file,
+            trust_mode,
+        })
     }
 
     fn trust(&self, state: &AgentdState) -> Result<VerifiedEvidenceTrustSnapshot, AgentdError> {
         let pin = match &self.trust_mode {
             EvidenceTrustMode::Development => None,
-            EvidenceTrustMode::Production { admitted_registry_sha256 } => Some(admitted_registry_sha256),
+            EvidenceTrustMode::Production {
+                admitted_registry_sha256,
+            } => Some(admitted_registry_sha256),
         };
         VerifiedEvidenceTrustSnapshot::load_owner_registry(
-            &self.store, &self.trust_file, state.identity().agent_id.as_str(), pin,
-        ).map_err(evidence_error)
+            &self.store,
+            &self.trust_file,
+            state.identity().agent_id.as_str(),
+            pin,
+        )
+        .map_err(evidence_error)
     }
 }
 
 /// Claims an external producer signs. Creates no key or independent authority.
 pub fn kernel_evidence_claims(
-    issuer_id: &str, key_epoch: u64, message_id: &str, sequence: u64,
-    expires_at_ms: u64, envelope: &QualificationEvidenceEnvelopeV1,
+    issuer_id: &str,
+    key_epoch: u64,
+    message_id: &str,
+    sequence: u64,
+    expires_at_ms: u64,
+    envelope: &QualificationEvidenceEnvelopeV1,
 ) -> Result<SignedMessageClaims, AgentdError> {
     let envelope_bytes = qualification_envelope_bytes(envelope).map_err(evidence_error)?;
     if envelope_bytes.len() > MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES {
-        return Err(invalid("Agentd evidence envelope exceeds the 48 KiB product-wire ceiling"));
+        return Err(invalid(
+            "Agentd evidence envelope exceeds the 48 KiB product-wire ceiling",
+        ));
     }
     Ok(SignedMessageClaims {
-        issuer_id: StableId::new(issuer_id.to_string()).map_err(|error| invalid(&error.to_string()))?,
-        key_epoch: Generation::new(key_epoch).map_err(|error| invalid(&error.to_string()))?,
-        message_id: StableId::new(message_id.to_string()).map_err(|error| invalid(&error.to_string()))?,
-        subject_id: qualification_subject(&envelope.candidate, envelope.issuer_role).map_err(evidence_error)?,
-        scope_digest: qualification_append_scope_digest(), payload_digest: Digest32::of_bytes(&envelope_bytes),
-        sequence, expires_at_ms,
+        issuer_id: StableId::new(issuer_id.to_string())
+            .map_err(|error| invalid(&error.to_string()))?,
+        key_epoch: Generation::new(key_epoch)
+            .map_err(|error| invalid(&error.to_string()))?,
+        message_id: StableId::new(message_id.to_string())
+            .map_err(|error| invalid(&error.to_string()))?,
+        subject_id: qualification_subject(&envelope.candidate, envelope.issuer_role)
+            .map_err(evidence_error)?,
+        scope_digest: qualification_append_scope_digest(),
+        payload_digest: Digest32::of_bytes(&envelope_bytes),
+        sequence,
+        expires_at_ms,
     })
 }
 
-pub(crate) async fn append(state: &AgentdState, request: KernelEvidenceAppendIngress) -> Result<KernelEvidenceResult, AgentdError> {
+pub(crate) async fn append(
+    state: &AgentdState,
+    request: KernelEvidenceAppendIngress,
+) -> Result<KernelEvidenceResult, AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
-    if request.envelope_json.len() > MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES { return Err(invalid("evidence envelope exceeds product-wire ceiling")); }
+    if request.envelope_json.len() > MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES {
+        return Err(invalid("evidence envelope exceeds product-wire ceiling"));
+    }
     let envelope: QualificationEvidenceEnvelopeV1 = serde_json::from_str(&request.envelope_json)
         .map_err(|error| invalid(&format!("invalid evidence envelope: {error}")))?;
     let canonical = qualification_envelope_bytes(&envelope).map_err(evidence_error)?;
-    if canonical.as_slice() != request.envelope_json.as_bytes() { return Err(invalid("evidence envelope must use canonical JSON")); }
-    let claims = kernel_evidence_claims(&request.issuer_id, request.key_epoch, &request.message_id,
-        request.sequence, request.expires_at_ms, &envelope)?;
+    if canonical.as_slice() != request.envelope_json.as_bytes() {
+        return Err(invalid("evidence envelope must use canonical JSON"));
+    }
+    let claims = kernel_evidence_claims(
+        &request.issuer_id,
+        request.key_epoch,
+        &request.message_id,
+        request.sequence,
+        request.expires_at_ms,
+        &envelope,
+    )?;
     let trust = host.trust(state)?;
-    let issuer = trust.issuer_for(&request.issuer_id, request.key_epoch, envelope.issuer_role).map_err(evidence_error)?;
-    let message = SignedMessage { claims, signature: hex_bytes(&request.signature_hex)? };
-    let evidence_id = host.store.qualification().append_receipt(&issuer, &message, &envelope).await.map_err(evidence_error)?;
+    let issuer = trust
+        .issuer_for(
+            &request.issuer_id,
+            request.key_epoch,
+            envelope.issuer_role,
+        )
+        .map_err(evidence_error)?;
+    let message = SignedMessage {
+        claims,
+        signature: hex_bytes(&request.signature_hex)?,
+    };
+    let evidence_id = host
+        .store
+        .qualification()
+        .append_receipt(&issuer, &message, &envelope)
+        .await
+        .map_err(evidence_error)?;
     require_ready(state)?;
     result(&evidence_id)
 }
 
-pub(crate) async fn query(state: &AgentdState, request: KernelEvidenceQueryV1) -> Result<KernelEvidenceResult, AgentdError> {
+pub(crate) async fn query(
+    state: &AgentdState,
+    request: KernelEvidenceQueryV1,
+) -> Result<KernelEvidenceResult, AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
     let candidate = candidate(request.candidate)?;
-    let claim_class = EvidenceClaimClassV1::parse(&request.claim_class).map_err(|error| invalid(&error))?;
-    let references = host.store.qualification().query_claim(&candidate, claim_class).await.map_err(evidence_error)?;
+    let claim_class =
+        EvidenceClaimClassV1::parse(&request.claim_class).map_err(|error| invalid(&error))?;
+    let references = host
+        .store
+        .qualification()
+        .query_claim(&candidate, claim_class)
+        .await
+        .map_err(evidence_error)?;
     require_ready(state)?;
     result(&references)
 }
 
-pub(crate) async fn verify(state: &AgentdState, request: KernelEvidenceVerifyV1) -> Result<KernelEvidenceResult, AgentdError> {
+pub(crate) async fn verify(
+    state: &AgentdState,
+    request: KernelEvidenceVerifyV1,
+) -> Result<KernelEvidenceResult, AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
     let candidate = candidate(request.candidate)?;
-    let claim_class = EvidenceClaimClassV1::parse(&request.claim_class).map_err(|error| invalid(&error))?;
-    if request.required_roles.len() > codex_hepta_agent_protocol::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES { return Err(invalid("too many required evidence roles")); }
-    let roles = request.required_roles.iter()
-        .map(|role| EvidenceIssuerRoleV1::parse(role).map_err(|error| invalid(&error))).collect::<Result<Vec<_>, _>>()?;
-    let profile = EvidenceVerificationProfileV1::from_legacy_roles(claim_class, &roles).map_err(evidence_error)?;
-    let request = ProfiledVerifyChainRequestV1::new(candidate, profile, current_time_millis()?).map_err(evidence_error)?;
+    let claim_class =
+        EvidenceClaimClassV1::parse(&request.claim_class).map_err(|error| invalid(&error))?;
+    if request.required_roles.len()
+        > codex_hepta_agent_protocol::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES
+    {
+        return Err(invalid("too many required evidence roles"));
+    }
+    let roles = request
+        .required_roles
+        .iter()
+        .map(|role| EvidenceIssuerRoleV1::parse(role).map_err(|error| invalid(&error)))
+        .collect::<Result<Vec<_>, _>>()?;
+    let profile = EvidenceVerificationProfileV1::from_legacy_roles(claim_class, &roles)
+        .map_err(evidence_error)?;
+    let request = ProfiledVerifyChainRequestV1::new(
+        candidate,
+        profile,
+        current_time_millis()?,
+    )
+    .map_err(evidence_error)?;
     let current_trust = host.trust(state)?;
-    let disposition = host.store.qualification().verify_chain(&request, &current_trust).await.map_err(evidence_error)?;
+    let disposition = host
+        .store
+        .qualification()
+        .verify_chain(&request, &current_trust)
+        .await
+        .map_err(evidence_error)?;
     require_ready(state)?;
     result(&disposition)
 }
 
 fn candidate(candidate: KernelEvidenceCandidateV1) -> Result<EvidenceCandidateV1, AgentdError> {
-    let candidate = EvidenceCandidateV1 { candidate_id: candidate.candidate_id, source_commit: candidate.source_commit, source_tree: candidate.source_tree };
+    let candidate = EvidenceCandidateV1 {
+        candidate_id: candidate.candidate_id,
+        source_commit: candidate.source_commit,
+        source_tree: candidate.source_tree,
+    };
     candidate.validate().map_err(|error| invalid(&error))?;
     Ok(candidate)
 }
+
 fn result<T: serde::Serialize>(value: &T) -> Result<KernelEvidenceResult, AgentdError> {
     let json = serde_json::to_string(value)?;
-    if json.len() > MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES { return Err(invalid("kernel evidence result exceeds the bounded Agentd response profile")); }
+    if json.len() > MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES {
+        return Err(invalid(
+            "kernel evidence result exceeds the bounded Agentd response profile",
+        ));
+    }
     Ok(KernelEvidenceResult { json })
 }
+
 fn attached(state: &AgentdState) -> Result<Arc<EvidenceHost>, AgentdError> {
-    state.evidence.get().cloned().ok_or_else(|| invalid("no explicit evidence trust configuration"))
+    state
+        .evidence
+        .get()
+        .cloned()
+        .ok_or_else(|| invalid("no explicit evidence trust configuration"))
 }
+
 fn require_ready(state: &AgentdState) -> Result<(), AgentdError> {
-    if !state.automation_admission_ready()? { return Err(invalid("Agent generation is not ready for kernel evidence operations")); }
+    if !state.automation_admission_ready()? {
+        return Err(invalid(
+            "Agent generation is not ready for kernel evidence operations",
+        ));
+    }
     Ok(())
 }
+
 fn current_time_millis() -> Result<u64, AgentdError> {
-    let millis = SystemTime::now().duration_since(UNIX_EPOCH)
-        .map_err(|error| invalid(&format!("system clock is before Unix epoch: {error}")))?.as_millis();
-    u64::try_from(millis).map_err(|error| invalid(&format!("system clock overflow: {error}")))
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|error| invalid(&format!("system clock is before Unix epoch: {error}")))?
+        .as_millis();
+    u64::try_from(millis)
+        .map_err(|error| invalid(&format!("system clock overflow: {error}")))
 }
-fn evidence_error(error: codex_hepta_evidence::EvidenceError) -> AgentdError { invalid(&error.to_string()) }
-fn invalid(message: &str) -> AgentdError { AgentdError::Invalid(format!("kernel.evidence: {message}")) }
+
+fn evidence_error(error: codex_hepta_evidence::EvidenceError) -> AgentdError {
+    invalid(&error.to_string())
+}
+
+fn invalid(message: &str) -> AgentdError {
+    AgentdError::Invalid(format!("kernel.evidence: {message}"))
+}
