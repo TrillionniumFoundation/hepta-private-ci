@@ -1,19 +1,13 @@
 name: NDU bounded formatter and source evidence
-
 on:
   push:
-    branches:
-      - codex/utility-ndu-production-hardening-20260926
-    paths:
-      - ".github/workflows/ndu-format-fix.yml"
-
+    branches: [codex/utility-ndu-production-hardening-20260926]
+    paths: [".github/workflows/ndu-format-fix.yml"]
 permissions:
   contents: write
-
 concurrency:
   group: ndu-one-shot-rustfmt
   cancel-in-progress: true
-
 jobs:
   repair-and-export:
     if: github.actor != 'github-actions[bot]'
@@ -23,16 +17,14 @@ jobs:
       EXPECTED_SHA: ${{ github.sha }}
       TARGET_BRANCH: codex/utility-ndu-production-hardening-20260926
     steps:
-      - name: Check out immutable source
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-      - name: Install qualification-compatible Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.12'
-      - name: Apply bounded review patch and bind staged source objects
+      - name: Apply bounded review patch and bind staged evidence
         shell: bash
         run: |
           set -euo pipefail
@@ -55,24 +47,36 @@ jobs:
           python3 scripts/test_hepta_ndu_map_integrity.py 2>&1 | tee "$RUNNER_TEMP/ndu-source-inspection/integrity-tests.log"
           python3 - <<'PY'
           import json
-          from pathlib import Path
+          from pathlib import Path, PurePosixPath
           import subprocess
-          import sys
-          sys.path.insert(0, 'scripts')
-          from hepta_ndu_map_integrity import PRIMARY, EXTENSION, evidence_paths
-          root = Path.cwd()
-          primary = json.loads((root / PRIMARY).read_text())
-          extension = json.loads((root / EXTENSION).read_text())
+          primary_path = Path('docs/modules/utility.ndu/IMPLEMENTATION_MAP.json')
+          primary = json.loads(primary_path.read_text())
+          paths = [entry['path'] for entry in primary['sourceObjects']]
+          if not paths or len(set(paths)) != len(paths):
+              raise SystemExit('empty or duplicate source inventory')
+          required = {
+              'codex-rs/hepta-agentd/src/ndu_control.rs',
+              'codex-rs/hepta-agentd/src/ndu_owner_tests.rs',
+              'docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json',
+              'scripts/hepta-ndu-qualification.py',
+              'scripts/test_hepta_ndu_qualification.py',
+              '.github/workflows/hepta-ndu-recursion.yml',
+          }
+          if not required <= set(paths):
+              raise SystemExit(f'missing reviewed evidence: {sorted(required-set(paths))}')
           tree = subprocess.check_output(['git', 'write-tree'], text=True).strip()
-          objects = []
-          for path in sorted(evidence_paths(root, primary, extension)):
-              oid = subprocess.check_output(['git', 'rev-parse', f'{tree}:{path}'], text=True).strip()
+          rebound = []
+          for name in sorted(paths):
+              path = PurePosixPath(name)
+              if path.is_absolute() or path.as_posix() != name or '..' in path.parts or name == str(primary_path):
+                  raise SystemExit(f'unsafe or self-referential path: {name}')
+              oid = subprocess.check_output(['git', 'rev-parse', f'{tree}:{name}'], text=True).strip()
               if subprocess.check_output(['git', 'cat-file', '-t', oid], text=True).strip() not in {'blob', 'tree'}:
-                  raise SystemExit(f'invalid evidence object: {path}')
-              objects.append({'path': path, 'object': oid})
-          primary['sourceObjects'] = objects
-          (root / PRIMARY).write_text(json.dumps(primary, indent=2) + '\n')
-          print(f'Explicitly rebound {len(objects)} typed paths to staged tree {tree}')
+                  raise SystemExit(f'invalid evidence object: {name}')
+              rebound.append({'path': name, 'object': oid})
+          primary['sourceObjects'] = rebound
+          primary_path.write_text(json.dumps(primary, indent=2) + '\n')
+          print(f'Rebound unchanged {len(rebound)}-path inventory to staged tree {tree}')
           PY
           git add -- docs/modules/utility.ndu/IMPLEMENTATION_MAP.json
           python3 - <<'PY'
@@ -91,7 +95,7 @@ jobs:
           }
           changed = set(subprocess.check_output(['git', 'diff', '--cached', '--name-only', '-z']).decode().strip('\0').split('\0')) - {''}
           if not changed <= allowed:
-              raise SystemExit(f'unexpected repair changes: {sorted(changed - allowed)}')
+              raise SystemExit(f'unexpected changes: {sorted(changed - allowed)}')
           if subprocess.check_output(['git', 'diff', '--name-only']):
               raise SystemExit('unstaged changes outside bounded repair')
           PY
@@ -100,8 +104,7 @@ jobs:
           git config user.email qualification@invalid
           git commit -m 'fix(ndu): revalidate physical admission deadlines and qualify artifact lifecycle'
           python3 scripts/hepta-ndu-implementation-map-closed-world.py \
-            --expected-sha "$(git rev-parse HEAD)" \
-            --expected-tree "$(git rev-parse HEAD^{tree})" \
+            --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})" \
             | tee "$RUNNER_TEMP/ndu-source-inspection/closed-world.json"
           test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$EXPECTED_SHA"
           git push origin "HEAD:refs/heads/$TARGET_BRANCH"
@@ -124,9 +127,8 @@ jobs:
           git rev-parse HEAD HEAD^{tree} > "$out/source-identity.txt"
           git status --porcelain > "$out/checkout-status.txt"
           sha256sum "$out/source.tar.gz" > "$out/source.tar.gz.sha256"
-      - name: Retain bounded repair and source evidence
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ndu-source-inspection-${{ github.sha }}
           path: ${{ runner.temp }}/ndu-source-inspection
