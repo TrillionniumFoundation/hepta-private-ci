@@ -39,7 +39,6 @@ jobs:
           set -euo pipefail
           python3 scripts/apply_context_compiler_v3_source.py
           python3 scripts/apply_context_compiler_current_closure.py
-          python3 scripts/generate_context_compiler_module_docs.py --write
 
       - name: Register property-test dependency
         shell: bash
@@ -77,10 +76,12 @@ jobs:
           cargo fmt --all
           cargo metadata --format-version 1 > /dev/null
 
-      - name: Verify generated truth
+      - name: Bind canonical state to formatted source
         shell: bash
         run: |
           set -euo pipefail
+          python3 scripts/refresh_context_compiler_current_state.py
+          python3 scripts/generate_context_compiler_module_docs.py --write
           python3 scripts/generate_context_compiler_module_docs.py --check
           python3 scripts/test_context_compiler_state.py
           python3 scripts/test_context_compiler_candidate.py
@@ -133,6 +134,7 @@ jobs:
           rm -f scripts/apply_context_compiler_full_closure.py
           rm -f scripts/apply_context_compiler_hardening.py
           rm -f scripts/apply_context_compiler_current_closure.py
+          rm -f scripts/refresh_context_compiler_current_state.py
           rm -f scripts/remediate_context_compiler_closure.py
           rm -f .github/context-compiler-materialize-v3.trigger
           rm -f .github/workflows/context-compiler-v3-direct-source.yml
