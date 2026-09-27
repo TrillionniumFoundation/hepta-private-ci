@@ -48,6 +48,10 @@ use crate::ProcessStream;
 use crate::SpawnSpec;
 use crate::driver::SpawnedProcess;
 
+#[path = "unix_process_ref.rs"]
+mod process_ref;
+use process_ref::ProcessRef;
+
 const LOG_CHUNK_BYTES: usize = 4_096;
 const HEALTH_PROBE_INTERVAL: Duration = Duration::from_millis(50);
 const HEALTH_PROBE_IO_TIMEOUT: Duration = Duration::from_millis(200);
@@ -82,14 +86,21 @@ pub struct UnixManagedProcess {
 
 enum UnixProcessHandle {
     Child(Child),
-    Adopted { process_id: u32 },
+    Adopted(ProcessRef),
 }
 
 impl UnixProcessHandle {
-    fn process_id(&self) -> u32 {
+    fn signal(&mut self, signal: i32) -> Result<(), ProcessDriverError> {
         match self {
-            Self::Child(child) => child.id(),
-            Self::Adopted { process_id } => *process_id,
+            Self::Child(child) => {
+                // Child is exclusively owned here. Do not signal after try_wait
+                // has reaped it; an unreaped child cannot have its PID reused.
+                if child.try_wait()?.is_some() {
+                    return Err(std::io::Error::from_raw_os_error(libc::ESRCH).into());
+                }
+                send_signal(child.id(), signal)
+            }
+            Self::Adopted(reference) => reference.signal(signal).map_err(Into::into),
         }
     }
 }
@@ -117,8 +128,8 @@ impl ManagedProcess for UnixManagedProcess {
                 }
                 None => true,
             },
-            UnixProcessHandle::Adopted { process_id } => {
-                if let Some(exit) = poll_adopted_process(*process_id)? {
+            UnixProcessHandle::Adopted(reference) => {
+                if let Some(exit) = poll_adopted_process(reference)? {
                     self.health_probe.shutdown();
                     return Ok(ProcessObservation {
                         state: ProcessState::Exited(exit),
@@ -164,11 +175,11 @@ impl ManagedProcess for UnixManagedProcess {
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
-        send_signal(self.handle.process_id(), libc::SIGTERM)
+        self.handle.signal(libc::SIGTERM)
     }
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
-        send_signal(self.handle.process_id(), libc::SIGKILL)
+        self.handle.signal(libc::SIGKILL)
     }
 }
 
@@ -238,13 +249,21 @@ impl ProcessDriver for UnixProcessDriver {
         }
         let process_id = u32::try_from(spec.identity.system_id())
             .map_err(|_| ProcessDriverError::new("stored child PID does not fit u32"))?;
+        // Acquire the kernel lifetime before the wire proof. If that task
+        // exits during proof, the reference cannot be rebound to a reused PID.
+        let Some(reference) = ProcessRef::open(process_id)? else {
+            return Ok(Adoption::Missing);
+        };
         let agent_control = AgentHealthProbeIdentity::from_adopt(spec, process_id);
         let health_identity = HealthProbeIdentity::Agentd(agent_control.clone());
         if prove_adoption_identity(&health_identity) {
+            if reference.exited()? {
+                return Ok(Adoption::Missing);
+            }
             let health_probe = HealthProbe::spawn(health_identity)?;
             let (_sender, logs) = std::sync::mpsc::sync_channel(1);
             return Ok(Adoption::Adopted(UnixManagedProcess {
-                handle: UnixProcessHandle::Adopted { process_id },
+                handle: UnixProcessHandle::Adopted(reference),
                 logs,
                 health_probe,
                 agent_control: Some(agent_control),
@@ -343,13 +362,19 @@ impl ProcessDriver for UnixProcessDriver {
         }
         let process_id = u32::try_from(spec.identity.system_id())
             .map_err(|_| ProcessDriverError::new("stored matrixd PID does not fit u32"))?;
+        let Some(reference) = ProcessRef::open(process_id)? else {
+            return Ok(Adoption::Missing);
+        };
         let health_identity =
             HealthProbeIdentity::Matrixd(MatrixHealthProbeIdentity::from_adopt(spec, process_id));
         if prove_adoption_identity(&health_identity) {
+            if reference.exited()? {
+                return Ok(Adoption::Missing);
+            }
             let health_probe = HealthProbe::spawn(health_identity)?;
             let (_sender, logs) = std::sync::mpsc::sync_channel(1);
             return Ok(Adoption::Adopted(UnixManagedProcess {
-                handle: UnixProcessHandle::Adopted { process_id },
+                handle: UnixProcessHandle::Adopted(reference),
                 logs,
                 health_probe,
                 agent_control: None,
@@ -825,39 +850,14 @@ fn process_exists(system_id: u64) -> Result<bool, ProcessDriverError> {
     }
 }
 
-/// Poll an adopted process without confusing a terminated child zombie for a
-/// live process. After supervisor recovery the process normally is not our
-/// child, in which case `waitpid` returns `ECHILD` and the exact UDS adoption
-/// proof remains the sole source of signal authority; here we only observe its
-/// continued existence with signal 0.
-fn poll_adopted_process(process_id: u32) -> Result<Option<ProcessExit>, ProcessDriverError> {
-    let pid = i32::try_from(process_id)
-        .map_err(|_| ProcessDriverError::new("adopted child PID does not fit Unix pid_t"))?;
-    let mut status = 0_i32;
-    // SAFETY: `pid` is the exact process identity proven during adoption,
-    // `status` points to writable storage, and WNOHANG never blocks.
-    let waited = unsafe { libc::waitpid(pid, &mut status, libc::WNOHANG) };
-    if waited > 0 {
-        let exited = libc::WIFEXITED(status);
-        return Ok(Some(ProcessExit {
-            success: exited && libc::WEXITSTATUS(status) == 0,
-            code: exited.then(|| libc::WEXITSTATUS(status)),
-        }));
-    }
-    if waited == 0 {
-        return Ok(None);
-    }
-
-    let error = std::io::Error::last_os_error();
-    if error.raw_os_error() == Some(libc::ECHILD) {
-        return process_exists(u64::from(process_id)).map(|exists| {
-            (!exists).then_some(ProcessExit {
-                success: false,
-                code: None,
-            })
-        });
-    }
-    Err(error.into())
+/// Observe the acquired lifetime, never the current occupant of a numeric PID.
+/// An adopted non-child has no authoritative wait status. Preserve that unknown
+/// exit status rather than inventing successful completion or reaping by PID.
+fn poll_adopted_process(reference: &ProcessRef) -> Result<Option<ProcessExit>, ProcessDriverError> {
+    Ok(reference.exited()?.then_some(ProcessExit {
+        success: false,
+        code: None,
+    }))
 }
 
 #[cfg(test)]
