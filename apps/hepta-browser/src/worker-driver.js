@@ -8,7 +8,11 @@ import {
   realpath,
   rm,
 } from "node:fs/promises";
-import { isAbsolute, join, resolve } from "node:path";
+import { isAbsolute, resolve } from "node:path";
+import { performance } from "node:perf_hooks";
+
+import { browserProfileArtifactPaths } from "./profile-artifacts.js";
+import { OwnedBrowserChild } from "./worker-lifecycle.js";
 
 import { GrantScopedEgressBroker } from "./egress-broker.js";
 import {
@@ -314,6 +318,7 @@ class PrivateWorkerClient {
       }
     });
     child.stderr?.resume?.();
+    child.stdin.on("error", (error) => this.#failAll(error));
     child.on("error", (error) => this.#failAll(error));
     child.on("exit", (code, signal) => {
       this.#closed = true;
@@ -605,6 +610,12 @@ export class SubprocessBrowserDriver {
   #allowPrivateNetworkForTests = false;
   #expiryTimer = null;
   #expiresAtMs = null;
+  #expiresMonotonicMs = null;
+  #ownership = null;
+  #termination = null;
+  #starting = false;
+  #stopTask = null;
+  #quarantined = false;
 
   constructor({
     workerPath,
@@ -657,8 +668,26 @@ export class SubprocessBrowserDriver {
     this.#allowPrivateNetworkForTests = allowPrivateNetworkForTests;
   }
 
-  async start(input, { signal } = {}) {
-    if (this.#child) throw new TypeError("browser worker is already started");
+  get hasPendingCleanup() {
+    return this.#child !== null || this.#ownership !== null ||
+      this.#egressBroker !== null || this.#profileDir !== null ||
+      this.#profileOwnerPath !== null || this.#verifiedWorkerPath !== null;
+  }
+
+  async start(input, options = {}) {
+    if (this.#starting || this.#stopTask !== null || this.hasPendingCleanup) {
+      throw new TypeError("browser worker is already started or still owns cleanup");
+    }
+    this.#starting = true;
+    this.#quarantined = false;
+    try {
+      return await this.#start(input, options);
+    } finally {
+      this.#starting = false;
+    }
+  }
+
+  async #start(input, { signal } = {}) {
     requireRecord(input, "browser worker start input");
     const profileId = stableId(input.profileId, "profileId");
     const principalId = stableId(input.principalId, "principalId");
@@ -669,17 +698,19 @@ export class SubprocessBrowserDriver {
     if (expiresAtMs <= Date.now()) {
       throw new TypeError("browser profile process/network lease has expired");
     }
+    const expiresMonotonicMs = performance.now() + (expiresAtMs - Date.now());
+    const paths = browserProfileArtifactPaths(this.#profileRoot);
     await this.#launcher.verify();
     const verifiedWorkerBytes = await this.#readVerifiedWorkerArtifact();
     await ensurePrivateProfileRoot(this.#profileRoot);
     try {
-      this.#profileDir = join(
-        this.#profileRoot,
-        `${profileId}.${generation}.${randomUUID()}`,
-      );
-      await mkdir(this.#profileDir, { mode: 0o700 });
+      this.#sessionId = profileId;
+      this.#generation = generation;
+      this.#processId = null;
+      await mkdir(paths.profileDir, { mode: 0o700 });
+      this.#profileDir = paths.profileDir;
       this.#egressBroker = new GrantScopedEgressBroker({
-        socketPath: join(this.#profileDir, ".hepta-egress.sock"),
+        socketPath: paths.socketPath,
         grantDigest,
         allowedOrigins: input.allowedOrigins,
         allowPrivateNetworkForTests: this.#allowPrivateNetworkForTests,
@@ -688,34 +719,27 @@ export class SubprocessBrowserDriver {
       // Ownership metadata must not be writable through the sandbox's profile
       // bind. Keep it in the host-private profile root and expose only its
       // digest to the worker/session boundary.
-      this.#profileOwnerPath = join(
-        this.#profileRoot,
-        `.hepta-profile-owner.${profileId}.${generation}.${randomUUID()}.json`,
-      );
       const ownerIdentity = {
-      schema: "hepta.browser.profile-owner.v1",
-      profileId,
-      principalId,
-      generation,
-      manifestDigest,
-      grantDigest,
+        schema: "hepta.browser.profile-owner.v1",
+        profileId,
+        principalId,
+        generation,
+        manifestDigest,
+        grantDigest,
       };
-      await this.#writeProfileOwnerManifest(ownerIdentity);
+      await this.#writeProfileOwnerManifest(ownerIdentity, paths.profileOwnerPath);
       // Keep the verified executable outside the profile directory that is
-    // mounted read/write into the sandbox. Otherwise the worker could mutate
-    // the same inode through /hepta-profile even though /hepta-worker is a
-    // read-only bind.
-      this.#verifiedWorkerPath = join(
-        this.#profileRoot,
-        `.hepta-verified-worker.${profileId}.${generation}.${randomUUID()}`,
-      );
-      await this.#writePrivateVerifiedWorker(verifiedWorkerBytes);
+      // mounted read/write into the sandbox. Otherwise the worker could mutate
+      // the same inode through /hepta-profile even though /hepta-worker is a
+      // read-only bind.
+      await this.#writePrivateVerifiedWorker(verifiedWorkerBytes, paths.verifiedWorkerPath);
       this.#sessionId = profileId;
       this.#generation = generation;
       this.#child = this.#launcher.spawn({
         workerPath: this.#verifiedWorkerPath,
         profileDir: this.#profileDir,
       });
+      this.#ownership = new OwnedBrowserChild(this.#child);
       if (
         !this.#child?.stdin ||
         !this.#child?.stdout ||
@@ -742,21 +766,28 @@ export class SubprocessBrowserDriver {
       if (observed.started !== true) {
         throw new TypeError("worker did not acknowledge start");
       }
-      this.#armExpiry(expiresAtMs);
+      if (signal?.aborted || Date.now() >= expiresAtMs || performance.now() >= expiresMonotonicMs) {
+        throw abortError("browser profile lease expired or startup was aborted");
+      }
+      this.#armExpiry(expiresAtMs, expiresMonotonicMs);
       return {
         started: true,
         processId: this.#processId,
         profileOwnerDigest: sha256(Buffer.from(JSON.stringify(ownerIdentity), "utf8")),
+        // Owner-private composition metadata: BrowserProfileHost publishes only
+        // the checked identity receipt, never this filesystem path on the wire.
+        privateProfileDirectory: this.#profileDir,
       };
     } catch (error) {
-      this.#child?.kill?.("SIGKILL");
-      await this.#cleanupProfile();
-      this.#child = null;
-      this.#client = null;
-      this.#sessionId = null;
-      this.#generation = null;
+      // A failed launch still owns every acquired process/socket/path. Cleanup
+      // failure keeps those handles in this driver and the pool reservation.
+      try {
+        await this.#terminateOwnedResources();
+        await this.#cleanupProfile();
+      } catch (cleanupError) {
+        throw new AggregateError([error, cleanupError], "browser startup failed; cleanup ownership retained");
+      }
       this.#processId = null;
-      this.#clearExpiryTimer();
       throw error;
     }
   }
@@ -856,60 +887,66 @@ export class SubprocessBrowserDriver {
   }
 
   async contain(input) {
-    this.#requireSession(input);
-    this.#clearExpiryTimer();
-    const broker = this.#egressBroker;
-    this.#egressBroker = null;
-    this.#client?.close();
-    this.#child?.kill?.("SIGKILL");
-    this.#client = null;
-    this.#child = null;
-    await broker?.close();
-    return { contained: true };
+    if (this.#starting) throw new Error("browser worker is starting; cancel startup first");
+    this.#requireIdentity(input);
+    await this.#terminateOwnedResources();
+    return { contained: true, processExitObserved: true };
   }
 
-  async stop(input, { signal } = {}) {
+  async stop(input, options = {}) {
+    if (this.#starting) throw new Error("browser worker is starting; cancel startup first");
+    this.#requireIdentity(input);
+    if (this.#stopTask !== null) return this.#stopTask;
+    this.#stopTask = this.#stopOwned(input, options);
+    try { return await this.#stopTask; }
+    finally { this.#stopTask = null; }
+  }
+
+  async #stopOwned(input, { signal } = {}) {
+    const graceful = this.#child && this.#client && !this.#quarantined;
+    this.#quarantined = true;
     this.#clearExpiryTimer();
-    const generation = input.generation ?? input.profileGeneration;
-    if (
-      input.profileId !== this.#sessionId ||
-      generation !== this.#generation
-    ) {
-      throw new TypeError("browser worker session or generation mismatch");
-    }
-    if (!this.#child || !this.#client) {
-      await this.#cleanupProfile();
-      return { stopped: true };
-    }
-    this.#requireSession(input);
-    try {
-      const observed = await this.#client.request(
-        "stop",
-        `${input.profileId}.${input.generation}`,
-        input,
-        { signal },
-      );
-      if (observed.stopped !== true) {
-        throw new TypeError("worker did not acknowledge stop");
+    // The protocol stop is best-effort bounded graceful shutdown. Its ACK is
+    // not process exit; every path still waits for owned process/network exit.
+    if (graceful) {
+      const controller = new AbortController();
+      const abort = () => controller.abort();
+      signal?.addEventListener("abort", abort, { once: true });
+      if (signal?.aborted) abort();
+      const timer = setTimeout(abort, 1000);
+      try {
+        await this.#client.request(
+          "stop", `${input.profileId}.${input.generation ?? input.profileGeneration}`,
+          input, { signal: controller.signal },
+        );
+      } catch {
+        // Observed forced termination below can establish stopped even when
+        // a broken control channel cannot supply a graceful ACK.
+      } finally {
+        clearTimeout(timer);
+        signal?.removeEventListener("abort", abort);
       }
-      return { stopped: true };
-    } finally {
-      this.#client?.close();
-      this.#child?.kill?.("SIGTERM");
-      this.#client = null;
-      this.#child = null;
-      await this.#cleanupProfile();
     }
+    await this.#terminateOwnedResources();
+    await this.#cleanupProfile();
+    return { stopped: true };
   }
 
-  #armExpiry(expiresAtMs) {
+  #armExpiry(expiresAtMs, expiresMonotonicMs) {
     this.#clearExpiryTimer();
     this.#expiresAtMs = expiresAtMs;
+    this.#expiresMonotonicMs = expiresMonotonicMs;
     const arm = () => {
       if (!this.#child || this.#expiresAtMs === null) return;
-      const remaining = this.#expiresAtMs - Date.now();
+      const remaining = Math.min(
+        this.#expiresAtMs - Date.now(),
+        this.#expiresMonotonicMs - performance.now(),
+      );
       if (remaining <= 0) {
-        void this.#containExpiredLease();
+        this.#quarantined = true;
+        // Keep failed cleanup visible through retained ownership; never emit
+        // an unhandled timer rejection or free a live pool slot on failure.
+        void this.#terminateOwnedResources().catch(() => {});
         return;
       }
       this.#expiryTimer = setTimeout(arm, Math.min(remaining, 2_147_000_000));
@@ -922,21 +959,41 @@ export class SubprocessBrowserDriver {
     if (this.#expiryTimer !== null) clearTimeout(this.#expiryTimer);
     this.#expiryTimer = null;
     this.#expiresAtMs = null;
+    this.#expiresMonotonicMs = null;
   }
 
-  async #containExpiredLease() {
+  async #terminateOwnedResources() {
+    if (this.#termination !== null) return this.#termination;
+    this.#quarantined = true;
     this.#clearExpiryTimer();
-    const broker = this.#egressBroker;
-    this.#egressBroker = null;
-    this.#client?.close();
-    this.#child?.kill?.("SIGKILL");
-    this.#client = null;
-    this.#child = null;
+    this.#termination = this.#terminate();
     try {
-      await broker?.close();
-    } catch {
-      // Expiry is fail-closed: the process is already killed and the private
-      // broker reference is detached even if socket cleanup itself fails.
+      return await this.#termination;
+    } finally {
+      this.#termination = null;
+    }
+  }
+
+  async #terminate() {
+    try { this.#client?.close(); } catch { /* Process termination remains mandatory. */ }
+    this.#client = null; // No further effect can enter this channel.
+    const process = this.#ownership;
+    const broker = this.#egressBroker;
+    const results = await Promise.allSettled([
+      process ? process.terminate() : this.#child === null
+        ? Promise.resolve() : Promise.reject(new Error("acquired worker has no verifiable exit owner")),
+      broker?.close(),
+    ]);
+    if (results[0].status === "fulfilled") {
+      this.#child = null;
+      this.#ownership = null;
+    }
+    if (results[1].status === "fulfilled") this.#egressBroker = null;
+    const errors = results.filter(result => result.status === "rejected").map(result => result.reason);
+    if (errors.length) {
+      const error = new AggregateError(errors, "browser containment incomplete; ownership retained");
+      error.code = "BROWSER_CONTAINMENT_UNPROVED";
+      throw error;
     }
   }
 
@@ -962,12 +1019,13 @@ export class SubprocessBrowserDriver {
     }
   }
 
-  async #writeProfileOwnerManifest(identity) {
+  async #writeProfileOwnerManifest(identity, path) {
     const body = Buffer.from(`${JSON.stringify(identity)}\n`, "utf8");
     const noFollow = constants.O_NOFOLLOW ?? 0;
     const flags =
       constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow;
-    const handle = await open(this.#profileOwnerPath, flags, 0o600);
+    const handle = await open(path, flags, 0o600);
+    this.#profileOwnerPath = path; // Only an acquired file may be cleaned up.
     try {
       await handle.writeFile(body);
       await handle.sync();
@@ -982,11 +1040,12 @@ export class SubprocessBrowserDriver {
     }
   }
 
-  async #writePrivateVerifiedWorker(bytes) {
+  async #writePrivateVerifiedWorker(bytes, path) {
     const noFollow = constants.O_NOFOLLOW ?? 0;
     const flags =
       constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow;
-    const handle = await open(this.#verifiedWorkerPath, flags, 0o500);
+    const handle = await open(path, flags, 0o500);
+    this.#verifiedWorkerPath = path;
     try {
       await handle.writeFile(bytes);
       await handle.sync();
@@ -1001,12 +1060,11 @@ export class SubprocessBrowserDriver {
     }
   }
 
-  #requireSession(input) {
-    if (!this.#child || !this.#client) {
-      throw new TypeError("browser worker is not started");
-    }
-    const generation = input.generation ?? input.profileGeneration;
-    if (input.profileId !== this.#sessionId || generation !== this.#generation) {
+  #requireIdentity(input) {
+    requireRecord(input, "browser worker identity");
+    const profileId = stableId(input.profileId, "profileId");
+    const generation = positiveInteger(input.generation ?? input.profileGeneration, "generation");
+    if (profileId !== this.#sessionId || generation !== this.#generation) {
       throw new TypeError("browser worker session or generation mismatch");
     }
     if (input.processId !== undefined && input.processId !== this.#processId) {
@@ -1014,43 +1072,39 @@ export class SubprocessBrowserDriver {
     }
   }
 
-  async #containBeforeDispatchBoundary() {
-    this.#clearExpiryTimer();
-    const broker = this.#egressBroker;
-    this.#egressBroker = null;
-    const client = this.#client;
-    const child = this.#child;
-    this.#client = null;
-    this.#child = null;
-    client?.close();
-    child?.kill?.("SIGKILL");
-    try {
-      await broker?.close();
-    } catch {
-      // The worker is already killed and the server close precedes socket
-      // unlink. Preserve the original dispatch uncertainty; final profile
-      // cleanup will retry filesystem removal through stop/close.
+  #requireSession(input) {
+    this.#requireIdentity(input);
+    if (this.#expiresAtMs !== null &&
+        (Date.now() >= this.#expiresAtMs || performance.now() >= this.#expiresMonotonicMs)) {
+      this.#quarantined = true;
+      void this.#terminateOwnedResources().catch(() => {});
+    }
+    if (this.#quarantined || !this.#child || !this.#client) {
+      throw new TypeError("browser worker is not started or is quarantined");
     }
   }
 
+  async #containBeforeDispatchBoundary() {
+    await this.#terminateOwnedResources();
+  }
+
   async #cleanupProfile() {
-    await this.#egressBroker?.close();
-    this.#egressBroker = null;
-    const profileDir = this.#profileDir;
-    const profileOwnerPath = this.#profileOwnerPath;
-    const verifiedWorkerPath = this.#verifiedWorkerPath;
-    this.#profileDir = null;
-    this.#profileOwnerPath = null;
-    this.#verifiedWorkerPath = null;
-    if (profileOwnerPath) {
-      await rm(profileOwnerPath, { force: true });
+    // Only retire a path after its actual deletion succeeds. A retry needs the
+    // same remaining handles, not a newly minted profile generation.
+    if (this.#child || this.#ownership || this.#egressBroker) {
+      throw new Error("cannot delete profile storage before owned resources close");
     }
-    if (verifiedWorkerPath) {
-      await rm(verifiedWorkerPath, { force: true });
+    const errors = [];
+    for (const [path, clear, recursive] of [
+      [this.#profileOwnerPath, () => { this.#profileOwnerPath = null; }, false],
+      [this.#verifiedWorkerPath, () => { this.#verifiedWorkerPath = null; }, false],
+      [this.#profileDir, () => { this.#profileDir = null; }, true],
+    ]) {
+      if (!path) continue;
+      try { await rm(path, { recursive, force: true }); clear(); }
+      catch (error) { errors.push(error); }
     }
-    if (profileDir) {
-      await rm(profileDir, { recursive: true, force: true });
-    }
+    if (errors.length) throw new AggregateError(errors, "profile filesystem cleanup remains owned");
   }
 }
 
@@ -1113,6 +1167,11 @@ export class PooledSubprocessBrowserDriver {
         processId: observed.processId,
       });
       return observed;
+    } catch (error) {
+      if (driver.hasPendingCleanup) {
+        this.#sessions.set(profileId, { driver, generation, processId: null, cleanupOnly: true });
+      }
+      throw error;
     } finally {
       this.#starting.delete(profileId);
     }
@@ -1137,6 +1196,7 @@ export class PooledSubprocessBrowserDriver {
   async contain(input) {
     requireRecord(input, "browser worker containment input");
     const profileId = stableId(input.profileId, "profileId");
+    if (this.#starting.has(profileId)) throw new Error("browser worker is starting; cancel startup first");
     const session = this.#sessions.get(profileId);
     if (!session) return { contained: true };
     this.#validateSessionIdentity(input, session);
@@ -1146,14 +1206,16 @@ export class PooledSubprocessBrowserDriver {
   async stop(input, options = {}) {
     requireRecord(input, "browser worker stop input");
     const profileId = stableId(input.profileId, "profileId");
+    if (this.#starting.has(profileId)) throw new Error("browser worker is starting; cancel startup first");
     const session = this.#sessions.get(profileId);
     if (!session) return { stopped: true };
     this.#validateSessionIdentity(input, session);
-    try {
-      return await session.driver.stop(input, options);
-    } finally {
-      this.#sessions.delete(profileId);
+    const result = await session.driver.stop(input, options);
+    if (result.stopped !== true || session.driver.hasPendingCleanup) {
+      throw new Error("browser pool cannot release an unclosed owner");
     }
+    this.#sessions.delete(profileId);
+    return result;
   }
 
   #session(input) {
@@ -1161,6 +1223,7 @@ export class PooledSubprocessBrowserDriver {
     const profileId = stableId(input.profileId, "profileId");
     const session = this.#sessions.get(profileId);
     if (!session) throw new TypeError("browser worker profile is not started");
+    if (session.cleanupOnly) throw new TypeError("browser worker profile is quarantined for cleanup");
     this.#validateSessionIdentity(input, session);
     return session;
   }

@@ -14,10 +14,11 @@ import json
 import os
 import pathlib
 import shutil
+import stat
 import subprocess
 import sys
 import urllib.request
-from typing import Any
+from typing import Any, NoReturn
 
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
 PRIMARY_WORKFLOW = ".github/workflows/hepta-browser-servo-worker-dev.yml"
@@ -28,7 +29,7 @@ SLSA_PREDICATE = "https://slsa.dev/provenance/v1"
 SPDX_PREDICATE = "https://spdx.dev/Document/v2.3"
 
 
-def fail(message: str) -> "NoReturn":  # type: ignore[name-defined]
+def fail(message: str) -> NoReturn:
     raise SystemExit(message)
 
 
@@ -47,21 +48,71 @@ def sha256(path: pathlib.Path) -> str:
     return digest.hexdigest()
 
 
+def _unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    value: dict[str, Any] = {}
+    for key, item in pairs:
+        if key in value:
+            fail(f"duplicate evidence JSON key: {key}")
+        value[key] = item
+    return value
+
+
+def _reject_constant(value: str) -> NoReturn:
+    fail(f"non-finite evidence JSON number: {value}")
+
+
 def load_json(path: pathlib.Path) -> Any:
+    require_file(path, 16 << 20)
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as error:
+        # Bound the actual read as well as the preceding metadata check.
+        with path.open("rb") as handle:
+            body = handle.read((16 << 20) + 1)
+        if len(body) > 16 << 20:
+            fail(f"evidence JSON exceeds byte limit: {path}")
+        return json.loads(
+            body.decode("utf-8"), object_pairs_hook=_unique_object,
+            parse_constant=_reject_constant,
+        )
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
         fail(f"cannot load {path}: {error}")
 
 
 def require_file(path: pathlib.Path, maximum: int = 1 << 30) -> pathlib.Path:
+    if type(maximum) is not int or maximum < 1:
+        fail("evidence file byte limit must be a positive integer")
     try:
-        metadata = path.stat()
+        metadata = path.lstat()
     except OSError as error:
         fail(f"missing required evidence {path}: {error}")
-    if not metadata.is_file() or metadata.st_size < 1 or metadata.st_size > maximum:
-        fail(f"evidence file is not a bounded regular file: {path}")
+    if not stat.S_ISREG(metadata.st_mode) or not 1 <= metadata.st_size <= maximum:
+        fail(f"evidence file is not a bounded non-symlink regular file: {path}")
     return path
+
+
+def require_fields(value: dict[str, Any], expected: dict[str, Any], name: str) -> None:
+    for key, wanted in expected.items():
+        actual = value.get(key)
+        # Python considers True == 1. Evidence must not coerce Boolean flags,
+        # counts, run identities or source identity fields across JSON types.
+        if type(actual) is not type(wanted) or actual != wanted:
+            fail(f"{name}.{key} mismatch")
+
+
+def require_run_id(value: str) -> str:
+    if not value.isascii() or not value.isdecimal() or value.startswith("0"):
+        fail("build run ID must be a canonical positive decimal integer")
+    return value
+
+
+def verify_source_lock(source_sha: str, artifact_lock: pathlib.Path) -> None:
+    actual = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    if actual != source_sha:
+        fail("checked-out source does not match SOURCE_SHA")
+    committed = subprocess.check_output([
+        "git", "show", f"{source_sha}:apps/hepta-browser/servo-worker/Cargo.lock",
+    ])
+    if hashlib.sha256(committed).hexdigest() != sha256(artifact_lock):
+        fail("builder lock does not match the exact committed source lock")
 
 
 def write_json(path: pathlib.Path, value: Any) -> None:
@@ -111,10 +162,9 @@ def verify_run(
         "name": name,
         "path": path,
         "conclusion": "success",
+        "status": "completed",
     }
-    for key, value in expected.items():
-        if run.get(key) != value:
-            fail(f"workflow run {run_id} {key} mismatch: {run.get(key)!r} != {value!r}")
+    require_fields(run, expected, f"workflow run {run_id}")
     if run.get("event") not in {"push", "workflow_dispatch"}:
         fail(f"workflow run {run_id} has unsupported event {run.get('event')!r}")
     repository = run.get("repository")
@@ -129,8 +179,8 @@ def copy_evidence(source: pathlib.Path, destination: pathlib.Path) -> None:
 
 def preflight() -> None:
     source_sha = required_env("SOURCE_SHA")
-    primary_run_id = required_env("BUILD_RUN_ID")
-    independent_run_id = required_env("INDEPENDENT_BUILD_RUN_ID")
+    primary_run_id = require_run_id(required_env("BUILD_RUN_ID"))
+    independent_run_id = require_run_id(required_env("INDEPENDENT_BUILD_RUN_ID"))
     expected_worker = required_env("EXPECTED_WORKER_SHA256")
     servo_pin = required_env("SERVO_PIN")
     token = required_env("GH_TOKEN")
@@ -193,6 +243,7 @@ def preflight() -> None:
     if sha256(primary_lock) != sha256(independent_lock):
         fail("independent builders did not consume the same Cargo.lock")
 
+    verify_source_lock(source_sha, primary_lock)
     source_tree = git_tree()
     primary = load_json(primary_receipt_path)
     independent = load_json(independent_receipt_path)
@@ -216,9 +267,7 @@ def preflight() -> None:
         "independentRunnerBuildCount": 1,
         "signedProvenanceRequiredForDeployment": True,
     }
-    for key, value in expected_primary.items():
-        if primary.get(key) != value:
-            fail(f"primary build receipt {key} mismatch")
+    require_fields(primary, expected_primary, "primary build receipt")
 
     if not isinstance(independent, dict) or independent.get("schema") != (
         "hepta.browser.servo-independent-rebuild-receipt.v1"
@@ -235,9 +284,7 @@ def preflight() -> None:
         "independentEphemeralRunner": True,
         "signedProvenanceRequiredForDeployment": True,
     }
-    for key, value in expected_independent.items():
-        if independent.get(key) != value:
-            fail(f"independent build receipt {key} mismatch")
+    require_fields(independent, expected_independent, "independent build receipt")
 
     expected_summaries = (
         (primary_summary, PRIMARY_WORKFLOW_ID),
@@ -440,6 +487,30 @@ def finalize() -> None:
     values = (multi, attestation, sandbox, smoke, e2e, public, soak)
     if any(not isinstance(value, dict) for value in values):
         fail("target evidence contains a non-object receipt")
+
+    source_sha = required_env("SOURCE_SHA")
+    source_tree = git_tree()
+    worker_sha = required_env("EXPECTED_WORKER_SHA256")
+    primary_run_id = require_run_id(required_env("BUILD_RUN_ID"))
+    independent_run_id = require_run_id(required_env("INDEPENDENT_BUILD_RUN_ID"))
+    if primary_run_id == independent_run_id:
+        fail("primary and independent build runs must differ")
+    # Never relabel old successful receipts with new environment identities.
+    require_fields(multi, {
+        "schema": "hepta.browser.servo-multi-builder-receipt.v1",
+        "sourceSha": source_sha, "sourceTree": source_tree,
+        "workerSha256": worker_sha, "servoPin": required_env("SERVO_PIN"),
+        "primaryBuildRunId": primary_run_id,
+        "independentBuildRunId": independent_run_id,
+        "independentRunnerBuildCount": 2,
+    }, "multiBuilder")
+    require_fields(attestation, {
+        "schema": "hepta.browser.servo-signed-attestation-verification.v1",
+        "sourceSha": source_sha, "sourceRef": "refs/heads/main",
+        "workerSha256": worker_sha, "repository": REPOSITORY,
+        "primarySignerWorkflow": PRIMARY_WORKFLOW_ID,
+        "independentSignerWorkflow": INDEPENDENT_WORKFLOW_ID,
+    }, "attestation")
 
     require_true(
         multi,
