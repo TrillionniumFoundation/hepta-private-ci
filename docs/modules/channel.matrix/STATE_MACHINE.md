@@ -46,6 +46,7 @@ For each logical send:
 - room, binding revision, Matrix-plane generation, canonical payload digest and replacement target are immutable;
 - `attempt > 0`, `lease_epoch = attempt`, and attempts are monotonic;
 - terminality belongs to the stable transaction: any exact matching entered-use proof from an attempt not newer than the observed dispatch attempt can qualify the server echo;
+- the append-only terminal attempt event is attributed to the newest qualifying entered-use attempt, never to a later claim that did not cross the final-use boundary;
 - each attempt has one immutable random claim capability and at most one immutable authority witness;
 - grant ID, request/scope/payload digests, authority epoch, revocation frontier and absolute expiry are bound to the exact attempt;
 - exact duplicate observations are idempotent; semantic drift is a conflict.
@@ -62,9 +63,9 @@ For each logical send:
 | entered-use proof | sealed SDK permit polls transport | accepted/indeterminate/failed | typed physical-boundary observation; event ID is not terminal success |
 | dispatching | timeout/reset/unknown response | indeterminate | typed failure class and optional retry hint |
 | dispatching | proven pre-effect permanent rejection | failed | no earlier accepted evidence and `permanently_rejected` event |
-| accepted/indeterminate | matching authenticated `/sync` event | succeeded | exact room, transaction and event plus any matching entered-use proof from `attempt <= current attempts`; the current active claim closes atomically |
+| accepted/indeterminate | matching authenticated `/sync` event | succeeded | exact room, transaction and event plus any matching entered-use proof from `attempt <= current attempts`; the terminal attempt event records the newest qualifying entered attempt and all residual active claim state closes atomically |
 | accepted/indeterminate | matching legacy event without current evidence | observed_unqualified | compatibility evidence only; never qualified success |
-| succeeded/observed_unqualified | matching redaction | redacted/observed_unqualified | target event plus redaction digest |
+| succeeded/observed_unqualified | matching redaction | redacted/observed_unqualified | target event plus redaction digest; qualified redaction uses the same entered-attempt attribution rule |
 | any terminal | exact replay | unchanged | full semantic equality |
 | any terminal | contradiction | error | no mutation |
 
@@ -107,8 +108,8 @@ Entered-use proof persistence occurs before the transport future exists and ther
 3. Dispatching phase and event commit together before final revocation refresh.
 4. Entered-use proof commits under the exact claim/content/authority tuple before permit construction.
 5. Fenced outcome handling updates the outbox claim and append-only attempt history under the exact attempt/lease/token identity.
-6. `/sync` reconciliation qualifies the stable transaction against every entered attempt up to the current attempt, then commits terminal ledger mutation, current-claim closure, outbox settlement, change record and sync checkpoint in one owner transaction.
-7. Redaction, dispatch redaction and checkpoint advancement commit in one owner transaction.
+6. `/sync` reconciliation qualifies the stable transaction against every entered attempt up to the current attempt, attributes the terminal attempt event to the newest qualifying entered attempt, and commits terminal ledger mutation, removal of residual active claim state, outbox settlement, change record and sync checkpoint in one owner transaction.
+7. Redaction, dispatch redaction and checkpoint advancement commit in one owner transaction under the same entered-attempt attribution rule.
 
 The durable dispatch ledger also uses attempt CAS. Random capability fencing protects active attempt transitions; stale workers cannot close, retry or settle a newer claim.
 
@@ -124,7 +125,7 @@ The durable dispatch ledger also uses attempt CAS. Random capability fencing pro
 | after token entry, before proof commit or proof acknowledgement | token remains consumed; the write outcome may be unknown, so the attempt cannot be downgraded to pre-entry release and retains the stable transaction for recovery/reconciliation |
 | after proof commit, before transport poll | entered intent remains durable; no success is fabricated and reconciliation keeps the transaction unresolved |
 | after adapter entry, before response | indeterminate; retain stable transaction |
-| after a later retry claim but before its adapter entry | a delayed matching server echo is qualified by the earlier entered-use proof and atomically closes the newer claim without another send |
+| after a later retry claim but before its adapter entry | a delayed matching server echo is qualified by the earlier entered-use proof, records terminal history against that entered attempt, and atomically closes the newer claim without another send |
 | after event ID, before local commit | retry/reconcile same transaction; `/sync` settles terminality |
 | after `/sync` mutation, before commit | transaction and cursor roll back; event replays safely |
 | after terminal commit | duplicate observations are idempotent |
