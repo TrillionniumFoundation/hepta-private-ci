@@ -1,0 +1,127 @@
+name: ui.native one-shot effect-broker remediation
+
+on:
+  push:
+    branches: [work/ui-native-remediation-20260927]
+    paths:
+      - .github/workflows/hepta-ui-native-apply-effect-broker.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ui-native-one-shot-effect-broker
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+  CARGO_TARGET_DIR: ${{ github.workspace }}/apps/hepta-native/target
+  REMEDIATION_BRANCH: work/ui-native-remediation-20260927
+  PATCH_PATH: .github/remediation/ui-native-effect-broker.patch.gz.b64
+  PATCH_SHA256: ee8e9411cda61c33be8fd65c6b710a7dc787891fb8cba014f93906550f3b85b6
+
+jobs:
+  apply-and-verify:
+    name: apply, verify, bind and push audited source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.REMEDIATION_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Bind one-shot input and decode the audited patch
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          base64 --decode "$PATCH_PATH" | gzip -dc > /tmp/ui-native-effect-broker.patch
+          printf '%s  %s\n' "$PATCH_SHA256" /tmp/ui-native-effect-broker.patch | sha256sum --check --strict
+          git apply --check --3way /tmp/ui-native-effect-broker.patch
+          git apply --3way --index /tmp/ui-native-effect-broker.patch
+      - name: Install Linux native prerequisites
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
+            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
+            libgl1-mesa-dev libssl-dev
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Format the materialized source
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-native-gateway \
+            -p codex-hepta-contracts \
+            -p codex-hepta-private-state
+          python3 -m py_compile apps/hepta-native/tools/prepare_current_source.py
+          git add -- apps/hepta-native
+      - name: Clippy with warnings denied
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --all-targets --all-features -- -D warnings
+      - name: Full app tests
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --all-targets
+      - name: Release binaries
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 build --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --release --bins
+      - name: Commit the verified source boundary
+        id: source
+        run: |
+          set -euo pipefail
+          git config user.name ui-native-remediation
+          git config user.email ui-native-remediation@users.noreply.github.com
+          git diff --cached --check
+          test -n "$(git status --porcelain)"
+          git commit -m 'feat(ui.native): persist operation-bound platform effect receipts'
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Regenerate exact source and implementation identities
+        env:
+          HEPTA_UI_NATIVE_WRITE_BRANCH: ${{ env.REMEDIATION_BRANCH }}
+        run: |
+          set -euo pipefail
+          python3 apps/hepta-native/tools/prepare_current_source.py --write-fingerprints
+          python3 apps/hepta-native/tools/prepare_current_source.py --sync-metadata
+          git add -- \
+            apps/hepta-native/CURRENT_SOURCE.json \
+            docs/modules/ui.native/IMPLEMENTATION_MAP.json \
+            docs/modules/SOURCE_BINDINGS.json \
+            docs/modules/MODULE_DOCS.json \
+            qualification/module-execution-dossiers/DETAILS.json \
+            qualification/module-execution-dossiers/NATIVE_BINDINGS.json
+          git diff --cached --check
+          git commit -m 'docs(ui.native): bind effect broker to exact source identity'
+      - name: Verify regenerated identities and registries
+        run: |
+          set -euo pipefail
+          python3 apps/hepta-native/tools/prepare_current_source.py
+          python3 scripts/test_hepta_module_registry.py
+          python3 -m unittest discover -s scripts -p test_hepta_ui_native_evidence.py -v
+      - name: Remove the one-shot transport without changing verified source
+        run: |
+          set -euo pipefail
+          git rm -- "$PATCH_PATH" .github/workflows/hepta-ui-native-apply-effect-broker.yml
+          git commit -m 'chore(ui.native): retire one-shot effect-broker applicator'
+      - name: Push only after all repository-controlled checks passed
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:refs/heads/$REMEDIATION_BRANCH"
+          {
+            echo '### ui.native effect-broker remediation'
+            echo
+            echo "Source commit: \`${{ steps.source.outputs.sha }}\`"
+            echo "Published head: \`$(git rev-parse HEAD)\`"
+            echo "Patch SHA-256: \`$PATCH_SHA256\`"
+            echo
+            echo 'This run is a source-construction diagnostic, not a six-subject qualification receipt.'
+          } >> "$GITHUB_STEP_SUMMARY"
