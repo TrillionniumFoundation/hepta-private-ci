@@ -21,8 +21,7 @@ async fn currentness_change_during_model_execution_prevents_durable_preparation(
         write_authority_file(&changed_path, &owners, digest("revoked-frontier"))
     });
     let before = control.operation_bytes();
-    let runner = AgentdIntelligenceProductRunnerV1::new(path, authority_verifier())
-        .expect("runner")
+    let runner = product_runner(path, &value)
         .with_evaluation_trust(trust)
         .expect("trust");
     let result = runner
@@ -54,8 +53,7 @@ async fn ood_neuron_result_cannot_become_a_ready_fast_policy() {
     );
     let control = Arc::clone(&value.neuron_control);
     control.force_ood.store(true, Ordering::SeqCst);
-    let runner = AgentdIntelligenceProductRunnerV1::new(path, authority_verifier())
-        .expect("runner")
+    let runner = product_runner(path, &value)
         .with_evaluation_trust(trust)
         .expect("trust");
     assert!(matches!(
@@ -84,23 +82,20 @@ async fn repeated_product_invocation_uses_the_same_durable_neuron_result() {
         value.request.snapshot.revocation_frontier_digest(),
     );
     let control = Arc::clone(&value.neuron_control);
-    let invocation = value.inputs.neuron.clone();
-    // Retry the same signed evaluation under the original activated trust.
-    // Rebuilding signed_fixture creates a new time-bound trust distribution.
-    let signed_evaluation = value.inputs.signed_evaluation.clone();
-    let runner = AgentdIntelligenceProductRunnerV1::new(path, authority_verifier())
-        .expect("runner")
+    // Retry the exact same frozen owner inputs and request. Rebuilding the
+    // fixture would create another time-bound intuition/evaluation generation
+    // and would not be an exact lost-ack retry.
+    let retry_request = value.request.clone();
+    let retry_inputs = value.inputs.clone();
+    let runner = product_runner(path, &value)
         .with_evaluation_trust(trust)
         .expect("trust");
     let first = runner
         .prepare(&product_test_coordinator(), value.request, value.inputs)
         .await
         .expect("first product result");
-    let (mut value, _) = signed_fixture();
-    value.inputs.neuron = invocation;
-    value.inputs.signed_evaluation = signed_evaluation;
     let second = runner
-        .prepare(&product_test_coordinator(), value.request, value.inputs)
+        .prepare(&product_test_coordinator(), retry_request, retry_inputs)
         .await
         .expect("repeated product result");
     let (

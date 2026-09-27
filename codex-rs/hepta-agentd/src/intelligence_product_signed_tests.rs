@@ -106,5 +106,7 @@ async fn signed_input_cannot_install_host_trust_or_change_actual_context() {
     ));
 }
 
+#[path = "neuron_product_tests.rs"]
+mod neuron_product;
 #[path = "intelligence_run_start_tests.rs"]
 mod run_start;

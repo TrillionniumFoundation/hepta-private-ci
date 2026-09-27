@@ -100,13 +100,13 @@ fn owners(value: Fixture) -> OwnerFixture {
                 v.inputs.utility_policy.clone(),
             )
         }),
-        reader(&values, &reads, &fail_at, /*index*/ 3, |v| {
-            (
-                v.inputs.neural_config.clone(),
-                v.inputs.neural_tick.clone(),
-                v.inputs.neural_previous.clone(),
-            )
-        }),
+        reader(
+            &values,
+            &reads,
+            &fail_at,
+            /*index*/ 3,
+            |v| v.inputs.neuron.clone(),
+        ),
         reader(&values, &reads, &fail_at, /*index*/ 4, |v| {
             v.inputs.prompt_request.clone()
         }),

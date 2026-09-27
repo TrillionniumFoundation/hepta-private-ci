@@ -28,6 +28,11 @@ use codex_hepta_types::FixedQ32;
 
 #[path = "intelligence_evaluation.rs"]
 mod evaluation;
+#[path = "neuron_product.rs"]
+mod neuron_product;
+#[cfg(test)]
+#[path = "neuron_product_fixture.rs"]
+mod neuron_product_fixture;
 pub use evaluation::AgentdEvaluationBindingV1;
 use evaluation::AgentdEvaluationSessionV1;
 pub use evaluation::AgentdIntelligenceEvaluationError;
@@ -78,10 +83,6 @@ use codex_hepta_ndu::EvaluationPolicyV1;
 use codex_hepta_ndu::ScalarizationProfile;
 use codex_hepta_ndu::UtilityProfile;
 use codex_hepta_ndu::evaluate_candidates_with_policy;
-use codex_hepta_neuron::SparseCheckpoint;
-use codex_hepta_neuron::SparseConfig;
-use codex_hepta_neuron::SparseTick;
-use codex_hepta_neuron::sparse_tick;
 use codex_hepta_objective::CompileDisposition;
 use codex_hepta_objective::ObjectiveAdmissionContextV1;
 use codex_hepta_objective::ObjectiveAdmissionProfileV1;
@@ -213,6 +214,7 @@ impl CanonicalFreshnessOracleV1 for FileBackedFreshnessOracleV1 {
     }
 }
 
+#[derive(Clone)]
 pub struct AgentdIntelligenceOwnerInputsV1 {
     pub objective_envelope: ObjectiveSourceEnvelopeV1,
     pub objective_profile: ObjectiveAdmissionProfileV1,
@@ -221,14 +223,22 @@ pub struct AgentdIntelligenceOwnerInputsV1 {
     pub utility_profile: UtilityProfile,
     pub utility_scalarization: Option<ScalarizationProfile>,
     pub utility_policy: EvaluationPolicyV1,
-    pub neural_config: SparseConfig,
-    pub neural_tick: SparseTick,
-    pub neural_previous: Option<SparseCheckpoint>,
+    pub neuron: crate::AgentdNeuronInvocationV1,
     pub prompt_request: OptimizationRequest,
     pub intuition: AgentdAuthenticatedIntuitionInputV1,
     pub context_request: CompilationRequest,
     pub evaluation_request: EvaluationRequest,
     pub signed_evaluation: Option<AgentdSignedEvaluationV2>,
+}
+
+struct AgentdOwnerPortsContextV1 {
+    evaluation_session: Option<AgentdEvaluationSessionV1>,
+    intuition_host: std::sync::Arc<AgentdIntuitionPolicyHostV2>,
+    intuition_current: AgentdIntuitionCurrentBindingV1,
+    intuition_oracle: FileBackedFreshnessOracleV1,
+    agent_id: codex_hepta_contracts::AgentId,
+    spawn_generation: u64,
+    neuron_admission: neuron_product::NeuronStageAdmission,
 }
 
 struct AgentdOwnerPortsV1 {
@@ -239,9 +249,8 @@ struct AgentdOwnerPortsV1 {
     utility_profile: Option<UtilityProfile>,
     utility_scalarization: Option<Option<ScalarizationProfile>>,
     utility_policy: Option<EvaluationPolicyV1>,
-    neural_config: Option<SparseConfig>,
-    neural_tick: Option<SparseTick>,
-    neural_previous: Option<Option<SparseCheckpoint>>,
+    neuron: Option<crate::AgentdNeuronInvocationV1>,
+    neuron_admission: neuron_product::NeuronStageAdmission,
     prompt_request: Option<OptimizationRequest>,
     intuition: Option<AgentdAuthenticatedIntuitionInputV1>,
     intuition_host: std::sync::Arc<AgentdIntuitionPolicyHostV2>,
@@ -256,15 +265,7 @@ struct AgentdOwnerPortsV1 {
 }
 
 impl AgentdOwnerPortsV1 {
-    fn new(
-        value: AgentdIntelligenceOwnerInputsV1,
-        evaluation_session: Option<AgentdEvaluationSessionV1>,
-        intuition_host: std::sync::Arc<AgentdIntuitionPolicyHostV2>,
-        intuition_current: AgentdIntuitionCurrentBindingV1,
-        agent_id: codex_hepta_contracts::AgentId,
-        spawn_generation: u64,
-        intuition_oracle: FileBackedFreshnessOracleV1,
-    ) -> Self {
+    fn new(value: AgentdIntelligenceOwnerInputsV1, context: AgentdOwnerPortsContextV1) -> Self {
         Self {
             objective_envelope: Some(value.objective_envelope),
             objective_profile: Some(value.objective_profile),
@@ -273,19 +274,18 @@ impl AgentdOwnerPortsV1 {
             utility_profile: Some(value.utility_profile),
             utility_scalarization: Some(value.utility_scalarization),
             utility_policy: Some(value.utility_policy),
-            neural_config: Some(value.neural_config),
-            neural_tick: Some(value.neural_tick),
-            neural_previous: Some(value.neural_previous),
+            neuron: Some(value.neuron),
+            neuron_admission: context.neuron_admission,
             prompt_request: Some(value.prompt_request),
             intuition: Some(value.intuition),
-            intuition_host,
-            intuition_current: Some(intuition_current),
-            intuition_oracle,
-            agent_id,
-            spawn_generation,
+            intuition_host: context.intuition_host,
+            intuition_current: Some(context.intuition_current),
+            intuition_oracle: context.intuition_oracle,
+            agent_id: context.agent_id,
+            spawn_generation: context.spawn_generation,
             context_request: Some(value.context_request),
             evaluation_request: Some(value.evaluation_request),
-            evaluation_session,
+            evaluation_session: context.evaluation_session,
             selected_candidate: None,
         }
     }
@@ -430,25 +430,43 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         &mut self,
         input: &CanonicalPortInputV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
-        let config = Self::take(&mut self.neural_config, input.stage, "neural config")?;
-        let tick = Self::take(&mut self.neural_tick, input.stage, "neural tick")?;
-        let previous = Self::take(&mut self.neural_previous, input.stage, "neural previous")?;
-        if tick.objective_digest != input.objective_digest
-            || tick.ndu_digest != input.predecessor_digest
-        {
-            return Err(Self::reject(input.stage, "neural binding"));
+        let invocation = Self::take(&mut self.neuron, input.stage, "neuron invocation")?;
+        if !invocation.matches_run(
+            &input.run_id,
+            self.neuron_admission.snapshot.body_generation().get(),
+        ) {
+            return Err(Self::reject(input.stage, "neuron run binding"));
         }
+        self.neuron_admission
+            .begin_stage(input.budget_micros)
+            .map_err(|error| {
+                neuron_product::failure(
+                    input.stage,
+                    &codex_hepta_neuron::NeuronRuntimeError::Admission(error),
+                )
+            })?;
         let started = Instant::now();
-        let (_, receipt) = sparse_tick(&config, &tick, previous.as_ref())
-            .map_err(|_| Self::reject(input.stage, "neural tick"))?;
+        let output = invocation
+            .execute(input, &mut self.neuron_admission)
+            .map_err(|error| neuron_product::failure(input.stage, &error))?;
         Self::within_budget(input, started)?;
-        if receipt.authority.grants_any() {
+        if output.signal.authority.grants_any() {
             return Err(Self::reject(input.stage, "neural authority"));
+        }
+        if output.tick.abstain || output.signal.abstain {
+            return Err(CanonicalPortFailureV1 {
+                class: CanonicalPortFailureClassV1::Unavailable,
+                evidence_digest: Digest32::of_parts(&[
+                    b"hepta.agentd.neuron-abstain.v1\0",
+                    output.tick.checkpoint_after.as_array(),
+                    output.signal.temporal_state_digest.as_array(),
+                ]),
+            });
         }
         Self::receipt(
             input,
             "neuron.runtime",
-            receipt.checkpoint_after,
+            output.tick.checkpoint_after,
             CanonicalPortDecisionV1::Continue,
         )
     }

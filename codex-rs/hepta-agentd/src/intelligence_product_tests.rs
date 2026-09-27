@@ -60,6 +60,9 @@ use codex_hepta_ndu::FeasibilityPosture;
 use codex_hepta_ndu::RequiredOrganSet;
 use codex_hepta_ndu::UtilityContribution;
 use codex_hepta_ndu::evaluate_candidates_with_policy;
+use codex_hepta_neuron::SparseConfig;
+use codex_hepta_neuron::SparseTick;
+use codex_hepta_neuron::sparse_tick;
 use codex_hepta_objective::ConstraintClass;
 use codex_hepta_objective::ObjectiveAbstentionRuleProfileV1;
 use codex_hepta_objective::ObjectiveActionProfileV1;
@@ -381,6 +384,7 @@ struct Fixture {
     inputs: AgentdIntelligenceOwnerInputsV1,
     owners: Vec<OwnerBindingV1>,
     intuition_host: Arc<AgentdIntuitionPolicyHostV2>,
+    neuron_control: Arc<neuron_product_fixture::FixtureControl>,
 }
 
 fn fixture() -> Fixture {
@@ -461,6 +465,8 @@ fn fixture() -> Fixture {
         utility_policy.clone(),
     )
     .expect("NDU");
+    let (neuron, neuron_control) =
+        neuron_product_fixture::invocation(objective_digest, ndu.evaluation_digest_v2);
 
     let model_digest = digest("model-artifact");
     let neural_config = SparseConfig {
@@ -668,9 +674,7 @@ fn fixture() -> Fixture {
             utility_profile,
             utility_scalarization,
             utility_policy,
-            neural_config,
-            neural_tick,
-            neural_previous: None,
+            neuron,
             prompt_request,
             intuition: intuition.input,
             context_request,
@@ -679,6 +683,22 @@ fn fixture() -> Fixture {
         },
         owners,
         intuition_host: intuition.host,
+        neuron_control,
+    }
+}
+
+fn neuron_stage_admission(
+    authority: PathBuf,
+    fixture: &Fixture,
+) -> neuron_product::NeuronStageAdmission {
+    neuron_product::NeuronStageAdmission {
+        snapshot: fixture.request.snapshot.clone(),
+        authority_file: authority,
+        authority_verifier: authority_verifier(),
+        deadline: Instant::now()
+            .checked_add(Duration::from_secs(60))
+            .expect("test deadline"),
+        cancellation: tokio_util::sync::CancellationToken::new(),
     }
 }
 

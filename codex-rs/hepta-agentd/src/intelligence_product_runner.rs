@@ -122,6 +122,9 @@ impl AgentdIntelligenceProductRunnerV1 {
             u64::try_from(crate::control_budget::OWNER_PREPARATION_TIMEOUT.as_micros())
                 .map_err(|_| AgentdIntelligenceProductError::Clock)?,
         );
+        let preparation_deadline = Instant::now()
+            .checked_add(Duration::from_micros(timeout_micros))
+            .ok_or(AgentdIntelligenceProductError::Clock)?;
         let started_ms = wall_clock_ms()?;
         let timeout_ms = timeout_micros.saturating_add(999) / 1_000;
         let deadline_ms = started_ms
@@ -173,18 +176,31 @@ impl AgentdIntelligenceProductRunnerV1 {
                 })
             }
         };
+        let cancellation = tokio_util::sync::CancellationToken::new();
+        let worker_cancellation = cancellation.clone();
+        let neuron_snapshot = snapshot.clone();
         let mut worker = self.spawn_owner_work(move || {
+            let neuron_admission = neuron_product::NeuronStageAdmission {
+                snapshot: neuron_snapshot,
+                authority_file: authority_file.clone(),
+                authority_verifier: authority_verifier.clone(),
+                deadline: preparation_deadline,
+                cancellation: worker_cancellation,
+            };
             let mut ports = AgentdOwnerPortsV1::new(
                 inputs,
-                evaluation_session,
-                intuition_host,
-                intuition_current,
-                agent_id,
-                generation,
-                FileBackedFreshnessOracleV1::new(
-                    authority_file.clone(),
-                    authority_verifier.clone(),
-                ),
+                AgentdOwnerPortsContextV1 {
+                    evaluation_session,
+                    intuition_host,
+                    intuition_current,
+                    intuition_oracle: FileBackedFreshnessOracleV1::new(
+                        authority_file.clone(),
+                        authority_verifier.clone(),
+                    ),
+                    agent_id,
+                    spawn_generation: generation,
+                    neuron_admission,
+                },
             );
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
             prepare_intelligence_run(request, &mut ports, &mut oracle)
@@ -192,6 +208,7 @@ impl AgentdIntelligenceProductRunnerV1 {
         let outcome = timeout(Duration::from_micros(timeout_micros), &mut worker)
             .await
             .map_err(|_| {
+                cancellation.cancel();
                 worker.abort();
                 AgentdIntelligenceProductError::TimedOut
             })?

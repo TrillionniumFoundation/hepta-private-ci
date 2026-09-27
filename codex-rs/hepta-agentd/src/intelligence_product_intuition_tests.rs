@@ -161,14 +161,19 @@ fn product_stage_rereads_current_owner_after_preparation() {
     let host = Arc::clone(&value.intuition_host);
     let saved_input = value.inputs.intuition.clone();
     let saved_current = current.clone();
+    let neuron_admission = neuron_stage_admission(path.clone(), &value);
     let mut ports = AgentdOwnerPortsV1::new(
         value.inputs,
-        None,
-        value.intuition_host,
-        current,
-        codex_hepta_contracts::AgentId::parse(intuition_support::TEST_AGENT_ID).unwrap(),
-        1,
-        FileBackedFreshnessOracleV1::new(path.clone(), authority_verifier()),
+        AgentdOwnerPortsContextV1 {
+            evaluation_session: None,
+            intuition_host: value.intuition_host,
+            intuition_current: current,
+            intuition_oracle: FileBackedFreshnessOracleV1::new(path.clone(), authority_verifier()),
+            agent_id: codex_hepta_contracts::AgentId::parse(intuition_support::TEST_AGENT_ID)
+                .unwrap(),
+            spawn_generation: 1,
+            neuron_admission,
+        },
     );
     write_authority_file(&path, &value.owners, digest("revoked-after-prepare"));
     assert_eq!(

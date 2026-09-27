@@ -1,9 +1,6 @@
 //! Qualification fixture using the real durable owner and the real
 //! inference-control adapter. The feature backend below is a deterministic test
 //! double, not evidence of selected Laya execution or independent calibration.
-use super::digest;
-use super::generation;
-use super::id;
 use codex_hepta_infer_core::NeuronFeatureObservationV1;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
@@ -23,6 +20,8 @@ use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_neuron::SparseConfig;
 use codex_hepta_neuron::canonical_feature_vector_digest_v1;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
@@ -48,6 +47,18 @@ impl FixtureControl {
 }
 
 const Q: i64 = 1 << 24;
+
+fn id(value: &str) -> StableId {
+    StableId::new(value).expect("valid fixture id")
+}
+
+fn digest(value: &str) -> Digest32 {
+    Digest32::of_bytes(value.as_bytes())
+}
+
+fn generation(value: u64) -> Generation {
+    Generation::new(value).expect("valid fixture generation")
+}
 
 struct FixtureFeaturePort(Arc<FixtureControl>);
 impl NeuronInferenceControlPort for FixtureFeaturePort {
