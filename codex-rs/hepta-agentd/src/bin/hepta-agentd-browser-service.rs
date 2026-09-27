@@ -6,10 +6,10 @@
 //! discovery, TCP, UDS, WebDriver, or CDP listener.
 //!
 //! `navigate_or_act` is replay-safe: before entering final-use authority the
-//! service asks the Browser owner to reconcile the exact operation identity.
-//! An existing operation returns its original/current receipt without claiming
-//! authority or dispatching again. Only a proven absence proceeds to the new
-//! effect path.
+//! service asks the Browser owner for the exact immutable operation receipt
+//! through a reserved read-only replay probe. An existing operation returns its
+//! original receipt without reconciliation, authority or dispatch. Only a
+//! proven absence proceeds to the new effect path.
 
 use std::io::{self, Read, Write};
 use std::path::Path;
@@ -156,12 +156,21 @@ fn execute_call_result(
             }
         };
 
-        // The Browser owner validates the complete immutable semantics while
-        // reconciling. A successful probe is therefore an authority-free exact
-        // replay. Only its explicit, typed absence result permits a new effect.
+        let mut replay_input = call.input.clone();
+        let replay_object = replay_input.as_object_mut().ok_or_else(|| {
+            BrowserServoError::Invalid("Browser call input must be an object".into())
+        })?;
+        if replay_object
+            .insert("replayOnly".into(), Value::Bool(true))
+            .is_some()
+        {
+            return Err(BrowserServoError::Invalid(
+                "Browser caller must not supply reserved replayOnly".into(),
+            ));
+        }
         let probe = BrowserServoCall::read(
             BrowserServoMethod::ReconcileOperation,
-            call.input.clone(),
+            replay_input,
         )?;
         if let Some(receipt) = classify_replay_probe(owner.call(probe))? {
             return Ok(receipt);
@@ -502,6 +511,9 @@ mod tests {
 
     #[test]
     fn canonical_json_orders_object_keys() {
-        assert_eq!(canonical_json(&json!({"z": 1, "a": 2})).unwrap(), "{\"a\":2,\"z\":1}");
+        assert_eq!(
+            canonical_json(&json!({"z": 1, "a": 2})).unwrap(),
+            "{\"a\":2,\"z\":1}"
+        );
     }
 }
