@@ -1,6 +1,12 @@
 name: Cognitive store one-shot finalizer
 
 on:
+  push:
+    branches:
+      - codex/cognitive-store-full-closure-20260927
+    paths:
+      - '.github/workflows/cognitive-store-finalizer-windows.yml'
+      - 'scripts/finalize_cognitive_store_candidate.py'
   workflow_dispatch:
 
 permissions:
@@ -12,6 +18,7 @@ concurrency:
 
 jobs:
   finalize:
+    if: github.actor != 'github-actions[bot]'
     runs-on: windows-2022
     timeout-minutes: 30
     steps:
