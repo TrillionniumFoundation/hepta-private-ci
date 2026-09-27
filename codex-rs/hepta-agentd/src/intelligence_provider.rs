@@ -20,6 +20,7 @@ use crate::AgentdIntelligenceInvocationProviderV1;
 use crate::AgentdIntelligenceInvocationV1;
 use crate::AgentdIntelligenceLearningHostV1;
 use crate::AgentdIntelligenceProductRunnerV1;
+use crate::AgentdIntelligenceRuntimeMetricsV1;
 
 const MAX_PENDING_CANONICAL_INVOCATIONS: usize = 256;
 
@@ -39,6 +40,7 @@ type InvocationFactory = Box<
 pub struct AgentdIntelligenceInvocationRegistryV1 {
     profile_digest: Digest32,
     learning_host: Option<Arc<AgentdIntelligenceLearningHostV1>>,
+    metrics: Arc<AgentdIntelligenceRuntimeMetricsV1>,
     pending: Mutex<BTreeMap<StableId, InvocationFactory>>,
 }
 
@@ -69,6 +71,7 @@ impl AgentdIntelligenceInvocationRegistryV1 {
         Ok(Self {
             profile_digest,
             learning_host,
+            metrics: Arc::new(AgentdIntelligenceRuntimeMetricsV1::new()),
             pending: Mutex::new(BTreeMap::new()),
         })
     }
@@ -131,6 +134,11 @@ impl AgentdIntelligenceInvocationRegistryV1 {
     pub fn product_ready(&self) -> bool {
         self.learning_host.is_some() && !self.profile_digest.is_zero()
     }
+
+    #[must_use]
+    pub fn metrics(&self) -> Arc<AgentdIntelligenceRuntimeMetricsV1> {
+        Arc::clone(&self.metrics)
+    }
 }
 
 impl AgentdIntelligenceInvocationProviderV1 for AgentdIntelligenceInvocationRegistryV1 {
@@ -140,6 +148,14 @@ impl AgentdIntelligenceInvocationProviderV1 for AgentdIntelligenceInvocationRegi
 
     fn learning_host(&self) -> Option<Arc<AgentdIntelligenceLearningHostV1>> {
         self.learning_host.clone()
+    }
+
+    fn runtime_metrics(&self) -> Option<Arc<AgentdIntelligenceRuntimeMetricsV1>> {
+        Some(Arc::clone(&self.metrics))
+    }
+
+    fn pending_invocations(&self) -> Result<Option<usize>, AgentdError> {
+        self.pending_len().map(Some)
     }
 
     fn build(
@@ -197,6 +213,8 @@ mod tests {
         let registry = AgentdIntelligenceInvocationRegistryV1::new(Digest32::of_bytes(b"profile"))
             .expect("registry");
         assert!(!registry.product_ready());
+        assert!(registry.runtime_metrics().is_some());
+        assert_eq!(registry.pending_invocations().unwrap(), Some(0));
         let run_id = StableId::new("run.provider").expect("run id");
         registry
             .register(run_id.clone(), |_, _| {
