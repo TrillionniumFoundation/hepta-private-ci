@@ -168,3 +168,7 @@ pub fn read_versioned_proposal(
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "robustness_tests.rs"]
+mod robustness_tests;
