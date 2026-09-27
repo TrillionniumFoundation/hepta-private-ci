@@ -25,7 +25,10 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
       - name: Apply convergence repair
-        run: python3 scripts/cognitive_store_one_shot_repair.py apply
+        run: |
+          set -euo pipefail
+          python3 scripts/cognitive_store_one_shot_repair.py apply
+          python3 scripts/cognitive_store_one_shot_followup.py
       - name: Prepare native prerequisites
         shell: bash
         run: |
@@ -60,7 +63,9 @@ jobs:
           git add -A
           python3 scripts/cognitive_store_one_shot_repair.py bind-map
           git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
-          git rm scripts/cognitive_store_one_shot_repair.py
+          git rm \
+            scripts/cognitive_store_one_shot_repair.py \
+            scripts/cognitive_store_one_shot_followup.py
       - name: Commit repaired candidate
         shell: bash
         run: |
@@ -94,6 +99,9 @@ jobs:
             -- --exact
           cargo test --locked -p codex-hepta-agentd --test cognitive_store_product_writer \
             --features qualification-cognitive-write
+          cargo test --locked -p codex-hepta-agentd --test cognitive_product_e2e \
+            running_owner_control_rejects_federation_mutation_without_writer_bootstrap \
+            -- --exact
       - name: Push repaired branch
         shell: bash
         run: |
