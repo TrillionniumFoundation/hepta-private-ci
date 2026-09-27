@@ -17,7 +17,7 @@ concurrency:
 jobs:
   migrate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - name: Checkout exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -104,10 +104,27 @@ jobs:
           elif text.count(helper_marker) != 1:
               raise SystemExit('protected effect clock helper is duplicated')
 
+          stale_call_old = (
+              '                "agentd-product-effect-dispatch",\n'
+              '                now_ms + 5,\n'
+          )
+          stale_call_new = (
+              '                "agentd-product-effect-dispatch",\n'
+              '                // Deliberately stale transport time: the host must sample protected time.\n'
+              '                1,\n'
+          )
+          if stale_call_old in text:
+              if text.count(stale_call_old) != 1:
+                  raise SystemExit('Agentd protected-time product test anchor is ambiguous')
+              text = text.replace(stale_call_old, stale_call_new, 1)
+          elif text.count(stale_call_new) != 1:
+              raise SystemExit('Agentd protected-time product test is missing or duplicated')
+
           path.write_text(text, encoding='utf-8')
           PY
           cd codex-rs
           cargo fmt -p codex-hepta-agentd
+          cargo test --locked -p codex-hepta-agentd host_dispatches_exact_wire_payload_once -- --nocapture
           cd ..
           git diff --check
 
