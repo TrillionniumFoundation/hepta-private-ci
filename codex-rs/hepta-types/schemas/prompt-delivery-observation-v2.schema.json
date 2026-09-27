@@ -55,6 +55,6 @@
   "$defs": {
     "stableId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
     "stableId64": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9._:-]+$" },
-    "nonzeroDigest": { "type": "string", "pattern": "^(?!0{64}$)[0-9a-f]{64}$" }
+    "nonzeroDigest": { "type": "string", "minLength": 64, "maxLength": 64, "pattern": "^(?!0{64}$)[0-9a-f]{64}$" }
   }
 }

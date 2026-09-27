@@ -61,9 +61,9 @@
   },
   "$defs": {
     "stableId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
-    "nonzeroDigest": { "type": "string", "pattern": "^(?!0{64}$)[0-9a-f]{64}$" },
-    "positiveU64String": { "type": "string", "pattern": "^[1-9][0-9]*$" },
-    "i64String": { "type": "string", "pattern": "^(0|-?[1-9][0-9]*)$" },
+    "nonzeroDigest": { "type": "string", "minLength": 64, "maxLength": 64, "pattern": "^(?!0{64}$)[0-9a-f]{64}$" },
+    "positiveU64String": { "type": "string", "minLength": 1, "maxLength": 20, "pattern": "^[1-9][0-9]*$" },
+    "i64String": { "type": "string", "minLength": 1, "maxLength": 20, "pattern": "^(0|-?[1-9][0-9]*)$" },
     "utcTimestamp": { "type": "string", "minLength": 20, "maxLength": 27, "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?Z$" }
   }
 }

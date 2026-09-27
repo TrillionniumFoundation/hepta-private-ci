@@ -46,7 +46,14 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
+      - id: schema
+        continue-on-error: true
+        shell: bash
+        run: >-
+          scripts/run_platform_types_schema_qualification.sh
+          "${{ runner.temp }}/platform-types-schema/source-head"
       - id: qualify
+        if: steps.schema.outcome == 'success'
         continue-on-error: true
         shell: bash
         env:
@@ -61,13 +68,16 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: platform-types-deep-source-${{ github.event.pull_request.head.sha || github.sha }}
-          path: .hepta-evidence/platform-types-deep/source-head/
+          path: |
+            .hepta-evidence/platform-types-deep/source-head/
+            ${{ runner.temp }}/platform-types-schema/source-head/
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 90
       - if: ${{ always() }}
         shell: bash
         run: |
+          test "${{ steps.schema.outcome }}" = success
           test "${{ steps.qualify.outcome }}" = success
           test "${{ steps.artifacts.outcome }}" = success
 
@@ -91,7 +101,14 @@ jobs:
           author-name: Hepta platform.types CI
           author-email: hepta-platform-types-ci@users.noreply.github.com
           message: Synthetic platform.types deep qualification merge
+      - id: schema
+        continue-on-error: true
+        shell: bash
+        run: >-
+          scripts/run_platform_types_schema_qualification.sh
+          "${{ runner.temp }}/platform-types-schema/synthetic-merge"
       - id: qualify
+        if: steps.schema.outcome == 'success'
         continue-on-error: true
         shell: bash
         env:
@@ -108,12 +125,15 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: platform-types-deep-merge-${{ steps.merge.outputs.sha }}
-          path: .hepta-evidence/platform-types-deep/synthetic-merge/
+          path: |
+            .hepta-evidence/platform-types-deep/synthetic-merge/
+            ${{ runner.temp }}/platform-types-schema/synthetic-merge/
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 90
       - if: ${{ always() }}
         shell: bash
         run: |
+          test "${{ steps.schema.outcome }}" = success
           test "${{ steps.qualify.outcome }}" = success
           test "${{ steps.artifacts.outcome }}" = success
