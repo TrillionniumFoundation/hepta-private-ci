@@ -14,6 +14,9 @@ pub enum RunPhase {
     Admitted,
     ContextAttached,
     Dispatched,
+    /// The exact dispatch was durably prepared by both owners, but the worker
+    /// proved that no external effect boundary was crossed.
+    AbortedBeforeEffect,
     Cancelling,
     Cancelled,
     Succeeded,
@@ -23,7 +26,10 @@ pub enum RunPhase {
 
 impl RunPhase {
     fn closed(self) -> bool {
-        matches!(self, Self::Cancelled | Self::Succeeded | Self::Failed)
+        matches!(
+            self,
+            Self::AbortedBeforeEffect | Self::Cancelled | Self::Succeeded | Self::Failed
+        )
     }
 
     fn terminal_observed(self) -> bool {
@@ -98,6 +104,13 @@ pub struct RunReceipt {
     pub cancel_reason: Option<String>,
     pub cancel_ack_deadline_ms: Option<u64>,
     pub compilation_receipt_digest: Option<String>,
+    /// Exact runtime.codex request/dispatch binding committed before the
+    /// physical effect boundary. Legacy callers leave this empty and therefore
+    /// cannot use the exact pre-effect abort transition.
+    pub dispatch_binding_digest: Option<String>,
+    /// Durable proof identity accepted by Agentd for a definitely-unsent
+    /// dispatch. This is deliberately not a provider terminal observation.
+    pub pre_effect_abort_proof_digest: Option<String>,
     pub terminal_observed: bool,
     pub idempotent: bool,
 }
@@ -137,6 +150,8 @@ struct RunRecord {
     phase: RunPhase,
     context_digest: Option<String>,
     compilation_receipt_digest: Option<String>,
+    dispatch_binding_digest: Option<String>,
+    pre_effect_abort_proof_digest: Option<String>,
     cancel_reason: Option<String>,
     cancel_ack_deadline_ms: Option<u64>,
 }
@@ -211,6 +226,8 @@ impl AgentRunCoordinator {
             phase: RunPhase::Admitted,
             context_digest: None,
             compilation_receipt_digest: None,
+            dispatch_binding_digest: None,
+            pre_effect_abort_proof_digest: None,
             cancel_reason: None,
             cancel_ack_deadline_ms: None,
         };
@@ -304,11 +321,41 @@ impl AgentRunCoordinator {
         Ok(receipt(record, /*idempotent*/ false))
     }
 
+    /// Legacy dispatch transition. It remains for compatibility, but because it
+    /// carries no exact external binding it cannot later prove a pre-effect
+    /// abort across the owner boundary.
     pub fn mark_dispatched(
         &mut self,
         now_ms: u64,
         run_id: &str,
         expected_revision: u64,
+    ) -> Result<RunReceipt, AgentRunError> {
+        self.mark_dispatched_inner(now_ms, run_id, expected_revision, None)
+    }
+
+    /// Commit the exact runtime.codex dispatch identity at the Agentd owner.
+    pub fn mark_dispatched_bound(
+        &mut self,
+        now_ms: u64,
+        run_id: &str,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+    ) -> Result<RunReceipt, AgentRunError> {
+        validate_digest(&dispatch_binding_digest, "dispatch binding")?;
+        self.mark_dispatched_inner(
+            now_ms,
+            run_id,
+            expected_revision,
+            Some(dispatch_binding_digest),
+        )
+    }
+
+    fn mark_dispatched_inner(
+        &mut self,
+        now_ms: u64,
+        run_id: &str,
+        expected_revision: u64,
+        dispatch_binding_digest: Option<String>,
     ) -> Result<RunReceipt, AgentRunError> {
         validate_identity(run_id, "run")?;
         let record = self
@@ -316,7 +363,11 @@ impl AgentRunCoordinator {
             .get_mut(run_id)
             .ok_or(AgentRunError::RunNotFound)?;
         if record.phase == RunPhase::Dispatched {
-            return Ok(receipt(record, /*idempotent*/ true));
+            return if record.dispatch_binding_digest == dispatch_binding_digest {
+                Ok(receipt(record, /*idempotent*/ true))
+            } else {
+                Err(AgentRunError::Conflict)
+            };
         }
         require_revision(record, expected_revision)?;
         require_live_deadline(record, now_ms)?;
@@ -326,7 +377,52 @@ impl AgentRunCoordinator {
         if record.phase != RunPhase::ContextAttached {
             return Err(AgentRunError::ContextRequired);
         }
+        record.dispatch_binding_digest = dispatch_binding_digest;
         record.phase = RunPhase::Dispatched;
+        advance_revision(record)?;
+        Ok(receipt(record, /*idempotent*/ false))
+    }
+
+    /// Close a bound dispatch as definitely unsent without inventing a
+    /// provider terminal observation. The proof digest must be produced by the
+    /// durable local runtime.codex journal for this exact dispatch binding.
+    pub fn abort_before_effect(
+        &mut self,
+        run_id: &str,
+        expected_revision: u64,
+        dispatch_binding_digest: &str,
+        proof_digest: &str,
+        reason: &str,
+    ) -> Result<RunReceipt, AgentRunError> {
+        validate_identity(run_id, "run")?;
+        validate_digest(dispatch_binding_digest, "dispatch binding")?;
+        validate_digest(proof_digest, "pre-effect abort proof")?;
+        validate_cancel_reason(reason)?;
+        let record = self
+            .runs
+            .get_mut(run_id)
+            .ok_or(AgentRunError::RunNotFound)?;
+        if record.phase == RunPhase::AbortedBeforeEffect {
+            let same = record.dispatch_binding_digest.as_deref() == Some(dispatch_binding_digest)
+                && record.pre_effect_abort_proof_digest.as_deref() == Some(proof_digest)
+                && record.cancel_reason.as_deref() == Some(reason);
+            return if same {
+                Ok(receipt(record, /*idempotent*/ true))
+            } else {
+                Err(AgentRunError::Conflict)
+            };
+        }
+        require_revision(record, expected_revision)?;
+        if record.phase != RunPhase::Dispatched {
+            return Err(AgentRunError::InvalidTransition);
+        }
+        if record.dispatch_binding_digest.as_deref() != Some(dispatch_binding_digest) {
+            return Err(AgentRunError::Conflict);
+        }
+        record.phase = RunPhase::AbortedBeforeEffect;
+        record.pre_effect_abort_proof_digest = Some(proof_digest.to_string());
+        record.cancel_reason = Some(reason.to_string());
+        record.cancel_ack_deadline_ms = None;
         advance_revision(record)?;
         Ok(receipt(record, /*idempotent*/ false))
     }
@@ -378,7 +474,10 @@ impl AgentRunCoordinator {
                     receipt(record, /*idempotent*/ true),
                 ));
             }
-            RunPhase::Cancelled | RunPhase::Succeeded | RunPhase::Failed => {
+            RunPhase::AbortedBeforeEffect
+            | RunPhase::Cancelled
+            | RunPhase::Succeeded
+            | RunPhase::Failed => {
                 return Ok((
                     CancellationDisposition::AlreadyTerminal,
                     receipt(record, /*idempotent*/ true),
@@ -455,6 +554,8 @@ impl AgentRunCoordinator {
             phase: RunPhase::Indeterminate,
             context_digest: Some(recovery.context_digest),
             compilation_receipt_digest: Some(recovery.compilation_receipt_digest),
+            dispatch_binding_digest: None,
+            pre_effect_abort_proof_digest: None,
             cancel_reason: recovery.cancel_reason,
             cancel_ack_deadline_ms: None,
         };
@@ -494,7 +595,8 @@ impl AgentRunCoordinator {
                     record.cancel_ack_deadline_ms = Some(cancel_ack_deadline(now_ms)?);
                     advance_revision(record)?;
                 }
-                RunPhase::Cancelling
+                RunPhase::AbortedBeforeEffect
+                | RunPhase::Cancelling
                 | RunPhase::Cancelled
                 | RunPhase::Succeeded
                 | RunPhase::Failed
@@ -700,7 +802,8 @@ fn expire_record(record: &mut RunRecord, now_ms: u64) -> Result<bool, AgentRunEr
             advance_revision(record)?;
             Ok(true)
         }
-        RunPhase::Cancelling
+        RunPhase::AbortedBeforeEffect
+        | RunPhase::Cancelling
         | RunPhase::Cancelled
         | RunPhase::Succeeded
         | RunPhase::Failed
@@ -735,6 +838,8 @@ fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
         cancel_reason: record.cancel_reason.clone(),
         cancel_ack_deadline_ms: record.cancel_ack_deadline_ms,
         compilation_receipt_digest: record.compilation_receipt_digest.clone(),
+        dispatch_binding_digest: record.dispatch_binding_digest.clone(),
+        pre_effect_abort_proof_digest: record.pre_effect_abort_proof_digest.clone(),
         terminal_observed: record.phase.terminal_observed(),
         idempotent,
     }
