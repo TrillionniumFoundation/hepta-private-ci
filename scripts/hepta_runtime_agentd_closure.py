@@ -41,6 +41,17 @@ SOURCE_REQUIREMENTS: dict[str, dict[str, tuple[str, ...]]] = {
         ),
         "forbidden": (),
     },
+    "codex-rs/hepta-agentd/src/config.rs": {
+        "required": (
+            "pub fn with_intelligence_product_runner(",
+            "pub(crate) fn with_intelligence_invocation_provider(",
+            "public composition boundary is `AgentdCanonicalRuntimeBootstrapV1`",
+        ),
+        "ordered": (),
+        "forbidden": (
+            "pub fn with_intelligence_invocation_provider(",
+        ),
+    },
     "codex-rs/hepta-agentd/src/runtime.rs": {
         "required": (
             '"runtime-codex-supervisor"',
