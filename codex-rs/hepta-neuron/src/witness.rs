@@ -5,6 +5,7 @@
 //! minimum history the host already acknowledged so rollback is detectable.
 
 use std::fs::File;
+use std::fs::OpenOptions;
 use std::fs::TryLockError;
 use std::io::Read;
 use std::io::Seek;
@@ -12,6 +13,7 @@ use std::io::SeekFrom;
 use std::io::Write;
 use std::ops::Deref;
 use std::ops::DerefMut;
+use std::path::Path;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -21,8 +23,10 @@ use crate::JournalAnchor;
 use crate::JournalScope;
 use crate::WitnessStoreError;
 
-const MAGIC: &[u8; 8] = b"HPTNWA01";
-const HEADER: usize = 112;
+const ROOT_MAGIC: &[u8; 8] = b"HPTNWA01";
+const ROOT_HEADER: usize = 112;
+const SUCCESSOR_MAGIC: &[u8; 8] = b"HPTNWA02";
+const SUCCESSOR_HEADER: usize = 152;
 const RECORD: usize = 112;
 const MAX_RECORDS: usize = 4096;
 
@@ -63,6 +67,10 @@ impl Drop for WitnessLockedFile {
 
 pub struct FileAnchorWitnessStore {
     file: WitnessLockedFile,
+    scope: JournalScope,
+    generation: Generation,
+    seed: Option<JournalAnchor>,
+    header_bytes: usize,
     max_records: usize,
     records: usize,
     current: Option<JournalAnchor>,
@@ -70,11 +78,103 @@ pub struct FileAnchorWitnessStore {
 }
 
 impl FileAnchorWitnessStore {
+    /// Open or initialize the first witness segment. Existing HPTNWA01 bytes
+    /// remain byte-compatible with the original single-file implementation.
     pub fn open(
         file: File,
         scope: JournalScope,
         generation: Generation,
         max_records: usize,
+    ) -> Result<Self, WitnessStoreError> {
+        Self::open_segment(file, scope, generation, max_records, None)
+    }
+
+    /// Create the first segment by pathname and durably enroll its directory
+    /// entry before returning. The parent directory must already exist and be
+    /// private to the composing owner.
+    pub fn create(
+        path: &Path,
+        scope: JournalScope,
+        generation: Generation,
+        max_records: usize,
+    ) -> Result<Self, WitnessStoreError> {
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create_new(true)
+            .open(path)?;
+        let store = Self::open(file, scope, generation, max_records)?;
+        sync_parent_directory(path)?;
+        Ok(store)
+    }
+
+    /// Open or initialize a compacted successor segment. Its immutable header
+    /// binds the exact acknowledged frontier of the predecessor segment. A
+    /// successor can therefore start empty without pretending history began at
+    /// sequence one or silently discarding the retained anti-rollback anchor.
+    pub fn open_successor(
+        file: File,
+        scope: JournalScope,
+        generation: Generation,
+        max_records: usize,
+        seed: JournalAnchor,
+    ) -> Result<Self, WitnessStoreError> {
+        Self::open_segment(file, scope, generation, max_records, Some(seed))
+    }
+
+    /// Path-owned successor creation includes parent-directory synchronization.
+    /// A crash before the caller atomically publishes its segment manifest may
+    /// leave an unreferenced file, but cannot move the acknowledged frontier.
+    pub fn create_successor(
+        path: &Path,
+        scope: JournalScope,
+        generation: Generation,
+        max_records: usize,
+        seed: JournalAnchor,
+    ) -> Result<Self, WitnessStoreError> {
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create_new(true)
+            .open(path)?;
+        let store = Self::open_successor(file, scope, generation, max_records, seed)?;
+        sync_parent_directory(path)?;
+        Ok(store)
+    }
+
+    /// Start a bounded successor from the exact current acknowledged anchor.
+    /// The old segment remains immutable and may be retained for audit/backup;
+    /// deletion is a separate host-authorized lifecycle operation.
+    pub fn start_successor(
+        &self,
+        file: File,
+        max_records: usize,
+    ) -> Result<Self, WitnessStoreError> {
+        if self.poisoned {
+            return Err(WitnessStoreError::Poisoned);
+        }
+        let seed = self.current.ok_or(WitnessStoreError::InvalidAnchor)?;
+        Self::open_successor(file, self.scope, self.generation, max_records, seed)
+    }
+
+    #[must_use]
+    pub fn segment_seed(&self) -> Option<JournalAnchor> {
+        self.seed
+    }
+
+    pub fn remaining_capacity(&self) -> Result<usize, WitnessStoreError> {
+        if self.poisoned {
+            return Err(WitnessStoreError::Poisoned);
+        }
+        Ok(self.max_records.saturating_sub(self.records))
+    }
+
+    fn open_segment(
+        file: File,
+        scope: JournalScope,
+        generation: Generation,
+        max_records: usize,
+        seed: Option<JournalAnchor>,
     ) -> Result<Self, WitnessStoreError> {
         if !(1..=MAX_RECORDS).contains(&max_records) {
             return Err(WitnessStoreError::InvalidLimit);
@@ -82,8 +182,13 @@ impl FileAnchorWitnessStore {
         if scope.scope_digest.is_zero() || scope.objective_digest.is_zero() {
             return Err(WitnessStoreError::ContextMismatch);
         }
+        if seed.is_some_and(|anchor| anchor.sequence == 0 || anchor.checkpoint_digest.is_zero()) {
+            return Err(WitnessStoreError::InvalidAnchor);
+        }
+
         let mut file = WitnessLockedFile::acquire(file)?;
-        let header = encode_header(scope, generation);
+        let header = encode_header(scope, generation, seed);
+        let header_bytes = header.len();
         let length = file.metadata()?.len();
         file.seek(SeekFrom::Start(0))?;
         if length == 0 {
@@ -92,22 +197,24 @@ impl FileAnchorWitnessStore {
             file.sync_all()
                 .map_err(|_| WitnessStoreError::Indeterminate)?;
         } else {
-            if length < HEADER as u64 || !(length - HEADER as u64).is_multiple_of(RECORD as u64) {
+            if length < header_bytes as u64
+                || !(length - header_bytes as u64).is_multiple_of(RECORD as u64)
+            {
                 return Err(WitnessStoreError::Corrupt);
             }
-            let records = ((length - HEADER as u64) / RECORD as u64) as usize;
+            let records = ((length - header_bytes as u64) / RECORD as u64) as usize;
             if records > max_records {
                 return Err(WitnessStoreError::Capacity);
             }
-            let mut actual = [0_u8; HEADER];
+            let mut actual = vec![0_u8; header_bytes];
             file.read_exact(&mut actual)?;
-            if actual.as_slice() != header {
+            if actual != header {
                 return Err(WitnessStoreError::ContextMismatch);
             }
         }
 
-        let records = ((file.metadata()?.len() - HEADER as u64) / RECORD as u64) as usize;
-        let mut current = None;
+        let records = ((file.metadata()?.len() - header_bytes as u64) / RECORD as u64) as usize;
+        let mut current = seed;
         let mut buffer = [0_u8; RECORD];
         for _ in 0..records {
             file.read_exact(&mut buffer)?;
@@ -121,6 +228,10 @@ impl FileAnchorWitnessStore {
             .map_err(|_| WitnessStoreError::Indeterminate)?;
         Ok(Self {
             file,
+            scope,
+            generation,
+            seed,
+            header_bytes,
             max_records,
             records,
             current,
@@ -130,6 +241,19 @@ impl FileAnchorWitnessStore {
 }
 
 impl AnchorWitnessStore for FileAnchorWitnessStore {
+    fn admit_new_anchor(&self, expected: Option<JournalAnchor>) -> Result<(), WitnessStoreError> {
+        if self.poisoned {
+            return Err(WitnessStoreError::Poisoned);
+        }
+        if self.current != expected {
+            return Err(WitnessStoreError::Conflict);
+        }
+        if self.records >= self.max_records {
+            return Err(WitnessStoreError::Capacity);
+        }
+        Ok(())
+    }
+
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
         if self.poisoned {
             Err(WitnessStoreError::Poisoned)
@@ -143,20 +267,12 @@ impl AnchorWitnessStore for FileAnchorWitnessStore {
         expected: Option<JournalAnchor>,
         next: JournalAnchor,
     ) -> Result<(), WitnessStoreError> {
-        if self.poisoned {
-            return Err(WitnessStoreError::Poisoned);
-        }
-        if self.current != expected {
-            return Err(WitnessStoreError::Conflict);
-        }
+        self.admit_new_anchor(expected)?;
         if !is_successor(expected, next) {
             return Err(WitnessStoreError::InvalidAnchor);
         }
-        if self.records >= self.max_records {
-            return Err(WitnessStoreError::Capacity);
-        }
         let record = encode_record(expected, next);
-        let expected_length = (HEADER + self.records * RECORD) as u64;
+        let expected_length = (self.header_bytes + self.records * RECORD) as u64;
         self.poisoned = true;
         if self.file.seek(SeekFrom::End(0))? != expected_length {
             return Err(WitnessStoreError::Corrupt);
@@ -174,17 +290,33 @@ impl AnchorWitnessStore for FileAnchorWitnessStore {
     }
 }
 
-fn encode_header(scope: JournalScope, generation: Generation) -> [u8; HEADER] {
-    let mut bytes = Vec::with_capacity(HEADER);
-    bytes.extend_from_slice(MAGIC);
+fn encode_header(
+    scope: JournalScope,
+    generation: Generation,
+    seed: Option<JournalAnchor>,
+) -> Vec<u8> {
+    let capacity = if seed.is_some() {
+        SUCCESSOR_HEADER
+    } else {
+        ROOT_HEADER
+    };
+    let mut bytes = Vec::with_capacity(capacity);
+    bytes.extend_from_slice(if seed.is_some() {
+        SUCCESSOR_MAGIC
+    } else {
+        ROOT_MAGIC
+    });
     bytes.extend_from_slice(scope.scope_digest.as_array());
     bytes.extend_from_slice(scope.objective_digest.as_array());
     bytes.extend_from_slice(&generation.get().to_be_bytes());
+    if let Some(seed) = seed {
+        bytes.extend_from_slice(&seed.sequence.to_be_bytes());
+        bytes.extend_from_slice(seed.checkpoint_digest.as_array());
+    }
     let checksum = Digest32::of_bytes(&bytes);
     bytes.extend_from_slice(checksum.as_array());
-    let mut output = [0_u8; HEADER];
-    output.copy_from_slice(&bytes);
-    output
+    debug_assert_eq!(bytes.len(), capacity);
+    bytes
 }
 
 fn encode_record(expected: Option<JournalAnchor>, next: JournalAnchor) -> [u8; RECORD] {
@@ -257,6 +389,20 @@ fn is_successor(expected: Option<JournalAnchor>, next: JournalAnchor) -> bool {
     expected.map_or(next.sequence == 1, |value| {
         value.sequence.checked_add(1) == Some(next.sequence)
     })
+}
+
+#[cfg(unix)]
+fn sync_parent_directory(path: &Path) -> Result<(), WitnessStoreError> {
+    let parent = path.parent().ok_or_else(|| {
+        WitnessStoreError::Io(std::io::ErrorKind::InvalidInput)
+    })?;
+    File::open(parent)?.sync_all()?;
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn sync_parent_directory(_path: &Path) -> Result<(), WitnessStoreError> {
+    Ok(())
 }
 
 #[cfg(test)]
