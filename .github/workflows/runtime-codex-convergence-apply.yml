@@ -1,15 +1,6 @@
 name: runtime.codex convergence apply
 
 on:
-  push:
-    branches:
-      - runtime-codex/convergence-v1
-    paths:
-      - scripts/runtime-codex-converge.py
-      - scripts/runtime-codex-converge-phase2.py
-      - scripts/runtime-codex-converge-phase3.py
-      - scripts/runtime-codex-converge-phase4.py
-      - .github/workflows/runtime-codex-convergence-apply.yml
   pull_request:
     branches:
       - main
@@ -35,7 +26,7 @@ jobs:
     if: >-
       github.event_name != 'pull_request' ||
       github.head_ref == 'runtime-codex/convergence-v1'
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
