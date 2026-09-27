@@ -1,4 +1,4 @@
-name: cognitive-types-exact-source-export
+name: cognitive-types-source-repair-once
 
 on:
   push:
@@ -6,48 +6,341 @@ on:
       - 'codex/cognitive-types-full-closure-20260927'
     paths:
       - '.github/workflows/cognitive-types-exact-source-export.yml'
-  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  export:
+  repair:
     runs-on: windows-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
-      - name: Check out exact head
+      - name: Check out exact repair source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
 
-      - name: Record source identity
+      - name: Verify branch has not advanced
         shell: bash
         run: |
           set -euo pipefail
-          git rev-parse HEAD > cognitive-types-source-sha.txt
-          git rev-parse HEAD^{tree} > cognitive-types-source-tree.txt
+          remote_head="$(git ls-remote origin refs/heads/codex/cognitive-types-full-closure-20260927 | cut -f1)"
+          test "$remote_head" = "$GITHUB_SHA"
 
-      - name: Upload audited source slice
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
-        with:
-          name: cognitive-types-source-${{ github.sha }}
-          path: |
-            cognitive-types-source-sha.txt
-            cognitive-types-source-tree.txt
-            codex-rs/hepta-cognitive-types
-            codex-rs/hepta-cognitive-store
-            codex-rs/hepta-cognitive-read
-            codex-rs/hepta-memory-retrieval
-            codex-rs/hepta-compact-engine
-            codex-rs/hepta-intelligence
-            codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs
-            codex-rs/hepta-agentd/Cargo.toml
-            codex-rs/Cargo.toml
-            codex-rs/Cargo.lock
-            docs/modules/cognitive.types
-            qualification/cognitive-types-v1
-          if-no-files-found: error
-          retention-days: 1
+      - name: Apply reviewed cognitive.store compatibility repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          def read_raw(path: Path) -> str:
+              with path.open("r", encoding="utf-8", newline="") as handle:
+                  return handle.read()
+
+          def write_raw(path: Path, content: str) -> None:
+              with path.open("w", encoding="utf-8", newline="") as handle:
+                  handle.write(content)
+
+          path = Path("codex-rs/hepta-cognitive-store/src/v2.rs")
+          source = read_raw(path)
+          newline = "\r\n" if "\r\n" in source else "\n"
+
+          old = f"use codex_hepta_cognitive_types::Citation;{newline}"
+          new = newline.join(
+              [
+                  "use codex_hepta_cognitive_types::Citation;",
+                  "use codex_hepta_cognitive_types::consumer::CanonicalConsumerBindingV1;",
+                  "use codex_hepta_cognitive_types::consumer::CanonicalConsumerV1;",
+                  "use codex_hepta_cognitive_types::consumer::CanonicalMigrationPostureV1;",
+                  "use codex_hepta_cognitive_types::consumer::CanonicalPayloadKindV1;",
+                  "use codex_hepta_cognitive_types::consumer::bind_memory_event_consumer_v1;",
+                  "",
+              ]
+          )
+          if source.count(old) != 1:
+              raise SystemExit("unexpected v2.rs import anchor")
+          source = source.replace(old, new, 1)
+
+          old = newline.join(
+              [
+                  "    binding.validate()?;",
+                  "    Ok(binding)",
+                  "}",
+                  "",
+                  "#[derive(Clone, Debug, Eq, PartialEq)]",
+                  "pub struct CanonicalMemoryEventShadowReceiptV1 {",
+              ]
+          )
+          new = newline.join(
+              [
+                  "    binding.validate()?;",
+                  "    Ok(binding)",
+                  "}",
+                  "",
+                  "/// Product-consumer binding for one canonical memory event and the exact durable",
+                  "/// mutation receipt that established its authoritative source revision.",
+                  "///",
+                  "/// The consumer binding deliberately remains compatibility-bound until the",
+                  "/// durable store accepts the canonical event as its sole mutation surface. The",
+                  "/// compatibility digest is the sealed durable bridge, while the exact durable",
+                  "/// receipt and operation digests occupy the source-identity and source-snapshot",
+                  "/// slots respectively. No field grants write or read authority.",
+                  "#[derive(Clone, Debug, Eq, PartialEq)]",
+                  "pub struct CanonicalProductMemoryEventBindingV1 {",
+                  "    pub durable_binding: CanonicalDurableMemoryEventBindingV1,",
+                  "    pub consumer_binding: CanonicalConsumerBindingV1,",
+                  "}",
+                  "",
+                  "impl CanonicalProductMemoryEventBindingV1 {",
+                  "    pub fn validate(&self) -> Result<(), CognitiveStoreV2Error> {",
+                  "        self.durable_binding.validate()?;",
+                  "        self.consumer_binding",
+                  "            .validate()",
+                  "            .map_err(|error| CognitiveStoreV2Error::CanonicalConsumer(error.to_string()))?;",
+                  "",
+                  "        let expected_operation_id =",
+                  "            format!(\"operation:{}\", self.durable_binding.operation_digest);",
+                  "        let compatibility_digest = self",
+                  "            .consumer_binding",
+                  "            .compatibility_payload_sha256",
+                  "            .map(|digest| digest.digest());",
+                  "        if self.consumer_binding.operation_id.as_str() != expected_operation_id",
+                  "            || self.consumer_binding.consumer != CanonicalConsumerV1::CognitiveStore",
+                  "            || self.consumer_binding.payload_kind != CanonicalPayloadKindV1::MemoryEvent",
+                  "            || self",
+                  "                .consumer_binding",
+                  "                .canonical_payload_sha256",
+                  "                .digest()",
+                  "                != self.durable_binding.event_digest",
+                  "            || self.consumer_binding.source_identity_sha256.digest()",
+                  "                != self.durable_binding.production_receipt_digest",
+                  "            || self.consumer_binding.source_snapshot_sha256.digest()",
+                  "                != self.durable_binding.operation_digest",
+                  "            || compatibility_digest != Some(self.durable_binding.binding_digest)",
+                  "            || self.consumer_binding.migration_posture",
+                  "                != CanonicalMigrationPostureV1::CompatibilityBound",
+                  "        {",
+                  "            return Err(CognitiveStoreV2Error::CanonicalProductBindingMismatch);",
+                  "        }",
+                  "        Ok(())",
+                  "    }",
+                  "}",
+                  "",
+                  "/// Bind a canonical MemoryEventV1 to the production durable writer receipt and",
+                  "/// to the named `cognitive.store` consumer operation.",
+                  "///",
+                  "/// This function first verifies full event/source/revision equivalence against",
+                  "/// the durable mutation receipt, then seals an authority-free consumer binding.",
+                  "pub fn bind_canonical_event_to_product_receipt_v1(",
+                  "    operation_id: ContractIdV1,",
+                  "    event: &MemoryEventV1,",
+                  "    production: &ProductionCognitiveMutationReceiptV1,",
+                  ") -> Result<CanonicalProductMemoryEventBindingV1, CognitiveStoreV2Error> {",
+                  "    let durable_binding = bind_canonical_event_to_durable_receipt(event, production)?;",
+                  "    let consumer_binding = bind_memory_event_consumer_v1(",
+                  "        operation_id,",
+                  "        CanonicalConsumerV1::CognitiveStore,",
+                  "        event,",
+                  "        durable_binding.production_receipt_digest,",
+                  "        durable_binding.operation_digest,",
+                  "        Some(durable_binding.binding_digest),",
+                  "        CanonicalMigrationPostureV1::CompatibilityBound,",
+                  "    )",
+                  "    .map_err(|error| CognitiveStoreV2Error::CanonicalConsumer(error.to_string()))?;",
+                  "    let value = CanonicalProductMemoryEventBindingV1 {",
+                  "        durable_binding,",
+                  "        consumer_binding,",
+                  "    };",
+                  "    value.validate()?;",
+                  "    Ok(value)",
+                  "}",
+                  "",
+                  "#[derive(Clone, Debug, Eq, PartialEq)]",
+                  "pub struct CanonicalMemoryEventShadowReceiptV1 {",
+              ]
+          )
+          if source.count(old) != 1:
+              raise SystemExit("unexpected v2.rs durable binding anchor")
+          source = source.replace(old, new, 1)
+
+          old = newline.join(
+              [
+                  "    Contract(LaneCContractError),",
+                  "    CanonicalContract(String),",
+                  "",
+              ]
+          )
+          new = newline.join(
+              [
+                  "    Contract(LaneCContractError),",
+                  "    CanonicalContract(String),",
+                  "    CanonicalConsumer(String),",
+                  "",
+              ]
+          )
+          if source.count(old) != 1:
+              raise SystemExit("unexpected v2.rs canonical error anchor")
+          source = source.replace(old, new, 1)
+
+          old = newline.join(
+              [
+                  "    CanonicalDurableStateMismatch,",
+                  "    EmptyDigest(&'static str),",
+                  "",
+              ]
+          )
+          new = newline.join(
+              [
+                  "    CanonicalDurableStateMismatch,",
+                  "    CanonicalProductBindingMismatch,",
+                  "    EmptyDigest(&'static str),",
+                  "",
+              ]
+          )
+          if source.count(old) != 1:
+              raise SystemExit("unexpected v2.rs product error anchor")
+          source = source.replace(old, new, 1)
+          write_raw(path, source)
+
+          path = Path("codex-rs/hepta-cognitive-store/src/v2_tests.rs")
+          source = read_raw(path)
+          newline = "\r\n" if "\r\n" in source else "\n"
+
+          old = newline.join(
+              [
+                  "    let mut wrong_intent = image.clone();",
+                  "    wrong_intent.journal[0].receipt.intent_id = id(\"intent:image:forged\");",
+                  "    wrong_intent.image_digest = wrong_intent.compute_image_digest();",
+              ]
+          )
+          new = newline.join(
+              [
+                  "    let mut wrong_intent = image.clone();",
+                  "    let original_receipt = wrong_intent.journal[0].receipt.clone();",
+                  "    let forged_intent = MemoryWriteIntentV1::new(",
+                  "        id(\"intent:image:forged\"),",
+                  "        original_receipt.candidate_digest(),",
+                  "        snapshot_key(),",
+                  "        original_receipt.writer_fence_digest(),",
+                  "        original_receipt.authorization_digest(),",
+                  "    )",
+                  "    .unwrap_or_else(|error| panic!(\"valid forged intent: {error}\"));",
+                  "    wrong_intent.journal[0].receipt = MemoryWriteReceiptV1::committed(",
+                  "        &forged_intent,",
+                  "        original_receipt.snapshot_key().clone(),",
+                  "        original_receipt",
+                  "            .record_id()",
+                  "            .cloned()",
+                  "            .expect(\"committed receipt record id\"),",
+                  "        original_receipt",
+                  "            .record_digest()",
+                  "            .expect(\"committed receipt record digest\"),",
+                  "        original_receipt",
+                  "            .committed_frontier()",
+                  "            .expect(\"committed receipt frontier\"),",
+                  "        original_receipt",
+                  "            .disposition()",
+                  "            .expect(\"committed receipt disposition\"),",
+                  "    )",
+                  "    .unwrap_or_else(|error| panic!(\"valid forged receipt: {error}\"));",
+                  "    wrong_intent.image_digest = wrong_intent.compute_image_digest();",
+              ]
+          )
+          if source.count(old) != 1:
+              raise SystemExit("unexpected v2_tests.rs forged-intent anchor")
+          source = source.replace(old, new, 1)
+
+          old = newline.join(
+              [
+                  "    let mut wrong_record = image;",
+                  "    wrong_record.journal[0].receipt.record_digest = digest(\"forged-record\");",
+                  "    wrong_record.image_digest = wrong_record.compute_image_digest();",
+              ]
+          )
+          new = newline.join(
+              [
+                  "    let mut wrong_record = image;",
+                  "    let original_receipt = wrong_record.journal[0].receipt.clone();",
+                  "    let original_intent = MemoryWriteIntentV1::new(",
+                  "        original_receipt.intent_id().clone(),",
+                  "        original_receipt.candidate_digest(),",
+                  "        snapshot_key(),",
+                  "        original_receipt.writer_fence_digest(),",
+                  "        original_receipt.authorization_digest(),",
+                  "    )",
+                  "    .unwrap_or_else(|error| panic!(\"valid original intent reconstruction: {error}\"));",
+                  "    wrong_record.journal[0].receipt = MemoryWriteReceiptV1::committed(",
+                  "        &original_intent,",
+                  "        original_receipt.snapshot_key().clone(),",
+                  "        original_receipt",
+                  "            .record_id()",
+                  "            .cloned()",
+                  "            .expect(\"committed receipt record id\"),",
+                  "        digest(\"forged-record\"),",
+                  "        original_receipt",
+                  "            .committed_frontier()",
+                  "            .expect(\"committed receipt frontier\"),",
+                  "        original_receipt",
+                  "            .disposition()",
+                  "            .expect(\"committed receipt disposition\"),",
+                  "    )",
+                  "    .unwrap_or_else(|error| panic!(\"valid record-forged receipt: {error}\"));",
+                  "    wrong_record.image_digest = wrong_record.compute_image_digest();",
+              ]
+          )
+          if source.count(old) != 1:
+              raise SystemExit("unexpected v2_tests.rs forged-record anchor")
+          source = source.replace(old, new, 1)
+
+          old = newline.join(
+              [
+                  "    assert_eq!(",
+                  "        result.shadow_receipt.record_digest,",
+                  "        result.write_receipt.record_digest",
+                  "    );",
+                  "    assert_eq!(",
+                  "        result.shadow_receipt.snapshot_vector_digest,",
+                  "        result.write_receipt.snapshot_key.vector_digest",
+                  "    );",
+              ]
+          )
+          new = newline.join(
+              [
+                  "    assert_eq!(",
+                  "        result.shadow_receipt.record_digest,",
+                  "        result",
+                  "            .write_receipt",
+                  "            .record_digest()",
+                  "            .expect(\"committed receipt record digest\")",
+                  "    );",
+                  "    assert_eq!(",
+                  "        result.shadow_receipt.snapshot_vector_digest,",
+                  "        result.write_receipt.snapshot_key().vector_digest",
+                  "    );",
+              ]
+          )
+          if source.count(old) != 1:
+              raise SystemExit("unexpected v2_tests.rs accessor anchor")
+          source = source.replace(old, new, 1)
+          write_raw(path, source)
+          PY
+
+      - name: Format and commit source repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --component rustfmt --profile minimal --no-self-update
+          rustfmt +1.95.0 --edition 2024 \
+            codex-rs/hepta-cognitive-store/src/v2.rs \
+            codex-rs/hepta-cognitive-store/src/v2_tests.rs
+          git rm .github/workflows/cognitive-types-exact-source-export.yml
+          git diff --check
+          git config user.name "Tomasrgbsf"
+          git config user.email "tomasbraynt@gmail.com"
+          git add codex-rs/hepta-cognitive-store/src/v2.rs \
+            codex-rs/hepta-cognitive-store/src/v2_tests.rs
+          git commit -m "fix(cognitive.types): complete product receipt bridge"
+          git push origin HEAD:codex/cognitive-types-full-closure-20260927
