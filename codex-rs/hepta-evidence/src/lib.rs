@@ -13,13 +13,16 @@ mod frontier_v2;
 mod governance_store;
 mod governance_validation;
 mod historical;
+mod identity_assignment;
 mod provider_claim;
 mod provider_effect_store;
 mod provider_insert;
 mod provider_record;
 mod provider_store;
 mod qualification;
+mod qualification_commitment;
 mod qualification_paging;
+mod qualification_policy;
 mod recovery_frontier;
 mod schema_validation;
 mod store {
@@ -27,6 +30,7 @@ mod store {
     mod runtime;
 }
 mod summary;
+mod verified_trust;
 
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ATTEMPTS;
@@ -102,6 +106,9 @@ pub use qualification::qualification_append_scope_digest;
 pub use qualification::qualification_envelope_bytes;
 pub use qualification::qualification_subject;
 pub use qualification_paging::QualificationEvidencePageV1;
+pub use qualification_policy::EvidenceVerificationProfileV1;
+pub use qualification_policy::EvidenceVerificationRequest;
+pub use qualification_policy::ProfiledVerifyChainRequestV1;
 pub use recovery_frontier::EVIDENCE_DATABASE_LINEAGE;
 pub use recovery_frontier::EvidenceRecoverySnapshotV1;
 pub use store::AppendDisposition;
@@ -111,6 +118,10 @@ pub use store::StoredReceipt;
 pub use summary::EvidenceSummary;
 pub use summary::GovernanceEvidenceSummary;
 pub use summary::ProviderEvidenceSummary;
+pub use verified_trust::EvidenceIssuerView;
+pub use verified_trust::EvidenceTrustSnapshotView;
+pub use verified_trust::VerifiedEvidenceIssuer;
+pub use verified_trust::VerifiedEvidenceTrustSnapshot;
 
 #[derive(Debug, thiserror::Error)]
 pub enum EvidenceError {
@@ -129,35 +140,27 @@ pub enum EvidenceError {
 #[cfg(test)]
 #[path = "tests.rs"]
 mod tests;
-
 #[cfg(test)]
 #[path = "provider_tests.rs"]
 mod provider_tests;
-
 #[cfg(test)]
 #[path = "provider_claim_tests.rs"]
 mod provider_claim_tests;
-
 #[cfg(test)]
 #[path = "provider_effect_tests.rs"]
 mod provider_effect_tests;
-
 #[cfg(test)]
 #[path = "summary_tests.rs"]
 mod summary_tests;
-
 #[cfg(test)]
 #[path = "historical_tests.rs"]
 mod historical_tests;
-
 #[cfg(test)]
 #[path = "authbus_outbox_tests.rs"]
 mod authbus_outbox_tests;
-
 #[cfg(test)]
 #[path = "authbus_outbox_quarantine_tests.rs"]
 mod authbus_outbox_quarantine_tests;
-
 #[cfg(test)]
 #[path = "qualification_tests.rs"]
 mod qualification_tests;

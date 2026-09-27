@@ -7,7 +7,7 @@ version.workspace = true
 [lib]
 name = "codex_hepta_evidence"
 path = "src/lib.rs"
-doctest = false
+doctest = true
 
 [lints]
 workspace = true
@@ -17,6 +17,7 @@ codex-hepta-authbus = { path = "../hepta-authbus" }
 codex-hepta-contracts = { workspace = true }
 codex-hepta-types = { workspace = true }
 codex-state = { workspace = true }
+ed25519-dalek = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 sqlx = { workspace = true }
@@ -27,7 +28,6 @@ tokio = { workspace = true, features = ["sync"] }
 libc = { workspace = true }
 
 [dev-dependencies]
-ed25519-dalek = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 tempfile = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
