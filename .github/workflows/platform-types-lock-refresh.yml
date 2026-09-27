@@ -63,6 +63,30 @@ jobs:
             git -C "$repo_root" rm -- scripts/platform_types_api_compat_fixup.py
           fi
 
+          # The V2 receipt tests compare registry-generation and definition
+          # binding. Their target raw range must use the target Q24 scale rather
+          # than inheriting the source PPM raw range, otherwise the fixture
+          # correctly fails for an unrelated OutOfRange condition.
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("codex-rs/hepta-types/src/numeric_registry_v2.rs")
+          text = path.read_text(encoding="utf-8")
+          old = """        let target = NumericSignalSchemaV1 {
+              profile: NumericProfileV1::SignedQ24NearestTiesEven,
+              ..source.schema.clone()
+          };"""
+          new = """        let target = NumericSignalSchemaV1 {
+              profile: NumericProfileV1::SignedQ24NearestTiesEven,
+              minimum_raw: -(1_i64 << 24),
+              maximum_raw: 1_i64 << 24,
+              ..source.schema.clone()
+          };"""
+          if old not in text:
+              raise SystemExit("numeric registry V2 target fixture anchor missing")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+
           cargo "+$PLATFORM_TYPES_MSRV" fmt \
             --manifest-path "$repo_root/codex-rs/Cargo.toml" \
             --package codex-hepta-types --package codex-hepta-ndu
