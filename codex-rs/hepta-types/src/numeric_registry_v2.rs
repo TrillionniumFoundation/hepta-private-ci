@@ -18,10 +18,11 @@ use crate::NumericConversionError;
 use crate::NumericConversionReceiptV1;
 use crate::NumericSignalSchemaV1;
 use crate::NumericSignalV1;
+use crate::RegisteredNumericConversionReceiptV1;
 use crate::RegistryError;
 use crate::StableId;
 use crate::canonical_digest_v1;
-use crate::rescale_signal_registered;
+use crate::rescale_signal;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct RegistrySnapshotIdentityV1 {
@@ -169,6 +170,40 @@ impl RegisteredNumericConversionReceiptV2 {
     }
 }
 
+/// Additive V1 registry-evidence helper. The historical top-level
+/// `rescale_signal_registered` signature remains unchanged for source
+/// compatibility; consumers that require a distinct registry-admission receipt
+/// opt into this explicitly named function.
+pub fn rescale_signal_registered_receipt_v1(
+    source: &NumericSignalV1,
+    target: &NumericSignalSchemaV1,
+    registry: &ContractRegistryV1,
+) -> Result<(NumericSignalV1, RegisteredNumericConversionReceiptV1), NumericConversionError> {
+    source.schema.validate_with_registry(registry)?;
+    target.validate_with_registry(registry)?;
+    if source.schema.normalization_digest != target.normalization_digest {
+        return Err(NumericConversionError::NormalizationMismatch);
+    }
+    let (output, conversion) = rescale_signal(source, target)?;
+    let registry_digest = registry
+        .registry_digest()
+        .map_err(|_| NumericConversionError::CanonicalEncoding)?;
+    let admission_digest = crate::numeric_conversion::registered_admission_digest(
+        registry_digest,
+        source.schema.normalization_digest,
+        &conversion,
+    )?;
+    Ok((
+        output,
+        RegisteredNumericConversionReceiptV1 {
+            conversion,
+            registry_digest,
+            admission_digest,
+            authority: NonAuthorizingPosture::DENY_ALL,
+        },
+    ))
+}
+
 pub fn rescale_signal_registered_v2(
     source: &NumericSignalV1,
     target: &NumericSignalSchemaV1,
@@ -184,7 +219,7 @@ pub fn rescale_signal_registered_v2(
     }
     let normalization_definition =
         registry.require_normalization(source.schema.normalization_digest)?;
-    let (output, registered_v1) = rescale_signal_registered(source, target, registry)?;
+    let (output, registered_v1) = rescale_signal_registered_receipt_v1(source, target, registry)?;
     let registry_snapshot = RegistrySnapshotIdentityV1::from_registry(generation, registry)?;
     let conversion_receipt_digest = conversion_receipt_digest(&registered_v1.conversion)?;
     let source_profile_definition_digest = source_definition.digest();
@@ -258,8 +293,14 @@ fn admission_digest_v2(
     conversion_receipt_digest: Digest32,
 ) -> Result<Digest32, NumericRegistryV2Error> {
     for (name, digest) in [
-        ("source profile definition", source_profile_definition_digest),
-        ("target profile definition", target_profile_definition_digest),
+        (
+            "source profile definition",
+            source_profile_definition_digest,
+        ),
+        (
+            "target profile definition",
+            target_profile_definition_digest,
+        ),
         ("normalization definition", normalization_definition_digest),
         ("conversion receipt", conversion_receipt_digest),
     ] {
@@ -354,10 +395,8 @@ mod tests {
             vec![
                 NumericProfileDefinitionV1::canonical(NumericProfileV1::HnmfPpmTowardZero)
                     .expect("source profile"),
-                NumericProfileDefinitionV1::canonical(
-                    NumericProfileV1::SignedQ24NearestTiesEven,
-                )
-                .expect("target profile"),
+                NumericProfileDefinitionV1::canonical(NumericProfileV1::SignedQ24NearestTiesEven)
+                    .expect("target profile"),
             ],
         )
         .expect("registry");
@@ -374,6 +413,8 @@ mod tests {
         };
         let target = NumericSignalSchemaV1 {
             profile: NumericProfileV1::SignedQ24NearestTiesEven,
+            minimum_raw: -(1_i64 << 24),
+            maximum_raw: 1_i64 << 24,
             ..source.schema.clone()
         };
         (registry, source, target)
@@ -383,16 +424,17 @@ mod tests {
     fn v2_binds_generation_and_every_definition_digest() {
         let (registry, source, target) = fixture();
         let generation = Generation::new(7).expect("generation");
-        let (_, receipt) =
-            rescale_signal_registered_v2(&source, &target, &registry, generation)
-                .expect("registered conversion");
+        let (_, receipt) = rescale_signal_registered_v2(&source, &target, &registry, generation)
+            .expect("registered conversion");
         assert_eq!(receipt.registry_snapshot().generation(), generation);
         assert!(!receipt.source_profile_definition_digest().is_zero());
         assert!(!receipt.target_profile_definition_digest().is_zero());
         assert!(!receipt.normalization_definition_digest().is_zero());
         assert!(!receipt.conversion_receipt_digest().is_zero());
         assert_eq!(receipt.authority(), NonAuthorizingPosture::DENY_ALL);
-        receipt.verify(&source, &target, &registry).expect("verified");
+        receipt
+            .verify(&source, &target, &registry)
+            .expect("verified");
 
         let (_, later) = rescale_signal_registered_v2(
             &source,
@@ -425,9 +467,8 @@ mod tests {
     fn v2_owner_pinned_snapshot_rejects_generation_and_digest_rollback() {
         let (registry, source, target) = fixture();
         let generation = Generation::new(7).expect("generation");
-        let (_, receipt) =
-            rescale_signal_registered_v2(&source, &target, &registry, generation)
-                .expect("registered conversion");
+        let (_, receipt) = rescale_signal_registered_v2(&source, &target, &registry, generation)
+            .expect("registered conversion");
         let current = receipt.registry_snapshot();
         receipt
             .verify_for_snapshot(&source, &target, &registry, current)
@@ -443,11 +484,9 @@ mod tests {
             Err(NumericRegistryV2Error::ReceiptMismatch)
         );
 
-        let wrong_digest = RegistrySnapshotIdentityV1::new(
-            generation,
-            Digest32::of_bytes(b"different-registry"),
-        )
-        .expect("snapshot");
+        let wrong_digest =
+            RegistrySnapshotIdentityV1::new(generation, Digest32::of_bytes(b"different-registry"))
+                .expect("snapshot");
         assert_eq!(
             receipt.verify_for_snapshot(&source, &target, &registry, wrong_digest),
             Err(NumericRegistryV2Error::ReceiptMismatch)

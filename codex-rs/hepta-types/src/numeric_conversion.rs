@@ -146,39 +146,25 @@ pub fn rescale_signal(
     Ok((output, receipt))
 }
 
-/// Production-admission variant. Both native numeric-profile semantics and
-/// the shared normalization definition must be present in the exact immutable
-/// registry generation supplied by the caller. Authentication of that registry
-/// belongs to the product owner, not to platform.types.
+/// Backward-compatible registry validation variant. Both native numeric-profile
+/// semantics and the shared normalization definition must be present in the
+/// exact immutable registry supplied by the caller. The return type remains the
+/// original pure arithmetic receipt; callers that need explicit registry
+/// evidence use `numeric_registry_v2::rescale_signal_registered_receipt_v1` or V2.
 pub fn rescale_signal_registered(
     source: &NumericSignalV1,
     target: &NumericSignalSchemaV1,
     registry: &ContractRegistryV1,
-) -> Result<(NumericSignalV1, RegisteredNumericConversionReceiptV1), NumericConversionError> {
+) -> Result<(NumericSignalV1, NumericConversionReceiptV1), NumericConversionError> {
     source.schema.validate_with_registry(registry)?;
     target.validate_with_registry(registry)?;
     if source.schema.normalization_digest != target.normalization_digest {
         return Err(NumericConversionError::NormalizationMismatch);
     }
-    let (output, conversion) = rescale_signal(source, target)?;
-    let registry_digest = registry
-        .registry_digest()
-        .map_err(|_| NumericConversionError::RegistryAdmission)?;
-    let admission_digest = registered_admission_digest(
-        registry_digest,
-        source.schema.normalization_digest,
-        &conversion,
-    )?;
-    let receipt = RegisteredNumericConversionReceiptV1 {
-        conversion,
-        registry_digest,
-        admission_digest,
-        authority: NonAuthorizingPosture::DENY_ALL,
-    };
-    Ok((output, receipt))
+    rescale_signal(source, target)
 }
 
-fn registered_admission_digest(
+pub(crate) fn registered_admission_digest(
     registry_digest: Digest32,
     normalization_digest: Digest32,
     conversion: &NumericConversionReceiptV1,

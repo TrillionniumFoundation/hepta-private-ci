@@ -17,7 +17,6 @@ use crate::ContributionSet;
 use crate::EvaluationPolicyV1;
 use crate::NduError;
 use crate::NduEvaluationReceiptV2;
-use crate::NduNumericAdmissionErrorV1;
 use crate::NduNumericRegistryV1;
 use crate::NduProjectionEntryV1;
 use crate::NduProjectionKindV1;
@@ -135,7 +134,6 @@ impl NduOwnerMutationV1 {
 pub enum NduOwnerError {
     InvalidContext(&'static str),
     Ndu(NduError),
-    NumericAdmission(NduNumericAdmissionErrorV1),
     Authority(FinalUseError),
     Store(NduProjectionStoreError),
 }
@@ -151,12 +149,6 @@ impl StdError for NduOwnerError {}
 impl From<NduError> for NduOwnerError {
     fn from(error: NduError) -> Self {
         Self::Ndu(error)
-    }
-}
-
-impl From<NduNumericAdmissionErrorV1> for NduOwnerError {
-    fn from(error: NduNumericAdmissionErrorV1) -> Self {
-        Self::NumericAdmission(error)
     }
 }
 
@@ -259,10 +251,12 @@ impl NduAuthenticatedOwnerV1 {
         let registry = self
             .numeric_registry
             .as_ref()
-            .ok_or(NduNumericAdmissionErrorV1::RegistryNotConfigured)?;
+            .ok_or(NduOwnerError::InvalidContext(
+                "numeric registry not configured",
+            ))?;
         registry
             .admit_utility_signal(&self.policy.utility_profile, source)
-            .map_err(NduOwnerError::NumericAdmission)
+            .map_err(|_| NduOwnerError::InvalidContext("numeric admission"))
     }
 
     /// The ordinary owner evaluation path cannot bypass its configured registry.
@@ -288,7 +282,8 @@ impl NduAuthenticatedOwnerV1 {
                     .into());
                 }
                 let admitted = registry
-                    .admit_utility_axes(&self.policy.utility_profile, &contribution.utility)?;
+                    .admit_utility_axes(&self.policy.utility_profile, &contribution.utility)
+                    .map_err(|_| NduOwnerError::InvalidContext("numeric admission"))?;
                 let fields = [
                     CanonicalFieldV1 {
                         name: "source_support",
@@ -450,9 +445,7 @@ fn production_policy_digest_with_numeric_registry(
     registry_digest: Digest32,
 ) -> Result<Digest32, NduOwnerError> {
     if registry_digest.is_zero() {
-        return Err(NduOwnerError::NumericAdmission(
-            NduNumericAdmissionErrorV1::EmptyRegistryDigest,
-        ));
+        return Err(NduOwnerError::InvalidContext("numeric registry digest"));
     }
     let base = production_policy_digest(policy)?;
     Ok(Digest32::of_parts(&[

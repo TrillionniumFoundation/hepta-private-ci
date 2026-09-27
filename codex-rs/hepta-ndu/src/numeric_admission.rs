@@ -10,7 +10,7 @@ use codex_hepta_types::NumericSignalV1;
 use codex_hepta_types::RegisteredNumericConversionReceiptV1;
 use codex_hepta_types::RegistryError;
 use codex_hepta_types::SignalUnitV1;
-use codex_hepta_types::rescale_signal_registered_receipt_v1;
+use codex_hepta_types::numeric_registry_v2::rescale_signal_registered_receipt_v1;
 
 use crate::AxisValue;
 use crate::UtilityProfile;

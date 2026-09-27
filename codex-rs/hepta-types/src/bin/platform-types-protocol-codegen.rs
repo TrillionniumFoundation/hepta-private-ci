@@ -18,7 +18,9 @@ fn main() {
 fn run() -> Result<(), Box<dyn Error>> {
     let arguments = std::env::args().collect::<Vec<_>>();
     if arguments.len() != 5 || arguments[1] != "--json" || arguments[3] != "--markdown" {
-        return Err("usage: platform-types-protocol-codegen --json <path> --markdown <path>".into());
+        return Err(
+            "usage: platform-types-protocol-codegen --json <path> --markdown <path>".into(),
+        );
     }
     verify_executable_schemas()?;
     write(Path::new(&arguments[2]), &render_json())?;
@@ -88,13 +90,7 @@ fn render_json() -> String {
             true,
         );
         match protocol.transport_schema {
-            Some(value) => push_json_string(
-                &mut output,
-                "      ",
-                "transportSchema",
-                value,
-                true,
-            ),
+            Some(value) => push_json_string(&mut output, "      ", "transportSchema", value, true),
             None => output.push_str("      \"transportSchema\": null,\n"),
         }
         push_json_string(
@@ -115,13 +111,7 @@ fn render_json() -> String {
         for (field_index, field) in protocol.fields.iter().enumerate() {
             output.push_str("        {\n");
             push_json_string(&mut output, "          ", "name", field.name, true);
-            push_json_string(
-                &mut output,
-                "          ",
-                "wireType",
-                field.wire_type,
-                true,
-            );
+            push_json_string(&mut output, "          ", "wireType", field.wire_type, true);
             output.push_str(&format!(
                 "          \"required\": {}",
                 if field.required { "true" } else { "false" }
@@ -149,13 +139,7 @@ fn render_json() -> String {
     output
 }
 
-fn push_json_string(
-    output: &mut String,
-    indentation: &str,
-    name: &str,
-    value: &str,
-    comma: bool,
-) {
+fn push_json_string(output: &mut String, indentation: &str, name: &str, value: &str, comma: bool) {
     output.push_str(indentation);
     output.push('"');
     output.push_str(name);

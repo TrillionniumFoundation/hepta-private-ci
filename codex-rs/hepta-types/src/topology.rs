@@ -3,7 +3,6 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
-use crate::CanonicalDigestError;
 use crate::CanonicalFieldV1;
 use crate::CanonicalValueV1;
 use crate::Digest32;
@@ -13,8 +12,7 @@ use crate::canonical_digest_v1;
 
 pub const MAX_RUNTIME_TOPOLOGY_DELTAS_V1: usize = 256;
 
-const RUNTIME_TOPOLOGY_CANDIDATE_TYPE_ID_V1: &str =
-    "platform.types:runtime-topology-candidate-v1";
+const RUNTIME_TOPOLOGY_CANDIDATE_TYPE_ID_V1: &str = "platform.types:runtime-topology-candidate-v1";
 const RUNTIME_TOPOLOGY_DELTA_TYPE_ID_V1: &str = "platform.types:runtime-topology-delta-v1";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -61,16 +59,9 @@ pub enum RuntimeTopologyContractErrorV1 {
     CandidateDigestMismatch,
     DuplicateModule(StableId),
     DuplicateRelatedModule(StableId),
-    NonCanonicalDeltaOrder {
-        previous: StableId,
-        current: StableId,
-    },
-    NonCanonicalRelatedModuleOrder(StableId),
     InvalidDelta(StableId),
     SplitParticipantMissingAdd(StableId),
     MergeParticipantMissingRetire(StableId),
-    InvalidTypeIdentity,
-    Canonical(CanonicalDigestError),
 }
 
 impl std::fmt::Display for RuntimeTopologyContractErrorV1 {
@@ -117,7 +108,7 @@ impl RuntimeTopologyDeltaV1 {
             },
         ];
         canonical_digest_v1(&type_id, 1, &fields)
-            .map_err(RuntimeTopologyContractErrorV1::Canonical)
+            .map_err(|_| RuntimeTopologyContractErrorV1::InvalidDelta(self.module_id.clone()))
     }
 }
 
@@ -299,12 +290,12 @@ impl RuntimeTopologyCandidateV1 {
             },
         ];
         canonical_digest_v1(&type_id, 1, &fields)
-            .map_err(RuntimeTopologyContractErrorV1::Canonical)
+            .map_err(|_| RuntimeTopologyContractErrorV1::CandidateShape)
     }
 }
 
 fn topology_type_id(value: &str) -> Result<StableId, RuntimeTopologyContractErrorV1> {
-    StableId::new(value).map_err(|_| RuntimeTopologyContractErrorV1::InvalidTypeIdentity)
+    StableId::new(value).map_err(|_| RuntimeTopologyContractErrorV1::CandidateShape)
 }
 
 const fn operation_id(operation: RuntimeTopologyOperationV1) -> &'static str {
@@ -331,10 +322,9 @@ fn validate_delta_order(
         }
         if let Some(previous) = previous {
             if previous > &delta.module_id {
-                return Err(RuntimeTopologyContractErrorV1::NonCanonicalDeltaOrder {
-                    previous: previous.clone(),
-                    current: delta.module_id.clone(),
-                });
+                return Err(RuntimeTopologyContractErrorV1::InvalidDelta(
+                    delta.module_id.clone(),
+                ));
             }
         }
         previous = Some(&delta.module_id);
@@ -358,11 +348,9 @@ fn validate_related_module_ids(
         }
         if let Some(previous) = previous {
             if previous > related {
-                return Err(
-                    RuntimeTopologyContractErrorV1::NonCanonicalRelatedModuleOrder(
-                        delta.module_id.clone(),
-                    ),
-                );
+                return Err(RuntimeTopologyContractErrorV1::DuplicateRelatedModule(
+                    delta.module_id.clone(),
+                ));
             }
         }
         previous = Some(related);
@@ -445,7 +433,9 @@ mod tests {
     #[test]
     fn digest_binds_every_candidate_semantic_field() {
         let baseline = candidate(vec![add_delta("module", "implementation", "evidence")]);
-        assert_digest_changes(&baseline, |value| value.proposal_digest = digest("proposal-2"));
+        assert_digest_changes(&baseline, |value| {
+            value.proposal_digest = digest("proposal-2")
+        });
         assert_digest_changes(&baseline, |value| value.candidate_id = id("candidate-2"));
         assert_digest_changes(&baseline, |value| {
             value.baseline_generation = Generation::new(6).expect("generation");
@@ -551,7 +541,7 @@ mod tests {
         reversed.deltas.reverse();
         assert!(matches!(
             reversed.content_digest(),
-            Err(RuntimeTopologyContractErrorV1::NonCanonicalDeltaOrder { .. })
+            Err(RuntimeTopologyContractErrorV1::InvalidDelta(_))
         ));
 
         let split = RuntimeTopologyDeltaV1 {
@@ -572,7 +562,7 @@ mod tests {
         };
         assert!(matches!(
             unordered_related.content_digest(),
-            Err(RuntimeTopologyContractErrorV1::NonCanonicalRelatedModuleOrder(_))
+            Err(RuntimeTopologyContractErrorV1::DuplicateRelatedModule(_))
         ));
     }
 

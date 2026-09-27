@@ -257,16 +257,24 @@ mod tests {
             provider_request_digest: digest("request"),
             delivered: false,
             rejected_reason: Some(
-                PromptDeliveryRejectReasonV1::new(id("provider.rejected"))
-                    .expect("reason"),
+                PromptDeliveryRejectReasonV1::new(id("provider.rejected")).expect("reason"),
             ),
             observed_token_positions: Some(vec![1, 4, 9]),
             truncation_observed: true,
         };
         let v2 = PromptDeliveryObservationV2::from_v1(&v1).expect("migration");
-        assert_eq!(v2.legacy_v1_digest(), Some(v1.semantic_digest().expect("v1 digest")));
-        assert_eq!(v2.semantic_digest().expect("digest"), v2.semantic_digest().expect("digest"));
-        assert_ne!(v2.semantic_digest().expect("v2 digest"), v1.semantic_digest().expect("v1 digest"));
+        assert_eq!(
+            v2.legacy_v1_digest(),
+            Some(v1.semantic_digest().expect("v1 digest"))
+        );
+        assert_eq!(
+            v2.semantic_digest().expect("digest"),
+            v2.semantic_digest().expect("digest")
+        );
+        assert_ne!(
+            v2.semantic_digest().expect("v2 digest"),
+            v1.semantic_digest().expect("v1 digest")
+        );
     }
 
     #[test]

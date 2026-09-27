@@ -111,7 +111,9 @@ fn digest(value: &Map<String, Value>, name: &str) -> Result<Digest32, String> {
 fn u64_text(value: &Map<String, Value>, name: &str, positive: bool) -> Result<u64, String> {
     let raw = text(value, name)?;
     if raw != "0"
-        && (raw.starts_with('0') || raw.is_empty() || !raw.bytes().all(|byte| byte.is_ascii_digit()))
+        && (raw.starts_with('0')
+            || raw.is_empty()
+            || !raw.bytes().all(|byte| byte.is_ascii_digit()))
     {
         return Err(format!("{name}: u64"));
     }
@@ -125,9 +127,10 @@ fn u64_text(value: &Map<String, Value>, name: &str, positive: bool) -> Result<u6
 fn i64_text(value: &Map<String, Value>, name: &str) -> Result<i64, String> {
     let raw = text(value, name)?;
     let canonical = raw == "0"
-        || raw
-            .strip_prefix('-')
-            .map_or_else(|| !raw.starts_with('0'), |rest| !rest.is_empty() && !rest.starts_with('0'));
+        || raw.strip_prefix('-').map_or_else(
+            || !raw.starts_with('0'),
+            |rest| !rest.is_empty() && !rest.starts_with('0'),
+        );
     if !canonical
         || raw == "-0"
         || !raw
@@ -221,11 +224,8 @@ fn sensor_digest(value: &Map<String, Value>) -> Result<Digest32, String> {
 
     let sensor_class = SensorClassV1::from_id(text(value, "sensor_class")?)
         .map_err(|_| "sensor_class".to_owned())?;
-    let distribution = UncertaintyDistributionV1::from_id(text(
-        uncertainty,
-        "distribution_class",
-    )?)
-    .map_err(|_| "distribution_class".to_owned())?;
+    let distribution = UncertaintyDistributionV1::from_id(text(uncertainty, "distribution_class")?)
+        .map_err(|_| "distribution_class".to_owned())?;
     let failure_policy = SensorFailurePolicyV1::from_id(text(value, "failure_policy")?)
         .map_err(|_| "failure_policy".to_owned())?;
     let confidence = uncertainty
@@ -288,10 +288,9 @@ fn semantic_digest(value: &Value) -> Result<Digest32, String> {
 
 #[test]
 fn strict_json_transport_matches_native_manifest_semantics() {
-    let document: Value = serde_json::from_str(
-        &fs::read_to_string(vector_path()).expect("read manifest vectors"),
-    )
-    .expect("parse manifest vectors");
+    let document: Value =
+        serde_json::from_str(&fs::read_to_string(vector_path()).expect("read manifest vectors"))
+            .expect("parse manifest vectors");
     let valid = document["validVectors"].as_array().expect("valid vectors");
     for vector in valid {
         let id = vector["id"].as_str().expect("vector id");

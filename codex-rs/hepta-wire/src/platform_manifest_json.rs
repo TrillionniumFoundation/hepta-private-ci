@@ -222,10 +222,7 @@ pub fn decode_external_system_manifest_v1_json(
         system_class,
         nonzero_digest(&wire.host_identity_digest, "host_identity_digest")?,
         nonzero_digest(&wire.os_release_digest, "os_release_digest")?,
-        nonzero_digest(
-            &wire.package_inventory_digest,
-            "package_inventory_digest",
-        )?,
+        nonzero_digest(&wire.package_inventory_digest, "package_inventory_digest")?,
         nonzero_digest(&wire.service_graph_digest, "service_graph_digest")?,
         nonzero_digest(&wire.filesystem_scope_digest, "filesystem_scope_digest")?,
         nonzero_digest(&wire.identity_map_digest, "identity_map_digest")?,
@@ -267,8 +264,8 @@ pub fn decode_sensor_calibration_manifest_v1_json(
     if wire.kind != "sensor_calibration_manifest_v1" {
         return Err(PlatformManifestWireError::InvalidKind);
     }
-    let sensor_class = SensorClassV1::from_id(&wire.sensor_class)
-        .map_err(PlatformManifestWireError::Manifest)?;
+    let sensor_class =
+        SensorClassV1::from_id(&wire.sensor_class).map_err(PlatformManifestWireError::Manifest)?;
     let distribution_class =
         UncertaintyDistributionV1::from_id(&wire.uncertainty_profile.distribution_class)
             .map_err(PlatformManifestWireError::Manifest)?;
@@ -294,10 +291,7 @@ pub fn decode_sensor_calibration_manifest_v1_json(
             &wire.hardware_or_adapter_digest,
             "hardware_or_adapter_digest",
         )?,
-        generation(
-            wire.calibration_generation,
-            "calibration_generation",
-        )?,
+        generation(wire.calibration_generation, "calibration_generation")?,
         &wire.clock_domain,
         &wire.valid_from,
         &wire.valid_until,
@@ -358,9 +352,8 @@ fn encode_json<T>(value: &T) -> Result<Vec<u8>, PlatformManifestWireError>
 where
     T: Serialize,
 {
-    let bytes = serde_json::to_vec(value).map_err(|_| {
-        PlatformManifestWireError::Wire(PlatformTypesWireError::InvalidJson)
-    })?;
+    let bytes = serde_json::to_vec(value)
+        .map_err(|_| PlatformManifestWireError::Wire(PlatformTypesWireError::InvalidJson))?;
     if bytes.len() > MAX_PLATFORM_TYPES_JSON_BYTES_V1 {
         return Err(PlatformManifestWireError::Wire(
             PlatformTypesWireError::TooLarge,
@@ -418,10 +411,7 @@ fn digest(value: &str, field: &'static str) -> Result<Digest32, PlatformManifest
     Digest32::from_str(value).map_err(|_| PlatformManifestWireError::Digest(field))
 }
 
-fn nonzero_digest(
-    value: &str,
-    field: &'static str,
-) -> Result<Digest32, PlatformManifestWireError> {
+fn nonzero_digest(value: &str, field: &'static str) -> Result<Digest32, PlatformManifestWireError> {
     let value = digest(value, field)?;
     if value.is_zero() {
         return Err(PlatformManifestWireError::Digest(field));
@@ -566,11 +556,7 @@ mod tests {
                 PlatformTypesWireError::DuplicateKey
             ))
         );
-        let unknown = random.replacen(
-            "{",
-            "{\"unexpected\":true,",
-            1,
-        );
+        let unknown = random.replacen("{", "{\"unexpected\":true,", 1);
         assert_eq!(
             decode_random_stream_manifest_v1_json(unknown.as_bytes()),
             Err(PlatformManifestWireError::Wire(
@@ -579,8 +565,7 @@ mod tests {
         );
 
         let sensor = String::from_utf8(
-            encode_sensor_calibration_manifest_v1_json(&sensor_manifest())
-                .expect("encode sensor"),
+            encode_sensor_calibration_manifest_v1_json(&sensor_manifest()).expect("encode sensor"),
         )
         .expect("utf8");
         let overlong = sensor.replace(

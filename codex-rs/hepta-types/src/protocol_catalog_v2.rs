@@ -71,19 +71,9 @@ const TOPOLOGY_V1_FIELDS: &[ProtocolFieldDescriptorV2] = &[
     field("candidate_generation", "positive_u64", true, None),
     field("selected_topology_digest", "digest32", true, Some(32)),
     field("evaluation_digest", "digest32", true, Some(32)),
-    field(
-        "rollback_predecessor_digest",
-        "digest32",
-        true,
-        Some(32),
-    ),
+    field("rollback_predecessor_digest", "digest32", true, Some(32)),
     field("changed", "bool", true, None),
-    field(
-        "deltas",
-        "ordered_topology_delta_array",
-        true,
-        Some(65_536),
-    ),
+    field("deltas", "ordered_topology_delta_array", true, Some(65_536)),
 ];
 
 const RANDOM_STREAM_FIELDS: &[ProtocolFieldDescriptorV2] = &[
@@ -117,12 +107,7 @@ const EXTERNAL_SYSTEM_FIELDS: &[ProtocolFieldDescriptorV2] = &[
 const SENSOR_FIELDS: &[ProtocolFieldDescriptorV2] = &[
     field("sensor_id", "stable_id", true, Some(128)),
     field("sensor_class", "closed_enum", true, Some(64)),
-    field(
-        "hardware_or_adapter_digest",
-        "digest32",
-        true,
-        Some(32),
-    ),
+    field("hardware_or_adapter_digest", "digest32", true, Some(32)),
     field("calibration_generation", "positive_u64", true, None),
     field("clock_domain", "bounded_text", true, Some(128)),
     field("valid_from", "utc_timestamp", true, Some(64)),
@@ -133,12 +118,7 @@ const SENSOR_FIELDS: &[ProtocolFieldDescriptorV2] = &[
 ];
 
 const REGISTERED_NUMERIC_V2_FIELDS: &[ProtocolFieldDescriptorV2] = &[
-    field(
-        "conversion",
-        "numeric_conversion_receipt_v1",
-        true,
-        None,
-    ),
+    field("conversion", "numeric_conversion_receipt_v1", true, None),
     field("registry_generation", "positive_u64", true, None),
     field("registry_digest", "digest32", true, Some(32)),
     field(

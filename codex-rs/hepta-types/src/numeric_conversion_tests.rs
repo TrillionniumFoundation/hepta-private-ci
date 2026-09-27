@@ -282,8 +282,11 @@ fn registered_conversion_requires_normalization_and_both_profile_definitions() {
         profile: NumericProfileV1::SignedQ24NearestTiesEven,
         ..source.schema.clone()
     };
-    let (registered_output, registered_receipt) =
-        checked(rescale_signal_registered(&source, &target, &registry));
+    let (registered_output, registered_receipt) = checked(
+        crate::numeric_registry_v2::rescale_signal_registered_receipt_v1(
+            &source, &target, &registry,
+        ),
+    );
     assert_eq!(registered_output.schema, target);
     assert_eq!(
         registered_receipt.registry_digest,
@@ -310,7 +313,11 @@ fn registered_conversion_requires_normalization_and_both_profile_definitions() {
     )
     .unwrap_or_else(|error| panic!("missing-target registry fixture failed: {error}"));
     assert_eq!(
-        rescale_signal_registered(&source, &target, &missing_target_profile),
+        crate::numeric_registry_v2::rescale_signal_registered_receipt_v1(
+            &source,
+            &target,
+            &missing_target_profile
+        ),
         Err(NumericConversionError::UnregisteredProfile)
     );
 
@@ -320,7 +327,18 @@ fn registered_conversion_requires_normalization_and_both_profile_definitions() {
     )
     .unwrap_or_else(|error| panic!("empty registry fixture failed: {error}"));
     assert_eq!(
-        rescale_signal_registered(&source, &target, &empty),
+        crate::numeric_registry_v2::rescale_signal_registered_receipt_v1(&source, &target, &empty),
         Err(NumericConversionError::UnknownNormalization)
     );
+}
+
+#[test]
+fn registered_compatibility_api_retains_original_receipt_shape() {
+    let _api: fn(
+        &NumericSignalV1,
+        &NumericSignalSchemaV1,
+        &ContractRegistryV1,
+    )
+        -> Result<(NumericSignalV1, NumericConversionReceiptV1), NumericConversionError> =
+        rescale_signal_registered;
 }

@@ -36,7 +36,6 @@ use crate::AxisValue;
 use crate::ContributionSet;
 use crate::EvaluationPolicyV1;
 use crate::FeasibilityPosture;
-use crate::NduNumericAdmissionErrorV1;
 use crate::NduNumericRegistryV1;
 use crate::NduProjectionKindV1;
 use crate::RequiredOrganSet;
@@ -405,8 +404,8 @@ fn unconfigured_owner_cannot_claim_registry_admission() {
         fixture
             .owner
             .admit_utility_signal(&numeric_signal(digest("production-utility-normalization"))),
-        Err(NduOwnerError::NumericAdmission(
-            NduNumericAdmissionErrorV1::RegistryNotConfigured
+        Err(NduOwnerError::InvalidContext(
+            "numeric registry not configured"
         ))
     ));
 }
@@ -527,11 +526,7 @@ fn ordinary_owner_evaluate_rejects_missing_registry_definition() {
     let fixture = fixture_with_registry(registry, digest("unregistered-normalization"));
     assert!(matches!(
         fixture.owner.evaluate(contributions()),
-        Err(NduOwnerError::NumericAdmission(
-            NduNumericAdmissionErrorV1::Conversion(
-                codex_hepta_types::NumericConversionError::UnknownNormalization
-            )
-        ))
+        Err(NduOwnerError::InvalidContext("numeric admission"))
     ));
 }
 
@@ -551,8 +546,6 @@ fn ordinary_owner_admission_does_not_launder_empty_support_or_wrong_axes() {
     source.contributions[0].utility[0].axis = id("substituted-axis");
     assert!(matches!(
         fixture.owner.evaluate(source),
-        Err(NduOwnerError::NumericAdmission(
-            NduNumericAdmissionErrorV1::AxisIdentityMismatch
-        ))
+        Err(NduOwnerError::InvalidContext("numeric admission"))
     ));
 }

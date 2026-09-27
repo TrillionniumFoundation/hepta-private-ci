@@ -194,13 +194,9 @@ mod tests {
 
     #[test]
     fn owner_binds_policy_episode_decision_and_counter_window() {
-        let policy = NduRandomStreamPolicyV1::new(
-            "utility.ndu",
-            "chacha20-counter",
-            "1.0.0",
-            1_024,
-        )
-        .expect("policy");
+        let policy =
+            NduRandomStreamPolicyV1::new("utility.ndu", "chacha20-counter", "1.0.0", 1_024)
+                .expect("policy");
         let manifest = RandomStreamManifestV1::new(
             id("manifest-1"),
             Digest32::of_bytes(b"root-seed"),
@@ -221,14 +217,17 @@ mod tests {
             &id("decision-1"),
         )
         .expect("admission");
-        assert_eq!(receipt.manifest_digest(), manifest.semantic_digest().expect("digest"));
+        assert_eq!(
+            receipt.manifest_digest(),
+            manifest.semantic_digest().expect("digest")
+        );
         assert_eq!(receipt.authority(), NonAuthorizingPosture::DENY_ALL);
     }
 
     #[test]
     fn owner_rejects_cross_decision_replay() {
-        let policy = NduRandomStreamPolicyV1::new("utility.ndu", "generator", "1", 8)
-            .expect("policy");
+        let policy =
+            NduRandomStreamPolicyV1::new("utility.ndu", "generator", "1", 8).expect("policy");
         let manifest = RandomStreamManifestV1::new(
             id("manifest"),
             Digest32::of_bytes(b"seed"),

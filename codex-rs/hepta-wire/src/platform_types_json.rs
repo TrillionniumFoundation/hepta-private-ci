@@ -47,20 +47,12 @@ impl ValidatedRuntimeTopologyCandidateV1 {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-#[serde(transparent)]
-struct RequiredNullable<T>(Option<T>);
-
-impl<'de, T> Deserialize<'de> for RequiredNullable<T>
+fn deserialize_required_nullable<'de, D, T>(deserializer: D) -> Result<Option<T>, D::Error>
 where
+    D: Deserializer<'de>,
     T: Deserialize<'de>,
 {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        Option::<T>::deserialize(deserializer).map(Self)
-    }
+    Option::<T>::deserialize(deserializer)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -101,10 +93,13 @@ struct PromptDeliveryObservationV2Json {
     compilation_id: String,
     provider_request_digest: String,
     delivered: bool,
-    rejected_reason: RequiredNullable<String>,
-    observed_token_positions: RequiredNullable<Vec<u32>>,
+    #[serde(deserialize_with = "deserialize_required_nullable")]
+    rejected_reason: Option<String>,
+    #[serde(deserialize_with = "deserialize_required_nullable")]
+    observed_token_positions: Option<Vec<u32>>,
     truncation_observed: bool,
-    legacy_v1_digest: RequiredNullable<String>,
+    #[serde(deserialize_with = "deserialize_required_nullable")]
+    legacy_v1_digest: Option<String>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
@@ -143,7 +138,6 @@ pub fn decode_prompt_delivery_v2_json(
     }
     let rejected_reason = wire
         .rejected_reason
-        .0
         .map(|value| {
             PromptDeliveryRejectReasonV2::new(stable_id(&value, "rejected_reason")?)
                 .map_err(PlatformTypesWireError::Prompt)
@@ -151,7 +145,6 @@ pub fn decode_prompt_delivery_v2_json(
         .transpose()?;
     let legacy_v1_digest = wire
         .legacy_v1_digest
-        .0
         .map(|value| digest(&value, "legacy_v1_digest"))
         .transpose()?;
     PromptDeliveryObservationV2::new(
@@ -159,7 +152,7 @@ pub fn decode_prompt_delivery_v2_json(
         nonzero_digest(&wire.provider_request_digest, "provider_request_digest")?,
         wire.delivered,
         rejected_reason,
-        wire.observed_token_positions.0,
+        wire.observed_token_positions,
         wire.truncation_observed,
         legacy_v1_digest,
     )
@@ -175,18 +168,12 @@ pub fn encode_prompt_delivery_v2_json(
         compilation_id: value.compilation_id().to_string(),
         provider_request_digest: value.provider_request_digest().to_string(),
         delivered: value.delivered(),
-        rejected_reason: RequiredNullable(
-            value
-                .rejected_reason()
-                .map(|reason| reason.as_id().to_string()),
-        ),
-        observed_token_positions: RequiredNullable(
-            value.observed_token_positions().map(<[u32]>::to_vec),
-        ),
+        rejected_reason: value
+            .rejected_reason()
+            .map(|reason| reason.as_id().to_string()),
+        observed_token_positions: value.observed_token_positions().map(<[u32]>::to_vec),
         truncation_observed: value.truncation_observed(),
-        legacy_v1_digest: RequiredNullable(
-            value.legacy_v1_digest().map(|item| item.to_string()),
-        ),
+        legacy_v1_digest: value.legacy_v1_digest().map(|item| item.to_string()),
     })
 }
 
@@ -360,10 +347,7 @@ fn digest(value: &str, field: &'static str) -> Result<Digest32, PlatformTypesWir
     Digest32::from_str(value).map_err(|_| PlatformTypesWireError::Digest(field))
 }
 
-fn nonzero_digest(
-    value: &str,
-    field: &'static str,
-) -> Result<Digest32, PlatformTypesWireError> {
+fn nonzero_digest(value: &str, field: &'static str) -> Result<Digest32, PlatformTypesWireError> {
     let value = digest(value, field)?;
     if value.is_zero() {
         return Err(PlatformTypesWireError::Digest(field));
@@ -441,15 +425,21 @@ mod tests {
             "829b995e0ebf8df74a18723dcc477ec924fefe1be88b8f60d9bb388e6073fa34"
         );
         let encoded = encode_prompt_delivery_v2_json(&value).expect("encode");
-        assert_eq!(decode_prompt_delivery_v2_json(&encoded).expect("roundtrip"), value);
+        assert_eq!(
+            decode_prompt_delivery_v2_json(&encoded).expect("roundtrip"),
+            value
+        );
     }
 
     #[test]
     fn topology_json_is_strict_and_recomputes_candidate_digest() {
-        let value = decode_runtime_topology_candidate_v1_json(TOPOLOGY.as_bytes())
-            .expect("decode");
+        let value = decode_runtime_topology_candidate_v1_json(TOPOLOGY.as_bytes()).expect("decode");
         assert_eq!(
-            value.as_inner().content_digest().expect("digest").to_string(),
+            value
+                .as_inner()
+                .content_digest()
+                .expect("digest")
+                .to_string(),
             "8a2396058d95d3c0efde025d3e34ec1524d0ffa3a10f2fb8f6457cdb35a195d8"
         );
         let encoded = encode_runtime_topology_candidate_v1_json(&value).expect("encode");
@@ -471,7 +461,10 @@ mod tests {
             Err(PlatformTypesWireError::DuplicateKey)
         );
         let deep = format!("{}0{}", "[".repeat(18), "]".repeat(18));
-        assert_eq!(enforce_raw_limits(deep.as_bytes()), Err(PlatformTypesWireError::DepthExceeded));
+        assert_eq!(
+            enforce_raw_limits(deep.as_bytes()),
+            Err(PlatformTypesWireError::DepthExceeded)
+        );
         assert_eq!(
             enforce_raw_limits(&vec![b' '; MAX_PLATFORM_TYPES_JSON_BYTES_V1 + 1]),
             Err(PlatformTypesWireError::TooLarge)
