@@ -6,11 +6,7 @@ on:
       - fix/memory-federation-full-closure-20260927
     paths:
       - ".github/workflows/memory-federation-full-closure-bootstrap.yml"
-      - "scripts/memory_federation_core_closure.py"
-      - "scripts/memory_federation_runtime_closure.py"
-      - "scripts/memory_federation_metadata_closure.py"
-      - "scripts/memory_federation_registry_closure.py"
-      - "scripts/memory_federation_codec_closure.py"
+      - "scripts/memory_federation_*"
 
 permissions:
   contents: write
@@ -37,8 +33,6 @@ jobs:
           git config user.name "Hepta Memory Federation Closure"
           git config user.email "hepta-memory-federation-closure@users.noreply.github.com"
           git fetch origin main
-          # The state generator has a stable seed commit. Replaying it makes the
-          # closure scripts idempotent across failed or repeated qualification runs.
           git checkout 8e98b1afe490cdfc50e8e3702ede4baf5c12853b -- scripts/hepta-memory-federation-state.py
 
       - name: Generate canonical, runtime, documentation, registry, codec, and metadata source
@@ -49,13 +43,15 @@ jobs:
           python3 scripts/memory_federation_metadata_closure.py
           python3 scripts/memory_federation_registry_closure.py
           python3 scripts/memory_federation_codec_closure.py
+          python3 scripts/memory_federation_codec_hardening.py
           python3 -m py_compile \
             scripts/hepta-memory-federation-state.py \
             scripts/memory_federation_core_closure.py \
             scripts/memory_federation_runtime_closure.py \
             scripts/memory_federation_metadata_closure.py \
             scripts/memory_federation_registry_closure.py \
-            scripts/memory_federation_codec_closure.py
+            scripts/memory_federation_codec_closure.py \
+            scripts/memory_federation_codec_hardening.py
 
       - name: Format and precompile generated source
         working-directory: codex-rs
