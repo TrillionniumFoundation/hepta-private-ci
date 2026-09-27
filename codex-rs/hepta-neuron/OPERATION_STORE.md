@@ -39,13 +39,16 @@ marker and is protected by a frame checksum. A prepared operation binds:
 The owner transaction order is:
 
 ```text
-validate input and exact selected model tuple
-compute the pure sparse successor
+check live host admission and exact input identity
+reject scope/sequence/journal capacity/result capacity/witness capacity before model execution
+verify the selected model output tuple and compute the pure sparse successor
+check live host admission again
 sync the prepared operation and exact result
 compare-and-append the sparse journal
 revalidate the committed checkpoint and result
 CAS the independent witness, with exact read-back on uncertain acknowledgement
 sync the operation completion marker
+check live host admission before current-use delivery
 return the stored result
 ```
 
@@ -57,6 +60,7 @@ different input is conflict. Only one prepared successor may exist at a time.
 
 | Durable state | Recovery behavior |
 | --- | --- |
+| Initialized nonempty journal header and empty operation history/witness | Reopen the enrolled owner before its first tick. A lost empty journal is not initialized during recovery. |
 | Completed operation, journal and witness agree | Return the exact stored result on retry. |
 | Prepared result exists, journal is still at the predecessor | Commit the stored sparse tick, advance the witness and mark complete. |
 | Journal committed but the witness is still at the predecessor or absent on the first operation | Validate the committed checkpoint, advance the witness and mark complete. |
@@ -90,3 +94,49 @@ drift, forged canonical predecessor, missing-sidecar recovery, partial tails,
 writer fencing and segment rollover. These source tests do not replace current
 exact-head, synthetic-merge, target-host, physical power-loss or independent
 acceptance evidence.
+
+## Admission and publication
+
+`NeuronRuntime::tick_guarded` requires a host-supplied `NeuronAdmissionGuard`.
+The guard runs before inference, before durable preparation, and before result
+publication. Historical retries also pass current-use checks. A rejected new
+request leaves no pending operation and cannot prevent a valid next request or
+segment rollover. `tick` remains the explicit mechanism/qualification adapter;
+the canonical Agentd product path uses the guarded method.
+
+A durable prepared record is a recovery obligation, not a fresh-use grant.
+Revocation/deadline observed after preparation suppresses success delivery but
+does not erase committed history or cause model reexecution. `query_result`
+reconciles and reads exact historical output by tick identity and input digest;
+it is not permission to use a revoked signal. The composing host must supply
+real selected-artifact, calibration/OOD, source and revocation evidence. Repeated
+checks alone are not an independent trust root or a physical interrupt.
+
+Canonical checkpoint publication requires the complete stored and completed
+operation receipt, including its exact tick identity and predecessor. Runtime
+recovery checks the stored numerical tick against the native checkpoint input
+binding and checks error/saturation/sparsity against the independently replayed
+journal receipt. An exact predecessor receipt is carried in memory across V1
+successor transitions; no existing on-disk journal byte is reinterpreted.
+
+## Real process cuts
+
+`runtime_process_tests.rs` exits a real child process without destructors at
+bootstrap, prepared-result sync, journal commit, witness sync and operation
+completion. The parent reopens real stores, verifies the identical retained
+output, and verifies that the model-call log contains one call across retries.
+This covers process teardown/reopen, not disk-controller power loss, a selected
+production model or independent learning efficacy. The existing exhaustive
+partial-byte journal and operation-store tests remain enabled.
+
+## Witness capacity before preparation
+
+`AnchorWitnessStore::admit_new_anchor` is an explicit required native contract.
+Under the exclusive writer lifetime, it rejects a poisoned/full witness or a
+mismatched predecessor before new model execution or durable preparation. The
+file witness reuses the same check at CAS. Historical result lookup and completed
+retries do not consume new capacity; an existing exact witness successor is still
+reconciled without another append. A full witness must not leave a newly committed
+journal successor with a permanently incomplete operation. Capacity exhaustion is
+an admission failure, not a reason to delete acknowledgement history or silently
+raise a configured bound. This adds no new on-disk format or rollover semantics.
