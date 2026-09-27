@@ -242,6 +242,7 @@ struct AgentdOwnerPortsV1 {
     neural_config: Option<SparseConfig>,
     neural_tick: Option<SparseTick>,
     neural_previous: Option<Option<SparseCheckpoint>>,
+    neural_invocation_seal: Option<crate::AgentdNeuronInvocationSealV1>,
     prompt_request: Option<OptimizationRequest>,
     intuition: Option<AgentdAuthenticatedIntuitionInputV1>,
     intuition_host: std::sync::Arc<AgentdIntuitionPolicyHostV2>,
@@ -258,6 +259,7 @@ struct AgentdOwnerPortsV1 {
 impl AgentdOwnerPortsV1 {
     fn new(
         value: AgentdIntelligenceOwnerInputsV1,
+        neural_invocation_seal: Option<crate::AgentdNeuronInvocationSealV1>,
         evaluation_session: Option<AgentdEvaluationSessionV1>,
         intuition_host: std::sync::Arc<AgentdIntuitionPolicyHostV2>,
         intuition_current: AgentdIntuitionCurrentBindingV1,
@@ -276,6 +278,7 @@ impl AgentdOwnerPortsV1 {
             neural_config: Some(value.neural_config),
             neural_tick: Some(value.neural_tick),
             neural_previous: Some(value.neural_previous),
+            neural_invocation_seal,
             prompt_request: Some(value.prompt_request),
             intuition: Some(value.intuition),
             intuition_host,
@@ -439,6 +442,24 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
             return Err(Self::reject(input.stage, "neural binding"));
         }
         let started = Instant::now();
+        if let Some(seal) = self.neural_invocation_seal.take() {
+            if !seal.matches_sparse_invocation(
+                &config,
+                &tick,
+                previous.as_ref(),
+                input.objective_digest,
+                input.predecessor_digest,
+            ) {
+                return Err(Self::reject(input.stage, "sealed neural invocation drift"));
+            }
+            Self::within_budget(input, started)?;
+            return Self::receipt(
+                input,
+                "neuron.runtime",
+                seal.output_digest(),
+                CanonicalPortDecisionV1::Continue,
+            );
+        }
         let (_, receipt) = sparse_tick(&config, &tick, previous.as_ref())
             .map_err(|_| Self::reject(input.stage, "neural tick"))?;
         Self::within_budget(input, started)?;
@@ -457,7 +478,7 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         &mut self,
         input: &CanonicalPortInputV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
-        let request = Self::take(&mut self.prompt_request, input.stage, "prompt request")?;
+        let request = Self::take(&mut self.prompt_request, input.stage, "context request")?;
         if request.objective_digest != input.objective_digest {
             return Err(Self::reject(input.stage, "prompt objective"));
         }
@@ -659,6 +680,7 @@ pub enum AgentdIntelligenceProductError {
     TimedOut,
     CandidateSetMismatch,
     RunStartBinding,
+    NeuronInvocation,
     Clock,
     InvalidAuthorityVerifier,
     IntuitionPolicyUnavailable,
@@ -673,6 +695,17 @@ impl fmt::Display for AgentdIntelligenceProductError {
 impl StdError for AgentdIntelligenceProductError {}
 
 const MAX_CANONICAL_OWNER_WORKERS: usize = 4;
+const MAX_PENDING_NEURON_INVOCATIONS: usize = 16;
+
+enum PendingNeuronInvocationStateV1 {
+    Ready(Option<crate::AgentdNeuronInvocationSealV1>),
+    Consumed,
+}
+
+struct PendingNeuronInvocationSealV1 {
+    state: PendingNeuronInvocationStateV1,
+    expires_at_ms: u64,
+}
 
 pub struct AgentdIntelligenceProductRunnerV1 {
     worker_slots: std::sync::Arc<tokio::sync::Semaphore>,
@@ -680,6 +713,7 @@ pub struct AgentdIntelligenceProductRunnerV1 {
     authority_verifier: IntelligenceAuthorityVerifierV1,
     evaluation_trust: Option<std::sync::Arc<codex_hepta_learning_ledger::ActivatedLearningTrustV1>>,
     intuition_policy: Option<std::sync::Arc<AgentdIntuitionPolicyHostV2>>,
+    neuron_seals: std::sync::Mutex<BTreeMap<String, PendingNeuronInvocationSealV1>>,
 }
 
 #[path = "intelligence_run_start.rs"]
