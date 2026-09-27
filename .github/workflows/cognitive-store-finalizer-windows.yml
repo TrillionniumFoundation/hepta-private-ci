@@ -1,12 +1,7 @@
 name: Cognitive store one-shot finalizer
 
 on:
-  push:
-    branches:
-      - codex/cognitive-store-full-closure-20260927
-    paths:
-      - '.github/workflows/cognitive-store-finalizer-windows.yml'
-      - 'scripts/finalize_cognitive_store_candidate.py'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -17,7 +12,6 @@ concurrency:
 
 jobs:
   finalize:
-    if: github.actor != 'github-actions[bot]'
     runs-on: windows-2022
     timeout-minutes: 30
     steps:
@@ -35,4 +29,16 @@ jobs:
 
       - name: Finalize and publish clean candidate
         shell: pwsh
-        run: python scripts/finalize_cognitive_store_candidate.py
+        run: |
+          $env:PYTHONUNBUFFERED = "1"
+          python scripts/finalize_cognitive_store_candidate.py 2>&1 | Tee-Object -FilePath "$env:RUNNER_TEMP\cognitive-finalizer.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Retain finalizer diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-finalizer-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cognitive-finalizer.log
+          if-no-files-found: warn
+          retention-days: 7
