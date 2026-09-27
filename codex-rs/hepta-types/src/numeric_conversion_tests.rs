@@ -332,11 +332,12 @@ fn registered_conversion_requires_normalization_and_both_profile_definitions() {
     );
 }
 
-type RegisteredCompatibilityApi = fn(
-    &NumericSignalV1,
-    &NumericSignalSchemaV1,
-    &ContractRegistryV1,
-) -> Result<(NumericSignalV1, NumericConversionReceiptV1), NumericConversionError>;
+type RegisteredCompatibilityApi =
+    fn(
+        &NumericSignalV1,
+        &NumericSignalSchemaV1,
+        &ContractRegistryV1,
+    ) -> Result<(NumericSignalV1, NumericConversionReceiptV1), NumericConversionError>;
 
 #[test]
 fn registered_compatibility_api_retains_original_receipt_shape() {
