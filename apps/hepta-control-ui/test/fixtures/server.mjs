@@ -12,6 +12,19 @@ const digests = {
   c: "c".repeat(64),
 };
 
+const heldResponseReleases = new Set();
+
+function holdAcceptedResponse() {
+  return new Promise(resolve => heldResponseReleases.add(resolve));
+}
+
+function releaseHeldResponses() {
+  const count = heldResponseReleases.size;
+  for (const release of heldResponseReleases) release();
+  heldResponseReleases.clear();
+  return count;
+}
+
 const state = {
   snapshotRevision: 11,
   snapshotGeneration: 7,
@@ -20,6 +33,7 @@ const state = {
 };
 
 function reset() {
+  releaseHeldResponses();
   state.snapshotRevision = 11;
   state.snapshotGeneration = 7;
   state.requestCount = 0;
@@ -143,6 +157,10 @@ async function api(request, response, url) {
       auditTraceId: `audit-${input.operationId}`,
     };
     state.operations.set(input.operationId, observation);
+    if (input.reason.includes("HOLD_RESPONSE")) {
+      await holdAcceptedResponse();
+      if (response.destroyed || response.writableEnded) return;
+    }
     if (input.reason.includes("AMBIGUOUS")) {
       request.socket.destroy();
       return;
@@ -172,7 +190,11 @@ async function testApi(request, response, url) {
       snapshotRevision: state.snapshotRevision,
       requestCount: state.requestCount,
       operations: [...state.operations.values()],
+      heldResponseCount: heldResponseReleases.size,
     });
+  }
+  if (url.pathname === "/__test__/release-held") {
+    return json(response, 200, { released: releaseHeldResponses() });
   }
   if (url.pathname === "/__test__/bump") {
     state.snapshotRevision += 1;
@@ -242,7 +264,9 @@ const server = createServer(async (request, response) => {
       await staticFile(request, response, url);
     }
   } catch (error) {
-    json(response, 500, { message: error.message });
+    if (!response.destroyed && !response.writableEnded) {
+      json(response, 500, { message: error.message });
+    }
   }
 });
 
@@ -251,5 +275,8 @@ server.listen(port, "127.0.0.1", () => {
 });
 
 for (const signal of ["SIGINT", "SIGTERM"]) {
-  process.on(signal, () => server.close(() => process.exit(0)));
+  process.on(signal, () => {
+    releaseHeldResponses();
+    server.close(() => process.exit(0));
+  });
 }

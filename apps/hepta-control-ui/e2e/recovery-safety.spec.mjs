@@ -62,17 +62,10 @@ test("polling preserves target and reason focus; target removal requires a new s
 });
 
 test("response held after server admission survives page loss without a replacement operation", async ({ page, context, request, browserName }) => {
-  let release;
-  const held = new Promise(resolve => { release = resolve; });
-  await page.route("**/api/ui-control/v1/operations", async route => {
-    // The server processes the request, but the browser receives no ACK.
-    const response = await route.fetch();
-    await held;
-    try { await route.fulfill({ response }); } catch { /* The original page was lost. */ }
-  });
   await load(page);
-  await submit(page, "Hold the accepted response while the original page is lost.");
+  await submit(page, "HOLD_RESPONSE after durable admission while the original page is lost.");
   await expect.poll(async () => (await (await request.get("/__test__/state")).json()).requestCount).toBe(1);
+  await expect.poll(async () => (await (await request.get("/__test__/state")).json()).heldResponseCount).toBe(1);
   const prepared = await records(page);
   expect(prepared).toHaveLength(1);
   expect(prepared[0].state).toBe("submitting");
@@ -84,7 +77,8 @@ test("response held after server admission survives page loss without a replacem
       void session.send("Page.crash").catch(() => {});
       await crashed;
     } else {
-      // Other engines cover abrupt page loss, not a renderer-crash claim.
+      // Other engines cover abrupt document/page loss; the response is still
+      // held by the server fixture, not by a Playwright route handler.
       await page.close({ runBeforeUnload: false });
     }
     const replacement = await context.newPage();
@@ -94,7 +88,7 @@ test("response held after server admission survives page loss without a replacem
     expect((await (await request.get("/__test__/state")).json()).requestCount).toBe(1);
     await replacement.close();
   } finally {
-    release();
+    await request.get("/__test__/release-held");
   }
 });
 

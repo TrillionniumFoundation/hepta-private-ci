@@ -55,8 +55,8 @@ test("double activation produces one server operation and renders redacted audit
     const button = document.getElementById("confirm-submit"); button.click(); button.click();
   });
   await expect(page.getByRole("dialog")).toBeHidden();
-  await expect(page.getByText(/audit-ui…[0-9a-f-]{6}/)).toBeVisible();
-  await expect(page.getByText(/digest [0-9a-f]{12}…[0-9a-f]{8}/)).toBeVisible();
+  await expect(page.locator("#pending-list")).toContainText(/audit-ui…[0-9a-f-]{6}/);
+  await expect(page.locator("#pending-list")).toContainText(/digest [0-9a-f]{12}…[0-9a-f]{8}/);
   const state = await (await request.get("/__test__/state")).json();
   expect(state.requestCount).toBe(1); expect(state.operations).toHaveLength(1);
   await expect(page.locator("body")).not.toContainText(state.operations[0].operationId);
