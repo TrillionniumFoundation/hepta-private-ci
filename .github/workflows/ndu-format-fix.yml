@@ -17,7 +17,7 @@ concurrency:
 jobs:
   repair-and-export:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
       EXPECTED_SHA: ${{ github.sha }}
@@ -64,13 +64,13 @@ jobs:
           fi
           test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$EXPECTED_SHA"
           git push origin "HEAD:refs/heads/$TARGET_BRANCH"
-      - name: Validate exact closed-world map and retain source snapshot
+      - name: Retain source snapshot and validate exact closed-world map
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/ndu-source-inspection"
           mkdir -p "$out"
-          python3 scripts/hepta-ndu-implementation-map-closed-world.py > "$out/closed-world.json"
           git archive --format=tar.gz -o "$out/source.tar.gz" HEAD \
             codex-rs/hepta-ndu codex-rs/hepta-agentd codex-rs/hepta-agent-protocol \
             codex-rs/hepta-contracts codex-rs/hepta-control-plane \
@@ -81,7 +81,9 @@ jobs:
             docs/modules docs/readiness/NDU_SYSTEM_EXECUTION.md docs/learning/NDU_FBSDE_SPEC.md \
             scripts justfile .github/workflows/hepta-ndu-recursion.yml
           git rev-parse HEAD HEAD^{tree} > "$out/source-identity.txt"
+          git status --porcelain > "$out/checkout-status.txt"
           sha256sum "$out/source.tar.gz" > "$out/source.tar.gz.sha256"
+          python3 scripts/hepta-ndu-implementation-map-closed-world.py > "$out/closed-world.json"
           test -z "$(git status --porcelain)"
       - name: Retain bounded repair and source evidence
         if: always()
