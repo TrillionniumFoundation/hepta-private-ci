@@ -359,13 +359,23 @@ fn require_intelligence_composition(
     provider: bool,
     runtime_codex: bool,
 ) -> Result<(), AgentdError> {
-    if runner == provider && provider == runtime_codex {
-        return Ok(());
+    if runner != provider {
+        return Err(AgentdError::Invalid(
+            "canonical intelligence requires both a runner and an authoritative invocation provider"
+                .to_string(),
+        ));
     }
-    Err(AgentdError::Invalid(
-        "canonical intelligence requires one complete runner/provider/runtime.codex profile"
-            .to_string(),
-    ))
+    match (runner, runtime_codex) {
+        (false, false) | (true, true) => Ok(()),
+        (true, false) => Err(AgentdError::Invalid(
+            "canonical intelligence requires the installed runtime.codex execution owner"
+                .to_string(),
+        )),
+        (false, true) => Err(AgentdError::Invalid(
+            "runtime.codex execution owner cannot start without canonical intelligence composition"
+                .to_string(),
+        )),
+    }
 }
 
 fn require_cognitive_retrieval_context_for_mode(
