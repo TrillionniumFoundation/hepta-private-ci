@@ -68,8 +68,8 @@ impl AgentdNeuronArtifactAdmissionV1 {
             .map_err(|_| NeuronAdmissionError::Unavailable)?;
         for directory in ["payloads", "registries"] {
             let path = artifact_root.join(directory);
-            let metadata = fs::symlink_metadata(&path)
-                .map_err(|_| NeuronAdmissionError::Unavailable)?;
+            let metadata =
+                fs::symlink_metadata(&path).map_err(|_| NeuronAdmissionError::Unavailable)?;
             if metadata.file_type().is_symlink() || !metadata.is_dir() {
                 return Err(NeuronAdmissionError::BindingMismatch);
             }
@@ -319,12 +319,14 @@ impl AgentdNeuronArtifactAdmissionV1 {
         file_name: &str,
     ) -> Result<File, NeuronAdmissionError> {
         let base = self.artifact_root.join(directory);
-        let canonical_base = fs::canonicalize(&base).map_err(|_| NeuronAdmissionError::Unavailable)?;
+        let canonical_base =
+            fs::canonicalize(&base).map_err(|_| NeuronAdmissionError::Unavailable)?;
         if canonical_base.parent() != Some(self.artifact_root.as_path()) {
             return Err(NeuronAdmissionError::BindingMismatch);
         }
         let path = base.join(file_name);
-        let metadata = fs::symlink_metadata(&path).map_err(|_| NeuronAdmissionError::Unavailable)?;
+        let metadata =
+            fs::symlink_metadata(&path).map_err(|_| NeuronAdmissionError::Unavailable)?;
         if metadata.file_type().is_symlink() || !metadata.is_file() {
             return Err(NeuronAdmissionError::BindingMismatch);
         }

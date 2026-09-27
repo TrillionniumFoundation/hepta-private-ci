@@ -141,11 +141,10 @@ impl CanonicalOwnerPortsV1 for DurableNeuronOwnerPortsV1 {
                 ),
             });
         }
-        let intuition = self
-            .inner
-            .intuition_request
-            .as_mut()
-            .ok_or_else(|| AgentdOwnerPortsV1::reject(input.stage, "intuition consumer missing"))?;
+        let intuition =
+            self.inner.intuition_request.as_mut().ok_or_else(|| {
+                AgentdOwnerPortsV1::reject(input.stage, "intuition consumer missing")
+            })?;
         intuition.state_digest = result.tick.checkpoint_after;
         AgentdOwnerPortsV1::receipt(
             input,
@@ -223,13 +222,8 @@ impl AgentdIntelligenceProductRunnerV1 {
         neuron: crate::AgentdNeuronInvocationV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
         let composition = coordinator.composition().clone();
-        self.prepare_for_composition_with_durable_neuron(
-            &composition,
-            request,
-            inputs,
-            neuron,
-        )
-        .await
+        self.prepare_for_composition_with_durable_neuron(&composition, request, inputs, neuron)
+            .await
     }
 
     /// Same product entry with an already frozen Agentd composition, avoiding a
@@ -324,16 +318,9 @@ impl AgentdIntelligenceProductRunnerV1 {
                 deadline: stage_deadline,
                 cancellation: worker_cancellation,
             };
-            let mut ports = DurableNeuronOwnerPortsV1::new(
-                inputs,
-                evaluation_session,
-                neuron,
-                admission,
-            );
-            let mut oracle = FileBackedFreshnessOracleV1::new(
-                authority_file,
-                authority_verifier,
-            );
+            let mut ports =
+                DurableNeuronOwnerPortsV1::new(inputs, evaluation_session, neuron, admission);
+            let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
             prepare_intelligence_run(request, &mut ports, &mut oracle)
         })?;
         let outcome = timeout(Duration::from_micros(timeout_micros), &mut worker)
@@ -482,9 +469,7 @@ fn finish_prepared_outcome(
                 },
             ))
         }
-        CanonicalRunOutcomeV1::Abstained(_) => {
-            Ok(AgentdIntelligenceProductOutcomeV1::Abstained)
-        }
+        CanonicalRunOutcomeV1::Abstained(_) => Ok(AgentdIntelligenceProductOutcomeV1::Abstained),
         CanonicalRunOutcomeV1::SlowPath(_) => Ok(AgentdIntelligenceProductOutcomeV1::SlowPath),
     }
 }
