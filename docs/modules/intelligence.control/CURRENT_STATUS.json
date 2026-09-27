@@ -1,0 +1,96 @@
+{
+  "schema": "hepta.intelligence-control-current-status.v1",
+  "schemaVersion": 1,
+  "module": "intelligence.control",
+  "statusAuthority": {
+    "sourceTruthVerifier": "scripts/hepta_intelligence_control_status.py",
+    "exactExecutionWorkflow": ".github/workflows/hepta-intelligence-control.yml",
+    "stableDesignGuide": "docs/modules/intelligence.control/TECHNICAL.md",
+    "currentImplementationGuide": "docs/modules/intelligence.control/CURRENT_IMPLEMENTATION.md",
+    "sourceNavigationMap": "docs/modules/intelligence.control/IMPLEMENTATION_MAP.json",
+    "testTraceability": "docs/modules/intelligence.control/TEST_TRACEABILITY.json"
+  },
+  "sourceState": {
+    "sourceRootPresent": true,
+    "canonicalCoreImplemented": true,
+    "daemonObjectiveStartRouteCallsitePresent": true,
+    "concreteBoundedProviderImplemented": true,
+    "providerImplementationSetClosed": true,
+    "atomicEmbeddingProfileComposable": true,
+    "standaloneProfileComposed": false,
+    "runnerOnlyActivationRejected": true,
+    "canonicalCapabilityFailsClosed": true,
+    "durableRunStartIdentityInherited": true,
+    "generationFenceUnified": true,
+    "decisionAcknowledgedBeforeReady": true,
+    "durableDecisionOutcomeOutboxImplemented": true,
+    "pendingAppendRestartReconciliationImplemented": true,
+    "outcomeRestartBindingApiImplemented": true,
+    "canonicalCandidateMembershipGuardImplemented": true,
+    "profileOwnedObservabilityImplemented": true,
+    "physicalTurnSourceBound": true,
+    "physicalOutcomeRouteComposed": false,
+    "productionImplementation": false
+  },
+  "executionState": {
+    "sourceTestsPresent": true,
+    "exactHeadExecuted": false,
+    "deterministicMergeExecuted": false,
+    "realProcessAgentdAppServerE2E": false,
+    "lostAckRestartRevocationE2E": false,
+    "targetHostHardTerminationQualified": false,
+    "targetHostLatencyAndRssQualified": false,
+    "independentSemanticSecurityAcceptance": false,
+    "activation": false,
+    "release": false
+  },
+  "capabilityPolicy": {
+    "capabilityId": "intelligence.canonical_v1",
+    "advertiseOnlyWhen": [
+      "runner_attached",
+      "sealed_concrete_provider_product_ready",
+      "nonzero_profile_digest",
+      "durable_learning_owner_attached",
+      "bounded_invocation_registry_inspectable",
+      "profile_metrics_attached"
+    ],
+    "missingPrerequisiteDisposition": "not_advertised_or_startup_rejected",
+    "compatibilityRunStartCountsAsCanonicalExecution": false
+  },
+  "evidencePolicy": {
+    "checkedInSourceMayEstablish": [
+      "source_presence",
+      "route_callsite_presence",
+      "provider_implementation",
+      "atomic_profile_api",
+      "closed_invariants",
+      "durable_outbox_source",
+      "source_tests_presence"
+    ],
+    "ciReceiptRequiredFor": [
+      "exact_head_execution",
+      "deterministic_merge_execution"
+    ],
+    "realProcessEvidenceRequiredFor": [
+      "physical_product_execution",
+      "lost_ack_reconciliation",
+      "process_restart_reconciliation_at_the_physical_boundary",
+      "revocation_race_qualification"
+    ],
+    "externalEvidenceRequiredFor": [
+      "target_host_resource_qualification",
+      "independent_acceptance",
+      "activation",
+      "release"
+    ],
+    "qualificationLegacyLearningWriteCountsAsProductEvidence": false
+  },
+  "remainingGates": [
+    "obtain terminal-green source-head and synthetic-merge receipts from the independent intelligence.control workflow",
+    "wire the physical terminal observer to AgentdIntelligenceOutcomePlanV1 and durably retain the acknowledged binding at the dispatch owner",
+    "run real-process Agentd/App Server E2E for turn-start lost acknowledgement, restart, dependency outage and revocation races",
+    "qualify a killable owner-process boundary for non-cooperative synchronous stages on the target host",
+    "collect target-host latency, RSS, worker-saturation and reconciliation-backlog evidence",
+    "obtain independent semantic/security review, operator acceptance, activation and release authorization"
+  ]
+}
