@@ -43,8 +43,25 @@ jobs:
         run: |
           set -euo pipefail
           test "$GITHUB_REF_NAME" = "$OWN_BRANCH"
+          test "$GITHUB_REPOSITORY" = 'TrillionniumFoundation/hepta-private-ci'
+          test "$GITHUB_SERVER_URL" = 'https://github.com'
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          test "$(git ls-remote origin "refs/heads/$OWN_BRANCH" | cut -f1)" = "$SOURCE_SHA"
+          ORIGIN_URL="https://github.com/$GITHUB_REPOSITORY.git"
+          # The runner may configure a read mirror in machine-global Git URL
+          # rewrites. Publish and verify refs against GitHub itself. Keep the
+          # repository-local checkout authentication; never print credentials,
+          # disable TLS validation, change global config or force-update a ref.
+          authoritative_git() {
+            env GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1 \
+              GIT_TERMINAL_PROMPT=0 git "$@"
+          }
+          git config --local remote.origin.pushurl "$ORIGIN_URL"
+          test "$(authoritative_git remote get-url --push origin)" = "$ORIGIN_URL"
+          remote_head() {
+            authoritative_git ls-remote "$ORIGIN_URL" "refs/heads/$OWN_BRANCH" \
+              | awk '{print $1}'
+          }
+          test "$(remote_head)" = "$SOURCE_SHA"
           git diff --exit-code
           git diff --cached --exit-code
           git config user.name 'Hepta KG candidate preparation'
@@ -158,12 +175,21 @@ jobs:
           tree="$(git rev-parse HEAD^{tree})"
           git diff --exit-code
           git diff --cached --exit-code
-          # Ordinary push to the authorized draft only, never merge or force.
-          # Persist source even when qualification finds a blocker, so native
-          # diagnostics can inspect exactly the same reviewable commit.
-          test "$(git ls-remote origin "refs/heads/$OWN_BRANCH" | cut -f1)" = "$SOURCE_SHA"
-          git push origin "HEAD:refs/heads/$OWN_BRANCH"
-          test "$(git ls-remote origin "refs/heads/$OWN_BRANCH" | cut -f1)" = "$candidate"
+          # A response can be lost after an accepted push. Reconcile the exact
+          # authoritative ref before any retry; never overwrite concurrent work.
+          for attempt in 1 2 3; do
+            observed="$(remote_head)"
+            if [ "$observed" = "$candidate" ]; then
+              break
+            fi
+            test "$observed" = "$SOURCE_SHA"
+            if authoritative_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=60 \
+              push origin "HEAD:refs/heads/$OWN_BRANCH"; then
+              break
+            fi
+            echo "Candidate push attempt $attempt failed; rechecking the authoritative ref."
+          done
+          test "$(remote_head)" = "$candidate"
           echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
           python3 scripts/hepta_knowledge_graph_map_verify.py \
             --expected-sha "$candidate" --expected-tree "$tree"
