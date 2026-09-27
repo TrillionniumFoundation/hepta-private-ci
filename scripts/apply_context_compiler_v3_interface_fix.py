@@ -15,6 +15,22 @@ def replace_once(path: str, old: str, new: str) -> None:
     target.write_text(text.replace(old, new, 1), encoding="utf-8")
 
 
+# The compatibility module and every public item exported from it must carry
+# the same feature gate. This keeps the ordinary product build on the direct V3
+# graph while preserving an explicit legacy test profile.
+replace_once(
+    "codex-rs/hepta-intelligence/src/lib.rs",
+    "pub use prompt_delivery::PromptRegistryDeliveryPreparationV2;",
+    "#[cfg(feature = \"legacy-prompt-context-v1\")]\n"
+    "pub use prompt_delivery::PromptRegistryDeliveryPreparationV2;",
+)
+replace_once(
+    "codex-rs/hepta-intelligence/src/lib.rs",
+    "pub use prompt_delivery::prepare_prompt_registry_delivery_v2;",
+    "#[cfg(feature = \"legacy-prompt-context-v1\")]\n"
+    "pub use prompt_delivery::prepare_prompt_registry_delivery_v2;",
+)
+
 replace_once(
     "codex-rs/hepta-intelligence/src/prompt_product_v3.rs",
     "use codex_hepta_prompt_registry::PromptContextAuthorityAdmissionV3;\n",
