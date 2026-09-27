@@ -10,6 +10,7 @@ on:
       - "docs/modules/prompt.optimizer/**"
       - "qualification/module-execution-dossiers/detail/prompt.optimizer.md"
       - "scripts/verify_prompt_optimizer_map.py"
+      - "scripts/test_verify_prompt_optimizer_map.py"
       - ".github/workflows/prompt-optimizer-map.yml"
   workflow_dispatch:
 
@@ -31,6 +32,8 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+      - name: Test source-map discovery
+        run: python3 -m unittest discover -s scripts -p 'test_verify_prompt_optimizer_map.py' -v
       - name: Verify source-derived implementation map
         run: |
           set -euo pipefail
