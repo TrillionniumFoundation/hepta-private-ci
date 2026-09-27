@@ -7,11 +7,11 @@ permissions:
   contents: write
 concurrency:
   group: ndu-bounded-native-remediation
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   repair:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
     env:
       EXPECTED_SHA: ${{ github.sha }}
