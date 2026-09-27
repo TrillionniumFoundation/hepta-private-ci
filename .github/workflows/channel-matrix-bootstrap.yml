@@ -41,7 +41,13 @@ jobs:
             echo 'applied=false' >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          cat "$patch_dir"/part-* > "$RUNNER_TEMP/channel-matrix-local.patch"
+          : > "$RUNNER_TEMP/channel-matrix-local.patch"
+          for part in "$patch_dir"/part-*; do
+            cat "$part" >> "$RUNNER_TEMP/channel-matrix-local.patch"
+            # Git blobs may intentionally omit a trailing newline; every patch
+            # segment nevertheless starts at a new diff boundary.
+            printf '\n' >> "$RUNNER_TEMP/channel-matrix-local.patch"
+          done
 
           # The patch was reviewed against this convergence branch, but several
           # documentation hunks intentionally omit blob-index lines. BSD patch
