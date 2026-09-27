@@ -90,6 +90,7 @@ pub use codex_hepta_agent_protocol::AgentdResponse;
 pub use codex_hepta_agent_protocol::AuthBusObjectiveBody;
 pub use codex_hepta_agent_protocol::AuthBusObjectiveIngress;
 pub use codex_hepta_agent_protocol::AuthBusTextBody;
+pub use codex_hepta_agent_protocol::AuthBusTextIngress;
 pub use codex_hepta_agent_protocol::AuthBusTextState;
 pub use codex_hepta_agent_protocol::AuthBusTextStatus;
 pub use codex_hepta_agent_protocol::AutomationEffectObservation;
