@@ -2,7 +2,8 @@ import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 async function load(page) {
-  await page.goto("/");
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("Connected", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Request start", exact: true })).toBeEnabled();
 }
 async function records(page) {
