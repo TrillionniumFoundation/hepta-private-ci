@@ -82,6 +82,16 @@ jobs:
 
           tests_path = Path('codex-rs/hepta-contracts/src/authority_trust_tests.rs')
           tests = tests_path.read_text(encoding='utf-8')
+          import_anchor = 'use super::*;\nuse ed25519_dalek::Signer;\n'
+          explicit_imports = '''use super::*;
+          use crate::final_use_control::FinalUseRevocationFeedVerifier;
+          use crate::final_use_control::FinalUseRevocationUpdate;
+          use crate::final_use_control::SignedFinalUseRevocationUpdate;
+          use ed25519_dalek::Signer;
+          '''
+          if tests.count(import_anchor) != 1:
+              raise SystemExit('verified-head test import anchor drifted')
+          tests = tests.replace(import_anchor, explicit_imports, 1)
           if tests.count('clock_at(4_000),') != 1:
               raise SystemExit('uncertainty boundary test anchor drifted')
           tests = tests.replace('clock_at(4_000),', 'clock_at(2_995),', 1)
