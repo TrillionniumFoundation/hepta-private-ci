@@ -1,0 +1,91 @@
+name: Hepta Laya real-model smoke
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-infer-worker-host/python/**'
+      - '.github/workflows/hepta-laya-smoke.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'codex-rs/hepta-infer-worker-host/python/**'
+      - '.github/workflows/hepta-laya-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-laya-smoke-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cpu-smoke:
+    runs-on: macos-15
+    timeout-minutes: 20
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Bind exact source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/laya-identity.txt"
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Install fixed direct dependencies and retain resolved provenance
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/laya-env"
+          "$RUNNER_TEMP/laya-env/bin/python" -m pip install --disable-pip-version-check --report "$RUNNER_TEMP/laya-install.json" \
+            'torch==2.8.0' 'transformers==4.56.2' 'tokenizers==0.22.0' \
+            'safetensors==0.6.2' 'huggingface_hub==0.34.4' 'numpy==2.2.6' \
+            'laya @ git+https://github.com/NandhaKishorM/laya@4066d5d5fbf08b66c6757ddeedbd797bd7655bc0'
+          "$RUNNER_TEMP/laya-env/bin/python" -m pip freeze --all > "$RUNNER_TEMP/laya-environment.txt"
+      - name: Contract and preparation tests (not model execution)
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/laya-env/bin/python" -m unittest discover -v -s codex-rs/hepta-infer-worker-host/python -p 'test_*.py' 2>&1 | tee "$RUNNER_TEMP/laya-contracts.log"
+      - name: Real pinned checkpoint load and bounded read-only predictions
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/laya-env/bin/python" codex-rs/hepta-infer-worker-host/python/laya_smoke.py --output "$RUNNER_TEMP/laya-smoke" 2>&1 | tee "$RUNNER_TEMP/laya-smoke.log"
+      - name: Require actual model observations
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/laya-env/bin/python" - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'laya-smoke'
+          run = json.loads((root / 'run.json').read_text())
+          observation = json.loads((root / 'model-observation.json').read_text())
+          assert run['success'] is True
+          assert run['source_sha'] == os.environ['SOURCE_SHA'] == run['tested_sha']
+          assert observation['real_model_forward_calls'] >= 2
+          assert observation['weights_parameters'] > 100_000_000
+          assert observation['production_composition'] is False
+          assert observation['held_out_efficacy'] is False
+          PY
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ always() }}
+        with:
+          name: laya-real-model-${{ env.SOURCE_SHA }}
+          path: |
+            ${{ runner.temp }}/laya-identity.txt
+            ${{ runner.temp }}/laya-install.json
+            ${{ runner.temp }}/laya-environment.txt
+            ${{ runner.temp }}/laya-contracts.log
+            ${{ runner.temp }}/laya-smoke.log
+            ${{ runner.temp }}/laya-smoke/*.json
+          if-no-files-found: error
+          retention-days: 14
