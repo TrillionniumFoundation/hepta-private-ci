@@ -65,9 +65,15 @@ def signal_owned_group(child: subprocess.Popen, observed_exit) -> str:
     except PermissionError as denied:
         if sys.platform != "darwin" or denied.errno != errno.EPERM:
             raise
+        # The child can exit BETWEEN the caller's observation and killpg.
+        # Re-observe after EPERM without reaping; a still-live child is denied.
         prior = _exit_identity(observed_exit, leader)
-        if prior is None:
+        current = os.waitid(os.P_PID, leader, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+        exited = _exit_identity(current, leader)
+        if exited is None:
             raise
+        if prior is not None and prior != exited:
+            raise ChildProcessError("group leader exit identity changed")
         if _darwin_group_members(leader) != (leader,):
             raise denied
         # The proc snapshot does not consume the child. Check ownership again
@@ -75,6 +81,6 @@ def signal_owned_group(child: subprocess.Popen, observed_exit) -> str:
         if child.returncode is not None:
             raise ChildProcessError("group leader ownership was lost")
         current = os.waitid(os.P_PID, leader, os.WEXITED | os.WNOHANG | os.WNOWAIT)
-        if _exit_identity(current, leader) != prior:
+        if _exit_identity(current, leader) != exited:
             raise ChildProcessError("group leader exit identity changed")
         return EXITED_LEADER_ONLY

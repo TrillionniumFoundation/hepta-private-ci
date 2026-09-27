@@ -99,6 +99,23 @@ class GroupTests(unittest.TestCase):
                 group.signal_owned_group(child, observed)
         self.assertIsNone(child.returncode)
 
+    def test_exit_between_initial_observation_and_signal_is_rechecked(self):
+        child, observed = self.child()
+        # A real unreaped zombie, with the caller's earlier live observation.
+        self.assertIsNotNone(observed)
+        self.assertEqual(self.denied(child, None), group.EXITED_LEADER_ONLY)
+        self.assertIsNone(child.returncode)
+        self.assertEqual(child.wait(timeout=3), 0)
+
+    def test_exit_identity_change_after_group_query_is_not_reaped(self):
+        child, observed = self.child()
+        other = SimpleNamespace(si_pid=child.pid, si_signo=signal.SIGCHLD,
+                                si_code=os.CLD_EXITED, si_status=9)
+        with patch.object(group.os, "waitid", side_effect=[observed, other]):
+            with self.assertRaises(ChildProcessError):
+                self.denied(child, observed)
+        self.assertIsNone(child.returncode)
+
     def test_external_reap_never_signals(self):
         child, observed = self.child()
         child.wait(timeout=3)

@@ -5,10 +5,12 @@ PID-reuse observation. They never create an external-effect or model claim.
 """
 import errno
 import os
+import signal
 import subprocess
 import unittest
 from unittest.mock import patch
 
+from laya_binary import OwnerDeadline
 from laya_process import ProcessFailure, _cleanup_owned_child
 import test_laya_process as fixtures
 
@@ -21,17 +23,22 @@ class OwnershipTests(unittest.TestCase):
     execute = fixtures.ProcessTests.execute
 
     def retained(self):
+        # Denied signalling of a LIVE child is unresolved on both platforms.
+        # An exited singleton is not a permission-denied fixture on Darwin.
+        deadline = OwnerDeadline.start(fixtures.decode_request_deadline(self.wire), maximum_seconds=0.25)
         with patch("laya_process.os.killpg", side_effect=PermissionError(errno.EPERM, "private")):
             with self.assertRaises(ProcessFailure) as caught:
-                self.execute("sys.stdin.buffer.read()")
+                self.execute("sys.stdin.buffer.read()\ntime.sleep(30)", deadline=deadline)
         failure = caught.exception
         self.assertIsNotNone(failure.child)
+        self.assertIsNone(os.waitid(os.P_PID, failure.child.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT))
         self.addCleanup(failure.reconcile_cleanup)
         return failure
 
     def test_external_wait_without_popen_update_permanently_loses_identity(self):
         failure = self.retained()
         child = failure.child
+        os.kill(child.pid, signal.SIGKILL)  # still the owned, unreaped live child
         os.waitpid(child.pid, 0)  # a prohibited external reaper; returncode stays None
         self.assertIsNone(child.returncode)
         first = failure.reconcile_cleanup()
@@ -50,7 +57,7 @@ class OwnershipTests(unittest.TestCase):
         self.assertFalse(second["eligible_reply"])
         self.assertFalse(second["retry_allowed"])
         # Record the external result for Popen destructor only, never as owner success.
-        child.returncode = 0
+        child.returncode = -signal.SIGKILL
 
     def test_observation_projection_cannot_forge_cleanup_completion(self):
         failure = self.retained()
