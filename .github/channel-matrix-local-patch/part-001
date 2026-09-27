@@ -1,61 +1,5 @@
---- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
-+++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
-@@ -3,6 +3,10 @@
- use std::collections::VecDeque;
- use std::error::Error;
- use std::fs;
-+#[cfg(unix)]
-+use std::fs::File;
-+#[cfg(unix)]
-+use std::io::Read;
- use std::sync::Mutex;
- #[cfg(unix)]
- use std::sync::atomic::AtomicU64;
-@@ -90,6 +94,13 @@
- const ALLOWED_SENDER: &str = "@owner:example.test";
- const ALLOWED_ROOM: &str = "!allowed:example.test";
- 
-+#[cfg(unix)]
-+fn test_material() -> TestResult<[u8; 32]> {
-+    let mut material = [0_u8; 32];
-+    File::open("/dev/urandom")?.read_exact(&mut material)?;
-+    Ok(material)
-+}
-+
- fn agent(value: &str) -> TestResult<AgentId> {
-     Ok(AgentId::parse(value)?)
- }
-@@ -261,7 +272,7 @@
- 
-         let directory = TempDir::new()?;
-         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
--        let signer = SigningKey::from_bytes(&[91; 32]);
-+        let signer = SigningKey::from_bytes(&test_material()?);
-         let authority = FinalUseAuthority::open_state_dir(
-             directory.path(),
-             "matrix-test-owner".to_string(),
-@@ -308,8 +319,8 @@
-             .map_err(|_| MatrixAuthorityError::Unavailable)
-             .map(|duration| duration.as_millis() as u64);
-         let signed = now.and_then(|now| {
--            let mut nonce = [0_u8; 32];
--            nonce[..8].copy_from_slice(&sequence.to_be_bytes());
-+            let nonce =
-+                test_material().map_err(|_| MatrixAuthorityError::Unavailable)?;
-             let grant = FinalUseGrant {
-                 schema_version: 1,
-                 signer_id: "matrix-test-owner".to_string(),
-@@ -324,7 +335,9 @@
-                 .signing_bytes()
-                 .map_err(|_| MatrixAuthorityError::InvalidBinding)?;
-             let signature = if self.wrong_signer {
--                SigningKey::from_bytes(&[92; 32])
-+                SigningKey::from_bytes(
-+                    &test_material().map_err(|_| MatrixAuthorityError::Unavailable)?,
-+                )
-                     .sign(&signing_bytes)
-                     .to_bytes()
-                     .to_vec()
+diff --git a/.github/workflows/channel-matrix-materialize.yml b/.github/workflows/channel-matrix-materialize.yml
+index f268f13..bb0a9c8 100644
 --- a/.github/workflows/channel-matrix-materialize.yml
 +++ b/.github/workflows/channel-matrix-materialize.yml
 @@ -1,14 +1,8 @@
@@ -75,3 +19,356 @@
    workflow_dispatch: {}
  
  permissions:
+diff --git a/codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs b/codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs
+index db38e02..83d37b2 100644
+--- a/codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs
++++ b/codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs
+@@ -82,10 +82,35 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
+             .authority()
+             .enter_verified_use(token, binding)
+             .map_err(|_| OutboxDispatchError::Authority)?;
+-        if !entered.matches(binding) {
+-            return Err(OutboxDispatchError::Authority);
++        // After kernel entry, the return type must retain the entered proof.
++        // A fallible clock/store/adapter step must not escape as a pre-entry
++        // error and make the caller release this claim as canceled or revoked.
++        Ok(self
++            .send_entered(
++                Arc::new(entered),
++                binding,
++                claimed_epoch,
++                claimed_revision,
++                grant_expires_at_ms,
++            )
++            .await)
++    }
++
++    async fn send_entered(
++        &self,
++        proof: Arc<EnteredUseToken>,
++        binding: &FinalUseBinding,
++        claimed_epoch: u64,
++        claimed_revision: u64,
++        grant_expires_at_ms: u64,
++    ) -> EnteredSend {
++        if !proof.matches(binding) {
++            return EnteredSend::indeterminate(proof);
+         }
+-        let proof = Arc::new(entered);
++        let entered_at_ms = match self.clock.now_ms() {
++            Ok(now_ms) => now_ms,
++            Err(_) => return EnteredSend::indeterminate(proof),
++        };
+ 
+         // Crossing the kernel check is a monotone audit boundary. The network
+         // has not necessarily been entered yet, but any result after this line
+@@ -99,13 +124,13 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
+                 self.claim,
+                 proof.as_ref(),
+                 binding,
+-                self.clock.now_ms()?,
++                entered_at_ms,
+             ),
+         )
+         .await;
+         match persisted {
+             Ok(Ok(())) => {}
+-            Ok(Err(_)) | Err(_) => return Ok(EnteredSend::indeterminate(proof)),
++            Ok(Err(_)) | Err(_) => return EnteredSend::indeterminate(proof),
+         }
+         if self
+             .preflight(
+@@ -116,7 +141,7 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
+             )
+             .is_err()
+         {
+-            return Ok(EnteredSend::indeterminate(proof));
++            return EnteredSend::indeterminate(proof);
+         }
+ 
+         let permit = match MatrixSendPermit::new(
+@@ -126,7 +151,7 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
+             self.record,
+         ) {
+             Ok(permit) => permit,
+-            Err(_) => return Ok(EnteredSend::indeterminate(proof)),
++            Err(_) => return EnteredSend::indeterminate(proof),
+         };
+         if self
+             .preflight(
+@@ -137,7 +162,7 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
+             )
+             .is_err()
+         {
+-            return Ok(EnteredSend::indeterminate(proof));
++            return EnteredSend::indeterminate(proof);
+         }
+         let mut send = self.transport.send_authorized(self.record, permit);
+ 
+@@ -163,14 +188,14 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
+                 result.unwrap_or(Err(OutboxDispatchError::LeaseExpired))
+             }
+         };
+-        Ok(EnteredSend {
++        EnteredSend {
+             result: match observed {
+                 Ok(result) => result,
+                 Err(OutboxDispatchError::LeaseExpired) => Err(MatrixTransportError::ReadTimeout),
+                 Err(_) => Err(MatrixTransportError::ResponseLost),
+             },
+             _proof: proof,
+-        })
++        }
+     }
+ 
+     fn preflight(
+diff --git a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+index f574360..6bffb35 100644
+--- a/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
++++ b/codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+@@ -3,6 +3,10 @@ use std::collections::BTreeSet;
+ use std::collections::VecDeque;
+ use std::error::Error;
+ use std::fs;
++#[cfg(unix)]
++use std::fs::File;
++#[cfg(unix)]
++use std::io::Read;
+ use std::sync::Mutex;
+ #[cfg(unix)]
+ use std::sync::atomic::AtomicU64;
+@@ -90,6 +94,13 @@ const AGENT_MXID: &str = "@agent:example.test";
+ const ALLOWED_SENDER: &str = "@owner:example.test";
+ const ALLOWED_ROOM: &str = "!allowed:example.test";
+ 
++#[cfg(unix)]
++fn test_material() -> TestResult<[u8; 32]> {
++    let mut material = [0_u8; 32];
++    File::open("/dev/urandom")?.read_exact(&mut material)?;
++    Ok(material)
++}
++
+ fn agent(value: &str) -> TestResult<AgentId> {
+     Ok(AgentId::parse(value)?)
+ }
+@@ -261,7 +272,7 @@ impl TestAuthorizer {
+ 
+         let directory = TempDir::new()?;
+         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
+-        let signer = SigningKey::from_bytes(&[91; 32]);
++        let signer = SigningKey::from_bytes(&test_material()?);
+         let authority = FinalUseAuthority::open_state_dir(
+             directory.path(),
+             "matrix-test-owner".to_string(),
+@@ -308,9 +319,7 @@ impl MatrixOutboundAuthorizer for TestAuthorizer {
+             .map_err(|_| MatrixAuthorityError::Unavailable)
+             .map(|duration| duration.as_millis() as u64);
+         let signed = now.and_then(|now| {
+-            let mut nonce = [0_u8; 32];
+-            nonce[..8].copy_from_slice(&sequence.to_be_bytes());
+-            nonce[8..16].copy_from_slice(&request.attempt.to_be_bytes());
++            let nonce = test_material().map_err(|_| MatrixAuthorityError::Unavailable)?;
+             let grant = FinalUseGrant {
+                 schema_version: 1,
+                 signer_id: "matrix-test-owner".to_string(),
+@@ -325,7 +334,9 @@ impl MatrixOutboundAuthorizer for TestAuthorizer {
+                 .signing_bytes()
+                 .map_err(|_| MatrixAuthorityError::InvalidBinding)?;
+             let signature = if self.wrong_signer {
+-                SigningKey::from_bytes(&[92; 32])
++                SigningKey::from_bytes(
++                    &test_material().map_err(|_| MatrixAuthorityError::Unavailable)?,
++                )
+                     .sign(&signing_bytes)
+                     .to_bytes()
+                     .to_vec()
+diff --git a/docs/modules/channel.matrix/CONTINUATION_VALIDATION.md b/docs/modules/channel.matrix/CONTINUATION_VALIDATION.md
+index 6386282..2e6f07a 100644
+--- a/docs/modules/channel.matrix/CONTINUATION_VALIDATION.md
++++ b/docs/modules/channel.matrix/CONTINUATION_VALIDATION.md
+@@ -90,3 +90,52 @@ The six new Rust tests were not compiled or executed in the current tool host,
+ which had no Rust/just toolchain. No exact-head native pass, real Synapse run,
+ encryption/rotation qualification, authenticated restore, acceptance or release
+ is claimed. Consult the final commit's actual CI artifacts for later execution.
++
++## 2026-09-28: materialization and post-entry error boundary
++
++Continuation baseline: PR #1105, source commit
++`1ce711d4494f191b3912fa9c793be810c1de9c90`. The retained bootstrap workspace
++(artifact `10936340892`, SHA-256
++`61e8a75f6651321081ee57b7868d22b7bdf29c0d6bfe93f0d5063e18db6d198f`)
++contains the source snapshot, not a native pass: its `Reject staged recovery
++source` step failed and the native-command logs are empty.
++
++The pending entropy patch did not apply exactly because the current grant
++fixture also binds `request.attempt` into its previous deterministic nonce.
++This continuation rebases that patch against the actual bytes, replaces the
++complete old nonce construction with Unix OS entropy, preserves the distinct
++wrong-signer negative path, and retains its manual-only recovery-workflow change.
++The materializer must remove the staged patch after applying the source; a
++patch file alone is never an implemented or qualified repair.
++
++`FinalSendGate::enter_verified_use` now delegates every operation after kernel
++entry to `send_entered`, whose return type is `EnteredSend`, not
++`Result<EnteredSend, OutboxDispatchError>`. The proof stays attached even if the
++post-entry clock sample, binding verification, persistence, cancellation,
++freshness check, permit construction, or transport continuation fails. Such
++failures remain unknown effects under the original transaction. A `?` cannot
++propagate a pre-entry error from this post-entry function. This does not claim
++that kernel entry alone means any network bytes were sent. Existing native
++`final_poll_regressions` and `pending_poll_regressions` exercise the surrounding
++kernel/SQLite paths; they still need execution on the final candidate.
++
++The source-navigation checker referred to a nonexistent migration-10 trigger
++name. It now checks the actual replacement trigger and its entered-use join and
++failure message, without modifying a historical migration or its checksum.
++Regression coverage checks every registered source marker against current
++files. Implementation maps also reject duplicate JSON keys at any depth,
++non-integer/wrong schema versions, missing operations, duplicate operations and
++mismatched design/native operation identities. All three owner operations must
++be represented exactly once before source mapping can be reported complete.
++
++Local verification: `python3 -m unittest discover -s scripts/tests -p
++ 'test_channel_matrix*.py' -v` ran 66 tests, with zero failures or skips. This
++includes real SQLite migration fixtures and temporary-Git/real-subprocess
++receipt tests; it is not Rust execution. The original snapshot suite ran 62
++tests successfully before these changes. No Rust compiler, Cargo, just, Docker,
++or usable network resolver was available in the local tool host. Locked native
++checks, strict lint, formatting, deterministic merge qualification, authentic
++Synapse, encryption/device rotation, authenticated restore, sustained retention
++and independent acceptance remain unproved here. Final exact SHA/tree receipts
++belong in the existing read-only qualification jobs; no sourceBase self-hash,
++unchecked success marker, gate waiver, activation or release is introduced.
+diff --git a/scripts/tests/test_channel_matrix_candidate_guard.py b/scripts/tests/test_channel_matrix_candidate_guard.py
+index 5b75b36..7a6dc61 100644
+--- a/scripts/tests/test_channel_matrix_candidate_guard.py
++++ b/scripts/tests/test_channel_matrix_candidate_guard.py
+@@ -1,5 +1,6 @@
+ """Verifier unit contracts in temporary Git fixtures, not product qualification."""
+ import importlib.util
++import json
+ from pathlib import Path
+ import subprocess
+ import tempfile
+@@ -70,6 +71,40 @@ class CandidateGuardTests(unittest.TestCase):
+         with self.assertRaises(RuntimeError):
+             guard.checked_observation({"commit": head, "tree": "0" * 40}, head, "fixture")
+ 
++    def test_operation_inventory_requires_every_owner_operation_once(self):
++        names = ("admit_event", "prepare_send", "observe_send")
++        rows = [{"operation": name, "designOperation": name} for name in names]
++        guard.require_operation_inventory(rows)
++        for invalid in (None, {}, [], rows[:2], rows + [rows[0]],
++                        [rows[0], rows[0], rows[2]], [None],
++                        [{"operation": "admit_event", "designOperation": "observe_send"}]):
++            with self.subTest(invalid=invalid), self.assertRaises(RuntimeError):
++                guard.require_operation_inventory(invalid)
++
++    def test_duplicate_map_fields_are_rejected_at_every_depth(self):
++        prefix = '{"schema":"hepta.module-implementation-map.v3","schemaVersion":3,'
++        for tail in ('"activation":true,"activation":false}',
++                     '"claimBoundary":{"activation":true,"activation":false}}'):
++            with self.subTest(tail=tail), self.assertRaises(RuntimeError):
++                guard.load_implementation_map(prefix + tail)
++
++    def test_map_schema_identity_requires_exact_types(self):
++        row = {"schema": "hepta.module-implementation-map.v3", "schemaVersion": 3}
++        self.assertEqual(guard.load_implementation_map(json.dumps(row)), row)
++        for invalid in (None, [], {**row, "schemaVersion": True},
++                        {**row, "schemaVersion": 3.0}, {**row, "schemaVersion": "3"},
++                        {**row, "schema": "hepta.module-implementation-map.v2"}):
++            with self.subTest(invalid=invalid), self.assertRaises(RuntimeError):
++                guard.load_implementation_map(json.dumps(invalid))
++
++    def test_registered_source_markers_match_the_actual_files(self):
++        # Catch source-navigation drift before it blocks all native tests.
++        root = Path(__file__).resolve().parents[2]
++        for path, markers in guard.SOURCE_MARKERS.items():
++            text = (root / path).read_text(encoding="utf-8")
++            with self.subTest(path=path):
++                self.assertEqual([marker for marker in markers if marker not in text], [])
++
+     def test_expected_sha_mismatch_fails_before_any_map_claim(self):
+         with self.assertRaises(RuntimeError):
+             guard.verify("0" * 40)
+diff --git a/scripts/verify_channel_matrix_candidate.py b/scripts/verify_channel_matrix_candidate.py
+index fe959e5..e87f7ec 100644
+--- a/scripts/verify_channel_matrix_candidate.py
++++ b/scripts/verify_channel_matrix_candidate.py
+@@ -32,7 +32,7 @@ SOURCE_MARKERS = {
+         "pin_outbox_content(", "record_outbox_authorized(", "record_outbox_dispatching(",
+         "refresh_revocations()", "enter_verified_use(token, &request.binding)",
+         "finish_outbox_transport_accepted(", "finish_outbox_indeterminate("),
+-    "codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs": ("enter_verified_use(token, binding)", "MatrixSendPermit::new(", "send_authorized(self.record, permit)", "outbound_payload_digest(self.record)"),
++    "codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs": ("enter_verified_use(token, binding)", "MatrixSendPermit::new(", "send_authorized(self.record, permit)", "outbound_payload_digest(self.record)", "async fn send_entered(", ") -> EnteredSend {"),
+     "codex-rs/hepta-matrix-sdk/src/outbound_v2/permit.rs": ("pub struct MatrixSendPermit", "proof.matches(&self.binding)", "outbound_payload_digest(record)"),
+     "codex-rs/hepta-matrix-sdk/src/outbound_v2/retry.rs": ("classified_retry_at(", "stable_jitter_ms(", "MatrixAttemptFailureClass::RateLimited", "MatrixAttemptFailureClass::ResponseLost"),
+     "codex-rs/hepta-matrix-sdk/src/authority.rs": ("MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION: u32 = 2", "pub struct MatrixFinalUseRequest", "pub trait MatrixOutboundAuthorizer", "outbound_payload_digest(record)"),
+@@ -48,7 +48,7 @@ SOURCE_MARKERS = {
+     "codex-rs/hepta-matrix-store/migrations/0007_matrix_claim_fencing.sql": ("CREATE TABLE matrix_dispatch_attempt_claims", "CREATE TABLE matrix_dispatch_active_claims", "CREATE TABLE matrix_dispatch_authority_witnesses", "CREATE TABLE matrix_dispatch_attempt_events", "Matrix attempt history is append-only"),
+     "codex-rs/hepta-matrix-store/migrations/0008_matrix_content_binding.sql": ("CREATE TABLE matrix_dispatch_content_bindings", "matrix_dispatch_content_bindings_no_update", "matrix_dispatch_content_bindings_no_delete"),
+     "codex-rs/hepta-matrix-store/migrations/0009_matrix_legacy_content_holds.sql": ("CREATE TABLE matrix_dispatch_legacy_content_holds", "message.attempts > 0", "matrix_dispatch_legacy_content_holds_no_insert", "matrix_dispatch_legacy_content_holds_no_delete"),
+-    "codex-rs/hepta-matrix-store/migrations/0010_matrix_entered_use_proofs.sql": ("CREATE TABLE matrix_dispatch_use_entries", "matrix_dispatch_use_entries_no_update", "matrix_dispatch_succeeded_requires_entered_use"),
++    "codex-rs/hepta-matrix-store/migrations/0010_matrix_entered_use_proofs.sql": ("CREATE TABLE matrix_dispatch_use_entries", "matrix_dispatch_use_entries_no_update", "CREATE TRIGGER matrix_dispatch_succeeded_requires_authority_claim", "qualified Matrix success requires a durable entered-use proof", "FROM matrix_dispatch_use_entries AS entry"),
+     "codex-rs/hepta-matrix-store/migrations/0011_matrix_legacy_hold_remediation.sql": ("INSERT INTO matrix_dispatch_ledger", "9223372036854775807", "matrix_dispatch_legacy_hold_no_reactivate"),
+     "codex-rs/hepta-matrix-store/migrations/0012_matrix_terminal_any_entered_attempt.sql": ("entry.attempt <= NEW.attempts", "matrix_dispatch_succeeded_requires_authority_claim", "matrix_dispatch_redacted_requires_authority_claim"),
+     "codex-rs/state/src/capability_random.rs": ("pub fn random_capability_bytes() -> [u8; 32]", "Uuid::new_v4()"),
+@@ -119,12 +119,49 @@ def checked_observation(value: object, head: str, label: str) -> tuple[str, str]
+     return commit, tree
+ 
+ 
++def load_implementation_map(payload: str) -> dict[str, object]:
++    """Reject ambiguous JSON and untyped schema identities before using a map."""
++    def unique(pairs):
++        result = {}
++        for key, value in pairs:
++            if key in result:
++                raise RuntimeError(f"duplicate implementation-map key: {key}")
++            result[key] = value
++        return result
++
++    row = json.loads(payload, object_pairs_hook=unique)
++    if not isinstance(row, dict):
++        raise RuntimeError("implementation map must be an object")
++    if (row.get("schema") != "hepta.module-implementation-map.v3"
++            or type(row.get("schemaVersion")) is not int
++            or row["schemaVersion"] != 3):
++        raise RuntimeError("unsupported implementation-map schema")
++    return row
++
++
++def require_operation_inventory(operations: object) -> None:
++    """All three owner operations are mandatory; duplicates are not coverage."""
++    expected = {"admit_event", "prepare_send", "observe_send"}
++    if not isinstance(operations, list):
++        raise RuntimeError("implementation map lacks typed operations")
++    observed = []
++    for operation in operations:
++        if not isinstance(operation, dict):
++            raise RuntimeError("implementation operation must be an object")
++        name = operation.get("operation")
++        if not isinstance(name, str) or name != operation.get("designOperation"):
++            raise RuntimeError("implementation operation/design identity mismatch")
++        observed.append(name)
++    if len(observed) != len(expected) or set(observed) != expected:
++        raise RuntimeError("implementation map must cover each Matrix operation exactly once")
++
++
+ def verify(expected_sha: str | None) -> dict[str, object]:
+     head, tree = rev("HEAD"), rev("HEAD^{tree}")
+     if expected_sha is not None and head != expected_sha:
+         raise RuntimeError(f"candidate mismatch: expected {expected_sha}, got {head}")
+     map_file = ROOT / MAP_PATH
+-    row = json.loads(map_file.read_text(encoding="utf-8"))
++    row = load_implementation_map(map_file.read_text(encoding="utf-8"))
+     if row.get("module") != "channel.matrix":
+         raise RuntimeError("implementation-map module identity mismatch")
+     if row.get("candidateBindingPolicy") != "immutable_source_anchor_plus_exact_head_receipt":
+@@ -143,6 +180,7 @@ def verify(expected_sha: str | None) -> dict[str, object]:
+     operations = row.get("operations")
+     if not isinstance(operations, list) or not operations:
+         raise RuntimeError("implementation map lacks operations")
++    require_operation_inventory(operations)
+     for operation in operations:
+         source, symbol = operation["sourcePath"], operation["nativeSymbol"]
+         require_markers(source, (symbol,))
