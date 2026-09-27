@@ -165,11 +165,7 @@ fn summary(values: &mut [u64]) -> serde_json::Value {
 }
 
 fn percentile(values: &[u64], percentile: usize) -> u64 {
-    let rank = values
-        .len()
-        .saturating_mul(percentile)
-        .saturating_add(99)
-        / 100;
+    let rank = values.len().saturating_mul(percentile).saturating_add(99) / 100;
     values[rank.saturating_sub(1).min(values.len() - 1)]
 }
 
