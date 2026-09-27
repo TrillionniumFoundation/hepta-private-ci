@@ -1,324 +1,291 @@
-# context.compiler technical development guide
-
-**Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
-
-**Module:** `context.compiler`
-
-**Owner:** `intelligence-platform`
-
-**Deputy:** `security-authority`
-
-**Lifecycle:** `target`
-
-**Source status:** `existing_bound`
-
-**Bootstrap work package:** `CTX-1-CONTEXT-COMPILER`
-
-This stable document is the implementation guide for `context.compiler`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
-
-## 1. Identity, mission and ownership
-
-Compile bounded, source-aware model context while keeping untrusted evidence distinct from trusted instruction.
-
-The primary owner `intelligence-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `security-authority` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
-
-Plane `domain`, kind `compiler`, state model `stateless_runtime` and architecture role `intervention_policy` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
-
-## 2. Source binding and implementation status
-
-Declared exclusive target roots:
-
-- `codex-rs/hepta-context-compiler`
-
-Existing declared roots at this exact source snapshot:
-
-- `codex-rs/hepta-context-compiler`
-
-Non-authoritative implementation evidence roots:
-
-None.
-
-Declared roots not yet present:
-
-None.
-
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
-
-### Native source and scope
-
-The registered primary source is [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs). V1 compatibility surfaces include `CompilationRequest`, `ContextCompilationReceipt`, `CompilationRequirementsV1`, `compile`, `compile_candidate_bound` and `compile_with_requirements`. The normative verified V2 surface is implemented in [src/v2.rs](../../../codex-rs/hepta-context-compiler/src/v2.rs) and includes `verify_admission_snapshot_v2`, `verify_admission_snapshot_successor_v2`, `verify_admission_v2`, `compile_v2`, `record_serialization`, `build_attachment`, `prepare_delivery_v2` and `observe_delivery`, typed admission snapshots/evidence, exact-tokenizer and serializer adapters, an opaque pre-dispatch safety witness, and provider-invocation evidence validation. The implementation map uses strict module-local source provenance anchored at commit `1ab65444213e47617d16b7fd03f6e141c4a8a400` / tree `ce640923f09262b664856da31369ae6b3d5fbc1c`; verification checks that anchor identity, ancestry and mapped-source/test drift. Source presence still does not prove product composition, independent qualification or provider execution. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/context.compiler.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md).
-
-## 3. Boundary, responsibilities and non-goals
-
-Direct dependencies:
-
-- `platform.types`
-- `platform.wire`
-- `cognitive.read`
-- `prompt.optimizer`
-- `intuition.policy`
-
-Authoritative write domains:
-
-None.
-
-Explicitly denied capabilities:
-
-- `raw_secret`
-- `unverified_fact_as_instruction`
-- `model_call`
-
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
-
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
-
-## 4. Internal architecture and component decomposition
-
-The bounded components are:
-
-- `admission record/snapshot verifier boundary`
-- `input normalizer`
-- `constraint validator`
-- `deterministic compiler`
-- `mandatory-group provenance binder`
-- `selected-byte realization validator`
-- `profile-bound serializer and exact tokenizer boundary`
-- `attachment revocation revalidator`
-- `provider-invocation evidence validator and terminal delivery receipt emitter`
-- `digest and receipt emitter`
-
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
-
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
-
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
-
-### Normative verified V2 execution path
-
-The V2 source path is deliberately stronger than a digest-only receipt chain:
-
-1. `ContextAdmissionSnapshotV2` is authenticated by a `ContextAdmissionVerifierV2`, producing a non-forgeable-by-struct-literal `VerifiedAdmissionSnapshotV2`. The snapshot is bound to request scope and authority domain, declares a complete cumulative revocation set and is bounded to 4096 revoked admission ids. `verify_admission_snapshot_successor_v2` binds the predecessor snapshot and rejects scope/domain drift, frontier rollback and removal of any previously revoked admission; an oversized cumulative set fails closed rather than pruning history.
-2. Every candidate, including evidence, carries `VerifiedAdmissionV2` bound to item id, role, content/source/generation digests, request scope, authority domain, verifier-authenticated secret classification, verifier identity, expiry and the snapshot/revocation epoch at which it was verified. Secret status is not a candidate-side caller boolean, and a verified admission classified as secret is rejected before compilation. A trusted instruction is not represented by a caller-supplied admission digest.
-3. `TokenizationReceiptV2::from_exact_bytes` invokes an `ExactTokenizerV2` over actual candidate bytes and binds the tokenizer identity from the exact model profile.
-4. `compile_v2` requires one scope, authority-domain and admission-verifier identity for the request, preserves non-tradable trusted/schema floors, canonicalizes mandatory groups and includes `mandatory_groups_digest` in the compilation receipt. Mandatory-group references are bounded to 4096 in aggregate.
-5. `record_serialization` consumes the actual selected item bytes, verifies every byte sequence against the selected content digest, invokes the profile-bound serializer, hashes the resulting final payload and then invokes the exact tokenizer over those final payload bytes. Final framing/tool/template overhead therefore counts against the real token budget.
-6. `build_attachment` requires a freshly verified admission snapshot and rechecks every selected admission for verifier identity, monotonic snapshot/epoch, expiry and revocation before attachment. Admission expiry is exclusive: a snapshot observed exactly at `expires_unix_ms` is already expired.
-7. `prepare_delivery_v2` revalidates again at the pre-dispatch boundary, rejects snapshot epoch or observation-time rollback relative to attachment, and emits a construction-closed `ContextDeliveryPreparationV2` binding the exact payload, provider/model profile and current admission snapshot. The runtime/provider owner performs the physical request and must bind the exact payload SHA-256 into `ProviderRequestBinding.ephemeral_input_sha256`. The existing `ephemeral_input_witness_sha256` remains a provider-owned exact-attempt witness; it is not redefined as `SHA256(ContextDeliveryPreparationV2)`. `observe_delivery` requires that witness to be present and passes the canonical `ProviderInvocationReceipt` together with the current preparation to an independent `ContextProviderDeliveryVerifierV2`, which must authenticate the provider-owned witness/preparation linkage. The compiler directly checks exact payload, provider/model, attempt/terminal and evidence lineage before emitting `ContextDeliveryReceiptV2`. The compiler itself never opens a provider/network/model effect boundary. `ContextCompilationReceiptV2`, `CompiledContextV2`, `SerializedContextV2`, `ContextSerializationReceiptV2`, `ContextAttachmentV2`, `ContextDeliveryPreparationV2` and `ContextDeliveryReceiptV2` are construction-closed outside this module; callers cannot bypass `compile_v2`, exact serialization/tokenization or current-revocation checks by synthesizing proof structs.
-
-The admission verifier, serializer, tokenizer and provider-evidence verifier are explicit trusted adapter seams. Their digest identities are evidence inputs, not authority grants. A malicious or incorrectly configured adapter is outside the compiler's pure-algorithm proof and must be qualified by the owning integration. The actual runtime/provider adapter must independently satisfy the repository's final-use authority contract; this module never mints or consumes provider authority. V1 APIs remain compatibility source surfaces and do not satisfy this V2 proof chain.
-
-### Multiscale DecisionCell integration target
-
-Compile approved cell/organ observations with source and truncation provenance under the same tokenizer and context budget. Treat model messages as evidence/advice, never new authority. Bind the actually delivered content and effective model bundle so training cannot attribute an undelivered intervention to an outcome.
-
-Required targeted tests: truncation accounting, stale evidence, tokenizer mismatch and compiled-versus-delivered identity.
-
-The shared contract and record design are in
-[DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md);
-[organ composition](../../cns/TECHNICAL.md) defines the stable outer boundary.
-This target does not change the current native implementation, source status or
-product/activation evidence recorded below. No existing wire version is redefined.
-
-### Capacity, depth and learning evidence target
-
-Preserve task-relevant approved representations or owner-readable references rather than silently collapsing all information into labels. Bound and record truncation, tokenizer equivalence, compression and reread costs. Typed/scoped inputs do not by themselves imply sufficient information.
-
-Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_SPEC.md)
-and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
-planned integration requirement, not a change to source or product status.
-
-### Shared-experience and isolated-Agent integration target
-
-Construct context independently from the local objective, local state and purpose-authorized shared evidence. Bind actual delivered records and truncation; another Agent context, instructions, credential environment or stale cache is not a permissible implicit input. Artifact-only experiments exclude hidden retrieval paths.
-
-The target [HNMF contract](../../hnmf/TECHNICAL.md) and
-[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
-retain current source, wire and capability states.
-
-## 5. Contracts, ports and compatibility
-
-Produced registered contracts:
-
-- `ContextCompilationReceiptV1` (compatibility surface)
-- `ModulePort::context.compiler::intelligence.control`
-
-Source-local V2 proof types such as `ContextCompilationReceiptV2`, `ContextSerializationReceiptV2`, `ContextAttachmentV2`, `ContextDeliveryPreparationV2` and `ContextDeliveryReceiptV2` are Rust API artifacts, not separately registered wire contracts in `docs/contracts/CONTRACTS.json`. The normative verified V2 compiler-to-runtime handoff is deliberately in-process and typed; V2 proof objects and payload bytes do not cross `platform.wire`. The registered `hepta.context-compilation-receipt.v2` framing remains a compatibility transport for legacy V1 receipt semantics and now admits only canonical producer `context.compiler`; it must not be interpreted as the verified V2 proof chain.
-
-Consumed contracts:
-
-- `IntuitionDecisionReceiptV1`
-- `ModulePort::cognitive.read::context.compiler`
-- `ModulePort::intuition.policy::context.compiler`
-- `ModulePort::platform.types::context.compiler`
-- `ModulePort::platform.wire::context.compiler`
-- `ModulePort::prompt.optimizer::context.compiler`
-- `ObjectiveFunctionV1`
-- `PromptExerciseDecisionV1`
-- `PromptPortfolioReceiptV1`
-- `PromptPricingReceiptV1`
-- `PromptRealizationV1`
-- `RunStartSnapshotV1`
-
-Critical protocol schemas:
-
-- `ContextCompilationReceiptV1`
-- `IntuitionDecisionReceiptV1`
-- `ObjectiveFunctionV1`
-- `PromptExerciseDecisionV1`
-- `PromptPortfolioReceiptV1`
-- `PromptPricingReceiptV1`
-- `PromptRealizationV1`
-- `RunStartSnapshotV1`
-
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
-
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
-
-## 6. Data authority, persistence and migrations
-
-Owned authoritative or rebuildable domains:
-
-None.
-
-Read-only data dependencies:
-
-None.
-
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
-
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
-
-## 7. Runtime, concurrency and transaction model
-
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/context.compiler.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md).
-
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
-
-## 8. Failure semantics, recovery and rollback
-
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/context.compiler.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
-
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
-
-## 9. Security, privacy and threat controls
-
-Owned threat entries:
-
-- `context_secret_leak`
-- `prompt_position_truncation`
-- `untrusted_content_role_escalation`
-
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
-
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
-
-## 10. Performance, capacity and hot-path policy
-
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Native verified-V2 hard ceilings are 4096 candidates, 256 mandatory groups, 4096 aggregate mandatory references, 4096 cumulative revoked admission ids, 1 MiB raw bytes per candidate/realization, 16 MiB aggregate realized bytes, 1,000,000 context tokens and 16 MiB final serialized payload. Exceeding a hard ceiling fails closed. Those ceilings are not target-host measurements; stricter product profiles may lower them. Current native limits belong to [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs) and the linked implementation components.
-
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
-
-## 11. Observability and operations
-
-Stateless context compiler, embedded before the physical App Server request. The verified V2 path reserves mandatory groups, binds their canonical provenance, rejects insufficient candidate or final serialized budgets, validates the exact selected bytes used for realization, tokenizes the actual final payload, revalidates current admission/revocation at attachment and again when creating the pre-dispatch safety witness, and validates canonical provider invocation/terminal evidence after the runtime owner performs the request. A compilation, attachment or preparation receipt alone is not a provider-send receipt. Production qualification must prove that the runtime/provider owner consumes current final-use authority, carries the exact payload into its provider binding, derives the provider-owned exact-attempt witness under the real provider policy, and lets the independent delivery verifier authenticate that witness against the current preparation plus persisted provider observation.
-
-Current operating and state-format references:
-
-- [codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md](../../../codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md).
-
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
-
-## 12. Verification and qualification
-
-Current focused test sources (source references, not pass receipts):
-
-- [codex-rs/hepta-context-compiler/src/v2_tests.rs](../../../codex-rs/hepta-context-compiler/src/v2_tests.rs); cases cover verifier rejection of otherwise well-formed admission records, scope/authority-domain binding, cumulative revocation no-resurrection, revocation/mandatory/raw-byte ceiling rejection, role-binding confusion, compile-to-attach revocation TOCTOU, actual realization-byte mismatch, exact final-payload tokenization including framing overhead, mandatory-group provenance binding, transport payload mismatch, and revocation after attachment but before delivery.
-- [codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs); compatibility case: `omitted_content_is_bound_without_changing_legacy_compilation`.
-- [codex-rs/hepta-context-compiler/src/lib_tests.rs](../../../codex-rs/hepta-context-compiler/src/lib_tests.rs); compatibility case: `evidence_never_becomes_instruction`.
-
-In `codex-rs`, run `just test -p codex-hepta-context-compiler`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md) separately labels target acceptance designs.
-
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
-
-## 13. Implementation sequence and work packages
-
-Applicable work packages:
-
-- `CTX-1-CONTEXT-COMPILER`
-
-The bootstrap package is `CTX-1-CONTEXT-COMPILER`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
-
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. For the verified V2 path this includes verifier-produced typed admission evidence, scope/authority-domain-bound complete cumulative revocation snapshots with no-resurrection successor checks, bounded mandatory/revocation/raw-byte inputs, canonical mandatory-group provenance, selected-byte realization checks, final-payload exact tokenization, attach/pre-dispatch revocation checks, an opaque dispatch witness, canonical producer admission on the compatibility wire surface and canonical provider-invocation evidence validation. Product caller composition, authoritative admission-verifier qualification, exact tokenizer/serializer qualification, runtime provider-owner authority wiring, provider-owned attempt-witness/preparation verification, independent provider-evidence verification, independent acceptance, activation and release remain separate evidence gates.
-
-## 14. Activation, compatibility and retirement
-
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
-
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
-
-## 15. Definition of module completion
-
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
-
-For `context.compiler`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
-
-### Work-package execution envelopes
-
-#### `CTX-1-CONTEXT-COMPILER`
-
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
-- Owner/deputy: `intelligence-platform` / `security-authority`.
-- Allowed write paths:
-- `codex-rs/hepta-context-compiler/**`
-- Development predecessors:
-- `OBJ-1-OBJECTIVE-COMPILER`
-- `PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW`
-- `INT-1-CALIBRATED-INTUITION-POLICY`
-- Activation predecessors:
-- `OBJ-1-OBJECTIVE-COMPILER`
-- `PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW`
-- `INT-1-CALIBRATED-INTUITION-POLICY`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-## 16. V8.2 pre-coding implementation-readiness overlay
-
-The canonical readiness overlay binds `context.compiler` to primary lane `LANE-C-MEMORY`. The following implementation-level specifications are mandatory alongside Sections 1–15:
-
-- [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
-- [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
-
-Owned readiness protocols:
-
-- None.
-
-Consumed readiness protocols:
-
-- None.
-
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
-
-## 17. Source implementation receipt
-
-The bootstrap source-location obligation for `context.compiler` is implemented by work package `CTX-1-CONTEXT-COMPILER` in:
-
-- `codex-rs/hepta-context-compiler`
-
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+<!-- GENERATED FILE: edit MODULE_MANIFEST.json and run scripts/generate_context_compiler_module_docs.py --write. -->
+# `context.compiler` technical development guide
+
+## 1. Provenance and state model
+
+- Module: `context.compiler`
+- Reviewed base SHA: `a126987b84737dbc2ee2592442a314117bddb4a2`
+- Integration branch: `codex/context-compiler-provider-closure-final-20260927`
+- Source manifest: `docs/modules/context.compiler/MODULE_MANIFEST.json`
+- Canonical manifest SHA-256: `f15a6b933050094662b25c31a1b645072bd7584d985db4263d361e7688280a2f`
+- Generator: `scripts/generate_context_compiler_module_docs.py`
+
+### Review baseline
+
+| Dimension | State | Evidence-based interpretation |
+|---|---|---|
+| Core implementation | **complete** | Review baseline before this closure branch. |
+| Product composition | **partial** | Review baseline before this closure branch. |
+| V2 provider closure | **incomplete** | Review baseline before this closure branch. |
+| Current-head qualification | **absent** | Review baseline before this closure branch. |
+
+### Candidate source state
+
+| Dimension | State | Evidence-based interpretation |
+|---|---|---|
+| Core implementation | **complete** | V2 compilation, verified admission, compiler-owned canonical serialization, typed snapshot succession, attachment, exact request proof, delivery observation, and deny-all proof objects are implemented. |
+| Product composition | **complete** | The registry, hepta-intelligence, Agentd, ext.hepta-prompt, Core, and codex-api compose one fail-closed exact-body path; the physical send is released only after durable pre-send evidence exists. |
+| V2 provider closure | **complete** | The exact encoded provider body is framed by a qualified provider/model policy, tokenized by a binary/vocabulary identity bound to the model profile, submitted without reconstruction, and reconciled into a durable ContextDeliveryReceiptV2. |
+| Current-head qualification | **absent** | Source state never self-asserts qualification. Only a successful immutable receipt whose headSha equals the reviewed Git commit changes the external qualification judgment. |
+
+The four dimensions are intentionally independent. Source-complete composition does not self-grant
+release qualification, deployment authority, provider credentials, or acceptance authority. The
+checked-in truth therefore keeps `currentHeadQualification: absent`; only the external exact-head
+receipt may establish that fact for one immutable commit.
+
+## 2. Scope and trust boundary
+
+`context.compiler` selects admitted context under a deterministic token budget, verifies the
+realized bytes, emits a compiler-owned canonical context bundle, revalidates a monotone admission
+snapshot immediately before physical dispatch, proves the exact encoded provider request, and
+maps verified provider terminal evidence into a durable `ContextDeliveryReceiptV2`.
+
+The module does **not** own provider credentials, network authority, model execution, deployment
+approval, or release acceptance. Admission verifiers, provider framing policies, exact tokenizers,
+and provider terminal verifiers are qualified host capabilities. Their absence or an identity
+mismatch fails closed. Registered candidate token costs may guide deterministic selection, but they
+are never accepted as proof of the final provider request token count.
+
+## 3. Authoritative source map
+
+- `codex-rs/hepta-context-compiler/src/provider_closure.rs`
+- `codex-rs/hepta-context-compiler/src/v2.rs`
+- `codex-rs/hepta-intelligence/src/prompt_delivery.rs`
+- `codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs`
+- `codex-rs/hepta-agentd/src/exact_context_delivery.rs`
+- `codex-rs/ext/hepta-prompt/src/exact_body.rs`
+- `codex-rs/ext/hepta-prompt/src/lib.rs`
+- `codex-rs/codex-api/src/encoded_body_observer.rs`
+- `codex-rs/codex-api/src/endpoint/responses.rs`
+- `codex-rs/core/src/client.rs`
+- `codex-rs/core/src/model_provider_policy`
+- `codex-rs/hepta-codex-adapter/src/lib.rs`
+
+Strict product surface:
+
+- `compile_prompt_registry_v2`
+- `record_canonical_context_bundle_v2`
+- `build_attachment`
+- `verify_admission_snapshot_successor_typed_v2`
+- `prepare_delivery_from_successor_v2`
+- `prove_final_provider_request_v2`
+- `FinalRequestFramingVerifierV2`
+- `ExactFinalRequestTokenizerV2`
+- `observe_final_provider_delivery_v2`
+- `AgentdExactContextDeliveryOwner`
+
+Construction-closed proof objects:
+
+- `VerifiedAdmissionSnapshotV2`
+- `VerifiedAdmissionSnapshotSuccessorV2`
+- `ContextCompilationReceiptV2`
+- `ContextAttachmentV2`
+- `ContextDeliveryPreparationV2`
+- `FinalRequestTokenizerIdentityV2`
+- `FinalRequestTokenizationReceiptV2`
+- `FinalProviderRequestProofV2`
+- `ContextDeliveryReceiptV2`
+
+## 4. End-to-end provider-bound sequence
+
+```mermaid
+flowchart TD
+    N0["registry/admission snapshot"]
+    N1["compile_v2"]
+    N0 --> N1
+    N2["canonical context serialization"]
+    N1 --> N2
+    N3["build_attachment"]
+    N2 --> N3
+    N4["fresh typed snapshot successor"]
+    N3 --> N4
+    N5["prepare_delivery_from_successor_v2"]
+    N4 --> N5
+    N6["host constructs exact encoded provider request"]
+    N5 --> N6
+    N7["qualified provider framing verification"]
+    N6 --> N7
+    N8["exact tokenizer over final request bytes"]
+    N7 --> N8
+    N9["durable pre-send claim"]
+    N8 --> N9
+    N10["provider submit using the attested bytes"]
+    N9 --> N10
+    N11["provider terminal evidence"]
+    N10 --> N11
+    N12["observe_final_provider_delivery_v2"]
+    N11 --> N12
+    N13["durable ContextDeliveryReceiptV2"]
+    N12 --> N13
+```
+
+The order is security-significant:
+
+1. The selected registry projection is serialized by the compiler, not by an arbitrary caller.
+2. The fresh typed snapshot successor is obtained immediately before final use.
+3. The provider host finishes canonical request construction before exact tokenization.
+4. A qualified provider/model framing verifier accepts all non-context request bytes.
+5. Agentd durably claims the exact attempt before transport receives the body.
+6. Terminal evidence is reconciled against the same preparation and final-request proof.
+
+## 5. Byte and digest identity model
+
+| Object | Owner | Exact material | Digest / witness | Security meaning |
+|---|---|---|---|---|
+| canonical context bundle | context.compiler | Compiler-owned JSON envelope containing selected realized items, explicit roles, IDs, content digests, and exact content. | `ContextSerializationReceiptV2.payload_digest` | The selected context is deterministic and cannot be replaced by a caller-supplied prepared payload on the strict product path. |
+| prompt fragments | hepta-intelligence / ext.hepta-prompt | Typed product projection inserted into the host request builder. | `PromptRuntimeAttachmentV1.source_binding_digest` | Useful for product composition and migration, but never accepted as proof of the final provider body. |
+| provider final request | codex-api encoded-body boundary | Exact canonical JSON bytes after all provider/model request construction and before compression or signing. | `FinalProviderRequestProofV2.provider_request_digest` | The qualified tokenizer, framing verifier, durable pre-send claim, and physical HTTP send all consume this same byte string. |
+| provider wire semantic digest | Core model-provider policy | Secret-free canonical semantics of the physical provider attempt, including provider, endpoint, transport, model, request kind, and logical input binding. | `ModelProviderInvocationInput.wire_semantic_sha256` | Binds transport semantics and terminal evidence; it is intentionally distinct from the byte-for-byte final-request digest. |
+
+These identities must never be collapsed:
+
+- **Canonical context bundle** proves the compiler-selected context bytes.
+- **Prompt fragments** are a product projection and migration aid.
+- **Provider final request** is the exact encoded HTTP body before compression or signing.
+- **Wire semantic digest** binds secret-free transport semantics and terminal accounting.
+
+The final request proof carries complete contiguous segment coverage, exactly one canonical context
+segment, qualified framing identity, the byte digest, the wire-semantic digest, and an exact
+tokenization receipt. A semantic digest is not a substitute for a byte digest; a fragment digest is
+not a substitute for either.
+
+## 6. Security invariants
+
+- The strict serializer is compiler-owned; product callers cannot certify arbitrary prepared payload bytes.
+- Every final request contains exactly one canonical context bundle and all remaining bytes are accepted only by a qualified provider/model framing verifier.
+- Tokenizer identity binds provider, model, declared profile tokenizer, executable digest, version digest, vocabulary digest, and normalization-policy digest.
+- The exact encoded body observed before transport is the tokenizer input and the physical HTTP body; no post-proof reconstruction is permitted.
+- Delivery preparation consumes a typed monotone snapshot successor whose predecessor is the attachment-bound snapshot.
+- A pre-send record is durably persisted before the exact request is released to transport.
+- An unresolved durable pre-send survives restart and blocks blind replay; terminal retries are idempotent only for an identical normalized terminal observation.
+- Provider terminal evidence binds the provider intent, wire-semantic digest, final-request proof, preparation, and deny-all authority receipt.
+
+### 6.1 Compiler-owned canonical serialization
+
+The strict path calls `record_canonical_context_bundle_v2`. Selected item IDs, roles, content
+digests, and exact UTF-8 content are encoded in a deterministic compiler-owned envelope. The
+legacy generic serializer trait can remain for compatibility and testing, but product V2 closure
+does not certify a caller-provided prepared payload.
+
+### 6.2 Qualified provider framing
+
+Complete byte coverage alone is insufficient: it can show where the context occurs without proving
+that the other bytes belong to an allowed provider grammar. `FinalRequestFramingVerifierV2`
+therefore validates the exact JSON request, provider/model binding, typed model-input fields, and a
+one-and-only-one decoded context occurrence. Its identity digest is included in
+`FinalProviderRequestProofV2`.
+
+### 6.3 Exact final-request tokenization
+
+`FinalRequestTokenizerIdentityV2` binds:
+
+- provider identity;
+- provider model identity;
+- declared profile tokenizer;
+- tokenizer executable digest;
+- tokenizer version digest;
+- vocabulary digest;
+- normalization-policy digest.
+
+Agentd hashes the configured executable and vocabulary, invokes the tokenizer as a bounded child
+process, writes the exact encoded request to standard input, accepts only a strict positive decimal
+count, and binds that result to the exact request digest. Estimates, candidate-cost sums, and
+post-hoc provider usage are not accepted as pre-dispatch budget proof.
+
+### 6.4 Typed snapshot succession
+
+`VerifiedAdmissionSnapshotSuccessorV2` binds the attachment snapshot as predecessor and rejects
+time rollback, revocation-epoch rollback, authority-domain changes, stale observations, and revoked
+admission resurrection. `prepare_delivery_from_successor_v2` consumes this typed lineage object
+rather than an unrelated freshly verified snapshot.
+
+### 6.5 Durable dispatch and crash recovery
+
+The exact-body observer runs after canonical JSON encoding and before compression/signing. Agentd
+performs final-use revalidation, framing verification, tokenization, and an atomic durable pre-send
+claim before the callback returns and transport may send the body. The send uses the same encoded
+body object; rebuilding from fragments after proof is prohibited.
+
+A durable pre-send without a terminal remains **indeterminate** after restart and blocks blind
+replay. A terminal callback is idempotent only when its normalized terminal observation digest
+matches the durable receipt. A different terminal for the same attempt is a conflict, not a retry.
+
+### 6.6 Provider terminal evidence
+
+Provider intent binds thread, turn, attempt, provider configuration, model, endpoint, request kind,
+transport, logical request, wire semantics, and optional ephemeral input witnesses. Terminal
+evidence is accepted only against the active preparation and final-request proof, then persisted as
+a deny-all `ContextDeliveryReceiptV2`.
+
+## 7. Failure model
+
+Strict APIs fail closed for, among other cases:
+
+- missing, stale, reset, rollback, or revoked admission state;
+- selected-byte mismatch, duplicate realization, or oversized content;
+- arbitrary serializer output on the strict product path;
+- absent, ambiguous, duplicated, gapped, overlapping, or unqualified final-request segments;
+- provider/model/tokenizer/framing identity mismatch;
+- tokenizer absence, timeout, malformed output, zero count, or budget overflow;
+- failure to durably claim the attempt before send;
+- unresolved pre-send recovery, duplicate-attempt conflict, or terminal mismatch;
+- provider evidence that does not bind the exact admitted attempt.
+
+There is no approximate-token fallback and no V1 receipt accepted as V2 closure evidence.
+
+## 8. Test strategy
+
+- canonical serializer golden and adversarial prepared-payload rejection
+- Unicode, embedded control bytes, large request, and exact JSON escaping
+- segment-map gaps, overlaps, duplicate context, wrong model, and unqualified framing
+- tokenizer binary/version/vocabulary/normalization/profile identity mismatch
+- real subprocess tokenizer receiving the exact Unicode/control-byte provider body
+- snapshot reset, time rollback, revocation-epoch rollback, and revocation resurrection
+- crash/reopen unresolved pre-send blocking, retry idempotency, and terminal conflict
+- registry → compiler → exact encoded body → provider terminal → durable receipt integration
+- property-generated deterministic coverage and mutation fail-closed corpus
+
+Property tests exercise deterministic complete coverage and fail-closed mutations over generated
+request shapes. Golden tests include Unicode, JSON escapes, control bytes, large payloads, and a real
+subprocess tokenizer fixture. Product tests cover registry compilation, immediate revocation,
+exact-body observation, crash recovery, terminal idempotency, and durable receipt reconciliation.
+
+## 9. Exact-head qualification
+
+Workflow: `.github/workflows/context-compiler-qualification.yml`
+
+Receipt artifact: `context-compiler-qualification-receipt-<head-sha>`
+
+Required command set:
+
+- `python3 scripts/generate_context_compiler_module_docs.py --check`
+- `cargo fmt --all -- --check`
+- `cargo test --locked -p codex-hepta-context-compiler`
+- `cargo test --locked -p codex-hepta-intelligence prompt_delivery`
+- `cargo test --locked -p codex-hepta-prompt-extension exact_body`
+- `cargo test --locked -p codex-hepta-agentd exact_context_delivery`
+- `cargo check --locked for codex-api/core/compiler/intelligence/prompt/agentd`
+- `cargo clippy --locked for all affected crates and all targets with -D warnings`
+- `cargo deny --locked check bans licenses sources`
+- `cargo deny --locked check advisories (recorded non-blocking repository audit)`
+- `bazel test //codex-rs/hepta-context-compiler:all`
+- `python3 scripts/hepta-readiness.py verify`
+- `python3 scripts/hepta-docs.py verify`
+
+The workflow checks out the exact candidate SHA, records every command, exit code, duration and log
+digest, hashes this manifest and all generated truth files, verifies a clean worktree, and uploads the
+receipt even when a command fails. The artifact name contains the head SHA. Historical green runs
+or source presence do not qualify a different commit.
+
+## 10. Operational requirements and open items
+
+- Exact-head qualification remains absent in source until the external workflow publishes a passing receipt bound to that Git SHA.
+- Deployment must provision an approved tokenizer executable, vocabulary, provider/model identity, normalization policy, and profile digest; missing or mismatched capabilities fail closed.
+- Historical V1 receipt data may be retained for migration and audit, but it is not accepted as V2 provider-closure evidence.
+
+## 11. Change discipline
+
+Edit `MODULE_MANIFEST.json`, regenerate all three truth artifacts, and commit them together. Direct
+manual edits to this file, `IMPLEMENTATION_MAP.json`, or the execution dossier are rejected by the
+qualification gate. Any change to the provider encoder, tokenizer ABI, framing policy, snapshot
+authority, durable state schema, or terminal mapping requires a new exact-head receipt.
