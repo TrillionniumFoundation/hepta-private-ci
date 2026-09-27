@@ -255,9 +255,9 @@ This block is generated from
 override these facts. Workflow receipts may prove the current candidate, but
 cannot self-issue independent acceptance, deployment, canary or release.
 
-- Source anchor commit: `2d8505b1f5caf8591dfe01ee72a8e587698b9154`
-- Source anchor tree: `c1d328e88255ccf9cb04b3b1ed658a6f952ba526`
-- Canonical status SHA-256: `e13fe0a31f4cc0b2983ea7ef080862fedfc71d24cd0319e6b7bd5c1ac2f914f7`
+- Source anchor commit: `001e557716e884fbd47d5ab2f0ca9f47175f958e`
+- Source anchor tree: `6ecfb41b6e18406ea019fbffa3a972aba5cc4baf`
+- Canonical status SHA-256: `efe917d985790cbb41f3bdc2083e7596abc211d4bfee63ace066e84dadd8f99e`
 - Workflow run ID: `none`
 - Retained artifact digest: `none`
 
@@ -276,6 +276,18 @@ cannot self-issue independent acceptance, deployment, canary or release.
 | SQLite authorizer callback | `true` |
 | Disk-full fault injection | `true` |
 | Multi-process contention benchmark | `true` |
+| Owner-controlled non-degradable verification profiles | `true` |
+| Sealed monotonic verified trust snapshots | `true` |
+| Single-transaction authenticated recovery snapshot V2 | `true` |
+| Complete authenticated-admission commitment | `true` |
+| Durable fenced publication and CAS reconciliation | `true` |
+| Bounded product verification summaries | `true` |
+| Real backup-object byte verification | `true` |
+| Governed source-to-executable build provenance | `true` |
+| Backup restore-witness binding | `true` |
+| Immutable segmented frontier history | `true` |
+| Self-authenticating atomic latest-frontier index | `true` |
+| Frontier rollover and capacity observability | `true` |
 
 ### Qualification, deployment and governance gates
 
