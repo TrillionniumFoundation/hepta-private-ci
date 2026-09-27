@@ -32,6 +32,7 @@ export const ACTIVE_STATUSES = new Set([
 ]);
 
 const KNOWN_PERMISSIONS = new Set(Object.values(UI_CONTROL_PERMISSIONS));
+const FORBIDDEN_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 
 export function invalid(message, details) {
   return uiControlError(UI_CONTROL_ERROR_CODES.INVALID_INPUT, message, { details });
@@ -40,6 +41,26 @@ export function invalid(message, details) {
 export function assertPlainObject(value, label) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     throw invalid(`${label} must be an object`, { label });
+  }
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw invalid(`${label} must be a plain object`, { label });
+  }
+  const symbols = Object.getOwnPropertySymbols(value);
+  if (symbols.length > 0) {
+    throw invalid(`${label} cannot contain symbol keys`, { label });
+  }
+  const descriptors = Object.getOwnPropertyDescriptors(value);
+  for (const [key, descriptor] of Object.entries(descriptors)) {
+    if (FORBIDDEN_KEYS.has(key)) {
+      throw invalid(`${label} contains a forbidden object key`, { label, key });
+    }
+    if (!("value" in descriptor) || descriptor.get || descriptor.set) {
+      throw invalid(`${label} cannot contain accessors`, { label, key });
+    }
+    if (!descriptor.enumerable) {
+      throw invalid(`${label} cannot contain hidden properties`, { label, key });
+    }
   }
   return value;
 }
@@ -83,6 +104,7 @@ export function normalizeSession(value, expectedProtocol, now) {
     );
   }
   const sessionId = assertStableIdentifier(value.sessionId, "session.sessionId");
+  const identityId = assertStableIdentifier(value.identityId, "session.identityId");
   const connectionGeneration = assertSafeInteger(
     value.connectionGeneration,
     "session.connectionGeneration",
@@ -111,14 +133,12 @@ export function normalizeSession(value, expectedProtocol, now) {
     authenticated: true,
     protocolVersion,
     sessionId,
+    identityId,
     connectionGeneration,
     permissionRevision,
     expiresAt,
     revoked: false,
     permissions: normalizePermissions(value.permissions),
-    identityId: value.identityId === undefined
-      ? null
-      : assertStableIdentifier(value.identityId, "session.identityId"),
   });
 }
 
@@ -143,10 +163,18 @@ export function publicOperation(entry) {
 
 export function operationMatches(entry, request) {
   return (
+    entry.protocolVersion === request.protocolVersion &&
     entry.method === request.method &&
-    entry.semanticDigest === request.semanticDigest &&
+    entry.operationId === request.operationId &&
+    constantTimeEqual(entry.semanticDigest, request.semanticDigest) &&
     entry.action === request.action &&
-    entry.targetId === request.targetId
+    entry.targetId === request.targetId &&
+    entry.reason === request.reason &&
+    entry.sessionId === request.sessionId &&
+    entry.connectionGeneration === request.connectionGeneration &&
+    entry.generation === request.generation &&
+    entry.displayedRevision === request.displayedRevision &&
+    constantTimeEqual(entry.snapshotDigest, request.snapshotDigest)
   );
 }
 
