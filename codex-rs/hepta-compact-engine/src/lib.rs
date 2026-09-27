@@ -1,13 +1,14 @@
 //! Bounded, deletion-aware cognitive compaction and checkpoint qualification.
 //!
-//! This crate exposes one checkpoint contract: the canonical Lane C
-//! `CompactCheckpointV1`. Legacy checkpoint construction is intentionally not
-//! exported. Durable publication must use an installed, root-authenticated
-//! trust registry and replayable verified publication material.
+//! This crate exposes one checkpoint contract and one durable publication
+//! boundary. Legacy checkpoint construction and the raw SQLite bundle/store are
+//! intentionally not exported. Product callers publish only sealed material
+//! verified against an installed, root-authenticated trust manifest.
 
 #![forbid(unsafe_code)]
 
 mod archive_codec;
+mod coordinator;
 mod durable;
 mod publication;
 #[allow(clippy::too_many_arguments)]
@@ -18,20 +19,18 @@ mod trust_registry;
 pub use codex_hepta_cognitive_types::lane_c::CompactCheckpointV1;
 pub use codex_hepta_cognitive_types::lane_c::CompactionProofV2;
 pub use codex_hepta_cognitive_types::lane_c::CompactionProofWitnessV1;
-pub use durable::CompactionArtifactImagesV1;
-pub use durable::DURABLE_COMPACTION_SCHEMA_VERSION;
-pub use durable::DurableCompactionBundleV1;
+pub use coordinator::CompactionCoordinatorErrorV2;
+pub use coordinator::CompactionPublicationMetricsV2;
+pub use coordinator::CompactionPublicationReceiptV2;
+pub use coordinator::CompactionReopenMetricsV2;
+pub use coordinator::MEMORY_CHECKPOINT_COORDINATOR_CALLER_V2;
+pub use coordinator::MemoryCheckpointCoordinatorV2;
+pub use coordinator::VerifiedCompactionSelectionV2;
+// Read-only receipts and fenced outbox claims are safe to expose. Raw bundle,
+// trust-set and store construction remain unreachable outside this crate.
 pub use durable::DurableCompactionDisposition;
 pub use durable::DurableCompactionError;
 pub use durable::DurableCompactionOutboxEventV1;
-pub use durable::DurableCompactionPublicationReceiptV1;
-pub use durable::DurableCompactionSelectionV1;
-pub use durable::DurableCompactionStoreV1;
-pub use durable::DurableCompactionTrustSetV1;
-pub use durable::MAX_DURABLE_COMPACTION_ARTIFACT_BYTES;
-pub use durable::MAX_DURABLE_COMPACTION_OUTBOX_PAYLOAD_BYTES;
-pub use durable::MEMORY_CHECKPOINT_COORDINATOR_CALLER;
-pub use durable::MemoryCheckpointCoordinatorV1;
 pub use publication::CompactionNonceBindingV1;
 pub use publication::CompactionPublicationEvidenceV1;
 pub use publication::CompactionPublicationRequestV1;
