@@ -1,4 +1,4 @@
-name: runtime.fleet one-shot rustfmt
+name: runtime.fleet one-shot convergence
 
 on:
   push:
@@ -17,10 +17,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  format-and-push:
+  converge-and-push:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Check out feature branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -28,11 +28,84 @@ jobs:
           ref: codex/runtime-fleet-durable-owner-v1-2026-09-27
           fetch-depth: 0
 
+      - name: Fence every mutation behind the durable frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("codex-rs/hepta-fleet/src/durable_owner_frontier.rs")
+          text = path.read_text()
+          replacements = [
+              (
+                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
+                  "        let result = self.inner.refresh_capacity(operation_id, observer);",
+                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
+                  "        self.reconcile_latest_frontier(operation_id)?;\n"
+                  "        let result = self.inner.refresh_capacity(operation_id, observer);",
+              ),
+              (
+                  "    ) -> Result<DurableFleetIssueReceiptV1, DurableFleetError> {\n"
+                  "        let result = self.inner.issue_with_authority(",
+                  "    ) -> Result<DurableFleetIssueReceiptV1, DurableFleetError> {\n"
+                  "        self.reconcile_latest_frontier(operation_id)?;\n"
+                  "        let result = self.inner.issue_with_authority(",
+              ),
+              (
+                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
+                  "        let result = self.inner.renew_or_revoke(",
+                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
+                  "        self.reconcile_latest_frontier(operation_id)?;\n"
+                  "        let result = self.inner.renew_or_revoke(",
+              ),
+              (
+                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
+                  "        let result = self.inner.reconcile_expired(operation_id);",
+                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
+                  "        self.reconcile_latest_frontier(operation_id)?;\n"
+                  "        let result = self.inner.reconcile_expired(operation_id);",
+              ),
+              (
+                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
+                  "        let result = self\n"
+                  "            .inner\n"
+                  "            .persist_revocation_snapshot(operation_id, snapshot);",
+                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
+                  "        self.reconcile_latest_frontier(operation_id)?;\n"
+                  "        let result = self\n"
+                  "            .inner\n"
+                  "            .persist_revocation_snapshot(operation_id, snapshot);",
+              ),
+          ]
+          for old, new in replacements:
+              count = text.count(old)
+              if count == 1:
+                  text = text.replace(old, new)
+              elif new in text:
+                  continue
+              else:
+                  raise SystemExit(f"expected exactly one runtime.fleet frontier pattern, found {count}: {old[:80]!r}")
+          path.write_text(text)
+          PY
+
       - name: Apply repository rustfmt
         working-directory: codex-rs
         run: cargo fmt --all
 
-      - name: Commit exact formatting change
+      - name: Run focused pre-push checks
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo test -p codex-hepta-fleet --all-targets
+          cargo test -p codex-hepta-supervisor --all-targets
+          cargo check -p codex-hepta-supervisor --bin hepta-supervisord
+          cargo clippy -p codex-hepta-fleet --all-targets --all-features -- -D warnings
+          cargo clippy -p codex-hepta-supervisor --all-targets --all-features -- -D warnings
+
+      - name: Commit convergence change
         shell: bash
         run: |
           set -euo pipefail
@@ -43,5 +116,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add codex-rs/hepta-fleet codex-rs/hepta-supervisor
-          git commit -m "runtime.fleet: apply repository rustfmt"
+          git commit -m "runtime.fleet: fence mutations and apply rustfmt"
           git push origin HEAD:codex/runtime-fleet-durable-owner-v1-2026-09-27
