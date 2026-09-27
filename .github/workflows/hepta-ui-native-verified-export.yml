@@ -1,0 +1,37 @@
+name: ui.native verified candidate source export
+
+on:
+  push:
+    branches: [work/ui-native-verified-closure-20260927]
+    paths: [.github/workflows/hepta-ui-native-verified-export.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/work/ui-native-verified-closure-20260927'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Export tracked immutable source only
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p "$RUNNER_TEMP/native-verified-source"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/native-verified-source/identity.txt"
+          git archive HEAD | gzip -n > "$RUNNER_TEMP/native-verified-source/source.tar.gz"
+          sha256sum "$RUNNER_TEMP/native-verified-source/source.tar.gz" > "$RUNNER_TEMP/native-verified-source/source.sha256"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-native-verified-source-${{ github.sha }}
+          path: ${{ runner.temp }}/native-verified-source
+          if-no-files-found: error
+          retention-days: 3
