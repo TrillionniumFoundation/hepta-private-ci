@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   repair:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, hepta-automation-selected-host]
     timeout-minutes: 120
     steps:
       - name: Check out exact work branch
