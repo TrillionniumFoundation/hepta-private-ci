@@ -1,9 +1,10 @@
 {
   "schema": "hepta.inference-worker-current-status.v1",
   "generatedFrom": {
-    "sourceHead": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "sourceTree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30",
-    "status": "remediation-candidate-not-yet-qualified"
+    "sourceHead": "17db3f6b1cdc926ba21054effa9bce4275628632",
+    "sourceTree": "43b686bb973aef3ac5a5a85ddd51242aa08cde8e",
+    "implementationMapHead": "fe597e419ae1181be787d6d1261d33f110f5392a",
+    "status": "remediation-candidate-qualification-pending"
   },
   "profiles": {
     "HostedAppServerWorker": {
@@ -12,7 +13,7 @@
       "productionImplementation": false
     },
     "LocalModelWorker": {
-      "maturity": "experimental",
+      "maturity": "experimental-non-production",
       "defaultBuild": false,
       "cargoFeature": "experimental-local-model",
       "productionImplementation": false
@@ -25,31 +26,50 @@
   },
   "qualification": {
     "lastExactHeadRun": {
-      "sourceHead": "a126987b84737dbc2ee2592442a314117bddb4a2",
-      "result": "failed",
+      "workflow": "Hepta inference.worker qualification",
+      "runId": 36333865839,
+      "candidateHead": "fe597e419ae1181be787d6d1261d33f110f5392a",
+      "result": "queued-without-allocated-jobs",
       "claimableAsCurrentPass": false
     },
     "lastMergeCandidateRun": {
-      "result": "not-established-for-this-remediation",
+      "workflow": "Hepta inference.worker qualification",
+      "runId": 36333865839,
+      "result": "queued-without-allocated-jobs",
       "claimableAsCurrentPass": false
     },
-    "linuxResult": "not-qualified",
-    "macosResult": "not-qualified",
-    "libTestResult": "not-qualified",
-    "binaryTestResult": "not-qualified",
-    "allTargetsResult": "not-qualified",
-    "clippyResult": "not-qualified",
+    "linuxResult": "pending",
+    "macosResult": "pending",
+    "libTestResult": "pending",
+    "binaryTestResult": "pending",
+    "allTargetsResult": "pending",
+    "clippyResult": "pending",
     "realHardwareResult": "not-established",
     "compositionResult": "repository-mock-composition-only",
     "independentAcceptanceResult": "not-established"
   },
   "reconciliation": {
     "exactAppServerThreadHistory": "implemented",
-    "missingHistoryResolution": "not-implemented",
-    "trustedTokenUsageReconciliation": "not-implemented",
+    "missingHistoryResolution": "explicit-indeterminate-api-plus-independent-signed-provider-receipt",
+    "trustedTokenUsageReconciliation": "implemented-via-independent-signed-provider-receipt",
     "realProviderTargetHostQualification": "not-complete"
   },
   "sourceBlobDigests": {
-    "note": "Filled by exact-candidate qualification; documentation must not convert a missing receipt into a pass."
+    "codex-rs/hepta-infer-worker-host/Cargo.toml": "53c93eec5d979d19feb2ca6c5193cee85fd47b4f",
+    "codex-rs/hepta-infer-worker-host/src/lib.rs": "07ee0a6b2d60aa8480446d07808edca5e51098a9",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs": "3f4c9682e4e899c86c7ad14503c3ae222ed80cb0",
+    "codex-rs/hepta-infer-worker-host/src/native_run_control.rs": "d378670412d30caf71feac26064c5cd476f6f1ca",
+    "codex-rs/hepta-infer-worker-host/src/provider_receipt.rs": "1e45a21f17dfb335763aaa5c024ef24d086b2a46",
+    "codex-rs/hepta-infer-worker-host/src/local_model/mod.rs": "90c2a92809f593bf71c0ce513b1e03be2b80a15f",
+    "codex-rs/hepta-infer-worker-host/src/local_model/grant.rs": "d244eafdd230e66744ff942a4f8c38dc822f05fd",
+    "codex-rs/hepta-infer-worker-host/src/local_model/resource.rs": "3ce233a1d2c690e1cc09aa1bc2b506ea2cd71d2a",
+    "codex-rs/hepta-infer-worker-host/src/local_model/worker_execute.rs": "809296f8f3073a124b7d319bd3765f0387c0ea26",
+    "codex-rs/hepta-infer-worker-host/src/local_model/worker_models.rs": "291b299bc973907c52f90561f23bbb87b2a18d8d",
+    "codex-rs/hepta-infer-worker-host/src/local_model/worker_reconcile.rs": "2ffbcfd640896c168ca64bc494953400d47a9642",
+    ".github/workflows/hepta-inference-worker.yml": "c601ea3a870050cebdbd40f77f601314d738550b"
+  },
+  "unclosedSourceBoundary": {
+    "turnStartReconcileGrace": "fixed-two-second-bound; operator-configurable policy not yet implemented",
+    "mergeAllowed": false
   }
 }
