@@ -1,0 +1,115 @@
+name: cognitive-types-mutation
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/hepta-cognitive-read/tests/canonical_consumer_v1.rs"
+      - "codex-rs/hepta-cognitive-store/src/canonical_adapter.rs"
+      - "codex-rs/hepta-cognitive-store/tests/canonical_consumer_v1.rs"
+      - "codex-rs/hepta-memory-retrieval/tests/canonical_consumer_v1.rs"
+      - "codex-rs/hepta-compact-engine/tests/canonical_consumer_v1.rs"
+      - "codex-rs/hepta-intelligence/tests/canonical_consumer_v1.rs"
+      - ".github/workflows/cognitive-types-mutation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-cognitive-types/**"
+      - ".github/workflows/cognitive-types-mutation.yml"
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_INCREMENTAL: 0
+  CARGO_TERM_COLOR: always
+
+concurrency:
+  group: cognitive-types-mutation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  incremental-mutants:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact candidate and base
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Build exact pull-request diff
+        run: |
+          git diff "${{ github.event.pull_request.base.sha }}"...HEAD -- \
+            codex-rs/hepta-cognitive-types > cognitive-types.diff
+          test -s cognitive-types.diff
+
+      - name: Install cargo-mutants 27.1.0
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-mutants@27.1.0
+
+      - name: Test mutants introduced by this pull request
+        working-directory: codex-rs
+        run: >-
+          cargo mutants
+          --package codex-hepta-cognitive-types
+          --in-place
+          --no-shuffle
+          --in-diff ../cognitive-types.diff
+          --timeout 120
+          --jobs 2
+
+      - name: Archive mutation outcomes
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: cognitive-types-mutants-${{ github.sha }}
+          path: codex-rs/mutants.out
+          if-no-files-found: warn
+          retention-days: 14
+
+  scheduled-core-mutants:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install cargo-mutants 27.1.0
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-mutants@27.1.0
+
+      - name: Mutate authority-bearing cognitive contracts
+        working-directory: codex-rs
+        run: >-
+          cargo mutants
+          --package codex-hepta-cognitive-types
+          --in-place
+          --no-shuffle
+          --file hepta-cognitive-types/src/contract.rs
+          --file hepta-cognitive-types/src/write_receipt.rs
+          --file hepta-cognitive-types/src/strict.rs
+          --file hepta-cognitive-types/src/registry.rs
+          --file hepta-cognitive-types/src/consumer.rs
+          --timeout 180
+          --jobs 2
+
+      - name: Archive mutation outcomes
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: cognitive-types-mutants-${{ github.sha }}
+          path: codex-rs/mutants.out
+          if-no-files-found: warn
+          retention-days: 30
