@@ -159,4 +159,12 @@ replace_once(
 """,
 )
 
+# Continue with ownership/type fixes only after the quarantine wire boundary has
+# been generated successfully. The chained helper also self-deletes.
+compile_fix = ROOT / "scripts/runtime_codex_compile_fix2.py"
+if not compile_fix.is_file():
+    raise SystemExit("missing chained runtime.codex compile fix")
+namespace = {"__file__": str(compile_fix), "__name__": "__main__"}
+exec(compile(compile_fix.read_text(encoding="utf-8"), str(compile_fix), "exec"), namespace)
+
 Path(__file__).unlink()
