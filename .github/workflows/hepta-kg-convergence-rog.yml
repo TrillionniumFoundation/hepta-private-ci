@@ -81,6 +81,37 @@ jobs:
           cargo fmt --package codex-hepta-kg --package codex-hepta-memory -- --check
           cargo check -p codex-hepta-kg -p codex-hepta-memory 2>&1 \
             | tee "$EVIDENCE_DIR/cargo-check.log"
+          python3 - "$EVIDENCE_DIR/input-Cargo.lock" Cargo.lock <<'PYLOCK'
+          import pathlib
+          import sys
+          import tomllib
+
+          before = tomllib.loads(pathlib.Path(sys.argv[1]).read_text())
+          after = tomllib.loads(pathlib.Path(sys.argv[2]).read_text())
+
+          def remove_kg(lock):
+              packages = lock["package"]
+              kg = [package for package in packages if package["name"] == "codex-hepta-kg"]
+              if len(kg) != 1:
+                  raise SystemExit("expected one KG lock entry")
+              lock["package"] = [
+                  package for package in packages if package["name"] != "codex-hepta-kg"
+              ]
+              return kg[0]
+
+          old, new = remove_kg(before), remove_kg(after)
+          old_dependencies = set(old.pop("dependencies", []))
+          new_dependencies = set(new.pop("dependencies", []))
+          added = new_dependencies - old_dependencies
+          if before != after:
+              raise SystemExit("refusing an unrelated Cargo.lock update")
+          if (
+              old != new
+              or old_dependencies - new_dependencies
+              or any(dependency.split()[0] != "sha2" for dependency in added)
+          ):
+              raise SystemExit("unexpected KG dependency drift")
+          PYLOCK
           cargo check --locked -p codex-hepta-kg -p codex-hepta-memory 2>&1 \
             | tee "$EVIDENCE_DIR/cargo-check-locked.log"
 
