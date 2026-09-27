@@ -10,6 +10,8 @@ use std::collections::BTreeMap;
 
 use codex_hepta_types::StableId;
 
+use self::snapshot::ClientAttemptIdentity;
+use self::snapshot::ClientAttemptMetadata;
 use crate::credential::PeerCredentialRegistryV1;
 use crate::host::FederationOutboundCredentialV1;
 use crate::protocol::AuthenticatedFrontierV1;
