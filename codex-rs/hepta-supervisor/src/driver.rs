@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -77,6 +78,17 @@ pub struct ProcessObservation {
     pub state: ProcessState,
     pub logs: Vec<ProcessLog>,
 }
+
+/// Final owner-boundary admission invoked immediately before a process effect.
+///
+/// Implementations must be deterministic, bounded and fail closed. A successful
+/// check is a point-in-time authorization observation, not a future-effect lease.
+pub trait ProcessAdmission: Send + Sync {
+    fn verify_spawn(&self, spec: &SpawnSpec) -> Result<(), ProcessDriverError>;
+    fn verify_adopt(&self, spec: &AdoptSpec) -> Result<(), ProcessDriverError>;
+}
+
+pub type SharedProcessAdmission = Arc<dyn ProcessAdmission>;
 
 /// One independently controlled agent child.
 ///

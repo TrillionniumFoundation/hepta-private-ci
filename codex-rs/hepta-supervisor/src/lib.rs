@@ -2,6 +2,7 @@
 //!
 //! The supervisor does not execute turns or forward messages, models, or tokens.
 
+mod admission_driver;
 mod authority_signer;
 mod control;
 mod daemon;
@@ -10,6 +11,7 @@ mod daemon_protocol;
 mod driver;
 mod durable_publish;
 mod error;
+mod fleet_process_admission;
 mod lease;
 mod matrix;
 mod model;
@@ -36,6 +38,7 @@ mod writer_handoff;
 #[cfg(unix)]
 mod unix;
 
+pub use admission_driver::AdmissionProcessDriver;
 pub use authority_signer::ExternalSignerError;
 pub use authority_signer::MAX_SIGNING_KEY_INPUT_BYTES;
 pub use authority_signer::MAX_SIGNING_REQUEST_BYTES;
@@ -48,6 +51,7 @@ pub use authority_signer::sign_request;
 pub use daemon::PRODUCTION_AUTHORITY_FEATURE_ENABLED;
 pub use daemon::run_supervisord;
 pub use daemon::run_supervisord_with_grant_verifier;
+pub use daemon::run_supervisord_with_product_controls;
 pub use daemon_client::SupervisordClient;
 pub use daemon_protocol::ControlStateDigest;
 pub use daemon_protocol::MAX_SUPERVISORD_ROSTER;
@@ -69,13 +73,18 @@ pub use driver::Adoption;
 pub use driver::ManagedProcess;
 pub use driver::MatrixAdoptSpec;
 pub use driver::MatrixSpawnSpec;
+pub use driver::ProcessAdmission;
 pub use driver::ProcessDriver;
 pub use driver::ProcessObservation;
 pub use driver::ProcessState;
+pub use driver::SharedProcessAdmission;
 pub use driver::SpawnSpec;
 pub use driver::SpawnedProcess;
 pub use error::ProcessDriverError;
 pub use error::SupervisorError;
+pub use fleet_process_admission::FLEET_PROCESS_ADMISSION_SCHEMA_VERSION;
+pub use fleet_process_admission::FleetProcessAdmissionV1;
+pub use fleet_process_admission::MAX_FLEET_PROCESS_ADMISSION_PROFILE_BYTES;
 pub use model::AgentCommand;
 pub use model::AgentFault;
 pub use model::AgentRelease;

@@ -13,13 +13,14 @@ use codex_hepta_fleet::LeaseLedgerError;
 use codex_hepta_fleet::LinuxProcfsCapacityObserverV1;
 use codex_hepta_fleet::SystemFleetClock;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_supervisor::FleetProcessAdmissionV1;
 use codex_hepta_supervisor::H7H89ProductionGrantVerifier;
 use codex_hepta_supervisor::SupervisorError;
-use codex_hepta_supervisor::run_supervisord;
-use codex_hepta_supervisor::run_supervisord_with_grant_verifier;
+use codex_hepta_supervisor::run_supervisord_with_product_controls;
 use sha2::Digest;
 use sha2::Sha256;
 use std::path::Path;
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -33,6 +34,7 @@ const MAX_MEMORY_PRESSURE_BASIS_POINTS: u16 = 5_000;
 const HOST_ID_ENV: &str = "HEPTA_FLEET_HOST_ID";
 const FAILURE_DOMAIN_ENV: &str = "HEPTA_FLEET_FAILURE_DOMAIN_ID";
 const HOST_GENERATION_ENV: &str = "HEPTA_FLEET_HOST_GENERATION";
+const FINAL_USE_PROFILE_ENV: &str = "HEPTA_FLEET_FINAL_USE_PROFILE";
 
 pub(crate) async fn run_supervisord_product(
     fleet_root: HeptaFleetRoot,
@@ -41,6 +43,7 @@ pub(crate) async fn run_supervisord_product(
 ) -> Result<(), SupervisorError> {
     let registry = FleetRegistry::open_existing(fleet_root.clone())?;
     let state_root = registry.layout().state_root().to_path_buf();
+    let canonical_fleet_root = registry.layout().fleet_root().as_path().to_path_buf();
 
     #[cfg(target_os = "linux")]
     let identity = Some(LocalFleetIdentityV1::discover()?);
@@ -49,20 +52,26 @@ pub(crate) async fn run_supervisord_product(
 
     perform_maintenance(&state_root, identity.as_ref())?;
 
+    let profile_path = std::env::var_os(FINAL_USE_PROFILE_ENV).map(PathBuf::from);
+    let admission = Arc::new(
+        FleetProcessAdmissionV1::from_optional_profile(
+            canonical_fleet_root,
+            &state_root,
+            profile_path.as_deref(),
+        )
+        .map_err(|error| {
+            SupervisorError::Invalid(format!(
+                "configure runtime.fleet process admission: {error}"
+            ))
+        })?,
+    );
     let supervisor_cancellation = cancellation.clone();
-    let mut supervisor = Box::pin(async move {
-        match verifier {
-            Some(verifier) => {
-                run_supervisord_with_grant_verifier(
-                    fleet_root,
-                    supervisor_cancellation,
-                    verifier,
-                )
-                .await
-            }
-            None => run_supervisord(fleet_root, supervisor_cancellation).await,
-        }
-    });
+    let mut supervisor = Box::pin(run_supervisord_with_product_controls(
+        fleet_root,
+        supervisor_cancellation,
+        verifier,
+        admission,
+    ));
     let mut interval = tokio::time::interval(CAPACITY_REFRESH_INTERVAL);
     interval.set_missed_tick_behavior(MissedTickBehavior::Skip);
     // The first interval tick is immediate; initial maintenance already ran.

@@ -6,6 +6,7 @@ on:
       - runtime-fleet/durable-owner-v1
     paths:
       - ".github/workflows/runtime-fleet-branch-formatter.yml"
+      - "scripts/runtime_fleet_apply_admission_patch.py"
       - "codex-rs/hepta-fleet/**"
       - "codex-rs/hepta-supervisor/**"
 
@@ -17,7 +18,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  format:
+  format-and-wire:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -29,21 +30,45 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
+      - name: Apply exact daemon migration
+        run: python3 scripts/runtime_fleet_apply_admission_patch.py
+
       - name: Format runtime.fleet source only
         working-directory: codex-rs
         run: cargo fmt --package codex-hepta-fleet --package codex-hepta-supervisor
 
-      - name: Commit formatter output
+      - name: Remove one-shot migration machinery
+        run: |
+          rm scripts/runtime_fleet_apply_admission_patch.py
+          rm .github/workflows/runtime-fleet-branch-formatter.yml
+
+      - name: Commit formatter and admission wiring
         shell: bash
         run: |
           set -euo pipefail
           git diff --check
-          if test -z "$(git status --porcelain -- codex-rs/hepta-fleet codex-rs/hepta-supervisor)"; then
-            echo "No formatter changes"
+          changed="$(git status --porcelain)"
+          if test -z "$changed"; then
+            echo "No migration changes"
             exit 0
           fi
-          git config user.name "runtime.fleet formatter"
-          git config user.email "runtime-fleet-formatter@users.noreply.github.com"
-          git add codex-rs/hepta-fleet codex-rs/hepta-supervisor
-          git commit -m "runtime.fleet: format durable owner sources"
+          while IFS= read -r row; do
+            path="${row:3}"
+            case "$path" in
+              codex-rs/hepta-fleet/*|codex-rs/hepta-supervisor/*|scripts/runtime_fleet_apply_admission_patch.py|.github/workflows/runtime-fleet-branch-formatter.yml)
+                ;;
+              *)
+                echo "Unexpected formatter path: $path" >&2
+                exit 1
+                ;;
+            esac
+          done <<< "$changed"
+          git config user.name "runtime.fleet migration"
+          git config user.email "runtime-fleet-migration@users.noreply.github.com"
+          git add -A -- \
+            codex-rs/hepta-fleet \
+            codex-rs/hepta-supervisor \
+            scripts/runtime_fleet_apply_admission_patch.py \
+            .github/workflows/runtime-fleet-branch-formatter.yml
+          git commit -m "runtime.fleet: gate process effects at final use"
           git push origin HEAD:runtime-fleet/durable-owner-v1
