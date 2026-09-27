@@ -22,15 +22,22 @@
   "productionWriterState": "not_applicable_stateless",
   "canonicalSurface": {
     "modulePath": "codex_hepta_prompt_optimizer::canonical",
-    "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+    "sourcePaths": [
+      "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "codex-rs/hepta-prompt-optimizer/src/canonical_verified.rs",
+      "codex-rs/hepta-prompt-optimizer/src/canonical_solver.rs",
+      "codex-rs/hepta-prompt-optimizer/src/canonical_runtime.rs"
+    ],
+    "rawWireSourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical_raw.rs",
     "authority": "deny_all",
-    "uniqueActivePipeline": true
+    "uniqueActivePipeline": true,
+    "verifiedTypeStateRequired": true
   },
   "operations": [
     {
       "operation": "enumerate_factors_v1",
       "nativeSymbol": "canonical::enumerate_factors_v1",
-      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical_verified.rs",
       "state": "source_implemented_product_source_composed",
       "authority": "none",
       "tests": [
@@ -45,8 +52,8 @@
     {
       "operation": "price_factors_v1",
       "nativeSymbol": "canonical::price_factors_v1",
-      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
-      "state": "source_implemented_not_product_composed",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical_verified.rs",
+      "state": "source_implemented_product_orchestrator_pending",
       "authority": "none",
       "tests": [
         "incomplete_candidate_completeness_cannot_be_authenticated_for_pricing"
@@ -58,8 +65,8 @@
     {
       "operation": "select_portfolio_v1",
       "nativeSymbol": "canonical::select_portfolio_v1",
-      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
-      "state": "source_implemented_not_product_composed",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical_solver.rs",
+      "state": "source_implemented_product_orchestrator_pending",
       "authority": "none",
       "tests": [
         "prerequisite_bundle_can_select_negative_prerequisite_for_positive_bundle",
@@ -72,7 +79,7 @@
     {
       "operation": "exercise_v1",
       "nativeSymbol": "canonical::exercise_v1",
-      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical_runtime.rs",
       "state": "source_implemented_product_source_composed",
       "authority": "none",
       "tests": [
@@ -118,7 +125,7 @@
   ],
   "repositoryControlledGaps": [
     "Compose price_factors_v1 and select_portfolio_v1 through one authenticated Agentd product callsite.",
-    "Seal cross-crate canonical stage values behind verified type-state and revalidate all semantic digests.",
+    "Run strict codec, tamper, replay, expiry, trust-rotation, graph-drift and product-terminal regressions.",
     "Run exact-head and deterministic synthetic-merge tests before changing the production claim."
   ],
   "externalEvidenceGates": [

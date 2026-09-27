@@ -47,48 +47,66 @@ def source_has_test(name: str) -> bool:
 
 def main() -> int:
     data = json.loads(MAP.read_text(encoding="utf-8"))
-    canonical = (CRATE / "canonical.rs").read_text(encoding="utf-8")
     crate_root = (CRATE / "lib.rs").read_text(encoding="utf-8")
-    compat = (CRATE / "compat.rs").read_text(encoding="utf-8")
+    canonical_root = (CRATE / "canonical.rs").read_text(encoding="utf-8")
 
     if "pub mod canonical;" not in crate_root or "pub mod compat;" not in crate_root:
         fail("crate root must expose canonical and compat modules")
     if data.get("productionImplementation") is not False:
         fail("productionImplementation must remain false before exact product evidence")
-    if not data.get("canonicalSurface", {}).get("uniqueActivePipeline"):
+    surface = data.get("canonicalSurface", {})
+    if not surface.get("uniqueActivePipeline"):
         fail("canonicalSurface.uniqueActivePipeline must be true")
+    if not surface.get("verifiedTypeStateRequired"):
+        fail("canonicalSurface.verifiedTypeStateRequired must be true")
+    for required_module in (
+        "canonical_raw.rs",
+        "canonical_verified.rs",
+        "canonical_solver.rs",
+        "canonical_runtime.rs",
+    ):
+        if required_module not in canonical_root:
+            fail(f"canonical module tree does not include {required_module}")
 
     for filename in DEAD_POLICY_FILES:
         if (CRATE / filename).exists():
-            fail(f"dead policy implementation remains reachable in tree: {filename}")
+            fail(f"dead policy implementation remains in tree: {filename}")
 
     mapped = {entry["operation"]: entry for entry in data.get("operations", [])}
     if set(mapped) != set(CANONICAL_OPERATIONS):
         fail(f"canonical operation inventory mismatch: {sorted(mapped)}")
 
     for operation in CANONICAL_OPERATIONS:
-        if not source_has_function(canonical, operation):
-            fail(f"canonical source does not define {operation}")
-        tests = mapped[operation].get("tests")
+        entry = mapped[operation]
+        source_path = ROOT / entry["sourcePath"]
+        if not source_path.is_file():
+            fail(f"mapped source is missing for {operation}: {source_path}")
+        source = source_path.read_text(encoding="utf-8")
+        if not source_has_function(source, operation):
+            fail(f"mapped source does not define {operation}")
+        tests = entry.get("tests")
         if not tests:
             fail(f"{operation} has no mapped test identity")
         for test in tests:
             if not source_has_test(test):
                 fail(f"mapped test is not present: {test}")
-        if mapped[operation].get("sourcePath") != (
-            "codex-rs/hepta-prompt-optimizer/src/canonical.rs"
-        ):
-            fail(f"{operation} is not mapped to canonical.rs")
 
-    for symbol in ("optimize", "optimize_with_factor_graph", "calculate_local_shadow"):
-        if symbol not in compat and symbol not in (
-            CRATE / "compat_legacy.rs"
-        ).read_text(encoding="utf-8"):
-            # local_shadow and graph are linked by module, not textually re-exported
-            if symbol not in {"optimize_with_factor_graph", "calculate_local_shadow"}:
-                fail(f"compatibility symbol not exposed: {symbol}")
+    forbidden_raw_exports = (
+        "pub use raw::enumerate_factors_v1",
+        "pub use raw::price_factors_v1",
+        "pub use raw::select_portfolio_v1",
+        "pub use raw::exercise_v1",
+    )
+    for forbidden in forbidden_raw_exports:
+        if forbidden in canonical_root:
+            fail(f"raw product operation is publicly re-exported: {forbidden}")
 
-    print("prompt.optimizer implementation map matches the active source tree")
+    compat = (CRATE / "compat.rs").read_text(encoding="utf-8")
+    for symbol in ("optimize", "optimize_with_factor_graph", "local_shadow"):
+        if symbol not in compat:
+            fail(f"compatibility surface is missing {symbol}")
+
+    print("prompt.optimizer implementation map matches the sealed source tree")
     return 0
 
 
