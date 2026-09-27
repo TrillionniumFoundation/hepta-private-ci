@@ -48,12 +48,27 @@ impl AgentdIntelligenceProductRunnerV1 {
             worker_slots: Arc::new(tokio::sync::Semaphore::new(MAX_CANONICAL_OWNER_WORKERS)),
             authority_file,
             authority_verifier,
+            authority_rollback: None,
             evaluation_trust: None,
             telemetry: Arc::new(crate::AgentdIntelligenceTelemetryV1::new(
                 MAX_CANONICAL_OWNER_WORKERS,
             )),
             hard_timeout_process_exit_grace: None,
         })
+    }
+
+    /// Install the independently retained durable anti-rollback witness used by
+    /// every signed authority-manifest read. Compatibility runners may omit it,
+    /// but they cannot become or advertise the canonical product profile.
+    pub fn with_authority_rollback_guard(
+        mut self,
+        guard: Arc<crate::IntelligenceAuthorityRollbackGuardV1>,
+    ) -> Result<Self, AgentdIntelligenceProductError> {
+        if self.authority_rollback.is_some() || guard.path() == self.authority_file {
+            return Err(AgentdIntelligenceProductError::InvalidAuthorityRollback);
+        }
+        self.authority_rollback = Some(guard);
+        Ok(self)
     }
 
     /// Configure trust that the host has already authenticated against its root.
@@ -92,6 +107,16 @@ impl AgentdIntelligenceProductRunnerV1 {
     }
 
     #[must_use]
+    pub fn canonical_profile_ready(&self) -> bool {
+        self.authority_rollback.is_some()
+    }
+
+    #[must_use]
+    pub fn authority_rollback_path(&self) -> Option<&Path> {
+        self.authority_rollback.as_deref().map(|guard| guard.path())
+    }
+
+    #[must_use]
     pub fn capability_profile_digest(&self) -> Digest32 {
         let mut bytes = b"hepta.agentd.intelligence-capability-profile.v1\0".to_vec();
         bytes.extend_from_slice(self.authority_file.to_string_lossy().as_bytes());
@@ -103,6 +128,13 @@ impl AgentdIntelligenceProductRunnerV1 {
             .map(|value| u64::try_from(value.as_millis()).unwrap_or(u64::MAX))
             .unwrap_or(0);
         bytes.extend_from_slice(&grace_ms.to_be_bytes());
+        match self.authority_rollback.as_ref() {
+            Some(guard) => {
+                bytes.push(1);
+                bytes.extend_from_slice(guard.profile_digest().as_array());
+            }
+            None => bytes.push(0),
+        }
         match self.evaluation_trust.as_ref() {
             Some(trust) => {
                 bytes.push(1);
@@ -255,6 +287,7 @@ impl AgentdIntelligenceProductRunnerV1 {
         let timeout_micros = total_timeout_micros.min(remaining_micros);
         let authority_file = self.authority_file.clone();
         let authority_verifier = self.authority_verifier.clone();
+        let authority_rollback = self.authority_rollback.clone();
         let evaluation_session = match inputs.signed_evaluation.take() {
             None => None,
             Some(signed) => {
@@ -265,6 +298,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                 let mut oracle = FileBackedFreshnessOracleV1::new_observed(
                     authority_file.clone(),
                     authority_verifier.clone(),
+                    authority_rollback.clone(),
                     Arc::clone(&self.telemetry),
                 );
                 let owner_id = StableId::new("learning.eval")
@@ -291,6 +325,7 @@ impl AgentdIntelligenceProductRunnerV1 {
             let mut oracle = FileBackedFreshnessOracleV1::new_observed(
                 authority_file,
                 authority_verifier,
+                authority_rollback,
                 worker_telemetry,
             );
             prepare_intelligence_run(request, &mut ports, &mut oracle)
@@ -330,6 +365,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                 let mut oracle = FileBackedFreshnessOracleV1::new_observed(
                     self.authority_file.clone(),
                     self.authority_verifier.clone(),
+                    self.authority_rollback.clone(),
                     Arc::clone(&self.telemetry),
                 );
                 if let Err(error) = validate_current_snapshot(&snapshot, &mut oracle) {
@@ -532,6 +568,7 @@ impl AgentdIntelligenceProductRunnerV1 {
         let mut oracle = FileBackedFreshnessOracleV1::new(
             self.authority_file.clone(),
             self.authority_verifier.clone(),
+            self.authority_rollback.clone(),
         );
         validate_current_snapshot(&snapshot, &mut oracle)
             .map_err(AgentdIntelligenceLedgerError::Currentness)?;
@@ -557,6 +594,7 @@ impl AgentdIntelligenceProductRunnerV1 {
         let mut oracle = FileBackedFreshnessOracleV1::new(
             self.authority_file.clone(),
             self.authority_verifier.clone(),
+            self.authority_rollback.clone(),
         );
         validate_current_snapshot(&pending.snapshot, &mut oracle)
             .map_err(AgentdIntelligenceLedgerError::Currentness)?;
