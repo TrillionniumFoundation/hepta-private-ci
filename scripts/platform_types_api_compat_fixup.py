@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One-shot source compatibility convergence for platform.types numeric admission."""
+"""One-shot source compatibility convergence for platform.types and named owners."""
 
 from __future__ import annotations
 
@@ -28,12 +28,122 @@ def replace_all(relative: str, old: str, new: str, expected: int) -> None:
     path.write_text(text.replace(old, new), encoding="utf-8")
 
 
+# Keep the pre-existing exhaustive numeric error enum source-compatible.
 replace_exact(
     "codex-rs/hepta-types/src/numeric_profile.rs",
     "    Overflow,\n    RegistryAdmission,\n    CanonicalEncoding,\n",
     "    Overflow,\n    CanonicalEncoding,\n",
 )
 
+# Keep the pre-existing exhaustive topology error enum source-compatible while
+# retaining canonical-order rejection and the complete HPTC commitment.
+replace_exact(
+    "codex-rs/hepta-types/src/topology.rs",
+    "use crate::CanonicalDigestError;\n",
+    "",
+)
+replace_exact(
+    "codex-rs/hepta-types/src/topology.rs",
+    '''    DuplicateModule(StableId),
+    DuplicateRelatedModule(StableId),
+    NonCanonicalDeltaOrder {
+        previous: StableId,
+        current: StableId,
+    },
+    NonCanonicalRelatedModuleOrder(StableId),
+    InvalidDelta(StableId),
+    SplitParticipantMissingAdd(StableId),
+    MergeParticipantMissingRetire(StableId),
+    InvalidTypeIdentity,
+    Canonical(CanonicalDigestError),
+''',
+    '''    DuplicateModule(StableId),
+    DuplicateRelatedModule(StableId),
+    InvalidDelta(StableId),
+    SplitParticipantMissingAdd(StableId),
+    MergeParticipantMissingRetire(StableId),
+''',
+)
+replace_exact(
+    "codex-rs/hepta-types/src/topology.rs",
+    '''        canonical_digest_v1(&type_id, 1, &fields)
+            .map_err(RuntimeTopologyContractErrorV1::Canonical)
+    }
+}
+
+impl RuntimeTopologyCandidateV1 {
+''',
+    '''        canonical_digest_v1(&type_id, 1, &fields).map_err(|_| {
+            RuntimeTopologyContractErrorV1::InvalidDelta(self.module_id.clone())
+        })
+    }
+}
+
+impl RuntimeTopologyCandidateV1 {
+''',
+)
+replace_exact(
+    "codex-rs/hepta-types/src/topology.rs",
+    '''        canonical_digest_v1(&type_id, 1, &fields)
+            .map_err(RuntimeTopologyContractErrorV1::Canonical)
+    }
+}
+
+fn topology_type_id(value: &str) -> Result<StableId, RuntimeTopologyContractErrorV1> {
+''',
+    '''        canonical_digest_v1(&type_id, 1, &fields)
+            .map_err(|_| RuntimeTopologyContractErrorV1::CandidateShape)
+    }
+}
+
+fn topology_type_id(value: &str) -> Result<StableId, RuntimeTopologyContractErrorV1> {
+''',
+)
+replace_exact(
+    "codex-rs/hepta-types/src/topology.rs",
+    '''    StableId::new(value).map_err(|_| RuntimeTopologyContractErrorV1::InvalidTypeIdentity)
+''',
+    '''    StableId::new(value).map_err(|_| RuntimeTopologyContractErrorV1::CandidateShape)
+''',
+)
+replace_exact(
+    "codex-rs/hepta-types/src/topology.rs",
+    '''                return Err(RuntimeTopologyContractErrorV1::NonCanonicalDeltaOrder {
+                    previous: previous.clone(),
+                    current: delta.module_id.clone(),
+                });
+''',
+    '''                return Err(RuntimeTopologyContractErrorV1::InvalidDelta(
+                    delta.module_id.clone(),
+                ));
+''',
+)
+replace_exact(
+    "codex-rs/hepta-types/src/topology.rs",
+    '''                return Err(
+                    RuntimeTopologyContractErrorV1::NonCanonicalRelatedModuleOrder(
+                        delta.module_id.clone(),
+                    ),
+                );
+''',
+    '''                return Err(RuntimeTopologyContractErrorV1::DuplicateRelatedModule(
+                    delta.module_id.clone(),
+                ));
+''',
+)
+replace_exact(
+    "codex-rs/hepta-types/src/topology.rs",
+    "            Err(RuntimeTopologyContractErrorV1::NonCanonicalDeltaOrder { .. })\n",
+    "            Err(RuntimeTopologyContractErrorV1::InvalidDelta(_))\n",
+)
+replace_exact(
+    "codex-rs/hepta-types/src/topology.rs",
+    "            Err(RuntimeTopologyContractErrorV1::NonCanonicalRelatedModuleOrder(_))\n",
+    "            Err(RuntimeTopologyContractErrorV1::DuplicateRelatedModule(_))\n",
+)
+
+# Restore the historical registered conversion signature and move distinct
+# registry evidence behind an additive explicit helper used by V2 and NDU.
 replace_exact(
     "codex-rs/hepta-types/src/numeric_conversion.rs",
     '''/// Production-admission variant. Both native numeric-profile semantics and
@@ -87,13 +197,11 @@ pub fn rescale_signal_registered(
 }
 ''',
 )
-
 replace_exact(
     "codex-rs/hepta-types/src/numeric_conversion.rs",
     "fn registered_admission_digest(\n",
     "pub(crate) fn registered_admission_digest(\n",
 )
-
 replace_exact(
     "codex-rs/hepta-types/src/numeric_registry_v2.rs",
     "use crate::NumericConversionReceiptV1;\n",
@@ -104,7 +212,6 @@ replace_exact(
     "use crate::rescale_signal_registered;\n",
     "use crate::rescale_signal;\n",
 )
-
 insert_anchor = '''pub fn rescale_signal_registered_v2(
     source: &NumericSignalV1,
 '''
@@ -155,7 +262,6 @@ replace_exact(
     "    let (output, registered_v1) = rescale_signal_registered(source, target, registry)?;\n",
     "    let (output, registered_v1) =\n        rescale_signal_registered_receipt_v1(source, target, registry)?;\n",
 )
-
 replace_exact(
     "codex-rs/hepta-ndu/src/numeric_admission.rs",
     "use codex_hepta_types::rescale_signal_registered;\n",
@@ -166,14 +272,12 @@ replace_exact(
     "        let (signal, admission) = rescale_signal_registered(source, &target, &self.registry)?;\n",
     "        let (signal, admission) =\n            rescale_signal_registered_receipt_v1(source, &target, &self.registry)?;\n",
 )
-
 replace_all(
     "codex-rs/hepta-types/src/numeric_conversion_tests.rs",
     "rescale_signal_registered(",
     "crate::numeric_registry_v2::rescale_signal_registered_receipt_v1(",
     3,
 )
-
 compat_test = '''
 
 #[test]
@@ -192,4 +296,105 @@ if "fn registered_compatibility_api_retains_original_receipt_shape()" in text:
     raise SystemExit("numeric conversion compatibility test already exists")
 path.write_text(text.rstrip() + compat_test, encoding="utf-8")
 
-print("platform.types numeric API compatibility fixup: applied")
+# Keep the pre-existing exhaustive NDU owner error enum source-compatible. The
+# new registry object still exposes detailed admission errors directly; the V1
+# owner surface folds them into its existing InvalidContext variant.
+replace_exact(
+    "codex-rs/hepta-ndu/src/owner.rs",
+    "use crate::NduNumericAdmissionErrorV1;\n",
+    "",
+)
+replace_exact(
+    "codex-rs/hepta-ndu/src/owner.rs",
+    "    NumericAdmission(NduNumericAdmissionErrorV1),\n",
+    "",
+)
+replace_exact(
+    "codex-rs/hepta-ndu/src/owner.rs",
+    '''impl From<NduNumericAdmissionErrorV1> for NduOwnerError {
+    fn from(error: NduNumericAdmissionErrorV1) -> Self {
+        Self::NumericAdmission(error)
+    }
+}
+
+''',
+    "",
+)
+replace_exact(
+    "codex-rs/hepta-ndu/src/owner.rs",
+    '''        let registry = self
+            .numeric_registry
+            .as_ref()
+            .ok_or(NduNumericAdmissionErrorV1::RegistryNotConfigured)?;
+        registry
+            .admit_utility_signal(&self.policy.utility_profile, source)
+            .map_err(NduOwnerError::NumericAdmission)
+''',
+    '''        let registry = self
+            .numeric_registry
+            .as_ref()
+            .ok_or(NduOwnerError::InvalidContext(
+                "numeric registry not configured",
+            ))?;
+        registry
+            .admit_utility_signal(&self.policy.utility_profile, source)
+            .map_err(|_| NduOwnerError::InvalidContext("numeric admission"))
+''',
+)
+replace_exact(
+    "codex-rs/hepta-ndu/src/owner.rs",
+    '''                let admitted = registry
+                    .admit_utility_axes(&self.policy.utility_profile, &contribution.utility)?;
+''',
+    '''                let admitted = registry
+                    .admit_utility_axes(&self.policy.utility_profile, &contribution.utility)
+                    .map_err(|_| NduOwnerError::InvalidContext("numeric admission"))?;
+''',
+)
+replace_exact(
+    "codex-rs/hepta-ndu/src/owner.rs",
+    '''        return Err(NduOwnerError::NumericAdmission(
+            NduNumericAdmissionErrorV1::EmptyRegistryDigest,
+        ));
+''',
+    '''        return Err(NduOwnerError::InvalidContext("numeric registry digest"));
+''',
+)
+replace_exact(
+    "codex-rs/hepta-ndu/src/owner_tests.rs",
+    "use crate::NduNumericAdmissionErrorV1;\n",
+    "",
+)
+replace_exact(
+    "codex-rs/hepta-ndu/src/owner_tests.rs",
+    '''        Err(NduOwnerError::NumericAdmission(
+            NduNumericAdmissionErrorV1::RegistryNotConfigured
+        ))
+''',
+    '''        Err(NduOwnerError::InvalidContext(
+            "numeric registry not configured"
+        ))
+''',
+)
+replace_exact(
+    "codex-rs/hepta-ndu/src/owner_tests.rs",
+    '''        Err(NduOwnerError::NumericAdmission(
+            NduNumericAdmissionErrorV1::Conversion(
+                codex_hepta_types::NumericConversionError::UnknownNormalization
+            )
+        ))
+''',
+    '''        Err(NduOwnerError::InvalidContext("numeric admission"))
+''',
+)
+replace_exact(
+    "codex-rs/hepta-ndu/src/owner_tests.rs",
+    '''        Err(NduOwnerError::NumericAdmission(
+            NduNumericAdmissionErrorV1::AxisIdentityMismatch
+        ))
+''',
+    '''        Err(NduOwnerError::InvalidContext("numeric admission"))
+''',
+)
+
+print("platform.types and named-owner API compatibility fixup: applied")
