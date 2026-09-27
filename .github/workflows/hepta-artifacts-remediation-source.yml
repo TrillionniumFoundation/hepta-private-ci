@@ -1,0 +1,36 @@
+name: Artifact remediation source diagnostics
+on:
+  push:
+    branches: [codex/learning-artifacts-production-remediation-20260927]
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Archive exact source and collect diagnostics
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p /tmp/artifact-remediation-source
+          git rev-parse HEAD HEAD^{tree} > /tmp/artifact-remediation-source/identity.txt
+          git archive --format=tar HEAD | gzip > /tmp/artifact-remediation-source/source.tar.gz
+          python3 scripts/hepta-lane-e-closure.py verify > /tmp/artifact-remediation-source/closure.json 2>&1
+          echo "$?" > /tmp/artifact-remediation-source/closure.exit
+          python3 -m unittest discover -s scripts -p 'test_hepta_artifacts_*.py' -v > /tmp/artifact-remediation-source/python-tests.log 2>&1
+          echo "$?" > /tmp/artifact-remediation-source/python-tests.exit
+          exit 0
+      - name: Retain source and diagnostics, never a qualification receipt
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: artifacts-remediation-source-${{ github.sha }}
+          path: /tmp/artifact-remediation-source/
+          if-no-files-found: error
+          retention-days: 7
