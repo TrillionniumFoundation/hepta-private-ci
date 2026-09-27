@@ -17,7 +17,7 @@ on:
       - ".github/workflows/hepta-intuition-ledger-qualification.yml"
       - ".github/actions/setup-ci/**"
   push:
-    branches: [main]
+    branches: [main, codex/intuition-policy-production-closure-20260927]
     paths:
       - "codex-rs/hepta-intuition/**"
       - "codex-rs/hepta-intelligence/**"
@@ -41,6 +41,12 @@ permissions:
 
 env:
   PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_RELEASE_DEBUG: "0"
+  CARGO_PROFILE_RELEASE_INCREMENTAL: "false"
+  CARGO_BUILD_JOBS: "2"
 
 concurrency:
   group: hepta-intuition-ledger-${{ github.event.pull_request.number || github.ref }}
@@ -70,10 +76,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/intuition_ledger_exact.py \
+          python3 scripts/intuition_ci_exact.py --kind ledger \
             --source-commit "$SOURCE_SHA" \
             --evidence "$RUNNER_TEMP/intuition-ledger-evidence"
-      - name: Retain ledger success, failure and interrupted-command evidence
+      - name: Retain ledger success, infrastructure failure and interrupted-command evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
