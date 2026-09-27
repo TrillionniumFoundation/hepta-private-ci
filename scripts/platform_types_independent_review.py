@@ -147,7 +147,8 @@ def _request_json(url: str, token: str) -> tuple[Any, dict[str, str]]:
     )
     try:
         with urllib.request.urlopen(request, timeout=30) as response:
-            return json.loads(response.read().decode("utf-8")), dict(response.headers)
+            headers = {key: value for key, value in response.headers.items()}
+            return json.loads(response.read().decode("utf-8")), headers
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as error:
         raise IndependentReviewError(f"GitHub API request failed for {url}: {error}") from error
 
