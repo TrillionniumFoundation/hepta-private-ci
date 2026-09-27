@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 """Qualification-only WAL/checkpoint, sharding and capacity model.
 
-This is an executable reference model for future kernel.authority storage work.
-It is deliberately not imported by runtime code and never grants production
-implementation, activation, release, or SLO status.
+This executable reference model exercises a hash-chained journal, atomic
+checkpoints and an independently retained monotonic frontier.  The frontier is
+passed to recovery from outside the modeled local state directory, so a valid
+but older checkpoint+journal pair is rejected rather than being confused with
+mere file corruption.
+
+The model is deliberately not imported by runtime code and never grants
+production implementation, activation, release or an SLO.
 """
 
 from __future__ import annotations
@@ -17,7 +22,8 @@ import shutil
 import tempfile
 from typing import Any
 
-SCHEMA = "hepta.kernel-authority-storage-model.v1"
+SCHEMA = "hepta.kernel-authority-storage-model.v2"
+FRONTIER_SCHEMA = "hepta.kernel-authority-storage-frontier.v1"
 MAX_AUTHORITY_LEASES = 16_384
 MAX_CAPABILITY_REVOCATIONS = 16_384
 MAX_RETIRED_AUTHORITY_LEASE_IDS = 16_384
@@ -58,20 +64,26 @@ def atomic_json(path: Path, value: Any) -> None:
     fsync_directory(path.parent)
 
 
-def append_record(root: Path, sequence: int, previous: str, operation: str) -> str:
+def record_envelope(sequence: int, previous: str, operation: str) -> dict[str, Any]:
     payload = {
         "operation": operation,
         "payloadSha256": sha256_bytes(f"payload:{sequence}:{operation}".encode()),
         "previousRecordSha256": previous,
         "sequence": sequence,
     }
-    record_sha256 = sha256_bytes(canonical(payload))
-    envelope = {"record": payload, "recordSha256": record_sha256}
+    return {
+        "record": payload,
+        "recordSha256": sha256_bytes(canonical(payload)),
+    }
+
+
+def append_record(root: Path, sequence: int, previous: str, operation: str) -> str:
+    envelope = record_envelope(sequence, previous, operation)
     with (root / "journal.jsonl").open("ab") as stream:
         stream.write(canonical(envelope) + b"\n")
         stream.flush()
         os.fsync(stream.fileno())
-    return record_sha256
+    return str(envelope["recordSha256"])
 
 
 def checkpoint(root: Path, generation: int, sequence: int, head: str) -> None:
@@ -91,6 +103,36 @@ def checkpoint(root: Path, generation: int, sequence: int, head: str) -> None:
     atomic_json(root / "manifest.json", manifest)
 
 
+def protected_frontier(sequence: int, head: str) -> dict[str, Any]:
+    return {
+        "schema": FRONTIER_SCHEMA,
+        "sequence": sequence,
+        "headRecordSha256": head,
+    }
+
+
+def validate_frontier(value: dict[str, Any]) -> tuple[int, str]:
+    if set(value) != {"schema", "sequence", "headRecordSha256"}:
+        raise ModelError("external frontier fields drifted")
+    if value["schema"] != FRONTIER_SCHEMA:
+        raise ModelError("external frontier schema mismatch")
+    sequence = value["sequence"]
+    head = value["headRecordSha256"]
+    if type(sequence) is not int or sequence < 0:
+        raise ModelError("external frontier sequence is invalid")
+    if (
+        not isinstance(head, str)
+        or len(head) != 64
+        or any(character not in "0123456789abcdef" for character in head)
+    ):
+        raise ModelError("external frontier digest is invalid")
+    if sequence == 0 and head != "0" * 64:
+        raise ModelError("genesis frontier digest mismatch")
+    if sequence != 0 and head == "0" * 64:
+        raise ModelError("non-genesis frontier has a zero digest")
+    return sequence, head
+
+
 def read_json(path: Path) -> dict[str, Any]:
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
@@ -101,7 +143,9 @@ def read_json(path: Path) -> dict[str, Any]:
     return value
 
 
-def recover(root: Path) -> dict[str, Any]:
+def recover(
+    root: Path, trusted_frontier: dict[str, Any] | None = None
+) -> dict[str, Any]:
     manifest = read_json(root / "manifest.json")
     expected_manifest_fields = {"checkpointPath", "checkpointSha256", "generation"}
     if set(manifest) != expected_manifest_fields:
@@ -122,6 +166,10 @@ def recover(root: Path) -> dict[str, Any]:
         raise ModelError("checkpoint generation mismatch")
     sequence = int(state["sequence"])
     head = str(state["headRecordSha256"])
+    expected_state_digest = sha256_bytes(f"state:{sequence}:{head}".encode())
+    if state["stateSha256"] != expected_state_digest:
+        raise ModelError("checkpoint state digest mismatch")
+
     journal = (root / "journal.jsonl").read_bytes()
     lines = journal.splitlines(keepends=True)
     discarded_partial_tail = False
@@ -158,37 +206,57 @@ def recover(root: Path) -> dict[str, Any]:
             raise ModelError("journal record digest mismatch")
         sequence = record_sequence
         head = expected_digest
+
+    external_frontier_matched = trusted_frontier is not None
+    if trusted_frontier is not None:
+        trusted_sequence, trusted_head = validate_frontier(trusted_frontier)
+        if sequence != trusted_sequence or head != trusted_head:
+            raise ModelError("local state does not match the external monotonic frontier")
+
     return {
         "discardedPartialTail": discarded_partial_tail,
+        "externalFrontierMatched": external_frontier_matched,
         "headRecordSha256": head,
         "sequence": sequence,
     }
-
-
-def build_model(root: Path, operations: int) -> tuple[int, str]:
-    root.mkdir(parents=True, exist_ok=True)
-    (root / "journal.jsonl").write_bytes(b"")
-    head = "0" * 64
-    generation = 0
-    checkpoint(root, generation, 0, head)
-    for sequence in range(1, operations + 1):
-        operation = ("put", "dispatch", "revoke", "prune")[sequence % 4]
-        head = append_record(root, sequence, head, operation)
-        if sequence % CHECKPOINT_INTERVAL == 0 and sequence != operations:
-            generation += 1
-            checkpoint(root, generation, sequence, head)
-    return operations, head
 
 
 def copy_model(source: Path, destination: Path) -> None:
     shutil.copytree(source, destination)
 
 
-def corruption_drills(root: Path, operations: int, expected_head: str) -> dict[str, bool]:
-    baseline = recover(root)
+def build_model(
+    root: Path, rollback_snapshot: Path, operations: int
+) -> tuple[dict[str, Any], str]:
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "journal.jsonl").write_bytes(b"")
+    head = "0" * 64
+    generation = 0
+    checkpoint(root, generation, 0, head)
+    rollback_sequence = max(1, operations // 2)
+    for sequence in range(1, operations + 1):
+        operation = ("put", "dispatch", "revoke", "prune")[sequence % 4]
+        head = append_record(root, sequence, head, operation)
+        if sequence % CHECKPOINT_INTERVAL == 0 and sequence != operations:
+            generation += 1
+            checkpoint(root, generation, sequence, head)
+        if sequence == rollback_sequence:
+            copy_model(root, rollback_snapshot)
+    return protected_frontier(operations, head), head
+
+
+def corruption_drills(
+    root: Path,
+    rollback_snapshot: Path,
+    operations: int,
+    expected_head: str,
+    trusted_frontier: dict[str, Any],
+) -> dict[str, bool]:
+    baseline = recover(root, trusted_frontier)
     baseline_ok = (
         baseline["sequence"] == operations
         and baseline["headRecordSha256"] == expected_head
+        and baseline["externalFrontierMatched"] is True
     )
 
     torn = root.parent / "torn-tail"
@@ -197,7 +265,7 @@ def corruption_drills(root: Path, operations: int, expected_head: str) -> dict[s
         stream.write(b'{"record":')
         stream.flush()
         os.fsync(stream.fileno())
-    torn_recovery = recover(torn)
+    torn_recovery = recover(torn, trusted_frontier)
     torn_tail_ok = (
         torn_recovery["sequence"] == operations
         and torn_recovery["discardedPartialTail"] is True
@@ -212,30 +280,62 @@ def corruption_drills(root: Path, operations: int, expected_head: str) -> dict[s
     value_index = pivot + len(b'"payloadSha256":"')
     journal[value_index] = ord("0") if journal[value_index] != ord("0") else ord("1")
     (corrupted / "journal.jsonl").write_bytes(journal)
-    corrupted_record_rejected = False
+    committed_record_corruption_rejected = False
     try:
-        recover(corrupted)
+        recover(corrupted, trusted_frontier)
     except ModelError:
-        corrupted_record_rejected = True
+        committed_record_corruption_rejected = True
 
-    rolled_back = root.parent / "rolled-back-checkpoint"
-    copy_model(root, rolled_back)
-    manifest = read_json(rolled_back / "manifest.json")
-    checkpoint_path = rolled_back / str(manifest["checkpointPath"])
+    corrupted_checkpoint = root.parent / "corrupted-checkpoint"
+    copy_model(root, corrupted_checkpoint)
+    manifest = read_json(corrupted_checkpoint / "manifest.json")
+    checkpoint_path = corrupted_checkpoint / str(manifest["checkpointPath"])
     checkpoint_bytes = bytearray(checkpoint_path.read_bytes())
-    checkpoint_bytes[-2] = ord("0") if checkpoint_bytes[-2] != ord("0") else ord("1")
+    checkpoint_bytes[-2] = (
+        ord("0") if checkpoint_bytes[-2] != ord("0") else ord("1")
+    )
     checkpoint_path.write_bytes(checkpoint_bytes)
-    rollback_rejected = False
+    corrupted_checkpoint_rejected = False
     try:
-        recover(rolled_back)
+        recover(corrupted_checkpoint, trusted_frontier)
     except ModelError:
-        rollback_rejected = True
+        corrupted_checkpoint_rejected = True
+
+    valid_older_snapshot_rejected = False
+    try:
+        recover(rollback_snapshot, trusted_frontier)
+    except ModelError:
+        valid_older_snapshot_rejected = True
+
+    next_operation = "put"
+    next_envelope = record_envelope(operations + 1, expected_head, next_operation)
+    frontier_ahead = protected_frontier(
+        operations + 1, str(next_envelope["recordSha256"])
+    )
+    external_frontier_ahead_fences = False
+    try:
+        recover(root, frontier_ahead)
+    except ModelError:
+        external_frontier_ahead_fences = True
+
+    stale_frontier_rejected = False
+    rollback_state = recover(rollback_snapshot)
+    stale_frontier = protected_frontier(
+        int(rollback_state["sequence"]), str(rollback_state["headRecordSha256"])
+    )
+    try:
+        recover(root, stale_frontier)
+    except ModelError:
+        stale_frontier_rejected = True
 
     return {
         "baselineRecovery": baseline_ok,
-        "committedRecordCorruptionRejected": corrupted_record_rejected,
+        "committedRecordCorruptionRejected": committed_record_corruption_rejected,
+        "corruptedCheckpointRejected": corrupted_checkpoint_rejected,
+        "externalFrontierAheadFences": external_frontier_ahead_fences,
         "partialTailDiscarded": torn_tail_ok,
-        "rolledBackCheckpointRejected": rollback_rejected,
+        "staleExternalFrontierRejected": stale_frontier_rejected,
+        "validOlderLocalSnapshotRejected": valid_older_snapshot_rejected,
     }
 
 
@@ -304,24 +404,41 @@ def main() -> int:
         parser.error("operations must be in 256..=32768")
 
     with tempfile.TemporaryDirectory(prefix="kernel-authority-storage-model-") as directory:
-        root = Path(directory) / "model"
-        operations, head = build_model(root, args.operations)
-        drills = corruption_drills(root, operations, head)
-        recovered = recover(root)
-        passed = all(drills.values()) and recovered["sequence"] == operations
+        parent = Path(directory)
+        root = parent / "model"
+        rollback_snapshot = parent / "valid-older-local-snapshot"
+        trusted_frontier, head = build_model(root, rollback_snapshot, args.operations)
+        drills = corruption_drills(
+            root,
+            rollback_snapshot,
+            args.operations,
+            head,
+            trusted_frontier,
+        )
+        recovered = recover(root, trusted_frontier)
+        passed = (
+            all(drills.values())
+            and recovered["sequence"] == args.operations
+            and recovered["externalFrontierMatched"] is True
+        )
         receipt = {
             "schema": SCHEMA,
-            "schemaVersion": 1,
+            "schemaVersion": 2,
             "qualificationOnly": True,
             "prototypeOnly": True,
             "productionImplementation": False,
             "activationGranted": False,
             "releaseGranted": False,
-            "operations": operations,
+            "operations": args.operations,
             "checkpointInterval": CHECKPOINT_INTERVAL,
+            "externalFrontier": {
+                **trusted_frontier,
+                "rollbackIndependent": True,
+                "qualificationOnly": True,
+            },
             "recovered": recovered,
-            "crashAndCorruptionDrills": drills,
-            "sharding": sharding_model(operations),
+            "crashRollbackAndCorruptionDrills": drills,
+            "sharding": sharding_model(args.operations),
             "capacityLifetime": capacity_model(),
             "passed": passed,
         }
