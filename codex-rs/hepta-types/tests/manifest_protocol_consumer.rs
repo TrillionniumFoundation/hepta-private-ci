@@ -309,24 +309,13 @@ fn strict_json_transport_matches_native_manifest_semantics() {
     for vector in invalid {
         let id = vector["id"].as_str().expect("vector id");
         let expected = vector["expectedError"].as_str().expect("expected error");
-        let error = semantic_digest(&vector["json"])
-            .unwrap_err_or_else(|_| panic!("{id}: invalid vector accepted"));
+        let error = match semantic_digest(&vector["json"]) {
+            Ok(_) => panic!("{id}: invalid vector accepted"),
+            Err(error) => error,
+        };
         assert!(
             error.contains(expected),
             "{id}: expected {expected:?}, got {error:?}"
         );
-    }
-}
-
-trait ResultExt<T, E> {
-    fn unwrap_err_or_else(self, accepted: impl FnOnce(T) -> !) -> E;
-}
-
-impl<T, E> ResultExt<T, E> for Result<T, E> {
-    fn unwrap_err_or_else(self, accepted: impl FnOnce(T) -> !) -> E {
-        match self {
-            Ok(value) => accepted(value),
-            Err(error) => error,
-        }
     }
 }
