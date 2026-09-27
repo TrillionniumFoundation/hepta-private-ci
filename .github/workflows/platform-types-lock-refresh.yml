@@ -32,7 +32,7 @@ jobs:
     name: Refresh exact platform.types Cargo lock
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -40,7 +40,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Generate and validate authoritative lock
+      - name: Converge compatibility source and authoritative lock
         id: refresh
         shell: bash
         env:
@@ -52,9 +52,19 @@ jobs:
           mkdir -p "$evidence"
           exec > >(tee "$evidence/run.log") 2>&1
 
-          rustup toolchain install "$PLATFORM_TYPES_MSRV" --profile minimal
+          rustup toolchain install "$PLATFORM_TYPES_MSRV" --profile minimal \
+            --component rustfmt
           cargo "+$PLATFORM_TYPES_MSRV" --version | tee "$evidence/cargo-version.txt"
           rustc "+$PLATFORM_TYPES_MSRV" --version --verbose | tee "$evidence/rustc-version.txt"
+
+          if [[ -f "$repo_root/scripts/platform_types_api_compat_fixup.py" ]]; then
+            python3 "$repo_root/scripts/platform_types_api_compat_fixup.py"
+            git -C "$repo_root" rm -- scripts/platform_types_api_compat_fixup.py
+          fi
+
+          cargo "+$PLATFORM_TYPES_MSRV" fmt \
+            --manifest-path "$repo_root/codex-rs/Cargo.toml" \
+            --package codex-hepta-types --package codex-hepta-ndu -- --check
 
           cargo "+$PLATFORM_TYPES_MSRV" generate-lockfile \
             --manifest-path "$repo_root/codex-rs/Cargo.toml"
@@ -62,43 +72,60 @@ jobs:
           unexpected="$(
             git -C "$repo_root" status --porcelain --untracked-files=no |
               cut -c4- |
-              grep -Ev '^codex-rs/Cargo\.lock$' || true
+              grep -Ev '^(codex-rs/Cargo\.lock|codex-rs/hepta-types/src/numeric_conversion\.rs|codex-rs/hepta-types/src/numeric_registry_v2\.rs|codex-rs/hepta-types/src/numeric_conversion_tests\.rs|codex-rs/hepta-ndu/src/numeric_admission\.rs|scripts/platform_types_api_compat_fixup\.py)$' || true
           )"
           if [[ -n "$unexpected" ]]; then
-            printf 'lock refresh changed unexpected tracked paths:\n%s\n' "$unexpected" >&2
+            printf 'compatibility/lock convergence changed unexpected tracked paths:\n%s\n' "$unexpected" >&2
             exit 1
           fi
 
           git -C "$repo_root" diff --check
+          python3 "$repo_root/scripts/platform_types_public_api.py"
           cargo "+$PLATFORM_TYPES_MSRV" metadata \
             --manifest-path "$repo_root/codex-rs/Cargo.toml" \
             --locked --no-deps > "$evidence/metadata.json"
           cargo "+$PLATFORM_TYPES_MSRV" check \
-            -p codex-hepta-types -p codex-hepta-wire \
+            -p codex-hepta-types -p codex-hepta-wire -p codex-hepta-ndu \
             --manifest-path "$repo_root/codex-rs/Cargo.toml" \
             --locked
           cargo "+$PLATFORM_TYPES_MSRV" test \
-            -p codex-hepta-types -p codex-hepta-wire \
+            -p codex-hepta-types -p codex-hepta-wire -p codex-hepta-ndu \
             --manifest-path "$repo_root/codex-rs/Cargo.toml" \
             --locked
 
-          git -C "$repo_root" diff --stat -- codex-rs/Cargo.lock \
-            | tee "$evidence/lock-diff-stat.txt"
-          sha256sum "$repo_root/codex-rs/Cargo.lock" \
-            | tee "$evidence/cargo-lock.sha256"
+          git -C "$repo_root" diff --stat -- \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-types/src/numeric_conversion.rs \
+            codex-rs/hepta-types/src/numeric_registry_v2.rs \
+            codex-rs/hepta-types/src/numeric_conversion_tests.rs \
+            codex-rs/hepta-ndu/src/numeric_admission.rs \
+            scripts/platform_types_api_compat_fixup.py \
+            | tee "$evidence/diff-stat.txt"
+          sha256sum \
+            "$repo_root/codex-rs/Cargo.lock" \
+            "$repo_root/codex-rs/hepta-types/src/numeric_conversion.rs" \
+            "$repo_root/codex-rs/hepta-types/src/numeric_registry_v2.rs" \
+            "$repo_root/codex-rs/hepta-ndu/src/numeric_admission.rs" \
+            | tee "$evidence/candidate-files.sha256"
 
-          if git -C "$repo_root" diff --quiet -- codex-rs/Cargo.lock; then
-            echo "Cargo.lock is already canonical"
+          if git -C "$repo_root" diff --quiet --exit-code; then
+            echo "numeric API compatibility and Cargo.lock are already canonical"
             exit 0
           fi
 
-          git -C "$repo_root" config user.name "Hepta platform.types lock bot"
+          git -C "$repo_root" config user.name "Hepta platform.types compatibility bot"
           git -C "$repo_root" config user.email "hepta-platform-types-ci@users.noreply.github.com"
-          git -C "$repo_root" add -- codex-rs/Cargo.lock
-          git -C "$repo_root" commit -m "chore(platform.types): refresh authoritative Cargo.lock"
+          git -C "$repo_root" add -A -- \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-types/src/numeric_conversion.rs \
+            codex-rs/hepta-types/src/numeric_registry_v2.rs \
+            codex-rs/hepta-types/src/numeric_conversion_tests.rs \
+            codex-rs/hepta-ndu/src/numeric_admission.rs \
+            scripts/platform_types_api_compat_fixup.py
+          git -C "$repo_root" commit -m "fix(platform.types): preserve numeric V1 source compatibility"
           git -C "$repo_root" push origin "HEAD:${HEAD_REF}"
 
-      - name: Preserve lock-refresh diagnostics
+      - name: Preserve compatibility/lock diagnostics
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
