@@ -2,23 +2,23 @@
 //!
 //! This adapter is intentionally internal to Agentd. It owns no mutable writer,
 //! trust root, owner-evidence store or authority. AgentdState retains it as the
-//! only product-side producer façade; the long-lived runtime owner still
-//! re-resolves current owner frontiers, revalidates independent
-//! Generator/Observer/Evaluator evidence and withholds success until the
-//! rollback-domain anchor commit succeeds.
+//! product-side producer façade; the long-lived runtime owner still re-resolves
+//! current owner frontiers, revalidates independent Generator/Observer/Evaluator
+//! evidence and withholds success until the rollback-domain anchor commit succeeds.
 
 use codex_hepta_intelligence::ParameterPlasticityProductReceiptV1;
 use codex_hepta_intelligence::ParameterPlasticityProductRequestV1;
 use codex_hepta_intelligence::TopologyPlasticityProductReceiptV1;
 use codex_hepta_intelligence::TopologyPlasticityProductRequestV1;
+use tokio_util::sync::CancellationToken;
 
 use crate::PlasticityRuntimeCallErrorV1;
 use crate::PlasticityRuntimeHandleV1;
 
 /// Product-side learning producer bound to one Agentd generation.
 ///
-/// It contains only the bounded runtime handle and cannot access proposal
-/// writers, anchor stores, trust roots or authoritative owner stores.
+/// It contains only the bounded runtime handle and cannot access proposal writers,
+/// anchor stores, trust roots or authoritative owner stores.
 #[derive(Clone)]
 pub(crate) struct AgentdLearningPlasticityProducerV1 {
     handle: PlasticityRuntimeHandleV1,
@@ -37,11 +37,45 @@ impl AgentdLearningPlasticityProducerV1 {
         self.handle.propose_parameter(request, now).await
     }
 
+    pub(crate) async fn submit_parameter_with_control(
+        &self,
+        request: ParameterPlasticityProductRequestV1,
+        now: u64,
+        deadline_unix_seconds: u64,
+        cancellation: CancellationToken,
+    ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
+        self.handle
+            .propose_parameter_with_control(
+                request,
+                now,
+                deadline_unix_seconds,
+                cancellation,
+            )
+            .await
+    }
+
     pub(crate) async fn submit_topology(
         &self,
         request: TopologyPlasticityProductRequestV1,
         now: u64,
     ) -> Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
         self.handle.propose_topology(request, now).await
+    }
+
+    pub(crate) async fn submit_topology_with_control(
+        &self,
+        request: TopologyPlasticityProductRequestV1,
+        now: u64,
+        deadline_unix_seconds: u64,
+        cancellation: CancellationToken,
+    ) -> Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
+        self.handle
+            .propose_topology_with_control(
+                request,
+                now,
+                deadline_unix_seconds,
+                cancellation,
+            )
+            .await
     }
 }
