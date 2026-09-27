@@ -3,10 +3,12 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: false,
-  retries: process.env.CI ? 1 : 0,
+  // The fixture owns one ledger. Projects/files must not reset it concurrently.
+  workers: 1,
+  retries: 0,
   timeout: 30_000,
   expect: { timeout: 10_000 },
-  reporter: process.env.CI ? [["line"], ["html", { open: "never" }]] : "line",
+  reporter: [["line"], ["json", { outputFile: "test-results/browser-results.json" }], ["html", { open: "never" }]],
   use: {
     baseURL: "http://127.0.0.1:4173",
     trace: "retain-on-failure",
