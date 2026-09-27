@@ -14,6 +14,7 @@ use codex_app_server_protocol::ThreadQueueReconcileParams;
 use codex_app_server_protocol::ThreadQueueReconcileResponse;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_automation::AutomationAdmission;
+use codex_hepta_automation::AutomationBatchStopReason;
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationFailureDisposition;
 use codex_hepta_automation::AutomationFuture;
@@ -32,8 +33,6 @@ use crate::AgentdState;
 use crate::automation_recovery;
 
 const AUTOMATION_TICK_INTERVAL: Duration = Duration::from_millis(250);
-const AUTOMATION_LEASE_DURATION: Duration = Duration::from_secs(30);
-const AUTOMATION_DISPATCH_TIMEOUT: Duration = Duration::from_secs(5);
 const APP_SERVER_COMMAND_CAPACITY: usize = 8;
 const APP_SERVER_EVENT_CAPACITY: usize = 16;
 
@@ -189,9 +188,7 @@ fn queue_failure_to_automation_error(failure: QueueFailure) -> AutomationError {
         QueueFailure::BeforeAdmission(AgentdError::GenerationFenced(_)) => {
             AutomationError::AccessDenied
         }
-        QueueFailure::BeforeAdmission(AgentdError::Automation(
-            error @ (AutomationError::Unavailable | AutomationError::Corrupt),
-        )) => error,
+        QueueFailure::BeforeAdmission(AgentdError::Automation(error)) => error,
         QueueFailure::BeforeAdmission(_) => AutomationError::Dispatch,
         QueueFailure::OutcomeUnknown => AutomationError::DispatchUnknown,
     }
@@ -239,8 +236,8 @@ pub(crate) async fn run_automation_scheduler(
         store,
         queue,
         identity.spawn_generation,
-        AUTOMATION_LEASE_DURATION,
-        AUTOMATION_DISPATCH_TIMEOUT,
+        Duration::from_millis(policy.slo.lease_expiry_ms),
+        Duration::from_millis(policy.slo.dispatch_timeout_ms),
     ) {
         Ok(scheduler) => scheduler,
         Err(error) => return stop_after_automation_error(error, &state, &cancellation).await,
@@ -336,9 +333,13 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
         // The batch is sequential and bounded. A fresh host clock is sampled
         // for each durable occurrence so a slow provider cannot reuse stale
         // lease timestamps across the entire cycle.
-        match scheduler.tick_batch(&policy, unix_time_ms).await {
+        match scheduler
+            .tick_batch_cancellable(&policy, unix_time_ms, || cancellation.is_cancelled())
+            .await
+        {
             Ok(report) => {
                 scheduler_transient_budget.reset();
+                let retry_deferred = report.stop_reason == AutomationBatchStopReason::RetryDeferred;
                 for tick in report.ticks {
                     if handle_automation_tick_with_limit(
                         tick,
@@ -350,6 +351,15 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
                     .await?
                     {
                         return Ok(());
+                    }
+                }
+                if retry_deferred {
+                    let delay = Duration::from_millis(
+                        policy.retry_delay_ms(retry_budget.consecutive_retries),
+                    );
+                    tokio::select! {
+                        _ = cancellation.cancelled() => return Ok(()),
+                        _ = tokio::time::sleep(delay) => {}
                     }
                 }
             }
@@ -376,7 +386,7 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
     }
 }
 
-fn classify_recovery_error(error: &AgentdError) -> AutomationFailureDisposition {
+pub(crate) fn classify_recovery_error(error: &AgentdError) -> AutomationFailureDisposition {
     match error {
         AgentdError::GenerationFenced(_) => AutomationFailureDisposition::Fence,
         AgentdError::Automation(error) => classify_automation_error(error),
