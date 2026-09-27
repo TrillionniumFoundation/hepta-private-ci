@@ -22,6 +22,7 @@ use crate::model::sha256_hex;
 const MAX_CONCURRENT_LAUNCHERS: usize = 4;
 const LAUNCHER_TIMEOUT: Duration = Duration::from_secs(1);
 const LAUNCHER_POLL_INTERVAL: Duration = Duration::from_millis(10);
+const RESOURCE_HANDOFF_ERROR: &str = "path effects require an OS adapter that consumes an already-verified resource capability; mutable path-string launch is disabled";
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PermissionDecision {
@@ -30,9 +31,10 @@ pub struct PermissionDecision {
 }
 
 pub trait PlatformAdapter: Send {
-    /// Adapter-specific, non-authorizing confirmation context. Test adapters
-    /// without filesystem effects may use None; the system adapter never does
-    /// so for a path operation.
+    /// Adapter-specific, non-authorizing confirmation context. Producing this
+    /// context happens before the operation journal enters Prepared. Adapters
+    /// must therefore reject effect classes that cannot be handed to the OS
+    /// without reopening a mutable name.
     fn confirmation_resource(
         &self,
         _payload: &PlatformPayload,
@@ -144,42 +146,23 @@ impl PlatformAdapter for SystemPlatformAdapter {
         payload: &PlatformPayload,
     ) -> Result<Option<String>, ShellError> {
         match payload {
-            PlatformPayload::OpenPath { path } | PlatformPayload::RevealPath { path } => {
-                Ok(Some(crate::resource::snapshot(path)?.digest))
+            PlatformPayload::OpenPath { .. } | PlatformPayload::RevealPath { .. } => {
+                Err(unsupported_resource_handoff(payload.action()))
             }
             _ => Ok(None),
         }
-    }
-
-    fn invoke_confirmed(
-        &mut self,
-        key: &OperationKey,
-        payload: &PlatformPayload,
-        expected_resource: &Option<String>,
-    ) -> Result<PlatformObservation, ShellError> {
-        let snapshot = match payload {
-            PlatformPayload::OpenPath { path } | PlatformPayload::RevealPath { path } => {
-                Some(crate::resource::snapshot(path)?)
-            }
-            _ => None,
-        };
-        if snapshot.as_ref().map(|value| &value.digest) != expected_resource.as_ref() {
-            return Err(ShellError::Security(
-                "confirmed resource changed before OS entry".to_owned(),
-            ));
-        }
-        let result = self.invoke(key, payload);
-        // Keep the opened identity alive through dispatch/observation. This
-        // does not turn the path-only OS launcher into a descriptor consumer.
-        drop(snapshot);
-        result
     }
 
     fn permission(&self, payload: &PlatformPayload) -> Result<PermissionDecision, ShellError> {
         payload.validate()?;
         let (allowed, reason) = match payload {
             PlatformPayload::OpenPath { path } | PlatformPayload::RevealPath { path } => {
-                (self.policy.path_allowed(path), "path_policy")
+                let reason = if self.policy.path_allowed(path) {
+                    "resource_capability_handoff_unavailable"
+                } else {
+                    "path_policy"
+                };
+                (false, reason)
             }
             PlatformPayload::CopyText { .. } => (self.policy.allow_clipboard, "clipboard_policy"),
             PlatformPayload::Notify { .. } => (
@@ -203,9 +186,14 @@ impl PlatformAdapter for SystemPlatformAdapter {
     ) -> Result<PlatformObservation, ShellError> {
         let final_permission = self.permission(payload)?;
         if !final_permission.allowed {
-            return Err(ShellError::Security(
-                "platform policy changed or was revoked before final OS entry".to_owned(),
-            ));
+            return Err(match payload {
+                PlatformPayload::OpenPath { .. } | PlatformPayload::RevealPath { .. } => {
+                    unsupported_resource_handoff(payload.action())
+                }
+                _ => ShellError::Security(
+                    "platform policy changed or was revoked before final OS entry".to_owned(),
+                ),
+            });
         }
         match payload {
             PlatformPayload::CopyText { text } => {
@@ -231,31 +219,8 @@ impl PlatformAdapter for SystemPlatformAdapter {
                     Ok(_) | Err(_) => Ok(PlatformObservation::indeterminate()),
                 }
             }
-            PlatformPayload::OpenPath { path } => {
-                let canonical = std::fs::canonicalize(path).map_err(|error| {
-                    ShellError::Platform(format!("canonicalize open path before OS entry: {error}"))
-                })?;
-                if !self.policy.path_allowed(&canonical) {
-                    return Err(ShellError::Security(
-                        "open path escaped admitted platform roots before OS entry".to_owned(),
-                    ));
-                }
-                let status = launch_open(&canonical, &self.active_launchers)?;
-                Ok(self.launcher_observation(PlatformAction::OpenPath, status))
-            }
-            PlatformPayload::RevealPath { path } => {
-                let canonical = std::fs::canonicalize(path).map_err(|error| {
-                    ShellError::Platform(format!(
-                        "canonicalize reveal path before OS entry: {error}"
-                    ))
-                })?;
-                if !self.policy.path_allowed(&canonical) {
-                    return Err(ShellError::Security(
-                        "reveal path escaped admitted platform roots before OS entry".to_owned(),
-                    ));
-                }
-                let status = launch_reveal(&canonical, &self.active_launchers)?;
-                Ok(self.launcher_observation(PlatformAction::RevealPath, status))
+            PlatformPayload::OpenPath { .. } | PlatformPayload::RevealPath { .. } => {
+                Err(unsupported_resource_handoff(payload.action()))
             }
             PlatformPayload::Notify { title, body } => {
                 let status = launch_notification(title, body, &self.active_launchers)?;
@@ -267,6 +232,10 @@ impl PlatformAdapter for SystemPlatformAdapter {
     fn reconcile(&mut self, _record: &OperationRecord) -> Result<PlatformObservation, ShellError> {
         Ok(PlatformObservation::indeterminate())
     }
+}
+
+fn unsupported_resource_handoff(action: PlatformAction) -> ShellError {
+    ShellError::Security(format!("{action}: {RESOURCE_HANDOFF_ERROR}"))
 }
 
 #[derive(Debug)]
@@ -323,49 +292,6 @@ fn run_bounded_launcher(
         }
         std::thread::sleep(LAUNCHER_POLL_INTERVAL);
     }
-}
-
-#[cfg(target_os = "macos")]
-fn launch_open(path: &Path, active: &Arc<AtomicUsize>) -> Result<ExitStatus, ShellError> {
-    let mut command = Command::new("open");
-    command.arg(path);
-    run_bounded_launcher(command, "open path", active)
-}
-
-#[cfg(target_os = "windows")]
-fn launch_open(path: &Path, active: &Arc<AtomicUsize>) -> Result<ExitStatus, ShellError> {
-    let mut command = Command::new("explorer.exe");
-    command.arg(path);
-    run_bounded_launcher(command, "open path", active)
-}
-
-#[cfg(all(unix, not(target_os = "macos")))]
-fn launch_open(path: &Path, active: &Arc<AtomicUsize>) -> Result<ExitStatus, ShellError> {
-    let mut command = Command::new("xdg-open");
-    command.arg(path);
-    run_bounded_launcher(command, "open path", active)
-}
-
-#[cfg(target_os = "macos")]
-fn launch_reveal(path: &Path, active: &Arc<AtomicUsize>) -> Result<ExitStatus, ShellError> {
-    let mut command = Command::new("open");
-    command.arg("-R").arg(path);
-    run_bounded_launcher(command, "reveal path", active)
-}
-
-#[cfg(target_os = "windows")]
-fn launch_reveal(path: &Path, active: &Arc<AtomicUsize>) -> Result<ExitStatus, ShellError> {
-    let mut command = Command::new("explorer.exe");
-    command.arg(format!("/select,{}", path.display()));
-    run_bounded_launcher(command, "reveal path", active)
-}
-
-#[cfg(all(unix, not(target_os = "macos")))]
-fn launch_reveal(path: &Path, active: &Arc<AtomicUsize>) -> Result<ExitStatus, ShellError> {
-    let parent = path.parent().unwrap_or(path);
-    let mut command = Command::new("xdg-open");
-    command.arg(parent);
-    run_bounded_launcher(command, "reveal path", active)
 }
 
 fn notification_supported() -> bool {
@@ -457,22 +383,29 @@ mod tests {
     }
 
     #[test]
-    fn local_path_policy_is_root_scoped_before_os_entry() {
+    fn path_effects_fail_closed_without_capability_handoff() {
         let root = TempDir::new().unwrap();
         let allowed = root.path().join("allowed.txt");
         std::fs::write(&allowed, b"allowed").unwrap();
         let adapter = SystemPlatformAdapter::new(
             PlatformPolicy::new(vec![root.path().to_path_buf()], false, false).unwrap(),
         );
-        assert!(
-            adapter
-                .permission(&PlatformPayload::OpenPath { path: allowed })
-                .unwrap()
-                .allowed
-        );
+        let payload = PlatformPayload::OpenPath { path: allowed };
 
+        let decision = adapter.permission(&payload).unwrap();
+        assert!(!decision.allowed);
+        let error = adapter.confirmation_resource(&payload).unwrap_err();
+        assert!(error.to_string().contains("mutable path-string launch is disabled"));
+    }
+
+    #[test]
+    fn path_outside_allowlist_is_denied() {
+        let root = TempDir::new().unwrap();
         let outside = root.path().with_extension("outside");
         std::fs::write(&outside, b"outside").unwrap();
+        let adapter = SystemPlatformAdapter::new(
+            PlatformPolicy::new(vec![root.path().to_path_buf()], false, false).unwrap(),
+        );
         assert!(
             !adapter
                 .permission(&PlatformPayload::RevealPath {
