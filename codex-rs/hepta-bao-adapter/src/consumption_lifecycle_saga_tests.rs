@@ -335,3 +335,124 @@ fn predispatch_crash_recovery_can_close_claimed_or_reserved_rows() {
         BaoConsumptionStateV1::Failed
     );
 }
+
+#[test]
+fn schema_three_success_reopens_without_inventing_or_discarding_history() {
+    for state in [BaoConsumptionStateV1::ConsumerSucceeded, BaoConsumptionStateV1::Succeeded] {
+        let (_directory, path) = registry_path();
+        let mut owner = reopen(&path);
+        let mut row = operation();
+        row.state = state;
+        row.reservation_id = Some("reservation:legacy".into());
+        row.receipt = Some(receipt());
+        // Construct a genuine schema-3 document: terminal fields did not exist.
+        owner.state.schema_version = 3;
+        owner.state.consumptions.insert(row.operation_id.clone(), row.clone());
+        std::fs::write(&path, serde_json::to_vec(&owner.state).unwrap()).unwrap();
+        drop(owner);
+        let owner = reopen(&path);
+        let recovered = owner.consumption_result(&row.operation_id).unwrap();
+        assert_eq!(recovered.state, state);
+        assert_eq!(recovered.receipt, row.receipt);
+        assert_eq!(recovered.terminal_evidence_sha256, Some(receipt_digest(&receipt()).unwrap()));
+        assert_eq!(recovered.terminal_observed_cost, Some(row.amount));
+    }
+}
+
+#[test]
+fn schema_three_missing_success_receipt_is_not_fabricated() {
+    let (_directory, path) = registry_path();
+    let mut owner = reopen(&path);
+    let mut row = operation();
+    row.state = BaoConsumptionStateV1::Succeeded;
+    row.reservation_id = Some("reservation:legacy".into());
+    owner.state.schema_version = 3;
+    owner.state.consumptions.insert(row.operation_id.clone(), row);
+    std::fs::write(&path, serde_json::to_vec(&owner.state).unwrap()).unwrap();
+    drop(owner);
+    assert!(matches!(DurableLeaseRegistryV1::open(&path), Err(LeaseRegistryErrorV1::CorruptState)));
+}
+
+#[test]
+fn fenced_owner_cannot_acknowledge_an_idempotent_transition() {
+    let (_directory, path) = registry_path();
+    let mut owner = reopen(&path);
+    let op = "operation:consumption-saga";
+    owner.claim_consumption(operation()).unwrap();
+    owner.mark_consumption_reserved(op, "reservation:original".into()).unwrap();
+    owner.mark_consumption_dispatch_fenced(op, "reservation:original").unwrap();
+    owner.enter_consumption(op, receipt()).unwrap();
+    owner.observe_consumption(op, true).unwrap();
+    owner.settle_consumption(op).unwrap();
+    owner.fenced = true;
+    assert_eq!(owner.mark_consumption_reserved(op, "reservation:original".into()), Err(LeaseRegistryErrorV1::Fenced));
+    assert_eq!(owner.mark_consumption_dispatch_fenced(op, "reservation:original"), Err(LeaseRegistryErrorV1::Fenced));
+    assert_eq!(owner.enter_consumption(op, receipt()), Err(LeaseRegistryErrorV1::Fenced));
+    assert_eq!(owner.observe_consumption(op, true), Err(LeaseRegistryErrorV1::Fenced));
+    assert_eq!(owner.settle_consumption(op), Err(LeaseRegistryErrorV1::Fenced));
+}
+
+#[test]
+fn schema_three_completed_lease_result_does_not_need_legacy_requalification() {
+    let (_directory, path) = registry_path();
+    let mut owner = reopen(&path);
+    owner.prepare_issue("lease:issue".into(), [17; 32]).unwrap();
+    owner.reconcile("lease:issue", ProviderLeaseObservationV1::IssueApplied {
+        lease: SecretLeaseMetadataV1 {
+            lease_id: "lease:original".into(),
+            secret_reference_id: "secret:original".into(),
+            consumer_id: "model-provider".into(),
+            scope_sha256: [18; 32],
+            provider_metadata_sha256: [19; 32],
+            issued_at_unix_ms: 1_000,
+            expires_at_unix_ms: 2_000,
+            renewable: true,
+            generation: 1,
+            state: SecretLeaseStateV1::Active,
+        }
+    }).unwrap();
+    let expected = owner.operation_result("lease:issue").unwrap();
+    owner.state.schema_version = 3;
+    std::fs::write(&path, serde_json::to_vec(&owner.state).unwrap()).unwrap();
+    drop(owner);
+    let owner = reopen(&path);
+    assert_eq!(owner.operation_result("lease:issue").unwrap(), expected);
+}
+
+#[test]
+fn postfence_without_delivery_can_close_but_cannot_refund() {
+    for unknown in [false, true] {
+        let (_directory, path) = registry_path();
+        let mut owner = reopen(&path);
+        let op = "operation:consumption-saga";
+        owner.claim_consumption(operation()).unwrap();
+        owner.mark_consumption_reserved(op, "reservation:original".into()).unwrap();
+        owner.mark_consumption_dispatch_fenced(op, "reservation:original").unwrap();
+        if unknown { owner.mark_consumption_indeterminate(op).unwrap(); }
+        drop(owner);
+        let mut owner = reopen(&path);
+        let _exclusive_recovery = owner.consumption_execution(op).unwrap();
+        owner.record_delivery_abort(op).unwrap();
+        let before = owner.consumption_result(op).unwrap();
+        owner.record_delivery_abort(op).unwrap();
+        assert_eq!(owner.consumption_result(op).unwrap(), before);
+        let terminal = owner.settle_consumption_failure(op).unwrap();
+        assert_eq!(terminal.terminal_observed_cost, Some(terminal.amount));
+        assert_eq!(terminal.terminal_code.as_deref(), Some("delivery_not_prepared"));
+        assert!(terminal.receipt.is_none());
+    }
+}
+
+#[test]
+fn prepared_delivery_cannot_be_reclassified_as_never_prepared() {
+    let (_directory, path) = registry_path();
+    let mut owner = reopen(&path);
+    let op = "operation:consumption-saga";
+    owner.claim_consumption(operation()).unwrap();
+    owner.mark_consumption_reserved(op, "reservation:original".into()).unwrap();
+    owner.mark_consumption_dispatch_fenced(op, "reservation:original").unwrap();
+    owner.enter_consumption(op, receipt()).unwrap();
+    assert_eq!(owner.record_delivery_abort(op), Err(LeaseRegistryErrorV1::InvalidTransition));
+    owner.mark_consumption_indeterminate(op).unwrap();
+    assert_eq!(owner.record_delivery_abort(op), Err(LeaseRegistryErrorV1::InvalidTransition));
+}

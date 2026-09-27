@@ -5,8 +5,16 @@
 use super::*;
 use codex_hepta_types::Digest32;
 
+#[path = "consumption_validation.rs"]
+mod validation;
+use validation::{has_terminal, receipt_digest, provider_error_code,
+    same_consumption_identity, set_terminal, terminal_matches, validate_receipt_for_request};
+pub(super) use validation::{migrate_schema_three_consumptions, validate_consumption};
+
+
 const TERMINAL_SUCCESS: &str = "success";
 const TERMINAL_PROVIDER_FAILURE: &str = "provider_failure";
+const TERMINAL_DELIVERY_ABORTED: &str = "delivery_aborted";
 const TERMINAL_CONSUMER_NOT_APPLIED: &str = "consumer_not_applied";
 const TERMINAL_ABORTED_BEFORE_RESERVATION: &str = "aborted_before_reservation";
 const TERMINAL_ABORTED_BEFORE_DISPATCH: &str = "aborted_before_dispatch";
@@ -31,6 +39,7 @@ pub enum BaoConsumptionStateV1 {
     ConsumerSucceeded,
     ConsumerNotApplied,
     ProviderFailed,
+    DeliveryAborted,
     Indeterminate,
     Succeeded,
     Failed,
@@ -114,6 +123,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         reservation_id: String,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         if !identifier(&reservation_id) {
             return Err(LeaseRegistryErrorV1::InvalidInput);
         }
@@ -139,6 +149,7 @@ impl DurableLeaseRegistryV1 {
                     | BaoConsumptionStateV1::ConsumerSucceeded
                     | BaoConsumptionStateV1::ConsumerNotApplied
                     | BaoConsumptionStateV1::ProviderFailed
+                    | BaoConsumptionStateV1::DeliveryAborted
                     | BaoConsumptionStateV1::Indeterminate
                     | BaoConsumptionStateV1::Succeeded
                     | BaoConsumptionStateV1::Failed
@@ -169,6 +180,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         reservation_id: &str,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         let current = self
             .state
             .consumptions
@@ -185,6 +197,7 @@ impl DurableLeaseRegistryV1 {
                 | BaoConsumptionStateV1::ConsumerSucceeded
                 | BaoConsumptionStateV1::ConsumerNotApplied
                 | BaoConsumptionStateV1::ProviderFailed
+                | BaoConsumptionStateV1::DeliveryAborted
                 | BaoConsumptionStateV1::Indeterminate
                 | BaoConsumptionStateV1::Succeeded
                 | BaoConsumptionStateV1::Failed
@@ -212,6 +225,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         receipt: BaoSecretReceipt,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         validate_receipt_for_request(&receipt, None)?;
         let current = self
             .state
@@ -255,6 +269,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         succeeded: bool,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         if !succeeded {
             return self.mark_consumption_indeterminate(operation_id);
         }
@@ -288,7 +303,8 @@ impl DurableLeaseRegistryV1 {
             .consumptions
             .get_mut(operation_id)
             .ok_or(LeaseRegistryErrorV1::OperationNotFound)?;
-        set_terminal(row, TERMINAL_SUCCESS, None, terminal, row.amount);
+        let amount = row.amount;
+        set_terminal(row, TERMINAL_SUCCESS, None, terminal, amount);
         row.state = BaoConsumptionStateV1::ConsumerSucceeded;
         self.commit(next, 0)
     }
@@ -298,6 +314,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         evidence_sha256: [u8; 32],
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         if evidence_sha256 == [0; 32] {
             return Err(LeaseRegistryErrorV1::InvalidInput);
         }
@@ -347,6 +364,7 @@ impl DurableLeaseRegistryV1 {
         &mut self,
         operation_id: &str,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         let current = self
             .state
             .consumptions
@@ -379,6 +397,7 @@ impl DurableLeaseRegistryV1 {
         evidence_sha256: [u8; 32],
         observed_cost: u64,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         if !provider_error_code(error_code)
             || evidence_sha256 == [0; 32]
             || observed_cost == 0
@@ -425,6 +444,45 @@ impl DurableLeaseRegistryV1 {
         self.commit(next, 0)
     }
 
+    /// Close a discontinued read whose durable delivery preparation never
+    /// committed. This proves no consumer entry, NOT no provider request. Charge
+    /// the full reserved request amount; never refund or redispatch this read.
+    /// The caller must hold the operation execution/recovery exclusion guard.
+    pub(crate) fn record_delivery_abort(
+        &mut self,
+        operation_id: &str,
+    ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
+        let current = self.state.consumptions.get(operation_id)
+            .cloned().ok_or(LeaseRegistryErrorV1::OperationNotFound)?;
+        let terminal = Digest32::of_bytes(
+            &serde_json::to_vec(&(
+                "hepta.bao.delivery-not-prepared.v1",
+                &current.operation_id, current.semantic_sha256,
+                current.effect_sha256, &current.reservation_id, current.amount,
+            )).map_err(|_| LeaseRegistryErrorV1::InvalidInput)?
+        ).into_array();
+        if matches!(current.state, BaoConsumptionStateV1::DeliveryAborted | BaoConsumptionStateV1::Failed)
+            && terminal_matches(&current, TERMINAL_DELIVERY_ABORTED,
+                Some("delivery_not_prepared"), terminal, current.amount)
+        {
+            return Ok(());
+        }
+        if !matches!(current.state, BaoConsumptionStateV1::DispatchFenced | BaoConsumptionStateV1::Indeterminate)
+            || current.reservation_id.is_none() || current.receipt.is_some() || has_terminal(&current)
+        {
+            return Err(LeaseRegistryErrorV1::InvalidTransition);
+        }
+        let mut next = self.state.clone();
+        let row = next.consumptions.get_mut(operation_id)
+            .ok_or(LeaseRegistryErrorV1::OperationNotFound)?;
+        let amount = row.amount;
+        set_terminal(row, TERMINAL_DELIVERY_ABORTED,
+            Some("delivery_not_prepared"), terminal, amount);
+        row.state = BaoConsumptionStateV1::DeliveryAborted;
+        self.commit(next, 0)
+    }
+
     pub(crate) fn record_consumption_abort(
         &mut self,
         operation_id: &str,
@@ -432,6 +490,7 @@ impl DurableLeaseRegistryV1 {
         code: &str,
         evidence_sha256: [u8; 32],
     ) -> Result<BaoConsumptionOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         if evidence_sha256 == [0; 32]
             || !matches!(
                 code,
@@ -488,6 +547,7 @@ impl DurableLeaseRegistryV1 {
         &mut self,
         operation_id: &str,
     ) -> Result<BaoSecretReceipt, LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         let current = self
             .state
             .consumptions
@@ -525,6 +585,7 @@ impl DurableLeaseRegistryV1 {
         &mut self,
         operation_id: &str,
     ) -> Result<BaoConsumptionOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         let current = self
             .state
             .consumptions
@@ -536,7 +597,9 @@ impl DurableLeaseRegistryV1 {
         }
         if !matches!(
             current.state,
-            BaoConsumptionStateV1::ProviderFailed | BaoConsumptionStateV1::ConsumerNotApplied
+            BaoConsumptionStateV1::ProviderFailed
+                | BaoConsumptionStateV1::DeliveryAborted
+                | BaoConsumptionStateV1::ConsumerNotApplied
         ) || !has_terminal(&current)
         {
             return Err(LeaseRegistryErrorV1::InvalidTransition);
@@ -548,215 +611,6 @@ impl DurableLeaseRegistryV1 {
             .state = BaoConsumptionStateV1::Failed;
         self.commit(next, 0)?;
         self.consumption_result(operation_id)
-    }
-}
-
-fn set_terminal(
-    row: &mut BaoConsumptionOperationV1,
-    kind: &str,
-    code: Option<&str>,
-    evidence_sha256: [u8; 32],
-    observed_cost: u64,
-) {
-    row.terminal_kind = Some(kind.to_owned());
-    row.terminal_code = code.map(str::to_owned);
-    row.terminal_evidence_sha256 = Some(evidence_sha256);
-    row.terminal_observed_cost = Some(observed_cost);
-}
-
-fn has_terminal(row: &BaoConsumptionOperationV1) -> bool {
-    row.terminal_kind.is_some()
-        || row.terminal_code.is_some()
-        || row.terminal_evidence_sha256.is_some()
-        || row.terminal_observed_cost.is_some()
-}
-
-fn terminal_matches(
-    row: &BaoConsumptionOperationV1,
-    kind: &str,
-    code: Option<&str>,
-    evidence_sha256: [u8; 32],
-    observed_cost: u64,
-) -> bool {
-    row.terminal_kind.as_deref() == Some(kind)
-        && row.terminal_code.as_deref() == code
-        && row.terminal_evidence_sha256 == Some(evidence_sha256)
-        && row.terminal_observed_cost == Some(observed_cost)
-}
-
-fn same_consumption_identity(
-    left: &BaoConsumptionOperationV1,
-    right: &BaoConsumptionOperationV1,
-) -> bool {
-    left.operation_id == right.operation_id
-        && left.semantic_sha256 == right.semantic_sha256
-        && left.effect_sha256 == right.effect_sha256
-        && left.request_sha256 == right.request_sha256
-        && left.consumer_id == right.consumer_id
-        && left.consumer_configuration_sha256 == right.consumer_configuration_sha256
-        && left.amount == right.amount
-}
-
-fn receipt_digest(receipt: &BaoSecretReceipt) -> Result<[u8; 32], LeaseRegistryErrorV1> {
-    let encoded = serde_json::to_vec(receipt).map_err(|_| LeaseRegistryErrorV1::InvalidInput)?;
-    Ok(Digest32::of_bytes(&encoded).into_array())
-}
-
-fn provider_error_code(value: &str) -> bool {
-    matches!(
-        value,
-        "provider_denied"
-            | "provider_unavailable"
-            | "not_found"
-            | "response_too_large"
-            | "invalid_response"
-            | "version_mismatch"
-            | "secret_digest_mismatch"
-    )
-}
-
-fn validate_receipt_for_request(
-    receipt: &BaoSecretReceipt,
-    request_sha256: Option<[u8; 32]>,
-) -> Result<(), LeaseRegistryErrorV1> {
-    if request_sha256.is_some_and(|request| receipt.request_sha256 != request)
-        || receipt.request_sha256 == [0; 32]
-        || receipt.version == 0
-        || receipt.secret_bytes > 1024 * 1024
-        || receipt.response_sha256 == [0; 32]
-        || receipt.secret_sha256 == [0; 32]
-    {
-        return Err(LeaseRegistryErrorV1::CorruptState);
-    }
-    Ok(())
-}
-
-pub(super) fn validate_consumption(
-    row: &BaoConsumptionOperationV1,
-) -> Result<(), LeaseRegistryErrorV1> {
-    if !identifier(&row.operation_id)
-        || !identifier(&row.consumer_id)
-        || row.amount == 0
-        || [
-            row.semantic_sha256,
-            row.effect_sha256,
-            row.request_sha256,
-            row.consumer_configuration_sha256,
-        ]
-        .contains(&[0; 32])
-        || row
-            .reservation_id
-            .as_deref()
-            .is_some_and(|id| !identifier(id))
-    {
-        return Err(LeaseRegistryErrorV1::CorruptState);
-    }
-    if let Some(receipt) = &row.receipt {
-        validate_receipt_for_request(receipt, Some(row.request_sha256))?;
-    }
-
-    let no_terminal = !has_terminal(row);
-    let valid = match row.state {
-        BaoConsumptionStateV1::Claimed => {
-            row.reservation_id.is_none() && row.receipt.is_none() && no_terminal
-        }
-        BaoConsumptionStateV1::Reserved | BaoConsumptionStateV1::DispatchFenced => {
-            row.reservation_id.is_some() && row.receipt.is_none() && no_terminal
-        }
-        BaoConsumptionStateV1::DeliveryPrepared => {
-            row.reservation_id.is_some() && row.receipt.is_some() && no_terminal
-        }
-        BaoConsumptionStateV1::Indeterminate => row.reservation_id.is_some() && no_terminal,
-        BaoConsumptionStateV1::ConsumerSucceeded | BaoConsumptionStateV1::Succeeded => {
-            row.reservation_id.is_some()
-                && row.receipt.is_some()
-                && terminal_matches(
-                    row,
-                    TERMINAL_SUCCESS,
-                    None,
-                    receipt_digest(
-                        row.receipt
-                            .as_ref()
-                            .ok_or(LeaseRegistryErrorV1::CorruptState)?,
-                    )?,
-                    row.amount,
-                )
-        }
-        BaoConsumptionStateV1::ConsumerNotApplied => {
-            row.reservation_id.is_some()
-                && row.receipt.is_some()
-                && row.terminal_kind.as_deref() == Some(TERMINAL_CONSUMER_NOT_APPLIED)
-                && row.terminal_code.as_deref() == Some("consumer_not_applied")
-                && row.terminal_evidence_sha256.is_some_and(|value| value != [0; 32])
-                && row.terminal_observed_cost == Some(0)
-        }
-        BaoConsumptionStateV1::ProviderFailed => {
-            row.reservation_id.is_some()
-                && row.receipt.is_none()
-                && row.terminal_kind.as_deref() == Some(TERMINAL_PROVIDER_FAILURE)
-                && row
-                    .terminal_code
-                    .as_deref()
-                    .is_some_and(provider_error_code)
-                && row.terminal_evidence_sha256.is_some_and(|value| value != [0; 32])
-                && row
-                    .terminal_observed_cost
-                    .is_some_and(|cost| cost != 0 && cost <= row.amount)
-        }
-        BaoConsumptionStateV1::Failed => validate_failed_terminal(row),
-        BaoConsumptionStateV1::DispatchAttempted => row.receipt.is_none() && no_terminal,
-    };
-    if valid {
-        Ok(())
-    } else {
-        Err(LeaseRegistryErrorV1::CorruptState)
-    }
-}
-
-fn validate_failed_terminal(row: &BaoConsumptionOperationV1) -> bool {
-    let evidence = row.terminal_evidence_sha256.is_some_and(|value| value != [0; 32]);
-    match row.terminal_kind.as_deref() {
-        Some(TERMINAL_PROVIDER_FAILURE) => {
-            row.reservation_id.is_some()
-                && row.receipt.is_none()
-                && row
-                    .terminal_code
-                    .as_deref()
-                    .is_some_and(provider_error_code)
-                && evidence
-                && row
-                    .terminal_observed_cost
-                    .is_some_and(|cost| cost != 0 && cost <= row.amount)
-        }
-        Some(TERMINAL_CONSUMER_NOT_APPLIED) => {
-            row.reservation_id.is_some()
-                && row.receipt.is_some()
-                && row.terminal_code.as_deref() == Some("consumer_not_applied")
-                && evidence
-                && row.terminal_observed_cost == Some(0)
-        }
-        Some(TERMINAL_ABORTED_BEFORE_RESERVATION) => {
-            row.reservation_id.is_none()
-                && row.receipt.is_none()
-                && row.terminal_code.as_deref() == Some("no_reservation")
-                && evidence
-                && row.terminal_observed_cost == Some(0)
-        }
-        Some(TERMINAL_ABORTED_BEFORE_DISPATCH) => {
-            row.reservation_id.is_some()
-                && row.receipt.is_none()
-                && matches!(
-                    row.terminal_code.as_deref(),
-                    Some(
-                        "reservation_cancelled"
-                            | "reservation_released"
-                            | "reservation_expired"
-                    )
-                )
-                && evidence
-                && row.terminal_observed_cost == Some(0)
-        }
-        _ => false,
     }
 }
 

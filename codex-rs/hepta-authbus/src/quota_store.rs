@@ -173,6 +173,16 @@ impl AuthBusAuthorityStore {
             }
             return Err(AuthBusAuthorityError::IdempotencyConflict);
         }
+        let sealed: bool = sqlx::query_scalar(
+            "SELECT EXISTS(SELECT 1 FROM authbus_operation_closure WHERE operation_id = ?)",
+        )
+        .bind(request.operation_id.as_str())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(storage)?;
+        if sealed {
+            return Err(AuthBusAuthorityError::IdempotencyConflict);
+        }
         let policy = load_policy_by_id(&mut tx, decision.policy_id()).await?;
         if !decision.allowed()
             || policy.effect != PolicyEffect::Allow

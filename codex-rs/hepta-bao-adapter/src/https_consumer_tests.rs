@@ -1249,3 +1249,6 @@ async fn consumer_configuration_is_inside_the_independently_signed_request() {
     ));
     task.abort();
 }
+
+#[path = "saga_crash_tests.rs"]
+mod saga_crash_tests;
