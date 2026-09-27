@@ -15,7 +15,7 @@ concurrency:
 jobs:
   export:
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Checkout exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -23,30 +23,79 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Generate pinned lockfile with repository toolchain
-        working-directory: codex-rs
+
+      - name: Resolve minimal lock delta and execute scoped checks
+        id: checks
+        shell: bash
+        run: |
+          set -uo pipefail
+          out="$RUNNER_TEMP/channel-matrix-bootstrap"
+          mkdir -p "$out"
+          cp codex-rs/Cargo.lock "$out/Cargo.lock.before"
+          status=0
+          (
+            cd codex-rs
+            cargo check \
+              -p codex-hepta-matrix-protocol \
+              -p codex-hepta-matrix-store \
+              -p codex-hepta-matrix-sdk \
+              -p codex-hepta-matrixd
+          ) >"$out/cargo-check.log" 2>&1 || status=$?
+          cp codex-rs/Cargo.lock "$out/Cargo.lock"
+          git diff -- codex-rs/Cargo.lock > "$out/Cargo.lock.patch"
+          if [ "$status" -eq 0 ]; then
+            (
+              cd codex-rs
+              cargo test --no-fail-fast \
+                -p codex-hepta-matrix-protocol \
+                -p codex-hepta-matrix-store \
+                -p codex-hepta-matrix-sdk \
+                -p codex-hepta-matrixd
+            ) >"$out/cargo-test.log" 2>&1 || status=$?
+          else
+            : >"$out/cargo-test.log"
+          fi
+          (
+            cd codex-rs
+            cargo fmt --all -- --check
+          ) >"$out/cargo-fmt.log" 2>&1 || status=$?
+          printf '%s\n' "$status" > "$out/check-status.txt"
+          exit 0
+
+      - name: Record exact source and workspace
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
-          cargo generate-lockfile
-      - name: Record generated lockfile and exact source
-        shell: bash
-        run: |
-          set -euo pipefail
+          out="$RUNNER_TEMP/channel-matrix-bootstrap"
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
-          mkdir -p "$RUNNER_TEMP/channel-matrix-bootstrap"
-          cp codex-rs/Cargo.lock "$RUNNER_TEMP/channel-matrix-bootstrap/Cargo.lock"
-          git diff -- codex-rs/Cargo.lock > "$RUNNER_TEMP/channel-matrix-bootstrap/Cargo.lock.patch"
-          git status --short > "$RUNNER_TEMP/channel-matrix-bootstrap/status.txt"
-          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/channel-matrix-bootstrap/source-sha.txt"
+          git status --short > "$out/status.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$out/source-sha.txt"
           tar --exclude=.git --exclude=target --exclude='*.zip' --exclude='*.tgz' \
-            -czf "$RUNNER_TEMP/channel-matrix-bootstrap/workspace.tgz" .
-          sha256sum "$RUNNER_TEMP/channel-matrix-bootstrap/"* \
-            > "$RUNNER_TEMP/channel-matrix-bootstrap/SHA256SUMS"
-      - name: Upload exact workspace and generated lockfile
+            -czf "$out/workspace.tgz" .
+          (
+            cd "$out"
+            sha256sum Cargo.lock.before Cargo.lock Cargo.lock.patch \
+              cargo-check.log cargo-test.log cargo-fmt.log check-status.txt \
+              source-sha.txt status.txt workspace.tgz > SHA256SUMS
+          )
+
+      - name: Upload exact workspace, minimal lock and logs
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: channel-matrix-bootstrap-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/channel-matrix-bootstrap/
           if-no-files-found: error
           retention-days: 1
+
+      - name: Propagate scoped check result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(cat "$RUNNER_TEMP/channel-matrix-bootstrap/check-status.txt")"
+          if [ "$status" -ne 0 ]; then
+            echo "Scoped Matrix checks failed with status $status" >&2
+            exit "$status"
+          fi
