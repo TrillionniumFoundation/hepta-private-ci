@@ -91,30 +91,179 @@ jobs:
           git diff --cached --quiet || \
             git commit -m 'docs(cognitive.read): atomically rebind affected implementation maps'
 
-      - name: Verify exact source candidate
+      - name: Prepare verification diagnostics
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
-          sha="$(git rev-parse HEAD)"
-          tree="$(git rev-parse HEAD^{tree})"
-          python3 .github/scripts/verify_cargo_workspace_manifests.py
-          python3 scripts/verify-cognitive-read-constants.py
-          python3 scripts/verify-cognitive-read-map.py --expected-sha "$sha"
+          diagnostics="$RUNNER_TEMP/cognitive-read-convergence-diagnostics"
+          mkdir -p "$diagnostics"
+          {
+            echo "source_sha=$SOURCE_SHA"
+            echo "candidate_sha=$(git rev-parse HEAD)"
+            echo "candidate_tree=$(git rev-parse HEAD^{tree})"
+            echo "event=$GITHUB_EVENT_NAME"
+            echo "run_id=$GITHUB_RUN_ID"
+            echo "run_attempt=$GITHUB_RUN_ATTEMPT"
+          } > "$diagnostics/candidate.txt"
+          cp "$RUNNER_TEMP/rebound-maps.json" "$diagnostics/rebound-maps.json"
+
+      - name: Verify workspace manifest policy
+        id: verify_manifest
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 .github/scripts/verify_cargo_workspace_manifests.py \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/workspace-manifest.log"
+
+      - name: Verify compiled contracts and documentation
+        id: verify_contracts
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 scripts/verify-cognitive-read-constants.py \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/contract-limits.log"
+
+      - name: Verify cognitive.read exact source map
+        id: verify_cognitive_map
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 scripts/verify-cognitive-read-map.py \
+            --expected-sha "$(git rev-parse HEAD)" \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/cognitive-map.log"
+
+      - name: Verify repository implementation maps
+        id: verify_all_maps
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
           python3 scripts/hepta-implementation-maps.py verify \
-            --expected-sha "$sha" --expected-tree "$tree"
-          python3 -m unittest scripts/test_hepta_implementation_maps.py
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})" \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/all-maps.log"
+
+      - name: Verify implementation-map regression tests
+        id: verify_map_tests
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 -m unittest scripts/test_hepta_implementation_maps.py \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/map-tests.log"
+
+      - name: Verify Rust formatting
+        id: verify_fmt
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/fmt.log"
+
+      - name: Verify locked product build
+        id: verify_build
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
           cargo check --manifest-path codex-rs/Cargo.toml --locked \
             -p codex-hepta-cognitive-read \
             -p codex-hepta-agentd \
             -p codex-hepta-infer-core \
-            -p codex-hepta-infer-worker-host --all-targets
+            -p codex-hepta-infer-worker-host --all-targets \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/locked-build.log"
+
+      - name: Verify cognitive.read unit and contract tests
+        id: verify_tests
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
           cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-cognitive-read --lib
+            -p codex-hepta-cognitive-read --lib \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/core-tests.log"
+
+      - name: Verify fuzz workspace compilation
+        id: verify_fuzz
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
           cargo check --manifest-path codex-rs/hepta-cognitive-read/fuzz/Cargo.toml \
-            --all-targets
+            --all-targets \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/fuzz-build.log"
+          status="${PIPESTATUS[0]}"
           rm -f codex-rs/hepta-cognitive-read/fuzz/Cargo.lock
+          exit "$status"
+
+      - name: Verify clean tracked candidate
+        id: verify_clean
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          git status --short --untracked-files=all \
+            | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/git-status.log"
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain convergence diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-read-convergence-diagnostics-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/cognitive-read-convergence-diagnostics
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce exact source candidate
+        if: always()
+        shell: bash
+        env:
+          MANIFEST_OUTCOME: ${{ steps.verify_manifest.outcome }}
+          CONTRACTS_OUTCOME: ${{ steps.verify_contracts.outcome }}
+          COGNITIVE_MAP_OUTCOME: ${{ steps.verify_cognitive_map.outcome }}
+          ALL_MAPS_OUTCOME: ${{ steps.verify_all_maps.outcome }}
+          MAP_TESTS_OUTCOME: ${{ steps.verify_map_tests.outcome }}
+          FMT_OUTCOME: ${{ steps.verify_fmt.outcome }}
+          BUILD_OUTCOME: ${{ steps.verify_build.outcome }}
+          TESTS_OUTCOME: ${{ steps.verify_tests.outcome }}
+          FUZZ_OUTCOME: ${{ steps.verify_fuzz.outcome }}
+          CLEAN_OUTCOME: ${{ steps.verify_clean.outcome }}
+        run: |
+          set -euo pipefail
+          failed=0
+          for outcome in \
+            "$MANIFEST_OUTCOME" \
+            "$CONTRACTS_OUTCOME" \
+            "$COGNITIVE_MAP_OUTCOME" \
+            "$ALL_MAPS_OUTCOME" \
+            "$MAP_TESTS_OUTCOME" \
+            "$FMT_OUTCOME" \
+            "$BUILD_OUTCOME" \
+            "$TESTS_OUTCOME" \
+            "$FUZZ_OUTCOME" \
+            "$CLEAN_OUTCOME"
+          do
+            if [[ "$outcome" != success ]]; then
+              failed=1
+            fi
+          done
+          exit "$failed"
 
       - name: Retire bootstrap and push sealed candidate
         shell: bash
