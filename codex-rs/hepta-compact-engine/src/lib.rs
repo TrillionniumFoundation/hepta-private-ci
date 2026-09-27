@@ -9,6 +9,7 @@
 
 mod archive_codec;
 mod coordinator;
+#[path = "durable_facade.rs"]
 mod durable;
 mod fenced_coordinator;
 mod publication;
