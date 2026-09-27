@@ -86,22 +86,51 @@ jobs:
             git commit -m "memory.federation: integrate v3 production closure"
           fi
 
-      - name: Rebind implementation map and generated projections
+      - name: Push tested source candidate
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py migrate --module memory.federation
-          python3 scripts/hepta-module-docs.py refresh-derived
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
+
+      - name: Rebind implementation map and generated projections
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p qualification/memory-federation/bootstrap-diagnostics
+          log=qualification/memory-federation/bootstrap-diagnostics/v3-rebind.log
+          rm -f "$log"
+          set +e
+          {
+            echo '$ python3 scripts/hepta-implementation-maps.py migrate --module memory.federation'
+            python3 scripts/hepta-implementation-maps.py migrate --module memory.federation
+            echo '$ python3 scripts/hepta-module-docs.py refresh-derived'
+            python3 scripts/hepta-module-docs.py refresh-derived
+            git add -A
+            if ! git diff --cached --quiet; then
+              git commit -m "docs(memory-federation): bind v3 source and projections"
+            fi
+            echo '$ python3 scripts/hepta-implementation-maps.py verify'
+            python3 scripts/hepta-implementation-maps.py verify
+            echo '$ python3 scripts/hepta-module-docs.py refresh-derived --check'
+            python3 scripts/hepta-module-docs.py refresh-derived --check
+            git diff --check
+            test -z "$(git status --porcelain --untracked-files=normal)"
+          } 2>&1 | tee "$log"
+          status=${PIPESTATUS[0]}
+          set -e
+          if [ "$status" -ne 0 ]; then
+            git add "$log"
+            git commit -m "ci(memory-federation): retain v3 rebind failure"
+            git push origin "HEAD:${GITHUB_HEAD_REF}"
+            exit "$status"
+          fi
+          rm -f "$log"
           git add -A
           if ! git diff --cached --quiet; then
-            git commit -m "docs(memory-federation): bind v3 source and projections"
+            git commit -m "ci(memory-federation): remove bootstrap diagnostic"
           fi
-          python3 scripts/hepta-implementation-maps.py verify
-          python3 scripts/hepta-module-docs.py refresh-derived --check
-          git diff --check
-          test -z "$(git status --porcelain --untracked-files=normal)"
 
-      - name: Push integrated candidate
+      - name: Push rebound candidate
         shell: bash
         run: |
           set -euo pipefail
