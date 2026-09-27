@@ -39,6 +39,24 @@ selected model. Compatibility is not admission: authenticated artifact lineage,
 current-source use, anti-rollback, withdrawal, signed selection and a real host
 consumer remain required before any product adoption.
 
+## Borrowed storage and the actual training snapshot
+
+A frozen `HeadRow` does not make its Tensor storage immutable. After the existing
+copy-budget check, fitting clones complete rows and the selected head, then
+validates the dataset and base digests on those actual private copies before any
+optimizer step. Checking only the caller's storage before and after fitting would
+miss a change/copy/restore (ABA): the returned identity could describe different
+features, labels, parameters or normalization than the bytes actually trained.
+The final caller-drift checks remain. Ordinary unchanged inputs retain the same
+numerical algorithm, row order and candidate identity; no-data still allocates no
+candidate. A transient change after snapshotting cannot influence private inputs.
+
+`test_cell_snapshot.py` deterministically reproduces these allocation-boundary
+races with real small CPU tensors and controlled owner callbacks. It also checks
+no-data/no-update, budget rejection before copies, retained drift rejection and
+unchanged-candidate parity. This is snapshot integrity, not authenticated source
+permission, independent outcomes, a process sandbox or longitudinal improvement.
+
 ## Actual model experiment versus fixtures
 
 The existing `Hepta Laya real-model smoke` workflow checks source-head and fixed

@@ -167,7 +167,9 @@ export class FileBrowserOperationJournal {
   #path;
   #tail = Promise.resolve();
   #parentReady = false;
-  #poisoned = false;
+  #poisoned = null;
+  // Live-handle high-water mark, not an external anti-rollback authority.
+  #frontier = null;
 
   constructor(path) {
     if (typeof path !== "string" || !isAbsolute(path)) {
@@ -214,37 +216,94 @@ export class FileBrowserOperationJournal {
     return records.get(`${profileId}\u0000${generation}\u0000${operationId}`) ?? null;
   }
 
-  async #load() {
-    const noFollow = constants.O_NOFOLLOW ?? 0;
-    let handle;
-    if (!this.#parentReady) {
-      try {
-        await ensureCanonicalPrivateParent(this.#path);
-        this.#parentReady = true;
-      } catch (error) {
-        this.#poisoned = true;
-        throw error;
-      }
+  async #readView(handle) {
+    if (await realpath(dirname(this.#path)) !== resolve(dirname(this.#path))) {
+      throw new TypeError("browser journal parent path changed");
     }
+    const info = await handle.stat({ bigint: true });
+    if (!info.isFile() || info.size > BigInt(MAX_FILE_BYTES)) {
+      throw new TypeError("browser journal is not a bounded regular file");
+    }
+    if (process.platform !== "win32" && (info.mode & 0o077n) !== 0n) {
+      throw new TypeError("browser journal permissions are too broad");
+    }
+    // Read at most the admitted size plus one growth-detection byte. readFile
+    // would allow a concurrently growing file to exceed the stat-time bound.
+    const size = Number(info.size);
+    const storage = Buffer.alloc(size + 1);
+    let offset = 0;
+    while (offset < storage.length) {
+      const { bytesRead } = await handle.read(storage, offset,
+        Math.min(64 * 1024, storage.length - offset), offset);
+      if (bytesRead === 0) break;
+      offset += bytesRead;
+    }
+    const after = await handle.stat({ bigint: true });
+    const entry = await lstat(this.#path, { bigint: true });
+    if (offset !== size || !entry.isFile()
+        || entry.dev !== info.dev || entry.ino !== info.ino
+        || entry.size !== info.size || entry.mtimeNs !== info.mtimeNs
+        || entry.ctimeNs !== info.ctimeNs
+        || after.dev !== info.dev || after.ino !== info.ino
+        || after.size !== info.size || after.mtimeNs !== info.mtimeNs
+        || after.ctimeNs !== info.ctimeNs
+        || await realpath(dirname(this.#path)) !== resolve(dirname(this.#path))) {
+      throw new TypeError("browser journal changed during bounded read");
+    }
+    const bytes = storage.subarray(0, size);
+    return { bytes, dev: info.dev, ino: info.ino, size,
+      digest: createHash("sha256").update(bytes).digest("hex") };
+  }
+
+  #checkFrontier(view, { exact = false } = {}) {
+    const old = this.#frontier;
+    if (!old) {
+      if (exact && view.size !== 0) throw new TypeError("browser journal appeared before creation");
+      return;
+    }
+    if (view.dev !== old.dev || view.ino !== old.ino || view.size < old.size
+        || exact && view.size !== old.size
+        || createHash("sha256").update(view.bytes.subarray(0, old.size)).digest("hex") !== old.digest) {
+      throw new TypeError("browser journal identity or observed prefix changed; explicit owner recovery is required");
+    }
+  }
+
+  #retainFrontier(view) {
+    // Do not retain a second full journal buffer or turn this into a cache of
+    // truth: every read still checks the current complete on-disk records.
+    this.#frontier = { dev: view.dev, ino: view.ino, size: view.size, digest: view.digest };
+  }
+
+  async #load() {
+    try {
+      return await this.#loadChecked();
+    } catch (error) {
+      this.#poisoned = error instanceof Error ? error : new Error("journal I/O failure");
+      throw error;
+    }
+  }
+
+  async #loadChecked() {
+    const noFollow = constants.O_NOFOLLOW ?? 0;
+    if (!this.#parentReady) {
+      await ensureCanonicalPrivateParent(this.#path);
+      this.#parentReady = true;
+    }
+    let handle;
     try {
       handle = await open(this.#path, constants.O_RDONLY | noFollow);
     } catch (error) {
-      if (error?.code === "ENOENT") return new Map();
+      if (error?.code === "ENOENT" && this.#frontier === null) return new Map();
       throw error;
     }
-    let bytes;
+    let view;
     try {
-      const info = await handle.stat();
-      if (!info.isFile() || info.size > MAX_FILE_BYTES) {
-        throw new TypeError("browser journal is not a bounded regular file");
-      }
-      if (process.platform !== "win32" && (info.mode & 0o077) !== 0) {
-        throw new TypeError("browser journal permissions are too broad");
-      }
-      bytes = await handle.readFile({ encoding: "utf8" });
+      view = await this.#readView(handle);
+      this.#checkFrontier(view);
     } finally {
       await handle.close();
     }
+    const bytes = new TextDecoder("utf-8", { fatal: true }).decode(view.bytes);
     if (bytes.length !== 0 && !bytes.endsWith("\n")) {
       throw new TypeError("browser journal has an incomplete final record; explicit owner recovery is required");
     }
@@ -281,6 +340,7 @@ export class FileBrowserOperationJournal {
       }
       records.set(key, advanceRecord(envelope.type, prior, record));
     }
+    this.#retainFrontier(view);
     return records;
   }
 
@@ -292,39 +352,51 @@ export class FileBrowserOperationJournal {
       throw new TypeError("browser journal record exceeds line limit");
     }
     const noFollow = constants.O_NOFOLLOW ?? 0;
-    const flags = constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | noFollow;
+    // Never recreate a journal that this live handle has already observed.
+    // First creation is exclusive; a racing creator must be reconciled.
+    const creation = this.#frontier === null ? constants.O_CREAT | constants.O_EXCL : 0;
+    const flags = constants.O_RDWR | constants.O_APPEND | creation | noFollow;
     let handle;
+    let appended;
     try {
+      if (await realpath(dirname(this.#path)) !== resolve(dirname(this.#path))) {
+        throw new TypeError("browser journal parent path changed");
+      }
       handle = await open(this.#path, flags, 0o600);
-      const info = await handle.stat();
-      if (!info.isFile()) {
-        throw new TypeError("browser journal is not a regular file");
-      }
-      if (process.platform !== "win32" && (info.mode & 0o077) !== 0) {
-        throw new TypeError("browser journal permissions are too broad");
-      }
-      if (info.size + lineBytes > MAX_FILE_BYTES) {
+      const prior = await this.#readView(handle);
+      // The reducer ran on this exact snapshot. Even valid concurrent growth
+      // cannot be acknowledged using a now-stale predecessor decision.
+      this.#checkFrontier(prior, { exact: true });
+      if (prior.size + lineBytes > MAX_FILE_BYTES) {
         throw new TypeError("browser journal capacity exhausted");
       }
       await handle.writeFile(line, "utf8");
       await handle.sync();
       await syncDirectory(dirname(this.#path));
+      appended = await this.#readView(handle);
+      this.#checkFrontier(appended);
+      if (appended.size !== prior.size + lineBytes
+          || createHash("sha256").update(appended.bytes.subarray(0, prior.size)).digest("hex") !== prior.digest
+          || !appended.bytes.subarray(prior.size).equals(Buffer.from(line, "utf8"))) {
+        throw new TypeError("browser journal append observation changed");
+      }
     } catch (error) {
       // A possible write/fsync failure is not an idempotent success. Preserve
       // bytes for recovery and reject all queued work through this same handle.
-      this.#poisoned = true;
+      this.#poisoned = error instanceof Error ? error : new Error("journal I/O failure");
       throw error;
     } finally {
       if (handle) {
         try { await handle.close(); }
-        catch (error) { this.#poisoned = true; throw error; }
+        catch (error) { this.#poisoned = error instanceof Error ? error : new Error("journal I/O failure"); throw error; }
       }
     }
+    this.#retainFrontier(appended);
   }
 
   #serialize(operation) {
     const run = this.#tail.catch(() => {}).then(() => {
-      if (this.#poisoned) throw new Error("browser journal requires explicit owner recovery");
+      if (this.#poisoned) throw new Error(`browser journal requires explicit owner recovery: ${this.#poisoned.message}`);
       return operation();
     });
     this.#tail = run.catch(() => {});

@@ -8,7 +8,7 @@ Digests here bind data; they do not certify source permission or independence.
 from __future__ import annotations
 
 import copy
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 import hashlib
 import json
 import math
@@ -256,13 +256,22 @@ def fit_head(selected: nn.Module, rows: tuple[HeadRow, ...], *, scope: str,
     if accounting > budget.owned_tensor_bytes:
         raise HeadRejected("tensor-copy budget exceeded before candidate allocation")
     check_time()
-    frozen = [(r.features.clone(), r.target.clone()) for r in sorted(rows, key=lambda r: r.row_id)]
+    # Borrowed Tensor storage is mutable even inside a frozen dataclass. Bind
+    # the actual private copies before optimization: checking the caller again
+    # at the end misses a change/copy/restore (ABA) of targets, features or base.
+    frozen = tuple(replace(r, features=r.features.clone(), target=r.target.clone())
+                   for r in sorted(rows, key=lambda r: r.row_id))
     candidate = copy.deepcopy(selected).eval().requires_grad_(True)
-    reference = [p.detach().clone() for p in candidate.parameters()]
     check_time()
+    if validate_rows(frozen, width, scope, objective, bundle) != dataset:
+        raise HeadRejected("copied dataset snapshot differs from admitted rows")
+    if state_digest(candidate) != baseline_digest:
+        raise HeadRejected("copied base snapshot differs from selected head")
+    reference = [p.detach().clone() for p in candidate.parameters()]
     optimizer = torch.optim.SGD(candidate.parameters(), lr=budget.learning_rate, momentum=0, foreach=False)
     for _ in range(budget.epochs):
-        for features, target in frozen:
+        for row in frozen:
+            features, target = row.features, row.target
             check_time(); optimizer.zero_grad(set_to_none=True)
             logits = candidate(features).squeeze(-1) / temperature
             loss = -(target * torch.log_softmax(logits, dim=-1)).sum()

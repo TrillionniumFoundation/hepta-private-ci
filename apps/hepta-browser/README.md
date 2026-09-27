@@ -50,6 +50,31 @@ owner fencing, directory race isolation and generation retirement remain the
 separately implemented Browser convergence profile's integration work.
 
 
+### Live journal identity and observed-history fence
+
+A live journal handle retains the device/inode, length and SHA-256 of its last
+validated prefix. A file it has observed cannot disappear and be recreated as
+an empty operation history. Truncation, prefix rewriting, a replacement inode,
+invalid UTF-8 and read/close failures poison the same handle, including queued
+requests. Restoring the file does not silently unpoison it. First creation is
+exclusive; an append must still see the exact predecessor used by the reducer.
+After file and parent sync, the same descriptor and current path must expose
+that predecessor plus the exact appended bytes before acknowledgment.
+
+Reads use bounded positional chunks with one extra growth-detection byte, not
+an unbounded readFile following a stat. This is a conservative observation fence,
+not a cross-process owner lock or an atomic filesystem namespace guarantee.
+The high-water observation is process-local: reopening requires the existing
+owner's independent recovery policy, and cannot detect an old valid backup by
+itself. No new journal schema, replay namespace, global store or retry permission
+is introduced. Full-history validation and extra append checks still have growing
+cost; no compaction, indexed recovery or long-term throughput claim is made.
+
+`test/journal-frontier.test.js` exercises actual filesystem deletion, truncation,
+replacement, same-length checksummed rewriting, restoration after corruption,
+queued operations and replacement during fsync. These are bounded owner tests,
+not power-loss, hostile multiwriter or real Servo acceptance evidence.
+
 ## Worker boundary
 
 `src/worker-protocol.js` implements the private protocol: four-byte big-endian length prefix, at most 1 MiB canonical JSON, payload digest, session ID, generation, monotonic sequence and request identity. Unknown/non-canonical frames fail closed.
