@@ -157,7 +157,7 @@ async fn configured_intelligence_runner_is_not_advertised_without_daemon_ingress
 }
 
 #[tokio::test]
-async fn canonical_intelligence_is_advertised_only_with_runner_and_host_provider() {
+async fn configured_canonical_intelligence_is_hidden_until_physical_supervisor_is_ready() {
     let (temp, _registry, state) = fixture().expect("runtime fixture");
     let signer = ed25519_dalek::SigningKey::from_bytes(&[42; 32]);
     let runner = crate::AgentdIntelligenceProductRunnerV1::new(
@@ -175,6 +175,8 @@ async fn canonical_intelligence_is_advertised_only_with_runner_and_host_provider
             .set(Arc::new(RejectingIntelligenceInvocationProvider))
             .is_ok()
     );
+    assert!(state.canonical_intelligence_configured());
+    assert!(!state.canonical_intelligence_enabled());
     let response = state
         .response(3, 1, crate::AgentdMethod::Capabilities)
         .await
@@ -182,10 +184,8 @@ async fn canonical_intelligence_is_advertised_only_with_runner_and_host_provider
     let AgentdPayload::Capabilities(capabilities) = response.payload else {
         panic!("capabilities payload");
     };
-    assert!(capabilities.capabilities.iter().any(|capability| {
+    assert!(!capabilities.capabilities.iter().any(|capability| {
         capability.id == crate::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1
-            && capability.major == 1
-            && capability.minor == 0
     }));
 }
 
