@@ -1,0 +1,156 @@
++               AND authority_claim.destination_id = ?
++               AND authority_claim.request_sha256 = ?
++               AND authority_claim.scope_sha256 = ?
++               AND authority_claim.payload_sha256 = dispatch.payload_sha256
++               AND authority_claim.expires_at_ms > ?
++               AND authority_witness.lease_epoch = ?
++               AND authority_witness.claim_token_sha256 = ?
++               AND authority_witness.authority_epoch = authority_claim.authority_epoch
++               AND authority_witness.revocation_revision = authority_claim.revocation_revision
++               AND authority_witness.grant_id = authority_claim.grant_id
++               AND authority_witness.verified_use_witness_sha256 = ?
++               AND content.scope_sha256 = ?
++               AND content.canonical_content_sha256 = ?",
++        )
++        .bind(identity.stable_txn_id.as_str())
++        .bind(to_i64(identity.attempt)?)
++        .bind(&operation_id)
++        .bind(&binding.subject_id)
++        .bind(&binding.destination_id)
++        .bind(&request_sha256)
++        .bind(&scope_sha256)
++        .bind(to_i64(recorded_at_ms)?)
++        .bind(to_i64(identity.lease_epoch)?)
++        .bind(identity.token_sha256)
++        .bind(&entered_use_witness_sha256)
++        .bind(&scope_sha256)
++        .bind(&canonical_payload_sha256)
++        .fetch_one(&mut *transaction)
++        .await
++        .map_err(unavailable)?;
++        if qualified != 1 {
++            return Err(MatrixDurableError::Conflict);
++        }
++
++        sqlx::query(
++            "INSERT INTO matrix_dispatch_use_entries (
++                stable_txn_id, attempt, lease_epoch, claim_token_sha256,
++                operation_id, subject_id, destination_id, request_sha256,
++                scope_sha256, canonical_payload_sha256,
++                entered_use_witness_sha256, entered_at_ms
++             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
++        )
++        .bind(identity.stable_txn_id.as_str())
++        .bind(to_i64(identity.attempt)?)
++        .bind(to_i64(identity.lease_epoch)?)
++        .bind(identity.token_sha256)
++        .bind(&operation_id)
++        .bind(&binding.subject_id)
++        .bind(&binding.destination_id)
++        .bind(&request_sha256)
++        .bind(&scope_sha256)
++        .bind(&canonical_payload_sha256)
++        .bind(&entered_use_witness_sha256)
++        .bind(to_i64(recorded_at_ms)?)
++        .execute(&mut *transaction)
++        .await
++        .map_err(unavailable)?;
++        transaction.commit().await.map_err(unavailable)
++    }
++
+     pub async fn release_outbox_claim_canceled(
+         &self,
+         claim: &MatrixFencedOutboxClaim,
+@@ -592,3 +744,13 @@ impl MatrixDurableStore {
+         transaction.commit().await.map_err(unavailable)
+     }
+ }
++
++fn hex_sha256(value: [u8; 32]) -> String {
++    use std::fmt::Write as _;
++
++    let mut output = String::with_capacity(64);
++    for byte in value {
++        write!(&mut output, "{byte:02x}").expect("writing to String cannot fail");
++    }
++    output
++}
+diff --git a/codex-rs/hepta-matrix-store/src/dispatch.rs b/codex-rs/hepta-matrix-store/src/dispatch.rs
+index f6b54aa..4eea605 100644
+--- a/codex-rs/hepta-matrix-store/src/dispatch.rs
++++ b/codex-rs/hepta-matrix-store/src/dispatch.rs
+@@ -1001,6 +1001,63 @@ async fn qualified_authority_claim_exists_tx(
+     {
+         return Err(MatrixDurableError::Corrupt);
+     }
++
++    let entry_count: i64 = sqlx::query_scalar(
++        "SELECT COUNT(*) FROM matrix_dispatch_use_entries
++         WHERE stable_txn_id = ? AND attempt = ?",
++    )
++    .bind(txn_id.as_str())
++    .bind(to_i64(expected_attempt)?)
++    .fetch_one(&mut **transaction)
++    .await
++    .map_err(unavailable)?;
++    if entry_count == 0 {
++        // A signed proposal and durable metadata are not evidence that a
++        // non-constructible token crossed the final revocation check.
++        return Ok(false);
++    }
++    if entry_count != 1 {
++        return Err(MatrixDurableError::Corrupt);
++    }
++
++    let qualified: i64 = sqlx::query_scalar(
++        "SELECT COUNT(*)
++         FROM matrix_dispatch_use_entries AS entry
++         JOIN matrix_dispatch_authority_claims AS authority_claim
++           ON authority_claim.stable_txn_id = entry.stable_txn_id
++          AND authority_claim.attempt = entry.attempt
++         JOIN matrix_dispatch_authority_witnesses AS authority_witness
++           ON authority_witness.stable_txn_id = entry.stable_txn_id
++          AND authority_witness.attempt = entry.attempt
++         JOIN matrix_dispatch_content_bindings AS content
++           ON content.stable_txn_id = entry.stable_txn_id
++         WHERE entry.stable_txn_id = ? AND entry.attempt = ?
++           AND entry.operation_id = ?
++           AND entry.subject_id = ?
++           AND authority_claim.operation_id = entry.operation_id
++           AND authority_claim.subject_id = entry.subject_id
++           AND authority_claim.destination_id = entry.destination_id
++           AND authority_claim.request_sha256 = entry.request_sha256
++           AND authority_claim.scope_sha256 = entry.scope_sha256
++           AND authority_claim.payload_sha256 = ?
++           AND authority_witness.authority_epoch = authority_claim.authority_epoch
++           AND authority_witness.revocation_revision = authority_claim.revocation_revision
++           AND authority_witness.grant_id = authority_claim.grant_id
++           AND authority_witness.verified_use_witness_sha256 = entry.entered_use_witness_sha256
++           AND content.scope_sha256 = entry.scope_sha256
++           AND content.canonical_content_sha256 = entry.canonical_payload_sha256",
++    )
++    .bind(txn_id.as_str())
++    .bind(to_i64(expected_attempt)?)
++    .bind(operation_id)
++    .bind(expected_subject_id)
++    .bind(payload_digest)
++    .fetch_one(&mut **transaction)
++    .await
++    .map_err(unavailable)?;
++    if qualified != 1 {
++        return Err(MatrixDurableError::Corrupt);
++    }
+     Ok(true)
+ }
+ 
+diff --git a/codex-rs/hepta-matrix-store/src/store.rs b/codex-rs/hepta-matrix-store/src/store.rs
+index bac5706..85bb5c3 100644
+--- a/codex-rs/hepta-matrix-store/src/store.rs
++++ b/codex-rs/hepta-matrix-store/src/store.rs
+@@ -1,3 +1,4 @@
++use std::collections::BTreeMap;
+ use std::fs;
+ use std::path::Path;
+ use std::path::PathBuf;
+@@ -73,6 +74,13 @@ const MATRIX_DB_FILENAME: &str = "matrix_1.sqlite3";
+ const MATRIX_V2_SCHEMA_FINGERPRINT: &str =
