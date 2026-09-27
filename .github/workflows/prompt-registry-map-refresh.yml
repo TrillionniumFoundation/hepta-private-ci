@@ -1,0 +1,73 @@
+name: Prompt registry exact implementation map refresh
+
+on:
+  push:
+    branches: [codex/prompt-registry-remediation-20260927]
+    paths: [.github/workflows/prompt-registry-map-refresh.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prompt-registry-map-refresh-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind clean exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git diff --quiet
+          git diff --cached --quiet
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Generate prompt.registry map from current source
+        shell: bash
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module prompt.registry
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path("docs/modules/prompt.registry/IMPLEMENTATION_MAP.json")
+          row = json.loads(path.read_text(encoding="utf-8"))
+          if row.get("schema") != "hepta.module-implementation-map.v3":
+              raise SystemExit("unexpected implementation-map schema")
+          if row.get("module") != "prompt.registry":
+              raise SystemExit("wrong implementation-map module")
+          if not row.get("operations"):
+              raise SystemExit("empty prompt.registry operation inventory")
+          print(json.dumps({
+              "module": row["module"],
+              "sourceBase": row.get("sourceBase"),
+              "observedAtHead": row.get("observedAtHead"),
+              "operations": len(row["operations"]),
+          }, sort_keys=True))
+          PY
+          git diff --check -- docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
+
+      - name: Commit exact generated map
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- docs/modules/prompt.registry/IMPLEMENTATION_MAP.json; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
+          git commit -m "prompt.registry: refresh exact implementation map [prompt-registry-map]"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
