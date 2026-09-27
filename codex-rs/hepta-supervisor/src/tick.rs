@@ -9,6 +9,7 @@ use crate::ProcessLog;
 use crate::ProcessState;
 use crate::Supervisor;
 use crate::SupervisorError;
+use crate::SupervisorEvent;
 use crate::SupervisorEventKind;
 use crate::control::pending;
 use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
@@ -141,12 +142,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         let registry_generation = self.record(agent_id)?.lifecycle.generation;
         if registry_generation != runtime.generation && !runtime.fenced {
             self.kill_matrix_now(agent_id, slot)?;
-            runtime
-                .process
-                .kill()
-                .map_err(|error| driver_error(agent_id, error))?;
+            // Logical fencing is immediate. A failed signal is not an
+            // acknowledged Killing phase and must remain retryable.
             runtime.fenced = true;
-            runtime.phase = RuntimePhase::Killing;
             slot.pending_control = None;
             slot.event(
                 runtime.generation,
@@ -159,13 +157,34 @@ impl<D: ProcessDriver> Supervisor<D> {
         let retrying = slot
             .pending_control
             .is_some_and(|pending| pending.applies_to(runtime));
-        let control_result = pending::apply(
-            agent_id,
-            runtime,
-            &mut slot.pending_control,
-            now,
-            self.config.stop_grace,
-        );
+        let control_result = if runtime.fenced {
+            // Fencing revokes serving authority, not ownership of the exact
+            // adopted child. Retry termination independently of ordinary
+            // pending-control admission, which correctly rejects fenced work.
+            if matches!(runtime.phase, RuntimePhase::Killing) {
+                Ok(None)
+            } else {
+                runtime
+                    .process
+                    .kill()
+                    .map_err(|error| driver_error(agent_id, error))
+                    .map(|()| {
+                        runtime.phase = RuntimePhase::Killing;
+                        Some(SupervisorEvent {
+                            generation: runtime.generation,
+                            kind: SupervisorEventKind::KillRequested,
+                        })
+                    })
+            }
+        } else {
+            pending::apply(
+                agent_id,
+                runtime,
+                &mut slot.pending_control,
+                now,
+                self.config.stop_grace,
+            )
+        };
         // Poll even when the signal failed: ESRCH on an already exited exact
         // child must not prevent durable exit/lease reconciliation. Conversely,
         // a failing probe must not prevent a pending kill from being attempted.

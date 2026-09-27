@@ -15,6 +15,8 @@ use crate::SpawnSpec;
 use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEventKind;
+use crate::control::pending;
+use crate::control::pending::PendingControl;
 use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
 use crate::lease::read_lease;
@@ -27,6 +29,10 @@ use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
 use crate::runtime::is_live_lifecycle;
+
+#[cfg(test)]
+#[path = "recovery_control_tests.rs"]
+mod control_tests;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn restore_release_state(
@@ -228,6 +234,38 @@ impl<D: ProcessDriver> Supervisor<D> {
             control_socket: record.layout.agentd_control_socket().to_path_buf(),
             identity: lease.identity.clone(),
         };
+        // Compute fallible deadlines before taking ownership of a live child.
+        // Registry lifecycle records desired state, not an acknowledged signal.
+        let (phase, recovery_control) = match record.lifecycle.lifecycle {
+            AgentLifecycle::Starting => (
+                RuntimePhase::AwaitingHealth {
+                    deadline: deadline(now, self.config.health_timeout)?,
+                },
+                None,
+            ),
+            AgentLifecycle::Running => (RuntimePhase::Running, None),
+            AgentLifecycle::Draining => (
+                RuntimePhase::Running,
+                Some(PendingControl::Drain {
+                    spawn_generation: lease.spawn_generation,
+                    deadline: deadline(now, self.config.drain_timeout)?,
+                }),
+            ),
+            AgentLifecycle::Failed => (
+                RuntimePhase::AwaitingHealth { deadline: now },
+                Some(PendingControl::Stop {
+                    spawn_generation: lease.spawn_generation,
+                    deadline: deadline(now, self.config.stop_grace)?,
+                }),
+            ),
+            AgentLifecycle::Stopped => (
+                RuntimePhase::Stopping { deadline: now },
+                Some(PendingControl::Kill {
+                    spawn_generation: lease.spawn_generation,
+                }),
+            ),
+        };
+        let mut control_fault = None;
         match self
             .driver
             .adopt(&spec)
@@ -287,29 +325,6 @@ impl<D: ProcessDriver> Supervisor<D> {
                         slot.active_release = Some(leased);
                     }
                 }
-                let phase = match record.lifecycle.lifecycle {
-                    AgentLifecycle::Starting => RuntimePhase::AwaitingHealth {
-                        deadline: deadline(now, self.config.health_timeout)?,
-                    },
-                    AgentLifecycle::Running => RuntimePhase::Running,
-                    AgentLifecycle::Draining => RuntimePhase::Draining {
-                        deadline: deadline(now, self.config.drain_timeout)?,
-                    },
-                    AgentLifecycle::Failed => {
-                        process
-                            .request_stop()
-                            .map_err(|error| driver_error(agent_id, error))?;
-                        RuntimePhase::Stopping {
-                            deadline: deadline(now, self.config.stop_grace)?,
-                        }
-                    }
-                    AgentLifecycle::Stopped => {
-                        process
-                            .kill()
-                            .map_err(|error| driver_error(agent_id, error))?;
-                        RuntimePhase::Killing
-                    }
-                };
                 slot.runtime = Some(AgentRuntime {
                     process,
                     identity: lease.identity,
@@ -324,6 +339,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation,
                     SupervisorEventKind::OrphanAdopted,
                 );
+                // Install the exact adopted handle before any fallible control
+                // call. Failed signals retain both ownership and a bounded retry.
+                slot.pending_control = recovery_control;
+                control_fault =
+                    pending::apply_to_slot(agent_id, slot, now, self.config.stop_grace).err();
                 if record.lifecycle.lifecycle == AgentLifecycle::Running {
                     // A daemon can die after committing the Running lifecycle but before
                     // appending the matching release-state revision. The lease and exact
@@ -360,7 +380,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.event(generation, SupervisorEventKind::OrphanRejected);
             }
         }
+        // A main-process signal failure must not skip companion adoption.
         self.recover_matrix_companion(agent_id, slot, record, now)?;
+        if let Some(error) = control_fault {
+            return Err(error);
+        }
         Ok(())
     }
 }
