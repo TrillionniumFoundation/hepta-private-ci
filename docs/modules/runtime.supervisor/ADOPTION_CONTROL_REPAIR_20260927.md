@@ -93,9 +93,10 @@ This patch does not close the five-stage remediation program. In particular:
 - Stop/kill supersession of a durable pending restart is still not a durable
   operator-command cancellation protocol. An adopted runtime is not, by itself,
   proof that a pending restart refers to a replacement rather than its predecessor.
-- Failure after lease unlink but before directory sync or lifecycle publication
-  still needs an identity-bound, retryable exit-finalization design. Do not make
-  missing leases globally acceptable as a shortcut.
+- The follow-up `EXIT_FINALIZATION_RETRY_20260927.md` adds identity-bound local
+  retry for main-process lease unlink and finalization. Cross-daemon crash cuts
+  and Matrix cleanup still require separate work and target-host qualification.
+  Missing leases are not globally accepted as a shortcut.
 - Spawn lease-publication failure with failed cleanup, release conversion failure
   before handle installation, and the unadmitted-release early return before
   companion adoption require separate owned-handle/reconciliation coverage.

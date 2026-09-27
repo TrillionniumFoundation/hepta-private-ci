@@ -14,13 +14,17 @@ use crate::SupervisorEventKind;
 use crate::control::pending;
 use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
-use crate::lease::remove_lease;
+use crate::lease::ProcessLeaseRemoval;
 use crate::restart_budget::RestartBudgetError;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
+
+#[cfg(test)]
+#[path = "exit_finalization_tests.rs"]
+mod exit_tests;
 
 enum RuntimeTickOutcome {
     Keep,
@@ -139,6 +143,15 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<RuntimeTickOutcome, SupervisorError> {
         // A failed registry read or process probe cannot preserve stale readiness.
         runtime.healthy = false;
+        if let Some(exit) = slot.observed_exit {
+            // No further signal or poll is needed after an exact terminal
+            // observation. Only the failed durable finalization is retried.
+            self.finalize_exit(agent_id, slot, runtime, exit)?;
+            slot.pending_control = None;
+            return Ok(RuntimeTickOutcome::Exited {
+                restart_fault: None,
+            });
+        }
         let registry_generation = self.record(agent_id)?.lifecycle.generation;
         if registry_generation != runtime.generation && !runtime.fenced {
             self.kill_matrix_now(agent_id, slot)?;
@@ -211,6 +224,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             } else {
                 None
             };
+            slot.observed_exit = Some(exit);
             self.finalize_exit(agent_id, slot, runtime, exit)?;
             slot.pending_control = None;
             return Ok(RuntimeTickOutcome::Exited { restart_fault });
@@ -339,7 +353,10 @@ impl<D: ProcessDriver> Supervisor<D> {
             release_id: runtime.release_id.clone(),
             identity: runtime.identity.clone(),
         };
-        remove_lease(record.layout.run_root(), &lease)?;
+        let removal = slot.exit_lease_removal.get_or_insert_with(|| {
+            ProcessLeaseRemoval::new(record.layout.run_root(), &lease)
+        });
+        removal.finish(record.layout.run_root(), &lease)?;
         let mut generation = runtime.generation;
         if !fenced {
             let target = match record.lifecycle.lifecycle {
@@ -370,6 +387,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                 },
             );
         }
+        slot.exit_lease_removal = None;
+        slot.observed_exit = None;
         slot.event(generation, SupervisorEventKind::Exited(exit));
         Ok(())
     }
