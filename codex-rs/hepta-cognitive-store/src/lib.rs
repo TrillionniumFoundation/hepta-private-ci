@@ -5,6 +5,11 @@
 
 #![forbid(unsafe_code)]
 
+#[cfg(any(
+    feature = "agentd-production-host",
+    feature = "qualification-cognitive-write"
+))]
+pub mod bootstrap;
 mod durable;
 mod v2;
 
@@ -32,6 +37,10 @@ pub use durable::DurableCognitiveReadStore;
 pub use durable::DurableCognitiveSnapshot;
 pub use durable::DurableCognitiveSnapshotCursor;
 pub use durable::DurableCognitiveSnapshotPage;
+#[cfg(any(
+    feature = "agentd-production-host",
+    feature = "qualification-cognitive-write"
+))]
 pub use durable::DurableCognitiveStore;
 pub use durable::DurableCognitiveStoreError;
 pub use durable::ForgetMemoryDraft;
@@ -57,11 +66,17 @@ pub use durable::ProductionCognitiveMutationReceiptV1;
 pub use durable::ProductionDispatchFuture;
 pub use durable::ProductionDispatchReceipt;
 pub use durable::ProductionDispatchRequest;
+#[cfg(any(
+    feature = "agentd-production-host",
+    feature = "qualification-cognitive-write"
+))]
 pub use durable::ProductionDurableWriter;
 pub use durable::ProductionFinalUseOutboxDispatcher;
 pub use durable::ProductionOutboxTarget;
 pub use durable::ProductionQueuedReceipt;
 pub use durable::ProductionWriterError;
+#[cfg(feature = "qualification-cognitive-write")]
+pub use durable::QualificationDurableCognitiveStore;
 pub use durable::RecoveredCognitiveReadOnly;
 pub use durable::SourceDraft;
 pub use durable::StableMemoryId;

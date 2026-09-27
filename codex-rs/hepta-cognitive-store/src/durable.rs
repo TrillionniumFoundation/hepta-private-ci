@@ -1,11 +1,9 @@
 //! Canonical cognitive-store boundaries over the single durable SQLite owner.
 //!
-//! `hepta-memory::CognitiveStore` remains the physical database owner.  Product
+//! `hepta-memory::CognitiveStore` remains the physical database owner. Product
 //! serving code receives [`DurableCognitiveReadStore`], which exposes only
-//! bounded read/revalidation operations.  The raw backend and writer types are
-//! compatibility/owner implementation details; the architecture gate permits
-//! their use only inside the physical owner, the unique Agentd production host,
-//! and explicit qualification code.
+//! bounded read/revalidation operations. The mutable raw backend is visible
+//! only to the named Agentd production host or explicit qualification builds.
 
 use std::fmt;
 use std::sync::Arc;
@@ -55,25 +53,38 @@ pub use codex_hepta_memory::RecoveredCognitiveReadOnly;
 pub use codex_hepta_memory::SourceDraft;
 pub use codex_hepta_memory::StableMemoryId;
 
-/// Raw physical owner compatibility alias.
+/// Mutable physical owner compatibility alias.
 ///
-/// Product serving code must use [`DurableCognitiveReadStore`].  The repository
-/// architecture check rejects new non-test uses of this alias outside the
-/// physical owner bootstrap and `AgentdProductionWriterHost`.
+/// This type does not exist in the default feature set. Only the named Agentd
+/// production host and explicit qualification builds can import it, so normal
+/// product crates cannot open a second writer or bypass the sealed capability.
+#[cfg(any(
+    feature = "agentd-production-host",
+    feature = "qualification-cognitive-write"
+))]
 #[doc(hidden)]
 pub use codex_hepta_memory::CognitiveStore as DurableCognitiveStore;
 
+/// Qualification-only spelling for the mutable physical owner.
+#[cfg(feature = "qualification-cognitive-write")]
+#[doc(hidden)]
+pub use codex_hepta_memory::CognitiveStore as QualificationDurableCognitiveStore;
+
 /// Low-level durable writer compatibility alias.
 ///
-/// The default Agentd build does not expose its writer accessor outside the
-/// crate.  Qualification builds opt in explicitly.
+/// The writer is hidden from default consumers and is only available where the
+/// host feature explicitly composes externally verified authority.
+#[cfg(any(
+    feature = "agentd-production-host",
+    feature = "qualification-cognitive-write"
+))]
 #[doc(hidden)]
 pub use codex_hepta_memory::ProductionDurableWriter;
 
 /// Read-only product capability for one exact durable cognitive owner.
 ///
 /// This wrapper has no mutation, source-append, lease-creation, migration or
-/// raw-backend escape method.  It can only be constructed from the already
+/// raw-backend escape method. It can only be constructed from the already
 /// composed `CognitiveRuntime`, so normal serving code cannot open a second
 /// writer or bypass recovery/authority composition.
 #[derive(Clone)]
@@ -91,7 +102,7 @@ impl fmt::Debug for DurableCognitiveReadStore {
 }
 
 impl DurableCognitiveReadStore {
-    /// Derive a read-only capability from a host-composed runtime.  No file is
+    /// Derive a read-only capability from a host-composed runtime. No file is
     /// opened and no authority is manufactured here.
     pub fn from_runtime(runtime: &codex_hepta_memory::CognitiveRuntime) -> Option<Self> {
         runtime.available_store().map(|backend| Self {

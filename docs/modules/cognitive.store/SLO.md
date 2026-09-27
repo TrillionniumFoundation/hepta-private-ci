@@ -1,11 +1,49 @@
-# Cognitive store SLO and capacity profile
+# cognitive.store candidate SLO and capacity policy
 
-These are qualification targets, not claims about an unmeasured host.
+These are qualification objectives, not measured deployment claims. A selected host profile must publish exact-run metrics before activation.
 
-- Correctness: zero acknowledged mutations without a committed receipt; zero cross-owner reads/writes; zero resurrection after a committed tombstone or current-witness rollback rejection.
-- Availability: 99.9% successful bounded local read/revalidation operations over a 30-day target-host window, excluding explicit security denial.
-- Latency targets: p99 local semantic commit <= 100 ms at the 256-record profile; p99 exact-ID read/revalidation <= 50 ms; cold reopen <= 2 s; 16,384-record snapshot/profile measurements must complete inside the dedicated CI command deadline.
-- Growth: report database, WAL/journal and recovery-generation bytes; alert at 70% and stop new ordinary writes before the qualified hard limit.
-- Recovery: crash/reopen RTO <= 60 s on the selected host; RPO is the last acknowledged SQLite FULL commit.  Descriptor-safe recovery requires the exact independently retained witness.
+## Profiles
 
-The workflow records p50/p95/p99/max, file bytes, cold-open, recovery-anchor and reopen cost for 256 and 16,384 records.  Threshold promotion requires target-host evidence and operator approval; repository CI artifacts alone do not activate production.
+| Profile | Purpose | Required workload |
+|---|---|---|
+| `PERF-DURABLE-256` | normal candidate latency | 256 committed records plus reopen/snapshot/recovery-anchor measurements |
+| `PERF-DURABLE-16384` | maximum retained pilot | 16,384 committed records plus database/WAL bytes, paging and reopen |
+| `FAULT-RECOVERY` | crash behavior | child kill at named transaction/recovery boundaries, then reopen and exact-cut comparison |
+| `BOOTSTRAP-HOST` | product admission | signed bundle verify, descriptor recovery, canary, rotation/restart and live revocation |
+
+## Initial objectives
+
+| Signal | Candidate objective |
+|---|---:|
+| 256-profile commit p95 | <= 50 ms on selected local SSD host |
+| 256-profile commit p99 | <= 100 ms |
+| exact-id read p95 | <= 20 ms for <= 128 ids |
+| 512-head snapshot page p95 | <= 250 ms at maximum retained pilot |
+| ordinary reopen p95 | <= 2 s at 16,384 records |
+| signed bootstrap plus exact-cut recovery p95 | <= 10 s excluding operator signing time |
+| live authority revalidation p95 | <= 10 ms from local external state storage |
+| crash/reopen data loss | zero committed revisions; zero tentative revisions visible |
+| stale-backup acceptance | zero |
+| blind replay after indeterminate outcome | zero |
+
+A host may adopt stricter thresholds. Relaxation requires a versioned host profile and review; it cannot be hidden in prose.
+
+## Capacity ceilings
+
+Current pilot bounds include 16,384 whole-scope immutable revisions, page sizes up to 512 heads, 65,536 citations/source rows per declared durable bound and bounded recovery rows/bytes. Crossing a hard bound returns an explicit capacity/unavailable result before partial publication. It never triggers silent pruning.
+
+## Required metrics
+
+- cold/warm commit p50/p95/p99/max;
+- read and page latency by selected count/encoded bytes;
+- SQLite database, WAL, journal and recovery-generation bytes;
+- process RSS and peak temporary-copy bytes;
+- recovery-anchor capture and exact-cut comparison;
+- ordinary reopen, descriptor recovery and checkpoint duration;
+- canary remember/tombstone duration;
+- authority file verification and revocation-detection latency;
+- archive/rebuild metrics once ADR-0001 is implemented.
+
+## Alerts and stop conditions
+
+Stop write admission on schema/integrity failure, current-cut mismatch, signer/token mismatch, revocation, writer-generation conflict, persistent capacity exhaustion or active-pointer ambiguity. Latency alerts do not bypass correctness; overload rejects before mutation.

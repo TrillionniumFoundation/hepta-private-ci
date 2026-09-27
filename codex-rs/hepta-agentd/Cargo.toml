@@ -18,7 +18,10 @@ default = ["production-cognitive-write"]
 production-cognitive-write = []
 # Adds the qualification-only turn-lifecycle witness seam on top of the real
 # product mutation profile. It never substitutes for production authority.
-qualification-cognitive-write = ["production-cognitive-write"]
+qualification-cognitive-write = [
+    "production-cognitive-write",
+    "codex-hepta-cognitive-store/qualification-cognitive-write",
+]
 qualification-legacy-learning-write = ["codex-hepta-learning-ledger/qualification-legacy-write"]
 
 [[bin]]
@@ -60,7 +63,7 @@ codex-hepta-codex-adapter = { workspace = true }
 codex-hepta-prompt-registry = { path = "../hepta-prompt-registry" }
 codex-hepta-prompt-optimizer = { path = "../hepta-prompt-optimizer" }
 codex-hepta-cognitive-read = { path = "../hepta-cognitive-read" }
-codex-hepta-cognitive-store = { path = "../hepta-cognitive-store" }
+codex-hepta-cognitive-store = { path = "../hepta-cognitive-store", features = ["agentd-production-host"] }
 codex-hepta-control-plane = { path = "../hepta-control-plane" }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-fleet = { workspace = true }

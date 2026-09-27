@@ -10,11 +10,19 @@ name = "codex_hepta_cognitive_store"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+# Only the named Agentd production host may compose the mutable durable owner.
+agentd-production-host = []
+# Qualification fixtures may inspect the raw backend explicitly; normal product
+# crates cannot enable this transitively.
+qualification-cognitive-write = []
+
 [lints]
 workspace = true
 
 [dependencies]
-codex-hepta-contracts = { workspace = true }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
+codex-hepta-contracts = { workspace = true }
 codex-hepta-memory = { workspace = true }

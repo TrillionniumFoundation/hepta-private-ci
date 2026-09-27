@@ -211,17 +211,7 @@ Use the error/recovery path linked by the [current native implementation](../../
 
 Owned threat entries:
 
-- raw-store or capability bypass;
-- stale/replayed authority and generation rollback;
-- valid-but-old backup restoration;
-- symlink, descriptor, WAL/journal and active-pointer substitution;
-- cross-Agent/workspace scope confusion;
-- intent/receipt replay with semantic drift;
-- provenance/source-revision mismatch;
-- secret leakage and bounded-resource exhaustion;
-- tombstone being misreported as physical erasure or model unlearning.
-
-The normative control/test mapping is [THREAT_MODEL.md](THREAT_MODEL.md).
+None.
 
 The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
 
@@ -375,10 +365,3 @@ The bootstrap source-location obligation for `cognitive.store` is implemented by
 - `codex-rs/hepta-cognitive-store`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
-
-
-## 18. Current convergence decision (2026-09-27)
-
-`AgentdProductionWriterHost` is the unique production-write facade.  The unreachable `production.rs` facade has been removed.  Normal Agentd serving state stores only `DurableCognitiveReadStore`; raw backend imports and direct mutation calls are closed-world checked by `scripts/cognitive_store_architecture.py`.  The default build keeps the raw writer accessor crate-private; qualification explicitly enables `qualification-cognitive-write`.
-
-The dedicated `cognitive-store-qualification.yml` workflow runs independently of unrelated modules in source-head and deterministic base-merge lanes and emits exact-SHA command records, crash/reopen and 256/16,384-record performance artifacts.  Host bootstrap evidence is persisted by `tools/cognitive-store-host-bootstrap`; it authenticates current-cut/rotation/revocation/canary/rollback observations but never mints production authority.  Activation, independent acceptance and release remain false until their external gates complete.
