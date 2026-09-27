@@ -96,6 +96,7 @@ struct Authorizer {
     sequence: AtomicU64,
     refreshes: AtomicU64,
     revoke_on_second_refresh: bool,
+    revoke_on_third_refresh: bool,
     delay: Duration,
 }
 
@@ -109,9 +110,14 @@ impl Authorizer {
             FinalUseRevocations { authority_epoch: 17, revision: 1, revoked_grant_ids: BTreeSet::new() },
         )?;
         Ok(Self {
-            authority, key, _directory: directory,
-            sequence: AtomicU64::new(0), refreshes: AtomicU64::new(0),
-            revoke_on_second_refresh: false, delay: Duration::ZERO,
+            authority,
+            key,
+            _directory: directory,
+            sequence: AtomicU64::new(0),
+            refreshes: AtomicU64::new(0),
+            revoke_on_second_refresh: false,
+            revoke_on_third_refresh: false,
+            delay: Duration::ZERO,
         })
     }
 }
@@ -145,7 +151,10 @@ impl MatrixOutboundAuthorizer for Authorizer {
     }
 
     fn refresh_revocations(&self) -> Result<(), MatrixAuthorityError> {
-        if self.refreshes.fetch_add(1, Ordering::SeqCst) == 1 && self.revoke_on_second_refresh {
+        let refresh = self.refreshes.fetch_add(1, Ordering::SeqCst) + 1;
+        if (refresh == 2 && self.revoke_on_second_refresh)
+            || (refresh == 3 && self.revoke_on_third_refresh)
+        {
             self.authority.update_revocations(FinalUseRevocations {
                 authority_epoch: 17,
                 revision: 2,
@@ -168,8 +177,11 @@ struct Transport {
 impl Transport {
     fn new() -> Self {
         Self {
-            polls: AtomicU64::new(0), identity_reads: AtomicU64::new(0),
-            rotate_identity: false, error: None, wait_forever: false,
+            polls: AtomicU64::new(0),
+            identity_reads: AtomicU64::new(0),
+            rotate_identity: false,
+            error: None,
+            wait_forever: false,
             cancel_after_entry: None,
         }
     }
@@ -201,14 +213,19 @@ impl MatrixOutboundTransport for Transport {
             }
             match self.error {
                 Some(error) => Err(error),
-                None => MatrixEventId::parse("$transport-accepted").map_err(|_| MatrixTransportError::ResponseLost),
+                None => MatrixEventId::parse("$transport-accepted")
+                    .map_err(|_| MatrixTransportError::ResponseLost),
             }
         })
     }
 }
 
 fn config() -> OutboxDispatchConfig {
-    OutboxDispatchConfig { lease_ms: 5_000, max_attempts: 1, ..OutboxDispatchConfig::default() }
+    OutboxDispatchConfig {
+        lease_ms: 5_000,
+        max_attempts: 1,
+        ..OutboxDispatchConfig::default()
+    }
 }
 
 #[tokio::test]
@@ -217,13 +234,53 @@ async fn revocation_after_persistence_prevents_first_transport_poll_and_releases
     let mut authority = Authorizer::new()?;
     authority.revoke_on_second_refresh = true;
     let transport = Transport::new();
-    let result = dispatch_outbox_once(&store, &transport, &authority, &config(),
-                                     &CancellationToken::new(), now_ms()?).await;
+    let result = dispatch_outbox_once(
+        &store,
+        &transport,
+        &authority,
+        &config(),
+        &CancellationToken::new(),
+        now_ms()?,
+    )
+    .await;
     assert!(result.is_err());
     assert_eq!(transport.polls.load(Ordering::SeqCst), 0);
     assert_eq!(authority.refreshes.load(Ordering::SeqCst), 2);
-    let remaining = store.claim_outbox_fenced(now_ms()?, /*lease_ms*/ 5_000, /*limit*/ 3).await?;
+    let remaining = store
+        .claim_outbox_fenced(now_ms()?, /*lease_ms*/ 5_000, /*limit*/ 3)
+        .await?;
     assert_eq!(remaining.len(), 3);
+    store.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn revocation_after_entered_use_is_indeterminate_and_never_released_as_pre_entry() -> TestResult {
+    let (_temp, store, ids) = fixture(/*count*/ 1).await?;
+    let mut authority = Authorizer::new()?;
+    authority.revoke_on_third_refresh = true;
+    let transport = Transport::new();
+    let stats = dispatch_outbox_once(
+        &store,
+        &transport,
+        &authority,
+        &config(),
+        &CancellationToken::new(),
+        now_ms()?,
+    )
+    .await?;
+    assert_eq!(authority.refreshes.load(Ordering::SeqCst), 3);
+    assert_eq!(transport.polls.load(Ordering::SeqCst), 0);
+    assert_eq!(stats.indeterminate, 1);
+    assert_eq!(stats.permanent_failure, 0);
+    let record = store.dispatch_for_txn(&ids[0]).await?.ok_or("missing ledger")?;
+    assert_eq!(record.state, MatrixDispatchState::Indeterminate);
+    let events = store.dispatch_attempt_events(&ids[0]).await?;
+    assert!(events.iter().any(|event| {
+        event.failure_class == Some(MatrixAttemptFailureClass::ResponseLost)
+    }));
+    let reclaim = store.claim_outbox_fenced(now_ms()?, 5_000, 1).await?;
+    assert!(reclaim.is_empty());
     store.close().await;
     Ok(())
 }
@@ -234,8 +291,18 @@ async fn identity_rotation_during_authorization_prevents_adapter_entry() -> Test
     let authority = Authorizer::new()?;
     let mut transport = Transport::new();
     transport.rotate_identity = true;
-    assert!(dispatch_outbox_once(&store, &transport, &authority, &config(),
-                                &CancellationToken::new(), now_ms()?).await.is_err());
+    assert!(
+        dispatch_outbox_once(
+            &store,
+            &transport,
+            &authority,
+            &config(),
+            &CancellationToken::new(),
+            now_ms()?,
+        )
+        .await
+        .is_err()
+    );
     assert_eq!(transport.polls.load(Ordering::SeqCst), 0);
     store.close().await;
     Ok(())
@@ -248,7 +315,8 @@ async fn canceled_before_claim_does_not_consume_a_lease() -> TestResult {
     let transport = Transport::new();
     let cancel = CancellationToken::new();
     cancel.cancel();
-    let stats = dispatch_outbox_once(&store, &transport, &authority, &config(), &cancel, now_ms()?).await?;
+    let stats = dispatch_outbox_once(&store, &transport, &authority, &config(), &cancel, now_ms()?)
+        .await?;
     assert!(stats.cancelled);
     assert_eq!(stats.claimed, 0);
     assert_eq!(transport.polls.load(Ordering::SeqCst), 0);
@@ -262,10 +330,22 @@ async fn broker_wait_consumes_the_existing_lease_not_a_fresh_timeout() -> TestRe
     let mut authority = Authorizer::new()?;
     authority.delay = Duration::from_secs(10);
     let transport = Transport::new();
-    let config = OutboxDispatchConfig { lease_ms: 1_000, ..config() };
-    let result = tokio::time::timeout(Duration::from_secs(3),
-        dispatch_outbox_once(&store, &transport, &authority, &config,
-                             &CancellationToken::new(), now_ms()?)).await?;
+    let config = OutboxDispatchConfig {
+        lease_ms: 1_000,
+        ..config()
+    };
+    let result = tokio::time::timeout(
+        Duration::from_secs(3),
+        dispatch_outbox_once(
+            &store,
+            &transport,
+            &authority,
+            &config,
+            &CancellationToken::new(),
+            now_ms()?,
+        ),
+    )
+    .await?;
     assert!(result.is_err());
     assert_eq!(transport.polls.load(Ordering::SeqCst), 0);
     store.close().await;
@@ -277,11 +357,25 @@ async fn transport_acceptance_alone_never_counts_as_confirmed_delivery() -> Test
     let (_temp, store, ids) = fixture(/*count*/ 1).await?;
     let authority = Authorizer::new()?;
     let transport = Transport::new();
-    let stats = dispatch_outbox_once(&store, &transport, &authority, &config(),
-                                    &CancellationToken::new(), now_ms()?).await?;
+    let stats = dispatch_outbox_once(
+        &store,
+        &transport,
+        &authority,
+        &config(),
+        &CancellationToken::new(),
+        now_ms()?,
+    )
+    .await?;
     assert_eq!(stats.transport_accepted, 1);
     assert_eq!(stats.sent, 0);
-    assert_eq!(store.dispatch_for_txn(&ids[0]).await?.ok_or("missing ledger")?.state, MatrixDispatchState::Accepted);
+    assert_eq!(
+        store
+            .dispatch_for_txn(&ids[0])
+            .await?
+            .ok_or("missing ledger")?
+            .state,
+        MatrixDispatchState::Accepted
+    );
     store.close().await;
     Ok(())
 }
@@ -294,11 +388,19 @@ async fn cancellation_after_first_poll_stays_indeterminate() -> TestResult {
     let mut transport = Transport::new();
     transport.wait_forever = true;
     transport.cancel_after_entry = Some(cancel.clone());
-    let stats = dispatch_outbox_once(&store, &transport, &authority, &config(), &cancel, now_ms()?).await?;
+    let stats = dispatch_outbox_once(&store, &transport, &authority, &config(), &cancel, now_ms()?)
+        .await?;
     assert_eq!(transport.polls.load(Ordering::SeqCst), 1);
     assert_eq!(stats.permanent_failure, 0);
     assert!(stats.cancelled);
-    assert_eq!(store.dispatch_for_txn(&ids[0]).await?.ok_or("missing ledger")?.state, MatrixDispatchState::Indeterminate);
+    assert_eq!(
+        store
+            .dispatch_for_txn(&ids[0])
+            .await?
+            .ok_or("missing ledger")?
+            .state,
+        MatrixDispatchState::Indeterminate
+    );
     store.close().await;
     Ok(())
 }
@@ -309,15 +411,36 @@ async fn read_timeout_parks_the_same_transaction_and_retains_the_error_class() -
     let authority = Authorizer::new()?;
     let mut transport = Transport::new();
     transport.wait_forever = true;
-    let config = OutboxDispatchConfig { lease_ms: 1_000, ..config() };
-    let stats = dispatch_outbox_once(&store, &transport, &authority, &config,
-                                    &CancellationToken::new(), now_ms()?).await?;
+    let config = OutboxDispatchConfig {
+        lease_ms: 1_000,
+        ..config()
+    };
+    let stats = dispatch_outbox_once(
+        &store,
+        &transport,
+        &authority,
+        &config,
+        &CancellationToken::new(),
+        now_ms()?,
+    )
+    .await?;
     assert_eq!(stats.indeterminate, 1);
     assert_eq!(stats.permanent_failure, 0);
     assert_eq!(transport.polls.load(Ordering::SeqCst), 1);
     let events = store.dispatch_attempt_events(&ids[0]).await?;
-    assert!(events.iter().any(|event| event.failure_class == Some(MatrixAttemptFailureClass::ReadTimeout)));
-    assert_eq!(store.dispatch_for_txn(&ids[0]).await?.ok_or("missing ledger")?.state, MatrixDispatchState::Indeterminate);
+    assert!(
+        events
+            .iter()
+            .any(|event| event.failure_class == Some(MatrixAttemptFailureClass::ReadTimeout))
+    );
+    assert_eq!(
+        store
+            .dispatch_for_txn(&ids[0])
+            .await?
+            .ok_or("missing ledger")?
+            .state,
+        MatrixDispatchState::Indeterminate
+    );
     store.close().await;
     Ok(())
 }
