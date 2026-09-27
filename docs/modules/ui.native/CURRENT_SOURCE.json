@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.ui-native-current-source.v1",
+  "schemaVersion": 1,
+  "module": "ui.native",
+  "statusAsOf": "2026-09-27",
+  "candidate": {
+    "branch": "work/ui-native-full-closure-20260927",
+    "pullRequest": 1107,
+    "auditedSourceCommit": "dbf657e268014512f510ba28ddab43156c6fedbe",
+    "auditedSourceTree": "69711bc66c0aa6ebee57ebfa95f4c4a215934643",
+    "parentCommit": "969db564ca352ced6067508ce06f879e9a763455",
+    "parentPullRequest": 1104,
+    "inheritance": [
+      "work/ui-native-boundary-remediation-20260927",
+      "work/ui-native-verified-closure-20260927",
+      "work/ui-native-full-closure-20260927"
+    ]
+  },
+  "repositoryControlledState": {
+    "authorizationContextBinding": "implemented_on_parent_candidate",
+    "refreshInvalidation": "implemented_on_parent_candidate",
+    "indeterminateOperationRetirement": "implemented_on_parent_candidate",
+    "mutablePathStringHandoff": "disabled_fail_closed_before_prepared",
+    "clipboardEffect": "enabled_only_by_local_policy_and_kernel_final_use",
+    "notificationEffect": "enabled_only_by_local_policy_and_kernel_final_use",
+    "pathEffectReenableCondition": "platform_adapter_consumes_verified_resource_capability_without_reopening_mutable_name"
+  },
+  "validation": {
+    "exactHeadNativeFormat": "pending_actual_job",
+    "exactHeadStrictLint": "pending_actual_job",
+    "exactHeadTests": "pending_actual_job",
+    "exactHeadBuild": "pending_actual_job",
+    "exactHeadPackage": "pending_actual_job",
+    "deterministicMainMergeCandidate": "pending_actual_job",
+    "historicalResultsCountAsCurrent": false,
+    "queuedOrSkippedCountsAsSuccess": false
+  },
+  "externalEvidenceGates": {
+    "installedMacOS": "not_claimed",
+    "installedWindows": "not_claimed",
+    "installedLinux": "not_claimed",
+    "accessibilityImeDpi": "not_claimed",
+    "signingNotarizationDistribution": "not_claimed",
+    "longRunInstalledPerformance": "not_claimed",
+    "independentReleaseApproval": "not_claimed"
+  },
+  "documents": {
+    "technicalGuide": "docs/modules/ui.native/TECHNICAL.md",
+    "remediationLedger": "docs/modules/ui.native/REMEDIATION-20260927.md",
+    "closureAddendum": "docs/modules/ui.native/CLOSURE-20260927.md",
+    "developmentGuide": "apps/hepta-native/DEVELOPMENT.md",
+    "indeterminateRunbook": "docs/modules/ui.native/INDETERMINATE-OPERATION-RUNBOOK.md",
+    "performancePlan": "docs/modules/ui.native/PERFORMANCE-MEASUREMENT.md"
+  },
+  "claimBoundary": {
+    "sourceCandidateExists": true,
+    "productExecutionProved": false,
+    "installedArtifactQualificationComplete": false,
+    "releaseApproved": false
+  }
+}
