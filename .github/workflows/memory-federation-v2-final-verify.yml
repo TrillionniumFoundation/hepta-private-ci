@@ -43,7 +43,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: memory-federation-v2-final-${{ github.event.pull_request.number || github.ref }}-${{ inputs.expected_sha || github.sha }}
+  group: ${{ github.workflow }}-memory-federation-v2-final-${{ github.event.pull_request.number || github.ref }}-${{ inputs.expected_sha || github.sha }}
   cancel-in-progress: true
 
 jobs:
