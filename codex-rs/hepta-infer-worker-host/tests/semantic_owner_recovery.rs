@@ -86,10 +86,12 @@ impl SemanticRetrievalDriver for Driver {
         self.calls.fetch_add(1, Ordering::SeqCst);
         match self.behavior {
             Behavior::Lost => return Err(Error::DriverFailure("lost result".to_string())),
-            Behavior::Malformed => return Ok(DriverSemanticRetrievalReplyV1 {
-                reply_wire: b"not a terminal reply".to_vec(),
-                observed_memory_bytes: 128,
-            }),
+            Behavior::Malformed => {
+                return Ok(DriverSemanticRetrievalReplyV1 {
+                    reply_wire: b"not a terminal reply".to_vec(),
+                    observed_memory_bytes: 128,
+                });
+            }
             _ => {}
         }
         let input = SemanticRetrievalRequestV1::decode(request_wire).expect("valid input");
@@ -99,14 +101,22 @@ impl SemanticRetrievalDriver for Driver {
         reply.extend_from_slice(&2_u32.to_be_bytes());
         reply.extend_from_slice(&100_000_u32.to_be_bytes());
         reply.extend_from_slice(&900_000_u32.to_be_bytes());
-        let tokens: u64 = if matches!(self.behavior, Behavior::OverBudget) { 65 } else { 12 };
+        let tokens: u64 = if matches!(self.behavior, Behavior::OverBudget) {
+            65
+        } else {
+            12
+        };
         reply.extend_from_slice(&tokens.to_be_bytes());
         reply.extend_from_slice(&0_u64.to_be_bytes());
         reply.extend_from_slice(&7_u64.to_be_bytes());
         input.decode_reply(&reply).expect("valid fixture reply");
         Ok(DriverSemanticRetrievalReplyV1 {
             reply_wire: reply,
-            observed_memory_bytes: if matches!(self.behavior, Behavior::NoMemoryMeasurement) { 0 } else { 128 },
+            observed_memory_bytes: if matches!(self.behavior, Behavior::NoMemoryMeasurement) {
+                0
+            } else {
+                128
+            },
         })
     }
 }
@@ -126,17 +136,24 @@ fn manifest() -> ModelManifest {
 }
 
 fn worker(behavior: Behavior, calls: Arc<AtomicUsize>) -> InferenceWorker<Driver> {
-    InferenceWorker::new(100, "worker.1".to_string(), 3, ResourceGrant {
-        grant_id: "grant.1".to_string(),
-        authority_epoch: 2,
-        generation: 3,
-        expires_at_ms: 10_000,
-        revoked: false,
-        maximum_models: 2,
-        maximum_active_requests: 1,
-        maximum_memory_bytes: 1024,
-        semantic_digest: "9".repeat(64),
-    }, Driver { calls, behavior }).expect("worker")
+    InferenceWorker::new(
+        100,
+        "worker.1".to_string(),
+        3,
+        ResourceGrant {
+            grant_id: "grant.1".to_string(),
+            authority_epoch: 2,
+            generation: 3,
+            expires_at_ms: 10_000,
+            revoked: false,
+            maximum_models: 2,
+            maximum_active_requests: 1,
+            maximum_memory_bytes: 1024,
+            semantic_digest: "9".repeat(64),
+        },
+        Driver { calls, behavior },
+    )
+    .expect("worker")
 }
 
 fn call(id: &str) -> SemanticRetrievalCallV1 {
@@ -183,18 +200,30 @@ fn actual_owner_reopen_returns_original_reply_without_loading_or_running_model()
         let mut control = path.open();
         let mut first = worker(Behavior::Reply, Arc::clone(&calls));
         first.load_model(100, manifest()).expect("load");
-        original = first.run_semantic_retrieval_durable(
-            &mut control, 100, "principal.1", "model.1", call("op.1"),
-        ).expect("first computation");
+        original = first
+            .run_semantic_retrieval_durable(
+                &mut control,
+                100,
+                "principal.1",
+                "model.1",
+                call("op.1"),
+            )
+            .expect("first computation");
         assert!(original.delivery_pending());
         assert_eq!(calls.load(Ordering::SeqCst), 1);
     }
     let before = fs::read(&path.0).expect("journal");
     let mut control = path.open();
     let mut reopened = worker(Behavior::Lost, Arc::clone(&calls));
-    let replayed = reopened.run_semantic_retrieval_durable(
-        &mut control, 20_000, "principal.1", "model.1", call("op.1"),
-    ).expect("historical observation, not current permission");
+    let replayed = reopened
+        .run_semantic_retrieval_durable(
+            &mut control,
+            20_000,
+            "principal.1",
+            "model.1",
+            call("op.1"),
+        )
+        .expect("historical observation, not current permission");
     assert_eq!(replayed, original);
     assert_eq!(calls.load(Ordering::SeqCst), 1);
     assert_eq!(fs::read(&path.0).expect("journal"), before);
@@ -209,21 +238,45 @@ fn lost_or_malformed_result_is_reconcile_only_across_worker_restarts() {
             let mut control = path.open();
             let mut first = worker(behavior, Arc::clone(&calls));
             first.load_model(100, manifest()).expect("load");
-            assert!(first.run_semantic_retrieval_durable(
-                &mut control, 100, "principal.1", "model.1", call("op.1"),
-            ).is_err());
+            assert!(
+                first
+                    .run_semantic_retrieval_durable(
+                        &mut control,
+                        100,
+                        "principal.1",
+                        "model.1",
+                        call("op.1"),
+                    )
+                    .is_err()
+            );
         }
         let mut control = path.open();
         let mut second = worker(Behavior::Reply, Arc::clone(&calls));
-        let recovered = second.run_semantic_retrieval_durable(
-            &mut control, 101, "principal.1", "model.1", call("op.1"),
-        ).expect("unknown observation");
+        let recovered = second
+            .run_semantic_retrieval_durable(
+                &mut control,
+                101,
+                "principal.1",
+                "model.1",
+                call("op.1"),
+            )
+            .expect("unknown observation");
         assert!(recovered.execution_unknown());
         assert_eq!(calls.load(Ordering::SeqCst), 1);
-        second.load_model(100, manifest()).expect("load for another request");
-        assert!(second.run_semantic_retrieval_durable(
-            &mut control, 101, "principal.1", "model.1", call("op.2"),
-        ).is_err());
+        second
+            .load_model(100, manifest())
+            .expect("load for another request");
+        assert!(
+            second
+                .run_semantic_retrieval_durable(
+                    &mut control,
+                    101,
+                    "principal.1",
+                    "model.1",
+                    call("op.2"),
+                )
+                .is_err()
+        );
         assert_eq!(calls.load(Ordering::SeqCst), 1);
     }
 }
@@ -237,13 +290,13 @@ fn cancellation_before_entry_is_durable_negative_without_model_call() {
     runtime.load_model(100, manifest()).expect("load");
     let mut cancelled = call("op.1");
     cancelled.authorization.cancelled = true;
-    let result = runtime.run_semantic_retrieval_durable(
-        &mut control, 100, "principal.1", "model.1", cancelled,
-    ).expect("negative");
+    let result = runtime
+        .run_semantic_retrieval_durable(&mut control, 100, "principal.1", "model.1", cancelled)
+        .expect("negative");
     assert_eq!(result.phase, SemanticPhaseV1::NotDispatched);
-    let retry = runtime.run_semantic_retrieval_durable(
-        &mut control, 101, "principal.1", "model.1", call("op.1"),
-    ).expect("same negative");
+    let retry = runtime
+        .run_semantic_retrieval_durable(&mut control, 101, "principal.1", "model.1", call("op.1"))
+        .expect("same negative");
     assert_eq!(retry, result);
     assert_eq!(calls.load(Ordering::SeqCst), 0);
 }
@@ -255,14 +308,22 @@ fn cancellation_after_lost_response_does_not_prove_non_execution() {
     let mut control = path.open();
     let mut runtime = worker(Behavior::Lost, Arc::clone(&calls));
     runtime.load_model(100, manifest()).expect("load");
-    assert!(runtime.run_semantic_retrieval_durable(
-        &mut control, 100, "principal.1", "model.1", call("op.1"),
-    ).is_err());
+    assert!(
+        runtime
+            .run_semantic_retrieval_durable(
+                &mut control,
+                100,
+                "principal.1",
+                "model.1",
+                call("op.1"),
+            )
+            .is_err()
+    );
     let mut cancelled = call("op.1");
     cancelled.authorization.cancelled = true;
-    let result = runtime.run_semantic_retrieval_durable(
-        &mut control, 101, "principal.1", "model.1", cancelled,
-    ).expect("cancel intent");
+    let result = runtime
+        .run_semantic_retrieval_durable(&mut control, 101, "principal.1", "model.1", cancelled)
+        .expect("cancel intent");
     assert!(result.execution_unknown());
     assert!(result.cancel_requested);
     assert!(!result.delivery_pending());
@@ -277,16 +338,28 @@ fn complete_but_unusable_results_preserve_observed_bytes() {
         let mut control = path.open();
         let mut runtime = worker(behavior, Arc::clone(&calls));
         runtime.load_model(100, manifest()).expect("load");
-        let result = runtime.run_semantic_retrieval_durable(
-            &mut control, 100, "principal.1", "model.1", call("op.1"),
-        ).expect("observed output");
+        let result = runtime
+            .run_semantic_retrieval_durable(
+                &mut control,
+                100,
+                "principal.1",
+                "model.1",
+                call("op.1"),
+            )
+            .expect("observed output");
         assert_eq!(result.phase, SemanticPhaseV1::Completed);
         assert!(result.completion.is_some());
         assert!(!result.delivery_pending());
         assert!(!result.within_resource_budget);
-        runtime.run_semantic_retrieval_durable(
-            &mut control, 101, "principal.1", "model.1", call("op.2"),
-        ).expect("terminal observation released capacity");
+        runtime
+            .run_semantic_retrieval_durable(
+                &mut control,
+                101,
+                "principal.1",
+                "model.1",
+                call("op.2"),
+            )
+            .expect("terminal observation released capacity");
         assert_eq!(calls.load(Ordering::SeqCst), 2);
     }
 }
@@ -298,20 +371,30 @@ fn principal_or_semantic_input_cannot_be_substituted_for_cached_result() {
     let mut control = path.open();
     let mut runtime = worker(Behavior::Reply, Arc::clone(&calls));
     runtime.load_model(100, manifest()).expect("load");
-    runtime.run_semantic_retrieval_durable(
-        &mut control, 100, "principal.1", "model.1", call("op.1"),
-    ).expect("original");
-    assert!(runtime.run_semantic_retrieval_durable(
-        &mut control, 101, "principal.2", "model.1", call("op.1"),
-    ).is_err());
+    runtime
+        .run_semantic_retrieval_durable(&mut control, 100, "principal.1", "model.1", call("op.1"))
+        .expect("original");
+    assert!(
+        runtime
+            .run_semantic_retrieval_durable(
+                &mut control,
+                101,
+                "principal.2",
+                "model.1",
+                call("op.1"),
+            )
+            .is_err()
+    );
     let mut changed = call("op.1");
     changed.input.workspace_id = "workspace.2".to_string();
     let digest = Digest32::of_bytes(&changed.input.encode().expect("wire")).to_string();
     changed.authorization.payload_digest = digest.clone();
     changed.authorization.lease_payload_digest = digest;
-    assert!(runtime.run_semantic_retrieval_durable(
-        &mut control, 101, "principal.1", "model.1", changed,
-    ).is_err());
+    assert!(
+        runtime
+            .run_semantic_retrieval_durable(&mut control, 101, "principal.1", "model.1", changed,)
+            .is_err()
+    );
     assert_eq!(calls.load(Ordering::SeqCst), 1);
 }
 
@@ -322,15 +405,25 @@ fn invalid_or_expired_new_request_never_admits_or_dispatches() {
     let mut control = path.open();
     let mut runtime = worker(Behavior::Reply, Arc::clone(&calls));
     runtime.load_model(100, manifest()).expect("load");
-    assert!(runtime.run_semantic_retrieval_durable(
-        &mut control, 9000, "principal.1", "model.1", call("op.1"),
-    ).is_err());
+    assert!(
+        runtime
+            .run_semantic_retrieval_durable(
+                &mut control,
+                9000,
+                "principal.1",
+                "model.1",
+                call("op.1"),
+            )
+            .is_err()
+    );
     assert!(control.semantic_record("op.1").expect("lookup").is_none());
     let mut wrong = call("op.2");
     wrong.authorization.lease_payload_digest = "a".repeat(64);
-    assert!(runtime.run_semantic_retrieval_durable(
-        &mut control, 101, "principal.1", "model.1", wrong,
-    ).is_err());
+    assert!(
+        runtime
+            .run_semantic_retrieval_durable(&mut control, 101, "principal.1", "model.1", wrong,)
+            .is_err()
+    );
     assert!(control.semantic_record("op.2").expect("lookup").is_none());
     assert_eq!(calls.load(Ordering::SeqCst), 0);
 }

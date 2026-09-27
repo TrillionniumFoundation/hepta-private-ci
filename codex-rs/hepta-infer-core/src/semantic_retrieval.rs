@@ -205,7 +205,8 @@ impl SemanticRetrievalRequestV1 {
             return Err(RetrievalWireError::Binding);
         }
         let count = reader.u32()?;
-        if usize::try_from(count).map_err(|_| RetrievalWireError::Bounds)? != self.sources.len() + 1 {
+        if usize::try_from(count).map_err(|_| RetrievalWireError::Bounds)? != self.sources.len() + 1
+        {
             return Err(RetrievalWireError::Binding);
         }
         let mut prediction_ppm = Vec::new();

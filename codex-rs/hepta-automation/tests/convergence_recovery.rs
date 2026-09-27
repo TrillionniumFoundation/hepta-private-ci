@@ -63,13 +63,18 @@ async fn uncertain_store() -> Result<
 
 #[tokio::test]
 async fn retirement_preserves_unknown_until_same_identity_absence_is_reconciled() -> TestResult {
-    for retirement in [AutomationTaskState::Disabled, AutomationTaskState::Cancelled] {
+    for retirement in [
+        AutomationTaskState::Disabled,
+        AutomationTaskState::Cancelled,
+    ] {
         let (_temp, layout, store, lease) = uncertain_store().await?;
         let task_id = lease.task.task_id;
         match retirement {
             AutomationTaskState::Disabled => {
                 store
-                    .set_enabled(task_id, /*enabled*/ false, /*resume_at_ms*/ None, 102)
+                    .set_enabled(
+                        task_id, /*enabled*/ false, /*resume_at_ms*/ None, 102,
+                    )
                     .await?;
             }
             AutomationTaskState::Cancelled => {
@@ -90,7 +95,11 @@ async fn retirement_preserves_unknown_until_same_identity_absence_is_reconciled(
         assert_eq!(
             recovered
                 .reconcile_uncertain_occurrence_absent(
-                    task_id, lease.occurrence, "different-client", &proof, 100_001,
+                    task_id,
+                    lease.occurrence,
+                    "different-client",
+                    &proof,
+                    100_001,
                 )
                 .await,
             Err(AutomationError::Conflict)
@@ -98,31 +107,58 @@ async fn retirement_preserves_unknown_until_same_identity_absence_is_reconciled(
         assert_eq!(recovered.uncertain_dispatches(/*limit*/ 10).await?.len(), 1);
         recovered
             .reconcile_uncertain_occurrence_absent(
-                task_id, lease.occurrence, &lease.client_user_message_id, &proof, 100_002,
+                task_id,
+                lease.occurrence,
+                &lease.client_user_message_id,
+                &proof,
+                100_002,
             )
             .await?;
-        let resolved = recovered.automation_occurrence(task_id, lease.occurrence).await?;
-        let retired = recovered.task(task_id).await?.ok_or("missing retired task")?;
+        let resolved = recovered
+            .automation_occurrence(task_id, lease.occurrence)
+            .await?;
+        let retired = recovered
+            .task(task_id)
+            .await?
+            .ok_or("missing retired task")?;
         assert_eq!(retired.state, retirement);
         recovered.close().await;
         let reopened = AutomationStore::open(&layout).await?;
         reopened
             .reconcile_uncertain_occurrence_absent(
-                task_id, lease.occurrence, &lease.client_user_message_id, &proof, 200_000,
+                task_id,
+                lease.occurrence,
+                &lease.client_user_message_id,
+                &proof,
+                200_000,
             )
             .await?;
         let changed_proof = Sha256Digest::for_bytes(b"different-absence-observation");
         assert_eq!(
             reopened
                 .reconcile_uncertain_occurrence_absent(
-                    task_id, lease.occurrence, &lease.client_user_message_id, &changed_proof, 200_001,
+                    task_id,
+                    lease.occurrence,
+                    &lease.client_user_message_id,
+                    &changed_proof,
+                    200_001,
                 )
                 .await,
             Err(AutomationError::Conflict)
         );
-        assert_eq!(reopened.automation_occurrence(task_id, lease.occurrence).await?, resolved);
+        assert_eq!(
+            reopened
+                .automation_occurrence(task_id, lease.occurrence)
+                .await?,
+            resolved
+        );
         assert_eq!(reopened.task(task_id).await?, Some(retired));
-        assert!(reopened.uncertain_dispatches(/*limit*/ 10).await?.is_empty());
+        assert!(
+            reopened
+                .uncertain_dispatches(/*limit*/ 10)
+                .await?
+                .is_empty()
+        );
         assert_eq!(reopened.claim_due(200_002, 3, 100).await?, None);
         reopened.close().await;
     }
@@ -137,31 +173,45 @@ async fn proven_absence_reclaim_preserves_operation_identity_across_generation()
     let proof = Sha256Digest::for_bytes(b"provider-stable-client-lookup-is-absent");
     recovered
         .reconcile_uncertain_occurrence_absent(
-            lease.task.task_id, lease.occurrence, &lease.client_user_message_id, &proof, 100_000,
+            lease.task.task_id,
+            lease.occurrence,
+            &lease.client_user_message_id,
+            &proof,
+            100_000,
         )
         .await?;
     recovered.close().await;
     let reopened = AutomationStore::open(&layout).await?;
     let successor = reopened
-        .claim_due(100_001, /*generation*/ 2, /*lease_duration_ms*/ 60_000)
+        .claim_due(
+            100_001, /*generation*/ 2, /*lease_duration_ms*/ 60_000,
+        )
         .await?
         .ok_or("missing proven-absent reclaim")?;
     assert_eq!(successor.occurrence, lease.occurrence);
-    assert_eq!(successor.client_user_message_id, lease.client_user_message_id);
+    assert_eq!(
+        successor.client_user_message_id,
+        lease.client_user_message_id
+    );
     assert_eq!(successor.schedule_revision, lease.schedule_revision);
     assert_ne!(successor.lease_generation, lease.lease_generation);
     let occurrence = reopened.materialize_occurrence(&successor, 100_002).await?;
     reopened
         .prepare_occurrence_taskflow(&occurrence, &successor, 100_002, 60_000)
         .await?;
-    reopened.record_dispatch_uncertain(&successor, 100_003).await?;
+    reopened
+        .record_dispatch_uncertain(&successor, 100_003)
+        .await?;
     assert_eq!(
         reopened.release_for_retry(&successor).await,
         Err(AutomationError::Conflict)
     );
     reopened.close().await;
     let final_reopen = AutomationStore::open(&layout).await?;
-    assert_eq!(final_reopen.uncertain_dispatches(/*limit*/ 10).await?.len(), 1);
+    assert_eq!(
+        final_reopen.uncertain_dispatches(/*limit*/ 10).await?.len(),
+        1
+    );
     assert_eq!(final_reopen.claim_due(300_000, 3, 100).await?, None);
     final_reopen.close().await;
     Ok(())

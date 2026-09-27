@@ -424,7 +424,9 @@ fn unknown_request_cannot_escape_capacity_by_switching_models() {
     worker.load_model(/*now_ms*/ 100, manifest()).expect("load");
     let mut other = manifest();
     other.model_id = "model.2".to_string();
-    worker.load_model(/*now_ms*/ 100, other).expect("load other");
+    worker
+        .load_model(/*now_ms*/ 100, other)
+        .expect("load other");
     worker
         .run(/*now_ms*/ 100, "model.1", request("r.1"))
         .expect("unknown");
@@ -444,12 +446,16 @@ impl SemanticRetrievalDriver for Driver {
         self.calls.run.fetch_add(1, Ordering::SeqCst);
         let reply_wire = match self.reply {
             Reply::Unknown | Reply::Error | Reply::Failure => {
-                return Err(Error::DriverFailure("no complete retrieval reply".to_string()));
+                return Err(Error::DriverFailure(
+                    "no complete retrieval reply".to_string(),
+                ));
             }
             Reply::Malformed => b"partial reply".to_vec(),
             Reply::Success => {
                 let mut bytes = b"HPTARS\x01\x00".to_vec();
-                bytes.extend_from_slice(codex_hepta_types::Digest32::of_bytes(request_wire).as_array());
+                bytes.extend_from_slice(
+                    codex_hepta_types::Digest32::of_bytes(request_wire).as_array(),
+                );
                 bytes.extend_from_slice(&[0x22; 32]);
                 for value in [2_u32, 100_000, 900_000] {
                     bytes.extend_from_slice(&value.to_be_bytes());
@@ -488,7 +494,10 @@ fn semantic_call(id: &str) -> SemanticRetrievalCallV1 {
     let mut authorization = request(id);
     authorization.payload_digest = payload.clone();
     authorization.lease_payload_digest = payload;
-    SemanticRetrievalCallV1 { authorization, input }
+    SemanticRetrievalCallV1 {
+        authorization,
+        input,
+    }
 }
 
 #[test]
@@ -541,7 +550,11 @@ fn semantic_request_mutation_invalidates_exact_payload() {
 fn semantic_error_retains_the_shared_worker_slot() {
     let (mut worker, calls) = worker(Reply::Error);
     worker.load_model(/*now_ms*/ 100, manifest()).expect("load");
-    assert!(worker.run_semantic_retrieval(/*now_ms*/ 100, "model.1", semantic_call("r.1")).is_err());
+    assert!(
+        worker
+            .run_semantic_retrieval(/*now_ms*/ 100, "model.1", semantic_call("r.1"))
+            .is_err()
+    );
     assert_eq!(
         worker.run(/*now_ms*/ 100, "model.1", request("r.2")),
         Err(Error::RequestCapacity)
@@ -557,7 +570,11 @@ fn semantic_error_retains_the_shared_worker_slot() {
 fn semantic_unknown_cannot_be_relabelled_pre_entry_cancelled() {
     let (mut worker, calls) = worker(Reply::Unknown);
     worker.load_model(/*now_ms*/ 100, manifest()).expect("load");
-    assert!(worker.run_semantic_retrieval(/*now_ms*/ 100, "model.1", semantic_call("r.1")).is_err());
+    assert!(
+        worker
+            .run_semantic_retrieval(/*now_ms*/ 100, "model.1", semantic_call("r.1"))
+            .is_err()
+    );
     let mut cancelled = semantic_call("r.1");
     cancelled.authorization.cancelled = true;
     assert_eq!(
@@ -593,7 +610,9 @@ fn semantic_pre_entry_cancel_is_a_distinct_non_execution() {
         Err(Error::RequestCancelled)
     );
     assert_eq!(calls.run.load(Ordering::SeqCst), 0);
-    worker.unload_model(/*now_ms*/ 100, "model.1").expect("unload");
+    worker
+        .unload_model(/*now_ms*/ 100, "model.1")
+        .expect("unload");
 }
 
 #[test]

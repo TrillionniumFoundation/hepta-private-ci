@@ -75,8 +75,11 @@ impl<D: SemanticRetrievalDriver> InferenceWorker<D> {
         {
             return Err(Error::PayloadMismatch);
         }
-        if self.active_requests.contains_key(&call.authorization.request_id)
-            || self.active_requests.len() >= self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS)
+        if self
+            .active_requests
+            .contains_key(&call.authorization.request_id)
+            || self.active_requests.len()
+                >= self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS)
         {
             return Err(Error::RequestCapacity);
         }
@@ -123,10 +126,8 @@ impl<D: SemanticRetrievalDriver> InferenceWorker<D> {
             .active_requests
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
-        self.active_requests.insert(
-            call.authorization.request_id.clone(),
-            model_id.to_string(),
-        );
+        self.active_requests
+            .insert(call.authorization.request_id.clone(), model_id.to_string());
         let observed = self.driver.run_semantic_retrieval(&loaded.handle, &wire)?;
         let reply = call
             .input
@@ -203,9 +204,13 @@ impl<D: SemanticRetrievalDriver> InferenceWorker<D> {
             preflight.authorization.cancelled = false;
             self.validate_semantic_entry(now_ms, model_id, &preflight)?;
         }
-        let record = control.reserve_semantic(
-            now_ms, admission, self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS),
-        ).map_err(owner_error)?;
+        let record = control
+            .reserve_semantic(
+                now_ms,
+                admission,
+                self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS),
+            )
+            .map_err(owner_error)?;
         if call.authorization.cancelled {
             return control.cancel_semantic(&id).map_err(owner_error);
         }
@@ -213,18 +218,27 @@ impl<D: SemanticRetrievalDriver> InferenceWorker<D> {
             return Ok(record);
         }
         self.validate_semantic_entry(now_ms, model_id, &call)?;
-        control.fence_semantic_dispatch(&id, record.revision, now_ms).map_err(owner_error)?;
+        control
+            .fence_semantic_dispatch(&id, record.revision, now_ms)
+            .map_err(owner_error)?;
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
-        loaded.active_requests = loaded.active_requests.checked_add(1).ok_or(Error::ArithmeticOverflow)?;
-        self.active_requests.insert(id.clone(), model_id.to_string());
+        loaded.active_requests = loaded
+            .active_requests
+            .checked_add(1)
+            .ok_or(Error::ArithmeticOverflow)?;
+        self.active_requests
+            .insert(id.clone(), model_id.to_string());
         let observed = self.driver.run_semantic_retrieval(&loaded.handle, &wire)?;
         let completion = SemanticCompletionV1 {
             reply_wire: observed.reply_wire,
-            observed_memory_bytes: (observed.observed_memory_bytes > 0).then_some(observed.observed_memory_bytes),
+            observed_memory_bytes: (observed.observed_memory_bytes > 0)
+                .then_some(observed.observed_memory_bytes),
         };
         // Persistence and binding checks happen before releasing the live slot
         // or publishing output. A write failure leaves both owners unknown.
-        let completed = control.complete_semantic(&id, completion).map_err(owner_error)?;
+        let completed = control
+            .complete_semantic(&id, completion)
+            .map_err(owner_error)?;
         self.active_requests.remove(&id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
         Ok(completed)

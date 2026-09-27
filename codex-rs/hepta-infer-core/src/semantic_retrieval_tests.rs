@@ -24,8 +24,7 @@ fn golden_reply() -> Vec<u8> {
     hex.as_bytes()
         .chunks_exact(2)
         .map(|pair| {
-            u8::from_str_radix(std::str::from_utf8(pair).expect("hex text"), 16)
-                .expect("hex byte")
+            u8::from_str_radix(std::str::from_utf8(pair).expect("hex text"), 16).expect("hex byte")
         })
         .collect()
 }
@@ -85,10 +84,16 @@ fn rejects_reply_for_changed_scope_or_observation() {
 fn rejects_trailing_or_wrong_profile_data() {
     let mut raw = golden_reply();
     raw.push(0);
-    assert_eq!(request().decode_reply(&raw), Err(RetrievalWireError::Trailing));
+    assert_eq!(
+        request().decode_reply(&raw),
+        Err(RetrievalWireError::Trailing)
+    );
     let mut raw = golden_reply();
     raw[6] = 2;
-    assert_eq!(request().decode_reply(&raw), Err(RetrievalWireError::Profile));
+    assert_eq!(
+        request().decode_reply(&raw),
+        Err(RetrievalWireError::Profile)
+    );
 }
 
 #[test]
@@ -118,14 +123,23 @@ fn enforces_utf8_byte_and_generation_bounds() {
 fn rejects_invalid_prediction_mass() {
     let mut raw = golden_reply();
     raw[76..80].copy_from_slice(&100_001_u32.to_be_bytes());
-    assert_eq!(request().decode_reply(&raw), Err(RetrievalWireError::Probability));
+    assert_eq!(
+        request().decode_reply(&raw),
+        Err(RetrievalWireError::Probability)
+    );
     let mut raw = golden_reply();
     raw[72..76].copy_from_slice(&16_u32.to_be_bytes());
-    assert_eq!(request().decode_reply(&raw), Err(RetrievalWireError::Binding));
+    assert_eq!(
+        request().decode_reply(&raw),
+        Err(RetrievalWireError::Binding)
+    );
 }
 
 #[test]
 fn checks_deadline_at_the_exact_boundary() {
     assert_eq!(request().validate_at(8999), Ok(()));
-    assert_eq!(request().validate_at(9000), Err(RetrievalWireError::Expired));
+    assert_eq!(
+        request().validate_at(9000),
+        Err(RetrievalWireError::Expired)
+    );
 }

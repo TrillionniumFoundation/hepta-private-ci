@@ -238,7 +238,9 @@ impl DurableInferenceControl {
             } else {
                 let event = decode_event(line)?;
                 if semantic.records.contains_key(event.request_id()) {
-                    return Err(Error::CorruptJournal("semantic identity used by legacy event"));
+                    return Err(Error::CorruptJournal(
+                        "semantic identity used by legacy event",
+                    ));
                 }
                 apply_event(&mut records, &event, /*replay*/ true)?;
             }
@@ -496,7 +498,9 @@ impl DurableInferenceControl {
             .checked_add(encoded.len() as u64)
             .ok_or(Error::ArithmeticOverflow)?;
         if encoded.len() > MAX_JOURNAL_LINE_BYTES
-            || next_bytes.checked_add(reserved).is_none_or(|bytes| bytes > MAX_JOURNAL_BYTES)
+            || next_bytes
+                .checked_add(reserved)
+                .is_none_or(|bytes| bytes > MAX_JOURNAL_BYTES)
         {
             return Err(Error::CapacityExceeded);
         }

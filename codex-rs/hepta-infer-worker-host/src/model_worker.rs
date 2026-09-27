@@ -560,7 +560,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             return Err(Error::ModelMismatch);
         }
         if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens
-            || request.authorization.maximum_tokens > request.authorization.reservation_maximum_tokens
+            || request.authorization.maximum_tokens
+                > request.authorization.reservation_maximum_tokens
         {
             return Err(Error::TokenLimit);
         }
