@@ -439,14 +439,56 @@ impl ProcessRuntimeCodexExecutorV1 {
 
         let concurrency = Arc::new(Semaphore::new(installed.maximum_concurrent_jobs));
         let mut jobs = JoinSet::new();
-        let mut recovery = interval(installed.recovery_interval);
-        recovery.set_missed_tick_behavior(MissedTickBehavior::Skip);
-        recovery.tick().await;
+        let maintenance_lifetime = lifetime.child_token();
+        let (recovery_reports, mut recovery_receiver) = mpsc::channel(1);
+        let mut maintenance = JoinSet::new();
+        maintenance.spawn(run_periodic_recovery(
+            Arc::clone(&installed),
+            owner.clone(),
+            maintenance_lifetime.clone(),
+            recovery_reports,
+        ));
 
-        let result = loop {
+        let mut result = loop {
             tokio::select! {
                 biased;
                 _ = lifetime.cancelled() => break Ok(()),
+                joined = maintenance.join_next(), if !maintenance.is_empty() => {
+                    let Some(joined) = joined else { continue; };
+                    match joined {
+                        Ok(Ok(())) if lifetime.is_cancelled() => break Ok(()),
+                        Ok(Ok(())) => {
+                            break Err(AgentdError::Protocol(
+                                "runtime.codex periodic reconciler exited before supervisor shutdown"
+                                    .to_string(),
+                            ));
+                        }
+                        Ok(Err(error)) => break Err(error),
+                        Err(error) => {
+                            break Err(AgentdError::Protocol(format!(
+                                "runtime.codex periodic reconciler failed to join: {error}"
+                            )));
+                        }
+                    }
+                }
+                maybe_report = recovery_receiver.recv() => {
+                    let report = match maybe_report {
+                        Some(report) => report,
+                        None => break Err(AgentdError::Protocol(
+                            "runtime.codex periodic reconciliation report channel closed"
+                                .to_string(),
+                        )),
+                    };
+                    if jobs.is_empty() {
+                        archive_terminal_operations(
+                            installed.executor.journal_root(),
+                            &owner,
+                            installed.executor.worker_artifact_digest(),
+                            ARCHIVE_BATCH,
+                        )?;
+                    }
+                    publish_recovery_status(&installed, &report);
+                }
                 joined = jobs.join_next(), if !jobs.is_empty() => {
                     let Some(joined) = joined else { continue; };
                     match joined {
@@ -470,21 +512,6 @@ impl ProcessRuntimeCodexExecutorV1 {
                             )));
                         }
                     }
-                }
-                _ = recovery.tick() => {
-                    let report = installed
-                        .executor
-                        .reconcile_pending(owner.clone(), lifetime.child_token())
-                        .await?;
-                    if jobs.is_empty() {
-                        archive_terminal_operations(
-                            installed.executor.journal_root(),
-                            &owner,
-                            installed.executor.worker_artifact_digest(),
-                            ARCHIVE_BATCH,
-                        )?;
-                    }
-                    publish_recovery_status(&installed, &report);
                 }
                 maybe_job = receiver.recv() => {
                     let job = match maybe_job {
@@ -528,7 +555,25 @@ impl ProcessRuntimeCodexExecutorV1 {
         installed.closed.store(true, Ordering::Release);
         installed.degraded.store(true, Ordering::Release);
         receiver.close();
+        maintenance_lifetime.cancel();
         cancel_active(&installed)?;
+        while let Some(joined) = maintenance.join_next().await {
+            match joined {
+                Ok(Ok(())) => {}
+                Ok(Err(error)) => {
+                    if result.is_ok() {
+                        result = Err(error);
+                    }
+                }
+                Err(error) => {
+                    if result.is_ok() {
+                        result = Err(AgentdError::Protocol(format!(
+                            "runtime.codex periodic reconciler failed during shutdown: {error}"
+                        )));
+                    }
+                }
+            }
+        }
         while let Ok(job) = receiver.try_recv() {
             let run_id = job.input.run_id().to_string();
             let digest = job.input.digest()?;
@@ -555,6 +600,44 @@ impl ProcessRuntimeCodexExecutorV1 {
             ARCHIVE_BATCH,
         )?;
         result
+    }
+}
+
+async fn run_periodic_recovery(
+    installed: Arc<Installation>,
+    owner: RuntimeCodexOwnerV1,
+    lifetime: CancellationToken,
+    reports: mpsc::Sender<super::super::RuntimeCodexReconcileReportV1>,
+) -> Result<(), AgentdError> {
+    let mut recovery = interval(installed.recovery_interval);
+    recovery.set_missed_tick_behavior(MissedTickBehavior::Skip);
+    // Initial recovery is completed synchronously before readiness publication.
+    // Consume the interval's immediate tick so the maintenance worker does not
+    // repeat the full scan as soon as it starts.
+    recovery.tick().await;
+    loop {
+        tokio::select! {
+            biased;
+            _ = lifetime.cancelled() => return Ok(()),
+            _ = recovery.tick() => {
+                let report = installed
+                    .executor
+                    .reconcile_pending(owner.clone(), lifetime.child_token())
+                    .await?;
+                tokio::select! {
+                    biased;
+                    _ = lifetime.cancelled() => return Ok(()),
+                    sent = reports.send(report) => {
+                        sent.map_err(|_| {
+                            AgentdError::Protocol(
+                                "runtime.codex supervisor dropped the recovery report receiver"
+                                    .to_string(),
+                            )
+                        })?;
+                    }
+                }
+            }
+        }
     }
 }
 
