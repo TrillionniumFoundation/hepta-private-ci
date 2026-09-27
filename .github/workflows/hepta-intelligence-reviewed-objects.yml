@@ -1,0 +1,171 @@
+name: intelligence.control reviewed source objects
+on:
+  pull_request:
+    paths: ['.github/workflows/hepta-intelligence-reviewed-objects.yml']
+permissions:
+  contents: write
+jobs:
+  reviewed-objects:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.number == 1022 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'codex/intelligence-control-product-closure-20260926'
+    runs-on: macos-15
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Upload only exact locally reviewed Git blobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, concurrent.futures, hashlib, json, lzma, os, pathlib, subprocess, urllib.request
+          repository = 'TrillionniumFoundation/hepta-private-ci'
+          expected_xz = 'e930cac009242090caca51c5bc447031d380560b9880c41a90f1fca1dd57198f'
+          expected_json = 'e7a96bc1976e23f31b9e082a8eedadab59488b93ae9cfde1b39fa31ac81d3b34'
+          parts = ['7b3e3660658c02c81f4c4d31e523d77d7488aeea', 'e608684050e8f05ed19b0da783f868803d2a2499', '7b1230f3f13841cc2ea8a9e60ebb9565c17e70cd']
+          allowed = set('''
+          .github/workflows/hepta-intelligence-control.yml
+          .github/workflows/hepta-intelligence-diagnostics.yml
+          codex-rs/Cargo.lock
+          codex-rs/core/src/client.rs
+          codex-rs/hepta-agentd/Cargo.toml
+          codex-rs/hepta-agentd/src/config.rs
+          codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs
+          codex-rs/hepta-agentd/src/intelligence_execution.rs
+          codex-rs/hepta-agentd/src/intelligence_files.rs
+          codex-rs/hepta-agentd/src/intelligence_ingress.rs
+          codex-rs/hepta-agentd/src/intelligence_learning.rs
+          codex-rs/hepta-agentd/src/intelligence_learning_exact.rs
+          codex-rs/hepta-agentd/src/intelligence_learning_io.rs
+          codex-rs/hepta-agentd/src/intelligence_learning_payload.rs
+          codex-rs/hepta-agentd/src/intelligence_learning_payload_tests.rs
+          codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs
+          codex-rs/hepta-agentd/src/intelligence_prepared_integrity.rs
+          codex-rs/hepta-agentd/src/intelligence_product.rs
+          codex-rs/hepta-agentd/src/intelligence_product_ports.rs
+          codex-rs/hepta-agentd/src/intelligence_product_runner.rs
+          codex-rs/hepta-agentd/src/intelligence_product_tests.rs
+          codex-rs/hepta-agentd/src/intelligence_prompt_binding.rs
+          codex-rs/hepta-agentd/src/intelligence_worker_watchdog.rs
+          codex-rs/hepta-agentd/src/lib.rs
+          codex-rs/hepta-agentd/src/objective_runtime.rs
+          codex-rs/hepta-agentd/src/runtime.rs
+          codex-rs/hepta-agentd/src/state.rs
+          codex-rs/hepta-infer-worker-host/src/lib.rs
+          codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+          codex-rs/hepta-infer-worker-host/src/native_intelligence_embedding.rs
+          codex-rs/hepta-infer-worker-host/src/native_intelligence_product.rs
+          codex-rs/hepta-infer-worker-host/src/native_run_control.rs
+          codex-rs/hepta-intelligence/src/canonical_invariants.rs
+          codex-rs/hepta-intelligence/src/prompt_pipeline.rs
+          codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs
+          codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs
+          codex-rs/hepta-learning-ledger/src/production.rs
+          codex-rs/hepta-learning-ledger/src/production_tests.rs
+          codex-rs/hepta-operations/src/exact_claim.rs
+          codex-rs/hepta-operations/src/pre_dispatch_defer.rs
+          docs/modules/intelligence.control/IMPLEMENTATION_MAP.json
+          docs/modules/intelligence.control/PRODUCT_CLOSURE.md
+          docs/modules/intelligence.control/RESTART_RECONCILIATION.md
+          docs/modules/intelligence.control/TECHNICAL.md
+          docs/modules/intelligence.control/TEST_TRACEABILITY.json
+          qualification/module-execution-dossiers/detail/intelligence.control.md
+          scripts/finalize-intelligence-control-boundaries.py
+          scripts/finalize-intelligence-control-product.py
+          scripts/hepta-intelligence-control-status.py
+          '''.split())
+          def api(suffix, value=None):
+              # This transport has no commit/ref endpoint and no branch write.
+              if not (suffix.startswith('git/blobs/') or suffix == 'git/blobs'):
+                  raise RuntimeError('only blob objects are permitted')
+              data = None if value is None else json.dumps(value).encode()
+              request = urllib.request.Request(
+                  'https://api.github.com/repos/' + repository + '/' + suffix,
+                  data=data,
+                  headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                           'Accept': 'application/vnd.github+json',
+                           'X-GitHub-Api-Version': '2022-11-28',
+                           'Content-Type': 'application/json'})
+              with urllib.request.urlopen(request, timeout=60) as response:
+                  return json.load(response)
+          def git_blob(raw):
+              return hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+          actual_head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          assert actual_head == os.environ['SOURCE_SHA']
+          chunks = []
+          for sha in parts:
+              entry = api('git/blobs/' + sha)
+              assert entry['encoding'] == 'base64'
+              chunk = base64.b64decode(entry['content'])
+              assert git_blob(chunk) == sha
+              chunks.append(chunk)
+          packed = b''.join(chunks)
+          assert len(packed) == 35320 and hashlib.sha256(packed).hexdigest() == expected_xz
+          decoder = lzma.LZMADecompressor(memlimit=128 * 1024 * 1024)
+          raw = decoder.decompress(packed, max_length=1_000_001)
+          assert decoder.eof and not decoder.unused_data
+          assert len(raw) == 187068 and hashlib.sha256(raw).hexdigest() == expected_json
+          packet = json.loads(raw)
+          assert packet['schema'] == 1 and packet['archive_commit'] == '81523506b8cb7c817cd1fb4c38a7236c07354c55'
+          assert {item['path'] for item in packet['edits']} == allowed
+          assert len(packet['edits']) == len(allowed)
+          reviewed = []
+          for row in packet['edits']:
+              path = pathlib.Path(row['path'])
+              assert not path.is_absolute() and '..' not in path.parts
+              assert not path.is_symlink()
+              if row['before'] is None:
+                  assert not path.exists()
+                  old = b''
+              else:
+                  old = path.read_bytes()
+                  assert git_blob(old) == row['before'], str(path)
+              if row['after'] is None:
+                  reviewed.append((row, None))
+                  continue
+              lines = old.decode('utf-8').splitlines(keepends=True)
+              edits = row['edits']
+              last = 0
+              for begin, end, inserted in edits:
+                  assert isinstance(begin, int) and isinstance(end, int)
+                  assert last <= begin <= end <= len(lines)
+                  assert isinstance(inserted, str)
+                  last = end
+              for begin, end, inserted in reversed(edits):
+                  lines[begin:end] = inserted.splitlines(keepends=True)
+              content = ''.join(lines).encode('utf-8')
+              assert len(content) <= 2_000_000 and git_blob(content) == row['after'], str(path)
+              reviewed.append((row, content))
+          def upload(pair):
+              row, content = pair
+              if content is not None:
+                  result = api('git/blobs', {'content': base64.b64encode(content).decode(), 'encoding': 'base64'})
+                  assert result['sha'] == row['after'], row['path']
+              return {key: row[key] for key in ('path', 'before', 'after')}
+          with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+              manifest = list(pool.map(upload, reviewed))
+          output = pathlib.Path(os.environ['RUNNER_TEMP']) / 'reviewed-objects'
+          output.mkdir()
+          (output / 'manifest.json').write_text(json.dumps({
+              'checkoutHead': actual_head, 'packetSha256': expected_json,
+              'scope': 'Reviewed source transport only; not execution or acceptance evidence.',
+              'blobs': manifest}, indent=2) + '\n')
+          subprocess.run(['git', 'diff', '--exit-code'], check=True)
+          subprocess.run(['git', 'diff', '--cached', '--exit-code'], check=True)
+          print('Uploaded exact reviewed blob objects:', len(manifest))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-reviewed-objects-${{ github.run_id }}
+          path: ${{ runner.temp }}/reviewed-objects/manifest.json
+          if-no-files-found: error
+          retention-days: 3
