@@ -2,8 +2,8 @@
   "schema": "hepta.kernel-authority-status-manifest.v1",
   "schemaVersion": 1,
   "sourceAnchor": {
-    "commit": "b553bc49099ae3adfd2d4d1a20386fafe474afbf",
-    "tree": "0e2371f41e623eb50df5af9cb204d080deea72b2"
+    "commit": "fb3a6e73ed4cc7a8ab8c1d30cd0ee35f7452cc81",
+    "tree": "21240e20fc06efb5908af34cdb4b5d568518b9ee"
   },
   "module": "kernel.authority",
   "laneId": "LANE-A-FOUNDATION",
@@ -60,15 +60,19 @@
       "operation": "final_use_authority",
       "nativeSymbol": "FinalUseAuthority::with_verified_use",
       "sourcePath": "codex-rs/hepta-contracts/src/final_use.rs",
-      "state": "source_implemented_nonce_claim_final_entry_pending_revocation_and_key_ring_recovery_not_product_activated",
+      "state": "source_implemented_nonce_claim_final_entry_durable_pending_revocation_v4_and_key_ring_recovery_not_product_activated",
       "authority": "security-authority",
       "tests": [
         "codex-rs/hepta-contracts/src/final_use_tests.rs",
-        "codex-rs/hepta-contracts/tests/final_use_linearization.rs"
+        "codex-rs/hepta-contracts/src/final_use_store_tests.rs",
+        "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+        "codex-rs/hepta-contracts/tests/final_use_pending_recovery.rs"
       ],
       "designOperation": "claim_enter_dispatch_recover_and_revoke",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-contracts/src/final_use_store.rs"
+      ]
     },
     {
       "operation": "final_use_control",
@@ -144,14 +148,15 @@
       "operation": "candidate_product_pilot",
       "nativeSymbol": "pilot",
       "sourcePath": "qualification/kernel-authority/runtime_qualification.py",
-      "state": "candidate_bound_fleet_browser_agentd_restart_revoke_rollback_and_rotation_process_pilot_defined_execution_pending",
+      "state": "candidate_bound_fleet_browser_agentd_restart_revoke_rollback_rotation_and_pending_crash_matrix_process_pilot_defined_execution_pending",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-fleet/src/authority_port.rs",
         "codex-rs/hepta-agentd/src/browser_servo.rs",
         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
         "codex-rs/hepta-agentd/src/authority_trust_host.rs",
-        "codex-rs/hepta-contracts/src/final_use_tests.rs"
+        "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "codex-rs/hepta-contracts/tests/final_use_pending_recovery.rs"
       ],
       "designOperation": "run_candidate_bound_dual_product_failure_and_recovery_pilot",
       "mappingClass": "qualification_harness",
@@ -189,7 +194,7 @@
       "id": "runtime.fleet.issue",
       "nativeSymbol": "FleetAuthorityPort::issue_with_witness",
       "sourcePath": "codex-rs/hepta-fleet/src/authority_port.rs",
-      "state": "source_composed_exact_mutation_binding_and_dispatch_witness_not_product_activated",
+      "state": "source_composed_exact_mutation_binding_restart_and_dispatch_witness_not_product_activated",
       "tests": [
         "codex-rs/hepta-fleet/src/authority_port.rs"
       ]
@@ -300,9 +305,9 @@
     "targetDeploymentQualified": false
   },
   "productPilots": {
-    "fleet": "candidate-bound process pilot defined; current candidate receipt pending",
+    "fleet": "candidate-bound create-restart-dispatch-revoke process pilot defined; current candidate receipt pending",
     "browserAgentd": "candidate-bound process pilot defined; current candidate receipt pending",
-    "restartRevocationRollbackRotation": "covered by named repository tests and harness; target deployment drill external",
+    "restartRevocationRollbackRotation": "covered by named repository tests including durable pending and both frontier-first crash windows; target deployment drill external",
     "deploymentActivationProved": false
   },
   "qualification": {

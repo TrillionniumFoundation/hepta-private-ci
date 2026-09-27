@@ -4,7 +4,7 @@
 
 Status: **source-hardened-repository-qualified-execution-pending**.
 
-Source anchor: `b553bc49099ae3adfd2d4d1a20386fafe474afbf` / tree `0e2371f41e623eb50df5af9cb204d080deea72b2`. Mapped source paths are proven unchanged from this anchor to the candidate.
+Source anchor: `fb3a6e73ed4cc7a8ab8c1d30cd0ee35f7452cc81` / tree `21240e20fc06efb5908af34cdb4b5d568518b9ee`. Mapped source paths are proven unchanged from this anchor to the candidate.
 
 Repository source closure is implemented, but production implementation, product execution proof, independent acceptance, activation and release remain false. External trust and target-host evidence cannot be manufactured by repository tests.
 
@@ -14,13 +14,13 @@ Repository source closure is implemented, but production implementation, product
 |---|---|---|---|
 | `authority_lease_registry` | `AuthorityLeaseRegistry::put_lease` | `codex-rs/hepta-contracts/src/authority_lease.rs` | source_implemented_owner_cas_retired_lineage_epoch_and_rollback_fencing_not_product_activated |
 | `authority_dispatch_binding` | `AuthorityLeaseVerifier::bind_dispatch` | `codex-rs/hepta-contracts/src/authority_trust.rs` | source_implemented_one_shot_lock_scoped_final_dispatch_with_closed_product_callers |
-| `final_use_authority` | `FinalUseAuthority::with_verified_use` | `codex-rs/hepta-contracts/src/final_use.rs` | source_implemented_nonce_claim_final_entry_pending_revocation_and_key_ring_recovery_not_product_activated |
+| `final_use_authority` | `FinalUseAuthority::with_verified_use` | `codex-rs/hepta-contracts/src/final_use.rs` | source_implemented_nonce_claim_final_entry_durable_pending_revocation_v4_and_key_ring_recovery_not_product_activated |
 | `final_use_control` | `FinalUseRevocationConvergenceVerifier::verify` | `codex-rs/hepta-contracts/src/final_use_control.rs` | source_implemented_independent_approval_signed_feed_and_receipt_bound_convergence_transport_external |
 | `production_trust_bundle` | `ProductionAuthorityTrustBundle::new` | `codex-rs/hepta-contracts/src/authority_trust.rs` | source_implemented_mandatory_clock_frontier_kms_custody_and_external_receipts_target_qualification_external |
 | `verified_use_witness` | `VerifiedUseTokenWitnessV1::validate` | `codex-rs/hepta-contracts/src/verified_use_witness.rs` | source_implemented_non_authorizing_entry_evidence_durably_consumed_by_taskflow_not_activated |
 | `agentd_external_trust_host` | `AgentdFinalUseTrustStore::open` | `codex-rs/hepta-agentd/src/authority_trust_host.rs` | named_host_source_implemented_monotonic_floor_external_frontier_private_state_and_rollback_detection_not_attested |
 | `agentd_effect_owner` | `AgentdAutomationEffectHost::execute` | `codex-rs/hepta-agentd/src/automation_effect_host.rs` | source_implemented_exact_wire_dispatch_durable_attempt_witness_terminal_receipt_and_reconciliation_not_activated |
-| `candidate_product_pilot` | `pilot` | `qualification/kernel-authority/runtime_qualification.py` | candidate_bound_fleet_browser_agentd_restart_revoke_rollback_and_rotation_process_pilot_defined_execution_pending |
+| `candidate_product_pilot` | `pilot` | `qualification/kernel-authority/runtime_qualification.py` | candidate_bound_fleet_browser_agentd_restart_revoke_rollback_rotation_and_pending_crash_matrix_process_pilot_defined_execution_pending |
 | `performance_qualification` | `qualification_benchmark_emits_machine_receipt` | `codex-rs/hepta-contracts/tests/kernel_authority_benchmark.rs` | qualification_measurement_defined_for_put_dispatch_revoke_contention_throughput_snapshot_and_reopen_no_production_slo |
 | `storage_scaling_model` | `main` | `qualification/kernel-authority/storage_model.py` | executable_reference_model_for_wal_checkpoint_corruption_recovery_sharding_and_capacity_not_runtime |
 
@@ -28,7 +28,7 @@ Repository source closure is implemented, but production implementation, product
 
 | Caller | Boundary | Source | State |
 |---|---|---|---|
-| `runtime.fleet.issue` | `FleetAuthorityPort::issue_with_witness` | `codex-rs/hepta-fleet/src/authority_port.rs` | source_composed_exact_mutation_binding_and_dispatch_witness_not_product_activated |
+| `runtime.fleet.issue` | `FleetAuthorityPort::issue_with_witness` | `codex-rs/hepta-fleet/src/authority_port.rs` | source_composed_exact_mutation_binding_restart_and_dispatch_witness_not_product_activated |
 | `browser.servo.agentd` | `BrowserServoPort::call` | `codex-rs/hepta-agentd/src/browser_servo.rs` | source_composed_final_use_fence_around_exact_local_dispatch_not_product_activated |
 | `automation.taskflow.agentd` | `AgentdAutomationEffectHost::execute` | `codex-rs/hepta-agentd/src/automation_effect_host.rs` | source_composed_effect_owner_with_reconciliation_and_durable_receipts_not_product_activated |
 | `secrets.heptabao.registered_host` | `BaoFinalUseHost::consume_kv_v2` | `codex-rs/hepta-bao-adapter/src/final_use_host.rs` | registered_host_source_composed_no_deployed_process_selected |
