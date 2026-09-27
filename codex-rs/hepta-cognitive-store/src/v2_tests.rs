@@ -495,7 +495,33 @@ fn image_rejects_cross_object_receipt_tampering_even_with_recomputed_digest() {
         .unwrap_or_else(|error| panic!("export: {error}"));
 
     let mut wrong_intent = image.clone();
-    wrong_intent.journal[0].receipt.intent_id = id("intent:image:forged");
+    let original_receipt = wrong_intent.journal[0].receipt.clone();
+    let forged_intent = MemoryWriteIntentV1::new(
+        id("intent:image:forged"),
+        original_receipt.candidate_digest(),
+        snapshot_key(),
+        original_receipt.writer_fence_digest(),
+        original_receipt.authorization_digest(),
+    )
+    .unwrap_or_else(|error| panic!("valid forged intent: {error}"));
+    wrong_intent.journal[0].receipt = MemoryWriteReceiptV1::committed(
+        &forged_intent,
+        original_receipt.snapshot_key().clone(),
+        original_receipt
+            .record_id()
+            .cloned()
+            .expect("committed receipt record id"),
+        original_receipt
+            .record_digest()
+            .expect("committed receipt record digest"),
+        original_receipt
+            .committed_frontier()
+            .expect("committed receipt frontier"),
+        original_receipt
+            .disposition()
+            .expect("committed receipt disposition"),
+    )
+    .unwrap_or_else(|error| panic!("valid forged receipt: {error}"));
     wrong_intent.image_digest = wrong_intent.compute_image_digest();
     assert!(matches!(
         wrong_intent.validate(),
@@ -503,7 +529,31 @@ fn image_rejects_cross_object_receipt_tampering_even_with_recomputed_digest() {
     ));
 
     let mut wrong_record = image;
-    wrong_record.journal[0].receipt.record_digest = digest("forged-record");
+    let original_receipt = wrong_record.journal[0].receipt.clone();
+    let original_intent = MemoryWriteIntentV1::new(
+        original_receipt.intent_id().clone(),
+        original_receipt.candidate_digest(),
+        snapshot_key(),
+        original_receipt.writer_fence_digest(),
+        original_receipt.authorization_digest(),
+    )
+    .unwrap_or_else(|error| panic!("valid original intent reconstruction: {error}"));
+    wrong_record.journal[0].receipt = MemoryWriteReceiptV1::committed(
+        &original_intent,
+        original_receipt.snapshot_key().clone(),
+        original_receipt
+            .record_id()
+            .cloned()
+            .expect("committed receipt record id"),
+        digest("forged-record"),
+        original_receipt
+            .committed_frontier()
+            .expect("committed receipt frontier"),
+        original_receipt
+            .disposition()
+            .expect("committed receipt disposition"),
+    )
+    .unwrap_or_else(|error| panic!("valid record-forged receipt: {error}"));
     wrong_record.image_digest = wrong_record.compute_image_digest();
     assert!(matches!(
         wrong_record.validate(),
@@ -766,11 +816,14 @@ fn canonical_event_shadow_binds_exact_admission_and_write_receipt() {
     assert_eq!(result.shadow_receipt.candidate_digest, candidate.digest());
     assert_eq!(
         result.shadow_receipt.record_digest,
-        result.write_receipt.record_digest
+        result
+            .write_receipt
+            .record_digest()
+            .expect("committed receipt record digest")
     );
     assert_eq!(
         result.shadow_receipt.snapshot_vector_digest,
-        result.write_receipt.snapshot_key.vector_digest
+        result.write_receipt.snapshot_key().vector_digest
     );
     assert!(!result.shadow_receipt.authority.grants_any());
 }

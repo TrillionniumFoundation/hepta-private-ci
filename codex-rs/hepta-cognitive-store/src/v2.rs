@@ -17,6 +17,11 @@ use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_cognitive_types::build_snapshot;
+use codex_hepta_cognitive_types::consumer::CanonicalConsumerBindingV1;
+use codex_hepta_cognitive_types::consumer::CanonicalConsumerV1;
+use codex_hepta_cognitive_types::consumer::CanonicalMigrationPostureV1;
+use codex_hepta_cognitive_types::consumer::CanonicalPayloadKindV1;
+use codex_hepta_cognitive_types::consumer::bind_memory_event_consumer_v1;
 use codex_hepta_cognitive_types::hnmf::ContractIdV1;
 use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
 use codex_hepta_cognitive_types::hnmf::MemoryVerificationStateV1;
@@ -222,6 +227,80 @@ pub fn bind_canonical_event_to_durable_receipt(
     binding.binding_digest = binding.compute_binding_digest();
     binding.validate()?;
     Ok(binding)
+}
+
+/// Product-consumer binding for one canonical memory event and the exact durable
+/// mutation receipt that established its authoritative source revision.
+///
+/// The consumer binding deliberately remains compatibility-bound until the
+/// durable store accepts the canonical event as its sole mutation surface. The
+/// compatibility digest is the sealed durable bridge, while the exact durable
+/// receipt and operation digests occupy the source-identity and source-snapshot
+/// slots respectively. No field grants write or read authority.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalProductMemoryEventBindingV1 {
+    pub durable_binding: CanonicalDurableMemoryEventBindingV1,
+    pub consumer_binding: CanonicalConsumerBindingV1,
+}
+
+impl CanonicalProductMemoryEventBindingV1 {
+    pub fn validate(&self) -> Result<(), CognitiveStoreV2Error> {
+        self.durable_binding.validate()?;
+        self.consumer_binding
+            .validate()
+            .map_err(|error| CognitiveStoreV2Error::CanonicalConsumer(error.to_string()))?;
+
+        let expected_operation_id = format!("operation:{}", self.durable_binding.operation_digest);
+        let compatibility_digest = self
+            .consumer_binding
+            .compatibility_payload_sha256
+            .map(|digest| digest.digest());
+        if self.consumer_binding.operation_id.as_str() != expected_operation_id
+            || self.consumer_binding.consumer != CanonicalConsumerV1::CognitiveStore
+            || self.consumer_binding.payload_kind != CanonicalPayloadKindV1::MemoryEvent
+            || self.consumer_binding.canonical_payload_sha256.digest()
+                != self.durable_binding.event_digest
+            || self.consumer_binding.source_identity_sha256.digest()
+                != self.durable_binding.production_receipt_digest
+            || self.consumer_binding.source_snapshot_sha256.digest()
+                != self.durable_binding.operation_digest
+            || compatibility_digest != Some(self.durable_binding.binding_digest)
+            || self.consumer_binding.migration_posture
+                != CanonicalMigrationPostureV1::CompatibilityBound
+        {
+            return Err(CognitiveStoreV2Error::CanonicalProductBindingMismatch);
+        }
+        Ok(())
+    }
+}
+
+/// Bind a canonical MemoryEventV1 to the production durable writer receipt and
+/// to the named `cognitive.store` consumer operation.
+///
+/// This function first verifies full event/source/revision equivalence against
+/// the durable mutation receipt, then seals an authority-free consumer binding.
+pub fn bind_canonical_event_to_product_receipt_v1(
+    operation_id: ContractIdV1,
+    event: &MemoryEventV1,
+    production: &ProductionCognitiveMutationReceiptV1,
+) -> Result<CanonicalProductMemoryEventBindingV1, CognitiveStoreV2Error> {
+    let durable_binding = bind_canonical_event_to_durable_receipt(event, production)?;
+    let consumer_binding = bind_memory_event_consumer_v1(
+        operation_id,
+        CanonicalConsumerV1::CognitiveStore,
+        event,
+        durable_binding.production_receipt_digest,
+        durable_binding.operation_digest,
+        Some(durable_binding.binding_digest),
+        CanonicalMigrationPostureV1::CompatibilityBound,
+    )
+    .map_err(|error| CognitiveStoreV2Error::CanonicalConsumer(error.to_string()))?;
+    let value = CanonicalProductMemoryEventBindingV1 {
+        durable_binding,
+        consumer_binding,
+    };
+    value.validate()?;
+    Ok(value)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -1573,11 +1652,13 @@ fn validate_record_history(
 pub enum CognitiveStoreV2Error {
     Contract(LaneCContractError),
     CanonicalContract(String),
+    CanonicalConsumer(String),
     CanonicalVerificationMismatch,
     CanonicalSourceProvenanceMismatch,
     CanonicalShadowReceiptMismatch,
     CanonicalDurableSourceMismatch,
     CanonicalDurableStateMismatch,
+    CanonicalProductBindingMismatch,
     EmptyDigest(&'static str),
     DigestMismatch(&'static str),
     InvalidCapacity,
