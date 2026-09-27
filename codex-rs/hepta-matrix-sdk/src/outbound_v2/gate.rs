@@ -183,15 +183,7 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
         grant_expires_at_ms: u64,
         binding: &FinalUseBinding,
     ) -> Result<(), OutboxDispatchError> {
-        if self.cancel.is_cancelled() {
-            return Err(OutboxDispatchError::Canceled);
-        }
-        if Instant::now() >= self.deadline {
-            return Err(OutboxDispatchError::LeaseExpired);
-        }
-        if !grant_is_live(self.clock.now_ms()?, grant_expires_at_ms) {
-            return Err(OutboxDispatchError::Authority);
-        }
+        self.require_live_window(grant_expires_at_ms)?;
         self.authorizer
             .refresh_revocations()
             .map_err(authority_error)?;
@@ -210,6 +202,23 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
         match outbound_payload_digest(self.record) {
             Ok(digest) if digest.as_str() == hex_digest(binding.payload_sha256) => {}
             _ => return Err(OutboxDispatchError::Authority),
+        }
+        // Revocation refresh, identity lookup and canonical serialization are
+        // synchronous but may still consume wall time. Recheck the absolute
+        // grant/lease/cancel window at the last possible point before the
+        // caller constructs or polls the lazy transport future.
+        self.require_live_window(grant_expires_at_ms)
+    }
+
+    fn require_live_window(&self, grant_expires_at_ms: u64) -> Result<(), OutboxDispatchError> {
+        if self.cancel.is_cancelled() {
+            return Err(OutboxDispatchError::Canceled);
+        }
+        if Instant::now() >= self.deadline {
+            return Err(OutboxDispatchError::LeaseExpired);
+        }
+        if !grant_is_live(self.clock.now_ms()?, grant_expires_at_ms) {
+            return Err(OutboxDispatchError::Authority);
         }
         Ok(())
     }
