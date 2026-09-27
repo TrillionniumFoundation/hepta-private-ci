@@ -52,19 +52,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut intelligence_revision = None;
     let mut intelligence_context_digest = None;
     let mut intelligence_envelope_digest = None;
-    let mut native_profile_selected = false;
     let mut timeout_ms = 120_000_u64;
     let mut args = std::env::args().skip(1);
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON --execution-trust-store ABSOLUTE_JSON --execution-authority-bundle ABSOLUTE_JSON [--output-protector-config ABSOLUTE_JSON] [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin. Four independent execution authorities and an independent final-use authority must authenticate the exact model/runtime/resource/quota/data binding before physical turn/start. External-encrypted output policies additionally require the UID-bound output-vault configuration."
+                "hepta-infer-worker [--profile native-app-server] --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON --execution-trust-store ABSOLUTE_JSON --execution-authority-bundle ABSOLUTE_JSON [--output-protector-config ABSOLUTE_JSON] [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nThe sole release profile is native-app-server and is selected by default. Reads one prompt from stdin. Four independent execution authorities and an independent final-use authority must authenticate the exact model/runtime/resource/quota/data binding before physical turn/start. External-encrypted output policies additionally require the UID-bound output-vault configuration."
             );
             return Ok(());
         }
         let value = args.next().ok_or("missing argument value")?;
         match flag.as_str() {
-            "--profile" if value == "native-app-server" => native_profile_selected = true,
+            "--profile" if value == "native-app-server" => {}
             "--profile" => return Err(format!("unsupported worker profile: {value}").into()),
             "--agentd-socket" => socket = Some(PathBuf::from(value)),
             "--agent-id" => agent_id = Some(AgentId::parse(value)?),
@@ -89,9 +88,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "--timeout-ms" => timeout_ms = value.parse()?,
             _ => return Err(format!("unknown argument: {flag}").into()),
         }
-    }
-    if !native_profile_selected {
-        return Err("--profile native-app-server must be selected explicitly".into());
     }
 
     let trust_document: TrustStoreDocument = read_owner_only_json(
