@@ -19,6 +19,7 @@ mod qualified;
 mod trust;
 mod trust_registry;
 
+pub use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 pub use codex_hepta_cognitive_types::lane_c::CompactCheckpointV1;
 pub use codex_hepta_cognitive_types::lane_c::CompactionProofV2;
 pub use codex_hepta_cognitive_types::lane_c::CompactionProofWitnessV1;
