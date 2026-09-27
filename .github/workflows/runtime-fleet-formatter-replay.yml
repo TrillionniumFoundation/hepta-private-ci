@@ -1,0 +1,40 @@
+name: runtime.fleet formatter replay tools
+
+# Read-only developer evidence. Formatting repairs are made in normal commits,
+# never by this job. This job does not qualify, mutate or push candidate source.
+on:
+  push:
+    branches: [codex/runtime-fleet-durable-owner-v1-2026-09-27]
+    paths: [.github/workflows/runtime-fleet-formatter-replay.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  replay-tools:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Install repository-pinned formatter
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+          root="$(dirname "$(dirname "$(rustup which --toolchain 1.95.0 rustfmt)")")"
+          mkdir -p "$RUNNER_TEMP/fleet-formatter/tools/bin" "$RUNNER_TEMP/fleet-formatter/tools/lib"
+          cp "$root/bin/rustfmt" "$RUNNER_TEMP/fleet-formatter/tools/bin/"
+          find "$root/lib" -maxdepth 1 -type f -name '*.so*' -exec cp '{}' "$RUNNER_TEMP/fleet-formatter/tools/lib/" ';'
+          rustup run 1.95.0 rustfmt --version > "$RUNNER_TEMP/fleet-formatter/version.txt"
+          ldd "$root/bin/rustfmt" > "$RUNNER_TEMP/fleet-formatter/linkage.txt"
+          tar -C "$RUNNER_TEMP/fleet-formatter" -czf "$RUNNER_TEMP/fleet-rustfmt-1.95.0.tgz" tools version.txt linkage.txt
+          sha256sum "$RUNNER_TEMP/fleet-rustfmt-1.95.0.tgz" > "$RUNNER_TEMP/fleet-rustfmt-1.95.0.sha256"
+      - name: Retain replay tools
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-fleet-rustfmt-1.95.0-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/fleet-rustfmt-1.95.0.tgz
+            ${{ runner.temp }}/fleet-rustfmt-1.95.0.sha256
+          if-no-files-found: error
+          retention-days: 3
