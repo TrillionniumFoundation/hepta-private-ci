@@ -20,7 +20,6 @@ env:
   CARGO_TARGET_DIR: ${{ github.workspace }}/apps/hepta-native/target
   REMEDIATION_BRANCH: work/ui-native-remediation-20260927
   PATCH_PATH: .github/remediation/ui-native-effect-broker.patch.gz.b64
-  PATCH_SHA256: ee8e9411cda61c33be8fd65c6b710a7dc787891fb8cba014f93906550f3b85b6
 
 jobs:
   apply-and-verify:
@@ -33,12 +32,38 @@ jobs:
           ref: ${{ env.REMEDIATION_BRANCH }}
           fetch-depth: 0
           persist-credentials: true
-      - name: Bind one-shot input and decode the audited patch
+      - name: Bind the one-shot input to this workflow run
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          base64 --decode "$PATCH_PATH" | gzip -dc > /tmp/ui-native-effect-broker.patch
-          printf '%s  %s\n' "$PATCH_SHA256" /tmp/ui-native-effect-broker.patch | sha256sum --check --strict
+          git ls-files --error-unmatch "$PATCH_PATH"
+          git diff --exit-code -- "$PATCH_PATH"
+      - name: Decode the audited patch transport
+        run: |
+          set -euo pipefail
+          base64 --decode "$PATCH_PATH" > /tmp/ui-native-effect-broker.patch.gz
+          test -s /tmp/ui-native-effect-broker.patch.gz
+      - name: Validate and decompress the audited patch
+        run: |
+          set -euo pipefail
+          gzip -t /tmp/ui-native-effect-broker.patch.gz
+          gzip -dc /tmp/ui-native-effect-broker.patch.gz > /tmp/ui-native-effect-broker.patch
+          test -s /tmp/ui-native-effect-broker.patch
+      - name: Record the commit-bound patch identity
+        id: patch
+        run: |
+          set -euo pipefail
+          actual="$(sha256sum /tmp/ui-native-effect-broker.patch | awk '{print $1}')"
+          echo "sha256=$actual" >> "$GITHUB_OUTPUT"
+          {
+            echo '### Commit-bound effect-broker patch'
+            echo
+            echo "Workflow input commit: \`$GITHUB_SHA\`"
+            echo "Decoded patch SHA-256: \`$actual\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Check and apply the audited patch
+        run: |
+          set -euo pipefail
           git apply --check --3way /tmp/ui-native-effect-broker.patch
           git apply --3way --index /tmp/ui-native-effect-broker.patch
       - name: Apply the audited single-site Clippy correction
@@ -144,7 +169,7 @@ jobs:
             echo
             echo "Source commit: \`${{ steps.source.outputs.sha }}\`"
             echo "Published head: \`$(git rev-parse HEAD)\`"
-            echo "Patch SHA-256: \`$PATCH_SHA256\`"
+            echo "Patch SHA-256: \`${{ steps.patch.outputs.sha256 }}\`"
             echo
             echo 'This run is a source-construction diagnostic, not a six-subject qualification receipt.'
           } >> "$GITHUB_STEP_SUMMARY"
