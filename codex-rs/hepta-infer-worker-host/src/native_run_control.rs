@@ -1,7 +1,5 @@
 //! Local durable admission around the actual App Server driver.
 
-use std::future::Future;
-use std::pin::Pin;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -15,6 +13,8 @@ use codex_hepta_infer_core::durable_control::native::NativeReservationState;
 use sha2::Digest;
 use sha2::Sha256;
 use tokio_util::sync::CancellationToken;
+
+use crate::output_protection::NativeOutputProtector;
 
 use super::AppServerModelDriver;
 use super::NativeOwnerAuthority;
@@ -37,27 +37,6 @@ pub struct NativeIntelligenceRunBinding {
     pub expected_revision: u64,
     pub context_digest: String,
     pub envelope_digest: String,
-}
-
-/// Asynchronous output-protection result. Implementations normally call a KMS
-/// or an isolated local vault and return only an encrypted object reference.
-pub type NativeOutputProtectionFuture<'a> = Pin<
-    Box<
-        dyn Future<Output = std::result::Result<ProtectedOutput, String>>
-            + Send
-            + 'a,
-    >,
->;
-
-/// Host-selected encryption port. The worker never receives a long-lived key;
-/// the durable journal accepts only the returned digest/reference metadata.
-pub trait NativeOutputProtector: Send + Sync {
-    fn protect<'a>(
-        &'a self,
-        plan: &'a VerifiedExecutionPlan,
-        plaintext: &'a [u8],
-        now_unix_ms: u64,
-    ) -> NativeOutputProtectionFuture<'a>;
 }
 
 #[derive(Clone, Copy)]
