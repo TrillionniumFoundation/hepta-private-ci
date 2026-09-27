@@ -1,0 +1,114 @@
+name: Hepta inference output source preparation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hepta-inference-prepare-once.yml'
+      - 'scripts/patches/inference-output-assembly.patch'
+
+# Temporary source preparation only. The sole write is Git blob creation:
+# no commit, ref, PR mutation, merge, deployment or qualification is performed.
+# Remove this workflow and the staging patch from the final candidate.
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    if: github.event.pull_request.number == 1065 && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'codex/inference-worker-hardening-20260927'
+    runs-on: macos-15
+    timeout-minutes: 10
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Apply exactly the reviewed two-file patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git hash-object scripts/patches/inference-output-assembly.patch)" = a9563c8279f4a78d53a46effe90f6d4a97d2aeb2
+          test "$(git hash-object codex-rs/hepta-infer-worker-host/src/native_app_server.rs)" = 3f4c9682e4e899c86c7ad14503c3ae222ed80cb0
+          test "$(git hash-object codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs)" = ed58f4cd04b49bef21cca15eef8f4910b56032fa
+          test "$(git hash-object codex-rs/hepta-infer-worker-host/src/native_output.rs)" = ce3076e6b3ef1c5a62cb1468381fddb0ab0e28da
+          test "$(git hash-object codex-rs/hepta-infer-worker-host/src/native_output_tests.rs)" = bea56ee387ae180283fb6d30038a8b8b865a4e4e
+          git apply --check scripts/patches/inference-output-assembly.patch
+          git apply scripts/patches/inference-output-assembly.patch
+      - name: Format prepared source with the repository toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host -- --check
+          git diff --check
+      - name: Publish unreferenced reviewed blobs and retain exact bytes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import base64
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import urllib.request
+
+          prefix = 'codex-rs/hepta-infer-worker-host/src/'
+          allowed = {prefix + name for name in (
+              'native_app_server.rs', 'native_app_server_tests.rs',
+              'native_output.rs', 'native_output_tests.rs',
+          )}
+          source = os.environ['SOURCE_SHA']
+          def git(*args):
+              return subprocess.check_output(['git', *args], text=True).strip()
+          if git('rev-parse', 'HEAD') != source:
+              raise SystemExit('source identity changed')
+          changed = set(git('diff', '--name-only').splitlines())
+          if not changed or not changed <= allowed:
+              raise SystemExit('source preparation escaped the four reviewed files')
+          directory = Path(os.environ['RUNNER_TEMP']) / 'inference-output-preparation'
+          directory.mkdir()
+          entries = []
+          for name in sorted(allowed):
+              path = Path(name)
+              if path.is_symlink() or not path.is_file():
+                  raise SystemExit('non-regular prepared source')
+              raw = path.read_bytes()
+              if len(raw) > 128 * 1024:
+                  raise SystemExit('prepared source exceeds its bound')
+              expected = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+              request = urllib.request.Request(
+                  'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs',
+                  data=json.dumps({'content': base64.b64encode(raw).decode(), 'encoding': 'base64'}).encode(),
+                  headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                           'Accept': 'application/vnd.github+json',
+                           'Content-Type': 'application/json',
+                           'X-GitHub-Api-Version': '2022-11-28'},
+                  method='POST',
+              )
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  observed = json.loads(response.read(1024 * 1024))
+              if observed.get('sha') != expected:
+                  raise SystemExit('Git blob identity mismatch')
+              (directory / path.name).write_bytes(raw)
+              entries.append({'path': name, 'git_blob': expected,
+                              'sha256': hashlib.sha256(raw).hexdigest()})
+          (directory / 'prepared.patch').write_text(git('diff') + '\n')
+          record = {'schema': 'hepta.source-preparation.v1', 'source_head': source,
+                    'source_tree': git('rev-parse', 'HEAD^{tree}'),
+                    'operation': 'unreferenced_blob_preparation_only',
+                    'files': entries, 'formatted': True, 'tests_run': False,
+                    'qualified': False, 'ref_updated': False,
+                    'production': False, 'activation': False, 'release': False}
+          (directory / 'source-objects.json').write_text(json.dumps(record, indent=2) + '\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-output-preparation-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/inference-output-preparation/
+          retention-days: 3
+          if-no-files-found: error
