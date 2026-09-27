@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Bind the final cognitive.store source map and remove ordinary bootstrap scripts.
+"""Bind the final cognitive.store source map and remove temporary convergence helpers.
 
 Workflow files are managed through the repository connection, not by the
-GitHub Actions token. This one-shot runner only mutates ordinary repository
-files, verifies the exact candidate, commits the resulting map, and pushes it.
+GitHub Actions token. This one-shot runner mutates ordinary repository files,
+verifies the exact candidate, commits the resulting map, and pushes it.
 """
 
 from __future__ import annotations
@@ -19,9 +19,13 @@ ROOT = Path(__file__).resolve().parents[1]
 BRANCH = "codex/cognitive-store-full-closure-20260927"
 MAP = ROOT / "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json"
 BOUNDARY = ROOT / "scripts/verify_cognitive_store_boundary.py"
+QUALIFICATION_WORKFLOW = ROOT / ".github/workflows/cognitive-store-qualification.yml"
+TECHNICAL = ROOT / "docs/modules/cognitive.store/TECHNICAL.md"
+BOOTSTRAP_RUNBOOK = ROOT / "docs/modules/cognitive.store/BOOTSTRAP_RUNBOOK.md"
 
 TEMPORARY_PATHS = (
     Path("scripts/finalize_cognitive_store_candidate.py"),
+    Path("scripts/cognitive_store_architecture.py"),
     Path("scripts/cognitive_store_macos_preflight_marker.py"),
     Path("scripts/cognitive_store_qualification_manifest.py"),
 )
@@ -52,6 +56,57 @@ def run(*args: str, cwd: Path = ROOT, capture: bool = False) -> str:
 
 def git(*args: str, capture: bool = True) -> str:
     return run("git", *args, capture=capture)
+
+
+def replace_once(path: Path, old: str, new: str, label: str) -> None:
+    text = path.read_text(encoding="utf-8")
+    if new in text:
+        return
+    if old not in text:
+        raise RuntimeError(f"{label} marker is missing in {path.relative_to(ROOT)}")
+    path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+
+def harden_qualification_workflow() -> None:
+    stage("set workflow-wide deny-all token permissions")
+    replace_once(
+        QUALIFICATION_WORKFLOW,
+        "  workflow_dispatch:\n\nconcurrency:\n",
+        "  workflow_dispatch:\n\npermissions: {}\n\nconcurrency:\n",
+        "qualification workflow permissions",
+    )
+
+
+def synchronize_security_and_bootstrap_truth() -> None:
+    stage("synchronize threat ownership and bootstrap claim boundaries")
+    replace_once(
+        TECHNICAL,
+        "Owned threat entries:\n\nNone.\n",
+        "Owned threat entries:\n\n"
+        "- [cognitive.store threat model and test map](THREAT_MODEL.md) is the module-owned threat register.\n"
+        "- Every listed threat remains a fail-closed source and qualification obligation; source references never substitute for exact-candidate or target-host evidence.\n",
+        "technical threat ownership",
+    )
+
+    marker = (
+        "The canonical schemas and signing-byte functions are in "
+        "`codex_hepta_cognitive_store::bootstrap`.\n\n"
+        "## Initial admission"
+    )
+    replacement = (
+        "The canonical schemas and signing-byte functions are in "
+        "`codex_hepta_cognitive_store::bootstrap`.\n\n"
+        "The signed `sourceCommit` and `sourceTree` fields bind the host-selected deployment candidate inside the manifest. They are not executable-byte attestation by themselves. Before invoking Agentd, the trusted host must compare them with an independently accepted release or artifact manifest; an ordinary local build remains unbound.\n\n"
+        "Across process restart, the latest accepted authority-state revision and semantic digest must be retained outside the Agent and fleet rollback domains. Agentd enforces exact monotonicity from the state observed by the live process; the trusted host must reject any bootstrap behind its retained frontier before invoking Agentd.\n\n"
+        "`tools/cognitive-store-host-bootstrap` is an operator-side HMAC ceremony ledger for retaining monotone current-cut, canary, rollback and indeterminate-state evidence. It does not issue the Ed25519 production authority, does not contain the raw fencing token, and is not a substitute for the four Agentd bootstrap inputs above.\n\n"
+        "## Initial admission"
+    )
+    replace_once(
+        BOOTSTRAP_RUNBOOK,
+        marker,
+        replacement,
+        "bootstrap source/frontier claim boundary",
+    )
 
 
 def normalize_boundary_verifier() -> None:
@@ -105,7 +160,7 @@ def mapped_paths(mapping: dict[str, Any]) -> set[str]:
 
 
 def remove_temporary_scripts() -> None:
-    stage("remove ordinary bootstrap scripts")
+    stage("remove temporary convergence helpers")
     for relative in TEMPORARY_PATHS:
         (ROOT / relative).unlink(missing_ok=True)
 
@@ -164,7 +219,7 @@ def commit_candidate() -> str:
             "git",
             "commit",
             "-m",
-            "docs(cognitive-store): bind final source objects and remove bootstrap scripts",
+            "fix(cognitive-store): finalize permissions, threat ownership, and bootstrap truth",
         )
     return git("rev-parse", "HEAD")
 
@@ -215,6 +270,8 @@ def verify_candidate(sha: str) -> None:
 def main() -> int:
     if git("branch", "--show-current") != BRANCH:
         raise RuntimeError("finalizer is running on the wrong branch")
+    harden_qualification_workflow()
+    synchronize_security_and_bootstrap_truth()
     normalize_boundary_verifier()
     remove_temporary_scripts()
     clean_python_artifacts()
