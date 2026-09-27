@@ -21,6 +21,7 @@ permissions:
   contents: write
 
 concurrency:
+  # Only the newest exact-source candidate may consume the one-shot writer.
   group: hepta-objective-production-convergence
   cancel-in-progress: true
 
