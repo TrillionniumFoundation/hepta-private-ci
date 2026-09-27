@@ -349,7 +349,6 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         let recovery_control = durable_control.or(lifecycle_control);
         let mut control_fault = None;
-        let mut recovery_fault = None;
         match self
             .driver
             .adopt(&spec)
@@ -430,16 +429,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation
                 };
                 slot.event(generation, SupervisorEventKind::OrphanRejected);
-                recovery_fault = Some(SupervisorError::UnresolvedLease(agent_id.clone()));
             }
         }
         // A main-process signal or identity failure must not skip companion
         // adoption. Each owned process remains independently recoverable.
         self.recover_matrix_companion(agent_id, slot, record, now)?;
         if let Some(error) = control_fault {
-            return Err(error);
-        }
-        if let Some(error) = recovery_fault {
             return Err(error);
         }
         Ok(())
