@@ -289,7 +289,8 @@ impl FleetRegistry {
         sync_directory(&staging_root.join("run"))?;
         initialize_release_state(&staging_root.join("releases"), &manifest.agent_id)?;
         sync_directory(&staging_root.join("releases"))?;
-        sync_directory(staging_root)
+        sync_directory(staging_root)?;
+        Ok(())
     }
 
     /// Read and validate one registered Agent without enumerating its peers.

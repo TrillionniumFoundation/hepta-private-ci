@@ -7,6 +7,7 @@
 
 use crate::LocalAllocationShareV1;
 use crate::LocalResourceVectorV1;
+#[cfg(test)]
 use crate::MAX_RESOURCE_AMOUNT;
 use crate::ResourceBudget;
 use crate::ResourceVectorError;

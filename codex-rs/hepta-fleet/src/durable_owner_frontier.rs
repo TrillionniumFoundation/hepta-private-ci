@@ -324,7 +324,7 @@ fn load_retained_states(root: &Path) -> Result<Vec<DurableFleetStateV1>, Durable
     }
     paths.sort_unstable_by_key(|(generation, _)| *generation);
 
-    let mut states = Vec::with_capacity(paths.len());
+    let mut states: Vec<DurableFleetStateV1> = Vec::with_capacity(paths.len());
     for (generation, path) in paths {
         let metadata = std::fs::symlink_metadata(&path)?;
         if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
