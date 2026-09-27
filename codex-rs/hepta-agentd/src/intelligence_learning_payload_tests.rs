@@ -203,3 +203,20 @@ fn historical_event_reconstruction_does_not_require_a_current_write_grant() {
     // Reconstruction is not application. Only the live destination comparison
     // may acknowledge it; apply_decision separately checks the current clock.
 }
+
+#[test]
+fn destination_observation_requires_witness_coverage() {
+    let record_chain = digest("record-chain");
+    assert!(matches!(
+        require_witness_coverage(7, record_chain, 6, digest("older-witness")),
+        Err(ProductionLedgerError::WitnessLag)
+    ));
+    assert!(matches!(
+        require_witness_coverage(7, record_chain, 7, digest("substituted-chain")),
+        Err(ProductionLedgerError::WitnessLag)
+    ));
+    require_witness_coverage(7, record_chain, 7, record_chain)
+        .expect("exact witness");
+    require_witness_coverage(7, record_chain, 8, digest("later-witness"))
+        .expect("later witness transitively covers record");
+}

@@ -263,13 +263,36 @@ pub(super) fn observe_applied_payload(
 ) -> Result<Option<AppendReceipt>, ProductionLedgerError> {
     let expected = expected_persisted_event(&envelope.payload)?;
     let records = writer.records()?;
-    let matched = records.iter().rev().find(|record| record.event == expected);
-    Ok(matched.map(|record| AppendReceipt {
+    let Some(record) = records.iter().rev().find(|record| record.event == expected) else {
+        return Ok(None);
+    };
+    let witness = writer.witness_frontier()?;
+    require_witness_coverage(
+        record.sequence,
+        record.chain_digest,
+        witness.anchor.sequence,
+        witness.anchor.chain_digest,
+    )?;
+    Ok(Some(AppendReceipt {
         disposition: AppendDisposition::IdempotentReplay,
         sequence: record.sequence,
         event_digest: record.event_digest,
         chain_digest: record.chain_digest,
     }))
+}
+
+fn require_witness_coverage(
+    record_sequence: u64,
+    record_chain_digest: Digest32,
+    witness_sequence: u64,
+    witness_chain_digest: Digest32,
+) -> Result<(), ProductionLedgerError> {
+    if witness_sequence < record_sequence
+        || (witness_sequence == record_sequence && witness_chain_digest != record_chain_digest)
+    {
+        return Err(ProductionLedgerError::WitnessLag);
+    }
+    Ok(())
 }
 
 fn expected_persisted_event(payload: &LearningPayloadV1) -> Result<LedgerEvent, ProductionLedgerError> {
