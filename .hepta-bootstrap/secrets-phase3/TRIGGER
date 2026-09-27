@@ -2,3 +2,5 @@ phase: secrets-heptabao-sqlite-owner-v1
 base_commit: f55e053735b2a5f454e50fc3536976df370ce748
 requested_date: 2026-09-27
 purpose: materialize and qualify the already-reviewed phase-three patch; this marker carries no product authority
+retrigger_commit: c655ae1a0e89082b7089a10d20d33378a768e335
+retrigger_reason: phase-three apply workflow was absent from the prior head run set
