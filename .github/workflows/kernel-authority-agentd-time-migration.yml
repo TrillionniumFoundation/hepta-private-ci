@@ -1,4 +1,4 @@
-name: Kernel authority Agentd time migration
+name: Kernel authority product time migration
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: kernel-authority-agentd-time-migration
+  group: kernel-authority-product-time-migration
   cancel-in-progress: true
 
 jobs:
@@ -26,15 +26,15 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Bind Agentd effect ownership to protected authority time
+      - name: Bind product effects to protected authority time
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
 
-          path = Path('codex-rs/hepta-agentd/src/automation_effect_host.rs')
-          text = path.read_text(encoding='utf-8')
+          agentd_path = Path('codex-rs/hepta-agentd/src/automation_effect_host.rs')
+          text = agentd_path.read_text(encoding='utf-8')
 
           execute_old = (
               "        command_id: &str,\n"
@@ -120,10 +120,79 @@ jobs:
           elif text.count(stale_call_new) != 1:
               raise SystemExit('Agentd protected-time product test is missing or duplicated')
 
-          path.write_text(text, encoding='utf-8')
+          agentd_path.write_text(text, encoding='utf-8')
+
+          fleet_path = Path('codex-rs/hepta-fleet/src/authority_port.rs')
+          fleet = fleet_path.read_text(encoding='utf-8')
+          fleet_signature_old = (
+              '        expected_lease_revision: u64,\n'
+              '        now_ms: u64,\n'
+              '        grant: AllocationGrant,\n'
+              '    ) -> Result<(LeaseReceipt, VerifiedUseTokenWitnessV1), FleetAuthorityError> {'
+          )
+          fleet_signature_new = (
+              '        expected_lease_revision: u64,\n'
+              '        _untrusted_now_ms: u64,\n'
+              '        grant: AllocationGrant,\n'
+              '    ) -> Result<(LeaseReceipt, VerifiedUseTokenWitnessV1), FleetAuthorityError> {'
+          )
+          if fleet_signature_old in fleet:
+              if fleet.count(fleet_signature_old) != 1:
+                  raise SystemExit('Fleet time parameter anchor is ambiguous')
+              fleet = fleet.replace(fleet_signature_old, fleet_signature_new, 1)
+          elif fleet.count(fleet_signature_new) != 1:
+              raise SystemExit('Fleet protected-time signature is missing or duplicated')
+
+          fleet_dispatch_old = (
+              '        let (result, witness) = dispatch_binding\n'
+              '            .dispatch(|_| ledger.issue(now_ms, grant))\n'
+              '            .map_err(FleetAuthorityError::Authority)?;'
+          )
+          fleet_dispatch_new = (
+              '        let (result, witness) = dispatch_binding\n'
+              '            .dispatch(|authority_witness| {\n'
+              '                ledger.issue(authority_witness.verified_at_unix_ms, grant)\n'
+              '            })\n'
+              '            .map_err(FleetAuthorityError::Authority)?;'
+          )
+          if fleet_dispatch_old in fleet:
+              if fleet.count(fleet_dispatch_old) != 1:
+                  raise SystemExit('Fleet dispatch-time anchor is ambiguous')
+              fleet = fleet.replace(fleet_dispatch_old, fleet_dispatch_new, 1)
+          elif fleet.count(fleet_dispatch_new) != 1:
+              raise SystemExit('Fleet protected dispatch-time path is missing or duplicated')
+
+          fleet_test_old = (
+              '            .issue_with_witness(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone())\n'
+          )
+          fleet_test_new = (
+              '            // Deliberately stale transport time: the final authority witness owns time.\n'
+              '            .issue_with_witness(&mut ledger, "fleet-issue-one", 1, 1, grant.clone())\n'
+          )
+          if fleet_test_old in fleet:
+              if fleet.count(fleet_test_old) != 1:
+                  raise SystemExit('Fleet protected-time test anchor is ambiguous')
+              fleet = fleet.replace(fleet_test_old, fleet_test_new, 1)
+          elif fleet.count(fleet_test_new) != 1:
+              raise SystemExit('Fleet protected-time test is missing or duplicated')
+
+          witness_assert_old = '        assert_eq!(witness.authority_epoch, 7);\n'
+          witness_assert_new = (
+              witness_assert_old
+              + '        assert_eq!(witness.verified_at_unix_ms, 2_000);\n'
+          )
+          if witness_assert_new not in fleet:
+              if fleet.count(witness_assert_old) != 1:
+                  raise SystemExit('Fleet witness time assertion anchor is ambiguous')
+              fleet = fleet.replace(witness_assert_old, witness_assert_new, 1)
+          elif fleet.count(witness_assert_new) != 1:
+              raise SystemExit('Fleet witness time assertion is duplicated')
+
+          fleet_path.write_text(fleet, encoding='utf-8')
           PY
           cd codex-rs
-          cargo fmt -p codex-hepta-agentd
+          cargo fmt -p codex-hepta-agentd -p codex-hepta-fleet
+          cargo test --locked -p codex-hepta-fleet allocation_issue_consumes_exact_live_kernel_authority_lease -- --nocapture
           cargo test --locked -p codex-hepta-agentd host_dispatches_exact_wire_payload_once -- --nocapture
           cd ..
           git diff --check
@@ -135,10 +204,15 @@ jobs:
           git config user.name 'kernel-authority-migration'
           git config user.email 'kernel-authority-migration@users.noreply.github.com'
 
-          if ! git diff --exit-code --quiet -- codex-rs/hepta-agentd/src/automation_effect_host.rs; then
-            git add codex-rs/hepta-agentd/src/automation_effect_host.rs
-            test "$(git diff --cached --name-only)" = 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
-            git commit -m 'fix(kernel-authority): use protected time for Agentd effects'
+          if ! git diff --exit-code --quiet -- \
+            codex-rs/hepta-agentd/src/automation_effect_host.rs \
+            codex-rs/hepta-fleet/src/authority_port.rs; then
+            git add \
+              codex-rs/hepta-agentd/src/automation_effect_host.rs \
+              codex-rs/hepta-fleet/src/authority_port.rs
+            unexpected="$(git diff --cached --name-only | grep -Ev '^(codex-rs/hepta-agentd/src/automation_effect_host.rs|codex-rs/hepta-fleet/src/authority_port.rs)$' || true)"
+            test -z "$unexpected"
+            git commit -m 'fix(kernel-authority): use protected time at product effects'
           fi
 
           source_commit="$(git rev-parse HEAD)"
