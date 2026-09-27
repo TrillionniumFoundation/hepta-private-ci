@@ -8,6 +8,10 @@ on:
       - "codex-rs/hepta-prompt-optimizer/**"
       - "codex-rs/hepta-plasticity/**"
       - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "docs/modules/learning.plasticity/**"
+      - "scripts/hepta-plasticity-exact-head.py"
+      - "scripts/test_plasticity_mutation_grammar_contract.py"
       - "qualification/lane-f-shadow/**"
       - ".github/workflows/hepta-lane-f-shadow-qualification.yml"
   push:
@@ -19,6 +23,10 @@ on:
       - "codex-rs/hepta-prompt-optimizer/**"
       - "codex-rs/hepta-plasticity/**"
       - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "docs/modules/learning.plasticity/**"
+      - "scripts/hepta-plasticity-exact-head.py"
+      - "scripts/test_plasticity_mutation_grammar_contract.py"
       - "qualification/lane-f-shadow/**"
       - ".github/workflows/hepta-lane-f-shadow-qualification.yml"
   workflow_dispatch:
@@ -56,6 +64,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          printf '/qualification/lane-f-shadow/Cargo.lock\n' >> .git/info/exclude
           cp codex-rs/Cargo.lock qualification/lane-f-shadow/Cargo.lock
           cp qualification/lane-f-shadow/Cargo.lock "$RUNNER_TEMP/lane-f-seed.lock"
           cargo metadata --format-version 1 --manifest-path qualification/lane-f-shadow/Cargo.toml >/dev/null
@@ -63,18 +72,51 @@ jobs:
             "$RUNNER_TEMP/lane-f-seed.lock" \
             qualification/lane-f-shadow/Cargo.lock
 
-      - name: Test and lint standalone vertical
+      - name: Record exact-head contract, tests, lint and format
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+          HEPTA_CI_LANE: source-head
         shell: bash
         run: |
           set -euo pipefail
+          RECEIPTS="$RUNNER_TEMP/learning-plasticity-exact-head"
+          mkdir -p "$RECEIPTS"
           trap 'rm -f qualification/lane-f-shadow/Cargo.lock' EXIT
-          cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
-          cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
-          cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECEIPTS/grammar-contract.json" -- \
+            python3 scripts/test_plasticity_mutation_grammar_contract.py
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECEIPTS/cargo-test.json" --minimum-tests 1 -- \
+            cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECEIPTS/cargo-clippy.json" -- \
+            cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECEIPTS/cargo-fmt.json" -- \
+            cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECEIPTS/git-diff-check.json" -- \
+            bash -lc 'git diff --check && test -z "$(git status --porcelain --untracked-files=no)"'
           rm qualification/lane-f-shadow/Cargo.lock
           trap - EXIT
-          git diff --check
-          test -z "$(git status --porcelain --untracked-files=no)"
+          python3 scripts/hepta-plasticity-exact-head.py \
+            --lane source-head \
+            --source-sha "$SOURCE_SHA" \
+            --tested-sha "$TESTED_SHA" \
+            --receipt-dir "$RECEIPTS" \
+            --output-json "$RECEIPTS/exact-head-status.json" \
+            --output-md "$RECEIPTS/exact-head-status.md"
+
+      - name: Retain exact-head evidence page
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-plasticity-exact-head-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/learning-plasticity-exact-head
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
 
   synthetic-merge:
     name: Deterministic vertical on merge candidate
@@ -131,6 +173,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ steps.merge.outputs.sha }}"
+          printf '/qualification/lane-f-shadow/Cargo.lock\n' >> .git/info/exclude
           cp codex-rs/Cargo.lock qualification/lane-f-shadow/Cargo.lock
           cp qualification/lane-f-shadow/Cargo.lock "$RUNNER_TEMP/lane-f-seed.lock"
           cargo metadata --format-version 1 --manifest-path qualification/lane-f-shadow/Cargo.toml >/dev/null
@@ -138,16 +181,50 @@ jobs:
             "$RUNNER_TEMP/lane-f-seed.lock" \
             qualification/lane-f-shadow/Cargo.lock
 
-      - name: Test merge candidate
+      - name: Record merge-candidate contract, tests, lint and format
         if: steps.execution.outputs.run_native == 'true'
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          TESTED_SHA: ${{ steps.merge.outputs.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEPTA_CI_LANE: base-merge
         shell: bash
         run: |
           set -euo pipefail
+          RECEIPTS="$RUNNER_TEMP/learning-plasticity-synthetic-merge"
+          mkdir -p "$RECEIPTS"
           trap 'rm -f qualification/lane-f-shadow/Cargo.lock' EXIT
-          cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
-          cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
-          cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECEIPTS/grammar-contract.json" -- \
+            python3 scripts/test_plasticity_mutation_grammar_contract.py
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECEIPTS/cargo-test.json" --minimum-tests 1 -- \
+            cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECEIPTS/cargo-clippy.json" -- \
+            cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECEIPTS/cargo-fmt.json" -- \
+            cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RECEIPTS/git-diff-check.json" -- \
+            bash -lc 'git diff --check && test -z "$(git status --porcelain --untracked-files=no)"'
           rm qualification/lane-f-shadow/Cargo.lock
           trap - EXIT
-          git diff --check
-          test -z "$(git status --porcelain --untracked-files=no)"
+          python3 scripts/hepta-plasticity-exact-head.py \
+            --lane base-merge \
+            --source-sha "$SOURCE_SHA" \
+            --tested-sha "$TESTED_SHA" \
+            --receipt-dir "$RECEIPTS" \
+            --output-json "$RECEIPTS/exact-head-status.json" \
+            --output-md "$RECEIPTS/exact-head-status.md"
+
+      - name: Retain merge-candidate evidence page
+        if: steps.execution.outputs.run_native == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-plasticity-synthetic-merge-${{ steps.merge.outputs.sha }}
+          path: ${{ runner.temp }}/learning-plasticity-synthetic-merge
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
