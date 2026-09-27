@@ -2,8 +2,8 @@
 """Authenticate and transition cognitive.store host bootstrap evidence.
 
 The HMAC key authenticates the host-retained current-cut bundle; it is not a
-production-authority signing key.  Authority material must already have been
-verified by its external issuer.  Raw fencing tokens are never persisted here.
+production-authority signing key. Authority material must already have been
+verified by its external issuer. Raw fencing tokens are never persisted here.
 """
 
 from __future__ import annotations
@@ -60,25 +60,50 @@ def sign(payload: dict[str, Any], key: bytes) -> str:
     return hmac.new(key, canonical(payload), hashlib.sha256).hexdigest()
 
 
+def _sync_parent_directory(path: Path) -> None:
+    """Persist the rename where the host exposes POSIX directory fsync.
+
+    Windows does not expose a portable directory fsync or POSIX permission
+    model through this API. The trusted host must enforce the equivalent ACL
+    and storage durability policy before treating the bundle as admitted.
+    """
+
+    if os.name != "posix":
+        return
+    flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+    directory = os.open(path, flags)
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
+
+
 def atomic_write(path: Path, value: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    fd, pending = tempfile.mkstemp(prefix=path.name + ".", dir=path.parent)
+    fd, pending_name = tempfile.mkstemp(prefix=path.name + ".", dir=path.parent)
+    pending = Path(pending_name)
+    descriptor_open = True
     try:
-        os.fchmod(fd, 0o600)
-        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+        if hasattr(os, "fchmod"):
+            os.fchmod(fd, 0o600)
+        stream = os.fdopen(fd, "w", encoding="utf-8", newline="\n")
+        descriptor_open = False
+        with stream:
             json.dump(value, stream, indent=2, sort_keys=True)
             stream.write("\n")
             stream.flush()
             os.fsync(stream.fileno())
+        if os.name == "posix":
+            os.chmod(pending, 0o600)
         os.replace(pending, path)
-        directory = os.open(path.parent, os.O_RDONLY)
-        try:
-            os.fsync(directory)
-        finally:
-            os.close(directory)
+        if os.name == "posix":
+            os.chmod(path, 0o600)
+        _sync_parent_directory(path.parent)
     finally:
+        if descriptor_open:
+            os.close(fd)
         try:
-            os.unlink(pending)
+            pending.unlink()
         except FileNotFoundError:
             pass
 
