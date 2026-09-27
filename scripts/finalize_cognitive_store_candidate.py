@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Finalize the cognitive.store convergence candidate exactly once.
+"""Finalize the cognitive.store remediation branch and remove bootstrap scaffolding.
 
-This script is invoked by a temporary Windows workflow so it does not compete
-with the Linux qualification lanes. It patches deterministic fixtures, regenerates
-the implementation map against the staged Git tree, deletes its temporary
-bootstrap files, verifies the committed candidate, and publishes the same commit
-to the working branch and active PR head.
+The script runs once from the temporary finalizer workflow. It:
+1. upgrades the canonical qualification workflow to run source-head and deterministic
+   base-merge lanes on both pull-request and branch pushes;
+2. removes temporary repair/finalizer files and the obsolete duplicate manifest builder;
+3. rebinds IMPLEMENTATION_MAP source-object identities to the staged tree;
+4. commits, verifies, and pushes one clean final candidate.
 """
 
 from __future__ import annotations
@@ -16,12 +17,17 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-WORKING_BRANCH = "codex/cognitive-store-total-closure-20260927"
-PR_BRANCH = "codex/cognitive-store-full-closure-20260927"
+BRANCH = "codex/cognitive-store-full-closure-20260927"
+WORKFLOW = ROOT / ".github/workflows/cognitive-store-qualification.yml"
+MAP = ROOT / "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json"
+
 TEMPORARY_PATHS = (
-    Path(".github/workflows/cognitive-store-integration-fixup.yml"),
     Path(".github/workflows/cognitive-store-finalizer-windows.yml"),
+    Path(".github/workflows/cognitive-store-lock-repair.yml"),
+    Path(".github/workflows/cognitive-store-macos-preflight.yml"),
     Path("scripts/finalize_cognitive_store_candidate.py"),
+    Path("scripts/cognitive_store_macos_preflight_marker.py"),
+    Path("scripts/cognitive_store_qualification_manifest.py"),
 )
 
 
@@ -40,49 +46,67 @@ def git(*args: str, capture: bool = True) -> str:
     return run("git", *args, capture=capture)
 
 
-def patch_lockfile() -> None:
-    path = ROOT / "codex-rs/Cargo.lock"
-    text = path.read_text(encoding="utf-8")
-    start = text.index('[[package]]\nname = "codex-hepta-agentd"')
-    end = text.index("\n[[package]]", start + 1)
-    package = text[start:end]
-    dependency = ' "ed25519-dalek",\n'
-    if dependency not in package:
-        marker = ' "core_test_support",\n'
-        if marker not in package:
-            raise RuntimeError("Agentd lockfile insertion marker is missing")
-        package = package.replace(marker, marker + dependency, 1)
-        text = text[:start] + package + text[end:]
-        path.write_text(text, encoding="utf-8")
+def patch_qualification_workflow() -> None:
+    text = WORKFLOW.read_text(encoding="utf-8")
+
+    old_matrix = (
+        "        lane: ${{ fromJSON(github.event_name == 'pull_request' "
+        "&& '[\"source-head\",\"base-merge\"]' || '[\"source-head\"]') }}"
+    )
+    new_matrix = "        lane: ${{ fromJSON('[\"source-head\",\"base-merge\"]') }}"
+    if old_matrix in text:
+        text = text.replace(old_matrix, new_matrix, 1)
+    elif new_matrix not in text:
+        raise RuntimeError("qualification matrix marker is missing")
+
+    old_base = """      - name: Resolve current pull-request base
+        id: current-base
+        if: github.event_name == 'pull_request'
+        env:
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EVENT_BASE_SHA"
+          test -n "$BASE_REF"
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          printf 'sha=%s\\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+          printf 'BASE_SHA=%s\\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
+"""
+    new_base = """      - name: Resolve current base
+        id: current-base
+        env:
+          BASE_REF: ${{ github.base_ref || 'main' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$BASE_REF"
+          git fetch --no-tags origin "$BASE_REF"
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          printf 'sha=%s\\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+          printf 'BASE_SHA=%s\\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
+"""
+    if old_base in text:
+        text = text.replace(old_base, new_base, 1)
+    elif new_base not in text:
+        raise RuntimeError("qualification base-resolution block is missing")
+
+    old_pr = "          pr-number: ${{ github.event.pull_request.number }}"
+    new_pr = "          pr-number: ${{ github.event.pull_request.number || 0 }}"
+    if old_pr in text:
+        text = text.replace(old_pr, new_pr, 1)
+    elif new_pr not in text:
+        raise RuntimeError("qualification synthetic-merge PR marker is missing")
+
+    WORKFLOW.write_text(text, encoding="utf-8")
 
 
-def patch_deterministic_fixtures() -> None:
-    migration_path = ROOT / "codex-rs/hepta-memory/src/cognitive_store_tests.rs"
-    migration = migration_path.read_text(encoding="utf-8")
-    old_versions = '"1,2,3,4,5,6,7,8,9,10,11,12,13,14"'
-    new_versions = '"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"'
-    if old_versions in migration:
-        migration = migration.replace(old_versions, new_versions, 1)
-    if new_versions not in migration:
-        raise RuntimeError("migration ledger fixture did not converge to schema 15")
-    migration_path.write_text(migration, encoding="utf-8")
-
-    compact_path = ROOT / "codex-rs/hepta-memory/src/local_compact_executor_tests.rs"
-    compact = compact_path.read_text(encoding="utf-8")
-    old_offset = 'let expiry_offset = if transition == "expire" { 1 } else { 3_600 };'
-    new_offset = 'let expiry_offset = if transition == "expire" { 5 } else { 3_600 };'
-    old_wait = "for _ in 0..120 {"
-    new_wait = "for _ in 0..400 {"
-    if old_offset in compact:
-        compact = compact.replace(old_offset, new_offset, 1)
-    if old_wait in compact:
-        compact = compact.replace(old_wait, new_wait, 1)
-    if new_offset not in compact or new_wait not in compact:
-        raise RuntimeError("compact expiry fixture did not converge")
-    compact_path.write_text(compact, encoding="utf-8")
-
-
-def normalize_mapped_path(value: Any) -> str | None:
+def normalize_path(value: Any) -> str | None:
     if isinstance(value, str):
         path = value
     elif isinstance(value, dict):
@@ -96,45 +120,23 @@ def normalize_mapped_path(value: Any) -> str | None:
     return path.replace("\\", "/")
 
 
-def reconcile_map() -> Path:
-    path = ROOT / "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json"
-    mapping: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
-
-    callers = mapping.get("productCallers", [])
-    canonical = [
-        caller
-        for caller in callers
-        if caller.get("sourcePath")
-        == "codex-rs/hepta-agentd/src/production_writer_host.rs"
-        and caller.get("nativeSymbol") == "AgentdProductionWriterHost"
-    ]
-    if len(canonical) != 1 or len(callers) != 1:
-        raise RuntimeError("implementation map must contain exactly one Agentd writer facade")
-    canonical[0]["state"] = "canonical_production_write_facade"
-
-    inventory = {
-        "operation": "rust_module_inventory",
-        "designOperation": "closed_world_crate_root_reachability",
-        "nativeSymbol": "check-rust-module-inventory.py",
-        "sourcePath": "scripts/check-rust-module-inventory.py",
-        "state": "source_implemented_execution_pending",
-        "authority": "none",
-        "mappingClass": "architecture_verifier",
-        "delegatedCallees": [],
-        "tests": [],
-        "sourcePathExists": True,
-    }
-    operations = mapping.get("operations", [])
-    matches = [row for row in operations if row.get("operation") == "rust_module_inventory"]
-    if matches:
-        matches[0].clear()
-        matches[0].update(inventory)
-    else:
-        operations.append(inventory)
-    mapping["operations"] = operations
-    mapping["sourceObjects"] = []
-    path.write_text(json.dumps(mapping, indent=2, sort_keys=False) + "\n", encoding="utf-8")
-    return path
+def mapped_paths(mapping: dict[str, Any]) -> set[str]:
+    paths: set[str] = set(mapping.get("resolvedRoots", []))
+    paths.add(mapping["technicalGuide"])
+    for caller in mapping.get("productCallers", []):
+        path = normalize_path(caller)
+        if path:
+            paths.add(path)
+    for operation in mapping.get("operations", []):
+        path = normalize_path(operation.get("sourcePath"))
+        if path:
+            paths.add(path)
+        for key in ("tests", "delegatedCallees"):
+            for entry in operation.get(key, []):
+                path = normalize_path(entry)
+                if path:
+                    paths.add(path)
+    return paths
 
 
 def delete_temporary_paths() -> None:
@@ -142,70 +144,55 @@ def delete_temporary_paths() -> None:
         (ROOT / relative).unlink(missing_ok=True)
 
 
-def mapped_paths(mapping: dict[str, Any]) -> set[str]:
-    paths: set[str] = set(mapping.get("resolvedRoots", []))
-    paths.add(mapping["technicalGuide"])
-    for caller in mapping.get("productCallers", []):
-        path = normalize_mapped_path(caller)
-        if path:
-            paths.add(path)
-    for operation in mapping.get("operations", []):
-        path = normalize_mapped_path(operation.get("sourcePath"))
-        if path:
-            paths.add(path)
-        for key in ("tests", "delegatedCallees"):
-            for entry in operation.get(key, []):
-                path = normalize_mapped_path(entry)
-                if path:
-                    paths.add(path)
-    return paths
+def rebind_implementation_map() -> None:
+    mapping: dict[str, Any] = json.loads(MAP.read_text(encoding="utf-8"))
 
+    callers = mapping.get("productCallers", [])
+    expected = [{
+        "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+        "nativeSymbol": "AgentdProductionWriterHost",
+        "state": "canonical_production_write_facade",
+    }]
+    if callers != expected:
+        raise RuntimeError("implementation map no longer has the unique Agentd writer facade")
 
-def stage_and_bind_source_objects(map_path: Path) -> None:
-    run(
-        "git",
-        "add",
-        "-A",
-        "codex-rs/Cargo.lock",
-        "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
-        "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
-        "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json",
-        ".github/workflows/cognitive-store-integration-fixup.yml",
-        ".github/workflows/cognitive-store-finalizer-windows.yml",
-        "scripts/finalize_cognitive_store_candidate.py",
-    )
+    mapping["sourceObjects"] = []
+    MAP.write_text(json.dumps(mapping, indent=2) + "\n", encoding="utf-8")
+    run("git", "add", "-A")
 
-    mapping: dict[str, Any] = json.loads(map_path.read_text(encoding="utf-8"))
     paths = mapped_paths(mapping)
     missing = [path for path in sorted(paths) if not (ROOT / path).exists()]
     if missing:
-        raise RuntimeError("mapped source paths are missing: " + ", ".join(missing))
+        raise RuntimeError("mapped paths are missing: " + ", ".join(missing))
 
     provisional_tree = git("write-tree")
     mapping["sourceObjects"] = [
         {"path": path, "object": git("rev-parse", f"{provisional_tree}:{path}")}
         for path in sorted(paths)
     ]
-    map_path.write_text(json.dumps(mapping, indent=2, sort_keys=False) + "\n", encoding="utf-8")
+    MAP.write_text(json.dumps(mapping, indent=2) + "\n", encoding="utf-8")
     run("git", "add", "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json")
 
 
-def commit_candidate() -> str:
+def commit_and_verify() -> str:
     run("git", "config", "user.name", "Hepta Cognitive CI")
     run("git", "config", "user.email", "hepta-cognitive-ci@users.noreply.github.com")
     run("git", "diff", "--cached", "--check")
-    quiet = subprocess.run(
-        ["git", "diff", "--cached", "--quiet"], cwd=ROOT, check=False
-    ).returncode
-    if quiet != 0:
-        run("git", "commit", "-m", "cognitive.store: finalize exact candidate evidence map")
-    return git("rev-parse", "HEAD")
+    if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode != 0:
+        run(
+            "git",
+            "commit",
+            "-m",
+            "ci(cognitive-store): remove scaffolding and require dual-lane evidence",
+        )
 
-
-def verify_candidate() -> None:
     sha = git("rev-parse", "HEAD")
     tree = git("rev-parse", "HEAD^{tree}")
-    run("python", "scripts/check-rust-module-inventory.py", "codex-rs/hepta-cognitive-store/src")
+    run(
+        "python",
+        "scripts/check-rust-module-inventory.py",
+        "codex-rs/hepta-cognitive-store/src",
+    )
     run("python", "scripts/verify_cognitive_store_boundary.py")
     run(
         "python",
@@ -215,30 +202,31 @@ def verify_candidate() -> None:
         "--expected-tree",
         tree,
     )
-    run("cargo", "metadata", "--locked", "--format-version", "1", "--no-deps", cwd=ROOT / "codex-rs")
-    if git("status", "--porcelain"):
-        raise RuntimeError("finalized candidate is not clean")
-
-
-def publish() -> None:
+    run("python", "tools/cognitive-store-host-bootstrap/test_bootstrap.py")
     run(
-        "git",
-        "push",
-        "origin",
-        f"HEAD:{WORKING_BRANCH}",
-        f"HEAD:{PR_BRANCH}",
+        "cargo",
+        "metadata",
+        "--locked",
+        "--format-version",
+        "1",
+        "--no-deps",
+        cwd=ROOT / "codex-rs",
     )
+    run("git", "diff", "--check")
+    if git("status", "--porcelain", "--untracked-files=normal"):
+        raise RuntimeError("final candidate is not clean")
+    return sha
 
 
 def main() -> int:
-    patch_lockfile()
-    patch_deterministic_fixtures()
-    map_path = reconcile_map()
+    if git("branch", "--show-current") != BRANCH:
+        raise RuntimeError("finalizer is running on the wrong branch")
+    patch_qualification_workflow()
     delete_temporary_paths()
-    stage_and_bind_source_objects(map_path)
-    commit_candidate()
-    verify_candidate()
-    publish()
+    rebind_implementation_map()
+    sha = commit_and_verify()
+    run("git", "push", "origin", f"{sha}:refs/heads/{BRANCH}")
+    print(json.dumps({"branch": BRANCH, "finalSha": sha}, sort_keys=True))
     return 0
 
 
