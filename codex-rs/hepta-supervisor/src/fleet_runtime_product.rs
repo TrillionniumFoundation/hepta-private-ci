@@ -9,6 +9,7 @@ use codex_hepta_fleet::CapacityObservationError;
 use codex_hepta_fleet::DurableFleetError;
 use codex_hepta_fleet::DurableFleetOwner;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::LeaseLedgerError;
 use codex_hepta_fleet::LinuxProcfsCapacityObserverV1;
 use codex_hepta_fleet::SystemFleetClock;
 use codex_hepta_paths::HeptaFleetRoot;
@@ -129,15 +130,21 @@ fn perform_maintenance(
     })?;
     match owner.refresh_capacity(&format!("supervisor-capacity-{now_ms}"), &observer) {
         Ok(_) => Ok(()),
-        // Pressure is an observed unavailable state, not fabricated zero
-        // capacity. Do not refresh the prior observation; it expires within one
-        // TTL and new allocation then fails closed while lifecycle supervision
-        // remains available.
-        Err(DurableFleetError::Capacity(
-            CapacityObservationError::PressureLimitExceeded { .. },
-        )) => Ok(()),
+        // Pressure and a capacity shrink below live reservations are observed
+        // unavailable states, not fabricated zero capacity. Preserve the last
+        // trusted observation; it expires within one TTL so new allocation
+        // fails closed while lifecycle supervision remains available.
+        Err(error) if nonfatal_capacity_refresh(&error) => Ok(()),
         Err(error) => Err(map_owner_error(error)),
     }
+}
+
+fn nonfatal_capacity_refresh(error: &DurableFleetError) -> bool {
+    matches!(
+        error,
+        DurableFleetError::Capacity(CapacityObservationError::PressureLimitExceeded { .. })
+            | DurableFleetError::Ledger(LeaseLedgerError::CapacityExceeded)
+    )
 }
 
 fn map_owner_error(error: DurableFleetError) -> SupervisorError {
@@ -249,4 +256,25 @@ fn unix_ms() -> Result<u64, SupervisorError> {
         .map_err(|error| SupervisorError::Invalid(format!("system clock before epoch: {error}")))?;
     u64::try_from(duration.as_millis())
         .map_err(|_| SupervisorError::Invalid("system time exceeds u64 milliseconds".to_string()))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn capacity_shrink_and_pressure_are_fail_closed_without_killing_supervision() {
+        assert!(nonfatal_capacity_refresh(&DurableFleetError::Ledger(
+            LeaseLedgerError::CapacityExceeded,
+        )));
+        assert!(nonfatal_capacity_refresh(&DurableFleetError::Capacity(
+            CapacityObservationError::PressureLimitExceeded {
+                observed: 8_000,
+                maximum: 5_000,
+            },
+        )));
+        assert!(!nonfatal_capacity_refresh(&DurableFleetError::Ledger(
+            LeaseLedgerError::CorruptSnapshot,
+        )));
+    }
 }

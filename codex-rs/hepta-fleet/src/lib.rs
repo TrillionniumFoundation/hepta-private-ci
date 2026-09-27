@@ -6,7 +6,6 @@
 
 /// Reusable state machine; does not install a second runtime owner.
 pub mod authority_port;
-#[path = "lease_ledger_v3.rs"]
 pub mod lease_ledger;
 pub mod revocation_control;
 
@@ -15,7 +14,6 @@ mod allocation_digest;
 mod allocation_model;
 mod allocation_validation;
 mod capacity_observer;
-#[allow(unused_imports)]
 mod durable_owner;
 mod error;
 mod final_use;
@@ -68,6 +66,7 @@ pub use final_use::FleetFinalUseError;
 pub use final_use::RevocationBoundGrantUseWitnessV1;
 pub use final_use::verify_final_use_with_revocation;
 pub use lease_ledger::AllocationGrant;
+pub use lease_ledger::Error as LeaseLedgerError;
 pub use lease_ledger::FleetClock;
 pub use lease_ledger::FleetClockError;
 pub use lease_ledger::GrantHistoryRecord;
