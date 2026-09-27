@@ -1,4 +1,4 @@
-name: Kernel authority product time migration
+name: Kernel authority verified-head migration
 
 on:
   push:
@@ -11,209 +11,80 @@ permissions:
   contents: write
 
 concurrency:
-  group: kernel-authority-agentd-time-migration
+  group: kernel-authority-verified-head-migration
   cancel-in-progress: true
 
 jobs:
   migrate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
-      - name: Checkout exact branch head
+      - name: Checkout exact trigger head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: work/kernel-authority-convergence-20260925
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Bind product effects to protected authority time
+      - name: Refuse a moved branch
+        shell: bash
+        env:
+          TRIGGER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TRIGGER_SHA"
+          test -z "$(git status --porcelain)"
+
+      - name: Apply verified-head and evidence closure
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          agentd_path = Path('codex-rs/hepta-agentd/src/automation_effect_host.rs')
-          text = agentd_path.read_text(encoding='utf-8')
-
-          execute_old = (
-              "        command_id: &str,\n"
-              "        now_ms: u64,\n"
-              "    ) -> Result<TaskFlowStepReceipt, AgentdError> {"
-          )
-          execute_new = (
-              "        command_id: &str,\n"
-              "        _untrusted_now_ms: u64,\n"
-              "    ) -> Result<TaskFlowStepReceipt, AgentdError> {"
-          )
-          if execute_old in text:
-              if text.count(execute_old) != 1:
-                  raise SystemExit('execute time parameter anchor is ambiguous')
-              text = text.replace(execute_old, execute_new, 1)
-          elif text.count(execute_new) != 1:
-              raise SystemExit('execute protected-time signature is missing or duplicated')
-
-          reconcile_old = (
-              "        attempt: u32,\n"
-              "        now_ms: u64,\n"
-              "    ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {"
-          )
-          reconcile_new = (
-              "        attempt: u32,\n"
-              "        _untrusted_now_ms: u64,\n"
-              "    ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {"
-          )
-          if reconcile_old in text:
-              if text.count(reconcile_old) != 1:
-                  raise SystemExit('reconcile time parameter anchor is ambiguous')
-              text = text.replace(reconcile_old, reconcile_new, 1)
-          elif text.count(reconcile_new) != 1:
-              raise SystemExit('reconcile protected-time signature is missing or duplicated')
-
-          fence_anchor = '        let fence = self.current_fence(&run, now_ms)?;'
-          protected_fence = (
-              '        let now_ms = self.protected_effect_now_ms()?;\n'
-              + fence_anchor
-          )
-          protected_count = text.count(protected_fence)
-          if protected_count == 0:
-              if text.count(fence_anchor) != 2:
-                  raise SystemExit('effect fence time anchors drifted')
-              text = text.replace(fence_anchor, protected_fence)
-          elif protected_count != 2:
-              raise SystemExit('protected effect fence anchors are incomplete or duplicated')
-
-          refresh_anchor = '    fn refresh_revocations(&self) -> Result<(), AgentdError> {'
-          helper_marker = '    fn protected_effect_now_ms(&self) -> Result<u64, AgentdError> {'
-          helper = ''.join([
-              '    /// Compatibility callers may still transport a wall-clock sample, but\n',
-              '    /// final effect ownership, TaskFlow lease validation and durable settlement\n',
-              '    /// are always evaluated against the protected authority clock.\n',
-              '    fn protected_effect_now_ms(&self) -> Result<u64, AgentdError> {\n',
-              '        self.authority_trust.now_unix_ms().map_err(|error| {\n',
-              '            AgentdError::Protocol(format!(\n',
-              '                "sample protected automation effect clock: {error}"\n',
-              '            ))\n',
-              '        })\n',
-              '    }\n\n',
-          ])
-          if helper_marker not in text:
-              if text.count(refresh_anchor) != 1:
-                  raise SystemExit('revocation refresh anchor drifted')
-              text = text.replace(refresh_anchor, helper + refresh_anchor, 1)
-          elif text.count(helper_marker) != 1:
-              raise SystemExit('protected effect clock helper is duplicated')
-
-          stale_call_old = (
-              '                "agentd-product-effect-dispatch",\n'
-              '                now_ms + 5,\n'
-          )
-          stale_call_new = (
-              '                "agentd-product-effect-dispatch",\n'
-              '                // Deliberately stale transport time: the host must sample protected time.\n'
-              '                1,\n'
-          )
-          if stale_call_old in text:
-              if text.count(stale_call_old) != 1:
-                  raise SystemExit('Agentd protected-time product test anchor is ambiguous')
-              text = text.replace(stale_call_old, stale_call_new, 1)
-          elif text.count(stale_call_new) != 1:
-              raise SystemExit('Agentd protected-time product test is missing or duplicated')
-
-          agentd_path.write_text(text, encoding='utf-8')
-
-          fleet_path = Path('codex-rs/hepta-fleet/src/authority_port.rs')
-          fleet = fleet_path.read_text(encoding='utf-8')
-          fleet_signature_old = (
-              '        expected_lease_revision: u64,\n'
-              '        now_ms: u64,\n'
-              '        grant: AllocationGrant,\n'
-              '    ) -> Result<(LeaseReceipt, VerifiedUseTokenWitnessV1), FleetAuthorityError> {'
-          )
-          fleet_signature_new = (
-              '        expected_lease_revision: u64,\n'
-              '        _untrusted_now_ms: u64,\n'
-              '        grant: AllocationGrant,\n'
-              '    ) -> Result<(LeaseReceipt, VerifiedUseTokenWitnessV1), FleetAuthorityError> {'
-          )
-          if fleet_signature_old in fleet:
-              if fleet.count(fleet_signature_old) != 1:
-                  raise SystemExit('Fleet time parameter anchor is ambiguous')
-              fleet = fleet.replace(fleet_signature_old, fleet_signature_new, 1)
-          elif fleet.count(fleet_signature_new) != 1:
-              raise SystemExit('Fleet protected-time signature is missing or duplicated')
-
-          fleet_dispatch_old = (
-              '        let (result, witness) = dispatch_binding\n'
-              '            .dispatch(|_| ledger.issue(now_ms, grant))\n'
-              '            .map_err(FleetAuthorityError::Authority)?;'
-          )
-          fleet_dispatch_new = (
-              '        let (result, witness) = dispatch_binding\n'
-              '            .dispatch(|authority_witness| {\n'
-              '                ledger.issue(authority_witness.verified_at_unix_ms, grant)\n'
-              '            })\n'
-              '            .map_err(FleetAuthorityError::Authority)?;'
-          )
-          if fleet_dispatch_old in fleet:
-              if fleet.count(fleet_dispatch_old) != 1:
-                  raise SystemExit('Fleet dispatch-time anchor is ambiguous')
-              fleet = fleet.replace(fleet_dispatch_old, fleet_dispatch_new, 1)
-          elif fleet.count(fleet_dispatch_new) != 1:
-              raise SystemExit('Fleet protected dispatch-time path is missing or duplicated')
-
-          fleet_test_old = (
-              '            .issue_with_witness(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone())\n'
-          )
-          fleet_test_new = (
-              '            // Deliberately stale transport time: the final authority witness owns time.\n'
-              '            .issue_with_witness(&mut ledger, "fleet-issue-one", 1, 1, grant.clone())\n'
-          )
-          if fleet_test_old in fleet:
-              if fleet.count(fleet_test_old) != 1:
-                  raise SystemExit('Fleet protected-time test anchor is ambiguous')
-              fleet = fleet.replace(fleet_test_old, fleet_test_new, 1)
-          elif fleet.count(fleet_test_new) != 1:
-              raise SystemExit('Fleet protected-time test is missing or duplicated')
-
-          witness_assert_old = '        assert_eq!(witness.authority_epoch, 7);\n'
-          witness_assert_new = (
-              witness_assert_old
-              + '        assert_eq!(witness.verified_at_unix_ms, 2_000);\n'
-          )
-          if witness_assert_new not in fleet:
-              if fleet.count(witness_assert_old) != 1:
-                  raise SystemExit('Fleet witness time assertion anchor is ambiguous')
-              fleet = fleet.replace(witness_assert_old, witness_assert_new, 1)
-          elif fleet.count(witness_assert_new) != 1:
-              raise SystemExit('Fleet witness time assertion is duplicated')
-
-          fleet_path.write_text(fleet, encoding='utf-8')
-          PY
+          python3 .github/scripts/kernel_authority_verified_head_migration.py
           cd codex-rs
-          cargo fmt -p codex-hepta-agentd -p codex-hepta-fleet
-          cargo test --locked -p codex-hepta-fleet allocation_issue_consumes_exact_live_kernel_authority_lease -- --nocapture
+          cargo fmt -p codex-hepta-contracts -p codex-hepta-agentd
+          cargo fmt --check -p codex-hepta-contracts -p codex-hepta-agentd
+          cargo test --locked -p codex-hepta-contracts --lib -- --nocapture
           cargo test --locked -p codex-hepta-agentd host_dispatches_exact_wire_payload_once -- --nocapture
           cd ..
+          python3 -m unittest discover -s qualification/kernel-authority -p 'test_*.py' -v
+          python3 qa/b4-no-bypass/test_kernel_authority_extension_api.py -v
+          python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py -v
           git diff --check
 
-      - name: Commit source migration and bind immutable source anchor
+      - name: Commit source closure and bind generated truth
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'kernel-authority-migration'
           git config user.email 'kernel-authority-migration@users.noreply.github.com'
 
-          if ! git diff --exit-code --quiet -- \
+          git add \
+            codex-rs/hepta-contracts/src/authority_trust.rs \
+            codex-rs/hepta-contracts/src/authority_trust_tests.rs \
             codex-rs/hepta-agentd/src/automation_effect_host.rs \
-            codex-rs/hepta-fleet/src/authority_port.rs; then
-            git add \
-              codex-rs/hepta-agentd/src/automation_effect_host.rs \
-              codex-rs/hepta-fleet/src/authority_port.rs
-            unexpected="$(git diff --cached --name-only | grep -Ev '^(codex-rs/hepta-agentd/src/automation_effect_host.rs|codex-rs/hepta-fleet/src/authority_port.rs)$' || true)"
-            test -z "$unexpected"
-            git commit -m 'fix(kernel-authority): use protected time at product effects'
-          fi
+            qualification/kernel-authority/runtime_qualification.py \
+            qualification/kernel-authority/test_runtime_qualification.py \
+            qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json \
+            .github/workflows/kernel-authority-convergence.yml \
+            .github/workflows/kernel-authority-production-closure.yml \
+            .github/workflows/kernel-authority-status.yml
+
+          expected="$(
+            printf '%s\n' \
+              '.github/workflows/kernel-authority-convergence.yml' \
+              '.github/workflows/kernel-authority-production-closure.yml' \
+              '.github/workflows/kernel-authority-status.yml' \
+              'codex-rs/hepta-agentd/src/automation_effect_host.rs' \
+              'codex-rs/hepta-contracts/src/authority_trust.rs' \
+              'codex-rs/hepta-contracts/src/authority_trust_tests.rs' \
+              'qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json' \
+              'qualification/kernel-authority/runtime_qualification.py' \
+              'qualification/kernel-authority/test_runtime_qualification.py'
+          )"
+          observed="$(git diff --cached --name-only | sort)"
+          test "$observed" = "$(printf '%s\n' "$expected" | sort)"
+          git diff --cached --check
+          git commit -m 'fix(kernel-authority): require authenticated production recovery heads'
 
           source_commit="$(git rev-parse HEAD)"
           source_tree="$(git rev-parse 'HEAD^{tree}')"
@@ -228,20 +99,31 @@ jobs:
               'commit': os.environ['SOURCE_COMMIT'],
               'tree': os.environ['SOURCE_TREE'],
           }
+          value['productionTrustBundle']['verifiedRevocationHeadRequired'] = True
+          for operation in value['operations']:
+              if operation['operation'] == 'final_use_control':
+                  operation['state'] = (
+                      'source_implemented_independent_approval_signed_feed_'
+                      'typed_verified_recovery_head_and_receipt_bound_convergence_'
+                      'transport_external'
+                  )
           path.write_text(json.dumps(value, indent=2) + '\n', encoding='utf-8')
           PY
+
           python3 scripts/kernel_authority_status.py write
           python3 scripts/kernel_authority_status.py check
           python3 qualification/kernel-authority/generate_status.py --check
-          python3 qa/b4-no-bypass/test_kernel_authority_extension_api.py
-          python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py
+          python3 qa/b4-no-bypass/test_kernel_authority_extension_api.py -v
+          python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py -v
           git diff --check
 
-      - name: Retire migration authority and publish generated truth
+      - name: Retire migration and publish immutable projections
         shell: bash
         run: |
           set -euo pipefail
-          git rm .github/workflows/kernel-authority-agentd-time-migration.yml
+          git rm \
+            .github/workflows/kernel-authority-agentd-time-migration.yml \
+            .github/scripts/kernel_authority_verified_head_migration.py
           git add \
             qualification/kernel-authority/status_manifest.json \
             docs/modules/kernel.authority/IMPLEMENTATION_MAP.json \
@@ -252,5 +134,5 @@ jobs:
             docs/modules/kernel.authority/STATUS.md \
             qualification/module-execution-dossiers/detail/kernel.authority.status.json
           git diff --cached --check
-          git commit -m 'docs(kernel-authority): rebind generated truth after protected-time migration'
+          git commit -m 'docs(kernel-authority): rebind truth after verified-head closure'
           git push origin HEAD:work/kernel-authority-convergence-20260925
