@@ -270,6 +270,46 @@ impl AgentdClient {
         &self,
         request: crate::KernelEvidenceQueryV1,
     ) -> Result<Vec<codex_hepta_evidence::EvidenceReferenceV1>, AgentdError> {
+        if request
+            .page_selector()
+            .map_err(kernel_evidence_selector_error)?
+            .is_some()
+        {
+            return Err(AgentdError::Invalid(
+                "paged kernel evidence requests must use query_kernel_evidence_page"
+                    .to_string(),
+            ));
+        }
+        let result = match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::KernelEvidenceQuery { request },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::KernelEvidenceResult(result) => result,
+            payload => return unexpected(payload),
+        };
+        Ok(serde_json::from_str(&result.json)?)
+    }
+
+    pub async fn query_kernel_evidence_page(
+        &self,
+        request: crate::KernelEvidenceQueryV1,
+    ) -> Result<codex_hepta_evidence::QualificationEvidencePageV1, AgentdError> {
+        if request
+            .page_selector()
+            .map_err(kernel_evidence_selector_error)?
+            .is_none()
+        {
+            return Err(AgentdError::Invalid(
+                "kernel evidence page client requires KernelEvidenceQueryV1::paged"
+                    .to_string(),
+            ));
+        }
         let result = match self
             .send(AgentdRequest {
                 schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -290,6 +330,46 @@ impl AgentdClient {
         &self,
         request: crate::KernelEvidenceVerifyV1,
     ) -> Result<codex_hepta_evidence::EvidenceDispositionV1, AgentdError> {
+        if request
+            .profile_name()
+            .map_err(kernel_evidence_selector_error)?
+            .is_some()
+        {
+            return Err(AgentdError::Invalid(
+                "profiled kernel evidence requests must use verify_kernel_evidence_profile"
+                    .to_string(),
+            ));
+        }
+        let result = match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::KernelEvidenceVerify { request },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::KernelEvidenceResult(result) => result,
+            payload => return unexpected(payload),
+        };
+        Ok(serde_json::from_str(&result.json)?)
+    }
+
+    pub async fn verify_kernel_evidence_profile(
+        &self,
+        request: crate::KernelEvidenceVerifyV1,
+    ) -> Result<codex_hepta_evidence::EvidenceVerificationSummaryV1, AgentdError> {
+        if request
+            .profile_name()
+            .map_err(kernel_evidence_selector_error)?
+            .is_none()
+        {
+            return Err(AgentdError::Invalid(
+                "kernel evidence profile client requires KernelEvidenceVerifyV1::profiled"
+                    .to_string(),
+            ));
+        }
         let result = match self
             .send(AgentdRequest {
                 schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -763,6 +843,10 @@ impl AgentdClient {
     fn request_id(&self) -> u64 {
         self.next_request_id.fetch_add(1, Ordering::Relaxed)
     }
+}
+
+fn kernel_evidence_selector_error(message: String) -> AgentdError {
+    AgentdError::Invalid(format!("kernel.evidence: {message}"))
 }
 
 fn encode_hex(bytes: &[u8]) -> String {
