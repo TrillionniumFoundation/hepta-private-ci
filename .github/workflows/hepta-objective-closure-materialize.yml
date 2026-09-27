@@ -1,4 +1,4 @@
-# closure-trigger: durable-proof-and-evidence-macos-20260927
+# closure-trigger: durable-proof-and-evidence-rog-20260927
 name: Hepta objective compiler closure materializer
 
 on:
@@ -13,14 +13,12 @@ permissions:
   contents: write
 
 concurrency:
-  # Share the writer lock with the Linux/ARM convergence path. Starting this
-  # exact-source materializer retires any older queued candidate.
   group: hepta-objective-production-convergence
   cancel-in-progress: true
 
 jobs:
   materialize:
-    runs-on: macos-15
+    runs-on: [self-hosted, linux, x64, rog]
     timeout-minutes: 150
     env:
       TARGET_BRANCH: work/objective-compiler-production-convergence-20260927
@@ -28,6 +26,7 @@ jobs:
       CARGO_INCREMENTAL: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_TARGET_DIR: ${{ runner.temp }}/objective-compiler-${{ github.run_id }}
     steps:
       - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -35,6 +34,7 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: true
+          clean: true
 
       - name: Bind exact source and branch
         shell: bash
@@ -44,9 +44,10 @@ jobs:
           test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
           git fetch origin "${TARGET_BRANCH}"
           test "$(git rev-parse "origin/${TARGET_BRANCH}")" = "${TRIGGER_SHA}"
+          test -z "$(git status --porcelain)"
           git rev-parse HEAD HEAD^{tree}
 
-      - name: Make one-shot migration re-entrant
+      - name: Make the one-shot migration re-entrant
         shell: bash
         run: |
           set -euo pipefail
@@ -108,12 +109,14 @@ jobs:
               )
           '''
           if old not in text or old_count not in text:
-              raise SystemExit("one-shot helper shape changed")
-          text = text.replace(old, new, 1).replace(old_count, new_count, 1)
-          path.write_text(text, encoding="utf-8")
+              raise SystemExit("objective closure helper shape changed")
+          path.write_text(
+              text.replace(old, new, 1).replace(old_count, new_count, 1),
+              encoding="utf-8",
+          )
           PY
 
-      - name: Materialize durable proof and evidence
+      - name: Materialize durable proof and end-to-end evidence
         shell: bash
         run: |
           set -euo pipefail
@@ -125,6 +128,7 @@ jobs:
             --package codex-hepta-learning-ledger \
             --package codex-hepta-intelligence \
             --package codex-hepta-agentd
+          mkdir -p codex-rs/hepta-intelligence/tests/fixtures
           HEPTA_OBJECTIVE_GOLDEN_OUTPUT="${GITHUB_WORKSPACE}/codex-rs/hepta-intelligence/tests/fixtures/objective_end_to_end_v1.txt" \
             cargo test --manifest-path codex-rs/Cargo.toml --locked \
               -p codex-hepta-intelligence \
@@ -133,7 +137,7 @@ jobs:
           test -s codex-rs/hepta-intelligence/tests/fixtures/objective_end_to_end_v1.txt
           git diff --check
 
-      - name: Validate generated source
+      - name: Validate generated source before commit
         shell: bash
         run: |
           set -euo pipefail
@@ -148,24 +152,20 @@ jobs:
             scripts.test_hepta_objective_contracts \
             scripts.test_hepta_objective_target_measure \
             scripts.test_hepta_objective_release_gate
-          (
-            cd codex-rs
-            cargo test --locked -p codex-hepta-objective -- --nocapture
-            cargo test --locked -p codex-hepta-learning-ledger run_start -- --nocapture
-            cargo test --locked -p codex-hepta-intelligence objective_run -- --nocapture
-            cargo clippy --locked \
-              -p codex-hepta-objective \
-              -p codex-hepta-learning-ledger \
-              -p codex-hepta-intelligence \
-              --all-targets --no-deps -- -D warnings
-            cargo fmt \
-              --package codex-hepta-objective \
-              --package codex-hepta-learning-ledger \
-              --package codex-hepta-intelligence \
-              --package codex-hepta-agentd -- --check
-          )
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-objective -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-ledger run_start -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence objective_run -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-agentd objective_runtime -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-agentd objective_run_start_checkpoint -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-agentd --test objective_product_e2e -- --nocapture
 
-      - name: Commit source closure and retire one-shot materializers
+      - name: Commit source closure and retire one-shot writers
         shell: bash
         run: |
           set -euo pipefail
@@ -180,7 +180,7 @@ jobs:
           git diff --cached --check
           git commit -m "objective.compiler: persist proof-bound admission and end-to-end evidence"
 
-      - name: Rebind exact-head provenance and generated status
+      - name: Rebind exact-source provenance and generated status
         shell: bash
         run: |
           set -euo pipefail
@@ -197,7 +197,7 @@ jobs:
             git commit -m "objective.compiler: rebind exact-head provenance and generated status"
           fi
 
-      - name: Qualify exact generated candidate
+      - name: Qualify the exact generated candidate
         shell: bash
         run: |
           set -euo pipefail
@@ -214,29 +214,28 @@ jobs:
           python3 scripts/hepta-lane-d-semantic-conformance.py self-test
           python3 scripts/hepta-lane-d-semantic-conformance.py verify
           python3 scripts/verify_cargo_lock.py
-          (
-            cd codex-rs
-            cargo test --locked --no-run \
-              -p codex-hepta-objective \
-              -p codex-hepta-learning-ledger \
-              -p codex-hepta-intelligence
-            cargo clippy --locked \
-              -p codex-hepta-objective \
-              -p codex-hepta-learning-ledger \
-              -p codex-hepta-intelligence \
-              --all-targets --no-deps -- -D warnings
-            cargo fmt \
-              --package codex-hepta-objective \
-              --package codex-hepta-learning-ledger \
-              --package codex-hepta-intelligence \
-              --package codex-hepta-agentd -- --check
-          )
+          cargo test --manifest-path codex-rs/Cargo.toml --locked --no-run \
+            -p codex-hepta-objective \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-objective \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd \
+            --all-targets --no-deps -- -D warnings
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-objective \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd -- --check
           git diff --check
           test -z "$(git status --porcelain)"
           printf 'QUALIFIED_SHA=%s\nQUALIFIED_TREE=%s\n' \
             "${QUALIFIED_SHA}" "${QUALIFIED_TREE}"
 
-      - name: Push only if remote source is unchanged
+      - name: Push only if the remote source is unchanged
         shell: bash
         run: |
           set -euo pipefail
