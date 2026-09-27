@@ -39,9 +39,15 @@ jobs:
           cat "$patch_dir"/part-* > "$RUNNER_TEMP/channel-matrix-local.patch"
           git apply --index --whitespace=error-all "$RUNNER_TEMP/channel-matrix-local.patch"
           git rm -r "$patch_dir"
+          (
+            cd codex-rs
+            cargo fmt --all
+          )
+          git add -A
+          git diff --cached --check
           git config user.name 'channel.matrix convergence bot'
           git config user.email 'channel-matrix@users.noreply.github.com'
-          git commit -m 'channel.matrix: persist entered-use proof and exact schema'
+          git commit -m 'channel.matrix: apply reviewed convergence fixes'
           git push origin "HEAD:${GITHUB_REF_NAME}"
           echo 'applied=true' >> "$GITHUB_OUTPUT"
 
