@@ -72,12 +72,13 @@ jobs:
           set -euo pipefail
           cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd -- --check
 
-      - name: Exercise real FinalUseAuthority handoff tests
+      - name: Exercise legacy and persistent FinalUseAuthority handoff tests
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
           cargo test --locked -p codex-hepta-agentd browser_servo --lib
+          cargo test --locked -p codex-hepta-agentd --bin hepta-agentd-browser-service
 
       - name: Compile diagnostic and persistent Agentd Browser callers
         working-directory: codex-rs
