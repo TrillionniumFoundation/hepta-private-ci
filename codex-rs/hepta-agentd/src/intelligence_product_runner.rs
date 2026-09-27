@@ -96,23 +96,32 @@ impl AgentdIntelligenceProductRunnerV1 {
             AgentdError::Protocol("canonical Neuron handoff mutex is poisoned".to_string())
         })?;
         pending.retain(|_, value| value.expires_at_ms > now_ms);
-        if pending.contains_key(run_id.as_str()) {
-            return Err(AgentdError::Protocol(
-                "canonical Neuron invocation is already staged for this run".to_string(),
-            ));
+        let replacement = PendingNeuronInvocationSealV1 {
+            state: PendingNeuronInvocationStateV1::Ready(seal),
+            expires_at_ms,
+        };
+        match pending.get_mut(run_id.as_str()) {
+            Some(existing) => match existing.state {
+                PendingNeuronInvocationStateV1::Ready(_) => {
+                    return Err(AgentdError::Protocol(
+                        "canonical Neuron invocation is already staged for this run".to_string(),
+                    ));
+                }
+                PendingNeuronInvocationStateV1::Consumed => {
+                    // An exact lost-ACK ObjectiveStart retry must obtain a new
+                    // current-owner seal; it may never reuse the consumed one.
+                    *existing = replacement;
+                    return Ok(());
+                }
+            },
+            None => {}
         }
         if pending.len() >= MAX_PENDING_NEURON_INVOCATIONS {
             return Err(AgentdError::Protocol(
                 "canonical Neuron invocation handoff capacity is exhausted".to_string(),
             ));
         }
-        pending.insert(
-            run_id.to_string(),
-            PendingNeuronInvocationSealV1 {
-                state: PendingNeuronInvocationStateV1::Ready(seal),
-                expires_at_ms,
-            },
-        );
+        pending.insert(run_id.to_string(), replacement);
         Ok(())
     }
 
