@@ -4,6 +4,8 @@ use crate::VerifiedUseAuthorityRefV1;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
+use sha2::Digest;
+use sha2::Sha256;
 use std::future::Future;
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
@@ -52,6 +54,13 @@ impl AuthorityFrontierStore<FinalUseFrontier> for MemoryFinalUseFrontier {
     }
 }
 
+fn test_nonce(label: &str) -> [u8; 32] {
+    let mut digest = Sha256::new();
+    digest.update(b"hepta.kernel.authority.final-use-tests-nonce.v1\0");
+    digest.update(label.as_bytes());
+    digest.finalize().into()
+}
+
 fn fixture()
 -> Result<(FinalUseAuthority, SignedFinalUseGrant, tempfile::TempDir), Box<dyn std::error::Error>> {
     let issuer = SigningKey::from_bytes(&[47; 32]);
@@ -61,7 +70,7 @@ fn fixture()
         signer_id: "security-owner".into(),
         authority_epoch: 9,
         grant_id: "read-one".into(),
-        nonce: [5; 32],
+        nonce: test_nonce("read-one"),
         binding: FinalUseBinding {
             subject_id: "agent-one".into(),
             destination_id: "provider:heptabao".into(),
@@ -332,7 +341,7 @@ fn injected_clock_is_the_only_final_use_time_source() {
         signer_id: "clock-owner".into(),
         authority_epoch: 3,
         grant_id: "clock-use".into(),
-        nonce: [8; 32],
+        nonce: test_nonce("clock-use"),
         binding: FinalUseBinding {
             subject_id: "agent-one".into(),
             destination_id: "provider:heptabao".into(),
@@ -380,7 +389,7 @@ fn external_final_use_frontier_detects_restored_claim_snapshot() {
         signer_id: "frontier-owner".into(),
         authority_epoch: 4,
         grant_id: "frontier-use".into(),
-        nonce: [14; 32],
+        nonce: test_nonce("frontier-use"),
         binding: FinalUseBinding {
             subject_id: "agent-one".into(),
             destination_id: "provider:heptabao".into(),
@@ -473,13 +482,13 @@ fn issuer_key_ring_supports_overlap_and_epoch_retirement() {
     .unwrap();
     assert_eq!(authority.issuer_key_ids(), vec!["next", "old"]);
 
-    let make = |grant_id: &str, nonce: [u8; 32], signer: &SigningKey| {
+    let make = |grant_id: &str, signer: &SigningKey| {
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "rotating-owner".into(),
             authority_epoch: 9,
             grant_id: grant_id.into(),
-            nonce,
+            nonce: test_nonce(grant_id),
             binding: FinalUseBinding {
                 subject_id: "agent-one".into(),
                 destination_id: "provider:heptabao".into(),
@@ -498,8 +507,8 @@ fn issuer_key_ring_supports_overlap_and_epoch_retirement() {
             grant,
         }
     };
-    let old_grant = make("old-key-use", [24; 32], &old);
-    let next_grant = make("next-key-use", [25; 32], &next);
+    let old_grant = make("old-key-use", &old);
+    let next_grant = make("next-key-use", &next);
     assert!(
         authority
             .claim(&old_grant, &old_grant.grant.binding)
@@ -546,7 +555,7 @@ fn issuer_key_ring_supports_overlap_and_epoch_retirement() {
     let mut retired_old = old_grant;
     retired_old.grant.authority_epoch = 10;
     retired_old.grant.grant_id = "retired-old-key".into();
-    retired_old.grant.nonce = [26; 32];
+    retired_old.grant.nonce = test_nonce("retired-old-key");
     retired_old.signature = old
         .sign(&retired_old.grant.signing_bytes().unwrap())
         .to_bytes()
@@ -572,7 +581,7 @@ fn external_final_use_frontier_ahead_after_local_failure_fences_reopen() {
         signer_id: "failure-owner".into(),
         authority_epoch: 6,
         grant_id: "failure-use".into(),
-        nonce: [31; 32],
+        nonce: test_nonce("failure-use"),
         binding: FinalUseBinding {
             subject_id: "agent-one".into(),
             destination_id: "provider:heptabao".into(),
@@ -813,7 +822,7 @@ fn async_final_use_fence_survives_pending_and_releases_on_cancellation() {
     let token = authority.claim(&signed, &binding).unwrap();
     let mut later = signed.clone();
     later.grant.grant_id = "read-after-pending-revocation".into();
-    later.grant.nonce = [91; 32];
+    later.grant.nonce = test_nonce("read-after-pending-revocation");
     later.signature = SigningKey::from_bytes(&[47; 32])
         .sign(&later.grant.signing_bytes().unwrap())
         .to_bytes()
@@ -888,7 +897,7 @@ fn replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small() {
 
     let mut second = signed;
     second.grant.grant_id = "read-two".into();
-    second.grant.nonce = [6; 32];
+    second.grant.nonce = test_nonce("read-two");
     second.signature = SigningKey::from_bytes(&[47; 32])
         .sign(&second.grant.signing_bytes().unwrap())
         .to_bytes()
