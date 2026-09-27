@@ -8,6 +8,7 @@ mod generation_bound;
 mod generator;
 mod semantics;
 mod v2;
+mod vector_owner;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -83,6 +84,15 @@ pub use semantics::ContradictionEvidenceV2;
 pub use semantics::PropositionPolarityV2;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
+pub use vector_owner::GenerationBoundVectorOwnerV1;
+pub use vector_owner::MAX_VECTOR_DIMENSIONS;
+pub use vector_owner::MAX_VECTOR_INDEX_RECORDS;
+pub use vector_owner::VectorEmbeddingV1;
+pub use vector_owner::VectorIndexRecordV1;
+pub use vector_owner::VectorIndexSnapshotV1;
+pub use vector_owner::VectorOwnerErrorV1;
+pub use vector_owner::VectorQueryV1;
+pub use vector_owner::generate_vector_batch_v1;
 
 const MAX_CANDIDATES: usize = 16_384;
 const MAX_RESULTS: usize = 256;
