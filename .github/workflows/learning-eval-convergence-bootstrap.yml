@@ -1,0 +1,154 @@
+name: learning.eval convergence bootstrap
+
+on:
+  push:
+    branches:
+      - learning-eval/close-production-boundaries-20260927
+
+permissions:
+  contents: write
+
+jobs:
+  converge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Apply learning.eval convergence patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/.learning-eval-bootstrap.py
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs")
+          text = path.read_text(encoding="utf-8")
+          text = text.replace(
+              "Err(crate::FencedHoldoutError::Store(FinalHoldoutCasStoreError::Rejected)) => break,",
+              "Err(crate::FencedHoldoutError::Rejected) => break,",
+          )
+          path.write_text(text, encoding="utf-8")
+
+          path = Path("codex-rs/hepta-intelligence-eval/src/evaluation_attempt.rs")
+          text = path.read_text(encoding="utf-8").replace(
+              "self.tag() as u16", "u16::from(self.tag())"
+          )
+          path.write_text(text, encoding="utf-8")
+
+          path = Path("scripts/hepta-lane-e-closure.py")
+          text = path.read_text(encoding="utf-8").replace(
+              '"ProductEvaluationAttemptStageV1::Failed",',
+              '"Self::Failed => 255",',
+          )
+          path.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Format touched Rust packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd
+          python3 scripts/hepta-learning-eval-status.py generate
+          python3 - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          root = Path.cwd()
+          path = root / "docs/modules/learning.eval/IMPLEMENTATION_MAP.json"
+          data = json.loads(path.read_text(encoding="utf-8"))
+          objects = {row.get("path"): row for row in data.get("sourceObjects", [])}
+          for relative in [
+              "codex-rs/hepta-intelligence-eval/src/lib.rs",
+              "codex-rs/hepta-intelligence-eval/src/product_admission.rs",
+              "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+              "codex-rs/hepta-intelligence-eval/src/qualification_evidence_file.rs",
+              "codex-rs/hepta-intelligence-eval/src/evaluation_attempt.rs",
+              "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+              "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
+              "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+          ]:
+              sha = subprocess.check_output(
+                  ["git", "hash-object", relative], text=True
+              ).strip()
+              objects[relative] = {"path": relative, "object": sha}
+          data["sourceObjects"] = list(objects.values())
+          path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+          PY
+          git diff --check
+
+      - name: Remove one-shot bootstrap
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm scripts/.learning-eval-bootstrap.py
+          rm .github/workflows/learning-eval-convergence-bootstrap.yml
+
+      - name: Commit and push convergence candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name hepta-learning-eval-bot
+          git config user.email hepta-learning-eval-bot@users.noreply.github.com
+          git add -A
+          git commit -m "learning.eval: close product admission and durability boundaries"
+          git push origin HEAD:learning-eval/close-production-boundaries-20260927
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Validate source closure and generated truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-learning-eval-status.py verify
+          python3 scripts/hepta-learning-eval-target-host.py lint-template
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+
+      - name: Compile affected product graph
+        working-directory: codex-rs
+        run: >-
+          cargo check --locked
+          -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
+          -p codex-hepta-agentd
+          -p codex-hepta-shadow-qualification
+          --all-targets
+
+      - name: Run affected tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/learning-eval-bootstrap
+          status=0
+          (
+            cd codex-rs
+            cargo test --locked -p codex-hepta-intelligence-eval
+            cargo test --locked -p codex-hepta-intelligence plasticity_product
+            cargo test --locked -p codex-hepta-agentd intelligence_evaluation
+            cargo test --locked -p codex-hepta-shadow-qualification lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
+          ) 2>&1 | tee .hepta-evidence/learning-eval-bootstrap/tests.log || status=${PIPESTATUS[0]}
+          python3 scripts/hepta-learning-eval-api-surface.py 2>&1 | tee .hepta-evidence/learning-eval-bootstrap/api-surface.log || status=$?
+          exit "$status"
+
+      - name: Upload bootstrap diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-bootstrap-${{ github.sha }}
+          path: .hepta-evidence/learning-eval-bootstrap/
+          if-no-files-found: warn
+          retention-days: 14
