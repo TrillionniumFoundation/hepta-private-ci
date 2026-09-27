@@ -1,0 +1,102 @@
+name: Runtime Agentd target-host qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact 40-character candidate commit to qualify.
+        required: true
+        type: string
+      plan_path:
+        description: Absolute operator-owned target-host plan path on the disposable runner.
+        required: true
+        type: string
+      target_root:
+        description: Absolute marked disposable root used for destructive scenarios.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-agentd-target-host-${{ inputs.candidate_sha }}
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    name: runtime.agentd disposable target host
+    environment: runtime-agentd-target-host
+    runs-on: [self-hosted, runtime-agentd-disposable]
+    timeout-minutes: 480
+    steps:
+      - name: Checkout exact candidate without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify exact candidate and qualification harness
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ inputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          python3 -B -m unittest -v \
+            scripts.qualification.test_runtime_agentd_target_host \
+            scripts.tests.test_hepta_runtime_agentd_closure
+          python3 -m py_compile \
+            scripts/qualification/runtime_agentd_target_host.py \
+            scripts/hepta_runtime_agentd_closure.py
+
+      - name: Execute all required physical fault and load scenarios
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ inputs.candidate_sha }}
+          PLAN_PATH: ${{ inputs.plan_path }}
+          TARGET_ROOT: ${{ inputs.target_root }}
+        run: |
+          set -euo pipefail
+          case "$PLAN_PATH" in /*) ;; *) echo "plan_path must be absolute" >&2; exit 64;; esac
+          case "$TARGET_ROOT" in /*) ;; *) echo "target_root must be absolute" >&2; exit 64;; esac
+          python3 -B scripts/qualification/runtime_agentd_target_host.py run \
+            --workspace "$GITHUB_WORKSPACE" \
+            --expected-sha "$EXPECTED_SHA" \
+            --plan "$PLAN_PATH" \
+            --target-root "$TARGET_ROOT" \
+            --output "$RUNNER_TEMP/runtime-agentd-target-host" \
+            --allow-destructive
+
+      - name: Verify complete retained scenario set
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ inputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          expected_tree="$(git rev-parse HEAD^{tree})"
+          python3 -B scripts/qualification/runtime_agentd_target_host.py verify \
+            --workspace "$GITHUB_WORKSPACE" \
+            --expected-sha "$EXPECTED_SHA" \
+            --expected-tree "$expected_tree" \
+            --evidence "$RUNNER_TEMP/runtime-agentd-target-host" \
+            --output "$RUNNER_TEMP/runtime-agentd-target-host-verified.json"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Retain target-host evidence including immutable logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-agentd-target-host-${{ inputs.candidate_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/runtime-agentd-target-host/
+            ${{ runner.temp }}/runtime-agentd-target-host-verified.json
+          if-no-files-found: error
+          retention-days: 90
