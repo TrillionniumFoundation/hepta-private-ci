@@ -30,13 +30,14 @@ jobs:
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/ndu-materialized"
           test "$(git rev-parse HEAD)" = "$REQUEST_SHA"
-          test "$(git hash-object scripts/ndu-remediation-stage-a.patch)" = 3c4b7cad3b61da153a8d20599b1941254f6ac386
+          # This is the actual Git blob of the locally reviewed and tested patch.
+          test "$(git hash-object scripts/ndu-remediation-stage-a.patch)" = 160751c48e948b5904d03ab785129f2e98812719
           BASE=$(git rev-parse origin/main)
           git merge-base --is-ancestor "$BASE" HEAD
           git apply --check scripts/ndu-remediation-stage-a.patch
           git apply scripts/ndu-remediation-stage-a.patch
-          rm scripts/ndu-remediation-stage-a.patch .github/workflows/hepta-ndu-abcd-materialize.yml .github/workflows/hepta-ndu-abcd-source-export.yml .github/workflows/hepta-ndu-final-regression-repair.yml
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-ndu
+          rm scripts/ndu-remediation-stage-a.patch
+          (cd codex-rs && cargo fmt --package codex-hepta-ndu)
           python3 scripts/test_hepta_ndu_source_policy.py
           python3 scripts/test_hepta_ndu_map_integrity.py
           python3 scripts/test_hepta_ndu_mounted_filesystem.py
@@ -49,6 +50,7 @@ jobs:
           git commit -s -m 'fix(ndu): materialize lexical scanner, strict lint, and real EROFS recovery'
           test -z "$(git status --porcelain --untracked-files=all)"
           python3 scripts/hepta-ndu-implementation-map-closed-world.py --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})" 2>&1 | tee "$RUNNER_TEMP/ndu-materialized/map-verifier.log"
+          # Fast-forward only: a concurrent update is a conflict, never overwritten.
           git push origin "HEAD:$GITHUB_REF_NAME"
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "base=$BASE" >> "$GITHUB_OUTPUT"
@@ -97,12 +99,14 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git cat-file -t "$BASE_SHA")" = commit
           if [ '${{ matrix.lane }}' = synthetic-merge ]; then
             TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
             export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
             export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
             export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
             MERGE=$(printf '%s\n' 'Qualification only; no selection or release' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            test "$(git show -s --format=%P "$MERGE")" = "$BASE_SHA $SOURCE_SHA"
             git checkout --detach "$MERGE"
           fi
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
