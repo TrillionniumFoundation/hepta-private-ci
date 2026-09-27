@@ -14,6 +14,7 @@ mod governance_store;
 mod governance_validation;
 mod historical;
 mod identity_assignment;
+mod operational_schema;
 mod provider_claim;
 mod provider_effect_store;
 mod provider_insert;
