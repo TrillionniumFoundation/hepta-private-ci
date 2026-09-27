@@ -19,6 +19,7 @@ on:
       - docs/modules/intelligence.control/**
       - qualification/module-execution-dossiers/detail/intelligence.control.md
       - scripts/hepta_intelligence_control_status.py
+      - scripts/hepta-implementation-maps.py
       - scripts/hepta_ci_candidate.py
       - scripts/hepta_ci_v8.py
       - .github/scripts/check_ci_results.py
@@ -45,6 +46,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_intelligence_control_status.py check
+          python3 scripts/hepta-implementation-maps.py verify
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
@@ -85,7 +87,10 @@ jobs:
           python3 scripts/hepta_ci_candidate.py "${args[@]}" --github-output "$GITHUB_OUTPUT"
       - name: Verify source truth on exact candidate
         if: steps.execution.outputs.run_native == 'true'
-        run: python3 scripts/hepta_intelligence_control_status.py check
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_intelligence_control_status.py check
+          python3 scripts/hepta-implementation-maps.py verify
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         if: steps.execution.outputs.run_native == 'true'
         with:
