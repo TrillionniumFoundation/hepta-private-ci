@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   converge:
-    runs-on: [self-hosted, hepta-automation-selected-host]
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - name: Check out exact branch head
