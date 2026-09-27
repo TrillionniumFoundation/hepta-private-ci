@@ -206,6 +206,24 @@ The current repository does **not** by itself prove:
 Those states remain false in the canonical source until exact external evidence
 is recorded. CI cannot self-sign them.
 
+## 11. Convergence amendments
+
+The direct convergence workflow adds a PR entry point without path filters and
+a nonempty Python regression gate. Reusable callers have distinct concurrency
+groups. Final qualification requires both observed passing tests and a retained
+artifact; a false final disposition fails the workflow while keeping diagnostic
+JSON and logs.
+
+Execution-record validation now binds command, clean Git identity, workflow
+run/attempt/job, integer exit codes and actual log bytes/digests. Malformed JSON,
+linked or changing files, unsafe paths, missing test execution and cross-run
+artifact identity fail closed. The external history range can only be created
+through a positive, ordered, 4096-generation-bounded public constructor.
+
+The 42 additional Python unit regressions have local execution results, not a
+Rust or exact-candidate qualification receipt. The operational and repository
+administration gates remain unresolved until their real evidence is retained.
+
 <!-- BEGIN GENERATED KERNEL EVIDENCE STATUS -->
 ## Canonical kernel.evidence status
 
@@ -215,9 +233,9 @@ This block is generated from
 override these facts. Workflow receipts may prove the current candidate, but
 cannot self-issue independent acceptance, deployment, canary or release.
 
-- Source anchor commit: `88a46b13d5479370812ca2b680e77972fb770767`
-- Source anchor tree: `94776711df64f9630c3dfd40b3a44f320d7d85ea`
-- Canonical status SHA-256: `c55c659e400adc86c1e658b332f87c041ef8e1db7d218c6dae1b60c653fb8e1e`
+- Source anchor commit: `38e54289c0cbe0177769b4ccaaadcdf90d85ac0d`
+- Source anchor tree: `ac7aa53cca04f1b41155a61786c3c7b2926b3cc0`
+- Canonical status SHA-256: `0994022f978542edeac9b03bde334ca00049f3ecc5cfc7e31e5f1c61d0646c06`
 - Workflow run ID: `none`
 - Retained artifact digest: `none`
 

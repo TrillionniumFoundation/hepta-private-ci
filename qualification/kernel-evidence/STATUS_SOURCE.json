@@ -2,8 +2,8 @@
   "schema": "hepta.kernel-evidence-status-source.v1",
   "schemaVersion": 1,
   "module": "kernel.evidence",
-  "asOfCommit": "88a46b13d5479370812ca2b680e77972fb770767",
-  "asOfTree": "94776711df64f9630c3dfd40b3a44f320d7d85ea",
+  "asOfCommit": "38e54289c0cbe0177769b4ccaaadcdf90d85ac0d",
+  "asOfTree": "ac7aa53cca04f1b41155a61786c3c7b2926b3cc0",
   "workflowRunId": null,
   "artifactDigest": null,
   "exactSourceQualified": false,
@@ -15,6 +15,7 @@
   "releaseApproved": false,
   "sourcePaths": [
     ".github/workflows/blocking-ci.yml",
+    ".github/workflows/hepta-kernel-evidence-convergence.yml",
     ".github/workflows/hepta-kernel-evidence-qualification.yml",
     "codex-rs/hepta-agentd/Cargo.toml",
     "codex-rs/hepta-agentd/src/evidence_frontier_signers.rs",
@@ -49,8 +50,11 @@
     "codex-rs/state/src/sqlite.rs",
     "codex-rs/state/src/sqlite_evidence_runtime.rs",
     "scripts/build_kernel_evidence_status.py",
+    "scripts/kernel_evidence_record_validation.py",
     "scripts/kernel_evidence_status.py",
-    "scripts/tests/test_kernel_evidence_status.py"
+    "scripts/tests/test_kernel_evidence_record_validation.py",
+    "scripts/tests/test_kernel_evidence_status.py",
+    "scripts/tests/test_kernel_evidence_status_admission.py"
   ],
   "capabilities": {
     "recoveryFrontierV2": true,

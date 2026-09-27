@@ -443,6 +443,39 @@ The named product caller is `runtime.agentd`. The stable qualification check is
 `Kernel evidence required`, incorporated into `CI required`. Activating it as a
 protected-branch requirement remains a repository-administrator operation.
 
+## 18. Convergence hardening on 2026-09-27
+
+The direct `hepta-kernel-evidence-convergence.yml` entry point runs on every PR
+without a path filter and also on main pushes. It invokes the reusable source
+and merge workflow and separately executes the Python receipt regressions. The
+final `Kernel evidence convergence required` check rejects missing, skipped,
+cancelled and failed applicable lanes. Reusable workflow concurrency includes
+the caller workflow name so this entry point and `blocking-ci` cannot cancel
+one another's qualification. Diagnostic initialization precedes toolchain setup
+and synthetic merge construction; test commands require observed passing tests.
+
+`kernel_evidence_record_validation.py` checks bounded regular files, exact
+command plans, clean before/after Git identities, run/attempt/job identity,
+terminal integer exit codes, test counts, timestamps and raw-log byte counts
+and SHA-256. Duplicate JSON fields, non-finite numbers, unsafe paths, symlinks,
+hard links and changed files fail closed. The final artifact-bearing status
+also validates the exact repository/run/artifact URL and returns a nonzero exit
+status if qualification is false. A pre-upload diagnostic may report successful
+execution but cannot report final qualification without a retained artifact.
+These checks do not authenticate an untrusted CI runner or confer release
+power; the reviewed command plan and governed runner remain the trust boundary.
+
+`EvidenceFrontierHistoryRangeV1` no longer permits external unchecked struct
+construction. Its constructor enforces positive inclusive ranges of at most
+4096 generations. Public accessors retain backend integration; a compile-fail
+doctest and inclusive-limit/overflow tests cover the boundary.
+
+The convergence change set has 42 additional Python unit regressions that were
+executed locally. This is not a full Rust build, exact-candidate qualification,
+independent acceptance or deployment receipt. See
+`qualification/kernel-evidence/CONVERGENCE_20260927.md` for the execution scope
+and unresolved administrative and operational gates.
+
 <!-- BEGIN GENERATED KERNEL EVIDENCE STATUS -->
 ## Canonical kernel.evidence status
 
@@ -452,9 +485,9 @@ This block is generated from
 override these facts. Workflow receipts may prove the current candidate, but
 cannot self-issue independent acceptance, deployment, canary or release.
 
-- Source anchor commit: `88a46b13d5479370812ca2b680e77972fb770767`
-- Source anchor tree: `94776711df64f9630c3dfd40b3a44f320d7d85ea`
-- Canonical status SHA-256: `c55c659e400adc86c1e658b332f87c041ef8e1db7d218c6dae1b60c653fb8e1e`
+- Source anchor commit: `38e54289c0cbe0177769b4ccaaadcdf90d85ac0d`
+- Source anchor tree: `ac7aa53cca04f1b41155a61786c3c7b2926b3cc0`
+- Canonical status SHA-256: `0994022f978542edeac9b03bde334ca00049f3ecc5cfc7e31e5f1c61d0646c06`
 - Workflow run ID: `none`
 - Retained artifact digest: `none`
 

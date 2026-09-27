@@ -35,6 +35,9 @@ repository CI cannot manufacture.
 | One machine-readable source generates all module status views | `STATUS_SOURCE.json`, `scripts/kernel_evidence_status.py` | closed-world key/source-anchor/projection drift tests | `docs.json` | none for repository facts; external gates still require receipts |
 | Backup publication exactly matches the accepted snapshot, backend and generation | Agentd production admission | durable flag, digest, freshness and generation mismatch tests | `agentd-product-test.json` | backup operator witness |
 | A valid stale complete SQLite image is rejected against a newer external frontier | frontier v2, backend, local acceptance and production admission | old-image/ledger-root mismatch tests | source/product artifact | witnessed recovery drill |
+| External callers cannot bypass the bounded history constructor | `frontier_backend.rs` | compile-fail doctest, inclusive 4096-generation and overflow tests | final evidence package run required | none for API enforcement |
+| Replayed, malformed or substituted execution records cannot produce final qualification | `scripts/kernel_evidence_record_validation.py`, `build_kernel_evidence_status.py` | 42 added Python unit regressions covering run/command/log/artifact and persistence boundaries | local unit results only until final convergence workflow passes | governed CI runner and independent review |
+| A required workflow cannot vanish behind path filters or cancel another caller | `hepta-kernel-evidence-convergence.yml`, reusable workflow concurrency | direct PR entry, nonempty regression suite and fail-closed fan-in | `Kernel evidence convergence required` | administrator must enforce the check |
 
 ## Claim boundary
 
@@ -67,9 +70,9 @@ This block is generated from
 override these facts. Workflow receipts may prove the current candidate, but
 cannot self-issue independent acceptance, deployment, canary or release.
 
-- Source anchor commit: `88a46b13d5479370812ca2b680e77972fb770767`
-- Source anchor tree: `94776711df64f9630c3dfd40b3a44f320d7d85ea`
-- Canonical status SHA-256: `c55c659e400adc86c1e658b332f87c041ef8e1db7d218c6dae1b60c653fb8e1e`
+- Source anchor commit: `38e54289c0cbe0177769b4ccaaadcdf90d85ac0d`
+- Source anchor tree: `ac7aa53cca04f1b41155a61786c3c7b2926b3cc0`
+- Canonical status SHA-256: `0994022f978542edeac9b03bde334ca00049f3ecc5cfc7e31e5f1c61d0646c06`
 - Workflow run ID: `none`
 - Retained artifact digest: `none`
 
