@@ -9,6 +9,10 @@ use std::fs::OpenOptions;
 use std::io::Read;
 #[cfg(unix)]
 use std::io::Write;
+#[cfg(test)]
+use std::sync::atomic::AtomicU8;
+#[cfg(test)]
+use std::sync::atomic::Ordering;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -43,8 +47,28 @@ const CHECKPOINT_SCHEMA_VERSION: u32 = 1;
 const MAX_CHECKPOINT_BYTES: u64 = 4096;
 const RECOVERY_BATCH: u32 = 256;
 
+#[cfg(test)]
+static CHECKPOINT_FAILPOINT: AtomicU8 = AtomicU8::new(0);
+
+#[cfg(test)]
+pub(crate) fn set_checkpoint_failpoint(stage: u8) {
+    CHECKPOINT_FAILPOINT.store(stage, Ordering::SeqCst);
+}
+
+fn checkpoint_failpoint(stage: u8) -> Result<(), AuthBusAuthorityError> {
+    #[cfg(test)]
+    if CHECKPOINT_FAILPOINT.load(Ordering::SeqCst) == stage {
+        return Err(AuthBusAuthorityError::Storage(format!(
+            "injected checkpoint I/O failure at stage {stage}"
+        )));
+    }
+    #[cfg(not(test))]
+    let _ = stage;
+    Ok(())
+}
+
 pub struct AuthBusAuthorityHost {
-    store: AuthBusAuthorityStore,
+    pub(crate) store: AuthBusAuthorityStore,
     checkpoint: AuthorityCheckpointFile,
     _owner_fence: OwnerFence,
 }
@@ -58,9 +82,8 @@ impl AuthBusAuthorityHost {
         Self::open_internal(database_path, checkpoint_path, owner_id, false).await
     }
 
-    /// Create the first independently retained checkpoint when both authority
-    /// state and witness are new. An existing database without its witness is
-    /// never reconstructed; that condition remains a rollback failure.
+    /// Create the first independently retained checkpoint only when neither
+    /// state domain exists. Bootstrap is never a recovery operation.
     pub async fn bootstrap(
         database_path: &Path,
         checkpoint_path: PathBuf,
@@ -75,9 +98,16 @@ impl AuthBusAuthorityHost {
         owner_id: &str,
         allow_bootstrap: bool,
     ) -> Result<Self, AuthBusAuthorityError> {
+        let database_exists = database_path.exists();
+        let checkpoint_exists = checkpoint_path.exists();
+        if (allow_bootstrap && (database_exists || checkpoint_exists))
+            || (!allow_bootstrap && (!database_exists || !checkpoint_exists))
+        {
+            return Err(AuthBusAuthorityError::RollbackDetected);
+        }
         let owner_fence = OwnerFence::acquire(database_path, owner_id).await?;
         let store = AuthBusAuthorityStore::open(database_path).await?;
-        let (checkpoint, external) = if checkpoint_path.exists() {
+        let (checkpoint, external) = if checkpoint_exists {
             AuthorityCheckpointFile::open(checkpoint_path, database_path, owner_id)?
         } else {
             if !allow_bootstrap || store.authority_checkpoint().await?.is_some() {
@@ -105,16 +135,14 @@ impl AuthBusAuthorityHost {
                 }
             }
         }
-        while !store.reconcile_after_restart(RECOVERY_BATCH).await? {}
+        // Startup work is deliberately bounded. If more work remains, normal
+        // write admission stays fail-closed through recovery_required while the
+        // named authority worker continues subsequent batches.
+        let _ = store.reconcile_after_restart(RECOVERY_BATCH).await?;
         if let Some(time) = store.last_trusted_time().await? {
-            loop {
-                let sweep = store
-                    .sweep_expired_reservations(time.clone(), RECOVERY_BATCH)
-                    .await?;
-                if !sweep.remaining {
-                    break;
-                }
-            }
+            let _ = store
+                .sweep_expired_reservations(time, RECOVERY_BATCH)
+                .await?;
         }
         let host = Self {
             store,
@@ -370,9 +398,6 @@ impl AuthBusAuthorityHost {
         self.finish(result).await
     }
 
-    /// One authority-worker maintenance tick. The caller supplies a freshly
-    /// verified trusted-time sample; checkpoint publication completes before the
-    /// result is returned.
     pub async fn sweep_expired_reservations(
         &self,
         time: TrustedTimeSample,
@@ -729,12 +754,16 @@ fn write_private_atomic(
             .mode(0o600)
             .open(&temporary)
             .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
+        checkpoint_failpoint(1)?;
         file.write_all(&payload)
             .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
+        checkpoint_failpoint(2)?;
         file.sync_all()
             .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
+        checkpoint_failpoint(3)?;
         std::fs::rename(&temporary, path)
             .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
+        checkpoint_failpoint(4)?;
         File::open(parent)
             .and_then(|directory| directory.sync_all())
             .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
@@ -754,3 +783,7 @@ fn write_private_atomic(
 ) -> Result<(), AuthBusAuthorityError> {
     Err(AuthBusAuthorityError::UnsafeCheckpoint)
 }
+
+#[cfg(all(test, unix))]
+#[path = "host_tests.rs"]
+mod tests;
