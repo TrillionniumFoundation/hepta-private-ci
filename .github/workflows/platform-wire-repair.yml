@@ -6,14 +6,22 @@ on:
       - codex/platform-wire-final-convergence-20260925
     paths:
       - '.github/workflows/platform-wire-repair.yml'
+      - '.github/workflows/lane-a-foundation.yml'
       - 'codex-rs/Cargo.lock'
       - 'codex-rs/hepta-wire/**'
+      - 'docs/modules/MODULES.json'
+      - 'scripts/generate_lane_a_workflow_paths.py'
+      - 'scripts/test_generate_lane_a_workflow_paths.py'
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - '.github/workflows/platform-wire-repair.yml'
+      - '.github/workflows/lane-a-foundation.yml'
       - 'codex-rs/Cargo.lock'
       - 'codex-rs/hepta-wire/**'
+      - 'docs/modules/MODULES.json'
+      - 'scripts/generate_lane_a_workflow_paths.py'
+      - 'scripts/test_generate_lane_a_workflow_paths.py'
   workflow_dispatch:
 
 permissions:
@@ -55,7 +63,7 @@ jobs:
           git diff --quiet
           git diff --cached --quiet
 
-      - name: Synchronize lock, evidence regression and deterministic formatting
+      - name: Synchronize lock, evidence regression, generated paths and formatting
         shell: bash
         run: |
           set -euo pipefail
@@ -112,7 +120,55 @@ jobs:
               if anchor not in test_text:
                   raise SystemExit('stream regression insertion anchor missing')
               test_path.write_text(test_text.replace(anchor, regression + anchor), encoding='utf-8')
+
+          workflow_path = Path('.github/workflows/lane-a-foundation.yml')
+          workflow = workflow_path.read_text(encoding='utf-8')
+          if 'BEGIN GENERATED LANE A MODULE PATHS' not in workflow:
+              old_paths = '''    paths:
+                - "codex-rs/hepta-*/**"
+                - "codex-rs/kernel-*/**"
+                - "docs/contracts/**"
+                - "docs/lane-a-foundation/**"
+                - "docs/modules/platform.types/**"
+                - "docs/modules/platform.wire/**"
+          '''
+              new_paths = '''    paths:
+                # BEGIN GENERATED LANE A MODULE PATHS
+                # END GENERATED LANE A MODULE PATHS
+                - "docs/modules/MODULES.json"
+                - "docs/contracts/**"
+                - "docs/lane-a-foundation/**"
+          '''
+              if old_paths not in workflow:
+                  raise SystemExit('Lane A path bootstrap anchor missing')
+              workflow = workflow.replace(old_paths, new_paths, 1)
+          script_anchor = '''      - "scripts/lane_a_foundation_core.py"
+                - "scripts/lane_a_foundation_lib.py"
+          '''
+          script_paths = '''      - "scripts/lane_a_foundation_core.py"
+                - "scripts/lane_a_foundation_lib.py"
+                - "scripts/generate_lane_a_workflow_paths.py"
+                - "scripts/test_generate_lane_a_workflow_paths.py"
+          '''
+          if 'scripts/generate_lane_a_workflow_paths.py' not in workflow:
+              if script_anchor not in workflow:
+                  raise SystemExit('Lane A generator trigger anchor missing')
+              workflow = workflow.replace(script_anchor, script_paths, 1)
+          verify_anchor = '''          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+                python3 scripts/verify_lane_a_foundation.py self-test
+          '''
+          verify_paths = '''          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+                python3 scripts/generate_lane_a_workflow_paths.py check
+                python3 -m unittest discover -s scripts -p 'test_generate_lane_a_workflow_paths.py'
+                python3 scripts/verify_lane_a_foundation.py self-test
+          '''
+          if "test_generate_lane_a_workflow_paths.py'" not in workflow:
+              if workflow.count(verify_anchor) != 2:
+                  raise SystemExit('Lane A verification insertion anchors missing')
+              workflow = workflow.replace(verify_anchor, verify_paths)
+          workflow_path.write_text(workflow, encoding='utf-8')
           PY
+          python3 scripts/generate_lane_a_workflow_paths.py write
           cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-wire
           git diff --check
 
@@ -120,6 +176,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python3 scripts/generate_lane_a_workflow_paths.py check
+          python3 -m unittest discover -s scripts -p 'test_generate_lane_a_workflow_paths.py'
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
           python3 scripts/platform_wire_status.py self-test
@@ -129,7 +187,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git add codex-rs/Cargo.lock codex-rs/hepta-wire
+          git add .github/workflows/lane-a-foundation.yml codex-rs/Cargo.lock codex-rs/hepta-wire \
+            scripts/generate_lane_a_workflow_paths.py scripts/test_generate_lane_a_workflow_paths.py
           if git diff --cached --quiet; then
             echo 'No repair changes were required.'
             exit 0
@@ -143,6 +202,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python3 scripts/generate_lane_a_workflow_paths.py check
           cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-wire -- --check
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --no-run
           git diff --quiet
