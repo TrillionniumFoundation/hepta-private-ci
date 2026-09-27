@@ -1,3 +1,4 @@
+use std::io::Read;
 use std::path::PathBuf;
 
 use codex_hepta_memory::H7ArtifactVerifier;
@@ -116,11 +117,67 @@ fn load_grant_verifier(
 }
 
 fn load_public_key(path: PathBuf, label: &str) -> anyhow::Result<[u8; 32]> {
-    let metadata = std::fs::symlink_metadata(&path)?;
-    if !metadata.file_type().is_file() {
-        anyhow::bail!("{label} must be a regular, non-symlink file");
+    // Public keys are not secrets, but their integrity is an authority boundary.
+    // The operator must protect parent directories; this pins the opened file.
+    anyhow::ensure!(path.is_absolute(), "{label} path must be absolute");
+    let before = std::fs::symlink_metadata(&path)?;
+    anyhow::ensure!(
+        before.is_file(),
+        "{label} must be a regular, non-symlink file"
+    );
+    let mut options = std::fs::OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
     }
-    let bytes = std::fs::read(&path)?;
+    let file = options.open(&path)?;
+    let opened = file.metadata()?;
+    anyhow::ensure!(opened.is_file(), "{label} opened file must be regular");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        // SAFETY: geteuid takes no arguments and has no memory-safety preconditions.
+        let uid = unsafe { libc::geteuid() };
+        anyhow::ensure!(
+            (opened.uid() == uid || opened.uid() == 0)
+                && opened.mode() & 0o022 == 0
+                && opened.nlink() == 1,
+            "{label} must be root/effective-user owned, single-link, and not writable by others"
+        );
+        anyhow::ensure!(
+            opened.dev() == before.dev() && opened.ino() == before.ino(),
+            "{label} file identity changed during open"
+        );
+    }
+    // 32 raw bytes or 64 hex characters with bounded surrounding whitespace.
+    // Read at most one byte beyond the limit, even for a growing/sparse file.
+    const MAX_KEY_BYTES: u64 = 128;
+    let mut bytes = Vec::new();
+    (&file).take(MAX_KEY_BYTES + 1).read_to_end(&mut bytes)?;
+    anyhow::ensure!(
+        bytes.len() as u64 <= MAX_KEY_BYTES,
+        "{label} exceeds key byte limit"
+    );
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        let after = file.metadata()?;
+        anyhow::ensure!(
+            after.dev() == opened.dev()
+                && after.ino() == opened.ino()
+                && after.uid() == opened.uid()
+                && after.mode() == opened.mode()
+                && after.nlink() == opened.nlink()
+                && after.len() == opened.len()
+                && after.mtime() == opened.mtime()
+                && after.mtime_nsec() == opened.mtime_nsec()
+                && after.ctime() == opened.ctime()
+                && after.ctime_nsec() == opened.ctime_nsec(),
+            "{label} file changed while being read"
+        );
+    }
     let key = if bytes.len() == 32 {
         let mut key = [0_u8; 32];
         key.copy_from_slice(&bytes);
@@ -181,3 +238,7 @@ async fn wait_for_shutdown_signal() {
 async fn wait_for_shutdown_signal() {
     let _ = tokio::signal::ctrl_c().await;
 }
+
+#[cfg(all(test, unix))]
+#[path = "main_key_tests.rs"]
+mod key_tests;

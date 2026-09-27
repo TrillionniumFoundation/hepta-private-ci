@@ -32,9 +32,10 @@ PLANS = {
         1, [*TEST, "--lib", "--features", "production-authority", *SERIAL],
     ),
     "products": (
-        9,
+        15,
         [
             *TEST, "--features", "production-authority",
+            "--bin", "hepta-supervisord",
             "--test", "authority_recovery",
             "--test", "daemon_product",
             "--test", "paired_process_product",
@@ -50,6 +51,54 @@ PLANS = {
         ],
     ),
 }
+# Reviewed mandatory cases: deleting/filtering a case cannot manufacture closure.
+# This validates trusted CI output, not adversarial runner authenticity.
+LIBRARY_REQUIREMENTS = (
+    "daemon::owner::tests::"
+    "contender_does_not_rewrite_or_chmod_live_owner_file",
+    "daemon::owner::tests::"
+    "symlink_and_hardlink_targets_are_never_truncated",
+    "daemon::owner::tests::"
+    "owner_release_keeps_the_same_lock_inode",
+    "daemon::owner::tests::"
+    "directory_is_not_a_lock_and_is_not_chmodded",
+    "daemon::execution::tests::"
+    "cancelled_waiter_retains_writer_and_capacity_until_blocking_work_finishes",
+    "daemon::execution::tests::"
+    "owner_panic_poison_cancels_daemon_and_prevents_successor_work",
+    "daemon::execution::tests::"
+    "cancellation_releases_ticker_wait_without_starting_more_work",
+    "daemon::execution::tests::"
+    "queued_request_gets_owner_capacity_before_a_later_tick",
+    "daemon::read_view::tests::"
+    "all_256_observations_are_addressable_and_roster_limits_remain_exact",
+    "daemon::read_view::tests::"
+    "expired_and_future_dated_observations_fail_closed_for_every_cached_read",
+    "daemon::read_view::tests::"
+    "invalidation_never_serves_the_preceding_successful_view",
+    "daemon::read_view::tests::"
+    "live_release_and_production_evidence_never_comes_from_observation_cache",
+    "daemon::read_view::tests::"
+    "recovery_required_view_is_reachable_but_not_ready",
+    "daemon::shutdown_tests::"
+    "shutdown_drains_accepted_connection_before_owner_can_be_replaced",
+    "daemon::shutdown_tests::"
+    "dropping_server_future_aborts_and_reaps_idle_connections",
+)
+KEY_REQUIREMENTS = (
+    "key_tests::public_key_accepts_raw_and_bounded_hex_without_rewriting_the_file",
+    "key_tests::public_key_rejects_relative_path_before_filesystem_access",
+    "key_tests::public_key_rejects_sparse_oversize_without_unbounded_allocation",
+    "key_tests::public_key_rejects_links_and_writable_authority_material",
+    "key_tests::public_key_rejects_fifo_without_waiting_for_a_writer",
+    "key_tests::public_key_rejects_malformed_hex_and_wrong_lengths",
+)
+REQUIRED_TESTS = {
+    "default": LIBRARY_REQUIREMENTS,
+    "production": LIBRARY_REQUIREMENTS,
+    "products": KEY_REQUIREMENTS,
+}
+
 CONTEXT_FIELDS = (
     "source_sha", "base_sha", "tested_sha", "lane", "run_id", "run_attempt",
 )
@@ -141,6 +190,12 @@ def validate_record(
         f"{name}: test count differs from log",
     )
     require(passed >= minimum and failed == 0, f"{name}: missing or failed tests")
+    text = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", log.decode("utf-8", errors="replace"))
+    named_passes = set(re.findall(
+        r"(?m)^\s*PASS\s+\[[^\]\r\n]+\]\s+\S+\s+(\S+)\s*$", text,
+    ))
+    missing = set(REQUIRED_TESTS.get(name, ())) - named_passes
+    require(not missing, f"{name}: mandatory tests did not pass: {sorted(missing)}")
 
 
 def context_from_env() -> dict:

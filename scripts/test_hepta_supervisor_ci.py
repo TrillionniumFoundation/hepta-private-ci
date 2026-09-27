@@ -13,6 +13,7 @@ from unittest.mock import patch
 from scripts.hepta_supervisor_ci import CONTEXT_ENV
 from scripts.hepta_supervisor_ci import CONTEXT_FIELDS
 from scripts.hepta_supervisor_ci import PLANS
+from scripts.hepta_supervisor_ci import REQUIRED_TESTS
 from scripts.hepta_supervisor_ci import context_from_env
 from scripts.hepta_supervisor_ci import read_regular
 from scripts.hepta_supervisor_ci import validate_record
@@ -27,21 +28,24 @@ class ReceiptTests(unittest.TestCase):
             "commit": "a" * 40, "tree": "c" * 40,
             "parents": ["b" * 40], "dirty": False,
         }
-        self.log = b"fixture runner output"
+        self.log = "".join(
+            f"PASS [ 0.001s] fixture {name}\n"
+            for name in (*REQUIRED_TESTS["products"], *(f"other_{i}" for i in range(9)))
+        ).encode()
         self.record = {
             "schema_version": 1, "status": "passed", **self.context,
             "command": PLANS["products"][1].copy(),
-            "minimum_tests": 9,
+            "minimum_tests": 15,
             "before": copy.deepcopy(self.identity),
             "after": copy.deepcopy(self.identity),
             "returncode": 0, "command_exit_code": 0, "exit_code": 0,
             "timed_out": False, "output_limit_exceeded": False,
-            "observed_passed_tests": 9, "observed_failed_tests": 0,
+            "observed_passed_tests": 15, "observed_failed_tests": 0,
             "log_bytes": len(self.log),
             "log_sha256": hashlib.sha256(self.log).hexdigest(),
         }
 
-    def validate(self, data=None, counts=(9, 0), log=None, identity=None):
+    def validate(self, data=None, counts=(15, 0), log=None, identity=None):
         # Stub only the runner's summary parser: parsing itself is tested by
         # hepta_ci_exec's existing suite; this suite tests the binding policy.
         validate_record(
@@ -101,11 +105,11 @@ class ReceiptTests(unittest.TestCase):
 
     def test_rejects_fabricated_test_counts(self):
         with self.assertRaises(ValueError):
-            self.validate(counts=(8, 0))
+            self.validate(counts=(14, 0))
         with self.assertRaises(ValueError):
             self.validate({**self.record, "observed_passed_tests": 0}, counts=(0, 0))
         with self.assertRaises(ValueError):
-            self.validate(counts=(9, 1))
+            self.validate(counts=(15, 1))
 
     def test_rejects_missing_schema_and_boolean_schema(self):
         for value in (None, True, 2, "1"):
@@ -155,6 +159,58 @@ class ReceiptTests(unittest.TestCase):
             link.symlink_to(path)
             with self.assertRaises(ValueError):
                 read_regular(link, 4)
+
+    def test_library_lanes_require_every_owner_and_cancellation_case(self):
+        for lane in ("default", "production"):
+            log = "".join(
+                f"PASS [ 0.001s] fixture {name}\n"
+                for name in REQUIRED_TESTS[lane]
+            ).encode()
+            record = {**self.record, "command": PLANS[lane][1].copy(),
+                      "minimum_tests": PLANS[lane][0], "log_bytes": len(log),
+                      "log_sha256": hashlib.sha256(log).hexdigest()}
+            validate_record(lane, record, self.context, self.identity, log,
+                            lambda _text: (15, 0))
+            for name in REQUIRED_TESTS[lane]:
+                missing = log.replace(name.encode(), b"unrelated")
+                changed = {**record, "log_bytes": len(missing),
+                           "log_sha256": hashlib.sha256(missing).hexdigest()}
+                with self.subTest(lane=lane, name=name), self.assertRaises(ValueError):
+                    validate_record(lane, changed, self.context, self.identity,
+                                    missing, lambda _text: (15, 0))
+
+    def test_parent_command_without_binary_tests_cannot_be_reused(self):
+        command = self.record["command"].copy()
+        index = command.index("--bin")
+        del command[index:index + 2]
+        with self.assertRaises(ValueError):
+            self.validate({**self.record, "command": command})
+
+    def test_total_pass_count_cannot_hide_a_missing_mandatory_test(self):
+        for name in REQUIRED_TESTS["products"]:
+            log = self.log.replace(name.encode(), b"unrelated_test")
+            record = {**self.record, "log_bytes": len(log),
+                      "log_sha256": hashlib.sha256(log).hexdigest()}
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                self.validate(record, log=log)
+
+    def test_nonpass_or_substring_is_not_a_named_success(self):
+        target = REQUIRED_TESTS["products"][0].encode()
+        for log in (
+            self.log.replace(b"PASS", b"SKIP", 1),
+            self.log.replace(b"PASS", b"FAIL", 1),
+            self.log.replace(target, target + b"_different"),
+        ):
+            record = {**self.record, "log_bytes": len(log),
+                      "log_sha256": hashlib.sha256(log).hexdigest()}
+            with self.subTest(log=log), self.assertRaises(ValueError):
+                self.validate(record, log=log)
+
+    def test_ansi_runner_successes_keep_exact_names(self):
+        log = self.log.replace(b"PASS", b"\x1b[32mPASS\x1b[0m")
+        record = {**self.record, "log_bytes": len(log),
+                  "log_sha256": hashlib.sha256(log).hexdigest()}
+        self.validate(record, log=log)
 
     def test_plans_preserve_default_and_production_lanes_without_retries(self):
         self.assertEqual(set(PLANS), {"format", "default", "production", "products", "lint"})
