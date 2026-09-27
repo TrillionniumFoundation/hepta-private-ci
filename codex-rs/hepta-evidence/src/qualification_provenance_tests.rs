@@ -259,3 +259,46 @@ async fn production_provenance_both_entry_points_reject_zero_current_generation(
     assert_both_entry_points_reject(&store, 0, &current, "positive trust generation").await;
     store.close().await;
 }
+
+#[tokio::test]
+async fn accepted_history_cannot_override_a_different_current_registry_digest() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    store
+        .bind_recovery_store_id("store:provenance")
+        .await
+        .expect("enroll store");
+    let accepted = Sha256Digest::for_bytes(b"trust:accepted-at-one");
+    let substituted = Sha256Digest::for_bytes(b"trust:substituted-at-one");
+    accept_trust_generation(&store, 1, &accepted).await;
+    insert_qualification(&store, 1, Some(vec![7_u8; 64]), Some(1), Some(&accepted)).await;
+
+    store
+        .verify_production_qualification_provenance(1, &accepted)
+        .await
+        .expect("exact current registry is supported");
+    assert_both_entry_points_reject(&store, 1, &substituted, "unaccepted trust generation").await;
+    store.close().await;
+}
+
+#[tokio::test]
+async fn accepted_history_cannot_make_a_future_generation_current() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    store
+        .bind_recovery_store_id("store:provenance")
+        .await
+        .expect("enroll store");
+    let selected = Sha256Digest::for_bytes(b"trust:selected-one");
+    let later = Sha256Digest::for_bytes(b"trust:accepted-two");
+    accept_trust_generation(&store, 1, &selected).await;
+    accept_trust_generation(&store, 2, &later).await;
+    insert_qualification(&store, 1, Some(vec![7_u8; 64]), Some(2), Some(&later)).await;
+
+    store
+        .verify_production_qualification_provenance(2, &later)
+        .await
+        .expect("latest exact registry is supported");
+    assert_both_entry_points_reject(&store, 1, &selected, "unaccepted trust generation").await;
+    store.close().await;
+}
