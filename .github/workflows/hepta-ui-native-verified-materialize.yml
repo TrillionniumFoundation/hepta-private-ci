@@ -26,7 +26,8 @@ jobs:
         shell: bash
     env:
       BRANCH: work/ui-native-verified-closure-20260927
-      SOURCE_PARENT: 00585142409e59f746ca7ac4d80416ecaaa60495
+      SOURCE_PARENT: bcc7233ac50c1d37001843392d32f7150a658bc2
+      PINNED_MAIN: a126987b84737dbc2ee2592442a314117bddb4a2
       PATCH_SHA256: a2d38ea3adb7ab90ee8755fbf36d1a599939c9eb29f3b9685191d979b0f19a03
       CARGO_INCREMENTAL: '0'
       CARGO_TERM_COLOR: never
@@ -45,14 +46,14 @@ jobs:
           cp .github/ui-native-verified-bootstrap/changes.patch.gz.b64 "$RUNNER_TEMP/native-verified-evidence/transport.b64"
           test "$(git rev-parse HEAD)" = "$EXPECTED"
           git merge-base --is-ancestor "$SOURCE_PARENT" HEAD
+          git cat-file -e "$PINNED_MAIN^{commit}"
           python3 - <<'PY'
           import base64, gzip, hashlib, os, subprocess
           from pathlib import Path
+          allowed = {'.github/workflows/hepta-ui-native-verified-materialize.yml', '.github/workflows/hepta-ui-native-verified-export.yml'}
           changed = subprocess.check_output(['git','diff','--name-only',os.environ['SOURCE_PARENT'],'HEAD'],text=True).splitlines()
-          assert changed and all(p.startswith('.github/ui-native-verified-bootstrap/') or p == '.github/workflows/hepta-ui-native-verified-materialize.yml' for p in changed), changed
+          assert changed and all(p.startswith('.github/ui-native-verified-bootstrap/') or p in allowed for p in changed), changed
           text = Path('.github/ui-native-verified-bootstrap/changes.patch.gz.b64').read_text(encoding='ascii').strip()
-          # Repair only known transport transcription differences. The original
-          # complete patch SHA256 below remains the non-negotiable acceptance gate.
           repairs = {
               'HFYKuUGUGXBT42': 'HFYKuUGUZDHXBT42',
               '8XRwOF6Mi0OMS2': '8XRwOF6MrwiC0OMS2',
@@ -73,12 +74,18 @@ jobs:
           git apply --index --check "$RUNNER_TEMP/native-verified.patch"
           git apply --index "$RUNNER_TEMP/native-verified.patch"
           python3 - <<'PY'
-          import subprocess
+          import os, subprocess
+          from pathlib import Path
           paths = subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
           assert len(paths) == 14, paths
           assert all(p.startswith(('apps/hepta-native/','docs/modules/ui.native/')) or p == '.github/workflows/hepta-ui-native-remediation.yml' for p in paths), paths
+          path = Path('.github/workflows/hepta-ui-native-remediation.yml')
+          text = path.read_text()
+          previous = 'a092b762b441f03f7b60ddafd3a79ee12e3b71ea05'
+          assert text.count(previous) == 1
+          path.write_text(text.replace(previous, os.environ['PINNED_MAIN']))
           PY
-          # The transport workflows are not shipped as permanent branch writers.
+          git add -- .github/workflows/hepta-ui-native-remediation.yml
           git rm -- .github/ui-native-verified-bootstrap/changes.patch.gz.b64 .github/workflows/hepta-ui-native-verified-materialize.yml .github/workflows/hepta-ui-native-verified-export.yml
       - name: Install pinned native toolchain
         id: toolchain
