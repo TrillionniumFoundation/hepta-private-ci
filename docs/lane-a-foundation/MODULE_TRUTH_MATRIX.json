@@ -579,66 +579,85 @@
     },
     {
       "module": "secrets.heptabao",
-      "profile": "bounded_external_secret_reader",
+      "profile": "registered_exact_kv_v2_secret_consumer",
       "formalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
+      "implementationDetail": "docs/modules/secrets.heptabao/CONSUMPTION_SAGA_V4.md",
       "states": {
-        "source": "implemented",
-        "implementation": "bounded_kv_v2_reader_with_registered_final_use_host",
-        "durability": "external_authority_plus_local_final_use_state",
-        "qualification": "source_tests_and_exact_candidate_workflow_required",
-        "activation": "registered_host_composed_not_product_activated",
+        "source": "implemented_candidate",
+        "implementation": "registered_read_saga_and_json_reference_owner",
+        "durability": "json_reference_owner_sqlite_production_owner_pending",
+        "qualification": "exact_source_and_synthetic_merge_required",
+        "activation": "not_product_activated",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
         "pinned-CA HTTPS read of one exact KV-v2 string field",
-        "canonical final-use claim and delivery boundaries",
-        "registered signed consumer-id to trusted callback mapping",
-        "independent approval before dispatch and authenticated revocation ingestion",
-        "metadata-only receipt without raw secret value"
+        "independently signed final-use grant and operator approval",
+        "authenticated monotonic revocation-feed admission",
+        "closed consumer registry bound to an immutable configuration digest",
+        "explicit Claimed Reserved DispatchFenced durable consumption saga",
+        "operation-ID reservation lookup and restart reconciliation without blind redispatch",
+        "immutable provider-failure and proved consumer-NotApplied terminal evidence",
+        "metadata-only receipts and secret-buffer best-effort zeroization",
+        "bounded single-writer JSON reference owner with fsync and fencing"
       ],
       "targetOnlyCapabilities": [
-        "secret mutation",
-        "generic secret lease renewal API",
-        "durable operation and evidence composition",
-        "fleet revocation distribution and freshness enforcement",
-        "automatic production enrollment and selected process caller"
+        "SQLite production owner activation and migration from the JSON reference model",
+        "selected Agentd or App Server production bootstrap",
+        "independently operated trusted-time settlement and key-rotation services",
+        "external anti-rollback checkpoint service and disaster-recovery ceremony",
+        "target-host power-loss and long-history archival qualification",
+        "independent operator acceptance promotion and release"
       ],
       "sourceAnchors": [
         {
-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+          "path": "codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs",
           "mustContain": [
-            "pub struct BaoClient",
-            "consume_kv_v2",
-            "MAX_RESPONSE_BYTES",
-            "claim_final_use(authority, grant, &binding)",
-            "deliver_final_use(authority, verified, &binding"
-          ],
-          "mustNotContain": [
-            ".claim(grant, &binding)",
-            ".with_verified_use(verified"
+            "Claimed",
+            "Reserved",
+            "DispatchFenced",
+            "record_provider_failure",
+            "observe_consumption_not_applied"
           ]
         },
         {
           "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
           "mustContain": [
-            "pub struct BaoFinalUseHost",
-            "UnregisteredConsumer",
-            "approval_verifier",
-            "revocation_verifier"
+            "consume_kv_v2_with_authbus",
+            "reconcile_consumption",
+            "NotAppliedWithEvidence",
+            "seal_unreserved_operation"
           ]
         },
         {
-          "path": "codex-rs/hepta-bao-adapter/README.md",
+          "path": "codex-rs/hepta-bao-adapter/src/authbus_saga.rs",
           "mustContain": [
-            "Authorized HeptaBao HTTPS consumer",
-            "Only read operations exist here"
+            "mark_dispatch_attempted",
+            "dispatch_fenced",
+            "provider_terminal"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/operation_lookup.rs",
+          "mustContain": [
+            "reservation_by_operation",
+            "seal_unreserved_operation",
+            "authbus_operation_admission_fence"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs",
+          "mustContain": [
+            "claimed_reserved_and_dispatch_fenced_are_distinct_durable_states",
+            "deterministic_provider_failure_is_immutable_and_terminal",
+            "proved_not_applied_settles_as_terminal_negative_without_reentry"
           ]
         }
-      ]
+      ],
+      "productCallerState": "registered_host_source_composed_not_activated"
     }
   ]
 }

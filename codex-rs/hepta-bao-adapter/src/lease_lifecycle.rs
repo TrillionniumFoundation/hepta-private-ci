@@ -169,6 +169,7 @@ impl LeaseRegistryPersistenceV1 for FsLeaseRegistryPersistenceV1 {
 }
 
 pub struct DurableLeaseRegistryV1 {
+    executions: crate::operation_execution::OperationExecutionSet,
     path: PathBuf,
     lock: File,
     state: StoredRegistryV1,
@@ -217,6 +218,11 @@ impl std::fmt::Display for LeaseRegistryErrorV1 {
 impl std::error::Error for LeaseRegistryErrorV1 {}
 
 impl DurableLeaseRegistryV1 {
+    pub(crate) fn enter_consumption_execution(&self, id: &str) -> Result<crate::operation_execution::OperationExecutionGuard, LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
+        self.executions.enter(id)
+    }
+
     pub fn open(path: impl Into<PathBuf>) -> Result<Self, LeaseRegistryErrorV1> {
         Self::open_with_persistence(path, Arc::new(FsLeaseRegistryPersistenceV1))
     }
@@ -328,6 +334,7 @@ impl DurableLeaseRegistryV1 {
                 .map_err(|_| LeaseRegistryErrorV1::CommitIndeterminate)?;
         }
         Ok(Self {
+            executions: Default::default(),
             path,
             lock,
             state,

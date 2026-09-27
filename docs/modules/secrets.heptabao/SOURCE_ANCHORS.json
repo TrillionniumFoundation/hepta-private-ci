@@ -1,0 +1,88 @@
+{
+  "schema": "hepta.module-source-anchors.v1",
+  "module": "secrets.heptabao",
+  "generatedFrom": "docs/modules/secrets.heptabao/MODULE_MANIFEST_V1.json",
+  "operations": [
+    {
+      "operation": "consume_kv_v2",
+      "symbol": "BaoClient::consume_kv_v2",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "class": "trusted_low_level_legacy_read"
+    },
+    {
+      "operation": "consume_kv_v2_with_authbus",
+      "symbol": "BaoFinalUseHost::consume_kv_v2_with_authbus",
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "class": "registered_durable_product_ingress"
+    },
+    {
+      "operation": "reconcile_consumption",
+      "symbol": "BaoFinalUseHost::reconcile_consumption",
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "class": "observer_only_restart_reconciliation"
+    },
+    {
+      "operation": "reservation_by_operation",
+      "symbol": "AuthBusAuthorityHost::reservation_by_operation",
+      "path": "codex-rs/hepta-authbus/src/host.rs",
+      "class": "read_only_recovery_projection"
+    },
+    {
+      "operation": "durable_consumption_transitions",
+      "symbol": "DurableLeaseRegistryV1",
+      "path": "codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs",
+      "class": "json_reference_owner"
+    },
+    {
+      "operation": "lease_lifecycle_reference",
+      "symbol": "DurableLeaseRegistryV1",
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "class": "json_reference_owner"
+    }
+  ],
+  "sourceAnchors": [
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs",
+      "mustContain": [
+        "Claimed",
+        "Reserved",
+        "DispatchFenced",
+        "record_provider_failure",
+        "observe_consumption_not_applied"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "mustContain": [
+        "consume_kv_v2_with_authbus",
+        "reconcile_consumption",
+        "NotAppliedWithEvidence",
+        "seal_unreserved_operation"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/authbus_saga.rs",
+      "mustContain": [
+        "mark_dispatch_attempted",
+        "dispatch_fenced",
+        "provider_terminal"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/operation_lookup.rs",
+      "mustContain": [
+        "reservation_by_operation",
+        "seal_unreserved_operation",
+        "authbus_operation_admission_fence"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs",
+      "mustContain": [
+        "claimed_reserved_and_dispatch_fenced_are_distinct_durable_states",
+        "deterministic_provider_failure_is_immutable_and_terminal",
+        "proved_not_applied_settles_as_terminal_negative_without_reentry"
+      ]
+    }
+  ]
+}

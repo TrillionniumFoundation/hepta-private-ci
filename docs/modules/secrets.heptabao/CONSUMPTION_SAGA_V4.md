@@ -1,7 +1,7 @@
 # Registered HeptaBao consumption saga V4
 
 This document is the current executable contract for the registered,
-operation-aware KV-v2 read path. It is generated semantically from
+operation-aware KV-v2 read path. The machine-readable states and source anchors are maintained in
 `MODULE_MANIFEST_V1.json`; exact source and merge identities are supplied by CI
 receipts rather than embedded into this document.
 
@@ -15,7 +15,7 @@ secret again or invokes the consumer effect again.
 
 | State | Durable fact | Only permitted recovery |
 |---|---|---|
-| `Claimed` | operation ID and exact semantics are committed; no reservation is implied | look up AuthBus by operation ID; bind a matching reservation or close as `no_reservation` after authoritative absence |
+| `Claimed` | operation ID and exact semantics are committed; no reservation is implied | atomically seal non-admission in AuthBus or bind its original reservation; a SELECT absence cannot close the operation |
 | `Reserved` | the original AuthBus reservation is bound; dispatch is not fenced | query the reservation; cancel or expire `Held`, then record a terminal pre-dispatch abort |
 | `DispatchFenced` | `mark_dispatch_attempted` committed for the exact effect digest | never redispatch; reconcile the original provider/consumer outcome and reservation |
 | `DeliveryPrepared` | a validated metadata receipt is committed before final authority recheck | query the original registered observer; receipt alone is not consumer-entry proof |
@@ -27,8 +27,11 @@ secret again or invokes the consumer effect again.
 | `Failed` | an immutable negative outcome and its abort/settlement proof are recorded | return the historical terminal error only |
 | `DispatchAttempted` | legacy schema-3 conservative state | find and bind the original reservation, then migrate to `Reserved` or `DispatchFenced`; never redispatch |
 
-Every state therefore has a defined recovery action. Unknown facts remain
-unknown; they do not become success, refund or a fresh attempt.
+The table defines the required recovery action, not proof that every boundary
+has passed native crash qualification. In particular, post-dispatch rows without
+a durable response receipt cannot currently query a provider-side operation
+observer; they remain pending. Unknown facts do not become success, refund or a
+fresh attempt.
 
 ## Forward sequence
 
@@ -42,7 +45,7 @@ unknown; they do not become success, refund or a fresh attempt.
 8. Perform the exact pinned-CA KV-v2 read without retry.
 9. For deterministic provider failure, commit immutable `ProviderFailed` evidence before settlement.
 10. For a valid response, commit `DeliveryPrepared` before the final live-authority check.
-11. Enter the registered consumer exactly once. Commit success or `Indeterminate`.
+11. Enter the registered consumer only on the new-operation path. Commit success or `Indeterminate`; this does not prove exactly-once external effects.
 12. Settle the original reservation from signed evidence.
 13. Commit the local terminal state.
 
@@ -69,10 +72,15 @@ terminal negative outcome eligible for AuthBus `Rejected` settlement.
 
 ## Restart reconciliation
 
-`AuthBusAuthorityHost::reservation_by_operation` searches both hot and archived
-reservations. A crash after reserve but before local bind therefore does not
-orphan the operation. Recovery validates operation ID, amount and effect digest
-before adopting the reservation.
+`AuthBusAuthorityHost::reservation_by_operation` searches hot and archived
+reservations in one transaction. Missing local bindings are recovered through
+`seal_unreserved_operation(operation, effect)`: its write transaction returns the
+original reservation or commits an immutable non-admission fence. A late reserve
+cannot commit after the fence. Read-only absence is never a negative proof.
+Recovery validates operation ID, amount and effect digest before adopting a
+reservation. The registry-shared operation guard prevents a live dispatch and
+recovery from entering the same identity concurrently; it is not a substitute
+for the durable seal. See `remediation/ADMISSION_FENCE_V1.md`.
 
 A `Held` reservation proves no dispatch fence. Recovery cancels it, or expires
 it under authenticated time, before committing the local terminal abort. A
@@ -106,10 +114,11 @@ outcome and an explicit recovery action for the resulting state.
 ## Storage profiles
 
 `DurableLeaseRegistryV1` remains a bounded JSON reference owner and migration
-oracle. It is not the production throughput target. The production owner is the
-SQLite profile described in `SQLITE_OWNER_V1.md`; activation remains false until
-its migration, anti-rollback service and target-host power-loss qualification are
-complete.
+oracle. It is not the production throughput target. A production SQLite replacement is still pending in this source candidate.
+Staged or partially recovered patches are not an executable owner. Migration,
+independently retained anti-rollback state, bounded archival, nonblocking writer
+integration and target-host power-loss qualification remain open. No missing
+`SQLITE_OWNER_V1.md` or staged payload is evidence that this work is complete.
 
 ## Nonclaims
 

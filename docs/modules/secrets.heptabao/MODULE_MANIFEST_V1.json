@@ -69,7 +69,7 @@
     {
       "state": "Claimed",
       "meaning": "operation identity and exact semantics are durable; no reservation is implied",
-      "recovery": "look up AuthBus by operation ID; bind a matching reservation or close as no_reservation after authoritative absence"
+      "recovery": "atomically seal absent AuthBus admission for the exact operation/effect or bind the returned original reservation; a SELECT absence is not proof"
     },
     {
       "state": "Reserved",
@@ -163,23 +163,46 @@
   "sourceAnchors": [
     {
       "path": "codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs",
-      "mustContain": ["Claimed", "Reserved", "DispatchFenced", "record_provider_failure", "observe_consumption_not_applied"]
+      "mustContain": [
+        "Claimed",
+        "Reserved",
+        "DispatchFenced",
+        "record_provider_failure",
+        "observe_consumption_not_applied"
+      ]
     },
     {
       "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
-      "mustContain": ["consume_kv_v2_with_authbus", "reconcile_consumption", "NotAppliedWithEvidence", "reservation_by_operation"]
+      "mustContain": [
+        "consume_kv_v2_with_authbus",
+        "reconcile_consumption",
+        "NotAppliedWithEvidence",
+        "seal_unreserved_operation"
+      ]
     },
     {
       "path": "codex-rs/hepta-bao-adapter/src/authbus_saga.rs",
-      "mustContain": ["mark_dispatch_attempted", "dispatch_fenced", "provider_terminal"]
+      "mustContain": [
+        "mark_dispatch_attempted",
+        "dispatch_fenced",
+        "provider_terminal"
+      ]
     },
     {
       "path": "codex-rs/hepta-authbus/src/operation_lookup.rs",
-      "mustContain": ["reservation_by_operation", "authbus_quota_reservation_archive"]
+      "mustContain": [
+        "reservation_by_operation",
+        "seal_unreserved_operation",
+        "authbus_operation_admission_fence"
+      ]
     },
     {
       "path": "codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs",
-      "mustContain": ["claimed_reserved_and_dispatch_fenced_are_distinct_durable_states", "deterministic_provider_failure_is_immutable_and_terminal", "proved_not_applied_settles_as_terminal_negative_without_reentry"]
+      "mustContain": [
+        "claimed_reserved_and_dispatch_fenced_are_distinct_durable_states",
+        "deterministic_provider_failure_is_immutable_and_terminal",
+        "proved_not_applied_settles_as_terminal_negative_without_reentry"
+      ]
     }
   ],
   "candidateIdentity": {

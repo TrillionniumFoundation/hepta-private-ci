@@ -16,6 +16,7 @@ use codex_hepta_types::StableId;
 
 mod authbus_saga;
 mod final_use_host;
+mod operation_execution;
 mod https_consumer;
 mod lease_lifecycle;
 mod secret_boundary_v1;

@@ -321,6 +321,10 @@ impl BaoFinalUseHost {
         .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::InvalidInput))?;
         let semantic_sha256 = Digest32::of_bytes(&semantics).into_array();
         let operation_id = admission.operation_id.as_str();
+        let _execution = registry.lock()
+            .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+            .enter_consumption_execution(operation_id)
+            .map_err(BaoProductHostError::Store)?;
         let operation = BaoConsumptionOperationV1 {
             operation_id: operation_id.to_owned(),
             semantic_sha256,
@@ -460,20 +464,14 @@ impl BaoFinalUseHost {
     ) -> Result<Option<BaoConsumptionOperationV1>, BaoProductHostError> {
         let operation = StableId::new(operation_id.to_owned())
             .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::CorruptState))?;
-        if authbus
-            .reservation_by_operation(&operation)
-            .await
-            .map_err(|error| BaoProductHostError::AuthBus(error.into()))?
-            .is_some()
-        {
+        let row = registry.lock()
+            .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+            .consumption_result(operation_id).map_err(BaoProductHostError::Store)?;
+        if row.state != BaoConsumptionStateV1::Claimed {
             return Ok(None);
         }
-        let row = registry
-            .lock()
-            .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
-            .consumption_result(operation_id)
-            .map_err(BaoProductHostError::Store)?;
-        if row.state != BaoConsumptionStateV1::Claimed {
+        if authbus.seal_unreserved_operation(&operation, Digest32::from_array(row.effect_sha256))
+            .await.map_err(|error| BaoProductHostError::AuthBus(error.into()))?.is_some() {
             return Ok(None);
         }
         let evidence = Digest32::of_bytes(
@@ -501,6 +499,10 @@ impl BaoFinalUseHost {
         operation_id: &str,
         evidence: &mut E,
     ) -> Result<BaoSecretReceipt, BaoProductHostError> {
+        let _execution = registry.lock()
+            .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+            .enter_consumption_execution(operation_id)
+            .map_err(BaoProductHostError::Store)?;
         let mut row = registry
             .lock()
             .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
@@ -536,7 +538,7 @@ impl BaoFinalUseHost {
                 )
             }
             None => authbus
-                .reservation_by_operation(&stable_operation)
+                .seal_unreserved_operation(&stable_operation, Digest32::from_array(row.effect_sha256))
                 .await
                 .map_err(|error| BaoProductHostError::AuthBus(error.into()))?,
         };
