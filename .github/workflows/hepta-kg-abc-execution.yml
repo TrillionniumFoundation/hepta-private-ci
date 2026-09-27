@@ -34,8 +34,7 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: true
-
-      - name: Prepare ordinary scoped commits and bind immutable source objects
+      - name: Prepare committed source and validate its complete observation
         id: bind
         shell: bash
         env:
@@ -50,10 +49,6 @@ jobs:
           git diff --cached --exit-code
           git config user.name 'Hepta KG candidate preparation'
           git config user.email 'hepta-kg-ci@users.noreply.github.com'
-
-          # Preparation is not executable proof. Format with the repository's
-          # real toolchain, commit the result, then bind that exact source tree.
-          # Execution jobs below only check formatting and never repair source.
           channel="$(sed -n 's/^channel *= *"\([^"]*\)".*/\1/p' codex-rs/rust-toolchain.toml)"
           test -n "$channel"
           rustup toolchain install "$channel" --profile minimal --component rustfmt
@@ -66,7 +61,6 @@ jobs:
           python3 - <<'PY'
           import subprocess
           from pathlib import Path
-
           roots = (
               'codex-rs/hepta-kg/', 'codex-rs/hepta-memory/',
               'codex-rs/hepta-agentd/', 'codex-rs/hepta-prompt-registry/',
@@ -109,17 +103,11 @@ jobs:
               -m 'Preparation only; native execution remains required.' \
               -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
           fi
-
-          # Bind only existing registered native/composition surfaces. The new
-          # supplementary docs are versioned in the candidate tree and linked
-          # from TECHNICAL.md, not masqueraded as code ownership surfaces.
-          # The map cannot bind its own future blob. Claim flags remain false.
           python3 - <<'PY'
           import importlib.util
           import json
           import sys
           from pathlib import Path
-
           sys.path.insert(0, str(Path('scripts').resolve()))
           spec = importlib.util.spec_from_file_location(
               'kg_maps', 'scripts/hepta-implementation-maps.py'
@@ -131,28 +119,31 @@ jobs:
           row = json.loads(original, object_pairs_hook=maps.unique_keys)
           assert row['module'] == 'knowledge.graph'
           assert row['declaredRoots'] == ['codex-rs/hepta-kg']
-          current = maps.current_source_base()
-          current_objects = maps.current_source_objects(row)
-          if current_objects != row['sourceObjects']:
-              row['sourceBase'] = current
-              row['observedAtHead'] = current
-              row['sourceObjects'] = current_objects
-          # Observed paths cover root identities AND their resolved files. A
-          # directory root cannot be replaced by listing only its descendants.
+          # Observe the whole current evidence cut, not merely conditional kernel
+          # object changes. The map-only commit below must change no mapped path.
+          anchor = maps.current_source_base()
+          row['sourceBase'] = anchor
+          row['observedAtHead'] = anchor
           row['observedSourcePaths'] = sorted(
               set(row['observedSourcePaths'])
               | set(row['declaredRoots'])
+              | set(row['resolvedRoots'])
               | set(row['compositionRoots'])
-              | {item['path'] for item in current_objects}
+              | {row['technicalGuide']}
+          )
+          row['sourceObjects'] = maps.current_source_objects(row)
+          row['observedSourcePaths'] = sorted(
+              set(row['observedSourcePaths'])
+              | {item['path'] for item in row['sourceObjects']}
           )
           assert row['productionImplementation'] is False
           for key in (
-              'productExecutionProved', 'independentAcceptance', 'activation', 'release',
+              'productionImplementation', 'productExecutionProved',
+              'independentAcceptance', 'activation', 'release',
           ):
               assert row['claimBoundary'][key] is False
-          updated = json.dumps(row, indent=2) + '\n'
-          if updated != original:
-              path.write_text(updated)
+          print('KG source observation:', json.dumps(anchor, sort_keys=True))
+          path.write_text(json.dumps(row, indent=2) + '\n')
           PY
           git diff --check
           git add docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
@@ -160,26 +151,28 @@ jobs:
             test "$(git diff --cached --name-only)" = \
               'docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json'
             git commit \
-              -m 'docs(knowledge.graph): bind immutable closure source objects' \
+              -m 'docs(knowledge.graph): bind complete immutable closure observation' \
               -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
           fi
           candidate="$(git rev-parse HEAD)"
           tree="$(git rev-parse HEAD^{tree})"
-          python3 scripts/hepta_knowledge_graph_map_verify.py \
-            --expected-sha "$candidate" --expected-tree "$tree"
           git diff --exit-code
           git diff --cached --exit-code
-          # Do not overwrite concurrent work; only a normal fast-forward push is
-          # allowed and only to the exact isolated branch authorized above.
+          # Ordinary push to the authorized draft only, never merge or force.
+          # Persist source even when qualification finds a blocker, so native
+          # diagnostics can inspect exactly the same reviewable commit.
           test "$(git ls-remote origin "refs/heads/$OWN_BRANCH" | cut -f1)" = "$SOURCE_SHA"
-          if [ "$candidate" != "$SOURCE_SHA" ]; then
-            git push origin "HEAD:refs/heads/$OWN_BRANCH"
-          fi
+          git push origin "HEAD:refs/heads/$OWN_BRANCH"
           test "$(git ls-remote origin "refs/heads/$OWN_BRANCH" | cut -f1)" = "$candidate"
           echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
+          python3 scripts/hepta_knowledge_graph_map_verify.py \
+            --expected-sha "$candidate" --expected-tree "$tree"
 
   execution:
     needs: bind
+    # A failed identity gate must not suppress native diagnostics. It still
+    # fails bind and the aggregate qualification gate; there is no green bypass.
+    if: ${{ always() && needs.bind.outputs.candidate != '' }}
     name: KG ${{ matrix.profile }} (${{ matrix.lane }})
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 180
@@ -205,13 +198,11 @@ jobs:
           ref: ${{ needs.bind.outputs.candidate }}
           fetch-depth: 0
           persist-credentials: false
-
       - name: Set up repository Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.12'
-
-      - name: Construct existing deterministic pinned-base merge
+      - name: Construct deterministic pinned-base merge
         if: matrix.lane == 'base-merge'
         uses: ./.github/actions/hepta-synthetic-merge
         with:
@@ -221,7 +212,6 @@ jobs:
           author-name: Hepta KG CI
           author-email: hepta-kg-ci@users.noreply.github.com
           message: Synthetic merge
-
       - name: Retain actual tested identity
         shell: bash
         env:
@@ -235,7 +225,6 @@ jobs:
             printf 'source=%s\nbase=%s\n' "$SOURCE_SHA" "$BASE_SHA"
             git rev-parse HEAD HEAD^{tree}
           } | tee "$RUNNER_TEMP/kg-evidence/identity.txt"
-
       - name: Install repository Rust toolchain
         shell: bash
         run: |
@@ -244,7 +233,6 @@ jobs:
           test -n "$channel"
           rustup toolchain install "$channel" \
             --profile minimal --component rustfmt --component clippy
-
       - name: Prepare real product sandbox prerequisites
         if: matrix.profile == 'product'
         shell: bash
@@ -256,27 +244,22 @@ jobs:
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
-
       - name: Resolve repository-verified V8 product artifacts
         if: matrix.profile == 'product'
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-
       - name: Verify synchronized knowledge.graph documentation
         run: python3 scripts/hepta_kg_documentation_sync.py --check
-
       - name: Execute complete profile without suppressing later checks
         env:
           SOURCE_SHA: ${{ needs.bind.outputs.candidate }}
         run: |
           python3 scripts/hepta_kg_current_candidate_runner.py \
-            --profile '${{ matrix.profile }}' \
-            --lane '${{ matrix.lane }}' \
+            --profile '${{ matrix.profile }}' --lane '${{ matrix.lane }}' \
             --evidence "$RUNNER_TEMP/kg-evidence" \
             --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA"
-
       - name: Ensure tests did not change tracked source
         if: always()
         shell: bash
@@ -285,7 +268,6 @@ jobs:
           git diff --exit-code
           git diff --cached --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
-
       - name: Audit complete current-candidate execution inventory
         if: always()
         env:
@@ -296,7 +278,6 @@ jobs:
           python3 scripts/hepta_kg_execution_audit.py \
             --directory "$RUNNER_TEMP/kg-evidence" --profile "$PROFILE" \
             --lane "$LANE" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA"
-
       - name: Preserve observed results, not acceptance claims
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -304,3 +285,21 @@ jobs:
           name: kg-abc-${{ matrix.profile }}-${{ matrix.lane }}-${{ needs.bind.outputs.candidate }}
           path: ${{ runner.temp }}/kg-evidence
           if-no-files-found: error
+
+  qualification:
+    needs: [bind, execution]
+    if: always()
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      - name: Require successful binding and all four native lanes
+        env:
+          BIND_RESULT: ${{ needs.bind.result }}
+          EXECUTION_RESULT: ${{ needs.execution.result }}
+          CANDIDATE: ${{ needs.bind.outputs.candidate }}
+        run: |
+          set -euo pipefail
+          test -n "$CANDIDATE"
+          test "$BIND_RESULT" = success
+          test "$EXECUTION_RESULT" = success
+          printf 'Exact-candidate checks succeeded for %s; independent acceptance and release are separate gates.\n' "$CANDIDATE"
