@@ -1,31 +1,28 @@
 name: runtime.codex convergence apply
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
-    types: [opened, synchronize, reopened]
+      - runtime-codex/convergence-v1
     paths:
       - scripts/runtime-codex-converge.py
       - scripts/runtime-codex-converge-phase2.py
       - scripts/runtime-codex-converge-phase3.py
       - scripts/runtime-codex-converge-phase4.py
+      - scripts/check-runtime-codex-fault-matrix.py
       - .github/workflows/runtime-codex-convergence-apply.yml
-      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-infer-core/examples/runtime_codex_microprofile.rs
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: runtime-codex-convergence-apply-${{ github.event.pull_request.number || github.ref }}
+  group: runtime-codex-convergence-branch
   cancel-in-progress: true
 
 jobs:
   apply:
-    if: >-
-      github.event_name != 'pull_request' ||
-      github.head_ref == 'runtime-codex/convergence-v1'
     runs-on: macos-15
     timeout-minutes: 25
     steps:
