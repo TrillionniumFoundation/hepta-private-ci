@@ -443,7 +443,6 @@ export function createControlConsole({
       started = true;
       announce("ui.control console connected.");
       render();
-      return client.readView();
     } catch (error) {
       if (!destroyed) showError(error);
       throw error;
@@ -461,7 +460,7 @@ export function createControlConsole({
           ),
         );
       }
-      if (started) return Promise.resolve(client.readView());
+      if (started) return Promise.resolve();
       if (startPromise) return startPromise;
 
       const epoch = lifecycleEpoch;
