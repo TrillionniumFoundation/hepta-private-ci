@@ -16,7 +16,7 @@
 
 ## Trust boundaries
 
-1. **Untrusted browser environment.** Extensions, injected scripts, stale tabs, and local storage are not authority.
+1. **Untrusted browser environment.** Extensions, injected scripts, stale tabs, storage denial/corruption, and local state are not authority.
 2. **Same-origin reverse proxy.** Terminates TLS and must supply security headers and route only the versioned API.
 3. **Authentication/session service.** Establishes identity, expiry, permission revision, and connection generation.
 4. **Operation ledger.** Owns the unique operation ID constraint and durable lookup.
@@ -34,14 +34,17 @@
 | Cross-site request forgery | SameSite/HttpOnly/Secure session cookie, same-origin API, per-session CSRF token, Origin/Fetch-Metadata checks, no permissive CORS. |
 | Cross-site scripting | No `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, `eval`, or inline executable script; use `textContent`; strict CSP. |
 | Clickjacking | `frame-ancestors 'none'` and `X-Frame-Options: DENY`. |
-| Permission change or revocation | Session refresh carries permission revision and expiry; revoked/expired sessions disable all actions; changed connection generation invalidates the snapshot. |
+| Identity substitution during refresh | Require the refreshed session ID and authenticated identity to match the active session; fail closed on identity drift. |
+| Hidden permission change or revision rollback | Reject permission revision regression and reject permission-set drift at an unchanged permission revision. |
+| Refresh/close/revoke race | Fence in-flight refresh against the active session object; clear local authority before transport cleanup so a failed close or revoke cannot preserve control access. |
 | Snapshot equivocation | Same generation/revision with a different semantic digest is `UI_CONTROL_SNAPSHOT_DRIFT`. |
 | Prototype pollution / hostile JSON | Plain objects only, forbidden prototype keys, bounded depth/entries/bytes, safe integers, NFC text, control/bidi-invisible rejection. |
-| Response amplification | One-megabyte response bound and bounded module/pending counts. |
+| Response amplification or slow body | One-megabyte response bound and timeout coverage across both response headers and body consumption. |
 | Credential or token persistence | Credentials stay in HttpOnly cookies; CSRF token is not exported in recovery state; recovery state contains operation metadata only. |
+| Local storage denial or corruption | Recovery persistence is best-effort, typed, and visible; storage failure cannot wedge the UI, authorize a request, or manufacture terminal state. |
 | Audit spoofing | Audit trace IDs are server-issued and validated; the client never synthesizes terminal success. |
 | Open redirect / cross-origin exfiltration | Transport URL must remain beneath the configured same-origin API base; redirects are rejected; referrer policy is `no-referrer`. |
-| Supply-chain drift in browser tests | CI pins direct Playwright and axe package versions and records resolved package identity in logs/receipt inputs. |
+| Supply-chain drift in browser tests | CI uses the committed exact npm lock, records its SHA-256 digest and resolved graph, and runs installation with scripts disabled. |
 
 ## Required response headers
 
@@ -62,7 +65,7 @@ Production may add nonce/hash-based script policy, Trusted Types, HSTS, and COEP
 ## CSRF and cookie requirements
 
 - session cookies: `Secure; HttpOnly; SameSite=Strict` unless a documented federated-login flow requires a narrower exception;
-- mutation requests: valid CSRF token, expected `Origin`, and permitted Fetch Metadata headers;
+- mutation requests: valid bounded CSRF token, expected `Origin`, and permitted Fetch Metadata headers;
 - no mutation over `GET`;
 - no wildcard CORS and no credentialed cross-origin CORS;
 - CSRF token rotation on authentication, privilege change, and connection-generation change.
