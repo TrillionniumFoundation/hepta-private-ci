@@ -11,22 +11,22 @@ permissions:
   contents: write
 
 concurrency:
-  group: prompt-optimizer-bootstrap
+  group: prompt-optimizer-bootstrap-x64
   cancel-in-progress: false
 
 jobs:
   apply:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Checkout exact bootstrap commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          fetch-depth: 2
+          fetch-depth: 3
           persist-credentials: true
 
-      - name: Require exact parent and reproduce validated source tree
+      - name: Require exact source root and reproduce validated tree
         env:
           EXACT_PARENT: 312616586f1d330bf8bb0d64f3a245cffb94193d
           PATCH_SHA256: 7bafa65c697bd174b5740ca8c7a937429206411e6cdf1ea7c643237560cd12ef
@@ -35,7 +35,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"
+          test "$(git rev-parse HEAD~2)" = "$EXACT_PARENT"
 
           cat > "$RUNNER_TEMP/expected-files" <<'EOF'
           .github/prompt-optimizer-bootstrap/chunk-00.txt
@@ -46,7 +46,7 @@ jobs:
           .github/prompt-optimizer-bootstrap/chunk-05.txt
           .github/workflows/prompt-optimizer-bootstrap.yml
           EOF
-          git diff --name-only HEAD^ HEAD | sort > "$RUNNER_TEMP/actual-files"
+          git diff --name-only "$EXACT_PARENT" HEAD | sort > "$RUNNER_TEMP/actual-files"
           diff -u "$RUNNER_TEMP/expected-files" "$RUNNER_TEMP/actual-files"
 
           cat .github/prompt-optimizer-bootstrap/chunk-*.txt \
