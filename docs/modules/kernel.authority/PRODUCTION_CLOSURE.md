@@ -16,11 +16,17 @@ The working branch keeps one authority spine and one final-use boundary:
   the binding at `LeaseLedger::issue`.
 - FinalUse claims are one-shot, nonce-backed and revalidated at the guarded
   dispatch entry.
-- a newer revocation observed during an active effect records the exact pending
-  head, fences every new claim/entry with `RevocationPending`, and requires the
-  same monotonic update to be committed after the active effect drains;
+- a newer revocation observed during an active effect persists the exact pending
+  head in the V4 authority snapshot, advances the external V2 frontier, fences
+  every new claim/entry with `RevocationPending`, and requires that head or a
+  strictly stronger monotonic update to be committed after the effect drains;
+- recovery covers both external-frontier-first crash windows: an external
+  pending frontier with a committed local snapshot and an external committed
+  frontier with a pending local snapshot. Repair is accepted only when an
+  independently authenticated head reconstructs the existing external frontier
+  exactly; recovery never advances that frontier;
 - FinalUse key-ring recovery preserves claimed nonce history and rejects a local
-  snapshot behind the external frontier;
+  snapshot that cannot be reconciled exactly with the external frontier;
 - Agentd owns provider selection, exact wire bytes, dispatch, reconciliation,
   durable witness recording and terminal receipt reuse;
 - exact-head and deterministic synthetic-merge candidates are prepared from
@@ -33,9 +39,17 @@ contracts, product and host lanes for both candidate modes without retries.
 match its commit and tree. Different-SHA or stale artifacts are rejected rather
 than silently reused.
 
+The closed-world proof has two coupled inventories. Canonical authority
+boundaries enumerate lower-level privileged entry points. The extension API
+inventory enumerates every public production wrapper. A wrapper may be treated
+as an internal canonical delegate only when it is both exhaustively classified
+as privileged and mapped to an existing canonical boundary. New wrappers or
+new product callers therefore fail closed rather than disappearing from the
+caller proof.
+
 ## 2. Mandatory production trust bundle
 
-`codex-rs/hepta-contracts/src/authority_trust.rs` now defines a complete
+`codex-rs/hepta-contracts/src/authority_trust.rs` defines a complete
 `ProductionAuthorityTrustBundle` containing:
 
 1. a `ProductionAuthorityClock` with a named trust domain and bounded maximum
@@ -74,14 +88,17 @@ is never requested by the kernel verifier.
 
 The repository test doubles implement the production marker traits only inside
 tests. `SystemAuthorityClock` and ordinary local-file compatibility stores still
-do not satisfy the production constructor.
+do not satisfy the production constructor. Repository source proves the
+contract and fail-closed composition; it does not manufacture an attested clock,
+linearizable production backend or real KMS/HSM receipt.
 
 ## 3. Fleet and Browser/Agentd product pilot
 
 `qualification/kernel-authority/runtime_qualification.py pilot` executes a
 candidate-bound process pilot for both product families. It covers:
 
-- Fleet lease creation and exact mutation binding;
+- Fleet lease creation, exact mutation binding and durable restart/reopen against
+  the exact committed frontier;
 - Fleet final dispatch and durable witness;
 - Fleet revocation and rejection of the old capability;
 - Browser/Agentd final-use fencing across the exact local dispatch boundary;
@@ -90,8 +107,9 @@ candidate-bound process pilot for both product families. It covers:
 - Agentd restart and signed revocation-feed advancement;
 - external-frontier rejection of a restored local snapshot;
 - pending-revocation admission fencing;
+- pending-revocation restart plus both frontier-first crash-recovery windows;
 - issuer key overlap and old-key retirement;
-- external frontier ahead after a failed local commit.
+- external frontier ahead after an unrelated failed local nonce commit.
 
 Each case retains the exact command, exit code, elapsed time, log byte count and
 log SHA-256. The aggregate receipt explicitly records:
@@ -153,7 +171,8 @@ same external evidence admission before activation.
 `.github/workflows/kernel-authority-production-closure.yml` runs, for both the
 exact head and deterministic synthetic merge:
 
-- the contracts format/test/strict-clippy lane, including the trust bundle;
+- the contracts format/test/strict-clippy lane, including the trust bundle and
+  durable pending-revocation recovery matrix;
 - the Fleet and Browser/Agentd product pilot;
 - the latency/recovery benchmark and storage reference model;
 - a merge gate that requires every lane for both candidate modes.

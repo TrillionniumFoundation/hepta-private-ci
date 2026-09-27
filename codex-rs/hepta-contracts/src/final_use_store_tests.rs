@@ -25,6 +25,7 @@ fn legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims() {
         let state = State {
             head: head.clone(),
             used_nonces: BTreeSet::from([[5; 32], [6; 32]]),
+            pending_revocations: None,
             failed: false,
         };
         let (owner, _) = Store::open_inner(
@@ -60,6 +61,7 @@ fn legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims() {
         .unwrap();
         assert_eq!(migrated.head, state.head);
         assert_eq!(migrated.used_nonces, state.used_nonces);
+        assert_eq!(migrated.pending_revocations, None);
         owner.append_claim(9, [7; 32]).unwrap();
         drop(owner);
         let (_, reopened) = Store::open_inner(
@@ -74,6 +76,7 @@ fn legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims() {
             reopened.used_nonces,
             BTreeSet::from([[5; 32], [6; 32], [7; 32]])
         );
+        assert_eq!(reopened.pending_revocations, None);
     }
 }
 
@@ -103,6 +106,7 @@ fn legacy_journal_keeps_trust_binding_and_exact_head_checks() {
     let (owner, migrated) =
         Store::open_exact(directory.path(), "owner", [47; 32], head.clone()).unwrap();
     assert_eq!(migrated.used_nonces, BTreeSet::from([[5; 32]]));
+    assert_eq!(migrated.pending_revocations, None);
     drop(owner);
     let newer = FinalUseRevocations {
         revision: 2,

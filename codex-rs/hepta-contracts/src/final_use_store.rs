@@ -8,6 +8,7 @@ use super::FinalUseError;
 use super::FinalUseRevocations;
 use super::MAX_CLAIMS;
 use super::State;
+use super::head_advances;
 use super::valid_head;
 use serde::Deserialize;
 use serde::Serialize;
@@ -22,6 +23,7 @@ use std::path::Path;
 const STATE_SCHEMA_V1: u32 = 1;
 const STATE_SCHEMA_V2: u32 = 2;
 const STATE_SCHEMA_V3: u32 = 3;
+const STATE_SCHEMA_V4: u32 = 4;
 const CLAIM_FRAME_BYTES: usize = 8 + 32;
 
 #[derive(Deserialize)]
@@ -65,6 +67,16 @@ struct StoredV3 {
     signer_id: String,
     trust: StoreTrust,
     head: FinalUseRevocations,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct StoredV4 {
+    schema: u32,
+    signer_id: String,
+    trust: StoreTrust,
+    head: FinalUseRevocations,
+    pending_revocations: Option<FinalUseRevocations>,
 }
 
 #[derive(Clone, Copy, Deserialize, Eq, PartialEq, Serialize)]
@@ -205,6 +217,7 @@ impl Store {
                         State {
                             used_nonces: store.read_claims(stored.head.authority_epoch)?,
                             head: stored.head,
+                            pending_revocations: None,
                             failed: false,
                         },
                         false,
@@ -220,6 +233,26 @@ impl Store {
                         State {
                             used_nonces: store.read_claims(stored.head.authority_epoch)?,
                             head: stored.head,
+                            pending_revocations: None,
+                            failed: false,
+                        },
+                        false,
+                    )
+                }
+                (_, STATE_SCHEMA_V4) => {
+                    let stored: StoredV4 =
+                        serde_json::from_slice(&bytes).map_err(|_| FinalUseError::InvalidTrust)?;
+                    if stored.schema != STATE_SCHEMA_V4
+                        || stored.signer_id != signer_id
+                        || stored.trust != trust
+                    {
+                        return Err(FinalUseError::InvalidTrust);
+                    }
+                    (
+                        State {
+                            used_nonces: store.read_claims(stored.head.authority_epoch)?,
+                            head: stored.head,
+                            pending_revocations: stored.pending_revocations,
                             failed: false,
                         },
                         false,
@@ -227,17 +260,23 @@ impl Store {
                 }
                 _ => return Err(FinalUseError::InvalidTrust),
             };
-            if !valid_head(&state.head) || state.used_nonces.len() > MAX_CLAIMS {
+            if !valid_head(&state.head)
+                || state.used_nonces.len() > MAX_CLAIMS
+                || state
+                    .pending_revocations
+                    .as_ref()
+                    .is_some_and(|pending| !valid_head(pending) || !head_advances(&state.head, pending))
+            {
                 return Err(FinalUseError::InvalidTrust);
             }
             state.failed = false;
-            if header.schema != STATE_SCHEMA_V3 {
+            if header.schema != STATE_SCHEMA_V4 {
                 // Publish a complete legacy nonce set before its journal-based
                 // snapshot. Retrying an interrupted migration is idempotent.
                 if legacy_snapshot {
                     store.replace_claims(state.head.authority_epoch, &state.used_nonces)?;
                 }
-                store.persist_snapshot(&state.head)?;
+                store.persist_snapshot(&state)?;
             }
             state
         } else {
@@ -250,15 +289,20 @@ impl Store {
             let state = State {
                 head: initial.clone(),
                 used_nonces: Default::default(),
+                pending_revocations: None,
                 failed: false,
             };
             store.replace_claims(initial.authority_epoch, &state.used_nonces)?;
-            store.persist_snapshot(&initial)?;
+            store.persist_snapshot(&state)?;
             state
         };
 
         if startup_head_policy == StartupHeadPolicy::Advance {
-            if initial.authority_epoch >= state.head.authority_epoch
+            if state.pending_revocations.is_some() {
+                if state.head != initial {
+                    return Err(FinalUseError::InvalidTrust);
+                }
+            } else if initial.authority_epoch >= state.head.authority_epoch
                 && initial.revision > state.head.revision
                 && (initial.authority_epoch > state.head.authority_epoch
                     || initial
@@ -290,7 +334,7 @@ impl Store {
     /// Persist a revocation/epoch transition. This path is not the per-claim
     /// hot path, so it may compact the claim journal to the current epoch.
     pub(super) fn persist(&self, state: &State) -> Result<(), FinalUseError> {
-        self.persist_snapshot(&state.head)?;
+        self.persist_snapshot(state)?;
         self.replace_claims(state.head.authority_epoch, &state.used_nonces)
     }
 
@@ -313,12 +357,13 @@ impl Store {
             .map_err(|_| FinalUseError::Unavailable)
     }
 
-    fn persist_snapshot(&self, head: &FinalUseRevocations) -> Result<(), FinalUseError> {
-        let stored = StoredV3 {
-            schema: STATE_SCHEMA_V3,
+    fn persist_snapshot(&self, state: &State) -> Result<(), FinalUseError> {
+        let stored = StoredV4 {
+            schema: STATE_SCHEMA_V4,
             signer_id: self.signer_id.clone(),
             trust: self.trust,
-            head: head.clone(),
+            head: state.head.clone(),
+            pending_revocations: state.pending_revocations.clone(),
         };
         let bytes = serde_json::to_vec(&stored).map_err(|_| FinalUseError::Unavailable)?;
         let mut file = open_private(&self.root, "authority.next", Access::Create)?;

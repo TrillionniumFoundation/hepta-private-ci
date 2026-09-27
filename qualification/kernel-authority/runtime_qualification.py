@@ -121,6 +121,21 @@ PILOT_CASES = (
         ),
     ),
     Case(
+        "pending-revocation-crash-recovery-matrix",
+        "kernel.authority",
+        (
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-contracts",
+            "--test",
+            "final_use_pending_recovery",
+            "--",
+            "--nocapture",
+        ),
+    ),
+    Case(
         "issuer-key-overlap-and-retirement",
         "kernel.authority",
         (
