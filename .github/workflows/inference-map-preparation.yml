@@ -1,0 +1,124 @@
+name: Inference cross-owner map preparation (no ref writes)
+
+on:
+  push:
+    branches: [codex/inference-map-preparation-20260927]
+    paths: [.github/workflows/inference-map-preparation.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/inference-map-preparation-20260927'
+    runs-on: macos-15
+    timeout-minutes: 10
+    # Immutable blobs only. This temporary preparation branch is not merged.
+    # Applying the reviewed blobs requires an explicit separate connector commit.
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare only the five maps invalidated by inference remediation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64
+          import copy
+          import hashlib
+          import importlib.util
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+          import urllib.request
+          root = Path.cwd()
+          sys.path.insert(0, str(root / 'scripts'))
+          spec = importlib.util.spec_from_file_location('inference_map_preparation', root / 'scripts/hepta-implementation-maps.py')
+          maps = importlib.util.module_from_spec(spec)
+          sys.modules[spec.name] = maps
+          spec.loader.exec_module(maps)
+          candidate = maps.current_source_base()
+          maps.require_clean_candidate(candidate)
+          source = {
+              'commit': '21b9e1129375e4a3a0fa7a7d4c526d839c6705ef',
+              'tree': '65f786ae9db3b8f2fb492bdda8e8f38b04a34520',
+          }
+          maps.checked_identity(source, candidate)
+          selected = ('kernel.operations', 'runtime.supervisor', 'runtime.agentd', 'intelligence.control', 'memory.retrieval')
+          modules = {module['id']: module for module in maps.load('docs/modules/MODULES.json')['modules']}
+          lanes = maps.lane_by_module()
+          output = Path(os.environ['RUNNER_TEMP']) / 'inference-map-proposal'
+          output.mkdir()
+          entries = []
+          changes = {}
+          for name in selected:
+              path = f'docs/modules/{name}/IMPLEMENTATION_MAP.json'
+              original = maps.load(path)
+              if maps.validate_claim_types(original):
+                  raise ValueError(f'{name}: refusing to rebind executable qualification')
+              maps.checked_identity(original['sourceBase'], candidate)
+              row = copy.deepcopy(original)
+              row['mappingSourceIdentityMode'] = 'exact_blob'
+              row['sourceIdentityPolicy'] = 'candidate_or_exact_observation_v1'
+              proposed = maps.migrate_map(row, modules[name], lanes, source)
+              proposed['sourceBase'] = copy.deepcopy(original['sourceBase'])
+              proposed['observedAtHead'] = source.copy()
+              proposed['sourceObjects'] = maps.current_source_objects(proposed)
+              if proposed['claimBoundary'] != original['claimBoundary']:
+                  raise ValueError(f'{name}: completion/authority claims changed')
+              for field in ('productionImplementation', 'productCallerState', 'productionWriterState'):
+                  if field in original and proposed.get(field) != original[field]:
+                      raise ValueError(f'{name}: {field} changed')
+              maps.verify_source_identity(proposed, maps.resolve_source_roots(root, modules[name]), candidate)
+              maps.validate_closed_world_bindings(proposed)
+              if maps.validate_claim_types(proposed):
+                  raise ValueError('migration invented execution authority')
+              data = (json.dumps(proposed, indent=2) + '\n').encode()
+              (output / f'{name}.json').write_bytes(data)
+              expected = hashlib.sha1(f'blob {len(data)}\0'.encode() + data, usedforsecurity=False).hexdigest()
+              request = urllib.request.Request(
+                  'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs',
+                  data=json.dumps({'encoding': 'base64', 'content': base64.b64encode(data).decode()}).encode(),
+                  headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json'},
+                  method='POST',
+              )
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  actual = json.load(response)['sha']
+              if actual != expected:
+                  raise ValueError('published blob identity mismatch')
+              entries.append({'path': path, 'mode': '100644', 'type': 'blob', 'sha': actual, 'sha256': hashlib.sha256(data).hexdigest()})
+              changes[name] = sorted(key for key in set(original) | set(proposed) if original.get(key) != proposed.get(key))
+          maps.require_clean_candidate(candidate)
+          (output / 'manifest.json').write_text(json.dumps({
+              'observed_source': source,
+              'preparation_candidate': candidate,
+              'tree_elements': entries,
+              'changed_top_level_fields': changes,
+              'claims_unchanged': True,
+              'production_qualification': False,
+              'refs_written': False,
+          }, indent=2) + '\n')
+          PY
+      - name: Retain immutable proposed map blobs for explicit review
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-map-proposal-${{ github.sha }}
+          path: ${{ runner.temp }}/inference-map-proposal/
+          if-no-files-found: error
+          retention-days: 1
+      - name: Original candidate must remain unchanged
+        if: ${{ always() }}
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
