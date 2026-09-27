@@ -17,7 +17,10 @@ fn split_contract_test_source_contains_all_golden_vectors() {
         "83fed9c7f5a4677f9564ac36b524cf8865effc27f032ca465d4368c114ac40aa",
         "f0f4f746a2c2e3f5a22bd5d5ce1760185d5c6579ef0bb6e5a23b1722edbfd62b",
     ] {
-        assert!(source.contains(digest), "missing split-source vector {digest}");
+        assert!(
+            source.contains(digest),
+            "missing split-source vector {digest}"
+        );
     }
 }
 

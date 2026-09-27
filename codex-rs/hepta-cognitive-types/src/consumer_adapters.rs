@@ -71,10 +71,10 @@ pub const COMPACT_ENGINE_CONSUMER_V1: CanonicalConsumerRegistrationV1 =
         consumer: "compact.engine",
         owner: "memory-platform",
         legacy_surface: "MemoryRecord and Lane C compaction compatibility surface",
-        canonical_schema: "hepta.hnmf.forget-propagation-receipt.v1",
+        canonical_schema: "hepta.hnmf.memory-event.v1",
         shadow_mismatch_metric: "compact_engine_canonical_shadow_mismatch_total",
-        cutover_gate: "tombstone/forget/rebuild parity on one immutable source cut",
-        rollback_path: "disable canonical forget projection; retain qualified checkpoint path",
+        cutover_gate: "canonical event/citation/provenance parity on one immutable source cut",
+        rollback_path: "disable canonical event inputs; retain qualified checkpoint path",
         state: ConsumerConvergenceStateV1::RegisteredPendingCutover,
     };
 
@@ -83,10 +83,10 @@ pub const INTELLIGENCE_CONTROL_CONSUMER_V1: CanonicalConsumerRegistrationV1 =
         consumer: "intelligence.control",
         owner: "intelligence-control",
         legacy_surface: "CognitiveSnapshot compatibility context input",
-        canonical_schema: "hepta.hnmf.memory-event.v1",
+        canonical_schema: "hepta.hnmf.recall-packet.v1",
         shadow_mismatch_metric: "intelligence_control_canonical_shadow_mismatch_total",
-        cutover_gate: "context fragment parity and exact generation-vector binding",
-        rollback_path: "disable canonical event fragments; retain immutable snapshot input",
+        cutover_gate: "recall/context fragment parity and exact generation-vector binding",
+        rollback_path: "disable canonical recall input; retain immutable snapshot input",
         state: ConsumerConvergenceStateV1::RegisteredPendingCutover,
     };
 

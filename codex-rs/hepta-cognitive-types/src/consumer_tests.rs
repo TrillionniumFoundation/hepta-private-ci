@@ -1,4 +1,5 @@
 use super::consumer::*;
+use super::consumer_adapters::*;
 use super::hnmf::*;
 use super::hnmf_learning::*;
 use std::collections::BTreeSet;
@@ -146,5 +147,29 @@ fn compatibility_posture_cannot_omit_or_hide_legacy_digest() {
             CanonicalMigrationPostureV1::Native,
         )
         .is_err()
+    );
+}
+
+#[test]
+fn consumer_registration_schemas_match_runtime_adapters() {
+    assert_eq!(
+        COGNITIVE_READ_CONSUMER_V1.canonical_schema,
+        "hepta.hnmf.memory-event.v1"
+    );
+    assert_eq!(
+        COGNITIVE_STORE_CONSUMER_V1.canonical_schema,
+        "hepta.hnmf.memory-event.v1"
+    );
+    assert_eq!(
+        MEMORY_RETRIEVAL_CONSUMER_V1.canonical_schema,
+        "hepta.hnmf.recall-packet.v1"
+    );
+    assert_eq!(
+        COMPACT_ENGINE_CONSUMER_V1.canonical_schema,
+        "hepta.hnmf.memory-event.v1"
+    );
+    assert_eq!(
+        INTELLIGENCE_CONTROL_CONSUMER_V1.canonical_schema,
+        "hepta.hnmf.recall-packet.v1"
     );
 }
