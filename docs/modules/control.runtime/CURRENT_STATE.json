@@ -1,0 +1,86 @@
+{
+  "schema": "hepta.module-current-state.v1",
+  "schemaVersion": 1,
+  "module": "control.runtime",
+  "owner": "runtime-control",
+  "deputy": "security-authority",
+  "sourceBase": {
+    "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "tree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30"
+  },
+  "candidateBinding": {
+    "branch": "codex/control-runtime-v11-convergence-20260928",
+    "exactHead": null,
+    "exactTree": null,
+    "state": "pending_exact_head_receipt"
+  },
+  "authorityDelta": "none",
+  "subsystems": {
+    "boundedPlanner": {
+      "sourceState": "source_candidate_implemented",
+      "productCallerState": "read_only_request_path_composed",
+      "productionWriterState": "not_activated",
+      "durabilityState": "reference_journal_only",
+      "qualificationState": "pending_exact_head"
+    },
+    "authenticatedContextAdapter": {
+      "sourceState": "source_candidate_implemented",
+      "productCallerState": "source_composed_candidate",
+      "integrity": [
+        "canonical_record_set_derives_verified_count",
+        "request_query_retrieval_and_ranker_binding",
+        "plan_receipt_final_use_validation",
+        "process_monotonic_final_use_lease"
+      ],
+      "qualificationState": "pending_exact_head"
+    },
+    "organHost": {
+      "sourceState": "read_only_reference_implemented",
+      "productCallerState": "not_established",
+      "partialFanoutSemantics": "explicit_but_not_production_reconciled",
+      "qualificationState": "pending_exact_head"
+    },
+    "embodimentReferences": {
+      "sourceState": "qualification_reference_implemented",
+      "productCallerState": "not_established",
+      "qualificationState": "pending_exact_head"
+    },
+    "plannerStore": {
+      "sourceState": "not_yet_in_this_candidate",
+      "activationState": "not_established"
+    },
+    "authorityExecutionLoop": {
+      "sourceState": "not_yet_in_this_candidate",
+      "namedProductionConsumer": "not_established",
+      "activationState": "not_established"
+    }
+  },
+  "claimBoundary": {
+    "readOnlyAgentdCaller": "source_composed_candidate",
+    "globalPlannerCaller": "not_established",
+    "productionWriter": "not_established",
+    "productExecutionProved": false,
+    "independentSemanticReview": false,
+    "operatorAcceptance": false,
+    "canary": false,
+    "activation": false,
+    "promotion": false,
+    "release": false
+  },
+  "requiredQualification": {
+    "sourceHeadRegression": "pending",
+    "syntheticMergeRegression": "pending",
+    "controlNduCallerRegression": "pending",
+    "strictClippy": "pending",
+    "formatting": "pending",
+    "packageTests": "pending",
+    "namedHostQualification": "pending"
+  },
+  "externallyGovernedGates": [
+    "independent semantic review",
+    "operator acceptance",
+    "canary deployment",
+    "promotion",
+    "release"
+  ]
+}
