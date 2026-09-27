@@ -73,6 +73,12 @@ jobs:
                   prefix = min(len(line), run_indent + 2)
                   body.append(line[prefix:])
               script = '\n'.join(body) + '\n'
+              if stage == 'Apply correctness and policy closure':
+                  old = r'r"fn roles_have_distinct_authenticated_identities\\(.*?\\n\\}\\n\\nfn read_u64_blob"'
+                  new = r'r"fn roles_have_distinct_authenticated_identities\\(.*?fn read_u64_blob"'
+                  if old not in script:
+                      raise SystemExit('missing matcher regex requiring hardening')
+                  script = script.replace(old, new, 1)
               print(f'::group::{stage}', flush=True)
               subprocess.run(['bash', '-lc', script], check=True)
               print('::endgroup::', flush=True)
