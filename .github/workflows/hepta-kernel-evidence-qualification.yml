@@ -8,7 +8,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: kernel-evidence-qualification-${{ github.event.pull_request.number || github.ref }}
+  # Reusable callers must not cancel each other's qualification runs.
+  group: kernel-evidence-qualification-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -29,10 +30,6 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: ./.github/actions/setup-ci
-
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
-
       - name: Initialize exact-source diagnostics
         shell: bash
         run: |
@@ -40,6 +37,10 @@ jobs:
           records="$RUNNER_TEMP/kernel-evidence/source"
           mkdir -p "$records"
           printf 'KERNEL_EVIDENCE_RECORDS=%s\n' "$records" >> "$GITHUB_ENV"
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
 
       - name: Bind exact source identity
         shell: bash
@@ -55,7 +56,7 @@ jobs:
         shell: bash
         run: |
           python3 scripts/hepta_ci_exec.py \
-            --output "$KERNEL_EVIDENCE_RECORDS/evidence-tests.json" -- \
+            --minimum-tests 1 --output "$KERNEL_EVIDENCE_RECORDS/evidence-tests.json" -- \
             bash -lc 'cd codex-rs && cargo test -p codex-hepta-evidence'
 
       - name: Test Agentd kernel evidence product
@@ -63,7 +64,7 @@ jobs:
         shell: bash
         run: |
           python3 scripts/hepta_ci_exec.py \
-            --output "$KERNEL_EVIDENCE_RECORDS/agentd-product-test.json" -- \
+            --minimum-tests 1 --output "$KERNEL_EVIDENCE_RECORDS/agentd-product-test.json" -- \
             bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product'
 
       - name: Verify Lane-A truth
@@ -123,7 +124,8 @@ jobs:
             --output "$KERNEL_EVIDENCE_RECORDS/STATUS.with-artifact.json" \
             --artifact-id "$ARTIFACT_ID" \
             --artifact-url "$ARTIFACT_URL" \
-            --artifact-digest "$ARTIFACT_DIGEST"
+            --artifact-digest "$ARTIFACT_DIGEST" \
+            --require-qualified
 
       - name: Upload exact-source canonical status
         if: always()
@@ -151,6 +153,14 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Initialize deterministic-merge diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/kernel-evidence/merge"
+          mkdir -p "$records"
+          printf 'KERNEL_EVIDENCE_RECORDS=%s\n' "$records" >> "$GITHUB_ENV"
+
       - name: Construct deterministic synthetic merge
         id: merge
         uses: ./.github/actions/hepta-synthetic-merge
@@ -166,17 +176,6 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
 
-      - name: Initialize deterministic-merge diagnostics
-        env:
-          TESTED_SHA: ${{ steps.merge.outputs.sha }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          records="$RUNNER_TEMP/kernel-evidence/merge"
-          mkdir -p "$records"
-          printf 'KERNEL_EVIDENCE_RECORDS=%s\n' "$records" >> "$GITHUB_ENV"
-          printf 'TESTED_SHA=%s\n' "$TESTED_SHA" >> "$GITHUB_ENV"
-
       - name: Bind deterministic merge identity
         env:
           TESTED_SHA: ${{ steps.merge.outputs.sha }}
@@ -184,6 +183,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          printf 'TESTED_SHA=%s\n' "$TESTED_SHA" >> "$GITHUB_ENV"
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
           git diff --quiet
@@ -194,7 +194,7 @@ jobs:
         shell: bash
         run: |
           python3 scripts/hepta_ci_exec.py \
-            --output "$KERNEL_EVIDENCE_RECORDS/evidence-tests.json" -- \
+            --minimum-tests 1 --output "$KERNEL_EVIDENCE_RECORDS/evidence-tests.json" -- \
             bash -lc 'cd codex-rs && cargo test -p codex-hepta-evidence'
 
       - name: Test Agentd kernel evidence product
@@ -202,7 +202,7 @@ jobs:
         shell: bash
         run: |
           python3 scripts/hepta_ci_exec.py \
-            --output "$KERNEL_EVIDENCE_RECORDS/agentd-product-test.json" -- \
+            --minimum-tests 1 --output "$KERNEL_EVIDENCE_RECORDS/agentd-product-test.json" -- \
             bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product'
 
       - name: Verify Lane-A truth
@@ -262,7 +262,8 @@ jobs:
             --output "$KERNEL_EVIDENCE_RECORDS/STATUS.with-artifact.json" \
             --artifact-id "$ARTIFACT_ID" \
             --artifact-url "$ARTIFACT_URL" \
-            --artifact-digest "$ARTIFACT_DIGEST"
+            --artifact-digest "$ARTIFACT_DIGEST" \
+            --require-qualified
 
       - name: Upload deterministic-merge canonical status
         if: always()
@@ -276,9 +277,7 @@ jobs:
   required:
     name: Kernel evidence required
     if: always()
-    needs:
-      - source-head
-      - merge-candidate
+    needs: [source-head, merge-candidate]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
