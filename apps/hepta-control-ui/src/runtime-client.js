@@ -61,7 +61,12 @@ export class RuntimeClient {
     clock = () => Date.now(),
     protocolVersion = UI_CONTROL_PROTOCOL_VERSION,
   }) {
-    assertPlainObject(transport, "transport");
+    if (
+      transport === null ||
+      (typeof transport !== "object" && typeof transport !== "function")
+    ) {
+      throw invalid("transport must be an object implementing the ui.control transport interface");
+    }
     for (const method of ["connect", "readSnapshot", "request", "lookup", "close"]) {
       if (typeof transport[method] !== "function") {
         throw invalid(`transport.${method} must be a function`);
@@ -226,16 +231,30 @@ export class RuntimeClient {
   }
 
   async #applySnapshotForSession(snapshot, session) {
-    const normalized = await normalizeSnapshot(snapshot, session);
-    if (this.#session !== session) {
-      throw uiControlError(
-        UI_CONTROL_ERROR_CODES.STALE_GENERATION,
-        "authenticated session changed while normalizing the runtime snapshot",
-        { retryable: true },
-      );
+    try {
+      const normalized = await normalizeSnapshot(snapshot, session);
+      if (this.#session !== session) {
+        throw uiControlError(
+          UI_CONTROL_ERROR_CODES.STALE_GENERATION,
+          "authenticated session changed while normalizing the runtime snapshot",
+          { retryable: true },
+        );
+      }
+      this.#snapshot = validateSnapshotTransition(this.#snapshot, normalized);
+      return this.readView();
+    } catch (error) {
+      if (
+        this.#session === session &&
+        isUiControlError(error) &&
+        [
+          UI_CONTROL_ERROR_CODES.INVALID_INPUT,
+          UI_CONTROL_ERROR_CODES.SNAPSHOT_DRIFT,
+        ].includes(error.code)
+      ) {
+        this.#snapshot = null;
+      }
+      throw error;
     }
-    this.#snapshot = validateSnapshotTransition(this.#snapshot, normalized);
-    return this.readView();
   }
 
   readView() {
