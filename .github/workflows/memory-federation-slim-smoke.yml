@@ -3,12 +3,15 @@ name: memory federation isolated smoke
 on:
   push:
     branches:
-      - feat/memory-federation-production-closure-20260926
+      - "feat/memory-federation-*"
+      - "fix/memory-federation-*"
     paths:
       - ".github/workflows/memory-federation-slim-smoke.yml"
       - "codex-rs/hepta-memory-federation/**"
+      - "codex-rs/hepta-memory-federation-wire/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/ext/hepta-memory/**"
+      - "scripts/memory_federation_full_attestation.py"
       - "scripts/run_memory_federation_qualification.sh"
 
 permissions:
