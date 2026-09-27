@@ -8,11 +8,13 @@
 
 #![forbid(unsafe_code)]
 
+mod codec_binding;
 mod directional_session;
 mod envelope;
 mod envelope_v2;
 mod frame;
 mod frame_header;
+mod managed_session;
 mod registry;
 mod schema;
 mod secure_session;
@@ -20,6 +22,11 @@ mod session;
 mod stream;
 mod version;
 
+pub use codec_binding::BoundPayloadCodec;
+pub use codec_binding::BoundWireSessionError;
+pub use codec_binding::CodecBindingError;
+pub use codec_binding::PayloadCodecBinding;
+pub use codec_binding::verify_codec_binding;
 pub use directional_session::AuthenticatedWireSession;
 pub use directional_session::SessionEndpoint;
 pub use directional_session::SessionMacKey;
@@ -41,6 +48,9 @@ pub use frame_header::MAX_WIRE_IDENTITY_BYTES;
 pub use frame_header::ValidatedFrameHeader;
 pub use frame_header::WIRE_HEADER_BYTES;
 pub use frame_header::WIRE_MAGIC;
+pub use managed_session::ManagedAuthenticatedWireSession;
+pub use managed_session::ManagedSessionError;
+pub use managed_session::SessionLifecycleState;
 pub use registry::CanonicalizationProfile;
 pub use registry::FrozenAdmissionError;
 pub use registry::FrozenSchemaRegistry;
