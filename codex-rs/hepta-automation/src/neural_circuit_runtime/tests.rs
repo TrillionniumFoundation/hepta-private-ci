@@ -99,8 +99,7 @@ fn vertical_slice() -> NeuralCircuitCandidateV1 {
     .expect("circuit")
 }
 
-#[test]
-fn vertical_slice_records_choice_organ_wait_and_terminal_receipt() {
+fn run_terminal(profile: &CircuitRuntimeProfileV1) -> CircuitTerminalReceiptV1 {
     let candidate = vertical_slice();
     let mut decision = RouteTo {
         next: "organ".to_string(),
@@ -111,7 +110,7 @@ fn vertical_slice_records_choice_organ_wait_and_terminal_receipt() {
     let outcome = run_neural_circuit_v1(
         &candidate,
         &event(),
-        &CircuitRuntimeProfileV1::default(),
+        profile,
         &mut decision,
         &mut organ,
         &mut wait,
@@ -121,11 +120,34 @@ fn vertical_slice_records_choice_organ_wait_and_terminal_receipt() {
     let CircuitRuntimeOutcomeV1::Terminal(receipt) = outcome else {
         panic!("expected terminal receipt");
     };
+    receipt
+}
+
+#[test]
+fn vertical_slice_records_choice_organ_wait_and_terminal_receipt() {
+    let receipt = run_terminal(&CircuitRuntimeProfileV1::default());
     assert_eq!(receipt.state, CircuitTerminalStateV1::Succeeded);
     assert_eq!(receipt.terminal_node_id, "success");
     assert_eq!(receipt.trace.recorded_choices.len(), 2);
     assert_eq!(receipt.trace.observation_digests.len(), 2);
     assert_eq!(receipt.trace.consumed_cost_units, 7);
+}
+
+#[test]
+fn terminal_receipt_binds_the_exact_runtime_profile() {
+    let baseline = run_terminal(&CircuitRuntimeProfileV1::default());
+    let constrained = run_terminal(&CircuitRuntimeProfileV1 {
+        max_steps: 64,
+        max_depth: 64,
+        max_feedback_rounds: 4,
+        cost_budget_units: 1_000,
+    });
+    assert_ne!(
+        baseline.trace.runtime_profile_digest,
+        constrained.trace.runtime_profile_digest
+    );
+    assert_ne!(baseline.trace.trace_digest, constrained.trace.trace_digest);
+    assert_ne!(baseline.receipt_digest, constrained.receipt_digest);
 }
 
 #[test]
