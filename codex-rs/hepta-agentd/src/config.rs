@@ -491,9 +491,10 @@ impl AgentdConfig {
         self.intuition_policy_host.clone()
     }
 
-    /// Compose the canonical intelligence product caller into this daemon.
-    /// No authority file, signer identity, or verifying key is inferred.
-    pub fn with_intelligence_product_runner(
+    /// Internal half of the all-or-none canonical intelligence profile. Public
+    /// callers must use `compose_canonical_intelligence_profile_v1`; a runner
+    /// alone can no longer be installed by an embedding or the standalone CLI.
+    pub(crate) fn with_intelligence_product_runner(
         mut self,
         runner: std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>,
     ) -> Result<Self, AgentdError> {
@@ -512,10 +513,10 @@ impl AgentdConfig {
         self.intelligence_product_runner.clone()
     }
 
-    /// Attach the host-owned provider that derives seven-owner inputs for the
-    /// existing ObjectiveStart product ingress.  The provider is never
-    /// constructed from request bytes.
-    pub fn with_intelligence_invocation_provider(
+    /// Internal half of the all-or-none canonical profile. The concrete
+    /// provider is host-owned, bounded, observable and backed by a durable
+    /// learning owner before the public composition helper installs it.
+    pub(crate) fn with_intelligence_invocation_provider(
         mut self,
         provider: std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>,
     ) -> Result<Self, AgentdError> {
