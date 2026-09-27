@@ -57,7 +57,9 @@ jobs:
           matches = [i for i, line in enumerate(lines) if 'text = text.replace("ui-native-remediation-' in line]
           if len(matches) != 1:
               raise SystemExit(f'expected one concurrency replacement line, found {len(matches)}')
-          lines[matches[0]] = '    text = text.replace("ui-native-remediation-", "ui-native-convergence-", 1)'
+          index = matches[0]
+          indent = lines[index][: len(lines[index]) - len(lines[index].lstrip())]
+          lines[index] = indent + 'text = text.replace("ui-native-remediation-", "ui-native-convergence-", 1)'
           script = '\n'.join(lines) + '\n'
           compile(script, 'ui-native-convergence-materializer', 'exec')
           exec(script, {'__name__': '__main__'})
