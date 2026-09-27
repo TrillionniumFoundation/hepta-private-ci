@@ -1,0 +1,211 @@
+name: learning.plasticity one-shot map sync
+
+on:
+  push:
+    branches:
+      - learning-plasticity/full-closure-20260927
+    paths:
+      - ".github/workflows/learning-plasticity-map-sync.yml"
+      - "codex-rs/hepta-plasticity/**"
+      - "codex-rs/hepta-agentd/**"
+      - "docs/modules/learning.plasticity/**"
+      - "qualification/lane-f-shadow/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: learning-plasticity-map-sync
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: learning-plasticity/full-closure-20260927
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Rebind, extend, generate and verify learning.plasticity truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git branch --show-current)" = "learning-plasticity/full-closure-20260927"
+          test -z "$(git status --porcelain)"
+
+          python3 scripts/hepta-implementation-maps.py migrate --module learning.plasticity
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json")
+          row = json.loads(path.read_text(encoding="utf-8"))
+
+          row["productCallerState"] = (
+              "control_engineering_iteration_coordinator_source_implemented_"
+              "iteration_envelope_frozen_coverage_observer_bound_replay_safe_"
+              "named_agentd_producer_submission_not_target_host_qualified"
+          )
+          row["productionWriterState"] = (
+              "agentd_parameter_topology_anchor_fence_journal_plus_"
+              "control_engineering_terminal_journal_and_final_use_runtime_"
+              "topology_executor_source_implemented_target_host_unproved"
+          )
+          row["productCallerBindingPolicy"] = "closed_world"
+          bindings = row.setdefault("productCallerBindings", [])
+          binding = {
+              "callerPath": "codex-rs/hepta-agentd/src/control_engineering_iteration.rs",
+              "mustContain": "lookup_exact_replay",
+          }
+          if binding not in bindings:
+              bindings.append(binding)
+          product_callers = row.setdefault("productCallers", [])
+          caller = {
+              "nativeSymbol": "ControlEngineeringIterationBootstrapV1::run",
+              "sourcePath": "codex-rs/hepta-agentd/src/control_engineering_iteration.rs",
+              "state": "source_composed_replay_safe_named_agentd_submission",
+          }
+          if not any(item.get("nativeSymbol") == caller["nativeSymbol"] for item in product_callers):
+              product_callers.append(caller)
+
+          additions = [
+              {
+                  "operation": "generator_coverage_receipt",
+                  "nativeSymbol": "build_generator_coverage_receipt_v1",
+                  "sourcePath": "codex-rs/hepta-plasticity/src/generator_coverage_v1.rs",
+                  "state": "source_implemented_expected_vs_actual_signals_scales_grammar_artifact_window_owner_frontier_and_omissions_bound",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-plasticity/src/generator_coverage_v1.rs::tests::complete_coverage_is_deterministic_and_profile_bound",
+                      "codex-rs/hepta-plasticity/src/generator_coverage_v1.rs::tests::empty_signal_and_scale_profiles_have_distinct_terminal_dispositions",
+                  ],
+                  "sourcePathExists": True,
+                  "designOperation": "build_generator_coverage_receipt_v1",
+                  "mappingClass": "owner_native",
+                  "delegatedCallees": [],
+              },
+              {
+                  "operation": "generator_coverage_verification",
+                  "nativeSymbol": "verify_generator_coverage_against_profile_v1",
+                  "sourcePath": "codex-rs/hepta-plasticity/src/generator_coverage_v1.rs",
+                  "state": "source_implemented_exact_profile_and_owner_frontier_recomputation",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-plasticity/src/generator_coverage_v1.rs::tests::every_coverage_binding_changes_the_digest"
+                  ],
+                  "sourcePathExists": True,
+                  "designOperation": "verify_generator_coverage_against_profile_v1",
+                  "mappingClass": "owner_native",
+                  "delegatedCallees": [],
+              },
+              {
+                  "operation": "control_engineering_iteration_coordinator",
+                  "nativeSymbol": "control_engineering_iteration_channel_v1",
+                  "sourcePath": "codex-rs/hepta-agentd/src/control_engineering_iteration.rs",
+                  "state": "source_implemented_iteration_envelope_freeze_observer_coverage_exact_replay_before_product_and_named_producer_submission",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-agentd/src/control_engineering_iteration.rs::tests::exact_replay_returns_original_before_product_and_drift_conflicts"
+                  ],
+                  "sourcePathExists": True,
+                  "designOperation": "coordinate_iteration_plasticity_v1",
+                  "mappingClass": "host_adapter",
+                  "delegatedCallees": [
+                      "AgentdState::submit_parameter_plasticity_v1",
+                      "AgentdState::submit_topology_plasticity_v1",
+                  ],
+              },
+              {
+                  "operation": "control_engineering_terminal_journal",
+                  "nativeSymbol": "DurableIterationTerminalJournalV1::append",
+                  "sourcePath": "codex-rs/hepta-agentd/src/control_engineering_iteration_base.rs",
+                  "state": "source_implemented_checksum_chained_terminal_receipt_idempotency_and_crash_tail_repair",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-agentd/src/control_engineering_iteration_base.rs::tests::terminal_journal_reopens_and_replays_idempotently",
+                      "codex-rs/hepta-agentd/src/control_engineering_iteration_base.rs::tests::terminal_identity_rejects_semantic_drift",
+                  ],
+                  "sourcePathExists": True,
+                  "designOperation": "append_iteration_terminal_receipt_v1",
+                  "mappingClass": "host_adapter",
+                  "delegatedCallees": [],
+              },
+              {
+                  "operation": "agentd_fair_plasticity_scheduler",
+                  "nativeSymbol": "PlasticityRuntimeHandleV1::propose_parameter_until",
+                  "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+                  "state": "source_implemented_separate_fair_queues_deadline_cancellation_byte_work_budgets_blocking_owner_and_metrics",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::runtime_limits_are_bounded",
+                      "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::logical_deadline_must_advance",
+                  ],
+                  "sourcePathExists": True,
+                  "designOperation": "schedule_plasticity_submission_v1",
+                  "mappingClass": "host_adapter",
+                  "delegatedCallees": [
+                      "propose_agentd_plasticity_v1",
+                      "propose_agentd_topology_plasticity_v1",
+                  ],
+              },
+              {
+                  "operation": "plasticity_rollback_domain_profile",
+                  "nativeSymbol": "verify_plasticity_rollback_domain_profile_v1",
+                  "sourcePath": "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs",
+                  "state": "source_implemented_nofollow_identity_recheck_parent_fsync_and_external_device_mount_snapshot_profile",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs::tests::secure_leaf_rejects_symbolic_link",
+                      "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs::tests::component_walk_rejects_parent_traversal",
+                  ],
+                  "sourcePathExists": True,
+                  "designOperation": "verify_plasticity_rollback_domain_profile_v1",
+                  "mappingClass": "host_adapter",
+                  "delegatedCallees": [],
+              },
+          ]
+          by_name = {operation["operation"]: operation for operation in row["operations"]}
+          for operation in additions:
+              by_name[operation["operation"]] = operation
+          existing_order = [operation["operation"] for operation in row["operations"]]
+          new_names = [operation["operation"] for operation in additions if operation["operation"] not in existing_order]
+          row["operations"] = [by_name[name] for name in existing_order + new_names]
+
+          gaps = [
+              gap
+              for gap in row.get("repositoryControlledGaps", [])
+              if not gap.startswith("Compose a real non-test control.engineering/self-iteration coordinator")
+          ]
+          process_gap = (
+              "Select the implemented control.engineering iteration coordinator in the final process bootstrap/inbox profile and obtain exact target-host execution receipts; source now validates IterationEnvelopeV1, freezes context, binds independent coverage, submits through the named Agentd producer and journals replay-safe terminal receipts."
+          )
+          if process_gap not in gaps:
+              gaps.insert(0, process_gap)
+          row["repositoryControlledGaps"] = gaps
+          path.write_text(json.dumps(row, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          PY
+
+          python3 scripts/hepta-implementation-maps.py migrate --module learning.plasticity
+          python3 scripts/hepta-implementation-maps.py sync-plasticity-status
+
+          git config user.name "Hepta Implementation Map Bot"
+          git config user.email "hepta-implementation-map@users.noreply.github.com"
+          git add \
+            docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json \
+            docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md \
+            docs/modules/learning.plasticity/CURRENT_STATE.json
+          test -n "$(git diff --cached --name-only)"
+          git commit -m "docs(plasticity): synchronize full-closure implementation truth"
+
+          EXPECTED_SHA="$(git rev-parse HEAD)"
+          EXPECTED_TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$EXPECTED_SHA" \
+            --expected-tree "$EXPECTED_TREE"
+          git push origin HEAD:learning-plasticity/full-closure-20260927
