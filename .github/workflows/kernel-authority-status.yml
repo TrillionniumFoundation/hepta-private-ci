@@ -55,7 +55,7 @@ jobs:
     if: (github.event_name == 'push' && github.ref == 'refs/heads/work/kernel-authority-convergence-20260925') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'work/kernel-authority-convergence-20260925')
     permissions:
       contents: write
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 90
     steps:
       - name: Checkout exact trigger head
