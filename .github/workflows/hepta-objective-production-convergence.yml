@@ -27,7 +27,7 @@ concurrency:
 
 jobs:
   converge:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 180
     env:
       TARGET_BRANCH: ${{ github.event.pull_request.head.ref || 'work/objective-compiler-production-convergence-20260927' }}
