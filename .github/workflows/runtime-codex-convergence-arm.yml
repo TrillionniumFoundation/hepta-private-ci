@@ -1,0 +1,212 @@
+name: runtime.codex ARM convergence
+on:
+  push:
+    branches: [work/runtime-codex-convergence-20260928]
+    paths: [.github/workflows/runtime-codex-convergence-arm.yml]
+permissions:
+  contents: read
+concurrency:
+  group: runtime-codex-arm-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  assemble:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+      - name: Execute the pinned bounded assembly recipe
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os, re, subprocess
+          from pathlib import Path
+          sha = os.environ['GITHUB_SHA']
+          assert re.fullmatch('[0-9a-f]{40}', sha)
+          text = Path('.github/workflows/runtime-codex-convergence-materialize.yml').read_text()
+          start = text.index('        run: |\n', text.index('- name: Materialize reviewed changes')) + len('        run: |\n')
+          end = text.index('\n      - uses:', start)
+          lines = text[start:end].splitlines()
+          assert all(not line or line.startswith('          ') for line in lines)
+          script = '\n'.join(line[10:] for line in lines).replace('${{ github.sha }}', sha)
+          script = script.replace('python3 scripts/runtime_codex_convergence_patch.py', 'python3 scripts/runtime_codex_convergence_patch.py\npython3 scripts/runtime_codex_convergence_regressions.py')
+          subprocess.run(['bash', '-e', '-o', 'pipefail', '-c', script], check=True)
+          PY
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: runtime-codex-materialized-patch
+          path: ${{ runner.temp }}/patch/
+          if-no-files-found: error
+          retention-days: 14
+  publish:
+    needs: assemble
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      source: ${{ steps.publish.outputs.source }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: runtime-codex-materialized-patch
+          path: ${{ runner.temp }}/patch
+      - name: Publish bounded source, never execute candidate code
+        id: publish
+        env:
+          EXPECTED: ${{ github.sha }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import subprocess
+          from pathlib import Path
+          text = Path('.github/workflows/runtime-codex-convergence-materialize.yml').read_text()
+          start = text.index('        run: |\n', text.index('- name: Publish exact bounded patch')) + len('        run: |\n')
+          end = text.index('\n      - uses:', start)
+          lines = text[start:end].splitlines()
+          assert all(not line or line.startswith('          ') for line in lines)
+          script = '\n'.join(line[10:] for line in lines)
+          subprocess.run(['bash', '-e', '-o', 'pipefail', '-c', script], check=True)
+          PY
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: runtime-codex-published-source
+          path: ${{ runner.temp }}/published/
+          if-no-files-found: error
+          retention-days: 14
+  qualification:
+    needs: publish
+    name: runtime.codex native (${{ matrix.lane }})
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    env:
+      SOURCE_SHA: ${{ needs.publish.outputs.source }}
+      BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      CARGO_INCREMENTAL: 0
+      CARGO_TERM_COLOR: never
+      CARGO_BUILD_JOBS: 4
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind executable source and ordered-parent merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if [ "$HEPTA_CI_LANE" = base-merge ]; then
+            tree=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+            export GIT_AUTHOR_NAME='runtime.codex qualification' GIT_AUTHOR_EMAIL='noreply@openai.com'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME" GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z' GIT_COMMITTER_DATE='2000-01-01T00:00:00Z'
+            commit=$(printf '%s\n' 'runtime.codex deterministic synthetic merge' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            git checkout --detach "$commit"
+          fi
+          echo "TESTED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "EVIDENCE=$RUNNER_TEMP/runtime-codex" >> "$GITHUB_ENV"
+          echo "RECORDS=$RUNNER_TEMP/runtime-codex/records" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/runtime-codex/records"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - uses: ./.github/actions/setup-ci
+      - name: Native prerequisites
+        run: sudo apt-get update -y && sudo apt-get install -y build-essential pkg-config libcap-dev
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        id: cache
+        with:
+          path: |
+            ~/.cargo/registry/
+            ~/.cargo/git/
+            ~/.cache/codex-ci/cargo-target/
+          key: runtime-codex-arm-1.95-nodebug-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          restore-keys: |
+            runtime-codex-arm-1.95-nodebug-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ matrix.lane }}-
+            runtime-codex-arm-1.95-nodebug-${{ hashFiles('codex-rs/Cargo.lock') }}-
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
+      - uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: aarch64-unknown-linux-gnu
+      - name: Verifier regressions
+        run: python3 -m unittest -v scripts.tests.test_runtime_codex_receipt_v2 scripts.tests.test_runtime_codex_target_host_evidence scripts.tests.test_runtime_codex_convergence
+      - name: Execute real native commands
+        working-directory: codex-rs
+        run: python3 ../scripts/runtime_codex_receipt_v2.py execute --records "$RECORDS"
+      - name: Retain current failed or passed qualification receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          args=(--source "$SOURCE_SHA" --lane "$HEPTA_CI_LANE" --records "$RECORDS" --output "$EVIDENCE/receipt.json")
+          if [ "$HEPTA_CI_LANE" = base-merge ]; then args+=(--base "$BASE_SHA"); fi
+          python3 scripts/runtime_codex_receipt_v2.py build "${args[@]}"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: runtime-codex-${{ matrix.lane }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/runtime-codex/
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        if: ${{ always() && steps.cache.outputs.cache-hit != 'true' }}
+        with:
+          path: |
+            ~/.cargo/registry/
+            ~/.cargo/git/
+            ~/.cache/codex-ci/cargo-target/
+          key: runtime-codex-arm-1.95-nodebug-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+  attest:
+    needs: qualification
+    if: always()
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: runtime-codex-${{ matrix.lane }}-${{ github.run_id }}
+          path: evidence
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        id: signature
+        with:
+          subject-path: evidence/receipt.json
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: runtime-codex-signature-${{ matrix.lane }}-${{ github.run_id }}
+          path: ${{ steps.signature.outputs.bundle-path }}
+          if-no-files-found: error
+          retention-days: 30
