@@ -1,0 +1,158 @@
+name: Platform wire throughput qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-wire/**"
+      - ".github/workflows/platform-wire-benchmark.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-wire/**"
+      - ".github/workflows/platform-wire-benchmark.yml"
+  schedule:
+    - cron: "47 3 * * *"
+  workflow_dispatch:
+    inputs:
+      near_limit_iterations:
+        description: Near-limit V2 decode iterations (1..256)
+        required: false
+        default: "32"
+        type: string
+      long_connection_frames:
+        description: Sequential long-connection frames (100..100000)
+        required: false
+        default: "10000"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-wire-throughput-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  throughput:
+    name: Exact-source bounded throughput probe
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Resolve bounded workload
+        id: workload
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == pull_request ]]; then
+            near=4
+            long=1000
+          elif [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
+            near='${{ inputs.near_limit_iterations }}'
+            long='${{ inputs.long_connection_frames }}'
+          else
+            near=32
+            long=10000
+          fi
+          [[ "$near" =~ ^[0-9]+$ ]]
+          [[ "$long" =~ ^[0-9]+$ ]]
+          if (( near < 1 || near > 256 )); then
+            echo "near-limit iterations must be within 1..256" >&2
+            exit 2
+          fi
+          if (( long < 100 || long > 100000 )); then
+            echo "long-connection frames must be within 100..100000" >&2
+            exit 2
+          fi
+          echo "near=$near" >> "$GITHUB_OUTPUT"
+          echo "long=$long" >> "$GITHUB_OUTPUT"
+
+      - name: Build and run release throughput probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          cargo run --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-wire \
+            --release \
+            --example throughput_probe \
+            -- \
+            "${{ steps.workload.outputs.near }}" \
+            "${{ steps.workload.outputs.long }}" \
+            | tee .hepta-evidence/platform-wire-throughput-metrics.json
+          python3 -m json.tool \
+            .hepta-evidence/platform-wire-throughput-metrics.json \
+            >/dev/null
+
+      - name: Write exact-source benchmark receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc_version="$(rustc --version --verbose | tr '\n' ';')"
+          cargo_version="$(cargo --version)"
+          generated_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          export rustc_version cargo_version generated_at
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import platform
+          import subprocess
+          from pathlib import Path
+
+          metrics_path = Path(".hepta-evidence/platform-wire-throughput-metrics.json")
+          metrics = json.loads(metrics_path.read_text())
+          tested_sha = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          if tested_sha != os.environ["SOURCE_SHA"]:
+              raise SystemExit("benchmark source mismatch")
+          receipt = {
+              "schema": "hepta.platform-wire.throughput-receipt.v1",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "tested_sha": tested_sha,
+              "status": "passed",
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "generated_at": os.environ["generated_at"],
+              "runner_os": platform.platform(),
+              "runner_machine": platform.machine(),
+              "rustc": os.environ["rustc_version"],
+              "cargo": os.environ["cargo_version"],
+              "metrics_sha256": hashlib.sha256(metrics_path.read_bytes()).hexdigest(),
+              "metrics": metrics,
+              "threshold_policy": "measurement-only-no-cloud-runner-hard-threshold",
+          }
+          Path(".hepta-evidence/platform-wire-throughput-receipt.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+          )
+          PY
+
+      - name: Retain benchmark evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-wire-throughput-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: .hepta-evidence/platform-wire-throughput-*.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 180
