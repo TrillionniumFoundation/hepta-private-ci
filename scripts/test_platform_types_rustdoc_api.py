@@ -157,6 +157,58 @@ class RustdocApiTests(unittest.TestCase):
         self.assertEqual(result["changed"], [])
         self.assertEqual(result["added"], ["codex_hepta_types::new_function"])
 
+    def test_additive_impl_does_not_cascade_into_type_or_callers(self):
+        base_document = document()
+        candidate_document = copy.deepcopy(base_document)
+        impl_id = 20
+        method_id = 21
+        candidate_document["index"]["1"]["inner"]["struct"]["impls"] = [impl_id]
+        candidate_document["index"][str(impl_id)] = {
+            "id": impl_id,
+            "crate_id": 0,
+            "name": None,
+            "visibility": "default",
+            "inner": {
+                "impl": {
+                    "is_unsafe": False,
+                    "generics": {"params": [], "where_predicates": []},
+                    "provided_trait_methods": [],
+                    "trait": None,
+                    "for": {"resolved_path": {"name": "Foo", "id": 1, "args": None}},
+                    "items": [method_id],
+                    "is_negative": False,
+                    "is_synthetic": False,
+                    "blanket_impl": None,
+                }
+            },
+        }
+        candidate_document["index"][str(method_id)] = {
+            "id": method_id,
+            "crate_id": 0,
+            "name": "new_method",
+            "visibility": "public",
+            "inner": {
+                "function": {
+                    "sig": {"inputs": [], "output": None, "is_c_variadic": False},
+                    "generics": {"params": [], "where_predicates": []},
+                    "header": {"is_const": False, "is_unsafe": False},
+                    "has_body": True,
+                }
+            },
+        }
+        candidate_document["paths"][str(method_id)] = {
+            "crate_id": 0,
+            "path": ["codex_hepta_types", "Foo", "new_method"],
+            "kind": "function",
+        }
+        result = diff(
+            _Normalizer(base_document).snapshot(),
+            _Normalizer(candidate_document).snapshot(),
+        )
+        self.assertFalse(result["breaking"])
+        self.assertEqual(result["changed"], [])
+        self.assertEqual(result["added"], ["codex_hepta_types::Foo::new_method"])
+
     def test_nested_resolved_path_change_is_breaking(self):
         base_document = document()
         candidate_document = copy.deepcopy(base_document)
@@ -191,6 +243,24 @@ class RustdocApiTests(unittest.TestCase):
         self.assertTrue(result["breaking"])
         changed = {row["path"] for row in result["changed"]}
         self.assertIn("codex_hepta_types::Foo", changed)
+
+    def test_function_parameter_type_change_is_breaking_without_recursive_fingerprints(self):
+        base_document = document()
+        candidate_document = copy.deepcopy(base_document)
+        candidate_document["index"]["2"]["inner"]["function"]["sig"]["inputs"][0][1][
+            "resolved_path"
+        ] = {
+            "name": "Bar",
+            "id": 4,
+            "args": {"angle_bracketed": {"args": [], "constraints": []}},
+        }
+        result = diff(
+            _Normalizer(base_document).snapshot(),
+            _Normalizer(candidate_document).snapshot(),
+        )
+        self.assertTrue(result["breaking"])
+        changed = {row["path"] for row in result["changed"]}
+        self.assertIn("codex_hepta_types::consume", changed)
 
     def test_docs_and_raw_item_numbers_do_not_change_fingerprint(self):
         base_document = document()
