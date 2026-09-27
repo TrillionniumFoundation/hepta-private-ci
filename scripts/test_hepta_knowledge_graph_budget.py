@@ -25,9 +25,10 @@ def fixtures():
         'benchmark': {
             'schema': 'hepta.knowledge-graph-perf-library.v2',
             'hostProfileId': 'test-ci',
+            'writes': 10, 'querySamples': 10, 'reopenSamples': 10,
             'mutationNs': distribution.copy(), 'queryNs': distribution.copy(),
             'reopenNs': distribution.copy(),
-            'contention': {'writerNs': distribution.copy(), 'readerNs': distribution.copy()},
+            'contention': {'rounds': 10, 'readersPerRound': 10, 'writerNs': distribution.copy(), 'readerNs': distribution.copy()},
             'process': {'peakRssKiB': 8},
             'storage': {'databaseBytes': 4, 'walBytes': 4},
         },
@@ -72,6 +73,11 @@ class BudgetEvidenceTests(unittest.TestCase):
             (('host', 'machine'), 'aarch64'), (('host', 'logicalCpuCount'), True),
             (('parameters', 'writes'), 1), (('parameters', 'writes'), True),
             (('benchmark', 'hostProfileId'), 'wrong'),
+            (('benchmark', 'writes'), 9),
+            (('benchmark', 'querySamples'), 1),
+            (('benchmark', 'reopenSamples'), True),
+            (('benchmark', 'contention', 'rounds'), 9),
+            (('benchmark', 'contention', 'readersPerRound'), 11),
             (('benchmark', 'mutationNs', 'p99'), 0),
             (('benchmark', 'queryNs', 'p99'), True),
             (('benchmark', 'queryNs', 'p99'), -1),
@@ -118,7 +124,7 @@ class BudgetEvidenceTests(unittest.TestCase):
     def test_json_duplicate_and_nonfinite_values_are_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'evidence.json'
-            for payload in ('{"x":1,"x":2}', '{"x":NaN}', '{"x":Infinity}', '{"x":-Infinity}'):
+            for payload in ('{"x":1,"x":2}', '{"x":NaN}', '{"x":Infinity}', '{"x":-Infinity}', '{"x":1e999}', '[]', 'null', 'true'):
                 with self.subTest(payload=payload):
                     path.write_text(payload)
                     with self.assertRaises(ValueError):

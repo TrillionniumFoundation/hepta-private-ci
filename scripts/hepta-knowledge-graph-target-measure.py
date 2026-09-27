@@ -4,15 +4,20 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import platform
+import re
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 from typing import Any
+
+from hepta_kg_evidence import check_observed_parameters, strict_object
 
 ROOT = Path(__file__).resolve().parents[1]
 CARGO_ROOT = ROOT / "codex-rs"
@@ -70,7 +75,7 @@ def parse_receipt(output: str, expected_profile_id: str) -> dict[str, Any]:
     if len(rows) != 1:
         fail(f"expected exactly one benchmark receipt, received {len(rows)}")
     try:
-        receipt = json.loads(rows[0])
+        receipt = strict_object(rows[0])
     except ValueError as error:
         fail(f"invalid benchmark receipt JSON: {error}")
     if receipt.get("schema") != BENCHMARK_SCHEMA:
@@ -133,42 +138,75 @@ def read_linux_host_details() -> dict[str, Any]:
     return details
 
 
-def run_benchmark(args: argparse.Namespace) -> tuple[dict[str, Any], int, str]:
+def observed_storage() -> dict[str, Any]:
+    """Identify the actual temporary filesystem used by the native fixture."""
+    root = Path(tempfile.gettempdir()).resolve(strict=True)
+    if not root.is_dir():
+        fail("benchmark temporary root is not a directory")
+    details: dict[str, Any] = {"temporaryRoot": str(root), "deviceId": root.stat().st_dev}
+    if platform.system() == "Linux":
+        mount = strict_object(command("findmnt", "--json", "--target", str(root),
+                                      "--output", "SOURCE,FSTYPE,UUID,TARGET"))
+        filesystems = mount.get("filesystems")
+        if not isinstance(filesystems, list) or len(filesystems) != 1:
+            fail("could not identify exactly one benchmark filesystem")
+        details["mount"] = filesystems[0]
+    digest = hashlib.sha256(json.dumps(details, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    return {"storageIdentity": "sha256:" + digest, "storageObservation": details}
+
+
+def run_benchmark(args: argparse.Namespace) -> tuple[dict[str, Any], int, str, dict[str, Any]]:
+    requested = {
+        "writes": args.writes, "querySamples": args.query_samples,
+        "reopenSamples": args.reopen_samples, "contentionReaders": args.contention_readers,
+        "contentionRounds": args.contention_rounds,
+    }
     env = os.environ.copy()
-    env.update(
-        {
-            "HEPTA_KG_TARGET_PROFILE_ID": args.host_profile_id,
-            "HEPTA_KG_BENCH_WRITES": str(args.writes),
-            "HEPTA_KG_BENCH_QUERY_SAMPLES": str(args.query_samples),
-            "HEPTA_KG_BENCH_REOPEN_SAMPLES": str(args.reopen_samples),
-            "HEPTA_KG_BENCH_CONTENTION_READERS": str(args.contention_readers),
-            "HEPTA_KG_BENCH_CONTENTION_ROUNDS": str(args.contention_rounds),
-            "CARGO_INCREMENTAL": "0",
-        }
-    )
+    env.update({
+        "HEPTA_KG_TARGET_PROFILE_ID": args.host_profile_id,
+        "HEPTA_KG_BENCH_WRITES": str(args.writes),
+        "HEPTA_KG_BENCH_QUERY_SAMPLES": str(args.query_samples),
+        "HEPTA_KG_BENCH_REOPEN_SAMPLES": str(args.reopen_samples),
+        "HEPTA_KG_BENCH_CONTENTION_READERS": str(args.contention_readers),
+        "HEPTA_KG_BENCH_CONTENTION_ROUNDS": str(args.contention_rounds),
+        "TMPDIR": str(Path(tempfile.gettempdir()).resolve(strict=True)),
+        "CARGO_INCREMENTAL": "0",
+    })
     if args.target_dir:
         env["CARGO_TARGET_DIR"] = str(Path(args.target_dir).expanduser().resolve())
-
     started = time.monotonic_ns()
-    output = command(
-        "cargo",
-        "test",
-        "--locked",
-        "--release",
-        "-p",
-        "codex-hepta-memory",
-        "--lib",
-        TEST_NAME,
-        "--",
-        "--ignored",
-        "--exact",
-        "--nocapture",
-        "--test-threads=1",
-        cwd=CARGO_ROOT,
-        env=env,
-    )
-    elapsed = time.monotonic_ns() - started
-    return parse_receipt(output, args.host_profile_id), elapsed, output
+    build = command("cargo", "test", "--locked", "--release", "--no-run",
+                    "--message-format=json", "-p", "codex-hepta-memory", "--lib",
+                    cwd=CARGO_ROOT, env=env)
+    executables: set[str] = set()
+    for line in build.splitlines():
+        if not line.startswith("{"):
+            continue
+        artifact = strict_object(line)
+        if (artifact.get("reason") == "compiler-artifact"
+                and artifact.get("target", {}).get("name") == "codex_hepta_memory"
+                and artifact.get("profile", {}).get("test") is True
+                and isinstance(artifact.get("executable"), str)):
+            executables.add(artifact["executable"])
+    if len(executables) != 1:
+        fail(f"expected one compiled native memory test executable, got {len(executables)}")
+    executable = Path(next(iter(executables))).resolve(strict=True)
+    executable_bytes = executable.read_bytes()
+    executable_digest = hashlib.sha256(executable_bytes).hexdigest()
+    output = command(str(executable), TEST_NAME, "--ignored", "--exact", "--nocapture",
+                     "--test-threads=1", cwd=CARGO_ROOT, env=env)
+    if not re.search(r"test result: ok\. 1 passed; 0 failed; 0 ignored;", output):
+        fail("native benchmark did not execute exactly one successful non-skipped test")
+    if hashlib.sha256(executable.read_bytes()).hexdigest() != executable_digest:
+        fail("native benchmark executable changed during measurement")
+    receipt = parse_receipt(output, args.host_profile_id)
+    try:
+        check_observed_parameters(receipt, requested)
+    except ValueError as error:
+        fail(str(error))
+    native = {"kind": "native-rust-test-harness", "testName": TEST_NAME,
+              "sha256": executable_digest, "bytes": len(executable_bytes)}
+    return receipt, time.monotonic_ns() - started, output, native
 
 
 def self_test() -> int:
@@ -220,7 +258,12 @@ def measure(args: argparse.Namespace) -> int:
     if platform.system() == "Linux":
         host.update(read_linux_host_details())
 
-    receipt, harness_ns, raw_output = run_benchmark(args)
+    host.update(observed_storage())
+    receipt, harness_ns, raw_output, native = run_benchmark(args)
+    if (git("rev-parse", "HEAD") != source_sha
+            or git("rev-parse", "HEAD^{tree}") != source_tree
+            or git("status", "--porcelain")):
+        fail("source identity or working tree changed during measurement")
     evidence = {
         "schema": EVIDENCE_SCHEMA,
         "sourceCommit": source_sha,
@@ -236,6 +279,8 @@ def measure(args: argparse.Namespace) -> int:
             "contentionRounds": args.contention_rounds,
         },
         "benchmark": receipt,
+        "nativeExecutable": native,
+        "rawOutputSha256": hashlib.sha256(raw_output.encode()).hexdigest(),
         "harnessWallNanoseconds": harness_ns,
         "interpretation": {
             "exactSourceBound": True,
@@ -281,7 +326,7 @@ def main() -> int:
 
     if args.self_test:
         return self_test()
-    if not args.expected_sha or len(args.expected_sha) != 40:
+    if not args.expected_sha or not re.fullmatch("[0-9a-f]{40}", args.expected_sha):
         parser.error("--expected-sha must be the exact 40-character candidate SHA")
     if not args.host_profile_id:
         parser.error("--host-profile-id is required")

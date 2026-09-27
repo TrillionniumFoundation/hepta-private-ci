@@ -7,6 +7,8 @@ import json
 import re
 from pathlib import Path
 
+from hepta_kg_evidence import check_observed_parameters, strict_object
+
 METRICS = {
     'mutationP99Ns': ('mutationNs', 'p99'),
     'queryP99Ns': ('queryNs', 'p99'),
@@ -69,6 +71,7 @@ def evaluate(evidence, profile, expected_sha):
     benchmark = evidence.get('benchmark', {})
     if benchmark.get('schema') != 'hepta.knowledge-graph-perf-library.v2' or benchmark.get('hostProfileId') != profile['profileId']:
         raise ValueError('benchmark identity mismatch')
+    check_observed_parameters(benchmark, parameters)
     for path in [('mutationNs',), ('queryNs',), ('reopenNs',), ('contention', 'writerNs'), ('contention', 'readerNs')]:
         distribution = at(benchmark, path)
         values = [integer(at(distribution, (key,)), key) for key in ('p50', 'p95', 'p99')]
@@ -86,18 +89,8 @@ def evaluate(evidence, profile, expected_sha):
             'independentAcceptance': False, 'activation': False, 'release': False}
 
 
-def no_duplicates(pairs):
-    result = {}
-    for key, value in pairs:
-        if key in result:
-            raise ValueError(f'duplicate JSON key: {key}')
-        result[key] = value
-    return result
-
-
 def read_json(path):
-    return json.loads(Path(path).read_text(), object_pairs_hook=no_duplicates,
-                      parse_constant=lambda value: (_ for _ in ()).throw(ValueError(f'nonfinite JSON: {value}')))
+    return strict_object(Path(path).read_text())
 
 
 def main():
