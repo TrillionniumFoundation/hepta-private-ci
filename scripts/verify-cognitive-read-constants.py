@@ -75,6 +75,17 @@ def require_contract_language() -> None:
     limits_doc = read("docs/modules/cognitive.read/CONTRACT_LIMITS.md")
     technical = read("docs/modules/cognitive.read/TECHNICAL.md")
     operations = read("docs/modules/cognitive.read/OPERATIONS.md")
+    compatibility = read("docs/modules/cognitive.read/COMPATIBILITY.md")
+    metrics_source = read("codex-rs/hepta-agentd/src/cognitive_context_metrics.rs")
+    fuzz_manifest = read("codex-rs/hepta-cognitive-read/fuzz/Cargo.toml")
+    fuzz_target = read(
+        "codex-rs/hepta-cognitive-read/fuzz/fuzz_targets/read_ids.rs"
+    )
+    qualification_workflow = read(
+        ".github/workflows/cognitive-read-qualification.yml"
+    )
+    qualification_runner = read("scripts/run-cognitive-read-qualification.sh")
+
     required_limits = (
         "total_encoded_bytes",
         "payload_encoded_bytes",
@@ -108,10 +119,75 @@ def require_contract_language() -> None:
         "activation=false",
         "low-cardinality",
         "runbook",
+        "codex_otel",
     )
     missing = [term for term in required_operations if term not in operations]
     if missing:
         raise SystemExit(f"OPERATIONS.md missing operational contract language: {missing}")
+
+    required_compatibility = (
+        "hepta.cognitive.read.ids.request.v1",
+        "hepta.cognitive.read.ids.v1",
+        "hepta.agentd.cognitive-context-read.v1",
+        "cognitive.context.revalidate@1",
+        "hepta.cognitive.read.golden-vector.v1",
+        "hepta.cognitive.read.qualification.v1",
+        "hepta.cognitive.read.benchmark.v1",
+        "activation=false",
+        "Never by schema migration alone",
+    )
+    missing = [term for term in required_compatibility if term not in compatibility]
+    if missing:
+        raise SystemExit(f"COMPATIBILITY.md missing version contract: {missing}")
+
+    metric_names = (
+        "codex.hepta.cognitive_read.requests",
+        "codex.hepta.cognitive_read.selected_items",
+        "codex.hepta.cognitive_read.missing_ids",
+        "codex.hepta.cognitive_read.payload_bytes",
+        "codex.hepta.cognitive_read.total_bytes",
+        "codex.hepta.cognitive_read.budget_rejections",
+        "codex.hepta.cognitive_read.revalidation_failures",
+        "codex.hepta.cognitive_read.stale_cut_rejections",
+        "codex.hepta.cognitive_read.revalidation_alerts",
+        "codex.hepta.cognitive_read.latency_us",
+    )
+    for path, body in (
+        ("cognitive_context_metrics.rs", metrics_source),
+        ("OPERATIONS.md", operations),
+    ):
+        missing = [name for name in metric_names if name not in body]
+        if missing:
+            raise SystemExit(f"{path} missing exported metric names: {missing}")
+
+    if "cargo-fuzz = true" not in fuzz_manifest:
+        raise SystemExit("cognitive.read fuzz manifest is not an isolated cargo-fuzz workspace")
+    for marker in ("fuzz_target!", "read_ids_v1", "total_encoded_bytes"):
+        if marker not in fuzz_target:
+            raise SystemExit(f"cognitive.read fuzz target missing marker: {marker}")
+
+    required_workflow = (
+        "run-cognitive-read-qualification.sh",
+        "actions/upload-artifact",
+        "artifact-digest",
+        "exact-head",
+        "merge-candidate",
+    )
+    missing = [term for term in required_workflow if term not in qualification_workflow]
+    if missing:
+        raise SystemExit(f"qualification workflow missing evidence markers: {missing}")
+
+    required_runner = (
+        "--manifest-path codex-rs/Cargo.toml",
+        "product-read-replay",
+        "product-write-smoke",
+        "SHA256SUMS",
+        "tar --sort=name",
+        "qualification-receipt.json",
+    )
+    missing = [term for term in required_runner if term not in qualification_runner]
+    if missing:
+        raise SystemExit(f"qualification runner missing evidence markers: {missing}")
 
 
 def require_inactive_mapping() -> None:
