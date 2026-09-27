@@ -26,11 +26,12 @@ jobs:
           set -euo pipefail
           cargo fetch --locked --target x86_64-unknown-linux-gnu
       - name: Retain public dependency sources and pinned test tools only
+        id: inputs
         working-directory: codex-rs
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/prompt-offline-inputs"
-          mkdir -p "$out/toolchain"
+          mkdir -p "$out/toolchain" "$out/parts"
           git rev-parse HEAD HEAD^{tree} > "$out/identity.txt"
           channel=$(python3 -c 'import tomllib; print(tomllib.load(open("rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
           printf '%s\n' "$channel-x86_64-unknown-linux-gnu" > "$out/toolchain.txt"
@@ -50,11 +51,42 @@ jobs:
           done
           test "${#paths[@]}" -gt 0
           tar -C "$cargo_home" -czf "$out/dependencies.tar.gz" "${paths[@]}"
-          (cd "$out" && sha256sum ./*.tar.gz toolchain/*.tar.xz > checksums.txt)
+          split --bytes=180M "$out/dependencies.tar.gz" "$out/parts/dependencies-"
+          test ! -f "$out/parts/dependencies-ad"
+          for suffix in ab ac; do
+            if test -f "$out/parts/dependencies-$suffix"; then echo "$suffix=true" >> "$GITHUB_OUTPUT"; fi
+          done
+          (cd "$out" && sha256sum ./*.tar.gz toolchain/*.tar.xz parts/* > checksums.txt)
           git diff --exit-code
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: prompt-offline-inputs-${{ github.sha }}
-          path: ${{ runner.temp }}/prompt-offline-inputs
+          name: prompt-offline-tools-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/prompt-offline-inputs/toolchain
+            ${{ runner.temp }}/prompt-offline-inputs/toolchain.txt
+            ${{ runner.temp }}/prompt-offline-inputs/identity.txt
+            ${{ runner.temp }}/prompt-offline-inputs/checksums.txt
+            ${{ runner.temp }}/prompt-offline-inputs/just.tar.gz
+            ${{ runner.temp }}/prompt-offline-inputs/nextest.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-offline-dependencies-aa-${{ github.sha }}
+          path: ${{ runner.temp }}/prompt-offline-inputs/parts/dependencies-aa
+          if-no-files-found: error
+          retention-days: 1
+      - if: steps.inputs.outputs.ab == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-offline-dependencies-ab-${{ github.sha }}
+          path: ${{ runner.temp }}/prompt-offline-inputs/parts/dependencies-ab
+          if-no-files-found: error
+          retention-days: 1
+      - if: steps.inputs.outputs.ac == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-offline-dependencies-ac-${{ github.sha }}
+          path: ${{ runner.temp }}/prompt-offline-inputs/parts/dependencies-ac
           if-no-files-found: error
           retention-days: 1
