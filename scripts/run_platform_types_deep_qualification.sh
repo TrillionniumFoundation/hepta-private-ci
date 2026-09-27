@@ -39,6 +39,7 @@ FUZZ_TOOLCHAIN="${PLATFORM_TYPES_FUZZ_TOOLCHAIN:-$MIRI_TOOLCHAIN}"
 OUT="${PLATFORM_TYPES_EVIDENCE_ROOT:-$ROOT/.hepta-evidence/platform-types-deep/$CANDIDATE_KIND}"
 MANIFEST="$ROOT/codex-rs/Cargo.toml"
 PACKAGE="codex-hepta-types"
+WIRE_PACKAGE="codex-hepta-wire"
 API_BASE_SHA="${PLATFORM_TYPES_API_BASE_SHA:-${BASE_SHA:-}}"
 if [[ -z "$API_BASE_SHA" || "$API_BASE_SHA" =~ ^0+$ ]]; then
   API_BASE_SHA="$(git rev-parse HEAD^)"
@@ -110,17 +111,17 @@ msrv_check() {
   rustup toolchain install "$MSRV" --profile minimal
   rustc "+$MSRV" --version --verbose
   cargo "+$MSRV" check --locked --manifest-path "$MANIFEST" \
-    --package "$PACKAGE" --all-targets
+    --package "$PACKAGE" --package "$WIRE_PACKAGE" --all-targets
   cargo "+$MSRV" test --locked --manifest-path "$MANIFEST" \
-    --package "$PACKAGE" --all-targets
+    --package "$PACKAGE" --package "$WIRE_PACKAGE" --all-targets
 }
 
 native_check() {
   rustc --version --verbose
   cargo test --locked --manifest-path "$MANIFEST" \
-    --package "$PACKAGE" --all-targets
+    --package "$PACKAGE" --package "$WIRE_PACKAGE" --all-targets
   cargo clippy --locked --manifest-path "$MANIFEST" \
-    --package "$PACKAGE" --all-targets -- -D warnings
+    --package "$PACKAGE" --package "$WIRE_PACKAGE" --all-targets -- -D warnings
 }
 
 miri_check() {
