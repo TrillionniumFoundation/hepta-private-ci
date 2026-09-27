@@ -74,14 +74,14 @@ cp "$ROOT/codex-rs/hepta-wire/fuzz/fuzz_targets/platform_types_json.rs" \
   cargo "+$TOOLCHAIN" fuzz run canonical_validate corpus \
     -- -runs="$TYPE_RUNS" -max_len=262145 -timeout=5 \
     -artifact_prefix="$OUT/types/artifacts/"
-) | tee "$OUT/types.log"
+) 2>&1 | tee "$OUT/types.log"
 
 (
   cd "$OUT/wire"
   cargo "+$TOOLCHAIN" fuzz run platform_types_json corpus \
     -- -runs="$WIRE_RUNS" -max_len=65537 -timeout=5 \
     -artifact_prefix="$OUT/wire/artifacts/"
-) | tee "$OUT/wire.log"
+) 2>&1 | tee "$OUT/wire.log"
 
 python3 - "$OUT" "$TOOLCHAIN" "$CARGO_FUZZ_VERSION" "$TYPE_RUNS" "$WIRE_RUNS" <<'PY'
 import hashlib
@@ -93,10 +93,17 @@ out = pathlib.Path(sys.argv[1])
 records = []
 for target in ("types", "wire"):
     log = out / f"{target}.log"
+    raw = log.read_bytes()
+    if not raw:
+        raise SystemExit(f"empty libFuzzer log: {log}")
+    text = raw.decode("utf-8", errors="replace")
+    if "DONE" not in text and "cov:" not in text:
+        raise SystemExit(f"libFuzzer completion/coverage marker missing: {log}")
     records.append({
         "target": target,
         "log": log.name,
-        "logSha256": hashlib.sha256(log.read_bytes()).hexdigest(),
+        "logSha256": hashlib.sha256(raw).hexdigest(),
+        "logBytes": len(raw),
         "artifactFiles": sorted(
             str(path.relative_to(out))
             for path in (out / target / "artifacts").glob("**/*")
@@ -104,8 +111,8 @@ for target in ("types", "wire"):
         ),
     })
 summary = {
-    "schema": "hepta.platform-types.coverage-fuzz.v1",
-    "schemaVersion": 1,
+    "schema": "hepta.platform-types.coverage-fuzz.v2",
+    "schemaVersion": 2,
     "module": "platform.types",
     "toolchain": sys.argv[2],
     "cargoFuzzVersion": sys.argv[3],
