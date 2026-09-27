@@ -581,3 +581,46 @@ fn external_deadline_is_rechecked_at_mutation_entry_without_effect() -> TestResu
     ));
     Ok(())
 }
+
+#[test]
+fn metrics_v2_reports_storage_health_and_does_not_block_on_owner() -> TestResult<()> {
+    let fixture = fixture()?;
+    let result = fixture
+        .host
+        .control(NduControlRequestV1::MetricsV2, || Ok(()))?;
+    assert!(matches!(
+        result,
+        NduControlResultV1::MetricsV2 {
+            storage_ready: Some(true),
+            filesystem_profile: Some(_),
+            memory_fallback_count: 0,
+            backup_age_seconds: None,
+            ..
+        }
+    ));
+    let held = fixture
+        .host
+        .owner
+        .lock()
+        .map_err(|_| "poisoned test owner")?;
+    let result = fixture
+        .host
+        .control(NduControlRequestV1::MetricsV2, || Ok(()))?;
+    assert!(matches!(
+        result,
+        NduControlResultV1::MetricsV2 {
+            storage_ready: None,
+            ..
+        }
+    ));
+    drop(held);
+    assert!(
+        fixture
+            .host
+            .control(NduControlRequestV1::MetricsV2, || Err(
+                AgentdNduOwnerErrorV1::NotReady
+            ))
+            .is_err()
+    );
+    Ok(())
+}

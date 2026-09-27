@@ -51,6 +51,36 @@ pub struct NduOperationalMetricSnapshotV1 {
     pub backup_age_seconds: Option<u64>,
 }
 
+/// Non-cumulative, inclusive-upper-bound buckets; the final bucket is overflow.
+/// They are aggregate observations, never samples containing candidate payloads.
+pub const NDU_LATENCY_BUCKET_UPPER_MICROS_V2: [u64; 6] = [100, 500, 1000, 2000, 5000, u64::MAX];
+pub const NDU_UNCERTAINTY_BUCKET_UPPER_RAW_V2: [i64; 6] =
+    [0, 1 << 24, 1 << 28, 1 << 30, 1 << 32, i64::MAX];
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NduOperationalMetricSnapshotV2 {
+    pub base: NduOperationalMetricSnapshotV1,
+    pub evaluation_latency_buckets: [u64; 6],
+    pub uncertainty_buckets: [u64; 6],
+    /// Hard constraint, risk ceiling and resource ceiling; one candidate can
+    /// increment multiple reasons, so this sum need not equal rejected count.
+    pub rejection_reason_counts: [u64; 3],
+    pub evaluation_failures: u64,
+    pub persistence_count: u64,
+    pub persistence_failures: u64,
+    pub persistence_latency_micros_total: u64,
+    pub persistence_latency_micros_max: u64,
+    pub persistence_latency_buckets: [u64; 6],
+    pub store_opens: u64,
+    pub recovered_nonempty_stores: u64,
+    pub corrupt_images: u64,
+}
+
+#[must_use]
+pub fn operational_metrics_snapshot_v2() -> NduOperationalMetricSnapshotV2 {
+    process_metrics().snapshot_v2()
+}
+
 #[derive(Debug)]
 pub struct NduOperationalMetricsV1 {
     evaluation_count: AtomicU64,
@@ -67,6 +97,18 @@ pub struct NduOperationalMetricsV1 {
     restore_failures: AtomicU64,
     journal_bytes: AtomicU64,
     backup_age_seconds: AtomicU64,
+    corrupt_images: AtomicU64,
+    evaluation_failures: AtomicU64,
+    persistence_count: AtomicU64,
+    persistence_failures: AtomicU64,
+    persistence_latency_micros_max: AtomicU64,
+    persistence_latency_micros_total: AtomicU64,
+    recovered_nonempty_stores: AtomicU64,
+    store_opens: AtomicU64,
+    evaluation_latency_buckets: [AtomicU64; 6],
+    uncertainty_buckets: [AtomicU64; 6],
+    rejection_reason_counts: [AtomicU64; 3],
+    persistence_latency_buckets: [AtomicU64; 6],
 }
 
 impl Default for NduOperationalMetricsV1 {
@@ -86,11 +128,108 @@ impl Default for NduOperationalMetricsV1 {
             restore_failures: AtomicU64::new(0),
             journal_bytes: AtomicU64::new(UNSET_GAUGE),
             backup_age_seconds: AtomicU64::new(UNSET_GAUGE),
+            corrupt_images: AtomicU64::new(0),
+            evaluation_failures: AtomicU64::new(0),
+            persistence_count: AtomicU64::new(0),
+            persistence_failures: AtomicU64::new(0),
+            persistence_latency_micros_max: AtomicU64::new(0),
+            persistence_latency_micros_total: AtomicU64::new(0),
+            recovered_nonempty_stores: AtomicU64::new(0),
+            store_opens: AtomicU64::new(0),
+            evaluation_latency_buckets: std::array::from_fn(|_| AtomicU64::new(0)),
+            uncertainty_buckets: std::array::from_fn(|_| AtomicU64::new(0)),
+            rejection_reason_counts: std::array::from_fn(|_| AtomicU64::new(0)),
+            persistence_latency_buckets: std::array::from_fn(|_| AtomicU64::new(0)),
         }
     }
 }
 
 impl NduOperationalMetricsV1 {
+    pub(crate) fn record_evaluation_outcome(&self, receipt: Option<&crate::NduEvaluationReceipt>) {
+        let Some(receipt) = receipt else {
+            saturating_add(&self.evaluation_failures, 1);
+            return;
+        };
+        for candidate in &receipt.rejected_candidates {
+            for reason in &candidate.reasons {
+                let index = match reason {
+                    crate::CandidateRejectionReason::HardConstraintViolation => 0,
+                    crate::CandidateRejectionReason::RiskCeilingExceeded => 1,
+                    crate::CandidateRejectionReason::ResourceCeilingExceeded => 2,
+                };
+                saturating_add(&self.rejection_reason_counts[index], 1);
+            }
+        }
+        for candidate in &receipt.evaluated_candidates {
+            for axis in &candidate.uncertainty {
+                if let Some(index) = NDU_UNCERTAINTY_BUCKET_UPPER_RAW_V2
+                    .iter()
+                    .position(|upper| axis.value.raw() <= *upper)
+                {
+                    saturating_add(&self.uncertainty_buckets[index], 1);
+                }
+            }
+        }
+    }
+
+    pub(crate) fn record_persistence(&self, elapsed: Duration, failed: bool) {
+        let micros = u64::try_from(elapsed.as_micros()).unwrap_or(u64::MAX);
+        saturating_add(&self.persistence_count, 1);
+        saturating_add(&self.persistence_latency_micros_total, micros);
+        self.persistence_latency_micros_max
+            .fetch_max(micros, Ordering::Relaxed);
+        record_bucket(
+            &self.persistence_latency_buckets,
+            micros,
+            &NDU_LATENCY_BUCKET_UPPER_MICROS_V2,
+        );
+        if failed {
+            saturating_add(&self.persistence_failures, 1);
+        }
+    }
+
+    pub(crate) fn record_store_open(&self, recovered: bool) {
+        saturating_add(&self.store_opens, 1);
+        if recovered {
+            saturating_add(&self.recovered_nonempty_stores, 1);
+        }
+    }
+
+    pub(crate) fn record_corruption(&self) {
+        saturating_add(&self.corrupt_images, 1);
+    }
+
+    #[must_use]
+    pub fn snapshot_v2(&self) -> NduOperationalMetricSnapshotV2 {
+        NduOperationalMetricSnapshotV2 {
+            base: self.snapshot(),
+            corrupt_images: self.corrupt_images.load(Ordering::Relaxed),
+            evaluation_failures: self.evaluation_failures.load(Ordering::Relaxed),
+            persistence_count: self.persistence_count.load(Ordering::Relaxed),
+            persistence_failures: self.persistence_failures.load(Ordering::Relaxed),
+            persistence_latency_micros_max: self
+                .persistence_latency_micros_max
+                .load(Ordering::Relaxed),
+            persistence_latency_micros_total: self
+                .persistence_latency_micros_total
+                .load(Ordering::Relaxed),
+            recovered_nonempty_stores: self.recovered_nonempty_stores.load(Ordering::Relaxed),
+            store_opens: self.store_opens.load(Ordering::Relaxed),
+            evaluation_latency_buckets: std::array::from_fn(|i| {
+                self.evaluation_latency_buckets[i].load(Ordering::Relaxed)
+            }),
+            uncertainty_buckets: std::array::from_fn(|i| {
+                self.uncertainty_buckets[i].load(Ordering::Relaxed)
+            }),
+            rejection_reason_counts: std::array::from_fn(|i| {
+                self.rejection_reason_counts[i].load(Ordering::Relaxed)
+            }),
+            persistence_latency_buckets: std::array::from_fn(|i| {
+                self.persistence_latency_buckets[i].load(Ordering::Relaxed)
+            }),
+        }
+    }
+
     #[must_use]
     pub fn new() -> Self {
         Self::default()
@@ -99,6 +238,11 @@ impl NduOperationalMetricsV1 {
     pub fn record_evaluation(&self, elapsed: Duration) {
         let micros = u64::try_from(elapsed.as_micros()).unwrap_or(u64::MAX);
         saturating_add(&self.evaluation_count, 1);
+        record_bucket(
+            &self.evaluation_latency_buckets,
+            micros,
+            &NDU_LATENCY_BUCKET_UPPER_MICROS_V2,
+        );
         saturating_add(&self.evaluation_latency_micros_total, micros);
         self.evaluation_latency_micros_max
             .fetch_max(micros, Ordering::Relaxed);
@@ -180,6 +324,12 @@ impl NduOperationalMetricsV1 {
             journal_bytes: gauge(&self.journal_bytes),
             backup_age_seconds: gauge(&self.backup_age_seconds),
         }
+    }
+}
+
+fn record_bucket<const N: usize>(buckets: &[AtomicU64; N], value: u64, bounds: &[u64; N]) {
+    if let Some(index) = bounds.iter().position(|upper| value <= *upper) {
+        saturating_add(&buckets[index], 1);
     }
 }
 
@@ -396,6 +546,31 @@ mod tests {
 
     fn digest(value: &str) -> Digest32 {
         Digest32::of_bytes(value.as_bytes())
+    }
+
+    #[test]
+    fn metrics_v2_buckets_are_disjoint_and_include_boundaries() {
+        let metrics = NduOperationalMetricsV1::new();
+        for micros in [0, 100, 101, 500, 501, 1000, 1001, 2000, 2001, 5000, 5001] {
+            metrics.record_evaluation(Duration::from_micros(micros));
+        }
+        metrics.record_evaluation_outcome(None);
+        metrics.record_persistence(Duration::from_micros(100), false);
+        metrics.record_persistence(Duration::from_micros(5001), true);
+        metrics.record_store_open(false);
+        metrics.record_store_open(true);
+        metrics.record_corruption();
+        let result = metrics.snapshot_v2();
+        assert_eq!(result.base.evaluation_count, 11);
+        assert_eq!(result.evaluation_latency_buckets, [2, 2, 2, 2, 2, 1]);
+        assert_eq!(result.evaluation_failures, 1);
+        assert_eq!(result.persistence_count, 2);
+        assert_eq!(result.persistence_failures, 1);
+        assert_eq!(result.persistence_latency_buckets, [1, 0, 0, 0, 0, 1]);
+        assert_eq!(result.persistence_latency_micros_total, 5101);
+        assert_eq!(result.store_opens, 2);
+        assert_eq!(result.recovered_nonempty_stores, 1);
+        assert_eq!(result.corrupt_images, 1);
     }
 
     #[test]

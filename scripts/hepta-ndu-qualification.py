@@ -6,6 +6,8 @@ exit code is retained and any failure rejects the suite. Output is outside the
 checkout; source must remain clean and bound to the same SHA/tree throughout.
 """
 
+from hepta_ndu_evidence import seal
+
 import argparse
 import hashlib
 import json
@@ -206,6 +208,7 @@ def commands(suite: str, sha: str, tree: str) -> list[tuple[str, Path, list[str]
         ("mounted-filesystem-orchestrator-tests", ROOT, ["python3", "scripts/test_hepta_ndu_mounted_filesystem.py"]),
         ("map-integrity-tests", ROOT, ["python3", "scripts/test_hepta_ndu_map_integrity.py"]),
         ("source-policy-tests", ROOT, ["python3", "scripts/test_hepta_ndu_source_policy.py"]),
+        ("evidence-transport-tests", ROOT, ["python3", "scripts/test_hepta_ndu_evidence.py"]),
         ("lock", ROOT, ["python3", "scripts/verify_cargo_lock.py"]),
         ("legacy-policy", ROOT, ["python3", "scripts/hepta-ndu-source-policy.py"]),
         (
@@ -442,6 +445,7 @@ def main() -> int:
         "productionActivation": False,
     }
     (output / "suite-receipt.json").write_text(json.dumps(report, indent=2) + "\n")
+    seal(output)
     return 0 if passed else 1
 
 

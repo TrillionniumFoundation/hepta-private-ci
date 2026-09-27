@@ -29,9 +29,9 @@ use crate::PlannerError;
 use crate::PlanningRequestV1;
 use crate::ResourceReservationV1;
 use crate::SnapshotRequestV1;
-use crate::canonical_ndu_planning_policy_digest;
+use crate::canonical_ndu_planning_policy_digest_v2;
 use crate::collect_snapshot;
-use crate::evaluate_prepared_plan_with_ndu;
+use crate::evaluate_prepared_plan_with_ndu_v2;
 use crate::prepare_plan;
 
 /// Host-only measurements after verifying the canonical read and local scope.
@@ -108,7 +108,20 @@ pub fn plan_observed_context(
             contributions: vec![],
         },
     };
-    let configuration_digest = canonical_ndu_planning_policy_digest(&input).map_err(E::Ndu)?;
+    let mut evidence_input = crate::NduPlanningInputV2 {
+        base: input.clone(),
+        evidence_policy: codex_hepta_ndu::NduEvidencePolicyV1 {
+            policy_id: id("verified-context-observed-features-v1")?,
+            high_risk: false,
+            required_actors: vec![],
+            proxy_uncertainty_floor: FixedQ32::ONE,
+            actor_risk_ceiling: FixedQ32::ZERO,
+            actor_uncertainty_ceiling: FixedQ32::ZERO,
+        },
+        features: vec![],
+        actor_scenarios: vec![],
+    };
+    let configuration_digest = canonical_ndu_planning_policy_digest_v2(&evidence_input)?;
     // This is an immutable, single-observation owner summary, whose own
     // revision is one. It does not report a database revision or a global
     // revocation frontier. Its only authority fence is this host generation.
@@ -214,8 +227,43 @@ pub fn plan_observed_context(
             }
         })
         .collect();
-    let evaluation =
-        evaluate_prepared_plan_with_ndu(&snapshot, &prepared, input, observed.observed_at_micros)?;
+    for contribution in &input.contributions.contributions {
+        for (kind, axes) in [
+            (
+                codex_hepta_ndu::NduFeatureKindV1::Utility,
+                &contribution.utility,
+            ),
+            (
+                codex_hepta_ndu::NduFeatureKindV1::Resource,
+                &contribution.resource,
+            ),
+        ] {
+            for axis in axes {
+                evidence_input
+                    .features
+                    .push(codex_hepta_ndu::NduFeatureEvidenceV1 {
+                        candidate_id: contribution.candidate_id.clone(),
+                        organ_id: contribution.organ_id.clone(),
+                        kind,
+                        axis: axis.axis.clone(),
+                        value: axis.value,
+                        origin: if contribution.candidate_id.as_str() == "abstain" {
+                            codex_hepta_ndu::NduFeatureOriginV1::Structural
+                        } else {
+                            codex_hepta_ndu::NduFeatureOriginV1::Measured
+                        },
+                        source_digest: observed.read_digest,
+                    });
+            }
+        }
+    }
+    evidence_input.base = input;
+    let evaluation = evaluate_prepared_plan_with_ndu_v2(
+        &snapshot,
+        &prepared,
+        evidence_input,
+        observed.observed_at_micros,
+    )?;
     Ok(ObservedContextPlanV1 {
         read_allowed: evaluation.plan.chosen_candidate_id() == Some(&read_id),
         context_digest,

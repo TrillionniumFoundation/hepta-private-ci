@@ -115,9 +115,9 @@ def one_fault(binary: Path, fault: str, output: Path) -> dict:
             if filesystem != "tmpfs" or os.stat(mount).st_dev == os.stat(directory).st_dev:
                 raise RuntimeError("the private fault mount was not independently established")
             record["filesystem"] = filesystem
-            # A per-mount read-only bind can be changed while the writer owns a
-            # writable lock FD; a superblock remount may correctly return EBUSY.
-            # It still exercises real EROFS in the production file-create path.
+            # Separate view isolates the VFS read-only transition. The Linux
+            # owner holds a read-only flock descriptor, not a writable FD that
+            # pins this mount writable. EROFS must come from native creation.
             command(privilege + ["mount", "--bind", str(mount), str(view)])
             bound = True
             record["readOnlyBoundary"] = "vfs-bind-mount"

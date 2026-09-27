@@ -260,6 +260,29 @@
           "symbol": "test_receipt_rejects_skips_wrong_identity_cleanup_and_missing_cuts"
         }
       ]
+    },
+    {
+      "operation": "bind_host_observed_feature_evidence_v1",
+      "nativeSymbol": "bind_contribution_evidence_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/feature_evidence.rs",
+      "sourcePathExists": true,
+      "state": "source_candidate_requires_exact_native_qualification",
+      "authority": "none",
+      "nonClaim": "Provenance binding is not source authentication. Affected actors come from a host-frozen policy, not claims of independent reviewers.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/feature_evidence.rs",
+          "symbol": "missing_tampered_duplicate_and_proxy_features_fail_closed"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/feature_evidence.rs",
+          "symbol": "high_risk_requires_all_actors_and_rejects_risk_or_uncertainty"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs",
+          "symbol": "evidence_v2_composes_into_planner_and_blocks_policy_downgrade"
+        }
+      ]
     }
   ],
   "supportingSources": [
@@ -278,6 +301,7 @@
     "codex-rs/hepta-ndu/src/covariance_profile.rs",
     "codex-rs/hepta-ndu/src/error.rs",
     "codex-rs/hepta-ndu/src/evaluation_digest.rs",
+    "codex-rs/hepta-ndu/src/feature_evidence.rs",
     "codex-rs/hepta-ndu/src/fixed.rs",
     "codex-rs/hepta-ndu/src/fixed_tests.rs",
     "codex-rs/hepta-ndu/src/lib.rs",

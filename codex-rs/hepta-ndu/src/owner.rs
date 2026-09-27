@@ -233,7 +233,7 @@ impl NduAuthenticatedOwnerV1 {
     ) -> Result<Self, NduOwnerError> {
         validate_context(&context)?;
         let production_policy_digest = production_policy_digest(&policy)?;
-        let store = NduProjectionStoreV1::open(root.as_ref())?;
+        let store = NduProjectionStoreV1::open_durable(root.as_ref())?;
         super::owner_binding::bind_owner(
             root.as_ref(),
             &context,
@@ -247,6 +247,16 @@ impl NduAuthenticatedOwnerV1 {
             authority,
             store,
         })
+    }
+
+    #[must_use]
+    pub fn storage_ready(&self) -> bool {
+        self.store.storage_ready()
+    }
+
+    #[must_use]
+    pub const fn filesystem_profile(&self) -> &'static str {
+        self.store.filesystem_profile()
     }
 
     #[must_use]

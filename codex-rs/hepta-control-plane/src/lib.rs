@@ -285,3 +285,7 @@ fn digest_state(state: &ControlState, intent: &ControlIntent) -> Digest32 {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+pub use planner_ndu::NduPlanningInputV2;
+pub use planner_ndu::canonical_ndu_planning_policy_digest_v2;
+pub use planner_ndu::evaluate_prepared_plan_with_ndu_v2;

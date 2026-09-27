@@ -90,6 +90,7 @@ pub fn evaluate_candidates_with_policy(
     let result = evaluate_candidates_inner(set, profile, scalarization, policy);
     let metrics = crate::operational_metrics::process_metrics();
     metrics.record_evaluation(started.elapsed());
+    metrics.record_evaluation_outcome(result.as_ref().ok().map(|receipt| &receipt.base));
     if let Ok(receipt) = &result {
         metrics.record_candidate_rejections(receipt.base.rejected_candidates.len());
     }

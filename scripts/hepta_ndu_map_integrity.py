@@ -28,6 +28,8 @@ INPUTS = (
     "scripts/test_hepta_ndu_map_integrity.py",
     "scripts/hepta-ndu-source-policy.py",
     "scripts/test_hepta_ndu_source_policy.py",
+    "scripts/hepta_ndu_evidence.py",
+    "scripts/test_hepta_ndu_evidence.py",
     ".github/workflows/hepta-ndu-recursion.yml",
 )
 

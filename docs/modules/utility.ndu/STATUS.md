@@ -34,7 +34,7 @@ The owner-local projection journal is a durability reference. Reopen must replay
 
 ## Named process composition and its limits
 
-The canonical follow-up remains PR #997 (`codex/utility-ndu-deterministic-closure`). The temporary patch-application workflow and staged Python parts have been replaced with reviewed source in that same candidate; they are not a second implementation or release path.
+The current follow-up is `work/utility-ndu-abcd-convergence-20260928`, inheriting the earlier PR #997 candidate (`codex/utility-ndu-deterministic-closure`). The temporary patch-application workflow and staged Python parts have been replaced with reviewed source in that same candidate; they are not a second implementation or release path.
 
 Normal Agentd accepts `--ndu-bootstrap-descriptor` together with `--ndu-bootstrap-descriptor-digest`. `load_ndu_process_bootstrap_v1` checks the descriptor digest, registered Agent identity, private owner paths, bounded frozen policy and independent issuer/revocation keys. `AgentdNduOwnerHostV1` is attached during normal startup and exposes `utility.ndu.control` on the existing owner-private control socket. No new network listener or signing key is created.
 
@@ -71,3 +71,24 @@ The dedicated NDU workflow independently executes source checks, core tests, Con
 Use `source candidate`, `deterministic kernel candidate`, `durable-writer source candidate`, or `deterministic NDU + stochastic numerical building blocks` while authenticated production composition, writer selection/activation and independent stochastic gates above remain open.
 
 Do not use `production complete`, `fully activated NDU`, `production writer established`, or `learned FBSDE NDU complete` without the corresponding repository and external evidence.
+
+## 2026-09-28 A–D source follow-up
+
+The source scanner and strict-contract repairs were materialized and pushed, not
+left as patch-generator claims. The current revision adds explicit durable and
+ephemeral constructors, Unix UID/mode/hard-link/root-and-lock identity checks,
+read-only Linux flock handles, real failure/timing observations, no-write exact
+replay, V2 feature/actor evidence on the actual Control context path, independent
+integer/grid and bounded mutational tests, versioned telemetry and sealed evidence
+transport. Native execution of this exact revision is required: see the emitted
+suite receipts and aggregate artifact, rather than historical status prose.
+
+The production bootstrap V2 source already supports host-supplied protected clock
+and externally persisted CAS frontier providers; the earlier local V1 profile
+limitations above must not be read as absence of those V2 interfaces. Having those
+interfaces is not proof that an independent deployment provider was enrolled.
+
+Do not classify a local filesystem fixture as production enrollment, an unrun
+AWS/OIDC workflow as successful external publication, lossless archive compression
+as V1 online compaction, or a governed-learning contract as a live learned policy.
+Unknown backup age and target-host acceptance remain explicit until observed.

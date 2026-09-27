@@ -539,3 +539,137 @@ fn real_store_records_busy_restore_reopen_and_indeterminate_failures() {
     assert!(after.reopen_failures > before.reopen_failures);
     assert!(after.store_indeterminate > before.store_indeterminate);
 }
+
+#[cfg(unix)]
+#[test]
+fn durable_constructor_rejects_unsafe_mode_and_hardlinked_lock() {
+    use std::os::unix::fs::PermissionsExt;
+    let root = TempRoot::new("unsafe-mode");
+    must(fs::set_permissions(
+        &root.0,
+        fs::Permissions::from_mode(0o777),
+    ));
+    assert!(matches!(
+        NduProjectionStoreV1::open_durable(&root.0),
+        Err(NduProjectionStoreError::UnsafeOwnerPath)
+    ));
+    must(fs::set_permissions(
+        &root.0,
+        fs::Permissions::from_mode(0o700),
+    ));
+    must(File::create(root.0.join(LOCK_FILE)));
+    must(fs::hard_link(root.0.join(LOCK_FILE), root.0.join("alias")));
+    assert!(NduProjectionStoreV1::open_durable(&root.0).is_err());
+}
+
+#[cfg(unix)]
+#[test]
+fn replaced_directory_or_lock_fences_authoritative_state() {
+    let parent = TempRoot::new("identity");
+    let root = parent.0.join("owner");
+    must(fs::create_dir(&root));
+    let store = must(NduProjectionStoreV1::open_durable(&root));
+    assert!(store.storage_ready());
+    must(fs::rename(&root, parent.0.join("old")));
+    must(fs::create_dir(&root));
+    must(File::create(root.join(LOCK_FILE)));
+    assert!(!store.storage_ready());
+    assert_eq!(
+        store.backup_bytes(),
+        Err(NduProjectionStoreError::OwnershipChanged)
+    );
+    drop(store);
+    let store = must(NduProjectionStoreV1::open_durable(&root));
+    must(fs::rename(root.join(LOCK_FILE), root.join("old-lock")));
+    must(File::create(root.join(LOCK_FILE)));
+    assert_eq!(
+        store.entries(),
+        Err(NduProjectionStoreError::OwnershipChanged)
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn permission_change_after_open_blocks_before_write() {
+    use std::os::unix::fs::PermissionsExt;
+    let root = TempRoot::new("permission-change");
+    let mut store = must(NduProjectionStoreV1::open_durable(&root.0));
+    let before = must(store.backup_bytes());
+    must(fs::set_permissions(
+        &root.0,
+        fs::Permissions::from_mode(0o777),
+    ));
+    assert!(
+        store
+            .append_projection(
+                NduProjectionKindV1::Utility,
+                digest("id"),
+                digest("objective"),
+                digest("subject"),
+                digest("payload")
+            )
+            .is_err()
+    );
+    assert!(!store.storage_ready());
+    must(fs::set_permissions(
+        &root.0,
+        fs::Permissions::from_mode(0o700),
+    ));
+    assert_eq!(must(store.backup_bytes()), before);
+}
+
+#[test]
+fn exact_replay_and_identical_restore_do_not_rewrite_snapshot() {
+    let root = TempRoot::new("replay-no-write");
+    let mut store = must(NduProjectionStoreV1::open_durable(&root.0));
+    let entry = must(store.append_projection(
+        NduProjectionKindV1::Utility,
+        digest("id"),
+        digest("objective"),
+        digest("subject"),
+        digest("payload"),
+    ));
+    let before = must(store.backup_bytes());
+    store.persistence = Arc::new(FaultPersistence {
+        stage: FaultStage::Write,
+        real: FsProjectionPersistenceV1,
+    });
+    assert_eq!(
+        must(store.append_projection(
+            NduProjectionKindV1::Utility,
+            digest("id"),
+            digest("objective"),
+            digest("subject"),
+            digest("payload")
+        )),
+        entry
+    );
+    must(store.restore_backup(&before));
+    assert_eq!(must(store.backup_bytes()), before);
+    assert!(store.storage_ready());
+}
+
+#[test]
+fn bounded_mutational_fuzz_rejects_every_single_bit_record_corruption() {
+    let root = TempRoot::new("fuzz-image");
+    let mut store = must(NduProjectionStoreV1::open_durable(&root.0));
+    must(store.append_projection(
+        NduProjectionKindV1::Utility,
+        digest("identity"),
+        digest("objective"),
+        digest("subject"),
+        digest("payload"),
+    ));
+    let bytes = must(store.backup_bytes());
+    for index in 0..bytes.len() {
+        for bit in 0..8 {
+            let mut changed = bytes.clone();
+            changed[index] ^= 1 << bit;
+            assert!(
+                NduProjectionJournalV1::reopen(&changed).is_err(),
+                "corruption accepted at {index}:{bit}"
+            );
+        }
+    }
+    assert_eq!(must(store.backup_bytes()), bytes);
+}

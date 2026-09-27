@@ -43,7 +43,7 @@ Export the `NduOperationalMetricSnapshotV1` fields with source SHA, source tree,
 
 | Metric | Required interpretation | Minimum alert condition |
 |---|---|---|
-| `evaluation_count`, latency total/max and host p50/p95/p99 | Numerical evaluation calls, including V3 preflight calls; excludes owner-lock/feed wait | p95 above 2 ms or p99 above 5 ms for the qualified workload |
+| `evaluation_count`, latency total/max and host p50/p95/p99 | Numerical evaluation calls, excluding internal V3 preflight calls; excludes owner-lock/feed wait | p95 above 2 ms or p99 above 5 ms for the qualified workload |
 | `convergence_runs`, `convergence_iterations`, `convergence_exhaustions` | Bounded preference solver outcome | any unexpected exhaustion; sustained iteration growth |
 | `candidate_rejections` | Policy-admitted but infeasible candidate count | abrupt rate change or rejection of `abstain` |
 | `candidate_quarantines` | Malformed non-abstain candidate isolated by V3 semantics | nonzero sustained rate; any quarantine schema not recognized |
@@ -263,3 +263,54 @@ binding. Neither version manufactures an off-host upload acknowledgement,
 a decryption observation, a successful restore, retention execution or
 permission to delete a backup. Keep the backup-age gauge unset until a real
 verified off-host transfer supplies the observation.
+
+## 2026-09-28 executable additions
+
+Request `{"operation":"metrics_v2"}` on the existing private control socket for
+latency/uncertainty histograms, rejection categories, persistence results and
+owner storage health. This endpoint does not wait on the owner lock: `null`
+readiness means unknown/contended, not healthy. The legacy metrics endpoint is
+unchanged. Counters are approximate process-local observations; tag them with
+host generation. The memory-fallback count is zero because the owner has no
+fallback branch, not because failed opens are ignored. Backup age remains null
+until a verified off-host backup integration updates it.
+
+On `OwnershipChanged`, unsafe mode/UID/hard links, corrupt image, or
+`Indeterminate`, stop mutation admission and retain the original directory and
+lock object. Do not remove lock files, clear journals, restore an old prefix or
+restart with a new operation identity to conceal an unknown outcome. Restore
+permissions/ownership under the supervisor, then reopen and reconcile the exact
+operation identity with the authenticated owner's historical Outcome endpoint.
+No old acknowledgement is fresh authority. Existing crash, real ENOSPC/EROFS,
+reopen and permission/identity regression tests remain mandatory.
+
+Every suite now writes `evidence-manifest.json`. Recheck a downloaded directory
+with `python3 scripts/hepta_ndu_evidence.py verify --root /absolute/evidence`.
+Aggregation requires all six suites in both lanes, exact command vectors and
+strict filters, exit codes, unchanged source/tree, two-parent merge identity,
+native host observations and every retained command-log checksum. The archive is
+losslessly compressed and create-only; it does not truncate a live journal.
+
+The separately named `NDU encrypted evidence publication` workflow is manual,
+default-branch-only, uses the trusted workflow revision and never executes
+candidate code with AWS credentials. Preconfigure the protected `ndu-evidence`
+environment, repository-specific IAM OIDC audience/subject trust, and these
+reviewed variables: `NDU_EVIDENCE_ROLE_ARN`, `NDU_EVIDENCE_REGION`,
+`NDU_EVIDENCE_ACCOUNT`, `NDU_EVIDENCE_BUCKET`, `NDU_EVIDENCE_KMS_ARN`.
+Do not invent destinations or broaden IAM trust to make a job green. This repo
+may use immutable repository-ID OIDC subjects; check the actual subject format.
+
+The publisher requires the expected account and versioned bucket, conditional
+create (`If-None-Match: *`), SHA-256, SSE-KMS and readback of the exact returned
+version with matching KMS key. It retains a publication receipt only on complete
+success. The account/bucket/KMS policy and target deployment still require real
+operator enrollment and a live run. SSE-KMS here is evidence encryption at rest,
+not a claim of client-side-encrypted production journal backups.
+
+Learning governance reuses `admit_with_artifact_lifecycle_v2`: training dataset
+withdrawals, CURRENT registry/witness/trust, independently verified signed
+selection, producer/selector roles, convergence and well-posedness are checked
+before admission. Rollback is a new governed selection of a still-eligible
+predecessor, never a stale journal restore or reversal of a revocation. A solver
+proposal or this numerical admission receipt remains DENY_ALL. A target-host
+online learning/rollback drill is a separate acceptance requirement.

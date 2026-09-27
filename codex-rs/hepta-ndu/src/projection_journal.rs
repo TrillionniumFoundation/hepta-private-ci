@@ -95,6 +95,12 @@ impl Default for NduProjectionJournalV1 {
 impl NduProjectionJournalV1 {
     #[must_use]
     pub fn new() -> Self {
+        Self::new_ephemeral()
+    }
+
+    /// Memory-only semantic journal; never selected by a failed durable open.
+    #[must_use]
+    pub fn new_ephemeral() -> Self {
         Self {
             entries: Vec::new(),
             identities: BTreeMap::new(),

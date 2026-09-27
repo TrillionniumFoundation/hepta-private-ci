@@ -82,6 +82,7 @@ pub fn evaluate_candidates_with_quarantine(
     );
     let metrics = crate::operational_metrics::process_metrics();
     metrics.record_evaluation(started.elapsed());
+    metrics.record_evaluation_outcome(result.as_ref().ok().map(|receipt| &receipt.evaluation.base));
     if let Ok(receipt) = &result {
         metrics.record_candidate_rejections(receipt.evaluation.base.rejected_candidates.len());
         metrics.record_candidate_quarantines(receipt.quarantined_candidates.len());

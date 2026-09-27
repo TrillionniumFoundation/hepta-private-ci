@@ -39,6 +39,11 @@ impl AgentdNduOwnerHostV1 {
     ) -> Result<NduControlResultV1, AgentdNduOwnerErrorV1> {
         // Diagnostic observations do not claim a current authority view.
         // Keep them readable when the protected clock or store has failed.
+        if matches!(&request, NduControlRequestV1::MetricsV2) {
+            live_guard()?;
+            let owner = self.owner.try_lock().ok();
+            return Ok(metrics_result_v2(self.spawn_generation, owner.as_deref()));
+        }
         if matches!(&request, NduControlRequestV1::MetricsV1) {
             live_guard()?;
             return Ok(metrics_result());
@@ -59,6 +64,7 @@ impl AgentdNduOwnerHostV1 {
                 }
                 NduControlRequestV1::Context
                 | NduControlRequestV1::MetricsV1
+                | NduControlRequestV1::MetricsV2
                 | NduControlRequestV1::Selection { .. }
                 | NduControlRequestV1::Outcome { .. } => {}
             }
@@ -157,6 +163,9 @@ impl AgentdNduOwnerHostV1 {
         let head = owner.journal_head_digest()?;
         let result = match request {
             NduControlRequestV1::MetricsV1 => Ok(metrics_result()),
+            NduControlRequestV1::MetricsV2 => {
+                Ok(metrics_result_v2(self.spawn_generation, Some(&owner)))
+            }
             NduControlRequestV1::Context => Ok(NduControlResultV1::Context {
                 journal_head: *head.as_array(),
                 revocation_head: *owner.context().revocation_frontier_digest.as_array(),
@@ -244,6 +253,35 @@ impl AgentdNduOwnerHostV1 {
                 .map_err(replay_store_error)?;
         }
         result
+    }
+}
+
+fn metrics_result_v2(
+    host_generation: u64,
+    owner: Option<&NduAuthenticatedOwnerV1>,
+) -> NduControlResultV1 {
+    let snapshot = codex_hepta_ndu::operational_metrics_snapshot_v2();
+    NduControlResultV1::MetricsV2 {
+        host_generation,
+        storage_ready: owner.map(NduAuthenticatedOwnerV1::storage_ready),
+        filesystem_profile: owner.map(|value| value.filesystem_profile().to_owned()),
+        evaluation_count: snapshot.base.evaluation_count,
+        evaluation_failures: snapshot.evaluation_failures,
+        evaluation_latency_buckets: snapshot.evaluation_latency_buckets,
+        uncertainty_buckets: snapshot.uncertainty_buckets,
+        rejection_reason_counts: snapshot.rejection_reason_counts,
+        persistence_count: snapshot.persistence_count,
+        persistence_failures: snapshot.persistence_failures,
+        persistence_latency_micros_total: snapshot.persistence_latency_micros_total,
+        persistence_latency_micros_max: snapshot.persistence_latency_micros_max,
+        persistence_latency_buckets: snapshot.persistence_latency_buckets,
+        store_opens: snapshot.store_opens,
+        recovered_nonempty_stores: snapshot.recovered_nonempty_stores,
+        corrupt_images: snapshot.corrupt_images,
+        journal_bytes: snapshot.base.journal_bytes,
+        backup_age_seconds: snapshot.base.backup_age_seconds,
+        // No fallback path exists: owner construction requires a durable store.
+        memory_fallback_count: 0,
     }
 }
 

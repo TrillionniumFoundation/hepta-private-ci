@@ -468,3 +468,61 @@ fn real_evaluation_records_rejections_and_quarantine_observations() {
     assert!(after.candidate_quarantines > before.candidate_quarantines);
     assert!(after.evaluation_latency_micros_total >= before.evaluation_latency_micros_total);
 }
+
+#[test]
+fn pareto_matches_independent_grid_oracle_and_input_permutations() {
+    let grid: Vec<(i64, i64)> = (-1..=1)
+        .flat_map(|x| (-1..=1).map(move |y| (x, y)))
+        .collect();
+    for a in &grid {
+        for b in &grid {
+            for c in &grid {
+                let values = [(0, 0), *a, *b, *c];
+                let names = ["abstain", "a", "b", "c"];
+                for tolerance in [0, 1] {
+                    let expected: Vec<_> = (0..4)
+                        .filter(|&i| {
+                            !(0..4).any(|j| {
+                                let (ix, iy) = values[i];
+                                let (jx, jy) = values[j];
+                                jx >= ix && jy <= iy && (jx - ix > tolerance || iy - jy > tolerance)
+                            })
+                        })
+                        .map(|i| id(names[i]))
+                        .collect();
+                    let mut expected = expected;
+                    expected.sort();
+                    let profile = profile();
+                    let mut policy = must(legacy_evaluation_policy(&profile));
+                    for axis in &mut policy.pareto_absolute_tolerances {
+                        axis.value = q32(tolerance);
+                    }
+                    let rows: Vec<_> = (0..4)
+                        .map(|i| contribution(names[i], values[i].0, values[i].1))
+                        .collect();
+                    let forward = must(evaluate_candidates_with_policy(
+                        set(rows.clone()),
+                        profile.clone(),
+                        None,
+                        policy.clone(),
+                    ));
+                    let reverse = must(evaluate_candidates_with_policy(
+                        set(rows.into_iter().rev().collect()),
+                        profile,
+                        None,
+                        policy,
+                    ));
+                    assert_eq!(forward, reverse);
+                    let mut actual: Vec<_> = forward
+                        .base
+                        .pareto_frontier
+                        .iter()
+                        .map(|candidate| candidate.candidate_id.clone())
+                        .collect();
+                    actual.sort();
+                    assert_eq!(actual, expected);
+                }
+            }
+        }
+    }
+}

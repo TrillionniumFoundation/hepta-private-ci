@@ -323,3 +323,57 @@ receipt that binds the full backup policy; V1 is only a compatibility reader.
 See `OPERATOR_RUNBOOK.md` for the exact entrypoints, stable admission failures,
 fixture boundary and remaining off-host evidence. These owner-local helpers
 and qualification types do not expand the generated system contract registry.
+
+## 2026-09-28 evidence, durable ownership and telemetry revision
+
+The current follow-up source lives on `work/utility-ndu-abcd-convergence-20260928`.
+The source/head/tree and exact fixed-main synthetic-merge identities are generated
+in runtime suite receipts, not embedded self-referentially in the source commit.
+
+`NduPlanningInputV2` freezes a separate `NduEvidencePolicyV1` before preparation.
+Every utility/risk/resource feature must have a unique candidate/organ/kind/axis
+observation, exact value and the original host-observed support digest. Missing
+features reject. Low-risk derived/defaulted utility requires the frozen positive
+uncertainty floor in the real numeric uncertainty channel. Risk/resource proxies
+reject because V1 has no corresponding uncertainty channel. High-risk profiles
+accept measured features only, require at least two explicitly registered affected
+actors, and reject missing actor rows, excess per-actor risk or uncertainty.
+An actor is not an organ and this contract does not claim reviewer independence.
+Host observation provenance remains an upstream authentication responsibility.
+
+The V1 Control adapter rejects candidates with nonempty final-effect payloads or
+risk ceilings: these must use V2. V2 also rejects a risk-policy downgrade. The
+real verified-context caller now constructs measured provenance from its observed
+item count and encoded byte length. It remains read-only and invents no actors.
+The complete canonical evidence manifest is bound into contribution supports,
+therefore into the numerical receipt and sealed Control plan.
+
+`NduProjectionStoreV1::open_durable` never returns an ephemeral store on error;
+`NduProjectionJournalV1::new_ephemeral` is an explicit in-memory primitive. On
+Unix, roots/files must belong to the current effective UID and forbid group/other
+writes; regular files must have one hard link. The product bootstrap additionally
+requires private owner directories. Opens use no-follow/nonblocking flags and
+held root/lock inode identities are checked before authoritative operations.
+Linux keeps a read-only flock descriptor; network/unknown filesystem types reject.
+The labels `linux-tmpfs-volatile` and `linux-overlay-unqualified-backing` explicitly
+do not assert power-loss durability. Other Unix targets still require their own
+filesystem qualification. This is not protection against a malicious process
+with the authenticated owner's UID replacing ancestors between syscalls.
+
+Exact journal replay and identical backup restore no longer rewrite the snapshot.
+All real persistence attempts record latency/failure observations. The live binary
+V1 journal remains bounded at 4096 records; it is never prefix-truncated for space.
+Revocations and operation identities must survive future V2 online compaction.
+Lossless archive compression and immutable off-host evidence versions are separate
+from live-journal compaction and from a verified production backup/restore drill.
+
+`MetricsV2` is additive and preserves `MetricsV1` JSON. Histograms are disjoint
+inclusive-upper-bound bins (not Prometheus cumulative buckets): evaluation and
+persistence microseconds `[100,500,1000,2000,5000,+inf]`; utility uncertainty Q32 raw
+`[0,2^24,2^28,2^30,2^32,+inf]`. Rejection reasons count hard-constraint, risk-ceiling,
+resource-ceiling independently and can overlap for one candidate. Observations
+also include evaluator failures, corrupt images, opens and recovered nonempty
+stores. Diagnostic storage readiness is unknown on owner-lock contention and
+is never equivalent to current authorization, deployment qualification or release.
+
+The structural zero of the no-effect `abstain` candidate has explicit `Structural` provenance; it is not a fabricated measurement. Structural evidence on any other candidate or a nonzero value is rejected. Control rejects an abstain candidate carrying a final-use effect payload.

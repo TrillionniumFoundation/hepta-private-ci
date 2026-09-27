@@ -50,6 +50,7 @@ pub struct NduMutationV1 {
 pub enum NduControlRequestV1 {
     Context,
     MetricsV1,
+    MetricsV2,
     Prepare {
         mutation: NduMutationV1,
         expected_head: [u8; 32],
@@ -99,9 +100,11 @@ impl NduControlRequestV1 {
         match self {
             Self::Prepare { .. } | Self::Apply { .. } => true,
             Self::ExternalAdmissionV2 { request, .. } => request.requires_mutation_admission(),
-            Self::Context | Self::MetricsV1 | Self::Selection { .. } | Self::Outcome { .. } => {
-                false
-            }
+            Self::Context
+            | Self::MetricsV1
+            | Self::MetricsV2
+            | Self::Selection { .. }
+            | Self::Outcome { .. } => false,
         }
     }
 
@@ -237,6 +240,7 @@ fn canonical_ndu_control_request_digest_v2(
     match request {
         NduControlRequestV1::Context => bytes.push(0),
         NduControlRequestV1::MetricsV1 => bytes.push(5),
+        NduControlRequestV1::MetricsV2 => bytes.push(6),
         NduControlRequestV1::Prepare {
             mutation,
             expected_head,
@@ -379,6 +383,29 @@ pub enum NduControlResultV1 {
         journal_bytes: Option<u64>,
         backup_age_seconds: Option<u64>,
     },
+    /// V2 histograms use documented non-cumulative buckets; owner readiness
+    /// is unknown while contended. No field grants execution authorization.
+    MetricsV2 {
+        host_generation: u64,
+        storage_ready: Option<bool>,
+        filesystem_profile: Option<String>,
+        evaluation_count: u64,
+        evaluation_failures: u64,
+        evaluation_latency_buckets: [u64; 6],
+        uncertainty_buckets: [u64; 6],
+        rejection_reason_counts: [u64; 3],
+        persistence_count: u64,
+        persistence_failures: u64,
+        persistence_latency_micros_total: u64,
+        persistence_latency_micros_max: u64,
+        persistence_latency_buckets: [u64; 6],
+        store_opens: u64,
+        recovered_nonempty_stores: u64,
+        corrupt_images: u64,
+        journal_bytes: Option<u64>,
+        backup_age_seconds: Option<u64>,
+        memory_fallback_count: u64,
+    },
     Context {
         journal_head: [u8; 32],
         revocation_head: [u8; 32],
@@ -437,6 +464,31 @@ mod tests {
             request: Box::new(request),
             extensions: Vec::new(),
         }
+    }
+
+    #[test]
+    fn metrics_versions_preserve_wire_and_do_not_collide() -> Result<(), Box<dyn std::error::Error>>
+    {
+        let v1 = NduControlRequestV1::MetricsV1;
+        let v2 = NduControlRequestV1::MetricsV2;
+        assert_eq!(serde_json::to_string(&v1)?, r#"{"operation":"metrics_v1"}"#);
+        assert_eq!(serde_json::to_string(&v2)?, r#"{"operation":"metrics_v2"}"#);
+        assert_eq!(
+            serde_json::from_str::<NduControlRequestV1>(&serde_json::to_string(&v2)?)?,
+            v2
+        );
+        assert_ne!(
+            v1.canonical_payload_digest_v2()?,
+            v2.canonical_payload_digest_v2()?
+        );
+        assert!(!v2.requires_mutation_admission());
+        assert!(
+            serde_json::from_str::<NduControlRequestV1>(
+                r#"{"operation":"metrics_v2","authorize":true}"#
+            )
+            .is_err()
+        );
+        Ok(())
     }
 
     #[test]
