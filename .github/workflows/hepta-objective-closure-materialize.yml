@@ -1,4 +1,4 @@
-# closure-trigger: durable-proof-and-evidence-rog-20260927
+# closure-trigger: durable-proof-and-evidence-rog-r2-20260927
 name: Hepta objective compiler closure materializer
 
 on:
@@ -18,7 +18,11 @@ concurrency:
 
 jobs:
   materialize:
-    runs-on: [self-hosted, linux, x64, rog]
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
+      - rog
     timeout-minutes: 150
     env:
       TARGET_BRANCH: work/objective-compiler-production-convergence-20260927
@@ -26,7 +30,7 @@ jobs:
       CARGO_INCREMENTAL: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
-      CARGO_TARGET_DIR: ${{ runner.temp }}/objective-compiler-${{ github.run_id }}
+      CARGO_TARGET_DIR: /tmp/hepta-objective-compiler-materialize
     steps:
       - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -45,6 +49,7 @@ jobs:
           git fetch origin "${TARGET_BRANCH}"
           test "$(git rev-parse "origin/${TARGET_BRANCH}")" = "${TRIGGER_SHA}"
           test -z "$(git status --porcelain)"
+          rm -rf "${CARGO_TARGET_DIR}"
           git rev-parse HEAD HEAD^{tree}
 
       - name: Make the one-shot migration re-entrant
@@ -152,18 +157,12 @@ jobs:
             scripts.test_hepta_objective_contracts \
             scripts.test_hepta_objective_target_measure \
             scripts.test_hepta_objective_release_gate
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-objective -- --nocapture
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-learning-ledger run_start -- --nocapture
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-intelligence objective_run -- --nocapture
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-agentd objective_runtime -- --nocapture
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-agentd objective_run_start_checkpoint -- --nocapture
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-agentd --test objective_product_e2e -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-objective -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-learning-ledger run_start -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-intelligence objective_run -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd objective_runtime -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd objective_run_start_checkpoint -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd --test objective_product_e2e -- --nocapture
 
       - name: Commit source closure and retire one-shot writers
         shell: bash
@@ -203,10 +202,8 @@ jobs:
           set -euo pipefail
           QUALIFIED_SHA="$(git rev-parse HEAD)"
           QUALIFIED_TREE="$(git rev-parse HEAD^{tree})"
-          python3 scripts/hepta-implementation-maps.py verify \
-            --module objective.compiler \
-            --expected-sha "${QUALIFIED_SHA}" \
-            --expected-tree "${QUALIFIED_TREE}"
+          python3 scripts/hepta-implementation-maps.py verify --module objective.compiler \
+            --expected-sha "${QUALIFIED_SHA}" --expected-tree "${QUALIFIED_TREE}"
           python3 scripts/hepta-objective-current-state.py verify
           python3 scripts/hepta-objective-release-gate.py verify-source
           python3 -m unittest -v scripts.test_hepta_objective_release_gate
@@ -215,25 +212,18 @@ jobs:
           python3 scripts/hepta-lane-d-semantic-conformance.py verify
           python3 scripts/verify_cargo_lock.py
           cargo test --manifest-path codex-rs/Cargo.toml --locked --no-run \
-            -p codex-hepta-objective \
-            -p codex-hepta-learning-ledger \
-            -p codex-hepta-intelligence \
-            -p codex-hepta-agentd
+            -p codex-hepta-objective -p codex-hepta-learning-ledger \
+            -p codex-hepta-intelligence -p codex-hepta-agentd
           cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-objective \
-            -p codex-hepta-learning-ledger \
-            -p codex-hepta-intelligence \
-            -p codex-hepta-agentd \
+            -p codex-hepta-objective -p codex-hepta-learning-ledger \
+            -p codex-hepta-intelligence -p codex-hepta-agentd \
             --all-targets --no-deps -- -D warnings
           cargo fmt --manifest-path codex-rs/Cargo.toml \
-            --package codex-hepta-objective \
-            --package codex-hepta-learning-ledger \
-            --package codex-hepta-intelligence \
-            --package codex-hepta-agentd -- --check
+            --package codex-hepta-objective --package codex-hepta-learning-ledger \
+            --package codex-hepta-intelligence --package codex-hepta-agentd -- --check
           git diff --check
           test -z "$(git status --porcelain)"
-          printf 'QUALIFIED_SHA=%s\nQUALIFIED_TREE=%s\n' \
-            "${QUALIFIED_SHA}" "${QUALIFIED_TREE}"
+          printf 'QUALIFIED_SHA=%s\nQUALIFIED_TREE=%s\n' "${QUALIFIED_SHA}" "${QUALIFIED_TREE}"
 
       - name: Push only if the remote source is unchanged
         shell: bash
