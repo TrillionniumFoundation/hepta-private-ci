@@ -148,10 +148,7 @@ fn malicious_selection_cannot_reach_context_or_evaluation() {
     for (candidate, probability) in [("candidate.outside", 1), ("candidate.a", 0)] {
         let mut ports = Ports::selected(candidate, probability);
         let error = prepare_intelligence_run(request(), &mut ports, &mut Oracle).unwrap_err();
-        assert!(matches!(
-            error,
-            CanonicalIntelligenceError::InvalidCandidateSet(_)
-        ));
+        assert!(matches!(error, CanonicalIntelligenceError::InvalidCandidateSet(_)));
         assert_eq!(
             ports.calls,
             vec![
@@ -194,9 +191,7 @@ fn boundary_rehashes_mutable_candidate_receipts() {
     legal.candidates[0].support_digest = digest("substituted-support");
     assert_eq!(
         decide_boundary(&id("run.closure"), &legal, &intuition),
-        Err(CanonicalIntelligenceError::InvalidCandidateSet(
-            "digest mismatch"
-        ))
+        Err(CanonicalIntelligenceError::InvalidCandidateSet("digest mismatch"))
     );
 }
 
@@ -215,4 +210,67 @@ fn direct_boundary_rejects_out_of_set_and_zero_propensity() {
         };
         assert!(decide_boundary(&id("run.closure"), &legal, &receipt).is_err());
     }
+}
+
+#[test]
+fn final_gate_rehashes_every_envelope_dependency() {
+    let request = request();
+    let original = prepare_intelligence_run(
+        request.clone(),
+        &mut Ports::selected("candidate.a", 1),
+        &mut Oracle,
+    )
+    .unwrap();
+    validate_canonical_outcome_v1(&request, &original).unwrap();
+    for field in 0..13 {
+        let mut changed = original.clone();
+        let CanonicalRunOutcomeV1::Ready(envelope) = &mut changed else {
+            panic!("fixture must select a candidate");
+        };
+        let different = digest("substituted");
+        match field {
+            0 => envelope.objective_digest = different,
+            1 => envelope.utility_receipt_digest = different,
+            2 => envelope.neural_receipt_digest = different,
+            3 => envelope.prompt_receipt_digest = different,
+            4 => envelope.context_receipt_digest = different,
+            5 => envelope.context_binding_digest = different,
+            6 => envelope.evaluation_receipt_digest = different,
+            7 => envelope.trace_digest = different,
+            8 => envelope.envelope_digest = different,
+            9 => envelope.decision.run_id = id("run.foreign"),
+            10 => envelope.decision.decision_digest = different,
+            11 => envelope.decision.intuition_receipt_digest = different,
+            12 => {
+                envelope.decision.decision = AdvisoryDecisionV1::Selected {
+                    candidate_id: id("candidate.b"),
+                    propensity: ProbabilityQ32::from_raw(1).unwrap(),
+                };
+            }
+            _ => unreachable!(),
+        }
+        assert!(
+            validate_canonical_outcome_v1(&request, &changed).is_err(),
+            "accepted changed field {field}"
+        );
+    }
+}
+
+#[test]
+fn final_gate_rejects_positive_propensity_substitution() {
+    let request = request();
+    let mut outcome = prepare_intelligence_run(
+        request.clone(),
+        &mut Ports::selected("candidate.a", 1),
+        &mut Oracle,
+    )
+    .unwrap();
+    let CanonicalRunOutcomeV1::Ready(envelope) = &mut outcome else {
+        panic!("fixture must select a candidate");
+    };
+    envelope.decision.decision = AdvisoryDecisionV1::Selected {
+        candidate_id: id("candidate.a"),
+        propensity: ProbabilityQ32::from_raw(2).unwrap(),
+    };
+    assert!(validate_canonical_outcome_v1(&request, &outcome).is_err());
 }
