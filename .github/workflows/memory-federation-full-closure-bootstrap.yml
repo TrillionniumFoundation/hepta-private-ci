@@ -10,6 +10,7 @@ on:
       - "scripts/memory_federation_runtime_closure.py"
       - "scripts/memory_federation_metadata_closure.py"
       - "scripts/memory_federation_registry_closure.py"
+      - "scripts/memory_federation_codec_closure.py"
 
 permissions:
   contents: write
@@ -40,19 +41,21 @@ jobs:
           # closure scripts idempotent across failed or repeated qualification runs.
           git checkout 8e98b1afe490cdfc50e8e3702ede4baf5c12853b -- scripts/hepta-memory-federation-state.py
 
-      - name: Generate canonical, runtime, documentation, registry, and metadata source
+      - name: Generate canonical, runtime, documentation, registry, codec, and metadata source
         run: |
           set -euo pipefail
           python3 scripts/memory_federation_core_closure.py
           python3 scripts/memory_federation_runtime_closure.py
           python3 scripts/memory_federation_metadata_closure.py
           python3 scripts/memory_federation_registry_closure.py
+          python3 scripts/memory_federation_codec_closure.py
           python3 -m py_compile \
             scripts/hepta-memory-federation-state.py \
             scripts/memory_federation_core_closure.py \
             scripts/memory_federation_runtime_closure.py \
             scripts/memory_federation_metadata_closure.py \
-            scripts/memory_federation_registry_closure.py
+            scripts/memory_federation_registry_closure.py \
+            scripts/memory_federation_codec_closure.py
 
       - name: Format and precompile generated source
         working-directory: codex-rs
