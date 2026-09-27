@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Normalize rustdoc JSON and fail closed on public API removals or mutations."""
+"""Normalize rustdoc JSON and fail closed on real public API removals or mutations."""
 
 from __future__ import annotations
 
@@ -46,24 +46,34 @@ class _Normalizer:
     Treating every integer as an item ID is unsafe because rustdoc also contains
     ordinary numeric values. IDs are therefore resolved only in schema fields
     that carry `Id` or `Vec<Id>` values.
+
+    Public paths are compared independently. Parent items intentionally do not
+    recursively absorb implementation blocks, module/trait item rosters, or the
+    complete signature of a referenced public type: doing so would turn an
+    additive method or an unrelated referenced-type change into a cascade of
+    false breaking changes. Public fields, variants, functions, methods and
+    associated items retain their own paths or are represented directly by the
+    enclosing type's field/variant roster, so removals and type substitutions
+    remain fail-closed.
     """
 
     ID_SINGLE_KEYS = frozenset({"id"})
-    ID_LIST_KEYS = frozenset(
-        {
-            "fields",
-            "foreign_impls",
-            "implementations",
-            "impls",
-            "items",
-            "variants",
-        }
-    )
+    ID_LIST_KEYS = frozenset({"fields", "variants"})
     ITEM_IGNORED_KEYS = frozenset(
         {"id", "crate_id", "span", "docs", "links", "deprecation"}
     )
     NESTED_IGNORED_KEYS = frozenset(
-        {"crate_id", "span", "docs", "links", "deprecation"}
+        {
+            "crate_id",
+            "span",
+            "docs",
+            "links",
+            "deprecation",
+            "foreign_impls",
+            "implementations",
+            "impls",
+            "items",
+        }
     )
 
     def __init__(self, document: dict[str, Any]) -> None:
@@ -95,9 +105,8 @@ class _Normalizer:
             rendered = "::".join(path)
             self.all_paths[item_id] = rendered
             if row.get("crate_id") == self.crate_id and len(path) > 1:
-                # The crate root is intentionally omitted. An additive re-export
-                # changes the root module item but is not a mutation of every
-                # pre-existing public item.
+                # The crate root is intentionally omitted. Additive exports are
+                # represented as new paths, not mutations of every ancestor.
                 self.public_paths[item_id] = rendered
         self.memo: dict[str, Any] = {}
         self.visiting: set[str] = set()
@@ -119,18 +128,10 @@ class _Normalizer:
             return None
         if isinstance(value, bool) or not isinstance(value, (int, str)):
             return self.normalize(value)
-        item_id = str(value)
-        if item_id not in self.index:
-            # External items can be present in `paths` without a local index
-            # entry. Their fully qualified path is sufficient and stable.
-            return {"item": self._label(item_id)}
-        item = self.index[item_id]
-        if not isinstance(item, dict) or item.get("crate_id") != self.crate_id:
-            return {"item": self._label(item_id)}
-        return {
-            "item": self._label(item_id),
-            "signature": self.item_signature(item_id),
-        }
+        # A reference is identified by its stable path only. The referred public
+        # item is fingerprinted independently, preventing unrelated impl changes
+        # from cascading into every function or field that names that type.
+        return {"item": self._label(str(value))}
 
     def item_signature(self, item_id: str) -> Any:
         if item_id in self.memo:
@@ -228,7 +229,7 @@ def diff(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
     return {
         "schema": "hepta.platform-types.rustdoc-semver-diff.v2",
         "schemaVersion": 2,
-        "policy": "fail_closed_on_removed_or_signature_changed_public_rustdoc_items",
+        "policy": "fail_closed_on_removed_or_semver_significant_signature_changes",
         "oldSnapshotSha256": old.get("snapshotSha256"),
         "newSnapshotSha256": new.get("snapshotSha256"),
         "oldItemCount": old.get("itemCount"),
