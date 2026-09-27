@@ -1,6 +1,6 @@
 name: intelligence.control source finalizer
 
-# The job runs only the checked-in deterministic finalizer, native validation,
+# The job runs only the checked-in deterministic finalizers, native validation,
 # a closed changed-path inventory and one non-force fast-forward push.
 on:
   push:
@@ -9,6 +9,7 @@ on:
     paths:
       - .github/workflows/hepta-intelligence-source-finalizer.yml
       - scripts/finalize-intelligence-control-product.py
+      - scripts/finalize-intelligence-control-boundaries.py
 
 permissions:
   contents: write
@@ -40,6 +41,7 @@ jobs:
           git cat-file -e HEAD^\{commit\}
           git merge-base --is-ancestor a126987b84737dbc2ee2592442a314117bddb4a2 HEAD
           test -f scripts/finalize-intelligence-control-product.py
+          test -f scripts/finalize-intelligence-control-boundaries.py
           git diff --quiet
           git diff --cached --quiet
           test -z "$(git status --porcelain --untracked-files=normal)"
@@ -49,6 +51,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/finalize-intelligence-control-product.py
+          python3 scripts/finalize-intelligence-control-boundaries.py
           git diff --check
 
       - name: Format and refresh the exact lockfile
@@ -91,7 +94,8 @@ jobs:
           set -euo pipefail
           git rm .github/workflows/hepta-intelligence-source-finalizer.yml
           git rm scripts/finalize-intelligence-control-product.py
-          allowed='^(\.github/workflows/hepta-intelligence-source-finalizer\.yml|scripts/finalize-intelligence-control-product\.py|codex-rs/Cargo\.lock|codex-rs/hepta-agentd/src/intelligence_.*\.rs|codex-rs/hepta-intelligence/(src|tests)/.*\.rs|codex-rs/hepta-operations/src/.*\.rs|codex-rs/hepta-infer-worker-host/src/(lib|native_intelligence_product|native_run_control|native_run_control_tests)\.rs|codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker\.rs)$'
+          git rm scripts/finalize-intelligence-control-boundaries.py
+          allowed='^(\.github/workflows/hepta-intelligence-source-finalizer\.yml|scripts/finalize-intelligence-control-(product|boundaries)\.py|scripts/hepta-intelligence-control-status\.py|docs/modules/intelligence\.control/(IMPLEMENTATION_MAP\.json|TEST_TRACEABILITY\.json|PRODUCT_CLOSURE\.md|TECHNICAL\.md)|codex-rs/Cargo\.lock|codex-rs/hepta-agentd/src/(config|state|lib|intelligence_.*)\.rs|codex-rs/hepta-intelligence/(src|tests)/.*\.rs|codex-rs/hepta-operations/src/.*\.rs|codex-rs/hepta-infer-worker-host/src/(lib|native_intelligence_product|native_run_control|native_run_control_tests)\.rs|codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker\.rs)$'
           unexpected="$(git status --short | cut -c4- | grep -Ev "$allowed" || true)"
           if [ -n "$unexpected" ]; then
             printf 'unexpected changed paths:\n%s\n' "$unexpected" >&2
@@ -109,6 +113,6 @@ jobs:
           git config user.name "Hepta Intelligence Source Finalizer"
           git config user.email "hepta-intelligence-source-finalizer@users.noreply.github.com"
           git add -A
-          git commit -m "feat(intelligence): bind owner prompt to physical product closure"
+          git commit -m "feat(intelligence): close product and authority rollback boundaries"
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git push origin HEAD:codex/intelligence-control-product-closure-20260926
