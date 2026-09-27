@@ -5,6 +5,7 @@
 
 #![forbid(unsafe_code)]
 
+pub mod consumer;
 pub mod contract;
 pub mod hnmf;
 pub mod hnmf_learning;
