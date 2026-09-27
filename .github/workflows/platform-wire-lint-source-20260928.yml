@@ -1,0 +1,78 @@
+name: Prepare platform.wire lint source 20260928
+
+on:
+  push:
+    branches: [author/platform-wire-reviewed-source-20260928]
+    paths: ['.github/workflows/platform-wire-lint-source-20260928.yml']
+
+# Isolated source authoring only. No qualification or acceptance is asserted.
+# The candidate is advanced only by a separate reviewed non-forced ref update.
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    env:
+      SOURCE_PARENT: 79c934620f8fbc912495b9e0437018174091d88c
+      RESULT_BRANCH: author/platform-wire-lint-result-20260928
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_PARENT }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Apply two exact reviewed source substitutions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_PARENT"
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          changes = [
+              ('codex-rs/hepta-wire/src/secure_session.rs',
+               '8efc96e6229aaeaf6b115caffc058436559ba0ccf3e17c71aa8c25ef152de71d',
+               '                downgraded,\n                StableId::new("role.a")?,\n                registry.clone(),\n                transcript',
+               '                downgraded,\n                StableId::new("role.a")?,\n                registry,\n                transcript',
+               '1d9dab715ab4efea9cd25f629a58cafc7fb76d88ef3df969b69fe9bcd9a6f373'),
+              ('codex-rs/hepta-wire/src/directional_session.rs',
+               'bdb5732d56237ff1485d63f26c7fcdc7d5fc8ca75bdc4ed0f1211a16341466a9',
+               '        debug_assert_ne!(send_key, receive_key);',
+               '        debug_assert!(send_key != receive_key, "directional session keys must differ");',
+               '705c9599db3b0c730be20eb9d8e57462d7cc0d65b2f1ccd8a0ff56a2502994aa'),
+          ]
+          for name, before, old, new, after in changes:
+              path = Path(name)
+              data = path.read_bytes()
+              assert hashlib.sha256(data).hexdigest() == before
+              text = data.decode()
+              assert text.count(old) == 1
+              changed = text.replace(old,new).encode()
+              assert hashlib.sha256(changed).hexdigest() == after
+              path.write_bytes(changed)
+          PY
+          git diff --check
+          git diff --stat
+          git diff
+      - name: Publish only the ordinary source review ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Hepta wire source author'
+          git config user.email 'hepta-wire-source@users.noreply.github.com'
+          git add codex-rs/hepta-wire/src/secure_session.rs codex-rs/hepta-wire/src/directional_session.rs
+          git commit -m 'fix(wire): satisfy strict clone lint and redact directional-key assertion failures'
+          test "$(git rev-parse HEAD^)" = "$SOURCE_PARENT"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          git push origin "HEAD:refs/heads/$RESULT_BRANCH"
+          mkdir -p "$RUNNER_TEMP/wire-lint-source"
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/wire-lint-source/git-identity.txt"
+          git diff HEAD^ HEAD > "$RUNNER_TEMP/wire-lint-source/source.patch"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-wire-lint-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/wire-lint-source/
+          retention-days: 30
+          if-no-files-found: error
