@@ -8,10 +8,11 @@ This schema-v19 SLO applies to the durable V1 scheduler, recovery lanes, externa
 | Unknown-result reconciliation | 5 min | alert and retain quarantine; no blind redispatch |
 | Scheduler lease | 30 s | expiry permits only the reviewed reclaim path; never proves provider absence |
 | Writer-epoch fence propagation | 1 s | mark host fenced and stop admission |
-| Recovery work per cycle | 8 | continue next cycle with durable cursor |
-| New admissions per cycle | 16 | continue next cycle; preserve age-first ordering |
+| Distinct recovery rows per cycle | 8 | continue next cycle; each selected row is contacted at most once |
+| New admissions per cycle | 16 | continue next cycle; preserve scheduled-age ordering |
 | Provider calls in flight | 1 | apply backpressure rather than opening parallel authority paths |
 | Consecutive proven pre-admission failures | 3 | fail-stop automation after bounded exponential backoff |
+| Consecutive recovery transport failures | 3 | block admission during retry; fail-stop after the independent bounded budget |
 
 ## Measurement
 
@@ -23,7 +24,11 @@ provider response, turn terminal observation and TaskFlow reconciliation.
 
 - `DispatchUnknown` is a correctness state, not a retry budget event.
 - Schema corruption and fencing have zero tolerance and fail closed.
-- Temporary transport/storage errors consume the bounded retry budget.
+- Temporary transport/storage errors consume the appropriate admission or
+  recovery retry budget; the budgets are independent.
+- A failed recovery attempt admits no new work in the same cycle.
 - Occurrence-local conflicts are isolated per cycle; repeated conflict reaches
   fail-stop rather than spinning forever.
-- Backlog age is measured from canonical `scheduled_for_ms`, not process wake-up.
+- New-admission backlog age is measured from canonical `scheduled_for_ms`.
+  Unknown-dispatch recovery age is measured from `observed_at_ms`; admitted turn
+  observation age is measured from the durable occurrence `updated_at_ms`.
