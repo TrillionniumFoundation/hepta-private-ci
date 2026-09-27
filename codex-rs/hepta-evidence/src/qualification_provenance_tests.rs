@@ -127,6 +127,24 @@ async fn accept_trust_generation(
     .expect("accept trust generation");
 }
 
+async fn assert_both_entry_points_reject(
+    store: &HeptaEvidenceStore,
+    generation: u64,
+    digest: &Sha256Digest,
+    expected_reason: &str,
+) {
+    let bounded = store
+        .verify_production_qualification_provenance_bounded(generation, digest)
+        .await
+        .expect_err("bounded provenance must reject the fixture");
+    let compatibility = store
+        .verify_production_qualification_provenance(generation, digest)
+        .await
+        .expect_err("compatibility provenance must not weaken production checks");
+    assert!(bounded.to_string().contains(expected_reason));
+    assert_eq!(compatibility.to_string(), bounded.to_string());
+}
+
 #[tokio::test]
 async fn production_provenance_rejects_missing_signature_or_trust_identity() {
     let temp = TempDir::new().expect("temp dir");
@@ -138,11 +156,13 @@ async fn production_provenance_rejects_missing_signature_or_trust_identity() {
     let current = Sha256Digest::for_bytes(b"trust:current");
     insert_qualification(&store, 1, None, Some(2), Some(&current)).await;
 
-    let error = store
-        .verify_production_qualification_provenance_bounded(2, &current)
-        .await
-        .expect_err("missing signature must fail closed");
-    assert!(error.to_string().contains("lacks complete authentication provenance"));
+    assert_both_entry_points_reject(
+        &store,
+        2,
+        &current,
+        "lacks complete authentication provenance",
+    )
+    .await;
     store.close().await;
 }
 
@@ -174,6 +194,10 @@ async fn production_provenance_pages_and_accepts_current_or_prior_accepted_trust
         .verify_production_qualification_provenance_bounded(2, &current)
         .await
         .expect("paged provenance verification");
+    store
+        .verify_production_qualification_provenance(2, &current)
+        .await
+        .expect("compatibility entry point must accept the same paged row set");
     store.close().await;
 }
 
@@ -196,10 +220,42 @@ async fn production_provenance_rejects_unaccepted_noncurrent_trust() {
     )
     .await;
 
-    let error = store
-        .verify_production_qualification_provenance_bounded(2, &current)
+    assert_both_entry_points_reject(&store, 2, &current, "unaccepted trust generation").await;
+    store.close().await;
+}
+
+#[tokio::test]
+async fn production_provenance_compatibility_requires_enrollment_even_for_current_rows() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    let current = Sha256Digest::for_bytes(b"trust:current");
+
+    // Neither an empty database nor a current-registry match substitutes for
+    // the immutable recovery-store identity required by production admission.
+    assert_both_entry_points_reject(&store, 2, &current, "enrolled store identity").await;
+    insert_qualification(&store, 1, Some(vec![7_u8; 64]), Some(2), Some(&current)).await;
+    assert_both_entry_points_reject(&store, 2, &current, "enrolled store identity").await;
+
+    store
+        .bind_recovery_store_id("store:provenance")
         .await
-        .expect_err("unaccepted prior trust must fail closed");
-    assert!(error.to_string().contains("unaccepted trust generation"));
+        .expect("enroll unchanged row set");
+    store
+        .verify_production_qualification_provenance(2, &current)
+        .await
+        .expect("enrollment closes the missing identity without changing evidence");
+    store.close().await;
+}
+
+#[tokio::test]
+async fn production_provenance_both_entry_points_reject_zero_current_generation() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    store
+        .bind_recovery_store_id("store:provenance")
+        .await
+        .expect("enroll store");
+    let current = Sha256Digest::for_bytes(b"trust:current");
+    assert_both_entry_points_reject(&store, 0, &current, "positive trust generation").await;
     store.close().await;
 }
