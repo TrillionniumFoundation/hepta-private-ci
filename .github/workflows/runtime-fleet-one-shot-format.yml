@@ -6,21 +6,23 @@ on:
       - codex/runtime-fleet-durable-owner-v1-2026-09-27
     paths:
       - ".github/workflows/runtime-fleet-one-shot-format.yml"
+      - "scripts/runtime_fleet_hardening.py"
       - "codex-rs/hepta-fleet/**"
       - "codex-rs/hepta-supervisor/**"
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
   group: runtime-fleet-one-shot-format
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
-  converge-and-push:
+  harden-test-and-push:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 75
     steps:
       - name: Check out feature branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -28,93 +30,62 @@ jobs:
           ref: codex/runtime-fleet-durable-owner-v1-2026-09-27
           fetch-depth: 0
 
-      - name: Fence every mutation behind the durable frontier
+      - name: Verify checked-out branch head
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
+          test "$(git branch --show-current)" = "codex/runtime-fleet-durable-owner-v1-2026-09-27"
+          git diff --check
 
-          path = Path("codex-rs/hepta-fleet/src/durable_owner_frontier.rs")
-          text = path.read_text()
-          replacements = [
-              (
-                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
-                  "        let result = self.inner.refresh_capacity(operation_id, observer);",
-                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
-                  "        self.reconcile_latest_frontier(operation_id)?;\n"
-                  "        let result = self.inner.refresh_capacity(operation_id, observer);",
-              ),
-              (
-                  "    ) -> Result<DurableFleetIssueReceiptV1, DurableFleetError> {\n"
-                  "        let result = self.inner.issue_with_authority(",
-                  "    ) -> Result<DurableFleetIssueReceiptV1, DurableFleetError> {\n"
-                  "        self.reconcile_latest_frontier(operation_id)?;\n"
-                  "        let result = self.inner.issue_with_authority(",
-              ),
-              (
-                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
-                  "        let result = self.inner.renew_or_revoke(",
-                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
-                  "        self.reconcile_latest_frontier(operation_id)?;\n"
-                  "        let result = self.inner.renew_or_revoke(",
-              ),
-              (
-                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
-                  "        let result = self.inner.reconcile_expired(operation_id);",
-                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
-                  "        self.reconcile_latest_frontier(operation_id)?;\n"
-                  "        let result = self.inner.reconcile_expired(operation_id);",
-              ),
-              (
-                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
-                  "        let result = self\n"
-                  "            .inner\n"
-                  "            .persist_revocation_snapshot(operation_id, snapshot);",
-                  "    ) -> Result<DurableFleetMutationReceiptV1, DurableFleetError> {\n"
-                  "        self.reconcile_latest_frontier(operation_id)?;\n"
-                  "        let result = self\n"
-                  "            .inner\n"
-                  "            .persist_revocation_snapshot(operation_id, snapshot);",
-              ),
-          ]
-          for old, new in replacements:
-              count = text.count(old)
-              if count == 1:
-                  text = text.replace(old, new)
-              elif new in text:
-                  continue
-              else:
-                  raise SystemExit(f"expected exactly one runtime.fleet frontier pattern, found {count}: {old[:80]!r}")
-          path.write_text(text)
-          PY
-
-      - name: Apply repository rustfmt
-        working-directory: codex-rs
-        run: cargo fmt --all
-
-      - name: Run focused pre-push checks
-        working-directory: codex-rs
+      - name: Apply runtime.fleet hardening
         shell: bash
         run: |
           set -euo pipefail
+          python3 scripts/runtime_fleet_hardening.py
+
+      - name: Apply and verify repository rustfmt
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt --all
           cargo fmt --all -- --check
+
+      - name: Run focused runtime.fleet tests
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
           cargo test -p codex-hepta-fleet --all-targets
           cargo test -p codex-hepta-supervisor --all-targets
           cargo check -p codex-hepta-supervisor --bin hepta-supervisord
+
+      - name: Run strict focused lint
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
           cargo clippy -p codex-hepta-fleet --all-targets --all-features -- -D warnings
           cargo clippy -p codex-hepta-supervisor --all-targets --all-features -- -D warnings
 
-      - name: Commit convergence change
+      - name: Check bounded patch scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          unexpected="$(git status --porcelain | awk '{print $2}' | grep -Ev '^(codex-rs/hepta-fleet/|codex-rs/hepta-supervisor/)' || true)"
+          if [ -n "$unexpected" ]; then
+            printf 'unexpected changed paths:\n%s\n' "$unexpected" >&2
+            exit 1
+          fi
+
+      - name: Commit and push verified hardening
         shell: bash
         run: |
           set -euo pipefail
           if git diff --quiet; then
+            echo "No source changes remain."
             exit 0
           fi
-          git diff --check
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add codex-rs/hepta-fleet codex-rs/hepta-supervisor
-          git commit -m "runtime.fleet: fence mutations and apply rustfmt"
+          git commit -m "runtime.fleet: close replay and revocation gaps"
           git push origin HEAD:codex/runtime-fleet-durable-owner-v1-2026-09-27
