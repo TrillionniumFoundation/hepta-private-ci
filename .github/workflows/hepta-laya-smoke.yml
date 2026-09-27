@@ -96,7 +96,10 @@ jobs:
           assert run['source_sha'] == os.environ['SOURCE_SHA']
           assert run['tested_sha'] == os.environ['TESTED']
           assert run['tested_tree'] == subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
-          assert observation['real_model_forward_calls'] >= 2
+          assert observation['real_model_forward_calls'] == 3
+          assert observation['binary']['real_model_forward_calls'] == 1
+          assert observation['binary']['decoded_reply']['input_tokens'] > 0
+          assert observation['binary']['decoded_reply']['output_tokens'] == 0
           assert observation['weights_parameters'] > 100_000_000
           assert observation['production_composition'] is False
           assert observation['held_out_efficacy'] is False

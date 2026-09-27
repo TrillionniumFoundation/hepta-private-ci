@@ -19,6 +19,8 @@ import time
 
 from laya_retrieval import (FORMAT, REQUIRED_FILES, REQUIRED_PACKAGES, RetrievalDriver,
                             digest, encoded, load_pinned)
+from hepta_retrieval_wire import decode_reply, encode_request
+from laya_binary import BinaryRetrievalDriver, OwnerDeadline
 
 SDK_REVISION = "4066d5d5fbf08b66c6757ddeedbd797bd7655bc0"
 MODEL_REVISION = "d51a65072f7c8eab3c4186b6e062de63d0bd5303"
@@ -57,6 +59,22 @@ def request() -> dict:
             "candidates": [{"id": "source-%d" % index,
                             "source_digest": hashlib.sha256(excerpt.encode()).hexdigest(),
                             "excerpt": excerpt} for index, excerpt in enumerate(excerpts)]}
+
+
+def binary_request(model_digest: str, deadline_ms: int) -> bytes:
+    """The native semantic profile, not a new protocol or a task-success label."""
+    query = request()
+    return encode_request({
+        "operation_id": "qualification.laya.binary.1",
+        "workspace_id": query["scope"], "generation": 1,
+        "objective_digest": query["objective_digest"],
+        "observation_digest": query["snapshot_digest"],
+        "bundle_digest": model_digest, "deadline_ms": deadline_ms,
+        "query": query["query"],
+        "sources": [{"source_id": source["id"], "revision": 1,
+                     "content_sha256": source["source_digest"], "text": source["excerpt"]}
+                    for source in reversed(query["candidates"])],
+    })
 
 
 def prepare(root: Path) -> None:
@@ -126,9 +144,26 @@ def run_offline(root: Path) -> None:
         warm_request = request()
         warm_request["operation_id"] = "qualification.laya.smoke.2"
         warm = driver.predict(encoded(warm_request), time.monotonic() + 60)
+        # This is a distinct, explicit smoke operation, not a retry. Use the
+        # existing binary protocol and verify actual SDK usage, not estimates.
+        deadline_ms = time.time_ns() // 1_000_000 + 60_000
+        wire = binary_request(identity, deadline_ms)
+        binary_start = forwards[0]
+        binary = BinaryRetrievalDriver(agent, identity).predict(wire, OwnerDeadline.start(deadline_ms))
+        binary_forwards = forwards[0] - binary_start
+        if binary_forwards != 1:
+            raise ValueError("binary prediction did not execute exactly one model forward")
+        reply = decode_reply(binary.wire, wire)
+        diagnostic = binary.observation
+        if (reply["input_tokens"] != diagnostic["observed_input_tokens"]
+                or diagnostic["request_sha256"] != hashlib.sha256(wire).hexdigest()
+                or diagnostic["reply_sha256"] != hashlib.sha256(binary.wire).hexdigest()
+                or diagnostic["receipt_digest"] != digest({
+                    key: value for key, value in diagnostic.items() if key != "receipt_digest"})):
+            raise ValueError("binary model observation binding mismatch")
     finally:
         hook.remove()
-    if forwards[0] < 2:
+    if forwards[0] != 3:
         raise ValueError("real model forward was not observed")
     for observation in (cold, warm):
         observed_digest = observation["receipt_digest"]
@@ -138,6 +173,9 @@ def run_offline(root: Path) -> None:
     report = {"schema": "hepta.laya.real-model-smoke.v1", "real_model_forward_calls": forwards[0],
               "weights_parameters": sum(parameter.numel() for parameter in agent.model.parameters()),
               "load_seconds": load_seconds, "cold": cold, "warm": warm,
+              "binary": {"real_model_forward_calls": binary_forwards,
+                         "request_wire_hex": wire.hex(), "reply_wire_hex": binary.wire.hex(),
+                         "decoded_reply": reply, "observation": diagnostic},
               "python": sys.version, "platform": platform.platform(),
               "device_observed": str(agent.device), "device_attested": False,
               "production_composition": False, "training_executed": False,

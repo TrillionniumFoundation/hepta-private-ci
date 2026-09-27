@@ -2,7 +2,8 @@
 import unittest
 
 from laya_retrieval import encoded, prepare
-from laya_smoke import normalize_tokenizer, request
+from laya_smoke import binary_request, normalize_tokenizer, request
+from hepta_retrieval_wire import decode_request
 
 
 class PreparationTests(unittest.TestCase):
@@ -29,6 +30,15 @@ class PreparationTests(unittest.TestCase):
         self.assertEqual(len(value["candidates"]), 2)
         self.assertIn("abstain", questions["source"]["criteria"])
         self.assertTrue(state)
+
+    def test_binary_smoke_keeps_native_identity_and_complete_source_bytes(self):
+        value = decode_request(binary_request("1" * 64, 9999))
+        self.assertEqual(value["bundle_digest"], "1" * 64)
+        self.assertEqual(value["deadline_ms"], 9999)
+        self.assertEqual(value["generation"], 1)
+        self.assertEqual(value["workspace_id"], "qualification.synthetic.readonly")
+        self.assertEqual([item["source_id"] for item in value["sources"]], ["source-1", "source-0"])
+        self.assertEqual([item["revision"] for item in value["sources"]], [1, 1])
 
 
 if __name__ == "__main__":
