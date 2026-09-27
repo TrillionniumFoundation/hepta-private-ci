@@ -229,7 +229,7 @@ fn main() -> anyhow::Result<()> {
                             &descriptor,
                         )
                         .map_err(anyhow::Error::msg)?;
-                        config = config.with_evidence_recovery_frontier_files(
+                        config = config.with_production_evidence_profile_files(
                             descriptor,
                             signer_trust.into(),
                         );
