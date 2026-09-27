@@ -13,7 +13,7 @@ on:
   push:
     branches:
       - main
-      - codex/browser-servo-product-closure-20260919
+      - codex/browser-servo-full-convergence-20260927
     paths:
       - 'codex-rs/hepta-agentd/**'
       - 'codex-rs/hepta-agent-protocol/**'
@@ -51,6 +51,9 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git rev-parse HEAD HEAD^{tree}
 
+      - name: Verify generated Browser source registry
+        run: npm --prefix apps/hepta-browser run verify:registry
+
       - name: Verify complete Browser owner boundary
         shell: bash
         run: |
@@ -61,6 +64,7 @@ jobs:
             echo "::endgroup::"
           done
           node --check apps/hepta-browser/src/*.js
+          for script in apps/hepta-browser/scripts/*.js; do node --check "$script"; done
 
       - name: Verify Agentd Browser formatting
         shell: bash
@@ -75,19 +79,25 @@ jobs:
           set -euo pipefail
           cargo test --locked -p codex-hepta-agentd browser_servo --lib
 
-      - name: Compile named Agentd Browser product caller
+      - name: Compile diagnostic and persistent Agentd Browser callers
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo check --locked -p codex-hepta-agentd --bin hepta-agentd-browser
+          cargo check --locked -p codex-hepta-agentd \
+            --bin hepta-agentd-browser \
+            --bin hepta-agentd-browser-service
 
       - name: Deny Agentd Browser lint warnings
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo clippy --locked -p codex-hepta-agentd --lib --bin hepta-agentd-browser --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-agentd \
+            --lib \
+            --bin hepta-agentd-browser \
+            --bin hepta-agentd-browser-service \
+            --no-deps -- -D warnings
 
       - name: Verify source stayed clean
         if: always()
