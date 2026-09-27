@@ -1,0 +1,86 @@
+name: ui.native immutable acceptance proposal
+on:
+  push:
+    branches: [work/ui-native-acceptance-repair-20260927]
+    paths:
+      - scripts/hepta_ui_native_acceptance_finish.py
+      - .github/workflows/hepta-ui-native-acceptance-proposal.yml
+permissions:
+  contents: read
+concurrency:
+  group: ui-native-acceptance-proposal-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  proposal:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/work/ui-native-acceptance-repair-20260927'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    env:
+      INPUT_SHA: ${{ github.sha }}
+      HEPTA_UI_NATIVE_WRITE_BRANCH: work/ui-native-acceptance-repair-20260927
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Verify immutable input and materialize audited edits
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$INPUT_SHA"
+          test -z "$(git status --porcelain)"
+          git merge-base --is-ancestor 39c313e0daf5163b3f239d0d4e135d38a5cd57c6 HEAD
+          echo 'a61d84ebcbf09d7138a78235c661434444e53a3466fa71ae946ffc375d2a429e  scripts/hepta_ui_native_acceptance_finish.py' | sha256sum -c -
+          python3 scripts/hepta_ui_native_acceptance_finish.py
+      - name: Format with the pinned native formatter
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-native-gateway -p codex-hepta-contracts -p codex-hepta-private-state
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -- apps/hepta-native codex-rs/hepta-native-gateway codex-rs/hepta-contracts codex-rs/hepta-private-state docs/modules/ui.native scripts/test_hepta_ui_native_source.py .github/workflows/hepta-ui-native-remediation.yml .github/workflows/hepta-ui-native-remediation-format.yml .github/workflows/ui-native-candidate-rebind.yml
+          git commit -m 'fix(ui.native): materialize archive regressions and current candidate documentation'
+      - name: Bind metadata to the committed source, never promote claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 apps/hepta-native/tools/prepare_current_source.py --write-fingerprints
+          python3 apps/hepta-native/tools/prepare_current_source.py --sync-metadata
+          git add -- apps/hepta-native/CURRENT_SOURCE.json docs/modules/ui.native/IMPLEMENTATION_MAP.json qualification/module-execution-dossiers/NATIVE_BINDINGS.json
+          git commit -m 'docs(ui.native): bind acceptance metadata to exact committed source'
+          python3 apps/hepta-native/tools/prepare_current_source.py
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml -- --check
+          test -z "$(git status --porcelain)"
+      - name: Publish an isolated immutable proposal, not the live candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/native-acceptance-proposal"
+          git diff --binary "$INPUT_SHA" HEAD > "$RUNNER_TEMP/native-acceptance-proposal/proposal.patch"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/native-acceptance-proposal/proposal.txt"
+          git archive --format=tar.gz -o "$RUNNER_TEMP/native-acceptance-proposal/source.tar.gz" HEAD
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          def git(*args): return subprocess.check_output(['git', *args], text=True).strip()
+          directory = pathlib.Path(os.environ['RUNNER_TEMP']) / 'native-acceptance-proposal'
+          report = {'schema':'hepta.ui.native.acceptance-proposal.v1',
+                    'inputSha':os.environ['INPUT_SHA'], 'proposalSha':git('rev-parse','HEAD'),
+                    'proposalTree':git('rev-parse','HEAD^{tree}'),
+                    'patchSha256':hashlib.sha256((directory/'proposal.patch').read_bytes()).hexdigest(),
+                    'formatChecked':True, 'nativeTestsPassed':False,
+                    'qualificationPassed':False, 'releaseAuthorized':False}
+          (directory/'proposal.json').write_text(json.dumps(report, indent=2)+'\n')
+          PY
+          git push origin "HEAD:refs/heads/work/ui-native-acceptance-proposal-${INPUT_SHA}"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ui-native-acceptance-proposal-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/native-acceptance-proposal
+          if-no-files-found: warn
+          retention-days: 7
