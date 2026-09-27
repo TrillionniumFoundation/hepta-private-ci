@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::env;
 use std::fmt;
 use std::fs::File;
@@ -7,11 +8,11 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Stdio;
 use std::str::FromStr;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::sync::PoisonError;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -47,12 +48,22 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
-use tokio::io::AsyncReadExt;
-use tokio::io::AsyncWriteExt;
+use sha2::Digest as _;
 use tokio::process::Command;
-use tokio::time::timeout;
 
-const EXACT_DELIVERY_SCHEMA: u32 = 1;
+mod framing_json;
+mod terminal_state;
+mod tokenizer_io;
+
+use terminal_state::apply_observation;
+use terminal_state::legacy_observation_version;
+use terminal_state::migrate_state;
+#[cfg(test)]
+mod runtime_tests;
+#[cfg(all(test, unix))]
+mod registry_race_tests;
+
+const EXACT_DELIVERY_SCHEMA: u32 = 2;
 const STATE_FILE: &str = "context-delivery-v2.json";
 const NEXT_FILE: &str = "context-delivery-v2.next";
 const LOCK_FILE: &str = "context-delivery-v2.lock";
@@ -61,6 +72,7 @@ const MAX_STAGED_CONTEXTS: usize = 256;
 const MAX_ACTIVE_ATTEMPTS: usize = 64;
 const MAX_PRE_SEND_RECORDS: usize = 4096;
 const MAX_TERMINAL_RECORDS: usize = 4096;
+const MAX_TERMINAL_OBSERVATIONS: usize = 4096;
 const MAX_TOKENIZER_FILE_BYTES: u64 = 512 * 1024 * 1024;
 const MAX_TOKENIZER_STDOUT_BYTES: u64 = 64;
 const TOKENIZER_TIMEOUT_MS_DEFAULT: u64 = 30_000;
@@ -69,6 +81,8 @@ const PROVIDER_EVIDENCE_VERIFIER_DOMAIN: &[u8] = b"hepta.context-provider-delive
 const PROVIDER_EVIDENCE_DOMAIN: &[u8] = b"hepta.context-provider-delivery-evidence.v2";
 
 pub(crate) const HEPTA_CONTEXT_TOKENIZER_BIN_ENV: &str = "HEPTA_CONTEXT_TOKENIZER_BIN";
+const TOKENIZER_BINARY_PIN_ENV: &str = "HEPTA_CONTEXT_TOKENIZER_BINARY_SHA256";
+const TOKENIZER_VOCABULARY_PIN_ENV: &str = "HEPTA_CONTEXT_TOKENIZER_VOCABULARY_SHA256";
 pub(crate) const HEPTA_CONTEXT_TOKENIZER_VERSION_ENV: &str = "HEPTA_CONTEXT_TOKENIZER_VERSION";
 pub(crate) const HEPTA_CONTEXT_TOKENIZER_VOCAB_ENV: &str = "HEPTA_CONTEXT_TOKENIZER_VOCAB";
 pub(crate) const HEPTA_CONTEXT_TOKENIZER_NORMALIZATION_ENV: &str =
@@ -89,7 +103,7 @@ struct ExactTurnKey {
 
 #[derive(Clone)]
 struct ActiveExactDelivery {
-    compiled: PromptRegistryCompiledContextV2,
+    compiled: Arc<PromptRegistryCompiledContextV2>,
     fresh: PromptRegistryDeliveryPreparationV2,
     final_request_proof: FinalProviderRequestProofV2,
     intent: ProviderInvocationIntent,
@@ -97,7 +111,8 @@ struct ActiveExactDelivery {
 
 #[derive(Default)]
 struct ExactRuntimeState {
-    staged: BTreeMap<ExactTurnKey, PromptRegistryCompiledContextV2>,
+    staged: BTreeMap<ExactTurnKey, Arc<PromptRegistryCompiledContextV2>>,
+    preparing: BTreeSet<ExactTurnKey>,
     active: BTreeMap<String, ActiveExactDelivery>,
     durable: StoredExactDeliveryState,
 }
@@ -105,6 +120,7 @@ struct ExactRuntimeState {
 pub(crate) struct AgentdExactContextDeliveryOwner {
     registry: Arc<Mutex<DurablePromptRegistry>>,
     state: Mutex<ExactRuntimeState>,
+    tokenizer: Mutex<Option<Arc<TokenizerRuntimeConfig>>>,
     store: ExactDeliveryStore,
 }
 
@@ -118,9 +134,11 @@ impl AgentdExactContextDeliveryOwner {
             registry,
             state: Mutex::new(ExactRuntimeState {
                 staged: BTreeMap::new(),
+                preparing: BTreeSet::new(),
                 active: BTreeMap::new(),
                 durable,
             }),
+            tokenizer: Mutex::new(None),
             store,
         })
     }
@@ -131,6 +149,7 @@ impl AgentdExactContextDeliveryOwner {
         turn_id: &str,
         compiled: PromptRegistryCompiledContextV2,
     ) -> Result<(), ExactContextDeliveryError> {
+        self.store.ensure_available()?;
         validate_runtime_id(thread_id, "thread id")?;
         validate_runtime_id(turn_id, "turn id")?;
         compiled
@@ -140,12 +159,12 @@ impl AgentdExactContextDeliveryOwner {
             thread_id: thread_id.to_owned(),
             turn_id: turn_id.to_owned(),
         };
-        let mut state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
+        let mut state = self.state.lock().map_err(|_| ExactContextDeliveryError::ReopenRequired)?;
         if state.durable.has_unresolved_for_turn(thread_id, turn_id) {
             return Err(ExactContextDeliveryError::RecoveryRequired);
         }
         if let Some(existing) = state.staged.get(&key) {
-            return if existing == &compiled {
+            return if existing.as_ref() == &compiled {
                 Ok(())
             } else {
                 Err(ExactContextDeliveryError::Conflict(
@@ -156,7 +175,7 @@ impl AgentdExactContextDeliveryOwner {
         if state.staged.len() >= MAX_STAGED_CONTEXTS {
             return Err(ExactContextDeliveryError::Capacity);
         }
-        state.staged.insert(key, compiled);
+        state.staged.insert(key, Arc::new(compiled));
         Ok(())
     }
 
@@ -164,64 +183,23 @@ impl AgentdExactContextDeliveryOwner {
         self: Arc<Self>,
         request: PromptRuntimeFinalRequestV2,
     ) -> Result<(), ExactContextDeliveryError> {
-        request.attempt.validate().map_err(|error| {
-            ExactContextDeliveryError::Domain(format!(
-                "{}: {}",
-                error.reason_code(),
-                error.detail()
-            ))
-        })?;
+        self.store.ensure_available()?;
+        request
+            .attempt
+            .validate()
+            .map_err(|_| ExactContextDeliveryError::InvalidIdentity)?;
         let key = ExactTurnKey {
             thread_id: request.attempt.thread_id.clone(),
             turn_id: request.attempt.turn_id.clone(),
         };
-        let compiled = {
-            let state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
-            if state
-                .durable
-                .terminals
-                .contains_key(&request.attempt.attempt_id)
-            {
-                return Err(ExactContextDeliveryError::Conflict(
-                    "terminal attempt cannot be dispatched again",
-                ));
-            }
-            if state
-                .durable
-                .has_unresolved_attempt(&request.attempt.attempt_id)
-            {
-                return Err(ExactContextDeliveryError::RecoveryRequired);
-            }
-            state
-                .staged
-                .get(&key)
-                .cloned()
-                .ok_or(ExactContextDeliveryError::MissingStagedContext)?
-        };
+        let (compiled, _reservation) = self.reserve_preparation(&key)?;
         validate_request_scope(&compiled, &request)?;
-        let now_unix_ms = current_unix_ms()?;
-        let suffix = Digest32::of_bytes(request.attempt.attempt_id.as_bytes()).to_string();
-        let snapshot_id = stable_id(format!("context-snapshot:{suffix}"))?;
-        let preparation_id = stable_id(format!("context-preparation:{suffix}"))?;
-        let fresh = {
-            let registry = self.registry.lock().unwrap_or_else(PoisonError::into_inner);
-            prepare_prompt_registry_delivery_v2(
-                &registry,
-                &compiled,
-                now_unix_ms,
-                snapshot_id,
-                preparation_id,
-            )
-            .map_err(|error| ExactContextDeliveryError::Domain(error.to_string()))?
-        };
-        fresh
-            .validate_for(&compiled)
-            .map_err(|error| ExactContextDeliveryError::Domain(error.to_string()))?;
-
-        let tokenizer = TokenizerRuntimeConfig::load(&request, &compiled)?;
+        let started_unix_ms = current_unix_ms()?;
+        check_send_time(started_unix_ms, started_unix_ms, request.attachment.deadline_ms)?;
+        let tokenizer = self.tokenizer_for(&request, &compiled)?;
         let token_count = tokenizer.count(&request.canonical_request).await?;
         let bound_tokenizer = BoundFinalRequestTokenizer {
-            identity: tokenizer.identity,
+            identity: tokenizer.identity.clone(),
             request_digest: Digest32::of_bytes(&request.canonical_request),
             token_count,
         };
@@ -231,6 +209,28 @@ impl AgentdExactContextDeliveryOwner {
             request.attempt.provider_config_digest,
             request.attempt.endpoint_digest,
         )?;
+
+        // No await after this point. The registry owner serializes revocation
+        // against the durable authorization commit. A revocation already
+        // committed during tokenization is observed here, not hidden behind a
+        // pre-tokenization snapshot. Revocation after authorization is a
+        // transport-owner cancellation concern, not an exactly-once claim.
+        let registry = self.registry.lock().map_err(|_| ExactContextDeliveryError::ReopenRequired)?;
+        let now_unix_ms = current_unix_ms()?;
+        check_send_time(started_unix_ms, now_unix_ms, request.attachment.deadline_ms)?;
+        if now_unix_ms < compiled.admission_snapshot.observed_unix_ms() {
+            return Err(ExactContextDeliveryError::Clock);
+        }
+        let suffix = Digest32::of_bytes(request.attempt.attempt_id.as_bytes()).to_string();
+        let fresh = prepare_prompt_registry_delivery_v2(
+            &registry,
+            &compiled,
+            now_unix_ms,
+            stable_id(format!("context-snapshot:{suffix}"))?,
+            stable_id(format!("context-preparation:{suffix}"))?,
+        )
+        .map_err(|_| ExactContextDeliveryError::AdmissionChanged)?;
+        fresh.validate_for(&compiled).map_err(|_| ExactContextDeliveryError::AdmissionChanged)?;
         let final_request_proof = prove_final_provider_request_v2(
             &fresh.preparation,
             &compiled.attachment,
@@ -241,32 +241,80 @@ impl AgentdExactContextDeliveryOwner {
             &framing_policy,
             &bound_tokenizer,
         )
-        .map_err(|error| ExactContextDeliveryError::Domain(error.to_string()))?;
+        .map_err(|_| ExactContextDeliveryError::InvalidProof)?;
         let intent = provider_intent(&request.attempt)?;
-        let pre_send =
-            StoredPreSend::new(&request, &fresh, &final_request_proof, &intent, now_unix_ms)?;
-        let active = ActiveExactDelivery {
-            compiled,
-            fresh,
-            final_request_proof,
-            intent,
-        };
-        self.commit_pre_send(request.attempt.attempt_id.clone(), pre_send, active)
+        check_send_time(now_unix_ms, current_unix_ms()?, request.attachment.deadline_ms)?;
+        let pre_send = StoredPreSend::new(
+            &request, &fresh, &final_request_proof, &intent, now_unix_ms,
+        )?;
+        self.commit_pre_send(
+            request.attempt.attempt_id.clone(),
+            pre_send,
+            ActiveExactDelivery { compiled, fresh, final_request_proof, intent },
+        )?;
+        // Expiry during fsync must refuse transport while retaining the claim.
+        check_send_time(now_unix_ms, current_unix_ms()?, request.attachment.deadline_ms)?;
+        drop(registry);
+        Ok(())
+    }
+
+    fn reserve_preparation(
+        self: &Arc<Self>,
+        key: &ExactTurnKey,
+    ) -> Result<(Arc<PromptRegistryCompiledContextV2>, PreparationReservation), ExactContextDeliveryError> {
+        self.store.ensure_available()?;
+        let mut state = self.state.lock().map_err(|_| ExactContextDeliveryError::ReopenRequired)?;
+        if state.durable.has_unresolved_for_turn(&key.thread_id, &key.turn_id)
+            || state.preparing.contains(key)
+        {
+            return Err(ExactContextDeliveryError::RecoveryRequired);
+        }
+        if state.active.len().saturating_add(state.preparing.len()) >= MAX_ACTIVE_ATTEMPTS {
+            return Err(ExactContextDeliveryError::Capacity);
+        }
+        let compiled = state.staged.get(key).cloned()
+            .ok_or(ExactContextDeliveryError::MissingStagedContext)?;
+        state.preparing.insert(key.clone());
+        Ok((compiled, PreparationReservation { owner: Arc::clone(self), key: key.clone() }))
+    }
+
+    fn tokenizer_for(
+        &self,
+        request: &PromptRuntimeFinalRequestV2,
+        compiled: &PromptRegistryCompiledContextV2,
+    ) -> Result<Arc<TokenizerRuntimeConfig>, ExactContextDeliveryError> {
+        let mut configured = self.tokenizer.lock().map_err(|_| ExactContextDeliveryError::ReopenRequired)?;
+        if configured.is_none() {
+            *configured = Some(Arc::new(TokenizerRuntimeConfig::load(request, compiled)?));
+        }
+        let tokenizer = configured.as_ref().ok_or(ExactContextDeliveryError::TokenizerConfiguration)?;
+        tokenizer.identity.validate_for(&compiled.model_profile)
+            .map_err(|_| ExactContextDeliveryError::TokenizerIdentity)?;
+        if tokenizer.provider_id != request.attempt.provider_id || tokenizer.model != request.attempt.model {
+            return Err(ExactContextDeliveryError::TokenizerIdentity);
+        }
+        Ok(Arc::clone(tokenizer))
     }
 
     pub(crate) async fn observe_final_terminal(
         &self,
         terminal: PromptRuntimeFinalTerminalV2,
     ) -> Result<(), ExactContextDeliveryError> {
+        self.store.ensure_available()?;
         let terminal_observation_digest = terminal_observation_digest(&terminal)?;
         let active = {
-            let state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
+            let state = self.state.lock().map_err(|_| ExactContextDeliveryError::ReopenRequired)?;
             if let Some(active) = state.active.get(&terminal.attempt.attempt_id) {
                 active.clone()
             } else if let Some(existing) = state.durable.terminals.get(&terminal.attempt.attempt_id)
             {
-                return if existing.terminal_observation_digest
-                    == terminal_observation_digest.into_array()
+                let observed_digest = if existing.observation_version == 2 {
+                    terminal_observation_digest_legacy(&terminal)?
+                } else {
+                    terminal_observation_digest
+                };
+                return if existing.terminal_observation_digest == observed_digest.into_array()
+                    && existing.is_final()
                 {
                     Ok(())
                 } else {
@@ -297,7 +345,7 @@ impl AgentdExactContextDeliveryOwner {
                 "provider terminal does not match the active exact attempt",
             ));
         }
-        let provider_terminal = provider_terminal(terminal.terminal)?;
+        let provider_terminal = provider_terminal(terminal.terminal.clone())?;
         let receipt = ProviderInvocationReceipt::new(active.intent.clone(), provider_terminal);
         receipt
             .validate()
@@ -339,30 +387,12 @@ impl AgentdExactContextDeliveryOwner {
         stored: StoredPreSend,
         active: ActiveExactDelivery,
     ) -> Result<(), ExactContextDeliveryError> {
-        let mut state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
-        if let Some(existing) = state.durable.pre_sends.get(&attempt_id) {
-            if existing != &stored {
-                return Err(ExactContextDeliveryError::Conflict(
-                    "attempt id already binds different pre-send evidence",
-                ));
-            }
-            if let Some(existing_active) = state.active.get(&attempt_id) {
-                if existing_active.final_request_proof != active.final_request_proof
-                    || existing_active.intent != active.intent
-                {
-                    return Err(ExactContextDeliveryError::Conflict(
-                        "attempt id already has different active evidence",
-                    ));
-                }
-                return Ok(());
-            }
-            return if state.durable.terminals.contains_key(&attempt_id) {
-                Err(ExactContextDeliveryError::Conflict(
-                    "terminal attempt cannot be re-armed",
-                ))
-            } else {
-                Err(ExactContextDeliveryError::RecoveryRequired)
-            };
+        let mut state = self.state.lock().map_err(|_| ExactContextDeliveryError::ReopenRequired)?;
+        self.store.ensure_available()?;
+        if state.durable.pre_sends.contains_key(&attempt_id)
+            || state.durable.has_unresolved_for_turn(&stored.thread_id, &stored.turn_id)
+        {
+            return Err(ExactContextDeliveryError::RecoveryRequired);
         }
         if state.active.len() >= MAX_ACTIVE_ATTEMPTS
             || state.durable.pre_sends.len() >= MAX_PRE_SEND_RECORDS
@@ -382,7 +412,8 @@ impl AgentdExactContextDeliveryOwner {
         attempt_id: &str,
         stored: StoredTerminal,
     ) -> Result<(), ExactContextDeliveryError> {
-        let mut state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
+        let mut state = self.state.lock().map_err(|_| ExactContextDeliveryError::ReopenRequired)?;
+        self.store.ensure_available()?;
         let Some(pre_send) = state.durable.pre_sends.get(attempt_id) else {
             return Err(ExactContextDeliveryError::MissingPreSendEvidence);
         };
@@ -391,25 +422,42 @@ impl AgentdExactContextDeliveryOwner {
                 "terminal receipt does not bind the durable pre-send proof",
             ));
         }
-        if let Some(existing) = state.durable.terminals.get(attempt_id) {
-            return if existing == &stored {
-                Ok(())
-            } else {
-                Err(ExactContextDeliveryError::Conflict(
-                    "attempt id already binds a different terminal receipt",
-                ))
-            };
-        }
-        if state.durable.terminals.len() >= MAX_TERMINAL_RECORDS {
-            return Err(ExactContextDeliveryError::Capacity);
-        }
         let mut next = state.durable.clone();
-        next.terminals.insert(attempt_id.to_owned(), stored);
+        let is_final = stored.is_final();
+        if !apply_observation(&mut next, stored)? {
+            return Ok(());
+        }
         self.store.persist(&next)?;
         state.durable = next;
-        state.active.remove(attempt_id);
+        if is_final {
+            state.active.remove(attempt_id);
+        }
         Ok(())
     }
+
+}
+
+struct PreparationReservation {
+    owner: Arc<AgentdExactContextDeliveryOwner>,
+    key: ExactTurnKey,
+}
+
+impl Drop for PreparationReservation {
+    fn drop(&mut self) {
+        if let Ok(mut state) = self.owner.state.lock() {
+            state.preparing.remove(&self.key);
+        }
+    }
+}
+
+fn check_send_time(started: u64, current: u64, deadline: u64) -> Result<(), ExactContextDeliveryError> {
+    if started == 0 || current < started {
+        return Err(ExactContextDeliveryError::Clock);
+    }
+    if deadline == 0 || current >= deadline {
+        return Err(ExactContextDeliveryError::Expired);
+    }
+    Ok(())
 }
 
 #[derive(Clone, Debug)]
@@ -459,8 +507,7 @@ impl FinalRequestFramingVerifierV2 for ResponsesJsonFramingPolicy {
         if context.is_empty() {
             return Err("canonical context payload is empty".to_owned());
         }
-        let value: serde_json::Value = serde_json::from_slice(canonical_request)
-            .map_err(|error| format!("provider request is not valid JSON: {error}"))?;
+        let value = framing_json::parse(canonical_request)?;
         let object = value
             .as_object()
             .ok_or_else(|| "provider request root is not an object".to_owned())?;
@@ -469,8 +516,18 @@ impl FinalRequestFramingVerifierV2 for ResponsesJsonFramingPolicy {
         {
             return Err("provider request model does not match the bound model".to_owned());
         }
-        if !object.contains_key("input") && !object.contains_key("instructions") {
-            return Err("provider request has no typed model-input field".to_owned());
+        let messages = object.get("input").and_then(serde_json::Value::as_array)
+            .ok_or_else(|| "context_typed_input_required".to_owned())?;
+        let exact_slots = messages.iter().filter(|message| {
+            message.get("role").and_then(serde_json::Value::as_str) == Some("developer")
+                && message.get("content").and_then(serde_json::Value::as_array).is_some_and(|parts| {
+                    parts.len() == 1
+                        && parts[0].get("type").and_then(serde_json::Value::as_str) == Some("input_text")
+                        && parts[0].get("text").and_then(serde_json::Value::as_str) == Some(context)
+                })
+        }).count();
+        if exact_slots != 1 {
+            return Err("context_exact_developer_slot_required".to_owned());
         }
         let occurrences = count_context_occurrences(&value, context)?;
         if occurrences != 1 {
@@ -490,9 +547,11 @@ fn count_context_occurrences(value: &serde_json::Value, context: &str) -> Result
                 .checked_add(count_context_occurrences(value, context)?)
                 .ok_or_else(|| "context occurrence count overflow".to_owned())
         }),
-        serde_json::Value::Object(values) => values.values().try_fold(0_usize, |total, value| {
-            total
-                .checked_add(count_context_occurrences(value, context)?)
+        serde_json::Value::Object(values) => values.iter().try_fold(0_usize, |total, (key, value)| {
+            if key.contains(context) {
+                return Err("context_in_object_key".to_owned());
+            }
+            total.checked_add(count_context_occurrences(value, context)?)
                 .ok_or_else(|| "context occurrence count overflow".to_owned())
         }),
         _ => Ok(0),
@@ -544,6 +603,15 @@ impl TokenizerRuntimeConfig {
         }
         let binary_digest = hash_bounded_file(&binary)?;
         let vocabulary_digest = hash_bounded_file(&vocabulary)?;
+        let binary_pin = Digest32::from_str(&bounded_env(TOKENIZER_BINARY_PIN_ENV, 64)?)
+            .map_err(|_| ExactContextDeliveryError::TokenizerIdentity)?;
+        let vocabulary_pin = Digest32::from_str(&bounded_env(TOKENIZER_VOCABULARY_PIN_ENV, 64)?)
+            .map_err(|_| ExactContextDeliveryError::TokenizerIdentity)?;
+        if binary_pin.is_zero() || vocabulary_pin.is_zero()
+            || binary_pin != binary_digest || vocabulary_pin != vocabulary_digest
+        {
+            return Err(ExactContextDeliveryError::TokenizerIdentity);
+        }
         let timeout_ms = match env::var(HEPTA_CONTEXT_TOKENIZER_TIMEOUT_MS_ENV) {
             Ok(value) => value
                 .parse::<u64>()
@@ -578,58 +646,27 @@ impl TokenizerRuntimeConfig {
     }
 
     async fn count(&self, request: &[u8]) -> Result<u64, ExactContextDeliveryError> {
-        let mut child = Command::new(&self.binary)
-            .arg("--provider")
-            .arg(&self.provider_id)
-            .arg("--model")
-            .arg(&self.model)
-            .arg("--version")
-            .arg(&self.version)
-            .arg("--vocabulary")
-            .arg(&self.vocabulary)
-            .arg("--normalization")
-            .arg(&self.normalization)
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::null())
-            .kill_on_drop(true)
-            .spawn()
-            .map_err(|_| ExactContextDeliveryError::TokenizerUnavailable)?;
-        let mut stdin = child
-            .stdin
-            .take()
-            .ok_or(ExactContextDeliveryError::TokenizerUnavailable)?;
-        let mut stdout = child
-            .stdout
-            .take()
-            .ok_or(ExactContextDeliveryError::TokenizerUnavailable)?;
-        stdin
-            .write_all(request)
-            .await
-            .map_err(|_| ExactContextDeliveryError::TokenizerUnavailable)?;
-        drop(stdin);
-        let execution = async {
-            let mut output = Vec::new();
-            stdout
-                .take(MAX_TOKENIZER_STDOUT_BYTES + 1)
-                .read_to_end(&mut output)
-                .await
-                .map_err(|_| ExactContextDeliveryError::TokenizerUnavailable)?;
-            let status = child
-                .wait()
-                .await
-                .map_err(|_| ExactContextDeliveryError::TokenizerUnavailable)?;
-            Ok::<_, ExactContextDeliveryError>((status, output))
-        };
-        let (status, output) = timeout(self.timeout, execution)
-            .await
-            .map_err(|_| ExactContextDeliveryError::TokenizerTimeout)??;
-        if !status.success()
-            || u64::try_from(output.len()).unwrap_or(u64::MAX) > MAX_TOKENIZER_STDOUT_BYTES
-        {
-            return Err(ExactContextDeliveryError::TokenizerRejected);
-        }
+        self.verify_artifacts()?;
+        let mut command = Command::new(&self.binary);
+        command.arg("--provider").arg(&self.provider_id)
+            .arg("--model").arg(&self.model)
+            .arg("--version").arg(&self.version)
+            .arg("--vocabulary").arg(&self.vocabulary)
+            .arg("--normalization").arg(&self.normalization);
+        let output = tokenizer_io::run(&mut command, request, self.timeout, MAX_TOKENIZER_STDOUT_BYTES).await?;
+        // These checks detect drift; immutable mounts/runtime qualification are
+        // still required to exclude adversarial replace-and-restore races.
+        self.verify_artifacts()?;
         parse_token_count(&output)
+    }
+
+    fn verify_artifacts(&self) -> Result<(), ExactContextDeliveryError> {
+        if hash_bounded_file(&self.binary)? != self.identity.tokenizer_binary_digest()
+            || hash_bounded_file(&self.vocabulary)? != self.identity.vocabulary_digest()
+        {
+            return Err(ExactContextDeliveryError::TokenizerIdentity);
+        }
+        Ok(())
     }
 }
 
@@ -788,12 +825,25 @@ fn terminal_observation_digest(
     let intent = provider_intent(&terminal.attempt)?;
     let provider_terminal = provider_terminal(terminal.terminal.clone())?;
     let receipt = ProviderInvocationReceipt::new(intent, provider_terminal);
-    let mut bytes = b"hepta.context-runtime-terminal-observation.v2".to_vec();
+    let mut bytes = b"hepta.context-runtime-terminal-observation.v3".to_vec();
     bytes.extend_from_slice(
         &receipt
             .canonical_wire_bytes()
             .map_err(ExactContextDeliveryError::Domain)?,
     );
+    bytes.extend_from_slice(terminal.attachment.context_attachment_digest.as_array());
+    bytes.extend_from_slice(terminal.attachment.context_payload_digest.as_array());
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+fn terminal_observation_digest_legacy(
+    terminal: &PromptRuntimeFinalTerminalV2,
+) -> Result<Digest32, ExactContextDeliveryError> {
+    let receipt = ProviderInvocationReceipt::new(
+        provider_intent(&terminal.attempt)?, provider_terminal(terminal.terminal.clone())?,
+    );
+    let mut bytes = b"hepta.context-runtime-terminal-observation.v2".to_vec();
+    bytes.extend_from_slice(&receipt.canonical_wire_bytes().map_err(ExactContextDeliveryError::Domain)?);
     bytes.extend_from_slice(terminal.attachment.context_attachment_digest.as_array());
     bytes.extend_from_slice(terminal.attachment.context_payload_digest.as_array());
     bytes.extend_from_slice(&terminal.observed_unix_ms.to_be_bytes());
@@ -823,6 +873,7 @@ fn validate_request_scope(
             != compiled.serialized_context.receipt().payload_digest()
         || request.attachment.model != request.attempt.model
         || request.canonical_request.is_empty()
+        || request.canonical_request.len() > codex_hepta_context_compiler::MAX_FINAL_PROVIDER_REQUEST_BYTES_V2
     {
         return Err(ExactContextDeliveryError::Conflict(
             "final request is outside the staged context scope",
@@ -879,16 +930,27 @@ fn absolute_regular_file(
 }
 
 fn hash_bounded_file(path: &Path) -> Result<Digest32, ExactContextDeliveryError> {
-    let mut bytes = Vec::new();
-    File::open(path)
-        .map_err(|_| ExactContextDeliveryError::TokenizerUnavailable)?
-        .take(MAX_TOKENIZER_FILE_BYTES + 1)
-        .read_to_end(&mut bytes)
+    let metadata = std::fs::symlink_metadata(path)
         .map_err(|_| ExactContextDeliveryError::TokenizerUnavailable)?;
-    if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_TOKENIZER_FILE_BYTES {
+    if !metadata.is_file() || metadata.file_type().is_symlink() || metadata.len() > MAX_TOKENIZER_FILE_BYTES {
         return Err(ExactContextDeliveryError::TokenizerConfiguration);
     }
-    Ok(Digest32::of_bytes(&bytes))
+    let mut file = File::open(path).map_err(|_| ExactContextDeliveryError::TokenizerUnavailable)?;
+    let mut digest = sha2::Sha256::new();
+    let mut buffer = [0_u8; 64 * 1024];
+    let mut total = 0_u64;
+    loop {
+        let count = file.read(&mut buffer).map_err(|_| ExactContextDeliveryError::TokenizerUnavailable)?;
+        if count == 0 { break; }
+        total = total.checked_add(u64::try_from(count).unwrap_or(u64::MAX))
+            .ok_or(ExactContextDeliveryError::TokenizerConfiguration)?;
+        if total > MAX_TOKENIZER_FILE_BYTES {
+            return Err(ExactContextDeliveryError::TokenizerConfiguration);
+        }
+        digest.update(&buffer[..count]);
+    }
+    Digest32::from_str(&format!("{:x}", digest.finalize()))
+        .map_err(|_| ExactContextDeliveryError::TokenizerIdentity)
 }
 
 fn sha256(digest: Digest32) -> Result<Sha256Digest, ExactContextDeliveryError> {
@@ -916,28 +978,26 @@ fn current_unix_ms() -> Result<u64, ExactContextDeliveryError> {
 #[derive(Clone, Default, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 struct StoredExactDeliveryState {
-    #[serde(default = "exact_delivery_schema")]
     schema: u32,
     #[serde(default)]
     pre_sends: BTreeMap<String, StoredPreSend>,
     #[serde(default)]
     terminals: BTreeMap<String, StoredTerminal>,
-}
-
-const fn exact_delivery_schema() -> u32 {
-    EXACT_DELIVERY_SCHEMA
+    #[serde(default)]
+    observations: BTreeMap<String, StoredTerminal>,
 }
 
 impl StoredExactDeliveryState {
     fn has_unresolved_attempt(&self, attempt_id: &str) -> bool {
-        self.pre_sends.contains_key(attempt_id) && !self.terminals.contains_key(attempt_id)
+        self.pre_sends.contains_key(attempt_id)
+            && !self.terminals.get(attempt_id).is_some_and(StoredTerminal::is_final)
     }
 
     fn has_unresolved_for_turn(&self, thread_id: &str, turn_id: &str) -> bool {
         self.pre_sends.iter().any(|(attempt_id, record)| {
             record.thread_id == thread_id
                 && record.turn_id == turn_id
-                && !self.terminals.contains_key(attempt_id)
+                && self.has_unresolved_attempt(attempt_id)
         })
     }
 }
@@ -1002,6 +1062,10 @@ impl StoredPreSend {
 #[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 struct StoredTerminal {
+    #[serde(default = "legacy_observation_version")]
+    observation_version: u32,
+    #[serde(default)]
+    provider_receipt: Option<ProviderInvocationReceipt>,
     attempt_id: String,
     terminal_observation_digest: [u8; 32],
     provider_receipt_digest: [u8; 32],
@@ -1020,6 +1084,8 @@ impl StoredTerminal {
         observed_unix_ms: u64,
     ) -> Result<Self, ExactContextDeliveryError> {
         Ok(Self {
+            observation_version: 3,
+            provider_receipt: Some(provider_receipt.clone()),
             attempt_id: runtime_terminal.attempt.attempt_id.clone(),
             terminal_observation_digest: terminal_observation_digest(runtime_terminal)?
                 .into_array(),
@@ -1039,6 +1105,7 @@ impl StoredTerminal {
 
 struct ExactDeliveryStore {
     root: PathBuf,
+    poisoned: AtomicBool,
     _lock: File,
 }
 
@@ -1060,6 +1127,7 @@ impl ExactDeliveryStore {
             .map_err(|_| ExactContextDeliveryError::StateLocked)?;
         let store = Self {
             root: directory.to_path_buf(),
+            poisoned: AtomicBool::new(false),
             _lock: lock,
         };
         let path = directory.join(STATE_FILE);
@@ -1081,13 +1149,42 @@ impl ExactDeliveryStore {
         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_DURABLE_STATE_BYTES {
             return Err(ExactContextDeliveryError::CorruptState);
         }
-        let state: StoredExactDeliveryState =
+        let mut state: StoredExactDeliveryState =
             serde_json::from_slice(&bytes).map_err(|_| ExactContextDeliveryError::CorruptState)?;
+        migrate_state(&mut state)?;
         validate_stored_state(&state)?;
         Ok((store, state))
     }
 
+    fn ensure_available(&self) -> Result<(), ExactContextDeliveryError> {
+        if self.poisoned.load(Ordering::Acquire) {
+            return Err(ExactContextDeliveryError::ReopenRequired);
+        }
+        Ok(())
+    }
+
     fn persist(&self, state: &StoredExactDeliveryState) -> Result<(), ExactContextDeliveryError> {
+        self.persist_with_sync(state, sync_directory)
+    }
+
+    fn persist_with_sync(
+        &self,
+        state: &StoredExactDeliveryState,
+        sync: impl FnOnce(&Path) -> Result<(), ExactContextDeliveryError>,
+    ) -> Result<(), ExactContextDeliveryError> {
+        self.ensure_available()?;
+        let result = self.persist_inner(state, sync);
+        if matches!(result, Err(ExactContextDeliveryError::IndeterminateDurability)) {
+            self.poisoned.store(true, Ordering::Release);
+        }
+        result
+    }
+
+    fn persist_inner(
+        &self,
+        state: &StoredExactDeliveryState,
+        sync: impl FnOnce(&Path) -> Result<(), ExactContextDeliveryError>,
+    ) -> Result<(), ExactContextDeliveryError> {
         validate_stored_state(state)?;
         let bytes =
             serde_json::to_vec(state).map_err(|_| ExactContextDeliveryError::Unavailable)?;
@@ -1107,38 +1204,14 @@ impl ExactDeliveryStore {
             .map_err(|_| ExactContextDeliveryError::Unavailable)?;
         std::fs::rename(&next_path, self.root.join(STATE_FILE))
             .map_err(|_| ExactContextDeliveryError::Unavailable)?;
-        sync_directory(&self.root)
+        sync(&self.root)
     }
 }
 
 fn validate_stored_state(
     state: &StoredExactDeliveryState,
 ) -> Result<(), ExactContextDeliveryError> {
-    if state.schema != EXACT_DELIVERY_SCHEMA
-        || state.pre_sends.len() > MAX_PRE_SEND_RECORDS
-        || state.terminals.len() > MAX_TERMINAL_RECORDS
-        || state
-            .terminals
-            .keys()
-            .any(|attempt| !state.pre_sends.contains_key(attempt))
-        || state.pre_sends.iter().any(|(attempt, record)| {
-            attempt != &record.attempt_id
-                || attempt.is_empty()
-                || record.preparation_digest == [0; 32]
-                || record.final_request_proof_digest == [0; 32]
-                || record.provider_request_digest == [0; 32]
-                || record.token_count == 0
-        })
-        || state.terminals.iter().any(|(attempt, record)| {
-            attempt != &record.attempt_id
-                || record.terminal_observation_digest == [0; 32]
-                || record.provider_receipt_digest == [0; 32]
-                || record.context_delivery_receipt_digest == [0; 32]
-        })
-    {
-        return Err(ExactContextDeliveryError::CorruptState);
-    }
-    Ok(())
+    terminal_state::validate(state)
 }
 
 fn prepare_directory(path: &Path) -> Result<(), ExactContextDeliveryError> {
@@ -1173,12 +1246,16 @@ fn sync_directory(path: &Path) -> Result<(), ExactContextDeliveryError> {
         .map_err(|_| ExactContextDeliveryError::IndeterminateDurability)
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) enum ExactContextDeliveryError {
     Unavailable,
     StateLocked,
     CorruptState,
     IndeterminateDurability,
+    ReopenRequired,
+    AdmissionChanged,
+    InvalidProof,
+    Expired,
     Capacity,
     MissingStagedContext,
     MissingActiveAttempt,
@@ -1202,6 +1279,10 @@ impl ExactContextDeliveryError {
             Self::StateLocked => "context_delivery_v2_state_locked",
             Self::CorruptState => "context_delivery_v2_corrupt_state",
             Self::IndeterminateDurability => "context_delivery_v2_indeterminate_durability",
+            Self::ReopenRequired => "context_delivery_v2_reopen_required",
+            Self::AdmissionChanged => "context_delivery_v2_admission_changed",
+            Self::InvalidProof => "context_delivery_v2_invalid_proof",
+            Self::Expired => "context_delivery_v2_expired",
             Self::Capacity => "context_delivery_v2_capacity",
             Self::MissingStagedContext => "context_delivery_v2_staged_context_missing",
             Self::MissingActiveAttempt => "context_delivery_v2_active_attempt_missing",
@@ -1222,11 +1303,13 @@ impl ExactContextDeliveryError {
 
 impl fmt::Display for ExactContextDeliveryError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Conflict(detail) => write!(formatter, "{}: {detail}", self.reason_code()),
-            Self::Domain(detail) => write!(formatter, "{}: {detail}", self.reason_code()),
-            _ => formatter.write_str(self.reason_code()),
-        }
+        formatter.write_str(self.reason_code())
+    }
+}
+
+impl fmt::Debug for ExactContextDeliveryError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(self.reason_code())
     }
 }
 
@@ -1265,8 +1348,7 @@ mod tests {
         let context = br#"{\"schema\":\"hepta.context-bundle.v2\"}"#;
         let request = serde_json::json!({
             "model": "model",
-            "instructions": String::from_utf8(context.to_vec()).expect("utf8"),
-            "input": []
+            "input": [{"role": "developer", "content": [{"type": "input_text", "text": String::from_utf8(context.to_vec()).expect("utf8")}]}]
         });
         let request = serde_json::to_vec(&request).expect("request");
         policy
@@ -1290,7 +1372,7 @@ mod tests {
         assert!(policy.verify_final_request(&wrong_model, context).is_err());
     }
 
-    fn stored_pre_send(thread_id: &str, turn_id: &str, attempt_id: &str) -> super::StoredPreSend {
+    pub(super) fn stored_pre_send(thread_id: &str, turn_id: &str, attempt_id: &str) -> super::StoredPreSend {
         super::StoredPreSend {
             thread_id: thread_id.to_owned(),
             turn_id: turn_id.to_owned(),
@@ -1310,8 +1392,10 @@ mod tests {
         }
     }
 
-    fn stored_terminal(attempt_id: &str) -> super::StoredTerminal {
+    pub(super) fn stored_terminal(attempt_id: &str) -> super::StoredTerminal {
         super::StoredTerminal {
+            observation_version: 2,
+            provider_receipt: None,
             attempt_id: attempt_id.to_owned(),
             terminal_observation_digest: [11; 32],
             provider_receipt_digest: [12; 32],
