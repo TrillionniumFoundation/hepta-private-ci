@@ -50,6 +50,9 @@ use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::exact_context_delivery::AgentdExactContextDeliveryOwner;
+use crate::exact_context_delivery::ExactContextDeliveryError;
+
 pub const AGENTD_PROMPT_REGISTRY_MAX_RECORDS: usize = 16_384;
 const MAX_STAGED_TURNS: usize = 256;
 const MAX_DISPATCH_RECORDS: usize = 1024;
@@ -490,10 +493,12 @@ impl AgentdPromptRuntimeOwner {
 pub enum AgentdPromptPipelineError {
     RegistryOpen(String),
     RuntimeOpen(AgentdPromptRuntimeError),
+    ExactOpen(ExactContextDeliveryError),
     StatePoisoned,
     CandidateSource(String),
     Compilation(String),
     Stage(AgentdPromptRuntimeError),
+    ExactStage(ExactContextDeliveryError),
 }
 
 impl fmt::Display for AgentdPromptPipelineError {
@@ -512,8 +517,9 @@ impl std::error::Error for AgentdPromptPipelineError {}
 /// \`compile_prompt_registry_v2\`, and stages the resulting exact realization
 /// bytes into the same PromptRuntimeHost consumed by the embedded App Server.
 pub struct AgentdPromptPipelineOwner {
-    registry: Mutex<DurablePromptRegistry>,
+    registry: Arc<Mutex<DurablePromptRegistry>>,
     runtime: Arc<AgentdPromptRuntimeOwner>,
+    exact: Arc<AgentdExactContextDeliveryOwner>,
 }
 
 impl fmt::Debug for AgentdPromptPipelineOwner {
@@ -534,17 +540,50 @@ impl AgentdPromptPipelineOwner {
         let registry =
             DurablePromptRegistry::open_state_dir(registry_directory, maximum_registry_records)
                 .map_err(|error| AgentdPromptPipelineError::RegistryOpen(error.to_string()))?;
+        let registry = Arc::new(Mutex::new(registry));
         let runtime = AgentdPromptRuntimeOwner::open_state_dir(runtime_directory)
             .map_err(AgentdPromptPipelineError::RuntimeOpen)?;
+        let exact_directory = runtime_directory.join("context-delivery-v2");
+        let exact = AgentdExactContextDeliveryOwner::open(&exact_directory, Arc::clone(&registry))
+            .map_err(AgentdPromptPipelineError::ExactOpen)?;
         Ok(Self {
-            registry: Mutex::new(registry),
+            registry,
             runtime: Arc::new(runtime),
+            exact: Arc::new(exact),
         })
     }
 
     #[must_use]
     pub fn runtime_owner(&self) -> Arc<AgentdPromptRuntimeOwner> {
         Arc::clone(&self.runtime)
+    }
+
+    pub fn host(&self) -> Result<PromptRuntimeHost, AgentdPromptPipelineError> {
+        let request_owner = Arc::clone(&self.exact);
+        let terminal_owner = Arc::clone(&self.exact);
+        let host = self
+            .runtime
+            .host()
+            .map_err(AgentdPromptPipelineError::Stage)?
+            .with_final_request_observer(move |request| {
+                let owner = Arc::clone(&request_owner);
+                Box::pin(async move {
+                    owner
+                        .observe_final_request(request)
+                        .await
+                        .map_err(exact_host_error)
+                })
+            })
+            .with_final_terminal_observer(move |terminal| {
+                let owner = Arc::clone(&terminal_owner);
+                Box::pin(async move {
+                    owner
+                        .observe_final_terminal(terminal)
+                        .await
+                        .map_err(exact_host_error)
+                })
+            });
+        Ok(host)
     }
 
     /// Enumerate candidates from this owner's exact current durable registry.
@@ -582,6 +621,9 @@ impl AgentdPromptPipelineOwner {
             compile_prompt_registry_v2(&registry, portfolio, exercise_request, compilation_request)
                 .map_err(|error| AgentdPromptPipelineError::Compilation(error.to_string()))?
         };
+        self.exact
+            .stage(thread_id, turn_id, compiled.clone())
+            .map_err(AgentdPromptPipelineError::ExactStage)?;
         self.runtime
             .stage_compiled_prompt_context(
                 thread_id,
@@ -1233,6 +1275,10 @@ fn validate_model(model: &str) -> Result<(), AgentdPromptRuntimeError> {
         return Err(AgentdPromptRuntimeError::InvalidModel);
     }
     Ok(())
+}
+
+fn exact_host_error(error: ExactContextDeliveryError) -> PromptRuntimeHostError {
+    PromptRuntimeHostError::new(error.reason_code(), error.to_string())
 }
 
 fn host_error(error: AgentdPromptRuntimeError) -> PromptRuntimeHostError {

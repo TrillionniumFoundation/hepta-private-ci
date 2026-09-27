@@ -28,6 +28,7 @@ codex-hepta-prompt-optimizer = { path = "../hepta-prompt-optimizer" }
 codex-hepta-prompt-registry = { path = "../hepta-prompt-registry" }
 codex-hepta-plasticity = { path = "../hepta-plasticity" }
 codex-hepta-types = { path = "../hepta-types" }
+serde_json = { workspace = true }
 
 [dev-dependencies]
 codex-hepta-contracts = { path = "../hepta-contracts" }

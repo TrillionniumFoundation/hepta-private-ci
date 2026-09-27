@@ -148,12 +148,12 @@ impl PromptRuntimeExactBodyObserver {
                 Ok(())
             }
             ExactBodyPhase::Bound(existing) if existing == &attempt => Ok(()),
-            ExactBodyPhase::Bound(_) | ExactBodyPhase::Proven { .. } => Err(
-                PromptRuntimeHostError::new(
+            ExactBodyPhase::Bound(_) | ExactBodyPhase::Proven { .. } => {
+                Err(PromptRuntimeHostError::new(
                     "prompt_runtime_exact_attempt_conflict",
                     "another physical attempt remains unresolved",
-                ),
-            ),
+                ))
+            }
         }
     }
 
@@ -205,7 +205,10 @@ impl fmt::Debug for PromptRuntimeExactBodyObserver {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
             .debug_struct("PromptRuntimeExactBodyObserver")
-            .field("attachment_digest", &self.attachment.context_attachment_digest)
+            .field(
+                "attachment_digest",
+                &self.attachment.context_attachment_digest,
+            )
             .finish_non_exhaustive()
     }
 }

@@ -7,6 +7,7 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::process::Stdio;
 use std::str::FromStr;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -26,6 +27,7 @@ use codex_hepta_context_compiler::ContextProviderDeliveryDecisionV2;
 use codex_hepta_context_compiler::ContextProviderDeliveryVerifierV2;
 use codex_hepta_context_compiler::ExactFinalRequestTokenizerV2;
 use codex_hepta_context_compiler::FinalProviderRequestProofV2;
+use codex_hepta_context_compiler::FinalRequestFramingVerifierV2;
 use codex_hepta_context_compiler::FinalRequestTokenizerIdentityV2;
 use codex_hepta_context_compiler::observe_final_provider_delivery_v2;
 use codex_hepta_context_compiler::prove_final_provider_request_v2;
@@ -48,7 +50,6 @@ use serde::Serialize;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::process::Command;
-use tokio::process::Stdio;
 use tokio::time::timeout;
 
 const EXACT_DELIVERY_SCHEMA: u32 = 1;
@@ -64,15 +65,12 @@ const MAX_TOKENIZER_FILE_BYTES: u64 = 512 * 1024 * 1024;
 const MAX_TOKENIZER_STDOUT_BYTES: u64 = 64;
 const TOKENIZER_TIMEOUT_MS_DEFAULT: u64 = 30_000;
 const TOKENIZER_TIMEOUT_MS_MAX: u64 = 120_000;
-const PROVIDER_EVIDENCE_VERIFIER_DOMAIN: &[u8] =
-    b"hepta.context-provider-delivery-verifier.v2";
+const PROVIDER_EVIDENCE_VERIFIER_DOMAIN: &[u8] = b"hepta.context-provider-delivery-verifier.v2";
 const PROVIDER_EVIDENCE_DOMAIN: &[u8] = b"hepta.context-provider-delivery-evidence.v2";
 
 pub(crate) const HEPTA_CONTEXT_TOKENIZER_BIN_ENV: &str = "HEPTA_CONTEXT_TOKENIZER_BIN";
-pub(crate) const HEPTA_CONTEXT_TOKENIZER_VERSION_ENV: &str =
-    "HEPTA_CONTEXT_TOKENIZER_VERSION";
-pub(crate) const HEPTA_CONTEXT_TOKENIZER_VOCAB_ENV: &str =
-    "HEPTA_CONTEXT_TOKENIZER_VOCAB";
+pub(crate) const HEPTA_CONTEXT_TOKENIZER_VERSION_ENV: &str = "HEPTA_CONTEXT_TOKENIZER_VERSION";
+pub(crate) const HEPTA_CONTEXT_TOKENIZER_VOCAB_ENV: &str = "HEPTA_CONTEXT_TOKENIZER_VOCAB";
 pub(crate) const HEPTA_CONTEXT_TOKENIZER_NORMALIZATION_ENV: &str =
     "HEPTA_CONTEXT_TOKENIZER_NORMALIZATION";
 pub(crate) const HEPTA_CONTEXT_TOKENIZER_PROFILE_SHA256_ENV: &str =
@@ -143,6 +141,9 @@ impl AgentdExactContextDeliveryOwner {
             turn_id: turn_id.to_owned(),
         };
         let mut state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
+        if state.durable.has_unresolved_for_turn(thread_id, turn_id) {
+            return Err(ExactContextDeliveryError::RecoveryRequired);
+        }
         if let Some(existing) = state.staged.get(&key) {
             return if existing == &compiled {
                 Ok(())
@@ -176,6 +177,21 @@ impl AgentdExactContextDeliveryOwner {
         };
         let compiled = {
             let state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
+            if state
+                .durable
+                .terminals
+                .contains_key(&request.attempt.attempt_id)
+            {
+                return Err(ExactContextDeliveryError::Conflict(
+                    "terminal attempt cannot be dispatched again",
+                ));
+            }
+            if state
+                .durable
+                .has_unresolved_attempt(&request.attempt.attempt_id)
+            {
+                return Err(ExactContextDeliveryError::RecoveryRequired);
+            }
             state
                 .staged
                 .get(&key)
@@ -209,6 +225,12 @@ impl AgentdExactContextDeliveryOwner {
             request_digest: Digest32::of_bytes(&request.canonical_request),
             token_count,
         };
+        let framing_policy = ResponsesJsonFramingPolicy::new(
+            &request.attempt.provider_id,
+            &request.attempt.model,
+            request.attempt.provider_config_digest,
+            request.attempt.endpoint_digest,
+        )?;
         let final_request_proof = prove_final_provider_request_v2(
             &fresh.preparation,
             &compiled.attachment,
@@ -216,11 +238,13 @@ impl AgentdExactContextDeliveryOwner {
             &compiled.model_profile,
             request.attempt.provider_wire_semantic_digest,
             &request.canonical_request,
+            &framing_policy,
             &bound_tokenizer,
         )
         .map_err(|error| ExactContextDeliveryError::Domain(error.to_string()))?;
         let intent = provider_intent(&request.attempt)?;
-        let pre_send = StoredPreSend::new(&request, &fresh, &final_request_proof, &intent, now_unix_ms);
+        let pre_send =
+            StoredPreSend::new(&request, &fresh, &final_request_proof, &intent, now_unix_ms)?;
         let active = ActiveExactDelivery {
             compiled,
             fresh,
@@ -234,19 +258,40 @@ impl AgentdExactContextDeliveryOwner {
         &self,
         terminal: PromptRuntimeFinalTerminalV2,
     ) -> Result<(), ExactContextDeliveryError> {
+        let terminal_observation_digest = terminal_observation_digest(&terminal)?;
         let active = {
             let state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
-            state
-                .active
-                .get(&terminal.attempt.attempt_id)
-                .cloned()
-                .ok_or(ExactContextDeliveryError::MissingActiveAttempt)?
+            if let Some(active) = state.active.get(&terminal.attempt.attempt_id) {
+                active.clone()
+            } else if let Some(existing) = state.durable.terminals.get(&terminal.attempt.attempt_id)
+            {
+                return if existing.terminal_observation_digest
+                    == terminal_observation_digest.into_array()
+                {
+                    Ok(())
+                } else {
+                    Err(ExactContextDeliveryError::Conflict(
+                        "duplicate terminal observation differs from durable receipt",
+                    ))
+                };
+            } else if state
+                .durable
+                .has_unresolved_attempt(&terminal.attempt.attempt_id)
+            {
+                return Err(ExactContextDeliveryError::RecoveryRequired);
+            } else {
+                return Err(ExactContextDeliveryError::MissingActiveAttempt);
+            }
         };
         if terminal.attempt != exact_attempt_from_intent(&active.intent, &terminal.attempt)?
             || terminal.attachment.context_attachment_digest
                 != active.compiled.attachment.attachment_digest()
             || terminal.attachment.context_payload_digest
-                != active.compiled.serialized_context.receipt().payload_digest()
+                != active
+                    .compiled
+                    .serialized_context
+                    .receipt()
+                    .payload_digest()
         {
             return Err(ExactContextDeliveryError::Conflict(
                 "provider terminal does not match the active exact attempt",
@@ -279,7 +324,7 @@ impl AgentdExactContextDeliveryOwner {
         )
         .map_err(|error| ExactContextDeliveryError::Domain(error.to_string()))?;
         let stored = StoredTerminal::new(
-            &terminal.attempt.attempt_id,
+            &terminal,
             &receipt,
             &context_receipt,
             active.final_request_proof.proof_digest(),
@@ -311,6 +356,13 @@ impl AgentdExactContextDeliveryOwner {
                 }
                 return Ok(());
             }
+            return if state.durable.terminals.contains_key(&attempt_id) {
+                Err(ExactContextDeliveryError::Conflict(
+                    "terminal attempt cannot be re-armed",
+                ))
+            } else {
+                Err(ExactContextDeliveryError::RecoveryRequired)
+            };
         }
         if state.active.len() >= MAX_ACTIVE_ATTEMPTS
             || state.durable.pre_sends.len() >= MAX_PRE_SEND_RECORDS
@@ -360,6 +412,98 @@ impl AgentdExactContextDeliveryOwner {
     }
 }
 
+#[derive(Clone, Debug)]
+struct ResponsesJsonFramingPolicy {
+    expected_model: String,
+    verifier_digest: Digest32,
+}
+
+impl ResponsesJsonFramingPolicy {
+    fn new(
+        provider_id: &str,
+        model: &str,
+        provider_config_digest: Digest32,
+        endpoint_digest: Digest32,
+    ) -> Result<Self, ExactContextDeliveryError> {
+        if provider_id.is_empty()
+            || model.is_empty()
+            || provider_config_digest.is_zero()
+            || endpoint_digest.is_zero()
+        {
+            return Err(ExactContextDeliveryError::InvalidIdentity);
+        }
+        let mut bytes = b"hepta.responses-json-framing-verifier.v2".to_vec();
+        push_framing_text(&mut bytes, provider_id);
+        push_framing_text(&mut bytes, model);
+        bytes.extend_from_slice(provider_config_digest.as_array());
+        bytes.extend_from_slice(endpoint_digest.as_array());
+        Ok(Self {
+            expected_model: model.to_owned(),
+            verifier_digest: Digest32::of_bytes(&bytes),
+        })
+    }
+}
+
+impl FinalRequestFramingVerifierV2 for ResponsesJsonFramingPolicy {
+    fn verifier_digest(&self) -> Digest32 {
+        self.verifier_digest
+    }
+
+    fn verify_final_request(
+        &self,
+        canonical_request: &[u8],
+        canonical_context_payload: &[u8],
+    ) -> Result<(), String> {
+        let context = std::str::from_utf8(canonical_context_payload)
+            .map_err(|_| "canonical context payload is not UTF-8".to_owned())?;
+        if context.is_empty() {
+            return Err("canonical context payload is empty".to_owned());
+        }
+        let value: serde_json::Value = serde_json::from_slice(canonical_request)
+            .map_err(|error| format!("provider request is not valid JSON: {error}"))?;
+        let object = value
+            .as_object()
+            .ok_or_else(|| "provider request root is not an object".to_owned())?;
+        if object.get("model").and_then(serde_json::Value::as_str)
+            != Some(self.expected_model.as_str())
+        {
+            return Err("provider request model does not match the bound model".to_owned());
+        }
+        if !object.contains_key("input") && !object.contains_key("instructions") {
+            return Err("provider request has no typed model-input field".to_owned());
+        }
+        let occurrences = count_context_occurrences(&value, context)?;
+        if occurrences != 1 {
+            return Err(format!(
+                "canonical context must occur in exactly one JSON string, observed {occurrences}"
+            ));
+        }
+        Ok(())
+    }
+}
+
+fn count_context_occurrences(value: &serde_json::Value, context: &str) -> Result<usize, String> {
+    match value {
+        serde_json::Value::String(text) => Ok(text.match_indices(context).count()),
+        serde_json::Value::Array(values) => values.iter().try_fold(0_usize, |total, value| {
+            total
+                .checked_add(count_context_occurrences(value, context)?)
+                .ok_or_else(|| "context occurrence count overflow".to_owned())
+        }),
+        serde_json::Value::Object(values) => values.values().try_fold(0_usize, |total, value| {
+            total
+                .checked_add(count_context_occurrences(value, context)?)
+                .ok_or_else(|| "context occurrence count overflow".to_owned())
+        }),
+        _ => Ok(0),
+    }
+}
+
+fn push_framing_text(bytes: &mut Vec<u8>, value: &str) {
+    bytes.extend_from_slice(&u64::try_from(value.len()).unwrap_or(u64::MAX).to_be_bytes());
+    bytes.extend_from_slice(value.as_bytes());
+}
+
 #[derive(Clone)]
 struct TokenizerRuntimeConfig {
     binary: PathBuf,
@@ -394,8 +538,7 @@ impl TokenizerRuntimeConfig {
         if declared != compiled.model_profile.tokenizer_digest
             || Digest32::of_bytes(provider_id.as_bytes())
                 != compiled.model_profile.provider_id_digest
-            || Digest32::of_bytes(model.as_bytes())
-                != compiled.model_profile.provider_model_digest
+            || Digest32::of_bytes(model.as_bytes()) != compiled.model_profile.provider_model_digest
         {
             return Err(ExactContextDeliveryError::TokenizerIdentity);
         }
@@ -639,6 +782,24 @@ fn provider_terminal(
     })
 }
 
+fn terminal_observation_digest(
+    terminal: &PromptRuntimeFinalTerminalV2,
+) -> Result<Digest32, ExactContextDeliveryError> {
+    let intent = provider_intent(&terminal.attempt)?;
+    let provider_terminal = provider_terminal(terminal.terminal.clone())?;
+    let receipt = ProviderInvocationReceipt::new(intent, provider_terminal);
+    let mut bytes = b"hepta.context-runtime-terminal-observation.v2".to_vec();
+    bytes.extend_from_slice(
+        &receipt
+            .canonical_wire_bytes()
+            .map_err(ExactContextDeliveryError::Domain)?,
+    );
+    bytes.extend_from_slice(terminal.attachment.context_attachment_digest.as_array());
+    bytes.extend_from_slice(terminal.attachment.context_payload_digest.as_array());
+    bytes.extend_from_slice(&terminal.observed_unix_ms.to_be_bytes());
+    Ok(Digest32::of_bytes(&bytes))
+}
+
 fn exact_attempt_from_intent(
     intent: &ProviderInvocationIntent,
     observed: &codex_hepta_codex_adapter::PromptRuntimeExactAttemptV2,
@@ -674,10 +835,7 @@ fn parse_token_count(output: &[u8]) -> Result<u64, ExactContextDeliveryError> {
     let text = std::str::from_utf8(output)
         .map_err(|_| ExactContextDeliveryError::TokenizerRejected)?
         .trim();
-    if text.is_empty()
-        || text.len() > 20
-        || !text.bytes().all(|byte| byte.is_ascii_digit())
-    {
+    if text.is_empty() || text.len() > 20 || !text.bytes().all(|byte| byte.is_ascii_digit()) {
         return Err(ExactContextDeliveryError::TokenizerRejected);
     }
     text.parse::<u64>()
@@ -686,7 +844,10 @@ fn parse_token_count(output: &[u8]) -> Result<u64, ExactContextDeliveryError> {
         .ok_or(ExactContextDeliveryError::TokenizerRejected)
 }
 
-fn bounded_env(name: &'static str, maximum_bytes: usize) -> Result<String, ExactContextDeliveryError> {
+fn bounded_env(
+    name: &'static str,
+    maximum_bytes: usize,
+) -> Result<String, ExactContextDeliveryError> {
     let value = env::var(name).map_err(|_| ExactContextDeliveryError::TokenizerConfiguration)?;
     if value.is_empty() || value.len() > maximum_bytes || value.as_bytes().contains(&0) {
         return Err(ExactContextDeliveryError::TokenizerConfiguration);
@@ -767,6 +928,20 @@ const fn exact_delivery_schema() -> u32 {
     EXACT_DELIVERY_SCHEMA
 }
 
+impl StoredExactDeliveryState {
+    fn has_unresolved_attempt(&self, attempt_id: &str) -> bool {
+        self.pre_sends.contains_key(attempt_id) && !self.terminals.contains_key(attempt_id)
+    }
+
+    fn has_unresolved_for_turn(&self, thread_id: &str, turn_id: &str) -> bool {
+        self.pre_sends.iter().any(|(attempt_id, record)| {
+            record.thread_id == thread_id
+                && record.turn_id == turn_id
+                && !self.terminals.contains_key(attempt_id)
+        })
+    }
+}
+
 #[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 struct StoredPreSend {
@@ -794,25 +969,23 @@ impl StoredPreSend {
         proof: &FinalProviderRequestProofV2,
         intent: &ProviderInvocationIntent,
         recorded_unix_ms: u64,
-    ) -> Self {
-        Self {
+    ) -> Result<Self, ExactContextDeliveryError> {
+        Ok(Self {
             thread_id: request.attempt.thread_id.clone(),
             turn_id: request.attempt.turn_id.clone(),
             attempt_id: request.attempt.attempt_id.clone(),
             provider_intent_digest: Digest32::of_bytes(
-                &intent.canonical_wire_bytes().unwrap_or_default(),
+                &intent
+                    .canonical_wire_bytes()
+                    .map_err(ExactContextDeliveryError::Domain)?,
             )
             .into_array(),
             registry_snapshot_digest: fresh.registry_snapshot_digest.into_array(),
-            final_use_materialization_digest: fresh
-                .final_use_materialization_digest
-                .into_array(),
+            final_use_materialization_digest: fresh.final_use_materialization_digest.into_array(),
             preparation_digest: fresh.preparation.preparation_digest().into_array(),
             final_request_proof_digest: proof.proof_digest().into_array(),
             provider_request_digest: proof.provider_request_digest().into_array(),
-            provider_wire_semantic_digest: proof
-                .provider_wire_semantic_digest()
-                .into_array(),
+            provider_wire_semantic_digest: proof.provider_wire_semantic_digest().into_array(),
             tokenizer_identity_digest: proof
                 .tokenization()
                 .tokenizer_identity()
@@ -822,7 +995,7 @@ impl StoredPreSend {
             token_count: proof.tokenization().token_count(),
             segment_map_digest: proof.segment_map_digest().into_array(),
             recorded_unix_ms,
-        }
+        })
     }
 }
 
@@ -830,6 +1003,7 @@ impl StoredPreSend {
 #[serde(deny_unknown_fields)]
 struct StoredTerminal {
     attempt_id: String,
+    terminal_observation_digest: [u8; 32],
     provider_receipt_digest: [u8; 32],
     context_delivery_receipt_digest: [u8; 32],
     final_request_proof_digest: [u8; 32],
@@ -839,14 +1013,16 @@ struct StoredTerminal {
 
 impl StoredTerminal {
     fn new(
-        attempt_id: &str,
+        runtime_terminal: &PromptRuntimeFinalTerminalV2,
         provider_receipt: &ProviderInvocationReceipt,
         context_receipt: &ContextDeliveryReceiptV2,
         final_request_proof_digest: Digest32,
         observed_unix_ms: u64,
     ) -> Result<Self, ExactContextDeliveryError> {
         Ok(Self {
-            attempt_id: attempt_id.to_owned(),
+            attempt_id: runtime_terminal.attempt.attempt_id.clone(),
+            terminal_observation_digest: terminal_observation_digest(runtime_terminal)?
+                .into_array(),
             provider_receipt_digest: Digest32::of_bytes(
                 &provider_receipt
                     .canonical_wire_bytes()
@@ -888,10 +1064,13 @@ impl ExactDeliveryStore {
         };
         let path = directory.join(STATE_FILE);
         if !path.exists() {
-            return Ok((store, StoredExactDeliveryState {
-                schema: EXACT_DELIVERY_SCHEMA,
-                ..StoredExactDeliveryState::default()
-            }));
+            return Ok((
+                store,
+                StoredExactDeliveryState {
+                    schema: EXACT_DELIVERY_SCHEMA,
+                    ..StoredExactDeliveryState::default()
+                },
+            ));
         }
         let mut bytes = Vec::new();
         File::open(&path)
@@ -910,7 +1089,8 @@ impl ExactDeliveryStore {
 
     fn persist(&self, state: &StoredExactDeliveryState) -> Result<(), ExactContextDeliveryError> {
         validate_stored_state(state)?;
-        let bytes = serde_json::to_vec(state).map_err(|_| ExactContextDeliveryError::Unavailable)?;
+        let bytes =
+            serde_json::to_vec(state).map_err(|_| ExactContextDeliveryError::Unavailable)?;
         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_DURABLE_STATE_BYTES {
             return Err(ExactContextDeliveryError::Capacity);
         }
@@ -931,11 +1111,16 @@ impl ExactDeliveryStore {
     }
 }
 
-fn validate_stored_state(state: &StoredExactDeliveryState) -> Result<(), ExactContextDeliveryError> {
+fn validate_stored_state(
+    state: &StoredExactDeliveryState,
+) -> Result<(), ExactContextDeliveryError> {
     if state.schema != EXACT_DELIVERY_SCHEMA
         || state.pre_sends.len() > MAX_PRE_SEND_RECORDS
         || state.terminals.len() > MAX_TERMINAL_RECORDS
-        || state.terminals.keys().any(|attempt| !state.pre_sends.contains_key(attempt))
+        || state
+            .terminals
+            .keys()
+            .any(|attempt| !state.pre_sends.contains_key(attempt))
         || state.pre_sends.iter().any(|(attempt, record)| {
             attempt != &record.attempt_id
                 || attempt.is_empty()
@@ -946,6 +1131,7 @@ fn validate_stored_state(state: &StoredExactDeliveryState) -> Result<(), ExactCo
         })
         || state.terminals.iter().any(|(attempt, record)| {
             attempt != &record.attempt_id
+                || record.terminal_observation_digest == [0; 32]
                 || record.provider_receipt_digest == [0; 32]
                 || record.context_delivery_receipt_digest == [0; 32]
         })
@@ -957,8 +1143,8 @@ fn validate_stored_state(state: &StoredExactDeliveryState) -> Result<(), ExactCo
 
 fn prepare_directory(path: &Path) -> Result<(), ExactContextDeliveryError> {
     std::fs::create_dir_all(path).map_err(|_| ExactContextDeliveryError::Unavailable)?;
-    let metadata = std::fs::symlink_metadata(path)
-        .map_err(|_| ExactContextDeliveryError::Unavailable)?;
+    let metadata =
+        std::fs::symlink_metadata(path).map_err(|_| ExactContextDeliveryError::Unavailable)?;
     if metadata.file_type().is_symlink() || !metadata.is_dir() {
         return Err(ExactContextDeliveryError::Unavailable);
     }
@@ -997,6 +1183,7 @@ pub(crate) enum ExactContextDeliveryError {
     MissingStagedContext,
     MissingActiveAttempt,
     MissingPreSendEvidence,
+    RecoveryRequired,
     Conflict(&'static str),
     InvalidIdentity,
     Clock,
@@ -1019,6 +1206,7 @@ impl ExactContextDeliveryError {
             Self::MissingStagedContext => "context_delivery_v2_staged_context_missing",
             Self::MissingActiveAttempt => "context_delivery_v2_active_attempt_missing",
             Self::MissingPreSendEvidence => "context_delivery_v2_pre_send_evidence_missing",
+            Self::RecoveryRequired => "context_delivery_v2_recovery_required",
             Self::Conflict(_) => "context_delivery_v2_conflict",
             Self::InvalidIdentity => "context_delivery_v2_identity_invalid",
             Self::Clock => "context_delivery_v2_clock_invalid",
@@ -1047,7 +1235,10 @@ impl std::error::Error for ExactContextDeliveryError {}
 #[cfg(test)]
 mod tests {
     use super::ExactContextDeliveryError;
+    use super::ResponsesJsonFramingPolicy;
     use super::parse_token_count;
+    use codex_hepta_context_compiler::FinalRequestFramingVerifierV2;
+    use codex_hepta_types::Digest32;
 
     #[test]
     fn exact_tokenizer_output_is_strict_decimal() {
@@ -1059,6 +1250,141 @@ mod tests {
         assert_eq!(
             parse_token_count(b"0"),
             Err(ExactContextDeliveryError::TokenizerRejected)
+        );
+    }
+
+    #[test]
+    fn framing_policy_accepts_one_bound_context_and_rejects_aliases() {
+        let policy = ResponsesJsonFramingPolicy::new(
+            "provider",
+            "model",
+            Digest32::of_bytes(b"config"),
+            Digest32::of_bytes(b"endpoint"),
+        )
+        .expect("policy");
+        let context = br#"{\"schema\":\"hepta.context-bundle.v2\"}"#;
+        let request = serde_json::json!({
+            "model": "model",
+            "instructions": String::from_utf8(context.to_vec()).expect("utf8"),
+            "input": []
+        });
+        let request = serde_json::to_vec(&request).expect("request");
+        policy
+            .verify_final_request(&request, context)
+            .expect("single context");
+
+        let duplicate = serde_json::json!({
+            "model": "model",
+            "instructions": String::from_utf8(context.to_vec()).expect("utf8"),
+            "input": [String::from_utf8(context.to_vec()).expect("utf8")]
+        });
+        let duplicate = serde_json::to_vec(&duplicate).expect("request");
+        assert!(policy.verify_final_request(&duplicate, context).is_err());
+
+        let wrong_model = serde_json::json!({
+            "model": "other",
+            "instructions": String::from_utf8(context.to_vec()).expect("utf8"),
+            "input": []
+        });
+        let wrong_model = serde_json::to_vec(&wrong_model).expect("request");
+        assert!(policy.verify_final_request(&wrong_model, context).is_err());
+    }
+
+    fn stored_pre_send(thread_id: &str, turn_id: &str, attempt_id: &str) -> super::StoredPreSend {
+        super::StoredPreSend {
+            thread_id: thread_id.to_owned(),
+            turn_id: turn_id.to_owned(),
+            attempt_id: attempt_id.to_owned(),
+            provider_intent_digest: [1; 32],
+            registry_snapshot_digest: [2; 32],
+            final_use_materialization_digest: [3; 32],
+            preparation_digest: [4; 32],
+            final_request_proof_digest: [5; 32],
+            provider_request_digest: [6; 32],
+            provider_wire_semantic_digest: [7; 32],
+            tokenizer_identity_digest: [8; 32],
+            tokenization_receipt_digest: [9; 32],
+            token_count: 11,
+            segment_map_digest: [10; 32],
+            recorded_unix_ms: 12,
+        }
+    }
+
+    fn stored_terminal(attempt_id: &str) -> super::StoredTerminal {
+        super::StoredTerminal {
+            attempt_id: attempt_id.to_owned(),
+            terminal_observation_digest: [11; 32],
+            provider_receipt_digest: [12; 32],
+            context_delivery_receipt_digest: [13; 32],
+            final_request_proof_digest: [5; 32],
+            disposition: "Delivered".to_owned(),
+            observed_unix_ms: 14,
+        }
+    }
+
+    #[test]
+    fn unresolved_pre_send_survives_reopen_and_blocks_turn_retry() {
+        let directory = tempfile::tempdir().expect("tempdir");
+        let (store, mut state) = super::ExactDeliveryStore::open(directory.path()).expect("open");
+        state.pre_sends.insert(
+            "attempt-a".to_owned(),
+            stored_pre_send("thread-a", "turn-a", "attempt-a"),
+        );
+        store.persist(&state).expect("persist");
+        drop(store);
+
+        let (_store, reopened) = super::ExactDeliveryStore::open(directory.path()).expect("reopen");
+        assert!(reopened.has_unresolved_attempt("attempt-a"));
+        assert!(reopened.has_unresolved_for_turn("thread-a", "turn-a"));
+
+        let mut resolved = reopened.clone();
+        resolved
+            .terminals
+            .insert("attempt-a".to_owned(), stored_terminal("attempt-a"));
+        assert!(!resolved.has_unresolved_attempt("attempt-a"));
+        assert!(!resolved.has_unresolved_for_turn("thread-a", "turn-a"));
+        super::validate_stored_state(&resolved).expect("valid resolved state");
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn exact_tokenizer_subprocess_receives_unicode_and_control_bytes() {
+        use std::os::unix::fs::PermissionsExt;
+
+        let directory = tempfile::tempdir().expect("tempdir");
+        let binary = directory.path().join("tokenizer.py");
+        let vocabulary = directory.path().join("vocab.txt");
+        std::fs::write(
+            &binary,
+            "#!/usr/bin/env python3\nimport sys\ndata=sys.stdin.buffer.read()\nprint(len(data))\n",
+        )
+        .expect("write tokenizer");
+        std::fs::set_permissions(&binary, std::fs::Permissions::from_mode(0o700)).expect("chmod");
+        std::fs::write(&vocabulary, b"fixture-vocabulary").expect("write vocab");
+        let identity = codex_hepta_context_compiler::FinalRequestTokenizerIdentityV2::new(
+            Digest32::of_bytes(b"provider"),
+            Digest32::of_bytes(b"model"),
+            Digest32::of_bytes(b"declared-tokenizer"),
+            super::hash_bounded_file(&binary).expect("binary digest"),
+            Digest32::of_bytes(b"fixture-v1"),
+            super::hash_bounded_file(&vocabulary).expect("vocab digest"),
+            Digest32::of_bytes(b"no-normalization"),
+        )
+        .expect("identity");
+        let tokenizer = super::TokenizerRuntimeConfig {
+            binary,
+            vocabulary,
+            provider_id: "provider".to_owned(),
+            model: "model".to_owned(),
+            version: "fixture-v1".to_owned(),
+            normalization: "no-normalization".to_owned(),
+            timeout: std::time::Duration::from_secs(5),
+            identity,
+        };
+        let request = "{\"model\":\"model\",\"input\":\"政策🧪\\ncontrol:\\u0001\"}".as_bytes();
+        assert_eq!(
+            tokenizer.count(request).await.expect("tokenizer count"),
+            u64::try_from(request.len()).expect("length")
         );
     }
 }

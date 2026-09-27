@@ -151,7 +151,9 @@ pub use pipeline_v2::run_shadow_pipeline_v2;
 pub use prompt_delivery::PromptRegistryCompilationErrorV2;
 pub use prompt_delivery::PromptRegistryCompilationRequestV2;
 pub use prompt_delivery::PromptRegistryCompiledContextV2;
+pub use prompt_delivery::PromptRegistryDeliveryPreparationV2;
 pub use prompt_delivery::compile_prompt_registry_v2;
+pub use prompt_delivery::prepare_prompt_registry_delivery_v2;
 
 mod pipeline;
 

@@ -31,6 +31,7 @@ use codex_hepta_context_compiler::SerializedContextV2;
 use codex_hepta_context_compiler::TokenizationReceiptV2;
 use codex_hepta_context_compiler::VerifiedAdmissionSnapshotV2;
 use codex_hepta_context_compiler::build_attachment;
+use codex_hepta_context_compiler::canonical_context_bundle_bytes_v2;
 use codex_hepta_context_compiler::compile_v2;
 use codex_hepta_context_compiler::record_canonical_context_bundle_v2;
 use codex_hepta_context_compiler::verify_admission_snapshot_v2;
@@ -545,6 +546,37 @@ fn prove_prompt_serialization(
         .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
     materialization.validate()?;
 
+    let by_id = materialization
+        .payloads
+        .iter()
+        .map(|payload| (payload.binding.realization_id.clone(), payload))
+        .collect::<BTreeMap<_, _>>();
+    let ordered_realizations = compiled
+        .receipt()
+        .selected_item_ids()
+        .iter()
+        .map(|item_id| {
+            let payload = by_id.get(item_id).ok_or_else(|| {
+                PromptPipelineErrorV1::SelectedRealizationMissing(item_id.to_string())
+            })?;
+            Ok(ContextRealizedItemV2 {
+                item_id: item_id.clone(),
+                role: match payload.binding.role {
+                    PromptRoleV2::ToolSchemaFragment => ContextRoleV2::Schema,
+                    PromptRoleV2::SystemInstruction
+                    | PromptRoleV2::DeveloperInstruction
+                    | PromptRoleV2::UserTemplate => ContextRoleV2::TrustedInstruction,
+                },
+                content: payload.payload.clone(),
+            })
+        })
+        .collect::<Result<Vec<_>, PromptPipelineErrorV1>>()?;
+    let canonical = canonical_context_bundle_bytes_v2(&ordered_realizations)
+        .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
+    if canonical != serialized_payload {
+        return Err(PromptPipelineErrorV1::SerializationProofDrift);
+    }
+
     let mut cursor = 0_usize;
     let mut occurrences = Vec::with_capacity(materialization.payloads.len());
     for item_id in compiled.receipt().selected_item_ids() {
@@ -560,8 +592,15 @@ fn prove_prompt_serialization(
                 item_id.to_string(),
             ));
         }
-        let Some(relative_start) = find_subslice(&serialized_payload[cursor..], &payload.payload)
-        else {
+        let text = std::str::from_utf8(&payload.payload)
+            .map_err(|_| PromptPipelineErrorV1::SerializationProofDrift)?;
+        let encoded = serde_json::to_string(text)
+            .map_err(|_| PromptPipelineErrorV1::SerializationProofDrift)?;
+        let encoded = encoded
+            .as_bytes()
+            .get(1..encoded.len().saturating_sub(1))
+            .ok_or(PromptPipelineErrorV1::SerializationProofDrift)?;
+        let Some(relative_start) = find_subslice(&serialized_payload[cursor..], encoded) else {
             return Err(PromptPipelineErrorV1::SerializedPayloadMissing(
                 item_id.to_string(),
             ));
@@ -570,7 +609,7 @@ fn prove_prompt_serialization(
             .checked_add(relative_start)
             .ok_or(PromptPipelineErrorV1::Arithmetic)?;
         let end = start
-            .checked_add(payload.payload.len())
+            .checked_add(encoded.len())
             .ok_or(PromptPipelineErrorV1::Arithmetic)?;
         occurrences.push(PromptSerializationOccurrenceV1 {
             realization_id: item_id.clone(),

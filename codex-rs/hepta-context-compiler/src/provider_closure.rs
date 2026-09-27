@@ -57,6 +57,7 @@ pub enum ProviderClosureErrorV2 {
     ContextPayloadNotUtf8,
     ContextPayloadMissing,
     ContextPayloadAmbiguous,
+    FramingVerifierRejected(String),
     SegmentCoverageInvalid,
     Arithmetic,
 }
@@ -424,6 +425,20 @@ pub trait ExactFinalRequestTokenizerV2: Send + Sync {
     fn count_final_request_tokens(&self, canonical_request: &[u8]) -> Result<u64, String>;
 }
 
+/// Qualified verifier for provider-specific framing around the canonical
+/// context bundle. The compiler proves complete byte coverage; this capability
+/// proves that the non-context bytes belong to an allowed provider request
+/// grammar for the exact provider/model pair.
+pub trait FinalRequestFramingVerifierV2: Send + Sync {
+    fn verifier_digest(&self) -> Digest32;
+
+    fn verify_final_request(
+        &self,
+        canonical_request: &[u8],
+        canonical_context_payload: &[u8],
+    ) -> Result<(), String>;
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FinalRequestSegmentKindV2 {
     TypedProviderFraming,
@@ -512,6 +527,7 @@ pub struct FinalProviderRequestProofV2 {
     context_payload_digest: Digest32,
     provider_request_digest: Digest32,
     provider_wire_semantic_digest: Digest32,
+    framing_verifier_digest: Digest32,
     request_bytes: u64,
     segments: Vec<FinalRequestSegmentV2>,
     segment_map_digest: Digest32,
@@ -539,6 +555,11 @@ impl FinalProviderRequestProofV2 {
     #[must_use]
     pub const fn provider_wire_semantic_digest(&self) -> Digest32 {
         self.provider_wire_semantic_digest
+    }
+
+    #[must_use]
+    pub const fn framing_verifier_digest(&self) -> Digest32 {
+        self.framing_verifier_digest
     }
 
     #[must_use]
@@ -581,6 +602,7 @@ impl FinalProviderRequestProofV2 {
             || self.context_payload_digest != preparation.payload_digest()
             || self.provider_request_digest.is_zero()
             || self.provider_wire_semantic_digest.is_zero()
+            || self.framing_verifier_digest.is_zero()
             || self.request_bytes == 0
             || self.request_bytes
                 > u64::try_from(MAX_FINAL_PROVIDER_REQUEST_BYTES_V2).unwrap_or(u64::MAX)
@@ -607,6 +629,7 @@ impl FinalProviderRequestProofV2 {
             self.context_payload_digest,
             self.provider_request_digest,
             self.provider_wire_semantic_digest,
+            self.framing_verifier_digest,
             self.segment_map_digest,
             self.tokenization.receipt_digest,
         ] {
@@ -625,6 +648,7 @@ pub fn prove_final_provider_request_v2(
     profile: &ContextModelProfileV2,
     provider_wire_semantic_digest: Digest32,
     canonical_request: &[u8],
+    framing_verifier: &impl FinalRequestFramingVerifierV2,
     tokenizer: &impl ExactFinalRequestTokenizerV2,
 ) -> Result<FinalProviderRequestProofV2, ProviderClosureErrorV2> {
     preparation.validate_for(attachment, serialization, profile)?;
@@ -640,6 +664,12 @@ pub fn prove_final_provider_request_v2(
         ));
     }
     tokenizer.identity().validate_for(profile)?;
+    let framing_verifier_digest = framing_verifier.verifier_digest();
+    if framing_verifier_digest.is_zero() {
+        return Err(ProviderClosureErrorV2::EmptyDigest(
+            "provider_framing_verifier",
+        ));
+    }
 
     let payload_text = std::str::from_utf8(serialization.payload())
         .map_err(|_| ProviderClosureErrorV2::ContextPayloadNotUtf8)?;
@@ -654,6 +684,9 @@ pub fn prove_final_provider_request_v2(
         encoded_payload,
         preparation.payload_digest(),
     )?;
+    framing_verifier
+        .verify_final_request(canonical_request, serialization.payload())
+        .map_err(ProviderClosureErrorV2::FramingVerifierRejected)?;
 
     let provider_request_digest = Digest32::of_bytes(canonical_request);
     let token_count = tokenizer
@@ -676,6 +709,7 @@ pub fn prove_final_provider_request_v2(
         context_payload_digest: preparation.payload_digest(),
         provider_request_digest,
         provider_wire_semantic_digest,
+        framing_verifier_digest,
         request_bytes: u64::try_from(canonical_request.len())
             .map_err(|_| ProviderClosureErrorV2::Arithmetic)?,
         segments,
@@ -838,6 +872,7 @@ fn push_u64(bytes: &mut Vec<u8>, value: u64) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use proptest::prelude::*;
 
     fn digest(label: &str) -> Digest32 {
         Digest32::of_bytes(label.as_bytes())
@@ -883,5 +918,90 @@ mod tests {
         let segments = build_segment_map(&request, payload, digest("payload")).expect("proof");
         assert_eq!(segments.len(), MAX_FINAL_PROVIDER_REQUEST_SEGMENTS_V2);
         validate_segment_coverage(&segments, request.len() as u64).expect("coverage");
+    }
+
+    proptest! {
+        #[test]
+        fn generated_segment_maps_are_total_deterministic_and_single_context(
+            prefix_len in 0_usize..2048,
+            suffix_len in 0_usize..2048,
+            seed in any::<u64>(),
+        ) {
+            let payload = format!("CTX::{seed:016x}::END").into_bytes();
+            let mut request = vec![b'p'; prefix_len];
+            request.extend_from_slice(&payload);
+            request.extend(std::iter::repeat(b's').take(suffix_len));
+            let first = build_segment_map(&request, &payload, digest("generated-payload"))
+                .expect("generated map");
+            let second = build_segment_map(&request, &payload, digest("generated-payload"))
+                .expect("deterministic map");
+            prop_assert_eq!(&first, &second);
+            prop_assert_eq!(
+                first.iter().filter(|segment| {
+                    segment.kind() == FinalRequestSegmentKindV2::CanonicalContextBundle
+                }).count(),
+                1
+            );
+            prop_assert_eq!(
+                first.last().expect("last segment").end_offset(),
+                request.len() as u64
+            );
+            prop_assert_eq!(
+                compute_segment_map_digest(&first),
+                compute_segment_map_digest(&second)
+            );
+        }
+
+        #[test]
+        fn generated_gap_and_overlap_mutations_fail_closed(
+            prefix_len in 2_usize..512,
+            suffix_len in 1_usize..512,
+            seed in any::<u32>(),
+        ) {
+            let payload = format!("UNIQUE-CONTEXT-{seed:08x}").into_bytes();
+            let mut request = vec![b'a'; prefix_len];
+            request.extend_from_slice(&payload);
+            request.extend(std::iter::repeat(b'z').take(suffix_len));
+            let valid = build_segment_map(&request, &payload, digest("mutation-payload"))
+                .expect("valid map");
+
+            let mut gap = valid.clone();
+            gap[0].end_offset -= 1;
+            prop_assert_eq!(
+                validate_segment_coverage(&gap, request.len() as u64),
+                Err(ProviderClosureErrorV2::SegmentCoverageInvalid)
+            );
+
+            let mut overlap = valid;
+            overlap[1].start_offset -= 1;
+            prop_assert_eq!(
+                validate_segment_coverage(&overlap, request.len() as u64),
+                Err(ProviderClosureErrorV2::SegmentCoverageInvalid)
+            );
+        }
+    }
+
+    #[test]
+    fn generated_unicode_control_corpus_keeps_exact_escaped_identity() {
+        for index in 0_u32..1024 {
+            let payload = format!("政策:{index}:🧪\\ncontrol:\u{0001}");
+            let encoded = serde_json::to_string(&payload).expect("encode");
+            let encoded = &encoded.as_bytes()[1..encoded.len() - 1];
+            let mut request = format!("{{\"model\":\"m-{index}\",\"instructions\":\"").into_bytes();
+            request.extend_from_slice(encoded);
+            request.extend_from_slice(b"\",\"input\":[]}");
+            let segments = build_segment_map(&request, encoded, digest("unicode-corpus"))
+                .expect("corpus proof");
+            validate_segment_coverage(&segments, request.len() as u64).expect("complete coverage");
+            assert_eq!(
+                segments
+                    .iter()
+                    .filter(|segment| {
+                        segment.kind() == FinalRequestSegmentKindV2::CanonicalContextBundle
+                    })
+                    .count(),
+                1
+            );
+        }
     }
 }
