@@ -1,6 +1,6 @@
 //! Public product runner with mandatory durable attempt recording.
 //!
-//! The lower-level composition remains crate-private. This facade records the
+//! The lower-level composition remains compatibility-only. This facade records
 //! irreversible final-holdout consumption before forwarding released data, and
 //! records exactly one sealed or failed terminal state before returning.
 
@@ -270,5 +270,147 @@ impl StdError for RecordedProductEvaluationErrorV1 {}
 impl From<ProductEvaluationAttemptJournalErrorV1> for RecordedProductEvaluationErrorV1 {
     fn from(value: ProductEvaluationAttemptJournalErrorV1) -> Self {
         Self::Journal(value)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use codex_hepta_types::FixedQ32;
+
+    use crate::CrossFoldPartitionV1;
+    use crate::CrossFoldPlanV1;
+    use crate::EvaluationClaimScopeV1;
+    use crate::EvaluationDirectionV1;
+    use crate::FinalHoldoutJournalV1;
+    use crate::MetricContractV1;
+    use crate::ProductEvaluationAttemptReceiptV1;
+    use crate::freeze_cross_fold_plan;
+
+    fn id(value: &str) -> StableId {
+        StableId::new(value).expect("valid test id")
+    }
+
+    fn digest(value: &str) -> Digest32 {
+        Digest32::of_bytes(value.as_bytes())
+    }
+
+    fn frozen_plan() -> crate::CrossFoldPlanReceiptV1 {
+        freeze_cross_fold_plan(CrossFoldPlanV1 {
+            plan_id: id("recorded-runner-plan"),
+            claim_scope: EvaluationClaimScopeV1::Qualification,
+            candidate_id: id("candidate"),
+            baseline_id: id("baseline"),
+            objective_digest: digest("objective"),
+            dataset_digest: digest("dataset"),
+            estimand_digest: digest("estimand"),
+            metric_contracts: vec![MetricContractV1 {
+                metric_id: id("utility"),
+                direction: EvaluationDirectionV1::Maximize,
+                safety_floor: Some(FixedQ32::ZERO),
+            }],
+            family_alpha_ppm: 50_000,
+            simultaneous_comparisons: 1,
+            folds: vec![
+                CrossFoldPartitionV1 {
+                    fold_id: id("fold-a"),
+                    training_principals: vec![id("train-principal-a")],
+                    training_episodes: vec![id("train-episode-a")],
+                    training_windows: vec![id("train-window-a")],
+                    holdout_principals: vec![id("holdout-principal-a")],
+                    holdout_episodes: vec![id("holdout-episode-a")],
+                    holdout_windows: vec![id("holdout-window-a")],
+                    model_digest: digest("model-a"),
+                    predictions_digest: digest("predictions-a"),
+                },
+                CrossFoldPartitionV1 {
+                    fold_id: id("fold-b"),
+                    training_principals: vec![id("train-principal-b")],
+                    training_episodes: vec![id("train-episode-b")],
+                    training_windows: vec![id("train-window-b")],
+                    holdout_principals: vec![id("holdout-principal-b")],
+                    holdout_episodes: vec![id("holdout-episode-b")],
+                    holdout_windows: vec![id("final-window")],
+                    model_digest: digest("model-b"),
+                    predictions_digest: digest("predictions-b"),
+                },
+            ],
+            final_holdout_window_id: id("final-window"),
+            final_holdout_digest: digest("final-holdout"),
+        })
+        .expect("freeze test plan")
+    }
+
+    struct NeverReleaseProvider {
+        release_calls: usize,
+    }
+
+    impl FinalHoldoutProviderV1 for NeverReleaseProvider {
+        fn manifest_digest(&mut self) -> Result<Digest32, ProductProviderErrorV1> {
+            Ok(digest("final-holdout"))
+        }
+
+        fn release_after_consumption(
+            &mut self,
+            _receipt: &FinalHoldoutJournalReceiptV1,
+        ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
+            self.release_calls += 1;
+            panic!("provider release must be blocked when attempt journaling fails")
+        }
+    }
+
+    struct IndeterminateJournal;
+
+    impl ProductEvaluationAttemptJournalV1 for IndeterminateJournal {
+        fn append(
+            &mut self,
+            _transition: ProductEvaluationAttemptTransitionV1,
+        ) -> Result<ProductEvaluationAttemptReceiptV1, ProductEvaluationAttemptJournalErrorV1>
+        {
+            Err(ProductEvaluationAttemptJournalErrorV1::Indeterminate)
+        }
+
+        fn latest(
+            &mut self,
+            _attempt_id: &StableId,
+        ) -> Result<Option<ProductEvaluationAttemptReceiptV1>, ProductEvaluationAttemptJournalErrorV1>
+        {
+            Ok(None)
+        }
+    }
+
+    #[test]
+    fn journal_failure_preserves_consumed_holdout_and_blocks_release() {
+        let plan = frozen_plan();
+        let mut holdout = FinalHoldoutJournalV1::new();
+        let receipt = holdout
+            .consume(holdout.head_digest(), &plan)
+            .expect("consume holdout");
+        let mut provider = NeverReleaseProvider { release_calls: 0 };
+        let mut journal = IndeterminateJournal;
+
+        {
+            let mut recorded = RecordedHoldoutProviderV1 {
+                attempt_id: id("attempt-1"),
+                plan_digest: plan.plan_digest,
+                inner: &mut provider,
+                journal: &mut journal,
+                consumed_record_digest: None,
+                journal_error: None,
+            };
+            assert_eq!(
+                recorded.release_after_consumption(&receipt),
+                Err(ProductProviderErrorV1::Indeterminate)
+            );
+            assert_eq!(
+                recorded.consumed_record_digest,
+                Some(receipt.record_digest)
+            );
+            assert_eq!(
+                recorded.journal_error,
+                Some(ProductEvaluationAttemptJournalErrorV1::Indeterminate)
+            );
+        }
+        assert_eq!(provider.release_calls, 0);
     }
 }
