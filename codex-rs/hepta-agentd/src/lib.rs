@@ -190,6 +190,8 @@ pub use intelligence_product::IntelligenceAuthorityVerifierV1;
 pub use intelligence_product::PendingIntelligenceLedgerAppendV1;
 pub use intelligence_product::PreparedAgentdIntelligenceRunV1;
 pub use intelligence_product::intelligence_evaluation_binding_payload_v1;
+pub use intelligence_provider::AgentdCanonicalIntelligenceRuntimeProfileV1;
+pub use intelligence_provider::AgentdCanonicalIntelligenceStatusV1;
 pub use intelligence_provider::AgentdIntelligenceInvocationRegistryV1;
 pub use intelligence_provider::compose_canonical_intelligence_profile_v1;
 pub use intuition_policy::AgentdIntuitionDecisionReceiptV1;
