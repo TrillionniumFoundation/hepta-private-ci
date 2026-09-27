@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a1ca5cf3fe3afa1d65439fc436d0dc1116457b77",
-    "tree": "2baa428d64ce3233a570936815367e1ec75d0dd7"
+    "commit": "d43e05399763aefac45b027d31c5ae26a1ad4d54",
+    "tree": "e3f729c1642ecbd735827d34a89e949891015b4d"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
@@ -205,8 +205,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "a1ca5cf3fe3afa1d65439fc436d0dc1116457b77",
-    "tree": "2baa428d64ce3233a570936815367e1ec75d0dd7"
+    "commit": "d43e05399763aefac45b027d31c5ae26a1ad4d54",
+    "tree": "e3f729c1642ecbd735827d34a89e949891015b4d"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-kg-abc-execution.yml",
@@ -251,11 +251,14 @@
     "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
     "docs/modules/knowledge.graph/TECHNICAL.md",
     "qualification/knowledge-graph/EXECUTION_20260927.md",
+    "qualification/knowledge-graph/EXECUTION_POSTFLIGHT_20260927.md",
     "qualification/knowledge-graph/QUERY_CLOSURE_20260927.md",
     "qualification/knowledge-graph/TARGET_HOST.md",
     "scripts/hepta-knowledge-graph-budget-check.py",
     "scripts/hepta-knowledge-graph-target-measure.py",
     "scripts/hepta_kg_evidence.py",
+    "scripts/hepta_kg_execution_audit.py",
+    "scripts/test_hepta_kg_execution_audit.py",
     "scripts/test_hepta_kg_measurement.py",
     "scripts/test_hepta_knowledge_graph_budget.py"
   ],
@@ -274,7 +277,7 @@
   "sourceObjects": [
     {
       "path": ".github/workflows/hepta-kg-abc-execution.yml",
-      "object": "a1055c2235262114419ae42a66b08622ab115397"
+      "object": "a41f04fcea1fdda479d5cb439a0f715a4809029b"
     },
     {
       "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
@@ -441,6 +444,10 @@
       "object": "4403c0d422b4a87f242cf905177586634be812db"
     },
     {
+      "path": "qualification/knowledge-graph/EXECUTION_POSTFLIGHT_20260927.md",
+      "object": "719586cb5b9727aaa1a09dce48f62352c187ed30"
+    },
+    {
       "path": "qualification/knowledge-graph/QUERY_CLOSURE_20260927.md",
       "object": "261d18a4c74335a074ad00500da6e5b02cbdaa9c"
     },
@@ -459,6 +466,14 @@
     {
       "path": "scripts/hepta_kg_evidence.py",
       "object": "57f267d5e6f25571918d746a740d3bc2cc62e6b7"
+    },
+    {
+      "path": "scripts/hepta_kg_execution_audit.py",
+      "object": "f91c4f51f0df5078ab3e316f3fb3ceee0de73124"
+    },
+    {
+      "path": "scripts/test_hepta_kg_execution_audit.py",
+      "object": "9a41548c8e05cadf1ac906dffe028bf930506074"
     },
     {
       "path": "scripts/test_hepta_kg_measurement.py",
