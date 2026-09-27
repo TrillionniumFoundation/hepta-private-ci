@@ -235,7 +235,10 @@ pub struct TrustedDeadline {
 
 impl TrustedDeadline {
     pub fn remaining(&self) -> Result<Duration> {
-        let now = self.clock.now_unix_ms().map_err(LocalAdmissionError::Trust)?;
+        let now = self
+            .clock
+            .now_unix_ms()
+            .map_err(LocalAdmissionError::Trust)?;
         let wall = self
             .absolute_unix_ms
             .checked_sub(now)
@@ -437,7 +440,10 @@ impl LocalAdmissionVerifier {
             return Err(LocalAdmissionError::InputMismatch);
         }
         let observed_at = Instant::now();
-        let now = self.clock.now_unix_ms().map_err(LocalAdmissionError::Trust)?;
+        let now = self
+            .clock
+            .now_unix_ms()
+            .map_err(LocalAdmissionError::Trust)?;
         let remaining = request
             .deadline_unix_ms
             .checked_sub(now)

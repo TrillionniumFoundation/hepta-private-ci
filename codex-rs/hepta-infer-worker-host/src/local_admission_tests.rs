@@ -38,7 +38,10 @@ impl AuthorityFrontierStore<FinalUseFrontier> for TestFrontier {
         if owner_id != "local-issuer" {
             return Err(AuthorityTrustError::Invalid);
         }
-        let mut current = self.0.lock().map_err(|_| AuthorityTrustError::Unavailable)?;
+        let mut current = self
+            .0
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
         if *current != *expected {
             return Err(AuthorityTrustError::Conflict);
         }
@@ -136,7 +139,10 @@ fn sign(key: &SigningKey, request: &LocalAdmissionRequest) -> SignedFinalUseGran
         not_before_unix_ms: 900,
         expires_at_unix_ms: 6_000,
     };
-    let signature = key.sign(&grant.signing_bytes().unwrap()).to_bytes().to_vec();
+    let signature = key
+        .sign(&grant.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
     SignedFinalUseGrant { grant, signature }
 }
 
@@ -155,7 +161,10 @@ fn exact_kernel_claim_retains_verified_input_manifest_and_witness() {
     assert_eq!(verified.input().sha256(), request.input_sha256);
     assert_eq!(verified.limits(), &request.limits);
     assert_eq!(verified.binding(), &signed.grant.binding);
-    assert_eq!(verified.deadline().absolute_unix_ms(), request.deadline_unix_ms);
+    assert_eq!(
+        verified.deadline().absolute_unix_ms(),
+        request.deadline_unix_ms
+    );
     assert!(verified.deadline().remaining().unwrap() <= Duration::from_millis(4_000));
     assert!(verified.check_live().is_ok());
     let witness = verified.witness();
@@ -386,5 +395,9 @@ fn claimed_nonce_survives_verifier_reopen_with_the_same_external_frontier() {
         frontier,
     )
     .unwrap();
-    assert!(reopened.claim(request, &signed, b"payload".to_vec()).is_err());
+    assert!(
+        reopened
+            .claim(request, &signed, b"payload".to_vec())
+            .is_err()
+    );
 }

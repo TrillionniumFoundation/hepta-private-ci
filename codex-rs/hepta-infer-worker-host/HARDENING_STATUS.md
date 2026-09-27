@@ -60,14 +60,31 @@ binds the new workspace limits. Old v1 digests are not silently reinterpreted.
 The inference.control-owned Neuron receipt format is not changed by this
 experimental admission digest revision.
 
+## Verified local preparation implemented separately
+
+`local_admission.rs` now provides privately constructed `VerifiedResourceGrant`,
+`VerifiedModelManifest`, `VerifiedInput` and `TrustedDeadline`. It reuses the
+kernel signed-grant verifier and durable nonce state, requires a host clock and
+external compare-and-set frontier, hashes actual owned input, and binds the
+worker/generation/device lease, complete model tuple, resource limits, purpose
+and absolute deadline. A shared guarded clock fences rollback; a fixed monotonic
+deadline prevents retry-based extension. The types cannot be cloned or restored
+from serialized untrusted input.
+
+This is preparation only. See [local admission and diagnostic boundaries](LOCAL_ADMISSION_BOUNDARY.md)
+for the canonical binding, revocation, time and test scope. There is deliberately
+no public effect-entry API until an inference.control-owned local dispatch proof
+exists. No private signing key, physical loader, `AttestedModelHandle`, or device
+attestation is introduced by this preparation layer.
+
 ## Capabilities that are NOT closed by these changes
 
-The local `ResourceGrant` remains an unverified experimental policy. The worker
-still has a synchronous driver, a caller-supplied clock, and pre-entry cancellation
-snapshot. These changes do not implement `VerifiedResourceGrant`,
-`VerifiedModelManifest`, `AttestedModelHandle`, `TrustedDeadline`, actual verified
-input descriptors, or a physical async driver. They must not be advertised as
-having done so. Production local execution remains prohibited.
+The existing synchronous model worker is not connected to the new verifier. Its
+`ResourceGrant` is still an unverified compatibility policy, its clock is supplied
+by the caller and cancellation is a pre-entry snapshot. The sealed preparation
+layer does not upgrade that older path into an authorized async executor. Actual
+verified artifact descriptors and a physical async driver remain missing.
+Production local execution remains prohibited.
 
 The local model/operation records and resource counters are process-local. A
 completed local request is not durably deduplicated, and process loss cannot be
@@ -89,10 +106,16 @@ Exact App Server thread-history reconciliation already exists in
 operation, input, thread, session, provider and runtime binding and never starts a
 new turn to recover the same operation.
 
+`inspect_native_run` additionally exposes a redacted, no-effect snapshot through
+an already opened inference.control owner. It reports persisted revision, slot
+occupancy, terminality and optional usage without opening a journal or contacting
+a provider. It does not authorize settlement/release or infer age from a deadline.
+Four regression tests exercise unchanged journal bytes, reopen, unknown identity,
+held capacity and unknown-versus-zero usage through the real durable owner.
+
 Missing-history resolution, later trustworthy token-usage reconciliation,
 configurable lost-acknowledgement grace and the complete operational monitoring
-surface are not closed by the local-resource patch. The ephemeral-thread history
-retention and unresolved-effect operating contract in
+surface remain open. The ephemeral-thread history retention and unresolved-effect operating contract in
 `FINAL_USE_AUTHORITY_PORT.md` continues to apply. History loss is indeterminate,
 not a terminal negative result and not permission to replay or reset a journal.
 
@@ -115,9 +138,20 @@ the other platform or the other candidate lane passed.
 
 Real-hardware, target-host composition, independent acceptance, activation and
 release remain unobserved/false. This document contains no Rust pass receipt.
-The authoring environment did not provide Rust/Cargo/rustfmt or a complete local
-checkout; only the Python receipt logic was executed locally. Actual formatting,
-compilation, tests and lint must be read from the exact candidate's CI artifacts.
+The authoring environment has no Rust/Cargo/rustfmt. A CI-produced source archive
+at `543c2a2a6a35d5a8cfacb2c451f83d280fdce8eb` was recovered and its Git tree
+reconstructed exactly as `04c2dbe045353b23b1d36ecf72ed37dba2456f8d`; full Git
+ancestry was not reconstructed. Against that source, seven Python receipt tests,
+`refresh-derived --check` and the strict module registry passed locally. These
+are not Rust execution or complete source-map qualification receipts.
+
+The same candidate's CI passed derived projections, the registry and macOS
+inference.control library steps, but reported stale cross-module implementation
+maps and six Rustfmt differences in the new admission files. Those exact format
+differences are corrected in the follow-up source commit. Native worker/Agentd,
+Linux and full Clippy success were not observed at that checkpoint. Actual
+formatting, compilation, tests and lint must be read from each final candidate's
+CI artifacts, never inherited from that diagnostic checkpoint.
 Queued/running workflows and tests merely present in source are not completion.
 
 ## Review and remaining sequence
@@ -130,6 +164,10 @@ retained. Review the resource state transitions separately from the extraction.
 Before merge, require current source and merge receipts, resolve the inherited
 owner/lifecycle and derived-projection failures rather than masking them, inspect
 the default/experimental feature graph, and run the registered ownership and
-Bazel checks. Next close the verified local authority/input boundary and existing
-owner-journal integration; then qualify actual physical devices and provider
-resolution. No source commit in this branch grants production or release rights.
+Bazel checks. Next compose the verified local preparation with the existing
+owner-journal dispatch/recovery protocol and an async physical driver, then
+qualify actual devices and provider resolution. Non-ancestor historical map
+anchors and cross-owner source drift are repository-controlled baseline blockers,
+not hardware limitations; refreshing this module's source observation alone
+cannot close the repository-wide check. No source commit in this branch grants
+production or release rights.
