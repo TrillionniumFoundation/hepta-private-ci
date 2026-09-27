@@ -1,10 +1,10 @@
 //! Crash-bounded durable owner store for planner decisions and execution evidence.
 //!
-//! V1 deliberately uses a Unix durability profile: one exclusive writer, a
-//! versioned self-validating image, temporary-file write, file synchronization,
-//! atomic rename and parent-directory synchronization.  A directory-sync
-//! failure poisons the open handle because the rename may already be visible.
-//! Reopening reconciles to the last complete validated image.
+//! V1 uses an owner-controlled Unix directory and atomic whole-image replacement,
+//! not append-log tail recovery. Every image and read is size-bounded before
+//! allocation. Directory-sync uncertainty poisons the writer; reopen
+//! selects the last complete, validated visible image. External anchor digests
+//! are references, not cryptographic verification or an anti-rollback witness.
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
@@ -154,8 +154,8 @@ pub enum PlannerStoreError {
     CorruptCheckpoint,
     Journal(PlannerJournalError),
     Io(io::ErrorKind),
-    /// A rename may have committed while parent-directory durability could not
-    /// be acknowledged.  Reopen before any authoritative read or mutation.
+    /// An operation may have become visible without acknowledged durability.
+    /// Reopen before any authoritative read or mutation.
     Indeterminate,
 }
 
@@ -191,8 +191,18 @@ struct FsPlannerPersistenceV1;
 
 impl PlannerPersistenceV1 for FsPlannerPersistenceV1 {
     fn write_temp(&self, path: &Path, bytes: &[u8]) -> io::Result<()> {
-        let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
-        file.write_all(bytes)
+        let mut options = OpenOptions::new();
+        options.write(true).create_new(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let mut file = options.open(path)?;
+        file.write_all(bytes)?;
+        // Sync the same descriptor that received the bytes. The separate hook
+        // remains a fault-injection boundary and an additional durability check.
+        file.sync_all()
     }
 
     fn sync_temp(&self, path: &Path) -> io::Result<()> {
@@ -251,10 +261,37 @@ impl PlannerStoreImageV1 {
         Digest32::of_bytes(&bytes)
     }
 
-    fn export_bytes(&self) -> Result<Vec<u8>, PlannerStoreError> {
+    fn encoded_len(&self) -> Result<usize, PlannerStoreError> {
         if self.bodies.len() > MAX_BODIES {
             return Err(PlannerStoreError::BodyLimitExceeded);
         }
+        // Header, bounded journal and image checksum. Check the running sum
+        // before building a body-sized buffer, including optional fields.
+        let mut len = 8 + 4 + 4 + 4 + 1 + self.journal.export_bytes().len() + 32;
+        if self.checkpoint.is_some() {
+            len += 64;
+        }
+        for body in self.bodies.values() {
+            if body.bytes.is_empty() {
+                return Err(PlannerStoreError::EmptyBody);
+            }
+            if body.bytes.len() > MAX_BODY_BYTES {
+                return Err(PlannerStoreError::BodyTooLarge);
+            }
+            let overhead = 1 + 32 + 32 + 1 + 4 + usize::from(body.parent_digest.is_some()) * 32;
+            len = len
+                .checked_add(overhead)
+                .and_then(|value| value.checked_add(body.bytes.len()))
+                .ok_or(PlannerStoreError::StoreTooLarge)?;
+            if len > MAX_STORE_BYTES {
+                return Err(PlannerStoreError::StoreTooLarge);
+            }
+        }
+        Ok(len)
+    }
+
+    fn export_bytes(&self) -> Result<Vec<u8>, PlannerStoreError> {
+        let encoded_len = self.encoded_len()?;
         if let Some(checkpoint) = self.checkpoint {
             if checkpoint.content_root_digest != self.content_root_digest()
                 || checkpoint.external_anchor_digest.is_zero()
@@ -262,9 +299,8 @@ impl PlannerStoreImageV1 {
                 return Err(PlannerStoreError::CorruptCheckpoint);
             }
         }
-
         let journal = self.journal.export_bytes();
-        let mut bytes = Vec::new();
+        let mut bytes = Vec::with_capacity(encoded_len);
         bytes.extend_from_slice(STORE_MAGIC);
         bytes.extend_from_slice(&STORE_SCHEMA_VERSION.to_be_bytes());
         push_u32(&mut bytes, journal.len());
@@ -288,8 +324,8 @@ impl PlannerStoreImageV1 {
         }
         let digest = image_digest(&bytes);
         bytes.extend_from_slice(digest.as_array());
-        if bytes.len() > MAX_STORE_BYTES {
-            return Err(PlannerStoreError::StoreTooLarge);
+        if bytes.len() != encoded_len {
+            return Err(PlannerStoreError::CorruptBody);
         }
         Ok(bytes)
     }
@@ -312,7 +348,6 @@ impl PlannerStoreImageV1 {
         if image_digest(payload) != expected_digest {
             return Err(PlannerStoreError::CorruptImageDigest);
         }
-
         let mut offset = 0;
         if read_exact(bytes, &mut offset, STORE_MAGIC.len())? != STORE_MAGIC {
             return Err(PlannerStoreError::CorruptHeader);
@@ -335,7 +370,6 @@ impl PlannerStoreImageV1 {
         };
         let journal_bytes = read_exact(bytes, &mut offset, journal_len)?;
         let journal = PlannerJournalV1::reopen(journal_bytes)?;
-
         let mut bodies = BTreeMap::new();
         for _ in 0..body_count {
             let kind = PlannerBodyKindV1::from_tag(read_u8(bytes, &mut offset)?)?;
@@ -378,7 +412,6 @@ impl PlannerStoreImageV1 {
                 return Err(PlannerStoreError::BodyConflict);
             }
         }
-
         let checkpoint = if has_checkpoint {
             Some(PlannerCheckpointV1 {
                 content_root_digest: read_digest(bytes, &mut offset)?,
@@ -390,7 +423,6 @@ impl PlannerStoreImageV1 {
         if offset != payload_len {
             return Err(PlannerStoreError::Truncated);
         }
-
         let image = Self {
             journal,
             bodies,
@@ -410,13 +442,20 @@ impl PlannerStoreImageV1 {
     fn validate_parent_links(&self) -> Result<(), PlannerStoreError> {
         for body in self.bodies.values() {
             if let Some(parent) = body.parent_digest {
-                let journal_knows_parent =
-                    self.journal.entries().iter().any(|entry| {
-                        entry.identity_digest == parent || entry.payload_digest == parent
-                    });
+                let journal_knows_parent = self.journal.entries().iter().any(|entry| {
+                    entry.identity_digest == parent || entry.payload_digest == parent
+                });
                 if !self.bodies.contains_key(&parent) && !journal_knows_parent {
                     return Err(PlannerStoreError::MissingParent);
                 }
+            }
+            let mut visited = BTreeSet::new();
+            let mut current = Some(body.semantic_digest);
+            while let Some(digest) = current {
+                if !visited.insert(digest) {
+                    return Err(PlannerStoreError::CorruptBody);
+                }
+                current = self.bodies.get(&digest).and_then(|value| value.parent_digest);
             }
         }
         Ok(())
@@ -469,8 +508,9 @@ impl PlannerStoreImageV1 {
     }
 }
 
-/// Exclusive owner-local writer for planner decisions and their exact evidence
-/// bodies.  The store itself grants no execution authority.
+/// Exclusive owner-local writer. Exact bytes are preserved, but their semantic
+/// meaning and any external signatures must be verified by the owning adapter.
+/// The root and its ancestors must not be writable by untrusted principals.
 pub struct PlannerStoreV1 {
     root: PathBuf,
     lock: File,
@@ -480,8 +520,6 @@ pub struct PlannerStoreV1 {
 }
 
 impl PlannerStoreV1 {
-    /// Open an existing owner-authorized directory or initialize its V1 image.
-    /// The directory must already exist; this API never widens filesystem scope.
     pub fn open(root: impl AsRef<Path>) -> Result<Self, PlannerStoreError> {
         Self::open_with_persistence(root, Arc::new(FsPlannerPersistenceV1))
     }
@@ -501,15 +539,16 @@ impl PlannerStoreV1 {
         if !metadata.is_dir() {
             return Err(PlannerStoreError::NotDirectory);
         }
-
         let lock_path = root.join(LOCK_FILE);
         reject_existing_symlink(&lock_path)?;
-        let lock = OpenOptions::new()
-            .read(true)
-            .write(true)
-            .create(true)
-            .truncate(false)
-            .open(&lock_path)?;
+        let mut options = OpenOptions::new();
+        options.read(true).write(true).create(true).truncate(false);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let lock = options.open(&lock_path)?;
         if !lock.metadata()?.is_file() {
             return Err(PlannerStoreError::NotRegular);
         }
@@ -518,26 +557,24 @@ impl PlannerStoreV1 {
             Err(TryLockError::WouldBlock) => return Err(PlannerStoreError::Busy),
             Err(TryLockError::Error(error)) => return Err(error.into()),
         }
-
         let temp_path = root.join(TEMP_FILE);
         match fs::remove_file(&temp_path) {
             Ok(()) => {}
             Err(error) if error.kind() == io::ErrorKind::NotFound => {}
             Err(error) => return Err(error.into()),
         }
-
         let store_path = root.join(STORE_FILE);
         reject_existing_symlink(&store_path)?;
         let image = match File::open(&store_path) {
             Ok(mut file) => {
-                if !file.metadata()?.is_file() {
+                let metadata = file.metadata()?;
+                if !metadata.is_file() {
                     return Err(PlannerStoreError::NotRegular);
                 }
-                let mut bytes = Vec::new();
-                file.read_to_end(&mut bytes)?;
-                if bytes.len() > MAX_STORE_BYTES {
+                if metadata.len() > MAX_STORE_BYTES as u64 {
                     return Err(PlannerStoreError::StoreTooLarge);
                 }
+                let bytes = read_bounded_image(&mut file)?;
                 if bytes.starts_with(LEGACY_JOURNAL_MAGIC) {
                     let migrated = PlannerStoreImageV1 {
                         journal: PlannerJournalV1::reopen(&bytes)?,
@@ -557,7 +594,6 @@ impl PlannerStoreV1 {
             }
             Err(error) => return Err(error.into()),
         };
-
         Ok(Self {
             root,
             lock,
@@ -585,6 +621,15 @@ impl PlannerStoreV1 {
         Ok(self.image.bodies.get(&semantic_digest))
     }
 
+    /// Bounded discovery of durable intent/evidence without trusting caller
+    /// supplied pending work. Returned bodies remain owned by this store.
+    pub fn evidence_bodies(
+        &self,
+    ) -> Result<impl Iterator<Item = &StoredPlannerBodyV1>, PlannerStoreError> {
+        self.ensure_authoritative()?;
+        Ok(self.image.bodies.values())
+    }
+
     pub fn checkpoint(&self) -> Result<Option<PlannerCheckpointV1>, PlannerStoreError> {
         self.ensure_authoritative()?;
         Ok(self.image.checkpoint)
@@ -595,9 +640,8 @@ impl PlannerStoreV1 {
         Ok(self.image.journal.selected_plan_digest())
     }
 
-    /// Reports whether every snapshot and decision record has an exact body.
-    /// Legacy journal migration remains readable but returns false until bodies
-    /// are supplied by the authoritative owner.
+    /// Legacy journal migration lacks canonical bodies until the owner supplies
+    /// them. Coverage proves storage presence, not semantic decoding.
     pub fn has_complete_body_coverage(&self) -> Result<bool, PlannerStoreError> {
         self.ensure_authoritative()?;
         Ok(self.image.journal.entries().iter().all(|entry| {
@@ -651,10 +695,7 @@ impl PlannerStoreV1 {
         parent_digest: Digest32,
         canonical_body: &[u8],
     ) -> Result<StoredPlannerBodyV1, PlannerStoreError> {
-        if matches!(
-            kind,
-            PlannerBodyKindV1::Snapshot | PlannerBodyKindV1::Decision
-        ) {
+        if matches!(kind, PlannerBodyKindV1::Snapshot | PlannerBodyKindV1::Decision) {
             return Err(PlannerStoreError::CorruptBody);
         }
         self.commit(|image| {
@@ -668,9 +709,7 @@ impl PlannerStoreV1 {
         receipt: &FeasiblePlanReceiptV1,
     ) -> Result<PlannerJournalEntryV1, PlannerStoreError> {
         self.commit(|image| {
-            Ok(image
-                .journal
-                .select_plan(operation_identity_digest, receipt)?)
+            Ok(image.journal.select_plan(operation_identity_digest, receipt)?)
         })
     }
 
@@ -680,15 +719,13 @@ impl PlannerStoreV1 {
         target_digest: Digest32,
     ) -> Result<PlannerJournalEntryV1, PlannerStoreError> {
         self.commit(|image| {
-            Ok(image
-                .journal
-                .revoke(revocation_identity_digest, target_digest)?)
+            Ok(image.journal.revoke(revocation_identity_digest, target_digest)?)
         })
     }
 
-    /// Persist an externally issued evidence receipt over the current content
-    /// root.  The anchor may be a signature receipt, transparency-log entry or
-    /// another independently governed immutable evidence identity.
+    /// Retain an external receipt reference. The caller must independently
+    /// verify that receipt and a non-regressing witness before using it as an
+    /// anti-rollback trust anchor. Nonzero digest alone proves neither property.
     pub fn anchor_checkpoint(
         &mut self,
         external_anchor_digest: Digest32,
@@ -707,9 +744,8 @@ impl PlannerStoreV1 {
         Ok(checkpoint)
     }
 
-    /// Bounded retention compaction. Snapshot and decision bodies are always
-    /// retained. Other evidence may be pruned only with an explicit external
-    /// archive anchor and an allow-set of semantic digests to keep online.
+    /// Retain execution identity roots even when observations are archived.
+    /// Removing request or grant evidence must never permit duplicate dispatch.
     pub fn compact_evidence(
         &mut self,
         retain_online: &BTreeSet<Digest32>,
@@ -724,7 +760,10 @@ impl PlannerStoreV1 {
         candidate.bodies.retain(|semantic, body| {
             matches!(
                 body.kind,
-                PlannerBodyKindV1::Snapshot | PlannerBodyKindV1::Decision
+                PlannerBodyKindV1::Snapshot
+                    | PlannerBodyKindV1::Decision
+                    | PlannerBodyKindV1::AuthorityRequest
+                    | PlannerBodyKindV1::AuthorityGrant
             ) || retain_online.contains(semantic)
         });
         candidate.validate_parent_links()?;
@@ -737,16 +776,13 @@ impl PlannerStoreV1 {
         Ok(removed)
     }
 
-    /// Complete self-validating backup image. Transport encryption, remote
-    /// retention and external acknowledgement remain the caller's authority.
     pub fn backup_bytes(&self) -> Result<Vec<u8>, PlannerStoreError> {
         self.ensure_authoritative()?;
         self.image.export_bytes()
     }
 
-    /// Restore only a monotonic extension of the current journal and body set.
-    /// This prevents an older valid backup from deleting a later revocation or
-    /// replacing an already-bound canonical body.
+    /// Refuse regression relative to this open image. Restoring the whole
+    /// directory from an old backup additionally needs an external witness.
     pub fn restore_backup(&mut self, bytes: &[u8]) -> Result<(), PlannerStoreError> {
         self.ensure_authoritative()?;
         let restored = PlannerStoreImageV1::reopen(bytes)?;
@@ -818,6 +854,17 @@ fn reject_existing_symlink(path: &Path) -> Result<(), PlannerStoreError> {
     }
 }
 
+fn read_bounded_image(reader: &mut impl Read) -> Result<Vec<u8>, PlannerStoreError> {
+    // Metadata is only a preflight: a file may grow while being read. Take one
+    // sentinel byte beyond the cap so growth cannot trigger unbounded reading.
+    let mut bytes = Vec::new();
+    reader.take(MAX_STORE_BYTES as u64 + 1).read_to_end(&mut bytes)?;
+    if bytes.len() > MAX_STORE_BYTES {
+        return Err(PlannerStoreError::StoreTooLarge);
+    }
+    Ok(bytes)
+}
+
 fn persist_image(
     root: &Path,
     image: &PlannerStoreImageV1,
@@ -829,7 +876,6 @@ fn persist_image(
     let bytes = image.export_bytes()?;
     let temp_path = root.join(TEMP_FILE);
     let store_path = root.join(STORE_FILE);
-
     match persistence.write_temp(&temp_path, &bytes) {
         Ok(()) => {}
         Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
@@ -877,12 +923,8 @@ fn read_exact<'a>(
     offset: &mut usize,
     len: usize,
 ) -> Result<&'a [u8], PlannerStoreError> {
-    let end = (*offset)
-        .checked_add(len)
-        .ok_or(PlannerStoreError::Truncated)?;
-    let value = bytes
-        .get(*offset..end)
-        .ok_or(PlannerStoreError::Truncated)?;
+    let end = (*offset).checked_add(len).ok_or(PlannerStoreError::Truncated)?;
+    let value = bytes.get(*offset..end).ok_or(PlannerStoreError::Truncated)?;
     *offset = end;
     Ok(value)
 }
@@ -910,14 +952,15 @@ fn read_digest(bytes: &[u8], offset: &mut usize) -> Result<Digest32, PlannerStor
 
 fn read_digest_at(bytes: &[u8], offset: usize) -> Result<Digest32, PlannerStoreError> {
     let end = offset.checked_add(32).ok_or(PlannerStoreError::Truncated)?;
-    let array: [u8; 32] = bytes
-        .get(offset..end)
-        .ok_or(PlannerStoreError::Truncated)?
-        .try_into()
-        .map_err(|_| PlannerStoreError::Truncated)?;
+    let array: [u8; 32] = bytes.get(offset..end).ok_or(PlannerStoreError::Truncated)?
+        .try_into().map_err(|_| PlannerStoreError::Truncated)?;
     Ok(Digest32::from_array(array))
 }
 
 #[cfg(test)]
 #[path = "planner_store_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "planner_store_recovery_tests.rs"]
+mod recovery_tests;

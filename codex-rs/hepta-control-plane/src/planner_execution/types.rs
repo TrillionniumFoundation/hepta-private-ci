@@ -26,6 +26,9 @@ impl AuthorityDispositionV1 {
     }
 }
 
+/// Owner-port projection. A signature digest is an evidence reference, not a
+/// cryptographic signature. Production adapters must authenticate the actual
+/// signed body, current issuer, scope and revocation state independently.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SignedAuthorityObservationV1 {
     pub request_digest: Digest32,
@@ -36,6 +39,8 @@ pub struct SignedAuthorityObservationV1 {
     pub canonical_body: Vec<u8>,
 }
 
+/// A trusted owner adapter supplies this projection after verification; public
+/// construction and nonzero digests do not themselves establish authority.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VerifiedExecutionGrantV1 {
     pub request_digest: Digest32,
@@ -92,6 +97,8 @@ pub struct SignedTerminalObservationV1 {
     pub canonical_body: Vec<u8>,
 }
 
+/// A named executor must independently revalidate current authority and final
+/// payload at its actual effect boundary. This trait is not a sandbox.
 pub trait PlannerEffectExecutorV1 {
     fn execute(
         &mut self,
@@ -145,6 +152,8 @@ pub struct SignedReconciliationReceiptV1 {
     pub canonical_body: Vec<u8>,
 }
 
+/// Read-only terminal observation. Reconciliation must not replay the effect;
+/// it remains available after the original execution grant expires.
 pub trait PlannerTerminalReconcilerV1 {
     fn reconcile(
         &mut self,
@@ -178,6 +187,7 @@ pub struct PlannerExecutionBatchV1 {
     pub request_set_digest: Digest32,
     pub outcomes: Vec<PlannerRequestOutcomeV1>,
     pub complete: bool,
+    /// An interrupted batch has attempted effects, including unknown outcomes.
     pub partial_execution: bool,
 }
 
@@ -186,6 +196,7 @@ pub enum PlannerExecutionError {
     EmptyRequestSet,
     RequestLimitExceeded,
     RequestExpired,
+    RecoveryRequired { request_digest: Digest32 },
     DecisionBodyMissing,
     AuthorityViolation,
     EmptyEvidence(&'static str),

@@ -15,7 +15,7 @@ fn granted_request_reaches_executor_and_persists_complete_evidence_chain() {
         executor,
         reconciler,
     );
-    let batch = must(coordinator.execute_request_set(&requests, 1_200));
+    let batch = must(coordinator.execute_request_set_with_clock(&requests, || Ok(1_200)));
     assert!(batch.complete);
     assert!(!batch.partial_execution);
     assert!(matches!(
@@ -44,7 +44,7 @@ fn denial_is_terminal_and_executor_is_never_called() {
             disposition: ReconciliationDispositionV1::Failed,
         },
     );
-    let batch = must(coordinator.execute_request_set(&requests, 1_200));
+    let batch = must(coordinator.execute_request_set_with_clock(&requests, || Ok(1_200)));
     assert!(!batch.complete);
     assert!(matches!(
         batch.outcomes.as_slice(),
@@ -61,19 +61,12 @@ fn final_payload_drift_is_rejected_before_executor_dispatch() {
     let mut store = open_store_with_decision(&root, &receipt);
     let mut coordinator = PlannerExecutionCoordinatorV1::new(
         &mut store,
-        GrantAuthority {
-            calls: 0,
-            tamper_payload: true,
-        },
+        GrantAuthority { calls: 0, tamper_payload: true },
         FixtureExecutor::new(vec![TerminalDispositionV1::Succeeded]),
-        FixtureReconciler {
-            calls: 0,
-            disposition: ReconciliationDispositionV1::Failed,
-        },
+        FixtureReconciler { calls: 0, disposition: ReconciliationDispositionV1::Failed },
     );
     assert_eq!(
-        coordinator
-            .execute_request_set(&requests, 1_200)
+        coordinator.execute_request_set_with_clock(&requests, || Ok(1_200))
             .expect_err("payload drift must fail closed"),
         PlannerExecutionError::GrantBindingMismatch
     );
@@ -90,21 +83,15 @@ fn indeterminate_effect_requires_signed_reconciliation() {
         &mut store,
         GrantAuthority::default(),
         FixtureExecutor::new(vec![TerminalDispositionV1::Indeterminate]),
-        FixtureReconciler {
-            calls: 0,
-            disposition: ReconciliationDispositionV1::Succeeded,
-        },
+        FixtureReconciler { calls: 0, disposition: ReconciliationDispositionV1::Succeeded },
     );
-    let batch = must(coordinator.execute_request_set(&requests, 1_200));
+    let batch = must(coordinator.execute_request_set_with_clock(&requests, || Ok(1_200)));
     let pending = match batch.outcomes.as_slice() {
         [PlannerRequestOutcomeV1::Indeterminate(value)] => value.clone(),
         other => panic!("unexpected outcomes: {other:?}"),
     };
     let reconciled = must(coordinator.reconcile(&pending, 1_300));
-    assert_eq!(
-        reconciled.disposition,
-        ReconciliationDispositionV1::Succeeded
-    );
+    assert_eq!(reconciled.disposition, ReconciliationDispositionV1::Succeeded);
     let (_, _, reconciler) = coordinator.into_ports();
     assert_eq!(reconciler.calls, 1);
     assert!(must(store.body(reconciled.reconciliation_digest)).is_some());
@@ -122,12 +109,9 @@ fn batch_stops_after_indeterminate_and_reports_prior_partial_execution() {
             TerminalDispositionV1::Succeeded,
             TerminalDispositionV1::Indeterminate,
         ]),
-        FixtureReconciler {
-            calls: 0,
-            disposition: ReconciliationDispositionV1::StillIndeterminate,
-        },
+        FixtureReconciler { calls: 0, disposition: ReconciliationDispositionV1::StillIndeterminate },
     );
-    let batch = must(coordinator.execute_request_set(&requests, 1_200));
+    let batch = must(coordinator.execute_request_set_with_clock(&requests, || Ok(1_200)));
     assert!(!batch.complete);
     assert!(batch.partial_execution);
     assert_eq!(batch.outcomes.len(), 2);
@@ -142,12 +126,9 @@ fn authority_indeterminate_never_dispatches_effect() {
         &mut store,
         IndeterminateAuthority,
         FixtureExecutor::new(vec![TerminalDispositionV1::Succeeded]),
-        FixtureReconciler {
-            calls: 0,
-            disposition: ReconciliationDispositionV1::Failed,
-        },
+        FixtureReconciler { calls: 0, disposition: ReconciliationDispositionV1::Failed },
     );
-    let batch = must(coordinator.execute_request_set(&requests, 1_200));
+    let batch = must(coordinator.execute_request_set_with_clock(&requests, || Ok(1_200)));
     assert!(matches!(
         batch.outcomes.as_slice(),
         [PlannerRequestOutcomeV1::Indeterminate(PlannerIndeterminateV1 {
