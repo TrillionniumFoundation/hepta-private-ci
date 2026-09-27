@@ -37,6 +37,9 @@ pub use evaluation::intelligence_evaluation_binding_payload_v1;
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
+use std::fs::OpenOptions;
+use std::io::Read;
+use std::path::Path;
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::sync::Arc;
@@ -129,19 +132,25 @@ pub struct IntelligenceAuthorityVerifierV1 {
     pub verifying_key: [u8; 32],
 }
 
-const MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES: u64 = 64 * 1024;
+const MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES: usize = 64 * 1024;
 
 struct FileBackedFreshnessOracleV1 {
     path: PathBuf,
     verifier: IntelligenceAuthorityVerifierV1,
+    rollback: Option<Arc<crate::IntelligenceAuthorityRollbackGuardV1>>,
     telemetry: Option<Arc<crate::AgentdIntelligenceTelemetryV1>>,
 }
 
 impl FileBackedFreshnessOracleV1 {
-    fn new(path: PathBuf, verifier: IntelligenceAuthorityVerifierV1) -> Self {
+    fn new(
+        path: PathBuf,
+        verifier: IntelligenceAuthorityVerifierV1,
+        rollback: Option<Arc<crate::IntelligenceAuthorityRollbackGuardV1>>,
+    ) -> Self {
         Self {
             path,
             verifier,
+            rollback,
             telemetry: None,
         }
     }
@@ -149,11 +158,13 @@ impl FileBackedFreshnessOracleV1 {
     fn new_observed(
         path: PathBuf,
         verifier: IntelligenceAuthorityVerifierV1,
+        rollback: Option<Arc<crate::IntelligenceAuthorityRollbackGuardV1>>,
         telemetry: Arc<crate::AgentdIntelligenceTelemetryV1>,
     ) -> Self {
         Self {
             path,
             verifier,
+            rollback,
             telemetry: Some(telemetry),
         }
     }
@@ -162,16 +173,7 @@ impl FileBackedFreshnessOracleV1 {
         &self,
         requested: &StableId,
     ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
-        validate_authority_file_path(&self.path, requested)?;
-        let metadata = std::fs::metadata(&self.path)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        if metadata.len() == 0 || metadata.len() > MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES {
-            return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-                requested.clone(),
-            ));
-        }
-        let bytes = std::fs::read(&self.path)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+        let bytes = read_authority_file_bounded(&self.path, requested)?;
         let file: IntelligenceAuthorityFileV1 = serde_json::from_slice(&bytes)
             .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
         verify_authority_file(&file, &self.verifier, requested)?;
@@ -179,6 +181,13 @@ impl FileBackedFreshnessOracleV1 {
             return Err(CanonicalIntelligenceError::FreshnessUnavailable(
                 requested.clone(),
             ));
+        }
+        if let Some(rollback) = self.rollback.as_ref() {
+            let manifest_digest = intelligence_authority_manifest_digest_v1(&file)
+                .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+            rollback
+                .admit(file.authority_epoch, manifest_digest)
+                .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
         }
         if let Some(telemetry) = self.telemetry.as_ref() {
             telemetry.record_authority_manifest(file.authority_epoch);
@@ -651,6 +660,7 @@ pub enum AgentdIntelligenceProductError {
     RunIdentityMismatch,
     Clock,
     InvalidAuthorityVerifier,
+    InvalidAuthorityRollback,
     InvalidWorkerPolicy,
     Run(crate::AgentRunError),
 }
@@ -665,10 +675,11 @@ impl StdError for AgentdIntelligenceProductError {}
 const MAX_CANONICAL_OWNER_WORKERS: usize = 4;
 
 pub struct AgentdIntelligenceProductRunnerV1 {
-    worker_slots: std::sync::Arc<tokio::sync::Semaphore>,
+    worker_slots: Arc<tokio::sync::Semaphore>,
     authority_file: PathBuf,
     authority_verifier: IntelligenceAuthorityVerifierV1,
-    evaluation_trust: Option<std::sync::Arc<codex_hepta_learning_ledger::ActivatedLearningTrustV1>>,
+    authority_rollback: Option<Arc<crate::IntelligenceAuthorityRollbackGuardV1>>,
+    evaluation_trust: Option<Arc<codex_hepta_learning_ledger::ActivatedLearningTrustV1>>,
     telemetry: Arc<crate::AgentdIntelligenceTelemetryV1>,
     hard_timeout_process_exit_grace: Option<Duration>,
 }
@@ -687,6 +698,18 @@ fn authority_signing_payload(
         &file.owners,
         &file.signer_id,
     ))
+}
+
+/// Exact identity of one signed manifest, including the signature bytes. This
+/// digest can initialize an independently retained rollback guard; signature
+/// verification still happens at every use before the guard is advanced.
+pub fn intelligence_authority_manifest_digest_v1(
+    file: &IntelligenceAuthorityFileV1,
+) -> Result<Digest32, serde_json::Error> {
+    let mut bytes = b"hepta.agentd.intelligence-authority-manifest.v1\0".to_vec();
+    bytes.extend_from_slice(&authority_signing_payload(file)?);
+    bytes.extend_from_slice(&file.signature);
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn verify_authority_file(
@@ -714,39 +737,48 @@ fn verify_authority_file(
         .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))
 }
 
-#[cfg(unix)]
-fn validate_authority_file_path(
-    path: &std::path::Path,
+fn read_authority_file_bounded(
+    path: &Path,
     requested: &StableId,
-) -> Result<(), CanonicalIntelligenceError> {
-    use std::os::unix::fs::PermissionsExt;
-
-    let metadata = std::fs::symlink_metadata(path)
-        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-    if metadata.file_type().is_symlink()
-        || !metadata.is_file()
-        || metadata.permissions().mode() & 0o022 != 0
+) -> Result<Vec<u8>, CanonicalIntelligenceError> {
+    let unavailable = || CanonicalIntelligenceError::FreshnessUnavailable(requested.clone());
+    let path_metadata = std::fs::symlink_metadata(path).map_err(|_| unavailable())?;
+    if path_metadata.file_type().is_symlink() || !path_metadata.is_file() {
+        return Err(unavailable());
+    }
+    let file = OpenOptions::new()
+        .read(true)
+        .open(path)
+        .map_err(|_| unavailable())?;
+    let opened_metadata = file.metadata().map_err(|_| unavailable())?;
+    if !opened_metadata.is_file()
+        || opened_metadata.len() == 0
+        || opened_metadata.len() > MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES as u64
     {
-        return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-            requested.clone(),
-        ));
+        return Err(unavailable());
     }
-    Ok(())
-}
-
-#[cfg(not(unix))]
-fn validate_authority_file_path(
-    path: &std::path::Path,
-    requested: &StableId,
-) -> Result<(), CanonicalIntelligenceError> {
-    let metadata = std::fs::metadata(path)
-        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-    if !metadata.is_file() {
-        return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-            requested.clone(),
-        ));
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        use std::os::unix::fs::PermissionsExt;
+        if path_metadata.dev() != opened_metadata.dev()
+            || path_metadata.ino() != opened_metadata.ino()
+            || opened_metadata.permissions().mode() & 0o022 != 0
+        {
+            return Err(unavailable());
+        }
     }
-    Ok(())
+    let mut bytes = Vec::with_capacity(
+        usize::try_from(opened_metadata.len())
+            .unwrap_or(MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES),
+    );
+    file.take((MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES + 1) as u64)
+        .read_to_end(&mut bytes)
+        .map_err(|_| unavailable())?;
+    if bytes.is_empty() || bytes.len() > MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES {
+        return Err(unavailable());
+    }
+    Ok(bytes)
 }
 
 fn wall_clock_ms() -> Result<u64, AgentdIntelligenceProductError> {
