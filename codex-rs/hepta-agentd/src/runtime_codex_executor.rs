@@ -1,22 +1,18 @@
 //! Agentd-owned process adapter for the existing `runtime.codex` worker.
 //!
 //! The adapter deliberately does not implement another model runtime. It owns
-//! only exact process invocation, an immutable operation manifest, bounded I/O,
-//! and restart reconciliation. `hepta-infer-worker` remains the physical App
-//! Server caller and therefore retains final-use authorization, dispatch
-//! fencing, terminal observation, and its native no-replay journal.
-//!
-//! A normal invocation is permitted only while its durable operation is still
-//! unfenced. Every dispatch-fenced duplicate, crash recovery, or unknown
-//! acknowledgement is routed through `--resume`; this module never recreates a
-//! physical `turn/start` after the point at which an earlier process might have
-//! crossed the effect boundary.
+//! exact process invocation, immutable operation identities, bounded I/O,
+//! restart reconciliation and terminal archive publication. `hepta-infer-worker`
+//! remains the physical App Server caller and final-use authority consumer.
 
+use std::collections::BTreeMap;
 use std::fmt;
 use std::future::Future;
 use std::path::Path;
 use std::path::PathBuf;
 use std::pin::Pin;
+use std::sync::Arc;
+use std::sync::Weak;
 use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
@@ -25,16 +21,21 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
-use tokio::sync::Mutex;
+use tokio::sync::Mutex as AsyncMutex;
+use tokio::sync::RwLock;
+use tokio::sync::Semaphore;
 use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
 
+#[path = "runtime_codex_archive.rs"]
+mod archive;
 #[path = "runtime_codex_executor_persistence.rs"]
 mod persistence;
 #[path = "runtime_codex_executor_process.rs"]
 mod process;
+pub use process::RuntimeCodexSupervisorStatusV1;
 
 const JOB_SCHEMA_VERSION: u32 = 1;
 const MAX_EXECUTABLE_BYTES: u64 = 2 * 1024 * 1024 * 1024;
@@ -281,6 +282,9 @@ pub struct RuntimeCodexReconcileReportV1 {
     pub already_terminal: usize,
     pub reconciled_terminal: usize,
     pub unresolved: usize,
+    pub unresolved_pre_dispatch: usize,
+    pub unresolved_post_dispatch: usize,
+    pub archived_terminal: usize,
 }
 
 pub trait RuntimeCodexExecutorV1: Send + Sync {
@@ -298,20 +302,21 @@ pub trait RuntimeCodexExecutorV1: Send + Sync {
     ) -> RuntimeCodexReconcileFuture<'a>;
 }
 
-/// Exact process configuration selected by the trusted host. Both external
-/// files are digest-pinned and re-observed immediately before every spawn.
+/// Exact process configuration selected by the trusted host.
 pub struct ProcessRuntimeCodexExecutorV1 {
     worker_executable: PathBuf,
     worker_artifact_digest: Digest32,
     final_use_authority_config: PathBuf,
     final_use_authority_digest: Digest32,
     journal_root: PathBuf,
+    archive_root: PathBuf,
     maximum_in_flight: usize,
     interrupt_grace: Duration,
-    // One Agentd owner is the only process permitted to construct this adapter.
-    // The async mutex serializes exact-run duplicate calls and startup recovery
-    // so no same-process task can race a fresh dispatch against reconciliation.
-    operation_lock: Mutex<()>,
+    /// Startup/periodic reconciliation excludes fresh execution. Once recovery
+    /// has completed, unrelated run identities may execute concurrently.
+    recovery_gate: RwLock<()>,
+    execution_permits: Arc<Semaphore>,
+    operation_locks: std::sync::Mutex<BTreeMap<String, Weak<AsyncMutex<()>>>>,
 }
 
 impl fmt::Debug for ProcessRuntimeCodexExecutorV1 {
@@ -326,6 +331,7 @@ impl fmt::Debug for ProcessRuntimeCodexExecutorV1 {
             )
             .field("final_use_authority_digest", &self.final_use_authority_digest)
             .field("journal_root", &self.journal_root)
+            .field("archive_root", &self.archive_root)
             .field("maximum_in_flight", &self.maximum_in_flight)
             .field("interrupt_grace", &self.interrupt_grace)
             .finish_non_exhaustive()
@@ -363,15 +369,20 @@ impl ProcessRuntimeCodexExecutorV1 {
             final_use_authority_digest,
         )?;
         persistence::prepare_private_directory(&journal_root)?;
+        let archive_root = archive::archive_root_for(&journal_root)?;
+        persistence::prepare_private_directory(&archive_root)?;
         Ok(Self {
             worker_executable,
             worker_artifact_digest,
             final_use_authority_config,
             final_use_authority_digest,
             journal_root,
+            archive_root,
             maximum_in_flight,
             interrupt_grace,
-            operation_lock: Mutex::new(()),
+            recovery_gate: RwLock::new(()),
+            execution_permits: Arc::new(Semaphore::new(maximum_in_flight)),
+            operation_locks: std::sync::Mutex::new(BTreeMap::new()),
         })
     }
 
@@ -379,8 +390,33 @@ impl ProcessRuntimeCodexExecutorV1 {
         self.worker_artifact_digest
     }
 
+    pub const fn final_use_authority_digest(&self) -> Digest32 {
+        self.final_use_authority_digest
+    }
+
+    pub const fn maximum_in_flight(&self) -> usize {
+        self.maximum_in_flight
+    }
+
     pub fn journal_root(&self) -> &Path {
         &self.journal_root
+    }
+
+    pub fn archive_root(&self) -> &Path {
+        &self.archive_root
+    }
+
+    fn operation_lock(&self, run_id: &str) -> Result<Arc<AsyncMutex<()>>, AgentdError> {
+        let mut locks = self.operation_locks.lock().map_err(|_| {
+            AgentdError::Protocol("runtime.codex operation-lock registry is poisoned".to_string())
+        })?;
+        locks.retain(|_, lock| lock.strong_count() > 0);
+        if let Some(lock) = locks.get(run_id).and_then(Weak::upgrade) {
+            return Ok(lock);
+        }
+        let lock = Arc::new(AsyncMutex::new(()));
+        locks.insert(run_id.to_string(), Arc::downgrade(&lock));
+        Ok(lock)
     }
 
     async fn execute_inner(
@@ -389,10 +425,26 @@ impl ProcessRuntimeCodexExecutorV1 {
         input: RuntimeCodexExecutionInputV1,
         cancellation: CancellationToken,
     ) -> Result<RuntimeCodexExecutionReceiptV1, AgentdError> {
-        let _operation_guard = self.operation_lock.lock().await;
+        let _recovery_guard = self.recovery_gate.read().await;
+        let _execution_permit = Arc::clone(&self.execution_permits)
+            .acquire_owned()
+            .await
+            .map_err(|_| AgentdError::Protocol("runtime.codex execution is closed".to_string()))?;
+        let operation_lock = self.operation_lock(input.run_id().as_str())?;
+        let _operation_guard = operation_lock.lock().await;
+
         persistence::validate_owner(self, &owner)?;
         persistence::revalidate_external_files(self)?;
         let input_digest = input.digest()?;
+        if let Some(receipt) =
+            archive::read_archived_receipt(self, &owner, &input, input_digest)?
+        {
+            return Ok(RuntimeCodexExecutionReceiptV1 {
+                idempotent: true,
+                ..receipt
+            });
+        }
+        archive::compact_terminal_operations(self, &owner)?;
         let prepared = persistence::prepare_operation(self, &owner, &input, input_digest)?;
         if let Some(receipt) =
             persistence::read_receipt_if_present(&prepared.paths.receipt, &prepared.manifest)?
@@ -424,6 +476,7 @@ impl ProcessRuntimeCodexExecutorV1 {
             &prepared.manifest,
             &receipt,
         )?;
+        archive::compact_terminal_operations(self, &owner)?;
         Ok(receipt)
     }
 
@@ -432,11 +485,15 @@ impl ProcessRuntimeCodexExecutorV1 {
         owner: RuntimeCodexOwnerV1,
         cancellation: CancellationToken,
     ) -> Result<RuntimeCodexReconcileReportV1, AgentdError> {
-        let _operation_guard = self.operation_lock.lock().await;
+        let _recovery_guard = self.recovery_gate.write().await;
         persistence::validate_owner(self, &owner)?;
         persistence::revalidate_external_files(self)?;
+        let archived_terminal = archive::compact_terminal_operations(self, &owner)?;
         let directories = persistence::list_operation_directories(&self.journal_root)?;
-        let mut report = RuntimeCodexReconcileReportV1::default();
+        let mut report = RuntimeCodexReconcileReportV1 {
+            archived_terminal,
+            ..RuntimeCodexReconcileReportV1::default()
+        };
         for directory in directories {
             if cancellation.is_cancelled() {
                 break;
@@ -462,13 +519,15 @@ impl ProcessRuntimeCodexExecutorV1 {
                 continue;
             }
             if !persistence::dispatch_is_fenced(&paths, &manifest)? {
-                // A manifest written before the dispatch fence is not evidence
-                // that physical execution was attempted. Startup lacks the
-                // prompt by design, so it must not invent or launch work. A
-                // matching authenticated caller can later finish first dispatch.
                 report.unresolved = report.unresolved.checked_add(1).ok_or_else(|| {
                     AgentdError::Protocol("recovery counter overflow".to_string())
                 })?;
+                report.unresolved_pre_dispatch = report
+                    .unresolved_pre_dispatch
+                    .checked_add(1)
+                    .ok_or_else(|| {
+                        AgentdError::Protocol("recovery counter overflow".to_string())
+                    })?;
                 continue;
             }
             match process::spawn_worker(
@@ -491,15 +550,22 @@ impl ProcessRuntimeCodexExecutorV1 {
                         })?;
                 }
                 Err(_) => {
-                    // One unresolved historical operation remains durable and
-                    // reconcile-only; it does not authorize a replay or make a
-                    // different operation disappear.
                     report.unresolved = report.unresolved.checked_add(1).ok_or_else(|| {
                         AgentdError::Protocol("recovery counter overflow".to_string())
                     })?;
+                    report.unresolved_post_dispatch = report
+                        .unresolved_post_dispatch
+                        .checked_add(1)
+                        .ok_or_else(|| {
+                            AgentdError::Protocol("recovery counter overflow".to_string())
+                        })?;
                 }
             }
         }
+        report.archived_terminal = report
+            .archived_terminal
+            .checked_add(archive::compact_terminal_operations(self, &owner)?)
+            .ok_or_else(|| AgentdError::Protocol("archive counter overflow".to_string()))?;
         Ok(report)
     }
 }

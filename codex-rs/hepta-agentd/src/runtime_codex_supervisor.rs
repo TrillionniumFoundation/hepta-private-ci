@@ -2,67 +2,64 @@ use std::collections::BTreeMap;
 use std::str::FromStr;
 use std::sync::Arc;
 use std::sync::OnceLock;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
+use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_types::Digest32;
+use tokio::sync::Notify;
+use tokio::sync::Semaphore;
 use tokio::sync::mpsc;
+use tokio::task::JoinSet;
+use tokio::time::Instant;
+use tokio::time::MissedTickBehavior;
+use tokio::time::interval;
+use tokio::time::timeout;
+use tokio::time::timeout_at;
 use tokio_util::sync::CancellationToken;
 
-use super::super::{
-    ProcessRuntimeCodexExecutorV1, RuntimeCodexExecutionInputV1, RuntimeCodexExecutorV1,
-    RuntimeCodexOwnerV1,
-};
-use crate::{
-    AgentdError, AgentdIdentity, PreparedAgentdIntelligenceRunV1, RunPhase, RunReceipt,
-};
+use super::super::ProcessRuntimeCodexExecutorV1;
+use super::super::RuntimeCodexExecutionInputV1;
+use super::super::RuntimeCodexExecutorV1;
+use super::super::RuntimeCodexOwnerV1;
+use crate::AgentdError;
+use crate::AgentdIdentity;
+use crate::PreparedAgentdIntelligenceRunV1;
+use crate::RunPhase;
+use crate::RunReceipt;
+use crate::RuntimeCodexInputProviderV1;
+use crate::RuntimeCodexReconcileReportV1;
 
 #[path = "runtime_codex_supervisor_worker.rs"]
 mod worker;
-use worker::{cancel_queued, run_job};
+use worker::cancel_queued;
+use worker::run_job;
 
 const MAX_QUEUE_CAPACITY: usize = 256;
+const RECOVERY_RETRY_INTERVAL: Duration = Duration::from_secs(5);
+const WORKER_DRAIN_GRACE: Duration = Duration::from_secs(35);
 
-trait InputProvider: Send + Sync {
-    fn build(
-        &self,
-        identity: &AgentdIdentity,
-        record: &RunStartRecordV1,
-        prepared: &PreparedAgentdIntelligenceRunV1,
-        receipt: &RunReceipt,
-    ) -> Result<RuntimeCodexExecutionInputV1, AgentdError>;
-}
-
-impl<F> InputProvider for F
-where
-    F: Fn(
-            &AgentdIdentity,
-            &RunStartRecordV1,
-            &PreparedAgentdIntelligenceRunV1,
-            &RunReceipt,
-        ) -> Result<RuntimeCodexExecutionInputV1, AgentdError>
-        + Send
-        + Sync,
-{
-    fn build(
-        &self,
-        identity: &AgentdIdentity,
-        record: &RunStartRecordV1,
-        prepared: &PreparedAgentdIntelligenceRunV1,
-        receipt: &RunReceipt,
-    ) -> Result<RuntimeCodexExecutionInputV1, AgentdError> {
-        self(identity, record, prepared, receipt)
-    }
+struct ActiveJob {
+    digest: Digest32,
+    cancellation: CancellationToken,
 }
 
 struct Installation {
     executor: Arc<ProcessRuntimeCodexExecutorV1>,
-    provider: Arc<dyn InputProvider>,
+    provider: Arc<dyn RuntimeCodexInputProviderV1>,
     sender: mpsc::Sender<Job>,
     receiver: std::sync::Mutex<Option<mpsc::Receiver<Job>>>,
-    active: std::sync::Mutex<BTreeMap<String, Digest32>>,
-    ready: AtomicBool,
+    active: std::sync::Mutex<BTreeMap<String, ActiveJob>>,
+    started: AtomicBool,
+    degraded: AtomicBool,
+    unresolved: AtomicUsize,
+    unresolved_post_dispatch: AtomicUsize,
     closed: AtomicBool,
+    status_changed: Notify,
 }
 
 struct Job {
@@ -78,26 +75,89 @@ enum DispatchState {
     Terminal,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RuntimeCodexSupervisorStatusV1 {
+    pub started: bool,
+    pub admission_ready: bool,
+    pub degraded: bool,
+    pub unresolved: usize,
+    pub unresolved_post_dispatch: usize,
+}
+
+/// A queue slot reserved before canonical run admission.
+///
+/// The permit is non-cloneable. Dropping it releases capacity without creating
+/// a run or durable process identity.
+pub(crate) struct RuntimeCodexSchedulePermitV1 {
+    installation: Arc<Installation>,
+    permit: Option<mpsc::OwnedPermit<Job>>,
+}
+
 static INSTALLATION: OnceLock<Arc<Installation>> = OnceLock::new();
 
+impl RuntimeCodexSchedulePermitV1 {
+    pub(crate) fn commit(
+        mut self,
+        identity: &AgentdIdentity,
+        record: &RunStartRecordV1,
+        prepared: &PreparedAgentdIntelligenceRunV1,
+        receipt: &RunReceipt,
+    ) -> Result<bool, AgentdError> {
+        if self.installation.closed.load(Ordering::Acquire) {
+            return Err(AgentdError::Protocol(
+                "runtime.codex supervisor closed before queue commit".to_string(),
+            ));
+        }
+        let input = self
+            .installation
+            .provider
+            .build(identity, record, prepared, receipt)?;
+        validate_input(record, prepared, receipt, &input)?;
+        let digest = input.digest()?;
+        let run_id = input.run_id().to_string();
+        let cancellation = CancellationToken::new();
+        {
+            let mut active = self.installation.active.lock().map_err(|_| {
+                AgentdError::Protocol("runtime.codex active registry is poisoned".to_string())
+            })?;
+            match active.get(&run_id) {
+                Some(existing) if existing.digest == digest => return Ok(false),
+                Some(_) => {
+                    return Err(AgentdError::Protocol(
+                        "runtime.codex run identity has queued semantic drift".to_string(),
+                    ));
+                }
+                None => {
+                    active.insert(
+                        run_id,
+                        ActiveJob {
+                            digest,
+                            cancellation: cancellation.clone(),
+                        },
+                    );
+                }
+            }
+        }
+        let permit = self.permit.take().ok_or_else(|| {
+            AgentdError::Protocol("runtime.codex queue permit was already consumed".to_string())
+        })?;
+        drop(permit.send(Job {
+            input,
+            cancellation,
+        }));
+        Ok(true)
+    }
+}
+
 impl ProcessRuntimeCodexExecutorV1 {
-    /// Install the one process-local runtime.codex owner before `agentd::run`.
-    /// The host provider, not request bytes, derives prompt, model and query.
+    /// Install exactly one process-local runtime.codex owner before `agentd::run`.
     pub fn install_agentd_supervisor<F>(
         self: Arc<Self>,
         queue_capacity: usize,
         provider: F,
     ) -> Result<(), AgentdError>
     where
-        F: Fn(
-                &AgentdIdentity,
-                &RunStartRecordV1,
-                &PreparedAgentdIntelligenceRunV1,
-                &RunReceipt,
-            ) -> Result<RuntimeCodexExecutionInputV1, AgentdError>
-            + Send
-            + Sync
-            + 'static,
+        F: RuntimeCodexInputProviderV1 + 'static,
     {
         if !(1..=MAX_QUEUE_CAPACITY).contains(&queue_capacity) {
             return Err(AgentdError::Invalid(format!(
@@ -112,8 +172,12 @@ impl ProcessRuntimeCodexExecutorV1 {
                 sender,
                 receiver: std::sync::Mutex::new(Some(receiver)),
                 active: std::sync::Mutex::new(BTreeMap::new()),
-                ready: AtomicBool::new(false),
+                started: AtomicBool::new(false),
+                degraded: AtomicBool::new(false),
+                unresolved: AtomicUsize::new(0),
+                unresolved_post_dispatch: AtomicUsize::new(0),
                 closed: AtomicBool::new(false),
+                status_changed: Notify::new(),
             }))
             .map_err(|_| {
                 AgentdError::Invalid(
@@ -126,60 +190,87 @@ impl ProcessRuntimeCodexExecutorV1 {
         INSTALLATION.get().is_some()
     }
 
-    pub(crate) fn schedule_canonical_run(
-        identity: &AgentdIdentity,
-        record: &RunStartRecordV1,
-        prepared: &PreparedAgentdIntelligenceRunV1,
-        receipt: &RunReceipt,
-    ) -> Result<bool, AgentdError> {
+    pub(crate) fn agentd_supervisor_status() -> RuntimeCodexSupervisorStatusV1 {
+        match INSTALLATION.get() {
+            Some(installed) => status(installed),
+            None => RuntimeCodexSupervisorStatusV1 {
+                started: false,
+                admission_ready: false,
+                degraded: false,
+                unresolved: 0,
+                unresolved_post_dispatch: 0,
+            },
+        }
+    }
+
+    pub(crate) async fn wait_agentd_supervisor_started(
+        maximum_wait: Duration,
+    ) -> Result<RuntimeCodexSupervisorStatusV1, AgentdError> {
+        if maximum_wait.is_zero() {
+            return Err(AgentdError::Invalid(
+                "runtime.codex supervisor startup wait must be non-zero".to_string(),
+            ));
+        }
         let installed = INSTALLATION.get().ok_or_else(|| {
+            AgentdError::Invalid("runtime.codex supervisor is not installed".to_string())
+        })?;
+        let deadline = Instant::now() + maximum_wait;
+        loop {
+            let notified = installed.status_changed.notified();
+            let current = status(installed);
+            if current.started {
+                return Ok(current);
+            }
+            timeout_at(deadline, notified).await.map_err(|_| {
+                AgentdError::Protocol(
+                    "runtime.codex supervisor startup reconciliation timed out".to_string(),
+                )
+            })?;
+        }
+    }
+
+    pub(crate) async fn reserve_agentd_schedule(
+        deadline_ms: u64,
+    ) -> Result<RuntimeCodexSchedulePermitV1, AgentdError> {
+        let installed = Arc::clone(INSTALLATION.get().ok_or_else(|| {
             AgentdError::Invalid(
                 "canonical intelligence has no installed runtime.codex supervisor".to_string(),
             )
-        })?;
-        if installed.closed.load(Ordering::Acquire) {
-            return Err(AgentdError::Protocol(
-                "runtime.codex supervisor is closed".to_string(),
-            ));
-        }
-        if !installed.ready.load(Ordering::Acquire) {
-            return Err(AgentdError::Protocol(
-                "runtime.codex supervisor recovery is not ready".to_string(),
-            ));
-        }
-        let input = installed
-            .provider
-            .build(identity, record, prepared, receipt)?;
-        validate_input(record, prepared, receipt, &input)?;
-        let digest = input.digest()?;
-        let run_id = input.run_id().to_string();
-        {
-            let mut active = installed.active.lock().map_err(|_| {
-                AgentdError::Protocol("runtime.codex active registry is poisoned".to_string())
-            })?;
-            match active.get(&run_id) {
-                Some(existing) if *existing == digest => return Ok(false),
-                Some(_) => {
-                    return Err(AgentdError::Protocol(
-                        "runtime.codex run identity has queued semantic drift".to_string(),
-                    ));
-                }
-                None => {
-                    active.insert(run_id.clone(), digest);
-                }
-            }
-        }
-        let job = Job {
-            input,
-            cancellation: CancellationToken::new(),
-        };
-        if let Err(error) = installed.sender.try_send(job) {
-            remove_active(installed, &run_id, digest)?;
+        })?);
+        let current = status(&installed);
+        if !current.admission_ready {
             return Err(AgentdError::Protocol(format!(
-                "runtime.codex supervisor rejected queued run: {error}"
+                "runtime.codex supervisor is not admission-ready: started={} degraded={} unresolved={} post_dispatch={}",
+                current.started,
+                current.degraded,
+                current.unresolved,
+                current.unresolved_post_dispatch
             )));
         }
-        Ok(true)
+        let now_ms = unix_time_ms()?;
+        let remaining_ms = deadline_ms.checked_sub(now_ms).filter(|value| *value > 0).ok_or_else(
+            || AgentdError::Invalid("runtime.codex schedule deadline has elapsed".to_string()),
+        )?;
+        let permit = timeout(
+            Duration::from_millis(remaining_ms),
+            installed.sender.clone().reserve_owned(),
+        )
+        .await
+        .map_err(|_| {
+            AgentdError::Protocol(
+                "runtime.codex queue reservation exceeded the run deadline".to_string(),
+            )
+        })?
+        .map_err(|_| AgentdError::Protocol("runtime.codex supervisor queue closed".to_string()))?;
+        if installed.closed.load(Ordering::Acquire) || !installed.started.load(Ordering::Acquire) {
+            return Err(AgentdError::Protocol(
+                "runtime.codex supervisor changed state while reserving capacity".to_string(),
+            ));
+        }
+        Ok(RuntimeCodexSchedulePermitV1 {
+            installation: installed,
+            permit: Some(permit),
+        })
     }
 
     pub(crate) async fn run_installed_agentd_supervisor(
@@ -204,41 +295,140 @@ impl ProcessRuntimeCodexExecutorV1 {
                 )
             })?;
         let owner = RuntimeCodexOwnerV1::from_agentd(&identity);
-        installed
+        let initial = installed
             .executor
             .reconcile_pending(owner.clone(), lifetime.child_token())
             .await?;
-        installed.ready.store(true, Ordering::Release);
+        publish_recovery_status(&installed, &initial);
+
+        let permits = Arc::new(Semaphore::new(installed.executor.maximum_in_flight()));
+        let mut workers = JoinSet::new();
+        let mut recovery = interval(RECOVERY_RETRY_INTERVAL);
+        recovery.set_missed_tick_behavior(MissedTickBehavior::Skip);
 
         loop {
-            let job = tokio::select! {
+            tokio::select! {
+                biased;
                 _ = lifetime.cancelled() => break,
-                job = receiver.recv() => job.ok_or_else(|| {
-                    AgentdError::Protocol("runtime.codex supervisor queue closed".to_string())
-                })?,
-            };
-            let run_id = job.input.run_id().to_string();
-            let digest = job.input.digest()?;
-            let result = run_job(
-                Arc::clone(&installed.executor),
-                owner.clone(),
-                identity.clone(),
-                job,
-                lifetime.clone(),
-            )
-            .await;
-            remove_active(&installed, &run_id, digest)?;
-            result?;
+                joined = workers.join_next(), if !workers.is_empty() => {
+                    observe_worker(&installed, joined).await?;
+                }
+                _ = recovery.tick(), if installed.degraded.load(Ordering::Acquire) && workers.is_empty() => {
+                    let report = installed.executor
+                        .reconcile_pending(owner.clone(), lifetime.child_token())
+                        .await?;
+                    publish_recovery_status(&installed, &report);
+                }
+                job = receiver.recv() => {
+                    let job = job.ok_or_else(|| {
+                        AgentdError::Protocol("runtime.codex supervisor queue closed".to_string())
+                    })?;
+                    let executor = Arc::clone(&installed.executor);
+                    let owner = owner.clone();
+                    let identity = identity.clone();
+                    let lifetime = lifetime.clone();
+                    let permits = Arc::clone(&permits);
+                    workers.spawn(async move {
+                        let permit = permits.acquire_owned().await.map_err(|_| {
+                            AgentdError::Protocol("runtime.codex worker permits closed".to_string())
+                        })?;
+                        let run_id = job.input.run_id().to_string();
+                        let digest = job.input.digest()?;
+                        let result = run_job(executor, owner, identity, job, lifetime).await;
+                        drop(permit);
+                        Ok::<_, AgentdError>((run_id, digest, result))
+                    });
+                }
+            }
         }
 
-        installed.ready.store(false, Ordering::Release);
+        installed.started.store(false, Ordering::Release);
         installed.closed.store(true, Ordering::Release);
+        installed.status_changed.notify_waiters();
+        cancel_active(&installed)?;
         while let Ok(job) = receiver.try_recv() {
-            cancel_queued(&identity, &job).await?;
-            remove_active(&installed, job.input.run_id().as_str(), job.input.digest()?)?;
+            let run_id = job.input.run_id().to_string();
+            let digest = job.input.digest()?;
+            job.cancellation.cancel();
+            if let Err(error) = cancel_queued(&identity, &job).await {
+                eprintln!(
+                    "runtime.codex queued run {run_id} could not publish shutdown cancellation: {error}"
+                );
+            }
+            remove_active(&installed, &run_id, digest)?;
+        }
+        match timeout(WORKER_DRAIN_GRACE, async {
+            while let Some(joined) = workers.join_next().await {
+                observe_worker(&installed, Some(joined)).await?;
+            }
+            Ok::<(), AgentdError>(())
+        })
+        .await
+        {
+            Ok(result) => result?,
+            Err(_) => {
+                workers.abort_all();
+                while let Some(joined) = workers.join_next().await {
+                    let _ = observe_worker(&installed, Some(joined)).await;
+                }
+                return Err(AgentdError::Protocol(
+                    "runtime.codex workers did not drain before the shutdown deadline"
+                        .to_string(),
+                ));
+            }
         }
         Ok(())
     }
+}
+
+fn status(installed: &Installation) -> RuntimeCodexSupervisorStatusV1 {
+    let started = installed.started.load(Ordering::Acquire);
+    let degraded = installed.degraded.load(Ordering::Acquire);
+    let closed = installed.closed.load(Ordering::Acquire);
+    RuntimeCodexSupervisorStatusV1 {
+        started,
+        admission_ready: started && !closed && !degraded,
+        degraded,
+        unresolved: installed.unresolved.load(Ordering::Acquire),
+        unresolved_post_dispatch: installed
+            .unresolved_post_dispatch
+            .load(Ordering::Acquire),
+    }
+}
+
+fn publish_recovery_status(
+    installed: &Installation,
+    report: &RuntimeCodexReconcileReportV1,
+) {
+    installed
+        .unresolved
+        .store(report.unresolved, Ordering::Release);
+    installed
+        .unresolved_post_dispatch
+        .store(report.unresolved_post_dispatch, Ordering::Release);
+    installed
+        .degraded
+        .store(report.unresolved_post_dispatch > 0, Ordering::Release);
+    installed.started.store(true, Ordering::Release);
+    installed.status_changed.notify_waiters();
+}
+
+async fn observe_worker(
+    installed: &Installation,
+    joined: Option<
+        Result<
+            Result<(String, Digest32, Result<(), AgentdError>), AgentdError>,
+            tokio::task::JoinError,
+        >,
+    >,
+) -> Result<(), AgentdError> {
+    let joined = joined.ok_or_else(|| {
+        AgentdError::Protocol("runtime.codex worker set unexpectedly became empty".to_string())
+    })?;
+    let (run_id, digest, result) = joined
+        .map_err(|error| AgentdError::Protocol(format!("runtime.codex worker task failed: {error}")))??;
+    remove_active(installed, &run_id, digest)?;
+    result
 }
 
 fn validate_input(
@@ -277,11 +467,33 @@ fn remove_active(
     let mut active = installed.active.lock().map_err(|_| {
         AgentdError::Protocol("runtime.codex active registry is poisoned".to_string())
     })?;
-    if active.get(run_id).is_some_and(|observed| *observed != digest) {
+    if active
+        .get(run_id)
+        .is_some_and(|observed| observed.digest != digest)
+    {
         return Err(AgentdError::Protocol(
             "runtime.codex active cleanup observed semantic drift".to_string(),
         ));
     }
     active.remove(run_id);
     Ok(())
+}
+
+fn cancel_active(installed: &Installation) -> Result<(), AgentdError> {
+    let active = installed.active.lock().map_err(|_| {
+        AgentdError::Protocol("runtime.codex active registry is poisoned".to_string())
+    })?;
+    for job in active.values() {
+        job.cancellation.cancel();
+    }
+    Ok(())
+}
+
+fn unix_time_ms() -> Result<u64, AgentdError> {
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| AgentdError::Protocol("system clock predates Unix epoch".to_string()))?
+        .as_millis();
+    u64::try_from(millis)
+        .map_err(|_| AgentdError::Protocol("system clock exceeds u64 milliseconds".to_string()))
 }

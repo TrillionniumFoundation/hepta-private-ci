@@ -2,13 +2,12 @@
 //!
 //! A durable record is evidence of a past publication, not permission to start
 //! work now. This module is the only constructor of `VerifiedRunStartV1`. It
-//! re-reads the Fleet generation, AuthBus trust, signed body, expiry, objective
-//! projection and exact owner fence before minting a single-use witness.
+//! re-reads Fleet generation, AuthBus trust, signed body, expiry, objective
+//! projection and the exact owner fence before minting a single-use witness.
 
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_types::Digest32;
 
-use crate::AgentdClient;
 use crate::AgentdError;
 use crate::AgentdIntelligenceAdmittedOutcomeV1;
 use crate::AgentdState;
@@ -25,8 +24,7 @@ pub(crate) enum VerifiedRunAdmissionV1 {
 
 /// Non-cloneable proof that one exact durable RunStart was current at a named
 /// Agentd owner boundary. All fields are private and construction is crate-
-/// local to this module, so deserialization, request data and ordinary tests
-/// cannot manufacture authority.
+/// local, so deserialization and request data cannot manufacture authority.
 pub(crate) struct VerifiedRunStartV1<'a> {
     agentd: &'a AgentdState,
     record: &'a RunStartRecordV1,
@@ -48,15 +46,10 @@ impl std::fmt::Debug for VerifiedRunStartV1<'_> {
 }
 
 impl VerifiedRunStartV1<'_> {
-    /// Consume the old witness and re-observe every mutable trust domain. This
-    /// is used immediately before crossing the admission boundary.
     fn reverify(self) -> Result<Self, AgentdError> {
         verify_current_run_start(self.agentd, self.record)
     }
 
-    /// Compatibility admission remains available only through a fresh sealed
-    /// witness. The state method performs its own final double-read as defense
-    /// in depth; this call cannot turn the earlier check into a reusable token.
     pub(crate) fn admit_compatibility(self) -> Result<RunReceipt, AgentdError> {
         let verified = self.reverify()?;
         let record = verified.record;
@@ -72,12 +65,20 @@ impl VerifiedRunStartV1<'_> {
         Ok(receipt)
     }
 
-    /// Select the canonical path when its full host composition is installed;
-    /// otherwise enter compatibility admission. The witness is consumed once,
-    /// and the canonical path independently revalidates after each async owner
-    /// boundary before mutating the coordinator.
+    /// Reserve physical-executor capacity before canonical run admission. The
+    /// permit is consumed only after the exact run/context tuple is frozen.
     pub(crate) async fn admit(self) -> Result<VerifiedRunAdmissionV1, AgentdError> {
         let verified = self.reverify()?;
+        let canonical = verified.agentd.canonical_intelligence_enabled();
+        let schedule_permit = if canonical {
+            let deadline_ms = verified.record.admission.deadline_unix_micros.div_ceil(1_000);
+            Some(
+                ProcessRuntimeCodexExecutorV1::reserve_agentd_schedule(deadline_ms).await?,
+            )
+        } else {
+            None
+        };
+
         match verified
             .agentd
             .start_canonical_intelligence(verified.record)
@@ -89,42 +90,41 @@ impl VerifiedRunStartV1<'_> {
                     run_receipt,
                 } = &outcome
                 {
-                    if let Err(error) = ProcessRuntimeCodexExecutorV1::schedule_canonical_run(
+                    let permit = schedule_permit.ok_or_else(|| {
+                        AgentdError::Protocol(
+                            "canonical run reached execution without a reserved runtime.codex slot"
+                                .to_string(),
+                        )
+                    })?;
+                    if let Err(error) = permit.commit(
                         verified.agentd.identity(),
                         verified.record,
                         prepared,
                         run_receipt,
                     ) {
-                        cancel_rejected_canonical_run(verified.agentd, run_receipt).await?;
+                        verified.agentd.cancel_run_internal(
+                            &run_receipt.run_id,
+                            run_receipt.revision,
+                            "runtime_codex_schedule_rejected",
+                        )?;
                         return Err(error);
                     }
                 }
                 Ok(VerifiedRunAdmissionV1::Canonical(outcome))
             }
-            None => verified
-                .admit_compatibility()
-                .map(VerifiedRunAdmissionV1::Compatibility),
+            None => {
+                if schedule_permit.is_some() {
+                    return Err(AgentdError::Protocol(
+                        "canonical runtime changed to compatibility after queue reservation"
+                            .to_string(),
+                    ));
+                }
+                verified
+                    .admit_compatibility()
+                    .map(VerifiedRunAdmissionV1::Compatibility)
+            }
         }
     }
-}
-
-async fn cancel_rejected_canonical_run(
-    agentd: &AgentdState,
-    receipt: &RunReceipt,
-) -> Result<(), AgentdError> {
-    let client = AgentdClient::new(
-        agentd.identity().control_socket.clone(),
-        agentd.identity().agent_id.clone(),
-        agentd.identity().spawn_generation,
-    )?;
-    client
-        .run_cancel(
-            receipt.run_id.clone(),
-            receipt.revision,
-            "runtime_codex_schedule_rejected".to_string(),
-        )
-        .await?;
-    Ok(())
 }
 
 pub(crate) fn verify_current_run_start<'a>(
