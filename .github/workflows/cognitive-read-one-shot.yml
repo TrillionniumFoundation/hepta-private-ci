@@ -7,18 +7,25 @@ on:
     paths:
       - ".github/scripts/cognitive_read_converge.py.xz.b64.*"
       - ".github/workflows/cognitive-read-one-shot.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/scripts/cognitive_read_converge.py.xz.b64.*"
+      - ".github/workflows/cognitive-read-one-shot.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: cognitive-read-one-shot-${{ github.ref_name }}
+  group: cognitive-read-one-shot-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 env:
   RUST_MIN_STACK: "8388608"
   PYTHONPATH: scripts
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
 
 jobs:
@@ -30,7 +37,7 @@ jobs:
       - name: Check out exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: true
 
@@ -44,7 +51,7 @@ jobs:
           git config user.name 'Cognitive Read Convergence'
           git config user.email 'cognitive-read-convergence@users.noreply.github.com'
           test "$(git branch --show-current)" = "$TARGET_BRANCH" || git switch -C "$TARGET_BRANCH"
-          test "$(git rev-parse HEAD)" = '${{ github.sha }}'
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git show a16fa81bfec716037332ed30ab3c4e82d91c8636:.github/workflows/cognitive-read-qualification.yml \
             > .github/workflows/cognitive-read-qualification.yml
 
@@ -197,7 +204,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: cognitive-read-one-shot-verification-${{ github.sha }}-${{ github.run_id }}
+          name: cognitive-read-one-shot-verification-${{ env.SOURCE_SHA }}-${{ github.run_id }}
           path: |
             ${{ runner.temp }}/cognitive-read-one-shot-verification.log
             ${{ runner.temp }}/rebound-maps.json
