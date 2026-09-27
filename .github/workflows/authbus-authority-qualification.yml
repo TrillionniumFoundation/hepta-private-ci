@@ -5,25 +5,28 @@ on:
     paths:
       - codex-rs/hepta-authbus/**
       - codex-rs/hepta-authbus-p1-3-qualification/**
-      - codex-rs/hepta-evidence/src/authbus_**
-      - codex-rs/hepta-agentd/src/authbus_**
-      - codex-rs/hepta-agentd/tests/kernel_evidence_product.rs
-      - codex-rs/hepta-bao-adapter/src/https_consumer**
+      - codex-rs/hepta-evidence/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-bao-adapter/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
       - docs/modules/auth.authbus/**
-      - scripts/check-authbus-closed-world.py
-      - scripts/authbus-exact-head-evidence.py
+      - scripts/*authbus*.py
       - .github/workflows/authbus-authority-qualification.yml
   push:
-    branches: [main]
+    branches: [main, codex/authbus-concurrency-closure-20260927]
     paths:
       - codex-rs/hepta-authbus/**
       - codex-rs/hepta-authbus-p1-3-qualification/**
-      - codex-rs/hepta-evidence/src/authbus_**
-      - codex-rs/hepta-agentd/src/authbus_**
-      - codex-rs/hepta-bao-adapter/src/https_consumer**
+      - codex-rs/hepta-evidence/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-bao-adapter/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
       - docs/modules/auth.authbus/**
-      - scripts/check-authbus-closed-world.py
-      - scripts/authbus-exact-head-evidence.py
+      - scripts/*authbus*.py
       - .github/workflows/authbus-authority-qualification.yml
   workflow_dispatch:
 
@@ -35,154 +38,99 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
+  PYTHONDONTWRITEBYTECODE: 1
 
 jobs:
-  source-head:
-    name: AuthBus exact source head
-    runs-on: ubuntu-latest
-    timeout-minutes: 180
+  portable-contract:
+    name: AuthBus receipt contract (not Rust qualification)
+    runs-on: macos-15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: codex-rs
-
+          persist-credentials: false
+      - name: Exercise failure and stale-evidence cases
+        run: python3 scripts/test-authbus-exact-head-evidence.py
       - name: Closed-world API inventory
         run: python3 scripts/check-authbus-closed-world.py --check
 
-      - name: Formatting
-        run: cargo fmt --all --manifest-path codex-rs/Cargo.toml -- --check
-
-      - name: Focused authority and product execution
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/authbus-evidence"
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/authbus.log"
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus-p1-3-qualification --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/qualification.log"
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/evidence.log"
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test kernel_evidence_product 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/agentd.log"
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-bao-adapter --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/bao.log"
-
-      - name: Exact-head workspace regression
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml --workspace --all-targets --no-fail-fast 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/workspace.log"
-
-      - name: Strict lint
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo clippy --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-authbus \
-            -p codex-hepta-authbus-p1-3-qualification \
-            -p codex-hepta-evidence \
-            -p codex-hepta-agentd \
-            -p codex-hepta-bao-adapter \
-            --all-targets --all-features -- -D warnings 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/clippy.log"
-
-      - name: Exact-head evidence receipt
-        run: |
-          python3 scripts/authbus-exact-head-evidence.py \
-            --output "$RUNNER_TEMP/authbus-evidence/receipt.json" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/authbus.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/qualification.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/evidence.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/agentd.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/bao.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/workspace.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/clippy.log"
-
-      - name: Clean tracked tree
-        run: git diff --exit-code && git diff --cached --exit-code
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: authbus-source-head-${{ github.event.pull_request.head.sha || github.sha }}
-          path: ${{ runner.temp }}/authbus-evidence
-          if-no-files-found: error
-          retention-days: 30
-
-  synthetic-merge:
-    if: github.event_name == 'pull_request'
-    name: AuthBus synthetic merge
+  qualification:
+    name: AuthBus ${{ matrix.mode }}
     runs-on: ubuntu-latest
     timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [source-head, synthetic-merge]
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
-          ref: refs/pull/${{ github.event.pull_request.number }}/merge
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: codex-rs
-
-      - name: Closed-world API inventory
-        run: python3 scripts/check-authbus-closed-world.py --check
-
-      - name: Merge-candidate focused execution
+          persist-credentials: false
+      - name: Fix source and base identities before any validation
+        id: identity
         shell: bash
+        env:
+          SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVENT_BASE: ${{ github.event.pull_request.base.sha || '' }}
+          BEFORE: ${{ github.event.before || '' }}
+          MODE: ${{ matrix.mode }}
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/authbus-evidence"
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/authbus.log"
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus-p1-3-qualification --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/qualification.log"
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/evidence.log"
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test kernel_evidence_product 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/agentd.log"
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-bao-adapter --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/bao.log"
-
-      - name: Merge-candidate workspace regression
+          SOURCE=$(git rev-parse "$SOURCE^{commit}")
+          if test -n "$EVENT_BASE"; then
+            BASE=$(git rev-parse "$EVENT_BASE^{commit}")
+          elif test "$GITHUB_REF" = refs/heads/main && test -n "$BEFORE" && test "$BEFORE" != 0000000000000000000000000000000000000000; then
+            BASE=$(git rev-parse "$BEFORE^{commit}")
+          else
+            BASE=$(git rev-parse refs/remotes/origin/main)
+            if test "$BASE" = "$SOURCE"; then BASE=$(git rev-parse "$SOURCE^"); fi
+          fi
+          printf 'source=%s\nbase=%s\nmode=%s\n' "$SOURCE" "$BASE" "$MODE" | tee "$RUNNER_TEMP/authbus-evidence/preparation.txt"
+          if test "$MODE" = synthetic-merge; then
+            git config user.name 'AuthBus qualification'
+            git config user.email 'authbus-qualification@invalid.local'
+            git checkout --detach "$BASE"
+            git -c core.hooksPath=/dev/null merge --no-ff --no-commit "$SOURCE"
+            TREE=$(git write-tree)
+            MERGE=$(printf 'AuthBus fixed-base synthetic qualification\n' | git commit-tree "$TREE" -p "$BASE" -p "$SOURCE")
+            git reset --hard "$MERGE"
+          fi
+          echo "source=$SOURCE" >> "$GITHUB_OUTPUT"
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          git rev-parse HEAD | tee -a "$RUNNER_TEMP/authbus-evidence/preparation.txt"
+      - name: Install repository-pinned Rust toolchain
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml --workspace --all-targets --no-fail-fast 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/workspace.log"
-
-      - name: Merge-candidate strict lint
+          TOOLCHAIN=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$TOOLCHAIN" --profile minimal --component rustfmt --component clippy
+          echo "RUSTUP_TOOLCHAIN=$TOOLCHAIN" >> "$GITHUB_ENV"
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: authbus-dependencies-${{ runner.os }}-${{ hashFiles('codex-rs/Cargo.lock') }}
+      - name: Execute all gates and record actual outcomes
         shell: bash
+        env:
+          SOURCE: ${{ steps.identity.outputs.source }}
+          BASE: ${{ steps.identity.outputs.base }}
+          MODE: ${{ matrix.mode }}
         run: |
           set -euo pipefail
-          cargo clippy --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-authbus \
-            -p codex-hepta-authbus-p1-3-qualification \
-            -p codex-hepta-evidence \
-            -p codex-hepta-agentd \
-            -p codex-hepta-bao-adapter \
-            --all-targets --all-features -- -D warnings 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/clippy.log"
-
-      - name: Merge-candidate evidence receipt
-        run: |
           python3 scripts/authbus-exact-head-evidence.py \
             --output "$RUNNER_TEMP/authbus-evidence/receipt.json" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/authbus.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/qualification.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/evidence.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/agentd.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/bao.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/workspace.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/clippy.log"
-
-      - name: Clean tracked tree
-        run: git diff --exit-code && git diff --cached --exit-code
-
+            --mode "$MODE" --source-head "$SOURCE" --base-sha "$BASE"
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: authbus-merge-${{ github.event.pull_request.head.sha }}
+          name: authbus-${{ matrix.mode }}-${{ github.event.pull_request.head.sha || github.sha }}-attempt-${{ github.run_attempt }}
           path: ${{ runner.temp }}/authbus-evidence
           if-no-files-found: error
           retention-days: 30
