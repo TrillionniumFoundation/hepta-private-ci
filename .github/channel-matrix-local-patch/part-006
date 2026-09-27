@@ -1,0 +1,129 @@
+          JOIN sqlite_schema USING (name) WHERE sqlite_schema.type = required.type",
+@@ -3674,10 +3796,11 @@ async fn verify_store(
+     .fetch_one(pool)
+     .await
+     .map_err(unavailable)?;
+-    if required_objects != 47 {
++    if required_objects != 75 {
+         return Err(MatrixDurableError::Corrupt);
+     }
+     verify_matrix_v2_schema(pool).await?;
++    verify_matrix_dispatch_schema(pool).await?;
+     let row =
+         sqlx::query("SELECT schema_version, owner_agent_id FROM matrix_meta WHERE singleton = 1")
+             .fetch_one(pool)
+@@ -3743,15 +3866,144 @@ async fn verify_store(
+     if invalid_authority_claims != 0 {
+         return Err(MatrixDurableError::Corrupt);
+     }
++    let invalid_claim_fences: i64 = sqlx::query_scalar(
++        "SELECT
++            (SELECT COUNT(*) FROM matrix_dispatch_active_claims AS active
++             LEFT JOIN matrix_dispatch_attempt_claims AS claimed
++               ON claimed.stable_txn_id = active.stable_txn_id
++              AND claimed.attempt = active.attempt
++              AND claimed.lease_epoch = active.lease_epoch
++              AND claimed.claim_token_sha256 = active.claim_token_sha256
++             LEFT JOIN outbox_messages AS message
++               ON message.stable_txn_id = active.stable_txn_id
++             WHERE claimed.stable_txn_id IS NULL
++                OR message.stable_txn_id IS NULL
++                OR message.state != 'in_flight'
++                OR message.attempts != active.attempt
++                OR active.lease_epoch != active.attempt)
++          + (SELECT COUNT(*) FROM matrix_dispatch_authority_witnesses AS witness
++             LEFT JOIN matrix_dispatch_attempt_claims AS claimed
++               ON claimed.stable_txn_id = witness.stable_txn_id
++              AND claimed.attempt = witness.attempt
++              AND claimed.lease_epoch = witness.lease_epoch
++              AND claimed.claim_token_sha256 = witness.claim_token_sha256
++             LEFT JOIN matrix_dispatch_authority_claims AS authority_claim
++               ON authority_claim.stable_txn_id = witness.stable_txn_id
++              AND authority_claim.attempt = witness.attempt
++             WHERE claimed.stable_txn_id IS NULL
++                OR authority_claim.stable_txn_id IS NULL
++                OR witness.authority_epoch != authority_claim.authority_epoch
++                OR witness.revocation_revision != authority_claim.revocation_revision
++                OR witness.grant_id != authority_claim.grant_id)",
++    )
++    .fetch_one(pool)
++    .await
++    .map_err(unavailable)?;
++    if invalid_claim_fences != 0 {
++        return Err(MatrixDurableError::Corrupt);
++    }
++    let invalid_content_bindings: i64 = sqlx::query_scalar(
++        "SELECT COUNT(*)
++         FROM matrix_dispatch_content_bindings AS content
++         JOIN matrix_dispatch_ledger AS dispatch USING (stable_txn_id)
++         JOIN outbox_messages AS message USING (stable_txn_id)
++         WHERE content.source_payload_sha256 != dispatch.payload_sha256
++            OR content.source_payload_sha256 != message.payload_sha256",
++    )
++    .fetch_one(pool)
++    .await
++    .map_err(unavailable)?;
++    if invalid_content_bindings != 0 {
++        return Err(MatrixDurableError::Corrupt);
++    }
++    let invalid_use_entries: i64 = sqlx::query_scalar(
++        "SELECT COUNT(*)
++         FROM matrix_dispatch_use_entries AS entry
++         LEFT JOIN matrix_dispatch_attempt_claims AS claimed
++           ON claimed.stable_txn_id = entry.stable_txn_id
++          AND claimed.attempt = entry.attempt
++          AND claimed.lease_epoch = entry.lease_epoch
++          AND claimed.claim_token_sha256 = entry.claim_token_sha256
++         LEFT JOIN matrix_dispatch_ledger AS dispatch
++           ON dispatch.stable_txn_id = entry.stable_txn_id
++         LEFT JOIN matrix_dispatch_authority_claims AS authority_claim
++           ON authority_claim.stable_txn_id = entry.stable_txn_id
++          AND authority_claim.attempt = entry.attempt
++         LEFT JOIN matrix_dispatch_authority_witnesses AS authority_witness
++           ON authority_witness.stable_txn_id = entry.stable_txn_id
++          AND authority_witness.attempt = entry.attempt
++         LEFT JOIN matrix_dispatch_content_bindings AS content
++           ON content.stable_txn_id = entry.stable_txn_id
++         WHERE claimed.stable_txn_id IS NULL
++            OR dispatch.stable_txn_id IS NULL
++            OR authority_claim.stable_txn_id IS NULL
++            OR authority_witness.stable_txn_id IS NULL
++            OR content.stable_txn_id IS NULL
++            OR entry.attempt != entry.lease_epoch
++            OR entry.operation_id != dispatch.operation_id
++            OR authority_claim.operation_id != entry.operation_id
++            OR authority_claim.subject_id != entry.subject_id
++            OR authority_claim.destination_id != entry.destination_id
++            OR authority_claim.request_sha256 != entry.request_sha256
++            OR authority_claim.scope_sha256 != entry.scope_sha256
++            OR authority_claim.payload_sha256 != dispatch.payload_sha256
++            OR authority_witness.authority_epoch != authority_claim.authority_epoch
++            OR authority_witness.revocation_revision != authority_claim.revocation_revision
++            OR authority_witness.grant_id != authority_claim.grant_id
++            OR authority_witness.verified_use_witness_sha256 != entry.entered_use_witness_sha256
++            OR content.scope_sha256 != entry.scope_sha256
++            OR content.canonical_content_sha256 != entry.canonical_payload_sha256",
++    )
++    .fetch_one(pool)
++    .await
++    .map_err(unavailable)?;
++    if invalid_use_entries != 0 {
++        return Err(MatrixDurableError::Corrupt);
++    }
++    let invalid_legacy_holds: i64 = sqlx::query_scalar(
++        "SELECT COUNT(*)
++         FROM matrix_dispatch_legacy_content_holds AS hold
++         JOIN outbox_messages AS message USING (stable_txn_id)
++         LEFT JOIN matrix_dispatch_content_bindings AS content USING (stable_txn_id)
++         WHERE hold.inherited_attempts > message.attempts
++            OR content.stable_txn_id IS NOT NULL",
++    )
++    .fetch_one(pool)
++    .await
++    .map_err(unavailable)?;
++    if invalid_legacy_holds != 0 {
++        return Err(MatrixDurableError::Corrupt);
++    }
+     let invalid_qualified_successes: i64 = sqlx::query_scalar(
+         "SELECT COUNT(*)
+          FROM matrix_dispatch_ledger AS dispatch
