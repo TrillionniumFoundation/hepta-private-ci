@@ -1,0 +1,105 @@
+name: Kernel authority Agentd time migration
+
+on:
+  push:
+    branches:
+      - work/kernel-authority-convergence-20260925
+    paths:
+      - '.github/workflows/kernel-authority-agentd-time-migration.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kernel-authority-agentd-time-migration
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: work/kernel-authority-convergence-20260925
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Bind Agentd effect ownership to protected authority time
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('codex-rs/hepta-agentd/src/automation_effect_host.rs')
+          text = path.read_text(encoding='utf-8')
+
+          execute_old = '''        command_id: &str,
+                  now_ms: u64,
+              ) -> Result<TaskFlowStepReceipt, AgentdError> {
+          '''
+          execute_new = '''        command_id: &str,
+                  _untrusted_now_ms: u64,
+              ) -> Result<TaskFlowStepReceipt, AgentdError> {
+          '''
+          if text.count(execute_old) != 1:
+              raise SystemExit('execute time parameter anchor drifted')
+          text = text.replace(execute_old, execute_new, 1)
+
+          reconcile_old = '''        attempt: u32,
+                  now_ms: u64,
+              ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {
+          '''
+          reconcile_new = '''        attempt: u32,
+                  _untrusted_now_ms: u64,
+              ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {
+          '''
+          if text.count(reconcile_old) != 1:
+              raise SystemExit('reconcile time parameter anchor drifted')
+          text = text.replace(reconcile_old, reconcile_new, 1)
+
+          fence_anchor = '        let fence = self.current_fence(&run, now_ms)?;'
+          if text.count(fence_anchor) != 2:
+              raise SystemExit('effect fence time anchors drifted')
+          text = text.replace(
+              fence_anchor,
+              '        let now_ms = self.protected_effect_now_ms()?;\n' + fence_anchor,
+          )
+
+          refresh_anchor = '    fn refresh_revocations(&self) -> Result<(), AgentdError> {'
+          helper = '''    /// Compatibility callers may still transport a wall-clock sample, but
+              /// final effect ownership, TaskFlow lease validation and durable settlement
+              /// are always evaluated against the protected authority clock.
+              fn protected_effect_now_ms(&self) -> Result<u64, AgentdError> {
+                  self.authority_trust.now_unix_ms().map_err(|error| {
+                      AgentdError::Protocol(format!(
+                          "sample protected automation effect clock: {error}"
+                      ))
+                  })
+              }
+
+          '''
+          if text.count(refresh_anchor) != 1:
+              raise SystemExit('revocation refresh anchor drifted')
+          text = text.replace(refresh_anchor, helper + refresh_anchor, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+          cd codex-rs
+          cargo fmt -p codex-hepta-agentd
+          cd ..
+          git diff --check
+          git diff --exit-code --quiet && {
+            echo 'migration produced no changes' >&2
+            exit 1
+          }
+      - name: Commit exact migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'kernel-authority-migration'
+          git config user.email 'kernel-authority-migration@users.noreply.github.com'
+          git add codex-rs/hepta-agentd/src/automation_effect_host.rs
+          test "$(git diff --cached --name-only)" = 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
+          git commit -m 'fix(kernel-authority): use protected time for Agentd effects'
+          git push origin HEAD:work/kernel-authority-convergence-20260925
