@@ -29,7 +29,7 @@ where
 {
     candidate.validate()?;
     profile.validate()?;
-    validate_digest(&event.event_digest, "event_digest")?;
+    event.validate()?;
 
     let nodes: BTreeMap<&str, &CircuitNodeV1> = candidate
         .nodes
