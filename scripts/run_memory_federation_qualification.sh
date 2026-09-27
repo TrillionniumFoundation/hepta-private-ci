@@ -39,6 +39,15 @@ cargo clippy \
 cargo clippy -p codex-hepta-memory-federation --all-targets --features legacy-v1 -- -D warnings
 cargo clippy -p codex-hepta-agentd --lib -- -D warnings
 
+# Cross-host V1 is deliberately a separately qualified protocol crate.  It is
+# not a workspace member or product caller yet, so these commands prove source
+# and protocol behavior without silently activating a network path.
+WIRE_MANIFEST="$ROOT/codex-rs/hepta-memory-federation-wire/Cargo.toml"
+cargo fmt --manifest-path "$WIRE_MANIFEST" -- --check
+cargo metadata --manifest-path "$WIRE_MANIFEST" --format-version 1 --no-deps > /dev/null
+cargo test --manifest-path "$WIRE_MANIFEST" --lib
+cargo clippy --manifest-path "$WIRE_MANIFEST" --all-targets -- -D warnings
+
 cd "$ROOT"
 git diff --check
 test -z "$(git status --porcelain --untracked-files=no)"
