@@ -18,7 +18,7 @@ concurrency:
 jobs:
   repair:
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - name: Checkout repair branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -31,34 +31,181 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
 
-      - name: Repair source and closed-world caller inventory
+      - name: Repair runtime, recovery fixtures and closed-world inventory
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
 
-          source = Path('codex-rs/hepta-contracts/src/final_use.rs')
-          text = source.read_text(encoding='utf-8')
-          old = r'b"pending\1"'
-          new = r'b"pending\x01"'
-          if old in text:
-              text = text.replace(old, new, 1)
-              source.write_text(text, encoding='utf-8')
-          elif new not in text:
-              raise SystemExit('pending frontier byte marker has an unexpected shape')
+          def read(path: str) -> tuple[Path, str]:
+              file = Path(path)
+              return file, file.read_text(encoding='utf-8')
 
-          callers = Path('CALLERS.toml')
-          text = callers.read_text(encoding='utf-8')
-          old = 'product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]'
-          new = 'product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-contracts/src/authority_trust.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]'
+          def write_if_changed(file: Path, before: str, after: str) -> None:
+              if after != before:
+                  file.write_text(after, encoding='utf-8')
+
+          # Production trust evidence validation: use the canonical slice helper
+          # rather than two clippy-rejected manual membership scans.
+          file, text = read('codex-rs/hepta-contracts/src/authority_trust.rs')
+          old = 'digests.iter().any(|digest| *digest == [0; 32])'
+          count = text.count(old)
+          if count:
+              if count != 2:
+                  raise SystemExit(f'unexpected zero-digest validation count: {count}')
+              updated = text.replace(old, 'digests.contains(&[0; 32])')
+          else:
+              updated = text
+              if updated.count('digests.contains(&[0; 32])') < 2:
+                  raise SystemExit('production trust digest validation has an unexpected shape')
+          write_if_changed(file, text, updated)
+
+          # The key ring is moved into the production owner and is not reused.
+          file, text = read('codex-rs/hepta-contracts/src/authority_trust_tests.rs')
+          old = '''        issuer_keys.clone(),
+                  &verified_head,'''
+          new = '''        issuer_keys,
+                  &verified_head,'''
           if old in text:
-              text = text.replace(old, new, 1)
-              callers.write_text(text, encoding='utf-8')
-          elif new not in text:
-              raise SystemExit('final_use_open_state caller inventory has an unexpected shape')
+              updated = text.replace(old, new, 1)
+          elif new in text:
+              updated = text
+          else:
+              raise SystemExit('issuer key-ring ownership test has an unexpected shape')
+          write_if_changed(file, text, updated)
+
+          # Recovery may finish an already-durable pending transition, but it
+          # must never manufacture a committed head from an arbitrary restored
+          # snapshot merely because the caller presents the current head.
+          file, text = read('codex-rs/hepta-contracts/src/final_use.rs')
+          old_comment = '''    /// Recover existing state only after exact external-frontier verification.
+              /// The authenticated `head` may complete a frontier-first pending or commit
+              /// transition, but it can never move the trusted frontier itself.'''
+          new_comment = '''    /// Recover existing state only after exact external-frontier verification.
+              /// The authenticated `head` may complete only a transition represented by
+              /// the durable pending marker or its exact trusted frontier. It cannot
+              /// manufacture a committed head from an arbitrary restored snapshot and it
+              /// can never move the trusted frontier itself.'''
+          if old_comment in text:
+              text = text.replace(old_comment, new_comment, 1)
+          elif new_comment not in text:
+              raise SystemExit('final-use recovery contract comment has an unexpected shape')
+
+          unsafe_commit_synthesis = '''
+              if head_advances(&state.head, authenticated_head) {
+                  let mut committed = state.clone();
+                  if authenticated_head.authority_epoch > committed.head.authority_epoch {
+                      committed.used_nonces.clear();
+                  }
+                  committed.head = authenticated_head.clone();
+                  committed.pending_revocations = None;
+                  if frontier_for_state(&committed) == trusted {
+                      store.persist(&committed)?;
+                      *state = committed;
+                      return Ok(());
+                  }
+              }
+          '''
+          if unsafe_commit_synthesis in text:
+              text = text.replace(unsafe_commit_synthesis, '\n', 1)
+          elif 'committed.head = authenticated_head.clone();' in text:
+              raise SystemExit('unrecognized restored-snapshot commit synthesis remains')
+          write_if_changed(file, file.read_text(encoding='utf-8'), text)
+
+          # A v1 migration fixture must remove every post-v1 object in reverse
+          # dependency order. The timer drain trigger references the v2 outcome
+          # table and therefore has to be removed before that table is dropped.
+          file, text = read('codex-rs/hepta-automation/tests/automation.rs')
+          anchor = '''    let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
+              sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")'''
+          replacement = '''    let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
+              sqlx::query("DROP TRIGGER IF EXISTS automation_timer_lifecycle_drain")
+                  .execute(&mut *rewind)
+                  .await
+                  .expect("drop timer lifecycle drain trigger");
+              sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")'''
+          if anchor in text:
+              text = text.replace(anchor, replacement, 1)
+          elif 'drop timer lifecycle drain trigger' not in text:
+              raise SystemExit('automation v1 rewind prelude has an unexpected shape')
+
+          anchor = '''        "DROP TRIGGER IF EXISTS automation_runs_schedule_revision_no_update",
+                  "DROP TRIGGER IF EXISTS automation_task_default_policy",'''
+          replacement = '''        "DROP TRIGGER IF EXISTS automation_runs_schedule_revision_no_update",
+                  "DROP TABLE IF EXISTS automation_timer_lifecycle",
+                  "DROP TRIGGER IF EXISTS automation_task_default_policy",'''
+          if anchor in text:
+              text = text.replace(anchor, replacement, 1)
+          elif '"DROP TABLE IF EXISTS automation_timer_lifecycle"' not in text:
+              raise SystemExit('automation v1 rewind object list has an unexpected shape')
+          write_if_changed(file, file.read_text(encoding='utf-8'), text)
+
+          # The recovery pilot deliberately asks the descriptor-bound recovery
+          # path to establish immutable identities. Make the fixture satisfy the
+          # production profile before closing the original owner.
+          file, text = read('codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs')
+          import_anchor = 'use std::fs;\nuse std::sync::Arc;'
+          import_replacement = 'use std::fs;\nuse std::os::unix::fs::PermissionsExt;\nuse std::sync::Arc;'
+          if import_anchor in text:
+              text = text.replace(import_anchor, import_replacement, 1)
+          elif 'use std::os::unix::fs::PermissionsExt;' not in text:
+              raise SystemExit('agentd recovery test imports have an unexpected shape')
+
+          anchor = '''    let store = DurableCognitiveStore::open(&config.identity().layout).await?;
+              let expected = store.recovery_anchor().await?;
+              drop(store);'''
+          replacement = '''    let store = DurableCognitiveStore::open(&config.identity().layout).await?;
+              let expected = store.recovery_anchor().await?;
+              let database_path = store.path().to_path_buf();
+              let cognitive_root = config.identity().layout.cognitive_root().to_path_buf();
+              drop(store);
+              fs::set_permissions(&cognitive_root, fs::Permissions::from_mode(0o700))?;
+              fs::set_permissions(&database_path, fs::Permissions::from_mode(0o600))?;
+              for suffix in ["-wal", "-shm", "-journal"] {
+                  let mut sidecar = database_path.as_os_str().to_os_string();
+                  sidecar.push(suffix);
+                  let sidecar = std::path::PathBuf::from(sidecar);
+                  if sidecar.exists() {
+                      fs::set_permissions(sidecar, fs::Permissions::from_mode(0o600))?;
+                  }
+              }'''
+          if anchor in text:
+              text = text.replace(anchor, replacement, 1)
+          elif 'let database_path = store.path().to_path_buf();' not in text:
+              raise SystemExit('agentd recovery fixture has an unexpected shape')
+          write_if_changed(file, file.read_text(encoding='utf-8'), text)
+
+          # The production dispatch binder is the sole expected internal caller
+          # of raw lease verification. Record the exact closed-world callsite.
+          file, text = read('CALLERS.toml')
+          old = '''[[boundary]]
+              id = "authority_lease_verify_use"
+              symbol = "AuthorityLeaseVerifier::verify_use"
+              call_pattern = '\\.\\s*verify_use\\s*\\('
+              caller_type_marker = "AuthorityLeaseVerifier"
+              definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+              definition_markers = ["pub struct AuthorityLeaseVerifier", "pub fn verify_use(", "LeaseVerifiedUseToken"]
+              product_callers = []
+              caller_markers = []'''
+          new = '''[[boundary]]
+              id = "authority_lease_verify_use"
+              symbol = "AuthorityLeaseVerifier::verify_use"
+              call_pattern = '\\.\\s*verify_use\\s*\\('
+              caller_type_marker = "AuthorityLeaseVerifier"
+              definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+              definition_markers = ["pub struct AuthorityLeaseVerifier", "pub fn verify_use(", "LeaseVerifiedUseToken"]
+              product_callers = ["codex-rs/hepta-contracts/src/authority_trust.rs"]
+              caller_markers = ["AuthorityLeaseVerifier", "self.verify_use(", "AuthorityDispatchBinding"]'''
+          if old in text:
+              updated = text.replace(old, new, 1)
+          elif new in text:
+              updated = text
+          else:
+              raise SystemExit('authority_lease_verify_use inventory has an unexpected shape')
+          write_if_changed(file, text, updated)
           PY
           (
             cd codex-rs
@@ -73,9 +220,13 @@ jobs:
           set -euo pipefail
           git config user.name 'kernel-authority-repair[bot]'
           git config user.email 'kernel-authority-repair[bot]@users.noreply.github.com'
-          git add CALLERS.toml codex-rs/hepta-contracts/src/final_use.rs codex-rs/hepta-contracts/tests/final_use_pending_recovery.rs
+          git add \
+            CALLERS.toml \
+            codex-rs/hepta-contracts \
+            codex-rs/hepta-automation/tests/automation.rs \
+            codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs
           if ! git diff --cached --quiet; then
-            git commit -m 'fix(kernel-authority): close final-use build and caller proof'
+            git commit -m 'fix(kernel-authority): close recovery and qualification gaps'
             git push origin HEAD:work/kernel-authority-convergence-20260925
           fi
           echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
@@ -89,13 +240,26 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta-implementation-maps.py migrate \
+            --module automation.taskflow \
+            --module cognitive.read \
+            --module control.engineering \
+            --module intelligence.control \
             --module kernel.authority \
             --module kernel.operations \
-            --module runtime.supervisor \
-            --module runtime.fleet \
-            --module utility.ndu \
+            --module knowledge.graph \
+            --module learning.artifacts \
+            --module learning.ledger \
+            --module learning.operator \
             --module learning.plasticity \
-            --module automation.taskflow
+            --module memory.federation \
+            --module memory.retrieval \
+            --module objective.compiler \
+            --module platform.types \
+            --module prompt.registry \
+            --module runtime.agentd \
+            --module runtime.fleet \
+            --module runtime.supervisor \
+            --module utility.ndu
           python3 - <<'PY'
           import json
           import os
@@ -123,9 +287,9 @@ jobs:
             echo 'projection repair produced no staged changes' >&2
             exit 1
           fi
-          git commit -m 'docs(kernel-authority): rebind generated truth to repaired source'
+          git commit -m 'docs(kernel-authority): regenerate candidate-bound truth'
 
-      - name: Verify governance, formatting, contracts and host compile
+      - name: Verify governance and the three previously failing regressions
         shell: bash
         run: |
           set -euo pipefail
@@ -142,7 +306,10 @@ jobs:
             cargo +1.95.0 fmt --all -- --check
             cargo +1.95.0 test --package codex-hepta-contracts --locked
             cargo +1.95.0 clippy --package codex-hepta-contracts --all-targets --locked -- -D warnings
-            cargo +1.95.0 test --package codex-hepta-agentd --locked --no-run
+            cargo +1.95.0 test --package codex-hepta-automation --test automation --locked \
+              v1_store_migrates_atomically_to_dispatch_outcome_schema -- --exact
+            cargo +1.95.0 test --package codex-hepta-agentd --test cognitive_store_product_writer --locked \
+              agentd_product_host_recovers_exact_cut_into_fenced_writer_generation -- --exact
           )
 
       - name: Push repaired candidate
