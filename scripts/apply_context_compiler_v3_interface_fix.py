@@ -15,6 +15,23 @@ def replace_once(path: str, old: str, new: str) -> None:
     target.write_text(text.replace(old, new, 1), encoding="utf-8")
 
 
+# Once prompt_delivery is compatibility-gated, every public export from that
+# module must carry the same feature gate. Leaving preparation exports
+# unconditional makes the default V3 profile reference a module that is not
+# compiled, while enabling the feature masks the cutover defect.
+replace_once(
+    "codex-rs/hepta-intelligence/src/lib.rs",
+    "pub use prompt_delivery::PromptRegistryDeliveryPreparationV2;",
+    "#[cfg(feature = \"legacy-prompt-context-v1\")]\n"
+    "pub use prompt_delivery::PromptRegistryDeliveryPreparationV2;",
+)
+replace_once(
+    "codex-rs/hepta-intelligence/src/lib.rs",
+    "pub use prompt_delivery::prepare_prompt_registry_delivery_v2;",
+    "#[cfg(feature = \"legacy-prompt-context-v1\")]\n"
+    "pub use prompt_delivery::prepare_prompt_registry_delivery_v2;",
+)
+
 replace_once(
     "codex-rs/hepta-intelligence/src/prompt_product_v3.rs",
     "use codex_hepta_prompt_registry::PromptContextAuthorityAdmissionV3;\n",
