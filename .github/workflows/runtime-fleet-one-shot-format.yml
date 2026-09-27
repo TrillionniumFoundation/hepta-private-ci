@@ -22,7 +22,7 @@ concurrency:
 jobs:
   harden-test-and-push:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 75
     steps:
       - name: Check out feature branch
