@@ -69,22 +69,32 @@ jobs:
           # correctly fails for an unrelated OutOfRange condition.
           python3 - <<'PY'
           from pathlib import Path
+          import re
 
           path = Path("codex-rs/hepta-types/src/numeric_registry_v2.rs")
           text = path.read_text(encoding="utf-8")
-          old = """        let target = NumericSignalSchemaV1 {
-              profile: NumericProfileV1::SignedQ24NearestTiesEven,
-              ..source.schema.clone()
-          };"""
-          new = """        let target = NumericSignalSchemaV1 {
-              profile: NumericProfileV1::SignedQ24NearestTiesEven,
-              minimum_raw: -(1_i64 << 24),
-              maximum_raw: 1_i64 << 24,
-              ..source.schema.clone()
-          };"""
-          if old not in text:
+          pattern = re.compile(
+              r"(?m)^(?P<indent>[ \t]*)let target = NumericSignalSchemaV1 \{\n"
+              r"(?P=indent)    profile: NumericProfileV1::SignedQ24NearestTiesEven,\n"
+              r"(?P=indent)    \.\.source\.schema\.clone\(\)\n"
+              r"(?P=indent)\};$"
+          )
+          match = pattern.search(text)
+          if match is None:
               raise SystemExit("numeric registry V2 target fixture anchor missing")
-          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          indent = match.group("indent")
+          replacement = (
+              f"{indent}let target = NumericSignalSchemaV1 {{\n"
+              f"{indent}    profile: NumericProfileV1::SignedQ24NearestTiesEven,\n"
+              f"{indent}    minimum_raw: -(1_i64 << 24),\n"
+              f"{indent}    maximum_raw: 1_i64 << 24,\n"
+              f"{indent}    ..source.schema.clone()\n"
+              f"{indent}}};"
+          )
+          text, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit(f"numeric registry V2 target fixture replacements: {count}")
+          path.write_text(text, encoding="utf-8")
           PY
 
           cargo "+$PLATFORM_TYPES_MSRV" fmt \
