@@ -52,7 +52,7 @@ jobs:
   # BEGIN VERIFIED-HEAD-MIGRATION
   migrate-verified-head:
     name: Authenticated recovery-head migration
-    if: github.event_name == 'push' && github.ref == 'refs/heads/work/kernel-authority-convergence-20260925'
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/work/kernel-authority-convergence-20260925') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'work/kernel-authority-convergence-20260925')
     permissions:
       contents: write
     runs-on: ubuntu-24.04
@@ -67,7 +67,7 @@ jobs:
       - name: Refuse a moved branch
         shell: bash
         env:
-          TRIGGER_SHA: ${{ github.sha }}
+          TRIGGER_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$TRIGGER_SHA"
