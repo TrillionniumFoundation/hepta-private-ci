@@ -45,6 +45,18 @@ CAPABILITIES = (
     ("sqliteAuthorizer", "SQLite authorizer callback"),
     ("diskFullFaultInjection", "Disk-full fault injection"),
     ("multiProcessContentionBenchmark", "Multi-process contention benchmark"),
+    ("ownerControlledVerificationProfiles", "Owner-controlled non-degradable verification profiles"),
+    ("verifiedMonotonicTrustSnapshots", "Sealed monotonic verified trust snapshots"),
+    ("transactionalRecoverySnapshotV2", "Single-transaction authenticated recovery snapshot V2"),
+    ("authenticatedAdmissionCommitment", "Complete authenticated-admission commitment"),
+    ("durablePublicationReconciliation", "Durable fenced publication and CAS reconciliation"),
+    ("boundedVerificationSummary", "Bounded product verification summaries"),
+    ("realBackupObjectVerification", "Real backup-object byte verification"),
+    ("governedBuildProvenance", "Governed source-to-executable build provenance"),
+    ("witnessedRestoreBinding", "Backup restore-witness binding"),
+    ("segmentedFrontierHistory", "Immutable segmented frontier history"),
+    ("atomicLatestFrontierIndex", "Self-authenticating atomic latest-frontier index"),
+    ("frontierCapacityObservability", "Frontier rollover and capacity observability"),
 )
 GATES = (
     ("exactSourceQualified", "Exact-source qualification"),
