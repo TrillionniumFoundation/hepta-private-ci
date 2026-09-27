@@ -1,0 +1,211 @@
+name: knowledge.graph A-B-C exact candidate execution
+
+on:
+  push:
+    branches: [work/kg-abc-execution-20260927]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kg-abc-execution-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
+  PYTHONDONTWRITEBYTECODE: '1'
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+
+jobs:
+  bind:
+    runs-on: macos-14
+    permissions:
+      contents: write
+    outputs:
+      candidate: ${{ steps.bind.outputs.candidate }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Bind only the knowledge.graph implementation map
+        id: bind
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          OWN_BRANCH: work/kg-abc-execution-20260927
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "$OWN_BRANCH"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git ls-remote origin "refs/heads/$OWN_BRANCH" | cut -f1)" = "$SOURCE_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+          python3 - <<'PY'
+          import importlib.util, json, sys
+          from pathlib import Path
+          sys.path.insert(0, str(Path('scripts').resolve()))
+          spec = importlib.util.spec_from_file_location('kg_maps', 'scripts/hepta-implementation-maps.py')
+          maps = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(maps)
+          path = Path('docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json')
+          row = json.loads(path.read_text(), object_pairs_hook=maps.unique_keys)
+          assert row['module'] == 'knowledge.graph'
+          assert row['declaredRoots'] == ['codex-rs/hepta-kg']
+          extra = {
+              '.github/workflows/hepta-kg-abc-execution.yml',
+              'scripts/hepta_kg_evidence.py',
+              'scripts/test_hepta_kg_measurement.py',
+              'qualification/knowledge-graph/EXECUTION_20260927.md',
+          }
+          existing = {item['path'] for item in row['sourceObjects']}
+          row['sourceObjects'].extend({'path': item} for item in sorted(extra - existing))
+          candidate = maps.current_source_base()
+          current_objects = maps.current_source_objects(row)
+          changed = current_objects != row['sourceObjects']
+          if not changed:
+              try:
+                  maps.verify_source_identity(row, row['resolvedRoots'], candidate)
+              except maps.SourceDrift:
+                  changed = True
+          if changed:
+              row['sourceBase'] = candidate
+              row['observedAtHead'] = candidate
+              row['sourceObjects'] = current_objects
+              row['observedSourcePaths'] = sorted(set(row['observedSourcePaths']) | {item['path'] for item in current_objects})
+              path.write_text(json.dumps(row, indent=2) + '\n')
+          assert row['productionImplementation'] is False
+          for key in ('productExecutionProved', 'independentAcceptance', 'activation', 'release'):
+              assert row['claimBoundary'][key] is False
+          PY
+          git diff --check
+          git add docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            test "$(git diff --cached --name-only)" = docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
+            git config user.name 'Hepta KG candidate binding'
+            git config user.email 'hepta-kg-ci@users.noreply.github.com'
+            git commit -m 'docs(knowledge.graph): bind current candidate source objects' -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
+            git push origin "HEAD:refs/heads/$OWN_BRANCH"
+          fi
+          echo "candidate=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  execution:
+    needs: bind
+    name: KG ${{ matrix.profile }} (${{ matrix.lane }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+        profile: [kernel, product]
+        include:
+          - profile: kernel
+            runner: macos-14
+          - profile: product
+            runner: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.bind.outputs.candidate }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Construct existing deterministic pinned-base merge
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ needs.bind.outputs.candidate }}
+          pr-number: '1110'
+          author-name: Hepta KG CI
+          author-email: hepta-kg-ci@users.noreply.github.com
+          message: Synthetic merge
+      - name: Retain actual tested identity
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ needs.bind.outputs.candidate }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/kg-evidence"
+          git diff --exit-code
+          git diff --cached --exit-code
+          { printf 'source=%s\nbase=%s\n' "$SOURCE_SHA" "$BASE_SHA"; git rev-parse HEAD HEAD^{tree}; } | tee "$RUNNER_TEMP/kg-evidence/identity.txt"
+      - name: Install repository Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          channel="$(sed -n 's/^channel *= *"\([^"]*\)".*/\1/p' codex-rs/rust-toolchain.toml)"
+          test -n "$channel"
+          rustup toolchain install "$channel" --profile minimal --component rustfmt --component clippy
+      - name: Prepare real product sandbox prerequisites
+        if: matrix.profile == 'product'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - name: Resolve repository-verified V8 product artifacts
+        if: matrix.profile == 'product'
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Execute every applicable check without hiding earlier failures
+        shell: bash
+        env:
+          PROFILE: ${{ matrix.profile }}
+        run: |
+          set -euo pipefail
+          export EVIDENCE="$RUNNER_TEMP/kg-evidence"
+          failed=0
+          run_check() {
+            name="$1"; shift
+            set +e
+            "$@" 2>&1 | tee "$EVIDENCE/$name.log"
+            status=${PIPESTATUS[0]}
+            set -e
+            printf '%s\t%s\n' "$name" "$status" >> "$EVIDENCE/results.tsv"
+            if [ "$status" -ne 0 ]; then failed=1; fi
+          }
+          run_check measurement-tests python3 -m unittest discover -s scripts -p test_hepta_kg_measurement.py -v
+          run_check budget-tests python3 -m unittest discover -s scripts -p test_hepta_knowledge_graph_budget.py -v
+          run_check measurement-self-test python3 scripts/hepta-knowledge-graph-target-measure.py --self-test
+          run_check implementation-maps python3 scripts/hepta-implementation-maps.py verify
+          cd codex-rs
+          if [ "$PROFILE" = kernel ]; then
+            run_check formatting cargo fmt --package codex-hepta-kg -- --check
+            run_check kg-kernel cargo test --locked -p codex-hepta-kg -- --nocapture
+            run_check kg-clippy cargo clippy --locked -p codex-hepta-kg --no-deps --all-targets -- -D warnings
+          else
+            run_check formatting cargo fmt --package codex-hepta-kg --package codex-hepta-memory --package codex-hepta-agentd --package codex-hepta-prompt-registry --package codex-hepta-prompt-optimizer -- --check
+            run_check prompt-registry cargo test --locked -p codex-hepta-prompt-registry -- --nocapture
+            run_check prompt-optimizer cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture
+            run_check cognitive-owner cargo test --locked -p codex-hepta-memory --lib -- --nocapture --test-threads=1
+            run_check crash-reopen cargo test --locked -p codex-hepta-memory --lib cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor -- --ignored --exact --nocapture --test-threads=1
+            run_check history-reopen cargo test --locked -p codex-hepta-memory --lib cognitive_kg_benchmark_tests::history::qualification_kg_history_reopen_no_resurrection -- --ignored --exact --nocapture --test-threads=1
+            run_check agentd-default cargo test --locked -p codex-hepta-agentd --test cognitive_product_e2e -- --nocapture --test-threads=1
+            run_check agentd-witness cargo test --locked -p codex-hepta-agentd --features qualification-cognitive-write --test cognitive_product_e2e -- --nocapture --test-threads=1
+            run_check strict-clippy cargo clippy --locked -p codex-hepta-kg -p codex-hepta-memory -p codex-hepta-agentd -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer --no-deps --all-targets --features codex-hepta-agentd/qualification-cognitive-write -- -D warnings
+          fi
+          exit "$failed"
+      - name: Ensure tests did not change tracked source
+        if: always()
+        shell: bash
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Preserve observed results, not acceptance claims
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kg-abc-${{ matrix.profile }}-${{ matrix.lane }}-${{ needs.bind.outputs.candidate }}
+          path: ${{ runner.temp }}/kg-evidence
+          if-no-files-found: error
