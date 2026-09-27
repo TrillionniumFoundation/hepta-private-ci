@@ -56,43 +56,75 @@ jobs:
           cargo "+$PLATFORM_TYPES_MSRV" --version | tee "$evidence/cargo-version.txt"
           rustc "+$PLATFORM_TYPES_MSRV" --version --verbose | tee "$evidence/rustc-version.txt"
 
+          python3 - "$repo_root/codex-rs/hepta-wire/src/platform_types.rs" <<'PY'
+          from pathlib import Path
+          import sys
+
+          path = Path(sys.argv[1])
+          text = path.read_text(encoding="utf-8")
+          old = '    let predecessor_digest = take_digest(&mut object, "predecessor_digest")?;\n'
+          new = (
+              '    let predecessor_digest =\n'
+              '        take_digest_allow_zero(&mut object, "predecessor_digest")?;\n'
+          )
+          if old in text:
+              if text.count(old) != 1:
+                  raise SystemExit("topology predecessor digest fixup is ambiguous")
+              path.write_text(text.replace(old, new), encoding="utf-8")
+          elif new not in text:
+              raise SystemExit("topology predecessor digest contract anchor is missing")
+          PY
+
           cargo "+$PLATFORM_TYPES_MSRV" generate-lockfile \
             --manifest-path "$repo_root/codex-rs/Cargo.toml"
 
           unexpected="$(
             git -C "$repo_root" status --porcelain --untracked-files=no |
               cut -c4- |
-              grep -Ev '^codex-rs/Cargo\.lock$' || true
+              grep -Ev '^(codex-rs/Cargo\.lock|codex-rs/hepta-wire/src/platform_types\.rs)$' || true
           )"
           if [[ -n "$unexpected" ]]; then
             printf 'lock refresh changed unexpected tracked paths:\n%s\n' "$unexpected" >&2
             exit 1
           fi
 
+          git -C "$repo_root" diff --check
           cargo "+$PLATFORM_TYPES_MSRV" metadata \
             --manifest-path "$repo_root/codex-rs/Cargo.toml" \
             --locked --no-deps > "$evidence/metadata.json"
           cargo "+$PLATFORM_TYPES_MSRV" check \
-            -p codex-hepta-types \
+            -p codex-hepta-types -p codex-hepta-wire \
             --manifest-path "$repo_root/codex-rs/Cargo.toml" \
             --locked
           cargo "+$PLATFORM_TYPES_MSRV" test \
             -p codex-hepta-types \
             --manifest-path "$repo_root/codex-rs/Cargo.toml" \
             --locked
+          cargo "+$PLATFORM_TYPES_MSRV" test \
+            -p codex-hepta-wire \
+            --manifest-path "$repo_root/codex-rs/Cargo.toml" \
+            --locked \
+            platform_types::tests::topology_json_is_strict_and_recomputes_candidate_digest
 
-          git -C "$repo_root" diff --stat -- codex-rs/Cargo.lock | tee "$evidence/lock-diff-stat.txt"
-          sha256sum "$repo_root/codex-rs/Cargo.lock" | tee "$evidence/cargo-lock.sha256"
+          git -C "$repo_root" diff --stat -- \
+            codex-rs/Cargo.lock codex-rs/hepta-wire/src/platform_types.rs \
+            | tee "$evidence/diff-stat.txt"
+          sha256sum \
+            "$repo_root/codex-rs/Cargo.lock" \
+            "$repo_root/codex-rs/hepta-wire/src/platform_types.rs" \
+            | tee "$evidence/candidate-files.sha256"
 
-          if git -C "$repo_root" diff --quiet -- codex-rs/Cargo.lock; then
-            echo "Cargo.lock is already canonical"
+          if git -C "$repo_root" diff --quiet -- \
+            codex-rs/Cargo.lock codex-rs/hepta-wire/src/platform_types.rs; then
+            echo "Cargo.lock and topology wire semantics are already canonical"
             exit 0
           fi
 
           git -C "$repo_root" config user.name "Hepta platform.types lock bot"
           git -C "$repo_root" config user.email "hepta-platform-types-ci@users.noreply.github.com"
-          git -C "$repo_root" add -- codex-rs/Cargo.lock
-          git -C "$repo_root" commit -m "chore(platform.types): refresh authoritative Cargo.lock"
+          git -C "$repo_root" add -- \
+            codex-rs/Cargo.lock codex-rs/hepta-wire/src/platform_types.rs
+          git -C "$repo_root" commit -m "fix(platform.types): align topology wire and authoritative lock"
           git -C "$repo_root" push origin "HEAD:${HEAD_REF}"
 
       - name: Preserve lock-refresh diagnostics
@@ -103,6 +135,7 @@ jobs:
           path: |
             .hepta-evidence/platform-types-lock-refresh/
             codex-rs/Cargo.lock
+            codex-rs/hepta-wire/src/platform_types.rs
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
