@@ -216,8 +216,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "f4484b839682160ade2eb79b10e0fb3582235dac",
-    "tree": "7a2c6b668a877727a0a4c585ebb122958c3bfa42"
+    "commit": "aa9e64e6b7f713d56618fd4ec7b218f635616b82",
+    "tree": "087980e77da332b692ef2825436ffcdec1a2814b"
   },
   "observedSourcePaths": [
     ".cargo",
@@ -286,6 +286,7 @@
     "docs/modules/memory.retrieval/ADR/0003-signed-lifecycle-delivery.md",
     "docs/modules/memory.retrieval/ADR/0004-protected-rollout-and-shadow-budgets.md",
     "docs/modules/memory.retrieval/API.md",
+    "docs/modules/memory.retrieval/CALIBRATION_AND_ABLATIONS.md",
     "docs/modules/memory.retrieval/CANARY_AND_ROLLBACK.md",
     "docs/modules/memory.retrieval/E2E_MEASUREMENT.md",
     "docs/modules/memory.retrieval/OPERATIONS.md",
@@ -326,11 +327,11 @@
   "sourceObjects": [
     {
       "path": ".github",
-      "object": "9b3afabda8c6b283eff9281113508816e55244f0"
+      "object": "0d7946f8b04498c6aaa2ba8f38873ff061702c27"
     },
     {
       "path": ".github/workflows",
-      "object": "c950123b6fcfcf0ed0b41aadf04facc4d986e2af"
+      "object": "922e3f1c0187aa4b3b4558707ab381bb8754dc49"
     },
     {
       "path": ".github/workflows/blocking-ci.yml",
@@ -338,7 +339,7 @@
     },
     {
       "path": ".github/workflows/hepta-memory-retrieval-convergence.yml",
-      "object": "fc81fb13fa7ff3539fa90ef7940a68a5c03cedde"
+      "object": "3c08ff343ff40587e9c291e04330eee029c37365"
     },
     {
       "path": ".github/workflows/hepta-memory-retrieval-maintenance.yml",
@@ -358,7 +359,7 @@
     },
     {
       "path": "codex-rs",
-      "object": "718f6d898df9b227f0edbfd369ab72304d5a633b"
+      "object": "6ad85982a939fdf6fe2b9c9108c868d9c1ac7010"
     },
     {
       "path": "codex-rs/.cargo",
@@ -374,7 +375,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "c2594c7529c80242754d9ba4286a5c926bd7fca9"
+      "object": "191c6cab0dd24b7a445dd3c2d2a3d5df51abaac5"
     },
     {
       "path": "codex-rs/hepta-agentd/Cargo.toml",
@@ -581,6 +582,10 @@
       "object": "0be22e59d527309e87a65d2175783ebd06db671f"
     },
     {
+      "path": "docs/modules/memory.retrieval/CALIBRATION_AND_ABLATIONS.md",
+      "object": "519615977a3d623b7067764e6b24d719031d9545"
+    },
+    {
       "path": "docs/modules/memory.retrieval/CANARY_AND_ROLLBACK.md",
       "object": "08c8c3c1111c527af9f89aa555becdb975649bf3"
     },
@@ -638,7 +643,7 @@
     },
     {
       "path": "scripts",
-      "object": "d5c47fb36778c283416793b8ffb6bc4931842e5c"
+      "object": "0ea3ddad53e861e8dcef1d105d724d135e2dfaf2"
     },
     {
       "path": "scripts/hepta_memory_retrieval_candidate.py",
