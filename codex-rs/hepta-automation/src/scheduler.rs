@@ -41,6 +41,8 @@ pub enum AutomationBatchStopReason {
 
 /// Results from one bounded Agentd admission cycle. The individual V1 ticks are
 /// retained so existing retry accounting and observability stay compatible.
+/// An idle stop retains the final `AutomationTick::Idle` sentinel so callers
+/// reset any cross-cycle pre-admission retry budget exactly as the V1 loop did.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AutomationBatchReport {
     pub ticks: Vec<AutomationTick>,
@@ -110,6 +112,7 @@ where
         for _ in 0..policy.admission_budget_per_cycle {
             match self.tick(now_ms()?).await? {
                 AutomationTick::Idle => {
+                    ticks.push(AutomationTick::Idle);
                     return Ok(AutomationBatchReport {
                         ticks,
                         stop_reason: AutomationBatchStopReason::Idle,
