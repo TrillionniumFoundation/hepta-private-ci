@@ -1,0 +1,153 @@
+name: Learning plasticity convergence
+
+on:
+  push:
+    branches:
+      - work/learning-plasticity-full-convergence-20260927
+    paths:
+      - codex-rs/hepta-plasticity/**
+      - codex-rs/hepta-agentd/**
+      - docs/modules/learning.plasticity/**
+      - docs/modules/runtime.agentd/**
+      - scripts/hepta-implementation-maps.py
+      - .github/workflows/hepta-learning-plasticity-convergence.yml
+  pull_request:
+    paths:
+      - codex-rs/hepta-plasticity/**
+      - codex-rs/hepta-agentd/**
+      - docs/modules/learning.plasticity/**
+      - docs/modules/runtime.agentd/**
+      - scripts/hepta-implementation-maps.py
+      - .github/workflows/hepta-learning-plasticity-convergence.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-rebind:
+    name: Generate exact-source rebind patch
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Generate canonical source rebind
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/plasticity-rebind/files"
+          candidate_sha="$(git rev-parse HEAD)"
+          candidate_tree="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-implementation-maps.py migrate \
+            --module learning.plasticity \
+            --module runtime.agentd \
+            | tee "$RUNNER_TEMP/plasticity-rebind/migrate.log"
+          python3 scripts/hepta-implementation-maps.py sync-plasticity-status
+          git diff --binary --full-index > "$RUNNER_TEMP/plasticity-rebind/rebind.patch"
+          git diff --name-only -z > "$RUNNER_TEMP/plasticity-rebind/changed.zlist"
+          if test -s "$RUNNER_TEMP/plasticity-rebind/changed.zlist"; then
+            tar --null -T "$RUNNER_TEMP/plasticity-rebind/changed.zlist" \
+              -czf "$RUNNER_TEMP/plasticity-rebind/files/changed-files.tar.gz"
+          else
+            tar -czf "$RUNNER_TEMP/plasticity-rebind/files/changed-files.tar.gz" --files-from /dev/null
+          fi
+          python3 - "$candidate_sha" "$candidate_tree" > "$RUNNER_TEMP/plasticity-rebind/source.json" <<'PY'
+          import json, sys
+          print(json.dumps({"candidateSha": sys.argv[1], "candidateTree": sys.argv[2]}, indent=2))
+          PY
+      - name: Verify generated candidate documents
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          {
+            python3 scripts/hepta-implementation-maps.py verify --expected-sha "$(git rev-parse HEAD)"
+            python3 scripts/hepta-technical-receipts.py verify
+            python3 scripts/hepta-implementation-dossiers.py verify
+            python3 scripts/hepta-docs.py verify
+          } 2>&1 | tee "$RUNNER_TEMP/plasticity-rebind/verify.log"
+      - name: Retain exact-source patch and verifier output
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: learning-plasticity-source-rebind-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/plasticity-rebind
+          if-no-files-found: error
+          retention-days: 7
+
+  qualification:
+    name: Exact-head plasticity qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind frozen source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git status --porcelain=v1 --untracked-files=all | test ! -s /dev/stdin
+      - name: Plasticity core build and tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-plasticity --all-targets --locked
+          cargo clippy -p codex-hepta-plasticity --all-targets --locked -- -D warnings
+      - name: Agentd plasticity process and lifetime tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-agentd plasticity --all-targets --locked
+          cargo clippy -p codex-hepta-agentd --all-targets --locked -- -D warnings
+      - name: Lane F and live structural canary
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp codex-rs/Cargo.lock qualification/lane-f-shadow/Cargo.lock
+          cargo metadata --manifest-path qualification/lane-f-shadow/Cargo.toml --locked --offline --format-version 1 >/dev/null
+          python3 qualification/lane-f-shadow/verify_lock.py
+          cargo test --manifest-path qualification/lane-f-shadow/Cargo.toml --locked --offline
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime \
+            authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics \
+            --locked --offline
+      - name: Record exact-head qualification status
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/plasticity-qualification"
+          python3 - > "$RUNNER_TEMP/plasticity-qualification/exact-head.json" <<'PY'
+          import json, os, subprocess
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          print(json.dumps({
+              "schema": "hepta.learning-plasticity-exact-head.v1",
+              "candidateSha": git("rev-parse", "HEAD"),
+              "candidateTree": git("rev-parse", "HEAD^{tree}"),
+              "workflowRunId": os.environ["GITHUB_RUN_ID"],
+              "workflowRunAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "ref": os.environ["GITHUB_REF"],
+              "hostProfile": "ubuntu-24.04",
+              "evidenceValidUntil": None,
+              "authorityDelta": "none",
+              "deploymentQualification": False,
+          }, indent=2, sort_keys=True))
+          PY
+      - name: Retain exact-head status
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: learning-plasticity-exact-head-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/plasticity-qualification
+          if-no-files-found: error
+          retention-days: 30
