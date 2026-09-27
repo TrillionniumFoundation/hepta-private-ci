@@ -12,12 +12,12 @@ permissions:
 
 concurrency:
   group: ndu-one-shot-rustfmt
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   repair-and-export:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
     env:
       EXPECTED_SHA: ${{ github.sha }}
@@ -28,6 +28,10 @@ jobs:
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
+      - name: Install qualification-compatible Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
       - name: Format only the two repaired files and refresh typed source objects
         shell: bash
         run: |
