@@ -6,13 +6,13 @@ permissions:
   contents: read
 concurrency:
   group: retrieval-assertion-delivery-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 env:
   PYTHONDONTWRITEBYTECODE: '1'
 jobs:
   close:
     if: contains(github.event.head_commit.message, '[retrieval-assertion-delivery-v2]')
-    runs-on: macos-15
+    runs-on: ubuntu-24.04
     timeout-minutes: 120
     permissions:
       contents: write
