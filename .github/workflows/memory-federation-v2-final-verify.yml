@@ -108,7 +108,7 @@ jobs:
           rm -rf "$RUNNER_TEMP/memory-federation-source"
           python3 scripts/memory_federation_full_attestation.py emit-payload \
             --output "$RUNNER_TEMP/memory-federation-source" \
-            --lane exact-head \
+            --lane source-head \
             --conclusion "$JOB_CONCLUSION" \
             --source-sha "$SOURCE_SHA" \
             --tested-sha "$SOURCE_SHA" \
@@ -137,7 +137,7 @@ jobs:
           python3 scripts/memory_federation_full_attestation.py emit-envelope \
             --output "$RUNNER_TEMP/memory-federation-source-envelope/envelope.json" \
             --payload "$RUNNER_TEMP/memory-federation-source/attestation.json" \
-            --lane exact-head \
+            --lane source-head \
             --conclusion "$JOB_CONCLUSION" \
             --artifact-name "memory-federation-source-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
             --artifact-id "$ARTIFACT_ID" \
