@@ -45,13 +45,13 @@ pub(crate) async fn run_supervisord_product(
     verifier: Option<H7H89ProductionGrantVerifier>,
     fleet_start_admission: FleetStartAdmission,
 ) -> Result<(), SupervisorError> {
-    let registry = FleetRegistry::open_existing(fleet_root.clone())?;
-    let state_root = registry.layout().state_root().to_path_buf();
-    // Acquire the named-product ownership boundary before the first capacity or
-    // expiry mutation and hold it until the daemon exits. The inner daemon lock
-    // remains authoritative for its control socket; this earlier lock prevents
-    // a losing second product instance from performing even one Fleet write.
+    let state_root = fleet_root.layout().state_root().to_path_buf();
+    // Acquire the named-product ownership boundary before FleetRegistry open:
+    // open_existing may clean staging roots, migrate private directories and
+    // republish the workspace reservation index. A losing second product must
+    // not perform even one registry or allocation-state write.
     let _product_owner = FleetProductOwnerGuard::acquire(&state_root)?;
+    FleetRegistry::open_existing(fleet_root.clone())?;
 
     #[cfg(target_os = "linux")]
     let identity = Some(LocalFleetIdentityV1::discover()?);
@@ -159,6 +159,13 @@ struct FleetProductOwnerGuard {
 
 impl FleetProductOwnerGuard {
     fn acquire(state_root: &Path) -> Result<Self, SupervisorError> {
+        let metadata = std::fs::symlink_metadata(state_root)?;
+        if !metadata.file_type().is_dir() || metadata.file_type().is_symlink() {
+            return Err(SupervisorError::Invalid(format!(
+                "runtime.fleet state root is not a physical directory: {}",
+                state_root.display()
+            )));
+        }
         let path = state_root.join(PRODUCT_OWNER_LOCK);
         let file = open_product_owner_lock(&path)?;
         file.try_lock().map_err(|error| {
