@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7627c2b2e631d42ebd9d62dd1df3f8b542bee482",
-    "tree": "020608dc9f6ff09479f5cf87487e49f361e0f307"
+    "commit": "d5fd7715b5ed1e70c2df271d5ef0bdfbd4ae8271",
+    "tree": "b3251b5fb52343b8fd25ac071c21f3858cf7d1b0"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.evidence",
@@ -155,6 +155,7 @@
       "state": "source_implemented_product_consumed",
       "authority": "read_only_hash_chained_audit_history",
       "tests": [
+        "codex-rs/hepta-evidence/src/frontier_backend_tests.rs",
         "codex-rs/hepta-evidence/src/frontier_backend_file_tests.rs"
       ],
       "sourcePathExists": true
@@ -218,7 +219,8 @@
   ],
   "repositoryControlledGaps": [
     "Obtain successful exact-source and deterministic-merge qualification receipts for the final PR head and retain their artifact digests.",
-    "A repository administrator must require the stable CI required fan-in, which includes Kernel evidence required, in protected-branch policy."
+    "Complete final Rust, general CI, architecture and convergence regression runs; local Python unit results do not qualify the full candidate.",
+    "A repository administrator must preserve existing requirements and enforce the stable CI required and Kernel evidence convergence required fan-ins; the active integration cannot administer branch protection."
   ],
   "externalEvidenceGates": [
     "independent exact-candidate semantic and security acceptance",
