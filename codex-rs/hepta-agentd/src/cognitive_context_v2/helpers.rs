@@ -1,5 +1,7 @@
 use super::*;
 
+pub(super) use super::publication::issued_seal;
+
 pub(super) async fn authenticate_packet(
     store: &CognitiveStore,
     owner: &AgentId,
@@ -70,7 +72,7 @@ pub(super) async fn authenticate_packet(
         record_set.extend_from_slice(&item.revision.to_be_bytes());
         push_digest(&mut record_set, expected_content);
     }
-    let record_count = u16::try_from(items.len()).map_err(|error| {
+    let record_count = u16::try_from(read.records().len()).map_err(|error| {
         CognitiveStoreError::Invalid(format!("invalid authenticated context count: {error}"))
     })?;
     Ok(AuthenticatedPacketV2 {
@@ -204,55 +206,6 @@ pub(super) fn request_binding_digest(
     Digest32::of_bytes(&bytes)
 }
 
-pub(super) fn register_issued_seal(
-    seal: IssuedContextSealV2,
-) -> Result<Digest32, CognitiveContextError> {
-    let digest = seal.digest();
-    let now = monotonic_micros()?;
-    let mut issued = ISSUED_CONTEXT_SEALS
-        .get_or_init(|| Mutex::new(BTreeMap::new()))
-        .lock()
-        .map_err(|_| {
-            CognitiveStoreError::Unavailable("context delivery seal registry poisoned".to_string())
-        })?;
-    issued.retain(|_, existing| existing.expires_at_micros > now);
-    if let Some(existing) = issued.get(&digest) {
-        if existing == &seal {
-            return Ok(digest);
-        }
-        return Err(CognitiveStoreError::Conflict(
-            "context delivery seal digest collision".to_string(),
-        )
-        .into());
-    }
-    if issued.len() >= MAX_ISSUED_CONTEXT_SEALS {
-        return Err(CognitiveStoreError::Unavailable(
-            "context delivery seal registry is full".to_string(),
-        )
-        .into());
-    }
-    issued.insert(digest, seal);
-    Ok(digest)
-}
-
-pub(super) fn issued_seal(digest: Digest32) -> Result<IssuedContextSealV2, CognitiveContextError> {
-    let now = monotonic_micros()?;
-    let mut issued = ISSUED_CONTEXT_SEALS
-        .get_or_init(|| Mutex::new(BTreeMap::new()))
-        .lock()
-        .map_err(|_| {
-            CognitiveStoreError::Unavailable("context delivery seal registry poisoned".to_string())
-        })?;
-    issued.retain(|_, existing| existing.expires_at_micros > now);
-    issued.get(&digest).cloned().ok_or_else(|| {
-        CognitiveStoreError::Conflict(
-            "context delivery seal is unknown, expired or belongs to another process generation"
-                .to_string(),
-        )
-        .into()
-    })
-}
-
 pub(super) fn encode_plan_binding(raw: Digest32, seal: Digest32) -> String {
     format!("{CONTEXT_PLAN_PREFIX}:{raw}:{seal}")
 }
@@ -294,7 +247,7 @@ pub(super) fn parse_digest(
         .map_err(|error| CognitiveStoreError::Invalid(format!("invalid {name}: {error}")).into())
 }
 
-pub(super) fn monotonic_micros() -> Result<u64, CognitiveContextError> {
+pub(crate) fn monotonic_micros() -> Result<u64, CognitiveContextError> {
     let origin = MONOTONIC_ORIGIN.get_or_init(Instant::now);
     u64::try_from(origin.elapsed().as_micros()).map_err(|error| {
         CognitiveStoreError::Unavailable(format!("context monotonic clock overflow: {error}"))

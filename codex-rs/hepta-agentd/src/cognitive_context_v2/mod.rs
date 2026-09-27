@@ -2,6 +2,8 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::OnceLock;
+use std::sync::atomic::AtomicU8;
+use std::sync::atomic::Ordering;
 use std::time::Instant;
 
 use codex_hepta_cognitive_read::MAX_ENCODED_READ_RESULT_BYTES_V2;
@@ -29,9 +31,11 @@ use crate::CurrentMemoryRetrievalContext;
 use crate::PinnedCognitiveRanker;
 
 mod helpers;
+mod publication;
 mod read;
 mod verify;
 
+pub(super) use helpers::monotonic_micros;
 pub(crate) use read::read_with_retrieval_context_and_learning;
 pub(crate) use verify::revalidate_with_retrieval_context;
 
@@ -52,7 +56,7 @@ const CONTEXT_DELIVERY_SEAL_DOMAIN: &[u8] = b"hepta.agentd.cognitive-context-del
 const CONTEXT_PLAN_PREFIX: &str = "context-plan-v2";
 
 static MONOTONIC_ORIGIN: OnceLock<Instant> = OnceLock::new();
-static ISSUED_CONTEXT_SEALS: OnceLock<Mutex<BTreeMap<Digest32, IssuedContextSealV2>>> =
+static ISSUED_CONTEXT_SEALS: OnceLock<Mutex<BTreeMap<Digest32, publication::SealEntryV2>>> =
     OnceLock::new();
 
 #[derive(Clone, Debug, Eq, PartialEq)]

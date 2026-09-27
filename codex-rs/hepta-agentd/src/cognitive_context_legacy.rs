@@ -23,6 +23,7 @@ use codex_hepta_memory::RetrievalExecutionContextV1;
 use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_memory::RevalidationStatus;
 use codex_hepta_memory::execute_owner_observation;
+use codex_hepta_memory_retrieval::RetrievalAssignmentObservationV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
@@ -113,6 +114,48 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     request_id: Option<u64>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    if learning_sink.is_some() && request_id.is_none() {
+        return Err(CognitiveContextError::RetrievalLearningUnavailable);
+    }
+    prepare_read(
+        store,
+        owner,
+        body_generation,
+        query,
+        limit,
+        ranker,
+        current_retrieval,
+        learning_sink.is_some(),
+    )
+    .await?
+    .record_delivery(owner, body_generation, learning_sink, request_id)
+    .await
+}
+
+/// The owner read is prepared without writing learning evidence. The product
+/// adapter must seal the final response before consuming this value in
+/// `record_delivery`; no response fields may change after the ledger append.
+pub(super) struct PreparedContextReadV2 {
+    pub(super) response: CognitiveContextSnapshot,
+    pub(super) issued_at_micros: u64,
+    pub(super) expires_at_micros: u64,
+    pub(super) retrieval_context_digest: Option<Digest32>,
+    pub(super) ranker_policy_digest: Option<Digest32>,
+    assignment: Option<RetrievalAssignmentObservationV1>,
+    downstream_policy_digest: Option<Digest32>,
+    delivery_propensity: ProbabilityQ32,
+}
+
+pub(super) async fn prepare_read(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    body_generation: u64,
+    query: &str,
+    limit: u16,
+    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    learning_required: bool,
+) -> Result<PreparedContextReadV2, CognitiveContextError> {
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
@@ -129,7 +172,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     let expected_retrieval_context_digest = retrieval_context
         .as_ref()
         .map(RetrievalExecutionContextV1::binding_digest);
-    if learning_sink.is_some() && retrieval_context.is_none() {
+    if learning_required && retrieval_context.is_none() {
         return Err(CognitiveContextError::RetrievalLearningUnavailable);
     }
     let mut pending_assignment = None;
@@ -272,6 +315,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         });
     }
 
+    let mut ranker_policy_digest = None;
     let mut downstream_policy_digest = None;
     let mut delivery_propensity = ProbabilityQ32::ONE;
     if let Some(ranker) = ranker {
@@ -291,6 +335,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         .map_err(|_| CognitiveContextError::RankerUnavailable)?
         .map_err(|_| CognitiveContextError::RankerUnavailable)?;
         admitted_items = ranked_items;
+        ranker_policy_digest = Some(rank_observation.policy_digest);
         if rank_observation.applied {
             downstream_policy_digest = Some(rank_observation.policy_digest);
             delivery_propensity = rank_observation.propensity;
@@ -358,13 +403,25 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     response.read_digest = selected_read_binding.to_string();
     let encoded_context = serde_json::to_vec(&response)
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-    let now_micros = u64::try_from(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?
-            .as_micros(),
-    )
-    .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
+    // Count only records returned by the canonical exact-ID owner receipt.
+    // The public item array is not an independent assertion of verification.
+    if !selected_read.missing_ids().is_empty()
+        || selected_read.records().len() != response.items.len()
+        || selected_read.records().iter().any(|record| !record.is_live())
+    {
+        return Err(CognitiveStoreError::Conflict(
+            "selected context does not match its canonical owner receipt".to_string(),
+        )
+        .into());
+    }
+    let verified_item_count = u32::try_from(selected_read.records().len())
+        .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+    // Store validity timestamps remain Unix time. Planner TTLs use the shared
+    // process-monotonic clock and are never renewed by sealing or recording.
+    let now_micros = super::v2::monotonic_micros()?;
+    let expires_at_micros = now_micros.checked_add(1_000_000).ok_or_else(|| {
+        CognitiveStoreError::Invalid("context plan expiry overflow".to_string())
+    })?;
     let plan = plan_observed_context(ObservedContextV1 {
         owner_id: StableId::new(owner.as_str())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
@@ -372,13 +429,11 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
         source_snapshot_digest: selected_read.snapshot_digest(),
         read_digest: selected_read_binding,
-        verified_item_count: response.items.len() as u32,
+        verified_item_count,
         encoded_context: &encoded_context,
         maximum_context_bytes: MAX_CONTEXT_JSON_BYTES as u32,
         observed_at_micros: now_micros,
-        expires_at_micros: now_micros.checked_add(1_000_000).ok_or_else(|| {
-            CognitiveStoreError::Invalid("context plan expiry overflow".to_string())
-        })?,
+        expires_at_micros,
     })
     .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
     if !plan.read_allowed {
@@ -421,61 +476,83 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
             return Err(CognitiveContextError::RetrievalContextUnavailable);
         }
     }
-    if let Some(sink) = learning_sink {
-        let assignment =
-            pending_assignment.ok_or(CognitiveContextError::RetrievalLearningUnavailable)?;
-        let request_id = request_id.ok_or(CognitiveContextError::RetrievalLearningUnavailable)?;
-        let selected = assignment
-            .selected_candidates
-            .iter()
-            .map(|candidate| {
-                (
+    Ok(PreparedContextReadV2 {
+        response,
+        issued_at_micros: now_micros,
+        expires_at_micros,
+        retrieval_context_digest: expected_retrieval_context_digest,
+        ranker_policy_digest,
+        assignment: pending_assignment,
+        downstream_policy_digest,
+        delivery_propensity,
+    })
+}
+
+impl PreparedContextReadV2 {
+    pub(super) async fn record_delivery(
+        self,
+        owner: &AgentId,
+        body_generation: u64,
+        learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
+        request_id: Option<u64>,
+    ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+        let Self {
+            response,
+            assignment,
+            downstream_policy_digest,
+            delivery_propensity,
+            ..
+        } = self;
+        if let Some(sink) = learning_sink {
+            let assignment =
+                assignment.ok_or(CognitiveContextError::RetrievalLearningUnavailable)?;
+            let request_id = request_id.ok_or(CognitiveContextError::RetrievalLearningUnavailable)?;
+            let selected = assignment
+                .selected_candidates
+                .iter()
+                .map(|candidate| {
                     (
-                        candidate.record_id.as_str().to_string(),
-                        candidate.record_revision.get(),
-                    ),
-                    candidate.clone(),
+                        (
+                            candidate.record_id.as_str().to_string(),
+                            candidate.record_revision.get(),
+                        ),
+                        candidate.clone(),
+                    )
+                })
+                .collect::<BTreeMap<_, _>>();
+            let delivered_candidates = response
+                .items
+                .iter()
+                .map(|item| {
+                    selected
+                        .get(&(item.memory_id.clone(), item.revision))
+                        .cloned()
+                        .ok_or(CognitiveContextError::RetrievalLearningUnavailable)
+                })
+                .collect::<Result<Vec<RetrievalCandidateIdentityV1>, _>>()?;
+            let context_exposed = !delivered_candidates.is_empty();
+            let published_context_digest = recorded_response_digest(&response)?;
+            let sink = std::sync::Arc::clone(sink);
+            let owner = owner.clone();
+            tokio::task::spawn_blocking(move || {
+                sink.append_with_delivery_policy(
+                    &owner,
+                    body_generation,
+                    request_id,
+                    &assignment,
+                    &delivered_candidates,
+                    context_exposed,
+                    published_context_digest,
+                    downstream_policy_digest,
+                    delivery_propensity,
                 )
             })
-            .collect::<BTreeMap<_, _>>();
-        let delivered_candidates = response
-            .items
-            .iter()
-            .map(|item| {
-                selected
-                    .get(&(item.memory_id.clone(), item.revision))
-                    .cloned()
-                    .ok_or(CognitiveContextError::RetrievalLearningUnavailable)
-            })
-            .collect::<Result<Vec<RetrievalCandidateIdentityV1>, _>>()?;
-        let context_exposed = !delivered_candidates.is_empty();
-        let published_context_digest = if context_exposed {
-            Some(Digest32::of_bytes(&serde_json::to_vec(&response).map_err(
-                |error| CognitiveStoreError::Invalid(error.to_string()),
-            )?))
-        } else {
-            None
-        };
-        let sink = std::sync::Arc::clone(sink);
-        let owner = owner.clone();
-        tokio::task::spawn_blocking(move || {
-            sink.append_with_delivery_policy(
-                &owner,
-                body_generation,
-                request_id,
-                &assignment,
-                &delivered_candidates,
-                context_exposed,
-                published_context_digest,
-                downstream_policy_digest,
-                delivery_propensity,
-            )
-        })
-        .await
-        .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)?
-        .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)?;
+            .await
+            .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)?
+            .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)?;
+        }
+        Ok(response)
     }
-    Ok(response)
 }
 
 #[cfg(test)]
@@ -726,3 +803,21 @@ fn now_seconds() -> Result<i64, CognitiveStoreError> {
 #[cfg(test)]
 #[path = "cognitive_context_tests.rs"]
 mod tests;
+
+/// Digest of the exact envelope handed to the caller, including its plan seal.
+/// This is delivery preparation evidence, not an acknowledgement from a model
+/// or a downstream effect boundary.
+fn recorded_response_digest(
+    response: &CognitiveContextSnapshot,
+) -> Result<Option<Digest32>, CognitiveContextError> {
+    if response.items.is_empty() {
+        return Ok(None);
+    }
+    let bytes = serde_json::to_vec(response)
+        .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+    Ok(Some(Digest32::of_bytes(&bytes)))
+}
+
+#[cfg(test)]
+#[path = "cognitive_context_publication_tests.rs"]
+mod publication_tests;
