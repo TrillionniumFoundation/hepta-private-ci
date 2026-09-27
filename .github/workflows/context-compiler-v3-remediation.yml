@@ -3,7 +3,7 @@ name: context-compiler-v3-remediation
 on:
   push:
     branches:
-      - codex/context-compiler-full-closure-review-20260927
+      - codex/context-compiler-v3-hardening-20260928
 
 permissions:
   contents: write
@@ -15,13 +15,20 @@ concurrency:
 jobs:
   materialize-and-verify:
     if: ${{ contains(github.event.head_commit.message, '[materialize-v3]') }}
-    runs-on: macos-15
-    timeout-minutes: 180
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           persist-credentials: true
+
+      - name: Install native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev pkg-config
 
       - name: Install pinned Rust toolchain
         shell: bash
@@ -149,5 +156,5 @@ jobs:
           git config user.email "hepta-closure-bot@users.noreply.github.com"
           git add --all
           git diff --cached --check
-          git commit -m "feat(context.compiler): materialize current V3 exact provider path [context-source-fixed] [v3-materialized]"
+          git commit -m "feat(context.compiler): materialize direct V3 source [context-source-fixed] [v3-materialized]"
           git push origin "HEAD:${BRANCH}"
