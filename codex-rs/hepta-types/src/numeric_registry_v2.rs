@@ -68,7 +68,7 @@ impl RegistrySnapshotIdentityV1 {
         registry: &ContractRegistryV1,
     ) -> Result<(), NumericRegistryV2Error> {
         if registry.registry_digest()? != self.registry_digest {
-            return Err(NumericRegistryV2Error::RegistrySnapshotMismatch);
+            return Err(NumericRegistryV2Error::ReceiptMismatch);
         }
         Ok(())
     }
@@ -152,7 +152,8 @@ impl RegisteredNumericConversionReceiptV2 {
     /// Verify against an owner-pinned exact snapshot. This closes the replay
     /// gap left by self-contained verification: a valid receipt from an older
     /// generation or another registry digest cannot be accepted for the
-    /// current owner generation.
+    /// current owner generation. Snapshot mismatch intentionally reuses the
+    /// existing V2 receipt-mismatch error to preserve exhaustive enum matches.
     pub fn verify_for_snapshot(
         &self,
         source: &NumericSignalV1,
@@ -162,7 +163,7 @@ impl RegisteredNumericConversionReceiptV2 {
     ) -> Result<NumericSignalV1, NumericRegistryV2Error> {
         expected_snapshot.verify_registry(registry)?;
         if self.registry_snapshot != expected_snapshot {
-            return Err(NumericRegistryV2Error::RegistrySnapshotMismatch);
+            return Err(NumericRegistryV2Error::ReceiptMismatch);
         }
         self.verify(source, target, registry)
     }
@@ -304,7 +305,6 @@ pub enum NumericRegistryV2Error {
     EmptyDigest(&'static str),
     InvalidTypeIdentity,
     ReceiptMismatch,
-    RegistrySnapshotMismatch,
     Canonical(CanonicalDigestError),
 }
 
@@ -440,7 +440,7 @@ mod tests {
         .expect("later snapshot");
         assert_eq!(
             receipt.verify_for_snapshot(&source, &target, &registry, later),
-            Err(NumericRegistryV2Error::RegistrySnapshotMismatch)
+            Err(NumericRegistryV2Error::ReceiptMismatch)
         );
 
         let wrong_digest = RegistrySnapshotIdentityV1::new(
@@ -450,7 +450,7 @@ mod tests {
         .expect("snapshot");
         assert_eq!(
             receipt.verify_for_snapshot(&source, &target, &registry, wrong_digest),
-            Err(NumericRegistryV2Error::RegistrySnapshotMismatch)
+            Err(NumericRegistryV2Error::ReceiptMismatch)
         );
     }
 }
