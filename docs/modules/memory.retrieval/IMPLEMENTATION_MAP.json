@@ -216,8 +216,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "46196c6803ac70a82ab392a642e71426bcfa5873",
-    "tree": "dbd6b3f4590df65e6db47347a6c113c4d3d000a8"
+    "commit": "7acc5d47737183ff7a5c71d4a74d964e4b51196b",
+    "tree": "e74cec38bcd5623ace0bb29caa9014200451dfb3"
   },
   "observedSourcePaths": [
     ".cargo",
@@ -281,6 +281,22 @@
     "codex-rs/hepta-types",
     "codex-rs/rust-toolchain.toml",
     "docs/modules/memory.retrieval",
+    "docs/modules/memory.retrieval/ADR/0001-semantic-admission.md",
+    "docs/modules/memory.retrieval/ADR/0002-source-and-retention.md",
+    "docs/modules/memory.retrieval/ADR/0003-signed-lifecycle-delivery.md",
+    "docs/modules/memory.retrieval/ADR/0004-protected-rollout-and-shadow-budgets.md",
+    "docs/modules/memory.retrieval/API.md",
+    "docs/modules/memory.retrieval/CANARY_AND_ROLLBACK.md",
+    "docs/modules/memory.retrieval/E2E_MEASUREMENT.md",
+    "docs/modules/memory.retrieval/OPERATIONS.md",
+    "docs/modules/memory.retrieval/OWNER_PROPOSITIONS.md",
+    "docs/modules/memory.retrieval/POLICY_REFERENCE.md",
+    "docs/modules/memory.retrieval/PROCESS_BOOTSTRAP.md",
+    "docs/modules/memory.retrieval/ROLLOUT_POLICY.md",
+    "docs/modules/memory.retrieval/TECHNICAL.md",
+    "docs/modules/memory.retrieval/TECHNICAL_BASELINE.md",
+    "docs/modules/memory.retrieval/THREAT_MODEL.md",
+    "docs/modules/memory.retrieval/VECTOR_OWNER.md",
     "justfile",
     "qualification/memory-retrieval",
     "qualification/memory-retrieval/TARGET_HOST.md",
@@ -309,24 +325,28 @@
   ],
   "sourceObjects": [
     {
-      "path": "codex-rs",
-      "object": "8e975c0aa893986de822a16c6ecd635a847b9e1d"
-    },
-    {
-      "path": "codex-rs/hepta-memory-retrieval",
-      "object": "3d42ab01876c5fec4aca7f5a7411f2472b465a72"
-    },
-    {
-      "path": "scripts",
-      "object": "236f17d6744d7976442520d12fd82d3492e00ff6"
-    },
-    {
       "path": ".github",
-      "object": "333a39306a8ba354187f1539884318ef6b9c96ef"
+      "object": "68f62e6b98dbb6cd2c15e5e7fb8b0b34095b981d"
     },
     {
-      "path": "justfile",
-      "object": "6ac734346c989cad04b754986032e364691233f3"
+      "path": ".github/workflows",
+      "object": "8c9ac30082b1b4c0a0774fd103bee8bb6f37b696"
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "object": "1798c5876871ea04fb5b3aa12b93e624470db006"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-convergence.yml",
+      "object": "fc81fb13fa7ff3539fa90ef7940a68a5c03cedde"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-maintenance.yml",
+      "object": "3e797b6be9eecd620f9caf2099d20178c3104bad"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+      "object": "4418e8f305e6cc26f47d3f67e71eb04233c7c3d4"
     },
     {
       "path": "MODULE.bazel",
@@ -337,16 +357,307 @@
       "object": "b563f19f51fff22a4cddcb3cd1a043192befbf84"
     },
     {
+      "path": "codex-rs",
+      "object": "f2c04b8fd56e992dc3d1669233ed1866d9bb993c"
+    },
+    {
+      "path": "codex-rs/.cargo",
+      "object": "b4b28cca20c34953dbecd5187dd7f3153a085ab7"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "cd6650b68a815d69038166b7de50c2857f358641"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd",
+      "object": "381b4743b786a66df6a24e891e7dac9700028359"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "object": "993f6faf64a733c37d82e96a579884fe1701a27c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "object": "c471069d1570571a16128776e161d4ab0f22ce8f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+      "object": "d6347cc9be5255e2b64dc07558f8efa31a87266d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "object": "bf1dcdcd86aff60bc528d42915cee909efd944a6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+      "object": "21b5cb0e03f66fc86645a73fd978626ce1e9638a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap.rs",
+      "object": "530cee2f72c60f763c50cb7f17e6b067e3c98b37"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap_tests.rs",
+      "object": "e6401a2ac792384214db997d2a5f2b19e8b172d0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
+      "object": "ad505b6f488ac1726e8e1590b917389c86d542a4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_context_codec.rs",
+      "object": "8b072adc22416a3be551d0b0359c828359ca6817"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_context_codec_tests.rs",
+      "object": "94958ccca70b7bd1a413fcc8010a9795669847dd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_engram_codec.rs",
+      "object": "e9f982a67f82584961b9a4cdecb48a4a34aa11da"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+      "object": "7dde8b3954eeca66ecee1f91d6a388d2871a5540"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "object": "32f0ac3fe848581ea60c2694dee4a2f52dda8f55"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_lease.rs",
+      "object": "7dd84f96d6eb23b1a32c132ee4a3ba305aff11e3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_provider.rs",
+      "object": "0e52305f7ece6ce5625dd507199342329a93ebdb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_provider_core.rs",
+      "object": "e3fcdcc82d46fc7be190464810e7964d69ea683e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_signed_delivery_tests.rs",
+      "object": "844e33509e81f990a76361d1584fa264dcef1b44"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "object": "d308562b6131332114de6e2a71b56e1842c4405e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_tests.rs",
+      "object": "72b88fcda504fc98f1606385af816883461af495"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "object": "32c1ac81f84f11821c835c71886f9689e7afa42a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/retrieval_product_mode.rs",
+      "object": "e1f84c41d98626940df6268615e2bdc808debbd4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "d03bb3359a401cb86863a6370e6b8c4f28a3d277"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read",
+      "object": "e672ff2c0e77cfde0a5dab87422690d120e98c62"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-store",
+      "object": "b321d1157ea310845ed7642e2692ef829ee3e0f8"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-types",
+      "object": "00f5c697053f9585cccfa20d32a1a1e7b1d1e1ea"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger",
+      "object": "e0413c9f6eecfd1665bafb7a1673c9726a9f71fa"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/Cargo.toml",
+      "object": "1d76cad44498e9538cefff1e20202482520257ff"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
+      "object": "29773833806142d8c6967cd2ac94d48958d90b2e"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/ledger.rs",
+      "object": "d043d06c49312f75a023f8d0766ea088fbdc60db"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/model.rs",
+      "object": "ebdec3db9e6c28a7abacffc332d37c0fd6e2e22d"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs",
+      "object": "0bd78900ad762610858a7d805db9538d893f2307"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/retrieval_assignment_tests.rs",
+      "object": "5df22a598d0df05c2baaf436748f065283d9aea9"
+    },
+    {
+      "path": "codex-rs/hepta-memory",
+      "object": "a771cb8b417fc6662a723e74822007ef842416bf"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval",
+      "object": "3d42ab01876c5fec4aca7f5a7411f2472b465a72"
+    },
+    {
+      "path": "codex-rs/hepta-memory/Cargo.toml",
+      "object": "6ba04f39f78e7d6295c9922d279e37e0492180f2"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
+      "object": "f6d1c4be2e188dac19eedfc60d677d96616c4865"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+      "object": "14702d68d7f9e5c25ac76d2605bdb958cecc0803"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_model.rs",
+      "object": "38f87484a8e07da934ceb429ff73f9104d9241a0"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+      "object": "dfc79598fc33fef2a7c9228037d39179b05310ec"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs",
+      "object": "450bc43abb48156fd4619bd120082bf1e79b6edd"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs",
+      "object": "4ae4274836a7412ce1ce1581c4f7c002a45edf4d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
+      "object": "83e3a1ea5fcb69c08ab99611d8a5152ac24164e4"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
+      "object": "d3d93e441bb05b97def0b84964e28361db1b0e06"
+    },
+    {
+      "path": "codex-rs/hepta-types",
+      "object": "ee71d3c1aa9bceae6bab9f304fc75e115dc49297"
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "object": "910c65114ec128a8317ee8257428451f3cd28230"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/ADR/0001-semantic-admission.md",
+      "object": "bbd8b909f02399a003d48998f27aafad011c9199"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/ADR/0002-source-and-retention.md",
+      "object": "fd5509639ec7442c2a68a4d6f6e651a355172d36"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/ADR/0003-signed-lifecycle-delivery.md",
+      "object": "2e416a4cd8d3d7a63807c700b4653535dd9b7cce"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/ADR/0004-protected-rollout-and-shadow-budgets.md",
+      "object": "bc51017bb8ce290f989b19f71d642fbed0d692b0"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/API.md",
+      "object": "0be22e59d527309e87a65d2175783ebd06db671f"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/CANARY_AND_ROLLBACK.md",
+      "object": "08c8c3c1111c527af9f89aa555becdb975649bf3"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/E2E_MEASUREMENT.md",
+      "object": "67a5a816aaa7c48a08cbc4beb23a177c75bb50b5"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/OPERATIONS.md",
+      "object": "c25ad6f4b8bb1a8d0bda082b49225a0e2f9b7952"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/OWNER_PROPOSITIONS.md",
+      "object": "fc66fc5b0812630898859e6d2c8703fc064b8a4a"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/POLICY_REFERENCE.md",
+      "object": "a6dd23d7496194870bd757be6753c9a5592d3919"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/PROCESS_BOOTSTRAP.md",
+      "object": "8fc56593627981953d5428db1b3fe1d0dea0dbe5"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/ROLLOUT_POLICY.md",
+      "object": "a44a146dc8cef2d02d74a802ab40b897ef7da771"
+    },
+    {
       "path": "docs/modules/memory.retrieval/TECHNICAL.md",
+      "object": "14c128c2391ef4d11513c6eac65b81a061111632"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/TECHNICAL_BASELINE.md",
       "object": "5b04a2e04f9a20d3337cc460b17cc0814a7e9bc4"
     },
     {
-      "path": "qualification/memory-retrieval/BASELINES/808b68350dc4f9d1b542803ac75a8d7e255ee836dd95de2255ad42a57b23b212/archive.zip",
-      "object": "4fdb6d06e2d35725c6e949764cd12707a9105020"
+      "path": "docs/modules/memory.retrieval/THREAT_MODEL.md",
+      "object": "e5788e77505a15e8118283708c4e24bdc9eeda55"
     },
     {
-      "path": "qualification/memory-retrieval/BASELINES/808b68350dc4f9d1b542803ac75a8d7e255ee836dd95de2255ad42a57b23b212/receipt.json",
-      "object": "c27cdc740b117956aedbb5309a29013aac238661"
+      "path": "docs/modules/memory.retrieval/VECTOR_OWNER.md",
+      "object": "44de70d5100074d9080f67849d0ae6731264ccc2"
+    },
+    {
+      "path": "justfile",
+      "object": "6ac734346c989cad04b754986032e364691233f3"
+    },
+    {
+      "path": "qualification/memory-retrieval",
+      "object": "4c22f07d2dbbec201add75be47e1c2e7d44675e7"
+    },
+    {
+      "path": "qualification/memory-retrieval/TARGET_HOST.md",
+      "object": "91713f7cf1be82f54c79eab5715d0860b8475eac"
+    },
+    {
+      "path": "scripts",
+      "object": "c933df81bf7cbfc44996dae4fb934a97fb1014c6"
+    },
+    {
+      "path": "scripts/hepta_memory_retrieval_candidate.py",
+      "object": "072c0e391e1acb60e4c2bda32680d5350df69e3a"
+    },
+    {
+      "path": "scripts/hepta_memory_retrieval_qualification.py",
+      "object": "a354fd4cd916a04940b8f6b2afc5bc50b8debf84"
+    },
+    {
+      "path": "scripts/hepta_memory_retrieval_slo.py",
+      "object": "8a80ba8bc70b8e5bbcdf918b61ae944da738cda4"
+    },
+    {
+      "path": "scripts/tests/test_hepta_memory_retrieval_candidate.py",
+      "object": "a6f22613af065a72bbbab0b41b62697d44f6dfdd"
     }
+  ],
+  "observedMissingPaths": [
+    ".cargo"
   ]
 }
