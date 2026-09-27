@@ -54,7 +54,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git rm .github/workflows/cognitive-store-one-shot-repair.yml
+          git rm \
+            .github/workflows/cognitive-store-one-shot-repair.yml \
+            .github/workflows/cognitive-store-lock-repair.yml
           git add -A
           python3 scripts/cognitive_store_one_shot_repair.py bind-map
           git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
