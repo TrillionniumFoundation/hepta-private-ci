@@ -16,6 +16,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 BRANCH = "codex/cognitive-store-full-closure-20260927"
 MAP = ROOT / "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json"
+BOUNDARY = ROOT / "scripts/verify_cognitive_store_boundary.py"
 
 TEMPORARY_PATHS = (
     Path("scripts/finalize_cognitive_store_candidate.py"),
@@ -42,6 +43,23 @@ def run(*args: str, cwd: Path = ROOT, capture: bool = False) -> str:
 
 def git(*args: str, capture: bool = True) -> str:
     return run("git", *args, capture=capture)
+
+
+def normalize_boundary_verifier() -> None:
+    stage("normalize boundary paths for cross-platform verification")
+    text = BOUNDARY.read_text(encoding="utf-8")
+    replacements = {
+        'host.get("sourcePath") == str(CANONICAL_HOST_PATH)':
+            'host.get("sourcePath") == CANONICAL_HOST_PATH.as_posix()',
+        '"canonicalProductFacadePath": str(CANONICAL_HOST_PATH),':
+            '"canonicalProductFacadePath": CANONICAL_HOST_PATH.as_posix(),',
+    }
+    for old, new in replacements.items():
+        if old in text:
+            text = text.replace(old, new, 1)
+        elif new not in text:
+            raise RuntimeError(f"boundary verifier marker is missing: {old}")
+    BOUNDARY.write_text(text, encoding="utf-8")
 
 
 def normalize_path(value: Any) -> str | None:
@@ -162,6 +180,7 @@ def verify_candidate(sha: str) -> None:
 def main() -> int:
     if git("branch", "--show-current") != BRANCH:
         raise RuntimeError("finalizer is running on the wrong branch")
+    normalize_boundary_verifier()
     remove_temporary_scripts()
     rebind_implementation_map()
     sha = commit_candidate()
