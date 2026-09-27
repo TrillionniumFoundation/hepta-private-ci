@@ -4,6 +4,7 @@
 
 mod authority_signer;
 mod control;
+mod control_intent;
 mod daemon;
 mod daemon_client;
 mod daemon_protocol;
