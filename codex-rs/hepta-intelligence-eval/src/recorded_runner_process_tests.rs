@@ -50,6 +50,18 @@ fn barrier(root: &Path) -> ! {
     }
 }
 
+fn publication_decision() -> SignedEvaluationDecisionV1 {
+    SignedEvaluationDecisionV1 {
+        decision: IndependentEvaluationDecisionV1 {
+            evaluation_id: id("evaluation"), candidate_id: id("candidate"), baseline_id: id("baseline"),
+            disposition: IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
+            failed_metrics: Vec::new(), evidence_digest: digest("decision"),
+            authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
+        },
+        trust_digest: digest("trust"), authentication_digest: digest("authentication"),
+    }
+}
+
 fn save_attempt_anchor(root: &Path, anchor: ProductEvaluationAttemptAnchorV1) {
     let mut bytes = anchor.binding.as_array().to_vec();
     bytes.extend_from_slice(&anchor.event_count.to_be_bytes());
@@ -109,6 +121,7 @@ impl ProductEvaluationAttemptJournalV1 for CrashJournal {
         if matches!((phase, self.stage.as_str()),
             (ProductEvaluationAttemptPhaseV1::HoldoutConsumed, "consumed_before_release")
             | (ProductEvaluationAttemptPhaseV1::ComparisonSealed, "sealed_before_publication")
+            | (ProductEvaluationAttemptPhaseV1::QualificationDecided, "decided_before_pending")
             | (ProductEvaluationAttemptPhaseV1::PublicationPending, "pending_before_write"))
         {
             barrier(&self.root);
@@ -117,6 +130,12 @@ impl ProductEvaluationAttemptJournalV1 for CrashJournal {
     }
     fn latest(&mut self, attempt: &StableId) -> Result<Option<ProductEvaluationAttemptReceiptV1>, ProductEvaluationAttemptJournalErrorV1> {
         self.inner.latest(attempt)
+    }
+    fn history(&mut self, attempt: &StableId) -> Result<Vec<ProductEvaluationAttemptReceiptV1>, ProductEvaluationAttemptJournalErrorV1> {
+        self.inner.history(attempt)
+    }
+    fn pending(&mut self, after: Option<&StableId>, limit: usize) -> Result<Vec<ProductEvaluationAttemptReceiptV1>, ProductEvaluationAttemptJournalErrorV1> {
+        self.inner.pending(after, limit)
     }
 }
 
@@ -194,15 +213,7 @@ fn product_process_worker() {
     let temporal = runner.evaluate_temporal_comparison(id("attempt"), &plan, &candidate, &baseline, &mut provider, &mut journal).expect("real estimate");
     // This second half isolates the production publication adapter boundary;
     // signature verification has its separate signed-product E2E qualification.
-    let decision = SignedEvaluationDecisionV1 {
-        decision: IndependentEvaluationDecisionV1 {
-            evaluation_id: id("evaluation"), candidate_id: id("candidate"), baseline_id: id("baseline"),
-            disposition: IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
-            failed_metrics: Vec::new(), evidence_digest: digest("decision"),
-            authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
-        },
-        trust_digest: digest("trust"), authentication_digest: digest("authentication"),
-    };
+    let decision = publication_decision();
     let mut sink = ReconciledProductQualificationSinkV1::new(FilePublicationFixture {
         root: root.clone(), kill_after_commit: stage == "publication_ack_lost",
     });
@@ -218,7 +229,7 @@ fn product_process_worker() {
 #[test]
 fn process_kill_boundaries_recover_without_releasing_or_republishing() {
     for stage in ["consume_before_attempt", "consumed_before_release", "computed_before_seal",
-        "sealed_before_publication", "pending_before_write", "publication_ack_lost"]
+        "sealed_before_publication", "decided_before_pending", "pending_before_write", "publication_ack_lost"]
     {
         let marker = tempfile::NamedTempFile::new().expect("unique test root marker");
         let root = marker.path().with_extension("crash-fixture");
@@ -259,13 +270,36 @@ fn process_kill_boundaries_recover_without_releasing_or_republishing() {
             let before = fs::read(root.join("writes")).expect("one attempted publication");
             assert_eq!(before, b"W");
             let mut sink = FilePublicationFixture { root: root.clone(), kill_after_commit: false };
-            let published = crate::reconcile_product_attempt_publication_v1(&mut journal, &mut sink, &id("attempt")).expect("read-only reconciliation");
+            let published = crate::reconcile_product_attempt_publication_v1(&mut journal, &mut sink, &id("attempt")).expect("read-only owner reconciliation");
             assert_eq!(published.transition.phase, ProductEvaluationAttemptPhaseV1::Published);
             assert_eq!(fs::read(root.join("writes")).expect("write count"), before);
         } else if stage == "pending_before_write" {
             let mut sink = FilePublicationFixture { root: root.clone(), kill_after_commit: false };
             assert_eq!(crate::reconcile_product_attempt_publication_v1(&mut journal, &mut sink, &id("attempt")), Err(crate::ProductAttemptRecoveryErrorV1::Unresolved));
             assert!(!root.join("writes").exists());
+        } else if stage == "decided_before_pending" {
+            assert!(!root.join("writes").exists());
+            let mut sink = ReconciledProductQualificationSinkV1::new(FilePublicationFixture {
+                root: root.clone(), kill_after_commit: false,
+            });
+            // The original full decision is reconstructed from an immutable
+            // fixture here. This is not a production evidence-archive claim.
+            let decision = publication_decision();
+            let mut altered = publication_decision();
+            altered.authentication_digest = digest("different-authentication");
+            assert!(RecordedProductEvaluationRunnerV1::<LockedFileFinalHoldoutCasStoreV1>::resume_decided_publication(
+                &mut journal, &id("attempt"), &altered, &mut sink,
+            ).is_err());
+            assert!(!root.join("writes").exists());
+            let published = RecordedProductEvaluationRunnerV1::<LockedFileFinalHoldoutCasStoreV1>::resume_decided_publication(
+                &mut journal, &id("attempt"), &decision, &mut sink,
+            ).expect("first publication after decided-only crash");
+            assert_eq!(published.transition.phase, ProductEvaluationAttemptPhaseV1::Published);
+            assert_eq!(fs::read(root.join("writes")).expect("one publication"), b"W");
+            assert!(RecordedProductEvaluationRunnerV1::<LockedFileFinalHoldoutCasStoreV1>::resume_decided_publication(
+                &mut journal, &id("attempt"), &decision, &mut sink,
+            ).is_err());
+            assert_eq!(fs::read(root.join("writes")).expect("no duplicate"), b"W");
         }
         let owner = FencedFinalHoldoutOwnerV1::recover(store, digest("namespace"), HoldoutWriterFenceV1 {
             owner_id: id("recovery-owner"), generation: 2, lease_digest: digest("recovery-lease"),
