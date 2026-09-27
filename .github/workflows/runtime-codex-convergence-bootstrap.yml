@@ -53,6 +53,9 @@ jobs:
           set +e
           {
             set -euo pipefail
+            python3 -m py_compile scripts/runtime_codex_convergence_preflight.py
+            python3 scripts/runtime_codex_convergence_preflight.py
+            test ! -e scripts/runtime_codex_convergence_preflight.py
             python3 -m py_compile scripts/runtime_codex_convergence.py
             python3 -m py_compile scripts/runtime_codex_convergence_fix.py
             python3 scripts/runtime_codex_convergence.py
