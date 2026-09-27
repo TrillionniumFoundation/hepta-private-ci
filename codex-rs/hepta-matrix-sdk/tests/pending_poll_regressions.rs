@@ -5,7 +5,9 @@
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fs;
+use std::fs::File;
 use std::future::poll_fn;
+use std::io::Read;
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
@@ -55,8 +57,6 @@ use tokio_util::sync::CancellationToken;
 
 type TestResult<T = ()> = Result<T, Box<dyn Error>>;
 
-static TEST_MATERIAL_SEQUENCE: AtomicU64 = AtomicU64::new(1);
-
 #[derive(Clone, Copy, Eq, PartialEq)]
 enum Interruption {
     None,
@@ -73,22 +73,13 @@ fn now_ms() -> TestResult<u64> {
     )?)
 }
 
-// These bytes provide collision-resistant test identities without embedding a
-// reusable key or nonce in source. They are not production entropy and never
-// leave this test process.
-fn next_test_material() -> [u8; 32] {
-    let sequence = TEST_MATERIAL_SEQUENCE.fetch_add(1, Ordering::Relaxed);
-    let unix_nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_or(0, |duration| duration.as_nanos());
-    let process_id = std::process::id();
-    let mixed_sequence = sequence.wrapping_mul(0x9e37_79b9_7f4a_7c15).to_be_bytes();
+// This Unix-only integration test obtains ephemeral signing keys and nonces
+// from the kernel CSPRNG. No reusable test secret or predictable nonce is
+// embedded in source or retained outside the test process.
+fn next_test_material() -> TestResult<[u8; 32]> {
     let mut material = [0_u8; 32];
-    material[..8].copy_from_slice(&sequence.to_be_bytes());
-    material[8..24].copy_from_slice(&unix_nanos.to_be_bytes());
-    material[24..28].copy_from_slice(&process_id.to_be_bytes());
-    material[28..].copy_from_slice(&mixed_sequence[4..]);
-    material
+    File::open("/dev/urandom")?.read_exact(&mut material)?;
+    Ok(material)
 }
 
 async fn fixture() -> TestResult<(
@@ -146,7 +137,7 @@ impl Authorizer {
     fn new(polls: Arc<AtomicU64>, interruption: Interruption) -> TestResult<Self> {
         let directory = TempDir::new()?;
         fs::set_permissions(directory.path(), fs::Permissions::from_mode(0o700))?;
-        let key = SigningKey::from_bytes(&next_test_material());
+        let key = SigningKey::from_bytes(&next_test_material()?);
         let authority = FinalUseAuthority::open_state_dir(
             directory.path(),
             "matrix-pending-test".to_string(),
@@ -197,7 +188,11 @@ impl MatrixOutboundAuthorizer for Authorizer {
     }
 
     fn signed_grant<'a>(&'a self, request: &'a MatrixFinalUseRequest) -> MatrixGrantFuture<'a> {
-        Box::pin(async move { self.sign(request.binding.clone(), next_test_material()) })
+        Box::pin(async move {
+            let nonce =
+                next_test_material().map_err(|_| MatrixAuthorityError::Unavailable)?;
+            self.sign(request.binding.clone(), nonce)
+        })
     }
 
     fn refresh_revocations(&self) -> Result<(), MatrixAuthorityError> {
@@ -226,7 +221,9 @@ impl MatrixOutboundAuthorizer for Authorizer {
                     scope_sha256: [3; 32],
                     payload_sha256: [4; 32],
                 };
-                let signed = self.sign(binding.clone(), next_test_material())?;
+                let nonce =
+                    next_test_material().map_err(|_| MatrixAuthorityError::Unavailable)?;
+                let signed = self.sign(binding.clone(), nonce)?;
                 self.authority
                     .claim(&signed, &binding)
                     .map_err(|_| MatrixAuthorityError::Unavailable)?;
