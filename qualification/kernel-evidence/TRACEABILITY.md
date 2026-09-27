@@ -1,87 +1,81 @@
 # kernel.evidence closure traceability
 
-This matrix is the canonical human-readable closure view for the current
-`kernel.evidence` source candidate. Source and test references prove only that
-an implementation and oracle exist. A retained GitHub Actions receipt proves
-only the exact commands and candidate recorded in that artifact. Deployment,
-independent acceptance, canary, promotion and release require authorities that
-repository CI cannot manufacture.
+This matrix describes the current source candidate. Source and test references
+prove only that an implementation and oracle exist. A retained workflow artifact
+proves only the exact commands and Git object recorded in that artifact.
+Deployment, independent acceptance, canary, promotion and release require
+separate authorities.
 
-| Requirement | Source | Test / oracle | Exact execution receipt | External authority |
-|---|---|---|---|---|
-| Native `append_receipt` authenticates the exact envelope and atomically advances replay plus append | `codex-rs/hepta-evidence/src/qualification.rs`, migration `0011_qualification_evidence.sql` | authenticated retry/idempotency, payload drift and transactional replay rollback cases | `evidence-tests.json` in source and merge artifacts | independent semantic review |
-| `query_claim` and stable cursor paging bind candidate/tree/class and preserve append-sequence order | `qualification.rs`, `qualification_paging.rs` | EVID-02/EVID-04 and cursor paging tests | `evidence-tests.json` | workload/retention acceptance |
-| `verify_chain` enforces expiry, lineage, current key/role trust, role coverage and distinct principal/signing identity | `qualification.rs`, Agentd `evidence_trust.rs` | EVID-01..04, shared-key rejection, key rotation and revocation tests | evidence and product command records | security review |
-| Correction/revocation authority is principal/role scoped except explicit `security` emergency revocation | `qualification.rs`, `evidence_trust.rs` | lineage mutation authority test | `evidence-tests.json` | security policy acceptance |
-| Durable evidence validity is separate from short AuthBus admission TTL | `qualification.rs` | independent-decision validity versus ingress TTL | `evidence-tests.json` | reviewer sets receipt expiry |
-| `IndependentDecisionReceiptV1` binds candidate, principal, key, role, evidence set and expiry | `qualification.rs` | independent-decision binding test | `evidence-tests.json` | **must be issued by an external principal** |
-| Qualification rows are database-append-only | migration `0011_qualification_evidence.sql`, schema verification | deny-trigger and missing-trigger reopen tests | `evidence-tests.json`, `lane-a-truth.json` | durability review |
-| Runtime SQL cannot mutate protected schema/evidence through an unrestricted connection | `codex-rs/state/src/sqlite_evidence_runtime.rs` | SQLite authorizer allow/deny tests | `agentd-product-test.json` and evidence package build | deployment profile review |
-| Product caller/writer is real Agentd composition | `hepta-agentd/src/evidence_host.rs`, `lib.rs`, `main.rs` | `tests/kernel_evidence_product.rs` | `agentd-product-test.json` | physical/operator activation |
-| Development and production evidence modes cannot silently degrade into one another | Agentd mode parsing and `evidence_production.rs` | missing production descriptor/trust/backend/build/backup/frontier inputs all fail closed | `agentd-product-test.json` | operator configuration ceremony |
-| Recovery-frontier v2 signs store generation, ledger root, migration, replay, trust, backend, build, qualification and backup identities | `frontier_v2.rs` | signing-domain mutations, invalid root/source and deterministic mutation corpus | `evidence-tests.json` | signer policy acceptance |
-| Threshold signatures require distinct principals and current epochs and reject revoked signers | `evidence_frontier_signers.rs` | threshold, overlap rotation and revoked signer tests | `agentd-product-test.json` | signer registry ceremony |
-| External backend exposes latest/CAS/history/identity and enforces monotonic generation | `frontier_backend.rs`, `frontier_backend_file.rs` | first publish, stale/skipped generation and history tests | `evidence-tests.json` | deployment on independent storage |
-| External audit journal is private, bounded, append-only and hash chained | `frontier_backend_file.rs` | torn/empty tail, hard-link/symlink, identity/directory replacement and append-bound tests | `evidence-tests.json` | filesystem semantics acceptance |
-| CAS success returns only after durable file and directory acknowledgement; uncertain writes poison the handle | `frontier_backend_file.rs` | injected write failure and indeterminate fencing tests | `evidence-tests.json` | storage durability acceptance |
-| Cross-process generation contention has exactly one winner | `tests/frontier_backend_multiprocess.rs` | eight-process contention executable | `evidence-tests.json` | production throughput qualification |
-| Local acceptance history is immutable and rejects generation rollback | `frontier_acceptance.rs`, migration `0013_recovery_frontier_acceptance.sql` | idempotency, conflict, reopen and rollback tests | `evidence-tests.json` | external latest-frontier witness |
-| Production control files are private, canonical and resistant to symlink/parent replacement | Agentd `evidence_production.rs` | wrong owner/mode/path, identity drift and replacement tests | `agentd-product-test.json` | host hardening review |
-| Exact-source receipt contains exactly five required command records and retained log identities | qualification workflow, `build_kernel_evidence_status.py`, Agentd production parser | missing/extra/failed/malformed check and log tests | `kernel-evidence-source-<SOURCE_SHA>-<ATTEMPT>` | independent receipt review |
-| Deterministic merge receipt is from the same repository/run/attempt and has base/source parent order | workflow synthetic-merge job, Agentd production parser | run, artifact URL and parent-order rejection tests | `kernel-evidence-merge-<SOURCE_SHA>-<ATTEMPT>` | final-candidate acceptance |
-| Qualification status and artifacts upload even when a command fails | `.github/workflows/hepta-kernel-evidence-qualification.yml` | split steps, `if: always()` diagnostics and fail-closed required fan-in | workflow run | repository required-check policy |
-| `Kernel evidence required` reaches the protected `CI required` fan-in | qualification workflow and `.github/workflows/blocking-ci.yml` | workflow graph inspection | check run on exact PR head | repository administrator must configure protection |
-| Disk-full and actual crash boundaries do not manufacture success | `store/runtime.rs`, AuthBus crash fixtures | disk-full, process exit before ack and reopen recovery | `evidence-tests.json` | operational fault drill |
-| One machine-readable source generates all module status views | `STATUS_SOURCE.json`, `scripts/kernel_evidence_status.py` | closed-world key/source-anchor/projection drift tests | `docs.json` | none for repository facts; external gates still require receipts |
-| Backup publication exactly matches the accepted snapshot, backend and generation | Agentd production admission | durable flag, digest, freshness and generation mismatch tests | `agentd-product-test.json` | backup operator witness |
-| A valid stale complete SQLite image is rejected against a newer external frontier | frontier v2, backend, local acceptance and production admission | old-image/ledger-root mismatch tests | source/product artifact | witnessed recovery drill |
-| External callers cannot bypass the bounded history constructor | `frontier_backend.rs` | compile-fail doctest, inclusive 4096-generation and overflow tests | final evidence package run required | none for API enforcement |
-| Replayed, malformed or substituted execution records cannot produce final qualification | `scripts/kernel_evidence_record_validation.py`, `build_kernel_evidence_status.py` | 42 added Python unit regressions covering run/command/log/artifact and persistence boundaries | local unit results only until final convergence workflow passes | governed CI runner and independent review |
-| A required workflow cannot vanish behind path filters or cancel another caller | `hepta-kernel-evidence-convergence.yml`, reusable workflow concurrency | direct PR entry, nonempty regression suite and fail-closed fan-in | `Kernel evidence convergence required` | administrator must enforce the check |
+| Requirement | Source | Test / oracle | Current receipt boundary |
+|---|---|---|---|
+| Role independence uses frame-correct backtracking and distinct principal plus signing identity | `identity_assignment.rs` | fixed three-role counterexample; exhaustive cartesian-oracle equivalence; work-budget cases | final evidence Rust suite required |
+| Verification requirements cannot be lowered by a caller | `qualification_policy.rs`, Agentd protocol/host | empty, duplicate, weakened, unknown and mismatched profile cases | final evidence and Agentd suites required |
+| Product code cannot forge raw trust bindings or issuer registrations | `verified_trust.rs`, sealed traits | compile boundary and forged-binding regressions | final evidence build/test required |
+| Trust schema V2 advances monotonically and binds predecessor digest | `verified_trust.rs`, `trust_acceptance.rs`, migration `0015` | stale, skipped, changed-predecessor, restart and atomic-acceptance tests | external trust ceremony remains separate |
+| Append authenticates the exact envelope and commits replay, evidence and publication intent together | `qualification.rs`, migrations `0011`, `0014`, `0016` | retry/idempotency, replay, payload drift and injected rollback cases | final source/merge artifacts required |
+| Recovery snapshot is one SQLite snapshot and commits complete authenticated admission | `recovery_snapshot.rs`, `qualification_commitment.rs` | concurrent mutation, signature/trust-field mutation, row/byte-bound and reopen tests | final evidence artifact required |
+| Production rejects historical rows without original signature/trust provenance | migration `0016`, production provenance verification | legacy-row negative and complete-provenance positive cases | no historical field is manufactured |
+| Trust and frontier acceptance are atomic at the expected snapshot | `trust_acceptance.rs`, `frontier_acceptance.rs` | snapshot drift, failed trust rotation, rollback and reopen cases | final evidence artifact required |
+| Publication has durable owner fencing and exact batch identity | `publication.rs`, migration `0014` | stale owner, lease/generation, semantic conflict and restart cases | final publication diagnostic required |
+| CAS uncertain outcome cannot be hidden by a new ID or blind retry | `publication.rs`, Agentd publication driver | before/after CAS crash, indeterminate latest-match/predecessor/divergent cases | final publication diagnostic required |
+| Agentd exposes stable paging and bounded verification summaries | protocol `evidence.rs`, `evidence_host.rs`, `qualification_summary.rs` | real product paging, cursor/profile parsing and 48 KiB response cases | final Agentd artifact required |
+| Production mode is explicit and cannot silently degrade | `evidence_host.rs`, `evidence_cli_profile.rs` | development/production profile and legacy-route rejection cases | operator configuration remains external |
+| Production admission hashes the real backup object bytes | `evidence_backup_manifest.rs` | object digest/length, link/path/owner and replacement cases | actual deployed object remains external |
+| Executable is bound to governed build provenance | `evidence_backup_manifest.rs`, `evidence_production.rs` | source/tree/workflow/artifact/toolchain/recipe/log/executable mismatch cases | builder authority remains external |
+| Restore witness is bound to object, snapshot and integrity-check digest | `evidence_backup_manifest.rs` | missing, failed, stale and mismatched witness cases | real operator witness remains external |
+| Segmented history rolls without deleting prior evidence | `frontier_backend_file/segmented/*` | rollover, immutable segment, chain and history-range tests | final evidence artifact required |
+| Latest lookup is bounded by an authenticated atomic index | segmented backend | stale/missing/tampered index reconstruction and fast-latest tests | selected filesystem semantics remain external |
+| Capacity is observable before rollover/exhaustion | segmented capacity API | active/archived bytes, headroom and alert tests | target-platform thresholds remain external |
+| External CAS admits exactly one next generation | backend trait/file adapter | stale/skipped generation and eight-process single-winner test | coherent lock/fsync deployment remains external |
+| Exact-source and fixed-base merge checks retain command/log/artifact identity | qualification/convergence workflows and record validators | real Git candidate tests and closed-world receipt regressions | queued/skipped/cancelled/action-required is not success |
+| Documentation and implementation map describe the same current source closure | this document, technical guide, store guide and implementation map | docs and map validators | must pass on the unchanged final head |
+| Repository CI cannot self-issue independent acceptance or release | canonical status source | closed-world status/gate tests | all external gates remain false without receipts |
 
-## Claim boundary
+## Integration-candidate policy
 
-Repository-controlled implementation now includes:
+`fix/kernel-evidence-production-closure` is the sole integration candidate for
+this closure. Earlier draft PRs are historical inputs only; their tests and
+artifacts do not transfer to the current head.
 
-- the exact-candidate qualification store and immutable lineage;
-- a named Agentd product host with explicit development and production modes;
-- recovery-frontier v2, threshold signer verification and immutable local
-  acceptance;
-- an explicit external monotonic backend contract and a locked-file adapter for
-  a separately mounted rollback domain;
-- read-only migration preflight, SQLite authorizer, denial triggers, stable
-  cursor paging, disk-full/process-crash coverage and multi-process contention;
-- split exact-source/synthetic-merge qualification with retained diagnostics;
-- a canonical status source and generated documentation/dashboard projections.
+The final qualification must bind:
 
-The current persistent gates remain false until exact evidence exists for this
-final candidate. In particular, source code does not prove that an external
-backend is deployed, a backup/restore drill was witnessed, an independent
-reviewer accepted the candidate, a canary passed, or release was approved. A
-green workflow may establish exact-source and merge execution only; it cannot
-advance the external gates by inference.
+- the exact source commit/tree;
+- the immutable main base used by the PR event;
+- the deterministic two-parent merge with base/source parent order;
+- successful evidence, Agentd, Lane-A, documentation and implementation-map
+  command records;
+- retained raw logs and artifact digests;
+- a clean checkout before and after every governed command.
 
-## Production CLI and all-event qualification follow-up
+A later metadata-only commit still creates a new candidate. It must receive its
+own source and merge receipts unless the qualification record explicitly tests
+that exact commit/tree.
 
-The explicit production CLI now rejects descriptors that would be routed to the
-legacy v1 verifier. Its direct-child, absolute and lexical-canonical checks are
-implemented in `codex-rs/hepta-agentd/src/evidence_cli_profile.rs` and exercised
-by the `kernel_evidence_profile` integration target, included in the governed
-Agentd command. This is a structural hand-off guard, not a replacement for the
-runtime's owner, trust, backend, signature, backup and snapshot checks.
+## Repository-controlled closure
 
-Both qualification lanes are now required for PR, push and manual invocation.
-`scripts/kernel_evidence_candidate.py` binds an explicit full base OID or, outside
-PRs, the exact source's first parent. The resulting merge is evidence about that
-recorded base only, not a later moving branch. Runner diagnostics precede
-checkout, and artifact names include the source and run attempt. Production
-receipt admission retains its governed PR-event requirement; this change does
-not authorize push/manual receipts for deployment.
+Tracks A–C are represented by direct Rust, SQL, product-wire and test sources,
+not by a future code-generation script. The remaining repository-controlled
+work is limited to obtaining successful final-head source/merge, formatting,
+lint, build, repository CI and architecture records; repairing any actual
+failures without weakening the oracles; and retaining artifact identities.
 
-The follow-up executed 20 real-Git Python candidate tests locally and added
-eight Rust profile regressions that still require compiler/CI execution. No
-qualification, external deployment or release gate advances from those local
-results. See `qualification/kernel-evidence/FOLLOWUP_20260927.md`.
+A successful repository workflow may establish execution on the recorded Git
+object. It does not establish that the external backend is deployed, that a
+target host survived power loss, that an independent reviewer accepted the
+candidate, or that canary/release occurred.
+
+## External gates
+
+The following require separately authorized receipts and remain false in the
+checked-in status source:
+
+- independently provisioned rollback-domain storage and verified lock/fsync
+  semantics;
+- trust and signer ceremonies;
+- real target-platform capacity, RPO/RTO and power-loss qualification;
+- durable backup publication plus witnessed restore and rollback rejection;
+- independent exact-candidate semantic/security acceptance;
+- operator acceptance, canary, promotion and release.
 
 <!-- BEGIN GENERATED KERNEL EVIDENCE STATUS -->
 ## Canonical kernel.evidence status

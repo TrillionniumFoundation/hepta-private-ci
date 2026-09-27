@@ -14,489 +14,346 @@
 
 **Bootstrap work package:** `P0.9-EXTERNAL-GATES`
 
-This document is the stable technical guide for `kernel.evidence`. Canonical
-identity, ownership, contract, data-authority and delivery facts remain in the
-repository registries. The checked-in status source records repository
-capabilities and separately records qualification, deployment and governance
-gates. Documentation, source implementation, exact-candidate execution,
-independent acceptance, deployment, canary, promotion and release are distinct
-states and must not be inferred from one another.
+This guide describes the repository implementation of `kernel.evidence` after
+the staged correctness, trust, recovery, publication and bounded-operations
+closure. It deliberately separates source capability, exact-candidate execution,
+external deployment, independent acceptance, canary and release. A later state
+must never be inferred from an earlier one.
 
 ## 1. Identity, mission and ownership
 
-`kernel.evidence` preserves exact-candidate qualification evidence and durable
-integrity without becoming a selector, deployer or release authority. The
-`qualification-plane` owns the evidence semantics and source implementation;
-`security-authority` independently reviews trust, signatures, persistence,
-recovery, concurrency, resource bounds and fail-closed activation.
+`kernel.evidence` is the qualification-plane authoritative store for exact
+candidate evidence, authenticated admission provenance, independent decision
+receipts, monotonic trust/frontier acceptance and durable publication intent.
+Its primary owner is `qualification-plane`; `security-authority` independently
+reviews trust, signatures, recovery, persistence, concurrency, capacity and
+fail-closed production admission.
 
-The module is a stateful qualification-plane authoritative store. It may own
-qualification evidence, immutable decision receipts and recovery acceptance
-history. It may not absorb another module's facts, manufacture an external
-reviewer, or convert a successful CI command into production authority.
+The module verifies and preserves evidence. It is not a selector, merger,
+deployer or release authority and it cannot mint the external principal whose
+independent receipt it may store.
 
 ## 2. Source binding and implementation status
 
-The declared exclusive implementation root is `codex-rs/hepta-evidence`.
-Product composition is in `codex-rs/hepta-agentd`; SQLite runtime authority
-separation is in `codex-rs/state`; qualification and canonical-status control
-is in `.github/workflows`, `qualification/kernel-evidence` and `scripts`.
+The declared implementation root is `codex-rs/hepta-evidence`. Product
+composition is in `codex-rs/hepta-agentd`, product-wire types are in
+`codex-rs/hepta-agent-protocol`, restricted SQLite runtime authority is in
+`codex-rs/state`, and qualification/status control is in `.github/workflows`,
+`qualification/kernel-evidence` and `scripts`.
 
-Current repository implementation includes:
+The canonical source-capability anchor is commit
+`001e557716e884fbd47d5ab2f0ca9f47175f958e`, tree
+`6ecfb41b6e18406ea019fbffa3a972aba5cc4baf`. Successor documentation and
+qualification-trigger commits do not inherit execution evidence from that
+anchor. Repository implementation is present for the A–C closure tracks, while
+the exact-source, fixed-base merge, external deployment and governance gates
+remain separately evidenced.
 
-- authenticated append, query, cursor paging and chain verification;
-- append-only qualification lineage and durable AuthBus replay state;
-- recovery-frontier v2 and deterministic ledger-root construction;
-- an explicit `EvidenceFrontierBackend` contract;
-- a locked-file monotonic CAS backend for a separately mounted rollback domain;
-- immutable local frontier acceptance;
-- threshold signer rotation and revocation enforcement;
-- explicit Agentd development and fail-closed production modes;
-- read-only migration preflight and a restricted runtime SQLite authorizer;
-- disk-full, process-crash and multi-process contention qualification fixtures;
-- split exact-source and deterministic-merge workflow lanes with retained
-  diagnostics;
-- one canonical machine-readable status source with generated projections.
+Current source capabilities include:
 
-These are repository capability claims. They do not prove that the final
-candidate passed, that an external backend is deployed, or that independent
-acceptance, canary, promotion or release occurred.
+- frame-correct bounded role-independence assignment with exhaustive oracle
+  equivalence tests;
+- owner-controlled, non-empty and non-degradable verification profiles;
+- sealed verified issuer/trust handles with monotonic V2 registry generations;
+- complete authenticated-admission commitments and one-transaction recovery
+  snapshots;
+- atomic trust/frontier acceptance at an exact snapshot;
+- fenced durable publication batches with CAS conflict and indeterminate-result
+  reconciliation;
+- product cursor paging and bounded verification summaries;
+- real backup-object byte verification, governed build provenance and restore
+  witness binding;
+- immutable segmented frontier history, an authenticated latest index and
+  capacity telemetry.
+
+These are source claims until the final candidate's retained workflows complete.
 
 ## 3. Boundary, responsibilities and non-goals
 
-Authoritative write domains are `qualification_evidence` and
-`independent_decision_receipt_v1`. The module accepts only typed, bounded,
-versioned and authenticated inputs. Missing authority, stale identity, replay,
-scope drift, digest mismatch, invalid lineage and unknown critical fields are
-hard failures.
+Authoritative write domains are `qualification_evidence`,
+`independent_decision_receipt_v1`, local recovery/trust acceptance and the
+publication control tables. Inputs must be typed, versioned, bounded,
+canonical and authenticated. Missing authority, stale generation, replay,
+scope drift, digest mismatch, invalid lineage and unknown critical fields fail
+closed.
 
-Explicitly denied capabilities are:
-
-- runtime provider effect execution;
-- selection or merge authority;
-- promotion or release authority;
-- self-issued independent review;
-- silent downgrade from production to development mode;
-- treating local SQLite integrity as an external anti-rollback oracle.
-
-Cross-owner mutation must retain authenticated provenance, durable intent,
-destination idempotency, acknowledgement and fenced reconciliation. Queue
-acceptance or handler completion is never reported as an external terminal
-success.
+Explicit non-goals are provider effect execution, candidate selection, merge
+authority, promotion, release, self-issued independent review, silent
+production-to-development downgrade and treating local SQLite integrity as an
+external rollback oracle.
 
 ## 4. Internal architecture and component decomposition
 
-The implementation is divided into the following bounded components:
-
 1. **Qualification ledger.** `QualificationEvidenceStore` authenticates and
-   appends immutable receipts, performs exact candidate/class queries, exposes
-   stable cursor pages and verifies active lineage against current trust.
-2. **Replay and delivery durability.** AuthBus admission and outbox state share
-   SQLite transactions with evidence mutations and retain consumed replay
-   sequences after terminal-history pruning.
-3. **Recovery snapshot.** The store computes deterministic migration,
-   qualification and replay frontiers plus an immutable store identity.
-4. **Recovery-frontier v2.** One signed domain binds generation, ledger root,
-   trust registries, backend, build, qualification receipts, backup publication
-   and source commit/tree.
-5. **External monotonic backend.** The trait provides latest, CAS, history and
-   backend-identity verification; the locked-file implementation keeps a
-   bounded hash-chained audit journal outside the local rollback domain.
-6. **Local acceptance history.** An append-only table records accepted external
-   generations and prevents rollback below a previously accepted frontier.
-7. **Agentd host.** Development mode admits local qualification composition;
-   production mode verifies every external and local identity before attaching
-   the product host.
-8. **SQLite authority profiles.** Migration connections own schema changes;
-   runtime connections use an authorizer that denies protected mutation and
-   schema escape.
-9. **Qualification/status pipeline.** Separate workflow jobs emit command JSON,
-   raw logs and canonical source/merge status artifacts. A checked-in status
-   source generates human-readable projections without granting authority.
-
-Configuration affecting trust, backend identity, source identity, build,
-signer policy, migration or recovery generation is immutable for one admitted
-process generation.
+   appends immutable receipts, maintains correction/revocation lineage, queries
+   exact candidate/claim identities and verifies a closed-world profile.
+2. **Independence policy.** `identity_assignment.rs` solves bounded role
+   assignment without corrupting recursive state; `qualification_policy.rs`
+   maps each permitted profile to its claim class and non-empty role set.
+3. **Verified trust.** `verified_trust.rs` parses owner-controlled registries,
+   validates V2 generation/predecessor continuity and yields sealed issuer and
+   snapshot views. Raw bindings are test-only adapters.
+4. **Authenticated commitment.** `qualification_commitment.rs` commits the
+   envelope together with principal, key epoch, signing identity, AuthBus
+   message/sequence/expiry/signature, trust generation/digest and recording
+   time.
+5. **Recovery snapshot.** `recovery_snapshot.rs` computes migration, evidence,
+   replay, store-identity and authenticated-admission frontiers in one SQLite
+   read transaction.
+6. **Atomic acceptance.** `trust_acceptance.rs` compares the exact expected
+   snapshot and atomically accepts the next trust generation and external
+   frontier under one `BEGIN IMMEDIATE` transaction.
+7. **Publication state machine.** `publication.rs` persists owner leases,
+   generation-fenced batches and row intents; it distinguishes prepared,
+   dispatching, indeterminate and acknowledged states and reconciles by external
+   latest-frontier observation.
+8. **External monotonic backend.** `frontier_backend_file` supplies a private,
+   separately mounted CAS store. The production adapter keeps an active tail,
+   immutable linked segments and an authenticated atomic latest index.
+9. **Agentd product host.** `evidence_host.rs` exposes append, stable paging and
+   profile verification through explicit development or production profiles.
+   `evidence_production.rs` and its included modules perform fail-closed startup,
+   backup/build/restore validation and publication driving.
+10. **Qualification/status pipeline.** Exact-source and deterministic merge
+    lanes emit bounded command records, logs and canonical status artifacts.
+    A machine-readable status source generates projections without granting
+    external authority.
 
 ## 5. Contracts, ports and compatibility
 
-Produced contracts include:
+Produced registered contracts remain `DomainRead::qualification_evidenceV1`,
+`IndependentDecisionReceiptV1` and the registered module ports. Rust values and
+canonical JSON must represent the same semantics and digest scope.
 
-- `DomainRead::qualification_evidenceV1`;
-- `IndependentDecisionReceiptV1`;
-- `ModulePort::kernel.evidence::control.engineering`;
-- `ModulePort::kernel.evidence::control.runtime`;
-- `ModulePort::kernel.evidence::learning.eval`;
-- `ModulePort::kernel.evidence::learning.operator`;
-- `ModulePort::kernel.evidence::learning.plasticity`.
+The product verification contract accepts an
+`EvidenceVerificationProfileV1`, not a caller-defined role vector. Legacy role
+requests are accepted only when they map exactly to a registered profile;
+empty, duplicate, weakened or unknown combinations fail closed. The product
+query selector supports bounded page size and stable cursor identity. Profile
+verification returns `EvidenceVerificationSummaryV1`, which contains state,
+profile, count and evidence-set digest instead of an unbounded evidence vector.
 
-Consumed contracts include the registered evaluation, conformance,
-reconciliation, fault, local-runtime, longitudinal and unlearning receipts plus
-registered domain reads and `ModulePort::platform.types::kernel.evidence`.
-
-Rust values and canonical JSON must represent the same semantics. Every digest
-scope includes all authority-relevant fields. Unknown critical fields, invalid
-enums, noncanonical order, oversize payloads and incompatible schema revisions
-are rejected. Compatibility changes are additive only where a registry allows
-them; identifiers and authority interpretation cannot change in place.
-
-The external recovery contract is:
+The external recovery backend contract is:
 
 ```text
 get_latest(store_id)
 compare_and_swap(store_id, expected_generation, new_frontier)
-get_history(store_id, range)
+get_history(store_id, bounded_range)
 verify_backend_identity()
 ```
 
-A successful CAS returns a durable acknowledgement containing backend identity,
-store identity, generation, frontier digest and audit sequence. Uncertain write
-outcomes poison the handle until operator reconciliation.
+A successful CAS returns a durable acknowledgement. A write whose durable
+outcome is unknown becomes `indeterminate` and can only be resolved by reading
+the authenticated latest frontier and matching the exact batch identity.
+Production accepts authenticated snapshot V2 and monotonic trust V2; legacy
+formats remain development/read compatibility only and cannot be relabelled as
+production authority.
 
 ## 6. Data authority, persistence and migrations
 
-Migration `0011_qualification_evidence.sql` owns immutable qualification rows,
-replay-linked admission state, indexes and database-level `UPDATE`/`DELETE`
-denial triggers. Rows bind receipt identity, candidate/source/tree, claim class,
-receipt kind, issuer principal/role/key epoch/signing-key digest, AuthBus
-message/sequence/expiry, exact payload/envelope digests, predecessor/target
-lineage, observation/expiry and bounded asset references.
+The physical lineage is `hepta_evidence_2.sqlite`; migrations `0001` through
+`0016` are ordered and checksum-bound. The closure-relevant migrations are:
 
-Corrections and revocations append lineage instead of rewriting history.
-Identical authenticated semantics are idempotent; reused identity with changed
-semantics conflicts. Ordinary lineage mutation is principal/role scoped; only a
-currently trusted `security` role may perform cross-principal emergency
-revocation.
+- `0011_qualification_evidence.sql`: append-only exact-candidate rows, immutable
+  store identity and update/delete denial triggers;
+- `0012_authbus_recovery.sql`: durable recovery facts for AuthBus delivery;
+- `0013_recovery_frontier_acceptance.sql`: immutable accepted external
+  generations;
+- `0014_evidence_publication.sql`: owner fencing, durable publication batches,
+  row intents and strict transition triggers;
+- `0015_evidence_trust_acceptance.sql`: monotonic accepted trust generations and
+  frontier binding;
+- `0016_qualification_auth_provenance.sql`: original signature and accepted
+  trust-generation provenance for new qualification rows.
 
-Migration `0013_recovery_frontier_acceptance.sql` stores immutable local
-acceptance records. Equal retries are idempotent, semantic drift conflicts and
-lower generations are rejected across restart.
+A production-valid row must have complete authenticated provenance. Historical
+V1 rows with absent signatures remain readable as history but cannot be
+manufactured into production-valid V2 provenance.
 
-Migrations are deterministic and checksum-bound. Production admission first
-opens a read-only preflight and refuses missing, unknown or incompatible schema.
-Only the migration authority may mutate schema. Runtime connections cannot
-attach databases, alter schema, enable writable pragmas or directly mutate
-protected evidence tables.
+Corrections and revocations append lineage rather than rewriting facts. Exact
+authenticated retries are idempotent; identity reuse with different semantics
+conflicts. Runtime connections cannot mutate migrations or schema, attach
+databases, enable write-capable pragmas or bypass immutable-row triggers.
 
 ## 7. Runtime, concurrency and transaction model
 
-Each logical evidence mutation uses one transaction boundary. Durable replay
-advancement and receipt insertion share one `BEGIN IMMEDIATE` transaction.
-Cursor paging is ordered by immutable append sequence and binds the query
-identity so a cursor cannot be replayed across candidate, tree or claim class.
+Receipt authentication, replay advancement, qualification insertion and
+publication-intent creation share one `BEGIN IMMEDIATE` mutation boundary.
+Before commit, sealed issuer/trust handles are revalidated against their pinned
+registry identity.
 
-The external backend holds an exclusive OS file lock across journal read,
-expected-generation comparison, append and synchronization. It accepts exactly
-the next generation. Every audit record binds the previous record digest and
-expected prior generation. The locked-file adapter pins root and journal
-directory device/inode identity and rejects symlink, hard-link, owner, mode and
-path replacement violations.
+Claim verification uses a stable read transaction. Role assignment has explicit
+role, candidate and work bounds. Recovery snapshot V2 reads every component from
+one transaction and pages qualification rows rather than materializing an
+unbounded table.
 
-The adapter requires storage with coherent cross-host locks and durable file and
-directory `fsync` semantics. A deployment on weaker storage does not satisfy the
-contract. Other adapters may implement the trait but must preserve authenticated
-latest reads, linearizable generation CAS, append-only history, key rotation,
-auditability and durable acknowledgement outside the local rollback domain.
-
-Multi-process qualification launches eight independent publishers for one
-generation and requires exactly one winner. That is a bounded correctness
-fixture, not a production throughput claim.
+Production acceptance compares the signed expected snapshot, validates the next
+trust generation and predecessor digest, and writes trust plus frontier
+acceptance atomically. Publication uses a durable owner generation and lease;
+stale owners cannot mutate a batch. The external segmented backend serializes
+each store with a dedicated file lock, appends and synchronizes the active tail,
+seals immutable segments and atomically publishes the latest index.
 
 ## 8. Failure semantics, recovery and rollback
 
-Failures distinguish invalid, conflict, unavailable, corrupt, unsupported and
-indeterminate outcomes. Invalid or corrupt identity and lineage fail closed.
-CAS conflicts report expected and actual generation. Backend unavailability
-never falls back to local state. A write that may have reached durable storage
-without a durable acknowledgement returns indeterminate and permanently fences
-that backend handle.
+Errors distinguish invalid, conflict, unavailable, corrupt, unsupported and
+indeterminate outcomes. Neither backend unavailability nor a weak storage
+profile falls back to local success.
 
-Production startup performs these recovery checks before product availability:
+Publication recovery rules are:
 
-1. owner-bound production descriptor and role-distinct control files;
-2. canonical private external root outside Agent home and on a different
-   device;
-3. pinned backend identity and current signer registry;
-4. exact-source and deterministic-merge qualification receipts from one
-   governed pull-request workflow run;
-5. exact build, trust-registry, backup-publication and source identities;
-6. latest frontier freshness and threshold signatures;
-7. local SQLite snapshot and ledger-root equality;
-8. immutable acceptance of the verified generation.
+- `prepared`: no external dispatch has begun and the current owner may resume;
+- `dispatching`: CAS has begun and restart must inspect external latest state;
+- `indeterminate`: success or failure is unknown and blind retry is forbidden;
+- `acknowledged`: the durable acknowledgement, exact snapshot and local
+  acceptance are atomically recorded.
 
-Any missing, stale, revoked, malformed or mismatched input enters
-`kernel.evidence recovery_required`. A valid but older complete database image
-is rejected against a newer external frontier or local accepted generation.
+If external latest equals the batch's proposed frontier, restart recovers the
+acknowledgement. If latest remains at the expected predecessor, the fenced owner
+may retry the same batch. A divergent generation or identity is a conflict,
+not an invitation to create a new operation ID.
 
-Fault coverage includes transactional insert failure, simulated disk-full
-behavior, torn and empty audit tails, directory/identity replacement, process
-exit after delivery before acknowledgement, stale lease fencing and reopen
-corruption.
+Production startup verifies private control paths, backend identity, signer
+trust, exact-source and merge receipts, build provenance, backup object bytes,
+restore witness, current executable, trust generation, signed frontier and
+local authenticated snapshot before publishing the host.
 
 ## 9. Security, privacy and threat controls
 
-The security posture is least authority, bounded input, digest binding,
-owner-controlled trust and independent evidence. Sensitive values are omitted
-or represented by digests. Credentials do not enter general logs, prompt
-factors, learning data or cross-module receipts.
+The trust boundary is least authority, current generation, bounded input and
+complete digest binding. The verified trust snapshot is sealed outside the
+crate; product callers cannot forge a raw binding or arbitrary
+`IssuerRegistration`. Distinct required roles must be assigned to distinct
+principals and distinct signing identities.
 
-Frontier v2 binds:
+The signed frontier binds store/generation, authenticated ledger root, migration
+set, issuer and signer registries, backend identity, executable, qualification
+receipts, backup manifest and source commit/tree. The backup manifest in turn
+binds the real object byte digest/length, storage acknowledgement, governed
+build artifact/toolchain/recipe/log and an independent restore witness.
 
-- store identity and strictly monotonic generation;
-- migration-set digest, qualification high-water/frontier and AuthBus replay
-  frontier through the ledger root;
-- issuer-trust and signer-registry digests;
-- external backend identity;
-- current executable digest;
-- exact-source and deterministic-merge receipt-set digest;
-- durable backup-publication digest;
-- source commit/tree, creation time and signer-policy generation.
-
-The signer registry requires distinct principals, current key epochs and a
-threshold. Revoked keys and duplicate principals cannot satisfy the threshold.
-Overlap rotation is explicit and generation-bound.
-
-External control files must be canonical direct children of the private backend
-root. Agentd opens them without following symlinks and verifies stable file and
-parent-directory identity throughout the read. Qualification receipts must
-contain exactly the five governed checks, successful command records, retained
-log digests, exact artifact identity, matching workflow repository/run/attempt
-and canonical source/base/merge parent order. All release-like flags in these
-CI receipts must remain false.
+Control files and backup objects are canonical private direct children of the
+configured roots, opened without following links and checked for stable
+file/directory identities while read. Secrets and signing keys never enter
+general evidence payloads or logs.
 
 ## 10. Performance, capacity and hot-path policy
 
-Enforced qualification bounds include:
+Enforced bounds include a 256 KiB canonical receipt, 64 assets, 256 lineage
+edges, 512 claim references, at most 32 required roles, a 48 KiB Agentd frame
+and product page size at most 128. Verification returns a bounded summary.
 
-- canonical receipt at most 256 KiB;
-- at most 64 referenced assets;
-- at most 256 predecessor edges;
-- at most 512 query references;
-- at most 32 required independent roles;
-- Agentd control frame at most 48 KiB.
+Authenticated recovery scanning is paged and bounded by one million
+qualification rows, 512 MiB aggregate canonical envelope bytes, fixed per-row
+limits and a bounded replay frontier. Normal append avoids recomputing the
+whole candidate evidence set unless an independent decision requires it.
 
-External audit journals are bounded to 256 KiB per record, 64 MiB total and one
-million records. The next append is rejected before crossing any bound. Active
-AuthBus outbox capacity remains bounded globally and per issuer; terminal
-history may be pruned without releasing consumed replay sequences.
-
-Before production activation, the selected platform must measure writer
-contention, p95/p99 latency, database and journal growth, WAL/checkpoint
-behavior, backup publication time, restore time, RPO and RTO. Source tests are
-not capacity evidence for a deployment.
+The segmented backend rolls over the active tail at 1024 records or 16 MiB,
+preserves immutable history, reconstructs a stale index from authenticated
+records and exposes record/byte headroom plus health/elevated alerts. These
+source bounds are not production throughput evidence. The selected platform
+must still measure contention, p95/p99 latency, WAL/checkpoint behavior,
+publication lag, segment growth, backup time, restore time, RPO and RTO.
 
 ## 11. Observability and operations
 
-Safe operational events include mode selection, backend identity digest,
-accepted generation, source/tree identity, signer-policy generation,
-qualification artifact digest, backup-publication digest, recovery-required
-reason class and indeterminate-write fencing. Secret material and raw signing
-keys are never logged.
+Safe operational facts include runtime profile, registry generation/digest,
+backend identity, accepted frontier, publication batch/owner generation,
+indeterminate reconciliation disposition, source/tree identity, backup/build
+digests and capacity/headroom. Raw keys and sensitive payloads are excluded.
 
-Operators must retain:
-
-- external backend identity and audit history;
-- exact-source and deterministic-merge artifacts and digests;
-- current issuer and signer registries plus rotation history;
-- durable backup-publication acknowledgements;
-- immutable accepted-frontier history;
-- witnessed restore and rollback-rejection receipts;
-- independent acceptance, canary, promotion and release decisions.
-
-Development mode is visibly distinct and cannot satisfy production readiness.
-Production mode refuses to start if any mandatory control input is absent. The
-locked-file backend requires an operator-confirmed independent mount and storage
-semantics; repository code cannot prove that deployment fact.
+Operators retain exact qualification artifacts and logs, registry rotation
+history, external segment/index history, backup/storage acknowledgements,
+restore witnesses, local accepted generations and external governance
+decisions. Capacity alarms must be raised before active rollover or segment
+count exhaustion; operators must never recover capacity by deleting history.
 
 ## 12. Verification and qualification
 
-The focused source suite covers:
+Focused tests cover:
 
-- exact authenticated append, replay/idempotency and semantic conflict;
-- correction/revocation non-resurrection and current trust/key rotation;
-- distinct-principal/signing-key independence;
-- canonical corruption, query/traversal bounds and stable cursor paging;
-- append-only triggers and runtime SQLite authorizer policy;
-- recovery-frontier v2 field binding, ledger-root binding and deterministic
-  mutation corpus;
-- backend first publish, stale/skipped generation, history, identity drift,
-  symlink/hard-link rejection, directory replacement, append bounds, torn/empty
-  records and uncertain-write fencing;
-- threshold signer overlap rotation and revoked key rejection;
-- production receipt closed-world inventory, workflow/artifact identity,
-  source/merge parent order and non-release authority boundary;
-- production build/trust/backend/backup/frontier/local-snapshot mismatch;
-- disk-full injection, actual process crash and eight-process CAS contention;
-- canonical status source, exact Git anchor, source inventory and generated
-  projection drift.
+- the fixed three-role counterexample, empty/duplicate roles, same-principal
+  multi-key cases and exhaustive bounded assignment/oracle equivalence;
+- sealed trust compile boundaries, digest pinning, monotonic rotation and stale
+  registry rejection;
+- authenticated append, replay, idempotency, signature/provenance corruption,
+  correction/revocation and current-trust verification;
+- one-transaction snapshot consistency, byte/row bounds and atomic
+  trust/frontier acceptance;
+- owner fencing, every publication transition, crash/reopen, CAS conflict,
+  uncertain outcome and startup reconciliation;
+- real Agentd paging, malformed selectors and bounded verification summaries;
+- backup-object bytes, build provenance, restore witness and production startup
+  mismatch cases;
+- segmented rollover, stale-index recovery, immutable history, capacity
+  telemetry and multiprocess single-winner CAS;
+- exact-source and deterministic fixed-base merge qualification with retained
+  records and logs.
 
-The dedicated reusable workflow runs the evidence package, Agentd product test,
-Lane-A truth, documentation and implementation-map checks on both the exact PR
-head and deterministic synthetic merge. Each command emits JSON and a raw log;
-later checks and diagnostic uploads run even after an earlier failure. The
-stable fan-in check is `Kernel evidence required`, consumed by repository
-`CI required`.
-
-A workflow artifact proves only the recorded execution on its bound object.
-Independent acceptance and operational activation require separate principals
-and retained receipts.
+The final execution evidence must be produced on the unchanged integration head;
+queued, skipped, cancelled, action-required or historical runs are not passes.
 
 ## 13. Implementation sequence and work packages
 
-The repository closure sequence is:
+The existing protocol was completed in four tracks rather than replaced:
 
-1. repair exact-source regressions without weakening production bounds;
-2. split qualification commands and retain diagnostics on failure;
-3. implement recovery-frontier v2 and external backend contract;
-4. add a concrete monotonic CAS adapter and immutable local acceptance;
-5. establish explicit development/production modes and fail-closed admission;
-6. separate migration/runtime database authority and add fault/property/
-   contention tests;
-7. generate all module status views from one canonical source;
-8. qualify the exact source and deterministic merge;
-9. obtain independent acceptance and deploy the external trust/backup system;
-10. complete restore drill, canary, promotion and release through their owners.
+1. **A — trustworthy decision:** fixed role backtracking, closed verification
+   profiles and sealed verified trust;
+2. **B — durable recovery:** authenticated commitments, transactional snapshot,
+   monotonic trust/frontier acceptance and fenced publication reconciliation;
+3. **C — product and longevity:** Agentd paging/summary, explicit modes,
+   backup/build/restore proof and segmented long-term history;
+4. **D — integration evidence:** synchronize documentation and implementation
+   mapping, then qualify one exact source and one deterministic merge candidate.
 
-Repository implementation through step 7 is present in this candidate. Steps 8
-through 10 remain evidence-dependent and are recorded as false until their exact
-receipts exist.
-
-The external work package `P0.9-EXTERNAL-GATES` retains independent exact
-candidate review, repository ruleset, operator acceptance, trust-root ceremony,
-physical platform, promotion and release. Stop conditions include authority
-violation, base drift, claim/evidence mismatch, cross-owner write and unbounded
-resource/retry.
+A–C are source implemented at the canonical source anchor. D remains open until
+the final head has successful retained receipts and all required repository
+checks complete.
 
 ## 14. Activation, compatibility and retirement
 
-Agentd is the named product caller. Development mode may attach the local host
-only under explicit development configuration. Production mode requires current
-issuer trust, threshold signer trust, external backend, build identity,
-qualification receipts, backup publication and latest frontier; any missing
-input fails closed.
+Development mode is visibly distinct and cannot satisfy production readiness.
+Production has no downgrade path: any absent, legacy, stale, revoked, malformed
+or mismatched control input returns `kernel.evidence recovery_required`.
 
-Repository implementation of `LockedFileEvidenceFrontierBackend` does not mark
-`externalFrontierActive=true`. That state requires deployment on independently
-retained storage and an authority receipt bound to this exact candidate.
-Likewise, repository tests cannot set `backupRestoreDrilled`,
-`independentAcceptance`, `canaryAccepted` or `releaseApproved`.
-
-Compatibility adapters are temporary. Retirement requires all named callers
-migrated, no legacy path use, parity where required, preserved historical
-interpretability, rehearsed rollback and independent acceptance. Frontier v1
-remains a predecessor format and must not be silently accepted as the v2
-production identity domain.
+Source implementation of the external adapter does not establish that it is
+deployed on an independently retained device with coherent locks and durable
+`fsync`. Compatibility paths may be retired only after all callers migrate,
+historical evidence remains interpretable, rollback is rehearsed and an
+independent principal accepts the exact candidate.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, canonical status and closed-world
-registry validation. Repository source completion requires implementation in
-the declared roots, source tests, product composition, exact-source and
-synthetic-merge execution receipts, and current implementation-map binding.
-Production completion additionally requires:
+Repository source completion requires current source mapping, formatted and
+linted Rust, evidence and Agentd tests, builds, documentation checks, exact-head
+and fixed-base merge receipts and retained artifact digests.
 
-- deployed authenticated external monotonic storage outside the local rollback
-  domain;
-- current issuer and threshold signer ceremonies;
-- durable backup publication and witnessed restore/rollback rejection;
-- independent exact-candidate acceptance;
-- measured capacity and recovery objectives on the selected platform;
-- canary, promotion and release receipts from their separate authorities;
-- repository branch protection requiring the stable qualification fan-in.
+Production completion additionally requires independent storage provisioning,
+signer and trust ceremonies, measured capacity/recovery objectives, a real
+witnessed backup/restore and rollback-rejection drill, independent
+exact-candidate acceptance, operator acceptance, canary and release approval.
+Those external states remain false until their own receipts exist.
 
-No prose, source code, local test or CI workflow may advance those external
-states by inference.
+## 16. Current claim boundary
 
-## 16. V8.2 implementation-readiness overlay
-
-Ordinary authorized development identifies the Git baseline, owned paths,
-contracts, fixtures, fallback and rollback. Runtime coordination still verifies
-current source, frozen contract/readiness digests, expiry and zero authority
-delta. An execution envelope is not additional permission for ordinary
-repository work and never grants independent acceptance or release.
-
-Readiness protocols remain registry-owned. `kernel.evidence` produces the
-registered canonical-source, evaluator-independence and assimilation
-qualification receipts and consumes the registered capability, migration,
-rollback, sandbox, objective and emergency-stop envelopes according to their
-current schemas.
+The repository may claim that A–C implementation surfaces exist and are wired
+to the named product host. It may not claim final execution, deployment,
+independent acceptance or release from source presence or from this document.
+The checked-in status source below is authoritative for persistent gate state.
 
 ## 17. Source implementation receipt
 
-| Operation | Native implementation | Principal tests |
+| Concern | Native implementation | Principal tests |
 |---|---|---|
-| append/query/verify qualification evidence | `codex-rs/hepta-evidence/src/qualification.rs` | `qualification_tests.rs`, Agentd product test |
-| stable cursor paging | `codex-rs/hepta-evidence/src/qualification_paging.rs` | `qualification_paging_tests.rs` |
-| recovery snapshot and migration/replay frontier | `codex-rs/hepta-evidence/src/recovery_frontier.rs` | recovery snapshot tests |
-| frontier v2 signing and ledger root | `codex-rs/hepta-evidence/src/frontier_v2.rs` | `frontier_v2_tests.rs` |
-| latest/CAS/history/backend identity | `codex-rs/hepta-evidence/src/frontier_backend.rs` | backend contract tests |
-| locked external file backend | `codex-rs/hepta-evidence/src/frontier_backend_file.rs` | file backend and multiprocess tests |
-| immutable local acceptance | `codex-rs/hepta-evidence/src/frontier_acceptance.rs` | acceptance and reopen tests |
-| production admission | `codex-rs/hepta-agentd/src/evidence_production.rs` | production admission tests |
-| threshold signer policy | `codex-rs/hepta-agentd/src/evidence_frontier_signers.rs` | signer rotation/revocation tests |
-| issuer trust and product host | `codex-rs/hepta-agentd/src/evidence_trust.rs`, `evidence_host.rs` | `kernel_evidence_product.rs` |
-| restricted runtime SQLite | `codex-rs/state/src/sqlite_evidence_runtime.rs` | authorizer tests |
-| canonical status and projections | `qualification/kernel-evidence/STATUS_SOURCE.json`, `scripts/kernel_evidence_status.py` | `scripts/tests/test_kernel_evidence_status.py` |
-| exact-source and merge qualification | `.github/workflows/hepta-kernel-evidence-qualification.yml` | retained workflow artifacts |
-
-The named product caller is `runtime.agentd`. The stable qualification check is
-`Kernel evidence required`, incorporated into `CI required`. Activating it as a
-protected-branch requirement remains a repository-administrator operation.
-
-## 18. Convergence hardening on 2026-09-27
-
-The direct `hepta-kernel-evidence-convergence.yml` entry point runs on every PR
-without a path filter and also on main pushes. It invokes the reusable source
-and merge workflow and separately executes the Python receipt regressions. The
-final `Kernel evidence convergence required` check rejects missing, skipped,
-cancelled and failed applicable lanes. Reusable workflow concurrency includes
-the caller workflow name so this entry point and `blocking-ci` cannot cancel
-one another's qualification. Diagnostic initialization precedes toolchain setup
-and synthetic merge construction; test commands require observed passing tests.
-
-`kernel_evidence_record_validation.py` checks bounded regular files, exact
-command plans, clean before/after Git identities, run/attempt/job identity,
-terminal integer exit codes, test counts, timestamps and raw-log byte counts
-and SHA-256. Duplicate JSON fields, non-finite numbers, unsafe paths, symlinks,
-hard links and changed files fail closed. The final artifact-bearing status
-also validates the exact repository/run/artifact URL and returns a nonzero exit
-status if qualification is false. A pre-upload diagnostic may report successful
-execution but cannot report final qualification without a retained artifact.
-These checks do not authenticate an untrusted CI runner or confer release
-power; the reviewed command plan and governed runner remain the trust boundary.
-
-`EvidenceFrontierHistoryRangeV1` no longer permits external unchecked struct
-construction. Its constructor enforces positive inclusive ranges of at most
-4096 generations. Public accessors retain backend integration; a compile-fail
-doctest and inclusive-limit/overflow tests cover the boundary.
-
-The convergence change set has 42 additional Python unit regressions that were
-executed locally. This is not a full Rust build, exact-candidate qualification,
-independent acceptance or deployment receipt. See
-`qualification/kernel-evidence/CONVERGENCE_20260927.md` for the execution scope
-and unresolved administrative and operational gates.
-
-## 19. Production CLI and all-event qualification follow-up
-
-The explicit production CLI now rejects descriptors that would be routed to the
-legacy v1 verifier. Its direct-child, absolute and lexical-canonical checks are
-implemented in `codex-rs/hepta-agentd/src/evidence_cli_profile.rs` and exercised
-by the `kernel_evidence_profile` integration target, included in the governed
-Agentd command. This is a structural hand-off guard, not a replacement for the
-runtime's owner, trust, backend, signature, backup and snapshot checks.
-
-Both qualification lanes are now required for PR, push and manual invocation.
-`scripts/kernel_evidence_candidate.py` binds an explicit full base OID or, outside
-PRs, the exact source's first parent. The resulting merge is evidence about that
-recorded base only, not a later moving branch. Runner diagnostics precede
-checkout, and artifact names include the source and run attempt. Production
-receipt admission retains its governed PR-event requirement; this change does
-not authorize push/manual receipts for deployment.
-
-The follow-up executed 20 real-Git Python candidate tests locally and added
-eight Rust profile regressions that still require compiler/CI execution. No
-qualification, external deployment or release gate advances from those local
-results. See `qualification/kernel-evidence/FOLLOWUP_20260927.md`.
+| bounded independent-role assignment | `identity_assignment.rs`, `qualification_policy.rs` | fixed counterexample and exhaustive oracle tests |
+| verified trust boundary | `verified_trust.rs`, `trust_acceptance.rs` | trust boundary, rotation and atomic acceptance tests |
+| authenticated append and commitment | `qualification.rs`, `qualification_commitment.rs` | qualification/provenance tests |
+| transactional recovery snapshot V2 | `recovery_snapshot.rs`, `recovery_frontier.rs` | recovery snapshot tests |
+| fenced durable publication | `publication.rs`, migration `0014` | publication and crash/reconciliation tests |
+| segmented monotonic backend | `frontier_backend_file/segmented/*` | rollover, recovery, capacity and multiprocess tests |
+| Agentd paging and bounded verification | `evidence_host.rs`, protocol `evidence.rs` | product paging/profile tests |
+| production backup/build/restore admission | `evidence_production.rs`, `evidence_backup_manifest.rs` | production admission tests |
+| exact source and fixed-base merge evidence | qualification and convergence workflows | retained source/merge artifacts |
 
 <!-- BEGIN GENERATED KERNEL EVIDENCE STATUS -->
 ## Canonical kernel.evidence status
