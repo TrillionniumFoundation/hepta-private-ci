@@ -42,6 +42,11 @@ cargo fmt \
 cargo test -p codex-hepta-memory-federation --lib
 cargo test -p codex-hepta-memory-federation --lib --features legacy-v1
 cargo test -p codex-hepta-memory --lib cognitive_runtime_tests
+# The reserved-read-budget regression lives in the inline product_nonce_tests
+# module rather than the external cognitive_runtime_tests module. Run it
+# explicitly so a permanently pending owner cannot regress without failing the
+# retained qualification matrix.
+cargo test -p codex-hepta-memory --lib product_nonce_tests
 cargo test -p codex-hepta-memory --lib cognitive_federation_tests
 cargo test -p codex-hepta-memory-extension --lib cognitive::federation
 cargo check -p codex-hepta-agentd -p codex-app-server

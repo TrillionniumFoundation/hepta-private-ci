@@ -39,6 +39,7 @@ base.COMMANDS = (
     "cargo test -p codex-hepta-memory-federation --lib",
     "cargo test -p codex-hepta-memory-federation --lib --features legacy-v1",
     "cargo test -p codex-hepta-memory --lib cognitive_runtime_tests",
+    "cargo test -p codex-hepta-memory --lib product_nonce_tests",
     "cargo test -p codex-hepta-memory --lib cognitive_federation_tests",
     "cargo test -p codex-hepta-memory-extension --lib cognitive::federation",
     "cargo check -p codex-hepta-agentd -p codex-app-server",

@@ -191,6 +191,7 @@ def verify() -> int:
         "verify_memory_federation_status.py verify",
         "memory_federation_execution_guard.py capture",
         "memory_federation_execution_guard.py verify",
+        "cargo test -p codex-hepta-memory --lib product_nonce_tests",
         "memory_federation_capacity_probe",
         "memory-federation-capacity.json",
     ):
