@@ -13,11 +13,11 @@ permissions:
 
 concurrency:
   group: kernel-authority-one-shot-repair
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   repair:
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, linux, x64, rog]
     timeout-minutes: 90
     steps:
       - name: Checkout repair branch
@@ -31,7 +31,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+          if ! rustup toolchain list | grep -q '^1.95.0'; then
+            rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+          fi
 
       - name: Repair source and closed-world caller inventory
         shell: bash
