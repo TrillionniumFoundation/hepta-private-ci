@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       lane:
-        description: Exact candidate lane: source-head or base-merge.
+        description: "Exact candidate lane: source-head or base-merge."
         required: true
         type: string
       candidate_sha:
