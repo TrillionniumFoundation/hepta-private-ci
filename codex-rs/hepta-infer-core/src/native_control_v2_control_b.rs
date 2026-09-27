@@ -79,7 +79,8 @@ impl DurableInferenceControl {
     }
 
     /// Apply only independently signed terminal evidence to a dispatched or
-    /// indeterminate record.
+    /// indeterminate record. Signed provider usage is still bounded by the
+    /// independently signed quota lease persisted before the provider effect.
     pub fn reconcile_native(
         &mut self,
         request_id: &str,
@@ -93,6 +94,10 @@ impl DurableInferenceControl {
             .records
             .get(request_id)
             .ok_or(Error::RequestNotFound)?;
+        let binding = record
+            .execution_binding
+            .as_ref()
+            .ok_or(Error::InvalidIdentity("native execution binding"))?;
         let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
         let dispatch_digest = native_dispatch_digest(dispatch)?;
         let receipt = verified.receipt();
@@ -101,6 +106,12 @@ impl DurableInferenceControl {
             || receipt.thread_id != dispatch.thread_id
             || receipt.provider_id != dispatch.model_provider
             || receipt.execution_binding_digest != plan.execution_binding_digest()
+            || receipt
+                .observed_output_tokens
+                .is_some_and(|value| value > binding.maximum_output_tokens)
+            || receipt
+                .usage_microunits
+                .is_some_and(|value| value > binding.maximum_cost_microunits)
         {
             return Err(Error::AssignmentMismatch);
         }
