@@ -12,6 +12,7 @@ use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
 use codex_hepta_infer_core::NeuronFeatureStoreError;
 use codex_hepta_infer_core::verify_neuron_feature_receipt_v1;
+use codex_hepta_neuron::DurableNeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronModelError;
 use codex_hepta_types::StableId;
@@ -166,6 +167,11 @@ impl<B: DurableNeuronFeatureBackend> NeuronInferenceControlPort
     ) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
         self.execute(request)
     }
+}
+
+impl<B: DurableNeuronFeatureBackend> DurableNeuronInferenceControlPort
+    for DurableNeuronFeaturePortV1<B>
+{
 }
 
 fn operation_id(record: &NeuronFeatureExecutionRecordV1) -> StableId {
