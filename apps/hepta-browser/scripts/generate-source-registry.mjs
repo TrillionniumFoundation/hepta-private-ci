@@ -19,6 +19,7 @@ const EXPECTED_OPERATIONS = Object.freeze([
 
 const SOURCE_PATHS = Object.freeze([
   "apps/hepta-browser/scripts/generate-source-registry.mjs",
+  "apps/hepta-browser/scripts/verify-deployment-evidence.py",
   "apps/hepta-browser/src/action.js",
   "apps/hepta-browser/src/agentd-protocol.js",
   "apps/hepta-browser/src/agentd-service-main.js",
@@ -105,15 +106,25 @@ function verifyCapabilities() {
     "Require the exact reviewed committed dependency lock",
     "sameRunnerByteIdenticalBuilds",
     "reproducibleIndependentBuilds': False",
+    "actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6",
+    "sbom-path: worker-evidence/hepta-servo-worker.spdx.json",
   ]);
   assertContains(".github/workflows/hepta-browser-servo-independent-rebuild.yml", [
     "independentEphemeralRunner",
     "git ls-files --error-unmatch",
+    "actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6",
   ]);
   assertContains(".github/workflows/hepta-browser-servo-deployment-qualification.yml", [
-    "multi-builder-receipt",
-    "reproducibleIndependentBuilds': True",
-    "independentRunnerBuildCount': 2",
+    "gh attestation verify",
+    "--deny-self-hosted-runners",
+    "https://spdx.dev/Document/v2.3",
+    "verify-deployment-evidence.py attestations",
+  ]);
+  assertContains("apps/hepta-browser/scripts/verify-deployment-evidence.py", [
+    "verifiedTimestamps",
+    "signedBuildProvenanceVerified",
+    "signedSbomVerified",
+    "selfHostedBuilderAttestationsDenied",
   ]);
 }
 
@@ -148,7 +159,7 @@ function buildRegistry() {
       { capability: "persistent_agentd_owner", state: "implemented_inherited_stdio" },
       { capability: "committed_worker_lock", state: "implemented_required" },
       { capability: "multi_builder_reproducibility", state: "implemented_deployment_gate" },
-      { capability: "signed_build_provenance", state: "not_implemented_external_gate" },
+      { capability: "signed_build_provenance", state: "implemented_main_sigstore_verified_target_gate" },
       { capability: "linux_isolation", state: "implemented_source_target_evidence_required" },
       { capability: "macos_isolation", state: "not_implemented_not_in_current_target" },
       { capability: "windows_isolation", state: "not_implemented_not_in_current_target" },
