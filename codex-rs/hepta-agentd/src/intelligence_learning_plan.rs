@@ -144,6 +144,28 @@ impl AgentdIntelligenceDecisionPlanV1 {
             evidence,
         })
     }
+
+    /// Persist and reconcile the exact canonical Decision before a prepared run
+    /// may become externally visible as `ContextAttached`/`Ready`.
+    ///
+    /// The outbox is written before the ledger owner is invoked. Any ambiguous
+    /// destination result therefore remains restart-reconcilable and never
+    /// authorizes physical dispatch.
+    pub(crate) fn append_prepared_decision(
+        &self,
+        learning_host: &AgentdIntelligenceLearningHostV1,
+        prepared: &PreparedAgentdIntelligenceRunV1,
+        now: u64,
+    ) -> Result<IntelligenceLearningStatusV1, IntelligenceLearningErrorV1> {
+        let decision = self.prepare(prepared, now)?;
+        learning_host.enqueue_decision(
+            decision.binding,
+            decision.expected_predecessor,
+            decision.decision,
+            decision.evidence,
+            now,
+        )
+    }
 }
 
 pub struct AgentdIntelligenceProductProfileV1 {
@@ -226,14 +248,7 @@ impl AgentdIntelligenceProductProfileV1 {
             .get(run_id)
             .cloned()
             .ok_or(IntelligenceLearningErrorV1::Missing)?;
-        let decision = plan.prepare(prepared, now)?;
-        let status = self.learning_host.enqueue_decision(
-            decision.binding,
-            decision.expected_predecessor,
-            decision.decision,
-            decision.evidence,
-            now,
-        )?;
+        let status = plan.append_prepared_decision(&self.learning_host, prepared, now)?;
         if matches!(status.state, IntelligenceLearningStateV1::Acknowledged { .. }) {
             self.remove_plan(run_id)?;
         }
