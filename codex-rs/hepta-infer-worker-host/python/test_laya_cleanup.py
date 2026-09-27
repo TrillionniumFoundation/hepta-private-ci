@@ -4,13 +4,15 @@ import signal
 import subprocess
 import threading
 import unittest
+
+from laya_wait import observation_supported, observe_owned_exit
 from unittest.mock import patch
 
 from laya_process import ProcessFailure
 import test_laya_process as fixtures
 
 
-@unittest.skipUnless(hasattr(os, "waitid") and hasattr(os, "WNOWAIT"),
+@unittest.skipUnless(observation_supported(),
                      "non-reaping child observation is unsupported")
 class CleanupTests(unittest.TestCase):
     # Share fixture methods, not TestCase inheritance (which duplicates cases).
@@ -38,7 +40,7 @@ class CleanupTests(unittest.TestCase):
             f"sys.stdin.buffer.read()\nsys.stdout.buffer.write({self.reply!r})")
         child = failure.child
         # The exited child has not been reaped; its PID still reserves identity.
-        self.assertIsNotNone(os.waitid(os.P_PID, child.pid, os.WEXITED | os.WNOWAIT))
+        self.assertIsNotNone(observe_owned_exit(child.pid))
         observed = failure.reconcile_cleanup()
         self.assertTrue(observed["direct_child_reaped"])
         self.assertTrue(observed["direct_child_exit_observed"])
@@ -107,14 +109,14 @@ class CleanupTests(unittest.TestCase):
         # Inject interrupt only in the exchange; the cleanup observation uses
         # the real waitid. The typed exception retains the original cause.
         import laya_process
-        original = laya_process.os.waitid
+        original = laya_process.observe_owned_exit
         calls = [0]
         def interrupt_once(*args):
             calls[0] += 1
             if calls[0] == 1:
                 raise KeyboardInterrupt()
             return original(*args)
-        with patch("laya_process.os.waitid", side_effect=interrupt_once):
+        with patch("laya_process.observe_owned_exit", side_effect=interrupt_once):
             failure = self.retained("sys.stdin.buffer.read()\ntime.sleep(5)")
         self.assertIsInstance(failure.__cause__, KeyboardInterrupt)
         self.assertTrue(failure.reconcile_cleanup()["direct_child_reaped"])

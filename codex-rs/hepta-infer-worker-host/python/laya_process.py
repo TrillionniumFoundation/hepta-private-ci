@@ -21,6 +21,7 @@ import time
 from hepta_retrieval_wire import MAX_FRAME, decode_reply, decode_request
 from laya_binary import OwnerDeadline
 from laya_retrieval import Rejected
+from laya_wait import observation_supported, observe_owned_exit
 from laya_process_group import EXITED_LEADER_ONLY, SIGNALLED, signal_owned_group
 
 MAX_DIAGNOSTIC_BYTES = 8192
@@ -92,7 +93,7 @@ def _cleanup_owned_child(child: subprocess.Popen, observation: dict) -> None:
     try:
         if child.returncode is not None:
             raise ChildProcessError("child was reaped outside its owner")
-        exited = os.waitid(os.P_PID, child.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+        exited = observe_owned_exit(child.pid)
     except ChildProcessError:
         observation["cleanup_error"] = "ChildOwnershipLost"
         return
@@ -163,8 +164,7 @@ def _exchange(command: list[str], request_wire: bytes, deadline: OwnerDeadline,
               cancel: threading.Event | None = None) -> ProcessPrediction:
     # WNOWAIT keeps the child PID reserved until group cleanup. Never signal a
     # numerical process group after poll/wait has reaped its leader.
-    if os.name != "posix" or not all(hasattr(os, name) for name in
-                                      ("waitid", "WNOWAIT", "WEXITED", "P_PID")):
+    if not observation_supported():
         raise Rejected("transport requires POSIX non-reaping child observation")
     if signal.getsignal(signal.SIGCHLD) != signal.SIG_DFL:
         raise Rejected("child lifecycle must not have an external reaper")
@@ -208,7 +208,7 @@ def _exchange(command: list[str], request_wire: bytes, deadline: OwnerDeadline,
             deadline.check(request["deadline_ms"])
             if cancel is not None and cancel.is_set():
                 raise Rejected("cancelled after process creation")
-            exited = os.waitid(os.P_PID, child.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+            exited = observe_owned_exit(child.pid)
             if exited is not None and not selector.get_map():
                 break
             remaining = min(0.02, deadline.monotonic_end - deadline.monotonic_clock())

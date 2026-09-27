@@ -101,12 +101,12 @@ isolation. OS resource control, protected source revalidation and durable
 cross-process ownership remain responsibilities of the existing native host.
 
 The existing smoke workflow runs source-head and fixed-base merge lanes on
-macOS and Linux. Linux additionally executes a fourth, distinct model request
-through this transport. `process-observation.json` binds both binary frames,
-token usage and observed direct-child termination; it deliberately does not
-claim a production caller, device attestation or held-out efficacy. Unsupported
-Python/platform process APIs are explicit test skips on the macOS lane, not
-successful process tests; the Linux lane exercises the process boundary.
+macOS and Linux. Both lanes require a fourth, distinct model request through
+this transport. `process-observation.json` binds both binary frames, token usage
+and observed direct-child termination; it deliberately does not claim a
+production caller, device attestation or held-out efficacy. Skipped contracts
+are a qualification failure on these supported targets. A configured workflow
+is not evidence that its current exact-source and merge jobs succeeded.
 
 ## Verification and remaining product work
 
@@ -137,3 +137,23 @@ and terminal observation; cross-process durable resource ownership; end-to-end
 TaskFlow/Neuron result handoff; and independent equal-budget retrieval outcomes.
 Local parameter training, organ credit, controlled computer actions and stateful
 organ surgery are not established by binary predictions or these source tests.
+
+### Portable non-reaping observation
+
+The existing process owner now uses `laya_wait.observe_owned_exit` rather than
+requiring CPython to expose `os.waitid` on macOS. On supported 64-bit Darwin,
+the helper uses the public `libSystem` waitid/siginfo ABI with
+`waitid(P_PID, pid, ..., WEXITED | WNOHANG | WNOWAIT)`; other
+supported POSIX interpreters retain native `os.waitid`. It checks the ABI before
+writing through a native pointer, zero-initializes the result, checks complete
+child identity and terminal reason, and propagates errors without retries.
+`ECHILD` remains permanent ownership loss. Nothing here reaps, signals, grants
+resource settlement, proves descendant containment or permits inference retry.
+
+Both Linux and macOS qualification lanes execute the complete process suite and
+the actual supervised pinned-model exchange. A skipped contract test fails this
+qualification; missing `os.waitid` is no longer a reason to skip the transport.
+The injected Darwin ABI tests are not native Darwin evidence: only the actual
+macOS source/merge job results establish that runtime observation. The existing
+owner journal, resident-model integration and protected final consumer remain
+separate product obligations.

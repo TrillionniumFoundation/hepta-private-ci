@@ -93,6 +93,14 @@ jobs:
         run: |
           set -euo pipefail
           "$RUNNER_TEMP/laya-env/bin/python" -m unittest discover -v -s codex-rs/hepta-infer-worker-host/python -p 'test_*.py' 2>&1 | tee "$RUNNER_TEMP/laya-contracts.log"
+          "$RUNNER_TEMP/laya-env/bin/python" - <<'PY'
+          import os, re
+          from pathlib import Path
+          output = (Path(os.environ['RUNNER_TEMP']) / 'laya-contracts.log').read_text()
+          counts = re.findall(r'^Ran ([0-9]+) tests? in ', output, re.MULTILINE)
+          assert len(counts) == 1 and int(counts[0]) >= 99, 'incomplete contract execution'
+          assert re.search(r'^OK$', output, re.MULTILINE), 'skipped or failed contracts are not qualification'
+          PY
       - name: Numerical trainer and paired-metric tests (not Laya weight evidence)
         run: |
           set -euo pipefail
@@ -101,10 +109,7 @@ jobs:
       - name: Real pinned checkpoint load and bounded read-only predictions
         run: |
           set -euo pipefail
-          # Empty arrays under nounset fail on the macOS Bash 3.2 runner.
-          set --
-          if [[ "$RUNNER_OS" == "Linux" ]]; then set -- --supervised; fi
-          "$RUNNER_TEMP/laya-env/bin/python" codex-rs/hepta-infer-worker-host/python/laya_smoke.py "$@" --output "$RUNNER_TEMP/laya-smoke" 2>&1 | tee "$RUNNER_TEMP/laya-smoke.log"
+          "$RUNNER_TEMP/laya-env/bin/python" codex-rs/hepta-infer-worker-host/python/laya_smoke.py --supervised --output "$RUNNER_TEMP/laya-smoke" 2>&1 | tee "$RUNNER_TEMP/laya-smoke.log"
       - name: Real frozen-Laya features and private scorer training
         env:
           HF_HUB_OFFLINE: '1'
@@ -155,15 +160,14 @@ jobs:
           for split in ('future', 'retention'):
               assert training['paired_metrics'][split]['rows'] == 4
               assert training['paired_metrics'][split]['final_holdout_consumed'] is False
-          if os.environ['RUNNER_OS'] == 'Linux':
-              process = json.loads((root / 'process-observation.json').read_text())
-              assert process['transport']['eligible_reply'] is True
-              assert process['transport']['direct_child_exit_observed'] is True
-              assert process['transport']['returncode'] == 0
-              assert process['transport']['retry_allowed'] is False
-              assert process['transport']['observed_memory_bytes'] is None
-              assert process['decoded_reply']['input_tokens'] > 0
-              assert process['decoded_reply']['output_tokens'] == 0
+          process = json.loads((root / 'process-observation.json').read_text())
+          assert process['transport']['eligible_reply'] is True
+          assert process['transport']['direct_child_exit_observed'] is True
+          assert process['transport']['returncode'] == 0
+          assert process['transport']['retry_allowed'] is False
+          assert process['transport']['observed_memory_bytes'] is None
+          assert process['decoded_reply']['input_tokens'] > 0
+          assert process['decoded_reply']['output_tokens'] == 0
           PY
           git diff --exit-code
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

@@ -8,6 +8,8 @@ import os
 import signal
 import subprocess
 import unittest
+
+from laya_wait import observation_supported, observe_owned_exit
 from unittest.mock import patch
 
 from laya_binary import OwnerDeadline
@@ -15,7 +17,7 @@ from laya_process import ProcessFailure, _cleanup_owned_child
 import test_laya_process as fixtures
 
 
-@unittest.skipUnless(hasattr(os, "waitid") and hasattr(os, "WNOWAIT"),
+@unittest.skipUnless(observation_supported(),
                      "non-reaping child observation is unsupported")
 class OwnershipTests(unittest.TestCase):
     setUp = fixtures.ProcessTests.setUp
@@ -31,7 +33,7 @@ class OwnershipTests(unittest.TestCase):
                 self.execute("sys.stdin.buffer.read()\ntime.sleep(30)", deadline=deadline)
         failure = caught.exception
         self.assertIsNotNone(failure.child)
-        self.assertIsNone(os.waitid(os.P_PID, failure.child.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT))
+        self.assertIsNone(observe_owned_exit(failure.child.pid))
         self.addCleanup(failure.reconcile_cleanup)
         return failure
 
@@ -45,7 +47,7 @@ class OwnershipTests(unittest.TestCase):
         self.assertEqual(first["cleanup_error"], "ChildOwnershipLost")
         # A later waitid(P_PID, stale_pid) could name ANOTHER child with this PID.
         # Merely returning success must never renew a previously lost identity.
-        with patch("laya_process.os.waitid", return_value=None) as observe:
+        with patch("laya_process.observe_owned_exit", return_value=None) as observe:
             with patch("laya_process.os.killpg") as signal_group:
                 with patch.object(child, "wait", return_value=0) as reap:
                     second = failure.reconcile_cleanup()
@@ -93,7 +95,7 @@ class OwnershipTests(unittest.TestCase):
 
     def test_observation_failure_records_phase_and_does_not_signal_or_reap(self):
         failure = self.retained()
-        with patch("laya_process.os.waitid", side_effect=OSError(errno.EIO, "private")):
+        with patch("laya_process.observe_owned_exit", side_effect=OSError(errno.EIO, "private")):
             with patch("laya_process.os.killpg") as signal_group:
                 with patch.object(failure.child, "wait") as reap:
                     result = failure.reconcile_cleanup()
@@ -116,7 +118,7 @@ class OwnershipTests(unittest.TestCase):
 
     def test_lower_level_loss_latch_rejects_successful_later_observation(self):
         observation = {"direct_child_reaped": False, "cleanup_error": "ChildOwnershipLost"}
-        with patch("laya_process.os.waitid") as observe, patch("laya_process.os.killpg") as kill:
+        with patch("laya_process.observe_owned_exit") as observe, patch("laya_process.os.killpg") as kill:
             _cleanup_owned_child(None, observation)
         observe.assert_not_called()
         kill.assert_not_called()

@@ -10,6 +10,7 @@ import signal
 import subprocess
 import sys
 import unittest
+import time
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -27,7 +28,13 @@ class GroupTests(unittest.TestCase):
                 child.kill()
                 child.wait(timeout=3)
         self.addCleanup(clean)
-        observed = os.waitid(os.P_PID, child.pid, os.WEXITED | os.WNOWAIT | (os.WNOHANG if running else 0))
+        observed = group.observe_owned_exit(child.pid)
+        end = time.monotonic() + 3
+        while not running and observed is None and time.monotonic() < end:
+            time.sleep(0.005)
+            observed = group.observe_owned_exit(child.pid)
+        if not running:
+            self.assertIsNotNone(observed, "fixture child did not exit")
         return child, observed
 
     def denied(self, child, observed, members=None):
@@ -110,8 +117,8 @@ class GroupTests(unittest.TestCase):
     def test_exit_identity_change_after_group_query_is_not_reaped(self):
         child, observed = self.child()
         other = SimpleNamespace(si_pid=child.pid, si_signo=signal.SIGCHLD,
-                                si_code=os.CLD_EXITED, si_status=9)
-        with patch.object(group.os, "waitid", side_effect=[observed, other]):
+                                si_code=1, si_status=9)
+        with patch.object(group, "observe_owned_exit", side_effect=[observed, other]):
             with self.assertRaises(ChildProcessError):
                 self.denied(child, observed)
         self.assertIsNone(child.returncode)
@@ -126,15 +133,15 @@ class GroupTests(unittest.TestCase):
 
     def test_echild_after_group_snapshot_is_ownership_loss(self):
         child, observed = self.child()
-        with patch.object(group.os, "waitid", side_effect=ChildProcessError()):
+        with patch.object(group, "observe_owned_exit", side_effect=ChildProcessError()):
             with self.assertRaises(ChildProcessError):
                 self.denied(child, observed)
 
     def test_changed_exit_status_is_ownership_loss(self):
         child, observed = self.child()
         other = SimpleNamespace(si_pid=child.pid, si_signo=signal.SIGCHLD,
-                                si_code=os.CLD_EXITED, si_status=7)
-        with patch.object(group.os, "waitid", return_value=other):
+                                si_code=1, si_status=7)
+        with patch.object(group, "observe_owned_exit", return_value=other):
             with self.assertRaises(ChildProcessError):
                 self.denied(child, observed)
 

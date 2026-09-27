@@ -9,6 +9,8 @@ import tempfile
 import threading
 import time
 import unittest
+
+from laya_wait import observation_supported, observe_owned_exit
 from unittest.mock import patch
 
 from hepta_retrieval_wire import MAX_FRAME, decode_reply, encode_request
@@ -19,7 +21,7 @@ from laya_retrieval import Rejected
 from test_hepta_retrieval_wire import reply_for, request
 
 
-@unittest.skipUnless(hasattr(os, "waitid") and hasattr(os, "WNOWAIT"),
+@unittest.skipUnless(observation_supported(),
                      "non-reaping child observation is unsupported")
 class ProcessTests(unittest.TestCase):
     def setUp(self):

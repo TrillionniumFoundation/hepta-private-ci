@@ -14,6 +14,8 @@ import signal
 import subprocess
 import sys
 
+from laya_wait import observe_owned_exit
+
 SIGNALLED = "signalled"
 ABSENT = "absent"
 EXITED_LEADER_ONLY = "exited-leader-only"
@@ -42,7 +44,7 @@ def _darwin_group_members(leader: int) -> tuple[int, ...]:
 def _exit_identity(observed, leader: int):
     if (observed is None or observed.si_pid != leader
             or observed.si_signo != signal.SIGCHLD
-            or observed.si_code not in (os.CLD_EXITED, os.CLD_KILLED, os.CLD_DUMPED)):
+            or observed.si_code not in (1, 2, 3)):
         return None
     return (observed.si_pid, observed.si_code, observed.si_status)
 
@@ -68,7 +70,7 @@ def signal_owned_group(child: subprocess.Popen, observed_exit) -> str:
         # The child can exit BETWEEN the caller's observation and killpg.
         # Re-observe after EPERM without reaping; a still-live child is denied.
         prior = _exit_identity(observed_exit, leader)
-        current = os.waitid(os.P_PID, leader, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+        current = observe_owned_exit(leader)
         exited = _exit_identity(current, leader)
         if exited is None:
             raise
@@ -80,7 +82,7 @@ def signal_owned_group(child: subprocess.Popen, observed_exit) -> str:
         # before permitting wait; no later signal may use a recycled group ID.
         if child.returncode is not None:
             raise ChildProcessError("group leader ownership was lost")
-        current = os.waitid(os.P_PID, leader, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+        current = observe_owned_exit(leader)
         if _exit_identity(current, leader) != exited:
             raise ChildProcessError("group leader exit identity changed")
         return EXITED_LEADER_ONLY
