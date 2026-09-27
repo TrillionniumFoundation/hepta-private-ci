@@ -1,6 +1,6 @@
 # Signed retrieval bootstrap for the ordinary Agentd process
 
-Status: source implementation, not native execution or deployment qualification. This document specifies the loader added to the ordinary `codex-hepta-agentd` binary. It does not declare an independently deployed frontier service, vector encoder/index, calibrated policy, approved canary or measured product SLO. See `API.md`, `OPERATIONS.md`, `THREAT_MODEL.md`, `CANARY_AND_ROLLBACK.md` and `E2E_MEASUREMENT.md`.
+Status: source implementation, not native execution or deployment qualification. This document specifies the loader added to the ordinary `codex-hepta-agentd` binary. It does not declare an independently deployed frontier service, vector encoder/index, calibrated policy, approved canary or measured product SLO. See `API.md`, `OPERATIONS.md`, `THREAT_MODEL.md`, `ROLLOUT_POLICY.md`, `CANARY_AND_ROLLBACK.md` and `E2E_MEASUREMENT.md`.
 
 ## Entry point and startup
 
@@ -20,11 +20,11 @@ The library entry is `LeasedMemoryRetrievalProviderV1::load_process_bootstrap(pa
 
 ## Protected descriptor
 
-The descriptor is a strict UTF-8 JSON object, at most 16384 bytes. The pin is SHA-256 of the original file bytes, not reserialized JSON. Its fields are:
+The descriptor is a strict UTF-8 JSON object, at most 16384 bytes. The pin is SHA-256 of the original file bytes, not reserialized JSON. Every version has these common fields:
 
 | Field | Required value or representation |
 | --- | --- |
-| `schema` | `hepta.agentd.retrieval-bootstrap.v1` |
+| `schema` | Exact supported schema string described below |
 | `owner_id` | Exact Agent UUID string from the launched identity |
 | `body_generation` | Exact nonzero launched body generation, unsigned integer |
 | `context_public_key_hex` | 64 lowercase hexadecimal characters for the publication verifying key |
@@ -34,7 +34,28 @@ The descriptor is a strict UTF-8 JSON object, at most 16384 bytes. The pin is SH
 | `maximum_lease_ms` | Maximum publication/frontier lease, 1 through 300000 milliseconds |
 | `publication_path` | Absolute canonical path to the signed publication file |
 
-Key pins and endpoint are startup configuration, not request parameters. No private signing key is read, generated or sent by this loader. The publisher and frontier owner must have separately governed keys and recovery policies. Merely supplying two public-key fields does not establish independent administration of those owners.
+### Descriptor v1
+
+`hepta.agentd.retrieval-bootstrap.v1` preserves the original fixed approximately five-percent canary cohort and the product structural ceilings. It must omit every v2 rollout/budget field. Supplying a v2 field under v1 is rejected rather than ignored, so old schema identity cannot silently acquire new rollout semantics.
+
+### Descriptor v2
+
+`hepta.agentd.retrieval-bootstrap.v2` requires all of the following fields in addition to the common fields. There is no field-by-field fallback to v1.
+
+| Field | Meaning and bound |
+| --- | --- |
+| `canary_threshold_ppm` | Deterministic owner cohort fraction, `0..=1000000` |
+| `canary_cohort_salt_hex` | Nonzero 32-byte policy-generation salt, 64 lowercase hex characters |
+| `shadow_maximum_channel_candidates` | Maximum declared candidates for any channel in non-delivery evaluation, `1..=512` |
+| `shadow_maximum_nodes` | Maximum HNMF nodes in non-delivery evaluation, `1..=4096` |
+| `shadow_maximum_synapses` | Maximum HNMF synapses in non-delivery evaluation, `1..=32768` |
+| `shadow_maximum_settling_steps` | Maximum settling steps in non-delivery evaluation, `1..=4` |
+
+The v2 policy is captured once when the host composes the provider. Mode, policy version, threshold, salt and all four structural ceilings are included in the routed lifecycle binding used at final revalidation. An in-place descriptor mutation fails its byte pin. A legitimate rollout transition requires approved new bytes/pin and a new process launch.
+
+The structural ceilings are checked before optional HNMF work for shadow and canary owners outside the delivery cohort. Exceeding a ceiling skips the optional work and preserves compatibility delivery without treatment exposure. These fields do not isolate CPU, RSS, allocations, wall time or cancellation; those remain separate qualification blockers.
+
+Key pins, endpoint and rollout policy are startup configuration, not request parameters. No private signing key is read, generated or sent by this loader. The publisher and frontier owner must have separately governed keys and recovery policies. Merely supplying two public-key fields does not establish independent administration of those owners.
 
 Descriptor and publication paths must be outside the Agent home, absolute, canonical and non-symlink. Files must be regular and bounded. Their immediate directory must not be group/world writable; shared writable ancestors are permitted only when sticky, such as a private directory under `/tmp`. The loader fails closed on non-Unix hosts until a separate host implementation is qualified.
 
@@ -79,10 +100,10 @@ A separately managed publisher assembles real owner/model/encoder/tokenizer/poli
 
 Revocation advances the independent frontier sequence and publishes a null publication digest. A stale local file cannot override revocation. Restart begins with an empty in-memory provider; it must observe the live challenged frontier again. A replayed Agent-home backup or local publication file is not an independently current frontier. Key rotation requires new approved descriptor bytes/pin and a new authorized host launch, not a request field.
 
-The frontier RPC framing, signature domain and total-deadline behavior remain specified in `OPERATIONS.md`. Deployment and durable recovery of that owner are still required; the loopback client is not itself the owner. The ordinary CLI bootstrap also does not create a learned ranker, durable learning sink, vector index or rollout authority. Full-chain composition and the nine-stage measurement producer remain separate implementation and qualification work.
+The frontier RPC framing, signature domain and total-deadline behavior remain specified in `OPERATIONS.md`. Deployment and durable recovery of that owner are still required; the loopback client is not itself the owner. The ordinary CLI bootstrap also does not create a learned ranker, durable learning sink or vector index. Bootstrap v2 supplies the rollout-policy seam but not independent operator approval or resource isolation. Full-chain composition and the nine-stage measurement producer remain separate implementation and qualification work.
 
 ## Tests and acceptance
 
-The candidate adds eleven native schema/path regression tests covering bounded strict decoding, duplicate/unknown keys, integer confusion/overflow, policy drift, generation binding, duplicate node support, canonical hex and private regular-file paths. They are authored source tests, not claimed executed in this implementation session. Existing provider/transport tests cover signed lifecycle and challenge behavior separately; that does not replace a full real-process bootstrap test.
+The candidate includes strict schema/path regressions for bounded decoding, duplicate/unknown keys, integer confusion/overflow, policy drift, generation binding, duplicate node support, canonical hex and private regular-file paths. It also includes v1 compatibility and v2 completeness/range tests plus routing tests for exact legacy cohort behavior, zero/full ppm limits, policy identity and each structural budget. They are authored source tests until exact-head CI records their execution.
 
 Require locked Agentd build/tests, all-target Clippy, repository formatting, dependency/Bazel lock validation, real startup/rotation/revocation/recovery fault injection, protected-path sandbox qualification and independently reviewed target-host evidence before activation. See `E2E_MEASUREMENT.md` for the exact-source SLO contract; a JSON validator pass is not a measured product result.
