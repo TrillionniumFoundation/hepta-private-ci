@@ -83,6 +83,7 @@ export function normalizeSession(value, expectedProtocol, now) {
     );
   }
   const sessionId = assertStableIdentifier(value.sessionId, "session.sessionId");
+  const identityId = assertStableIdentifier(value.identityId, "session.identityId");
   const connectionGeneration = assertSafeInteger(
     value.connectionGeneration,
     "session.connectionGeneration",
@@ -111,14 +112,12 @@ export function normalizeSession(value, expectedProtocol, now) {
     authenticated: true,
     protocolVersion,
     sessionId,
+    identityId,
     connectionGeneration,
     permissionRevision,
     expiresAt,
     revoked: false,
     permissions: normalizePermissions(value.permissions),
-    identityId: value.identityId === undefined
-      ? null
-      : assertStableIdentifier(value.identityId, "session.identityId"),
   });
 }
 
@@ -153,13 +152,24 @@ export function operationMatches(entry, request) {
 export function validateAcknowledgement(entry, acknowledgement) {
   assertPlainObject(acknowledgement, "acknowledgement");
   if (acknowledgement.accepted !== true) {
+    const message = acknowledgement.message === undefined
+      ? "backend rejected the control request"
+      : assertCanonicalText(acknowledgement.message, "acknowledgement.message", {
+        maxBytes: 2048,
+      });
+    const backendCode = acknowledgement.errorCode === undefined ||
+      acknowledgement.errorCode === null
+      ? null
+      : assertStableIdentifier(acknowledgement.errorCode, "acknowledgement.errorCode", {
+        maxBytes: 128,
+      });
     throw uiControlError(
       UI_CONTROL_ERROR_CODES.BACKEND_REJECTED,
-      acknowledgement.message || "backend rejected the control request",
+      message,
       {
         details: {
           operationId: entry.operationId,
-          backendCode: acknowledgement.errorCode ?? null,
+          backendCode,
         },
       },
     );
