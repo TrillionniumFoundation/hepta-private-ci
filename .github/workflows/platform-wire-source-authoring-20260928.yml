@@ -4,35 +4,39 @@ on:
     branches: [work/platform-wire-source-authoring-20260928]
     paths:
       - 'ops/platform_wire_source_repair_20260928.py'
+      - 'ops/platform_wire_source_followup_20260928.py'
+      - 'ops/platform_wire_http_accept_20260928.rs'
       - '.github/workflows/platform-wire-source-authoring-20260928.yml'
 permissions:
-  contents: write
+  contents: read
 concurrency:
-  group: platform-wire-isolated-source-authoring-20260928
+  group: platform-wire-isolated-source-authoring-r2-20260928
   cancel-in-progress: false
 jobs:
   author:
+    permissions:
+      contents: write
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref_name == 'work/platform-wire-source-authoring-20260928'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    outputs:
+      commit: ${{ steps.source.outputs.commit }}
+      tree: ${{ steps.source.outputs.tree }}
     env:
       REVIEWED_SOURCE: df550741c58081c3271ce2b2dce92e95d1bfb4d4
-      PROPOSAL_REF: work/platform-wire-source-result-20260928
+      PROPOSAL_REF: work/platform-wire-source-result-r2-20260928
       RUSTUP_TOOLCHAIN: '1.95.0'
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
-      - name: Checkout authoring instructions only
+      - name: Checkout authoring instructions
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 1
           persist-credentials: true
       - name: Install exact source formatter
-        shell: bash
-        run: |
-          set -euo pipefail
-          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal --component rustfmt
-      - name: Author ordinary source proposal from fixed parent
+        run: rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal --component rustfmt
+      - name: Author ordinary source from fixed parent
         id: source
         shell: bash
         run: |
@@ -41,6 +45,7 @@ jobs:
           proposal="$RUNNER_TEMP/platform-wire-source-proposal"
           git worktree add --detach "$proposal" "$REVIEWED_SOURCE"
           python3 "$GITHUB_WORKSPACE/ops/platform_wire_source_repair_20260928.py" "$proposal"
+          python3 "$GITHUB_WORKSPACE/ops/platform_wire_source_followup_20260928.py" "$proposal"
           cd "$proposal"
           test "$(git rev-parse HEAD)" = "$REVIEWED_SOURCE"
           git diff --exit-code
@@ -48,38 +53,102 @@ jobs:
           python3 - <<'PY'
           import subprocess
           paths = subprocess.check_output(['git', 'diff', '--cached', '--name-only'], text=True).splitlines()
-          allowed = ('codex-rs/hepta-wire/', 'docs/modules/platform.wire/', 'docs/lane-a-foundation/platform.wire/')
-          exact = {
-              'codex-rs/Cargo.lock', '.github/workflows/lane-a-foundation.yml',
-              '.github/workflows/platform-wire-fuzz.yml',
-              'qualification/module-execution-dossiers/detail/platform.wire.md',
-          }
-          assert paths, 'empty source proposal'
-          assert all(p.startswith(allowed) or p in exact for p in paths), paths
-          assert not any('source_authoring' in p or 'source_repair_20260928' in p for p in paths)
+          prefixes = ('codex-rs/hepta-wire/', 'docs/modules/platform.wire/', 'docs/lane-a-foundation/platform.wire/')
+          exact = {'codex-rs/Cargo.lock', '.github/workflows/lane-a-foundation.yml',
+                   '.github/workflows/platform-wire-fuzz.yml',
+                   'codex-rs/hepta-native-gateway/src/http_accept.rs',
+                   'qualification/module-execution-dossiers/detail/platform.wire.md'}
+          assert paths and all(p.startswith(prefixes) or p in exact for p in paths), paths
           PY
           git diff --cached --stat
           git config user.name 'Platform Wire Source Author'
           git config user.email 'platform-wire-source@users.noreply.github.com'
           tree="$(git write-tree)"
-          commit="$(printf '%s\n' 'fix(platform.wire): preserve bounded feed progress and authenticate session context' '' 'Materialize lossless resumable feeds, role-bound session identity profile 2, transcript-registry coherence, MAC-before-semantic validation, lock and generated-path repairs, and explicit nonclaims. Source proposal only; no qualification or acceptance is asserted.' | git commit-tree "$tree" -p "$REVIEWED_SOURCE")"
+          commit="$(printf '%s\n' 'fix(platform.wire): preserve bounded feeds and authenticate session context' '' 'Source-only repair: resumable feeds, role-bound session identity profile 2, transcript-registry coherence, MAC-before-semantic validation, HTTP precedence/exclusion, lock and generated paths, merge lane and fuzz setup. No qualification or acceptance is asserted.' | git commit-tree "$tree" -p "$REVIEWED_SOURCE")"
           echo "commit=$commit" >> "$GITHUB_OUTPUT"
           echo "tree=$tree" >> "$GITHUB_OUTPUT"
-          echo "proposal=$proposal" >> "$GITHUB_OUTPUT"
-      - name: Export proposal ref only
-        shell: bash
+      - name: Export proposal only, never update candidate
         env:
           PROPOSAL_COMMIT: ${{ steps.source.outputs.commit }}
+        shell: bash
         run: |
           set -euo pipefail
-          test "$PROPOSAL_REF" = 'work/platform-wire-source-result-20260928'
+          test "$PROPOSAL_REF" = 'work/platform-wire-source-result-r2-20260928'
           test "$(git rev-parse "$PROPOSAL_COMMIT^")" = "$REVIEWED_SOURCE"
           git push origin "$PROPOSAL_COMMIT:refs/heads/$PROPOSAL_REF"
-          {
-            echo '## Ordinary source proposal; not qualification'
-            echo "Parent: $REVIEWED_SOURCE"
-            echo "Commit: $PROPOSAL_COMMIT"
-            echo "Tree: ${{ steps.source.outputs.tree }}"
-            echo "Ref: $PROPOSAL_REF"
-            echo 'The candidate branch was not modified. Promotion requires explicit review and a separate ref update.'
-          } >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' '## Source proposal, not qualification' "Parent: $REVIEWED_SOURCE" "Commit: $PROPOSAL_COMMIT" "Tree: ${{ steps.source.outputs.tree }}" "Ref: $PROPOSAL_REF" 'Candidate unchanged; explicit review and a separate ref update are required.' >> "$GITHUB_STEP_SUMMARY"
+
+  source-tests:
+    needs: author
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      SOURCE_COMMIT: ${{ needs.author.outputs.commit }}
+      SOURCE_TREE: ${{ needs.author.outputs.tree }}
+      RUSTUP_TOOLCHAIN: '1.95.0'
+      CARGO_TARGET_DIR: ${{ runner.temp }}/platform-wire-target
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout exported immutable source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_COMMIT }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install exact native toolchain
+        run: rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal --component rustfmt --component clippy
+      - name: Run read-only source diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_COMMIT"
+          test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+          export DIAGNOSTICS="$RUNNER_TEMP/platform-wire-diagnostics"
+          mkdir -p "$DIAGNOSTICS"
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess, time
+          out = pathlib.Path(os.environ['DIAGNOSTICS'])
+          commands = [
+            ('native-tests', ['cargo','test','--manifest-path','codex-rs/Cargo.toml','--locked','-p','codex-hepta-wire','--all-targets']),
+            ('strict-clippy', ['cargo','clippy','--manifest-path','codex-rs/Cargo.toml','--locked','-p','codex-hepta-wire','--all-targets','--','-D','warnings']),
+            ('http-compile', ['rustc','--edition=2024','--test','codex-rs/hepta-native-gateway/src/http_accept.rs','-o',str(out/'http-tests')]),
+            ('http-tests', [str(out/'http-tests')]),
+            ('format', ['cargo','fmt','--manifest-path','codex-rs/Cargo.toml','--package','codex-hepta-wire','--package','codex-hepta-native-gateway','--','--check']),
+            ('generated-paths', ['python3','scripts/generate_lane_a_workflow_paths.py','check']),
+            ('path-tests', ['python3','-m','unittest','discover','-s','scripts','-p','test_generate_lane_a_workflow_paths.py']),
+            ('lane-a-self-test', ['python3','scripts/verify_lane_a_foundation.py','self-test']),
+            ('lane-a-truth', ['python3','scripts/verify_lane_a_foundation.py','verify']),
+          ]
+          records = []
+          for label, argv in commands:
+            start = time.time()
+            path = out/(label+'.log')
+            with path.open('wb') as log:
+              try:
+                code = subprocess.run(argv, stdout=log, stderr=subprocess.STDOUT, timeout=1200).returncode
+              except subprocess.TimeoutExpired:
+                code = 124
+                log.write(b'\nDIAGNOSTIC_TIMEOUT\n')
+              except OSError as error:
+                code = 127
+                log.write(str(error).encode())
+            record = {'label':label,'argv':argv,'exit_code':code,'seconds':time.time()-start,'log_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+            records.append(record)
+            print(json.dumps(record), flush=True)
+            print(path.read_text(errors='replace')[-10000:], flush=True)
+          dirty = subprocess.check_output(['git','status','--porcelain','--untracked-files=all'], text=True)
+          final = subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip()
+          report = {'schema':'platform_wire_source_diagnostics_v1','source_commit':os.environ['SOURCE_COMMIT'],'source_tree':os.environ['SOURCE_TREE'],'workflow_sha':os.environ.get('GITHUB_WORKFLOW_SHA'),'run_id':os.environ['GITHUB_RUN_ID'],'runner_image':os.environ.get('ImageVersion'),'commands':records,'clean_tree':not dirty,'source_unchanged':final==os.environ['SOURCE_COMMIT'],'qualification':False,'independent_acceptance':False,'production_activation':False}
+          (out/'report.json').write_text(json.dumps(report, indent=2)+'\n')
+          raise SystemExit(0 if all(r['exit_code']==0 for r in records) and not dirty and report['source_unchanged'] else 1)
+          PY
+      - name: Retain source diagnostics including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-wire-source-diagnostics-${{ env.SOURCE_COMMIT }}
+          path: ${{ runner.temp }}/platform-wire-diagnostics
+          retention-days: 14
+          if-no-files-found: warn
