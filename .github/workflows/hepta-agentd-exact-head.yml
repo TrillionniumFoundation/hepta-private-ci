@@ -1,0 +1,135 @@
+name: Agentd exact-head engineering
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+      - work/runtime-agentd-remediation-20260926
+      - work/product-convergence-20260923
+      - integrate/agentd-product-sweep-20260829
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agentd-exact-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  CARGO_INCREMENTAL: '0'
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Receipt verifier adversarial tests
+        run: python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
+      - name: Derived projections and source ownership
+        if: ${{ always() }}
+        run: node scripts/architecture/ci-source-ownership.mjs
+
+  suite:
+    name: Agentd ${{ matrix.os }} / ${{ matrix.suite }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        suite: [owner-libraries, native-library, native-process, daemon-process, product-process, strict-clippy, read-only-profile]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install repository toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal --component clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: codex-rs
+          shared-key: agentd-exact-v1
+      - name: Execute suite and record actual source, commands, logs and binary digests
+        if: ${{ always() }}
+        shell: bash
+        env:
+          QUALIFICATION_OS: ${{ matrix.os }}
+          QUALIFICATION_SUITE: ${{ matrix.suite }}
+        run: |
+          python3 -B scripts/qualification/agentd_exact_head.py run \
+            --workspace "$GITHUB_WORKSPACE" --sha "$EXPECTED_SHA" \
+            --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
+            --os "$QUALIFICATION_OS" --suite "$QUALIFICATION_SUITE" \
+            --output "$RUNNER_TEMP/agentd-exact-receipt"
+      - name: Upload evidence including failures
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: agentd-exact-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.suite }}
+          path: ${{ runner.temp }}/agentd-exact-receipt
+          if-no-files-found: error
+          retention-days: 14
+
+  qualification-result:
+    name: Agentd exact-head required
+    if: ${{ always() }}
+    needs: [contract, suite]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: agentd-exact-${{ github.run_id }}-${{ github.run_attempt }}-*
+          path: ${{ runner.temp }}/agentd-evidence
+      - name: Reject missing, stale, skipped, failed or tampered receipts
+        if: ${{ always() }}
+        env:
+          CONTRACT_RESULT: ${{ needs.contract.result }}
+          SUITE_RESULT: ${{ needs.suite.result }}
+        run: |
+          python3 -B scripts/qualification/agentd_exact_head.py verify \
+            --sha "$EXPECTED_SHA" --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
+            --evidence "$RUNNER_TEMP/agentd-evidence" --output "$RUNNER_TEMP/agentd-engineering-result.json" \
+            --contract-result "$CONTRACT_RESULT" --suite-result "$SUITE_RESULT"
+      - name: Require every independent job to succeed
+        if: ${{ always() }}
+        env:
+          CONTRACT_RESULT: ${{ needs.contract.result }}
+          SUITE_RESULT: ${{ needs.suite.result }}
+        run: |
+          test "$CONTRACT_RESULT" = success
+          test "$SUITE_RESULT" = success
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: agentd-engineering-result-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/agentd-engineering-result.json
+          if-no-files-found: error

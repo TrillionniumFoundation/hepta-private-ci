@@ -45,6 +45,8 @@ use crate::authbus_trust::TextTrust;
 use crate::authbus_trust::hex_bytes;
 use crate::authbus_trust::invalid;
 use crate::authbus_trust::read_private_owner_file;
+use crate::run_start_authority::VerifiedRunAdmissionV1;
+use crate::run_start_authority::verify_current_run_start;
 
 #[path = "objective_run_start_source.rs"]
 mod run_start_source;
@@ -135,7 +137,7 @@ impl ObjectiveRuntimeHost {
                     // rather than silently entering the compatibility path.
                     continue;
                 }
-                agentd.start_current_run_start(&state.journal, &record.snapshot.run_id)?;
+                verify_current_run_start(agentd, record)?.admit_compatibility()?;
             }
         }
         Ok(())
@@ -317,38 +319,23 @@ impl ObjectiveRuntimeHost {
             }
         };
 
-        authbus_ingress::require_ready(agentd)?;
-        let current = authbus.trust(agentd)?;
-        if !authentication_is_current(
-            &record,
-            &current,
-            agentd.identity(),
-            authbus_ingress::now_ms()?,
-        )? {
-            return Err(invalid(
-                "objective trust changed after durable publication; retry after reconciliation",
-            ));
-        }
-
-        self.revalidate_projection(&record, agentd.identity())?;
+        // A durable publication is only historical evidence. Mint a sealed,
+        // single-use current-trust witness after the publication lock is gone.
+        // The witness is reissued once more immediately before mutation.
+        let verified = verify_current_run_start(agentd, &record)?;
         let disposition = match record.disposition {
-            RunStartObjectiveDispositionV1::Compiled => {
-                match agentd.start_canonical_intelligence(&record).await? {
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }) => {
-                        "canonical_ready"
-                    }
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained) => {
-                        "canonical_abstained"
-                    }
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath) => {
-                        "canonical_slow_path"
-                    }
-                    None => {
-                        agentd.start_current_run_start_record(&record)?;
-                        "compiled"
-                    }
-                }
-            }
+            RunStartObjectiveDispositionV1::Compiled => match verified.admit().await? {
+                VerifiedRunAdmissionV1::Canonical(
+                    crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. },
+                ) => "canonical_ready",
+                VerifiedRunAdmissionV1::Canonical(
+                    crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained,
+                ) => "canonical_abstained",
+                VerifiedRunAdmissionV1::Canonical(
+                    crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath,
+                ) => "canonical_slow_path",
+                VerifiedRunAdmissionV1::Compatibility(_receipt) => "compiled",
+            },
             RunStartObjectiveDispositionV1::ExplicitAbstain => "explicit_abstain",
         };
 

@@ -1,0 +1,43 @@
+name: Runtime Agentd trust boundary
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - codex-rs/hepta-agentd/src/**
+      - scripts/hepta_agentd_trust_boundary.py
+      - .github/workflows/runtime-agentd-trust-boundary.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-agentd-trust-boundary-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sealed-run-start-authority:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source candidate
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Enforce closed-world RunStart admission
+        run: python3 scripts/hepta_agentd_trust_boundary.py
+      - name: Check immutable source tree
+        if: always()
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

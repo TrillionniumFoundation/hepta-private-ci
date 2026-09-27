@@ -11,7 +11,7 @@ use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 
-pub(super) fn fixture() -> (tempfile::TempDir, Arc<AgentdState>) {
+fn fixture() -> (tempfile::TempDir, Arc<AgentdState>) {
     let temp = tempfile::tempdir().expect("temp");
     let root = temp.path().canonicalize().expect("root");
     let fleet_path = root.join("fleet");
@@ -71,6 +71,17 @@ fn objective_request() -> AuthBusObjectiveIngress {
     }
 }
 
+#[test]
+fn error_response_reports_the_owner_generation() {
+    let (_temp, state) = fixture();
+    let response = error_response(&state, 41, "fixture", "fixture");
+    assert_eq!(response.spawn_generation, state.identity().spawn_generation);
+    assert_eq!(
+        response.current_generation,
+        state.current_generation().expect("current generation")
+    );
+}
+
 #[tokio::test]
 async fn objective_transport_delivers_after_old_two_second_cutoff() {
     let (temp, state) = fixture();
@@ -85,7 +96,6 @@ async fn objective_transport_delivers_after_old_two_second_cutoff() {
             Ok(error_response(
                 &owner,
                 request.request_id,
-                request.spawn_generation,
                 "handler_completed",
                 "transport fixture finished",
             ))
