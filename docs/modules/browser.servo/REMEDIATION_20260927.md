@@ -6,9 +6,9 @@ The sole continuation is PR #1064 on
 `codex/browser-servo-full-convergence-20260927`, based on
 `main@a126987b84737dbc2ee2592442a314117bddb4a2`.
 
-The exact implementation predecessor of this ledger is
-`12762d626f53b64e81aa8b4cd70b10734699418e`, tree
-`bc8dcaca21d71bf5dfa9e6abb2b55740f8c58fc9`. This file is a source and
+The exact runtime predecessor of this metadata and registry closure is
+`75dacad78961b4a2278c4a9e7de69367c95f682e`, tree
+`9c22fc0ec0e07d50a71f0c8325732f82e2fb9661`. This file is a source and
 qualification ledger, not an activation or release receipt. Later metadata-only
 successors do not widen runtime claims.
 
@@ -26,16 +26,16 @@ profile-affine subprocess pool, operation-scoped network owner, observation
 redactor, worker-admission boundary, durable-evidence decorator and private
 Agentd service.
 
-The generated registry now inventories the complete tracked
+The generated registry inventories the complete tracked
 `apps/hepta-browser` package plus the selected Agentd, workflow, documentation
 and Servo-pin objects. Its import parser accepts only actual static import
-statements; comments and string fixtures no longer fabricate dependencies.
-`journal-v2.js`, journal ownership, evidence drivers, tests and service
-composition are all in the exact source-object set.
+statements; comments and string fixtures do not fabricate dependencies.
+`journal-v2.js`, kernel journal ownership, evidence drivers, tests, the worker
+loader and every bounded worker source part are in the exact source-object set.
 
-The stale runtime ownership fixture now expects the canonical digest of the
-actual profile/principal/generation/manifest/grant tuple. The negative forged
-ownership test remains intact.
+The implementation map points to concrete worker source parts rather than the
+`include!` loader facade. The registry verifier binds both the loader topology
+and the implementation anchors in those parts.
 
 ### Authority-free exact replay
 
@@ -55,14 +55,14 @@ Caller-supplied `replayOnly` is rejected by the named Agentd service. Semantic
 substitution remains an error, not proof of absence. Ordinary
 `reconcile_operation` retains its live observer semantics.
 
-This closes the previous protocol failure in which a legitimate replay could be
+This closes the former protocol failure in which a legitimate replay could be
 misread as a missing authority challenge and reset the Browser child. It does
 not convert replay into a fresh terminal observation.
 
 ### Durable worker-admission and network evidence
 
 `DurableEvidenceBrowserDriver` reuses the same
-`FileBrowserOperationJournal`; no second state owner was added. The Browser
+`FileBrowserOperationJournal`; no second state owner is introduced. The Browser
 owner records immutable dispatch intent first. The decorator then requires and
 persists the worker-originated admission receipt before dispatch returns to the
 final-use boundary. Missing admission fails closed.
@@ -73,11 +73,11 @@ written through the journal's monotonic `recordEgress` transition. These
 receipts establish bounded operation-network observations only; they are not
 remote business success.
 
-### Existing safety and owner semantics retained
+### Kernel ownership, recovery and containment
 
 The candidate retains:
 
-- the permanent kernel `flock` owner protocol, without stale PID-directory
+- a permanent kernel `flock` owner protocol, without stale PID-directory
   rename/reclaim;
 - validated incremental journal indexes with identity-change invalidation,
   compaction, torn-tail recovery and monotonic generation retirement;
@@ -87,12 +87,59 @@ The candidate retains:
   containment, retained ownership after failed cleanup and bounded descendant
   census;
 - short random profile directories and explicit Unix-socket path bounds;
-- `lstat`/`stat.S_ISREG` deployment evidence validation with bounded reads,
-  duplicate-key rejection and exact run/source/lock checks.
+- deployment evidence parsing with bounded `lstat`/regular-file checks,
+  duplicate-key rejection and exact run/source/lock binding.
 
 These source controls still require exact native and target execution evidence.
 
-## Commits in this continuation
+### Worker-private target identity and atomic action
+
+The Servo worker no longer treats a selector or observable control shape as the
+final target identity.
+
+At worker creation it installs one worker-owned `UserScript` bridge with a
+random bridge name, random secret and random handle prefix. The bridge captures
+native DOM primitives before the hostile page can replace them and retains
+node-to-token identities in a private `WeakMap`. The bridge property is
+non-writable, non-enumerable and non-configurable; calls without the secret are
+rejected.
+
+For an authoritative observation the worker:
+
+1. takes a bounded preliminary semantic snapshot;
+2. binds every observed actionable selector to a private node token;
+3. takes the authoritative snapshot;
+4. requires the same actionable-surface digest and the same selector-to-node
+   token map across both snapshots;
+5. stores those tokens beside the admitted document/navigation generation.
+
+Immediately before dispatch, the worker recomputes the bounded action surface,
+rebinds the selectors and requires exact equality with the authoritative token
+map. For click/type/focus it reserves the selected token and emits the worker
+`dispatch_boundary`. Execution then uses one bridge invocation that resolves
+the selector, requires the same node token, rechecks visibility/disabled/type
+constraints and performs the action with captured native primitives. There is
+no second selector-only action evaluation.
+
+`real-worker-smoke.js` exercises the real built worker through the production
+sandbox against a hostile page. It requires:
+
+- a page-realm `HTMLElement.prototype.click` replacement cannot intercept the
+  worker action;
+- an identical-shape node replacement after observation is rejected before the
+  worker dispatch boundary;
+- neither the replaced node nor the replacement node receives the stale action;
+- the real worker still starts, speaks the private protocol and shuts down
+  through the sandbox.
+
+The emitted smoke receipt records
+`privateAtomicActionBridge=true`,
+`pageRealmMonkeypatchBypassed=true` and
+`identicalShapeNodeReplacementRejected=true`. The source registry requires
+these executable assertions to remain present. Source presence is not a claim
+that the current exact build has passed them.
+
+## Relevant commits in this continuation
 
 | Commit | Published change |
 | --- | --- |
@@ -101,21 +148,24 @@ These source controls still require exact native and target execution evidence.
 | `3f6709b44046ab0a598ee73fe41046732891ab62` / `d754ee59c04e8bdb4e1dbbdc4d4ad418ba4b080f` / `a0abe6da1c4a17dce6e234a09a52b98de3b842d2` | Add, compose and test durable admission/egress evidence on the existing journal owner. |
 | `db937434ce04c66a1fb7c6a75722483963151a13` / `84d0d295b8b1e8d37fb06a8158d28a2576f459b1` / `772bbeb466eb940ece518d074699229ec063c1bb` / `7beeb32907ccd6bd4babff37592fe375480cb5c1` / `c9e997c63c8a65591ff5526fdcc88c7418b658d5` | Implement and test the reserved non-executing replay probe across Browser and Agentd. |
 | `12762d626f53b64e81aa8b4cd70b10734699418e` | Refresh the exact generated source registry for the replay path. |
+| `5ae44358f0b70c9539bec41dca6dc276014c72b2` | Add worker-private node handles, captured DOM primitives, one bridge action primitive and the hostile real-worker smoke. |
+| `75dacad78961b4a2278c4a9e7de69367c95f682e` | Require target identity to remain stable across the authoritative observation itself. |
 
 ## Verification state
 
-At this ledger's implementation predecessor, exact-source workflows were
-created for Browser Node/source checks, Agentd composition, Lane B, blocking CI,
-Servo worker build and independent rebuild. They were queued or pending when
-this ledger was written. Queued, pending, skipped-applicable, cancelled,
-prior-head or donor-branch results are not pass evidence.
+The exact-head Browser Agentd composition run for
+`75dacad78961b4a2278c4a9e7de69367c95f682e` failed at the generated-source
+registry step before Browser or Rust tests ran. The runtime commit split the
+worker into bounded `include!` source parts and strengthened the smoke oracle,
+but the prior registry generator still searched the loader facade for symbols
+that had moved into those parts. The committed registry also retained the old
+monolithic worker blob and omitted the six source parts.
 
-Earlier runs on `fb0395fd1cf9a20c4049614b5d9f75b07eacf928`
-failed before Browser tests because the former registry parser interpreted a
-string fixture as an import. That defect is fixed in the current source, but the
-old failures are not relabelled as passes.
+This metadata closure corrects the generator anchors, implementation map and
+source-object registry together. The earlier failure is retained as a failure;
+it is not relabelled as a pass.
 
-The current exact candidate still requires terminal-success evidence for:
+The final exact candidate still requires terminal-success evidence for:
 
 ```sh
 npm --prefix apps/hepta-browser run verify:registry
@@ -136,24 +186,22 @@ cargo clippy --locked -p codex-hepta-agentd \
   --no-deps -- -D warnings
 ```
 
-It also requires the exact-lock Servo worker build, real Browser E2E, public
-HTTPS, storage isolation, parent/descendant cleanup, recovery, soak,
-byte-identical independent rebuild, SBOM and signed provenance gates on the same
-final source.
+It also requires the exact-lock Servo worker build, worker unit tests, the
+hostile real-worker smoke, real Browser E2E, public HTTPS, storage isolation,
+parent/descendant cleanup, recovery, soak, byte-identical independent rebuild,
+SBOM and signed provenance gates on the same final source. Exact-head success
+does not substitute for the deterministic merge candidate, and neither
+substitutes for main-only target qualification.
 
-## Remaining repository-controlled blocker
+## Remaining repository-controlled work
 
-The native worker still performs action-surface revalidation and
-click/type/focus execution in separate JavaScript evaluations. The exact Servo
-worker has not yet established an engine-private DOM node handle or a single
-atomic final validation-and-action primitive. A hostile page-realm API
-monkeypatch or identical-shape node replacement therefore remains outside the
-proved invariant.
+No known design-level source blocker remains in the four-stage remediation
+scope. The remaining repository-controlled work is evidentiary and remedial:
+run the final exact head and deterministic merge candidate, inspect every real
+failure, and correct the same candidate without weakening the invariants.
 
-This must be closed in the real worker and exercised by a real-page regression;
-a fixture flag, another digest comparison, or a document statement is not
-sufficient. Until then, repository-controlled source-boundary closure remains
-false.
+Queued, pending, skipped-applicable, cancelled, prior-head or donor-branch
+results are not pass evidence.
 
 ## External and independently governed gates
 
@@ -162,7 +210,8 @@ following remain separate:
 
 - successful signed primary and independent artifacts from merged `main`;
 - main-only trusted Linux target execution for namespace, launcher, listener,
-  direct-egress, profile isolation, process-tree cleanup and soak;
+  direct-egress, profile isolation, hostile-page atomic actions, process-tree
+  cleanup and soak;
 - independently operated signed remote-business terminal observations where
   business terminality is claimed;
 - operator acceptance, production activation, promotion and release;
@@ -176,6 +225,7 @@ The current booleans remain:
 
 ```text
 source_root_present = true
+repository_controlled_source_boundary_gaps_closed = true
 production_implementation = false
 product_execution_proved = false
 deployment_qualification = false

@@ -2,13 +2,13 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3d2ecac748b4c16987f1d3ae4db4aba7cfd9abe2",
-    "tree": "755bad05eb377319abfb26c6ca8fd0802e567472"
+    "commit": "75dacad78961b4a2278c4a9e7de69367c95f682e",
+    "tree": "9c22fc0ec0e07d50a71f0c8325732f82e2fb9661"
   },
-  "sourceBaseSemantics": "This is the exact runtime-and-ledger predecessor of this map correction, not qualification evidence. GENERATED_SOURCE_REGISTRY.json binds the current Browser package and selected integration blobs. REMEDIATION_20260927.md records executed versus queued evidence and the remaining native DOM-atomicity blocker.",
+  "sourceBaseSemantics": "This is the exact pre-map candidate containing the worker-private node-identity bridge and hostile real-worker regression. It is source provenance, not qualification evidence. GENERATED_SOURCE_REGISTRY.json binds the complete current Browser package and selected integration blobs; REMEDIATION_20260927.md distinguishes source closure from pending exact-head, merge-candidate and target evidence.",
   "laneId": "LANE-B-RUNTIME",
   "module": "browser.servo",
-  "sourceMaturity": "durable_owner_kernel_lock_incremental_index_replay_safe_operation_egress_persistent_agentd_partial_native_closure",
+  "sourceMaturity": "durable_owner_kernel_lock_incremental_index_replay_safe_operation_egress_persistent_agentd_atomic_dom_source_closure",
   "declaredRoots": [
     "apps/hepta-browser",
     "third_party/servo-patches"
@@ -18,8 +18,8 @@
     "third_party/servo-patches"
   ],
   "generatedSourceRegistry": "docs/modules/browser.servo/GENERATED_SOURCE_REGISTRY.json",
-  "stateOwnerDisposition": "Owns serialized profile/session/page/operation state and the monotonic v2 journal. Kernel flock ownership, validated incremental indexes, a persistent Agentd service, authority-free exact replay probes, operation-scoped egress and durable admission/egress evidence are source-composed. Production activation remains external.",
-  "terminalObserverDisposition": "Worker admission and operation-network receipts are durably bound to the same immutable operation identity. Network completion is not remote business terminality. Post-process-loss business terminality still requires the separately configured signed observer receipt.",
+  "stateOwnerDisposition": "Owns serialized profile/session/page/operation state and the monotonic v2 journal. Kernel flock ownership, validated incremental indexes, a persistent Agentd service, authority-free exact replay probes, operation-scoped egress, durable admission/egress evidence and worker-private DOM target identity are source-composed. Production activation remains external.",
+  "terminalObserverDisposition": "Worker admission and operation-network receipts are durably bound to the same immutable operation identity. Network completion and a local DOM action are not remote business terminality. Post-process-loss business terminality still requires the separately configured signed observer receipt.",
   "operations": [
     {
       "designOperation": "open_profile",
@@ -108,7 +108,7 @@
       "delegatedCallees": [
         {
           "role": "servo_semantic_observer",
-          "path": "apps/hepta-browser/servo-worker/src/main.rs",
+          "path": "apps/hepta-browser/servo-worker/src/worker_parts/00_core.rs",
           "symbol": "fn observe(",
           "buildTarget": "hepta-servo-worker"
         }
@@ -128,9 +128,14 @@
           "path": "apps/hepta-browser/scripts/real-browser-e2e.js",
           "kind": "real_servo_e2e",
           "command": "node apps/hepta-browser/scripts/real-browser-e2e.js WORKER_BINARY"
+        },
+        {
+          "path": "apps/hepta-browser/scripts/real-worker-smoke.js",
+          "kind": "hostile_page_private_handle_observation",
+          "command": "node apps/hepta-browser/scripts/real-worker-smoke.js WORKER_BINARY"
         }
       ],
-      "sourceSemantics": "Publishes a bounded redacted semantic observation and exact action-surface digest. Engine-private target identity and a single atomic final validation/action primitive remain the current native blocker.",
+      "sourceSemantics": "Publishes a bounded redacted semantic observation and exact action-surface digest. A worker-installed secret-bound bridge assigns private WeakMap-backed node handles, and the worker requires the same surface and exact handles across preliminary and authoritative snapshots before exposing the observation.",
       "operation": "observe_page",
       "nativeSymbol": "async observePage(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -160,8 +165,20 @@
         },
         {
           "role": "worker_admission_boundary",
-          "path": "apps/hepta-browser/servo-worker/src/main.rs",
+          "path": "apps/hepta-browser/servo-worker/src/worker_parts/20_runtime.rs",
           "symbol": "dispatch_boundary",
+          "buildTarget": "hepta-servo-worker"
+        },
+        {
+          "role": "worker_atomic_dom_action",
+          "path": "apps/hepta-browser/servo-worker/src/worker_parts/10_dispatch.rs",
+          "symbol": "fn atomic_dom_action(",
+          "buildTarget": "hepta-servo-worker"
+        },
+        {
+          "role": "worker_private_action_bridge",
+          "path": "apps/hepta-browser/servo-worker/src/worker_parts/30_protocol_bridge.rs",
+          "symbol": "fn private_action_bridge_script(",
           "buildTarget": "hepta-servo-worker"
         },
         {
@@ -218,9 +235,14 @@
           "path": "apps/hepta-browser/test/journal-evidence.test.js",
           "kind": "durable_evidence_schema",
           "command": "node --test apps/hepta-browser/test/journal-evidence.test.js"
+        },
+        {
+          "path": "apps/hepta-browser/scripts/real-worker-smoke.js",
+          "kind": "real_hostile_dom_atomicity",
+          "command": "node apps/hepta-browser/scripts/real-worker-smoke.js WORKER_BINARY"
         }
       ],
-      "sourceSemantics": "Returns an existing immutable operation receipt through a reserved authority-free probe; only exact absence may consume signed final-use authority. New effects persist intent, cross worker admission, durably record admission before fence release, and durably bind terminal network evidence. Unknown post-admission outcomes remain indeterminate and are never blindly redispatched.",
+      "sourceSemantics": "Returns an existing immutable operation receipt through a reserved authority-free probe; only exact absence may consume signed final-use authority. New effects persist intent, cross worker admission, durably record admission before fence release, and durably bind terminal network evidence. For click/type/focus, worker revalidation requires the exact previously observed node handle; one secret-bound bridge invocation rechecks selector-to-node identity and performs the action with captured native primitives. Unknown post-admission outcomes remain indeterminate and are never blindly redispatched.",
       "operation": "navigate_or_act",
       "nativeSymbol": "async navigateOrAct(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -366,13 +388,11 @@
     }
   ],
   "repositoryControlledGaps": [
-    "The current Servo worker revalidates the action surface and executes click/type/focus in separate page-realm JavaScript evaluations; engine-private target identity and one atomic final validation/action primitive remain unimplemented and unqualified.",
-    "Exact final-head and deterministic-merge Browser/Agentd/Servo qualification, Rust formatting/strict lint, locked builds, real E2E and complete artifact closure must reach terminal success on one final SHA.",
-    "The detailed technical guide, worker guide, pin audit and dossier must be interpreted with REMEDIATION_20260927.md until their final exact-source refresh is accepted by documentation checks."
+    "Exact final-head and deterministic-merge Browser/Agentd/Servo qualification, Rust formatting/strict lint, locked builds, hostile-page real-worker smoke, real E2E and complete artifact closure must reach terminal success on one final SHA."
   ],
   "externalEvidenceGates": [
     "terminal-success exact-SHA reproducible b5a1 Servo artifact and signed provenance",
-    "trusted target-host Linux namespace launcher listener egress descendant-cleanup profile-isolation and soak evidence",
+    "trusted target-host Linux namespace launcher listener egress descendant-cleanup profile-isolation hostile-page atomic-action and soak evidence",
     "current signed remote-business terminal observations where business terminality is claimed",
     "independent operator acceptance activation promotion and release",
     "equivalent macOS or Windows isolation only if those platforms enter the product target set"
@@ -381,7 +401,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -397,7 +417,7 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "long_lived_agentd_inherited_stdio_service_source_present_exact_qualification_pending",
-  "productionWriterState": "browser_owner_replay_admission_egress_and_containment_source_present_dom_atomicity_and_exact_qualification_open",
+  "productionWriterState": "browser_owner_replay_admission_egress_containment_and_atomic_dom_source_present_exact_qualification_open",
   "owner": "browser-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/browser.servo/TECHNICAL.md",

@@ -36,8 +36,8 @@ function assertContains(path, needles) {
   }
 }
 function sourcePaths() {
-  // Inventory the entire tracked Browser package, including new implementation
-  // files, tests, probes, lock and package metadata. Never bind only a facade.
+  // Inventory the entire tracked Browser package, including worker source
+  // parts, tests, probes, lock and package metadata. Never bind only a facade.
   const packagePaths = git(["ls-files", "-z", "--", "apps/hepta-browser"]).split("\0").filter(Boolean);
   const paths = [...new Set([...packagePaths, ...EXTRA_SOURCES])].sort();
   if (paths.length > 2048) throw new Error("Browser source inventory exceeds its bound");
@@ -68,7 +68,51 @@ function verifyAnchors(paths) {
   assertContains("apps/hepta-browser/src/journal-owner-lock.js", ["kernel-owner-lock.v2", "--exclusive"]);
   assertContains("apps/hepta-browser/src/egress-broker.js", ["GrantScopedEgressBroker", "CONNECT", "serverName", "allowedOrigins"]);
   assertContains("apps/hepta-browser/src/effect-network-driver.js", ["EffectScopedNetworkDriver", "admitOperation"]);
-  assertContains("apps/hepta-browser/servo-worker/src/main.rs", ['matches!(kind, "credential" | "upload" | "download")', "typedAction capability is not connected", "dispatch_boundary", "pageGeneration"]);
+
+  // The worker is intentionally split into bounded include units. Bind both
+  // the loader topology and the concrete implementation anchors instead of
+  // searching the loader facade for symbols that live in included files.
+  assertContains("apps/hepta-browser/servo-worker/src/main.rs", [
+    'include!("worker_parts/00_core.rs");',
+    'include!("worker_parts/10_dispatch.rs");',
+    'include!("worker_parts/20_runtime.rs");',
+    'include!("worker_parts/30_protocol_bridge.rs");',
+    'include!("worker_parts/40_observation_helpers.rs");',
+    'include!("worker_parts/50_validation_tests.rs");',
+  ]);
+  assertContains("apps/hepta-browser/servo-worker/src/worker_parts/00_core.rs", [
+    "fn observe(",
+    "last_action_handles",
+    "prepared_action_handles",
+    "UserContentManager",
+  ]);
+  assertContains("apps/hepta-browser/servo-worker/src/worker_parts/10_dispatch.rs", [
+    'matches!(kind, "credential" | "upload" | "download")',
+    "typedAction capability is not connected",
+    "fn atomic_dom_action(",
+    "target_identity_drift",
+  ]);
+  assertContains("apps/hepta-browser/servo-worker/src/worker_parts/20_runtime.rs", [
+    '"dispatch_boundary"',
+    "execute_prepared_dispatch",
+  ]);
+  assertContains("apps/hepta-browser/servo-worker/src/worker_parts/30_protocol_bridge.rs", [
+    "fn private_action_bridge_script(",
+    "WeakMap",
+    "configurable:false",
+    "target_identity_drift",
+  ]);
+  assertContains("apps/hepta-browser/servo-worker/src/worker_parts/50_validation_tests.rs", [
+    "private_action_handles_detect_identical_shape_node_replacement",
+    "private_bridge_uses_hidden_secret_bound_native_primitive",
+  ]);
+  assertContains("apps/hepta-browser/scripts/real-worker-smoke.js", [
+    "privateAtomicActionBridge",
+    "pageRealmMonkeypatchBypassed",
+    "identicalShapeNodeReplacementRejected",
+    "worker_rejected_before_dispatch",
+  ]);
+
   assertContains("codex-rs/hepta-agentd/src/bin/hepta-agentd-browser-service.rs", ["open_browser_servo_port_from_file", "while let Some(body)"]);
   assertContains("apps/hepta-browser/test/deployment-verifier.test.js", ["python3", "py_compile", "verify-deployment-evidence.py"]);
   const tracked = new Set(paths);
@@ -106,6 +150,7 @@ function buildRegistry() {
       ...implemented.map(capability => ({ capability, state: "implemented" })),
       { capability: "semantic_observation", state: "implemented_bounded" },
       { capability: "worker_effect_admission", state: "implemented" },
+      { capability: "atomic_dom_target_identity", state: "implemented_private_handle_bridge" },
       { capability: "grant_scoped_egress", state: "implemented_linux_source" },
       { capability: "persisted_terminal_reconciliation", state: "implemented_signed_observer" },
       ...["credential", "upload", "download"].map(capability => ({ capability, state: "fail_closed_not_connected" })),
