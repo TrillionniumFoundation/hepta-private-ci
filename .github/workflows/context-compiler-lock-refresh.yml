@@ -1,0 +1,47 @@
+name: context.compiler lock refresh
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "codex-rs/**"
+      - ".github/workflows/context-compiler-lock-refresh.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: context-compiler-lock-refresh-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  refresh-lockfile:
+    if: github.head_ref == 'codex/context-compiler-provider-closure-final-20260927'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Generate lockfile from candidate manifests
+        working-directory: codex-rs
+        run: cargo metadata --format-version 1 > /dev/null
+
+      - name: Verify generated lockfile resolves the focused crate
+        working-directory: codex-rs
+        run: cargo check -p codex-hepta-context-compiler --tests
+
+      - name: Record deterministic diff
+        run: git diff --check -- codex-rs/Cargo.lock
+
+      - name: Upload generated lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: context-compiler-generated-lockfile
+          path: codex-rs/Cargo.lock
+          if-no-files-found: error
+          retention-days: 3
