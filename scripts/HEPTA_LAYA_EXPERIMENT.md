@@ -118,7 +118,7 @@ The native semantic input/output boundary below is now source-implemented.
 Existing `NeuronFeatureRequestV1` still carries numeric features and is unchanged.
 Current `PinnedCognitiveRanker` loads an independently selected tabular artifact.
 Do not bypass that selector or instantiate this script as an unrestricted Agentd
-model server. Product integration still needs a qualified concrete transport,
+model server. Product integration still needs native owner integration of a qualified transport,
 the durable owner/worker composition described below, source/registry
 currentness at final use, artifact approval/revocation, then real task data on
 fixed hardware. Source implementation of the owner journal is not product
@@ -159,8 +159,9 @@ input-plus-output token bound. Error, malformed output, missing measurement or
 observed budget overrun retains the active identity instead of permitting replay
 or unload. Pre-entry cancellation has a distinct error and is checked only after
 an existing unknown request has been ruled out. The driver trait is not a
-sandbox or durable result store. No production implementation of its transport
-or Agentd startup selection is supplied by this profile.
+sandbox or durable result store. The bounded Linux process primitive described below is available, but no native
+`SemanticRetrievalDriver` implementation or Agentd startup selection is supplied
+by this profile.
 
 The Python leaf entry point reads one complete binary frame from stdin, checks
 it before loading a pinned model, scores once and writes one binary reply. It
@@ -242,7 +243,7 @@ when its result cannot be used. Malformed output and lost replies do not.
 
 `InferenceWorker::run_semantic_retrieval_durable` is the new trusted composition
 port. The older in-memory call remains a compatibility seam, not a durable
-product path. The concrete process transport, owner-authenticated observations,
+product path. Native integration of the bounded process transport, owner-authenticated observations,
 shared physical quotas across execution profiles, external anti-rollback
 frontier, source revocation and Agentd product integration remain separate work.
 Caller-supplied digests are bindings, not signed credentials or model attestation.
@@ -261,7 +262,7 @@ python3 -m unittest -v scripts.tests.test_hepta_laya_deadline
 cd codex-rs
 just test --locked -p codex-hepta-infer-core --lib durable_control::semantic::tests
 just test --locked -p codex-hepta-infer-worker-host --test semantic_owner_recovery
-cargo test --locked -p codex-hepta-infer-core semantic_journal_retained_history_curve -- --ignored --nocapture --test-threads=1
+just test --locked -p codex-hepta-infer-core --run-ignored only --no-capture --test-threads 1 --retries 0 -E 'test(semantic_journal_retained_history_curve)'
 ```
 
 The explicit measurement writes and fsyncs 64/256/1024 complete records, reopens
@@ -271,3 +272,72 @@ perform compaction or establish a long-term SLO. The maintenance workflow's old
 `post_compaction_multi_generation_curve` filter matched zero tests in the source
 candidate; the new filter selects this actual retained-history test without
 weakening the minimum executed-test requirement.
+
+
+## Bounded Linux leaf transport
+
+`hepta_laya_process.run_process` executes one host-selected trusted leaf using
+an exact HPTARQ request and HPTARS response. It does not select a model, grant
+permissions, own a journal, or independently turn a request into a product call.
+The existing inference owner must record its dispatch fence before invoking it.
+All post-spawn failures remain unknown execution to that owner, not proof that
+nothing ran. Transport cleanup does not settle an operation or release durable
+quota. The final consumer still revalidates source, artifact, objective, scope
+and deadline before use; a previously valid reply is not current authorization.
+
+The command must name an absolute host-selected executable. The environment is
+explicit and allowlisted, with offline flags set and no inherited credentials,
+`PYTHONPATH` or loader injection. This is not package attestation: the host must
+provision immutable reviewed code, weights, tokenizer and runtime. In particular,
+a path check alone does not protect an executable from filesystem replacement.
+
+The transport uses nonblocking stdin/stdout/stderr with bounded per-poll work,
+closes stdin after the complete request, caps stdout at 64 KiB and stderr at
+16 KiB, and retains only diagnostic byte count and digest in the observation.
+Both wall-clock expiry/regression and monotonic elapsed time are checked from
+before spawn. Cancellation, invalid replies, nonzero exit, floods and deadline
+failure never select another backend or automatically repeat the request.
+
+Linux `waitid(WNOWAIT)` observes leader exit without releasing its PID. Group
+signalling precedes `wait4` reaping, so a reused PID/PGID is not signalled by the
+normal cleanup sequence. Normal leader exit also triggers group cleanup to
+prevent inherited pipe holders from stalling result collection. A bounded cleanup
+that has not observed leader exit retains the child in `ProcessUnavailable`;
+the caller must keep or transfer that handle to its existing supervisor and use
+`reconcile_cleanup`, rather than dropping ownership. Failure to signal a group
+remains incomplete cleanup even when the leader was reaped.
+
+The function requires Linux and exclusive child-reaping ownership. A custom
+SIGCHLD disposition is rejected; the host must also ensure no competing thread
+or library reaps the same child. Recorded peak RSS and CPU are Linux `wait4`
+leader observations, not aggregate descendant usage, a hard memory cap, GPU
+measurements or independent device attestation. An untrusted child can escape
+its process group, and a killed parent is not recovered by this Python object.
+Cgroups/sandboxing, daemon-death containment, hard resource reservations and
+cross-restart reconciliation remain existing runtime/supervisor responsibilities.
+No production isolation or arbitrary executable-loading claim follows here.
+
+The real-process suite uses synthetic model replies and no Laya weights:
+
+```sh
+python3 -m unittest -v scripts.tests.test_hepta_laya_process \
+  scripts.tests.test_hepta_laya_deadline scripts.tests.test_hepta_retrieval_wire
+python3 -m unittest -v scripts.tests.test_hepta_multiscale_ci
+```
+
+Its twenty process cases cover valid output and host resource observations,
+stdin EOF, both output floods, redacted diagnostics, failed/truncated/rebound
+replies, hanging and pipe-holding children, cancellation before/after spawn,
+environment rejection, reaping order, retained handles, failed group signalling
+and clock regression. These are OS-process/transport regressions, not real-model
+quality, organ credit, browser-task or stateful topology evidence.
+
+The existing maintenance workflow now pins the repository Rust toolchain,
+installs the repository `just test`/nextest entry point, and independently runs
+source-head and base-merge tests, strict lint and nonmutating formatting. It no
+longer skips native execution merely because a tree comparison is equal. Minimum
+observed test counts and exact commit/tree/parent identities remain mandatory;
+the process and CI wiring suites also run in the multiscale protocol workflow.
+A passing wiring test only establishes the tested configuration; actual workflow
+execution is required to establish either candidate passed. No historical run or
+queued check is promoted to current-head success.
