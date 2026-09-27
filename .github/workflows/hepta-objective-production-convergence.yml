@@ -6,6 +6,15 @@ on:
       - work/objective-compiler-production-convergence-20260927
     paths:
       - .github/workflows/hepta-objective-production-convergence.yml
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
+    paths:
+      - .github/workflows/hepta-objective-production-convergence.yml
   workflow_dispatch:
 
 permissions:
@@ -20,8 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 180
     env:
-      TARGET_BRANCH: work/objective-compiler-production-convergence-20260927
-      TRIGGER_SHA: ${{ github.sha }}
+      TARGET_BRANCH: ${{ github.event.pull_request.head.ref || 'work/objective-compiler-production-convergence-20260927' }}
+      TRIGGER_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       CARGO_INCREMENTAL: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
@@ -29,7 +38,7 @@ jobs:
       - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.TRIGGER_SHA }}
           fetch-depth: 0
           persist-credentials: true
 
@@ -38,7 +47,9 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${TRIGGER_SHA}"
-          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+          if test "${GITHUB_EVENT_NAME}" = "push"; then
+            test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+          fi
           git fetch origin "${TARGET_BRANCH}"
           test "$(git rev-parse "origin/${TARGET_BRANCH}")" = "${TRIGGER_SHA}"
           git rev-parse HEAD HEAD^{tree}
@@ -177,6 +188,7 @@ jobs:
           git config user.email qualification@invalid
           git rm \
             .github/workflows/hepta-objective-closure-materialize.yml \
+            .github/workflows/hepta-objective-production-convergence.yml \
             scripts/hepta-objective-materialize-closure.py \
             scripts/hepta-objective-evidence-materialize.py
           git add -A
