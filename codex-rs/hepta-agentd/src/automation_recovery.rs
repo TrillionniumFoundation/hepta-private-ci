@@ -44,15 +44,6 @@ enum TurnLookup {
     Exhausted,
 }
 
-pub(crate) async fn reconcile_one(
-    store: &AutomationStore,
-    state: &AgentdState,
-    identity: &AgentdIdentity,
-    now_ms: u64,
-) -> Result<bool, AgentdError> {
-    Ok(reconcile_batch(store, state, identity, now_ms, 1).await? != 0)
-}
-
 /// Reconcile a bounded snapshot of distinct durable frontiers.
 ///
 /// Unknown dispatches retain priority. Pending occurrences are selected before
