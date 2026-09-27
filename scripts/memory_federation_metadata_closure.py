@@ -134,6 +134,217 @@ impl Drop for RegisteredFederationQueryV2 {
     extension_path.write_text(extension, encoding="utf-8")
 
 
+def patch_generated_diagnostics() -> None:
+    telemetry_path = ROOT / "codex-rs/hepta-memory/src/cognitive_runtime_federation/telemetry.rs"
+    telemetry = telemetry_path.read_text(encoding="utf-8")
+    old_enum_derive = "#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]"
+    new_enum_derive = (
+        "#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize)]"
+    )
+    if telemetry.count(old_enum_derive) != 3:
+        raise SystemExit("generated diagnostic enum derive drift")
+    telemetry = telemetry.replace(old_enum_derive, new_enum_derive)
+    telemetry = replace_once(
+        telemetry,
+        "#[derive(Clone, Debug, Eq, PartialEq, Serialize)]\npub struct FederatedPeerDiagnosticV2",
+        "#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize)]\npub struct FederatedPeerDiagnosticV2",
+        "diagnostic entry ordering",
+    )
+    telemetry = replace_once(
+        telemetry,
+        '''    pub fn binding_sha256(&self) -> Result<Sha256Digest, CognitiveStoreError> {
+        let bytes = serde_json::to_vec(self).map_err(|error| {''',
+        '''    pub(super) fn canonicalize(&mut self) {
+        self.entries.sort();
+    }
+
+    pub fn binding_sha256(&self) -> Result<Sha256Digest, CognitiveStoreError> {
+        let mut canonical = self.clone();
+        canonical.canonicalize();
+        let bytes = serde_json::to_vec(&canonical).map_err(|error| {''',
+        "canonical diagnostic digest",
+    )
+    telemetry_path.write_text(telemetry, encoding="utf-8")
+
+    module_path = ROOT / "codex-rs/hepta-memory/src/cognitive_runtime_federation/mod.rs"
+    module = module_path.read_text(encoding="utf-8")
+    module = replace_once(
+        module,
+        '''    finalize_candidates(&mut candidates, &mut coverage, &mut diagnostics);
+    Ok(FederatedProductReadV2 {''',
+        '''    finalize_candidates(&mut candidates, &mut coverage, &mut diagnostics);
+    diagnostics.canonicalize();
+    Ok(FederatedProductReadV2 {''',
+        "canonical diagnostic return",
+    )
+    module_path.write_text(module, encoding="utf-8")
+
+    aggregator_path = ROOT / "codex-rs/hepta-memory/src/cognitive_runtime_federation/aggregator.rs"
+    aggregator = aggregator_path.read_text(encoding="utf-8")
+    aggregator = replace_once(
+        aggregator,
+        '''            if result.validity != FederatedValidityV2::Valid {
+                diagnostics.push(FederatedPeerDiagnosticV2 {
+                    peer_digest: attempt.peer_digest,
+                    phase: FederationProductPhaseV2::PostIoAuthority,
+                    disposition: FederationProductDispositionV2::Partial,
+                    failure: Some(FederationProductFailureV2::AuthorityRejected),
+                    cancellation_receipt_digest: None,
+                });
+                return;
+            }''',
+        '''            if result.validity != FederatedValidityV2::Valid {
+                let (phase, disposition, failure) = match result.validity {
+                    FederatedValidityV2::Revoked | FederatedValidityV2::StaleGeneration => (
+                        FederationProductPhaseV2::PostIoAuthority,
+                        FederationProductDispositionV2::Failed,
+                        FederationProductFailureV2::AuthorityRejected,
+                    ),
+                    FederatedValidityV2::Indeterminate
+                        if result.coverage.failures.deadline_or_cancelled > 0 => (
+                            FederationProductPhaseV2::Cancellation,
+                            FederationProductDispositionV2::Cancelled,
+                            FederationProductFailureV2::DeadlineOrCancelled,
+                        ),
+                    FederatedValidityV2::Indeterminate
+                        if result.coverage.failures.transport_unavailable > 0 => (
+                            FederationProductPhaseV2::Transport,
+                            FederationProductDispositionV2::Failed,
+                            FederationProductFailureV2::TransportUnavailable,
+                        ),
+                    FederatedValidityV2::Indeterminate => (
+                        FederationProductPhaseV2::Integrity,
+                        FederationProductDispositionV2::Failed,
+                        FederationProductFailureV2::IntegrityRejected,
+                    ),
+                    FederatedValidityV2::Valid => (
+                        FederationProductPhaseV2::Aggregation,
+                        FederationProductDispositionV2::Failed,
+                        FederationProductFailureV2::IntegrityRejected,
+                    ),
+                };
+                diagnostics.push(FederatedPeerDiagnosticV2 {
+                    peer_digest: attempt.peer_digest,
+                    phase,
+                    disposition,
+                    failure: Some(failure),
+                    cancellation_receipt_digest: None,
+                });
+                return;
+            }''',
+        "typed invalid-result diagnostics",
+    )
+    aggregator = replace_once(
+        aggregator,
+        "            if result.completeness != FederatedCompletenessV2::Complete {",
+        "            if result.completeness == FederatedCompletenessV2::Partial {",
+        "empty result diagnostic semantics",
+    )
+    aggregator_path.write_text(aggregator, encoding="utf-8")
+
+
+def patch_generated_wire() -> None:
+    wire_path = ROOT / "codex-rs/hepta-memory-federation/src/wire.rs"
+    wire = wire_path.read_text(encoding="utf-8")
+    wire = replace_once(
+        wire,
+        '''        if self.entries.len() == self.capacity {
+            self.entries.pop_front();
+        }
+        self.entries.push_back(ReplayEntryV1 {''',
+        '''        if self.entries.len() == self.capacity {
+            return Err(FederationWireError::ReplayWindowFull);
+        }
+        self.entries.push_back(ReplayEntryV1 {''',
+        "fail-closed replay capacity",
+    )
+    wire = replace_once(
+        wire,
+        '''    if request.owner_epoch != credential.owner_epoch {
+        return Err(FederationWireError::OwnerEpochMismatch);
+    }
+    validate_window(request.issued_unix_ms, request.expires_unix_ms, now_unix_ms)?;''',
+        '''    if request.owner_epoch != credential.owner_epoch {
+        return Err(FederationWireError::OwnerEpochMismatch);
+    }
+    validate_credential_window(
+        credential,
+        request.issued_unix_ms,
+        request.expires_unix_ms,
+    )?;
+    validate_window(request.issued_unix_ms, request.expires_unix_ms, now_unix_ms)?;''',
+        "request credential horizon",
+    )
+    wire = replace_once(
+        wire,
+        '''    if response.query_binding_digest != expected_request.query_binding_digest
+        || response.source_cut_digest != expected_request.source_cut_digest
+    {
+        return Err(FederationWireError::BindingMismatch);
+    }
+    validate_window(response.issued_unix_ms, response.expires_unix_ms, now_unix_ms)?;''',
+        '''    if response.query_binding_digest != expected_request.query_binding_digest
+        || response.source_cut_digest != expected_request.source_cut_digest
+        || response.issued_unix_ms < expected_request.issued_unix_ms
+        || response.expires_unix_ms > expected_request.expires_unix_ms
+        || response.nonce_digest == expected_request.nonce_digest
+    {
+        return Err(FederationWireError::BindingMismatch);
+    }
+    validate_credential_window(
+        credential,
+        response.issued_unix_ms,
+        response.expires_unix_ms,
+    )?;
+    validate_window(response.issued_unix_ms, response.expires_unix_ms, now_unix_ms)?;''',
+        "response request and credential horizon",
+    )
+    wire = replace_once(
+        wire,
+        '''fn validate_window(
+    issued_unix_ms: u64,
+    expires_unix_ms: u64,
+    now_unix_ms: u64,
+) -> Result<(), FederationWireError> {''',
+        '''fn validate_credential_window(
+    credential: &FederationPeerCredentialV1,
+    issued_unix_ms: u64,
+    expires_unix_ms: u64,
+) -> Result<(), FederationWireError> {
+    if issued_unix_ms < credential.effective_unix_ms
+        || expires_unix_ms > credential.expires_unix_ms
+    {
+        return Err(FederationWireError::CredentialExpired);
+    }
+    Ok(())
+}
+
+fn validate_window(
+    issued_unix_ms: u64,
+    expires_unix_ms: u64,
+    now_unix_ms: u64,
+) -> Result<(), FederationWireError> {''',
+        "credential window validator",
+    )
+    wire = replace_once(
+        wire,
+        "    InvalidReplayCapacity,\n    ReplayDetected,",
+        "    InvalidReplayCapacity,\n    ReplayWindowFull,\n    ReplayDetected,",
+        "replay window full error",
+    )
+    wire_path.write_text(wire, encoding="utf-8")
+
+    protocol_path = ROOT / "docs/modules/memory.federation/WIRE_PROTOCOL_V1.md"
+    protocol = protocol_path.read_text(encoding="utf-8")
+    protocol = replace_once(
+        protocol,
+        "Full queues evict the oldest unexpired observation only after a valid\nsignature has been checked.",
+        "A full window containing only unexpired observations rejects new envelopes;\nit never evicts a live nonce and thereby makes an earlier replay admissible.",
+        "wire replay documentation",
+    )
+    protocol_path.write_text(protocol, encoding="utf-8")
+
+
 def patch_state_sources() -> None:
     path = ROOT / "scripts/hepta-memory-federation-state.py"
     text = path.read_text(encoding="utf-8")
@@ -214,6 +425,8 @@ def patch_profile() -> None:
 def main() -> None:
     patch_generated_runtime_parent()
     patch_generated_cancellation_and_binding()
+    patch_generated_diagnostics()
+    patch_generated_wire()
     patch_state_sources()
     patch_profile()
     print("memory.federation metadata closure applied")
