@@ -466,9 +466,9 @@ impl AgentdIntuitionPolicyHostV1 {
         match &production {
             Some(value) => {
                 bytes.push(1);
-                bytes.extend_from_slice(
-                    Digest32::of_bytes(&decision_signing_payload_v2(value)?).as_array(),
-                );
+                let payload = decision_signing_payload_v2(value)
+                    .map_err(AgentdIntuitionPolicyError::Learning)?;
+                bytes.extend_from_slice(Digest32::of_bytes(&payload).as_array());
             }
             None => bytes.push(0),
         }
@@ -533,16 +533,22 @@ impl AgentdIntuitionPolicyHostV1 {
                     now,
                 ) {
                     Ok(receipt) => receipt,
-                    Err(AgentdIntuitionPolicyError::IndeterminateAfterLedgerCommit { .. }) => {
-                        // One bounded exact replay reconciles the only admitted
-                        // uncertain state: ledger committed, witness not advanced.
-                        // The ledger rejects any record/evidence/predecessor drift.
-                        product.learning.append_decision(
-                            expected_ledger_head,
-                            retry_production,
-                            retry_evidence,
-                            now,
-                        )?
+                    Err(AgentdIntuitionPolicyError::IndeterminateAfterLedgerCommit { receipt }) => {
+                        // One exact replay may reconcile a ledger/witness lag.
+                        // Any second failure must retain the already-known commit,
+                        // including an ordinary I/O, trust, or lock error.
+                        preserve_known_commit(
+                            receipt,
+                            product.learning.append_decision(
+                                expected_ledger_head,
+                                retry_production,
+                                retry_evidence,
+                                now,
+                            ),
+                        )
+                        .map_err(|receipt| {
+                            AgentdIntuitionPolicyError::IndeterminateAfterLedgerCommit { receipt }
+                        })?
                     }
                     Err(error) => return Err(error),
                 };
@@ -574,6 +580,11 @@ impl AgentdIntuitionPolicyHostV1 {
             service_receipt_digest: Digest32::of_bytes(&bytes),
         })
     }
+}
+
+/// Reconciliation cannot turn a known commit into a not-committed failure.
+fn preserve_known_commit<T, E>(committed: T, replay: Result<T, E>) -> Result<T, T> {
+    replay.map_err(|_| committed)
 }
 
 fn validate_prepared_time(
@@ -708,14 +719,10 @@ fn validate_legacy_pins(
         return Err(AgentdIntuitionPolicyError::GenerationFence);
     }
     if pins.model_artifact_digest.is_zero() {
-        return Err(AgentdIntuitionPolicyError::InvalidHost(
-            "model artifact pin",
-        ));
+        return Err(AgentdIntuitionPolicyError::InvalidHost("model artifact pin"));
     }
     if pins.scorer_contract_digest.is_zero() {
-        return Err(AgentdIntuitionPolicyError::InvalidHost(
-            "scorer contract pin",
-        ));
+        return Err(AgentdIntuitionPolicyError::InvalidHost("scorer contract pin"));
     }
     if pins.rng_owner_digest.is_some_and(Digest32::is_zero) {
         return Err(AgentdIntuitionPolicyError::InvalidHost("rng owner pin"));
@@ -959,6 +966,27 @@ mod tests {
                 Err(AgentdIntuitionPolicyError::PreparedEvidenceExpired)
             ));
         }
+    }
+
+    #[test]
+    fn failed_reconciliation_preserves_the_first_durable_commit() {
+        let receipt = String::from("committed:event:7:chain:verified");
+        for failure in ["witness unavailable", "trust changed", "writer lock poisoned"] {
+            assert_eq!(
+                preserve_known_commit(receipt.clone(), Err(failure)),
+                Err(receipt.clone()),
+            );
+        }
+    }
+
+    #[test]
+    fn successful_reconciliation_returns_the_verified_replay_receipt() {
+        let original = String::from("committed:unwitnessed");
+        let reconciled = String::from("committed:witnessed");
+        assert_eq!(
+            preserve_known_commit::<_, ()>(original, Ok(reconciled.clone())),
+            Ok(reconciled),
+        );
     }
 
     #[test]
