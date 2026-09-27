@@ -1,0 +1,114 @@
+name: NDU bounded native remediation
+on:
+  push:
+    branches: [codex/utility-ndu-production-hardening-20260926]
+    paths: [".github/ndu-lint-layout.patch", ".github/workflows/ndu-native-hardening.yml"]
+permissions:
+  contents: write
+concurrency:
+  group: ndu-bounded-native-remediation
+  cancel-in-progress: false
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: ${{ github.sha }}
+      TARGET_BRANCH: codex/utility-ndu-production-hardening-20260926
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Apply reviewed source-only patch and rebind evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain)"
+          git apply --check --index .github/ndu-lint-layout.patch
+          git apply --index .github/ndu-lint-layout.patch
+          (
+            cd codex-rs
+            rustfmt --edition 2024 --config-path rustfmt.toml \
+              hepta-agent-protocol/src/ndu.rs hepta-agentd/src/ndu_owner_tests.rs \
+              hepta-agentd/src/ndu_process_bootstrap_tests.rs hepta-agentd/tests/ndu_process_e2e.rs
+          )
+          git add -- codex-rs/hepta-agent-protocol/src/ndu.rs \
+            codex-rs/hepta-agentd/src/ndu_owner_tests.rs \
+            codex-rs/hepta-agentd/src/ndu_process_bootstrap_tests.rs \
+            codex-rs/hepta-agentd/tests/ndu_process_e2e.rs
+          python3 - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          primary_path = Path('docs/modules/utility.ndu/IMPLEMENTATION_MAP.json')
+          extension_path = Path('docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json')
+          primary = json.loads(primary_path.read_text())
+          extension = json.loads(extension_path.read_text())
+          additions = {
+              'codex-rs/hepta-agentd/src/ndu_process_bootstrap_tests.rs',
+              'codex-rs/hepta-agentd/tests/ndu_process_e2e.rs',
+          }
+          extension['supportingSources'] = sorted(set(extension['supportingSources']) | additions)
+          operation = next(op for op in extension['operations'] if op['operation'] == 'requires_mutation_admission')
+          operation['tests'].append({
+              'path': 'codex-rs/hepta-agent-protocol/src/ndu.rs',
+              'symbol': 'boxed_grant_preserves_the_v1_wire_shape_and_v2_payload_digest',
+          })
+          extension_path.write_text(json.dumps(extension, indent=2) + '\n')
+          subprocess.run(['git', 'add', '--', str(extension_path)], check=True)
+          tree = subprocess.check_output(['git', 'write-tree'], text=True).strip()
+          paths = sorted({entry['path'] for entry in primary['sourceObjects']} | additions)
+          primary['sourceObjects'] = [
+              {'path': path, 'object': subprocess.check_output(['git', 'rev-parse', f'{tree}:{path}'], text=True).strip()}
+              for path in paths
+          ]
+          primary_path.write_text(json.dumps(primary, indent=2) + '\n')
+          subprocess.run(['git', 'add', '--', str(primary_path)], check=True)
+          allowed = additions | {
+              'codex-rs/hepta-agent-protocol/src/ndu.rs',
+              'codex-rs/hepta-agentd/src/ndu_owner_tests.rs',
+              str(primary_path), str(extension_path),
+          }
+          changed = set(subprocess.check_output(['git', 'diff', '--cached', '--name-only', '-z']).decode().strip('\0').split('\0')) - {''}
+          if not changed or not changed <= allowed:
+              raise SystemExit(f'unexpected staged changes: {sorted(changed - allowed)}')
+          if subprocess.check_output(['git', 'diff', '--name-only']):
+              raise SystemExit('unexpected unstaged changes')
+          PY
+          git diff --cached --check
+          git config user.name hepta-qualification
+          git config user.email qualification@invalid
+          git commit -m 'fix(ndu): bound admission enum layout without changing wire or digest semantics'
+          mkdir -p "$RUNNER_TEMP/ndu-native-hardening"
+          python3 scripts/test_hepta_ndu_qualification.py 2>&1 | tee "$RUNNER_TEMP/ndu-native-hardening/qualification-tests.log"
+          python3 scripts/test_hepta_ndu_map_integrity.py 2>&1 | tee "$RUNNER_TEMP/ndu-native-hardening/map-tests.log"
+          python3 scripts/hepta-ndu-implementation-map-closed-world.py \
+            --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})" \
+            | tee "$RUNNER_TEMP/ndu-native-hardening/closed-world.json"
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$EXPECTED_SHA"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+      - name: Retain exact generated source and publication state
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/ndu-native-hardening"
+          mkdir -p "$out"
+          git rev-parse HEAD HEAD^{tree} > "$out/source-identity.txt"
+          git status --porcelain > "$out/checkout-status.txt"
+          git ls-remote origin "refs/heads/$TARGET_BRANCH" > "$out/published-ref.txt"
+          git show --format=fuller --stat HEAD > "$out/commit.txt"
+          git archive --format=tar.gz -o "$out/source.tar.gz" HEAD \
+            codex-rs/hepta-agent-protocol/src/ndu.rs codex-rs/hepta-agentd/src/ndu_owner_tests.rs \
+            codex-rs/hepta-agentd/src/ndu_process_bootstrap_tests.rs codex-rs/hepta-agentd/tests/ndu_process_e2e.rs \
+            docs/modules/utility.ndu
+          sha256sum "$out/source.tar.gz" > "$out/source.tar.gz.sha256"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ndu-native-hardening-${{ github.sha }}
+          path: ${{ runner.temp }}/ndu-native-hardening
+          if-no-files-found: error
+          retention-days: 30
