@@ -40,6 +40,8 @@ use codex_hepta_intelligence_eval::admit_signed_eligibility_v2;
 use codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1;
 use codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1;
 use codex_hepta_intelligence_eval::RecordedProductEvaluationRunnerV1;
+use codex_hepta_intelligence_eval::DurableProductEvaluationAttemptJournalV1;
+use codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1;
 
 #[allow(dead_code)]
 fn recorded<S: FinalHoldoutCasStoreV1>(owner: FencedFinalHoldoutOwnerV1<S>) {
@@ -47,8 +49,13 @@ fn recorded<S: FinalHoldoutCasStoreV1>(owner: FencedFinalHoldoutOwnerV1<S>) {
 }
 #[allow(dead_code)]
 fn anchored<A: codex_hepta_intelligence_eval::ProductEvaluationAttemptAnchorStoreV1>() {
-    fn durable<J: codex_hepta_intelligence_eval::DurableProductEvaluationAttemptJournalV1>() {}
+    fn durable<J: DurableProductEvaluationAttemptJournalV1>() {}
     durable::<codex_hepta_intelligence_eval::AnchoredProductEvaluationAttemptJournalV1<A>>();
+}
+#[allow(dead_code)]
+fn verified_recovery<J: DurableProductEvaluationAttemptJournalV1>() {
+    let _ = RecordedProductEvaluationRunnerV1::<LockedFileFinalHoldoutCasStoreV1>::resume_decided_qualification::<J>;
+    let _ = RecordedProductEvaluationRunnerV1::<LockedFileFinalHoldoutCasStoreV1>::resume_decided_outcome_qualification::<J>;
 }
 fn main() {
     let _ = admit_signed_eligibility_v2;
@@ -82,6 +89,33 @@ if not expected:
 PY
 done
 
+cat >"${tmp}/unverified_resume.rs" <<'RS'
+use codex_hepta_intelligence_eval::DurableProductEvaluationAttemptJournalV1;
+use codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1;
+use codex_hepta_intelligence_eval::RecordedProductEvaluationRunnerV1;
+fn bypass<J: DurableProductEvaluationAttemptJournalV1>() {
+    let _ = RecordedProductEvaluationRunnerV1::<LockedFileFinalHoldoutCasStoreV1>::resume_decided_publication::<J>;
+}
+fn main() {}
+RS
+if rustc --edition=2024 --crate-name learning_eval_unverified_resume --error-format=json \
+    "${tmp}/unverified_resume.rs" --extern "codex_hepta_intelligence_eval=${rlib}" \
+    -L "dependency=${deps}" -o "${tmp}/unverified_resume" \
+    >"${tmp}/unverified_resume.stdout" 2>"${tmp}/unverified_resume.stderr"
+then
+  echo "unverified decision publication is publicly callable" >&2
+  exit 1
+fi
+python3 - "${tmp}/unverified_resume.stderr" <<'PY'
+import json
+import pathlib
+import sys
+rows = [json.loads(line) for line in pathlib.Path(sys.argv[1]).read_text().splitlines() if line.strip()]
+if not any(row.get('level') == 'error' and (row.get('code') or {}).get('code') == 'E0624'
+           and 'resume_decided_publication' in row.get('message', '') for row in rows):
+    raise SystemExit('unverified recovery fixture failed for an unrelated reason')
+PY
+
 cat >"${tmp}/volatile.rs" <<'RS'
 use codex_hepta_intelligence_eval::DurableProductEvaluationAttemptJournalV1;
 use codex_hepta_intelligence_eval::InMemoryProductEvaluationAttemptJournalV1;
@@ -114,4 +148,4 @@ printf 'use codex_hepta_intelligence_eval::ProductEvaluationRunnerV1;\nfn main()
 rustc --edition=2024 --crate-name learning_eval_compat_surface "${tmp}/compat.rs" \
   --extern "codex_hepta_intelligence_eval=${compat}" -L "dependency=$(dirname "${compat}")" \
   -o "${tmp}/compat"
-printf '%s\n' '{"schema":"hepta.learning-eval.api-surface.v1","publicAdmission":true,"publicRecordedRunner":true,"lowLevelV2Public":false,"lowLevelV3Public":false,"volatileJournalDefaultAccepted":false,"rawRunnerDefaultPublic":false,"rawRunnerExplicitCompatibilityPublic":true}'
+printf '%s\n' '{"schema":"hepta.learning-eval.api-surface.v1","publicAdmission":true,"publicRecordedRunner":true,"verifiedRecoveryPublic":true,"unverifiedPublicationRecoveryPublic":false,"lowLevelV2Public":false,"lowLevelV3Public":false,"volatileJournalDefaultAccepted":false,"rawRunnerDefaultPublic":false,"rawRunnerExplicitCompatibilityPublic":true}'
