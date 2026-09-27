@@ -1,7 +1,7 @@
-name: intelligence.control source finalizer
+name: intelligence.control owner prompt staging
 
 on:
-  push:
+  pull_request:
     branches:
       - codex/intelligence-control-product-closure-20260926
     paths:
@@ -12,45 +12,75 @@ permissions:
   contents: write
 
 concurrency:
-  group: intelligence-control-source-finalizer
+  group: intelligence-control-owner-prompt-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
   finalize:
-    name: compose and verify owner-backed intelligence product
+    name: materialize and verify exact owner-backed product source
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
-      - name: Check out exact trigger
+      - name: Check out exact head branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Bind exact predecessor
+      - name: Bind source and target
+        env:
+          EVENT_HEAD: ${{ github.event.pull_request.head.sha }}
+          EVENT_BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "834c8aef4cda056c7dc9832a5413085fc9919b27"
-          test "$(git branch --show-current)" = "codex/intelligence-control-product-closure-20260926"
+          test "$HEAD_REF" = "codex/intelligence-control-owner-prompt-staging"
+          test "$BASE_REF" = "codex/intelligence-control-product-closure-20260926"
+          test "$(git rev-parse HEAD)" = "$EVENT_HEAD"
+          git cat-file -e "$EVENT_BASE^{commit}"
+          git merge-base --is-ancestor "$EVENT_BASE" HEAD
           test -f scripts/finalize-intelligence-control-product.py
 
-      - name: Compose existing owners without a second control plane
+      - name: Materialize existing-owner product closure
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/finalize-intelligence-control-product.py
           git diff --check
 
-      - name: Format and refresh the exact lockfile
-        working-directory: codex-rs
+      - name: Format and refresh generated truth
         shell: bash
         run: |
           set -euo pipefail
+          cd codex-rs
           cargo fmt --all
           cargo generate-lockfile
           cargo metadata --locked --no-deps --format-version 1 >/dev/null
+          cd ..
+          python3 scripts/hepta-intelligence-control-status.py --write-tracked
+          python3 scripts/hepta-intelligence-control-status.py --check-tracked
+          git diff --check
+
+      - name: Create exact candidate commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/hepta-intelligence-source-finalizer.yml
+          git rm scripts/finalize-intelligence-control-product.py
+          allowed='^(\.github/workflows/hepta-intelligence-source-finalizer\.yml|scripts/finalize-intelligence-control-product\.py|codex-rs/Cargo\.lock|codex-rs/hepta-agentd/src/intelligence_.*\.rs|codex-rs/hepta-infer-worker-host/src/(lib|native_intelligence_product|native_run_control|native_run_control_tests)\.rs|docs/modules/intelligence\.control/(IMPLEMENTATION_MAP|TEST_TRACEABILITY)\.json)$'
+          unexpected="$(git status --short | cut -c4- | grep -Ev "$allowed" || true)"
+          if [ -n "$unexpected" ]; then
+            printf 'unexpected changed paths:\n%s\n' "$unexpected" >&2
+            exit 1
+          fi
+          git config user.name "Hepta Intelligence Source Finalizer"
+          git config user.email "hepta-intelligence-source-finalizer@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(intelligence): bind owner prompt to physical product closure"
+          printf 'TESTED_SHA=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
       - name: Verify canonical and product packages
         working-directory: codex-rs
@@ -62,41 +92,34 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --locked -p codex-hepta-intelligence
-          cargo test --locked -p codex-hepta-operations
-          cargo test --locked -p codex-hepta-agentd --lib
-          cargo test --locked -p codex-hepta-agentd --lib --features qualification-legacy-learning-write
-          cargo test --locked -p codex-hepta-infer-worker-host --lib
-          cargo check --locked -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets
-          cargo clippy --locked -p codex-hepta-intelligence -p codex-hepta-operations -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          mkdir -p "$RUNNER_TEMP/intelligence-owner-prompt-records"
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/intelligence-owner-prompt-records/intelligence-tests.json" -- cargo test --locked -p codex-hepta-intelligence
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/intelligence-owner-prompt-records/operations-tests.json" -- cargo test --locked -p codex-hepta-operations
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/intelligence-owner-prompt-records/agentd-tests.json" -- cargo test --locked -p codex-hepta-agentd --lib
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/intelligence-owner-prompt-records/agentd-legacy-tests.json" -- cargo test --locked -p codex-hepta-agentd --lib --features qualification-legacy-learning-write
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/intelligence-owner-prompt-records/infer-worker-tests.json" -- cargo test --locked -p codex-hepta-infer-worker-host --lib
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/intelligence-owner-prompt-records/all-targets.json" -- cargo check --locked -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/intelligence-owner-prompt-records/clippy.json" -- cargo clippy --locked -p codex-hepta-intelligence -p codex-hepta-operations -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
 
-      - name: Verify generated intelligence declarations
+      - name: Retain exact command records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-owner-prompt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intelligence-owner-prompt-records/*
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Publish the exact tested commit to the staging branch
+        if: success()
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-intelligence-control-status.py --check-tracked
-          git diff --check
-
-      - name: Restrict mutation and self-remove
-        shell: bash
-        run: |
-          set -euo pipefail
-          git rm .github/workflows/hepta-intelligence-source-finalizer.yml
-          git rm scripts/finalize-intelligence-control-product.py
-          allowed='^(\.github/workflows/hepta-intelligence-source-finalizer\.yml|scripts/finalize-intelligence-control-product\.py|codex-rs/Cargo\.lock|codex-rs/hepta-agentd/src/intelligence_.*\.rs|codex-rs/hepta-infer-worker-host/src/(lib|native_intelligence_product|native_run_control|native_run_control_tests)\.rs)$'
-          unexpected="$(git status --short | cut -c4- | grep -Ev "$allowed" || true)"
-          if [ -n "$unexpected" ]; then
-            printf 'unexpected changed paths:\n%s\n' "$unexpected" >&2
-            exit 1
-          fi
-          test -n "$(git status --short)"
-
-      - name: Commit verified product closure
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "Hepta Intelligence Source Finalizer"
-          git config user.email "hepta-intelligence-source-finalizer@users.noreply.github.com"
-          git add -A
-          git commit -m "feat(intelligence): bind owner prompt to physical product closure"
-          git push origin HEAD:codex/intelligence-control-product-closure-20260926
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git push origin "HEAD:$HEAD_REF"
