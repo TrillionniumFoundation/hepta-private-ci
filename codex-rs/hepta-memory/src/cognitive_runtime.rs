@@ -153,6 +153,20 @@ impl MemoryFederationHostProfile {
         self.total_budget
     }
 
+    /// Maximum time owner discovery may consume before the product proceeds
+    /// with every completed discovery. The other half of the total budget is
+    /// reserved for the already-admitted reads and their authority fences.
+    pub fn discovery_budget(self) -> Duration {
+        self.total_budget / 2
+    }
+
+    /// Minimum portion of the total operation budget that discovery cannot
+    /// consume. This closes the phase-barrier failure where one pending owner
+    /// left no time for a fast, already-discovered owner to be read.
+    pub fn attempt_budget_floor(self) -> Duration {
+        self.total_budget.saturating_sub(self.discovery_budget())
+    }
+
     pub const fn max_owner_candidates(self) -> usize {
         self.max_owner_candidates
     }
@@ -641,7 +655,7 @@ async fn retrieve_federated_product(
         .ok_or_else(|| CognitiveStoreError::Invalid("federation deadline overflow".to_string()))?;
 
     let (outcomes, timed_out_discoveries) = {
-        let discovery_deadline = tokio::time::Instant::now() + host_profile.total_budget();
+        let discovery_deadline = tokio::time::Instant::now() + host_profile.discovery_budget();
         let discovery = stream::iter(owner_layouts.iter().cloned())
             .map(|owner_layout| async move {
                 let outcome = FederatedMemoryReader::discover(
@@ -653,17 +667,7 @@ async fn retrieve_federated_product(
                 (owner_layout, outcome)
             })
             .buffer_unordered(host_profile.discovery_concurrency());
-        futures::pin_mut!(discovery);
-        let mut outcomes = Vec::with_capacity(owner_layouts.len());
-        loop {
-            match tokio::time::timeout_at(discovery_deadline, discovery.next()).await {
-                Ok(Some(outcome)) => outcomes.push(outcome),
-                Ok(None) => break,
-                Err(_) => break,
-            }
-        }
-        let timed_out_discoveries = owner_layouts.len().saturating_sub(outcomes.len());
-        (outcomes, timed_out_discoveries)
+        collect_discovery_outcomes(discovery, owner_layouts.len(), discovery_deadline).await
     };
     let mut readers = Vec::new();
     let mut discovery_failures = timed_out_discoveries;
@@ -844,6 +848,27 @@ async fn retrieve_federated_product(
         },
         coverage,
     ))
+}
+
+async fn collect_discovery_outcomes<S, T>(
+    discovery: S,
+    expected_outcomes: usize,
+    deadline: tokio::time::Instant,
+) -> (Vec<T>, usize)
+where
+    S: futures::Stream<Item = T>,
+{
+    futures::pin_mut!(discovery);
+    let mut outcomes = Vec::with_capacity(expected_outcomes);
+    loop {
+        match tokio::time::timeout_at(deadline, discovery.next()).await {
+            Ok(Some(outcome)) => outcomes.push(outcome),
+            Ok(None) => break,
+            Err(_) => break,
+        }
+    }
+    let timed_out = expected_outcomes.saturating_sub(outcomes.len());
+    (outcomes, timed_out)
 }
 
 fn merge_product_coverage(
@@ -1465,6 +1490,8 @@ mod product_nonce_tests {
         )
         .expect("narrow host profile");
         assert_eq!(profile.total_budget(), Duration::from_millis(250));
+        assert_eq!(profile.discovery_budget(), Duration::from_millis(125));
+        assert_eq!(profile.attempt_budget_floor(), Duration::from_millis(125));
         assert_eq!(profile.max_owner_candidates(), 8);
         assert_eq!(profile.max_admitted_peers(), 4);
         assert_eq!(profile.discovery_concurrency(), 2);
@@ -1503,6 +1530,44 @@ mod product_nonce_tests {
             )
             .is_err()
         );
+    }
+
+    #[tokio::test]
+    async fn pending_owner_discovery_cannot_consume_attempt_budget() {
+        use futures::future::BoxFuture;
+
+        let profile = MemoryFederationHostProfile::try_new(
+            Duration::from_millis(200),
+            2,
+            2,
+            2,
+            2,
+            2,
+        )
+        .expect("profile");
+        let discoveries: Vec<BoxFuture<'static, u8>> = vec![
+            Box::pin(async { 7 }),
+            Box::pin(std::future::pending::<u8>()),
+        ];
+        let discovery = stream::iter(discoveries).buffer_unordered(2);
+        let started = Instant::now();
+        let (outcomes, timed_out) = collect_discovery_outcomes(
+            discovery,
+            2,
+            tokio::time::Instant::now() + profile.discovery_budget(),
+        )
+        .await;
+        assert_eq!(outcomes, vec![7]);
+        assert_eq!(timed_out, 1);
+        let remaining = profile.total_budget().saturating_sub(started.elapsed());
+        assert!(remaining > Duration::from_millis(25));
+        let completed = tokio::time::timeout(remaining, async {
+            tokio::time::sleep(Duration::from_millis(1)).await;
+            9_u8
+        })
+        .await
+        .expect("reserved attempt budget");
+        assert_eq!(completed, 9);
     }
 
     #[test]
