@@ -3,6 +3,7 @@ use std::error::Error;
 use std::fmt;
 
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::DecodedEnvelope;
@@ -14,28 +15,117 @@ use crate::WireCapabilities;
 
 pub const MAX_FROZEN_SCHEMA_ENTRIES: usize = 256;
 pub const MAX_POLICY_SUBJECTS: usize = 64;
-const REGISTRY_DIGEST_DOMAIN: &[u8] = b"HPTA-SCHEMA-REGISTRY-V1\0";
+const REGISTRY_DIGEST_DOMAIN: &[u8] = b"HPTA-SCHEMA-REGISTRY-V2\0";
+const DEFAULT_SCHEMA_REVISION_DOMAIN: &[u8] = b"HPTA-SCHEMA-REVISION-V1\0";
+
+/// Generation admission owned by a frozen schema policy.
+///
+/// Replay ordering remains a session/record-layer concern. This policy only
+/// rejects a frame generation that predates the schema's admitted floor.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum GenerationPolicy {
+    NonZero,
+    AtLeast(u64),
+}
+
+impl GenerationPolicy {
+    pub const fn minimum(self) -> u64 {
+        match self {
+            Self::NonZero => 1,
+            Self::AtLeast(minimum) => minimum,
+        }
+    }
+
+    const fn admits(self, generation: Generation) -> bool {
+        generation.get() >= self.minimum()
+    }
+}
+
+/// Canonicalization contract delegated to the registered typed codec.
+///
+/// This marker is bound into the immutable registry snapshot and therefore the
+/// authenticated negotiation transcript. It never canonicalizes untyped bytes
+/// by itself; the matching codec must enforce the selected profile.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum CanonicalizationProfile {
+    CodecOwnedStrictV1,
+    CanonicalJsonV1,
+    OpaqueBytesV1,
+}
+
+impl CanonicalizationProfile {
+    pub const fn id(self) -> &'static str {
+        match self {
+            Self::CodecOwnedStrictV1 => "codec-owned-strict-v1",
+            Self::CanonicalJsonV1 => "canonical-json-v1",
+            Self::OpaqueBytesV1 => "opaque-bytes-v1",
+        }
+    }
+}
 
 /// Immutable admission policy for one schema.
 ///
-/// Production callers must enumerate both producer identities and runtime
-/// roles. This prevents a newly introduced caller from treating schema
-/// admission as producer authorization.
+/// Production callers must enumerate producer identities and runtime roles and
+/// bind a semantic schema revision, generation floor and canonicalization
+/// profile. This prevents a newly introduced caller from treating basic schema
+/// admission as producer authorization or silently changing payload semantics.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SchemaPolicy {
     descriptor: SchemaDescriptor,
+    schema_revision: Digest32,
+    generation_policy: GenerationPolicy,
+    canonicalization_profile: CanonicalizationProfile,
     allowed_producers: Vec<StableId>,
     allowed_roles: Vec<StableId>,
     required_capabilities: WireCapabilities,
 }
 
 impl SchemaPolicy {
+    /// Backward-compatible strict constructor.
+    ///
+    /// The derived revision is deterministic for the descriptor, generations
+    /// remain non-zero, and canonicalization remains codec-owned. Production
+    /// domains that need an externally frozen semantic revision or a later
+    /// generation floor should use `new_bound`.
     pub fn new(
         descriptor: SchemaDescriptor,
+        allowed_producers: Vec<StableId>,
+        allowed_roles: Vec<StableId>,
+        required_capabilities: WireCapabilities,
+    ) -> Result<Self, RegistryBuildError> {
+        let schema_revision = default_schema_revision(&descriptor);
+        Self::new_bound(
+            descriptor,
+            schema_revision,
+            GenerationPolicy::NonZero,
+            CanonicalizationProfile::CodecOwnedStrictV1,
+            allowed_producers,
+            allowed_roles,
+            required_capabilities,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn new_bound(
+        descriptor: SchemaDescriptor,
+        schema_revision: Digest32,
+        generation_policy: GenerationPolicy,
+        canonicalization_profile: CanonicalizationProfile,
         mut allowed_producers: Vec<StableId>,
         mut allowed_roles: Vec<StableId>,
         required_capabilities: WireCapabilities,
     ) -> Result<Self, RegistryBuildError> {
+        if schema_revision.is_zero() {
+            return Err(RegistryBuildError::ZeroSchemaRevision(
+                descriptor.schema().clone(),
+            ));
+        }
+        if generation_policy.minimum() == 0 {
+            return Err(RegistryBuildError::InvalidGenerationFloor {
+                schema: descriptor.schema().clone(),
+                minimum: 0,
+            });
+        }
         allowed_producers.sort();
         allowed_producers.dedup();
         allowed_roles.sort();
@@ -66,6 +156,9 @@ impl SchemaPolicy {
         }
         Ok(Self {
             descriptor,
+            schema_revision,
+            generation_policy,
+            canonicalization_profile,
             allowed_producers,
             allowed_roles,
             required_capabilities,
@@ -74,6 +167,18 @@ impl SchemaPolicy {
 
     pub fn descriptor(&self) -> &SchemaDescriptor {
         &self.descriptor
+    }
+
+    pub const fn schema_revision(&self) -> Digest32 {
+        self.schema_revision
+    }
+
+    pub const fn generation_policy(&self) -> GenerationPolicy {
+        self.generation_policy
+    }
+
+    pub const fn canonicalization_profile(&self) -> CanonicalizationProfile {
+        self.canonicalization_profile
     }
 
     pub fn allowed_producers(&self) -> &[StableId] {
@@ -87,6 +192,16 @@ impl SchemaPolicy {
     pub const fn required_capabilities(&self) -> WireCapabilities {
         self.required_capabilities
     }
+}
+
+fn default_schema_revision(descriptor: &SchemaDescriptor) -> Digest32 {
+    let mut encoded = Vec::new();
+    encoded.extend_from_slice(DEFAULT_SCHEMA_REVISION_DOMAIN);
+    put_id(&mut encoded, descriptor.schema());
+    encoded.extend_from_slice(&descriptor.min_version().as_u16().to_be_bytes());
+    encoded.extend_from_slice(&descriptor.max_version().as_u16().to_be_bytes());
+    encoded.extend_from_slice(&(descriptor.max_payload_bytes() as u64).to_be_bytes());
+    Digest32::of_bytes(&encoded)
 }
 
 #[derive(Clone, Debug)]
@@ -229,6 +344,13 @@ impl FrozenSchemaRegistry {
                 role: role.clone(),
             });
         }
+        if !policy.generation_policy().admits(envelope.generation()) {
+            return Err(FrozenAdmissionError::GenerationDenied {
+                schema: envelope.schema().clone(),
+                minimum: policy.generation_policy().minimum(),
+                actual: envelope.generation().get(),
+            });
+        }
         Ok(policy)
     }
 
@@ -247,6 +369,9 @@ fn snapshot_digest(policies: &BTreeMap<StableId, SchemaPolicy>) -> Digest32 {
         encoded.extend_from_slice(&descriptor.min_version().as_u16().to_be_bytes());
         encoded.extend_from_slice(&descriptor.max_version().as_u16().to_be_bytes());
         encoded.extend_from_slice(&(descriptor.max_payload_bytes() as u64).to_be_bytes());
+        encoded.extend_from_slice(policy.schema_revision().as_bytes());
+        encoded.extend_from_slice(&policy.generation_policy().minimum().to_be_bytes());
+        put_raw(&mut encoded, policy.canonicalization_profile().id().as_bytes());
         encoded.extend_from_slice(&policy.required_capabilities().bits().to_be_bytes());
         encoded.extend_from_slice(&(policy.allowed_producers().len() as u16).to_be_bytes());
         for producer in policy.allowed_producers() {
@@ -261,7 +386,10 @@ fn snapshot_digest(policies: &BTreeMap<StableId, SchemaPolicy>) -> Digest32 {
 }
 
 fn put_id(encoded: &mut Vec<u8>, value: &StableId) {
-    let bytes = value.as_str().as_bytes();
+    put_raw(encoded, value.as_str().as_bytes());
+}
+
+fn put_raw(encoded: &mut Vec<u8>, bytes: &[u8]) {
     encoded.extend_from_slice(&(bytes.len() as u16).to_be_bytes());
     encoded.extend_from_slice(bytes);
 }
@@ -275,6 +403,11 @@ pub enum RegistryBuildError {
     EntryLimit {
         attempted: usize,
         maximum: usize,
+    },
+    ZeroSchemaRevision(StableId),
+    InvalidGenerationFloor {
+        schema: StableId,
+        minimum: u64,
     },
     EmptyProducerPolicy(StableId),
     EmptyRolePolicy(StableId),
@@ -302,6 +435,13 @@ impl fmt::Display for RegistryBuildError {
             Self::EntryLimit { attempted, maximum } => write!(
                 formatter,
                 "frozen schema registry would contain {attempted} entries, maximum is {maximum}"
+            ),
+            Self::ZeroSchemaRevision(schema) => {
+                write!(formatter, "schema {schema} has a zero semantic revision digest")
+            }
+            Self::InvalidGenerationFloor { schema, minimum } => write!(
+                formatter,
+                "schema {schema} has invalid generation floor {minimum}; minimum is one"
             ),
             Self::EmptyProducerPolicy(schema) => {
                 write!(formatter, "schema {schema} has no admitted producers")
@@ -363,6 +503,11 @@ pub enum FrozenAdmissionError {
         schema: StableId,
         role: StableId,
     },
+    GenerationDenied {
+        schema: StableId,
+        minimum: u64,
+        actual: u64,
+    },
 }
 
 impl fmt::Display for FrozenAdmissionError {
@@ -391,6 +536,14 @@ impl fmt::Display for FrozenAdmissionError {
             Self::RoleDenied { schema, role } => {
                 write!(formatter, "runtime role {role} is not admitted for schema {schema}")
             }
+            Self::GenerationDenied {
+                schema,
+                minimum,
+                actual,
+            } => write!(
+                formatter,
+                "schema {schema} generation {actual} predates admitted floor {minimum}"
+            ),
         }
     }
 }
@@ -408,8 +561,6 @@ impl Error for FrozenAdmissionError {
 mod tests {
     use std::error::Error;
 
-    use codex_hepta_types::Generation;
-
     use super::*;
     use crate::NegotiationOffer;
     use crate::WireEnvelopeV2;
@@ -420,9 +571,35 @@ mod tests {
         Ok(StableId::new(value)?)
     }
 
+    fn descriptor(schema: &str) -> Result<SchemaDescriptor, Box<dyn Error>> {
+        Ok(SchemaDescriptor::new(
+            id(schema)?,
+            WireVersion::V2,
+            WireVersion::V2,
+            256,
+        )?)
+    }
+
     fn policy(schema: &str) -> Result<SchemaPolicy, Box<dyn Error>> {
         Ok(SchemaPolicy::new(
-            SchemaDescriptor::new(id(schema)?, WireVersion::V2, WireVersion::V2, 256)?,
+            descriptor(schema)?,
+            vec![id("producer.test")?],
+            vec![id("role.test")?],
+            WireCapabilities::METADATA_BOUND_DIGEST,
+        )?)
+    }
+
+    fn bound_policy(
+        schema: &str,
+        revision: &[u8],
+        generation_policy: GenerationPolicy,
+        canonicalization_profile: CanonicalizationProfile,
+    ) -> Result<SchemaPolicy, Box<dyn Error>> {
+        Ok(SchemaPolicy::new_bound(
+            descriptor(schema)?,
+            Digest32::of_bytes(revision),
+            generation_policy,
+            canonicalization_profile,
             vec![id("producer.test")?],
             vec![id("role.test")?],
             WireCapabilities::METADATA_BOUND_DIGEST,
@@ -445,6 +622,44 @@ mod tests {
     }
 
     #[test]
+    fn semantic_policy_fields_change_snapshot_digest() -> Result<(), Box<dyn Error>> {
+        let mut baseline = FrozenSchemaRegistryBuilder::new();
+        baseline.register(bound_policy(
+            "schema.a",
+            b"revision-a",
+            GenerationPolicy::AtLeast(7),
+            CanonicalizationProfile::CanonicalJsonV1,
+        )?)?;
+        let baseline = baseline.freeze()?.snapshot_digest();
+
+        for policy in [
+            bound_policy(
+                "schema.a",
+                b"revision-b",
+                GenerationPolicy::AtLeast(7),
+                CanonicalizationProfile::CanonicalJsonV1,
+            )?,
+            bound_policy(
+                "schema.a",
+                b"revision-a",
+                GenerationPolicy::AtLeast(8),
+                CanonicalizationProfile::CanonicalJsonV1,
+            )?,
+            bound_policy(
+                "schema.a",
+                b"revision-a",
+                GenerationPolicy::AtLeast(7),
+                CanonicalizationProfile::OpaqueBytesV1,
+            )?,
+        ] {
+            let mut changed = FrozenSchemaRegistryBuilder::new();
+            changed.register(policy)?;
+            assert_ne!(baseline, changed.freeze()?.snapshot_digest());
+        }
+        Ok(())
+    }
+
+    #[test]
     fn builder_enforces_entry_limit() -> Result<(), Box<dyn Error>> {
         let mut builder = FrozenSchemaRegistryBuilder::with_maximum_entries(1)?;
         builder.register(policy("schema.a")?)?;
@@ -459,13 +674,18 @@ mod tests {
     }
 
     #[test]
-    fn frozen_registry_enforces_version_producer_role_and_capabilities()
+    fn frozen_registry_enforces_version_producer_role_capabilities_and_generation()
     -> Result<(), Box<dyn Error>> {
         let schema = id("schema.a")?;
         let producer = id("producer.test")?;
         let role = id("role.test")?;
         let mut builder = FrozenSchemaRegistryBuilder::new();
-        builder.register(policy(schema.as_str())?)?;
+        builder.register(bound_policy(
+            schema.as_str(),
+            b"revision-a",
+            GenerationPolicy::AtLeast(7),
+            CanonicalizationProfile::CodecOwnedStrictV1,
+        )?)?;
         let registry = builder.freeze()?;
         let offer = NegotiationOffer::current();
         let negotiated = negotiate(
@@ -473,16 +693,31 @@ mod tests {
             &offer,
             WireCapabilities::METADATA_BOUND_DIGEST,
         )?;
-        let envelope = DecodedEnvelope::V2(WireEnvelopeV2::new(
-            schema,
-            producer,
-            Generation::new(1)?,
+        let admitted = DecodedEnvelope::V2(WireEnvelopeV2::new(
+            schema.clone(),
+            producer.clone(),
+            Generation::new(7)?,
             b"payload".to_vec(),
         )?);
-        registry.admit_envelope(negotiated, &role, &envelope)?;
+        registry.admit_envelope(negotiated, &role, &admitted)?;
         assert!(matches!(
-            registry.admit_envelope(negotiated, &id("role.denied")?, &envelope),
+            registry.admit_envelope(negotiated, &id("role.denied")?, &admitted),
             Err(FrozenAdmissionError::RoleDenied { .. })
+        ));
+
+        let stale = DecodedEnvelope::V2(WireEnvelopeV2::new(
+            schema,
+            producer,
+            Generation::new(6)?,
+            b"payload".to_vec(),
+        )?);
+        assert!(matches!(
+            registry.admit_envelope(negotiated, &role, &stale),
+            Err(FrozenAdmissionError::GenerationDenied {
+                minimum: 7,
+                actual: 6,
+                ..
+            })
         ));
         Ok(())
     }
