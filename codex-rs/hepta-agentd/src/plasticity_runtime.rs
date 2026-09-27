@@ -2,17 +2,20 @@
 //!
 //! Parameter and topology requests enter separate bounded queues and are drained
 //! with alternating priority. Synchronous filesystem/cryptographic work executes
-//! inside Tokio's blocking region, while callers retain an absolute deadline and
-//! cancellation token. The owner still grants no selection, model installation,
-//! topology application, promotion or release authority.
+//! on Tokio's blocking pool behind one exclusive owner core. Callers retain an
+//! absolute deadline and cancellation token. The owner grants no selection,
+//! model installation, topology application, promotion or release authority.
 
 use std::error::Error as StdError;
 use std::fmt;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_intelligence::AnchoredPlasticityWriterV1;
 use codex_hepta_intelligence::ParameterPlasticityProductReceiptV1;
@@ -38,6 +41,8 @@ use crate::PlasticityOwnerEvidenceResolverV1;
 use crate::SelfIterationParameterReceiptV1;
 use crate::SelfIterationParameterSubmissionV1;
 use crate::SelfIterationPlasticityErrorV1;
+use crate::SelfIterationTerminalJournalErrorV1;
+use crate::SelfIterationTerminalJournalV1;
 use crate::SelfIterationTopologyReceiptV1;
 use crate::SelfIterationTopologySubmissionV1;
 use crate::authenticate_self_iteration_parameter_v1;
@@ -52,6 +57,7 @@ const DEFAULT_PLASTICITY_DEADLINE_SECONDS: u64 = 30;
 const MAX_PLASTICITY_DEADLINE_SECONDS: u64 = 300;
 const MAX_PLASTICITY_ESTIMATED_BYTES: usize = 4 * 1024 * 1024;
 const MAX_PLASTICITY_ESTIMATED_WORK: usize = 16_384;
+const MAX_SELF_ITERATION_TERMINAL_RECORDS: usize = 16_384;
 
 #[derive(Debug)]
 pub enum PlasticityRuntimeCallErrorV1 {
@@ -61,11 +67,12 @@ pub enum PlasticityRuntimeCallErrorV1 {
     InvalidDeadline,
     DeadlineExceeded,
     BudgetExceeded,
+    Clock,
     Parameter(AgentdPlasticityHostErrorV1),
     Topology(AgentdTopologyHostErrorV1),
     SelfIteration(SelfIterationPlasticityErrorV1),
+    TerminalJournal(SelfIterationTerminalJournalErrorV1),
 }
-
 impl fmt::Display for PlasticityRuntimeCallErrorV1 {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(formatter, "{self:?}")
@@ -75,35 +82,40 @@ impl StdError for PlasticityRuntimeCallErrorV1 {}
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct PlasticityRuntimeMetricsSnapshotV1 {
-    pub accepted_commands: u64,
+    pub dequeued_commands: u64,
     pub cancelled_before_execution: u64,
+    pub unavailable_rejections: u64,
     pub deadline_rejections: u64,
     pub budget_rejections: u64,
     pub queue_wait_micros: u64,
     pub execution_micros: u64,
+    pub terminal_commit_micros: u64,
 }
 
 #[derive(Default)]
 struct PlasticityRuntimeMetricsV1 {
-    accepted_commands: AtomicU64,
+    dequeued_commands: AtomicU64,
     cancelled_before_execution: AtomicU64,
+    unavailable_rejections: AtomicU64,
     deadline_rejections: AtomicU64,
     budget_rejections: AtomicU64,
     queue_wait_micros: AtomicU64,
     execution_micros: AtomicU64,
+    terminal_commit_micros: AtomicU64,
 }
-
 impl PlasticityRuntimeMetricsV1 {
     fn snapshot(&self) -> PlasticityRuntimeMetricsSnapshotV1 {
         PlasticityRuntimeMetricsSnapshotV1 {
-            accepted_commands: self.accepted_commands.load(Ordering::Relaxed),
+            dequeued_commands: self.dequeued_commands.load(Ordering::Relaxed),
             cancelled_before_execution: self
                 .cancelled_before_execution
                 .load(Ordering::Relaxed),
+            unavailable_rejections: self.unavailable_rejections.load(Ordering::Relaxed),
             deadline_rejections: self.deadline_rejections.load(Ordering::Relaxed),
             budget_rejections: self.budget_rejections.load(Ordering::Relaxed),
             queue_wait_micros: self.queue_wait_micros.load(Ordering::Relaxed),
             execution_micros: self.execution_micros.load(Ordering::Relaxed),
+            terminal_commit_micros: self.terminal_commit_micros.load(Ordering::Relaxed),
         }
     }
 }
@@ -115,7 +127,6 @@ struct RuntimeRequestControlV1 {
     estimated_bytes: usize,
     estimated_work: usize,
 }
-
 impl RuntimeRequestControlV1 {
     fn new(
         now: u64,
@@ -179,8 +190,6 @@ enum RuntimeCommandV1 {
     Topology(TopologyRuntimeCommandV1),
 }
 
-/// Bounded in-process product handle. It contains no writer, store or trust-root
-/// material, so dropping/recreating a handle cannot create another owner.
 #[derive(Clone)]
 pub struct PlasticityRuntimeHandleV1 {
     parameter_sender: mpsc::Sender<ParameterRuntimeCommandV1>,
@@ -290,12 +299,12 @@ impl PlasticityRuntimeHandleV1 {
             now,
             deadline,
             cancellation.clone(),
-            base_bytes.checked_add(missing.saturating_mul(128)).ok_or(
-                PlasticityRuntimeCallErrorV1::BudgetExceeded,
-            )?,
-            base_work.checked_add(missing).ok_or(
-                PlasticityRuntimeCallErrorV1::BudgetExceeded,
-            )?,
+            base_bytes
+                .checked_add(missing.saturating_mul(128))
+                .ok_or(PlasticityRuntimeCallErrorV1::BudgetExceeded)?,
+            base_work
+                .checked_add(missing)
+                .ok_or(PlasticityRuntimeCallErrorV1::BudgetExceeded)?,
         )?;
         let (response, receive) = oneshot::channel();
         send_with_cancellation(
@@ -366,19 +375,20 @@ async fn receive_with_control<T>(
     cancellation: CancellationToken,
 ) -> Result<T, PlasticityRuntimeCallErrorV1> {
     let wait = Duration::from_secs(deadline_unix_seconds.saturating_sub(now));
+    let timeout_cancellation = cancellation.clone();
     tokio::select! {
         _ = cancellation.cancelled() => Err(PlasticityRuntimeCallErrorV1::Cancelled),
         result = tokio::time::timeout(wait, receive) => match result {
             Ok(Ok(value)) => value,
             Ok(Err(_)) => Err(PlasticityRuntimeCallErrorV1::Closed),
-            Err(_) => Err(PlasticityRuntimeCallErrorV1::DeadlineExceeded),
+            Err(_) => {
+                timeout_cancellation.cancel();
+                Err(PlasticityRuntimeCallErrorV1::DeadlineExceeded)
+            }
         },
     }
 }
 
-/// Immutable construction envelope consumed exactly once by Agentd runtime
-/// composition. Creating this value does not start a second owner or grant
-/// proposal authority.
 pub struct PlasticityRuntimeBootstrapV1 {
     capacity: usize,
     artifacts: ArtifactRegistry,
@@ -421,10 +431,11 @@ impl PlasticityRuntimeBootstrapV1 {
         })
     }
 
-    pub(crate) fn into_channel(
+    fn into_channel_with_terminal_journal(
         self,
+        terminal_journal: SelfIterationTerminalJournalV1,
     ) -> Result<(PlasticityRuntimeHandleV1, PlasticityRuntimeOwnerV1), AgentdError> {
-        plasticity_runtime_channel_v1(
+        plasticity_runtime_channel_internal_v1(
             self.capacity,
             self.artifacts,
             self.ledger,
@@ -435,14 +446,12 @@ impl PlasticityRuntimeBootstrapV1 {
             self.parameter_anchor_store,
             self.topology_writer,
             self.topology_anchor_store,
+            Some(terminal_journal),
         )
     }
 }
 
-pub struct PlasticityRuntimeOwnerV1 {
-    parameter_receiver: mpsc::Receiver<ParameterRuntimeCommandV1>,
-    topology_receiver: mpsc::Receiver<TopologyRuntimeCommandV1>,
-    metrics: Arc<PlasticityRuntimeMetricsV1>,
+struct PlasticityRuntimeCoreV1 {
     artifacts: ArtifactRegistry,
     ledger: DurableLedger,
     owner_evidence_resolver: Box<dyn PlasticityOwnerEvidenceResolverV1 + Send>,
@@ -452,6 +461,14 @@ pub struct PlasticityRuntimeOwnerV1 {
     parameter_anchor_store: AgentdPlasticityAnchorStoreV1,
     topology_writer: AgentdTopologyWriterV1,
     topology_anchor_store: AgentdTopologyAnchorStoreV1,
+    terminal_journal: Option<SelfIterationTerminalJournalV1>,
+}
+
+pub struct PlasticityRuntimeOwnerV1 {
+    parameter_receiver: mpsc::Receiver<ParameterRuntimeCommandV1>,
+    topology_receiver: mpsc::Receiver<TopologyRuntimeCommandV1>,
+    metrics: Arc<PlasticityRuntimeMetricsV1>,
+    core: Arc<Mutex<PlasticityRuntimeCoreV1>>,
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -467,10 +484,51 @@ pub fn plasticity_runtime_channel_v1(
     topology_writer: AgentdTopologyWriterV1,
     topology_anchor_store: AgentdTopologyAnchorStoreV1,
 ) -> Result<(PlasticityRuntimeHandleV1, PlasticityRuntimeOwnerV1), AgentdError> {
+    plasticity_runtime_channel_internal_v1(
+        capacity,
+        artifacts,
+        ledger,
+        owner_evidence_resolver,
+        owner_evidence_policy,
+        verifier,
+        parameter_writer,
+        parameter_anchor_store,
+        topology_writer,
+        topology_anchor_store,
+        None,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn plasticity_runtime_channel_internal_v1(
+    capacity: usize,
+    artifacts: ArtifactRegistry,
+    ledger: DurableLedger,
+    owner_evidence_resolver: Box<dyn PlasticityOwnerEvidenceResolverV1 + Send>,
+    owner_evidence_policy: PlasticityOwnerEvidencePolicyV1,
+    verifier: LearningEvidenceVerifierV1,
+    parameter_writer: AnchoredPlasticityWriterV1,
+    parameter_anchor_store: AgentdPlasticityAnchorStoreV1,
+    topology_writer: AgentdTopologyWriterV1,
+    topology_anchor_store: AgentdTopologyAnchorStoreV1,
+    terminal_journal: Option<SelfIterationTerminalJournalV1>,
+) -> Result<(PlasticityRuntimeHandleV1, PlasticityRuntimeOwnerV1), AgentdError> {
     validate_plasticity_runtime_capacity(capacity)?;
     let (parameter_sender, parameter_receiver) = mpsc::channel(capacity);
     let (topology_sender, topology_receiver) = mpsc::channel(capacity);
     let metrics = Arc::new(PlasticityRuntimeMetricsV1::default());
+    let core = Arc::new(Mutex::new(PlasticityRuntimeCoreV1 {
+        artifacts,
+        ledger,
+        owner_evidence_resolver,
+        owner_evidence_policy,
+        verifier,
+        parameter_writer,
+        parameter_anchor_store,
+        topology_writer,
+        topology_anchor_store,
+        terminal_journal,
+    }));
     Ok((
         PlasticityRuntimeHandleV1 {
             parameter_sender,
@@ -481,15 +539,7 @@ pub fn plasticity_runtime_channel_v1(
             parameter_receiver,
             topology_receiver,
             metrics,
-            artifacts,
-            ledger,
-            owner_evidence_resolver,
-            owner_evidence_policy,
-            verifier,
-            parameter_writer,
-            parameter_anchor_store,
-            topology_writer,
-            topology_anchor_store,
+            core,
         },
     ))
 }
@@ -509,7 +559,17 @@ pub(crate) fn compose_plasticity_runtime_v1(
 ) -> Result<Option<PlasticityRuntimeOwnerV1>, AgentdError> {
     match bootstrap {
         Some(bootstrap) => {
-            let (handle, owner) = bootstrap.into_channel()?;
+            let terminal_journal = SelfIterationTerminalJournalV1::open_for_agent(
+                state.identity(),
+                MAX_SELF_ITERATION_TERMINAL_RECORDS,
+            )
+            .map_err(|error| {
+                AgentdError::Invalid(format!(
+                    "self-iteration terminal journal failed to open: {error}"
+                ))
+            })?;
+            let (handle, owner) =
+                bootstrap.into_channel_with_terminal_journal(terminal_journal)?;
             state.attach_plasticity_runtime(handle)?;
             Ok(Some(owner))
         }
@@ -569,16 +629,16 @@ impl PlasticityRuntimeOwnerV1 {
             let ready = state.plasticity_admission_ready()?;
             match command {
                 RuntimeCommandV1::Parameter(command) => {
-                    self.execute_parameter(command, ready);
+                    self.execute_parameter(command, ready).await;
                 }
                 RuntimeCommandV1::Topology(command) => {
-                    self.execute_topology(command, ready);
+                    self.execute_topology(command, ready).await;
                 }
             }
         }
     }
 
-    fn execute_parameter(&mut self, command: ParameterRuntimeCommandV1, ready: bool) {
+    async fn execute_parameter(&self, command: ParameterRuntimeCommandV1, ready: bool) {
         match command {
             ParameterRuntimeCommandV1::Product {
                 request,
@@ -586,24 +646,42 @@ impl PlasticityRuntimeOwnerV1 {
                 control,
                 response,
             } => {
-                if !self.preflight(&control, response.is_closed(), ready) {
+                if let Err(error) = self.preflight(&control, response.is_closed(), ready) {
+                    let _ = response.send(Err(error));
                     return;
                 }
+                let core = Arc::clone(&self.core);
                 let started = Instant::now();
-                let result = tokio::task::block_in_place(|| {
+                let result = tokio::task::spawn_blocking(move || {
+                    let mut core = core
+                        .lock()
+                        .map_err(|_| PlasticityRuntimeCallErrorV1::Unavailable)?;
+                    let PlasticityRuntimeCoreV1 {
+                        artifacts,
+                        ledger,
+                        owner_evidence_resolver,
+                        owner_evidence_policy,
+                        verifier,
+                        parameter_writer,
+                        parameter_anchor_store,
+                        ..
+                    } = &mut *core;
                     propose_agentd_plasticity_v1(
                         *request,
-                        &self.artifacts,
-                        &self.ledger,
-                        self.owner_evidence_resolver.as_ref(),
-                        &self.owner_evidence_policy,
-                        &self.verifier,
-                        &mut self.parameter_writer,
-                        &mut self.parameter_anchor_store,
+                        artifacts,
+                        ledger,
+                        owner_evidence_resolver.as_ref(),
+                        owner_evidence_policy,
+                        verifier,
+                        parameter_writer,
+                        parameter_anchor_store,
                         now,
                     )
                     .map_err(PlasticityRuntimeCallErrorV1::Parameter)
-                });
+                })
+                .await
+                .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)
+                .and_then(|result| result);
                 self.record_execution(started);
                 let _ = response.send(result);
             }
@@ -613,35 +691,68 @@ impl PlasticityRuntimeOwnerV1 {
                 control,
                 response,
             } => {
-                if !self.preflight(&control, response.is_closed(), ready) {
+                if let Err(error) = self.preflight(&control, response.is_closed(), ready) {
+                    let _ = response.send(Err(error));
                     return;
                 }
+                let core = Arc::clone(&self.core);
+                let metrics = Arc::clone(&self.metrics);
                 let started = Instant::now();
-                let result = tokio::task::block_in_place(|| {
-                    authenticate_self_iteration_parameter_v1(&submission, &self.verifier, now)
+                let result = tokio::task::spawn_blocking(move || {
+                    let mut core = core
+                        .lock()
+                        .map_err(|_| PlasticityRuntimeCallErrorV1::Unavailable)?;
+                    authenticate_self_iteration_parameter_v1(&submission, &core.verifier, now)
                         .map_err(PlasticityRuntimeCallErrorV1::SelfIteration)?;
-                    let product = propose_agentd_plasticity_v1(
-                        submission.request.clone(),
-                        &self.artifacts,
-                        &self.ledger,
-                        self.owner_evidence_resolver.as_ref(),
-                        &self.owner_evidence_policy,
-                        &self.verifier,
-                        &mut self.parameter_writer,
-                        &mut self.parameter_anchor_store,
-                        now,
-                    )
-                    .map_err(PlasticityRuntimeCallErrorV1::Parameter)?;
-                    finalize_self_iteration_parameter_receipt_v1(&submission, &product)
-                        .map_err(PlasticityRuntimeCallErrorV1::SelfIteration)
-                });
+                    let product = {
+                        let PlasticityRuntimeCoreV1 {
+                            artifacts,
+                            ledger,
+                            owner_evidence_resolver,
+                            owner_evidence_policy,
+                            verifier,
+                            parameter_writer,
+                            parameter_anchor_store,
+                            ..
+                        } = &mut *core;
+                        propose_agentd_plasticity_v1(
+                            submission.request.clone(),
+                            artifacts,
+                            ledger,
+                            owner_evidence_resolver.as_ref(),
+                            owner_evidence_policy,
+                            verifier,
+                            parameter_writer,
+                            parameter_anchor_store,
+                            now,
+                        )
+                        .map_err(PlasticityRuntimeCallErrorV1::Parameter)?
+                    };
+                    let terminal =
+                        finalize_self_iteration_parameter_receipt_v1(&submission, &product)
+                            .map_err(PlasticityRuntimeCallErrorV1::SelfIteration)?;
+                    let commit_started = Instant::now();
+                    core.terminal_journal
+                        .as_mut()
+                        .ok_or(PlasticityRuntimeCallErrorV1::Unavailable)?
+                        .append_parameter(terminal.clone())
+                        .map_err(PlasticityRuntimeCallErrorV1::TerminalJournal)?;
+                    metrics.terminal_commit_micros.fetch_add(
+                        duration_micros(commit_started.elapsed()),
+                        Ordering::Relaxed,
+                    );
+                    Ok(terminal)
+                })
+                .await
+                .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)
+                .and_then(|result| result);
                 self.record_execution(started);
                 let _ = response.send(result);
             }
         }
     }
 
-    fn execute_topology(&mut self, command: TopologyRuntimeCommandV1, ready: bool) {
+    async fn execute_topology(&self, command: TopologyRuntimeCommandV1, ready: bool) {
         match command {
             TopologyRuntimeCommandV1::Product {
                 request,
@@ -649,22 +760,38 @@ impl PlasticityRuntimeOwnerV1 {
                 control,
                 response,
             } => {
-                if !self.preflight(&control, response.is_closed(), ready) {
+                if let Err(error) = self.preflight(&control, response.is_closed(), ready) {
+                    let _ = response.send(Err(error));
                     return;
                 }
+                let core = Arc::clone(&self.core);
                 let started = Instant::now();
-                let result = tokio::task::block_in_place(|| {
+                let result = tokio::task::spawn_blocking(move || {
+                    let mut core = core
+                        .lock()
+                        .map_err(|_| PlasticityRuntimeCallErrorV1::Unavailable)?;
+                    let PlasticityRuntimeCoreV1 {
+                        artifacts,
+                        ledger,
+                        verifier,
+                        topology_writer,
+                        topology_anchor_store,
+                        ..
+                    } = &mut *core;
                     propose_agentd_topology_plasticity_v1(
                         *request,
-                        &self.artifacts,
-                        &self.ledger,
-                        &self.verifier,
-                        &mut self.topology_writer,
-                        &mut self.topology_anchor_store,
+                        artifacts,
+                        ledger,
+                        verifier,
+                        topology_writer,
+                        topology_anchor_store,
                         now,
                     )
                     .map_err(PlasticityRuntimeCallErrorV1::Topology)
-                });
+                })
+                .await
+                .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)
+                .and_then(|result| result);
                 self.record_execution(started);
                 let _ = response.send(result);
             }
@@ -674,26 +801,57 @@ impl PlasticityRuntimeOwnerV1 {
                 control,
                 response,
             } => {
-                if !self.preflight(&control, response.is_closed(), ready) {
+                if let Err(error) = self.preflight(&control, response.is_closed(), ready) {
+                    let _ = response.send(Err(error));
                     return;
                 }
+                let core = Arc::clone(&self.core);
+                let metrics = Arc::clone(&self.metrics);
                 let started = Instant::now();
-                let result = tokio::task::block_in_place(|| {
+                let result = tokio::task::spawn_blocking(move || {
+                    let mut core = core
+                        .lock()
+                        .map_err(|_| PlasticityRuntimeCallErrorV1::Unavailable)?;
                     validate_self_iteration_topology_bindings_v1(&submission, now)
                         .map_err(PlasticityRuntimeCallErrorV1::SelfIteration)?;
-                    let product = propose_agentd_topology_plasticity_v1(
-                        submission.request.clone(),
-                        &self.artifacts,
-                        &self.ledger,
-                        &self.verifier,
-                        &mut self.topology_writer,
-                        &mut self.topology_anchor_store,
-                        now,
-                    )
-                    .map_err(PlasticityRuntimeCallErrorV1::Topology)?;
-                    finalize_self_iteration_topology_receipt_v1(&submission, &product)
-                        .map_err(PlasticityRuntimeCallErrorV1::SelfIteration)
-                });
+                    let product = {
+                        let PlasticityRuntimeCoreV1 {
+                            artifacts,
+                            ledger,
+                            verifier,
+                            topology_writer,
+                            topology_anchor_store,
+                            ..
+                        } = &mut *core;
+                        propose_agentd_topology_plasticity_v1(
+                            submission.request.clone(),
+                            artifacts,
+                            ledger,
+                            verifier,
+                            topology_writer,
+                            topology_anchor_store,
+                            now,
+                        )
+                        .map_err(PlasticityRuntimeCallErrorV1::Topology)?
+                    };
+                    let terminal =
+                        finalize_self_iteration_topology_receipt_v1(&submission, &product)
+                            .map_err(PlasticityRuntimeCallErrorV1::SelfIteration)?;
+                    let commit_started = Instant::now();
+                    core.terminal_journal
+                        .as_mut()
+                        .ok_or(PlasticityRuntimeCallErrorV1::Unavailable)?
+                        .append_topology(terminal.clone())
+                        .map_err(PlasticityRuntimeCallErrorV1::TerminalJournal)?;
+                    metrics.terminal_commit_micros.fetch_add(
+                        duration_micros(commit_started.elapsed()),
+                        Ordering::Relaxed,
+                    );
+                    Ok(terminal)
+                })
+                .await
+                .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)
+                .and_then(|result| result);
                 self.record_execution(started);
                 let _ = response.send(result);
             }
@@ -705,8 +863,10 @@ impl PlasticityRuntimeOwnerV1 {
         control: &RuntimeRequestControlV1,
         response_closed: bool,
         ready: bool,
-    ) -> bool {
-        self.metrics.accepted_commands.fetch_add(1, Ordering::Relaxed);
+    ) -> Result<(), PlasticityRuntimeCallErrorV1> {
+        self.metrics
+            .dequeued_commands
+            .fetch_add(1, Ordering::Relaxed);
         self.metrics.queue_wait_micros.fetch_add(
             duration_micros(control.enqueued_at.elapsed()),
             Ordering::Relaxed,
@@ -715,10 +875,20 @@ impl PlasticityRuntimeOwnerV1 {
             self.metrics
                 .cancelled_before_execution
                 .fetch_add(1, Ordering::Relaxed);
-            return false;
+            return Err(PlasticityRuntimeCallErrorV1::Cancelled);
         }
         if !ready {
-            return false;
+            self.metrics
+                .unavailable_rejections
+                .fetch_add(1, Ordering::Relaxed);
+            return Err(PlasticityRuntimeCallErrorV1::Unavailable);
+        }
+        if unix_seconds()? > control.deadline_unix_seconds {
+            self.metrics
+                .deadline_rejections
+                .fetch_add(1, Ordering::Relaxed);
+            control.cancellation.cancel();
+            return Err(PlasticityRuntimeCallErrorV1::DeadlineExceeded);
         }
         if control.estimated_bytes > MAX_PLASTICITY_ESTIMATED_BYTES
             || control.estimated_work > MAX_PLASTICITY_ESTIMATED_WORK
@@ -726,9 +896,9 @@ impl PlasticityRuntimeOwnerV1 {
             self.metrics
                 .budget_rejections
                 .fetch_add(1, Ordering::Relaxed);
-            return false;
+            return Err(PlasticityRuntimeCallErrorV1::BudgetExceeded);
         }
-        true
+        Ok(())
     }
 
     fn record_execution(&self, started: Instant) {
@@ -808,6 +978,13 @@ fn estimate_topology_request(
         .ok_or(PlasticityRuntimeCallErrorV1::BudgetExceeded)?;
     validate_budget(bytes, work)?;
     Ok((bytes, work))
+}
+
+fn unix_seconds() -> Result<u64, PlasticityRuntimeCallErrorV1> {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_secs())
+        .map_err(|_| PlasticityRuntimeCallErrorV1::Clock)
 }
 
 fn duration_micros(duration: Duration) -> u64 {
