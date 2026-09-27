@@ -24,7 +24,7 @@ jobs:
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
       github.actor != 'github-actions[bot]' &&
       github.ref == 'refs/heads/work/product-convergence-20260923'
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, linux, x64, rog]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
