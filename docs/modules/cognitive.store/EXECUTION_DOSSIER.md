@@ -19,6 +19,7 @@ and recomputes the merge tree. Every command has an exclusive record and bounded
 | `default-feature-check.json` | `codex-rs` | `cargo check --locked -p codex-hepta-cognitive-store --no-default-features --lib` | 0 |
 | `cognitive-store-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-cognitive-store --all-features` | 1 |
 | `memory-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-memory` | 1 |
+| `publication-fault-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-memory --test cognitive_recovery_publication_fault` | 1 |
 | `agentd-product-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-agentd --test cognitive_store_product_writer --features qualification-cognitive-write` | 1 |
 | `bootstrap-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-agentd --test cognitive_bootstrap --features qualification-cognitive-write` | 1 |
 | `recovery-boundary-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-agentd --test cognitive_recovery_boundary --features qualification-cognitive-write` | 8 |
@@ -27,7 +28,7 @@ and recomputes the merge tree. Every command has an exclusive record and bounded
 | `perf-16384.json` | `codex-rs` | `cargo run --locked -p codex-hepta-memory --example cognitive_store_perf` | 0 |
 | `history-64-16.json` | `codex-rs` | `cargo run --locked -p codex-hepta-memory --example cognitive_store_history_perf` | 0 |
 | `history-128-64.json` | `codex-rs` | `cargo run --locked -p codex-hepta-memory --example cognitive_store_history_perf` | 0 |
-| `clippy.json` | `codex-rs` | `cargo clippy --locked -p codex-hepta-cognitive-store -p codex-hepta-memory -p codex-hepta-agentd --all-targets --all-features -- -D warnings` | 0 |
+| `clippy.json` | `codex-rs` | `cargo clippy --locked -p codex-hepta-cognitive-store -p codex-hepta-memory -p codex-hepta-agentd --all-targets --all-features --no-deps -- -D warnings` | 0 |
 | `clean-source.json` | `.` | `git diff --exit-code HEAD --` | 0 |
 
 A v2 qualification manifest is retained even when work fails or is not executed.
@@ -38,10 +39,11 @@ and artifact digests. Missing/skipped/running evidence cannot become terminal-su
 ## Host and data-lifecycle boundary
 
 The process-exit regression uses the real writer and SQLite, but fixture authority.
-The post-rename regression establishes candidate retention in source; it does not prove
-a real target filesystem's directory-fsync failure behavior. A trusted target-host run
-must separately establish signer governance, witness reconciliation, actual filesystem
-fault injection, canary, restart, and strictly newer rollback generations.
+The post-rename regression injects a real Linux directory-fsync failure through
+the public recovery entry, but it is not selected-host filesystem evidence. A
+trusted target-host run must separately establish signer governance, witness
+reconciliation, filesystem fault injection, canary, restart, and strictly newer
+rollback generations.
 
 History profiles measure corrections, tombstones, growth, snapshots, and reopen cuts.
 They neither implement history pruning nor prove payload erasure in backups or derived artifacts.
