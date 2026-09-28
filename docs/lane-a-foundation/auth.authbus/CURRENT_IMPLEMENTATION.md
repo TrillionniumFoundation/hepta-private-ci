@@ -29,16 +29,16 @@ Authentication, policy evaluation and queue acceptance do not grant provider aut
 
 `AuthBusAuthorityWorker` holds `Arc<AuthBusAuthorityHost>`. Therefore a worker cannot outlive the owner fence while retaining store capability. Releasing the caller's original `Arc` does not permit a replacement owner until the worker is also dropped.
 
-On supported Unix hosts, owner acquisition proceeds in this order:
+On qualified Linux hosts, owner acquisition proceeds in this order:
 
 1. validate the immutable absolute database path and private parent directory;
 2. reserve the lock path in a process-local RAII registry **before opening the lock inode**;
 3. open the deployed lock pathname with `O_NOFOLLOW`, private mode and close-on-exec;
 4. validate regular-file identity, ownership, link count and pathname/inode stability;
-5. acquire a non-blocking exclusive descriptor-lifetime `flock`;
+5. acquire a non-blocking exclusive Linux open-file-description record lock with `F_OFD_SETLK`;
 6. revalidate the locked inode before exposing the host.
 
-The pre-open process reservation keeps same-process uniqueness explicit instead of relying on platform-specific `flock` behavior. Cross-process exclusion is attached to the live lock-file description, so closing an unrelated descriptor for the same inode cannot release the owner fence. Tests cover both rejected duplicate initialization and unrelated-descriptor close before probing from a third process. Unsupported non-Unix, Solaris and illumos targets fail closed rather than silently degrading to process-local exclusion.
+The pre-open reservation keeps same-process uniqueness explicit and ensures a rejected duplicate initialization never opens the live lock inode. The OFD lock is attached to the open file description, so closing an unrelated descriptor for the same inode cannot release the owner fence. It is deliberately taken on the existing lock pathname and conflicts with the process-associated POSIX record lock used by the preceding AuthBus implementation, preserving exclusion during a rolling replacement. Tests cover both lock directions, an unrelated-descriptor close and a third-process probe. Targets without the qualified Linux OFD-lock contract fail closed rather than silently falling back to a second or weaker lock domain.
 
 ## One authority-use and transaction boundary
 
@@ -99,7 +99,7 @@ Startup executes one bounded restart-reconciliation batch and one bounded expira
 
 Mutation latency is measured from request entry across gate wait, checkpoint preflight, SQLite work and checkpoint publication. `blocking_reasons()` reports whether the owner is blocked on checkpoint reconciliation, restart recovery, expired reservation reconciliation, indeterminate settlement, reservation capacity, quota capacity or oldest-active age. Exporters compute rates/deltas from cumulative counters and use bounded non-secret labels.
 
-The Evidence SQLite owner now exposes `HeptaEvidenceStore::authbus_outbox_operational_snapshot()`. Its bounded, read-only projection reports queued, leased and terminal counts; active depth; oldest unsettled age; retained claim attempts and retries; active rows that exhausted the claim limit; and retained enqueue-to-ack latency percentiles. These are retained-window values because terminal history may be pruned; they are not represented as process-lifetime counters. The query neither claims nor renews a lease, acknowledges an effect, nor advances replay state.
+The Evidence SQLite owner exposes `HeptaEvidenceStore::authbus_outbox_operational_snapshot()`. Its bounded, read-only projection reports queued, leased and terminal counts; active depth; oldest unsettled age; retained claim attempts and retries; active rows that exhausted the claim limit; and retained enqueue-to-ack latency percentiles. These are retained-window values because terminal history may be pruned; they are not represented as process-lifetime counters. The query neither claims nor renews a lease, acknowledges an effect, nor advances replay state.
 
 Bao/provider request latency remains owned by the Bao adapter and HTTP client, which are the only components that can observe it faithfully. AuthBus does not fabricate downstream observations; the qualification workflow executes Evidence, Agentd and Bao owner tests alongside the AuthBus crate.
 
@@ -126,7 +126,8 @@ Agentd is the named signed-ingress/outbox caller. Evidence outbox quarantine, cl
 The host and integration test suites prove, rather than merely assert in documentation, that:
 
 - a failed same-process duplicate initialization does not release the live cross-process fence;
-- closing an unrelated descriptor for the lock inode does not release the live cross-process fence;
+- closing an unrelated descriptor for the lock inode does not release the live OFD fence;
+- a new OFD owner blocks a legacy POSIX-lock owner, and a legacy POSIX-lock owner blocks a new OFD owner during rolling replacement;
 - a worker retains the host and fence until the worker is dropped;
 - `SIGKILL` releases the operating-system fence while restart recovery preserves ambiguous effects;
 - checkpoint failures at write, file-sync, rename and directory-sync stages are classified as committed-needs-reconciliation and recover successfully;
@@ -145,6 +146,6 @@ A skipped/cancelled/queued job, a run for another SHA, or a source-mutating work
 
 ## Remaining external gates and non-claims
 
-The repository candidate does not prove production provisioning of independent checkpoint storage, non-exportable KMS/HSM keys, trusted-time service, target-host disk semantics or an external durable `kernel.operations` owner. Distributed multi-host consensus is not implemented; the supported model is one active authority owner per database on a qualified Unix target with supported descriptor-lifetime `flock` semantics.
+The repository candidate does not prove production provisioning of independent checkpoint storage, non-exportable KMS/HSM keys, trusted-time service, target-host disk semantics or an external durable `kernel.operations` owner. Distributed multi-host consensus is not implemented; the supported model is one active authority owner per database on a qualified Linux target with OFD record-lock support.
 
 Production activation remains blocked until one unchanged candidate obtains terminal-success exact-head and synthetic-merge receipts, target-host ENOSPC and power-loss evidence, KMS/operator acceptance and independent release approval. An indeterminate reservation is never automatically refunded merely to restore availability.

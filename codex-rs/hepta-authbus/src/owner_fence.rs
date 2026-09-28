@@ -13,9 +13,11 @@ static PROCESS_OWNERS: OnceLock<Mutex<HashSet<PathBuf>>> = OnceLock::new();
 ///
 /// The process-local claim is acquired before the lock file is opened. That
 /// ordering preserves a single in-process owner and prevents a failed duplicate
-/// initialization from opening the live lock inode. The kernel fence itself
-/// uses descriptor-lifetime `flock`, so closing an unrelated descriptor for the
-/// same inode cannot release the live owner's cross-process exclusion.
+/// initialization from opening the live lock inode. On Linux, the kernel fence
+/// is an open-file-description record lock on the deployed lock pathname. It is
+/// released with the final descriptor for this open file description, survives
+/// unrelated closes, and conflicts with the legacy process-associated POSIX
+/// record lock used by older AuthBus binaries.
 ///
 /// Existing authority databases must also be canonical, regular, single-link
 /// files owned by the private database directory owner. This prevents a second
@@ -63,8 +65,9 @@ impl OwnerFence {
 impl Drop for OwnerFence {
     fn drop(&mut self) {
         release_process_lock(&self.file);
-        // Fields are dropped after this method. The file descriptor closes
-        // before `_process_claim` releases the same-process reservation.
+        // Fields are dropped after this method. `file` is declared before the
+        // process claim, so the kernel lock descriptor closes before the same-
+        // process reservation is released.
     }
 }
 
@@ -110,13 +113,14 @@ fn lock_path(database_path: &Path) -> Result<PathBuf, AuthBusAuthorityError> {
             "authority database has no file name",
         ))?
         .to_os_string();
-    // Preserve the deployed lock pathname so a new process conflicts with an
-    // older SQLite-backed owner during a rolling upgrade.
+    // Preserve the deployed lock pathname. Linux OFD record locks conflict with
+    // the POSIX record locks used by older binaries, so a rolling replacement
+    // cannot establish a second lock domain on this inode.
     name.push(".authbus-owner-lock.sqlite");
     Ok(parent.join(name))
 }
 
-#[cfg(unix)]
+#[cfg(target_os = "linux")]
 fn validate_parent(path: &Path) -> Result<(), AuthBusAuthorityError> {
     use std::os::unix::fs::MetadataExt;
 
@@ -133,12 +137,12 @@ fn validate_parent(path: &Path) -> Result<(), AuthBusAuthorityError> {
     Ok(())
 }
 
-#[cfg(not(unix))]
+#[cfg(not(target_os = "linux"))]
 fn validate_parent(_path: &Path) -> Result<(), AuthBusAuthorityError> {
     Err(AuthBusAuthorityError::UnsafeCheckpoint)
 }
 
-#[cfg(unix)]
+#[cfg(target_os = "linux")]
 fn validate_existing_database_path(path: &Path) -> Result<(), AuthBusAuthorityError> {
     use std::io::ErrorKind;
     use std::os::unix::fs::MetadataExt;
@@ -162,12 +166,12 @@ fn validate_existing_database_path(path: &Path) -> Result<(), AuthBusAuthorityEr
     Ok(())
 }
 
-#[cfg(not(unix))]
+#[cfg(not(target_os = "linux"))]
 fn validate_existing_database_path(_path: &Path) -> Result<(), AuthBusAuthorityError> {
     Err(AuthBusAuthorityError::UnsafeCheckpoint)
 }
 
-#[cfg(unix)]
+#[cfg(target_os = "linux")]
 fn open_lock_file(path: &Path) -> Result<File, AuthBusAuthorityError> {
     use rustix::fs::Mode;
     use rustix::fs::OFlags;
@@ -187,42 +191,54 @@ fn open_lock_file(path: &Path) -> Result<File, AuthBusAuthorityError> {
     Ok(descriptor.into())
 }
 
-#[cfg(not(unix))]
+#[cfg(not(target_os = "linux"))]
 fn open_lock_file(_path: &Path) -> Result<File, AuthBusAuthorityError> {
     Err(AuthBusAuthorityError::UnsafeCheckpoint)
 }
 
-#[cfg(all(
-    unix,
-    not(any(target_os = "illumos", target_os = "solaris"))
-))]
-fn acquire_process_lock(file: &File) -> Result<(), AuthBusAuthorityError> {
-    match rustix::fs::flock(file, rustix::fs::FlockOperation::NonBlockingLockExclusive) {
-        Ok(()) => Ok(()),
-        Err(error) if error == rustix::io::Errno::AGAIN || error == rustix::io::Errno::ACCESS => {
-            Err(AuthBusAuthorityError::OwnerAlreadyActive)
-        }
-        Err(error) => Err(AuthBusAuthorityError::Storage(error.to_string())),
+#[cfg(target_os = "linux")]
+fn whole_file_lock(lock_type: nix::libc::c_short) -> nix::libc::flock {
+    nix::libc::flock {
+        l_type: lock_type,
+        l_whence: nix::libc::SEEK_SET as nix::libc::c_short,
+        l_start: 0,
+        l_len: 0,
+        // Linux requires l_pid to be zero for an OFD lock request.
+        l_pid: 0,
     }
 }
 
-#[cfg(any(not(unix), target_os = "illumos", target_os = "solaris"))]
+#[cfg(target_os = "linux")]
+fn acquire_process_lock(file: &File) -> Result<(), AuthBusAuthorityError> {
+    let lock = whole_file_lock(nix::libc::F_WRLCK as nix::libc::c_short);
+    match nix::fcntl::fcntl(file, nix::fcntl::FcntlArg::F_OFD_SETLK(&lock)) {
+        Ok(_) => Ok(()),
+        Err(error)
+            if error == nix::errno::Errno::EAGAIN || error == nix::errno::Errno::EACCES =>
+        {
+            Err(AuthBusAuthorityError::OwnerAlreadyActive)
+        }
+        Err(error) => Err(AuthBusAuthorityError::Storage(format!(
+            "open-file-description owner lock unavailable: {error}"
+        ))),
+    }
+}
+
+#[cfg(not(target_os = "linux"))]
 fn acquire_process_lock(_file: &File) -> Result<(), AuthBusAuthorityError> {
     Err(AuthBusAuthorityError::UnsafeCheckpoint)
 }
 
-#[cfg(all(
-    unix,
-    not(any(target_os = "illumos", target_os = "solaris"))
-))]
+#[cfg(target_os = "linux")]
 fn release_process_lock(file: &File) {
-    let _ = rustix::fs::flock(file, rustix::fs::FlockOperation::Unlock);
+    let unlock = whole_file_lock(nix::libc::F_UNLCK as nix::libc::c_short);
+    let _ = nix::fcntl::fcntl(file, nix::fcntl::FcntlArg::F_OFD_SETLK(&unlock));
 }
 
-#[cfg(any(not(unix), target_os = "illumos", target_os = "solaris"))]
+#[cfg(not(target_os = "linux"))]
 fn release_process_lock(_file: &File) {}
 
-#[cfg(unix)]
+#[cfg(target_os = "linux")]
 fn validate_open_lock_file(file: &File, path: &Path) -> Result<(), AuthBusAuthorityError> {
     use std::os::unix::fs::MetadataExt;
 
@@ -247,7 +263,7 @@ fn validate_open_lock_file(file: &File, path: &Path) -> Result<(), AuthBusAuthor
     Ok(())
 }
 
-#[cfg(not(unix))]
+#[cfg(not(target_os = "linux"))]
 fn validate_open_lock_file(_file: &File, _path: &Path) -> Result<(), AuthBusAuthorityError> {
     Err(AuthBusAuthorityError::UnsafeCheckpoint)
 }
@@ -256,11 +272,7 @@ fn storage_io(error: std::io::Error) -> AuthBusAuthorityError {
     AuthBusAuthorityError::Storage(error.to_string())
 }
 
-#[cfg(all(
-    test,
-    unix,
-    not(any(target_os = "illumos", target_os = "solaris"))
-))]
+#[cfg(all(test, target_os = "linux"))]
 mod tests {
     use std::os::unix::fs::MetadataExt;
     use std::os::unix::fs::PermissionsExt;

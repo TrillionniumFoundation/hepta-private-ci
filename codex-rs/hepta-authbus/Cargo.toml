@@ -25,6 +25,9 @@ tokio = { workspace = true, features = ["macros", "rt", "sync", "time"] }
 [target.'cfg(unix)'.dependencies]
 rustix = { workspace = true, features = ["fs"] }
 
+[target.'cfg(target_os = "linux")'.dependencies]
+nix = { version = "0.30.1", features = ["fs"] }
+
 [dev-dependencies]
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }
