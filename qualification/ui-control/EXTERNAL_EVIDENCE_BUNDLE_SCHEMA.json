@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hepta.ui-control.external-evidence-bundle.v1",
+  "title": "ui.control externally observed production-evidence bundle",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema",
+    "status",
+    "observedAt",
+    "candidate",
+    "backendDeploymentDigest",
+    "evidenceDigests",
+    "claims"
+  ],
+  "properties": {
+    "schema": { "const": "hepta.ui-control.external-evidence-bundle.v1" },
+    "status": { "enum": ["accepted", "failed"] },
+    "observedAt": { "type": "string", "format": "date-time" },
+    "candidate": {
+      "type": "object",
+      "required": ["commit", "tree"],
+      "properties": {
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "backendDeploymentDigest": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "evidenceDigests": { "type": "object" },
+    "claims": { "type": "object" }
+  }
+}

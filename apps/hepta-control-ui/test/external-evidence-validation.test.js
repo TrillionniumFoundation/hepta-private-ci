@@ -1,0 +1,280 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { execFileSync, spawnSync } from "node:child_process";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+  deploymentSubject,
+  safeFailure,
+  sha256,
+  validateChaosEvidence,
+  validateDeploymentSecurityReceipt,
+  validateAuthorityEvidence,
+  validateIndependentAcceptance,
+  validateIndependentSecurityReview,
+  validateOperationalExercise,
+  validateProductionApproval,
+  validateRealBackendReceipt,
+  validateRepositoryQualificationReceipt,
+} from "../../../qualification/ui-control/external-evidence-lib.mjs";
+
+const commit = "a".repeat(40);
+const tree = "b".repeat(40);
+const digest = "c".repeat(64);
+const raw = "d".repeat(64);
+const now = Date.parse("2026-09-28T00:00:00Z");
+const executedAt = "2026-09-27T00:00:00Z";
+const expected = { candidateCommit: commit, candidateTree: tree, backendDeploymentDigest: digest };
+
+function chaosEvidence() {
+  return {
+    schema: "hepta.ui-control.agentd-chaos-evidence.v2",
+    candidateCommit: commit,
+    candidateTree: tree,
+    backendDeploymentDigest: digest,
+    executedAt,
+    executor: "independent chaos runner",
+    cases: [
+      { id: "crash-before-admission-commit", status: "passed", operationId: "op-1", observedRecordCount: 0, observedSideEffectCount: 0, terminalStatus: null, rawEvidenceDigest: raw },
+      { id: "crash-after-admission-before-dispatch", status: "passed", operationId: "op-2", observedRecordCount: 1, observedSideEffectCount: 0, terminalStatus: null, rawEvidenceDigest: raw },
+      { id: "crash-after-dispatch-before-terminal-observation", status: "passed", operationId: "op-3", observedRecordCount: 1, observedSideEffectCount: 1, terminalStatus: null, rawEvidenceDigest: raw },
+      { id: "restart-reconciles-terminal-state", status: "passed", operationId: "op-4", observedRecordCount: 1, observedSideEffectCount: 1, terminalStatus: "succeeded", rawEvidenceDigest: raw },
+    ],
+    rawEvidenceDigest: raw,
+  };
+}
+
+test("deployment identity is stable and path-sensitive", () => {
+  const first = deploymentSubject("https://control.example.test/console/", "release-17");
+  const second = deploymentSubject("https://control.example.test/console", "release-17");
+  const other = deploymentSubject("https://control.example.test/other", "release-17");
+  assert.equal(first.digest, second.digest);
+  assert.notEqual(first.digest, other.digest);
+  assert.equal(first.subject.basePath, "/console");
+});
+
+test("chaos evidence enforces exact crash semantics and identity", () => {
+  assert.equal(validateChaosEvidence(chaosEvidence(), expected, { now }).caseCount, 4);
+  const wrong = chaosEvidence();
+  wrong.cases[0].observedRecordCount = 1;
+  assert.throws(() => validateChaosEvidence(wrong, expected, { now }), /wrong durable record count/u);
+  const reused = chaosEvidence();
+  reused.cases[1].operationId = reused.cases[0].operationId;
+  assert.throws(() => validateChaosEvidence(reused, expected, { now }), /distinct operation IDs/u);
+});
+
+test("authority evidence closes permission-revision and revocation semantics", () => {
+  const receipt = {
+    schema: "hepta.ui-control.authority-evidence-receipt.v1",
+    status: "passed",
+    ...expected,
+    executedAt,
+    rawEvidenceDigest: raw,
+    executor: "identity qualification runner",
+    cases: [
+      {
+        id: "permission-revision-change-observed",
+        status: "passed",
+        beforePermissionRevision: 4,
+        afterPermissionRevision: 5,
+        rawEvidenceDigest: raw,
+      },
+      {
+        id: "permission-revocation-fences-mutation",
+        status: "passed",
+        postRevocationStatus: 403,
+        operationCreated: false,
+        rawEvidenceDigest: raw,
+      },
+      {
+        id: "session-switch-requires-new-generation",
+        status: "passed",
+        beforeSessionIdDigest: "1".repeat(64),
+        afterSessionIdDigest: "2".repeat(64),
+        beforeConnectionGeneration: 10,
+        afterConnectionGeneration: 11,
+        rawEvidenceDigest: raw,
+      },
+    ],
+  };
+  assert.doesNotThrow(() => validateAuthorityEvidence(receipt, expected, { now }));
+  receipt.cases = receipt.cases.filter(item => item.id !== "permission-revocation-fences-mutation");
+  assert.throws(() => validateAuthorityEvidence(receipt, expected, { now }), /missing authority cases/u);
+});
+
+test("independent evidence requires full browser, keyboard, and screen-reader coverage", () => {
+  const receipt = {
+    schema: "hepta.ui-control.independent-acceptance-receipt.v2",
+    status: "passed",
+    ...expected,
+    executedAt,
+    rawEvidenceDigest: raw,
+    verifier: { identity: "Verifier", organization: "Independent Lab", independentOfImplementationAuthor: true },
+    observations: [
+      { id: "chrome-keyboard", modality: "keyboard-only", browser: { name: "Chrome", version: "154" }, os: "Windows", result: "pass", rawEvidenceDigest: raw },
+      { id: "firefox-operator", modality: "browser-operator", browser: { name: "Firefox", version: "150" }, os: "Linux", result: "pass", rawEvidenceDigest: raw },
+      { id: "safari-operator", modality: "browser-operator", browser: { name: "Safari", version: "20" }, os: "macOS", result: "pass", rawEvidenceDigest: raw },
+      { id: "nvda", modality: "screen-reader", browser: { name: "Chrome", version: "154" }, os: "Windows", assistiveTechnology: { name: "NVDA", version: "2026.2" }, result: "pass", rawEvidenceDigest: raw },
+      { id: "voiceover", modality: "screen-reader", browser: { name: "Safari", version: "20" }, os: "macOS", assistiveTechnology: { name: "VoiceOver", version: "20" }, result: "pass", rawEvidenceDigest: raw },
+    ],
+  };
+  assert.doesNotThrow(() => validateIndependentAcceptance(receipt, expected, { now }));
+  receipt.observations[1] = { ...receipt.observations[1], browser: { name: "Chrome", version: "154" } };
+  assert.throws(() => validateIndependentAcceptance(receipt, expected, { now }), /Chrome, Firefox, and Safari/u);
+});
+
+test("security, operations, and signed production approval remain separate gates", () => {
+  const security = {
+    schema: "hepta.ui-control.independent-security-review-receipt.v1",
+    status: "passed",
+    ...expected,
+    executedAt,
+    rawEvidenceDigest: raw,
+    reviewer: { identity: "Security Reviewer", organization: "Independent Lab", independentOfImplementationAuthor: true },
+    scope: ["tls", "csp", "csrf", "cors", "cookie", "identity", "session", "operation-ledger", "logging-redaction", "penetration-test"],
+    findings: { openCritical: 0, openHigh: 0, openMedium: 1, openLow: 2 },
+  };
+  assert.doesNotThrow(() => validateIndependentSecurityReview(security, expected, { now }));
+
+  const operations = {
+    schema: "hepta.ui-control.operational-exercise-receipt.v1",
+    status: "passed",
+    ...expected,
+    executedAt,
+    rawEvidenceDigest: raw,
+    cases: ["rollback", "disaster-recovery", "alert-routing", "log-redaction", "credential-rotation"]
+      .map(id => ({ id, status: "passed", rawEvidenceDigest: raw })),
+  };
+  assert.doesNotThrow(() => validateOperationalExercise(operations, expected, { now }));
+
+  const evidenceDigests = { sourceHead: "1".repeat(64), mergeTree: "2".repeat(64), deploymentSecurity: "3".repeat(64), realBackend: "4".repeat(64), independentAcceptance: "5".repeat(64), independentSecurity: "6".repeat(64), operationalExercise: "7".repeat(64) };
+  const approval = {
+    schema: "hepta.ui-control.production-approval-receipt.v1",
+    status: "approved",
+    ...expected,
+    approvedAt: executedAt,
+    expiresAt: "2026-10-28T00:00:00Z",
+    rawEvidenceDigest: raw,
+    signature: { kind: "sigstore-bundle", digest: raw },
+    approvals: [
+      { role: "deployment-authority", identity: "Deployment owner" },
+      { role: "release-authority", identity: "Release owner" },
+      { role: "security-authority", identity: "Security owner" },
+    ],
+    evidenceDigests: { ...evidenceDigests },
+  };
+  assert.doesNotThrow(() => validateProductionApproval(approval, expected, evidenceDigests, { now }));
+  approval.evidenceDigests.realBackend = "0".repeat(64);
+  assert.throws(() => validateProductionApproval(approval, expected, evidenceDigests, { now }), /realBackend/u);
+});
+
+test("failure projection strips control characters and bounds output", () => {
+  const projected = safeFailure(Object.assign(new Error("bad\nsecret\u0000text"), { code: "UI_CONTROL_TEST" }), "probe");
+  assert.equal(projected.code, "UI_CONTROL_TEST");
+  assert.equal(projected.stage, "probe");
+  assert.ok(!projected.message.includes("\n"));
+  assert.ok(!projected.message.includes("\u0000"));
+});
+
+
+test("repository, deployment, and real-backend receipts remain exact-subject gates", () => {
+  const source = {
+    schema: "hepta.ui-control.qualification-receipt.v2",
+    candidate: {
+      kind: "source-head",
+      evaluated: { sha: commit, tree },
+      sourceHead: { sha: commit, tree },
+      base: null,
+    },
+    verificationStages: {
+      sourceTestsPassed: { state: "passed" },
+      browserTestsPassed: { state: "passed" },
+      mergeTreePassed: { state: "not-evaluated" },
+    },
+    artifacts: {
+      dependencyLockSha256: "1".repeat(64),
+      browserBuildManifestSha256: "2".repeat(64),
+      statusManifestSha256: "3".repeat(64),
+    },
+    claims: {
+      repositorySourceQualified: true,
+      repositoryBrowserCompositionQualified: true,
+      deterministicMergeQualified: false,
+    },
+  };
+  assert.equal(
+    validateRepositoryQualificationReceipt(source, "source-head", expected).browserBuildManifestSha256,
+    "2".repeat(64),
+  );
+
+  const merge = structuredClone(source);
+  merge.candidate.kind = "synthetic-merge";
+  merge.candidate.evaluated = { sha: "e".repeat(40), tree: "f".repeat(40) };
+  merge.verificationStages.mergeTreePassed.state = "passed";
+  merge.claims.deterministicMergeQualified = true;
+  assert.doesNotThrow(() => validateRepositoryQualificationReceipt(merge, "synthetic-merge", expected));
+
+  const deployment = {
+    schema: "hepta.ui-control.deployment-security-receipt.v2",
+    status: "passed",
+    candidateCommit: commit,
+    candidateTree: tree,
+    backendDeploymentDigest: digest,
+    deployment: { observedAt: executedAt },
+    source: { browserBuildManifestSha256: "2".repeat(64) },
+    assets: { verifiedAssetCount: 17 },
+    claims: { deployedSecurityObserved: true, exactCandidateAssetsObserved: true },
+  };
+  assert.doesNotThrow(() => validateDeploymentSecurityReceipt(deployment, expected, { now }));
+
+  const backend = {
+    schema: "hepta.ui-control.real-backend-receipt.v2",
+    status: "passed",
+    candidateCommit: commit,
+    candidateTree: tree,
+    backendDeploymentDigest: digest,
+    backend: { observedAt: executedAt },
+    cases: ["duplicate", "conflict", "restart"],
+    claims: {
+      realBackendSemanticsQualified: true,
+      durableIdempotencyQualified: true,
+      crashRestartQualified: true,
+      permissionRevisionAndRevocationQualified: true,
+      sessionSwitchQualified: true,
+    },
+  };
+  assert.doesNotThrow(() => validateRealBackendReceipt(backend, expected, { now }));
+  backend.claims.crashRestartQualified = false;
+  assert.throws(() => validateRealBackendReceipt(backend, expected, { now }), /crashRestartQualified/u);
+});
+
+test("all external qualification command modules parse under the supported Node runtime", () => {
+  const root = fileURLToPath(new URL("../../../", import.meta.url));
+  for (const relativePath of [
+    "qualification/ui-control/deployment-security.mjs",
+    "qualification/ui-control/real-backend-contract.mjs",
+    "qualification/ui-control/validate-external-evidence.mjs",
+  ]) {
+    execFileSync(process.execPath, ["--check", `${root}${relativePath}`], { stdio: "pipe" });
+  }
+});
+
+
+test("external evidence schemas remain valid JSON contracts", () => {
+  const root = fileURLToPath(new URL("../../../", import.meta.url));
+  for (const name of [
+    "AGENTD_CHAOS_EVIDENCE_SCHEMA.json",
+    "AUTHORITY_EVIDENCE_SCHEMA.json",
+    "INDEPENDENT_ACCEPTANCE_SCHEMA.json",
+    "INDEPENDENT_SECURITY_REVIEW_SCHEMA.json",
+    "OPERATIONAL_EXERCISE_SCHEMA.json",
+    "PRODUCTION_APPROVAL_SCHEMA.json",
+    "EXTERNAL_EVIDENCE_BUNDLE_SCHEMA.json",
+  ]) {
+    const schema = JSON.parse(readFileSync(resolve(root, "qualification/ui-control", name), "utf8"));
+    assert.equal(typeof schema.$id, "string");
+    assert.equal(schema.type, "object");
+  }
+});

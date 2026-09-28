@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hepta.ui-control.production-approval-receipt.v1",
+  "title": "ui.control production deployment and release approval",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "status",
+    "candidateCommit",
+    "candidateTree",
+    "backendDeploymentDigest",
+    "approvedAt",
+    "expiresAt",
+    "approvals",
+    "evidenceDigests",
+    "signature",
+    "rawEvidenceDigest"
+  ],
+  "properties": {
+    "schema": { "const": "hepta.ui-control.production-approval-receipt.v1" },
+    "status": { "const": "approved" },
+    "candidateCommit": { "$ref": "#/$defs/sha1" },
+    "candidateTree": { "$ref": "#/$defs/sha1" },
+    "backendDeploymentDigest": { "$ref": "#/$defs/sha256" },
+    "approvedAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "approvals": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "identity"],
+        "properties": {
+          "role": { "enum": ["deployment-authority", "release-authority", "security-authority"] },
+          "identity": { "type": "string", "minLength": 1, "maxLength": 256 }
+        }
+      }
+    },
+    "evidenceDigests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceHead",
+        "mergeTree",
+        "deploymentSecurity",
+        "realBackend",
+        "independentAcceptance",
+        "independentSecurity",
+        "operationalExercise"
+      ],
+      "properties": {
+        "sourceHead": { "$ref": "#/$defs/sha256" },
+        "mergeTree": { "$ref": "#/$defs/sha256" },
+        "deploymentSecurity": { "$ref": "#/$defs/sha256" },
+        "realBackend": { "$ref": "#/$defs/sha256" },
+        "independentAcceptance": { "$ref": "#/$defs/sha256" },
+        "independentSecurity": { "$ref": "#/$defs/sha256" },
+        "operationalExercise": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "digest"],
+      "properties": {
+        "kind": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "digest": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "rawEvidenceDigest": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "sha1": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

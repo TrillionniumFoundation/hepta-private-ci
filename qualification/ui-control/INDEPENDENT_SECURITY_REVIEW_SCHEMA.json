@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hepta.ui-control.independent-security-review-receipt.v1",
+  "title": "ui.control independent security and penetration-review receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "status",
+    "candidateCommit",
+    "candidateTree",
+    "backendDeploymentDigest",
+    "executedAt",
+    "reviewer",
+    "scope",
+    "findings",
+    "rawEvidenceDigest"
+  ],
+  "properties": {
+    "schema": { "const": "hepta.ui-control.independent-security-review-receipt.v1" },
+    "status": { "enum": ["passed", "failed"] },
+    "candidateCommit": { "$ref": "#/$defs/sha1" },
+    "candidateTree": { "$ref": "#/$defs/sha1" },
+    "backendDeploymentDigest": { "$ref": "#/$defs/sha256" },
+    "executedAt": { "type": "string", "format": "date-time" },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "organization", "independentOfImplementationAuthor"],
+      "properties": {
+        "identity": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "organization": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "independentOfImplementationAuthor": { "const": true }
+      }
+    },
+    "scope": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "tls",
+          "csp",
+          "csrf",
+          "cors",
+          "cookie",
+          "identity",
+          "session",
+          "operation-ledger",
+          "logging-redaction",
+          "penetration-test"
+        ]
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["openCritical", "openHigh", "openMedium", "openLow"],
+      "properties": {
+        "openCritical": { "type": "integer", "minimum": 0 },
+        "openHigh": { "type": "integer", "minimum": 0 },
+        "openMedium": { "type": "integer", "minimum": 0 },
+        "openLow": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "rawEvidenceDigest": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "sha1": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

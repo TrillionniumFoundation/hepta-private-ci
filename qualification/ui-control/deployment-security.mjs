@@ -1,186 +1,316 @@
 #!/usr/bin/env node
-import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
+import { isIP } from "node:net";
 import { resolve } from "node:path";
+import { connect as tlsConnect } from "node:tls";
+import {
+  assertEvidence,
+  deploymentSubject,
+  safeFailure,
+  sha256,
+} from "./external-evidence-lib.mjs";
 
 const required = name => {
   const value = process.env[name];
-  if (!value) throw new Error(`${name} is required`);
+  if (!value) {
+    const error = new Error(`${name} is required`);
+    error.code = "UI_CONTROL_EXTERNAL_INPUT_MISSING";
+    throw error;
+  }
   return value;
 };
-const assert = (condition, message) => {
-  if (!condition) throw new Error(message);
-};
-const sha256 = value => createHash("sha256").update(value).digest("hex");
 const command = (...args) => execFileSync(args[0], args.slice(1), { encoding: "utf8" }).trim();
-
-const rawBase = required("HEPTA_UI_CONTROL_BASE_URL");
-const cookie = required("HEPTA_UI_CONTROL_COOKIE");
-const csrfToken = required("HEPTA_UI_CONTROL_CSRF_TOKEN");
-const base = new URL(rawBase);
-assert(base.protocol === "https:", "deployment qualification requires HTTPS");
-assert(!base.username && !base.password && !base.search && !base.hash, "base URL contains forbidden components");
-base.pathname = base.pathname.replace(/\/+$/, "");
-const origin = base.origin;
-const rootUrl = new URL(`${base.pathname || ""}/`, origin);
-const apiBase = new URL(`${base.pathname || ""}/api/ui-control/v1/`, origin);
 const output = process.argv[2] ? resolve(process.argv[2]) : null;
-const buildManifestText = await readFile(
-  resolve(process.env.HEPTA_UI_CONTROL_BUILD_MANIFEST || "apps/hepta-control-ui/dist/build-manifest.json"),
-  "utf8",
-);
+const source = {
+  sha: command("git", "rev-parse", "HEAD"),
+  tree: command("git", "rev-parse", "HEAD^{tree}"),
+};
+let stage = "initialization";
+let deployment = null;
+const checks = [];
 
-async function request(url, options = {}) {
-  const response = await fetch(url, {
-    redirect: "manual",
-    cache: "no-store",
-    ...options,
+async function emit(receipt) {
+  const serialized = `${JSON.stringify(receipt, null, 2)}\n`;
+  if (output) await writeFile(output, serialized);
+  process.stdout.write(serialized);
+}
+
+function cookieAttributes(value) {
+  const entries = value.split(";").slice(1).map(part => part.trim()).filter(Boolean);
+  const attributes = new Map();
+  for (const entry of entries) {
+    const separator = entry.indexOf("=");
+    const name = (separator === -1 ? entry : entry.slice(0, separator)).trim().toLowerCase();
+    const attributeValue = separator === -1 ? true : entry.slice(separator + 1).trim();
+    attributes.set(name, attributeValue);
+  }
+  return attributes;
+}
+
+async function observeTls(base) {
+  return new Promise((resolveTls, rejectTls) => {
+    const socket = tlsConnect({
+      host: base.hostname,
+      port: Number(base.port || 443),
+      servername: isIP(base.hostname) ? undefined : base.hostname,
+      rejectUnauthorized: true,
+      minVersion: "TLSv1.2",
+    });
+    const timer = setTimeout(() => {
+      socket.destroy();
+      const error = new Error("TLS handshake timed out");
+      error.code = "UI_CONTROL_TLS_TIMEOUT";
+      rejectTls(error);
+    }, 10_000);
+    socket.once("secureConnect", () => {
+      clearTimeout(timer);
+      try {
+        assertEvidence(socket.authorized, "UI_CONTROL_TLS_UNAUTHORIZED", socket.authorizationError || "TLS peer was not authorized");
+        const protocol = socket.getProtocol();
+        assertEvidence(["TLSv1.2", "TLSv1.3"].includes(protocol), "UI_CONTROL_TLS_PROTOCOL", `unsupported TLS protocol: ${protocol}`);
+        const certificate = socket.getPeerCertificate();
+        assertEvidence(certificate && certificate.valid_to, "UI_CONTROL_TLS_CERTIFICATE", "peer certificate metadata is unavailable");
+        const validTo = Date.parse(certificate.valid_to);
+        assertEvidence(Number.isFinite(validTo) && validTo > Date.now(), "UI_CONTROL_TLS_CERTIFICATE_EXPIRED", "peer certificate is expired");
+        resolveTls({
+          protocol,
+          cipher: socket.getCipher()?.standardName || socket.getCipher()?.name || null,
+          certificateValidTo: new Date(validTo).toISOString(),
+          certificateFingerprint256: certificate.fingerprint256 || null,
+        });
+      } catch (error) {
+        rejectTls(error);
+      } finally {
+        socket.end();
+      }
+    });
+    socket.once("error", error => {
+      clearTimeout(timer);
+      rejectTls(error);
+    });
+  });
+}
+
+try {
+  const cookie = required("HEPTA_UI_CONTROL_COOKIE");
+  const csrfToken = required("HEPTA_UI_CONTROL_CSRF_TOKEN");
+  deployment = deploymentSubject(
+    required("HEPTA_UI_CONTROL_BASE_URL"),
+    required("HEPTA_UI_CONTROL_DEPLOYMENT_ID"),
+  );
+  const { base, subject, digest: backendDeploymentDigest } = deployment;
+  const origin = subject.origin;
+  const prefix = subject.basePath === "/" ? "" : subject.basePath;
+  const rootUrl = new URL(`${prefix}/`, origin);
+  const apiBase = new URL(`${prefix}/api/ui-control/v1/`, origin);
+  const buildManifestText = await readFile(
+    resolve(process.env.HEPTA_UI_CONTROL_BUILD_MANIFEST || "apps/hepta-control-ui/dist/build-manifest.json"),
+    "utf8",
+  );
+  const buildManifest = JSON.parse(buildManifestText);
+  assertEvidence(buildManifest.schema === "hepta.ui-control.browser-build.v1", "UI_CONTROL_BUILD_MANIFEST_SCHEMA", "unsupported browser build manifest");
+
+  async function request(url, options = {}) {
+    const response = await fetch(url, {
+      redirect: "manual",
+      cache: "no-store",
+      ...options,
+      headers: {
+        accept: "application/json",
+        cookie,
+        ...(options.headers || {}),
+      },
+    });
+    assertEvidence(!(response.status >= 300 && response.status < 400), "UI_CONTROL_DEPLOYMENT_REDIRECT", `${url}: redirects are forbidden`);
+    assertEvidence(response.headers.get("access-control-allow-origin") !== "*", "UI_CONTROL_CORS_WILDCARD", `${url}: wildcard CORS is forbidden`);
+    return response;
+  }
+
+  async function json(response, label) {
+    const contentType = response.headers.get("content-type") || "";
+    assertEvidence(/^application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/iu.test(contentType), "UI_CONTROL_JSON_CONTENT_TYPE", `${label}: JSON content type required`);
+    return response.json();
+  }
+
+  stage = "tls";
+  const tls = await observeTls(base);
+  checks.push("tls-1.2-or-newer-and-valid-certificate");
+
+  stage = "root-security-headers";
+  const root = await request(rootUrl, { headers: { accept: "text/html" } });
+  assertEvidence(root.ok, "UI_CONTROL_ROOT_HTTP", `root: expected 2xx, got ${root.status}`);
+  const csp = root.headers.get("content-security-policy") || "";
+  for (const directive of [
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self'",
+    "connect-src 'self'",
+    "object-src 'none'",
+    "base-uri 'none'",
+    "frame-ancestors 'none'",
+  ]) {
+    assertEvidence(csp.includes(directive), "UI_CONTROL_CSP_DIRECTIVE", `root: CSP missing ${directive}`);
+  }
+  const hsts = root.headers.get("strict-transport-security") || "";
+  assertEvidence(/(?:^|;)\s*max-age=\d+/iu.test(hsts), "UI_CONTROL_HSTS", "root: HSTS max-age is required");
+  assertEvidence((root.headers.get("x-content-type-options") || "").toLowerCase() === "nosniff", "UI_CONTROL_NOSNIFF", "root: nosniff is required");
+  assertEvidence((root.headers.get("x-frame-options") || "").toUpperCase() === "DENY", "UI_CONTROL_FRAME_OPTIONS", "root: X-Frame-Options DENY is required");
+  assertEvidence((root.headers.get("referrer-policy") || "").toLowerCase() === "no-referrer", "UI_CONTROL_REFERRER_POLICY", "root: no-referrer is required");
+  assertEvidence((root.headers.get("cross-origin-opener-policy") || "").toLowerCase() === "same-origin", "UI_CONTROL_COOP", "root: COOP same-origin is required");
+  assertEvidence((root.headers.get("cross-origin-resource-policy") || "").toLowerCase() === "same-origin", "UI_CONTROL_CORP", "root: CORP same-origin is required");
+  assertEvidence(/(?:^|,)\s*(?:no-store|private\s*,?\s*no-store)/iu.test(root.headers.get("cache-control") || ""), "UI_CONTROL_CACHE_CONTROL", "root: Cache-Control must prevent shared or persistent caching");
+  checks.push("csp", "hsts", "no-store", "browser-isolation-headers");
+
+  stage = "asset-identity";
+  const rootBytes = Buffer.from(await root.arrayBuffer());
+  const expectedRoot = buildManifest.files?.["index.html"];
+  assertEvidence(expectedRoot, "UI_CONTROL_ASSET_MANIFEST", "build manifest is missing index.html");
+  assertEvidence(rootBytes.length === expectedRoot.bytes && sha256(rootBytes) === expectedRoot.sha256, "UI_CONTROL_DEPLOYED_ASSET_DRIFT", "deployed index.html does not match the exact candidate build");
+  let verifiedAssetCount = 1;
+  for (const [relativePath, expected] of Object.entries(buildManifest.files || {})) {
+    if (relativePath === "index.html") continue;
+    const response = await request(new URL(`${prefix}/${relativePath}`, origin), { headers: { accept: "*/*" } });
+    assertEvidence(response.ok, "UI_CONTROL_ASSET_HTTP", `${relativePath}: expected 2xx, got ${response.status}`);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    assertEvidence(bytes.length === expected.bytes && sha256(bytes) === expected.sha256, "UI_CONTROL_DEPLOYED_ASSET_DRIFT", `${relativePath}: deployed bytes do not match the exact candidate build`);
+    verifiedAssetCount += 1;
+  }
+  checks.push("exact-deployed-asset-manifest");
+
+  const connectBody = JSON.stringify({
+    protocolVersion: "hepta.ui-control.v1",
+    client: "hepta-control-ui-external-qualification",
+    requestedCapabilities: ["runtime.read", "runtime.request", "runtime.start", "runtime.stop"],
+  });
+  const connectUrl = new URL("session/connect", apiBase);
+
+  stage = "csrf-and-cors";
+  const missingCsrf = await request(connectUrl, {
+    method: "POST",
+    headers: { origin, "content-type": "application/json" },
+    body: connectBody,
+  });
+  assertEvidence([401, 403].includes(missingCsrf.status), "UI_CONTROL_CSRF_PRECHECK", `connect without CSRF must fail closed, got ${missingCsrf.status}`);
+
+  const attackerOrigin = "https://attacker.invalid";
+  const preflight = await request(connectUrl, {
+    method: "OPTIONS",
     headers: {
-      accept: "application/json",
-      cookie,
-      ...(options.headers || {}),
+      origin: attackerOrigin,
+      "access-control-request-method": "POST",
+      "access-control-request-headers": "content-type,x-hepta-csrf-token",
     },
   });
-  assert(!(response.status >= 300 && response.status < 400), `${url}: redirects are forbidden`);
-  assert(response.headers.get("access-control-allow-origin") !== "*", `${url}: wildcard CORS is forbidden`);
-  return response;
+  assertEvidence(preflight.headers.get("access-control-allow-origin") !== attackerOrigin, "UI_CONTROL_CORS_REFLECTION", "attacker Origin was accepted by preflight");
+  const wrongOrigin = await request(connectUrl, {
+    method: "POST",
+    headers: {
+      origin: attackerOrigin,
+      "content-type": "application/json",
+      "x-hepta-csrf-token": csrfToken,
+    },
+    body: connectBody,
+  });
+  assertEvidence([401, 403].includes(wrongOrigin.status), "UI_CONTROL_CROSS_ORIGIN", `cross-origin connect must fail closed, got ${wrongOrigin.status}`);
+  assertEvidence(wrongOrigin.headers.get("access-control-allow-origin") !== attackerOrigin, "UI_CONTROL_CORS_REFLECTION", "attacker Origin was reflected");
+  checks.push("csrf-before-connect", "cors-preflight-rejection", "cross-origin-rejection");
+
+  stage = "authenticated-session-and-cookie";
+  const connectedResponse = await request(connectUrl, {
+    method: "POST",
+    headers: {
+      origin,
+      "content-type": "application/json",
+      "x-hepta-csrf-token": csrfToken,
+    },
+    body: connectBody,
+  });
+  assertEvidence(connectedResponse.ok, "UI_CONTROL_CONNECT", `connect: expected success, got ${connectedResponse.status}`);
+  const setCookies = typeof connectedResponse.headers.getSetCookie === "function"
+    ? connectedResponse.headers.getSetCookie()
+    : [connectedResponse.headers.get("set-cookie")].filter(Boolean);
+  assertEvidence(setCookies.length > 0, "UI_CONTROL_COOKIE_MISSING", "connect: an observed Set-Cookie is required to qualify cookie policy");
+  const expectedCookiePath = process.env.HEPTA_UI_CONTROL_COOKIE_PATH || (prefix || "/");
+  for (const value of setCookies) {
+    const attributes = cookieAttributes(value);
+    assertEvidence(attributes.has("secure"), "UI_CONTROL_COOKIE_SECURE", "connect cookie must be Secure");
+    assertEvidence(attributes.has("httponly"), "UI_CONTROL_COOKIE_HTTP_ONLY", "connect cookie must be HttpOnly");
+    assertEvidence(["strict", "lax"].includes(String(attributes.get("samesite") || "").toLowerCase()), "UI_CONTROL_COOKIE_SAMESITE", "connect cookie must set SameSite=Strict or Lax");
+    assertEvidence(attributes.get("path") === expectedCookiePath, "UI_CONTROL_COOKIE_PATH", `connect cookie must set Path=${expectedCookiePath}`);
+    assertEvidence(!attributes.has("domain"), "UI_CONTROL_COOKIE_DOMAIN", "connect cookie must remain host-only");
+  }
+  const session = await json(connectedResponse, "connect");
+  assertEvidence(session.authenticated === true, "UI_CONTROL_SESSION_AUTH", "connect: authenticated session not established");
+  assertEvidence(typeof session.sessionId === "string" && session.sessionId.length > 0, "UI_CONTROL_SESSION_ID", "connect: sessionId missing");
+  assertEvidence(Number.isSafeInteger(session.connectionGeneration) && session.connectionGeneration > 0, "UI_CONTROL_CONNECTION_GENERATION", "connect: connectionGeneration invalid");
+  checks.push("authenticated-connect", "secure-httponly-samesite-host-only-cookie");
+
+  stage = "authenticated-read-and-mutation-precheck";
+  const viewResponse = await request(new URL("view", apiBase), {
+    method: "POST",
+    headers: { origin, "content-type": "application/json" },
+    body: JSON.stringify({ sessionId: session.sessionId, connectionGeneration: session.connectionGeneration }),
+  });
+  assertEvidence(viewResponse.ok, "UI_CONTROL_VIEW", `view: expected success, got ${viewResponse.status}`);
+  await json(viewResponse, "view");
+  const operationWithoutCsrf = await request(new URL("operations", apiBase), {
+    method: "POST",
+    headers: { origin, "content-type": "application/json" },
+    body: "{}",
+  });
+  assertEvidence([401, 403].includes(operationWithoutCsrf.status), "UI_CONTROL_MUTATION_CSRF", `mutation without CSRF must fail before semantic admission, got ${operationWithoutCsrf.status}`);
+  checks.push("authenticated-view", "mutation-csrf-precheck");
+
+  stage = "authenticated-close";
+  const closeResponse = await request(new URL("session/close", apiBase), {
+    method: "POST",
+    headers: { origin, "content-type": "application/json", "x-hepta-csrf-token": csrfToken },
+    body: JSON.stringify({ sessionId: session.sessionId, connectionGeneration: session.connectionGeneration }),
+  });
+  assertEvidence(closeResponse.ok, "UI_CONTROL_SESSION_CLOSE", `close: expected success, got ${closeResponse.status}`);
+  checks.push("authenticated-close");
+
+  await emit({
+    schema: "hepta.ui-control.deployment-security-receipt.v2",
+    status: "passed",
+    candidateCommit: source.sha,
+    candidateTree: source.tree,
+    backendDeploymentDigest,
+    source: {
+      ...source,
+      browserBuildManifestSha256: sha256(buildManifestText),
+    },
+    deployment: { ...subject, observedAt: new Date().toISOString() },
+    tls,
+    assets: { verifiedAssetCount },
+    checks,
+    claims: {
+      deployedSecurityObserved: true,
+      exactCandidateAssetsObserved: true,
+      realBackendSemanticsQualified: false,
+      independentAcceptanceSigned: false,
+      productionDeploymentApproved: false,
+    },
+  });
+} catch (error) {
+  await emit({
+    schema: "hepta.ui-control.deployment-security-receipt.v2",
+    status: "failed",
+    candidateCommit: source.sha,
+    candidateTree: source.tree,
+    backendDeploymentDigest: deployment?.digest ?? null,
+    source,
+    deployment: deployment ? { ...deployment.subject, observedAt: new Date().toISOString() } : null,
+    checks,
+    failure: safeFailure(error, stage),
+    claims: {
+      deployedSecurityObserved: false,
+      exactCandidateAssetsObserved: false,
+      realBackendSemanticsQualified: false,
+      independentAcceptanceSigned: false,
+      productionDeploymentApproved: false,
+    },
+  });
+  process.exitCode = 1;
 }
-
-async function json(response, label) {
-  const contentType = response.headers.get("content-type") || "";
-  assert(/^application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/iu.test(contentType), `${label}: JSON content type required`);
-  return response.json();
-}
-
-const root = await request(rootUrl, { headers: { accept: "text/html" } });
-assert(root.ok, `root: expected 2xx, got ${root.status}`);
-const csp = root.headers.get("content-security-policy") || "";
-for (const directive of ["default-src 'self'", "object-src 'none'", "base-uri 'none'", "frame-ancestors 'none'"]) {
-  assert(csp.includes(directive), `root: CSP missing ${directive}`);
-}
-const hsts = root.headers.get("strict-transport-security") || "";
-assert(/(?:^|;)\s*max-age=\d+/iu.test(hsts), "root: HSTS max-age is required");
-assert((root.headers.get("x-content-type-options") || "").toLowerCase() === "nosniff", "root: nosniff is required");
-assert((root.headers.get("x-frame-options") || "").toUpperCase() === "DENY", "root: X-Frame-Options DENY is required");
-assert((root.headers.get("referrer-policy") || "").toLowerCase() === "no-referrer", "root: no-referrer is required");
-assert((root.headers.get("cross-origin-opener-policy") || "").toLowerCase() === "same-origin", "root: COOP same-origin is required");
-assert((root.headers.get("cross-origin-resource-policy") || "").toLowerCase() === "same-origin", "root: CORP same-origin is required");
-
-const connectBody = JSON.stringify({
-  protocolVersion: "hepta.ui-control.v1",
-  client: "hepta-control-ui-external-qualification",
-  requestedCapabilities: ["runtime.read", "runtime.request", "runtime.start", "runtime.stop"],
-});
-const connectUrl = new URL("session/connect", apiBase);
-const missingCsrf = await request(connectUrl, {
-  method: "POST",
-  headers: { origin, "content-type": "application/json" },
-  body: connectBody,
-});
-assert([401, 403].includes(missingCsrf.status), `connect without CSRF must fail closed, got ${missingCsrf.status}`);
-
-const attackerOrigin = "https://attacker.invalid";
-const wrongOrigin = await request(connectUrl, {
-  method: "POST",
-  headers: {
-    origin: attackerOrigin,
-    "content-type": "application/json",
-    "x-hepta-csrf-token": csrfToken,
-  },
-  body: connectBody,
-});
-assert([401, 403].includes(wrongOrigin.status), `cross-origin connect must fail closed, got ${wrongOrigin.status}`);
-assert(wrongOrigin.headers.get("access-control-allow-origin") !== attackerOrigin, "attacker Origin was reflected");
-
-const connectedResponse = await request(connectUrl, {
-  method: "POST",
-  headers: {
-    origin,
-    "content-type": "application/json",
-    "x-hepta-csrf-token": csrfToken,
-  },
-  body: connectBody,
-});
-assert(connectedResponse.ok, `connect: expected success, got ${connectedResponse.status}`);
-const setCookies = typeof connectedResponse.headers.getSetCookie === "function"
-  ? connectedResponse.headers.getSetCookie()
-  : [connectedResponse.headers.get("set-cookie")].filter(Boolean);
-assert(setCookies.length > 0, "connect: an observed Set-Cookie is required to qualify cookie policy");
-for (const value of setCookies) {
-  assert(/;\s*Secure(?:;|$)/iu.test(value), "connect cookie must be Secure");
-  assert(/;\s*HttpOnly(?:;|$)/iu.test(value), "connect cookie must be HttpOnly");
-  assert(/;\s*SameSite=(?:Strict|Lax)(?:;|$)/iu.test(value), "connect cookie must set SameSite=Strict or Lax");
-}
-const session = await json(connectedResponse, "connect");
-assert(session.authenticated === true, "connect: authenticated session not established");
-assert(typeof session.sessionId === "string" && session.sessionId.length > 0, "connect: sessionId missing");
-assert(Number.isSafeInteger(session.connectionGeneration) && session.connectionGeneration > 0, "connect: connectionGeneration invalid");
-
-const viewResponse = await request(new URL("view", apiBase), {
-  method: "POST",
-  headers: { origin, "content-type": "application/json" },
-  body: JSON.stringify({
-    sessionId: session.sessionId,
-    connectionGeneration: session.connectionGeneration,
-  }),
-});
-assert(viewResponse.ok, `view: expected success, got ${viewResponse.status}`);
-await json(viewResponse, "view");
-
-const operationWithoutCsrf = await request(new URL("operations", apiBase), {
-  method: "POST",
-  headers: { origin, "content-type": "application/json" },
-  body: "{}",
-});
-assert([401, 403].includes(operationWithoutCsrf.status), `mutation without CSRF must fail before semantic admission, got ${operationWithoutCsrf.status}`);
-
-const closeResponse = await request(new URL("session/close", apiBase), {
-  method: "POST",
-  headers: {
-    origin,
-    "content-type": "application/json",
-    "x-hepta-csrf-token": csrfToken,
-  },
-  body: JSON.stringify({
-    sessionId: session.sessionId,
-    connectionGeneration: session.connectionGeneration,
-  }),
-});
-assert(closeResponse.ok, `close: expected success, got ${closeResponse.status}`);
-
-const receipt = {
-  schema: "hepta.ui-control.deployment-security-receipt.v1",
-  status: "passed",
-  source: {
-    sha: command("git", "rev-parse", "HEAD"),
-    tree: command("git", "rev-parse", "HEAD^{tree}"),
-    browserBuildManifestSha256: sha256(buildManifestText),
-  },
-  deployment: {
-    origin,
-    observedAt: new Date().toISOString(),
-  },
-  checks: [
-    "https",
-    "csp",
-    "hsts",
-    "no-wildcard-cors",
-    "cross-origin-rejection",
-    "csrf-before-connect",
-    "authenticated-connect",
-    "secure-httponly-samesite-cookie",
-    "authenticated-view",
-    "mutation-csrf-precheck",
-    "authenticated-close",
-  ],
-  claims: {
-    deployedSecurityObserved: true,
-    realBackendSemanticsQualified: false,
-    independentAcceptanceSigned: false,
-    productionDeploymentApproved: false,
-  },
-};
-const serialized = `${JSON.stringify(receipt, null, 2)}\n`;
-if (output) await writeFile(output, serialized);
-process.stdout.write(serialized);
