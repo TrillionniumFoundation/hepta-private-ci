@@ -67,12 +67,137 @@ jobs:
           """
           if text.count(old) != 1:
               raise SystemExit("platform manifest repair anchor drifted")
-          path.write_text(text.replace(old, new), encoding="utf-8")
+          text = text.replace(old, new)
+
+          start = text.index("def repair_rama_manifest() -> None:\n")
+          end = text.index("\n\ndef repair_registry_indexes() -> None:", start)
+          replacement = '''def repair_rama_manifest() -> None:
+              replace_once(
+                  "codex-rs/network-proxy/Cargo.toml",
+                  """rama-core = { version = "=0.3.0-alpha.4" }
+rama-http = { version = "=0.3.0-alpha.4" }
+rama-http-backend = { version = "=0.3.0-alpha.4", features = ["tls"] }
+rama-net = { version = "=0.3.0-alpha.4", features = ["http", "tls"] }
+rama-socks5 = { version = "=0.3.0-alpha.4" }
+rama-tcp = { version = "=0.3.0-alpha.4", features = ["http"] }
+rama-tls-rustls = { version = "=0.3.0-alpha.4", features = ["http"] }""",
+                  """# Rama 0.3.0 is a single coherent release train. Exact direct
+# constraints prevent a future lock refresh from mixing private support APIs.
+rama-core = { version = "=0.3.0" }
+rama-error = "=0.3.0"
+rama-http = { version = "=0.3.0" }
+rama-http-backend = { version = "=0.3.0", features = ["tls"] }
+rama-macros = "=0.3.0"
+rama-net = { version = "=0.3.0", features = ["http", "tls"] }
+rama-socks5 = { version = "=0.3.0" }
+rama-tcp = { version = "=0.3.0", features = ["http"] }
+rama-tls-rustls = { version = "=0.3.0", features = ["http"] }
+rama-utils = "=0.3.0"""",
+              )
+              replace_once(
+                  "codex-rs/network-proxy/Cargo.toml",
+                  'rama-unix = { version = "=0.3.0-alpha.4" }',
+                  'rama-unix = { version = "=0.3.0" }',
+              )
+          '''
+          text = text[:start] + replacement + text[end:]
+          path.write_text(text, encoding="utf-8")
+
+          guard_path = Path("scripts/platform_types_rama_lock_guard.py")
+          guard = guard_path.read_text(encoding="utf-8")
+          if guard.count('EXPECTED_VERSION = "0.3.0-alpha.4"') != 1:
+              raise SystemExit("Rama lock guard version anchor drifted")
+          guard = guard.replace(
+              '"""Reject incoherent Rama prerelease selections in platform.types qualification."""',
+              '"""Reject incoherent Rama release selections in platform.types qualification."""',
+          ).replace(
+              'EXPECTED_VERSION = "0.3.0-alpha.4"',
+              'EXPECTED_VERSION = "0.3.0"',
+          )
+          guard_path.write_text(guard, encoding="utf-8")
+
+          Path("scripts/test_platform_types_rama_lock_guard.py").write_text(
+              '''"""Regression tests for exact Rama release graph enforcement."""
+
+from __future__ import annotations
+
+import tempfile
+import unittest
+from pathlib import Path
+
+from platform_types_rama_lock_guard import (
+    EXPECTED_VERSION,
+    REQUIRED_PACKAGES,
+    RamaLockError,
+    validate,
+)
+
+WRONG_VERSION = "0.3.0-alpha.4"
+
+
+def manifest_text(*, wrong_error: bool = False, omit_utils: bool = False) -> str:
+    rows = ["[dependencies]"]
+    for package in REQUIRED_PACKAGES:
+        if package == "rama-unix":
+            continue
+        if omit_utils and package == "rama-utils":
+            continue
+        version = WRONG_VERSION if wrong_error and package == "rama-error" else EXPECTED_VERSION
+        rows.append(f'{package} = "={version}"')
+    rows.extend(
+        [
+            "",
+            "[target.'cfg(target_family = \\\"unix\\\")'.dependencies]",
+            f'rama-unix = "={EXPECTED_VERSION}"',
+        ]
+    )
+    return "\\n".join(rows) + "\\n"
+
+
+def lock_text(*, wrong_error: bool = False) -> str:
+    rows = ["version = 4", ""]
+    for package in REQUIRED_PACKAGES:
+        version = WRONG_VERSION if wrong_error and package == "rama-error" else EXPECTED_VERSION
+        rows.extend(
+            [
+                "[[package]]",
+                f'name = "{package}"',
+                f'version = "{version}"',
+                "",
+            ]
+        )
+    return "\\n".join(rows)
+
+
+class RamaLockGuardTests(unittest.TestCase):
+    def validate_fixture(self, manifest: str, lock: str) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest_path = root / "Cargo.toml"
+            lock_path = root / "Cargo.lock"
+            manifest_path.write_text(manifest, encoding="utf-8")
+            lock_path.write_text(lock, encoding="utf-8")
+            validate(manifest_path, lock_path)
+
+    def test_coherent_exact_release_graph_passes(self):
+        self.validate_fixture(manifest_text(), lock_text())
+
+    def test_mixed_support_crate_version_is_rejected(self):
+        with self.assertRaises(RamaLockError):
+            self.validate_fixture(manifest_text(), lock_text(wrong_error=True))
+
+    def test_missing_direct_constraint_is_rejected(self):
+        with self.assertRaises(RamaLockError):
+            self.validate_fixture(manifest_text(omit_utils=True), lock_text())
+
+
+if __name__ == "__main__":
+    unittest.main()
+''',
+              encoding="utf-8",
+          )
           PY
           python3 scripts/platform_types_apply_closure_repair.py
-          # Use the workspace Cargo metadata and pinned rustfmt exactly as the
-          # later qualification check does. Per-file rustfmt can miss workspace
-          # edition/configuration and unrelated drift in selected consumers.
           cargo fmt --manifest-path codex-rs/Cargo.toml --all
 
       - name: Regenerate the authoritative Cargo lock
@@ -82,21 +207,16 @@ jobs:
           cp codex-rs/Cargo.lock "$original_lock"
           converged=false
 
-          # The alpha.4 Rama graph requires the current Tokio line. Restore the
-          # exact input lock before every attempt so a transient registry/index
-          # failure can never leave a half-migrated dependency graph behind.
+          # Rama 0.3.0 requires Rust 1.96 and Tokio 1.52. Restore the exact
+          # input lock before every attempt so no partial solver result survives.
           for attempt in 1 2 3 4 5; do
             echo "Cargo lock convergence attempt ${attempt}/5"
             cp "$original_lock" codex-rs/Cargo.lock
 
             if cargo update --manifest-path codex-rs/Cargo.toml \
-                 --package tokio@1.43.4 --precise 1.48.0 \
+                 --package rama-core@0.3.0-alpha.4 --precise 0.3.0 \
               && cargo update --manifest-path codex-rs/Cargo.toml \
-                 --package rama-error --precise 0.3.0-alpha.4 \
-              && cargo update --manifest-path codex-rs/Cargo.toml \
-                 --package rama-macros --precise 0.3.0-alpha.4 \
-              && cargo update --manifest-path codex-rs/Cargo.toml \
-                 --package rama-utils --precise 0.3.0-alpha.4 \
+                 --package tokio --precise 1.52.0 \
               && cargo metadata --manifest-path codex-rs/Cargo.toml \
                  --locked --no-deps >/dev/null; then
               converged=true
@@ -152,4 +272,4 @@ jobs:
           git commit -m "fix(platform.types): close exact-candidate qualification gaps"
           git push origin "HEAD:$BRANCH"
 
-# API retrigger v5: execute guarded repair after fixing the benchmark lint.
+# API retrigger v6: migrate the incoherent Rama alpha graph to Rama 0.3.0.
