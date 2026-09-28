@@ -12,7 +12,7 @@ Compatibility migration: an intentionally unconfigured local development process
 
 The product host consumes complete immutable policy pins and the existing root-authenticated `LedgerWriter`. That writer owns a durable or segmented backend plus a separate durable witness. Do not replace it with an in-memory writer, diagnostic JSONL, or a second policy-owned authoritative store. The current typed canonical invocation replaces neither the identity authority nor the generator/evaluator/observer roles.
 
-The Production profile guard does not by itself establish deployed entitlement integration, a diagnostic audit exporter, a metrics endpoint, a dashboard, or operator acceptance. Those remain separate release gates.
+The canonical serving gate now emits bounded OpenTelemetry metrics and a tracing span through the process-global Codex telemetry clients. That source integration does not by itself establish deployed entitlement integration, a configured exporter endpoint, dashboard delivery, alert routing, diagnostic audit delivery or operator acceptance. Those remain separate release gates.
 
 ## 2. Exact-source qualification
 
@@ -97,8 +97,18 @@ Rollback selects a still-qualified predecessor under a newly admitted configurat
 
 ## 7. Observability and remaining release gates
 
-Production observability must distinguish admit/abstain/slow-path, authority rejection, profile mismatch, expiry, generation fence, ledger failure, indeterminate commit, successful reconciliation and replay. Metrics must use bounded labels rather than request IDs or key material. An exporter must be exercised through the actual running product; proposed metric names or dashboard JSON alone are not an integration.
+The canonical gate emits the following metrics through the installed Codex `MetricsClient`:
 
-Required operational measurements include pending age, witness lag, commit/reconciliation latency, request latency and audit-delivery failures. The owner must record the measured baseline, approved error/latency/capacity budgets, alert routing and operator response. No live Prometheus/OpenTelemetry exporter, dashboard deployment, SLO result or production audit delivery is certified by this change.
+- `codex.hepta.intuition.policy.request` by bounded process profile;
+- `codex.hepta.intuition.policy.outcome` by status, disposition and durable-append presence;
+- `codex.hepta.intuition.policy.failure` by bounded error class;
+- `codex.hepta.intuition.policy.duration` for end-to-end gate latency;
+- `codex.hepta.intuition.policy.ledger_append` for acknowledged durable selected Decisions.
+
+It also emits the internal span `hepta.intuition_policy.authenticate` and terminal success/rejection events. Labels never include request IDs, candidate IDs, episode IDs, evidence bytes, key material or arbitrary error text. Metrics and tracing are observational: exporter absence or emission failure cannot change policy admission, denial, parity checking or ledger commit semantics.
+
+Production dashboards and alerts must distinguish selected/admit, abstain, slow-path, authority rejection, profile mismatch, expiry, generation fence, ledger failure, indeterminate commit, successful reconciliation and replay. The current bounded error classes intentionally aggregate request-specific details; operators correlate an alert with the separately governed audit and ledger receipts rather than adding high-cardinality identifiers to telemetry.
+
+Required operational measurements include pending age, witness lag, commit/reconciliation latency, full authenticated request latency and audit-delivery failures. The owner must record the measured target-host baseline, approved error/latency/capacity budgets, alert routing and operator response. Source instrumentation is now present, but no live Prometheus/OpenTelemetry exporter, dashboard deployment, SLO result, target-host scrape or production audit delivery is certified by this change.
 
 Keep the PR draft until the exact required checks pass. Independent execution, semantic acceptance, operator target-host acceptance and release approval remain distinct. A queued job, a workflow definition, a local recorder unit test, a template receipt or an unsigned approval JSON must never turn production completion into true.
