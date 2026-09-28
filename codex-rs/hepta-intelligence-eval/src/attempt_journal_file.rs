@@ -13,6 +13,8 @@ use super::*;
 #[path = "attempt_capacity.rs"]
 mod capacity;
 use capacity::AttemptCapacity;
+#[path = "attempt_checkpoint.rs"]
+mod checkpoint;
 
 const MAGIC: &[u8; 8] = b"HEPTAT01";
 const HEADER: u64 = 72;

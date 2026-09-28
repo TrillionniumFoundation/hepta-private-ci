@@ -82,6 +82,50 @@ impl<A: ProductEvaluationAttemptAnchorStoreV1> AnchoredProductEvaluationAttemptJ
         })
     }
 
+    /// Recover from an independently retained checkpoint and replay only the
+    /// later journal tail. The normal journal anchor remains authoritative; the
+    /// checkpoint authority is a separate derived namespace in the supplied
+    /// store and cannot lower or replace that anchor.
+    pub fn recover_with_checkpoint<C: ProductEvaluationAttemptAnchorStoreV1>(
+        file: File,
+        checkpoint: File,
+        binding: Digest32,
+        mut authority: A,
+        checkpoint_authority: &mut C,
+    ) -> Result<Self, ProductEvaluationAttemptJournalErrorV1> {
+        let retained = authority
+            .load(binding)?
+            .ok_or(ProductEvaluationAttemptJournalErrorV1::Binding)?;
+        let journal = LockedFileProductEvaluationAttemptJournalV1::recover_with_checkpoint(
+            file,
+            checkpoint,
+            binding,
+            retained,
+            checkpoint_authority,
+        )?;
+        let recovered = journal.anchor()?;
+        if recovered != retained {
+            authority.compare_and_swap(binding, Some(retained), recovered)?;
+        }
+        Ok(Self {
+            journal,
+            authority,
+            retained: recovered,
+            poisoned: false,
+        })
+    }
+
+    /// Persist a reducer checkpoint without changing the journal frontier. The
+    /// checkpoint identity is retained under a derived binding in `authority`.
+    pub fn checkpoint_into<C: ProductEvaluationAttemptAnchorStoreV1>(
+        &self,
+        checkpoint: File,
+        authority: &mut C,
+    ) -> Result<ProductEvaluationAttemptAnchorV1, ProductEvaluationAttemptJournalErrorV1> {
+        self.anchor()?;
+        self.journal.checkpoint_into(checkpoint, authority)
+    }
+
     pub fn anchor(
         &self,
     ) -> Result<ProductEvaluationAttemptAnchorV1, ProductEvaluationAttemptJournalErrorV1> {
