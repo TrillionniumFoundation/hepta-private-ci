@@ -166,12 +166,9 @@ where
     } else {
         match timeout(operation_timeout(&request.method), handler(request)).await {
             Ok(Ok(response)) => response,
-            Ok(Err(error)) => error_response(
-                &state,
-                request_id,
-                "request_rejected",
-                &error.to_string(),
-            ),
+            Ok(Err(error)) => {
+                error_response(&state, request_id, "request_rejected", &error.to_string())
+            }
             Err(_) => error_response(
                 &state,
                 request_id,

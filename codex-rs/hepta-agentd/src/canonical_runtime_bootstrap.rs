@@ -107,8 +107,7 @@ impl AgentdNeuronInvocationSealV1 {
         let observed = neuron_input_binding_digest(config, tick, previous)?;
         if observed != self.raw_input_binding_digest || self.checkpoint_after.is_zero() {
             return Err(AgentdError::GenerationFenced(
-                "sealed Neuron invocation input changed before canonical consumption"
-                    .to_string(),
+                "sealed Neuron invocation input changed before canonical consumption".to_string(),
             ));
         }
         Ok(self.checkpoint_after)
@@ -179,7 +178,9 @@ where
             ));
         }
         let runtime_digest = owner.runtime().configuration_digest().map_err(|error| {
-            AgentdError::Protocol(format!("Neuron runtime configuration is unavailable: {error}"))
+            AgentdError::Protocol(format!(
+                "Neuron runtime configuration is unavailable: {error}"
+            ))
         })?;
         let binding_digest = Digest32::of_parts(&[
             b"hepta.runtime-agentd.bound-neuron-owner.v1\0",
@@ -210,12 +211,10 @@ where
     }
 
     fn validate_agentd_identity(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {
-        if identity.agent_id != self.agent_id
-            || identity.spawn_generation != self.agentd_generation
+        if identity.agent_id != self.agent_id || identity.spawn_generation != self.agentd_generation
         {
             return Err(AgentdError::GenerationFenced(
-                "canonical Neuron owner does not match the Agentd identity/generation"
-                    .to_string(),
+                "canonical Neuron owner does not match the Agentd identity/generation".to_string(),
             ));
         }
         Ok(())
@@ -258,7 +257,8 @@ where
         })?;
         match (current, previous) {
             (None, None) => {}
-            (Some(anchor), Some(checkpoint)) if anchor.checkpoint_digest == checkpoint.digest() => {}
+            (Some(anchor), Some(checkpoint)) if anchor.checkpoint_digest == checkpoint.digest() => {
+            }
             _ => {
                 return Err(AgentdError::GenerationFenced(
                     "canonical sparse invocation does not start from the current Neuron frontier"
@@ -315,8 +315,7 @@ impl AgentdIntelligenceInvocationProviderV1 for NeuronSealedInvocationProviderV1
         let mut invocation = self.inner.build(identity, record)?;
         if invocation.inputs.neuron_seal.is_some() {
             return Err(AgentdError::Protocol(
-                "canonical invocation provider attempted to supply its own Neuron seal"
-                    .to_string(),
+                "canonical invocation provider attempted to supply its own Neuron seal".to_string(),
             ));
         }
         let seal = self.neuron.seal(

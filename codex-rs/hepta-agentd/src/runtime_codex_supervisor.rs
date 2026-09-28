@@ -19,9 +19,7 @@ use super::super::{
     RuntimeCodexOwnerV1,
 };
 use crate::canonical_runtime_bootstrap::CanonicalRuntimeInstallationTokenV1;
-use crate::{
-    AgentdError, AgentdIdentity, PreparedAgentdIntelligenceRunV1, RunPhase, RunReceipt,
-};
+use crate::{AgentdError, AgentdIdentity, PreparedAgentdIntelligenceRunV1, RunPhase, RunReceipt};
 
 #[path = "runtime_codex_supervisor_worker.rs"]
 mod worker;
@@ -190,7 +188,9 @@ impl RuntimeCodexScheduleReservationV1 {
             }
         }
         let permit = self.permit.take().ok_or_else(|| {
-            AgentdError::Protocol("runtime.codex queue reservation was already consumed".to_string())
+            AgentdError::Protocol(
+                "runtime.codex queue reservation was already consumed".to_string(),
+            )
         })?;
         let _sender = permit.send(Job {
             input,
@@ -315,8 +315,8 @@ impl ProcessRuntimeCodexExecutorV1 {
             .is_some_and(|installed| installed.profile.is_canonical())
     }
 
-    pub(crate) fn agentd_supervisor_snapshot(
-    ) -> Result<Option<RuntimeCodexSupervisorSnapshotV1>, AgentdError> {
+    pub(crate) fn agentd_supervisor_snapshot()
+    -> Result<Option<RuntimeCodexSupervisorSnapshotV1>, AgentdError> {
         let Some(installed) = INSTALLATION
             .get()
             .filter(|installed| installed.profile.is_canonical())
@@ -341,8 +341,8 @@ impl ProcessRuntimeCodexExecutorV1 {
         }))
     }
 
-    pub(crate) fn reserve_canonical_run(
-    ) -> Result<RuntimeCodexScheduleReservationV1, AgentdError> {
+    pub(crate) fn reserve_canonical_run() -> Result<RuntimeCodexScheduleReservationV1, AgentdError>
+    {
         let installed = Arc::clone(INSTALLATION.get().ok_or_else(|| {
             AgentdError::Invalid(
                 "canonical intelligence has no installed runtime.codex supervisor".to_string(),
@@ -415,9 +415,7 @@ impl ProcessRuntimeCodexExecutorV1 {
         let mut receiver = installed
             .receiver
             .lock()
-            .map_err(|_| {
-                AgentdError::Protocol("runtime.codex receiver is poisoned".to_string())
-            })?
+            .map_err(|_| AgentdError::Protocol("runtime.codex receiver is poisoned".to_string()))?
             .take()
             .ok_or_else(|| {
                 AgentdError::Protocol(
@@ -597,9 +595,8 @@ fn validate_input(
     input: &RuntimeCodexExecutionInputV1,
 ) -> Result<(), AgentdError> {
     let context = prepared.context_attachment();
-    let context_digest = Digest32::from_str(&context.context_digest).map_err(|_| {
-        AgentdError::Protocol("canonical context digest is invalid".to_string())
-    })?;
+    let context_digest = Digest32::from_str(&context.context_digest)
+        .map_err(|_| AgentdError::Protocol("canonical context digest is invalid".to_string()))?;
     if record.snapshot.run_id.as_str() != prepared.envelope.run_id.as_str()
         || record.snapshot.run_id.as_str() != receipt.run_id
         || record.snapshot.run_id.as_str() != input.run_id().as_str()

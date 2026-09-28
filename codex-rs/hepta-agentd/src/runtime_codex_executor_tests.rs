@@ -275,7 +275,10 @@ async fn witness_without_archive_blocks_identity_resurrection() {
         )
         .await
         .expect_err("witness without archive must block redispatch");
-    assert!(error.to_string().contains("witness exists without"), "{error}");
+    assert!(
+        error.to_string().contains("witness exists without"),
+        "{error}"
+    );
     assert_eq!(std::fs::read(&fixture.counter).expect("counter"), b"x");
     assert!(!fixture.resume_counter.exists());
 }
@@ -299,8 +302,9 @@ printf '%s\n' '__TERMINAL_JSON__'
         input_digest,
     )
     .expect("durable manifest");
-    assert!(!persistence::dispatch_is_fenced(&prepared.paths, &prepared.manifest)
-        .expect("fence state"));
+    assert!(
+        !persistence::dispatch_is_fenced(&prepared.paths, &prepared.manifest).expect("fence state")
+    );
 
     let report = fixture
         .executor
@@ -315,11 +319,7 @@ printf '%s\n' '__TERMINAL_JSON__'
 
     let receipt = fixture
         .executor
-        .execute(
-            fixture.owner.clone(),
-            exact_input,
-            CancellationToken::new(),
-        )
+        .execute(fixture.owner.clone(), exact_input, CancellationToken::new())
         .await
         .expect("matching authenticated retry may finish first dispatch");
     assert!(receipt.succeeded());
@@ -416,11 +416,7 @@ printf '%s\n' '__TERMINAL_JSON__'
 
     let error = fixture
         .executor
-        .execute(
-            fixture.owner.clone(),
-            exact_input,
-            CancellationToken::new(),
-        )
+        .execute(fixture.owner.clone(), exact_input, CancellationToken::new())
         .await
         .expect_err("corrupt fence must fail closed");
     assert!(error.to_string().contains("dispatch fence"), "{error}");

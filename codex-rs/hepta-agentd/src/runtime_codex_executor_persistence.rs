@@ -195,26 +195,28 @@ pub(super) fn dispatch_is_fenced(
     paths: &OperationPaths,
     manifest: &RuntimeCodexJobManifestV1,
 ) -> Result<bool, AgentdError> {
-    let fence: RuntimeCodexDispatchFenceV1 = match read_bounded_json(&paths.dispatch_fence, 16 * 1024)
-    {
-        Ok(value) => value,
-        Err(AgentdError::Io(error)) if error.kind() == std::io::ErrorKind::NotFound => {
-            // A native worker journal means a prior process crossed the process
-            // boundary even if the outer fence was lost. Never infer Fresh in
-            // that state; require reconcile-only behavior.
-            return match std::fs::symlink_metadata(&paths.native_journal) {
-                Ok(metadata) if metadata.is_file() && !metadata.file_type().is_symlink() => Ok(true),
-                Ok(_) => Err(AgentdError::Protocol(
-                    "runtime.codex native journal is not a regular file".to_string(),
-                )),
-                Err(native_error) if native_error.kind() == std::io::ErrorKind::NotFound => {
-                    Ok(false)
-                }
-                Err(native_error) => Err(native_error.into()),
-            };
-        }
-        Err(error) => return Err(error),
-    };
+    let fence: RuntimeCodexDispatchFenceV1 =
+        match read_bounded_json(&paths.dispatch_fence, 16 * 1024) {
+            Ok(value) => value,
+            Err(AgentdError::Io(error)) if error.kind() == std::io::ErrorKind::NotFound => {
+                // A native worker journal means a prior process crossed the process
+                // boundary even if the outer fence was lost. Never infer Fresh in
+                // that state; require reconcile-only behavior.
+                return match std::fs::symlink_metadata(&paths.native_journal) {
+                    Ok(metadata) if metadata.is_file() && !metadata.file_type().is_symlink() => {
+                        Ok(true)
+                    }
+                    Ok(_) => Err(AgentdError::Protocol(
+                        "runtime.codex native journal is not a regular file".to_string(),
+                    )),
+                    Err(native_error) if native_error.kind() == std::io::ErrorKind::NotFound => {
+                        Ok(false)
+                    }
+                    Err(native_error) => Err(native_error.into()),
+                };
+            }
+            Err(error) => return Err(error),
+        };
     validate_dispatch_fence(&fence, manifest)?;
     Ok(true)
 }
@@ -599,10 +601,7 @@ pub(super) fn validate_protected_file(
     Ok(())
 }
 
-pub(super) fn deadline_instant(
-    deadline_ms: u64,
-    reconciled: bool,
-) -> Result<Instant, AgentdError> {
+pub(super) fn deadline_instant(deadline_ms: u64, reconciled: bool) -> Result<Instant, AgentdError> {
     let now_ms = unix_time_ms()?;
     let duration = if deadline_ms > now_ms {
         Duration::from_millis(deadline_ms - now_ms)
@@ -718,10 +717,7 @@ fn validate_read_path(path: &Path) -> Result<(), AgentdError> {
 
 fn require_canonical_directory(path: &Path, label: &str) -> Result<(), AgentdError> {
     let metadata = std::fs::symlink_metadata(path)?;
-    if metadata.file_type().is_symlink()
-        || !metadata.is_dir()
-        || path.canonicalize()? != path
-    {
+    if metadata.file_type().is_symlink() || !metadata.is_dir() || path.canonicalize()? != path {
         return Err(AgentdError::Invalid(format!(
             "{label} must be an absolute canonical non-symlink directory: {}",
             path.display()

@@ -56,21 +56,11 @@ const MAX_EXECUTION_TIMEOUT: Duration = Duration::from_secs(3_600);
 const MIN_INTERRUPT_GRACE: Duration = Duration::from_millis(100);
 const MAX_INTERRUPT_GRACE: Duration = Duration::from_secs(30);
 
-pub type RuntimeCodexExecutionFuture<'a> = Pin<
-    Box<
-        dyn Future<Output = Result<RuntimeCodexExecutionReceiptV1, AgentdError>>
-            + Send
-            + 'a,
-    >,
->;
+pub type RuntimeCodexExecutionFuture<'a> =
+    Pin<Box<dyn Future<Output = Result<RuntimeCodexExecutionReceiptV1, AgentdError>> + Send + 'a>>;
 
-pub type RuntimeCodexReconcileFuture<'a> = Pin<
-    Box<
-        dyn Future<Output = Result<RuntimeCodexReconcileReportV1, AgentdError>>
-            + Send
-            + 'a,
-    >,
->;
+pub type RuntimeCodexReconcileFuture<'a> =
+    Pin<Box<dyn Future<Output = Result<RuntimeCodexReconcileReportV1, AgentdError>> + Send + 'a>>;
 
 /// Minimal immutable owner identity required by the process boundary.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -90,8 +80,7 @@ impl RuntimeCodexOwnerV1 {
     ) -> Result<Self, AgentdError> {
         if generation == 0 || !agentd_socket.is_absolute() || !home_root.is_absolute() {
             return Err(AgentdError::Invalid(
-                "runtime.codex owner requires a non-zero generation and absolute paths"
-                    .to_string(),
+                "runtime.codex owner requires a non-zero generation and absolute paths".to_string(),
             ));
         }
         Ok(Self {
@@ -338,7 +327,10 @@ impl fmt::Debug for ProcessRuntimeCodexExecutorV1 {
                 "final_use_authority_config",
                 &self.final_use_authority_config,
             )
-            .field("final_use_authority_digest", &self.final_use_authority_digest)
+            .field(
+                "final_use_authority_digest",
+                &self.final_use_authority_digest,
+            )
             .field("journal_root", &self.journal_root)
             .field("maximum_in_flight", &self.maximum_in_flight)
             .field("interrupt_grace", &self.interrupt_grace)
@@ -450,10 +442,7 @@ impl ProcessRuntimeCodexExecutorV1 {
                 ..receipt
             });
         }
-        let fresh_input = if persistence::dispatch_is_fenced(
-            &prepared.paths,
-            &prepared.manifest,
-        )? {
+        let fresh_input = if persistence::dispatch_is_fenced(&prepared.paths, &prepared.manifest)? {
             None
         } else {
             Some(&input)
@@ -467,11 +456,7 @@ impl ProcessRuntimeCodexExecutorV1 {
             cancellation,
         )
         .await?;
-        persistence::write_receipt(
-            &prepared.paths.receipt,
-            &prepared.manifest,
-            &receipt,
-        )?;
+        persistence::write_receipt(&prepared.paths.receipt, &prepared.manifest, &receipt)?;
         Ok(receipt)
     }
 
@@ -509,29 +494,21 @@ impl ProcessRuntimeCodexExecutorV1 {
                 .ok_or_else(|| AgentdError::Protocol("recovery counter overflow".to_string()))?;
             let paths = persistence::OperationPaths::for_directory(&directory);
             let manifest = persistence::read_manifest(&paths.manifest)?;
-            persistence::validate_manifest_owner(
-                &manifest,
-                &owner,
-                self.worker_artifact_digest,
-            )?;
+            persistence::validate_manifest_owner(&manifest, &owner, self.worker_artifact_digest)?;
             let run_id = manifest.run_id.clone();
             let operation_lock = self.operation_lock_for(&run_id)?;
             let guard = operation_lock.lock().await;
             let result = async {
                 if persistence::read_receipt_if_present(&paths.receipt, &manifest)?.is_some() {
-                    report.already_terminal = report
-                        .already_terminal
-                        .checked_add(1)
-                        .ok_or_else(|| {
+                    report.already_terminal =
+                        report.already_terminal.checked_add(1).ok_or_else(|| {
                             AgentdError::Protocol("recovery counter overflow".to_string())
                         })?;
                     return Ok(());
                 }
                 if !persistence::dispatch_is_fenced(&paths, &manifest)? {
-                    report.prepared_unfenced = report
-                        .prepared_unfenced
-                        .checked_add(1)
-                        .ok_or_else(|| {
+                    report.prepared_unfenced =
+                        report.prepared_unfenced.checked_add(1).ok_or_else(|| {
                             AgentdError::Protocol("recovery counter overflow".to_string())
                         })?;
                     report.unresolved = report.unresolved.checked_add(1).ok_or_else(|| {
@@ -551,24 +528,19 @@ impl ProcessRuntimeCodexExecutorV1 {
                 {
                     Ok(receipt) => {
                         persistence::write_receipt(&paths.receipt, &manifest, &receipt)?;
-                        report.reconciled_terminal = report
-                            .reconciled_terminal
-                            .checked_add(1)
-                            .ok_or_else(|| {
+                        report.reconciled_terminal =
+                            report.reconciled_terminal.checked_add(1).ok_or_else(|| {
                                 AgentdError::Protocol("recovery counter overflow".to_string())
                             })?;
                     }
                     Err(_) => {
-                        report.fenced_unresolved = report
-                            .fenced_unresolved
-                            .checked_add(1)
-                            .ok_or_else(|| {
+                        report.fenced_unresolved =
+                            report.fenced_unresolved.checked_add(1).ok_or_else(|| {
                                 AgentdError::Protocol("recovery counter overflow".to_string())
                             })?;
-                        report.unresolved =
-                            report.unresolved.checked_add(1).ok_or_else(|| {
-                                AgentdError::Protocol("recovery counter overflow".to_string())
-                            })?;
+                        report.unresolved = report.unresolved.checked_add(1).ok_or_else(|| {
+                            AgentdError::Protocol("recovery counter overflow".to_string())
+                        })?;
                     }
                 }
                 Ok(())

@@ -39,12 +39,8 @@ impl AgentdControlServer {
     ) -> Result<Self, AgentdError> {
         let identity = state.identity().clone();
         let control_shutdown = CancellationToken::new();
-        let inner = base::AgentdControlServer::bind(
-            socket_path,
-            state,
-            control_shutdown.clone(),
-        )
-        .await?;
+        let inner =
+            base::AgentdControlServer::bind(socket_path, state, control_shutdown.clone()).await?;
         Ok(Self {
             inner,
             identity,

@@ -15,12 +15,7 @@ fn canonical_runtime_profile_is_closed_world() {
         (false, true, false, "both a runner"),
         (true, false, true, "both a runner"),
         (false, true, true, "both a runner"),
-        (
-            true,
-            true,
-            false,
-            "installed runtime.codex execution owner",
-        ),
+        (true, true, false, "installed runtime.codex execution owner"),
         (
             false,
             false,
