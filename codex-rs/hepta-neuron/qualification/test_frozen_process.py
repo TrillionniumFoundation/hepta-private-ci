@@ -18,6 +18,8 @@ from decision_cell_process import build_request, canonical, MAX_FRAME
 HELPER = r'''
 import hashlib,json,sys,time,os
 ready=json.loads(sys.argv[1]);mode=sys.argv[2]
+with open(os.path.join(os.environ["HEPTA_DECISIONCELL_PRIVATE_ROOT"], "private-model-copy"), "wb") as snapshot:
+    snapshot.write(b"fixture-private-copy")
 def emit(x):
     print(json.dumps(x,separators=(",",":")),flush=True)
 if mode=="startup_hang":
@@ -72,6 +74,7 @@ class FrozenProcessTests(unittest.TestCase):
                              deadline_ns=time.monotonic_ns() + 10**10)
 
     def assert_reaped(self, child):
+        self.assertFalse(child.private_snapshot_root.exists(), "private model copy survived cleanup")
         self.assertIsNotNone(child._process.poll())
         with self.assertRaises(ProcessLookupError):
             os.kill(child.pid, 0)

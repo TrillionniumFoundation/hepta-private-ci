@@ -224,3 +224,10 @@ base and trained tensors, reuses a resident worker, verifies original reply reus
 checks lookup after replacement, and interrupts a real model child. Its report
 retains exact source/artifact identity and does not claim production activation,
 external action success, independent acceptance or prospective efficacy.
+
+The process host owns the private model snapshot parent and removes only that
+created directory after confirmed child exit. Hard cancellation cannot rely on a
+child's `finally` cleanup. If exit or cleanup is unconfirmed, new calls remain
+closed and a later close can finish cleanup; the directory is not deleted while a
+child may still be running. Host crash/power-loss cleanup requires the deployment
+supervisor's own retained launch inventory and is not claimed by these tests.

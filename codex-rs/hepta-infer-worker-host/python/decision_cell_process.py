@@ -17,6 +17,7 @@ import selectors
 import signal
 import subprocess
 import threading
+import tempfile
 import time
 from typing import Any, Mapping, Sequence
 
@@ -108,12 +109,18 @@ class FrozenEncoderProcess:
         self._lock = threading.Lock()
         self._closed = False
         self._buffer = bytearray()
-        self._process = subprocess.Popen(list(command), stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL, env=dict(environment), close_fds=True, start_new_session=True, bufsize=0)
-        self.pid = self._process.pid
-        os.set_blocking(self._process.stdin.fileno(), False)
-        os.set_blocking(self._process.stdout.fileno(), False)
+        self._process = None
+        self._reaped = False
+        self._private = tempfile.TemporaryDirectory(prefix="hepta-worker-owner-")
+        self.private_snapshot_root = Path(self._private.name)
+        child_environment = dict(environment)
+        child_environment["HEPTA_DECISIONCELL_PRIVATE_ROOT"] = str(self.private_snapshot_root)
         try:
+            self._process = subprocess.Popen(list(command), stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL, env=child_environment, close_fds=True, start_new_session=True, bufsize=0)
+            self.pid = self._process.pid
+            os.set_blocking(self._process.stdin.fileno(), False)
+            os.set_blocking(self._process.stdout.fileno(), False)
             deadline = time.monotonic_ns() + int(startup_seconds * 10**9)
             ready = _json(self._read(deadline, None))
             if ready != self.expected:
@@ -258,15 +265,19 @@ class FrozenEncoderProcess:
                     raise WorkerTransportError("invalid probability simplex")
 
     def close(self) -> None:
-        if self._closed:
+        if self._reaped:
             return
         self._closed = True
-        try:
-            os.killpg(self.pid, signal.SIGKILL)
-        except ProcessLookupError:
-            pass
-        finally:
+        if self._process is not None:
+            try:
+                os.killpg(self.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            # Retain the handle and owned directory if physical exit is uncertain.
+            # A later close may complete cleanup; new requests stay prohibited.
             self._process.wait(timeout=5)
             self._process.stdin.close()
             self._process.stdout.close()
-            self._buffer.clear()
+        self._private.cleanup()
+        self._buffer.clear()
+        self._reaped = True

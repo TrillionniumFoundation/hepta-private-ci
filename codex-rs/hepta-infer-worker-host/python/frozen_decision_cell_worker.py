@@ -10,6 +10,7 @@ import argparse
 import contextlib
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import sys
@@ -167,7 +168,8 @@ def main() -> None:
             manifest_path=args.manifest, manifest_sha256=args.manifest_sha256,
             weights_path=args.weights, weights_sha256=args.weights_sha256,
             expected_base_snapshot=args.base_snapshot_sha256,
-            expected_runtime_profile=profile)
+            expected_runtime_profile=profile,
+            snapshot_parent=Path(os.environ["HEPTA_DECISIONCELL_PRIVATE_ROOT"]))
     try:
         session = WorkerSession(model, args.session_id)
         sys.stdout.buffer.write(_canonical({"schema": "hepta.frozen-encoder-ready.v1",

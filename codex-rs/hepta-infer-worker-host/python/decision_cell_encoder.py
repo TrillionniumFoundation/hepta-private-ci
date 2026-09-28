@@ -111,7 +111,7 @@ class FrozenMdebertaDecisionCellV2:
     """
     def __init__(self, *, model_path: Path, manifest_path: Path, manifest_sha256: str,
                  weights_path: Path, weights_sha256: str, expected_base_snapshot: str,
-                 expected_runtime_profile: dict[str, Any]):
+                 expected_runtime_profile: dict[str, Any], snapshot_parent: Path | None = None):
         self._closed = True
         self._private = None
         self._model = None
@@ -127,7 +127,12 @@ class FrozenMdebertaDecisionCellV2:
             expected_base_snapshot=expected_base_snapshot,
             expected_runtime_profile=expected_runtime_profile)
         try:
-            self._private = tempfile.TemporaryDirectory(prefix="hepta-frozen-encoder-")
+            if snapshot_parent is not None:
+                info = snapshot_parent.lstat()
+                if (not snapshot_parent.is_absolute() or not stat.S_ISDIR(info.st_mode) or
+                        info.st_uid != os.getuid() or info.st_mode & 0o077):
+                    raise ValueError("private snapshot parent must be an owned mode-0700 directory")
+            self._private = tempfile.TemporaryDirectory(prefix="hepta-frozen-encoder-", dir=snapshot_parent)
             _copy_base(model_path, Path(self._private.name), manifest["base_model"])
             self._tokenizer, self._model = _load_backbone(Path(self._private.name))
             self._closed = False
