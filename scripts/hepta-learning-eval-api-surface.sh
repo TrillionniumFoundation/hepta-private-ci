@@ -44,9 +44,27 @@ print(result)
 PY
 }
 
+# Cargo commonly reports the package rlib in target/debug while its transitive
+# rlibs live in target/debug/deps. Direct rustc fixtures must search the latter;
+# otherwise a valid public crate is misdiagnosed as missing before the intended
+# visibility or trait-bound assertion is reached.
+dependency_dir() {
+  local rlib="$1"
+  local directory
+  directory="$(dirname "${rlib}")"
+  if [[ "$(basename "${directory}")" == "deps" ]]; then
+    printf '%s\n' "${directory}"
+  elif [[ -d "${directory}/deps" ]]; then
+    printf '%s\n' "${directory}/deps"
+  else
+    echo "compiler-reported dependency directory is missing for ${rlib}" >&2
+    return 1
+  fi
+}
+
 cargo build --locked -p codex-hepta-intelligence-eval --message-format=json >"${tmp}/default-build.jsonl"
 rlib="$(artifact "${tmp}/default-build.jsonl" default)"
-deps="$(dirname "${rlib}")"
+deps="$(dependency_dir "${rlib}")"
 
 cat >"${tmp}/positive.rs" <<'RS'
 use codex_hepta_intelligence_eval::admit_signed_eligibility_v2;
@@ -191,8 +209,9 @@ done
 cargo build --locked -p codex-hepta-intelligence-eval --features trusted-inprocess-eval \
   --message-format=json >"${tmp}/compat-build.jsonl"
 compat="$(artifact "${tmp}/compat-build.jsonl" compat)"
+compat_deps="$(dependency_dir "${compat}")"
 printf 'use codex_hepta_intelligence_eval::ProductEvaluationRunnerV1;\nfn main() {}\n' >"${tmp}/compat.rs"
 rustc --edition=2024 --crate-name learning_eval_compat_surface "${tmp}/compat.rs" \
-  --extern "codex_hepta_intelligence_eval=${compat}" -L "dependency=$(dirname "${compat}")" \
+  --extern "codex_hepta_intelligence_eval=${compat}" -L "dependency=${compat_deps}" \
   -o "${tmp}/compat"
 printf '%s\n' '{"schema":"hepta.learning-eval.api-surface.v1","publicAdmission":true,"publicRecordedRunner":true,"verifiedRecoveryPublic":true,"callerDecisionDecoderAccepted":false,"unverifiedPublicationRecoveryPublic":false,"lowLevelV2Public":false,"lowLevelV3Public":false,"volatileJournalDefaultAccepted":false,"rawRunnerDefaultPublic":false,"rawRunnerExplicitCompatibilityPublic":true}'
