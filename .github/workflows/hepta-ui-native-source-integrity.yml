@@ -1,0 +1,52 @@
+name: ui.native source integrity
+
+on:
+  push:
+    branches: [work/ui-native-qualified-integration-20260928]
+    paths:
+      - apps/hepta-native/**
+      - docs/modules/ui.native/**
+      - scripts/hepta_ui_native*.py
+      - scripts/test_hepta_ui_native*.py
+      - .github/workflows/hepta-ui-native-source-integrity.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-native-source-integrity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inspect:
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Retain exact committed source before checks (not qualification)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          mkdir -p /tmp/ui-native-source
+          git archive --format=tar HEAD | gzip -n > /tmp/ui-native-source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > /tmp/ui-native-source/identity.txt
+          sha256sum /tmp/ui-native-source/source.tar.gz > /tmp/ui-native-source/source.sha256
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-native-source-integrity-${{ github.sha }}-${{ github.run_attempt }}
+          path: /tmp/ui-native-source
+          if-no-files-found: error
+          retention-days: 7
+      - name: Source and evidence infrastructure regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_hepta_ui_native*.py' -v
+          test -z "$(git status --porcelain)"
