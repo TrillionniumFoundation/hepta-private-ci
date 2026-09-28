@@ -1,7 +1,8 @@
 name: Runtime Agentd apply reviewed instance patch
 
-# Administrator retrigger: execute the existing content-addressed patch through
-# its compile, product-E2E and strict-lint gates before publishing source.
+# Execute the existing content-addressed patch through compile, product-E2E and
+# strict-lint gates before publishing source. This workflow is intentionally
+# one-shot and removes itself together with the patch carrier after success.
 on:
   push:
     branches:
@@ -20,9 +21,7 @@ concurrency:
 jobs:
   apply-test-push:
     if: github.actor != 'github-actions[bot]'
-    runs-on:
-      group: trillionnium-android-gpu
-      labels: [self-hosted, linux, x64]
+    runs-on: ubuntu-24.04
     timeout-minutes: 180
     env:
       BASE_SHA: 35a87891852355e75a350973c33871d2b0889fd5
@@ -46,13 +45,16 @@ jobs:
           test -z "$unexpected"
           printf '%s  %s\n' "$PATCH_SHA256" "$PATCH_PATH" | sha256sum -c -
           gzip -dc "$PATCH_PATH" > "$RUNNER_TEMP/runtime-agentd-instance.patch"
-          git apply --check "$RUNNER_TEMP/runtime-agentd-instance.patch"
+          # One hunk is already present in the exact source (`_error`); use the
+          # index blobs for a deterministic three-way application and reject
+          # every unresolved hunk.
+          git apply --3way "$RUNNER_TEMP/runtime-agentd-instance.patch"
+          test -z "$(find codex-rs/hepta-agentd -name '*.rej' -print -quit)"
 
-      - name: Apply source patch and remove one-shot carrier
+      - name: Remove one-shot carrier
         shell: bash
         run: |
           set -euo pipefail
-          git apply "$RUNNER_TEMP/runtime-agentd-instance.patch"
           rm "$PATCH_PATH"
           rm .github/workflows/runtime-agentd-apply-instance-patch.yml
           git diff --check
