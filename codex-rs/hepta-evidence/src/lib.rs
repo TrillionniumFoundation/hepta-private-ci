@@ -28,7 +28,56 @@ mod provider_insert;
 mod provider_record;
 mod provider_store;
 mod publication;
-mod qualification;
+mod qualification {
+    /// SQLx 0.9 requires an explicit safety witness for runtime-owned SQL text.
+    /// This adapter is scoped to qualification.rs, whose dynamic strings only
+    /// select a closed, source-controlled column inventory; values remain bound.
+    mod sqlx {
+        pub(super) use ::sqlx::Row;
+        pub(super) use ::sqlx::Sqlite;
+        pub(super) use ::sqlx::SqliteConnection;
+        pub(super) use ::sqlx::SqlitePool;
+        pub(super) use ::sqlx::Transaction;
+
+        pub(super) mod sqlite {
+            pub(super) use ::sqlx::sqlite::SqliteRow;
+        }
+
+        pub(super) trait AuditedQualificationSql {
+            type Safe: ::sqlx::SqlSafeStr;
+
+            fn into_safe(self) -> Self::Safe;
+        }
+
+        impl<'a> AuditedQualificationSql for &'a str {
+            type Safe = ::sqlx::AssertSqlSafe<&'a str>;
+
+            fn into_safe(self) -> Self::Safe {
+                ::sqlx::AssertSqlSafe(self)
+            }
+        }
+
+        impl<'a> AuditedQualificationSql for &'a String {
+            type Safe = ::sqlx::AssertSqlSafe<&'a str>;
+
+            fn into_safe(self) -> Self::Safe {
+                ::sqlx::AssertSqlSafe(self.as_str())
+            }
+        }
+
+        pub(super) fn query<'a, DB, S>(
+            sql: S,
+        ) -> ::sqlx::query::Query<'a, DB, <DB as ::sqlx::Database>::Arguments>
+        where
+            DB: ::sqlx::Database,
+            S: AuditedQualificationSql,
+        {
+            ::sqlx::query(sql.into_safe())
+        }
+    }
+
+    include!("qualification.rs");
+}
 mod qualification_commitment;
 mod qualification_paging;
 mod qualification_policy;
