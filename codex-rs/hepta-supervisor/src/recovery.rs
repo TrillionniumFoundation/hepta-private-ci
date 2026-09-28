@@ -24,6 +24,9 @@ use crate::lease::read_lease;
 use crate::lease::read_matrix_lease;
 use crate::lease::remove_lease;
 use crate::lease::write_lease;
+use crate::restart_lineage;
+use crate::restart_lineage::RestartProcessWitness;
+use crate::restart_lineage::RestartRecoveryRole;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::MatrixRuntimePhase;
@@ -115,7 +118,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     pub(crate) fn recover_restart_budget(
-        &self,
+        &mut self,
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
@@ -124,23 +127,91 @@ impl<D: ProcessDriver> Supervisor<D> {
         if control_intent::cancel_restart_if_unresolved(record.layout.run_root(), agent_id)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         {
+            let lineage = restart_lineage::cancel(record.layout.run_root(), agent_id)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()));
             slot.restart_pending = false;
             slot.restart_not_before = None;
-            return Ok(());
+            return lineage;
         }
         let pending = crate::restart_budget::pending_restart(
             record.layout.run_root(),
             self.config.restart_max_attempts,
         )
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        if let Some(claim) = pending {
-            slot.restart_attempt = claim.attempt;
-            slot.restart_not_before = Some(deadline(now, claim.backoff)?);
-            // Until the durable restart owner distinguishes predecessor from
-            // replacement, an adopted runtime must not make the claim vanish.
-            // Keep the replacement intent pending; tick starts it only after
-            // exact predecessor exit and lease cleanup leave runtime absent.
-            slot.restart_pending = true;
+        let Some(claim) = pending else {
+            restart_lineage::cancel_if_budget_absent(record.layout.run_root(), agent_id)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            slot.restart_pending = false;
+            slot.restart_not_before = None;
+            return Ok(());
+        };
+
+        slot.restart_attempt = claim.attempt;
+        let current = slot
+            .runtime
+            .as_ref()
+            .map(|runtime| {
+                RestartProcessWitness::new(
+                    runtime.spawn_generation,
+                    runtime.identity.clone(),
+                    runtime.release_id.clone(),
+                )
+            })
+            .transpose()
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let lease_present = read_lease(record.layout.run_root())?.is_some();
+        let role = restart_lineage::reconcile_pending(
+            record.layout.run_root(),
+            agent_id,
+            claim.window_started_unix_ms,
+            claim.attempt,
+            current.as_ref(),
+            lease_present,
+        );
+        let role = match role {
+            Ok(role) => role,
+            Err(error) => {
+                // Keep the daemon alive to retain any exact adopted handle, but
+                // make that handle non-serving and retry termination. The
+                // unresolved lineage remains durable and blocks replacement.
+                admission::reject_owned(agent_id, slot, now);
+                slot.restart_pending = false;
+                slot.restart_not_before = None;
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::DriverFault(bounded_message(error.to_string())),
+                );
+                return Ok(());
+            }
+        };
+        match role {
+            RestartRecoveryRole::PredecessorOwned => {
+                slot.restart_pending = true;
+                slot.restart_not_before = Some(deadline(now, claim.backoff)?);
+            }
+            RestartRecoveryRole::ReplacementPending => {
+                slot.restart_pending = true;
+                slot.restart_not_before = Some(deadline(now, claim.backoff)?);
+            }
+            RestartRecoveryRole::ReplacementStarted => {
+                // The exact replacement is already owned. Wait for its health
+                // transition; do not queue a second process and do not complete
+                // the budget merely because a process exists.
+                slot.restart_pending = false;
+                slot.restart_not_before = None;
+            }
+            RestartRecoveryRole::Completed => {
+                crate::restart_budget::complete_restart(record.layout.run_root())
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                slot.restart_pending = false;
+                slot.restart_not_before = None;
+            }
+            RestartRecoveryRole::Cancelled => {
+                crate::restart_budget::cancel_restart(record.layout.run_root())
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                slot.restart_pending = false;
+                slot.restart_not_before = None;
+            }
         }
         Ok(())
     }
@@ -212,7 +283,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             agent_id: agent_id.clone(),
             generation: starting.generation,
             fleet_root: self.registry.layout().fleet_root().as_path().to_path_buf(),
-            workspace: record.manifest.workspace.as_path().to_path_buf(),
+            workspace: record.manifest.workspace.as_path().to_path_path_buf(),
             home_root: record.layout.home_root().to_path_buf(),
             run_root: record.layout.run_root().to_path_buf(),
             control_socket: record.layout.agentd_control_socket().to_path_buf(),
@@ -258,10 +329,38 @@ impl<D: ProcessDriver> Supervisor<D> {
         let initialized = slot.runtime.as_ref().and_then(|runtime| {
             runtime.process.initialization_failure().map(str::to_owned)
         });
-        let launch = publication.and_then(|()| match initialized {
-            Some(error) => Err(driver_error(agent_id, crate::ProcessDriverError::new(error))),
-            None => Ok(()),
-        });
+        let launch = publication
+            .and_then(|()| match initialized {
+                Some(error) => Err(driver_error(agent_id, crate::ProcessDriverError::new(error))),
+                None => Ok(()),
+            })
+            .and_then(|()| {
+                let Some(claim) = crate::restart_budget::pending_restart(
+                    record.layout.run_root(),
+                    self.config.restart_max_attempts,
+                )
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+                else {
+                    return Ok(());
+                };
+                let runtime = slot.runtime.as_ref().ok_or_else(|| {
+                    SupervisorError::Invalid("restart replacement owner is absent".to_string())
+                })?;
+                let replacement = RestartProcessWitness::new(
+                    runtime.spawn_generation,
+                    runtime.identity.clone(),
+                    runtime.release_id.clone(),
+                )
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                restart_lineage::bind_replacement(
+                    record.layout.run_root(),
+                    agent_id,
+                    claim.window_started_unix_ms,
+                    claim.attempt,
+                    replacement,
+                )
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))
+            });
         if let Err(error) = launch {
             slot.exit_lease_removal = Some(if publication_failed {
                 ProcessLeaseRemoval::for_failed_publication(record.layout.run_root(), &lease)
@@ -271,6 +370,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             slot.pending_control = None;
             slot.restart_pending = false;
             slot.restart_not_before = None;
+            let _ = restart_lineage::cancel(record.layout.run_root(), agent_id);
+            let _ = crate::restart_budget::cancel_restart(record.layout.run_root());
             let termination = if let Some(runtime) = slot.runtime.as_mut() {
                 runtime.healthy = false;
                 runtime.fenced = true;
