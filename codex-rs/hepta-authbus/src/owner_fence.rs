@@ -11,13 +11,15 @@ static PROCESS_OWNERS: OnceLock<Mutex<HashSet<PathBuf>>> = OnceLock::new();
 
 /// Process-lifetime single-owner fence held on one securely opened inode.
 ///
-/// The file is opened without following the final symlink, validated through
-/// its descriptor and locked non-blockingly. The descriptor remains owned by
-/// this value, so normal exit and process death both release the fence. A local
-/// registry closes the process-associated `fcntl` same-process gap.
+/// The process-local claim is acquired before the lock file is opened. That
+/// ordering is security-sensitive: traditional POSIX record locks are process
+/// associated, so closing a second descriptor for the same inode can release a
+/// lock held through the first descriptor. Rejecting duplicate same-process
+/// owners before `open(2)` prevents a failed duplicate initialization from
+/// weakening the live owner's cross-process fence.
 pub(crate) struct OwnerFence {
     file: File,
-    path: PathBuf,
+    _process_claim: ProcessOwnerClaim,
 }
 
 impl OwnerFence {
@@ -32,28 +34,62 @@ impl OwnerFence {
         }
         let path = lock_path(database_path)?;
         validate_parent(&path)?;
+
+        // This claim must precede opening the lock inode. See the type-level
+        // comment above for the POSIX close/release hazard it prevents.
+        let process_claim = ProcessOwnerClaim::acquire(&path)?;
         let file = open_lock_file(&path)?;
         validate_open_lock_file(&file, &path)?;
-        claim_process_owner(&path)?;
-        if let Err(error) = acquire_process_lock(&file) {
-            release_process_owner(&path);
-            return Err(error);
-        }
+        acquire_process_lock(&file)?;
+
         // Ensure the pathname still names the locked inode before exposing the
         // host. Protected owner directories exclude unprivileged replacement.
         if let Err(error) = validate_open_lock_file(&file, &path) {
             release_process_lock(&file);
-            release_process_owner(&path);
             return Err(error);
         }
-        Ok(Self { file, path })
+        Ok(Self {
+            file,
+            _process_claim: process_claim,
+        })
     }
 }
 
 impl Drop for OwnerFence {
     fn drop(&mut self) {
         release_process_lock(&self.file);
-        release_process_owner(&self.path);
+        // Fields are dropped after this method. The file descriptor closes
+        // before `_process_claim` releases the same-process reservation.
+    }
+}
+
+struct ProcessOwnerClaim {
+    path: PathBuf,
+}
+
+impl ProcessOwnerClaim {
+    fn acquire(path: &Path) -> Result<Self, AuthBusAuthorityError> {
+        let mut owners = PROCESS_OWNERS
+            .get_or_init(|| Mutex::new(HashSet::new()))
+            .lock()
+            .map_err(|_| AuthBusAuthorityError::Storage("owner registry poisoned".into()))?;
+        if !owners.insert(path.to_path_buf()) {
+            return Err(AuthBusAuthorityError::OwnerAlreadyActive);
+        }
+        Ok(Self {
+            path: path.to_path_buf(),
+        })
+    }
+}
+
+impl Drop for ProcessOwnerClaim {
+    fn drop(&mut self) {
+        if let Ok(mut owners) = PROCESS_OWNERS
+            .get_or_init(|| Mutex::new(HashSet::new()))
+            .lock()
+        {
+            owners.remove(&self.path);
+        }
     }
 }
 
@@ -73,26 +109,6 @@ fn lock_path(database_path: &Path) -> Result<PathBuf, AuthBusAuthorityError> {
     // older SQLite-backed owner during a rolling upgrade.
     name.push(".authbus-owner-lock.sqlite");
     Ok(parent.join(name))
-}
-
-fn claim_process_owner(path: &Path) -> Result<(), AuthBusAuthorityError> {
-    let mut owners = PROCESS_OWNERS
-        .get_or_init(|| Mutex::new(HashSet::new()))
-        .lock()
-        .map_err(|_| AuthBusAuthorityError::Storage("owner registry poisoned".into()))?;
-    if !owners.insert(path.to_path_buf()) {
-        return Err(AuthBusAuthorityError::OwnerAlreadyActive);
-    }
-    Ok(())
-}
-
-fn release_process_owner(path: &Path) {
-    if let Ok(mut owners) = PROCESS_OWNERS
-        .get_or_init(|| Mutex::new(HashSet::new()))
-        .lock()
-    {
-        owners.remove(path);
-    }
 }
 
 #[cfg(unix)]
@@ -221,7 +237,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn rejects_a_second_live_owner_and_releases_after_drop() {
+    async fn rejects_duplicate_owner_before_open_and_releases_after_drop() {
         let root = private_root();
         let database = root.path().join("authority.sqlite");
         let first = OwnerFence::acquire(&database, "owner:first")
@@ -229,6 +245,10 @@ mod tests {
             .expect("first owner");
         assert!(matches!(
             OwnerFence::acquire(&database, "owner:second").await,
+            Err(AuthBusAuthorityError::OwnerAlreadyActive)
+        ));
+        assert!(matches!(
+            OwnerFence::acquire(&database, "owner:third").await,
             Err(AuthBusAuthorityError::OwnerAlreadyActive)
         ));
         drop(first);
