@@ -1,0 +1,253 @@
+name: cognitive-types-segmented-final
+
+on:
+  push:
+    branches: ['chatgpt/cognitive-types-final-slim-20260928']
+
+permissions:
+  contents: read
+
+jobs:
+  materialize:
+    if: ${{ github.event.head_commit.message == 'ci(cognitive.types): launch segmented final verifier' }}
+    runs-on: ubuntu-slim
+    timeout-minutes: 14
+    permissions:
+      contents: write
+    steps:
+      - name: Check out exact staged candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Install repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt
+      - name: Materialize normal source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          branch="${GITHUB_REF_NAME:?missing GITHUB_REF_NAME}"
+          remote_head="$(git ls-remote origin "refs/heads/${branch}" | cut -f1)"
+          test "$remote_head" = "$GITHUB_SHA"
+
+          patch_file="$RUNNER_TEMP/cognitive-types-final.patch"
+          cat .github/cognitive-types-repair/part-*.patch > "$patch_file"
+          actual_digest="$(python3 - "$patch_file" <<'PY'
+          import hashlib
+          import pathlib
+          import sys
+          print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest())
+          PY
+          )"
+          test "$actual_digest" = '6b75ab829e85a28e316f948abf2ca613a24b954fa519195bea5b3a846439559a'
+          git apply --check "$patch_file"
+          git apply --index "$patch_file"
+
+          packages=(
+            codex-hepta-cognitive-types
+            codex-hepta-cognitive-store
+            codex-hepta-context-compiler
+            codex-hepta-intelligence
+            codex-hepta-memory-retrieval
+            codex-hepta-memory
+            codex-hepta-authbus
+            codex-hepta-agentd
+          )
+          for package in "${packages[@]}"; do
+            cargo fmt --manifest-path codex-rs/Cargo.toml --package "$package"
+          done
+
+          rm -rf .github/cognitive-types-repair
+          rm -f \
+            .github/workflows/cognitive-types-apply-final.yml \
+            .github/workflows/cognitive-types-apply-pocket4.yml \
+            .github/workflows/cognitive-types-apply-macbook.yml
+          git add -A
+          git diff --cached --check
+          test -z "$(find . -type d -name target -not -path './target' -print -quit)"
+
+          remote_head="$(git ls-remote origin "refs/heads/${branch}" | cut -f1)"
+          test "$remote_head" = "$GITHUB_SHA"
+          git config user.name 'Tomasrgbsf'
+          git config user.email 'tomasbraynt@gmail.com'
+          git commit -m 'fix(cognitive.types): close remaining qualification blockers'
+          git push origin "HEAD:refs/heads/${branch}"
+
+  static-contracts:
+    if: ${{ github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' }}
+    runs-on: ubuntu-slim
+    timeout-minutes: 14
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt
+      - name: Verify formatting, registries, vectors, and traceability
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          packages=(
+            codex-hepta-cognitive-types
+            codex-hepta-cognitive-store
+            codex-hepta-context-compiler
+            codex-hepta-intelligence
+            codex-hepta-memory-retrieval
+            codex-hepta-memory
+            codex-hepta-authbus
+            codex-hepta-agentd
+          )
+          for package in "${packages[@]}"; do
+            cargo fmt --manifest-path codex-rs/Cargo.toml --package "$package" -- --check
+          done
+          python3 scripts/hepta-hnmf.py self-test
+          python3 scripts/hepta-hnmf.py verify
+          python3 -m unittest discover -s qualification/cognitive-types-v1 -p 'test_*.py'
+          python3 qualification/cognitive-types-v1/verify_vectors.py
+          python3 qualification/cognitive-types-v1/verify_bound_vector.py
+          node qualification/cognitive-types-v1/verify_bound_vector.mjs
+          python3 qualification/cognitive-types-v2/verify_vectors.py
+          python3 qualification/cognitive-types-v1/render_traceability.py --check
+          test -z "$(git status --short)"
+
+  package-check:
+    if: ${{ github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - codex-hepta-cognitive-types
+          - codex-hepta-cognitive-store
+          - codex-hepta-context-compiler
+          - codex-hepta-intelligence
+          - codex-hepta-memory-retrieval
+          - codex-hepta-memory
+          - codex-hepta-authbus
+          - codex-hepta-agentd
+    runs-on: ubuntu-slim
+    timeout-minutes: 14
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Check all targets
+        run: cargo check --manifest-path codex-rs/Cargo.toml --locked --all-targets -p '${{ matrix.package }}'
+
+  package-test:
+    if: ${{ github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - codex-hepta-cognitive-types
+          - codex-hepta-cognitive-store
+          - codex-hepta-context-compiler
+          - codex-hepta-intelligence
+          - codex-hepta-memory-retrieval
+          - codex-hepta-memory
+          - codex-hepta-authbus
+          - codex-hepta-agentd
+    runs-on: ubuntu-slim
+    timeout-minutes: 14
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Run package tests
+        run: cargo test --manifest-path codex-rs/Cargo.toml --locked -p '${{ matrix.package }}'
+
+  package-clippy:
+    if: ${{ github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - codex-hepta-cognitive-types
+          - codex-hepta-cognitive-store
+          - codex-hepta-context-compiler
+          - codex-hepta-intelligence
+          - codex-hepta-memory-retrieval
+          - codex-hepta-memory
+          - codex-hepta-authbus
+          - codex-hepta-agentd
+    runs-on: ubuntu-slim
+    timeout-minutes: 14
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: clippy
+      - name: Run strict Clippy
+        run: cargo clippy --manifest-path codex-rs/Cargo.toml --locked --all-targets -p '${{ matrix.package }}' -- -D warnings
+
+  fuzz-harness:
+    if: ${{ github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' }}
+    runs-on: ubuntu-slim
+    timeout-minutes: 14
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Compile all fuzz targets
+        run: cargo check --manifest-path codex-rs/hepta-cognitive-types/fuzz/Cargo.toml --all-targets
+
+  remove-verifier:
+    if: ${{ always() && github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' && needs.static-contracts.result == 'success' && needs.package-check.result == 'success' && needs.package-test.result == 'success' && needs.package-clippy.result == 'success' && needs.fuzz-harness.result == 'success' }}
+    needs:
+      - static-contracts
+      - package-check
+      - package-test
+      - package-clippy
+      - fuzz-harness
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Check out verified source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Remove temporary verifier from the verified tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          branch="${GITHUB_REF_NAME:?missing GITHUB_REF_NAME}"
+          remote_head="$(git ls-remote origin "refs/heads/${branch}" | cut -f1)"
+          test "$remote_head" = "$GITHUB_SHA"
+          rm .github/workflows/cognitive-types-segmented-final.yml
+          git add -A
+          git diff --cached --check
+          git config user.name 'Tomasrgbsf'
+          git config user.email 'tomasbraynt@gmail.com'
+          git commit -m 'ci(cognitive.types): remove temporary final verifier'
+          git push origin "HEAD:refs/heads/${branch}"
