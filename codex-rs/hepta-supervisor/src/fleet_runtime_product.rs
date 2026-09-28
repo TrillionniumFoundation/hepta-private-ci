@@ -311,7 +311,10 @@ fn observed_boot_identity() -> Result<String, SupervisorError> {
     let bytes = read_bounded("/proc/sys/kernel/random/boot_id", 4_096)?;
     // The digest is an opaque identity. Its numeric ordering is never a host
     // generation; the existing durable owner allocates that separately.
-    Ok(hex_prefix(&Sha256::digest(bytes.as_slice().trim_ascii()), 64))
+    Ok(hex_prefix(
+        &Sha256::digest(bytes.as_slice().trim_ascii()),
+        64,
+    ))
 }
 
 fn read_bounded(path: &str, maximum: usize) -> Result<Vec<u8>, SupervisorError> {
@@ -424,7 +427,8 @@ mod tests {
     #[test]
     fn actual_linux_boot_identity_is_stable_across_owner_reopens() {
         let directory = tempfile::tempdir().expect("tempdir");
-        let first = LocalFleetIdentityV1::discover_linux(directory.path()).expect("native discovery");
+        let first =
+            LocalFleetIdentityV1::discover_linux(directory.path()).expect("native discovery");
         let second = LocalFleetIdentityV1::discover_linux(directory.path()).expect("native reopen");
         assert_eq!(first.host_id, second.host_id);
         assert_eq!(first.host_generation, second.host_generation);
@@ -441,6 +445,9 @@ mod tests {
         symlink(&target, &link).expect("symlink");
         assert!(read_bounded(link.to_str().expect("path"), 32).is_err());
         assert!(open_product_owner_lock(&link).is_err());
-        assert_eq!(std::fs::read_to_string(target).expect("target"), "boot-identity");
+        assert_eq!(
+            std::fs::read_to_string(target).expect("target"),
+            "boot-identity"
+        );
     }
 }
