@@ -1,0 +1,117 @@
+{
+  "schema": "hepta.memory-retrieval.qualification-policy.v1",
+  "module": "memory.retrieval",
+  "implementationMap": "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json",
+  "sourceRoot": "codex-rs/hepta-memory-retrieval",
+  "activationMode": "compatibility",
+  "sourceInputs": [
+    ".github/workflows",
+    "MODULE.bazel",
+    "MODULE.bazel.lock",
+    "codex-rs",
+    "docs/modules/memory.retrieval",
+    "justfile",
+    "qualification/memory-retrieval",
+    "scripts"
+  ],
+  "sourceObjectInputs": [
+    "codex-rs/hepta-memory-retrieval"
+  ],
+  "promotionClaims": [
+    "productionImplementation",
+    "productExecutionProved",
+    "independentAcceptance",
+    "activation",
+    "release"
+  ],
+  "requiredChecks": [
+    {
+      "name": "Memory retrieval exact source",
+      "workflow": ".github/workflows/hepta-memory-retrieval-convergence.yml"
+    },
+    {
+      "name": "Memory retrieval source-head",
+      "workflow": ".github/workflows/hepta-memory-retrieval-convergence.yml"
+    },
+    {
+      "name": "Memory retrieval base-merge",
+      "workflow": ".github/workflows/hepta-memory-retrieval-convergence.yml"
+    },
+    {
+      "name": "Memory retrieval current-main",
+      "workflow": ".github/workflows/hepta-memory-retrieval-convergence.yml"
+    },
+    {
+      "name": "Memory retrieval structural probes",
+      "workflow": ".github/workflows/hepta-memory-retrieval-qualification-host.yml"
+    },
+    {
+      "name": "Memory retrieval maintenance tests",
+      "workflow": ".github/workflows/hepta-memory-retrieval-maintenance.yml"
+    },
+    {
+      "name": "Memory retrieval calibration contract",
+      "workflow": ".github/workflows/hepta-memory-retrieval-calibration.yml"
+    }
+  ],
+  "securityChecks": [
+    {
+      "name": "CodeQL",
+      "requiredConclusion": "success"
+    }
+  ],
+  "evidencePolicy": {
+    "artifactRetentionDays": 90,
+    "contentHashesRequired": true,
+    "externalImmutableRetentionRequiredForProduction": true
+  },
+  "e2eEvidence": {
+    "state": "missing_target_host",
+    "minimumSamplesPerCase": 100,
+    "requiredMetrics": [
+      "p50",
+      "p95",
+      "p99",
+      "max",
+      "cpu_time",
+      "peak_rss",
+      "allocation_count",
+      "allocated_bytes",
+      "sqlite_reads",
+      "sqlite_writes",
+      "sqlite_syncs",
+      "delivery_shadow_contention",
+      "worker_exit_latency"
+    ]
+  },
+  "calibrationEvidence": {
+    "state": "contract_only",
+    "requiresHeldOutQuality": true,
+    "requiresAblations": true
+  },
+  "externalGates": [
+    {
+      "name": "Memory retrieval target-host",
+      "state": "missing_external"
+    },
+    {
+      "name": "independent human exact-head acceptance",
+      "state": "missing_external"
+    },
+    {
+      "name": "external immutable raw-evidence retention",
+      "state": "missing_external"
+    },
+    {
+      "name": "protected killable worker and hard resource isolation",
+      "state": "missing_external"
+    }
+  ],
+  "claimBoundary": {
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  }
+}

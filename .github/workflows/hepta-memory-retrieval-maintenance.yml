@@ -1,0 +1,47 @@
+name: Hepta memory retrieval maintenance
+
+on:
+  pull_request: {}
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-retrieval-maintenance-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  maintenance:
+    name: Memory retrieval maintenance tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Run qualification, status, SLO, archive and source-refresh regressions
+        run: >-
+          python3 -m unittest -v
+          scripts.tests.test_hepta_memory_retrieval_qualification
+          scripts.tests.test_hepta_memory_retrieval_status
+          scripts.tests.test_hepta_memory_retrieval_workflow_policy
+          scripts.tests.test_hepta_memory_retrieval_slo
+          scripts.tests.test_hepta_memory_retrieval_archive
+          scripts.tests.test_hepta_memory_retrieval_refresh_map
+      - name: Enforce read-only retrieval workflows
+        run: python3 scripts/hepta_memory_retrieval_workflow_policy.py
+      - name: Verify retained original historical archive and canonical manifest
+        run: >-
+          python3 scripts/hepta_memory_retrieval_archive.py verify
+          qualification/memory-retrieval/BASELINES/808b68350dc4f9d1b542803ac75a8d7e255ee836dd95de2255ad42a57b23b212/receipt.json
+      - name: Preserve clean source
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=normal)"

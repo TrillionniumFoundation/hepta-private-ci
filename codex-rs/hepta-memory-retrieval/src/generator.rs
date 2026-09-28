@@ -19,6 +19,7 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
 use crate::CandidateUnionV1;
+use crate::ContradictionEvidenceV2;
 use crate::EngramDynamicsPolicyV1;
 use crate::EngramSnapshotV1;
 use crate::MAX_GENERATION_BOUND_CANDIDATES;
@@ -203,8 +204,10 @@ impl RetrievalGeneratorBatchV1 {
                 return Err(GeneratorErrorV1::ScoreOutOfRange);
             }
             ensure_digest("generator_candidate_support", candidate.support_digest)?;
-            if let Some(group) = candidate.contradiction_group_digest {
-                ensure_digest("generator_contradiction_group", group)?;
+            if let Some(claim) = candidate.contradiction_group_digest {
+                claim
+                    .validate(self.receipt.generation_vector_digest)
+                    .map_err(GeneratorErrorV1::Recall)?;
             }
             let identity = (
                 candidate.record.record_id.clone(),
@@ -467,14 +470,40 @@ pub fn recall_generated_with_engram(
     engram_snapshot: &EngramSnapshotV1,
     dynamics_policy: &EngramDynamicsPolicyV1,
 ) -> Result<GeneratedRecallV1, GeneratorErrorV1> {
+    recall_generated_with_engram_controlled(
+        cue,
+        policy,
+        input,
+        engram_snapshot,
+        dynamics_policy,
+        &crate::RecallWorkControlV1::compatibility(),
+    )
+}
+
+/// Host-bounded counterpart; interruption never publishes partial recall.
+pub fn recall_generated_with_engram_controlled(
+    cue: &MemoryCueV1,
+    policy: &RetrievalPolicyV1,
+    input: &GeneratedCandidateInputV1,
+    engram_snapshot: &EngramSnapshotV1,
+    dynamics_policy: &EngramDynamicsPolicyV1,
+    work: &crate::RecallWorkControlV1,
+) -> Result<GeneratedRecallV1, GeneratorErrorV1> {
+    work.checkpoint().map_err(GeneratorErrorV1::Recall)?;
     cue.validate().map_err(GeneratorErrorV1::Recall)?;
     input.validate()?;
     ensure_input_generation(cue, input)?;
     ensure_policy_generators(policy, input)?;
     let candidates = input.flattened_candidates()?;
-    let packet =
-        crate::recall_with_engram(cue, policy, candidates, engram_snapshot, dynamics_policy)
-            .map_err(|error| GeneratorErrorV1::Engram(error.to_string()))?;
+    let packet = crate::recall_with_engram_controlled(
+        cue,
+        policy,
+        candidates,
+        engram_snapshot,
+        dynamics_policy,
+        work,
+    )
+    .map_err(|error| GeneratorErrorV1::Engram(error.to_string()))?;
     let mut value = GeneratedRecallV1 {
         packet,
         generator_receipts: input
@@ -628,7 +657,7 @@ struct MergedCandidate {
     ood: ProbabilityQ32,
     support_digests: BTreeSet<Digest32>,
     receipt_digests: BTreeSet<Digest32>,
-    contradiction_group_digest: Option<Digest32>,
+    contradiction_group_digest: Option<ContradictionEvidenceV2>,
     generation_vector_digest: Digest32,
 }
 

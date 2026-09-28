@@ -134,6 +134,7 @@ pub use cognitive_retrieval::SourceRevalidationBinding;
 pub use cognitive_retrieval_adapter::OwnerRetrievalExecutionV1;
 pub use cognitive_retrieval_adapter::RetrievalExecutionContextV1;
 pub use cognitive_retrieval_adapter::execute_owner_observation;
+pub use cognitive_retrieval_adapter::execute_owner_observation_controlled;
 pub use cognitive_retrieval_adapter::sqlite_owner_cue_profile_digest;
 pub use cognitive_retrieval_adapter::sqlite_owner_retrieval_policy_v1;
 pub use cognitive_runtime::CognitiveRuntime;

@@ -16,6 +16,7 @@ use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
 use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_cognitive_store::ForgetMemoryDraft;
 use codex_hepta_cognitive_store::KgFactSetDraft;
+use codex_hepta_cognitive_store::KgRelationFactDraft;
 use codex_hepta_cognitive_store::MemoryDraft;
 use codex_hepta_cognitive_store::MemoryRevisionDraft;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
@@ -359,6 +360,53 @@ impl AgentdProductionWriterHost {
         })?;
         Ok(mutation
             .correct_with_kg(access, memory_id, expected_revision, source, draft, facts)
+            .await?)
+    }
+
+    pub async fn remember_with_assertions(
+        &self,
+        access: &CognitiveAccess,
+        source: &SourceDraft,
+        draft: &MemoryDraft,
+        affirmed: &KgFactSetDraft,
+        denied: &[KgRelationFactDraft],
+    ) -> Result<ProductionCognitiveMutationReceiptV1, AgentdError> {
+        let mutation = self.production_mutation().ok_or_else(|| {
+            AgentdError::Protocol(
+                "production cognitive mutation capability is not attached".to_string(),
+            )
+        })?;
+        Ok(mutation
+            .remember_with_assertions(access, source, draft, affirmed, denied)
+            .await?)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub async fn correct_with_assertions(
+        &self,
+        access: &CognitiveAccess,
+        memory_id: &StableMemoryId,
+        expected_revision: u64,
+        source: &SourceDraft,
+        draft: &MemoryRevisionDraft,
+        affirmed: &KgFactSetDraft,
+        denied: &[KgRelationFactDraft],
+    ) -> Result<ProductionCognitiveMutationReceiptV1, AgentdError> {
+        let mutation = self.production_mutation().ok_or_else(|| {
+            AgentdError::Protocol(
+                "production cognitive mutation capability is not attached".to_string(),
+            )
+        })?;
+        Ok(mutation
+            .correct_with_assertions(
+                access,
+                memory_id,
+                expected_revision,
+                source,
+                draft,
+                affirmed,
+                denied,
+            )
             .await?)
     }
 

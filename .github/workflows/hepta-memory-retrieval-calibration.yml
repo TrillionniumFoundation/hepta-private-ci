@@ -1,0 +1,62 @@
+name: Hepta memory retrieval calibration contract
+
+# Deliberately unfiltered: any exact-head source change invalidates calibration
+# evidence until the contract has been re-executed for that source.
+on:
+  pull_request: {}
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-retrieval-calibration-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  contract:
+    name: Memory retrieval calibration contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Compile strict calibration source
+        run: |
+          python3 -m py_compile \
+            scripts/hepta_memory_retrieval_calibration.py \
+            scripts/tests/test_hepta_memory_retrieval_calibration.py
+      - name: Execute calibration contract tests
+        run: |
+          python3 -m unittest -v \
+            scripts.tests.test_hepta_memory_retrieval_calibration
+      - name: Preserve claim boundary
+        run: |
+          python3 - <<'PY'
+          import pathlib
+          text = pathlib.Path(
+              "docs/modules/memory.retrieval/CALIBRATION_AND_ABLATIONS.md"
+          ).read_text()
+          for claim in (
+              "productionPolicyApproved",
+              "productionImplementation",
+              "productExecutionProved",
+              "independentAcceptance",
+              "activation",
+              "release",
+          ):
+              if claim not in text:
+                  raise SystemExit(f"missing explicit false claim boundary: {claim}")
+          PY
+      - name: Preserve clean source
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=normal)"

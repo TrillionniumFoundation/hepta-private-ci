@@ -284,3 +284,187 @@ fn indexed_historical_identity_does_not_accept_changed_assignment() {
     assert_eq!(writer.witness_frontier().expect("frontier"), before);
     assert_eq!(writer.snapshot().expect("snapshot").records().len(), 2);
 }
+
+#[test]
+fn product_sink_nonempty_context_is_a_preparation_not_an_exposure() {
+    let (_temp, sink) = sink();
+    let observation = observation("prepared-packet");
+    sink.append_preparation(
+        &owner(),
+        1,
+        707,
+        &observation,
+        &observation.selected_candidates,
+        Some(digest("exact-response")),
+        None,
+        ProbabilityQ32::ONE,
+    )
+    .expect("prepare");
+    let snapshot = sink
+        .writer
+        .lock()
+        .expect("lock")
+        .snapshot()
+        .expect("snapshot");
+    let LedgerEvent::RetrievalPrepared(prepared) = &snapshot.records()[0].event else {
+        panic!("product sink emitted a legacy exposure event");
+    };
+    assert!(!prepared.assignment.context_exposed);
+    assert!(prepared.assignment.delivered_candidate_indices.is_empty());
+    assert!(prepared.assignment.published_context_digest.is_none());
+    assert_eq!(prepared.prepared_candidate_indices, vec![0]);
+    assert_eq!(
+        prepared.prepared_context_digest,
+        Some(digest("exact-response"))
+    );
+}
+
+#[test]
+fn durable_native_reopen_never_promotes_write_ahead_dispatch_to_exposure() {
+    use crate::retrieval_delivery::RetrievalDeliveryStageV1;
+    use crate::retrieval_delivery::RetrievalNativeBindingV1;
+    use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+    use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+    use codex_hepta_infer_core::durable_control::native::NativeRequest;
+    use serde_json::json;
+
+    let (temp, sink) = sink();
+    let observation = observation("durable-reconciliation");
+    let context = digest("exact-response");
+    let first = sink
+        .append_preparation(
+            &owner(),
+            1,
+            707,
+            &observation,
+            &observation.selected_candidates,
+            Some(context),
+            None,
+            ProbabilityQ32::ONE,
+        )
+        .expect("durable preparation");
+    let snapshot = sink
+        .writer
+        .lock()
+        .expect("lock")
+        .snapshot()
+        .expect("snapshot");
+    let preparation_id = snapshot.records()[0].event.record_id().clone();
+    let binding = RetrievalNativeBindingV1 {
+        request_id: "native-request".to_string(),
+        principal_id: "principal".to_string(),
+        worker_generation: 7,
+    };
+    let journal_path = temp.path().join("native.journal");
+    let mut native = DurableInferenceControl::open(&journal_path, 16).expect("native owner");
+    let prepared = sink
+        .native_delivery_receipt(&preparation_id, &binding, &native)
+        .expect("prepared");
+    assert_eq!(prepared.stage, RetrievalDeliveryStageV1::AssignmentPrepared);
+    native
+        .reserve_native(
+            NativeRequest {
+                request_id: binding.request_id.clone(),
+                principal_id: binding.principal_id.clone(),
+                worker_generation: binding.worker_generation,
+                model: "model".to_string(),
+                payload_digest: digest("payload").to_string(),
+            },
+            2,
+        )
+        .expect("reserve");
+    let dispatch: NativeDispatch = serde_json::from_value(json!({
+        "thread_id": "thread", "model_provider": "provider",
+        "context_digest": digest("additional-context").to_string(),
+        "owner_context_digest": context.to_string(),
+    }))
+    .expect("dispatch");
+    native
+        .dispatch_native(&binding.request_id, dispatch)
+        .expect("write-ahead dispatch");
+    let before_crash = sink
+        .native_delivery_receipt(&preparation_id, &binding, &native)
+        .expect("WAL");
+    assert_eq!(
+        before_crash.stage,
+        RetrievalDeliveryStageV1::AssignmentPrepared
+    );
+    drop(native);
+    let mut native = DurableInferenceControl::open(&journal_path, 16).expect("reopen");
+    let after_crash = sink
+        .native_delivery_receipt(&preparation_id, &binding, &native)
+        .expect("reconcile");
+    assert_eq!(after_crash, before_crash);
+    native
+        .native_started(&binding.request_id, "turn".to_string())
+        .expect("durable native start");
+    let started = sink
+        .native_delivery_receipt(&preparation_id, &binding, &native)
+        .expect("start");
+    assert_eq!(started.stage, RetrievalDeliveryStageV1::NativeStarted);
+    drop(native);
+    let native = DurableInferenceControl::open(&journal_path, 16).expect("reopen started");
+    assert_eq!(
+        sink.native_delivery_receipt(&preparation_id, &binding, &native)
+            .expect("stable"),
+        started
+    );
+    let replay = sink
+        .append_preparation(
+            &owner(),
+            1,
+            707,
+            &observation,
+            &observation.selected_candidates,
+            Some(context),
+            None,
+            ProbabilityQ32::ONE,
+        )
+        .expect("idempotent retry");
+    assert_eq!(replay.event_digest, first.event_digest);
+    assert_eq!(replay.disposition, AppendDisposition::IdempotentReplay);
+    assert_eq!(
+        sink.writer
+            .lock()
+            .expect("lock")
+            .snapshot()
+            .expect("snapshot")
+            .records()
+            .len(),
+        1
+    );
+    assert!(
+        sink.native_delivery_receipt(&id("absent"), &binding, &native)
+            .is_err()
+    );
+    let wrong = RetrievalNativeBindingV1 {
+        principal_id: "another-principal".to_string(),
+        ..binding
+    };
+    assert!(
+        sink.native_delivery_receipt(&preparation_id, &wrong, &native)
+            .is_err()
+    );
+}
+
+#[test]
+fn busy_product_writer_fails_before_another_append_can_wait() {
+    let (_temp, sink) = sink();
+    let _held = sink.writer.lock().expect("hold offline reconciliation");
+    assert!(sink.append(&owner(), 3, 91, &observation("busy")).is_err());
+}
+
+#[test]
+fn expired_or_wrong_owner_host_admission_never_appends() {
+    let (_temp, mut sink) = sink();
+    sink.admission = Some(RetrievalLearningAdmission {
+        owner: owner(), body_generation: 3, expires_at_unix_s: 0,
+        expires_at: std::time::Instant::now() + std::time::Duration::from_secs(60),
+    });
+    assert!(sink.append(&owner(), 3, 92, &observation("expired")).is_err());
+    sink.admission.as_mut().expect("admission").expires_at_unix_s = u64::MAX;
+    assert!(sink.append(&owner(), 4, 92, &observation("wrong-body")).is_err());
+    sink.admission.as_mut().expect("admission").expires_at = std::time::Instant::now();
+    assert!(sink.append(&owner(), 3, 92, &observation("monotonic-expiry")).is_err());
+    assert!(sink.writer.lock().expect("writer").records().expect("records").is_empty());
+}

@@ -1,0 +1,234 @@
+name: Hepta memory retrieval convergence
+
+on:
+  pull_request: {}
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: read
+  actions: read
+
+concurrency:
+  group: memory-retrieval-convergence-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  identity:
+    name: Memory retrieval exact source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      source_sha: ${{ steps.identity.outputs.source_sha }}
+      base_sha: ${{ steps.identity.outputs.base_sha }}
+      main_sha: ${{ steps.identity.outputs.main_sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind candidate and current main base
+        id: identity
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          REQUESTED_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/retrieval-source"
+          python3 scripts/hepta_memory_retrieval_candidate.py refs --source "$SOURCE_SHA" \
+            | tee "$RUNNER_TEMP/retrieval-source/refs.env" >> "$GITHUB_OUTPUT"
+          BASE_SHA="$(sed -n 's/^base_sha=//p' "$RUNNER_TEMP/retrieval-source/refs.env")"
+          MAIN_SHA="$(sed -n 's/^main_sha=//p' "$RUNNER_TEMP/retrieval-source/refs.env")"
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/retrieval-source/identity.txt"
+          printf '%s\n' "$BASE_SHA" > "$RUNNER_TEMP/retrieval-source/base.txt"
+          printf '%s\n' "$MAIN_SHA" > "$RUNNER_TEMP/retrieval-source/current-main.txt"
+          printf '%s\n' "$REQUESTED_BASE" > "$RUNNER_TEMP/retrieval-source/event-base-provenance.txt"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/retrieval-source/source.tar.gz"
+          sha256sum "$RUNNER_TEMP/retrieval-source/source.tar.gz" > "$RUNNER_TEMP/retrieval-source/SHA256SUMS"
+      - name: Test candidate, verifier, status, retention and SLO rejection behavior
+        run: >-
+          python3 -m unittest -v
+          scripts.tests.test_hepta_memory_retrieval_candidate
+          scripts.tests.test_hepta_memory_retrieval_qualification
+          scripts.tests.test_hepta_memory_retrieval_slo
+          scripts.tests.test_hepta_memory_retrieval_archive
+          scripts.tests.test_hepta_memory_retrieval_refresh_map
+          scripts.tests.test_hepta_memory_retrieval_status
+          scripts.tests.test_hepta_memory_retrieval_workflow_policy
+      - name: Enforce read-only retrieval workflows
+        run: python3 scripts/hepta_memory_retrieval_workflow_policy.py
+      - name: Require current source-object closure
+        env:
+          SOURCE_SHA: ${{ steps.identity.outputs.source_sha }}
+        run: >-
+          python3 scripts/hepta_memory_retrieval_qualification.py source
+          --head "$SOURCE_SHA"
+          --output "$RUNNER_TEMP/retrieval-source/source-observation.json"
+      - name: Enforce independent review before product claim promotion
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ steps.identity.outputs.source_sha }}
+        run: >-
+          python3 scripts/hepta_memory_retrieval_qualification.py promotion
+          --head "$SOURCE_SHA"
+          --output "$RUNNER_TEMP/retrieval-source/promotion-guard.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-retrieval-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/retrieval-source/
+          retention-days: 90
+          if-no-files-found: error
+
+  qualify:
+    name: Memory retrieval ${{ matrix.lane }}
+    needs: identity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge, current-main]
+    env:
+      SOURCE_SHA: ${{ needs.identity.outputs.source_sha }}
+      BASE_SHA: ${{ needs.identity.outputs.base_sha }}
+      MAIN_SHA: ${{ needs.identity.outputs.main_sha }}
+      QUALIFICATION_LANE: ${{ matrix.lane }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.identity.outputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Construct the exact tested object
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/retrieval-$QUALIFICATION_LANE"
+          case "$QUALIFICATION_LANE" in
+            source-head)
+              TESTED_SHA="$SOURCE_SHA"
+              ;;
+            base-merge)
+              TESTED_SHA="$(python3 scripts/hepta_memory_retrieval_candidate.py merge --base "$BASE_SHA" --source "$SOURCE_SHA")"
+              ;;
+            current-main)
+              TESTED_SHA="$MAIN_SHA"
+              echo "SOURCE_SHA=$MAIN_SHA" >> "$GITHUB_ENV"
+              echo 'HEPTA_CI_LANE=source-head' >> "$GITHUB_ENV"
+              ;;
+            *) exit 1 ;;
+          esac
+          git checkout --detach "$TESTED_SHA"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          echo "TESTED_SHA=$TESTED_SHA" >> "$GITHUB_ENV"
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/retrieval-$QUALIFICATION_LANE/tested-object.txt"
+      - name: Prepare native host prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - name: Resolve verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Execute package tests with real nonzero test-count receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          failed=0
+          for package in codex-hepta-memory-retrieval codex-hepta-memory codex-hepta-agentd codex-hepta-learning-ledger; do
+            python3 scripts/hepta_ci_exec.py \
+              --output "$RUNNER_TEMP/retrieval-$QUALIFICATION_LANE/$package-tests.json" \
+              --minimum-tests 1 -- just test --locked -p "$package" || failed=1
+          done
+          exit "$failed"
+      - name: All-target Clippy
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/retrieval-$QUALIFICATION_LANE/clippy.json" -- \
+            bash -c 'cd codex-rs && cargo clippy --locked --all-targets -p codex-hepta-memory-retrieval -p codex-hepta-memory -p codex-hepta-agentd -p codex-hepta-learning-ledger -- -D warnings'
+      - name: Formatting and clean source
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/retrieval-$QUALIFICATION_LANE/format.json" -- just fmt-check
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-retrieval-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/retrieval-${{ matrix.lane }}/
+          retention-days: 90
+          if-no-files-found: error
+
+  manifest:
+    name: Memory retrieval qualification manifest
+    needs: [identity, qualify]
+    if: ${{ always() && needs.identity.result == 'success' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      checks: read
+    env:
+      SOURCE_SHA: ${{ needs.identity.outputs.source_sha }}
+      BASE_SHA: ${{ needs.identity.outputs.base_sha }}
+      MAIN_SHA: ${{ needs.identity.outputs.main_sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.identity.outputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Generate exact-head status manifest
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          directory="$RUNNER_TEMP/retrieval-manifest"
+          mkdir -p "$directory"
+          SYNTHETIC_SHA="$(python3 scripts/hepta_memory_retrieval_candidate.py merge --base "$BASE_SHA" --source "$SOURCE_SHA")"
+          python3 scripts/hepta_memory_retrieval_status.py \
+            --source "$SOURCE_SHA" \
+            --base "$BASE_SHA" \
+            --main "$MAIN_SHA" \
+            --synthetic-merge "$SYNTHETIC_SHA" \
+            --repository "$GITHUB_REPOSITORY" \
+            --output "$directory/qualification-manifest.json"
+          git show -s --format='%H%n%T%n%P' "$SOURCE_SHA" > "$directory/source-object.txt"
+          git show -s --format='%H%n%T%n%P' "$SYNTHETIC_SHA" > "$directory/synthetic-object.txt"
+          (cd "$directory" && sha256sum qualification-manifest.json source-object.txt synthetic-object.txt > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-retrieval-manifest-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/retrieval-manifest/
+          retention-days: 90
+          if-no-files-found: error

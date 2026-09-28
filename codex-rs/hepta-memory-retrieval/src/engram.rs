@@ -28,6 +28,8 @@ use crate::RecallSelectionV1;
 use crate::RetrievalChannelCandidateV1;
 use crate::RetrievalPolicyV1;
 use crate::build_candidate_union;
+use crate::semantics::contradiction_population_count;
+use crate::semantics::policy_admitted_union;
 
 pub const MAX_ENGRAM_NODES: usize = 4096;
 pub const MAX_ENGRAM_SYNAPSES: usize = 32_768;
@@ -38,8 +40,8 @@ pub const MAX_ACTIVATION_PATHS: usize = 64;
 pub const MAX_ENGRAM_GRAPH_HOPS: u8 = 2;
 
 const ENGRAM_SNAPSHOT_DOMAIN: &[u8] = b"hepta.engram-snapshot.v1";
-const ENGRAM_POLICY_DOMAIN: &[u8] = b"hepta.engram-dynamics-policy.v1";
-const ENGRAM_RECALL_DOMAIN: &[u8] = b"hepta.engram-recall.v1";
+const ENGRAM_POLICY_DOMAIN: &[u8] = b"hepta.engram-dynamics-policy.v2";
+const ENGRAM_RECALL_DOMAIN: &[u8] = b"hepta.engram-recall.v2";
 const ENGRAM_RESOURCE_DOMAIN: &[u8] = b"hepta.engram-resource-receipt.v1";
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -101,7 +103,7 @@ pub struct EngramNodeV1 {
 
 impl EngramNodeV1 {
     fn validate(&self, generation_vector_digest: Digest32) -> Result<(), EngramErrorV1> {
-        if self.support.is_empty() {
+        if self.support.is_empty() || self.support.len() > MAX_GENERATION_BOUND_CANDIDATES {
             return Err(EngramErrorV1::EmptySupport(self.node_id.to_string()));
         }
         if !strictly_sorted_unique(&self.support) {
@@ -483,7 +485,7 @@ impl EngramRecallReceiptV1 {
         let mut population_counts = BTreeMap::<EngramPopulationV1, usize>::new();
         let mut previous_active: Option<&ActiveEngramNodeV1> = None;
         for node in &self.active_nodes {
-            if node.activation < FixedQ32::ZERO || node.activation > FixedQ32::ONE {
+            if node.activation <= FixedQ32::ZERO || node.activation > FixedQ32::ONE {
                 return Err(EngramErrorV1::ScoreOutOfRange("active_node_activation"));
             }
             if node.support.is_empty() {
@@ -659,10 +661,33 @@ pub fn settle_engram(
     snapshot: &EngramSnapshotV1,
     policy: &EngramDynamicsPolicyV1,
 ) -> Result<EngramRecallReceiptV1, EngramErrorV1> {
+    settle_engram_controlled(
+        cue,
+        union,
+        snapshot,
+        policy,
+        &crate::RecallWorkControlV1::compatibility(),
+    )
+}
+
+/// Host-bounded counterpart; interruption never publishes partial recall.
+pub fn settle_engram_controlled(
+    cue: &MemoryCueV1,
+    union: &CandidateUnionV1,
+    snapshot: &EngramSnapshotV1,
+    policy: &EngramDynamicsPolicyV1,
+    work: &crate::RecallWorkControlV1,
+) -> Result<EngramRecallReceiptV1, EngramErrorV1> {
+    work.checkpoint().map_err(EngramErrorV1::Recall)?;
     cue.validate().map_err(EngramErrorV1::Recall)?;
     union.validate().map_err(EngramErrorV1::Recall)?;
     snapshot.validate()?;
     policy.validate()?;
+    if cue.digest() != union.cue_digest {
+        return Err(EngramErrorV1::Recall(RecallErrorV1::DigestMismatch(
+            "engram_cue",
+        )));
+    }
     if cue.snapshot_key.vector_digest != union.generation_vector_digest
         || cue.snapshot_key.vector_digest != snapshot.generation_vector_digest
     {
@@ -677,6 +702,7 @@ pub fn settle_engram(
     let candidate_scores = union
         .entries
         .iter()
+        .filter(|entry| entry.weighted_score > FixedQ32::ZERO)
         .map(|entry| {
             (
                 EngramSupportV1 {
@@ -707,9 +733,10 @@ pub fn settle_engram(
         return empty_receipt(union, snapshot, policy);
     }
 
-    let expanded = expand_nodes(snapshot, &node_map, &seeds, policy)?;
+    let expanded = expand_nodes(snapshot, &node_map, &seeds, policy, work)?;
     let mut direct = BTreeMap::new();
     for node_id in &expanded {
+        work.checkpoint().map_err(EngramErrorV1::Recall)?;
         let node = node_map
             .get(node_id)
             .copied()
@@ -733,7 +760,10 @@ pub fn settle_engram(
         .collect::<BTreeMap<_, _>>();
     let mut incoming_synapses = BTreeMap::new();
     for synapse in &snapshot.synapses {
-        if expanded.contains(&synapse.source_node_id) && expanded.contains(&synapse.target_node_id)
+        work.checkpoint().map_err(EngramErrorV1::Recall)?;
+        if synapse.weight != FixedQ32::ZERO
+            && expanded.contains(&synapse.source_node_id)
+            && expanded.contains(&synapse.target_node_id)
         {
             incoming_synapses
                 .entry(synapse.target_node_id.clone())
@@ -745,9 +775,11 @@ pub fn settle_engram(
     let mut last_paths = Vec::new();
     let mut traversed_synapses = 0_usize;
     for _step in 0..policy.maximum_settling_steps {
+        work.checkpoint().map_err(EngramErrorV1::Recall)?;
         let mut raw = BTreeMap::new();
         let mut paths = Vec::new();
         for node_id in &expanded {
+            work.checkpoint().map_err(EngramErrorV1::Recall)?;
             let node = node_map
                 .get(node_id)
                 .copied()
@@ -816,7 +848,8 @@ pub fn settle_engram(
     let mut active_nodes = activation
         .iter()
         .filter_map(|(node_id, activation)| {
-            (*activation >= policy.minimum_activation).then_some((node_id, activation))
+            (*activation > FixedQ32::ZERO && *activation >= policy.minimum_activation)
+                .then_some((node_id, activation))
         })
         .map(|(node_id, activation)| {
             let node = node_map
@@ -841,6 +874,15 @@ pub fn settle_engram(
     active_nodes.truncate(usize::try_from(policy.maximum_active_nodes).unwrap_or(usize::MAX));
     let active_ids = active_nodes
         .iter()
+        .map(|node| node.node_id.clone())
+        .collect::<BTreeSet<_>>();
+    let admitted_active_ids = active_nodes
+        .iter()
+        .filter(|node| {
+            node.support
+                .iter()
+                .any(|support| candidate_scores.contains_key(support))
+        })
         .map(|node| node.node_id.clone())
         .collect::<BTreeSet<_>>();
 
@@ -870,8 +912,9 @@ pub fn settle_engram(
         .iter()
         .filter(|synapse| {
             synapse.relation == SynapseRelationV1::Contradicts
-                && active_ids.contains(&synapse.source_node_id)
-                && active_ids.contains(&synapse.target_node_id)
+                && synapse.weight != FixedQ32::ZERO
+                && admitted_active_ids.contains(&synapse.source_node_id)
+                && admitted_active_ids.contains(&synapse.target_node_id)
         })
         .map(|synapse| {
             let (left_node_id, right_node_id) = if synapse.source_node_id <= synapse.target_node_id
@@ -902,7 +945,7 @@ pub fn settle_engram(
         .collect::<BTreeSet<_>>()
         .into_iter()
         .collect::<Vec<_>>();
-    let coverage = ratio_probability(selected_support.len(), candidate_scores.len())?;
+    let coverage = ratio_probability(selected_support.len(), union.entries.len())?;
     let confidence = active_confidence(&active_nodes)?;
     let mut resources = EngramResourceReceiptV1 {
         candidate_records: u32::try_from(union.entries.len()).unwrap_or(u32::MAX),
@@ -930,6 +973,7 @@ pub fn settle_engram(
     };
     receipt.receipt_digest = receipt.compute_receipt_digest();
     receipt.validate()?;
+    work.checkpoint().map_err(EngramErrorV1::Recall)?;
     Ok(receipt)
 }
 
@@ -940,24 +984,59 @@ pub fn recall_with_engram(
     engram_snapshot: &EngramSnapshotV1,
     dynamics_policy: &EngramDynamicsPolicyV1,
 ) -> Result<RecallPacketV1, EngramErrorV1> {
+    recall_with_engram_controlled(
+        cue,
+        retrieval_policy,
+        candidates,
+        engram_snapshot,
+        dynamics_policy,
+        &crate::RecallWorkControlV1::compatibility(),
+    )
+}
+
+/// Host-bounded counterpart; interruption never publishes partial recall.
+pub fn recall_with_engram_controlled(
+    cue: &MemoryCueV1,
+    retrieval_policy: &RetrievalPolicyV1,
+    candidates: Vec<RetrievalChannelCandidateV1>,
+    engram_snapshot: &EngramSnapshotV1,
+    dynamics_policy: &EngramDynamicsPolicyV1,
+    work: &crate::RecallWorkControlV1,
+) -> Result<RecallPacketV1, EngramErrorV1> {
+    work.checkpoint().map_err(EngramErrorV1::Recall)?;
     cue.validate().map_err(EngramErrorV1::Recall)?;
     retrieval_policy.validate().map_err(EngramErrorV1::Recall)?;
     let union =
         build_candidate_union(cue, retrieval_policy, candidates).map_err(EngramErrorV1::Recall)?;
-    let engram = settle_engram(cue, &union, engram_snapshot, dynamics_policy)?;
+    let admitted =
+        policy_admitted_union(&union, retrieval_policy).map_err(EngramErrorV1::Recall)?;
+    let mut engram =
+        settle_engram_controlled(cue, &admitted, engram_snapshot, dynamics_policy, work)?;
+    // Account for every observed union record, including records rejected by
+    // admission. Rejected records cannot seed dynamics or contribute risk.
+    engram.resources.candidate_records =
+        u32::try_from(union.entries.len()).map_err(|_| EngramErrorV1::Arithmetic)?;
+    engram.resources.receipt_digest = engram.resources.compute_digest();
+    engram.coverage = ratio_probability(engram.selected_support.len(), union.entries.len())?;
+    engram.receipt_digest = engram.compute_receipt_digest();
+    engram.validate()?;
 
     let minimum_channels =
         usize::try_from(retrieval_policy.minimum_distinct_channels).unwrap_or(usize::MAX);
-    let observed_channels = usize::try_from(union.distinct_channels).unwrap_or(0);
-    let maximum_ood = union
+    let observed_channels = usize::try_from(admitted.distinct_channels).unwrap_or(0);
+    let maximum_ood = admitted
         .entries
         .iter()
         .map(|entry| entry.maximum_ood)
         .max()
         .unwrap_or(ProbabilityQ32::ZERO);
     let contradiction =
-        !engram.contradictions.is_empty() || contradiction_population_count(&union.entries) > 0;
-    let reason = if union.entries.is_empty() || engram.selected_support.is_empty() {
+        !engram.contradictions.is_empty() || contradiction_population_count(&admitted.entries) > 0;
+    let reason = if union.entries.is_empty() {
+        Some(RecallAbstentionReasonV1::NoCandidate)
+    } else if admitted.entries.is_empty() {
+        Some(RecallAbstentionReasonV1::ScoreBelowFloor)
+    } else if engram.selected_support.is_empty() {
         Some(RecallAbstentionReasonV1::NoCandidate)
     } else if observed_channels < minimum_channels {
         Some(RecallAbstentionReasonV1::InsufficientChannelCoverage)
@@ -977,14 +1056,13 @@ pub fn recall_with_engram(
     let (disposition, selections, omitted_count) = if let Some(reason) = reason {
         (RecallDispositionV1::Abstained(reason), Vec::new(), 0)
     } else {
-        let mut ranked = union
+        let mut ranked = admitted
             .entries
             .iter()
             .filter_map(|entry| {
                 let support = support_for_entry(entry);
                 let activation = active_strength.get(&support).copied()?;
-                (entry.weighted_score >= retrieval_policy.minimum_total_score)
-                    .then_some((entry, activation))
+                Some((entry, activation))
             })
             .collect::<Vec<_>>();
         ranked.sort_by(|(left, left_activation), (right, right_activation)| {
@@ -1029,13 +1107,14 @@ pub fn recall_with_engram(
         disposition,
         selections,
         omitted_count,
-        distinct_channels: union.distinct_channels,
+        distinct_channels: admitted.distinct_channels,
         engram: Some(engram),
         packet_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
     };
     packet.packet_digest = packet.compute_packet_digest();
     packet.validate().map_err(EngramErrorV1::Recall)?;
+    work.checkpoint().map_err(EngramErrorV1::Recall)?;
     Ok(packet)
 }
 
@@ -1078,6 +1157,7 @@ fn expand_nodes(
     node_map: &BTreeMap<StableId, &EngramNodeV1>,
     seeds: &BTreeSet<StableId>,
     policy: &EngramDynamicsPolicyV1,
+    work: &crate::RecallWorkControlV1,
 ) -> Result<BTreeSet<StableId>, EngramErrorV1> {
     let mut selected = seeds.clone();
     let mut frontier = seeds.clone();
@@ -1088,6 +1168,10 @@ fn expand_nodes(
         }
         let mut next = BTreeSet::new();
         for synapse in &snapshot.synapses {
+            work.checkpoint().map_err(EngramErrorV1::Recall)?;
+            if synapse.weight == FixedQ32::ZERO {
+                continue;
+            }
             let mut consider = Vec::new();
             if frontier.contains(&synapse.source_node_id) {
                 consider.push(synapse.target_node_id.clone());
@@ -1178,15 +1262,28 @@ fn active_support_strength(engram: &EngramRecallReceiptV1) -> BTreeMap<EngramSup
 }
 
 fn active_confidence(active_nodes: &[ActiveEngramNodeV1]) -> Result<ProbabilityQ32, EngramErrorV1> {
-    if active_nodes.is_empty() {
+    let mut weighted = 0_u128;
+    let mut total_activation = 0_u128;
+    for node in active_nodes {
+        if node.activation <= FixedQ32::ZERO || node.activation > FixedQ32::ONE {
+            return Err(EngramErrorV1::ScoreOutOfRange("active_node_activation"));
+        }
+        let activation =
+            u128::try_from(node.activation.raw()).map_err(|_| EngramErrorV1::Arithmetic)?;
+        let contribution = activation
+            .checked_mul(u128::from(node.confidence.raw()))
+            .ok_or(EngramErrorV1::Arithmetic)?;
+        weighted = weighted
+            .checked_add(contribution)
+            .ok_or(EngramErrorV1::Arithmetic)?;
+        total_activation = total_activation
+            .checked_add(activation)
+            .ok_or(EngramErrorV1::Arithmetic)?;
+    }
+    if total_activation == 0 {
         return Ok(ProbabilityQ32::ZERO);
     }
-    let total = active_nodes.iter().try_fold(0_u128, |sum, node| {
-        sum.checked_add(u128::from(node.confidence.raw()))
-            .ok_or(EngramErrorV1::Arithmetic)
-    })?;
-    let average =
-        total / u128::try_from(active_nodes.len()).map_err(|_| EngramErrorV1::Arithmetic)?;
+    let average = weighted / total_activation;
     ProbabilityQ32::from_raw(u64::try_from(average).map_err(|_| EngramErrorV1::Arithmetic)?)
         .map_err(|_| EngramErrorV1::Arithmetic)
 }
@@ -1213,16 +1310,6 @@ fn support_for_entry(entry: &CandidateUnionEntryV1) -> EngramSupportV1 {
         record_id: entry.record.record_id.clone(),
         record_revision: entry.record.revision,
     }
-}
-
-fn contradiction_population_count(entries: &[CandidateUnionEntryV1]) -> usize {
-    let mut groups = BTreeMap::<Digest32, usize>::new();
-    for entry in entries {
-        for group in &entry.contradiction_group_digests {
-            *groups.entry(*group).or_insert(0) += 1;
-        }
-    }
-    groups.values().filter(|count| **count > 1).count()
 }
 
 fn abs_fixed(value: FixedQ32) -> Result<FixedQ32, EngramErrorV1> {

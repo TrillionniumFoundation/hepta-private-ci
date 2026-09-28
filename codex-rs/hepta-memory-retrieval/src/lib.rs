@@ -6,7 +6,12 @@ mod decision;
 mod engram;
 mod generation_bound;
 mod generator;
+mod semantics;
 mod v2;
+mod vector_owner;
+mod work;
+pub use work::RecallInterruptionV1;
+pub use work::RecallWorkControlV1;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -45,7 +50,9 @@ pub use engram::MAX_ENGRAM_SYNAPSES;
 pub use engram::SynapseRelationV1;
 pub use engram::SynapseV1;
 pub use engram::recall_with_engram;
+pub use engram::recall_with_engram_controlled;
 pub use engram::settle_engram;
+pub use engram::settle_engram_controlled;
 pub use generation_bound::CandidateUnionEntryV1;
 pub use generation_bound::CandidateUnionV1;
 pub use generation_bound::CanonicalRecallSelectionBindingV1;
@@ -78,8 +85,20 @@ pub use generator::build_candidate_union_from_generated;
 pub use generator::compile_cue;
 pub use generator::recall_generated;
 pub use generator::recall_generated_with_engram;
+pub use generator::recall_generated_with_engram_controlled;
+pub use semantics::ContradictionEvidenceV2;
+pub use semantics::PropositionPolarityV2;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
+pub use vector_owner::GenerationBoundVectorOwnerV1;
+pub use vector_owner::MAX_VECTOR_DIMENSIONS;
+pub use vector_owner::MAX_VECTOR_INDEX_RECORDS;
+pub use vector_owner::VectorEmbeddingV1;
+pub use vector_owner::VectorIndexRecordV1;
+pub use vector_owner::VectorIndexSnapshotV1;
+pub use vector_owner::VectorOwnerErrorV1;
+pub use vector_owner::VectorQueryV1;
+pub use vector_owner::generate_vector_batch_v1;
 
 const MAX_CANDIDATES: usize = 16_384;
 const MAX_RESULTS: usize = 256;
@@ -242,3 +261,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "semantics_tests.rs"]
+mod semantics_tests;
