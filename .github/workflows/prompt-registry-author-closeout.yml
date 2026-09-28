@@ -1,0 +1,126 @@
+name: Prompt registry reviewed source publication
+on:
+  push:
+    branches: [ops/prompt-registry-author-closeout-20260928]
+    paths:
+      - 'ops/prompt-registry-closeout/**'
+      - '.github/workflows/prompt-registry-author-closeout.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: prompt-registry-reviewed-source-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      TARGET_BRANCH: codex/prompt-registry-verified-closeout-20260928
+      EXPECTED_TARGET: e979975fd02d4cc7bd5592c6941d670d88357aa4
+      PATCH_SHA256: c6a0a7d86f34b410760c214c58908aabe4d5e396cf2551de6bc2f874835e6647
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: author
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: e979975fd02d4cc7bd5592c6941d670d88357aa4
+          path: candidate
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Verify reviewed delta and apply only to exact developer checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/prompt-publication"
+          python3 - <<'PY'
+          import base64, gzip, hashlib, os
+          from pathlib import Path
+          root = Path('author/ops/prompt-registry-closeout')
+          chunks = [root / f'part-{i}.b64' for i in range(4)]
+          patch = gzip.decompress(base64.b64decode(''.join(p.read_text().strip() for p in chunks), validate=True))
+          assert len(patch) == 89604, 'reviewed source delta length mismatch'
+          assert hashlib.sha256(patch).hexdigest() == os.environ['PATCH_SHA256'], 'reviewed source delta digest mismatch'
+          (Path(os.environ['RUNNER_TEMP']) / 'prompt-publication' / 'reviewed.patch').write_bytes(patch)
+          PY
+          cd candidate
+          test "$(git rev-parse HEAD)" = "$EXPECTED_TARGET"
+          test -z "$(git status --porcelain)"
+          git apply --check --unidiff-zero "$RUNNER_TEMP/prompt-publication/reviewed.patch"
+          git apply --unidiff-zero "$RUNNER_TEMP/prompt-publication/reviewed.patch"
+      - name: Format reviewed developer source before committing
+        working-directory: candidate/codex-rs
+        run: cargo fmt -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer -p codex-hepta-agentd
+      - name: Verify scope and harness without weakening qualification
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add codex-rs/hepta-prompt-registry codex-rs/hepta-prompt-optimizer codex-rs/hepta-agentd/src/prompt_final_use.rs codex-rs/hepta-agentd/src/prompt_final_use_tests.rs codex-rs/hepta-agentd/src/prompt_runtime.rs docs/modules/prompt.registry scripts/hepta-prompt-registry-*.py
+          git diff --exit-code
+          git diff --cached --check
+          python3 - <<'PY'
+          import subprocess
+          prefixes = ('codex-rs/hepta-prompt-registry/', 'codex-rs/hepta-prompt-optimizer/', 'docs/modules/prompt.registry/', 'scripts/hepta-prompt-registry-')
+          exact = {'codex-rs/hepta-agentd/src/prompt_final_use.rs', 'codex-rs/hepta-agentd/src/prompt_final_use_tests.rs', 'codex-rs/hepta-agentd/src/prompt_runtime.rs'}
+          paths = subprocess.check_output(['git', 'diff', '--cached', '--name-only'], text=True).splitlines()
+          assert paths and all(p in exact or p.startswith(prefixes) for p in paths), 'source delta escaped reviewed scope'
+          assert 'docs/modules/prompt.registry/IMPLEMENTATION_MAP.json' not in paths, 'map must be generated from committed source'
+          PY
+          python3 scripts/hepta-prompt-registry-harness-tests.py
+      - name: Commit source, then commit its generated implementation map
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat(prompt.registry): atomic payload GC, typed recovery and exact-candidate evidence'
+          python3 scripts/hepta-prompt-registry-map.py --write
+          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
+          git commit -m 'docs(prompt.registry): bind operation map to committed closeout source'
+          python3 scripts/hepta-prompt-registry-map.py --check
+          test -z "$(git status --porcelain)"
+      - name: Fast-forward only the dedicated delivery branch
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "+refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
+          test "$(git rev-parse "refs/remotes/origin/$TARGET_BRANCH")" = "$EXPECTED_TARGET"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          git rev-parse HEAD > "$RUNNER_TEMP/prompt-publication/published-sha.txt"
+          git rev-parse 'HEAD^{tree}' > "$RUNNER_TEMP/prompt-publication/published-tree.txt"
+          git diff --stat "$EXPECTED_TARGET" HEAD > "$RUNNER_TEMP/prompt-publication/source-stat.txt"
+          git archive --format=tar HEAD | gzip -n > "$RUNNER_TEMP/prompt-publication/source.tar.gz"
+      - name: Dispatch independent read-only qualification of published source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api "repos/$GITHUB_REPOSITORY/actions/workflows/hepta-prompt-registry-qualification.yml/dispatches" -f ref="$TARGET_BRANCH"
+      - name: Native registry smoke on the published source (not product acceptance)
+        working-directory: candidate/codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-prompt-registry -- --test-threads=1 2>&1 | tee "$RUNNER_TEMP/prompt-publication/registry-smoke.log"
+      - name: Retain publication diagnostics and exact source
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-reviewed-publication-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/prompt-publication/
+          if-no-files-found: warn
+          retention-days: 14
