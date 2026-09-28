@@ -1,0 +1,149 @@
+@@ -14,14 +14,14 @@ use crate::CanonicalRecallIntelligenceInputV1;
+ use crate::CanonicalRunOutcomeV1;
+ use crate::IntelligenceHostEnvelopeV1;
+ 
+-#[cfg(test)]
+-use codex_hepta_types::AuthorityPosture;
+ #[cfg(test)]
+ use crate::AdvisoryDecisionReceiptV1;
+ #[cfg(test)]
+ use crate::AdvisoryDecisionV1;
+ #[cfg(test)]
+ use crate::CanonicalTerminalReceiptV1;
++#[cfg(test)]
++use codex_hepta_types::AuthorityPosture;
+ 
+ const RECALL_POLICY_DOMAIN_V1: &[u8] = b"hepta.intelligence.recall-product-policy.v1\0";
+ const RECALL_TRACE_DOMAIN_V1: &[u8] = b"hepta.intelligence.recall-policy-trace.v1\0";
+@@ -163,19 +163,15 @@ mod tests {
+             .expect("first policy");
+         let second = canonical_recall_absence_policy_digest_v1(digest("reason:second"))
+             .expect("second policy");
+-        let CanonicalRunOutcomeV1::Abstained(first_outcome) = bind_recall_policy_outcome_v1(
+-            CanonicalRunOutcomeV1::Abstained(terminal()),
+-            first,
+-        )
+-        .expect("first outcome")
++        let CanonicalRunOutcomeV1::Abstained(first_outcome) =
++            bind_recall_policy_outcome_v1(CanonicalRunOutcomeV1::Abstained(terminal()), first)
++                .expect("first outcome")
+         else {
+             panic!("terminal")
+         };
+-        let CanonicalRunOutcomeV1::Abstained(second_outcome) = bind_recall_policy_outcome_v1(
+-            CanonicalRunOutcomeV1::Abstained(terminal()),
+-            second,
+-        )
+-        .expect("second outcome")
++        let CanonicalRunOutcomeV1::Abstained(second_outcome) =
++            bind_recall_policy_outcome_v1(CanonicalRunOutcomeV1::Abstained(terminal()), second)
++                .expect("second outcome")
+         else {
+             panic!("terminal")
+         };
+diff --git a/codex-rs/hepta-intelligence/src/canonical_tests.rs b/codex-rs/hepta-intelligence/src/canonical_tests.rs
+index f69d097a63..da9b1a53cc 100644
+--- a/codex-rs/hepta-intelligence/src/canonical_tests.rs
++++ b/codex-rs/hepta-intelligence/src/canonical_tests.rs
+@@ -159,9 +159,10 @@ impl CanonicalFreshnessOracleV1 for Oracle {
+     ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
+         let calls = self.calls.entry(owner_id.clone()).or_default();
+         *calls += 1;
+-        let mut current = self.states.get(owner_id).cloned().ok_or_else(|| {
+-            CanonicalIntelligenceError::FreshnessUnavailable(owner_id.clone())
+-        })?;
++        let mut current =
++            self.states.get(owner_id).cloned().ok_or_else(|| {
++                CanonicalIntelligenceError::FreshnessUnavailable(owner_id.clone())
++            })?;
+         if self.drift_after_first.as_ref() == Some(owner_id) && *calls > 1 {
+             current.generation = generation(current.generation.get() + 1);
+         }
+@@ -337,7 +338,10 @@ fn pending_recall_consumer_cannot_omit_compatibility_digest() {
+         None,
+     )
+     .expect_err("pending consumer must not self-promote to native");
+-    assert!(matches!(error, CanonicalIntelligenceError::CanonicalRecall(_)));
++    assert!(matches!(
++        error,
++        CanonicalIntelligenceError::CanonicalRecall(_)
++    ));
+ }
+ 
+ #[test]
+diff --git a/codex-rs/hepta-memory-retrieval/src/canonical_owner.rs b/codex-rs/hepta-memory-retrieval/src/canonical_owner.rs
+index c20589acfe..7102fd38e3 100644
+--- a/codex-rs/hepta-memory-retrieval/src/canonical_owner.rs
++++ b/codex-rs/hepta-memory-retrieval/src/canonical_owner.rs
+@@ -95,12 +95,7 @@ impl RetrievalOwnedCanonicalRecallV1 {
+         bytes.extend_from_slice(self.legacy_candidate_union_digest().as_array());
+         bytes.extend_from_slice(self.legacy_generation_vector_digest().as_array());
+         bytes.extend_from_slice(packet_digest.as_array());
+-        bytes.extend_from_slice(
+-            self.consumer_binding()
+-                .binding_sha256
+-                .digest()
+-                .as_array(),
+-        );
++        bytes.extend_from_slice(self.consumer_binding().binding_sha256.digest().as_array());
+         Ok(Digest32::of_bytes(&bytes))
+     }
+ }
+diff --git a/codex-rs/hepta-memory/src/cognitive_store_recovery.rs b/codex-rs/hepta-memory/src/cognitive_store_recovery.rs
+index b04217a0de..cb82d87652 100644
+--- a/codex-rs/hepta-memory/src/cognitive_store_recovery.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store_recovery.rs
+@@ -26,6 +26,15 @@ use sqlx::TypeInfo;
+ use sqlx::ValueRef;
+ 
+ use super::CognitiveStore;
++
++impl CognitiveStore {
++    /// Close every SQLite connection before an external owner captures or
++    /// reopens the database as one immutable recovery image. Dropping a pool
++    /// only releases one handle; it does not wait for checked-out connections.
++    pub async fn close(self) {
++        self.pool.close().await;
++    }
++}
+ use super::CognitiveStoreError;
+ use super::CognitiveStoreOpenGuard;
+ use super::REQUIRED_SCHEMA_OBJECTS;
+diff --git a/codex-rs/hepta-memory/src/cognitive_store_tests.rs b/codex-rs/hepta-memory/src/cognitive_store_tests.rs
+index b5462745d3..4373abad74 100644
+--- a/codex-rs/hepta-memory/src/cognitive_store_tests.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store_tests.rs
+@@ -1098,6 +1098,6 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
+         .fetch_one(&migrated.pool)
+         .await
+         .expect("migration ledger"),
+-        "1,2,3,4,5,6,7,8,9,10,11,12,13,14"
++        "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"
+     );
+ }
+diff --git a/qualification/cognitive-types-v1/negative-vectors.json b/qualification/cognitive-types-v1/negative-vectors.json
+index 541904fec0..bb8474a321 100644
+--- a/qualification/cognitive-types-v1/negative-vectors.json
++++ b/qualification/cognitive-types-v1/negative-vectors.json
+@@ -6,35 +6,35 @@
+       "name": "duplicate-selected-event-logical-identity",
+       "contract": "RecallPacketV1",
+       "reason": "same eventId and revision bind two digests",
+-      "expectedErrorContains": "DuplicateIdentity(\"selectedEventIdentity\")",
++      "expectedErrorContains": "DuplicateIdentity(\"selectedEvents\")",
+       "wire": "{\"contract\":\"RecallPacketV1\",\"payload\":{\"abstain\":null,\"activationPaths\":[],\"activeNodes\":[{\"activationPpm\":800000,\"nodeId\":\"node:1\",\"population\":\"semantic_concept\"}],\"confidencePpm\":800000,\"contradictions\":[],\"coveragePpm\":900000,\"cueDigest\":\"5555555555555555555555555555555555555555555555555555555555555555\",\"engramSnapshotDigest\":\"7777777777777777777777777777777777777777777777777777777777777777\",\"eventSnapshotDigest\":\"6666666666666666666666666666666666666666666666666666666666666666\",\"oodPpm\":100000,\"resourceReceipt\":{\"activeNodeCount\":1,\"candidateEventCount\":2,\"nodeCount\":1,\"settlingSteps\":1,\"synapseCount\":0},\"selectedEvents\":[{\"eventDigest\":\"8888888888888888888888888888888888888888888888888888888888888888\",\"eventId\":\"event:1\",\"revision\":1},{\"eventDigest\":\"9999999999999999999999999999999999999999999999999999999999999999\",\"eventId\":\"event:1\",\"revision\":1}]},\"schema\":\"hepta.hnmf.recall-packet.v1\",\"schemaVersion\":1}"
+     },
+     {
+       "name": "duplicate-active-node-logical-identity",
+       "contract": "RecallPacketV1",
+       "reason": "same nodeId binds two activations",
+-      "expectedErrorContains": "DuplicateIdentity(\"activeNodeId\")",
++      "expectedErrorContains": "DuplicateIdentity(\"activeNodes\")",
+       "wire": "{\"contract\":\"RecallPacketV1\",\"payload\":{\"abstain\":null,\"activationPaths\":[],\"activeNodes\":[{\"activationPpm\":800000,\"nodeId\":\"node:1\",\"population\":\"semantic_concept\"},{\"activationPpm\":800001,\"nodeId\":\"node:1\",\"population\":\"semantic_concept\"}],\"confidencePpm\":800000,\"contradictions\":[],\"coveragePpm\":900000,\"cueDigest\":\"5555555555555555555555555555555555555555555555555555555555555555\",\"engramSnapshotDigest\":\"7777777777777777777777777777777777777777777777777777777777777777\",\"eventSnapshotDigest\":\"6666666666666666666666666666666666666666666666666666666666666666\",\"oodPpm\":100000,\"resourceReceipt\":{\"activeNodeCount\":2,\"candidateEventCount\":1,\"nodeCount\":2,\"settlingSteps\":1,\"synapseCount\":0},\"selectedEvents\":[{\"eventDigest\":\"8888888888888888888888888888888888888888888888888888888888888888\",\"eventId\":\"event:1\",\"revision\":1}]},\"schema\":\"hepta.hnmf.recall-packet.v1\",\"schemaVersion\":1}"
+     },
+     {
+       "name": "conflicting-weight-proposal-logical-identity",
+       "contract": "PlasticityBatchV1",
+       "reason": "same synapse key has two proposed successors",
+-      "expectedErrorContains": "DuplicateIdentity(\"weightProposalIdentity\")",
++      "expectedErrorContains": "DuplicateIdentity(\"weightProposals\")",
