@@ -1,0 +1,199 @@
+name: control-engineering-production-acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_commit:
+        description: Exact merged main commit to verify
+        required: true
+        type: string
+      source_tree:
+        description: Exact Git tree for source_commit
+        required: true
+        type: string
+      target_digest:
+        description: SHA-256 digest of the deployment target identity
+        required: true
+        type: string
+      evidence_run_id:
+        description: Workflow run containing the externally produced evidence artifact
+        required: true
+        type: string
+      evidence_artifact:
+        description: Name of the externally produced evidence artifact
+        required: true
+        type: string
+      envelope_id:
+        description: Durable work-envelope identity in the supplied owner database
+        required: true
+        type: string
+      lease_id:
+        description: Durable path-lease identity in the supplied owner database
+        required: true
+        type: string
+      database_file:
+        description: Relative path to the SQLite owner database in the artifact
+        required: false
+        default: engineering.sqlite3
+        type: string
+      typed_controls_file:
+        description: Relative path to the typed fence/audit/custody bundle
+        required: false
+        default: typed-controls.json
+        type: string
+      observations_file:
+        description: Relative path to external terminal/deployment/operator receipts
+        required: false
+        default: external-observations.json
+        type: string
+      public_keys_file:
+        description: Relative path to the public-key manifest
+        required: false
+        default: public-keys.json
+        type: string
+
+concurrency:
+  group: control-engineering-production-acceptance-${{ inputs.source_commit }}-${{ inputs.target_digest }}
+  cancel-in-progress: false
+
+permissions:
+  actions: read
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONPATH: tools/hepta-engineering-control
+
+jobs:
+  verify:
+    name: Verify external control.engineering production evidence
+    environment: control-engineering-production-acceptance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Validate immutable input identities
+        shell: bash
+        env:
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+          SOURCE_TREE: ${{ inputs.source_tree }}
+          TARGET_DIGEST: ${{ inputs.target_digest }}
+          EVIDENCE_RUN_ID: ${{ inputs.evidence_run_id }}
+          DATABASE_FILE: ${{ inputs.database_file }}
+          TYPED_CONTROLS_FILE: ${{ inputs.typed_controls_file }}
+          OBSERVATIONS_FILE: ${{ inputs.observations_file }}
+          PUBLIC_KEYS_FILE: ${{ inputs.public_keys_file }}
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$SOURCE_TREE" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$TARGET_DIGEST" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$EVIDENCE_RUN_ID" =~ ^[1-9][0-9]*$ ]]
+          for path in "$DATABASE_FILE" "$TYPED_CONTROLS_FILE" "$OBSERVATIONS_FILE" "$PUBLIC_KEYS_FILE"; do
+            test -n "$path"
+            test "$path" = "${path#/}"
+            case "/$path/" in
+              */../*|*/./*) echo "unsafe evidence path: $path" >&2; exit 1 ;;
+            esac
+          done
+
+      - name: Checkout exact merged source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ inputs.source_commit }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require exact source/tree and main ancestry
+        shell: bash
+        env:
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+          SOURCE_TREE: ${{ inputs.source_tree }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_COMMIT"
+          test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+          git fetch --no-tags origin main
+          git merge-base --is-ancestor "$SOURCE_COMMIT" origin/main
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Download externally produced evidence
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.evidence_run_id }}
+          github-token: ${{ github.token }}
+          name: ${{ inputs.evidence_artifact }}
+          path: ${{ runner.temp }}/control-engineering-evidence
+
+      - name: Bind and hash all supplied evidence bytes
+        id: evidence
+        shell: bash
+        env:
+          DATABASE_FILE: ${{ inputs.database_file }}
+          TYPED_CONTROLS_FILE: ${{ inputs.typed_controls_file }}
+          OBSERVATIONS_FILE: ${{ inputs.observations_file }}
+          PUBLIC_KEYS_FILE: ${{ inputs.public_keys_file }}
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/control-engineering-evidence"
+          test -f "$root/$DATABASE_FILE"
+          test -f "$root/$TYPED_CONTROLS_FILE"
+          test -f "$root/$OBSERVATIONS_FILE"
+          test -f "$root/$PUBLIC_KEYS_FILE"
+          find "$root" -type l -print -quit | grep -q . && {
+            echo 'symbolic links are not accepted in production evidence' >&2
+            exit 1
+          }
+          (
+            cd "$root"
+            find . -type f -print0 | sort -z | xargs -0 sha256sum
+          ) > "$RUNNER_TEMP/control-engineering-evidence-sha256.txt"
+          test -s "$RUNNER_TEMP/control-engineering-evidence-sha256.txt"
+
+      - name: Verify canonical repository projection before external evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m control_engineering_v2.status_projection verify \
+            --repository "$GITHUB_WORKSPACE" \
+            --output "$RUNNER_TEMP/control-engineering-status-verification.json"
+
+      - name: Verify typed owner-state controls and external observations
+        shell: bash
+        env:
+          DATABASE_FILE: ${{ inputs.database_file }}
+          TYPED_CONTROLS_FILE: ${{ inputs.typed_controls_file }}
+          OBSERVATIONS_FILE: ${{ inputs.observations_file }}
+          PUBLIC_KEYS_FILE: ${{ inputs.public_keys_file }}
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/control-engineering-evidence"
+          (
+            cd "$root"
+            PYTHONPATH="$GITHUB_WORKSPACE/tools/hepta-engineering-control" \
+              python3 -m control_engineering_v2.production_acceptance \
+                --database "$DATABASE_FILE" \
+                --envelope-id '${{ inputs.envelope_id }}' \
+                --lease-id '${{ inputs.lease_id }}' \
+                --typed-controls "$TYPED_CONTROLS_FILE" \
+                --receipts "$OBSERVATIONS_FILE" \
+                --public-keys "$PUBLIC_KEYS_FILE" \
+                --source-commit '${{ inputs.source_commit }}' \
+                --source-tree '${{ inputs.source_tree }}' \
+                --target-digest '${{ inputs.target_digest }}' \
+                --output "$RUNNER_TEMP/control-engineering-production-verification.json"
+          )
+
+      - name: Retain verification without activation or release
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: control-engineering-production-verification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/control-engineering-production-verification.json
+            ${{ runner.temp }}/control-engineering-status-verification.json
+            ${{ runner.temp }}/control-engineering-evidence-sha256.txt
+          if-no-files-found: warn
+          retention-days: 90
