@@ -1,0 +1,71 @@
+name: control-engineering-projection
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/control-engineering-projection.yml
+      - docs/modules/control.engineering/**
+      - tools/hepta-engineering-control/**
+  push:
+    branches:
+      - main
+      - codex/control-engineering-final-closure-20260928
+    paths:
+      - .github/workflows/control-engineering-projection.yml
+      - docs/modules/control.engineering/**
+      - tools/hepta-engineering-control/**
+  workflow_dispatch: {}
+
+concurrency:
+  group: control-engineering-projection-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  projection:
+    name: control.engineering canonical projection
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Generate projection in the disposable worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.status_projection prepare \
+              --repository "$GITHUB_WORKSPACE" \
+              --output "$RUNNER_TEMP/control-engineering-projection-report.json"
+
+      - name: Retain generated canonical projection
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: control-engineering-projection-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            docs/modules/control.engineering/IMPLEMENTATION_MAP.json
+            docs/modules/control.engineering/STATUS.json
+            docs/modules/control.engineering/API_COMPATIBILITY.json
+            ${{ runner.temp }}/control-engineering-projection-report.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Reject projection drift
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code -- \
+            docs/modules/control.engineering/IMPLEMENTATION_MAP.json \
+            docs/modules/control.engineering/STATUS.json \
+            docs/modules/control.engineering/API_COMPATIBILITY.json
+          test -z "$(git status --porcelain --untracked-files=normal)"
