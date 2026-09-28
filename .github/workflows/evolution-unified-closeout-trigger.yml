@@ -6,7 +6,7 @@ on:
     paths:
       - '.github/workflows/evolution-unified-closeout-trigger.yml'
       - '.github/scripts/apply_evolution_agentd_clippy_closeout.py'
-      - '.github/patches/evolution-unified-closeout.patch.zlib.b64'
+      - '.github/patches/evolution-unified-closeout/**'
   workflow_dispatch:
 
 permissions:
@@ -70,9 +70,23 @@ jobs:
           curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location \
             "$author_root/.github/scripts/apply_evolution_agentd_clippy_closeout.py" \
             -o "$RUNNER_TEMP/apply-evolution-closeout.py"
-          curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location \
-            "$author_root/.github/patches/evolution-unified-closeout.patch.zlib.b64" \
-            -o "$RUNNER_TEMP/evolution-closeout.patch.zlib.b64"
+          mkdir -p "$RUNNER_TEMP/evolution-closeout-parts"
+          while read -r part digest; do
+            target="$RUNNER_TEMP/evolution-closeout-parts/$part"
+            curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location \
+              "$author_root/.github/patches/evolution-unified-closeout/$part" \
+              -o "$target"
+            printf '%s  %s\n' "$digest" "$target" | sha256sum -c -
+          done <<'PARTS'
+          part-00.b64 3fe413e5014919ddd9e652431dffed37c6dcd15eb5103a3316f75ba0a7183176
+          part-01.b64 80f0026f18c26e758cc629e54700e9e380d2b0de56c527985f16b3aa722410df
+          part-02.b64 80c2bc0b25630112b89a47b5fe6aeda00c82abf1ae4e9b2eaad40371d5d6f489
+          part-03.b64 5838ec55a0c787753bd93ab978b05be0638be5eae42e2306630a1dc00448389c
+          part-04.b64 0662e6ee05217b0993051c716da5f8f1c26edd14f96d1739e2c04c70549333a4
+          PARTS
+          cat "$RUNNER_TEMP"/evolution-closeout-parts/part-*.b64 \
+            > "$RUNNER_TEMP/evolution-closeout.patch.zlib.b64"
+          test "$(tr -d '[:space:]' < "$RUNNER_TEMP/evolution-closeout.patch.zlib.b64" | wc -c)" -eq 13248
           python3 "$RUNNER_TEMP/apply-evolution-closeout.py" \
             --payload "$RUNNER_TEMP/evolution-closeout.patch.zlib.b64" \
             | tee "$RUNNER_TEMP/patch-digest.txt"
