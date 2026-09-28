@@ -8,11 +8,41 @@ async function load(page) {
   await expect(page.getByRole("button", { name: "Request start", exact: true })).toBeEnabled();
   return receipt;
 }
-async function records(page) {
+
+async function scopedRecords(page) {
   return page.evaluate(() => Object.keys(localStorage)
     .filter(key => key.startsWith("hepta.ui-control.scoped-recovery.v2:"))
-    .map(key => JSON.parse(localStorage.getItem(key)).operation));
+    .map(key => {
+      const operation = JSON.parse(localStorage.getItem(key)).operation;
+      const suffix = `:${operation.operationId}`;
+      return {
+        operation,
+        scopeKey: key.endsWith(suffix) ? key.slice(0, -suffix.length) : key,
+      };
+    }));
 }
+
+async function records(page) {
+  return (await scopedRecords(page)).map(record => record.operation);
+}
+
+async function bindTabSession(page, { identityId, sessionId }) {
+  const rewriteSession = async route => {
+    const response = await route.fetch();
+    const body = await response.json();
+    await route.fulfill({ response, json: { ...body, identityId, sessionId } });
+  };
+  const rewriteView = async route => {
+    const response = await route.fetch();
+    const body = await response.json();
+    await route.fulfill({ response, json: { ...body, sessionId } });
+  };
+
+  await page.route("**/api/ui-control/v1/session/connect", rewriteSession);
+  await page.route("**/api/ui-control/v1/session/refresh", rewriteSession);
+  await page.route("**/api/ui-control/v1/view", rewriteView);
+}
+
 async function submit(page, reason) {
   await page.getByLabel("Reason", { exact: true }).fill(reason);
   await page.getByRole("button", { name: "Request start", exact: true }).click();
@@ -104,23 +134,41 @@ test("response held after server admission survives page loss without a replacem
   }
 });
 
-test("two tabs keep tab-private sessions while sharing scoped recovery records", async ({ page, context, request }) => {
-  const firstReadiness = await load(page);
+test("two tabs keep tab-private identities while sharing only scoped recovery records", async ({ page, context, request }) => {
   const other = await context.newPage();
-  const secondReadiness = await load(other);
+  await Promise.all([
+    bindTabSession(page, { identityId: "operator-first", sessionId: "session-first" }),
+    bindTabSession(other, { identityId: "operator-second", sessionId: "session-second" }),
+  ]);
 
+  // Both documents cross the same HTTP + application-readiness barrier before
+  // either performs a mutation. No fixed delay stands in for coordination.
+  const [firstReadiness, secondReadiness] = await Promise.all([load(page), load(other)]);
+
+  expect(firstReadiness.navigationAck.applicationReady).toBe(true);
+  expect(secondReadiness.navigationAck.applicationReady).toBe(true);
   expect(secondReadiness.tabId).not.toBe(firstReadiness.tabId);
   expect(firstReadiness.stateOwnership.activeSession).toBe("tab-private");
   expect(secondReadiness.stateOwnership.activeSession).toBe("tab-private");
   expect(firstReadiness.stateOwnership.recoveryRecords)
     .toBe("endpoint-protocol-identity-scoped-cross-tab");
+  await expect(page.locator("#identity-state")).toHaveText("operator-first");
+  await expect(other.locator("#identity-state")).toHaveText("operator-second");
 
   await Promise.all([submit(page, "First tab operation."), submit(other, "Second tab operation.")]);
   await expect(page.getByRole("dialog")).toBeHidden();
   await expect(other.getByRole("dialog")).toBeHidden();
+
+  // Shared storage notifications and recovery locks must never replace either
+  // tab's active principal.
+  await expect(page.locator("#identity-state")).toHaveText("operator-first");
+  await expect(other.locator("#identity-state")).toHaveText("operator-second");
+
   const state = await (await request.get("/__test__/state")).json();
   expect(state.requestCount).toBe(2);
-  expect((await records(page)).map(operation => operation.operationId).sort())
+  const stored = await scopedRecords(page);
+  expect(stored.map(record => record.operation.operationId).sort())
     .toEqual(state.operations.map(operation => operation.operationId).sort());
+  expect(new Set(stored.map(record => record.scopeKey)).size).toBe(2);
   await other.close();
 });

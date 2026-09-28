@@ -1,21 +1,64 @@
+import { randomUUID } from "node:crypto";
 import { expect } from "@playwright/test";
 
 const READINESS_SCHEMA = "hepta.ui-control.readiness.v1";
+const NAVIGATION_PARAMETER = "ui-control-navigation";
+
+function isExpectedNavigationInterruption(error) {
+  const message = String(error?.message ?? error);
+  return [
+    "Execution context was destroyed",
+    "navigation",
+    "frame was detached",
+    "Target page, context or browser has been closed",
+  ].some(fragment => message.includes(fragment));
+}
 
 export async function loadControlConsole(page) {
-  const response = await page.goto("/", { waitUntil: "commit" });
-  expect(response, "navigation must produce an HTTP response").not.toBeNull();
-  expect(response.ok(), `navigation failed with HTTP ${response.status()}`).toBeTruthy();
+  const navigationId = `navigation:${randomUUID()}`;
+  const relativeUrl = `/?${NAVIGATION_PARAMETER}=${encodeURIComponent(navigationId)}`;
+  const response = await page.context().request.get(relativeUrl);
+  const httpStatus = response.status();
+  const targetUrl = response.url();
+  const httpOk = response.ok();
+  await response.dispose();
 
-  await page.waitForFunction(
-    () => {
-      const marker = document.documentElement.dataset.uiControlReady;
-      const phase = globalThis.__heptaUiControlReadiness?.phase;
-      return marker === "true" || marker === "failed" || phase === "failed";
+  expect(httpOk, `navigation preflight failed with HTTP ${httpStatus}`).toBeTruthy();
+
+  // Firefox can render and finish application startup while a protocol-level
+  // page.goto(..., waitUntil: "commit") promise remains pending. Initiate the
+  // navigation without treating a browser lifecycle event as application
+  // readiness, then wait for the application's immutable readiness receipt.
+  try {
+    await page.evaluate(url => globalThis.location.replace(url), targetUrl);
+  } catch (error) {
+    if (!isExpectedNavigationInterruption(error)) throw error;
+  }
+
+  await expect.poll(
+    async () => {
+      try {
+        return await page.evaluate(
+          ({ navigationId: expectedId, parameter }) => {
+            const currentId = new URL(globalThis.location.href).searchParams.get(parameter);
+            const marker = document.documentElement.dataset.uiControlReady;
+            const phase = globalThis.__heptaUiControlReadiness?.phase;
+            return currentId === expectedId &&
+              (marker === "true" || marker === "failed" || phase === "failed");
+          },
+          { navigationId, parameter: NAVIGATION_PARAMETER },
+        );
+      } catch {
+        // The old execution context may disappear between navigation and the
+        // first evaluation. Poll the new document rather than sleeping.
+        return false;
+      }
     },
-    undefined,
-    { timeout: 30_000 },
-  );
+    {
+      timeout: 30_000,
+      message: `ui.control did not acknowledge navigation ${navigationId}`,
+    },
+  ).toBe(true);
 
   const receipt = await page.evaluate(() =>
     JSON.parse(JSON.stringify(globalThis.__heptaUiControlReadiness ?? null)),
@@ -31,5 +74,14 @@ export async function loadControlConsole(page) {
     leaderAndClaims: "scope-scoped-cross-tab",
     credentials: "memory-only-never-broadcast-or-persisted",
   });
-  return receipt;
+
+  return Object.freeze({
+    ...receipt,
+    navigationAck: Object.freeze({
+      id: navigationId,
+      httpStatus,
+      finalUrl: page.url(),
+      applicationReady: true,
+    }),
+  });
 }
