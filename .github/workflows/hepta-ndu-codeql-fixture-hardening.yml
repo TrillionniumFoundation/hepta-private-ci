@@ -6,205 +6,52 @@ on:
     paths: [.github/workflows/hepta-ndu-codeql-fixture-hardening.yml]
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ndu-codeql-fixture-hardening
   cancel-in-progress: false
 
 jobs:
-  materialize:
+  sync-current-main:
     runs-on: ubuntu-22.04
-    timeout-minutes: 45
-    permissions:
-      contents: write
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-      - name: Replace hard-coded cryptographic test material and publish exact source
+      - name: Merge current main and restore exact-source hardening workflow
         shell: bash
         env:
           REQUEST_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$REQUEST_SHA"
+          git fetch --no-tags origin main
           BASE=$(git rev-parse refs/remotes/origin/main)
+          git config user.name hepta-ndu-remediation
+          git config user.email qualification@invalid
+          git merge --no-edit "$BASE"
           git merge-base --is-ancestor "$BASE" HEAD
-          export REQUEST_SHA
+          git show "$REQUEST_SHA^:.github/workflows/hepta-ndu-codeql-fixture-hardening.yml" \
+            > .github/workflows/hepta-ndu-codeql-fixture-hardening.yml
+          export BASE
           python3 - <<'PY'
           from pathlib import Path
           import os
 
-          def replace_once(path: str, old: str, new: str) -> None:
-              target = Path(path)
-              text = target.read_text(encoding='utf-8')
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f'{path}: expected one replacement, found {count}')
-              target.write_text(text.replace(old, new, 1), encoding='utf-8')
-
-          replace_once(
-              'codex-rs/hepta-agentd/src/ndu_owner_tests.rs',
-              '    let signing = SigningKey::from_bytes(&[93; 32]);\n',
-              '''    let signing_seed = format!(
-                  "ndu-owner-tests:{}:{}:{}",
-                  authority_dir.path().display(),
-                  SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos(),
-                  std::process::id(),
-              );
-              let signing_bytes = *digest(&signing_seed).as_array();
-              let signing = SigningKey::from_bytes(&signing_bytes);
-          ''',
-          )
-          replace_once(
-              'codex-rs/hepta-agentd/src/ndu_owner_tests.rs',
-              '''        let mut nonce = [0; 32];
-                  nonce[0] = self.nonce;
-                  self.nonce = self.nonce.checked_add(1).ok_or("nonce bound")?;
-          ''',
-              '''        let nonce_sequence = self.nonce;
-                  self.nonce = self.nonce.checked_add(1).ok_or("nonce bound")?;
-                  let nonce_material = format!(
-                      "ndu-owner-tests:{}:{}:{}:{}",
-                      grant_id,
-                      nonce_sequence,
-                      now,
-                      self.store.path().display(),
-                  );
-                  let nonce = *digest(&nonce_material).as_array();
-          ''',
-          )
-
-          replace_once(
-              'codex-rs/hepta-agentd/tests/ndu_process_e2e.rs',
-              '''    let now = now_ms()?;
-              let grant = FinalUseGrant {
-          ''',
-              '''    let now = now_ms()?;
-              let nonce_material = format!(
-                  "ndu-process-e2e:{grant_id}:{nonce}:{now}:{}",
-                  std::process::id(),
-              );
-              let grant = FinalUseGrant {
-          ''',
-          )
-          replace_once(
-              'codex-rs/hepta-agentd/tests/ndu_process_e2e.rs',
-              '        nonce: [nonce; 32],\n',
-              '        nonce: digest(&nonce_material),\n',
-          )
-          replace_once(
-              'codex-rs/hepta-agentd/tests/ndu_process_e2e.rs',
-              '''    let issuer = SigningKey::from_bytes(&[93; 32]);
-              let distributor = SigningKey::from_bytes(&[94; 32]);
-          ''',
-              '''    let fixture_seed = format!(
-                  "ndu-process-e2e:{}:{}:{}",
-                  root.display(),
-                  now_ms()?,
-                  std::process::id(),
-              );
-              let issuer = SigningKey::from_bytes(&digest(&format!("{fixture_seed}:issuer")));
-              let distributor =
-                  SigningKey::from_bytes(&digest(&format!("{fixture_seed}:distributor")));
-          ''',
-          )
-
-          replace_once(
-              'codex-rs/hepta-contracts/src/final_use_control.rs',
-              '''    fn fixture() -> Result<Fixture, Box<dyn std::error::Error>> {
-                  let issuer = SigningKey::from_bytes(&[41; 32]);
-                  let approver = SigningKey::from_bytes(&[42; 32]);
-                  let distributor = SigningKey::from_bytes(&[43; 32]);
-                  let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
-                  let grant = FinalUseGrant {
-                      schema_version: 1,
-                      signer_id: "security-owner".into(),
-                      authority_epoch: 11,
-                      grant_id: "approved-use".into(),
-                      nonce: [7; 32],
-                      binding: FinalUseBinding {
-                          subject_id: "agent-one".into(),
-                          destination_id: "provider:heptabao".into(),
-                          request_sha256: [1; 32],
-                          scope_sha256: [2; 32],
-                          payload_sha256: [3; 32],
-                      },
-                      not_before_unix_ms: now - 1_000,
-                      expires_at_unix_ms: now + 30_000,
-                  };
-                  let signature = issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
-                  let directory = tempfile::tempdir()?;
-                  std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
-          ''',
-              '''    fn fixture() -> Result<Fixture, Box<dyn std::error::Error>> {
-                  let directory = tempfile::tempdir()?;
-                  std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
-                  let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
-                  let fixture_seed = format!(
-                      "final-use-control:{}:{now}:{}",
-                      directory.path().display(),
-                      std::process::id(),
-                  );
-                  let fixture_bytes = |label: &str| -> [u8; 32] {
-                      let mut hasher = Sha256::new();
-                      hasher.update(fixture_seed.as_bytes());
-                      hasher.update([0]);
-                      hasher.update(label.as_bytes());
-                      hasher.finalize().into()
-                  };
-                  let issuer = SigningKey::from_bytes(&fixture_bytes("issuer"));
-                  let approver = SigningKey::from_bytes(&fixture_bytes("approver"));
-                  let distributor = SigningKey::from_bytes(&fixture_bytes("distributor"));
-                  let grant = FinalUseGrant {
-                      schema_version: 1,
-                      signer_id: "security-owner".into(),
-                      authority_epoch: 11,
-                      grant_id: "approved-use".into(),
-                      nonce: fixture_bytes("approved-use-nonce"),
-                      binding: FinalUseBinding {
-                          subject_id: "agent-one".into(),
-                          destination_id: "provider:heptabao".into(),
-                          request_sha256: fixture_bytes("request"),
-                          scope_sha256: fixture_bytes("scope"),
-                          payload_sha256: fixture_bytes("payload"),
-                      },
-                      not_before_unix_ms: now - 1_000,
-                      expires_at_unix_ms: now + 30_000,
-                  };
-                  let signature = issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
-          ''',
-          )
-
-          workflow = Path('.github/workflows/hepta-ndu-final-evidence-sync.yml')
-          text = workflow.read_text(encoding='utf-8')
-          anchor = f'# codeql-fixture-hardening-source: {os.environ["REQUEST_SHA"]}\n'
-          lines = [line for line in text.splitlines(keepends=True) if not line.startswith('# codeql-fixture-hardening-source: ')]
-          lines.insert(1, anchor)
+          workflow = Path('.github/workflows/hepta-ndu-codeql-fixture-hardening.yml')
+          lines = [
+              line for line in workflow.read_text(encoding='utf-8').splitlines(keepends=True)
+              if not line.startswith('# baseline-sync-main: ')
+          ]
+          lines.insert(1, f'# baseline-sync-main: {os.environ["BASE"]}\n')
           workflow.write_text(''.join(lines), encoding='utf-8')
           PY
-
-          rm .github/workflows/hepta-ndu-codeql-fixture-hardening.yml
-          (cd codex-rs && cargo fmt --package codex-hepta-contracts --package codex-hepta-agentd)
-          (cd codex-rs && cargo test --locked -p codex-hepta-contracts --lib final_use_control::tests)
-          (cd codex-rs && cargo test --locked -p codex-hepta-agentd --lib ndu_owner_tests)
-          (cd codex-rs && cargo test --locked -p codex-hepta-agentd --test ndu_process_e2e --no-run)
+          rm -f .github/workflows/ndu-sync-main-and-retrigger-once.yml
           git add -A
-          python3 scripts/hepta_ndu_map_integrity.py \
-            --rebind-index \
-            --candidate-branch "$GITHUB_REF_NAME" \
-            --baseline-main "$BASE"
-          git add docs/modules/utility.ndu/IMPLEMENTATION_MAP.json
-          python3 scripts/test_hepta_ndu_map_integrity.py
-          python3 scripts/test_hepta_ndu_source_policy.py
           git diff --cached --check
-          git config user.name hepta-ndu-remediation
-          git config user.email qualification@invalid
-          git commit -s -m 'test(ndu): derive cryptographic fixture material at runtime'
+          git commit -s -m 'ci(ndu): merge current main before fixture hardening'
           test -z "$(git status --porcelain --untracked-files=all)"
-          python3 scripts/hepta-ndu-implementation-map-closed-world.py \
-            --expected-sha "$(git rev-parse HEAD)" \
-            --expected-tree "$(git rev-parse HEAD^{tree})"
           git push origin "HEAD:$GITHUB_REF_NAME"
