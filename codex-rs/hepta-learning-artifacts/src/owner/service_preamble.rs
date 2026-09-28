@@ -27,21 +27,6 @@ use crate::SignedCurrentArtifactHeadV1;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
 
-#[path = "owner/durable_control.rs"]
-mod durable_control;
-#[path = "owner/durable_inputs.rs"]
-mod durable_inputs;
-#[path = "owner/durable_withdrawals.rs"]
-mod durable_withdrawals;
-#[path = "owner/operational_metrics.rs"]
-mod operational_metrics;
-#[path = "owner/operational_state.rs"]
-mod operational_state;
-#[path = "owner/publication_recovery.rs"]
-mod publication_recovery;
-#[path = "owner/request_identity.rs"]
-mod request_identity;
-
 use durable_control::DurableDrain;
 use durable_inputs::verify_durable_inputs;
 use durable_withdrawals::DurableWithdrawalFloor;

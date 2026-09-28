@@ -114,11 +114,3 @@ impl From<ArtifactPublicationError> for LearningArtifactOwnerServiceError {
         Self::Publication(value)
     }
 }
-
-#[cfg(test)]
-#[path = "owner_service_tests.rs"]
-mod tests;
-
-#[cfg(all(test, unix))]
-#[path = "owner/withdrawal_service_tests.rs"]
-mod withdrawal_tests;
