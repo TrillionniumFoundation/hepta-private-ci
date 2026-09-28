@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+mod authbus_operations;
 mod authbus_outbox;
 mod authbus_outbox_record;
 mod authbus_outbox_worker;
@@ -20,6 +21,8 @@ mod schema_validation;
 mod store;
 mod summary;
 
+pub use authbus_operations::AuthBusOutboxLatencySummary;
+pub use authbus_operations::AuthBusOutboxOperationalSnapshot;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ATTEMPTS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_LEASE_MS;
@@ -123,6 +126,10 @@ mod summary_tests;
 #[cfg(test)]
 #[path = "historical_tests.rs"]
 mod historical_tests;
+
+#[cfg(test)]
+#[path = "authbus_operations_tests.rs"]
+mod authbus_operations_tests;
 
 #[cfg(test)]
 #[path = "authbus_outbox_tests.rs"]
