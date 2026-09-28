@@ -200,6 +200,19 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         {
             return Err(Self::reject(input.stage, "objective binding"));
         }
+        // In this native V1 product profile, candidate IDs name compiled action
+        // classes. Agreement among caller-supplied sets cannot authorize a new
+        // action. Allow a bounded subset, but never infer an alias or admit a
+        // forbidden/undeclared candidate, including an unregistered abstain ID.
+        if self.legal_candidates.iter().any(|candidate| {
+            !receipt
+                .objective
+                .legal_actions
+                .iter()
+                .any(|action| &action.id == candidate)
+        }) {
+            return Err(Self::reject(input.stage, "objective legal candidate binding"));
+        }
         Self::receipt(
             input,
             "objective.compiler",
