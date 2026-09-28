@@ -509,6 +509,9 @@ fn decision_cell_model(
     }
 }
 
+#[path = "decision_cell_binding_tests.rs"]
+mod decision_cell_binding_tests;
+
 fn subject() -> StableId {
     id("subject.1")
 }

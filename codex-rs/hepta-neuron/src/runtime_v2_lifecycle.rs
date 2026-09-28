@@ -182,11 +182,24 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         input: NeuronTickInputV1,
         guard: &mut dyn NeuronAdmissionGuard,
     ) -> Result<NeuronRuntimeCommitV2, NeuronRuntimeV2Error> {
+        let input_digest = input.semantic_digest()?;
+        self.tick_with_input_digest_guarded(model, input, input_digest, guard)
+    }
+
+    /// Internal typed-input entry. Only a validated owning adapter may derive
+    /// an extended identity; ordinary V1 tick keys and persisted bytes stay intact.
+    pub(crate) fn tick_with_input_digest_guarded(
+        &mut self,
+        model: &mut impl DurableNeuronModelPort,
+        input: NeuronTickInputV1,
+        input_digest: Digest32,
+        guard: &mut dyn NeuronAdmissionGuard,
+    ) -> Result<NeuronRuntimeCommitV2, NeuronRuntimeV2Error> {
         let started = Instant::now();
         let store_before = self.store.storage_observation();
         let index_before = self.index.storage_observation();
         let witness_before = self.witness.io_metrics();
-        let result = self.tick_guarded_inner(model, input, guard);
+        let result = self.tick_guarded_inner(model, input, input_digest, guard);
         let store_after = self.store.storage_observation();
         let index_after = self.index.storage_observation();
         let witness_after = self.witness.io_metrics();
@@ -226,13 +239,13 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         &mut self,
         model: &mut impl DurableNeuronModelPort,
         input: NeuronTickInputV1,
+        input_digest: Digest32,
         guard: &mut dyn NeuronAdmissionGuard,
     ) -> Result<NeuronRuntimeCommitV2, NeuronRuntimeV2Error> {
         guard
             .check(&self.config, &input)
             .map_err(NeuronRuntimeV2Error::Admission)?;
         self.reconcile()?;
-        let input_digest = input.semantic_digest()?;
         let key = NeuronOperationKeyV2 {
             tick_id: input.tick_id.clone(),
             input_semantic_digest: input_digest,
@@ -270,7 +283,8 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         }
         self.require_expected_checkpoint(&input, expected_anchor)?;
         self.preflight_new_tick(&input)?;
-        let request = self.model_request(&input)?;
+        let mut request = self.model_request(&input)?;
+        request.input_digest = input_digest;
         self.witness.admit_new_anchor(expected_anchor)?;
         self.index.prepare(key.clone(), expected_anchor)?;
         crash_cut("after_reservation");
@@ -338,9 +352,19 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             Ok(result) => result,
             Err(_) => return self.fail_attempt(&key, NeuronOperationFailureV2::InvalidTransition),
         };
-        let receipt_extension = model.receipt_extension(&request, &model_output, &output)?;
-        if let Some(extension) = &receipt_extension {
-            extension.validate()?;
+        let receipt_extension = match model.receipt_extension(&request, &model_output, &output) {
+            Ok(extension) => extension,
+            Err(NeuronModelError::Rejected) => {
+                return self.fail_attempt(&key, NeuronOperationFailureV2::InvalidModelOutput);
+            }
+            Err(error @ (NeuronModelError::Unavailable | NeuronModelError::Indeterminate)) => {
+                return Err(NeuronRuntimeV2Error::Model(error));
+            }
+        };
+        if let Some(extension) = &receipt_extension
+            && extension.validate().is_err()
+        {
+            return self.fail_attempt(&key, NeuronOperationFailureV2::InvalidModelOutput);
         }
         let next_anchor = JournalAnchor {
             sequence: input.logical_sequence,

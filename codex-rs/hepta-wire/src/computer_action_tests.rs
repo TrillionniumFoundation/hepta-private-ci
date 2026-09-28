@@ -263,3 +263,36 @@ fn cross_runtime_golden_frame_is_frozen() {
         "48414331000100060000000000000000000000050000000000000008000000000000000d0000000000000015000b6f7065726174696f6e2d3100097375626a6563742d31000c6e61746976652d7368656c6cac27cf5248407a85a0cfe7e4b899851d938c9b7d25e4039993332b1d769924dcb0ce1457f27c72529e170e766a645ecf041df62b3c7f6015b02063216029744d4e291d88e42d06d51721cbd10ce87fb65b5410fd880d493d2d974f4125b5fe2825bcb6e219f560fd3fb6419d9655353a0b17cffa60ecf00ed4715b2f9f5928680000000c000a706174682d7265662d310b86962fda869a8c716db9b07513eae16de01d804e38608bdc105558012484ac"
     );
 }
+
+#[test]
+fn portable_integer_boundary_matches_the_javascript_consumer() {
+    let mut value = frame(
+        ComputerActionOpcodeV1::Stop,
+        None,
+        ComputerActionPayloadV1::None,
+    );
+    value.body_generation = MAX_PORTABLE_INTEGER;
+    value.session_generation = MAX_PORTABLE_INTEGER;
+    value.observation_revision = MAX_PORTABLE_INTEGER;
+    value.deadline_monotonic_micros = MAX_PORTABLE_INTEGER;
+    let encoded = encode_computer_action_frame_v1(&value).expect("portable maximum");
+    assert_eq!(
+        decode_computer_action_frame_v1(&encoded).expect("decode maximum"),
+        value
+    );
+    for offset in [12, 20, 28, 36] {
+        let mut hostile = encoded.clone();
+        hostile[offset..offset + 8].copy_from_slice(&(MAX_PORTABLE_INTEGER + 1).to_be_bytes());
+        let body_len = hostile.len() - CHECKSUM_BYTES;
+        let checksum = Digest32::of_parts(&[FRAME_DOMAIN, &hostile[..body_len]]);
+        hostile[body_len..].copy_from_slice(checksum.as_array());
+        assert_eq!(
+            decode_computer_action_frame_v1(&hostile),
+            Err(if offset == 36 {
+                ComputerActionCodecError::InvalidDeadline
+            } else {
+                ComputerActionCodecError::InvalidGeneration
+            }),
+        );
+    }
+}

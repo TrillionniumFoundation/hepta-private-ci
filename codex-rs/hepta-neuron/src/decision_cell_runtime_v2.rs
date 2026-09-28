@@ -220,7 +220,7 @@ where
                 encoder_digest: config.encoder_digest,
                 head_digest: config.head_digest,
                 weights_digest: config.weights_digest,
-                input_digest: tick.semantic_digest().map_err(NeuronRuntimeV2Error::from)?,
+                input_digest: decision_cell_input_digest_v2(invocation, tick)?,
                 feature_vector_q24: tick.feature_vector_q24.clone(),
                 expected_output_width: config.state_width,
             },
@@ -364,7 +364,41 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         let (config, body, body_digest) = self.decision_cell_context();
         let mut adapter =
             DecisionCellNeuronAdapterV2::new(model, invocation, config, body, body_digest, &input)?;
-        self.tick_guarded(&mut adapter, input, guard)
+        let input_digest = decision_cell_input_digest_v2(invocation, &input)?;
+        self.tick_with_input_digest_guarded(&mut adapter, input, input_digest, guard)
+            .map_err(DecisionCellRuntimeV2Error::Runtime)
+    }
+}
+
+/// Domain separation preserves ordinary tick identities while binding every
+/// DecisionCell candidate, frontier and deadline before reservation/dispatch.
+fn decision_cell_input_digest_v2(
+    invocation: &DecisionCellInvocationV2,
+    input: &NeuronTickInputV1,
+) -> Result<Digest32, DecisionCellRuntimeV2Error> {
+    let tick_digest = input
+        .semantic_digest()
+        .map_err(NeuronRuntimeV2Error::from)?;
+    let request_digest = decision_cell_request_digest_v1(&invocation.request)?;
+    Ok(Digest32::of_parts(&[
+        b"hepta.neuron.decision-cell-input.v2",
+        tick_digest.as_array(),
+        request_digest.as_array(),
+    ]))
+}
+
+impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
+    /// Inspect a typed operation by the same complete identity used at dispatch.
+    /// Inspection never calls the model or retries an unknown execution.
+    pub fn query_decision_cell_operation(
+        &mut self,
+        invocation: &DecisionCellInvocationV2,
+        input: &NeuronTickInputV1,
+    ) -> Result<crate::NeuronOperationStatusV2, DecisionCellRuntimeV2Error> {
+        let (config, body, body_digest) = self.decision_cell_context();
+        invocation.validate(config, body, body_digest, input)?;
+        let digest = decision_cell_input_digest_v2(invocation, input)?;
+        self.query_operation(&input.tick_id, digest)
             .map_err(DecisionCellRuntimeV2Error::Runtime)
     }
 }

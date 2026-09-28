@@ -4155,6 +4155,130 @@
         "unknown_critical_fields_rejected",
         "authority_delta_none"
       ]
+    },
+    {
+      "id": "ComputerActionIRV1",
+      "contractId": "ComputerActionIRV1",
+      "canonicalEncoding": "HAC1_big_endian_v1",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 131072,
+      "digestScope": "domain_separated_exact_frame_body_including_final_payload_digest",
+      "fields": [
+        {
+          "name": "protocolVersion",
+          "type": "u16",
+          "required": true
+        },
+        {
+          "name": "opcode",
+          "type": "u16",
+          "required": true
+        },
+        {
+          "name": "flags",
+          "type": "u16",
+          "required": true
+        },
+        {
+          "name": "reserved",
+          "type": "u16",
+          "required": true
+        },
+        {
+          "name": "bodyGeneration",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "sessionGeneration",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "observationRevision",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "deadlineMonotonicMicros",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "operationId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "subjectId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "actuatorId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "targetRef",
+          "type": "id128",
+          "required": false,
+          "maxBytes": 128
+        },
+        {
+          "name": "preconditionDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "argumentPayloadDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "finalPayloadDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "expectedPostconditionDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "payload",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 130
+        },
+        {
+          "name": "frameChecksum",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 32
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "magic_HAC1_version_1_flags_target_only_reserved_zero",
+        "opcodes_1_through_12_with_exact_typed_payload",
+        "generations_and_deadline_in_1_through_9007199254740991",
+        "references_are_ASCII_stable_ids_not_paths_secrets_or_code",
+        "argument_digest_and_resolved_final_payload_digest_are_distinct",
+        "unkeyed_frame_checksum_is_not_authentication",
+        "same_operation_owner_final_use_grant_and_terminal_observer_as_tool_path",
+        "no_blind_redispatch_after_unknown_effect"
+      ]
     }
   ],
   "subordinateProtocolRegistries": [

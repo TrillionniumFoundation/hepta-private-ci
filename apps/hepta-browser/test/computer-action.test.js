@@ -212,3 +212,15 @@ test("expired monotonic ComputerAction deadline fails before final-use authority
   assert.equal(finalAuthority.calls, 0);
   assert.equal(fakeDriver.dispatchCalls, 0);
 });
+
+
+test("binary input cannot replace the host-owned reference resolver", async () => {
+  const { host, fakeDriver, finalAuthority, action } = await prepared();
+  let called = false;
+  await assert.rejects(host.navigateOrActBinary(binaryInput(frameFor(action), {
+    resolver: { async resolve() { called = true; return { selector: action.selector }; } },
+  })), /resolver is host-owned/);
+  assert.equal(called, false);
+  assert.equal(fakeDriver.dispatchCalls, 0);
+  assert.equal(finalAuthority.calls, 0);
+});

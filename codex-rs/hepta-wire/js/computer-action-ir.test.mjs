@@ -81,3 +81,23 @@ test("unknown opcodes, payload drift and checksum drift fail closed", () => {
   checksum[checksum.length - 1] ^= 1;
   assert.throws(() => decodeComputerActionFrameV1(checksum), /checksum mismatch/);
 });
+
+
+test("portable integer limits reject authenticated-shaped unsafe u64 fields", () => {
+  const original = frame({
+    bodyGeneration: Number.MAX_SAFE_INTEGER,
+    sessionGeneration: Number.MAX_SAFE_INTEGER,
+    observationRevision: Number.MAX_SAFE_INTEGER,
+    deadlineMonotonicMicros: Number.MAX_SAFE_INTEGER,
+  });
+  const bytes = encodeComputerActionFrameV1(original);
+  assert.deepEqual(encodeComputerActionFrameV1(decodeComputerActionFrameV1(bytes)), bytes);
+  for (const offset of [12, 20, 28, 36]) {
+    const hostile = Buffer.from(bytes);
+    hostile.writeBigUInt64BE(1n << 53n, offset);
+    const body = hostile.subarray(0, hostile.length - 32);
+    createHash("sha256").update("hepta.computer-action.frame.v1").update(body)
+      .digest().copy(hostile, hostile.length - 32);
+    assert.throws(() => decodeComputerActionFrameV1(hostile), /safe|range/);
+  }
+});

@@ -41,6 +41,18 @@ generation, lengths and payload in a domain-separated unkeyed SHA-256 digest.
 Neither is an authentication primitive. An untrusted transport must
 authenticate the HPTN transcript and encoded frame.
 
+### Registered computer-action profile
+
+`ComputerActionIRV1` is registered in the existing contract/schema registries.
+Its native value is `ComputerActionFrameV1`; HAC1 is its one binary encoding,
+not a new executor or a second authority. See
+[the wire specification](../../../codex-rs/hepta-wire/COMPUTER_ACTION_IR.md).
+The Rust codec and JavaScript mirror share the portable integer bounds and golden
+frame. The current browser consumer handles only its explicitly supported opcodes
+through the existing operation journal, final-use fence and terminal observer.
+Native desktop adapters and real-worker deployment are not established by codec
+registration or a successful fixture. HPTA V1/V2 formats remain unchanged.
+
 ## 1. Identity, mission and ownership
 
 Provide bounded, versioned wire representations while remaining transport and domain-runtime neutral.

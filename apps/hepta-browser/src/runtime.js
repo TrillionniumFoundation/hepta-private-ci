@@ -38,7 +38,10 @@ export class BrowserProfileHost extends HardenedBrowserProfileHost {
   }
 
   async navigateOrActBinary(input) {
-    const resolver = input?.resolver ?? this.#binaryResolver;
+    if (input !== null && typeof input === "object" && "resolver" in input) {
+      throw new TypeError("binary browser resolver is host-owned");
+    }
+    const resolver = this.#binaryResolver;
     if (
       resolver === null ||
       typeof resolver !== "object" ||

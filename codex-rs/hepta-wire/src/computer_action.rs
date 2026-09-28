@@ -21,6 +21,9 @@ const PAYLOAD_DOMAIN: &[u8] = b"hepta.computer-action.payload.v1";
 const CHECKSUM_BYTES: usize = 32;
 pub const MAX_COMPUTER_ACTION_FRAME_BYTES: usize = 128 * 1024;
 const MAX_REFERENCE_BYTES: usize = 128;
+// The first registered HAC1 profile is shared with JavaScript desktop owners.
+// Reject unrepresentable u64s rather than rounding a target generation/deadline.
+const MAX_PORTABLE_INTEGER: u64 = (1_u64 << 53) - 1;
 const MAX_WAIT_MICROS: u64 = 60_000_000;
 const MAX_SCROLL_MILLI: i32 = 100_000;
 
@@ -302,13 +305,17 @@ fn validate_frame(frame: &ComputerActionFrameV1) -> Result<(), ComputerActionCod
     if frame.authority.grants_any() {
         return Err(ComputerActionCodecError::AuthorityGranted);
     }
-    if frame.body_generation == 0
-        || frame.session_generation == 0
-        || frame.observation_revision == 0
+    if [
+        frame.body_generation,
+        frame.session_generation,
+        frame.observation_revision,
+    ]
+    .iter()
+    .any(|value| !(1..=MAX_PORTABLE_INTEGER).contains(value))
     {
         return Err(ComputerActionCodecError::InvalidGeneration);
     }
-    if frame.deadline_monotonic_micros == 0 {
+    if !(1..=MAX_PORTABLE_INTEGER).contains(&frame.deadline_monotonic_micros) {
         return Err(ComputerActionCodecError::InvalidDeadline);
     }
     for (name, digest) in [

@@ -102,3 +102,10 @@ filter = 'package(codex-hepta-learning-ledger) & test(signed_product_history_cur
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
+
+# Exhaustive Neuron partial-frame and child-process cuts exercise real fsync.
+# Avoid concurrent disk campaigns; this does not relax timeouts or skip cuts.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-neuron) & (test(every_partial_frame_boundary_recovers_only_the_predecessor) | test(every_partial_acknowledged_frame_is_preserved_as_failure_evidence) | test(durable_process_crash_matrix) | test(real_process_recovery_preserves_one_physical_execution_at_each_durable_boundary))'
+test-group = 'hepta_durable_capacity'
+retries = 0

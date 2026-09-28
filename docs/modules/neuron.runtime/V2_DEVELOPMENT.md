@@ -166,3 +166,23 @@ be reported as passing that commit's read-only qualification.
 
 No native result is asserted by this document. Only the corresponding completed
 exact-source workflow evidence can establish which commands actually passed.
+
+## Typed DecisionCell operation identity
+
+`tick_decision_cell_guarded` binds the complete validated DecisionCell request,
+including the action/target sets, observation frontier and deadline, together with
+the canonical tick digest before durable admission. The key is domain separated
+from ordinary Neuron ticks. `query_decision_cell_operation` derives the same key;
+ordinary `query_input_operation` is not a typed-Cell lookup shortcut. Existing
+non-Cell V1/V2 record bytes and tick keys are unchanged.
+
+Changing candidates or a target generation under a used tick ID is a conflict,
+including after a dispatched/unknown attempt. It cannot call a reconciler with
+replacement context or reinterpret an old choice. Historical unregistered Cell
+prototypes with tick-only keys are not silently replayed through the new path;
+retain them for explicit reconciliation/migration rather than clearing identity.
+
+A deterministically rejected or malformed typed receipt becomes a durable
+`InvalidModelOutput` terminal failure. Unknown provider or I/O outcomes remain
+unknown. Receipt construction never obtains permission to rerun a consumed model
+invocation or dispatch a computer action.
