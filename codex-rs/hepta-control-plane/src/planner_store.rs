@@ -1,11 +1,10 @@
 //! Owner-local durable storage for complete planner decision envelopes.
 //!
-//! This store is intentionally authority-free. It persists canonical envelope
-//! bytes, detects corruption, recovers a partial final frame, serializes one
-//! writer with an owner-local lock, and publishes externally anchored
-//! checkpoints through same-directory atomic replacement. Product activation
-//! still requires an owner-selected filesystem/profile and independent host
-//! qualification.
+//! This store is authority-free. It persists canonical envelope bytes, detects
+//! corruption, recovers a partial final frame, serializes one writer, and
+//! publishes externally anchored checkpoints through same-directory atomic
+//! replacement. Product activation still requires an owner-selected host and
+//! independent qualification.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -93,8 +92,12 @@ impl Default for PlannerStoreConfigV1 {
     }
 }
 
+/// Deterministic one-shot crash and storage faults used by qualification.
+/// Callers must treat every failpoint result as a simulated process crash and
+/// reopen before issuing another operation.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum PlannerStoreFailpointV1 {
+    DiskFullBeforeFrameWrite,
     BeforeFrameWrite,
     AfterFrameWriteBeforeSync,
     AfterLogSyncBeforePublish,
@@ -116,6 +119,7 @@ pub struct PlannerStoreCheckpointV1 {
 pub enum PlannerStoreError {
     Io(String),
     Locked,
+    CorruptLock,
     InvalidConfiguration,
     EmptyDigest(&'static str),
     RecordLimitExceeded,
@@ -145,10 +149,63 @@ impl From<std::io::Error> for PlannerStoreError {
     }
 }
 
+/// RAII owner lock. On Linux, a lock left by an exited process is reclaimed
+/// only when the recorded PID/start-time pair is no longer current. On other
+/// targets an existing lock fails closed.
+struct PlannerWriterLockV1 {
+    root: PathBuf,
+    path: PathBuf,
+    owner_token: String,
+    _file: File,
+}
+
+impl PlannerWriterLockV1 {
+    fn acquire(root: &Path) -> Result<Self, PlannerStoreError> {
+        let path = root.join(LOCK_NAME);
+        let owner_token = current_process_token()?;
+        loop {
+            match OpenOptions::new().create_new(true).write(true).open(&path) {
+                Ok(mut file) => {
+                    file.write_all(owner_token.as_bytes())?;
+                    file.sync_all()?;
+                    sync_directory(root)?;
+                    return Ok(Self {
+                        root: root.to_path_buf(),
+                        path,
+                        owner_token,
+                        _file: file,
+                    });
+                }
+                Err(error) if error.kind() == ErrorKind::AlreadyExists => {
+                    let existing = fs::read_to_string(&path)
+                        .map_err(|_| PlannerStoreError::CorruptLock)?;
+                    if lock_owner_is_current(existing.trim())? {
+                        return Err(PlannerStoreError::Locked);
+                    }
+                    fs::remove_file(&path)?;
+                    sync_directory(root)?;
+                }
+                Err(error) => return Err(error.into()),
+            }
+        }
+    }
+}
+
+impl Drop for PlannerWriterLockV1 {
+    fn drop(&mut self) {
+        let owned = fs::read_to_string(&self.path)
+            .ok()
+            .is_some_and(|value| value.trim() == self.owner_token);
+        if owned {
+            let _ = fs::remove_file(&self.path);
+            let _ = sync_directory(&self.root);
+        }
+    }
+}
+
 pub struct PlannerStoreV1 {
     root: PathBuf,
-    lock_path: PathBuf,
-    lock_file: File,
+    _lock: PlannerWriterLockV1,
     log: File,
     records: Vec<PlannerStoreRecordV1>,
     config: PlannerStoreConfigV1,
@@ -158,7 +215,8 @@ pub struct PlannerStoreV1 {
 impl PlannerStoreV1 {
     /// Open the current schema and acquire the owner-local single-writer lock.
     /// A partial final frame is truncated to the last complete verified frame;
-    /// corruption inside a complete frame fails closed.
+    /// corruption inside a complete frame fails closed. The RAII lock is
+    /// released on every failed-open path.
     pub fn open(
         root: impl AsRef<Path>,
         config: PlannerStoreConfigV1,
@@ -166,22 +224,7 @@ impl PlannerStoreV1 {
         validate_config(config)?;
         let root = root.as_ref().to_path_buf();
         fs::create_dir_all(&root)?;
-        let lock_path = root.join(LOCK_NAME);
-        let mut lock_file = match OpenOptions::new()
-            .create_new(true)
-            .write(true)
-            .open(&lock_path)
-        {
-            Ok(file) => file,
-            Err(error) if error.kind() == ErrorKind::AlreadyExists => {
-                return Err(PlannerStoreError::Locked);
-            }
-            Err(error) => return Err(error.into()),
-        };
-        lock_file.write_all(std::process::id().to_string().as_bytes())?;
-        lock_file.sync_all()?;
-        sync_directory(&root)?;
-
+        let lock = PlannerWriterLockV1::acquire(&root)?;
         let log_path = root.join(LOG_NAME);
         let mut log = OpenOptions::new()
             .create(true)
@@ -192,16 +235,16 @@ impl PlannerStoreV1 {
         log.read_to_end(&mut bytes)?;
         let decoded = decode_records(&bytes, config)?;
         if decoded.partial_tail {
-            log.set_len(u64::try_from(decoded.valid_bytes).map_err(|_| {
+            let valid = u64::try_from(decoded.valid_bytes).map_err(|_| {
                 PlannerStoreError::Io("valid planner log length does not fit u64".to_string())
-            })?)?;
+            })?;
+            log.set_len(valid)?;
             log.sync_data()?;
         }
         log.seek(SeekFrom::End(0))?;
         Ok(Self {
             root,
-            lock_path,
-            lock_file,
+            _lock: lock,
             log,
             records: decoded.records,
             config,
@@ -219,7 +262,6 @@ impl PlannerStoreV1 {
         SCHEMA_VERSION
     }
 
-    /// Install a one-shot deterministic crash failpoint for qualification.
     pub fn set_failpoint(&mut self, failpoint: Option<PlannerStoreFailpointV1>) {
         self.failpoint = failpoint;
     }
@@ -256,15 +298,12 @@ impl PlannerStoreV1 {
         if self.records.len() >= self.config.maximum_records {
             return Err(PlannerStoreError::RecordLimitExceeded);
         }
-        let sequence = self
-            .records
-            .last()
-            .map_or(Ok(1), |record| {
-                record
-                    .sequence
-                    .checked_add(1)
-                    .ok_or(PlannerStoreError::RecordLimitExceeded)
-            })?;
+        let sequence = self.records.last().map_or(Ok(1), |record| {
+            record
+                .sequence
+                .checked_add(1)
+                .ok_or(PlannerStoreError::RecordLimitExceeded)
+        })?;
         let record_digest = digest_record(
             sequence,
             kind,
@@ -281,8 +320,15 @@ impl PlannerStoreV1 {
             record_digest,
         };
         let frame = encode_record(&record)?;
+        self.trip(PlannerStoreFailpointV1::DiskFullBeforeFrameWrite)?;
         self.trip(PlannerStoreFailpointV1::BeforeFrameWrite)?;
-        self.log.write_all(&frame)?;
+        let start = self.log.seek(SeekFrom::End(0))?;
+        if let Err(error) = self.log.write_all(&frame) {
+            self.log.set_len(start)?;
+            self.log.seek(SeekFrom::End(0))?;
+            self.log.sync_data()?;
+            return Err(error.into());
+        }
         self.trip(PlannerStoreFailpointV1::AfterFrameWriteBeforeSync)?;
         self.log.sync_data()?;
         self.trip(PlannerStoreFailpointV1::AfterLogSyncBeforePublish)?;
@@ -319,8 +365,6 @@ impl PlannerStoreV1 {
         Ok(checkpoint)
     }
 
-    /// Verify the retained checkpoint against both the current complete log and
-    /// the independently supplied expected anchor.
     pub fn verify_checkpoint(
         &self,
         expected_anchor_digest: Digest32,
@@ -368,9 +412,6 @@ impl PlannerStoreV1 {
         Ok(())
     }
 
-    /// Copy the verified complete log and checkpoint into a durable backup
-    /// directory. A checkpoint is required so restore cannot silently accept an
-    /// unanchored copy.
     pub fn backup_to(&mut self, destination: impl AsRef<Path>) -> Result<(), PlannerStoreError> {
         self.log.sync_data()?;
         let checkpoint_bytes = fs::read(self.root.join(CHECKPOINT_NAME))?;
@@ -385,8 +426,6 @@ impl PlannerStoreV1 {
         sync_directory(destination)
     }
 
-    /// Restore one previously anchored backup into an inactive destination and
-    /// then acquire it as the current single writer.
     pub fn restore_from_backup(
         backup: impl AsRef<Path>,
         destination: impl AsRef<Path>,
@@ -396,7 +435,12 @@ impl PlannerStoreV1 {
         let backup = backup.as_ref();
         let destination = destination.as_ref();
         if destination.join(LOCK_NAME).exists() {
-            return Err(PlannerStoreError::Locked);
+            let existing = fs::read_to_string(destination.join(LOCK_NAME))
+                .map_err(|_| PlannerStoreError::CorruptLock)?;
+            if lock_owner_is_current(existing.trim())? {
+                return Err(PlannerStoreError::Locked);
+            }
+            fs::remove_file(destination.join(LOCK_NAME))?;
         }
         let log_bytes = fs::read(backup.join(LOG_NAME))?;
         let decoded = decode_records(&log_bytes, config)?;
@@ -417,8 +461,6 @@ impl PlannerStoreV1 {
         Self::open(destination, config)
     }
 
-    /// Validate the currently supported migration edge. Future schema upgrades
-    /// must add a new deterministic transformer rather than reinterpret v1.
     pub fn validate_migration(from: u16, to: u16) -> Result<(), PlannerStoreError> {
         if from == SCHEMA_VERSION && to == SCHEMA_VERSION {
             Ok(())
@@ -430,6 +472,9 @@ impl PlannerStoreV1 {
     fn trip(&mut self, point: PlannerStoreFailpointV1) -> Result<(), PlannerStoreError> {
         if self.failpoint == Some(point) {
             self.failpoint = None;
+            if point == PlannerStoreFailpointV1::DiskFullBeforeFrameWrite {
+                return Err(PlannerStoreError::Io("injected disk full".to_string()));
+            }
             return Err(PlannerStoreError::Failpoint(point));
         }
         Ok(())
@@ -439,9 +484,6 @@ impl PlannerStoreV1 {
 impl Drop for PlannerStoreV1 {
     fn drop(&mut self) {
         let _ = self.log.sync_data();
-        let _ = self.lock_file.sync_all();
-        let _ = fs::remove_file(&self.lock_path);
-        let _ = sync_directory(&self.root);
     }
 }
 
@@ -502,14 +544,12 @@ fn decode_records(
         }
         let envelope = take(bytes, &mut offset, envelope_len)?.to_vec();
         let record_digest = read_digest(bytes, &mut offset)?;
-        let expected_sequence = records
-            .last()
-            .map_or(Ok(sequence), |record: &PlannerStoreRecordV1| {
-                record
-                    .sequence
-                    .checked_add(1)
-                    .ok_or(PlannerStoreError::CorruptSequence)
-            })?;
+        let expected_sequence = records.last().map_or(Ok(sequence), |record: &PlannerStoreRecordV1| {
+            record
+                .sequence
+                .checked_add(1)
+                .ok_or(PlannerStoreError::CorruptSequence)
+        })?;
         if sequence == 0 || sequence != expected_sequence {
             return Err(PlannerStoreError::CorruptSequence);
         }
@@ -523,15 +563,9 @@ fn decode_records(
         if expected_digest != record_digest {
             return Err(PlannerStoreError::CorruptRecordDigest);
         }
-        if let Some(existing) = records.iter().find(|record| {
+        if records.iter().any(|record| {
             record.operation_identity_digest == operation_identity_digest
         }) {
-            if existing.kind != kind
-                || existing.payload_digest != payload_digest
-                || existing.envelope != envelope
-            {
-                return Err(PlannerStoreError::IdentityConflict);
-            }
             return Err(PlannerStoreError::IdentityConflict);
         }
         records.push(PlannerStoreRecordV1 {
@@ -557,7 +591,7 @@ fn encode_record(record: &PlannerStoreRecordV1) -> Result<Vec<u8>, PlannerStoreE
     let envelope_len = u32::try_from(record.envelope.len()).map_err(|_| {
         PlannerStoreError::EnvelopeTooLarge {
             actual: record.envelope.len(),
-            maximum: u32::MAX as usize,
+            maximum: usize::try_from(u32::MAX).unwrap_or(usize::MAX),
         }
     })?;
     let mut bytes = Vec::with_capacity(FRAME_FIXED_BYTES + record.envelope.len());
@@ -586,14 +620,14 @@ fn digest_record(
     bytes.push(kind.tag());
     bytes.extend_from_slice(operation_identity_digest.as_array());
     bytes.extend_from_slice(payload_digest.as_array());
-    bytes.extend_from_slice(&(envelope.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(&u64::try_from(envelope.len()).unwrap_or(u64::MAX).to_be_bytes());
     bytes.extend_from_slice(envelope);
     Digest32::of_bytes(&bytes)
 }
 
 fn digest_store(records: &[PlannerStoreRecordV1]) -> Digest32 {
     let mut bytes = b"hepta.control.planner-store.v1".to_vec();
-    bytes.extend_from_slice(&(records.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(&u64::try_from(records.len()).unwrap_or(u64::MAX).to_be_bytes());
     for record in records {
         bytes.extend_from_slice(record.record_digest.as_array());
     }
@@ -678,8 +712,7 @@ fn write_new_file(path: &Path, bytes: &[u8]) -> Result<(), PlannerStoreError> {
 }
 
 fn atomic_write(root: &Path, name: &str, bytes: &[u8]) -> Result<(), PlannerStoreError> {
-    let temp_name = format!("{name}.tmp");
-    let temp_path = root.join(temp_name);
+    let temp_path = root.join(format!("{name}.tmp"));
     write_new_file(&temp_path, bytes)?;
     fs::rename(temp_path, root.join(name))?;
     sync_directory(root)
@@ -690,13 +723,54 @@ fn sync_directory(path: &Path) -> Result<(), PlannerStoreError> {
     Ok(())
 }
 
+fn current_process_token() -> Result<String, PlannerStoreError> {
+    process_token(std::process::id())?.ok_or(PlannerStoreError::CorruptLock)
+}
+
+#[cfg(target_os = "linux")]
+fn process_token(pid: u32) -> Result<Option<String>, PlannerStoreError> {
+    let path = format!("/proc/{pid}/stat");
+    let stat = match fs::read_to_string(path) {
+        Ok(value) => value,
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(error.into()),
+    };
+    let end = stat.rfind(')').ok_or(PlannerStoreError::CorruptLock)?;
+    let tail = stat.get(end + 1..).ok_or(PlannerStoreError::CorruptLock)?;
+    // The tail starts at proc field 3; starttime is field 22.
+    let start_time = tail
+        .split_whitespace()
+        .nth(19)
+        .ok_or(PlannerStoreError::CorruptLock)?;
+    Ok(Some(format!("{pid}:{start_time}")))
+}
+
+#[cfg(not(target_os = "linux"))]
+fn process_token(pid: u32) -> Result<Option<String>, PlannerStoreError> {
+    Ok(Some(pid.to_string()))
+}
+
+fn lock_owner_is_current(token: &str) -> Result<bool, PlannerStoreError> {
+    let (pid, _) = token
+        .split_once(':')
+        .ok_or(PlannerStoreError::CorruptLock)?;
+    let pid = pid
+        .parse::<u32>()
+        .map_err(|_| PlannerStoreError::CorruptLock)?;
+    Ok(process_token(pid)?.as_deref() == Some(token))
+}
+
 fn take<'a>(
     bytes: &'a [u8],
     offset: &mut usize,
     count: usize,
 ) -> Result<&'a [u8], PlannerStoreError> {
-    let end = offset.checked_add(count).ok_or(PlannerStoreError::Truncated)?;
-    let value = bytes.get(*offset..end).ok_or(PlannerStoreError::Truncated)?;
+    let end = (*offset)
+        .checked_add(count)
+        .ok_or(PlannerStoreError::Truncated)?;
+    let value = bytes
+        .get(*offset..end)
+        .ok_or(PlannerStoreError::Truncated)?;
     *offset = end;
     Ok(value)
 }

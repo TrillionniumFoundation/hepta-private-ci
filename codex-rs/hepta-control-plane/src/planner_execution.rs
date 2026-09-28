@@ -39,8 +39,6 @@ pub enum PlannerAuthorityRevalidationV1 {
     Indeterminate,
 }
 
-/// Product-owned authority boundary. Implementations must not be controlled by
-/// the planner that supplied the request.
 pub trait PlannerAuthorityConsumerV1 {
     fn authorize(
         &mut self,
@@ -70,7 +68,6 @@ pub struct PlannerEffectObservationV1 {
     pub observed_at_micros: u64,
 }
 
-/// Effect owner that consumes one already revalidated grant.
 pub trait PlannerEffectExecutorV1 {
     fn execute(
         &mut self,
@@ -97,12 +94,22 @@ pub struct PlannerTerminalReceiptV1 {
     pub authority: AuthorityPosture,
 }
 
-/// Durable terminal-receipt owner. Queue admission is not a terminal outcome.
+/// A first dispatch and a later reconciliation have different durable record
+/// identities. This permits an indeterminate first observation to converge to
+/// a later terminal observation without reusing or overwriting the dispatch
+/// receipt identity.
 pub trait PlannerTerminalReceiptSinkV1 {
     fn append_terminal_receipt(
         &mut self,
         receipt: &PlannerTerminalReceiptV1,
     ) -> Result<(), PlannerExecutionError>;
+
+    fn append_reconciliation_receipt(
+        &mut self,
+        receipt: &PlannerTerminalReceiptV1,
+    ) -> Result<(), PlannerExecutionError> {
+        self.append_terminal_receipt(receipt)
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -133,9 +140,6 @@ impl From<PlannerStoreError> for PlannerExecutionError {
     }
 }
 
-/// Authorize, revalidate and execute exactly one final-payload request.
-/// Authorization is checked twice and every semantic digest is compared before
-/// the executor is entered.
 pub fn execute_planner_request_v1<A, E, S>(
     request: &GrantRequestV1,
     now_micros: u64,
@@ -179,6 +183,8 @@ where
 }
 
 /// Reconcile a previously indeterminate operation without replaying dispatch.
+/// The sink receives a reconciliation record, not a second initial terminal
+/// record with the same operation identity.
 pub fn reconcile_planner_request_v1<E, S>(
     request: &GrantRequestV1,
     grant_digest: Digest32,
@@ -199,7 +205,7 @@ where
         expires_at_micros: request.expires_at_micros,
     };
     let receipt = terminal_receipt(request, &grant, observation)?;
-    sink.append_terminal_receipt(&receipt)?;
+    sink.append_reconciliation_receipt(&receipt)?;
     Ok(receipt)
 }
 
@@ -208,15 +214,39 @@ impl PlannerTerminalReceiptSinkV1 for PlannerStoreV1 {
         &mut self,
         receipt: &PlannerTerminalReceiptV1,
     ) -> Result<(), PlannerExecutionError> {
-        let envelope = encode_terminal_receipt(receipt);
-        self.append(
+        append_store_receipt(
+            self,
             PlannerStoreRecordKindV1::TerminalReceipt,
             receipt.operation_identity_digest,
-            receipt.receipt_digest,
-            &envelope,
-        )?;
-        Ok(())
+            receipt,
+        )
     }
+
+    fn append_reconciliation_receipt(
+        &mut self,
+        receipt: &PlannerTerminalReceiptV1,
+    ) -> Result<(), PlannerExecutionError> {
+        let mut bytes = b"hepta.control.reconciliation-identity.v1".to_vec();
+        bytes.extend_from_slice(receipt.operation_identity_digest.as_array());
+        bytes.extend_from_slice(receipt.receipt_digest.as_array());
+        append_store_receipt(
+            self,
+            PlannerStoreRecordKindV1::Reconciliation,
+            Digest32::of_bytes(&bytes),
+            receipt,
+        )
+    }
+}
+
+fn append_store_receipt(
+    store: &mut PlannerStoreV1,
+    kind: PlannerStoreRecordKindV1,
+    identity_digest: Digest32,
+    receipt: &PlannerTerminalReceiptV1,
+) -> Result<(), PlannerExecutionError> {
+    let envelope = encode_terminal_receipt(receipt);
+    store.append(kind, identity_digest, receipt.receipt_digest, &envelope)?;
+    Ok(())
 }
 
 fn validate_request(
@@ -347,7 +377,11 @@ fn encode_terminal_receipt(receipt: &PlannerTerminalReceiptV1) -> Vec<u8> {
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &str) {
-    bytes.extend_from_slice(&(value.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(
+        &u64::try_from(value.len())
+            .unwrap_or(u64::MAX)
+            .to_be_bytes(),
+    );
     bytes.extend_from_slice(value.as_bytes());
 }
 
