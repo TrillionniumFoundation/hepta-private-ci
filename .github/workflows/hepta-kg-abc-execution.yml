@@ -2,7 +2,7 @@ name: knowledge.graph A-B-C exact candidate execution
 
 on:
   push:
-    branches: [work/kg-abc-closure-20260928]
+    branches: [work/kg-abc-evidence-hardening-20260928]
   workflow_dispatch:
 
 permissions:
@@ -39,7 +39,7 @@ jobs:
         shell: bash
         env:
           SOURCE_SHA: ${{ github.sha }}
-          OWN_BRANCH: work/kg-abc-closure-20260928
+          OWN_BRANCH: work/kg-abc-evidence-hardening-20260928
         run: |
           set -euo pipefail
           test "$GITHUB_REF_NAME" = "$OWN_BRANCH"
@@ -47,10 +47,6 @@ jobs:
           test "$GITHUB_SERVER_URL" = 'https://github.com'
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           ORIGIN_URL="https://github.com/$GITHUB_REPOSITORY.git"
-          # The runner may configure a read mirror in machine-global Git URL
-          # rewrites. Publish and verify refs against GitHub itself. Keep the
-          # repository-local checkout authentication; never print credentials,
-          # disable TLS validation, change global config or force-update a ref.
           authoritative_git() {
             env GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1 \
               GIT_TERMINAL_PROMPT=0 git "$@"
@@ -108,6 +104,16 @@ jobs:
               guide.write_text(text.rstrip() + section)
           elif section.strip() not in text:
               raise SystemExit('existing query-budget guide section has drifted')
+          extension = (
+              '\n\n## Query and history acceptance extension (2026-09-28)\n\n'
+              'See [ACCEPTANCE_EXTENSION_20260928.md](ACCEPTANCE_EXTENSION_20260928.md) '
+              'for the public-API query equivalence matrix, exact work-budget '
+              'regressions and concurrent long-history/reopen/deletion checks. '
+              'Execution and production acceptance remain separate gates.\n'
+          )
+          text = guide.read_text()
+          if '## Query and history acceptance extension (2026-09-28)' not in text:
+              guide.write_text(text.rstrip() + extension)
           PY
           python3 scripts/hepta_kg_documentation_sync.py --check
           git diff --check
@@ -116,7 +122,7 @@ jobs:
             codex-rs/hepta-prompt-optimizer docs/modules/knowledge.graph/TECHNICAL.md
           if ! git diff --cached --quiet; then
             git commit \
-              -m 'fix(knowledge.graph): format scoped candidate and link current contracts' \
+              -m 'fix(knowledge.graph): format scoped candidate and link acceptance extension' \
               -m 'Preparation only; native execution remains required.' \
               -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
           fi
@@ -132,12 +138,9 @@ jobs:
           maps = importlib.util.module_from_spec(spec)
           spec.loader.exec_module(maps)
           path = Path('docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json')
-          original = path.read_text()
-          row = json.loads(original, object_pairs_hook=maps.unique_keys)
+          row = json.loads(path.read_text(), object_pairs_hook=maps.unique_keys)
           assert row['module'] == 'knowledge.graph'
           assert row['declaredRoots'] == ['codex-rs/hepta-kg']
-          # Observe the whole current evidence cut, not merely conditional kernel
-          # object changes. The map-only commit below must change no mapped path.
           anchor = maps.current_source_base()
           row['sourceBase'] = anchor
           row['observedAtHead'] = anchor
@@ -146,7 +149,7 @@ jobs:
               | set(row['declaredRoots'])
               | set(row['resolvedRoots'])
               | set(row['compositionRoots'])
-              | {row['technicalGuide']}
+              | {row['technicalGuide'], 'docs/modules/knowledge.graph/ACCEPTANCE_EXTENSION_20260928.md'}
           )
           row['sourceObjects'] = maps.current_source_objects(row)
           row['observedSourcePaths'] = sorted(
@@ -175,8 +178,6 @@ jobs:
           tree="$(git rev-parse HEAD^{tree})"
           git diff --exit-code
           git diff --cached --exit-code
-          # A response can be lost after an accepted push. Reconcile the exact
-          # authoritative ref before any retry; never overwrite concurrent work.
           for attempt in 1 2 3; do
             observed="$(remote_head)"
             if [ "$observed" = "$candidate" ]; then
@@ -196,8 +197,6 @@ jobs:
 
   execution:
     needs: bind
-    # A failed identity gate must not suppress native diagnostics. It still
-    # fails bind and the aggregate qualification gate; there is no green bypass.
     if: ${{ always() && needs.bind.outputs.candidate != '' }}
     name: KG ${{ matrix.profile }} (${{ matrix.lane }})
     runs-on: ${{ matrix.runner }}
@@ -234,7 +233,7 @@ jobs:
         with:
           base-sha: ${{ env.BASE_SHA }}
           source-sha: ${{ needs.bind.outputs.candidate }}
-          pr-number: '1142'
+          pr-number: '1169'
           author-name: Hepta KG CI
           author-email: hepta-kg-ci@users.noreply.github.com
           message: Synthetic merge
