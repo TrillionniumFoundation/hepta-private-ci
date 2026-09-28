@@ -639,7 +639,10 @@ fn production_decision_from_authenticated(
         .collect::<Vec<_>>();
     let abstain_id = StableId::new("abstain")
         .map_err(|_| AgentdIntuitionPolicyError::InvalidHost("abstain candidate id"))?;
-    if candidate_ids.iter().any(|candidate| candidate == &abstain_id) {
+    if candidate_ids
+        .iter()
+        .any(|candidate| candidate == &abstain_id)
+    {
         return Err(AgentdIntuitionPolicyError::InvalidHost(
             "reserved abstain candidate in policy request",
         ));
