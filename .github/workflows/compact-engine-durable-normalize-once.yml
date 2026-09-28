@@ -9,12 +9,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: compact-engine-source-remediation-once
+  group: compact-engine-source-remediation-once-ubuntu22
   cancel-in-progress: false
 
 jobs:
   remediate:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
     steps:
       - name: Check out exact remediation commit
@@ -32,7 +32,7 @@ jobs:
       - name: Apply reviewed compact.engine remediation
         shell: bash
         env:
-          EXPECTED_PARENT: d1edbcc8ead12267b6884c6c75344daf4693a58a
+          EXPECTED_PARENT: 919da65982424778e0997799d268652e9c6f5791
           WORKFLOW_PATH: .github/workflows/compact-engine-durable-normalize-once.yml
           PATCH_PATH: .github/compact-engine-stage-bc.patch
         run: |
