@@ -121,7 +121,7 @@ pub(super) async fn collect_in_transaction(
     let mut last_seq = 0_i64;
     let mut observed_rows = 0_i64;
     loop {
-        let page = sqlx::query(&statement)
+        let page = sqlx::query(sqlx::AssertSqlSafe(statement.as_str()))
             .bind(last_seq)
             .bind(PAGE_ROWS)
             .fetch_all(&mut **transaction)
@@ -167,7 +167,11 @@ pub(super) async fn collect_in_transaction(
     let replay_rows = sqlx::query(
         "SELECT issuer_id, key_epoch, subject_id, scope_digest, sequence, envelope_digest
          FROM authbus_replay_sequences ORDER BY issuer_id, key_epoch, subject_id, scope_digest LIMIT ?",
-    ).bind(MAX_REPLAY_ROWS + 1).fetch_all(&mut **transaction).await.map_err(classify_sqlx_error)?;
+    )
+    .bind(MAX_REPLAY_ROWS + 1)
+    .fetch_all(&mut **transaction)
+    .await
+    .map_err(classify_sqlx_error)?;
     if replay_rows.len() > MAX_REPLAY_ROWS as usize {
         return Err(EvidenceError::Unavailable(
             "AuthBus replay frontier exceeds capacity".into(),
