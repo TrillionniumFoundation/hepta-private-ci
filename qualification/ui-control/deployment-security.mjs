@@ -11,6 +11,15 @@ import {
   verifyExactAsset,
 } from "./deployment-asset-invariants.mjs";
 import {
+  assertContentSecurityPolicy,
+  assertCookiePolicy,
+  assertHstsPolicy,
+  assertNoStoreCachePolicy,
+  assertPermissionsPolicy,
+  assertTlsPolicy,
+  deploymentSecurityPolicyReceipt,
+} from "./deployment-security-invariants.mjs";
+import {
   assertEvidence,
   deploymentSubject,
   safeFailure,
@@ -42,18 +51,6 @@ async function emit(receipt) {
   process.stdout.write(serialized);
 }
 
-function cookieAttributes(value) {
-  const entries = value.split(";").slice(1).map(part => part.trim()).filter(Boolean);
-  const attributes = new Map();
-  for (const entry of entries) {
-    const separator = entry.indexOf("=");
-    const name = (separator === -1 ? entry : entry.slice(0, separator)).trim().toLowerCase();
-    const attributeValue = separator === -1 ? true : entry.slice(separator + 1).trim();
-    attributes.set(name, attributeValue);
-  }
-  return attributes;
-}
-
 async function observeTls(base) {
   return new Promise((resolveTls, rejectTls) => {
     const socket = tlsConnect({
@@ -73,23 +70,14 @@ async function observeTls(base) {
       clearTimeout(timer);
       try {
         assertEvidence(socket.authorized, "UI_CONTROL_TLS_UNAUTHORIZED", socket.authorizationError || "TLS peer was not authorized");
-        const protocol = socket.getProtocol();
-        assertEvidence(["TLSv1.2", "TLSv1.3"].includes(protocol), "UI_CONTROL_TLS_PROTOCOL", `unsupported TLS protocol: ${protocol}`);
         const certificate = socket.getPeerCertificate();
         assertEvidence(certificate && certificate.valid_to, "UI_CONTROL_TLS_CERTIFICATE", "peer certificate metadata is unavailable");
-        const validTo = Date.parse(certificate.valid_to);
-        assertEvidence(Number.isFinite(validTo) && validTo > Date.now(), "UI_CONTROL_TLS_CERTIFICATE_EXPIRED", "peer certificate is expired");
-        assertEvidence(
-          typeof certificate.fingerprint256 === "string" && certificate.fingerprint256.length > 0,
-          "UI_CONTROL_TLS_CERTIFICATE_FINGERPRINT",
-          "peer certificate SHA-256 fingerprint is unavailable",
-        );
-        resolveTls({
-          protocol,
+        resolveTls(assertTlsPolicy({
+          protocol: socket.getProtocol(),
           cipher: socket.getCipher()?.standardName || socket.getCipher()?.name || null,
-          certificateValidTo: new Date(validTo).toISOString(),
+          certificateValidTo: certificate.valid_to,
           certificateFingerprint256: certificate.fingerprint256,
-        });
+        }));
       } catch (error) {
         rejectTls(error);
       } finally {
@@ -157,32 +145,15 @@ try {
   stage = "root-security-headers";
   const root = await request(rootUrl, { headers: { accept: "text/html" } });
   assertEvidence(root.ok, "UI_CONTROL_ROOT_HTTP", `root: expected 2xx, got ${root.status}`);
-  const csp = root.headers.get("content-security-policy") || "";
-  for (const directive of [
-    "default-src 'self'",
-    "script-src 'self'",
-    "style-src 'self'",
-    "connect-src 'self'",
-    "img-src 'self' data:",
-    "object-src 'none'",
-    "base-uri 'none'",
-    "form-action 'self'",
-    "frame-ancestors 'none'",
-  ]) {
-    assertEvidence(csp.includes(directive), "UI_CONTROL_CSP_DIRECTIVE", `root: CSP missing ${directive}`);
-  }
-  const hsts = root.headers.get("strict-transport-security") || "";
-  assertEvidence(/(?:^|;)\s*max-age=\d+/iu.test(hsts), "UI_CONTROL_HSTS", "root: HSTS max-age is required");
+  assertContentSecurityPolicy(root.headers.get("content-security-policy") || "");
+  assertHstsPolicy(root.headers.get("strict-transport-security") || "");
   assertEvidence((root.headers.get("x-content-type-options") || "").toLowerCase() === "nosniff", "UI_CONTROL_NOSNIFF", "root: nosniff is required");
   assertEvidence((root.headers.get("x-frame-options") || "").toUpperCase() === "DENY", "UI_CONTROL_FRAME_OPTIONS", "root: X-Frame-Options DENY is required");
   assertEvidence((root.headers.get("referrer-policy") || "").toLowerCase() === "no-referrer", "UI_CONTROL_REFERRER_POLICY", "root: no-referrer is required");
   assertEvidence((root.headers.get("cross-origin-opener-policy") || "").toLowerCase() === "same-origin", "UI_CONTROL_COOP", "root: COOP same-origin is required");
   assertEvidence((root.headers.get("cross-origin-resource-policy") || "").toLowerCase() === "same-origin", "UI_CONTROL_CORP", "root: CORP same-origin is required");
-  const permissionsPolicy = (root.headers.get("permissions-policy") || "").replace(/\s+/gu, "").toLowerCase();
-  for (const directive of ["camera=()", "microphone=()", "geolocation=()", "payment=()"]) {
-    assertEvidence(permissionsPolicy.includes(directive), "UI_CONTROL_PERMISSIONS_POLICY", `root: Permissions-Policy missing ${directive}`);
-  }
-  assertEvidence(/(?:^|,)\s*(?:no-store|private\s*,?\s*no-store)/iu.test(root.headers.get("cache-control") || ""), "UI_CONTROL_CACHE_CONTROL", "root: Cache-Control must prevent shared or persistent caching");
+  assertPermissionsPolicy(root.headers.get("permissions-policy") || "");
+  assertNoStoreCachePolicy(root.headers.get("cache-control") || "");
   checks.push("csp", "hsts", "no-store", "browser-isolation-headers");
 
   stage = "asset-identity";
@@ -268,12 +239,7 @@ try {
   assertEvidence(setCookies.length > 0, "UI_CONTROL_COOKIE_MISSING", "connect: an observed Set-Cookie is required to qualify cookie policy");
   const expectedCookiePath = process.env.HEPTA_UI_CONTROL_COOKIE_PATH || (prefix || "/");
   for (const value of setCookies) {
-    const attributes = cookieAttributes(value);
-    assertEvidence(attributes.has("secure"), "UI_CONTROL_COOKIE_SECURE", "connect cookie must be Secure");
-    assertEvidence(attributes.has("httponly"), "UI_CONTROL_COOKIE_HTTP_ONLY", "connect cookie must be HttpOnly");
-    assertEvidence(["strict", "lax"].includes(String(attributes.get("samesite") || "").toLowerCase()), "UI_CONTROL_COOKIE_SAMESITE", "connect cookie must set SameSite=Strict or Lax");
-    assertEvidence(attributes.get("path") === expectedCookiePath, "UI_CONTROL_COOKIE_PATH", `connect cookie must set Path=${expectedCookiePath}`);
-    assertEvidence(!attributes.has("domain"), "UI_CONTROL_COOKIE_DOMAIN", "connect cookie must remain host-only");
+    assertCookiePolicy(value, expectedCookiePath);
   }
   const session = await json(connectedResponse, "connect");
   assertEvidence(session.authenticated === true, "UI_CONTROL_SESSION_AUTH", "connect: authenticated session not established");
@@ -317,6 +283,7 @@ try {
       browserBuildManifestSha256: sha256(buildManifestText),
     },
     deployment: { ...subject, observedAt: new Date().toISOString() },
+    policy: deploymentSecurityPolicyReceipt(),
     tls,
     assets: {
       verifiedAssetCount,
@@ -340,6 +307,7 @@ try {
     backendDeploymentDigest: deployment?.digest ?? null,
     source,
     deployment: deployment ? { ...deployment.subject, observedAt: new Date().toISOString() } : null,
+    policy: deploymentSecurityPolicyReceipt(),
     checks,
     failure: safeFailure(error, stage),
     claims: {
