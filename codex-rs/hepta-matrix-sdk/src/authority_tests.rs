@@ -67,15 +67,21 @@ fn binding_changes_for_attempt_destination_and_payload() {
     retry_record.attempts = 2;
     let mut retry_dispatch = dispatch.clone();
     retry_dispatch.attempts = 2;
-    let retry = build_matrix_final_use_request(&first.subject_id, &retry_dispatch, &retry_record, &identity)
-        .expect("retry binding");
+    let retry = build_matrix_final_use_request(
+        &first.subject_id,
+        &retry_dispatch,
+        &retry_record,
+        &identity,
+    )
+    .expect("retry binding");
     assert_ne!(first.request_digest, retry.request_digest);
     assert_eq!(first.scope_digest, retry.scope_digest);
     assert_eq!(first.payload_digest, retry.payload_digest);
     let mut other_identity = identity.clone();
     other_identity.device_id = "OTHER".to_string();
-    let other = build_matrix_final_use_request(&first.subject_id, &dispatch, &record, &other_identity)
-        .expect("other binding");
+    let other =
+        build_matrix_final_use_request(&first.subject_id, &dispatch, &record, &other_identity)
+            .expect("other binding");
     assert_ne!(first.scope_digest, other.scope_digest);
     assert_ne!(first.destination_id, other.destination_id);
     let mut edit = record.clone();

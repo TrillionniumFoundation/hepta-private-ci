@@ -1,6 +1,6 @@
-use std::collections::VecDeque;
 #[cfg(unix)]
 use std::collections::BTreeSet;
+use std::collections::VecDeque;
 use std::error::Error;
 use std::fs;
 use std::sync::Mutex;
@@ -43,8 +43,6 @@ use codex_hepta_matrix_sdk::IngressIgnoredReason;
 #[cfg(unix)]
 use codex_hepta_matrix_sdk::MatrixAuthorityError;
 #[cfg(unix)]
-use codex_hepta_matrix_sdk::build_matrix_final_use_request;
-#[cfg(unix)]
 use codex_hepta_matrix_sdk::MatrixFinalUseRequest;
 #[cfg(unix)]
 use codex_hepta_matrix_sdk::MatrixGrantFuture;
@@ -60,12 +58,14 @@ use codex_hepta_matrix_sdk::MatrixSidecarConfig;
 use codex_hepta_matrix_sdk::MatrixTimelineEvent;
 use codex_hepta_matrix_sdk::MatrixTransportError;
 use codex_hepta_matrix_sdk::OutboxDispatchConfig;
+#[cfg(unix)]
+use codex_hepta_matrix_sdk::build_matrix_final_use_request;
 use codex_hepta_matrix_sdk::dispatch_outbox_once;
 use codex_hepta_matrix_sdk::run_outbox_sender;
-use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::MatrixDispatchAuthorityClaim;
-use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::MatrixDispatchState;
+use codex_hepta_matrix_store::MatrixDurableConfig;
+use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::OutboxDisposition;
 use codex_hepta_matrix_store::OutboxDraft;
 use codex_hepta_matrix_store::OutboxKind;
@@ -645,7 +645,8 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
             .retry_scheduled,
         1
     );
-    let accepted = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
+    let accepted =
+        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
     assert_eq!(accepted.sent, 0);
     assert_eq!(accepted.transport_accepted, 1);
     assert_eq!(
@@ -711,7 +712,8 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     assert_eq!(after_response_loss.state, OutboxState::RetryScheduled);
     assert_eq!(after_response_loss.sent_event_id, None);
 
-    let second = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
+    let second =
+        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
     assert_eq!(second.sent, 0);
     assert_eq!(second.transport_accepted, 1);
     assert_eq!(
@@ -894,11 +896,13 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
         idle_poll: Duration::from_millis(10),
     };
 
-    // Cut 1: final-use nonce has been consumed and adapter entry returned a
-    // lazy future, but Matrix has not durably recorded the claim and the
-    // future has never been polled.
+    // Cut 1: final-use nonce has been consumed, but no sealed adapter future is
+    // constructed and Matrix has not durably recorded the authority claim.
     let first = store.claim_outbox(10, config.lease_ms, 1).await?;
-    let first = first.first().ok_or("missing first crash-cut claim")?.clone();
+    let first = first
+        .first()
+        .ok_or("missing first crash-cut claim")?
+        .clone();
     let prepared = store.prepare_outbox_dispatch(&first, 10).await?;
     let request = build_matrix_final_use_request(
         agent_id.as_str(),
@@ -908,10 +912,9 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
     )?;
     let signed = authorizer.signed_grant(&request).await?;
     let token = authorizer.authority().claim(&signed, &request.binding)?;
-    let (future, _) = authorizer
+    authorizer
         .authority()
-        .with_verified_use_at_frontier(token, &request.binding, || transport.send(&first))?;
-    drop(future);
+        .with_verified_use_at_frontier(token, &request.binding, || ())?;
     assert!(transport.txn_ids()?.is_empty());
     assert!(
         store
@@ -921,11 +924,14 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
     );
     store.close().await;
 
-    // Cut 2: the exact authority claim is durable, but the lazy network future
-    // is still dropped before its first poll.
+    // Cut 2: the exact authority claim is durable, but the process stops before
+    // constructing or polling a sealed network future.
     let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
     let second = store.claim_outbox(20, config.lease_ms, 1).await?;
-    let second = second.first().ok_or("missing second crash-cut claim")?.clone();
+    let second = second
+        .first()
+        .ok_or("missing second crash-cut claim")?
+        .clone();
     let prepared = store.prepare_outbox_dispatch(&second, 20).await?;
     let request = build_matrix_final_use_request(
         agent_id.as_str(),
@@ -935,9 +941,10 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
     )?;
     let signed = authorizer.signed_grant(&request).await?;
     let token = authorizer.authority().claim(&signed, &request.binding)?;
-    let (future, frontier) = authorizer
-        .authority()
-        .with_verified_use_at_frontier(token, &request.binding, || transport.send(&second))?;
+    let (_, frontier) =
+        authorizer
+            .authority()
+            .with_verified_use_at_frontier(token, &request.binding, || ())?;
     store
         .record_dispatch_authority_claim(
             &original.stable_txn_id,
@@ -950,20 +957,17 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
                 device_id: request.device_id.clone(),
                 session_generation: request.session_generation,
                 authority_epoch: frontier.authority_epoch,
-                revocation_revision: frontier.revision,
+                revocation_revision: frontier.revocation_revision,
                 grant_id: signed.grant.grant_id.clone(),
                 request_digest: request.request_digest.clone(),
                 scope_digest: request.scope_digest.clone(),
                 payload_digest: request.payload_digest.clone(),
                 attempt: second.attempts,
                 expires_at_ms: signed.grant.expires_at_unix_ms,
-                claimed_at_ms: SystemTime::now()
-                    .duration_since(UNIX_EPOCH)?
-                    .as_millis() as u64,
+                claimed_at_ms: SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64,
             },
         )
         .await?;
-    drop(future);
     assert!(transport.txn_ids()?.is_empty());
     let durable_second = store
         .dispatch_authority_claim(&original.stable_txn_id, second.attempts)
@@ -1026,7 +1030,10 @@ async fn revoked_grant_never_enters_the_physical_matrix_adapter() -> TestResult 
         10,
     )
     .await;
-    assert!(matches!(result, Err(codex_hepta_matrix_sdk::OutboxDispatchError::Authority)));
+    assert!(matches!(
+        result,
+        Err(codex_hepta_matrix_sdk::OutboxDispatchError::Authority)
+    ));
     assert!(transport.txn_ids()?.is_empty());
     assert!(
         store
@@ -1050,7 +1057,10 @@ async fn revocation_after_claim_before_adapter_entry_never_crosses_network() -> 
     let transport = FakeTransport::new([Ok(event("$must-not-send-revocation-race")?)]);
 
     let claimed = store.claim_outbox(10, 20, 1).await?;
-    let claimed = claimed.first().ok_or("missing revocation-race claim")?.clone();
+    let claimed = claimed
+        .first()
+        .ok_or("missing revocation-race claim")?
+        .clone();
     let prepared = store.prepare_outbox_dispatch(&claimed, 10).await?;
     let request = build_matrix_final_use_request(
         agent_id.as_str(),
@@ -1063,18 +1073,22 @@ async fn revocation_after_claim_before_adapter_entry_never_crosses_network() -> 
 
     let mut revoked = BTreeSet::new();
     revoked.insert(signed.grant.grant_id.clone());
-    authorizer.authority().update_revocations(FinalUseRevocations {
-        authority_epoch: signed.grant.authority_epoch,
-        revision: 2,
-        revoked_grant_ids: revoked,
-    })?;
+    authorizer
+        .authority()
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: signed.grant.authority_epoch,
+            revision: 2,
+            revoked_grant_ids: revoked,
+        })?;
 
-    let entered = authorizer.authority().with_verified_use_at_frontier(
-        token,
-        &request.binding,
-        || transport.send(&claimed),
+    let entered =
+        authorizer
+            .authority()
+            .with_verified_use_at_frontier(token, &request.binding, || ());
+    assert!(
+        entered.is_err(),
+        "revocation committed before adapter entry must deny use"
     );
-    assert!(entered.is_err(), "revocation committed before adapter entry must deny use");
     assert!(transport.txn_ids()?.is_empty());
     assert!(
         store
@@ -1152,10 +1166,12 @@ async fn later_permanent_rejection_cannot_erase_prior_transport_acceptance() -> 
     };
     let cancel = CancellationToken::new();
 
-    let accepted = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 10).await?;
+    let accepted =
+        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 10).await?;
     assert_eq!(accepted.transport_accepted, 1);
     assert_eq!(accepted.sent, 0);
-    let rejected_retry = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
+    let rejected_retry =
+        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
     assert_eq!(rejected_retry.permanent_failure, 0);
     assert_eq!(rejected_retry.indeterminate, 1);
 
@@ -1235,7 +1251,8 @@ async fn transient_failures_use_bounded_backoff_and_then_park_for_reconciliation
         .await?
         .ok_or("second retry record disappeared")?;
     assert_eq!(second_retry.next_attempt_at_ms, 40);
-    let parked = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 40).await?;
+    let parked =
+        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 40).await?;
     assert_eq!(parked.permanent_failure, 0);
     assert_eq!(parked.indeterminate, 1);
     let unresolved = store

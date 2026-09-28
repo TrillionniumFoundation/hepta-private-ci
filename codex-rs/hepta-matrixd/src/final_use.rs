@@ -6,9 +6,9 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_matrix_sdk::MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION;
 use codex_hepta_matrix_sdk::MatrixAuthorityError;
 use codex_hepta_matrix_sdk::MatrixFinalUseRequest;
-use codex_hepta_matrix_sdk::MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION;
 use codex_hepta_matrix_sdk::MatrixGrantFuture;
 use codex_hepta_matrix_sdk::MatrixOutboundAuthorizer;
 use codex_hepta_paths::HeptaAgentLayout;
@@ -380,7 +380,10 @@ mod tests {
     #[test]
     fn config_constants_remain_bounded() {
         assert_eq!(HOST_CONFIG_SCHEMA_VERSION, 1);
-        assert_eq!(BROKER_WIRE_SCHEMA_VERSION, MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION);
+        assert_eq!(
+            BROKER_WIRE_SCHEMA_VERSION,
+            MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION
+        );
         assert!(HOST_CONFIG_MAX_BYTES <= BROKER_FRAME_MAX_BYTES);
         assert!(MIN_BROKER_TIMEOUT_MS > 0);
         assert!(MAX_BROKER_TIMEOUT_MS <= 10_000);
@@ -390,8 +393,7 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn revocation_file_rollback_and_stale_head_fail_closed() -> TestResult {
-        let (_directory, broker) =
-            test_broker(head(17, 3, &["revoked-a"]), head(17, 2, &[]))?;
+        let (_directory, broker) = test_broker(head(17, 3, &["revoked-a"]), head(17, 2, &[]))?;
         assert_eq!(
             broker.refresh_revocations(),
             Err(MatrixAuthorityError::Rejected),
@@ -403,8 +405,7 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn stronger_revocation_file_is_adopted_monotonically() -> TestResult {
-        let (_directory, broker) =
-            test_broker(head(17, 1, &[]), head(17, 2, &["revoked-a"]))?;
+        let (_directory, broker) = test_broker(head(17, 1, &[]), head(17, 2, &["revoked-a"]))?;
         broker.refresh_revocations()?;
         let frontier = broker.authority.revocation_head()?;
         assert_eq!(frontier.authority_epoch, 17);

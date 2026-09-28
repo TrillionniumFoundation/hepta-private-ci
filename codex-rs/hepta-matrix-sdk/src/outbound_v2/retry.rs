@@ -79,15 +79,15 @@ pub(super) fn classified_retry_at(
         | MatrixTransportError::ReadTimeout
         | MatrixTransportError::ConnectionReset
         | MatrixTransportError::ResponseLost
-        | MatrixTransportError::ServerUnavailable => {
-            retry_delay_ms(config, record.attempts)?
-        }
+        | MatrixTransportError::ServerUnavailable => retry_delay_ms(config, record.attempts)?,
         MatrixTransportError::Permanent => return Err(OutboxDispatchError::Invalid),
     };
     let delay = base
         .saturating_add(stable_jitter_ms(record, base))
         .min(config.max_retry_delay_ms);
-    now_ms.checked_add(delay).ok_or(OutboxDispatchError::Invalid)
+    now_ms
+        .checked_add(delay)
+        .ok_or(OutboxDispatchError::Invalid)
 }
 
 pub(super) fn retry_delay_ms(

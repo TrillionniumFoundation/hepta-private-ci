@@ -103,7 +103,9 @@ impl MatrixSdkClient {
         ingress: &MatrixIngress,
         cancel: &CancellationToken,
     ) -> Result<MatrixSyncExit, MatrixSdkError> {
-        self.inner.sync_durable_until_cancelled(store, ingress, cancel).await
+        self.inner
+            .sync_durable_until_cancelled(store, ingress, cancel)
+            .await
     }
 
     pub async fn sync_durable_once(
@@ -148,7 +150,10 @@ impl MatrixOutboundTransport for MatrixSdkClient {
                 .map_err(|_| MatrixTransportError::Permanent)?;
             let room_id = OwnedRoomId::try_from(record.room_id.as_str())
                 .map_err(|_| MatrixTransportError::Permanent)?;
-            let room = self.inner.client().get_room(&room_id)
+            let room = self
+                .inner
+                .client()
+                .get_room(&room_id)
                 .ok_or(MatrixTransportError::Retryable)?;
             let txn_id = OwnedTransactionId::from(record.stable_txn_id.as_str());
             let content = outbound_message_content(body, record.replaces_event_id.as_ref());

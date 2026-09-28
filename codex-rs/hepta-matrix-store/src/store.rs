@@ -3642,8 +3642,8 @@ async fn verify_matrix_dispatch_schema(pool: &SqlitePool) -> Result<(), MatrixDu
     Ok(())
 }
 
-fn matrix_dispatch_schema_objects(
-) -> Result<BTreeMap<String, (String, String)>, MatrixDurableError> {
+fn matrix_dispatch_schema_objects() -> Result<BTreeMap<String, (String, String)>, MatrixDurableError>
+{
     let mut objects = BTreeMap::new();
     for source in MATRIX_DISPATCH_SCHEMA_SOURCES {
         let mut statement = String::new();

@@ -71,12 +71,19 @@ fn now_ms() -> TestResult<u64> {
     )?)
 }
 
-async fn fixture() -> TestResult<(TempDir, HeptaAgentLayout, MatrixDurableStore, MatrixTransactionId)> {
+async fn fixture() -> TestResult<(
+    TempDir,
+    HeptaAgentLayout,
+    MatrixDurableStore,
+    MatrixTransactionId,
+)> {
     let temp = TempDir::new()?;
     let root = temp.path().join("fleet");
     fs::create_dir_all(&root)?;
     let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
-    let layout = HeptaFleetRoot::parse(root.canonicalize()?)?.layout().agent(&agent);
+    let layout = HeptaFleetRoot::parse(root.canonicalize()?)?
+        .layout()
+        .agent(&agent);
     let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
     let room = MatrixRoomId::parse("!allowed:example.test")?;
     store
@@ -174,9 +181,7 @@ impl MatrixOutboundAuthorizer for Authorizer {
     }
 
     fn refresh_revocations(&self) -> Result<(), MatrixAuthorityError> {
-        if self.polls.load(Ordering::SeqCst) == 0
-            || self.changed.swap(1, Ordering::SeqCst) != 0
-        {
+        if self.polls.load(Ordering::SeqCst) == 0 || self.changed.swap(1, Ordering::SeqCst) != 0 {
             return Ok(());
         }
         match self.interruption {
@@ -275,7 +280,11 @@ async fn check_interruption(interruption: Interruption) -> TestResult {
     );
     assert_eq!(polls.load(Ordering::SeqCst), if continuing { 2 } else { 1 });
     assert_eq!(
-        (stats.sent, stats.permanent_failure, stats.transport_accepted),
+        (
+            stats.sent,
+            stats.permanent_failure,
+            stats.transport_accepted
+        ),
         (0, 0, u64::from(continuing))
     );
     let expected = if continuing {
@@ -284,13 +293,23 @@ async fn check_interruption(interruption: Interruption) -> TestResult {
         MatrixDispatchState::Indeterminate
     };
     assert_eq!(
-        store.dispatch_for_txn(&txn).await?.ok_or("missing ledger")?.state,
+        store
+            .dispatch_for_txn(&txn)
+            .await?
+            .ok_or("missing ledger")?
+            .state,
         expected
     );
     if !continuing {
-        assert!(store.dispatch_attempt_events(&txn).await?.iter().any(|event| {
-            event.failure_class == Some(MatrixAttemptFailureClass::ResponseLost)
-        }));
+        assert!(
+            store
+                .dispatch_attempt_events(&txn)
+                .await?
+                .iter()
+                .any(|event| {
+                    event.failure_class == Some(MatrixAttemptFailureClass::ResponseLost)
+                })
+        );
     }
     let events = store.dispatch_attempt_events(&txn).await?;
     store.close().await;

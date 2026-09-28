@@ -45,8 +45,8 @@ pub(crate) fn outbound_payload_digest(
     if record.payload.len() > MAX_BODY_BYTES {
         return Err(MatrixAuthorityError::InvalidBinding);
     }
-    let body = std::str::from_utf8(&record.payload)
-        .map_err(|_| MatrixAuthorityError::InvalidBinding)?;
+    let body =
+        std::str::from_utf8(&record.payload).map_err(|_| MatrixAuthorityError::InvalidBinding)?;
     let content = outbound_message_content(body, record.replaces_event_id.as_ref());
     content_digest(&content)
 }
