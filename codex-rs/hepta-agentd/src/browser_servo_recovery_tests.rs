@@ -6,7 +6,6 @@ use std::sync::Arc;
 
 use codex_hepta_contracts::FinalUseRevocations;
 use ed25519_dalek::SigningKey;
-use pretty_assertions::assert_eq;
 
 use super::*;
 
