@@ -24,6 +24,16 @@ impl Drop for ChildQuiescenceProbe {
 }
 
 #[cfg(unix)]
+struct UnavailableQuiescenceProbe;
+
+#[cfg(unix)]
+impl crate::FleetQuiescenceProbe for UnavailableQuiescenceProbe {
+    fn is_quiescent(&self, _hold: &crate::FleetExecutionHoldV1) -> std::io::Result<bool> {
+        Err(std::io::Error::other("selected-host observation unavailable"))
+    }
+}
+
+#[cfg(unix)]
 fn physical_hold_case(revoke: bool) {
     let directory = tempfile::tempdir().expect("tempdir");
     let state_root = directory.path().join("state");
@@ -84,9 +94,31 @@ fn physical_hold_case(revoke: bool) {
             .prepare_execution("wrong-host", wrong_host, &witness)
             .is_err()
     );
+    let mut wrong_boot = context.clone();
+    wrong_boot.boot_identity = "c".repeat(64);
+    assert!(
+        owner
+            .prepare_execution("wrong-boot", wrong_boot, &witness)
+            .is_err()
+    );
     owner
         .prepare_execution("actual-child", context.clone(), &witness)
         .expect("intent before spawn");
+    let pinned_state_sha = owner.state().content_sha256.clone();
+    assert!(matches!(
+        owner.prepare_execution("renamed-effect", context.clone(), &witness),
+        Err(DurableFleetError::ExecutionAlreadyPrepared)
+    ));
+    let mut second_context = context.clone();
+    second_context.execution_sha256 = "d".repeat(64);
+    assert!(matches!(
+        owner.prepare_execution("same-grant-second-child", second_context, &witness),
+        Err(DurableFleetError::Ledger(
+            crate::LeaseLedgerError::CapacityExceeded
+        ))
+    ));
+    assert_eq!(owner.state().content_sha256, pinned_state_sha);
+    assert_eq!(owner.state().fleet_execution_holds.len(), 1);
     assert!(
         owner
             .prepare_execution("actual-child", context, &witness)
@@ -122,6 +154,14 @@ fn physical_hold_case(revoke: bool) {
         owner.metrics().expect("metrics").fleet_reserved_resource["host-one"],
         first.resources
     );
+    let before_probe = owner.state().content_sha256.clone();
+    assert!(
+        owner
+            .reconcile_execution_group(&first.allocation_id, &UnavailableQuiescenceProbe)
+            .is_err()
+    );
+    assert_eq!(owner.state().content_sha256, before_probe);
+    assert_eq!(owner.state().fleet_execution_holds.len(), 1);
     assert!(
         !owner
             .reconcile_execution_group(&first.allocation_id, &probe)
