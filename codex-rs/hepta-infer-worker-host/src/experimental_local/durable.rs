@@ -11,6 +11,7 @@ use serde::Serialize;
 use tokio_util::sync::CancellationToken;
 
 use super::AttestedModelHandle;
+use super::DriverLoadObservation;
 use super::DriverReconciliation;
 use super::DriverRunObservation;
 use super::DriverTerminalStatus;
@@ -18,6 +19,7 @@ use super::LocalModelDriver;
 use super::LocalWorkerError;
 use super::ResourceManager;
 use super::TrustedClock;
+use super::TrustedReleaseObservation;
 use super::TrustedResourceObservation;
 use super::TrustedResourceObserver;
 use super::VerifiedInput;
@@ -121,17 +123,22 @@ where
         {
             Ok(observed) => observed,
             Err(error) => {
-                self.resources.fence_generation(
-                    "trusted resource observation failed after physical model load",
-                )?;
+                if !self.cleanup_failed_load(&load, grant).await {
+                    self.resources.fence_generation(
+                        "trusted resource observation failed after physical model load and cleanup was not independently confirmed",
+                    )?;
+                }
                 return Err(error);
             }
         };
-        let handle = match AttestedModelHandle::attest(load, observed, manifest, grant) {
+        let handle = match AttestedModelHandle::attest(load.clone(), observed, manifest, grant) {
             Ok(handle) => handle,
             Err(error) => {
-                self.resources
-                    .fence_generation("loaded model failed trusted attestation")?;
+                if !self.cleanup_failed_load(&load, grant).await {
+                    self.resources.fence_generation(
+                        "loaded model failed trusted attestation and cleanup was not independently confirmed",
+                    )?;
+                }
                 return Err(error);
             }
         };
@@ -148,6 +155,20 @@ where
             return Err(error);
         }
         Ok(handle)
+    }
+
+    async fn cleanup_failed_load(
+        &self,
+        load: &DriverLoadObservation,
+        grant: &VerifiedResourceGrant,
+    ) -> bool {
+        let cleanup = self.driver.cleanup_failed_load(load).await;
+        let released = self
+            .observer
+            .observe_unattested_release(&load.handle_id, &load.device_uuid, self.generation)
+            .await;
+        matches!(cleanup, Ok(value) if value.terminal_observed)
+            && matches!(released, Ok(value) if unattested_release_matches(&value, load, grant))
     }
 
     pub async fn unload_model(
@@ -224,7 +245,7 @@ where
             .map_err(control_error)?;
         if record.state != NativeReservationState::Reserved {
             return self
-                .recover_existing(control, grant, manifest, handle, &record)
+                .recover_existing(control, grant, manifest, handle, &admission, &record)
                 .await;
         }
 
@@ -383,6 +404,7 @@ where
         grant: &VerifiedResourceGrant,
         manifest: &VerifiedModelManifest,
         handle: &AttestedModelHandle,
+        admission: &LocalRunAdmission,
         record: &NativeRunRecord,
     ) -> Result<LocalRunResult, LocalWorkerError> {
         validate_existing_binding(record, grant, manifest, handle)?;
@@ -399,8 +421,7 @@ where
             .await?;
         match reconciled {
             DriverReconciliation::Terminal(observed) => {
-                let admission = admission_from_record(record, grant);
-                validate_run_observation(&observed, &admission, grant)?;
+                validate_run_observation(&observed, admission, grant)?;
                 if !observed.terminal_observed {
                     return Err(LocalWorkerError::InvalidObservation(
                         "terminal reconciliation was nonterminal",
@@ -417,6 +438,8 @@ where
                 let settled = control
                     .settle_native(&record.request.request_id, output)
                     .map_err(control_error)?;
+                self.resources
+                    .resolve_quarantine_if_present(&record.request.request_id)?;
                 result_from_record(&settled)
             }
             DriverReconciliation::Pending {
@@ -609,20 +632,6 @@ fn validate_existing_binding(
         ));
     }
     Ok(())
-}
-
-fn admission_from_record(
-    record: &NativeRunRecord,
-    grant: &VerifiedResourceGrant,
-) -> LocalRunAdmission {
-    LocalRunAdmission {
-        request_id: record.request.request_id.clone(),
-        maximum_in_flight: usize::try_from(grant.maximum_concurrency()).unwrap_or(256),
-        maximum_tokens: grant.maximum_tokens(),
-        maximum_usage_units: grant.claims().maximum_usage_units,
-        expected_transient_memory_bytes: 0,
-        requested_deadline_ms: grant.claims().expires_at_ms,
-    }
 }
 
 #[derive(Serialize)]
@@ -861,7 +870,7 @@ fn resource_matches(
 }
 
 fn release_matches(
-    released: &super::TrustedReleaseObservation,
+    released: &TrustedReleaseObservation,
     handle: &AttestedModelHandle,
 ) -> bool {
     released.handle_id == handle.handle_id()
@@ -869,7 +878,26 @@ fn release_matches(
         && released.device_uuid == handle.device_uuid()
         && released.device_epoch == handle.device_epoch()
         && released.resident_memory_bytes == 0
+        && validate_identity(&released.observer_id, "release observer").is_ok()
         && validate_digest(&released.attestation_digest, "release attestation").is_ok()
+}
+
+fn unattested_release_matches(
+    released: &TrustedReleaseObservation,
+    load: &DriverLoadObservation,
+    grant: &VerifiedResourceGrant,
+) -> bool {
+    released.handle_id == load.handle_id
+        && released.worker_generation == grant.worker_generation()
+        && released.device_uuid == load.device_uuid
+        && released.device_epoch == grant.device_epoch()
+        && released.resident_memory_bytes == 0
+        && validate_identity(&released.observer_id, "failed-load release observer").is_ok()
+        && validate_digest(
+            &released.attestation_digest,
+            "failed-load release attestation",
+        )
+        .is_ok()
 }
 
 fn bounded_reason(reason: &str) -> Result<String, LocalWorkerError> {
