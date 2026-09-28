@@ -115,6 +115,8 @@ def command_plan(root: Path, output: Path) -> list[tuple[str, list[str]]]:
         "deployment_evidence.py", "stress_profile.py", "qualification_mutation.py",
     )]
     return [
+        ("toolchain", [python, "-m", "pip", "freeze"]),
+        ("sqlite-version", [python, "-c", "import sqlite3; print(sqlite3.sqlite_version)"]),
         ("status", [python, "scripts/control_engineering_status.py", "--check"]),
         ("public-api", [python, "scripts/control_engineering_api.py", "--check"]),
         ("runtime-regressions", [python, "-m", "unittest", "-v",
@@ -176,10 +178,11 @@ def qualify_lane(root: Path, output: Path, source: str, base: str, lane: str) ->
     report = output / "unittest.json"
     result = json.loads(report.read_text()) if report.is_file() else None
     receipt["allChecksPassed"] = all(record["exitCode"] == 0 for record in records)
-    receipt["noSkippedTests"] = bool(result and result["testsRun"] > 0 and not result["skipped"])
-    receipt["trackedStatusAfter"] = git(root, "status", "--porcelain", "--untracked-files=no")
+    receipt["noSkippedTests"] = bool(result and result["testsRun"] > 0 and not result["skipped"]
+        and not result.get("expectedFailures", []))
+    receipt["checkoutStatusAfter"] = git(root, "status", "--porcelain", "--untracked-files=normal")
     receipt["qualificationPassed"] = bool(
-        receipt["allChecksPassed"] and receipt["noSkippedTests"] and not receipt["trackedStatusAfter"]
+        receipt["allChecksPassed"] and receipt["noSkippedTests"] and not receipt["checkoutStatusAfter"]
     )
     artifacts = {}
     for path in sorted(output.iterdir()):
@@ -211,7 +214,7 @@ def main() -> int:
         parser.error("output must be a new directory outside the checkout")
     if git(ROOT, "rev-parse", "HEAD") != args.source_commit:
         parser.error("checkout does not match source commit")
-    if git(ROOT, "status", "--porcelain", "--untracked-files=no"):
+    if git(ROOT, "status", "--porcelain", "--untracked-files=normal"):
         parser.error("candidate tracked tree must be clean")
     output.mkdir(parents=True)
     source = qualify_lane(ROOT, output / "source-head", args.source_commit, args.base_commit, "source-head")
@@ -243,7 +246,10 @@ def main() -> int:
         write_json(output / "merge-setup-failure.json", {
             "sourceCommit": args.source_commit, "baseCommit": args.base_commit,
             "setupSucceeded": False, "errorType": type(error).__name__,
-            "diagnostic": str(error), "qualificationPassed": False,
+            "diagnostic": str(error),
+            "stdout": getattr(error, "output", None),
+            "stderr": getattr(error, "stderr", None),
+            "qualificationPassed": False,
         })
     passed = bool(source["qualificationPassed"] and merge and merge["qualificationPassed"])
     write_json(output / "summary.json", {
