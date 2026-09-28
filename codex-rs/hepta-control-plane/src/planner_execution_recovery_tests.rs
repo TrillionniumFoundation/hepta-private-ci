@@ -26,7 +26,10 @@ fn current_authority_claims_before_execution_and_records_terminal_receipt() {
     assert_eq!(authority.revalidations, 1);
     assert!(!receipt.authority.grants_any());
     assert_eq!(store.records().len(), 2);
-    assert_eq!(store.records()[0].kind, PlannerStoreRecordKindV1::Selection);
+    assert_eq!(
+        store.records()[0].kind,
+        PlannerStoreRecordKindV1::Selection
+    );
     assert_eq!(
         store.records()[1].kind,
         PlannerStoreRecordKindV1::TerminalReceipt
@@ -216,11 +219,9 @@ fn legacy_v1_claim_reopens_into_reconciliation_without_redispatch() {
         directory.path(),
         PlannerStoreConfigV1::default(),
     ));
-    must(store.append(
+    must(store.append_execution_record(
         PlannerStoreRecordKindV1::Selection,
-        super::super::super::codec::dispatch_claim_identity(
-            operation_identity_digest,
-        ),
+        super::super::super::codec::dispatch_claim_identity(operation_identity_digest),
         claim_digest,
         &envelope,
     ));
