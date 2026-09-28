@@ -1,5 +1,6 @@
-"""Regression guard for retired intuition source-mutating workflows."""
+"""Regression guards for intuition qualification workflow authority and concurrency."""
 from pathlib import Path
+import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -24,6 +25,16 @@ class ReadOnlyWorkflowTests(unittest.TestCase):
                 self.assertNotIn("scripts/intuition_finalize_branch.py", active)
                 self.assertNotIn("scripts/intuition_legacy_imports.py", active)
                 self.assertIn("exit 1", active)
+
+    def test_qualification_keeps_one_current_candidate_per_pr(self):
+        text = (ROOT / ".github/workflows/hepta-intuition-qualification.yml").read_text()
+        match = re.search(r"(?m)^  group: (.+)$", text)
+        self.assertIsNotNone(match)
+        group = match.group(1)
+        self.assertIn("github.event.pull_request.number || github.ref", group)
+        self.assertNotIn("head.sha", group)
+        self.assertNotIn("github.sha", group)
+        self.assertRegex(text, r"(?m)^  cancel-in-progress: true$")
 
 
 if __name__ == "__main__":
