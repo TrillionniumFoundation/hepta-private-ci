@@ -1,16 +1,16 @@
-name: knowledge.graph remaining-four closure
+name: knowledge.graph remaining-four ARM executor
 on:
   push:
-    branches: [work/kg-abc-evidence-hardening-20260928]
+    branches: [ops/kg-remaining-four-executor-20260929]
 permissions:
   contents: write
 concurrency:
-  group: kg-remaining-four-${{ github.ref }}
+  group: kg-remaining-four-arm-executor
   cancel-in-progress: false
 jobs:
   close:
     if: "${{ startsWith(github.event.head_commit.message, 'kg remaining-four closure') }}"
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 180
     env:
       BRANCH: work/kg-abc-evidence-hardening-20260928
@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 0
+          fetch-depth: 64
           persist-credentials: true
       - name: Install native prerequisites
         run: |
@@ -70,6 +70,6 @@ jobs:
           git config user.email 'noreply@openai.com'
           git add -A
           git commit -m 'fix(knowledge.graph): close bounded product-query contracts' -m 'Route all real consumers through typed budgets, distinguish exhaustion from corruption, bind charged work in receipts, and extend exact evidence mapping.' -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
-          git fetch origin "$BRANCH"
+          git fetch --deepen=64 origin "$BRANCH"
           git rebase "origin/$BRANCH"
           git push origin "HEAD:refs/heads/$BRANCH"
