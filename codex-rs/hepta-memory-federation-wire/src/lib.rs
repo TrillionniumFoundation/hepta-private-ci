@@ -86,6 +86,8 @@ mod credential_tests;
 #[cfg(test)]
 mod host_atomicity_tests;
 #[cfg(test)]
+mod host_terminal_tests;
+#[cfg(test)]
 mod host_tests;
 #[cfg(test)]
 mod tests;
