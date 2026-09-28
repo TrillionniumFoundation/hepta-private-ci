@@ -98,7 +98,7 @@ jobs:
           from pathlib import Path
           output = (Path(os.environ['RUNNER_TEMP']) / 'laya-contracts.log').read_text()
           counts = re.findall(r'^Ran ([0-9]+) tests? in ', output, re.MULTILINE)
-          assert len(counts) == 1 and int(counts[0]) >= 99, 'incomplete contract execution'
+          assert len(counts) == 1 and int(counts[0]) >= 125, 'incomplete contract execution'
           assert re.search(r'^OK$', output, re.MULTILINE), 'skipped or failed contracts are not qualification'
           PY
       - name: Numerical trainer and paired-metric tests (not Laya weight evidence)
@@ -110,6 +110,13 @@ jobs:
         run: |
           set -euo pipefail
           "$RUNNER_TEMP/laya-env/bin/python" codex-rs/hepta-infer-worker-host/python/laya_smoke.py --supervised --output "$RUNNER_TEMP/laya-smoke" 2>&1 | tee "$RUNNER_TEMP/laya-smoke.log"
+      - name: Real pinned resident process and distinct read-only exchanges
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/laya-env/bin/python" codex-rs/hepta-infer-worker-host/python/laya_resident_smoke.py --prepared "$RUNNER_TEMP/laya-smoke" 2>&1 | tee "$RUNNER_TEMP/laya-resident-smoke.log"
       - name: Real frozen-Laya features and private scorer training
         env:
           HF_HUB_OFFLINE: '1'
@@ -168,6 +175,26 @@ jobs:
           assert process['transport']['observed_memory_bytes'] is None
           assert process['decoded_reply']['input_tokens'] > 0
           assert process['decoded_reply']['output_tokens'] == 0
+          resident = json.loads((root / 'resident-report.json').read_text())
+          assert resident['success'] is True
+          for key in ('source_sha', 'tested_sha', 'tested_tree'):
+              assert resident[key] == run[key]
+          assert len(resident['observations']) == 2
+          first, second = resident['observations']
+          assert first['transport']['process_id'] == second['transport']['process_id']
+          assert first['request_sha256'] != second['request_sha256']
+          for index, entry in enumerate(resident['observations'], 1):
+              assert entry['transport']['eligible_reply'] is True
+              assert entry['transport']['completed_exchanges'] == index
+              assert entry['transport']['model_reservation_released'] is False
+              assert entry['decoded_reply']['bundle_digest'] == resident['bundle_digest']
+              assert entry['decoded_reply']['input_tokens'] > 0
+              assert entry['decoded_reply']['output_tokens'] == 0
+          assert resident['close']['direct_child_reaped'] is True
+          assert resident['close']['descendant_exit_verified'] is False
+          assert resident['production_composition'] is False
+          assert resident['held_out_efficacy'] is False
+          assert resident['artifact_adoption'] is False
           PY
           git diff --exit-code
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -184,6 +211,7 @@ jobs:
             ${{ runner.temp }}/laya-training-contracts.log
             ${{ runner.temp }}/laya-metrics-contracts.log
             ${{ runner.temp }}/laya-training-smoke.log
+            ${{ runner.temp }}/laya-resident-smoke.log
             ${{ runner.temp }}/laya-smoke/candidate-head.safetensors
             ${{ runner.temp }}/laya-smoke.log
             ${{ runner.temp }}/laya-smoke/*.json
