@@ -9,13 +9,17 @@ permissions:
   contents: write
 
 concurrency:
-  group: compact-engine-source-remediation-once-ubuntu22
+  group: compact-engine-source-remediation-once-final
   cancel-in-progress: false
 
 jobs:
   remediate:
     runs-on: ubuntu-22.04
-    timeout-minutes: 15
+    timeout-minutes: 45
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
     steps:
       - name: Check out exact remediation commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -23,16 +27,15 @@ jobs:
           fetch-depth: 2
           persist-credentials: true
 
-      - name: Install pinned Rust formatter
+      - name: Install pinned Rust qualification toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
-          toolchain: stable
-          components: rustfmt
+          components: rustfmt,clippy
 
       - name: Apply reviewed compact.engine remediation
         shell: bash
         env:
-          EXPECTED_PARENT: 919da65982424778e0997799d268652e9c6f5791
+          EXPECTED_PARENT: 78791267ea64003398e3206c1d503c2087d366c7
           WORKFLOW_PATH: .github/workflows/compact-engine-durable-normalize-once.yml
           PATCH_PATH: .github/compact-engine-stage-bc.patch
         run: |
@@ -58,17 +61,32 @@ jobs:
           lines[:6] = [line[1:] for line in lines[:6]]
           path.write_text("".join(lines), encoding="utf-8")
           PY
-          rm -- "$WORKFLOW_PATH" "$PATCH_PATH"
-          (cd codex-rs && cargo fmt --all)
+          rustfmt --edition 2024 \
+            codex-rs/hepta-compact-engine/src/publication.rs \
+            codex-rs/hepta-compact-engine/src/durable_facade.rs \
+            codex-rs/hepta-compact-engine/src/coordinator.rs \
+            codex-rs/hepta-compact-engine/src/durable_fence_tests.rs \
+            codex-rs/hepta-compact-engine/src/product_e2e_tests.rs
           git diff --check
-          actual="$(git diff --name-only | sort | tr '\n' ' ')"
-          expected=".github/compact-engine-stage-bc.patch .github/workflows/compact-engine-durable-normalize-once.yml codex-rs/hepta-compact-engine/src/coordinator.rs codex-rs/hepta-compact-engine/src/durable.rs codex-rs/hepta-compact-engine/src/durable_facade.rs codex-rs/hepta-compact-engine/src/durable_fence_tests.rs codex-rs/hepta-compact-engine/src/product_e2e_tests.rs codex-rs/hepta-compact-engine/src/publication.rs "
-          test "$actual" = "$expected"
 
-      - name: Commit source remediation and remove temporary inputs
+      - name: Locked native qualification before publication
+        working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
+          cargo check --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets
+          cargo test --locked -p codex-hepta-compact-engine -p codex-hepta-agentd
+          cargo clippy --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets -- -D warnings
+
+      - name: Commit source remediation and remove temporary inputs
+        shell: bash
+        env:
+          WORKFLOW_PATH: .github/workflows/compact-engine-durable-normalize-once.yml
+          PATCH_PATH: .github/compact-engine-stage-bc.patch
+        run: |
+          set -euo pipefail
+          rm -- "$WORKFLOW_PATH" "$PATCH_PATH"
+          git diff --check
           git config user.name "compact-engine-remediation"
           git config user.email "compact-engine-remediation@users.noreply.github.com"
           git add -A
