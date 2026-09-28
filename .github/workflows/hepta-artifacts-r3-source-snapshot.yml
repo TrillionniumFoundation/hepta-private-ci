@@ -1,9 +1,10 @@
-name: Learning artifacts r3 source snapshot
+name: Learning artifacts source snapshot
 
 on:
   push:
     branches:
       - codex/learning-artifacts-qualified-host-r3-20260927
+      - work/learning-artifacts-runtime-convergence-20260928
   workflow_dispatch:
 
 permissions:
@@ -23,14 +24,15 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
-          mkdir -p "${RUNNER_TEMP}/artifact-r3-source"
-          git archive --format=tar.gz HEAD > "${RUNNER_TEMP}/artifact-r3-source/source.tar.gz"
-          git rev-parse HEAD HEAD^{tree} > "${RUNNER_TEMP}/artifact-r3-source/source-identity.txt"
-          sha256sum "${RUNNER_TEMP}/artifact-r3-source/source.tar.gz" > "${RUNNER_TEMP}/artifact-r3-source/archive.sha256"
-          printf '%s\n' 'Source materialization only. No native tests, acceptance, activation or release are certified.' > "${RUNNER_TEMP}/artifact-r3-source/NON_CLAIMS.txt"
+          mkdir -p "${RUNNER_TEMP}/artifact-source"
+          git archive --format=tar.gz HEAD > "${RUNNER_TEMP}/artifact-source/source.tar.gz"
+          git rev-parse HEAD HEAD^{tree} > "${RUNNER_TEMP}/artifact-source/source-identity.txt"
+          git ls-tree -r HEAD > "${RUNNER_TEMP}/artifact-source/source-objects.txt"
+          (cd "${RUNNER_TEMP}/artifact-source" && sha256sum source.tar.gz > archive.sha256)
+          printf '%s\n' 'Source materialization only. No native tests, acceptance, activation or release are certified.' > "${RUNNER_TEMP}/artifact-source/NON_CLAIMS.txt"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: artifact-r3-source-${{ github.sha }}
-          path: ${{ runner.temp }}/artifact-r3-source/
+          name: artifact-source-${{ github.sha }}
+          path: ${{ runner.temp }}/artifact-source/
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 3
