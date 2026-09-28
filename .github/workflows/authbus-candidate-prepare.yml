@@ -8,6 +8,7 @@ on:
       - scripts/prepare-authbus-candidate.py
       - scripts/authbus-preflight-repair.py
       - scripts/finalize-authbus-candidate.py
+      - docs/modules/auth.authbus/**
   workflow_dispatch:
 
 permissions:
