@@ -1,0 +1,238 @@
+name: Inference worker v2 bootstrap repair
+
+on:
+  push:
+    branches:
+      - codex/inference-worker-hardening-v2-20260928
+
+permissions:
+  contents: write
+
+concurrency:
+  group: inference-worker-v2-bootstrap
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    if: ${{ !contains(github.event.head_commit.message, '[v2-bootstrap-applied]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      RUST_BACKTRACE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/inference-worker-hardening-v2-20260928
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Repair source and qualification assumptions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one replacement, found {count}")
+              file.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+              '.find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")\n        .expect("physical turn start");',
+              '.find("send_authorized_turn_start(&mut client, entered_use, turn_params)")\n        .expect("authority-consuming physical turn start helper");',
+          )
+
+          replace_once(
+              "codex-rs/hepta-agentd/src/test_support.rs",
+              '''        let control_task = tokio::spawn(control.run());
+          let app_server_task = tokio::spawn(run_app_server(
+              identity.clone(),
+              Arg0DispatchPaths::default(),''',
+              '''        let control_task = tokio::spawn(control.run());
+          let arg0_paths = Arg0DispatchPaths {
+              codex_self_exe: Some(std::env::current_exe()?),
+              ..Arg0DispatchPaths::default()
+          };
+          let app_server_task = tokio::spawn(run_app_server(
+              identity.clone(),
+              arg0_paths,''',
+          )
+
+          replace_once(
+              "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+              '''            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
+                  if let Ok(cancelled) = owner
+                      .run_cancel(
+                          binding.run_id.clone(),
+                          revision,
+                          reason.chars().take(512).collect(),
+                      )
+                      .await
+                  {
+                      intelligence_revision = Some(cancelled.receipt.revision);
+                  }
+              }''',
+              '''            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                  && let Ok(cancelled) = owner
+                      .run_cancel(
+                          binding.run_id.clone(),
+                          revision,
+                          reason.chars().take(512).collect(),
+                      )
+                      .await
+              {
+                  intelligence_revision = Some(cancelled.receipt.revision);
+              }''',
+          )
+
+          replace_once(
+              "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+              '''fn verify_persisted_dispatch_binding(
+              control: &DurableInferenceControl,''',
+              '''#[expect(
+              clippy::too_many_arguments,
+              reason = "one atomic comparison binds the complete persisted dispatch tuple before effect entry"
+          )]
+          fn verify_persisted_dispatch_binding(
+              control: &DurableInferenceControl,''',
+          )
+          PY
+          rustup component add rustfmt clippy
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-infer-worker-host \
+            --package codex-hepta-agentd
+          git diff --check
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Resolve pinned sandboxed V8 prerequisites
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Verify repaired source before committing it
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo nextest run --locked --profile default --no-fail-fast --retries 0 \
+            --lib -p codex-hepta-infer-worker-host --test-threads 1
+          cargo nextest run --locked --profile default --no-fail-fast --retries 0 \
+            --lib -p codex-hepta-infer-worker-host \
+            --features experimental-local-worker --test-threads 1
+          cargo test --locked -p codex-hepta-infer-worker-host --bins
+          cargo check --locked -p codex-hepta-infer-worker-host --all-targets
+          cargo check --locked -p codex-hepta-infer-worker-host \
+            --features experimental-local-worker --all-targets
+          cargo clippy --locked -p codex-hepta-infer-worker-host \
+            --all-targets --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-infer-worker-host \
+            --features experimental-local-worker --all-targets --no-deps -- -D warnings
+          cargo test --locked -p codex-hepta-agentd --lib --test-threads=1
+
+      - name: Commit source repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta inference CI"
+          git config user.email "hepta-inference-ci@users.noreply.github.com"
+          git add \
+            codex-rs/hepta-agentd/src/test_support.rs \
+            codex-rs/hepta-infer-worker-host/src
+          git commit -m "inference.worker: repair exact-head test and lint baseline"
+
+      - name: Conservatively re-anchor invalid map observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          import subprocess
+
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          tree = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip()
+          identity = {"commit": head, "tree": tree}
+          execution_keys = {
+              "productionImplementation",
+              "productExecutionProved",
+              "independentAcceptance",
+              "activation",
+              "release",
+              "productExecutionComplete",
+              "deploymentQualificationComplete",
+              "independentAcceptanceComplete",
+          }
+          changed = []
+          for path in sorted(Path("docs/modules").glob("*/IMPLEMENTATION_MAP.json")):
+              row = json.loads(path.read_text(encoding="utf-8"))
+              source = row.get("sourceBase", {}).get("commit")
+              if not isinstance(source, str):
+                  continue
+              ancestor = subprocess.run(
+                  ["git", "merge-base", "--is-ancestor", source, head],
+                  stdout=subprocess.DEVNULL,
+                  stderr=subprocess.DEVNULL,
+              ).returncode == 0
+              if ancestor:
+                  continue
+              row["sourceBase"] = identity
+              if "observedAtHead" in row:
+                  row["observedAtHead"] = identity
+              for key in execution_keys:
+                  if key in row and isinstance(row[key], bool):
+                      row[key] = False
+              for section in ("claimBoundary", "completion"):
+                  value = row.get(section)
+                  if isinstance(value, dict):
+                      for key in execution_keys:
+                          if key in value and isinstance(value[key], bool):
+                              value[key] = False
+              status = row.get("status")
+              if isinstance(status, dict) and isinstance(status.get("qualified"), bool):
+                  status["qualified"] = False
+              path.write_text(json.dumps(row, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+              changed.append(str(path))
+          print(json.dumps({"conservativelyReanchored": changed}, indent=2))
+          PY
+          if ! git diff --quiet -- docs/modules; then
+            git add docs/modules
+            git commit -m "docs: conservatively re-anchor non-ancestral source observations"
+          fi
+
+      - name: Canonically migrate and verify all implementation maps
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate
+          if ! git diff --quiet -- docs/modules; then
+            git add docs/modules
+            git commit -m "docs: refresh exact source observations after worker repair"
+          fi
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta_module_registry.py --strict
+          python3 scripts/hepta-implementation-maps.py verify
+
+      - name: Remove bootstrap and publish repaired candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/inference-worker-v2-bootstrap.yml
+          git add -A
+          git commit -m "ci: remove inference worker bootstrap [v2-bootstrap-applied]"
+          python3 scripts/hepta-implementation-maps.py verify
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+          git push origin HEAD:codex/inference-worker-hardening-v2-20260928
