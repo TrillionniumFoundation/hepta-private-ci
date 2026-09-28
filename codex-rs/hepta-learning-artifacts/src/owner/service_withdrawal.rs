@@ -47,7 +47,8 @@ impl LearningArtifactOwnerService {
             }
             Err(error) => {
                 self.operational_state.fail_withdrawal_persist(now);
-                self.metrics.increment_withdrawal_blocked();
+                // Count blocked publication/read attempts at the actual gate,
+                // not once here when the owner enters an uncertain state.
                 self.metrics.increment_control_persistence_unknown();
                 Err(error)
             }
