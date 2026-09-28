@@ -17,6 +17,7 @@ on:
       - scripts/hepta-objective-evidence-project.py
       - scripts/test_hepta_objective_evidence_project.py
       - .github/workflows/hepta-objective-exact-execution.yml
+      - .github/workflows/hepta-objective-target-measurement.yml
   workflow_dispatch:
     inputs:
       source_commit:
@@ -88,7 +89,11 @@ jobs:
           set -euo pipefail
           receipt="$RUNNER_TEMP/objective-exact-evidence/receipt.json"
           if [[ -f "$receipt" ]]; then
-            python3 scripts/hepta-objective-evidence-project.py               --source-commit "$SOURCE_SHA"               --source-tree "$(git rev-parse HEAD^{tree})"               --exact-execution "$receipt"               --output "$RUNNER_TEMP/objective-exact-evidence/evidence-projection.json"
+            python3 scripts/hepta-objective-evidence-project.py \
+              --source-commit "$SOURCE_SHA" \
+              --source-tree "$(git rev-parse HEAD^{tree})" \
+              --exact-execution "$receipt" \
+              --output "$RUNNER_TEMP/objective-exact-evidence/evidence-projection.json"
           fi
       - name: Preserve observed failures and partial execution as evidence
         if: always()
