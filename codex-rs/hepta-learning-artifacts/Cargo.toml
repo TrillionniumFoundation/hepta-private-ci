@@ -5,6 +5,10 @@ name = "codex-hepta-learning-artifacts"
 version.workspace = true
 publish = false
 
+[features]
+default = []
+artifact_test_hooks = []
+
 [lib]
 name = "codex_hepta_learning_artifacts"
 path = "src/lib.rs"
