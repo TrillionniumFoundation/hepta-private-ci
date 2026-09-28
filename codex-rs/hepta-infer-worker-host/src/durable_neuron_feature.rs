@@ -101,7 +101,7 @@ impl<B: DurableNeuronFeatureBackend> DurableNeuronFeaturePortV1<B> {
         request: &NeuronFeatureRequestV1,
     ) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
         let record = match self.store.admit(request).map_err(map_store_error)? {
-            NeuronFeatureAdmissionV1::Historical(record) => record,
+            NeuronFeatureAdmissionV1::Historical(record) => *record,
             NeuronFeatureAdmissionV1::New => self
                 .store
                 .reserve(request.clone())
@@ -179,7 +179,7 @@ impl<B: DurableNeuronFeatureBackend> DurableNeuronInferenceControlPort
             NeuronFeatureAdmissionV1::New => {
                 return Ok(DurableNeuronFeatureResolutionV2::NotStarted);
             }
-            NeuronFeatureAdmissionV1::Historical(record) => record,
+            NeuronFeatureAdmissionV1::Historical(record) => *record,
         };
         if record.state == NeuronFeatureExecutionStateV1::Reserved {
             return Ok(DurableNeuronFeatureResolutionV2::NotStarted);
