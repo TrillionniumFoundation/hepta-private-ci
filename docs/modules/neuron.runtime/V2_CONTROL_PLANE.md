@@ -139,16 +139,22 @@ latency because they never entered the runtime.
 - provider execution/reconciliation;
 - Sparse transition and output construction;
 - receipt extension, canonical encoding and payload sizing;
-- generation-store commit;
-- ordered-index reservation/dispatch/completion;
-- witness work;
+- immutable full-receipt materialization, including the required checkpoint
+  payload copy, as a nested subinterval of receipt encoding;
+- generation-store commit, split into measured sync and non-sync work;
+- ordered-index reservation/dispatch/completion, split into measured sync and
+  non-sync work;
+- witness work and measured witness sync;
 - final-use authorization.
 
-The store and index observations retain measured sync calls and sync duration.
-`store_non_sync_micros` therefore captures framing, checksums, immutable payload
-copies and in-memory bookkeeping without pretending those costs are physical
-sync time. This is the evidence required before considering shared immutable
-payloads, segment manifests or a new format version.
+The diagnostic summary emits p50/p95/p99 for receipt encoding, full-receipt
+materialization/copy, encoding excluding materialization, generation-store
+non-sync work, index non-sync work, each sync boundary and total request time.
+The nested materialization interval is not added twice when calculating
+unclassified time. Remaining store-side clones stay visible in
+`store_non_sync_micros`; they are not mislabeled as physical sync cost. This is
+the evidence required before considering shared immutable payloads, segment
+manifests or a new format version.
 
 No current optimization removes the full receipt-to-checkpoint payload copy or
 changes recovery meaning. Any future representation change requires a new format

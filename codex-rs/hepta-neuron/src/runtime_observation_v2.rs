@@ -25,6 +25,10 @@ pub struct NeuronRuntimeMeasurementV2 {
     pub provider_micros: u64,
     pub transition_micros: u64,
     pub receipt_encode_micros: u64,
+    /// Nested within `receipt_encode_micros`: time spent constructing the
+    /// immutable full-receipt byte vector, including the required checkpoint
+    /// payload copy. It is not added again by `unclassified_micros`.
+    pub full_receipt_materialize_micros: u64,
     pub store_commit_micros: u64,
     pub index_commit_micros: u64,
     pub witness_micros: u64,
@@ -49,8 +53,17 @@ impl NeuronRuntimeMeasurementV2 {
         self.index_after.io.since(self.index_before.io)
     }
 
-    /// Store work excluding measured file-sync time. This includes framing,
-    /// checksums, immutable payload copies and in-memory index maintenance.
+    /// Receipt preparation excluding the nested immutable full-receipt
+    /// materialization/copy interval.
+    #[must_use]
+    pub fn receipt_encode_excluding_materialization_micros(&self) -> u64 {
+        self.receipt_encode_micros
+            .saturating_sub(self.full_receipt_materialize_micros)
+    }
+
+    /// Store work excluding measured file-sync time. This includes durable
+    /// framing/checksums, cloning already-materialized immutable payloads and
+    /// in-memory bookkeeping performed by the store.
     #[must_use]
     pub fn store_non_sync_micros(&self) -> u64 {
         self.store_commit_micros

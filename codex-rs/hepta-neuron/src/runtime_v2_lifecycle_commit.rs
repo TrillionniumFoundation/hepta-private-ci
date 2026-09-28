@@ -88,8 +88,13 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
                 return self.fail_attempt(key, NeuronOperationFailureV2::InvalidTransition);
             }
         };
-        let full_receipt_bytes =
-            encode_full_receipt_v2(&checkpoint_bytes, receipt_extension.as_ref())?;
+        let materialize_started = Instant::now();
+        let full_receipt_result =
+            encode_full_receipt_v2(&checkpoint_bytes, receipt_extension.as_ref());
+        phases.full_receipt_materialize_micros = phases
+            .full_receipt_materialize_micros
+            .saturating_add(elapsed_micros(materialize_started));
+        let full_receipt_bytes = full_receipt_result?;
         if full_receipt_bytes.len() > self.store_context.max_full_receipt_bytes
             || checkpoint_bytes.len() > self.store_context.max_checkpoint_bytes
         {

@@ -35,6 +35,11 @@ def summarize(
     latency: list[int] = []
     non_sync_latency: list[int] = []
     recovery: list[int] = []
+    receipt_encode: list[int] = []
+    full_receipt_materialize: list[int] = []
+    receipt_encode_without_materialize: list[int] = []
+    store_non_sync: list[int] = []
+    index_non_sync: list[int] = []
     store_sync: list[int] = []
     index_sync: list[int] = []
     witness_sync: list[int] = []
@@ -60,8 +65,24 @@ def summarize(
             raise ValueError("failed request cannot enter the successful diagnostic cohort")
 
         total_micros = measurement["total_micros"]
+        encode_micros = measurement["receipt_encode_micros"]
+        materialize_micros = measurement["full_receipt_materialize_micros"]
+        store_commit_micros = measurement["store_commit_micros"]
+        index_commit_micros = measurement["index_commit_micros"]
+        if min(
+            total_micros,
+            encode_micros,
+            materialize_micros,
+            store_commit_micros,
+            index_commit_micros,
+        ) < 0 or materialize_micros > encode_micros:
+            raise ValueError("invalid phase measurement")
+
         latency.append(total_micros)
         recovery.append(sample["recovery_micros"])
+        receipt_encode.append(encode_micros)
+        full_receipt_materialize.append(materialize_micros)
+        receipt_encode_without_materialize.append(encode_micros - materialize_micros)
         phase_sync: dict[str, int] = {}
         phase_growth: dict[str, int] = {}
         for name, expected_calls in (("store", 2), ("index", 3)):
@@ -81,6 +102,11 @@ def summarize(
                 raise ValueError("negative observation")
             phase_sync[name] = micros
             phase_growth[name] = growth
+
+        if phase_sync["store"] > store_commit_micros or phase_sync["index"] > index_commit_micros:
+            raise ValueError("sync duration exceeds enclosing commit phase")
+        store_non_sync.append(store_commit_micros - phase_sync["store"])
+        index_non_sync.append(index_commit_micros - phase_sync["index"])
 
         witness = measurement["witness_sync"]
         if witness is None or witness["sync_calls"] != 1 or witness["sync_errors"] != 0:
@@ -118,6 +144,13 @@ def summarize(
         "request_micros": quantiles(latency),
         "request_minus_measured_sync_micros": quantiles(non_sync_latency),
         "recovery_micros": quantiles(recovery),
+        "receipt_encode_micros_per_request": quantiles(receipt_encode),
+        "full_receipt_materialize_micros_per_request": quantiles(full_receipt_materialize),
+        "receipt_encode_minus_materialize_micros_per_request": quantiles(
+            receipt_encode_without_materialize
+        ),
+        "generation_store_non_sync_micros_per_request": quantiles(store_non_sync),
+        "runtime_index_non_sync_micros_per_request": quantiles(index_non_sync),
         "store_sync_micros_per_request": quantiles(store_sync),
         "index_sync_micros_per_request": quantiles(index_sync),
         "witness_sync_micros_per_request": quantiles(witness_sync),

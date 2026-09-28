@@ -7,6 +7,7 @@ struct PhaseMeasurementV2 {
     provider_micros: u64,
     transition_micros: u64,
     receipt_encode_micros: u64,
+    full_receipt_materialize_micros: u64,
     store_commit_micros: u64,
     index_commit_micros: u64,
     witness_micros: u64,

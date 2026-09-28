@@ -23,6 +23,10 @@ class MeasurementsTests(unittest.TestCase):
                 "measurement": {
                     "returned_success": True,
                     "total_micros": 20 + index,
+                    "receipt_encode_micros": 8,
+                    "full_receipt_materialize_micros": 3,
+                    "store_commit_micros": 9,
+                    "index_commit_micros": 10,
                     "store_before": copy.deepcopy(before),
                     "index_before": copy.deepcopy(before),
                     "store_after": {
@@ -57,6 +61,26 @@ class MeasurementsTests(unittest.TestCase):
         self.assertEqual(
             result["request_minus_measured_sync_micros"],
             {"p50": 37, "p95": 66, "p99": 69},
+        )
+        self.assertEqual(
+            result["receipt_encode_micros_per_request"],
+            {"p50": 8, "p95": 8, "p99": 8},
+        )
+        self.assertEqual(
+            result["full_receipt_materialize_micros_per_request"],
+            {"p50": 3, "p95": 3, "p99": 3},
+        )
+        self.assertEqual(
+            result["receipt_encode_minus_materialize_micros_per_request"],
+            {"p50": 5, "p95": 5, "p99": 5},
+        )
+        self.assertEqual(
+            result["generation_store_non_sync_micros_per_request"],
+            {"p50": 4, "p95": 4, "p99": 4},
+        )
+        self.assertEqual(
+            result["runtime_index_non_sync_micros_per_request"],
+            {"p50": 4, "p95": 4, "p99": 4},
         )
         self.assertEqual(
             result["store_sync_micros_per_request"],
@@ -110,6 +134,18 @@ class MeasurementsTests(unittest.TestCase):
     def test_measured_sync_cannot_exceed_total_request_time(self):
         samples = self.samples()
         samples[0]["measurement"]["total_micros"] = 13
+        with self.assertRaises(ValueError):
+            summarize(samples, "a" * 40)
+
+    def test_nested_materialization_cannot_exceed_receipt_encode(self):
+        samples = self.samples()
+        samples[0]["measurement"]["full_receipt_materialize_micros"] = 9
+        with self.assertRaises(ValueError):
+            summarize(samples, "a" * 40)
+
+    def test_sync_cannot_exceed_enclosing_commit_phase(self):
+        samples = self.samples()
+        samples[0]["measurement"]["store_commit_micros"] = 4
         with self.assertRaises(ValueError):
             summarize(samples, "a" * 40)
 
