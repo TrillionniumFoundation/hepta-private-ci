@@ -32,6 +32,7 @@ struct FakeDriverState {
     runs: AtomicUsize,
     inspections: AtomicUsize,
     failed_load_cleanups: AtomicUsize,
+    fail_failed_load_cleanup: AtomicBool,
     fail_unload: AtomicBool,
     corrupt_load_identity: AtomicBool,
     run_observation: Mutex<DriverRunObservation>,
@@ -46,6 +47,7 @@ impl FakeDriver {
                 runs: AtomicUsize::new(0),
                 inspections: AtomicUsize::new(0),
                 failed_load_cleanups: AtomicUsize::new(0),
+                fail_failed_load_cleanup: AtomicBool::new(false),
                 fail_unload: AtomicBool::new(false),
                 corrupt_load_identity: AtomicBool::new(false),
                 run_observation: Mutex::new(success_observation()),
@@ -87,11 +89,21 @@ impl LocalModelDriver for FakeDriver {
         self.state
             .failed_load_cleanups
             .fetch_add(1, Ordering::SeqCst);
+        let fail = self
+            .state
+            .fail_failed_load_cleanup
+            .load(Ordering::SeqCst);
         Box::pin(async move {
-            Ok(DriverUnloadObservation {
-                terminal_observed: true,
-                released_memory_bytes: Some(100),
-            })
+            if fail {
+                Err(LocalWorkerError::Driver(
+                    "injected failed-load cleanup failure".to_string(),
+                ))
+            } else {
+                Ok(DriverUnloadObservation {
+                    terminal_observed: true,
+                    released_memory_bytes: Some(100),
+                })
+            }
         })
     }
 
@@ -417,6 +429,45 @@ async fn failed_attestation_is_cleaned_and_does_not_leak_pending_capacity() {
     assert_eq!(snapshot.committed_model_bytes, 0);
     assert_eq!(snapshot.loaded_models, 0);
     assert_eq!(snapshot.fenced_reason, None);
+}
+
+#[tokio::test]
+async fn uncertain_failed_load_retains_capacity_and_fences_generation() {
+    let (grant, _) = signed_grant(512);
+    let manifest = manifest(&grant);
+    let driver = FakeDriver::new();
+    driver
+        .state
+        .corrupt_load_identity
+        .store(true, Ordering::SeqCst);
+    driver
+        .state
+        .fail_failed_load_cleanup
+        .store(true, Ordering::SeqCst);
+    let worker = DurableLocalModelWorker::new(
+        driver.clone(),
+        FakeObserver,
+        FixedClock(1_000),
+        &grant,
+    )
+    .expect("worker");
+
+    assert!(matches!(
+        worker.load_model(&grant, &manifest).await,
+        Err(LocalWorkerError::InvalidObservation(_))
+    ));
+    assert_eq!(
+        driver
+            .state
+            .failed_load_cleanups
+            .load(Ordering::SeqCst),
+        1
+    );
+    let snapshot = worker.resources().snapshot().expect("snapshot");
+    assert_eq!(snapshot.pending_model_bytes, 100);
+    assert_eq!(snapshot.committed_model_bytes, 0);
+    assert_eq!(snapshot.loaded_models, 0);
+    assert!(snapshot.fenced_reason.is_some());
 }
 
 #[tokio::test]
