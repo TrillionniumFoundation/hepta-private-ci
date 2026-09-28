@@ -125,7 +125,7 @@ export async function nativeOperationFromComputerActionV1({
   frameBytes,
   principalId,
   sessionGeneration,
-  viewGeneration,
+  bodyGeneration,
   viewRevision,
   viewDigest,
   grantPayloadDigest,
@@ -134,7 +134,7 @@ export async function nativeOperationFromComputerActionV1({
 }) {
   const principal = stableId(principalId, "principalId");
   const acceptedSessionGeneration = positive(sessionGeneration, "sessionGeneration");
-  const acceptedViewGeneration = positive(viewGeneration, "viewGeneration");
+  const acceptedViewGeneration = positive(bodyGeneration, "bodyGeneration");
   const acceptedViewRevision = positive(viewRevision, "viewRevision");
   const acceptedViewDigest = digest(viewDigest, "viewDigest");
   const acceptedGrantPayloadDigest = digest(grantPayloadDigest, "grantPayloadDigest");
@@ -157,7 +157,7 @@ export async function nativeOperationFromComputerActionV1({
     throw new TypeError("binary native session generation mismatch");
   }
   if (frame.bodyGeneration !== acceptedViewGeneration) {
-    throw new TypeError("binary native view generation mismatch");
+    throw new TypeError("binary native body generation mismatch");
   }
   if (frame.observationRevision !== acceptedViewRevision) {
     throw new TypeError("binary native observation revision mismatch");

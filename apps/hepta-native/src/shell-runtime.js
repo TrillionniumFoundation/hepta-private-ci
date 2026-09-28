@@ -79,7 +79,7 @@ export class NativeShellRuntime {
   #lastMonotonic = 0;
   #resolving = 0;
 
-  constructor({ backend, platform, updater, principalId, binaryResolver, monotonicMicros }) {
+  constructor({ backend, platform, updater, principalId, bodyGeneration, binaryResolver, monotonicMicros }) {
     for (const [name, value, methods] of [
       ["backend", backend, ["connect", "request", "close"]],
       ["platform", platform, ["permission", "invoke"]],
@@ -95,13 +95,13 @@ export class NativeShellRuntime {
     this.#backend = backend;
     this.#platform = platform;
     this.#updater = updater;
-    if ([principalId, binaryResolver, monotonicMicros].some((value) => value !== undefined)) {
+    if ([principalId, bodyGeneration, binaryResolver, monotonicMicros].some((value) => value !== undefined)) {
       if (!binaryResolver || typeof binaryResolver.resolve !== "function" ||
           typeof monotonicMicros !== "function") {
         throw new TypeError("binary profile requires owner resolver and monotonic clock");
       }
       this.#binary = Object.freeze({ principalId: stableId(principalId, "principalId"),
-        resolver: binaryResolver, monotonicMicros });
+        bodyGeneration: positive(bodyGeneration, "bodyGeneration"), resolver: binaryResolver, monotonicMicros });
     }
   }
 
@@ -211,7 +211,7 @@ export class NativeShellRuntime {
     ++this.#resolving;
     const resolution = nativeOperationFromComputerActionV1({ frameBytes: ownedBytes,
       principalId: this.#binary.principalId, sessionGeneration: session.generation,
-      viewGeneration: view.generation, viewRevision: view.revision, viewDigest: view.digest,
+      bodyGeneration: this.#binary.bodyGeneration, viewRevision: view.revision, viewDigest: view.digest,
       grantPayloadDigest, currentMonotonicMicros: now, resolver: this.#binary.resolver });
     void resolution.then(() => --this.#resolving, () => --this.#resolving);
     const prepared = await this.#withinDeadline(resolution, frame.deadlineMonotonicMicros);

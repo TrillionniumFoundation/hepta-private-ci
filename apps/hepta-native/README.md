@@ -8,7 +8,7 @@ physical-effect, promotion or release authority.
 ## Optional HAC1 native reference adapter
 
 `NativeShellRuntime.requestPlatformCapabilityBinary` accepts the registered HAC1
-frame through a constructor-installed principal, read-only reference resolver and
+frame through a constructor-installed principal and body generation, read-only reference resolver and
 monotonic clock. The existing six-field text entry is unchanged. Only the existing
 open/reveal/copy/notify reference capabilities are supported; raw paths, credentials,
 executable payloads and arbitrary desktop input are not accepted here.
@@ -27,3 +27,5 @@ This shell boundary is process-local, not durable exactly-once execution, a sele
 OS driver, an independently trusted outcome observer, or deployment activation.
 The platform owner remains responsible for final-use revocation, persistent operation
 identity, stop/reconcile and OS-specific outcome evidence.
+
+The selected body generation is distinct from the UI projection generation; a matching UI generation cannot authorize an action for a different body.

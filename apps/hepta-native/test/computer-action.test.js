@@ -81,11 +81,12 @@ function notifyFrame(resource, overrides = {}) {
   };
 }
 
-async function connected({ resolver, monotonicMicros = () => 1_000_000 } = {}) {
+async function connected({ resolver, bodyGeneration = 9, monotonicMicros = () => 1_000_000 } = {}) {
   const io = ioFixture();
   const runtime = new NativeShellRuntime({
     ...io,
     principalId: "principal.1",
+    bodyGeneration,
     binaryResolver:
       resolver ??
       new InlineNativeReferenceResolver([
@@ -102,7 +103,7 @@ async function connected({ resolver, monotonicMicros = () => 1_000_000 } = {}) {
   runtime.renderRuntimeView({
     sessionId: "session.1",
     sessionGeneration: 3,
-    generation: 9,
+    generation: 77,
     revision: 11,
     digest: D2,
     modules: [],
@@ -163,7 +164,7 @@ test("subject, view, precondition and deadline drift fail before effect boundary
   const cases = [
     [notifyFrame(resource, { subjectId: "principal.other" }), /subject mismatch/],
     [notifyFrame(resource, { sessionGeneration: 4 }), /session generation mismatch/],
-    [notifyFrame(resource, { bodyGeneration: 10 }), /view generation mismatch/],
+    [notifyFrame(resource, { bodyGeneration: 10 }), /body generation mismatch/],
     [notifyFrame(resource, { observationRevision: 12 }), /observation revision mismatch/],
     [notifyFrame(resource, { preconditionDigest: D1 }), /precondition/],
     [notifyFrame(resource, { deadlineMonotonicMicros: 1_000_000 }), /deadline has expired/],
@@ -250,7 +251,7 @@ test("binary resolution cannot cross a changed view", async () => {
   const execution = runtime.requestPlatformCapabilityBinary({
     frameBytes: encodeComputerActionFrameV1(frame), grantPayloadDigest: frame.finalPayloadDigest });
   runtime.renderRuntimeView({ sessionId: "session.1", sessionGeneration: 3,
-    generation: 9, revision: 12, digest: D2, modules: [] });
+    generation: 77, revision: 12, digest: D2, modules: [] });
   release({ resource: "notification.channel.1" });
   await assert.rejects(execution, /context changed/);
   assert.equal(io.calls.some(([name]) => name === "invoke"), false);
@@ -305,5 +306,15 @@ test("late resolver completion cannot dispatch after a timeout", async () => {
     frameBytes:encodeComputerActionFrameV1(frame),grantPayloadDigest:frame.finalPayloadDigest}), /deadline/);
   release({resource:"notification.channel.1"});
   await new Promise(setImmediate);
+  assert.equal(io.calls.some(([name])=>name==="invoke"),false);
+});
+
+
+test("UI generation does not grant a different body generation", async () => {
+  const { runtime, io } = await connected({bodyGeneration:7});
+  const frame = notifyFrame("notification.channel.1", {bodyGeneration:77});
+  await assert.rejects(runtime.requestPlatformCapabilityBinary({
+    frameBytes:encodeComputerActionFrameV1(frame),grantPayloadDigest:frame.finalPayloadDigest}),
+    /body generation mismatch/);
   assert.equal(io.calls.some(([name])=>name==="invoke"),false);
 });
