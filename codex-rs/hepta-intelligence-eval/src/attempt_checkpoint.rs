@@ -7,7 +7,6 @@
 
 use std::fs::File;
 use std::fs::TryLockError;
-use std::io;
 use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
