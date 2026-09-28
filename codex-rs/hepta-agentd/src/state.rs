@@ -41,6 +41,7 @@ pub(crate) struct AgentdState {
     pub(crate) cognitive_retrieval_learning:
         std::sync::OnceLock<Arc<crate::CognitiveRetrievalLearningSink>>,
     pub(crate) intuition_policy: std::sync::OnceLock<Arc<crate::AgentdIntuitionPolicyHostV1>>,
+    pub(crate) intuition_serving_profile: crate::intuition_policy_serving::ServingProfile,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
     pub(crate) production_operations: std::sync::OnceLock<Arc<crate::AgentdProductionWriterHost>>,
     pub(crate) evidence: std::sync::OnceLock<Arc<crate::evidence_host::EvidenceHost>>,
@@ -79,6 +80,18 @@ impl AgentdState {
         registry: FleetRegistry,
         event_capacity: usize,
     ) -> Result<Self, AgentdError> {
+        let profile = crate::intuition_policy_serving::ServingProfile::from_environment()?;
+        Self::new_with_intuition_profile(identity, registry, event_capacity, profile)
+    }
+
+    /// Inject the immutable profile at startup. Tests and embedded development
+    /// hosts select compatibility explicitly, without mutating process globals.
+    pub(crate) fn new_with_intuition_profile(
+        identity: AgentdIdentity,
+        registry: FleetRegistry,
+        event_capacity: usize,
+        intuition_serving_profile: crate::intuition_policy_serving::ServingProfile,
+    ) -> Result<Self, AgentdError> {
         let mut events = EventBuffer::new(event_capacity)?;
         events.push(AgentdEventKind::Bootstrapped);
         events.push(AgentdEventKind::Lifecycle {
@@ -86,12 +99,13 @@ impl AgentdState {
             generation: identity.spawn_generation,
         });
         let configuration_material = format!(
-            "{}|{}|{}|{}|{}",
+            "{}|{}|{}|{}|{}|{}",
             identity.agent_id,
             identity.spawn_generation,
             identity.workspace.display(),
             identity.home_root.display(),
-            identity.run_root.display()
+            identity.run_root.display(),
+            intuition_serving_profile.as_str()
         );
         let ports_material = format!(
             "{}|{}|{}",
@@ -139,6 +153,7 @@ impl AgentdState {
             cognitive_retrieval_learning: std::sync::OnceLock::new(),
             plasticity_runtime: std::sync::OnceLock::new(),
             intuition_policy: std::sync::OnceLock::new(),
+            intuition_serving_profile,
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
@@ -566,24 +581,35 @@ impl AgentdState {
             && runtime.app_server_ready
             && !runtime.fenced)
     }
+
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
         self.intelligence_product.get().is_some() && self.intelligence_invocation.get().is_some()
     }
 
-    /// Prepare the exact durable Objective through the configured canonical
-    /// seven-owner composition, then atomically freeze its run/context identity
-    /// into the sole Agentd run coordinator. None is explicit compatibility
-    /// mode: both the runner and host-owned invocation provider must be present
-    /// before canonical execution is attempted or advertised.
+    pub(crate) fn require_intuition_host_configuration(&self) -> Result<(), AgentdError> {
+        self.intuition_serving_profile
+            .require_host(self.intuition_policy.get().is_some_and(|host| host.is_product_ready()))
+            .map_err(|code| AgentdError::Invalid(code.to_string()))
+    }
+
+    /// Prepare through the existing seven-owner composition, then retain the
+    /// authenticated policy receipt through run/context admission. No-host
+    /// compatibility is possible only under an explicit development profile.
     pub(crate) async fn start_canonical_intelligence(
         &self,
         record: &RunStartRecordV1,
-    ) -> Result<Option<crate::AgentdIntelligenceAdmittedOutcomeV1>, AgentdError> {
+    ) -> Result<Option<crate::intuition_policy_service::CanonicalIntuitionAdmissionV2>, AgentdError> {
+        // This check precedes every early return, including an entirely absent
+        // canonical composition. The inner serving gate alone cannot guard it.
+        self.require_intuition_host_configuration()?;
         let (Some(runner), Some(provider)) = (
             self.intelligence_product.get(),
             self.intelligence_invocation.get(),
         ) else {
-            if self.intuition_policy.get().is_some() {
+            if self.intuition_policy.get().is_some()
+                || self.intelligence_product.get().is_some()
+                || self.intelligence_invocation.get().is_some()
+            {
                 return Err(AgentdError::Protocol(
                     "agentd.intuition.service.canonical_composition_required".to_string(),
                 ));
@@ -620,12 +646,8 @@ impl AgentdState {
                 ))
             })?;
 
-        // The compatibility advisory stage is not a product decision. A
-        // configured product host must independently authenticate the
-        // current profile/runtime evidence and commit any selected Decision
-        // before the outcome can cross run admission.
         let policy_now = self.require_current_run_start(record)?;
-        let _authenticated_intuition =
+        let authenticated_intuition =
             crate::intuition_policy_serving::authenticate_canonical_intuition(
                 self,
                 intuition_product,
@@ -636,11 +658,11 @@ impl AgentdState {
                 policy_now,
             )?;
 
-        match outcome {
+        // All fallible operations after policy commit stay inside this result.
+        // The final conversion retains the receipt on every failure, including
+        // either freshness check, run-lock acquisition and context attachment.
+        let admission = (|| match outcome {
             crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
-                // Owner preparation is asynchronous. Revalidate the durable
-                // signed Objective and Fleet fence again after it completes,
-                // twice as the compatibility path does at its final boundary.
                 let first_now = self.require_current_run_start(record)?;
                 let second_now = self.require_current_run_start(record)?;
                 let now_ms = first_now.max(second_now);
@@ -682,18 +704,23 @@ impl AgentdState {
                         },
                     )
                     .map_err(run_error)?;
-                Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready {
+                Ok(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready {
                     prepared,
                     run_receipt,
-                }))
+                })
             }
             crate::AgentdIntelligenceProductOutcomeV1::Abstained => {
-                Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained))
+                Ok(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained)
             }
             crate::AgentdIntelligenceProductOutcomeV1::SlowPath => {
-                Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath))
+                Ok(crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath)
             }
-        }
+        })();
+        crate::intuition_policy_service::finish_canonical_admission(
+            admission,
+            authenticated_intuition,
+        )
+        .map(Some)
     }
 
     /// Revalidate a durable run-start record against the current owner trust,

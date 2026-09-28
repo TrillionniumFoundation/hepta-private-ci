@@ -1,9 +1,9 @@
 //! Live Agentd serving seam for intuition.policy.
 //!
 //! Both phases revalidate the Fleet generation and normal Agentd admission
-//! boundary. Commit validates the generation again after durable append; if the
-//! generation changed or the final admission check failed, the receipt is
-//! returned only as an indeterminate recovery token and must never be dispatched.
+//! boundary. A failure after policy commit retains the exact policy receipt,
+//! including failures in the subsequent run and context admission boundaries.
+//! Such a receipt is recovery evidence, never dispatch authority.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -23,6 +23,11 @@ use crate::AgentdIntuitionPolicyError;
 use crate::PreparedAgentdIntuitionDecisionV3;
 use crate::state::AgentdState;
 
+#[path = "intuition_policy_admission.rs"]
+mod admission;
+pub(crate) use admission::CanonicalIntuitionAdmissionV2;
+pub(crate) use admission::finish_canonical_admission;
+
 #[derive(Debug)]
 pub enum AgentdIntuitionServiceErrorV1 {
     NotConfigured,
@@ -31,6 +36,12 @@ pub enum AgentdIntuitionServiceErrorV1 {
     Policy(AgentdIntuitionPolicyError),
     GenerationChangedAfterCommit {
         receipt: AgentdIntuitionDecisionReceiptV2,
+    },
+    /// The policy phase succeeded, but a later canonical admission boundary
+    /// failed. Preserve both facts; an error must not imply that no append ran.
+    AdmissionFailedAfterPolicy {
+        receipt: AgentdIntuitionDecisionReceiptV2,
+        source: Box<AgentdError>,
     },
 }
 
@@ -45,6 +56,20 @@ impl AgentdIntuitionServiceErrorV1 {
             Self::GenerationChangedAfterCommit { .. } => {
                 "agentd.intuition.service.generation_changed_after_commit"
             }
+            Self::AdmissionFailedAfterPolicy { .. } => {
+                "agentd.intuition.service.admission_failed_after_policy"
+            }
+        }
+    }
+
+    /// Return the complete successfully acknowledged policy receipt, when one
+    /// is known. Callers must still inspect its selected/nonselected disposition.
+    #[must_use]
+    pub fn acknowledged_policy_receipt(&self) -> Option<&AgentdIntuitionDecisionReceiptV2> {
+        match self {
+            Self::GenerationChangedAfterCommit { receipt }
+            | Self::AdmissionFailedAfterPolicy { receipt, .. } => Some(receipt),
+            Self::NotConfigured | Self::NotReady | Self::Agentd(_) | Self::Policy(_) => None,
         }
     }
 }
@@ -60,7 +85,8 @@ impl StdError for AgentdIntuitionServiceErrorV1 {
         match self {
             Self::Agentd(source) => Some(source),
             Self::Policy(source) => Some(source),
-            _ => None,
+            Self::AdmissionFailedAfterPolicy { source, .. } => Some(source.as_ref()),
+            Self::NotConfigured | Self::NotReady | Self::GenerationChangedAfterCommit { .. } => None,
         }
     }
 }

@@ -1,11 +1,9 @@
 //! Authenticated intuition gate on the canonical Agentd serving path.
 //!
 //! Production is fail-closed even when both the host and invocation are absent.
-//! Compatibility bypass requires an explicit non-production profile. The
-//! product host authenticates V3 evidence and owns the durable signed ledger;
-//! an advisory result alone never grants production admission.
+//! Compatibility bypass requires an explicit non-production startup profile.
+//! The host authenticates V3 evidence and owns the durable signed ledger.
 
-use std::sync::OnceLock;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -29,7 +27,7 @@ const DURATION_METRIC: &str = "codex.hepta.intuition.policy.duration";
 const LEDGER_APPEND_METRIC: &str = "codex.hepta.intuition.policy.ledger_append";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum ServingProfile {
+pub(crate) enum ServingProfile {
     Development,
     Test,
     Production,
@@ -46,7 +44,18 @@ impl ServingProfile {
         }
     }
 
-    fn require_host(self, product_ready: bool) -> Result<(), &'static str> {
+    /// Resolve once while building AgentdState, before opening serving paths.
+    /// Runtime requests never re-read environment variables or a global cache.
+    pub(crate) fn from_environment() -> Result<Self, AgentdError> {
+        let result = match std::env::var("HEPTA_INTUITION_PROFILE") {
+            Ok(value) => Self::parse(Some(&value), cfg!(test)),
+            Err(std::env::VarError::NotPresent) => Self::parse(None, cfg!(test)),
+            Err(std::env::VarError::NotUnicode(_)) => Err("agentd.intuition.profile.invalid"),
+        };
+        result.map_err(|code| AgentdError::Invalid(code.to_string()))
+    }
+
+    pub(crate) fn require_host(self, product_ready: bool) -> Result<(), &'static str> {
         if self == Self::Production && !product_ready {
             Err("agentd.intuition.service.production_product_host_required")
         } else {
@@ -54,25 +63,13 @@ impl ServingProfile {
         }
     }
 
-    const fn as_str(self) -> &'static str {
+    pub(crate) const fn as_str(self) -> &'static str {
         match self {
             Self::Development => "development",
             Self::Test => "test",
             Self::Production => "production",
         }
     }
-}
-
-fn serving_profile() -> Result<ServingProfile, AgentdError> {
-    // Pin the process profile on first access. Runtime environment changes must
-    // not demote an already serving production process into compatibility mode.
-    static PROFILE: OnceLock<Result<ServingProfile, &'static str>> = OnceLock::new();
-    let profile = PROFILE.get_or_init(|| match std::env::var("HEPTA_INTUITION_PROFILE") {
-        Ok(value) => ServingProfile::parse(Some(&value), cfg!(test)),
-        Err(std::env::VarError::NotPresent) => ServingProfile::parse(None, cfg!(test)),
-        Err(std::env::VarError::NotUnicode(_)) => Err("agentd.intuition.profile.invalid"),
-    });
-    (*profile).map_err(|code| AgentdError::Invalid(code.to_string()))
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -86,14 +83,7 @@ pub(crate) fn authenticate_canonical_intuition(
     now: u64,
 ) -> Result<Option<AgentdIntuitionDecisionReceiptV2>, AgentdError> {
     let started = Instant::now();
-    let profile = match serving_profile() {
-        Ok(profile) => profile,
-        Err(error) => {
-            record_request("invalid");
-            record_failure("invalid", started.elapsed(), &error);
-            return Err(error);
-        }
-    };
+    let profile = state.intuition_serving_profile;
     record_request(profile.as_str());
     let span = tracing::info_span!(
         "hepta.intuition_policy.authenticate",
@@ -103,9 +93,7 @@ pub(crate) fn authenticate_canonical_intuition(
 
     let result: Result<Option<AgentdIntuitionDecisionReceiptV2>, AgentdError> = (|| {
         let host = state.intuition_policy.get();
-        profile
-            .require_host(host.is_some_and(|host| host.is_product_ready()))
-            .map_err(|code| AgentdError::Invalid(code.to_string()))?;
+        state.require_intuition_host_configuration()?;
         let product = match (host.is_some(), product) {
             (false, None) => return Ok(None),
             (true, Some(product)) => product,
@@ -156,8 +144,7 @@ pub(crate) fn authenticate_canonical_intuition(
             &policy_prepared.decision().decision.propensities,
         )?;
 
-        // Signature verification and advisory preparation consume time. A lease
-        // validated at prepare cannot be extended by replaying its old timestamp.
+        // A lease validated at prepare cannot be extended by reusing its time.
         let commit_now = crate::authbus_ingress::now_ms()?;
         let committed = state
             .commit_intuition_policy_v3(
@@ -167,26 +154,34 @@ pub(crate) fn authenticate_canonical_intuition(
                 commit_now,
             )
             .map_err(AgentdError::from)?;
-        require_outcome_parity(
-            canonical,
-            &committed.decision.decision.disposition,
-            &committed.decision.decision.propensities,
-        )?;
-
-        match &committed.decision.decision.disposition {
-            ProductionDispositionV1::Selected(_) if committed.learning.is_none() => {
-                return Err(AgentdError::Protocol(
-                    "agentd.intuition.service.selected_without_durable_decision".to_string(),
-                ));
+        let final_check = (|| {
+            require_outcome_parity(
+                canonical,
+                &committed.decision.decision.disposition,
+                &committed.decision.decision.propensities,
+            )?;
+            match &committed.decision.decision.disposition {
+                ProductionDispositionV1::Selected(_) if committed.learning.is_none() => {
+                    Err(AgentdError::Protocol(
+                        "agentd.intuition.service.selected_without_durable_decision".to_string(),
+                    ))
+                }
+                ProductionDispositionV1::Abstained(_) | ProductionDispositionV1::SlowPath(_)
+                    if committed.learning.is_some() =>
+                {
+                    Err(AgentdError::Protocol(
+                        "agentd.intuition.service.nonselected_with_decision".to_string(),
+                    ))
+                }
+                _ => Ok(()),
             }
-            ProductionDispositionV1::Abstained(_) | ProductionDispositionV1::SlowPath(_)
-                if committed.learning.is_some() =>
-            {
-                return Err(AgentdError::Protocol(
-                    "agentd.intuition.service.nonselected_with_decision".to_string(),
-                ));
+        })();
+        if let Err(source) = final_check {
+            return Err(crate::AgentdIntuitionServiceErrorV1::AdmissionFailedAfterPolicy {
+                receipt: committed,
+                source: Box::new(source),
             }
-            _ => {}
+            .into());
         }
         Ok(Some(committed))
     })();
@@ -267,9 +262,10 @@ fn record_result(
 
 fn record_failure(profile: &'static str, elapsed: Duration, error: &AgentdError) {
     let error_class = agentd_error_class(error);
+    let reason_code = agentd_error_reason(error);
     emit_counter(
         FAILURE_METRIC,
-        &[("profile", profile), ("error_class", error_class)],
+        &[("profile", profile), ("error_class", error_class), ("reason_code", reason_code)],
     );
     emit_duration(
         DURATION_METRIC,
@@ -279,6 +275,7 @@ fn record_failure(profile: &'static str, elapsed: Duration, error: &AgentdError)
     tracing::warn!(
         profile,
         error_class,
+        reason_code,
         error = %error,
         elapsed_ms = elapsed.as_millis(),
         "intuition policy request rejected"
@@ -326,6 +323,13 @@ const fn agentd_error_class(error: &AgentdError) -> &'static str {
         AgentdError::ProductionWriter(_) => "production_writer",
         AgentdError::ProductionCognitiveMutation(_) => "production_cognitive_mutation",
         AgentdError::CognitiveStore(_) => "cognitive_store",
+    }
+}
+
+fn agentd_error_reason(error: &AgentdError) -> &'static str {
+    match error {
+        AgentdError::IntuitionPolicy(source) => source.code(),
+        _ => agentd_error_class(error),
     }
 }
 
@@ -396,14 +400,8 @@ mod tests {
 
     #[test]
     fn missing_profile_defaults_to_production_in_all_builds() {
-        assert_eq!(
-            ServingProfile::parse(None, false),
-            Ok(ServingProfile::Production)
-        );
-        assert_eq!(
-            ServingProfile::parse(None, true),
-            Ok(ServingProfile::Production)
-        );
+        assert_eq!(ServingProfile::parse(None, false), Ok(ServingProfile::Production));
+        assert_eq!(ServingProfile::parse(None, true), Ok(ServingProfile::Production));
     }
 
     #[test]
@@ -414,30 +412,16 @@ mod tests {
 
     #[test]
     fn compatibility_profile_must_be_explicit() {
-        assert_eq!(
-            ServingProfile::parse(Some("development"), false),
-            Ok(ServingProfile::Development)
-        );
+        assert_eq!(ServingProfile::parse(Some("development"), false), Ok(ServingProfile::Development));
         assert!(ServingProfile::Development.require_host(false).is_ok());
-        assert_eq!(
-            ServingProfile::parse(Some("test"), true),
-            Ok(ServingProfile::Test)
-        );
+        assert_eq!(ServingProfile::parse(Some("test"), true), Ok(ServingProfile::Test));
         assert!(ServingProfile::Test.require_host(false).is_ok());
         assert!(ServingProfile::parse(Some("test"), false).is_err());
     }
 
     #[test]
     fn malformed_profiles_do_not_fall_back() {
-        for value in [
-            "",
-            "Production",
-            " production",
-            "production ",
-            "fixture",
-            "prod",
-            "unknown",
-        ] {
+        for value in ["", "Production", " production", "production ", "fixture", "prod", "unknown"] {
             assert!(ServingProfile::parse(Some(value), true).is_err());
         }
     }
@@ -447,18 +431,19 @@ mod tests {
         assert_eq!(ServingProfile::Development.as_str(), "development");
         assert_eq!(ServingProfile::Test.as_str(), "test");
         assert_eq!(ServingProfile::Production.as_str(), "production");
-        assert_eq!(
-            agentd_error_class(&AgentdError::Invalid("request-specific detail".to_string())),
-            "invalid"
-        );
-        assert_eq!(
-            agentd_error_class(&AgentdError::Protocol("request-specific detail".to_string())),
-            "protocol"
-        );
-        assert_eq!(
-            agentd_error_class(&AgentdError::Overloaded { retry_after_ms: 10 }),
-            "overloaded"
-        );
+        assert_eq!(agentd_error_class(&AgentdError::Invalid("request-specific detail".to_string())), "invalid");
+        assert_eq!(agentd_error_class(&AgentdError::Protocol("request-specific detail".to_string())), "protocol");
+        assert_eq!(agentd_error_class(&AgentdError::Overloaded { retry_after_ms: 10 }), "overloaded");
+    }
+
+    #[test]
+    fn telemetry_retains_static_policy_reason_without_request_details() {
+        let expiry = AgentdError::from(crate::AgentdIntuitionServiceErrorV1::Policy(
+            crate::AgentdIntuitionPolicyError::PreparedEvidenceExpired,
+        ));
+        assert_eq!(agentd_error_reason(&expiry), "agentd.intuition.prepared_evidence_expired");
+        let arbitrary = AgentdError::Invalid("secret/request/arbitrary text".to_string());
+        assert_eq!(agentd_error_reason(&arbitrary), "invalid");
     }
 
     #[test]
@@ -472,16 +457,8 @@ mod tests {
             candidate_id: candidate.clone(),
             probability: ProbabilityQ32::ONE,
         }];
-        assert!(require_decision_parity(
-            &canonical,
-            &ProductionDispositionV1::Selected(candidate),
-            &rows,
-        ));
-        assert!(!require_decision_parity(
-            &canonical,
-            &ProductionDispositionV1::Selected(id("candidate:two")),
-            &rows,
-        ));
+        assert!(require_decision_parity(&canonical, &ProductionDispositionV1::Selected(candidate), &rows));
+        assert!(!require_decision_parity(&canonical, &ProductionDispositionV1::Selected(id("candidate:two")), &rows));
     }
 
     #[test]
@@ -497,50 +474,23 @@ mod tests {
             probability: ProbabilityQ32::ONE,
         };
         assert!(!require_decision_parity(&canonical, &selected, &[]));
-        assert!(!require_decision_parity(
-            &canonical,
-            &selected,
-            &[row.clone(), row],
-        ));
+        assert!(!require_decision_parity(&canonical, &selected, &[row.clone(), row]));
         let zero_row = CalibratedCandidatePropensityV1 {
             candidate_id: candidate.clone(),
             probability: ProbabilityQ32::ZERO,
         };
-        assert!(!require_decision_parity(
-            &canonical,
-            &selected,
-            std::slice::from_ref(&zero_row),
-        ));
+        assert!(!require_decision_parity(&canonical, &selected, std::slice::from_ref(&zero_row)));
         let zero_canonical = AdvisoryDecisionV1::Selected {
             candidate_id: candidate,
             propensity: ProbabilityQ32::ZERO,
         };
-        assert!(!require_decision_parity(
-            &zero_canonical,
-            &selected,
-            &[zero_row],
-        ));
+        assert!(!require_decision_parity(&zero_canonical, &selected, &[zero_row]));
     }
 
     #[test]
     fn terminal_outcome_parity_preserves_disposition_class() {
-        let authenticated =
-            ProductionDispositionV1::SlowPath(ProductionSlowPathReasonV1::ProfileRiskRule);
-        assert!(
-            require_outcome_parity(
-                &AgentdIntelligenceProductOutcomeV1::SlowPath,
-                &authenticated,
-                &[],
-            )
-            .is_ok()
-        );
-        assert!(
-            require_outcome_parity(
-                &AgentdIntelligenceProductOutcomeV1::Abstained,
-                &authenticated,
-                &[],
-            )
-            .is_err()
-        );
+        let authenticated = ProductionDispositionV1::SlowPath(ProductionSlowPathReasonV1::ProfileRiskRule);
+        assert!(require_outcome_parity(&AgentdIntelligenceProductOutcomeV1::SlowPath, &authenticated, &[]).is_ok());
+        assert!(require_outcome_parity(&AgentdIntelligenceProductOutcomeV1::Abstained, &authenticated, &[]).is_err());
     }
 }
