@@ -43,3 +43,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: bash scripts/kernel_authority_direct_repair_v3.sh
+
+# Manual deterministic trigger: 2026-09-28
