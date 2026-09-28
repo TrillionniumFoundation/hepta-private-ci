@@ -9,10 +9,13 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::DurableFleetOwner;
 use codex_hepta_fleet::FleetAuthorityPort;
+use codex_hepta_fleet::FleetCapacityObserverV1;
+use codex_hepta_fleet::FleetClock;
 use codex_hepta_fleet::FleetExecutionContextV1;
 use codex_hepta_fleet::FleetExecutionHoldV1;
 use codex_hepta_fleet::FleetReadOnlyFenceV1;
 use codex_hepta_fleet::LeaseLedger;
+use codex_hepta_fleet::LinuxProcfsCapacityObserverV1;
 use codex_hepta_fleet::ResourceMappingPolicyV1;
 use codex_hepta_fleet::RevocationBoundGrantUseWitnessV1;
 use codex_hepta_fleet::SystemFleetClock;
@@ -202,6 +205,14 @@ impl ProcessBinding {
             resources,
             execution_sha256: digest_bytes(&encoded),
         };
+        if effect.dispatch.is_some() {
+            // A maintenance pressure/shrink error must deny a new process
+            // immediately, not rely on the old observation eventually aging.
+            // Do this before preparing intent: rejection creates no unused pin.
+            let fence = lock_fleet_snapshot(&self.state_root, Arc::new(SystemFleetClock))
+                .map_err(reject)?;
+            self.verify_current_capacity(&fence)?;
+        }
         let witness = admission
             .verify_agent_start(effect.agent_id)
             .map_err(reject)?;
@@ -253,6 +264,39 @@ impl ProcessBinding {
             _fence: fence,
             hold,
         })
+    }
+
+    fn verify_current_capacity(
+        &self,
+        fence: &FleetReadOnlyFenceV1,
+    ) -> Result<(), ProcessDriverError> {
+        let state = &fence.snapshot.state;
+        let incarnation = state
+            .fleet_host_incarnations
+            .get(&self.host_id)
+            .ok_or_else(|| reject("local host incarnation is unavailable"))?;
+        let observer = LinuxProcfsCapacityObserverV1::for_current_host(
+            self.host_id.clone(),
+            incarnation.failure_domain_id.clone(),
+            self.host_generation,
+            60_000,
+            5_000,
+        )
+        .map_err(reject)?;
+        let observation = observer
+            .observe(SystemFleetClock.now_unix_ms().map_err(reject)?)
+            .map_err(reject)?;
+        observation.validate().map_err(reject)?;
+        let reserved = state
+            .fleet_resource_totals
+            .get(&self.host_id)
+            .ok_or_else(|| reject("no independently reserved resource for local execution"))?;
+        if !reserved.fits(observation.capacity) {
+            return Err(reject(
+                "current host capacity is below committed physical reservations",
+            ));
+        }
+        Ok(())
     }
 
     fn validate_fence(
