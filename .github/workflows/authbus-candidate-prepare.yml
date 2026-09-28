@@ -38,10 +38,7 @@ jobs:
       - name: Apply audited source changes
         run: |
           set -euo pipefail
-          python3 scripts/authbus-preflight-repair.py
           python3 scripts/prepare-authbus-candidate.py
-          python3 scripts/finalize-authbus-candidate.py
-          git restore --source=HEAD -- .github/workflows/authbus-authority-qualification.yml .github/workflows/authbus-trust-boundary-migrate.yml
       - name: Install pinned formatter
         run: |
           set -euo pipefail
@@ -54,7 +51,7 @@ jobs:
           python3 - <<'PY'
           import pathlib, subprocess
           roots = ('codex-rs/hepta-authbus/', 'codex-rs/hepta-authbus-p1-3-qualification/')
-          exact = {'codex-rs/hepta-evidence/src/lib.rs', 'codex-rs/hepta-evidence/src/qualification_tests.rs', 'codex-rs/hepta-agentd/tests/kernel_evidence_product.rs', 'codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs'}
+          exact = {'codex-rs/hepta-evidence/src/lib.rs', 'codex-rs/hepta-evidence/src/qualification_tests.rs', 'codex-rs/hepta-agentd/tests/kernel_evidence_product.rs', 'codex-rs/hepta-agentd/src/evidence_trust.rs', 'codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs'}
           prefixes = ('codex-rs/hepta-evidence/src/authbus_', 'codex-rs/hepta-agentd/src/authbus_', 'codex-rs/hepta-bao-adapter/src/https_consumer')
           names = subprocess.check_output(['git', 'ls-files', '--cached', '--others', '--exclude-standard', '-z', '--', 'codex-rs']).decode().split('\0')
           for path in sorted(set(names)):
@@ -74,7 +71,7 @@ jobs:
           python3 - <<'PY'
           import pathlib, subprocess
           allowed = ('codex-rs/hepta-authbus/', 'codex-rs/hepta-authbus-p1-3-qualification/', 'codex-rs/hepta-evidence/src/authbus_', 'codex-rs/hepta-agentd/src/authbus_', 'codex-rs/hepta-bao-adapter/src/https_consumer', 'docs/modules/auth.authbus/')
-          exact = {'codex-rs/Cargo.lock', 'codex-rs/hepta-evidence/src/lib.rs', 'codex-rs/hepta-evidence/src/qualification_tests.rs', 'codex-rs/hepta-agentd/tests/kernel_evidence_product.rs', 'scripts/authbus-exact-head-evidence.py', 'scripts/test-authbus-exact-head-evidence.py', 'scripts/check-authbus-closed-world.py'}
+          exact = {'codex-rs/Cargo.lock', 'codex-rs/hepta-evidence/src/lib.rs', 'codex-rs/hepta-evidence/src/qualification_tests.rs', 'codex-rs/hepta-agentd/tests/kernel_evidence_product.rs', 'codex-rs/hepta-agentd/src/evidence_trust.rs', 'scripts/authbus-exact-head-evidence.py', 'scripts/test-authbus-exact-head-evidence.py', 'scripts/check-authbus-closed-world.py', 'scripts/generate-authbus-implementation-map.py'}
           def names(*args):
               return {p for p in subprocess.check_output(['git', *args, '-z']).decode().split('\0') if p}
           paths = sorted(names('diff', '--name-only') | names('diff', '--cached', '--name-only') | names('ls-files', '--others', '--exclude-standard'))
