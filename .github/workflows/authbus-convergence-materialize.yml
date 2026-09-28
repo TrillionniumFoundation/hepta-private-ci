@@ -23,6 +23,17 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
+      - name: Prove pristine source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Pre-clean worktree (including ignored files):"
+          git status --short --ignored
+          git clean -ffdx
+          git reset --hard "${GITHUB_SHA}"
+          test ! -e codex-rs/hepta-authbus/tests/registry_owner.rs
+          git status --short
+
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt
