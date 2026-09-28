@@ -24,7 +24,10 @@ concurrency:
 jobs:
   qualification:
     name: ${{ matrix.check }}
-    runs-on: ubuntu-24.04-arm
+    # Candidate identity and closed-world source qualification use the standard
+    # hosted Linux lane; the repository-wide Rust matrix separately owns ARM,
+    # Windows, macOS and musl portability evidence.
+    runs-on: ubuntu-24.04
     timeout-minutes: 120
     strategy:
       fail-fast: false
@@ -95,7 +98,7 @@ jobs:
       - name: Verified V8 artifacts
         uses: ./.github/actions/setup-rusty-v8
         with:
-          target: aarch64-unknown-linux-gnu
+          target: x86_64-unknown-linux-gnu
       - name: Test receipt tooling
         run: python3 -m unittest -v scripts.tests.test_runtime_codex_receipt_v2
       - name: Execute the complete closed-world focused plan
