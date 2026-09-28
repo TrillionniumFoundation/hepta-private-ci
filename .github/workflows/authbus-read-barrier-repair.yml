@@ -10,12 +10,12 @@ permissions:
 
 concurrency:
   group: authbus-read-barrier-repair
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   repair:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/authbus-final-hardening-20260928'
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
