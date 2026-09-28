@@ -6,6 +6,10 @@
 //! pinned trust roots, and verifies all grant/host/generation/digest fences
 //! immediately before process spawn.
 
+#[cfg(unix)]
+#[path = "fleet_execution_admission.rs"]
+pub(crate) mod execution;
+
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::FinalUseRevocationConvergenceVerifier;
 use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
@@ -13,6 +17,7 @@ use codex_hepta_contracts::FinalUseRevocationNodeTrust;
 use codex_hepta_contracts::FinalUseTrustKey;
 use codex_hepta_contracts::SystemAuthorityClock;
 use codex_hepta_fleet::DurableFleetOwner;
+use codex_hepta_fleet::FleetClock;
 use codex_hepta_fleet::RevocationBoundGrantUseWitnessV1;
 use codex_hepta_fleet::SystemFleetClock;
 use codex_hepta_fleet::verify_final_use_with_revocation;
@@ -164,8 +169,10 @@ impl FleetStartAdmission {
             Arc::new(SystemFleetClock),
         )
         .map_err(|error| FleetStartAdmissionError::Durable(error.to_string()))?;
-        owner
-            .metrics()
+        // open() already returns a validated cut. Final-use verification and
+        // the physical-effect fence recheck it; a metrics reload adds no fence.
+        let now_ms = SystemFleetClock
+            .now_unix_ms()
             .map_err(|error| FleetStartAdmissionError::Durable(error.to_string()))?;
         let principal_id = agent_id.to_string();
         let mut matching = owner
@@ -173,7 +180,11 @@ impl FleetStartAdmission {
             .fleet_grants
             .active_grants
             .values()
-            .filter(|grant| grant.principal_id == principal_id && !grant.revoked);
+            .filter(|grant| {
+                grant.principal_id == principal_id
+                    && !grant.revoked
+                    && grant.expires_at_ms > now_ms
+            });
         let grant = matching
             .next()
             .cloned()
