@@ -185,6 +185,15 @@ jobs:
         if: needs.scope.outputs.derived == 'true'
         run: python3 scripts/hepta-module-docs.py refresh-derived --check
 
+  runtime-codex:
+    name: runtime.codex qualification
+    needs: scope
+    if: needs.scope.outputs.inference == 'true'
+    uses: ./.github/workflows/runtime-codex-qualification.yml
+    with:
+      called_from_blocking_ci: true
+    secrets: inherit
+
   lightweight:
     name: Lightweight prose and derived checks
     needs: scope
@@ -225,6 +234,7 @@ jobs:
       - rust-ci
       - sdk
       - hepta-scoped
+      - runtime-codex
       - lightweight
     runs-on: ubuntu-24.04
     steps:
@@ -235,6 +245,7 @@ jobs:
       - name: Require successful applicable dependencies
         env:
           NEEDS: ${{ toJSON(needs) }}
+          INFERENCE: ${{ needs.scope.outputs.inference }}
           NATIVE: ${{ needs.scope.outputs.native }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
         shell: bash
@@ -244,6 +255,7 @@ jobs:
             python3 - <<'PY'
           import json
           import os
+          inference = os.environ["INFERENCE"] == "true"
           native = os.environ["NATIVE"] == "true"
           full = os.environ["FULL_REPO"] == "true"
           allowed = []
@@ -253,6 +265,8 @@ jobs:
               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
           if not (native and not full):
               allowed.append("hepta-scoped")
+          if not inference:
+              allowed.append("runtime-codex")
           if not (not native and not full):
               allowed.append("lightweight")
           print(json.dumps(allowed))
