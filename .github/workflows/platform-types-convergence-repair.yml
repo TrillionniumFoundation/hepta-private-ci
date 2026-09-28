@@ -117,3 +117,5 @@ jobs:
           test -n "$(git status --porcelain)"
           git commit -m "fix(platform.types): close exact-candidate qualification gaps"
           git push origin "HEAD:$BRANCH"
+
+# API retrigger: materialize the guarded repair on the active PR head.
