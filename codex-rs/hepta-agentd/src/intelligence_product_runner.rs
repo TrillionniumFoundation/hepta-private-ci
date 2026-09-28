@@ -2,6 +2,12 @@
 // worker/testing seams retain the same visibility. Item order is irrelevant to
 // name resolution; the explicit port alias below shadows the parent's glob
 // import used by the retained implementation body.
+//
+// Generated-source anchors for the implementation body retained below:
+// - request_digest: run_identity.request_digest.to_string()
+// - validate_canonical_outcome_v1
+// - with_hard_timeout_process_exit
+// - capability_profile_digest
 include!("intelligence_product_runner_base.rs");
 
 #[path = "intelligence_stage_bound_ports.rs"]
