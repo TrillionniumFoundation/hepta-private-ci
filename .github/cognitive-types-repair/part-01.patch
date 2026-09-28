@@ -1,0 +1,210 @@
+@@ -7,10 +6,6 @@ use sqlx::Row;
+ use sqlx::Sqlite;
+ use sqlx::SqlitePool;
+ use sqlx::Transaction;
+-use sqlx::sqlite::SqliteConnectOptions;
+-use sqlx::sqlite::SqliteJournalMode;
+-use sqlx::sqlite::SqlitePoolOptions;
+-use sqlx::sqlite::SqliteSynchronous;
+ 
+ use crate::AuthBusAuthorityError;
+ use crate::AuthPolicy;
+@@ -29,16 +24,7 @@ pub struct AuthBusAuthorityStore {
+ 
+ impl AuthBusAuthorityStore {
+     pub async fn open(path: &Path) -> Result<Self, AuthBusAuthorityError> {
+-        let options = SqliteConnectOptions::new()
+-            .filename(path)
+-            .create_if_missing(true)
+-            .journal_mode(SqliteJournalMode::Wal)
+-            .synchronous(SqliteSynchronous::Full)
+-            .foreign_keys(true)
+-            .busy_timeout(Duration::from_secs(5));
+-        let pool = SqlitePoolOptions::new()
+-            .max_connections(5)
+-            .connect_with(options)
++        let pool = crate::sqlite_owner::open_durable_pool(path)
+             .await
+             .map_err(storage)?;
+         let quick_check: String = sqlx::query_scalar("PRAGMA quick_check")
+@@ -521,7 +507,7 @@ pub(crate) fn u64_bytes(value: u64) -> [u8; 8] {
+ fn is_unique_violation(error: &sqlx::Error) -> bool {
+     error
+         .as_database_error()
+-        .is_some_and(|database| database.is_unique_violation())
++        .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
+ }
+ 
+ pub(crate) fn storage(error: impl ToString) -> AuthBusAuthorityError {
+diff --git a/codex-rs/hepta-authbus/src/lib.rs b/codex-rs/hepta-authbus/src/lib.rs
+index 49f9952e27..055f9f7a4a 100644
+--- a/codex-rs/hepta-authbus/src/lib.rs
++++ b/codex-rs/hepta-authbus/src/lib.rs
+@@ -18,6 +18,7 @@ mod recovery;
+ mod settlement;
+ mod settlement_store;
+ mod signed;
++mod sqlite_owner;
+ mod trust;
+ mod trust_store;
+ pub use authority::AuthBusAuthorityError;
+diff --git a/codex-rs/hepta-authbus/src/quota_store.rs b/codex-rs/hepta-authbus/src/quota_store.rs
+index 0f21fcd0e4..076e5ad583 100644
+--- a/codex-rs/hepta-authbus/src/quota_store.rs
++++ b/codex-rs/hepta-authbus/src/quota_store.rs
+@@ -67,7 +67,7 @@ impl AuthBusAuthorityStore {
+         if let Err(error) = result {
+             if error
+                 .as_database_error()
+-                .is_some_and(|database| database.is_unique_violation())
++                .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
+             {
+                 return Err(AuthBusAuthorityError::AlreadyExists);
+             }
+diff --git a/codex-rs/hepta-authbus/src/sqlite_owner.rs b/codex-rs/hepta-authbus/src/sqlite_owner.rs
+new file mode 100644
+index 0000000000..e587ef78ca
+--- /dev/null
++++ b/codex-rs/hepta-authbus/src/sqlite_owner.rs
+@@ -0,0 +1,45 @@
++//! The single SQLite pool-construction boundary owned by AuthBus.
++//!
++//! AuthBus is a lower-level authority contract and intentionally does not take
++//! a dependency on the broader state runtime. Keeping the two approved pool
++//! profiles here prevents individual stores from selecting weaker durability,
++//! foreign-key, or busy-timeout settings.
++
++use std::path::Path;
++use std::time::Duration;
++
++use sqlx::Error;
++use sqlx::SqlitePool;
++use sqlx::sqlite::SqliteConnectOptions;
++use sqlx::sqlite::SqliteJournalMode;
++use sqlx::sqlite::SqlitePoolOptions;
++use sqlx::sqlite::SqliteSynchronous;
++
++#[expect(
++    clippy::disallowed_methods,
++    reason = "AuthBus owner-local SQLite construction is centralized in this function"
++)]
++pub(crate) async fn open_in_memory_pool() -> Result<SqlitePool, Error> {
++    SqlitePoolOptions::new()
++        .max_connections(1)
++        .connect("sqlite::memory:")
++        .await
++}
++
++#[expect(
++    clippy::disallowed_methods,
++    reason = "AuthBus owner-local SQLite construction is centralized in this function"
++)]
++pub(crate) async fn open_durable_pool(path: &Path) -> Result<SqlitePool, Error> {
++    let options = SqliteConnectOptions::new()
++        .filename(path)
++        .create_if_missing(true)
++        .journal_mode(SqliteJournalMode::Wal)
++        .synchronous(SqliteSynchronous::Full)
++        .foreign_keys(true)
++        .busy_timeout(Duration::from_secs(5));
++    SqlitePoolOptions::new()
++        .max_connections(5)
++        .connect_with(options)
++        .await
++}
+diff --git a/codex-rs/hepta-authbus/src/trust_store.rs b/codex-rs/hepta-authbus/src/trust_store.rs
+index 78c9470269..4d8f1c47db 100644
+--- a/codex-rs/hepta-authbus/src/trust_store.rs
++++ b/codex-rs/hepta-authbus/src/trust_store.rs
+@@ -238,7 +238,7 @@ async fn insert_issuer(
+     .map_err(|error| {
+         if error
+             .as_database_error()
+-            .is_some_and(|database| database.is_unique_violation())
++            .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
+         {
+             AuthBusAuthorityError::AlreadyExists
+         } else {
+diff --git a/codex-rs/hepta-cognitive-store/src/v2_product_tests.rs b/codex-rs/hepta-cognitive-store/src/v2_product_tests.rs
+index cd12ca8641..dea7f0a64f 100644
+--- a/codex-rs/hepta-cognitive-store/src/v2_product_tests.rs
++++ b/codex-rs/hepta-cognitive-store/src/v2_product_tests.rs
+@@ -106,8 +106,7 @@ fn product_binding_keeps_distinct_digest_profiles_for_one_checked_payload() {
+         .validate()
+         .expect("different domains are not a semantic mismatch");
+     assert_eq!(
+-        canonical_contract_digest_v1(binding.canonical_event().as_inner())
+-            .expect("frozen digest"),
++        canonical_contract_digest_v1(binding.canonical_event().as_inner()).expect("frozen digest"),
+         binding.consumer_binding.canonical_payload_sha256.digest()
+     );
+ }
+@@ -157,7 +156,10 @@ fn product_binding_rejects_resealed_operation_consumer_source_and_snapshot_subst
+             .consumer_binding
+             .compute_binding_sha256()
+             .expect("recomputed structural hash");
+-        binding.consumer_binding.validate().expect("valid raw binding");
++        binding
++            .consumer_binding
++            .validate()
++            .expect("valid raw binding");
+         assert_eq!(
+             binding.validate(),
+             Err(CognitiveStoreV2Error::CanonicalProductBindingMismatch),
+diff --git a/codex-rs/hepta-cognitive-types/src/consumer.rs b/codex-rs/hepta-cognitive-types/src/consumer.rs
+index d34f928130..bac678e6fa 100644
+--- a/codex-rs/hepta-cognitive-types/src/consumer.rs
++++ b/codex-rs/hepta-cognitive-types/src/consumer.rs
+@@ -220,8 +220,7 @@ pub const fn migration_posture_authorized_for_state_v1(
+         }
+         ConsumerConvergenceStateV1::CanonicalAuthoritative => matches!(
+             posture,
+-            CanonicalMigrationPostureV1::Native
+-                | CanonicalMigrationPostureV1::CompatibilityBound
++            CanonicalMigrationPostureV1::Native | CanonicalMigrationPostureV1::CompatibilityBound
+         ),
+         ConsumerConvergenceStateV1::LegacyRetired => matches!(
+             posture,
+@@ -238,17 +237,18 @@ pub fn authorize_migration_posture_v1(
+     consumer: CanonicalConsumerV1,
+     posture: CanonicalMigrationPostureV1,
+ ) -> Result<(), CanonicalConsumerBindingError> {
+-    let registration = registered_consumer_v1(consumer.as_str()).ok_or(
+-        CanonicalConsumerBindingError::ConsumerNotRegistered { consumer },
+-    )?;
++    let registration = registered_consumer_v1(consumer.as_str())
++        .ok_or(CanonicalConsumerBindingError::ConsumerNotRegistered { consumer })?;
+     if migration_posture_authorized_for_state_v1(registration.state, posture) {
+         Ok(())
+     } else {
+-        Err(CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
+-            consumer,
+-            posture,
+-            state: registration.state,
+-        })
++        Err(
++            CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
++                consumer,
++                posture,
++                state: registration.state,
++            },
++        )
+     }
+ }
+ 
+diff --git a/codex-rs/hepta-cognitive-types/src/consumer_adapters.rs b/codex-rs/hepta-cognitive-types/src/consumer_adapters.rs
+index c61902ecc3..1b9262d287 100644
+--- a/codex-rs/hepta-cognitive-types/src/consumer_adapters.rs
++++ b/codex-rs/hepta-cognitive-types/src/consumer_adapters.rs
+@@ -16,8 +16,7 @@ const SHADOW_COMPARISON_DOMAIN: &[u8] = b"hepta.cognitive.consumer-shadow.v1";
+ /// This profile compares only the two digest byte strings supplied by the
+ /// caller. It does not project legacy and canonical values into a shared
+ /// semantic domain and therefore cannot establish migration parity or cutover.
+-pub const RAW_SHADOW_DIGEST_COMPARISON_PROFILE_V1: &str =
+-    "raw_digest_equality_diagnostic_v1";
++pub const RAW_SHADOW_DIGEST_COMPARISON_PROFILE_V1: &str = "raw_digest_equality_diagnostic_v1";
+ 
+ #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+ pub enum ConsumerConvergenceStateV1 {
+diff --git a/codex-rs/hepta-cognitive-types/src/consumer_tests.rs b/codex-rs/hepta-cognitive-types/src/consumer_tests.rs
+index 47c302367d..024403df41 100644
