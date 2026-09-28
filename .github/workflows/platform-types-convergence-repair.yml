@@ -75,6 +75,12 @@ jobs:
       - name: Regenerate the authoritative Cargo lock
         run: |
           set -euo pipefail
+          # The alpha.4 Rama graph requires the current Tokio line. Unlock the
+          # shared runtime first; updating Rama helper crates one-by-one while
+          # Tokio remains fixed at 1.43.4 creates an intentionally unsatisfiable
+          # intermediate graph.
+          cargo update --manifest-path codex-rs/Cargo.toml \
+            --package tokio@1.43.4 --precise 1.48.0
           for package in rama-error rama-macros rama-utils; do
             cargo update --manifest-path codex-rs/Cargo.toml \
               --package "$package" --precise 0.3.0-alpha.4
@@ -118,4 +124,4 @@ jobs:
           git commit -m "fix(platform.types): close exact-candidate qualification gaps"
           git push origin "HEAD:$BRANCH"
 
-# API retrigger: materialize the guarded repair on the active PR head.
+# API retrigger v2: unlock the shared Tokio runtime before Rama convergence.
