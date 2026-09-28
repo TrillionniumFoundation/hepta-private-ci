@@ -1,5 +1,5 @@
 name: Neuron exact repair once
-# Explicit retrigger for the bounded Neuron runtime closure review on 2026-09-28.
+# Two-phase bounded closure: expose the exact candidate, then validate and finalize it.
 
 on:
   push:
@@ -28,7 +28,11 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Apply the bounded source and documentation closure
+      - name: Apply and publish the bounded candidate
+        id: candidate
+        env:
+          BRANCH: codex/neuron-runtime-durable-closure-v1
+          EXPECTED_HEAD: ${{ github.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -54,38 +58,6 @@ jobs:
           grep -F 'codex-hepta-neuron = { path = "../hepta-neuron" }' \
             codex-rs/hepta-infer-worker-host/Cargo.toml
           test -f docs/modules/neuron.runtime/GAP_ANALYSIS.md
-
-      - name: Format and validate the exact candidate
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd codex-rs
-          cargo fmt --package codex-hepta-neuron
-          cargo metadata --locked --format-version 1 --no-deps >/dev/null
-          packages=(
-            -p codex-hepta-neuron
-            -p codex-hepta-infer-core
-            -p codex-hepta-infer-worker-host
-            -p codex-hepta-agentd
-            -p codex-hepta-intelligence
-          )
-          cargo check --locked "${packages[@]}" --all-targets
-          cargo test --locked "${packages[@]}"
-          cargo clippy --locked "${packages[@]}" --all-targets --no-deps -- -D warnings
-          cargo fmt --package codex-hepta-neuron -- --check
-          cd ..
-          PYTHONPATH=scripts/neuron python3 -m unittest discover \
-            -s scripts/neuron -p 'test_*.py'
-          python3 -m json.tool docs/modules/neuron.runtime/IMPLEMENTATION_MAP.json >/dev/null
-          git diff --check
-
-      - name: Publish only the validated closure
-        env:
-          BRANCH: codex/neuron-runtime-durable-closure-v1
-          EXPECTED_HEAD: ${{ github.sha }}
-        shell: bash
-        run: |
-          set -euo pipefail
           python3 - <<'PY'
           import subprocess
 
@@ -119,12 +91,62 @@ jobs:
           if missing:
               raise SystemExit('required paths unchanged: ' + ', '.join(missing))
           PY
-          git rm .github/workflows/neuron-exact-repair-once.yml \
-            .github/neuron-runtime-closure.patch.gz.b64
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'fix(neuron): close canonical checkpoint and docs gaps'
+          git commit -m 'fix(neuron): stage canonical checkpoint closure'
+          candidate_head="$(git rev-parse HEAD)"
           git fetch origin "refs/heads/$BRANCH:refs/remotes/origin/$BRANCH"
           test "$(git rev-parse "refs/remotes/origin/$BRANCH")" = "$EXPECTED_HEAD"
+          git push origin "HEAD:refs/heads/$BRANCH"
+          echo "head=$candidate_head" >> "$GITHUB_OUTPUT"
+
+      - name: Validate the exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            cd codex-rs
+            cargo fmt --package codex-hepta-neuron
+            cargo metadata --locked --format-version 1 --no-deps >/dev/null
+            packages=(
+              -p codex-hepta-neuron
+              -p codex-hepta-infer-core
+              -p codex-hepta-infer-worker-host
+              -p codex-hepta-agentd
+              -p codex-hepta-intelligence
+            )
+            cargo check --locked "${packages[@]}" --all-targets
+            cargo test --locked "${packages[@]}"
+            cargo clippy --locked "${packages[@]}" --all-targets --no-deps -- -D warnings
+            cargo fmt --package codex-hepta-neuron -- --check
+            cd ..
+            PYTHONPATH=scripts/neuron python3 -m unittest discover \
+              -s scripts/neuron -p 'test_*.py'
+            python3 -m json.tool docs/modules/neuron.runtime/IMPLEMENTATION_MAP.json >/dev/null
+            git diff --check
+          } 2>&1 | tee "$RUNNER_TEMP/neuron-runtime-validation.log"
+
+      - name: Retain exact validation log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: neuron-runtime-validation-${{ github.run_id }}
+          path: ${{ runner.temp }}/neuron-runtime-validation.log
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Finalize only the validated closure
+        env:
+          BRANCH: codex/neuron-runtime-durable-closure-v1
+          CANDIDATE_HEAD: ${{ steps.candidate.outputs.head }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/neuron-exact-repair-once.yml \
+            .github/neuron-runtime-closure.patch.gz.b64
+          git add -A
+          git commit -m 'chore(neuron): finalize validated runtime closure'
+          git fetch origin "refs/heads/$BRANCH:refs/remotes/origin/$BRANCH"
+          test "$(git rev-parse "refs/remotes/origin/$BRANCH")" = "$CANDIDATE_HEAD"
           git push origin "HEAD:refs/heads/$BRANCH"
