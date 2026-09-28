@@ -89,3 +89,20 @@ This source grants no model/provider/tool/effect authority, no production activa
 - **Remaining work:** complete the physical App Server product execution from the daemon-prepared binding and make ambiguous Decision/Outcome append recovery durable across Agentd process loss; obtain current exact-head and deterministic-merge execution receipts; run exact-candidate real-process Agentd/App Server intelligence-bound E2E including lost-ack/restart/revocation races; collect target-host latency/RSS and hard-termination measurements; obtain independent semantic/security acceptance; and complete the separate C1 prompted-memory retrieval milestone. Source integration of the physical model route does not itself prove a live provider, target host, activation, promotion or release.
 
 Native source admission commits the intelligence run, revision, context and envelope. Only a newly committed, non-idempotent Agentd dispatch may enter a physical model request. Unknown results remain reconcile-only. The same bounded generation/fence-aware coordinator owns preparation and admission.
+
+
+## 9. Product-closure amendment
+
+The current source candidate adds one RunStart-derived physical identity, one
+fence constructor, composition-bound admission, a concrete host-owned invocation
+provider, an atomic runner/provider profile API, canonical selected-candidate
+membership checks, formal `LedgerWriter` Decision/Outcome APIs, a durable
+`kernel.operations` outbox with exact restart replay, physical-terminal Outcome
+binding, bounded telemetry and an opt-in hard-timeout Agentd process fence.
+
+These source facts supersede earlier statements that durable product learning
+or a provider implementation was wholly absent. They do not prove that the
+ordinary CLI composes a provider, that a live provider/App Server path has been
+exercised, or that target-host, independent-acceptance, activation, promotion or
+release gates are closed. Exact status and test classification come from the
+generated module JSON and its CI exact-head artifacts.

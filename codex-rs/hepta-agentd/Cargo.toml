@@ -53,6 +53,7 @@ codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
 codex-hepta-intelligence = { path = "../hepta-intelligence" }
 codex-hepta-intuition = { path = "../hepta-intuition" }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
+codex-hepta-operations = { workspace = true }
 codex-hepta-authbus = { path = "../hepta-authbus" }
 codex-hepta-evidence = { workspace = true }
 codex-hepta-contracts = { workspace = true }
@@ -86,6 +87,7 @@ http = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { workspace = true }
+rustix = { workspace = true, features = ["fs", "process"] }
 thiserror = { workspace = true }
 tokio = { workspace = true, features = [
     "fs",
@@ -100,7 +102,6 @@ tokio-util = { workspace = true }
 
 [dev-dependencies]
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
-codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 app_test_support = { workspace = true }

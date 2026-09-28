@@ -55,7 +55,7 @@ fn record(
             artifact_set_digest: digest("artifact"),
             authority_epoch: 7,
             generation: 3,
-            fence_digest: digest("fence"),
+            fence_digest: crate::objective_run_fence_digest_v1("agent.test", 2, 3),
         },
         runtime_body_digest: digest(&format!("body:{run_id}")),
         objective_semantic_bytes: objective,
@@ -111,7 +111,7 @@ fn durable_authentication_frontier_allows_only_exact_replay() {
 fn runtime_consumes_compiled_record_but_not_explicit_abstain() {
     let mut coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
         agent_id: "agent.test".to_string(),
-        supervisor_generation: 3,
+        supervisor_generation: 2,
         agentd_generation: 3,
         configuration_digest: digest("config").to_string(),
         ports_digest: digest("ports").to_string(),
@@ -138,7 +138,7 @@ fn runtime_consumes_compiled_record_but_not_explicit_abstain() {
 fn legacy_record_without_protocol_identity_is_rejected_at_final_use() {
     let mut coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
         agent_id: "agent.test".to_string(),
-        supervisor_generation: 3,
+        supervisor_generation: 2,
         agentd_generation: 3,
         configuration_digest: digest("config").to_string(),
         ports_digest: digest("ports").to_string(),

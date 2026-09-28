@@ -1,0 +1,416 @@
+{
+  "schema": "hepta.intelligence-control-requirement-test-map.v1",
+  "schemaVersion": 1,
+  "module": "intelligence.control",
+  "generated": false,
+  "claimBoundary": {
+    "sourcePresenceIsExecutionEvidence": false,
+    "ancestorResultsApplyToCurrentHead": false,
+    "queuedOrSkippedCountsAsPassed": false,
+    "productLoopSourceImplemented": true,
+    "currentTimeEvidenceSemanticsImplemented": true,
+    "supervisedOwnerBoundariesImplemented": true,
+    "exactOperationSettlementImplemented": true,
+    "postTerminalReconciliationStateImplemented": true,
+    "macOsPrivateStateGatePresent": true,
+    "realProcessE2EProved": false,
+    "targetHostQualified": false,
+    "activation": false,
+    "release": false
+  },
+  "requirements": [
+    {
+      "id": "INT-A-CANDIDATE-CLOSURE",
+      "phase": "A",
+      "statement": "Canonical candidate order, digest, membership and non-zero propensity are revalidated before context or dispatch publication.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/canonical.rs",
+          "symbol": "decide_boundary"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+          "symbol": "validate_canonical_outcome_v1"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+          "name": "malicious_selection_cannot_reach_context_or_evaluation"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+          "name": "candidate_permutations_produce_identical_public_outcomes"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+          "name": "boundary_rehashes_mutable_candidate_receipts"
+        }
+      ]
+    },
+    {
+      "id": "INT-A-STAGE-DATAFLOW",
+      "phase": "A",
+      "statement": "Actual utility, neural, prompt and intuition outputs bind their successor inputs and the final context-stage identity rather than merely appearing in a receipt chain.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_ports.rs",
+          "symbol": "bind_stage_digest"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_prompt_binding.rs",
+          "symbol": "prompt_conditioned_state_digest_v1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_stage_bound_ports.rs",
+          "symbol": "context_stage_digest_v1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+          "symbol": "StageBoundAgentdOwnerPortsV1 as AgentdOwnerPortsV1"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_ports.rs",
+          "name": "actual_stage_outputs_fill_templates_but_reject_substitution"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_prompt_binding.rs",
+          "name": "prompt_conditioned_state_rejects_either_stage_substitution"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_stage_bound_ports.rs",
+          "name": "successor_request_bindings_change_with_real_predecessor"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_stage_bound_ports.rs",
+          "name": "context_binding_is_idempotent_and_substitution_fails"
+        }
+      ]
+    },
+    {
+      "id": "INT-A-CURRENT-TIME-EVIDENCE",
+      "phase": "A",
+      "statement": "Historical event time remains immutable while every absent destination event is first applied only under current evidence time and fresh final-use authority.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_current.rs",
+          "symbol": "apply_payload_at"
+        },
+        {
+          "path": "docs/modules/intelligence.control/ACTIVE_PRODUCT_CONTRACT.md",
+          "symbol": "Historical event time and current validation time"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_current.rs",
+          "name": "delayed_first_application_uses_current_validation_time"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_current.rs",
+          "name": "clock_rollback_is_indeterminate_not_success"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_product_api.rs",
+          "name": "product_validation_clock_is_current_and_nonzero"
+        }
+      ]
+    },
+    {
+      "id": "INT-B-REAL-PRODUCT-LOOP",
+      "phase": "B",
+      "statement": "Authenticated ObjectiveStart continues through the sole Agentd lifecycle, authenticated Decision, existing runtime.codex App Server turn, exact terminal observation and authenticated Outcome, while a profile without continuation falls back before canonical admission.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+          "symbol": "start_canonical_intelligence_product_loop"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_intelligence_product_loop.rs",
+          "symbol": "product_continuation()"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_product_loop_base.rs",
+          "symbol": "continue_ready_impl"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_product_loop_base.rs",
+          "name": "provider_terminal_requires_exact_correlation_digest"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_product_loop_base.rs",
+          "name": "protocol_and_physical_terminal_must_agree"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
+          "name": "canonical_product_route_requires_continuation_before_admission"
+        }
+      ]
+    },
+    {
+      "id": "INT-B-EXACT-LEARNING-SETTLEMENT",
+      "phase": "B",
+      "statement": "Interactive Decision and Outcome settlement claims, dispatches and reconciles the exact requested scope and operation rather than spending authority or work on an older unrelated queue head.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_product_api.rs",
+          "symbol": "dispatch_operation_current"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_product_api.rs",
+          "symbol": "reconcile_operation_current"
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/exact_claim.rs",
+          "symbol": "claim_operation"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
+          "name": "exact_operation_settlement_never_dispatches_an_arbitrary_queue_head"
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/exact_claim_tests.rs",
+          "name": "exact_claim_never_consumes_an_older_queued_operation"
+        }
+      ]
+    },
+    {
+      "id": "INT-B-PHYSICAL-IDENTITY",
+      "phase": "B",
+      "statement": "The native physical request identity is derived from the same durable run snapshot, Decision and episode so retry cannot change identity and redispatch the logical turn.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_owner_supervisor.rs",
+          "symbol": "canonical_native_request_id_v1"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+          "symbol": "run_intelligence"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_owner_supervisor.rs",
+          "name": "physical_request_identity_is_stable_and_run_bound"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+          "name": "intelligence_handoff_is_committed_to_native_admission_identity"
+        }
+      ]
+    },
+    {
+      "id": "INT-B-POST-TERMINAL-RECONCILIATION",
+      "phase": "B",
+      "statement": "Once a provider terminal digest exists, Agentd terminal-control loss or incomplete authenticated Outcome closure returns a distinct reconciliation-required receipt retaining that digest and never authorizes logical-turn redispatch.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+          "symbol": "ReconciliationRequired"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_product_loop_base.rs",
+          "symbol": "reconciliation_required_receipt"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+          "symbol": "canonical_reconciliation_required"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_product_loop_base.rs",
+          "name": "terminal_control_loss_never_discards_a_provider_terminal_into_replay"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_product_loop_base.rs",
+          "name": "unknown_dispatch_and_post_terminal_reconciliation_are_distinct"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
+          "name": "post_terminal_failures_are_reconciliation_required_not_redispatchable_errors"
+        }
+      ]
+    },
+    {
+      "id": "INT-C-INVOCATION-FACTORY-BOUND",
+      "phase": "C",
+      "statement": "Host-owned seven-owner input construction is panic-safe, bounded and retains its physical worker reservation after caller timeout until the worker exits.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_invocation_supervisor.rs",
+          "symbol": "InvocationWorkerReservation"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_profile.rs",
+          "symbol": "SupervisedHostOwnedAgentdIntelligenceInvocationProviderV1"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_invocation_supervisor.rs",
+          "name": "physical_worker_reservation_survives_until_thread_exit"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_invocation_supervisor.rs",
+          "name": "panicking_worker_releases_its_reservation"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_invocation_supervisor.rs",
+          "name": "invocation_factory_policy_rejects_unbounded_values"
+        }
+      ]
+    },
+    {
+      "id": "INT-C-PRODUCT-OWNER-BOUND",
+      "phase": "C",
+      "statement": "Product-loop Decision, prompt, context and Outcome owner work has an independent panic-safe worker budget that cannot be freed by dropping a timed-out waiting future.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_owner_supervisor.rs",
+          "symbol": "SupervisedCanonicalIntelligenceProductLoopOwnerV1"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_owner_supervisor.rs",
+          "symbol": "new_supervised"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_owner_supervisor.rs",
+          "name": "owner_worker_reservation_lives_until_physical_exit"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_owner_supervisor.rs",
+          "name": "owner_worker_panic_releases_reservation"
+        }
+      ]
+    },
+    {
+      "id": "INT-C-RECOVERY-FAIRNESS",
+      "phase": "C",
+      "statement": "Unsettled reconciliation cannot permanently starve newly prepared operations and temporary capacity or availability failures do not fabricate terminal success or kill the required service.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+          "symbol": "cycle_budget"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+          "symbol": "retryable_learning_error"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+          "name": "single_slot_cycles_alternate_without_starvation"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+          "name": "multi_slot_cycles_reserve_both_classes"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+          "name": "temporary_capacity_and_io_failures_remain_retryable"
+        }
+      ]
+    },
+    {
+      "id": "INT-C-CURRENTNESS-FILE-BOUNDARY",
+      "phase": "C",
+      "statement": "The signed currentness manifest is read through a bounded no-follow handle and an independently retained monotonic witness rejects older or same-epoch substituted signed manifests.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_files.rs",
+          "symbol": "read_bounded"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
+          "symbol": "IntelligenceAuthorityRollbackGuardV1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_base.rs",
+          "symbol": "with_rollback"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_files.rs",
+          "name": "authority_read_rejects_parent_leaf_links_and_oversize"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
+          "name": "guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen"
+        }
+      ]
+    },
+    {
+      "id": "INT-D-EXACT-CANDIDATE-NATIVE-GATES",
+      "phase": "D",
+      "statement": "The tracked source requires source-head and deterministic base-merge native tests, all-target compilation, strict lint, active-source traceability, process-loss cuts and retained resource evidence without self-promoting external claims.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
+          "symbol": "current_candidate_workflow_requires_source_and_merge_native_execution"
+        },
+        {
+          "path": "scripts/hepta-intelligence-control-closure.py",
+          "symbol": "Execution status remains owned by the current GitHub Actions"
+        },
+        {
+          "path": "scripts/hepta-intelligence-control-status.py",
+          "symbol": "ACTIVE_SOURCE_FILES"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
+          "name": "current_candidate_workflow_requires_source_and_merge_native_execution"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
+          "name": "tracked_claim_boundary_remains_fail_closed"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
+          "name": "generated_truth_reads_active_split_implementation_files"
+        }
+      ]
+    },
+    {
+      "id": "INT-D-UNIX-PORTABILITY",
+      "phase": "D",
+      "statement": "The signed-authority, anti-rollback, bounded-file and strict NDU compatibility boundaries execute on macOS as well as the Linux source/merge lanes, with temporary test roots explicitly provisioned as private directories.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+          "symbol": "private signed-authority fixture root"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
+          "symbol": "portability_workflow_executes_private_state_and_dependency_boundaries"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+          "name": "signed_evaluation_completes_existing_owner_preparation_and_run_admission"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+          "name": "signed_input_cannot_install_host_trust_or_change_actual_context"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
+          "name": "portability_workflow_executes_private_state_and_dependency_boundaries"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,382 @@
+name: intelligence.control closure traceability
+
+on:
+  push:
+    paths:
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/intelligence.control/**"
+      - "scripts/hepta-intelligence-control-closure.py"
+      - "scripts/hepta-intelligence-control-status.py"
+      - "scripts/hepta-intelligence-control-status-base.py"
+      - "scripts/hepta_ci_v8.py"
+      - "scripts/hepta_ci_exec.py"
+      - ".github/workflows/hepta-intelligence-control-closure.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+  pull_request:
+    paths:
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/intelligence.control/**"
+      - "scripts/hepta-intelligence-control-closure.py"
+      - "scripts/hepta-intelligence-control-status.py"
+      - "scripts/hepta-intelligence-control-status-base.py"
+      - "scripts/hepta_ci_v8.py"
+      - "scripts/hepta_ci_exec.py"
+      - ".github/workflows/hepta-intelligence-control-closure.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intelligence-control-closure-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  qualification:
+    name: closure native (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    steps:
+      - name: Check out source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Resolve current pull-request base
+        id: current-base
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$BASE_REF"
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          printf 'sha=%s\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+          printf 'BASE_SHA=%s\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
+
+      - name: Construct deterministic merge candidate
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.current-base.outputs.sha || env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Intelligence Closure CI
+          author-email: hepta-intelligence-closure-ci@users.noreply.github.com
+          message: intelligence.control closure synthetic merge
+
+      - name: Bind exact candidate identity
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          MERGE_SHA: ${{ steps.synthetic.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ matrix.lane }}" = base-merge ]; then
+            test -n "$MERGE_SHA"
+            test "$TESTED_SHA" = "$MERGE_SHA"
+          else
+            test -z "$MERGE_SHA"
+            test "$TESTED_SHA" = "$SOURCE_SHA"
+          fi
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'TESTED_SHA=%s\n' "$TESTED_SHA" >> "$GITHUB_ENV"
+
+      - name: Prepare native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config time
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Expose DotSlash for integration tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Resolve verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Verify stable implementation truth
+        run: python3 scripts/hepta-intelligence-control-status.py --check-tracked
+
+      - name: Verify explicit requirement-source-test mapping
+        run: python3 scripts/hepta-intelligence-control-closure.py
+
+      - name: Check formatting
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-closure-records/fmt.json"
+          -- cargo fmt --all -- --check
+
+      - name: Test canonical intelligence and Agentd product closure
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-closure-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-closure-records/agentd-tests.json"
+          -- cargo test --locked -p codex-hepta-intelligence
+          -p codex-hepta-agentd --lib
+
+      - name: Test exact operation claim and durable recovery owner
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-closure-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-closure-records/operations-tests.json"
+          -- cargo test --locked -p codex-hepta-operations
+
+      - name: Test NDU policy and deprecated compatibility boundary
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-closure-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-closure-records/ndu-tests.json"
+          -- cargo test --locked -p codex-hepta-ndu
+
+      - name: Test real runtime.codex product continuation
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-closure-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-closure-records/infer-worker-tests.json"
+          -- cargo test --locked -p codex-hepta-infer-worker-host --lib
+
+      - name: Compile all closure targets
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-closure-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-closure-records/check.json"
+          -- cargo check --locked -p codex-hepta-intelligence
+          -p codex-hepta-agentd -p codex-hepta-infer-worker-host
+          -p codex-hepta-operations -p codex-hepta-ndu --all-targets
+
+      - name: Strict lint closure packages
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-closure-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-closure-records/clippy.json"
+          -- cargo clippy --locked -p codex-hepta-intelligence
+          -p codex-hepta-agentd -p codex-hepta-infer-worker-host
+          -p codex-hepta-operations -p codex-hepta-ndu
+          --all-targets -- -D warnings
+
+      - name: Measure supervision and process-loss fault cuts
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-closure-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/intelligence-closure-metrics"
+          /usr/bin/time -v -o "$RUNNER_TEMP/intelligence-closure-metrics/invocation-worker.txt" \
+            cargo test --locked -p codex-hepta-agentd \
+              physical_worker_reservation_survives_until_thread_exit -- --nocapture
+          /usr/bin/time -v -o "$RUNNER_TEMP/intelligence-closure-metrics/owner-worker.txt" \
+            cargo test --locked -p codex-hepta-infer-worker-host \
+              owner_worker_reservation_lives_until_physical_exit -- --nocapture
+          /usr/bin/time -v -o "$RUNNER_TEMP/intelligence-closure-metrics/lost-ack.txt" \
+            cargo test --locked -p codex-hepta-infer-worker-host \
+              lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread -- --nocapture
+          /usr/bin/time -v -o "$RUNNER_TEMP/intelligence-closure-metrics/restart-reconcile.txt" \
+            cargo test --locked -p codex-hepta-agentd \
+              newer_generation_reopen_reconciles_applied_destination_without_redispatch -- --nocapture
+          /usr/bin/time -v -o "$RUNNER_TEMP/intelligence-closure-metrics/exact-operation-claim.txt" \
+            cargo test --locked -p codex-hepta-operations \
+              exact_claim_never_consumes_an_older_queued_operation -- --nocapture
+
+      - name: Generate exact executed truth and closure receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$RUNNER_TEMP/intelligence-closure-status/${{ matrix.lane }}"
+          mkdir -p "$status" "$RUNNER_TEMP/intelligence-closure-receipts"
+          python3 scripts/hepta-intelligence-control-status.py \
+            --source-head "$TESTED_SHA" \
+            --execution-status passed \
+            --lane "${{ matrix.lane }}" \
+            --output-dir "$status"
+          TESTED_SHA="$TESTED_SHA" BASE_SHA="$BASE_SHA" python3 - <<'PY' \
+            > "$RUNNER_TEMP/intelligence-closure-receipts/${{ matrix.lane }}.json"
+          import json, os
+          print(json.dumps({
+              "schema": "hepta.intelligence-control-closure-execution.v1",
+              "lane": os.environ["HEPTA_CI_LANE"],
+              "testedSha": os.environ["TESTED_SHA"],
+              "sourceSha": os.environ["SOURCE_SHA"],
+              "baseSha": os.environ.get("BASE_SHA", ""),
+              "executionStatus": "passed",
+              "realProcessProviderE2E": False,
+              "targetHostQualified": False,
+              "activation": False,
+              "release": False,
+          }, indent=2, sort_keys=True))
+          PY
+          python3 scripts/hepta-intelligence-control-closure.py \
+            > "$RUNNER_TEMP/intelligence-closure-receipts/${{ matrix.lane }}-map.json"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+
+      - name: Retain exact command, status, fault and resource evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-control-closure-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: |
+            ${{ runner.temp }}/intelligence-closure-records/*
+            ${{ runner.temp }}/intelligence-closure-metrics/*
+            ${{ runner.temp }}/intelligence-closure-status/${{ matrix.lane }}/*
+            ${{ runner.temp }}/intelligence-closure-receipts/*
+          if-no-files-found: warn
+          retention-days: 30
+
+  portability:
+    name: macOS private state and strict NDU lint
+    if: github.event_name == 'pull_request'
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Check formatting
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-portability-fmt.json"
+          -- cargo fmt --all -- --check
+
+      - name: Exercise signed authority profile on macOS
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-portability-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/intelligence-portability-signed-ready.json" \
+            -- cargo test --locked -p codex-hepta-agentd --lib \
+              signed_evaluation_completes_existing_owner_preparation_and_run_admission \
+              -- --nocapture
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/intelligence-portability-signed-substitution.json" \
+            -- cargo test --locked -p codex-hepta-agentd --lib \
+              signed_input_cannot_install_host_trust_or_change_actual_context \
+              -- --nocapture
+
+      - name: Exercise anti-rollback and private-file boundaries
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-portability-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/intelligence-portability-rollback.json" \
+            -- cargo test --locked -p codex-hepta-agentd --lib \
+              guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen \
+              -- --nocapture
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/intelligence-portability-files.json" \
+            -- cargo test --locked -p codex-hepta-agentd --lib \
+              authority_read_rejects_parent_leaf_links_and_oversize \
+              -- --nocapture
+
+      - name: Strict lint NDU compatibility boundary
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-portability-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-portability-ndu-clippy.json"
+          -- cargo clippy --locked -p codex-hepta-ndu --all-targets -- -D warnings
+
+      - name: Verify exact source remains clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Retain portability command records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-control-portability-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intelligence-portability-*.json
+          if-no-files-found: warn
+          retention-days: 30
