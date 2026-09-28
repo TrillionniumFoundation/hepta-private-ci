@@ -89,3 +89,47 @@ index fede31464..000000000 100644
  pub mod final_use_authorizer;
  pub mod native_app_server;
  pub mod profiles;
+diff --git a/codex-rs/hepta-infer-worker-host/src/verified_local.rs b/codex-rs/hepta-infer-worker-host/src/verified_local.rs
+--- a/codex-rs/hepta-infer-worker-host/src/verified_local.rs
++++ b/codex-rs/hepta-infer-worker-host/src/verified_local.rs
+@@ -55,6 +55,13 @@ pub struct SignedResourceGrantV1 {
+     pub signature: Vec<u8>,
+ }
+ 
++impl SignedResourceGrantV1 {
++    /// Canonical schema-v1 bytes signed by the independent resource authority.
++    pub fn semantic_bytes(&self) -> Result<Vec<u8>, VerificationError> {
++        grant_semantic_bytes(self)
++    }
++}
++
+@@ -359,15 +366,14 @@ impl AttestedModelHandle {
+     }
+ 
+-    pub fn release_after_observed_unload(
+-        mut self,
++    pub fn release_after_observed_unload(
++        &mut self,
+         observation: &UnloadObservation,
+     ) -> Result<(), VerificationError> {
+         if !observation.terminal_observed || !observation.released {
+             self.lifecycle = HandleLifecycle::RepairRequired;
+             return Err(VerificationError::Driver(
+                 "unload was not terminally observed".to_string(),
+             ));
+         }
+         self.lease.take();
+         Ok(())
+@@ -579,7 +585,9 @@ impl LoadReservation {
+-    pub(crate) fn commit(
++    #[allow(dead_code)]
++    pub(crate) fn commit(
+@@ -709,7 +717,7 @@ pub type DriverFuture<'a, T> = Pin<
+-mod sealed {
++pub(crate) mod sealed {
+     pub trait Sealed {}
+ }
+@@ -744,8 +752,6 @@ pub trait LocalModelDriver: sealed::Sealed + Send + Sync {
+ }
+-
+-pub(crate) use sealed::Sealed as LocalModelDriverSealed;
