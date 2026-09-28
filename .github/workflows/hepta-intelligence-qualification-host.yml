@@ -1,0 +1,211 @@
+name: intelligence.control qualification host
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/intelligence.control/**"
+      - ".github/workflows/hepta-intelligence-qualification-host.yml"
+      - "scripts/hepta_ci_v8.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intelligence-control-qualification-host-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  qualification-host:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind source and qualification-host identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          root="$RUNNER_TEMP/intelligence-qualification-host"
+          mkdir -p "$root"
+          {
+            printf 'source_commit=%s\n' "$(git rev-parse HEAD)"
+            printf 'source_tree=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'runner_name=%s\n' "$RUNNER_NAME"
+            printf 'runner_os=%s\n' "$RUNNER_OS"
+            printf 'runner_arch=%s\n' "$RUNNER_ARCH"
+            uname -a
+            lscpu
+            free -b
+            rustc -Vv
+            cargo -V
+            /usr/bin/time --version
+          } > "$root/host.txt" 2>&1
+
+      - name: Prepare native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Resolve verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: |
+          sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+          python3 scripts/hepta_ci_v8.py
+
+      - name: Compile release qualification probes
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-qualification-target
+        run: cargo test --release --locked -p codex-hepta-agentd -p codex-hepta-operations -p codex-hepta-infer-worker-host --lib --no-run
+
+      - name: Execute crash recovery and saturation matrix
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-qualification-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/intelligence-qualification-host"
+          run_probe() {
+            local package="$1"
+            local filter="$2"
+            local output="$root/${filter}.log"
+            timeout 300 cargo test --release --locked -p "$package" --lib "$filter" -- --nocapture --test-threads=1 > "$output" 2>&1
+            grep -Eq 'test result: ok\. [1-9][0-9]* passed' "$output"
+          }
+          run_probe codex-hepta-agentd explicit_hard_timeout_terminates_a_real_child_process
+          run_probe codex-hepta-agentd aborted_owner_work_retains_its_budget_until_computation_finishes
+          run_probe codex-hepta-agentd single_slot_alternates_instead_of_starving_new_work
+          run_probe codex-hepta-agentd replay_verification_uses_current_time_not_frozen_event_time
+          run_probe codex-hepta-agentd guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen
+          run_probe codex-hepta-operations child_process_kill_matrix_preserves_durable_effect_semantics
+          run_probe codex-hepta-operations acknowledgement_loss_stays_indeterminate_until_terminal_observer
+          run_probe codex-hepta-infer-worker-host intelligence_prompt_substitution_fails_before_provider_contact
+
+      - name: Execute semantic quality conformance matrix
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-qualification-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/intelligence-qualification-host"
+          : > "$root/semantic-quality.jsonl"
+          for filter in \
+            actual_stage_outputs_fill_templates_but_reject_substitution \
+            utility_universe_rejects_foreign_and_missing_candidates \
+            signed_input_cannot_install_host_trust_or_change_actual_context \
+            final_gate_rehashes_every_envelope_dependency \
+            membership_gate_rejects_mutated_legal_support
+          do
+            output="$root/quality-${filter}.log"
+            timeout 300 cargo test --release --locked -p codex-hepta-agentd --lib "$filter" -- --nocapture --test-threads=1 > "$output" 2>&1
+            grep -Eq 'test result: ok\. [1-9][0-9]* passed' "$output"
+            printf '{"test":"%s","status":"passed"}\n' "$filter" >> "$root/semantic-quality.jsonl"
+          done
+
+      - name: Measure canonical real-owner preparation latency and RSS
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-qualification-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/intelligence-qualification-host"
+          filter=signed_evaluation_completes_existing_owner_preparation_and_run_admission
+          timeout 300 cargo test --release --locked -p codex-hepta-agentd --lib "$filter" -- --nocapture --test-threads=1 > "$root/warmup.log" 2>&1
+          grep -Eq 'test result: ok\. [1-9][0-9]* passed' "$root/warmup.log"
+          printf 'sample,elapsed_seconds,max_rss_kib\n' > "$root/samples.csv"
+          for sample in $(seq 1 9); do
+            output="$root/sample-${sample}.log"
+            timing="$root/sample-${sample}.time"
+            timeout 300 /usr/bin/time -f "${sample},%e,%M" -o "$timing" \
+              cargo test --release --locked -p codex-hepta-agentd --lib "$filter" -- --nocapture --test-threads=1 \
+              > "$output" 2>&1
+            grep -Eq 'test result: ok\. [1-9][0-9]* passed' "$output"
+            cat "$timing" >> "$root/samples.csv"
+          done
+          python3 - "$root" "$SOURCE_SHA" <<'PY'
+          import csv, json, math, pathlib, statistics, sys
+          root = pathlib.Path(sys.argv[1])
+          rows = list(csv.DictReader((root / "samples.csv").open()))
+          elapsed = sorted(float(row["elapsed_seconds"]) for row in rows)
+          rss = [int(row["max_rss_kib"]) for row in rows]
+          def percentile(values, value):
+              return values[max(0, math.ceil(value * len(values)) - 1)]
+          result = {
+              "schema": "hepta.intelligence-control.qualification-host.v1",
+              "sourceCommit": sys.argv[2],
+              "sampleCount": len(rows),
+              "elapsedSeconds": {
+                  "p50": percentile(elapsed, 0.50),
+                  "p95": percentile(elapsed, 0.95),
+                  "p99": percentile(elapsed, 0.99),
+                  "mean": statistics.fmean(elapsed),
+                  "maximum": max(elapsed),
+              },
+              "maximumResidentSetKiB": max(rss),
+              "claimBoundary": {
+                  "githubHostedQualificationHost": True,
+                  "productionTargetHostAcceptance": False,
+                  "modelQualityOrLongitudinalEfficacy": False,
+              },
+          }
+          (root / "metrics.json").write_text(json.dumps(result, indent=2) + "\n")
+          print(json.dumps(result, sort_keys=True))
+          PY
+
+      - name: Summarize qualification-host evidence
+        if: always()
+        shell: bash
+        run: |
+          root="$RUNNER_TEMP/intelligence-qualification-host"
+          {
+            printf 'Source: `%s`\n\n' "$SOURCE_SHA"
+            printf 'This is GitHub-hosted qualification-host evidence, not a production target-host acceptance receipt.\n\n'
+            if test -f "$root/metrics.json"; then
+              printf '```json\n'
+              cat "$root/metrics.json"
+              printf '```\n'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Retain raw qualification-host evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-control-qualification-host-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intelligence-qualification-host/**
+          if-no-files-found: error
+          retention-days: 30
