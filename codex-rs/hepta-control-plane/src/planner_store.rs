@@ -6,6 +6,8 @@
 //! poisoned, no further write/checkpoint/compaction/backup operation is
 //! accepted; the caller must drop and reopen from the verified log.
 
+use std::fs;
+use std::io::ErrorKind;
 use std::path::Path;
 
 use codex_hepta_types::Digest32;
@@ -20,6 +22,9 @@ pub use core::PlannerStoreFailpointV1;
 pub use core::PlannerStoreRecordKindV1;
 pub use core::PlannerStoreRecordV1;
 
+const LOG_NAME: &str = "planner-store.v1.log";
+const FRAME_FIXED_BYTES: u64 = 8 + 2 + 1 + 8 + 32 + 32 + 4 + 32;
+const MAX_TOTAL_STORE_BYTES: u64 = 256 * 1024 * 1024;
 const RECOVERY_REQUIRED: &str = "planner store recovery required; drop and reopen";
 
 pub struct PlannerStoreV1 {
@@ -32,6 +37,8 @@ impl PlannerStoreV1 {
         root: impl AsRef<Path>,
         config: PlannerStoreConfigV1,
     ) -> Result<Self, PlannerStoreError> {
+        let root = root.as_ref();
+        preflight_log_size(root)?;
         Ok(Self {
             inner: core::PlannerStoreV1::open(root, config)?,
             recovery_required: false,
@@ -65,6 +72,20 @@ impl PlannerStoreV1 {
         envelope: &[u8],
     ) -> Result<PlannerStoreRecordV1, PlannerStoreError> {
         self.ensure_healthy()?;
+        let identity_exists = self
+            .inner
+            .records()
+            .iter()
+            .any(|record| record.operation_identity_digest == operation_identity_digest);
+        if !identity_exists {
+            let projected = current_store_bytes(self.inner.records())?
+                .checked_add(FRAME_FIXED_BYTES)
+                .and_then(|value| value.checked_add(u64::try_from(envelope.len()).ok()?))
+                .ok_or(PlannerStoreError::RecordLimitExceeded)?;
+            if projected > MAX_TOTAL_STORE_BYTES {
+                return Err(PlannerStoreError::RecordLimitExceeded);
+            }
+        }
         let result = self
             .inner
             .append(kind, operation_identity_digest, payload_digest, envelope);
@@ -107,6 +128,8 @@ impl PlannerStoreV1 {
         destination: impl AsRef<Path>,
         config: PlannerStoreConfigV1,
     ) -> Result<Self, PlannerStoreError> {
+        let backup = backup.as_ref();
+        preflight_log_size(backup)?;
         Ok(Self {
             inner: core::PlannerStoreV1::restore_from_backup(backup, destination, config)?,
             recovery_required: false,
@@ -136,6 +159,28 @@ impl PlannerStoreV1 {
         }
         result
     }
+}
+
+fn preflight_log_size(root: &Path) -> Result<(), PlannerStoreError> {
+    match fs::metadata(root.join(LOG_NAME)) {
+        Ok(metadata) if metadata.len() > MAX_TOTAL_STORE_BYTES => {
+            Err(PlannerStoreError::RecordLimitExceeded)
+        }
+        Ok(_) => Ok(()),
+        Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
+        Err(error) => Err(error.into()),
+    }
+}
+
+fn current_store_bytes(records: &[PlannerStoreRecordV1]) -> Result<u64, PlannerStoreError> {
+    records.iter().try_fold(0_u64, |total, record| {
+        let envelope = u64::try_from(record.envelope.len())
+            .map_err(|_| PlannerStoreError::RecordLimitExceeded)?;
+        total
+            .checked_add(FRAME_FIXED_BYTES)
+            .and_then(|value| value.checked_add(envelope))
+            .ok_or(PlannerStoreError::RecordLimitExceeded)
+    })
 }
 
 #[derive(Clone, Copy)]
@@ -178,6 +223,8 @@ fn mutation_may_be_uncertain(
 
 #[cfg(test)]
 mod hardening_tests {
+    use std::fs::File;
+
     use tempfile::tempdir;
 
     use super::*;
@@ -231,5 +278,19 @@ mod hardening_tests {
         );
         assert!(matches!(error, Err(PlannerStoreError::EmptyDigest(_))));
         assert!(!store.recovery_required());
+    }
+
+    #[test]
+    fn oversized_existing_log_is_rejected_before_read_to_end() {
+        let directory = tempdir().unwrap();
+        let log = File::create(directory.path().join(LOG_NAME)).unwrap();
+        log.set_len(MAX_TOTAL_STORE_BYTES + 1).unwrap();
+        drop(log);
+
+        let result = PlannerStoreV1::open(
+            directory.path(),
+            PlannerStoreConfigV1::default(),
+        );
+        assert!(matches!(result, Err(PlannerStoreError::RecordLimitExceeded)));
     }
 }
