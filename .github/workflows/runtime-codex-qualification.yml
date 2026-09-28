@@ -3,7 +3,7 @@ name: runtime.codex qualification
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, runtime-codex/closure-20260927]
   workflow_dispatch:
 
 permissions:
