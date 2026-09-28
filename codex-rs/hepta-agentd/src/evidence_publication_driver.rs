@@ -93,12 +93,7 @@ async fn execute_publication_request(
 ) -> Result<String, AgentdError> {
     use codex_hepta_evidence::EvidenceFrontierHistoryRangeV1;
 
-    let EvidencePublicationFiles {
-        descriptor_bytes,
-        descriptor_file,
-        issuer_trust_file,
-        signer_trust_file,
-    } = *files;
+    let signer_trust_file = files.signer_trust_file;
 
     // An existing accepted digest is the root of this continuation. Selecting a
     // different private signer file cannot establish a replacement authority.
@@ -154,18 +149,14 @@ async fn execute_publication_request(
     }
     signer_trust.verify(predecessor)?;
     require_authenticated_snapshot(predecessor)?;
-    let issuer = VerifiedEvidenceTrustSnapshot::load_owner_registry(
+    verify_current_publication_controls(
+        identity,
         store,
-        issuer_trust_file,
-        identity.agent_id.as_str(),
-        Some(&predecessor.issuer_trust_registry_sha256),
-    )
-    .map_err(evidence_error)?;
-    if !issuer.is_monotonic() || issuer.registry_generation() == 0 {
-        return Err(recovery_required(
-            "publication requires monotonic issuer trust",
-        ));
-    }
+        config,
+        files,
+        &signer_bytes,
+        predecessor,
+    )?;
     let exact_bytes = read_external_private_file(
         &config.exact_source_receipt_file,
         &config.external_backend_root,
@@ -228,21 +219,13 @@ async fn execute_publication_request(
                 identity,
                 MAX_EXTERNAL_CONTROL_FILE_BYTES,
             )?;
-            let proposed: EvidenceRecoveryFrontierV2 =
-                serde_json::from_slice(&proposal_bytes)?;
+            let proposed: EvidenceRecoveryFrontierV2 = serde_json::from_slice(&proposal_bytes)?;
             proposed.validate_structure().map_err(evidence_error)?;
             require_authenticated_snapshot(&proposed)?;
             validate_publication_continuation(&batch, predecessor, &proposed)?;
             signer_trust.verify(&proposed)?;
             let now = current_time_millis()?;
-            if proposed.created_at_unix_ms > now.saturating_add(MAX_FUTURE_CLOCK_SKEW_MS)
-                || now.saturating_sub(proposed.created_at_unix_ms)
-                    > config.frontier_max_age_ms
-            {
-                return Err(recovery_required(
-                    "publication frontier is outside its freshness window",
-                ));
-            }
+            validate_publication_freshness(&proposed, now, config.frontier_max_age_ms)?;
             let backup_bytes = read_external_private_file(
                 &config.backup_publication_receipt_file,
                 &config.external_backend_root,
@@ -254,8 +237,7 @@ async fn execute_publication_request(
                     "publication backup witness digest differs",
                 ));
             }
-            let backup: EvidenceBackupPublicationReceiptV1 =
-                serde_json::from_slice(&backup_bytes)?;
+            let backup: EvidenceBackupPublicationReceiptV1 = serde_json::from_slice(&backup_bytes)?;
             let executable_sha256 = current_executable_sha256()?;
             validate_backup_publication(
                 &backup,
@@ -276,9 +258,28 @@ async fn execute_publication_request(
                     frontier_file.as_path(),
                 ],
             )?;
-            let digest =
-                evidence_recovery_frontier_v2_sha256(&proposed).map_err(evidence_error)?;
-            // The exact operation identity is durable BEFORE any CAS can run.
+            let digest = evidence_recovery_frontier_v2_sha256(&proposed).map_err(evidence_error)?;
+            // Backup verification can take longer than the issuer policy or
+            // owner lease remains current. Reload all authority inputs before
+            // recording dispatch, then validate the lease in that transaction.
+            verify_current_publication_controls(
+                identity,
+                store,
+                config,
+                files,
+                &signer_bytes,
+                predecessor,
+            )?;
+            let dispatch_now = current_time_millis()?;
+            validate_publication_freshness(&proposed, dispatch_now, config.frontier_max_age_ms)?;
+            validate_backup_publication(
+                &backup,
+                &proposed,
+                &executable_sha256,
+                dispatch_now,
+                config.frontier_max_age_ms,
+            )?;
+            // The exact operation identity is durable BEFORE any external IO.
             store
                 .mark_publication_dispatched(
                     &lease,
@@ -289,18 +290,6 @@ async fn execute_publication_request(
                 )
                 .await
                 .map_err(evidence_error)?;
-            if read_owner_file(descriptor_file, identity)?.as_slice() != descriptor_bytes
-                || read_external_private_file(
-                    signer_trust_file,
-                    &config.external_backend_root,
-                    identity,
-                    MAX_EXTERNAL_CONTROL_FILE_BYTES,
-                )? != signer_bytes
-            {
-                return Err(recovery_required(
-                    "publication controls changed before dispatch",
-                ));
-            }
             // Recovery re-fsyncs a matching stored record. A latest read alone
             // is never converted into a successful durability acknowledgement.
             let result = match backend.recover_durable_acknowledgement(
@@ -309,11 +298,47 @@ async fn execute_publication_request(
                 &digest,
             ) {
                 Ok(Some(ack)) => Ok(ack),
-                Ok(None) => backend.compare_and_swap(
-                    &config.store_id,
-                    batch.expected_frontier_generation,
-                    &proposed,
-                ),
+                Ok(None) => {
+                    // Historical lookup can block on storage. Revalidate after
+                    // it as well; its earlier lease check does not authorize a
+                    // new CAS after policy revocation or owner takeover.
+                    verify_current_publication_controls(
+                        identity,
+                        store,
+                        config,
+                        files,
+                        &signer_bytes,
+                        predecessor,
+                    )?;
+                    let cas_now = current_time_millis()?;
+                    validate_publication_freshness(
+                        &proposed,
+                        cas_now,
+                        config.frontier_max_age_ms,
+                    )?;
+                    validate_backup_publication(
+                        &backup,
+                        &proposed,
+                        &executable_sha256,
+                        cas_now,
+                        config.frontier_max_age_ms,
+                    )?;
+                    store
+                        .mark_publication_dispatched(
+                            &lease,
+                            &batch_id,
+                            &digest,
+                            &config.backend_identity_sha256,
+                            current_time_millis()?,
+                        )
+                        .await
+                        .map_err(evidence_error)?;
+                    backend.compare_and_swap(
+                        &config.store_id,
+                        batch.expected_frontier_generation,
+                        &proposed,
+                    )
+                }
                 Err(error) => Err(error),
             };
             let acknowledgement = match result {
@@ -322,11 +347,7 @@ async fn execute_publication_request(
                     // A failed local status update must not erase the durable
                     // Dispatching fence or replace the original backend error.
                     let status_result = store
-                        .mark_publication_indeterminate(
-                            &lease,
-                            &batch_id,
-                            current_time_millis()?,
-                        )
+                        .mark_publication_indeterminate(&lease, &batch_id, current_time_millis()?)
                         .await;
                     return Err(recovery_required(&format!(
                         "publication unresolved: {error}; durable-status update: {status_result:?}"
@@ -335,25 +356,14 @@ async fn execute_publication_request(
             };
             // A changed/revoked policy or expired lease after external IO leaves
             // the SAME batch unresolved for a newly authorized reconciler.
-            if read_external_private_file(
-                signer_trust_file,
-                &config.external_backend_root,
+            verify_current_publication_controls(
                 identity,
-                MAX_EXTERNAL_CONTROL_FILE_BYTES,
-            )? != signer_bytes
-                || read_owner_file(descriptor_file, identity)?.as_slice() != descriptor_bytes
-            {
-                return Err(recovery_required(
-                    "publication controls changed before acknowledgement",
-                ));
-            }
-            VerifiedEvidenceTrustSnapshot::load_owner_registry(
                 store,
-                issuer_trust_file,
-                identity.agent_id.as_str(),
-                Some(&predecessor.issuer_trust_registry_sha256),
-            )
-            .map_err(evidence_error)?;
+                config,
+                files,
+                &signer_bytes,
+                predecessor,
+            )?;
             store
                 .acknowledge_publication(
                     &lease,
@@ -366,6 +376,61 @@ async fn execute_publication_request(
             Ok(serde_json::to_string(&acknowledgement)?)
         }
     }
+}
+
+// This is a point-in-time authority check, not a distributed lock on owner
+// files. Durable batch identity and the final acknowledgement fence remain
+// necessary when another owner changes policy while external IO is in flight.
+fn verify_current_publication_controls(
+    identity: &AgentdIdentity,
+    store: &HeptaEvidenceStore,
+    config: &EvidenceProductionConfigV1,
+    files: &EvidencePublicationFiles<'_>,
+    signer_bytes: &[u8],
+    predecessor: &EvidenceRecoveryFrontierV2,
+) -> Result<(), AgentdError> {
+    if read_owner_file(files.descriptor_file, identity)?.as_slice() != files.descriptor_bytes
+        || read_external_private_file(
+            files.signer_trust_file,
+            &config.external_backend_root,
+            identity,
+            MAX_EXTERNAL_CONTROL_FILE_BYTES,
+        )?
+        .as_slice()
+            != signer_bytes
+    {
+        return Err(recovery_required("publication controls changed"));
+    }
+    let issuer = VerifiedEvidenceTrustSnapshot::load_owner_registry(
+        store,
+        files.issuer_trust_file,
+        identity.agent_id.as_str(),
+        Some(&predecessor.issuer_trust_registry_sha256),
+    )
+    .map_err(evidence_error)?;
+    if !issuer.is_monotonic() || issuer.registry_generation() == 0 {
+        return Err(recovery_required(
+            "publication requires monotonic issuer trust",
+        ));
+    }
+    Ok(())
+}
+
+fn validate_publication_freshness(
+    proposed: &EvidenceRecoveryFrontierV2,
+    now: u64,
+    max_age_ms: u64,
+) -> Result<(), AgentdError> {
+    if max_age_ms == 0
+        || max_age_ms > MAX_FRONTIER_AGE_MS
+        || proposed.created_at_unix_ms > now.saturating_add(MAX_FUTURE_CLOCK_SKEW_MS)
+        || now.saturating_sub(proposed.created_at_unix_ms) > max_age_ms
+    {
+        return Err(recovery_required(
+            "publication frontier is outside its freshness window",
+        ));
+    }
+    Ok(())
 }
 
 fn validate_publication_continuation(
@@ -392,8 +457,7 @@ fn validate_publication_continuation(
         || proposed.source_commit != predecessor.source_commit
         || proposed.source_tree != predecessor.source_tree
         || proposed.issuer_trust_registry_sha256 != predecessor.issuer_trust_registry_sha256
-        || proposed.frontier_signer_registry_sha256
-            != predecessor.frontier_signer_registry_sha256
+        || proposed.frontier_signer_registry_sha256 != predecessor.frontier_signer_registry_sha256
         || proposed.signer_policy_generation != predecessor.signer_policy_generation
         || proposed.build_artifact_sha256 != predecessor.build_artifact_sha256
         || proposed.qualification_receipt_sha256 != predecessor.qualification_receipt_sha256
