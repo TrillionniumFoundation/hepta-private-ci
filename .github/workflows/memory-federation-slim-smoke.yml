@@ -30,6 +30,26 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+      - name: Retain exact source for read-only reproduction
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p "$RUNNER_TEMP/memory-federation-reproduction"
+          git archive --format=tar.gz --output="$RUNNER_TEMP/memory-federation-reproduction/source.tar.gz" HEAD
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/memory-federation-reproduction/identity.txt"
+          git ls-tree -r HEAD > "$RUNNER_TEMP/memory-federation-reproduction/source-objects.txt"
+          cd "$RUNNER_TEMP/memory-federation-reproduction"
+          sha256sum source.tar.gz identity.txt source-objects.txt > SHA256SUMS
+      - name: Upload exact source reproduction inputs
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-reproduction-${{ github.sha }}
+          path: ${{ runner.temp }}/memory-federation-reproduction
+          if-no-files-found: error
+          retention-days: 7
       - name: Install pinned Rust toolchain
         shell: bash
         run: |
