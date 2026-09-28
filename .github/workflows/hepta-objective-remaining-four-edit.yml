@@ -1,0 +1,176 @@
+name: Hepta objective remaining four development edit
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-production-convergence-20260927
+    paths:
+      - .github/workflows/hepta-objective-remaining-four-edit.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: objective-remaining-four-development-edit
+  cancel-in-progress: false
+
+jobs:
+  edit-source:
+    name: Ordinary source commit - not qualification
+    runs-on: macos-15
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Bind exact development source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+      - name: Apply bounded remaining-four source changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/maintenance/objective_profile_reuse_edit.py
+          python3 .github/maintenance/objective_measurement_edit.py
+          python3 .github/maintenance/objective_evidence_edit.py
+          python3 .github/maintenance/objective_docs_edit.py
+          python3 - <<'PY'
+          import subprocess
+          expected = {
+              '.github/workflows/hepta-objective-exact-execution.yml',
+              '.github/workflows/hepta-objective-target-measurement.yml',
+              'codex-rs/hepta-agentd/src/objective_runtime.rs',
+              'codex-rs/hepta-agentd/tests/objective_product_e2e.rs',
+              'codex-rs/hepta-intelligence/src/lib.rs',
+              'codex-rs/hepta-intelligence/src/objective_run.rs',
+              'codex-rs/hepta-objective/src/lib.rs',
+              'codex-rs/hepta-objective/src/objective_admission.rs',
+              'codex-rs/hepta-objective/src/objective_admission_tests.rs',
+              'codex-rs/hepta-objective/src/objective_function_v1.rs',
+              'codex-rs/hepta-objective/src/proof_projection.rs',
+              'codex-rs/hepta-objective/src/validated_admission.rs',
+              'codex-rs/hepta-objective/src/validated_admission_tests.rs',
+              'docs/modules/objective.compiler/DELIVERY_EVIDENCE.md',
+              'docs/modules/objective.compiler/TECHNICAL.md',
+              'scripts/hepta-objective-evidence-project.py',
+              'scripts/hepta-objective-target-measure.py',
+              'scripts/test_hepta_objective_evidence_project.py',
+          }
+          changed = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
+          if changed != expected:
+              raise SystemExit(f'editing scope mismatch: missing={expected-changed}; unexpected={changed-expected}')
+          PY
+          rustfmt --edition 2024 --config skip_children=true \
+            codex-rs/hepta-agentd/src/objective_runtime.rs \
+            codex-rs/hepta-agentd/tests/objective_product_e2e.rs \
+            codex-rs/hepta-intelligence/src/lib.rs \
+            codex-rs/hepta-intelligence/src/objective_run.rs \
+            codex-rs/hepta-objective/src/lib.rs \
+            codex-rs/hepta-objective/src/objective_admission.rs \
+            codex-rs/hepta-objective/src/objective_admission_tests.rs \
+            codex-rs/hepta-objective/src/objective_function_v1.rs \
+            codex-rs/hepta-objective/src/proof_projection.rs \
+            codex-rs/hepta-objective/src/validated_admission.rs \
+            codex-rs/hepta-objective/src/validated_admission_tests.rs
+          git diff --check
+      - name: Validate Python evidence and measurement semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/hepta-objective-evidence-project.py \
+            scripts/hepta-objective-target-measure.py \
+            scripts/test_hepta_objective_evidence_project.py
+          python3 -m unittest -v scripts.test_hepta_objective_evidence_project
+          python3 scripts/hepta-objective-target-measure.py --self-test
+          python3 scripts/hepta-objective-current-state.py verify
+      - name: Compile and test changed Rust boundaries
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-objective -p codex-hepta-intelligence -p codex-hepta-agentd -- --check
+          cargo test --locked -p codex-hepta-objective
+          cargo test --locked -p codex-hepta-intelligence --lib objective_run
+          cargo test --locked -p codex-hepta-agentd --lib objective_runtime
+          cargo test --locked -p codex-hepta-agentd --test objective_product_e2e --no-run
+          cargo clippy --locked \
+            -p codex-hepta-objective \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd \
+            --all-targets --no-deps -- -D warnings
+      - name: Publish ordinary source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch=work/objective-compiler-production-convergence-20260927
+          remote=$(git ls-remote origin "refs/heads/$branch" | cut -f1)
+          test "$remote" = "$GITHUB_SHA"
+          rm -f \
+            .github/maintenance/objective_profile_reuse_edit.py \
+            .github/maintenance/objective_measurement_edit.py \
+            .github/maintenance/objective_evidence_edit.py \
+            .github/maintenance/objective_docs_edit.py \
+            .github/workflows/hepta-objective-remaining-four-edit.yml
+          git diff --check
+          python3 - <<'PY'
+          import subprocess
+          expected = {
+              '.github/maintenance/objective_profile_reuse_edit.py',
+              '.github/maintenance/objective_measurement_edit.py',
+              '.github/maintenance/objective_evidence_edit.py',
+              '.github/maintenance/objective_docs_edit.py',
+              '.github/workflows/hepta-objective-exact-execution.yml',
+              '.github/workflows/hepta-objective-remaining-four-edit.yml',
+              '.github/workflows/hepta-objective-target-measurement.yml',
+              'codex-rs/hepta-agentd/src/objective_runtime.rs',
+              'codex-rs/hepta-agentd/tests/objective_product_e2e.rs',
+              'codex-rs/hepta-intelligence/src/lib.rs',
+              'codex-rs/hepta-intelligence/src/objective_run.rs',
+              'codex-rs/hepta-objective/src/lib.rs',
+              'codex-rs/hepta-objective/src/objective_admission.rs',
+              'codex-rs/hepta-objective/src/objective_admission_tests.rs',
+              'codex-rs/hepta-objective/src/objective_function_v1.rs',
+              'codex-rs/hepta-objective/src/proof_projection.rs',
+              'codex-rs/hepta-objective/src/validated_admission.rs',
+              'codex-rs/hepta-objective/src/validated_admission_tests.rs',
+              'docs/modules/objective.compiler/DELIVERY_EVIDENCE.md',
+              'docs/modules/objective.compiler/TECHNICAL.md',
+              'scripts/hepta-objective-evidence-project.py',
+              'scripts/hepta-objective-target-measure.py',
+              'scripts/test_hepta_objective_evidence_project.py',
+          }
+          changed = set(subprocess.check_output(['git', 'diff', '--name-only', 'HEAD'], text=True).splitlines())
+          if changed != expected:
+              raise SystemExit(f'final scope mismatch: missing={expected-changed}; unexpected={changed-expected}')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'perf(objective): reuse frozen profiles and project observed evidence'
+          git push origin "HEAD:refs/heads/$branch"
+          printf 'Published ordinary source commit: %s\nQualification: not issued by this development job.\n' "$(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+      - name: Capture development result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/objective-remaining-four-development"
+          mkdir -p "$out"
+          git log -2 --format='%H %T %s' > "$out/commits.txt"
+          git status --short > "$out/status.txt"
+          git diff HEAD^ > "$out/final.patch" || true
+          printf '%s\n' 'Development artifact only. It is not exact-head qualification, selected deployment-host acceptance, independent acceptance, activation, promotion, or release.' > "$out/CLAIM_BOUNDARY.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: objective-remaining-four-development-${{ github.sha }}
+          path: ${{ runner.temp }}/objective-remaining-four-development
+          if-no-files-found: error
+          retention-days: 7
