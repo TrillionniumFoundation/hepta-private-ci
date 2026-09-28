@@ -78,7 +78,12 @@ jobs:
           (output / "final.patch.gz").write_bytes(compressed)
           (output / "final.patch").write_bytes(patch)
           PY
-          git apply --check --whitespace=error-all "$output/final.patch"
+          if git apply --check --whitespace=error-all "$output/final.patch" \
+              > "$output/APPLY_CHECK.txt" 2>&1; then
+            printf 'applicable=true\n' >> "$output/APPLY_CHECK.txt"
+          else
+            printf 'applicable=false\n' >> "$output/APPLY_CHECK.txt"
+          fi
           git apply --stat "$output/final.patch" > "$output/STAT.txt"
           git apply --numstat "$output/final.patch" > "$output/NUMSTAT.txt"
           git archive --format=tar.gz --output="$output/source.tar.gz" HEAD
@@ -93,6 +98,7 @@ jobs:
           test -z "$(git status --porcelain=v1)"
 
       - name: Retain decoded diagnostic
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: automation-taskflow-final-diagnostic
