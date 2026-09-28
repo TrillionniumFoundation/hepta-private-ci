@@ -9,6 +9,71 @@ use codex_hepta_fleet::FleetRegistryError;
 use codex_hepta_memory::ProductionCognitiveMutationError;
 use codex_hepta_memory::ProductionWriterError;
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum CompactEngineErrorCodeV1 {
+    InvalidInput,
+    AdmissionRejected,
+    OwnerConflict,
+    CapacityExceeded,
+    CorruptState,
+    StorageUnavailable,
+    OutcomeIndeterminate,
+}
+
+impl fmt::Display for CompactEngineErrorCodeV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let value = match self {
+            Self::InvalidInput => "invalid_input",
+            Self::AdmissionRejected => "admission_rejected",
+            Self::OwnerConflict => "owner_conflict",
+            Self::CapacityExceeded => "capacity_exceeded",
+            Self::CorruptState => "corrupt_state",
+            Self::StorageUnavailable => "storage_unavailable",
+            Self::OutcomeIndeterminate => "outcome_indeterminate",
+        };
+        formatter.write_str(value)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum CompactEngineRecoveryActionV1 {
+    CorrectRequest,
+    RetrySameOperation,
+    Backpressure,
+    ReopenOwner,
+    ReconcileSameOperation,
+    StopWrites,
+}
+
+impl fmt::Display for CompactEngineRecoveryActionV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let value = match self {
+            Self::CorrectRequest => "correct_request",
+            Self::RetrySameOperation => "retry_same_operation",
+            Self::Backpressure => "backpressure",
+            Self::ReopenOwner => "reopen_owner",
+            Self::ReconcileSameOperation => "reconcile_same_operation",
+            Self::StopWrites => "stop_writes",
+        };
+        formatter.write_str(value)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum CompactEngineCommitStateV1 {
+    NotCommitted,
+    Unknown,
+}
+
+impl fmt::Display for CompactEngineCommitStateV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::NotCommitted => formatter.write_str("not_committed"),
+            Self::Unknown => formatter.write_str("unknown"),
+        }
+    }
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum AgentdError {
     #[error("invalid agentd configuration: {0}")]
@@ -19,6 +84,15 @@ pub enum AgentdError {
     CognitiveWriteRuntimeUnavailable,
     #[error("agentd protocol error: {0}")]
     Protocol(String),
+    #[error(
+        "compact.engine {code}: {message}; action={action}; commit_state={commit_state}"
+    )]
+    CompactEngine {
+        code: CompactEngineErrorCodeV1,
+        action: CompactEngineRecoveryActionV1,
+        commit_state: CompactEngineCommitStateV1,
+        message: String,
+    },
     #[error("agentd control overloaded; retry after {retry_after_ms} ms")]
     Overloaded { retry_after_ms: u64 },
     #[error(transparent)]
