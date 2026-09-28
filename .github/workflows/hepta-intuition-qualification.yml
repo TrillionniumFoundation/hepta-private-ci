@@ -53,43 +53,27 @@ jobs:
           import bz2
           from pathlib import Path
 
-          # The payload was authored against the immediately preceding runtime
-          # naming. Normalize the semantically identical current block before
-          # applying the bounded transformation; fail on any other drift.
+          # Normalize the semantically identical current ObjectiveRuntime local
+          # naming expected by the reviewed payload. Every edit is count-checked.
           runtime = Path("../codex-rs/hepta-agentd/src/runtime.rs")
           text = runtime.read_text()
-          old = '''        let host = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(
-              &identity, &path,
-          )?);
-          let current_generation = state.current_generation()?;
-          host.reconcile(
-              &state,
-              current_generation,
-              crate::authbus_ingress::now_ms()?,
-          )?;
-          state
-              .objective_runtime
-              .set(host)
-              .map_err(|_| AgentdError::Protocol("objective runtime already attached".to_string()))?;
-          state.refresh_generation()?;
-          '''
-          new = '''        let objective_runtime = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(
-              &identity, &path,
-          )?);
-          objective_runtime.reconcile(
-              &state,
-              state.current_generation()?,
-              crate::authbus_ingress::now_ms()?,
-          )?;
-          state
-              .objective_runtime
-              .set(objective_runtime)
-              .map_err(|_| AgentdError::Protocol("objective runtime already attached".to_string()))?;
-          state.refresh_generation()?;
-          '''
-          if text.count(old) != 1:
-              raise SystemExit(f"runtime normalization expected one block, found {text.count(old)}")
-          runtime.write_text(text.replace(old, new, 1))
+          replacements = [
+              (
+                  "        let host = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(\n",
+                  "        let objective_runtime = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(\n",
+              ),
+              (
+                  "        let current_generation = state.current_generation()?;\n        host.reconcile(\n            &state,\n            current_generation,\n",
+                  "        objective_runtime.reconcile(\n            &state,\n            state.current_generation()?,\n",
+              ),
+              ("            .set(host)\n", "            .set(objective_runtime)\n"),
+          ]
+          for old, new in replacements:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"runtime normalization expected one marker, found {count}: {old!r}")
+              text = text.replace(old, new, 1)
+          runtime.write_text(text)
 
           payload = b"".join(
               path.read_bytes()
