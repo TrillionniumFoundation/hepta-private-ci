@@ -6,6 +6,8 @@ on:
       - "docs/learning/**"
       - "docs/modules/**"
       - "scripts/hepta-algorithm-docs.py"
+      - "scripts/hepta_experiment_design.py"
+      - "scripts/test_hepta_experiment_design.py"
       - ".github/workflows/hepta-algorithm-docs.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
@@ -15,6 +17,8 @@ on:
       - "docs/learning/**"
       - "docs/modules/**"
       - "scripts/hepta-algorithm-docs.py"
+      - "scripts/hepta_experiment_design.py"
+      - "scripts/test_hepta_experiment_design.py"
       - ".github/workflows/hepta-algorithm-docs.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   workflow_dispatch:

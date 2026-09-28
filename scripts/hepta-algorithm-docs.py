@@ -9,6 +9,7 @@ import hashlib
 import json
 import re
 import subprocess
+import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -22,10 +23,12 @@ except ModuleNotFoundError as error:
 
 try:
     from scripts.hepta_module_catalog import has_unique_module_ids
+    from scripts.hepta_experiment_design import validate_decision_cell_design
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
     from hepta_module_catalog import has_unique_module_ids
+    from hepta_experiment_design import validate_decision_cell_design
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAN_ID = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"
@@ -786,6 +789,10 @@ def verify() -> int:
     work = load(WORK_PATH)
     document_system = load(DOCUMENT_SYSTEM_PATH)
     experiments = load(EXPERIMENTS_PATH)
+    try:
+        validate_decision_cell_design(experiments)
+    except ValueError as error:
+        need(False, "experiment design: " + str(error))
     artifacts = load(ARTIFACTS_PATH)
     claims = load(CLAIMS_PATH)
 
@@ -1018,7 +1025,6 @@ def verify() -> int:
 
     dedicated_workflow = (ROOT / WORKFLOW_PATH).read_text(encoding="utf-8")
     global_workflow = (ROOT / GLOBAL_WORKFLOW).read_text(encoding="utf-8")
-    global_verifier = (ROOT / GLOBAL_VERIFIER).read_text(encoding="utf-8")
     for workflow, label in (
         (dedicated_workflow, "dedicated workflow"),
         (global_workflow, "global workflow"),
@@ -1084,6 +1090,13 @@ def verify_algorithm_workflow_commands(dedicated: str, global_workflow: str) -> 
 
 
 def self_test() -> int:
+    design_tests = unittest.defaultTestLoader.discover(
+        str(ROOT / "scripts"), pattern="test_hepta_experiment_design.py"
+    )
+    need(
+        unittest.TextTestRunner().run(design_tests).wasSuccessful(),
+        "experiment-design semantic regressions",
+    )
     authority_fixture = (
         "Canonical production protocols remain owned by "
         f"`{CONTRACTS_PATH}` and `{PROTOCOLS_PATH}`."
