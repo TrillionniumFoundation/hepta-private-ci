@@ -7,6 +7,8 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 MODULE_PATH = ROOT / "scripts" / "runtime_codex_target_host_evidence.py"
 SPEC = importlib.util.spec_from_file_location("runtime_codex_target_host_evidence", MODULE_PATH)
 assert SPEC and SPEC.loader
@@ -172,6 +174,7 @@ class TargetHostEvidenceTests(unittest.TestCase):
                 "agent-protocol",
                 "agent-run-lifecycle",
                 "worker-host",
+                "target-host-evidence",
                 "crash-matrix",
                 "quarantine-protocol",
                 "product-e2e",
@@ -180,6 +183,7 @@ class TargetHostEvidenceTests(unittest.TestCase):
                 "formatting",
             },
         )
+        self.assertEqual(receipt.PLAN["target-host-evidence"][0], 12)
         self.assertEqual(receipt.PLAN["crash-matrix"][0], 12)
         self.assertEqual(receipt.PLAN["quarantine-protocol"][0], 5)
 
