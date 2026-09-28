@@ -36,6 +36,15 @@ class ReadOnlyWorkflowTests(unittest.TestCase):
         self.assertNotIn("github.sha", group)
         self.assertRegex(text, r"(?m)^  cancel-in-progress: true$")
 
+    def test_cancelled_candidate_cannot_hold_required_sentinel_open(self):
+        text = (ROOT / ".github/workflows/hepta-intuition-qualification.yml").read_text()
+        required = text.split("\n  required:\n", 1)[1]
+        self.assertRegex(
+            required,
+            r"(?m)^    if: \$\{\{ always\(\) && !cancelled\(\) \}\}$",
+        )
+        self.assertNotRegex(required, r"(?m)^    if: always\(\)$")
+
 
 if __name__ == "__main__":
     unittest.main()
