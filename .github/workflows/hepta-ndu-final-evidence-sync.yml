@@ -53,35 +53,35 @@ jobs:
           end_marker = "# utility.ndu status and claim boundary\n"
           start = status.index(start_marker)
           end = status.index(end_marker, start)
-          replacement = """## Exact A–D engineering qualification protocol (2026-09-29)
-
-The convergence branch is `work/utility-ndu-abcd-convergence-20260928`. Its
-qualification path is the read-only workflow
-`.github/workflows/hepta-ndu-recursion.yml`. The workflow resolves the exact PR
-head at run start, executes source-head and deterministic synthetic-merge lanes
-for source, core, callers, product, strict lint and host suites, and independently
-reopens every retained receipt and checksum before publishing one aggregate.
-
-Qualification jobs have `contents: read` and never normalize source, merge a base,
-rewrite evidence prose, or push a descendant commit. A new commit therefore
-invalidates the previous required check instead of inheriting its result. The
-concrete source SHA, source tree, baseline SHA and synthetic-merge identity live in
-the immutable aggregate artifact and PR metadata. They are intentionally not
-embedded into the commit that contains this document because that would create an
-unstable self-reference. Historical runs remain evidence for their own exact
-commits only.
-
-A successful `ndu-qualified-evidence-<exact-source-sha>` aggregate establishes the
-engineering qualification fields for that exact source only. It does not select
-or activate a production writer, enroll a production clock/frontier, prove
-physical power-loss durability, or grant release authority.
-
-"""
+          replacement = "\n".join([
+              "## Exact A–D engineering qualification protocol (2026-09-29)",
+              "",
+              "The convergence branch is `work/utility-ndu-abcd-convergence-20260928`. Its",
+              "qualification path is the read-only workflow",
+              "`.github/workflows/hepta-ndu-recursion.yml`. The workflow resolves the exact PR",
+              "head at run start, executes source-head and deterministic synthetic-merge lanes",
+              "for source, core, callers, product, strict lint and host suites, and independently",
+              "reopens every retained receipt and checksum before publishing one aggregate.",
+              "",
+              "Qualification jobs have `contents: read` and never normalize source, merge a base,",
+              "rewrite evidence prose, or push a descendant commit. A new commit therefore",
+              "invalidates the previous required check instead of inheriting its result. The",
+              "concrete source SHA, source tree, baseline SHA and synthetic-merge identity live in",
+              "the immutable aggregate artifact and PR metadata. They are intentionally not",
+              "embedded into the commit that contains this document because that would create an",
+              "unstable self-reference. Historical runs remain evidence for their own exact",
+              "commits only.",
+              "",
+              "A successful `ndu-qualified-evidence-<exact-source-sha>` aggregate establishes the",
+              "engineering qualification fields for that exact source only. It does not select",
+              "or activate a production writer, enroll a production clock/frontier, prove",
+              "physical power-loss durability, or grant release authority.",
+              "",
+              "",
+          ])
           status = status[:start] + replacement + status[end:]
-          old = """`exactHeadSourceQualification` for this revision is bound to workflow run `36393371823` and is established only when that run finishes with a successful aggregate for its emitted exact source SHA. An older source result, an unchanged code subtree, or a workflow definition is never substituted for that receipt.
-"""
-          new = """`exactHeadSourceQualification` is derived only from the successful required check and sealed aggregate for the current PR head. The source tree does not pre-claim its own result. An older run, an unchanged code subtree, a materializer output, or a workflow definition is never substituted for the current receipt.
-"""
+          old = "`exactHeadSourceQualification` for this revision is bound to workflow run `36393371823` and is established only when that run finishes with a successful aggregate for its emitted exact source SHA. An older source result, an unchanged code subtree, or a workflow definition is never substituted for that receipt.\n"
+          new = "`exactHeadSourceQualification` is derived only from the successful required check and sealed aggregate for the current PR head. The source tree does not pre-claim its own result. An older run, an unchanged code subtree, a materializer output, or a workflow definition is never substituted for the current receipt.\n"
           if old not in status:
               raise SystemExit("STATUS exact-head paragraph drifted")
           status_path.write_text(status.replace(old, new), encoding="utf-8")
@@ -92,8 +92,7 @@ physical power-loss durability, or grant release authority.
           completion["exactHeadQualification"] = "derived_only_from_current_read_only_dual_lane_required_check_and_sealed_aggregate"
           completion["namedHostQualification"] = "ci_host_receipts_are_exact_head_scoped; named_production_target_pending"
           completion["localDeterministicProcess"] = "implemented_and_exact_head_qualified_only_when_current_aggregate_passes; production_trust_pending"
-          source_base = mapping.setdefault("sourceBase", {})
-          source_base["role"] = "historical_materialized_source_baseline_not_current_head_identity"
+          mapping.setdefault("sourceBase", {})["role"] = "historical_materialized_source_baseline_not_current_head_identity"
           mapping["qualificationGovernance"] = {
               "workflow": ".github/workflows/hepta-ndu-recursion.yml",
               "mode": "read_only_exact_pr_head_dual_lane",
