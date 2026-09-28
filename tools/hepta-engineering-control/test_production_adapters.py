@@ -25,6 +25,7 @@ _EVIDENCE_CLASSES = {
     "rollback_rehearsal_observer": "rollback_rehearsal",
     "operator_acceptance": "operator_acceptance",
 }
+_UNSET = object()
 
 
 class ExternalProductionAdapterTests(unittest.TestCase):
@@ -66,11 +67,12 @@ class ExternalProductionAdapterTests(unittest.TestCase):
             )
         return result
 
-    def verify(self, receipts=None, controls=None):
+    def verify(self, receipts=None, controls=_UNSET):
+        selected_controls = self.controls if controls is _UNSET else controls
         return verify_external_production_bundle(
             self.receipts() if receipts is None else receipts,
             self.trust,
-            production_controls=self.controls if controls is None else controls,
+            production_controls=selected_controls,
             expected_source_commit=self.commit,
             expected_source_tree=self.tree,
             expected_target_digest=self.target,
@@ -91,7 +93,7 @@ class ExternalProductionAdapterTests(unittest.TestCase):
         with self.assertRaisesRegex(
             EngineeringError, "typed_production_controls_required"
         ):
-            self.verify(controls=None)  # type: ignore[arg-type]
+            self.verify(controls=None)
         incomplete = ProductionControlDecision(True, False, True, "e" * 64)
         with self.assertRaisesRegex(
             EngineeringError, "typed_production_controls_incomplete"
