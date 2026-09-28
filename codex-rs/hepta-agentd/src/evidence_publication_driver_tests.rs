@@ -4,7 +4,11 @@ use codex_hepta_evidence::EvidencePublicationBatchV1;
 use codex_hepta_evidence::EvidenceRecoveryFrontierSignatureV2;
 use codex_hepta_evidence::EvidenceRecoverySnapshotV1;
 
-fn continuation() -> (EvidencePublicationBatchV1, EvidenceRecoveryFrontierV2, EvidenceRecoveryFrontierV2) {
+fn continuation() -> (
+    EvidencePublicationBatchV1,
+    EvidenceRecoveryFrontierV2,
+    EvidenceRecoveryFrontierV2,
+) {
     let snapshot = EvidenceRecoverySnapshotV1 {
         schema_version: 2,
         database_lineage: codex_hepta_evidence::EVIDENCE_DATABASE_LINEAGE.to_string(),
@@ -105,4 +109,49 @@ fn owner_publication_request_rejects_unknown_and_duplicate_fields() {
     ] {
         assert!(serde_json::from_str::<EvidencePublicationRequestV1>(invalid).is_err());
     }
+}
+
+#[test]
+fn publication_freshness_is_rechecked_after_slow_preparation() {
+    let (_, _, proposed) = continuation();
+    let admitted_at = proposed.created_at_unix_ms;
+    let max_age_ms = 1_000;
+    assert!(validate_publication_freshness(&proposed, admitted_at, max_age_ms).is_ok());
+    assert!(
+        validate_publication_freshness(&proposed, admitted_at + max_age_ms, max_age_ms).is_ok()
+    );
+    assert!(
+        validate_publication_freshness(&proposed, admitted_at + max_age_ms + 1, max_age_ms)
+            .is_err()
+    );
+}
+
+#[test]
+fn publication_freshness_rejects_missing_or_unbounded_policy() {
+    let (_, _, proposed) = continuation();
+    for max_age_ms in [0, MAX_FRONTIER_AGE_MS + 1, u64::MAX] {
+        assert!(
+            validate_publication_freshness(&proposed, proposed.created_at_unix_ms, max_age_ms)
+                .is_err()
+        );
+    }
+}
+
+#[test]
+fn publication_freshness_enforces_future_clock_skew_boundary() {
+    let (_, _, mut proposed) = continuation();
+    let now = proposed.created_at_unix_ms;
+    proposed.created_at_unix_ms = now + MAX_FUTURE_CLOCK_SKEW_MS;
+    assert!(validate_publication_freshness(&proposed, now, MAX_FRONTIER_AGE_MS).is_ok());
+    proposed.created_at_unix_ms += 1;
+    assert!(validate_publication_freshness(&proposed, now, MAX_FRONTIER_AGE_MS).is_err());
+}
+
+#[test]
+fn publication_freshness_does_not_wrap_at_the_clock_domain_boundary() {
+    let (_, _, mut proposed) = continuation();
+    proposed.created_at_unix_ms = u64::MAX;
+    assert!(validate_publication_freshness(&proposed, u64::MAX, 1).is_ok());
+    proposed.created_at_unix_ms = 1;
+    assert!(validate_publication_freshness(&proposed, u64::MAX, MAX_FRONTIER_AGE_MS).is_err());
 }
