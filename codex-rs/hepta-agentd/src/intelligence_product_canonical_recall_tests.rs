@@ -92,7 +92,7 @@ fn owned_recall(
         disposition,
         selections,
         omitted_count: 0,
-        distinct_channels: u32::from(packet.abstain.is_none()),
+        distinct_channels: if packet.abstain.is_none() { 1 } else { 0 },
         engram: None,
         packet_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
