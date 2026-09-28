@@ -240,8 +240,7 @@ fn cancellation_survives_reopen(kill: bool) -> Result<()> {
         f.supervisor.kill_slot(&f.agent, &mut f.slot)?;
         Signal::Kill
     } else {
-        f.supervisor
-            .stop_slot(&f.agent, &mut f.slot, f.now)?;
+        f.supervisor.stop_slot(&f.agent, &mut f.slot, f.now)?;
         Signal::Stop
     };
     assert_eq!(
@@ -251,16 +250,12 @@ fn cancellation_survives_reopen(kill: bool) -> Result<()> {
     let after = read_main_restart_budget(&f.root)?.expect("after");
     assert!(!after.pending);
     assert_eq!(after.attempts, before.attempts);
-    assert_eq!(
-        after.window_started_unix_ms,
-        before.window_started_unix_ms
-    );
+    assert_eq!(after.window_started_unix_ms, before.window_started_unix_ms);
     assert_eq!(after.next_eligible_unix_ms, before.next_eligible_unix_ms);
     assert!(!f.slot.restart_pending);
     assert!(f.slot.restart_not_before.is_none());
     f.process.lock().expect("state").exited = true;
-    f.supervisor
-        .tick_slot(&f.agent, &mut f.slot, f.now)?;
+    f.supervisor.tick_slot(&f.agent, &mut f.slot, f.now)?;
     assert!(f.slot.runtime.is_none());
     let config = f.supervisor.config.clone();
     drop(f.supervisor);
@@ -375,12 +370,7 @@ fn deferred_companion_stop_continuation_does_not_cancel_the_restart_claim() -> R
     f.queue_restart()?;
     f.slot.deferred_agent_action = Some(DeferredAgentAction {
         kind: DeferredAgentActionKind::Stop,
-        spawn_generation: f
-            .slot
-            .runtime
-            .as_ref()
-            .expect("runtime")
-            .spawn_generation,
+        spawn_generation: f.slot.runtime.as_ref().expect("runtime").spawn_generation,
     });
     f.supervisor
         .tick_matrix_companion(&f.agent, &mut f.slot, f.now)?;

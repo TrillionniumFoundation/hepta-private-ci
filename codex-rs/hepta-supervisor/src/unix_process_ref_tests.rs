@@ -13,13 +13,15 @@ struct ChildOwner(Child);
 
 impl ChildOwner {
     fn spawn() -> Self {
-        Self(Command::new("/bin/sleep")
-            .arg("30")
-            .stdin(Stdio::null())
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .spawn()
-            .expect("spawn owned lifetime fixture"))
+        Self(
+            Command::new("/bin/sleep")
+                .arg("30")
+                .stdin(Stdio::null())
+                .stdout(Stdio::null())
+                .stderr(Stdio::null())
+                .spawn()
+                .expect("spawn owned lifetime fixture"),
+        )
     }
 
     fn reference(&self) -> ProcessRef {
@@ -42,7 +44,10 @@ fn observe_exit(reference: &ProcessRef) {
         if reference.exited().expect("poll stable process reference") {
             return;
         }
-        assert!(Instant::now() < deadline, "kernel exit observation exceeded deadline");
+        assert!(
+            Instant::now() < deadline,
+            "kernel exit observation exceeded deadline"
+        );
         std::thread::sleep(Duration::from_millis(1));
     }
 }
@@ -58,7 +63,9 @@ fn lifetime_reference_signals_exact_live_process_and_observes_exit() {
     let mut child = ChildOwner::spawn();
     let reference = child.reference();
     assert!(!reference.exited().expect("initial lifetime"));
-    reference.signal(libc::SIGTERM).expect("signal exact lifetime");
+    reference
+        .signal(libc::SIGTERM)
+        .expect("signal exact lifetime");
     observe_exit(&reference);
     assert!(!child.0.wait().expect("reap owned child").success());
     // Darwin's one-shot kqueue event must remain an immutable observation.
@@ -70,13 +77,24 @@ fn expired_lifetime_cannot_signal_a_later_process() {
     let mut predecessor = ChildOwner::spawn();
     let reference = predecessor.reference();
     predecessor.0.kill().expect("kill owned predecessor");
-    predecessor.0.wait().expect("reap predecessor before later spawn");
+    predecessor
+        .0
+        .wait()
+        .expect("reap predecessor before later spawn");
     observe_exit(&reference);
     let mut unrelated = ChildOwner::spawn();
     for signal in [libc::SIGTERM, libc::SIGKILL] {
-        let error = reference.signal(signal).expect_err("dead lifetime cannot deliver signal");
+        let error = reference
+            .signal(signal)
+            .expect_err("dead lifetime cannot deliver signal");
         assert_eq!(error.raw_os_error(), Some(libc::ESRCH));
-        assert!(unrelated.0.try_wait().expect("observe unrelated child").is_none());
+        assert!(
+            unrelated
+                .0
+                .try_wait()
+                .expect("observe unrelated child")
+                .is_none()
+        );
     }
     // This is a real lifetime/reap test, not a forced numeric-PID-reuse receipt.
 }
@@ -85,7 +103,9 @@ fn expired_lifetime_cannot_signal_a_later_process() {
 fn unsupported_signal_is_rejected_without_touching_process() {
     let mut child = ChildOwner::spawn();
     let reference = child.reference();
-    let error = reference.signal(libc::SIGUSR1).expect_err("unregistered control signal");
+    let error = reference
+        .signal(libc::SIGUSR1)
+        .expect_err("unregistered control signal");
     assert_eq!(error.kind(), io::ErrorKind::InvalidInput);
     assert!(child.0.try_wait().expect("owned child is live").is_none());
 }

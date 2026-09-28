@@ -90,10 +90,7 @@ impl ProcessDriver for Driver {
         })
     }
 
-    fn adopt(
-        &mut self,
-        _spec: &AdoptSpec,
-    ) -> Result<Adoption<Self::Process>, ProcessDriverError> {
+    fn adopt(&mut self, _spec: &AdoptSpec) -> Result<Adoption<Self::Process>, ProcessDriverError> {
         self.counters.lock().expect("counters").adoptions += 1;
         Ok(match self.adoption {
             AdoptionMode::Adopt => Adoption::Adopted(Process(Arc::clone(&self.counters))),

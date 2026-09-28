@@ -62,6 +62,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         config: SupervisorConfig,
         now: Instant,
     ) -> Result<(Self, TickReport), SupervisorError> {
+        let _control_latency = crate::control_latency::OperationTimer::start(
+            crate::control_latency::ControlLatencyOperation::Recovery,
+        );
         config.validate()?;
         let snapshot = registry.load()?;
         let slots = snapshot
@@ -454,6 +457,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         command: AgentCommand,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        let _control_latency = crate::control_latency::OperationTimer::start(
+            crate::control_latency::ControlLatencyOperation::Start,
+        );
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.start_slot(agent_id, slot, command, now)
         })
@@ -465,30 +471,45 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        let _control_latency = crate::control_latency::OperationTimer::start(
+            crate::control_latency::ControlLatencyOperation::Start,
+        );
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.start_release_slot(agent_id, slot, release, now)
         })
     }
 
     pub fn drain(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        let _control_latency = crate::control_latency::OperationTimer::start(
+            crate::control_latency::ControlLatencyOperation::Drain,
+        );
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.drain_slot(agent_id, slot, now)
         })
     }
 
     pub fn stop(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        let _control_latency = crate::control_latency::OperationTimer::start(
+            crate::control_latency::ControlLatencyOperation::Stop,
+        );
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.stop_slot(agent_id, slot, now)
         })
     }
 
     pub fn kill(&mut self, agent_id: &AgentId) -> Result<(), SupervisorError> {
+        let _control_latency = crate::control_latency::OperationTimer::start(
+            crate::control_latency::ControlLatencyOperation::Kill,
+        );
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.kill_slot(agent_id, slot)
         })
     }
 
     pub fn restart(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        let _control_latency = crate::control_latency::OperationTimer::start(
+            crate::control_latency::ControlLatencyOperation::Restart,
+        );
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.restart_slot(agent_id, slot, now)
         })
@@ -500,6 +521,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         target: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        let _control_latency = crate::control_latency::OperationTimer::start(
+            crate::control_latency::ControlLatencyOperation::ReleaseChange,
+        );
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.upgrade_slot(
                 agent_id, slot, target, now, /*explicit_rollback*/ false,
@@ -509,6 +533,9 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     pub fn rollback(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        let _control_latency = crate::control_latency::OperationTimer::start(
+            crate::control_latency::ControlLatencyOperation::ReleaseChange,
+        );
         self.with_slot(agent_id, |supervisor, slot| {
             let target = slot
                 .previous_release

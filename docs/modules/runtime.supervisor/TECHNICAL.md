@@ -448,3 +448,12 @@ receipts. No source-boundary, product, independent acceptance, activation or
 release flag may be inferred true from this amendment. Keep the normal required
 checks and existing denied-authority posture; missing, queued or skipped
 execution is not a passing result.
+
+
+## 19. Production-closure candidate overlay
+
+The exact source candidate for the September 28 control/recovery closure is
+recorded in [PRODUCTION_CLOSURE.md](PRODUCTION_CLOSURE.md) and its machine-readable
+[PRODUCTION_CLOSURE.json](PRODUCTION_CLOSURE.json). The overlay distinguishes
+implemented source, exact-candidate CI, selected-host evidence and still-open
+production acceptance. It does not redefine any wire version or grant authority.

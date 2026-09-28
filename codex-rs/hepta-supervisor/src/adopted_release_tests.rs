@@ -99,7 +99,9 @@ impl ProcessDriver for Driver {
     }
 
     fn adopt(&mut self, _spec: &AdoptSpec) -> Result<Adoption<Process>, ProcessDriverError> {
-        Err(ProcessDriverError::new("fixture must install its exact handle"))
+        Err(ProcessDriverError::new(
+            "fixture must install its exact handle",
+        ))
     }
 }
 
@@ -209,7 +211,10 @@ impl Fixture {
         assert!(runtime.fenced);
         assert!(!runtime.healthy);
         assert_eq!(self.slot.active_release, Some(self.predecessor.clone()));
-        assert_eq!(self.slot.last_command, Some(self.predecessor.command().clone()));
+        assert_eq!(
+            self.slot.last_command,
+            Some(self.predecessor.command().clone())
+        );
         assert!(self.slot.previous_release.is_none());
         assert_eq!(self.calls.lock().expect("calls").drops, 0);
         assert_eq!(
@@ -250,10 +255,18 @@ fn catalog_error_and_failed_termination_keep_the_same_handle_retryable() -> Resu
     let error = FleetRegistryError::Invalid("injected catalog error".to_string());
     assert!(f.bind(Err(error)).is_err());
     f.assert_rejected_and_owned()?;
-    assert!(f.slot.events.items.iter().all(|event| {
-        !matches!(&event.kind, SupervisorEventKind::KillRequested)
-    }));
-    assert!(f.supervisor.tick_slot(&f.agent, &mut f.slot, f.now).is_err());
+    assert!(
+        f.slot
+            .events
+            .items
+            .iter()
+            .all(|event| { !matches!(&event.kind, SupervisorEventKind::KillRequested) })
+    );
+    assert!(
+        f.supervisor
+            .tick_slot(&f.agent, &mut f.slot, f.now)
+            .is_err()
+    );
     f.calls.lock().expect("calls").kill_fails = false;
     f.supervisor.tick_slot(&f.agent, &mut f.slot, f.now)?;
     f.assert_rejected_and_owned()?;
@@ -308,10 +321,14 @@ fn lifecycle_cas_failure_does_not_lose_fenced_process_ownership() -> Result<()> 
         record.lifecycle.generation,
         AgentLifecycle::Draining,
     )?;
-    let resolved = Err(FleetRegistryError::Invalid("injected catalog error".to_string()));
-    assert!(f.supervisor.bind_adopted_release(
-        &f.agent, &mut f.slot, record, resolved, f.now,
-    ).is_err());
+    let resolved = Err(FleetRegistryError::Invalid(
+        "injected catalog error".to_string(),
+    ));
+    assert!(
+        f.supervisor
+            .bind_adopted_release(&f.agent, &mut f.slot, record, resolved, f.now,)
+            .is_err()
+    );
     f.assert_rejected_and_owned()?;
     assert_eq!(f.registry.load()?.agents[&f.agent].lifecycle, newer);
     Ok(())

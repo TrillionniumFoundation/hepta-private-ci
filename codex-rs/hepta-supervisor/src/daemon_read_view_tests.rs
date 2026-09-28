@@ -10,8 +10,8 @@ fn observation(captured_at: Instant, count: u16) -> Observation {
     let epoch = SupervisorEpoch::new();
     let agents = (0..count)
         .map(|index| {
-            let agent_id = AgentId::parse(format!("018f4f72-5f8f-7cc1-8f55-{index:012x}"))
-                .expect("agent id");
+            let agent_id =
+                AgentId::parse(format!("018f4f72-5f8f-7cc1-8f55-{index:012x}")).expect("agent id");
             let fence = SupervisordControlFence {
                 agent_id: agent_id.clone(),
                 supervisor_epoch: epoch.clone(),

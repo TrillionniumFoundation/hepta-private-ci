@@ -38,10 +38,10 @@ use crate::runtime::bounded_message;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
 
-#[path = "matrix_tick.rs"]
-mod tick;
 #[path = "matrix_lease_removal.rs"]
 mod lease_removal;
+#[path = "matrix_tick.rs"]
+mod tick;
 pub(crate) use lease_removal::MatrixProcessLeaseRemoval;
 
 const MAX_MATRIX_BINDING_BYTES: u64 = 65_536;
@@ -189,7 +189,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         let health_deadline = match deadline(now, self.config.health_timeout) {
             Ok(value) => value,
             Err(error) => {
-                self.degrade_matrix(agent_id, slot, attached_agent_generation, error.to_string(), now);
+                self.degrade_matrix(
+                    agent_id,
+                    slot,
+                    attached_agent_generation,
+                    error.to_string(),
+                    now,
+                );
                 return;
             }
         };
@@ -233,9 +239,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             healthy: false,
             fenced: false,
         });
-        slot.event(attached_agent_generation, SupervisorEventKind::MatrixSpawned);
+        slot.event(
+            attached_agent_generation,
+            SupervisorEventKind::MatrixSpawned,
+        );
         let _ = self.publish_owned_matrix_launch(
-            agent_id, slot, record.layout.matrixd_process_lease(), &lease, now,
+            agent_id,
+            slot,
+            record.layout.matrixd_process_lease(),
+            &lease,
+            now,
         );
     }
 
@@ -258,10 +271,18 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             // Attempt termination before any fallible restart-budget I/O.
             if let Err(signal) = self.kill_matrix_now(agent_id, slot) {
-                slot.event(lease.attached_agent_generation,
-                    SupervisorEventKind::DriverFault(bounded_message(signal.to_string())));
+                slot.event(
+                    lease.attached_agent_generation,
+                    SupervisorEventKind::DriverFault(bounded_message(signal.to_string())),
+                );
             }
-            self.degrade_matrix(agent_id, slot, lease.attached_agent_generation, error.to_string(), now);
+            self.degrade_matrix(
+                agent_id,
+                slot,
+                lease.attached_agent_generation,
+                error.to_string(),
+                now,
+            );
             return Err(error);
         }
         slot.matrix.retry_at = None;

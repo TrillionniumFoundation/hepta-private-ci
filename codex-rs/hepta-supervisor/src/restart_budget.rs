@@ -115,13 +115,7 @@ pub fn claim_restart(
     window: Duration,
     base_backoff: Duration,
 ) -> Result<RestartClaim, RestartBudgetError> {
-    claim_restart_at(
-        run_root,
-        maximum_attempts,
-        window,
-        base_backoff,
-        unix_ms()?,
-    )
+    claim_restart_at(run_root, maximum_attempts, window, base_backoff, unix_ms()?)
 }
 
 pub(crate) fn claim_restart_bound(
@@ -153,8 +147,7 @@ pub(crate) fn validate_persisted_state(
     if state.schema_version != RESTART_BUDGET_SCHEMA_VERSION
         || state.window_started_unix_ms == 0
         || (state.pending
-            && (state.attempts == 0
-                || state.next_eligible_unix_ms < state.window_started_unix_ms))
+            && (state.attempts == 0 || state.next_eligible_unix_ms < state.window_started_unix_ms))
     {
         return Err(RestartBudgetError::Invalid(
             "restart budget state is outside structural bounds".to_string(),
@@ -378,9 +371,7 @@ fn claim_restart_at(
     if state.pending {
         return Ok(RestartClaim {
             attempt: state.attempts,
-            backoff: Duration::from_millis(
-                state.next_eligible_unix_ms.saturating_sub(now_ms),
-            ),
+            backoff: Duration::from_millis(state.next_eligible_unix_ms.saturating_sub(now_ms)),
         });
     }
     let claim = prepare_attempt(
@@ -432,9 +423,7 @@ fn claim_restart_bound_at(
         }
         return Ok(RestartClaim {
             attempt: state.attempts,
-            backoff: Duration::from_millis(
-                state.next_eligible_unix_ms.saturating_sub(now_ms),
-            ),
+            backoff: Duration::from_millis(state.next_eligible_unix_ms.saturating_sub(now_ms)),
         });
     }
 
@@ -472,8 +461,7 @@ fn claim_restart_bound_at(
     state.predecessor = expected_predecessor;
     state.predecessor_drain_deadline_unix_ms = drain_deadline;
     state.predecessor_stop_deadline_unix_ms = stop_deadline;
-    state.predecessor_exit_observed_unix_ms =
-        state.predecessor.is_none().then_some(now_ms);
+    state.predecessor_exit_observed_unix_ms = state.predecessor.is_none().then_some(now_ms);
     state.replacement = None;
     state.replacement_healthy_unix_ms = None;
     state.terminal = None;
@@ -654,13 +642,7 @@ pub(crate) fn observe_restart_process_exit(
     spawn_generation: u64,
     identity: &ProcessIdentity,
 ) -> Result<RestartExitObservation, RestartBudgetError> {
-    observe_restart_process_exit_at(
-        run_root,
-        release_id,
-        spawn_generation,
-        identity,
-        unix_ms()?,
-    )
+    observe_restart_process_exit_at(run_root, release_id, spawn_generation, identity, unix_ms()?)
 }
 
 fn observe_restart_process_exit_at(

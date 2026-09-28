@@ -185,10 +185,17 @@ impl<D: ProcessDriver> Supervisor<D> {
                         slot.event(runtime.generation, SupervisorEventKind::KillRequested);
                     })
             };
+            let latency_operation = latency_operation_for_runtime(slot, runtime);
+            let exit_observation_started = Instant::now();
             let observation = runtime
                 .process
                 .poll(self.config.driver_poll_batch)
                 .map_err(|error| driver_error(agent_id, error))?;
+            crate::control_latency::record_stage(
+                latency_operation,
+                crate::control_latency::ControlLatencyStage::ExitObservation,
+                exit_observation_started.elapsed(),
+            );
             self.push_logs(slot, observation.logs);
             if let ProcessState::Exited(exit) = observation.state {
                 slot.observed_exit = Some(exit);
@@ -258,10 +265,17 @@ impl<D: ProcessDriver> Supervisor<D> {
         if let Ok(Some(event)) = &control_result {
             slot.events.push(event.clone());
         }
+        let latency_operation = latency_operation_for_runtime(slot, runtime);
+        let exit_observation_started = Instant::now();
         let observation = runtime
             .process
             .poll(self.config.driver_poll_batch)
             .map_err(|error| driver_error(agent_id, error))?;
+        crate::control_latency::record_stage(
+            latency_operation,
+            crate::control_latency::ControlLatencyStage::ExitObservation,
+            exit_observation_started.elapsed(),
+        );
         self.push_logs(slot, observation.logs);
         if let ProcessState::Exited(exit) = observation.state {
             // Persist the automatic-restart claim before the lifecycle/lease
@@ -411,6 +425,8 @@ impl<D: ProcessDriver> Supervisor<D> {
         runtime: &AgentRuntime<D::Process>,
         exit: crate::ProcessExit,
     ) -> Result<(), SupervisorError> {
+        let latency_operation = latency_operation_for_runtime(slot, runtime);
+        let metadata_commit_started = Instant::now();
         let record = self.record(agent_id)?;
         let fenced = runtime.fenced || record.lifecycle.generation != runtime.generation;
         let lease = ProcessLease {
@@ -465,17 +481,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                 }
                 AgentLifecycle::Starting => Some(AgentLifecycle::Stopped),
                 AgentLifecycle::Running => Some(AgentLifecycle::Failed),
-                AgentLifecycle::Draining | AgentLifecycle::Failed => {
-                    Some(AgentLifecycle::Stopped)
-                }
+                AgentLifecycle::Draining | AgentLifecycle::Failed => Some(AgentLifecycle::Stopped),
                 AgentLifecycle::Stopped => None,
             };
             if let Some(target) = target {
-                let next = self.registry.compare_and_transition(
-                    agent_id,
-                    runtime.generation,
-                    target,
-                )?;
+                let next =
+                    self.registry
+                        .compare_and_transition(agent_id, runtime.generation, target)?;
                 generation = next.generation;
                 slot.event(next.generation, SupervisorEventKind::Lifecycle(target));
             }
@@ -496,6 +508,11 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.exit_lease_removal = None;
         slot.observed_exit = None;
         slot.event(generation, SupervisorEventKind::Exited(exit));
+        crate::control_latency::record_stage(
+            latency_operation,
+            crate::control_latency::ControlLatencyStage::MetadataCommit,
+            metadata_commit_started.elapsed(),
+        );
         Ok(())
     }
 
@@ -503,6 +520,23 @@ impl<D: ProcessDriver> Supervisor<D> {
         for mut log in logs.into_iter().take(self.config.driver_poll_batch) {
             log.bytes.truncate(self.config.max_log_bytes);
             slot.logs.push(log);
+        }
+    }
+}
+
+fn latency_operation_for_runtime<P>(
+    slot: &AgentSlot<P>,
+    runtime: &AgentRuntime<P>,
+) -> crate::control_latency::ControlLatencyOperation {
+    if slot.restart_pending {
+        return crate::control_latency::ControlLatencyOperation::Restart;
+    }
+    match runtime.phase {
+        RuntimePhase::Draining { .. } => crate::control_latency::ControlLatencyOperation::Drain,
+        RuntimePhase::Stopping { .. } => crate::control_latency::ControlLatencyOperation::Stop,
+        RuntimePhase::Killing => crate::control_latency::ControlLatencyOperation::Kill,
+        RuntimePhase::AwaitingHealth { .. } | RuntimePhase::Running => {
+            crate::control_latency::ControlLatencyOperation::Recovery
         }
     }
 }

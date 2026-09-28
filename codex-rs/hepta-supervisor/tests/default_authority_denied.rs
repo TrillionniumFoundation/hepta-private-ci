@@ -34,7 +34,9 @@ async fn default_library_refuses_runtime_verifier_before_opening_fleet() -> Resu
     let verifier = H7H89ProductionGrantVerifier::from_bytes(
         "default-denial-fixture",
         1,
-        SigningKey::from_bytes(&TEST_SEED).verifying_key().to_bytes(),
+        SigningKey::from_bytes(&TEST_SEED)
+            .verifying_key()
+            .to_bytes(),
     )?;
     let result = codex_hepta_supervisor::run_supervisord_with_grant_verifier(
         root,
@@ -56,7 +58,9 @@ fn default_daemon_refuses_valid_verifier_configuration_before_fleet_mutation() -
     let root = temp.path().canonicalize()?;
     let fleet = root.join("fleet-must-not-exist");
     let key = root.join("fixture.pub");
-    let public = SigningKey::from_bytes(&TEST_SEED).verifying_key().to_bytes();
+    let public = SigningKey::from_bytes(&TEST_SEED)
+        .verifying_key()
+        .to_bytes();
     {
         use std::io::Write;
         let mut file = OpenOptions::new()

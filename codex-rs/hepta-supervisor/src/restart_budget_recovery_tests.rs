@@ -66,7 +66,9 @@ fn clock_rollback_rejects_claim_preflight_and_recovery_without_rewrite() {
 fn cancellation_reopens_without_pending_and_preserves_consumed_budget() {
     let dir = tempfile::tempdir().expect("temp");
     claim(dir.path(), 1_000).expect("claim");
-    let mut expected = read_restart_budget(dir.path()).expect("read").expect("state");
+    let mut expected = read_restart_budget(dir.path())
+        .expect("read")
+        .expect("state");
     expected.pending = false;
     cancel_restart(dir.path()).expect("cancel");
     assert_eq!(
@@ -98,8 +100,7 @@ fn cancellation_does_not_replenish_an_exhausted_window() {
         Err(RestartBudgetError::Exhausted)
     ));
     assert!(
-        !restart_available_at(dir.path(), 3, Duration::from_millis(100), 1_003)
-            .expect("preflight")
+        !restart_available_at(dir.path(), 3, Duration::from_millis(100), 1_003).expect("preflight")
     );
 }
 
@@ -111,7 +112,9 @@ fn a_terminal_window_can_replenish_for_a_new_claim() {
     let next = claim(dir.path(), 1_100).expect("new window");
     assert_eq!(next.attempt, 1);
     assert_eq!(next.backoff, Duration::from_millis(10));
-    let state = read_restart_budget(dir.path()).expect("read").expect("state");
+    let state = read_restart_budget(dir.path())
+        .expect("read")
+        .expect("state");
     assert_eq!(state.window_started_unix_ms, 1_100);
     assert_eq!(state.next_eligible_unix_ms, 1_110);
 }
@@ -261,7 +264,9 @@ fn replacement_requires_exact_predecessor_exit_and_exact_healthy_identity() {
         complete_restart_for_replacement_at(dir.path(), 8, &replacement, 1_012)
             .expect("complete exact replacement")
     );
-    let state = read_restart_budget(dir.path()).expect("read").expect("state");
+    let state = read_restart_budget(dir.path())
+        .expect("read")
+        .expect("state");
     assert!(!state.pending);
     assert_eq!(state.terminal, Some(RestartTerminal::Completed));
     assert_eq!(state.replacement_healthy_unix_ms, Some(1_012));
@@ -300,7 +305,9 @@ fn replacement_exit_is_failure_not_restart_completion() {
         .expect("replacement exit"),
         RestartExitObservation::Replacement
     );
-    let state = read_restart_budget(dir.path()).expect("read").expect("state");
+    let state = read_restart_budget(dir.path())
+        .expect("read")
+        .expect("state");
     assert!(!state.pending);
     assert_eq!(state.terminal, Some(RestartTerminal::Failed));
     assert!(state.replacement_healthy_unix_ms.is_none());

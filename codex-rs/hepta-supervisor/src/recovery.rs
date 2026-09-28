@@ -119,11 +119,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Ok(());
         };
 
-        let is_predecessor = pending
-            .state
-            .predecessor
-            .as_ref()
-            .is_some_and(|process| {
+        let is_predecessor =
+            pending.state.predecessor.as_ref().is_some_and(|process| {
                 process.matches(runtime.spawn_generation, &runtime.identity)
             });
         if is_predecessor {
@@ -190,9 +187,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             agent_id,
             record.lifecycle.lifecycle,
         )
-        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        .map_err(SupervisorError::from)?;
         if control_intent::has_unresolved(record.layout.run_root())
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .map_err(SupervisorError::from)?
         {
             return Err(SupervisorError::Invalid(format!(
                 "agent {agent_id} has an unresolved durable termination intent"
@@ -316,10 +313,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             unreachable!("freshly acquired child must remain installed");
         };
         match termination {
-            Ok(()) => slot.event(
-                starting_generation,
-                SupervisorEventKind::KillRequested,
-            ),
+            Ok(()) => slot.event(starting_generation, SupervisorEventKind::KillRequested),
             Err(fault) => slot.event(
                 starting_generation,
                 SupervisorEventKind::DriverFault(bounded_message(fault.to_string())),
@@ -372,7 +366,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 agent_id,
                 terminal_lifecycle,
             )
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            .map_err(SupervisorError::from)?;
             self.recover_matrix_companion(agent_id, slot, record, now)?;
             return Ok(());
         };
@@ -389,7 +383,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             &lease.identity,
             now,
         )
-        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        .map_err(SupervisorError::from)?;
         let restart_control = crate::restart_budget::recover_predecessor_control(
             record.layout.run_root(),
             lease.spawn_generation,
@@ -514,7 +508,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     agent_id,
                     self.record(agent_id)?.lifecycle.lifecycle,
                 )
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                .map_err(SupervisorError::from)?;
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
             }
             Adoption::Rejected => {

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "module": "runtime.supervisor",
+  "candidateBranch": "codex/runtime-supervisor-production-closure-20260928",
+  "sourceBase": "9dc892603d57a2c2fb064d6568e7aaee253aa9c3",
+  "implemented": {
+    "exactTargetStopKillIntent": true,
+    "sameTargetKillSupersession": true,
+    "nonResettingStopDeadline": true,
+    "typedFailureDisposition": true,
+    "operationalBlockerSnapshot": true,
+    "stageLatencySnapshot": true
+  },
+  "resourceEnforcement": {
+    "operationTimeout": "enforced",
+    "memoryMb": "declared_only",
+    "maxSubprocesses": "declared_only",
+    "network": "declared_only"
+  },
+  "verificationWorkflow": ".github/workflows/runtime-supervisor-production-closure.yml",
+  "openBoundaries": [
+    "durable_drain",
+    "launch_before_lease_recovery",
+    "selected_host_256_process_load",
+    "production_key_provision",
+    "independent_operator_security_acceptance"
+  ]
+}

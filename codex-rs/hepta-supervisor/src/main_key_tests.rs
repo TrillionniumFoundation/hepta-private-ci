@@ -9,7 +9,10 @@ use super::load_public_key;
 fn public_key_accepts_raw_and_bounded_hex_without_rewriting_the_file() {
     let temp = tempfile::tempdir().expect("directory");
     let path = temp.path().join("authority.pub");
-    for bytes in [vec![0xab; 32], format!("{}\n", "ab".repeat(32)).into_bytes()] {
+    for bytes in [
+        vec![0xab; 32],
+        format!("{}\n", "ab".repeat(32)).into_bytes(),
+    ] {
         std::fs::write(&path, &bytes).expect("key");
         std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o644)).expect("mode");
         assert_eq!(
@@ -18,7 +21,11 @@ fn public_key_accepts_raw_and_bounded_hex_without_rewriting_the_file() {
         );
         assert_eq!(std::fs::read(&path).expect("unchanged bytes"), bytes);
         assert_eq!(
-            std::fs::metadata(&path).expect("metadata").permissions().mode() & 0o777,
+            std::fs::metadata(&path)
+                .expect("metadata")
+                .permissions()
+                .mode()
+                & 0o777,
             0o644
         );
     }

@@ -26,11 +26,17 @@ impl ProcessRef {
     }
 
     pub(super) fn exited(&self) -> io::Result<bool> {
-        Err(io::Error::new(io::ErrorKind::Unsupported, "no process reference"))
+        Err(io::Error::new(
+            io::ErrorKind::Unsupported,
+            "no process reference",
+        ))
     }
 
     pub(super) fn signal(&self, _signal: i32) -> io::Result<()> {
-        Err(io::Error::new(io::ErrorKind::Unsupported, "no process reference"))
+        Err(io::Error::new(
+            io::ErrorKind::Unsupported,
+            "no process reference",
+        ))
     }
 }
 
@@ -38,7 +44,10 @@ pub(super) fn checked_pid(pid: u32) -> io::Result<i32> {
     let pid = i32::try_from(pid)
         .map_err(|_| io::Error::new(io::ErrorKind::InvalidInput, "PID exceeds pid_t"))?;
     if pid <= 0 {
-        return Err(io::Error::new(io::ErrorKind::InvalidInput, "PID must be positive"));
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "PID must be positive",
+        ));
     }
     Ok(pid)
 }

@@ -88,6 +88,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .runtime
             .as_ref()
             .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))?;
+        let stop_intent_started = Instant::now();
         control_intent::prepare_stop(
             record.layout.run_root(),
             agent_id,
@@ -97,10 +98,27 @@ impl<D: ProcessDriver> Supervisor<D> {
             self.config.stop_grace,
         )
         .map_err(SupervisorError::from)?;
+        crate::control_latency::record_stage(
+            crate::control_latency::ControlLatencyOperation::Stop,
+            crate::control_latency::ControlLatencyStage::IntentPersistence,
+            stop_intent_started.elapsed(),
+        );
         // Cancel durably after the overriding Stop itself is durable, but before
         // companion deferral, lifecycle CAS or signaling.
+        let stop_metadata_started = Instant::now();
         self.cancel_pending_restart(agent_id, slot)?;
+        crate::control_latency::record_stage(
+            crate::control_latency::ControlLatencyOperation::Stop,
+            crate::control_latency::ControlLatencyStage::MetadataCommit,
+            stop_metadata_started.elapsed(),
+        );
+        let stop_dispatch_started = Instant::now();
         let result = self.stop_runtime_slot(agent_id, slot, now);
+        crate::control_latency::record_stage(
+            crate::control_latency::ControlLatencyOperation::Stop,
+            crate::control_latency::ControlLatencyStage::EffectDispatch,
+            stop_dispatch_started.elapsed(),
+        );
         if result.is_ok()
             && slot.runtime.as_ref().is_some_and(|runtime| {
                 matches!(
@@ -160,6 +178,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
+        let kill_intent_started = Instant::now();
         let intent = slot
             .runtime
             .as_ref()
@@ -174,10 +193,21 @@ impl<D: ProcessDriver> Supervisor<D> {
                 )
                 .map_err(SupervisorError::from)
             });
+        crate::control_latency::record_stage(
+            crate::control_latency::ControlLatencyOperation::Kill,
+            crate::control_latency::ControlLatencyStage::IntentPersistence,
+            kill_intent_started.elapsed(),
+        );
         // Failure to persist the overriding Kill or restart cancellation must
         // be reported, but cannot suppress emergency termination of an already
         // owned main or companion process.
+        let kill_metadata_started = Instant::now();
         let cancellation = self.cancel_pending_restart(agent_id, slot);
+        crate::control_latency::record_stage(
+            crate::control_latency::ControlLatencyOperation::Kill,
+            crate::control_latency::ControlLatencyStage::MetadataCommit,
+            kill_metadata_started.elapsed(),
+        );
         slot.deferred_agent_action = None;
         // Prepare only the main lifecycle here. Do not enter a potentially
         // failing companion driver before attempting the main emergency signal.
@@ -205,6 +235,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             Ok(())
         })();
+        let kill_dispatch_started = Instant::now();
         let main = if intent.is_err()
             || cancellation.is_err()
             || preparation.is_err()
@@ -227,20 +258,26 @@ impl<D: ProcessDriver> Supervisor<D> {
                 pending::PendingControl::Kill { spawn_generation },
             )
             .and_then(|()| {
-                pending::apply_to_slot(
-                    agent_id,
-                    slot,
-                    Instant::now(),
-                    self.config.stop_grace,
-                )
+                pending::apply_to_slot(agent_id, slot, Instant::now(), self.config.stop_grace)
             })
         };
+        crate::control_latency::record_stage(
+            crate::control_latency::ControlLatencyOperation::Kill,
+            crate::control_latency::ControlLatencyStage::EffectDispatch,
+            kill_dispatch_started.elapsed(),
+        );
+        let acknowledgement_started = Instant::now();
         let acknowledgement = if intent.is_ok() && main.is_ok() {
             control_intent::mark_kill_requested(record.layout.run_root())
                 .map_err(SupervisorError::from)
         } else {
             Ok(())
         };
+        crate::control_latency::record_stage(
+            crate::control_latency::ControlLatencyOperation::Kill,
+            crate::control_latency::ControlLatencyStage::IntentPersistence,
+            acknowledgement_started.elapsed(),
+        );
         // Both outcomes are collected; neither an error nor a delayed companion
         // call can prevent the main signal that was attempted above.
         let companion = self.kill_matrix_now(agent_id, slot);
@@ -288,6 +325,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .runtime
             .as_ref()
             .map(|runtime| (runtime.spawn_generation, &runtime.identity));
+        let restart_intent_started = Instant::now();
         let claim = claim_restart_bound(
             record.layout.run_root(),
             self.config.restart_max_attempts,
@@ -304,6 +342,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             other => SupervisorError::Invalid(other.to_string()),
         })?;
+        crate::control_latency::record_stage(
+            crate::control_latency::ControlLatencyOperation::Restart,
+            crate::control_latency::ControlLatencyStage::IntentPersistence,
+            restart_intent_started.elapsed(),
+        );
         slot.restart_attempt = claim.attempt;
         slot.restart_not_before = Some(deadline(now, claim.backoff)?);
         if slot.runtime.is_none() {
@@ -313,6 +356,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Ok(());
         }
         let lifecycle = record.lifecycle.lifecycle;
+        let restart_dispatch_started = Instant::now();
         let result = if matches!(
             lifecycle,
             AgentLifecycle::Running | AgentLifecycle::Draining
@@ -321,6 +365,11 @@ impl<D: ProcessDriver> Supervisor<D> {
         } else {
             self.stop_runtime_slot(agent_id, slot, now)
         };
+        crate::control_latency::record_stage(
+            crate::control_latency::ControlLatencyOperation::Restart,
+            crate::control_latency::ControlLatencyStage::EffectDispatch,
+            restart_dispatch_started.elapsed(),
+        );
         // A driver error after staging control must not lose the durable restart
         // claim. Earlier preflight failures do not create a new in-memory intent.
         let retryable_driver_failure = matches!(&result, Err(SupervisorError::Driver { .. }))

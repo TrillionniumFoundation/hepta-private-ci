@@ -30,10 +30,12 @@ fn observe_exit(fixture: &Fixture) {
 fn main_emergency_kill_is_attempted_despite_companion_failure() -> Result<()> {
     let mut fixture = Fixture::new()?;
     fixture.companion.lock().expect("state").failure = Failure::Kill;
-    assert!(fixture
-        .supervisor
-        .kill_slot(&fixture.agent, &mut fixture.slot)
-        .is_err());
+    assert!(
+        fixture
+            .supervisor
+            .kill_slot(&fixture.agent, &mut fixture.slot)
+            .is_err()
+    );
     std::assert_eq!(fixture.main.lock().expect("main").kills, 1);
     std::assert_eq!(fixture.companion.lock().expect("companion").kills, 1);
     std::assert_eq!(fixture.main.lock().expect("main").drops, 0);
@@ -52,10 +54,12 @@ fn main_emergency_kill_is_attempted_despite_companion_failure() -> Result<()> {
 fn failed_main_kill_does_not_skip_companion_containment() -> Result<()> {
     let mut fixture = Fixture::new()?;
     fixture.main.lock().expect("main").failure = Failure::Kill;
-    assert!(fixture
-        .supervisor
-        .kill_slot(&fixture.agent, &mut fixture.slot)
-        .is_err());
+    assert!(
+        fixture
+            .supervisor
+            .kill_slot(&fixture.agent, &mut fixture.slot)
+            .is_err()
+    );
     std::assert_eq!(fixture.main.lock().expect("main").kills, 1);
     std::assert_eq!(fixture.companion.lock().expect("companion").kills, 1);
     assert!(fixture.slot.pending_control.is_some());
@@ -81,10 +85,12 @@ fn failed_registry_preparation_preserves_and_terminates_both_owned_handles() -> 
         layout.agent_root().join("agent.toml"),
         layout.agent_root().join("agent.saved"),
     )?;
-    assert!(fixture
-        .supervisor
-        .kill_slot(&fixture.agent, &mut fixture.slot)
-        .is_err());
+    assert!(
+        fixture
+            .supervisor
+            .kill_slot(&fixture.agent, &mut fixture.slot)
+            .is_err()
+    );
     std::assert_eq!(fixture.main.lock().expect("main").kills, 1);
     std::assert_eq!(fixture.companion.lock().expect("companion").kills, 1);
     assert!(fixture.slot.runtime.as_ref().expect("main").fenced);
@@ -157,10 +163,12 @@ fn failed_matrix_publication_retains_partial_lease_until_observed_exit() -> Resu
     let lease = current_lease(&fixture);
     write_matrix_lease(path, &lease)?;
     fixture.companion.lock().expect("state").failure = Failure::Kill;
-    assert!(fixture
-        .supervisor
-        .publish_owned_matrix_launch(&fixture.agent, &mut fixture.slot, path, &lease, now)
-        .is_err());
+    assert!(
+        fixture
+            .supervisor
+            .publish_owned_matrix_launch(&fixture.agent, &mut fixture.slot, path, &lease, now)
+            .is_err()
+    );
     fixture.assert_retained();
     std::assert_eq!(read_matrix_lease(path)?, Some(lease));
     assert!(
@@ -189,10 +197,12 @@ fn unpublished_matrix_absence_is_reconciled_only_by_retained_launch_owner() -> R
     let lease = current_lease(&fixture);
     std::fs::create_dir(path)?;
     fixture.companion.lock().expect("state").failure = Failure::Kill;
-    assert!(fixture
-        .supervisor
-        .publish_owned_matrix_launch(&fixture.agent, &mut fixture.slot, path, &lease, now)
-        .is_err());
+    assert!(
+        fixture
+            .supervisor
+            .publish_owned_matrix_launch(&fixture.agent, &mut fixture.slot, path, &lease, now)
+            .is_err()
+    );
     fixture.assert_retained();
     std::fs::remove_dir(path)?;
     observe_exit(&fixture);

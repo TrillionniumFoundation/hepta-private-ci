@@ -59,6 +59,10 @@ use tokio_util::sync::CancellationToken;
 use crate::AgentRelease;
 #[cfg(any(unix, test))]
 use crate::AgentSupervisorSnapshot;
+#[cfg(any(unix, test))]
+use crate::ControlEffectBoundary;
+#[cfg(any(unix, test))]
+use crate::ControlFailureClass;
 #[cfg(unix)]
 use crate::H7H89ProductionGrant;
 use crate::H7H89ProductionGrantVerifier;
@@ -924,12 +928,19 @@ async fn handle_mutation<D: ProcessDriver>(
         PreparedMutation::Rollback => supervisor.rollback(&agent_id, Instant::now()),
     };
     let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
-    if let Err(_error) = mutation {
-        return error_payload(
-            "operation_indeterminate",
-            "operation outcome is indeterminate; refresh before retry",
-            post,
+    if let Err(error) = mutation {
+        let audit_started = Instant::now();
+        let disposition = error.control_failure_disposition(ControlEffectBoundary::EffectAttempted);
+        eprintln!(
+            "hepta_supervisord_control_audit operation={operation:?} agent_id={agent_id} control_revision={next_revision} outcome=rejected class={:?} next_action={:?}",
+            disposition.class, disposition.next_action,
         );
+        crate::control_latency::record_stage(
+            latency_operation_for_mutation(&operation),
+            crate::control_latency::ControlLatencyStage::AuditPublication,
+            audit_started.elapsed(),
+        );
+        return safe_rejection(error, post, /*mutation_started*/ true);
     }
     let Some(agent) = post else {
         return error_payload(
@@ -938,11 +949,36 @@ async fn handle_mutation<D: ProcessDriver>(
             /*actual*/ None,
         );
     };
+    let audit_started = Instant::now();
+    eprintln!(
+        "hepta_supervisord_control_audit operation={operation:?} agent_id={agent_id} control_revision={next_revision} outcome=accepted",
+    );
+    crate::control_latency::record_stage(
+        latency_operation_for_mutation(&operation),
+        crate::control_latency::ControlLatencyStage::AuditPublication,
+        audit_started.elapsed(),
+    );
     SupervisordPayload::MutationAccepted {
         operation,
         accepted_state_digest,
         agent,
         production_receipt: None,
+    }
+}
+
+#[cfg(unix)]
+fn latency_operation_for_mutation(
+    operation: &SupervisordMutation,
+) -> crate::control_latency::ControlLatencyOperation {
+    match operation {
+        SupervisordMutation::Start => crate::control_latency::ControlLatencyOperation::Start,
+        SupervisordMutation::Drain => crate::control_latency::ControlLatencyOperation::Drain,
+        SupervisordMutation::Stop => crate::control_latency::ControlLatencyOperation::Stop,
+        SupervisordMutation::Kill => crate::control_latency::ControlLatencyOperation::Kill,
+        SupervisordMutation::Restart => crate::control_latency::ControlLatencyOperation::Restart,
+        SupervisordMutation::Upgrade | SupervisordMutation::Rollback => {
+            crate::control_latency::ControlLatencyOperation::ReleaseChange
+        }
     }
 }
 
@@ -1187,12 +1223,41 @@ fn safe_rejection(
     actual: Option<SupervisordAgentStatus>,
     mutation_started: bool,
 ) -> SupervisordPayload {
-    if mutation_started {
-        return error_payload(
-            "operation_indeterminate",
-            "operation outcome is indeterminate; refresh before retry",
-            actual,
-        );
+    let boundary = if mutation_started {
+        ControlEffectBoundary::EffectAttempted
+    } else {
+        ControlEffectBoundary::Preflight
+    };
+    match error.control_failure_disposition(boundary).class {
+        ControlFailureClass::TargetIdentityStale => {
+            return error_payload(
+                "stale_control_target",
+                "selected Agent identity changed; refresh before retry",
+                actual,
+            );
+        }
+        ControlFailureClass::AlreadyCompleted => {
+            return error_payload(
+                "operation_already_completed",
+                "requested operation is already reflected in current state; do not retry",
+                actual,
+            );
+        }
+        ControlFailureClass::PersistenceIndeterminate => {
+            return error_payload(
+                "persistence_indeterminate",
+                "durable operation outcome is indeterminate; inspect status before retry",
+                actual,
+            );
+        }
+        ControlFailureClass::RecoveryRequired => {
+            return error_payload(
+                "recovery_required",
+                "durable control state requires recovery; ordinary retry is blocked",
+                actual,
+            );
+        }
+        ControlFailureClass::NotStarted => {}
     }
     match error {
         SupervisorError::UnknownAgent(_) => {
@@ -1288,7 +1353,9 @@ fn safe_rejection(
             "signed operation outcome is indeterminate; refresh before retry",
             actual,
         ),
-        SupervisorError::CorruptLease(_)
+        SupervisorError::ControlPersistenceIndeterminate(_)
+        | SupervisorError::ControlRecoveryRequired(_)
+        | SupervisorError::CorruptLease(_)
         | SupervisorError::Registry(_)
         | SupervisorError::Io(_) => error_payload(
             "control_state_unavailable",

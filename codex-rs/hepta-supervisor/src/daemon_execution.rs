@@ -248,7 +248,10 @@ pub(super) async fn handle(
             }
         },
     };
-    state.execution.owner_wait.record(owner_wait_started.elapsed());
+    state
+        .execution
+        .owner_wait
+        .record(owner_wait_started.elapsed());
 
     let runtime = Handle::current();
     let metrics_state = Arc::clone(&state);
@@ -309,6 +312,7 @@ pub(super) async fn tick(state: Arc<DaemonState<UnixProcessDriver>>, scheduled: 
         if log_now {
             state.supervisor.log_snapshot();
             execution.log_snapshot();
+            crate::control_latency::log_snapshot();
             match operational {
                 Ok(Some(summary)) => eprintln!(
                     "hepta_supervisord_progress registered_agents={} blocked_agents={} target_identity_changed={} awaiting_process_exit={} restart_backoff={} restart_budget_exhausted={} release_transition_in_progress={} persistence_uncertain={} recovery_quarantined={} control_state_unavailable={} resource_enforcement_gaps={}",
@@ -375,7 +379,10 @@ mod latency_tests {
 
     #[test]
     fn empty_histogram_is_explicitly_zero() {
-        assert_eq!(LatencyHistogram::default().snapshot(), LatencySummary::default());
+        assert_eq!(
+            LatencyHistogram::default().snapshot(),
+            LatencySummary::default()
+        );
     }
 }
 

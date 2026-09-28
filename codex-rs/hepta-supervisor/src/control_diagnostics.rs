@@ -162,8 +162,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                         summary.target_identity_changed.saturating_add(1);
                 }
                 ControlBlocker::AwaitingProcessExit => {
-                    summary.awaiting_process_exit =
-                        summary.awaiting_process_exit.saturating_add(1);
+                    summary.awaiting_process_exit = summary.awaiting_process_exit.saturating_add(1);
                 }
                 ControlBlocker::RestartBackoff => {
                     summary.restart_backoff = summary.restart_backoff.saturating_add(1);
@@ -177,12 +176,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                         summary.release_transition_in_progress.saturating_add(1);
                 }
                 ControlBlocker::PersistenceUncertain => {
-                    summary.persistence_uncertain =
-                        summary.persistence_uncertain.saturating_add(1);
+                    summary.persistence_uncertain = summary.persistence_uncertain.saturating_add(1);
                 }
                 ControlBlocker::RecoveryQuarantined => {
-                    summary.recovery_quarantined =
-                        summary.recovery_quarantined.saturating_add(1);
+                    summary.recovery_quarantined = summary.recovery_quarantined.saturating_add(1);
                 }
                 ControlBlocker::ControlStateUnavailable => {
                     summary.control_state_unavailable =
@@ -235,9 +232,10 @@ fn derive(
             SupervisorEventKind::OrphanRejected | SupervisorEventKind::MatrixOrphanRejected
         )
     });
-    let latest_driver_fault = snapshot.events.last().is_some_and(|event| {
-        matches!(event.kind, SupervisorEventKind::DriverFault(_))
-    });
+    let latest_driver_fault = snapshot
+        .events
+        .last()
+        .is_some_and(|event| matches!(event.kind, SupervisorEventKind::DriverFault(_)));
     let persistence_uncertain = snapshot.runtime_fenced
         || recent_recovery_fault
         || (latest_driver_fault && effect_in_flight);
@@ -274,9 +272,12 @@ fn derive(
     let blocker = if recovery_required {
         Some(ControlBlocker::RecoveryQuarantined)
     } else if snapshot.runtime_fenced
-        || snapshot.events.iter().rev().take(8).any(|event| {
-            matches!(event.kind, SupervisorEventKind::GenerationFenced { .. })
-        })
+        || snapshot
+            .events
+            .iter()
+            .rev()
+            .take(8)
+            .any(|event| matches!(event.kind, SupervisorEventKind::GenerationFenced { .. }))
     {
         Some(ControlBlocker::TargetIdentityChanged)
     } else if persistence_uncertain {
@@ -374,15 +375,12 @@ mod tests {
 
     #[test]
     fn recovery_quarantine_dominates_retryable_runtime_state() {
-        let diagnostic = derive(
-            agent(),
-            AgentLifecycle::Running,
-            snapshot(),
-            true,
-            5,
-        );
+        let diagnostic = derive(agent(), AgentLifecycle::Running, snapshot(), true, 5);
         assert_eq!(diagnostic.progress, ControlProgress::RecoveryRequired);
-        assert_eq!(diagnostic.blocker, Some(ControlBlocker::RecoveryQuarantined));
+        assert_eq!(
+            diagnostic.blocker,
+            Some(ControlBlocker::RecoveryQuarantined)
+        );
         assert!(!diagnostic.can_accept_new_mutation);
     }
 
@@ -397,14 +395,11 @@ mod tests {
                 registry: 8,
             },
         });
-        let diagnostic = derive(
-            agent(),
-            AgentLifecycle::Running,
-            state,
-            false,
-            5,
+        let diagnostic = derive(agent(), AgentLifecycle::Running, state, false, 5);
+        assert_eq!(
+            diagnostic.blocker,
+            Some(ControlBlocker::TargetIdentityChanged)
         );
-        assert_eq!(diagnostic.blocker, Some(ControlBlocker::TargetIdentityChanged));
         assert_eq!(diagnostic.operation_revision, 9);
         assert_eq!(
             diagnostic.operation_id.as_deref(),
@@ -415,13 +410,7 @@ mod tests {
 
     #[test]
     fn resource_capability_gaps_are_explicit_but_not_a_lifecycle_blocker() {
-        let diagnostic = derive(
-            agent(),
-            AgentLifecycle::Running,
-            snapshot(),
-            false,
-            5,
-        );
+        let diagnostic = derive(agent(), AgentLifecycle::Running, snapshot(), false, 5);
         assert!(diagnostic.can_accept_new_mutation);
         assert!(diagnostic.resource_enforcement.has_declared_only_limits());
         assert_eq!(
@@ -437,13 +426,7 @@ mod tests {
             generation: 7,
             kind: SupervisorEventKind::DriverFault("redacted".to_string()),
         });
-        let diagnostic = derive(
-            agent(),
-            AgentLifecycle::Running,
-            state,
-            false,
-            5,
-        );
+        let diagnostic = derive(agent(), AgentLifecycle::Running, state, false, 5);
         assert!(!diagnostic.persistence_uncertain);
         assert_eq!(diagnostic.blocker, None);
     }
