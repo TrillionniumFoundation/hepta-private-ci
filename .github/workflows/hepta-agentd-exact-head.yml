@@ -9,6 +9,7 @@ on:
       - main
       - work/runtime-agentd-remediation-20260926
       - work/runtime-agentd-remediation-20260927
+      - work/runtime-agentd-production-closure-20260928
       - work/product-convergence-20260923
       - integrate/agentd-product-sweep-20260829
 
@@ -40,6 +41,8 @@ jobs:
           node-version: '20'
       - name: Receipt verifier adversarial tests
         run: python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
+      - name: Validate dynamic status generator
+        run: python3 -B -m py_compile scripts/qualification/runtime_agentd_current_status.py
       - name: Derived projections and source ownership
         if: ${{ always() }}
         run: node scripts/architecture/ci-source-ownership.mjs
@@ -121,6 +124,17 @@ jobs:
             --sha "$EXPECTED_SHA" --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
             --evidence "$RUNNER_TEMP/agentd-evidence" --output "$RUNNER_TEMP/agentd-engineering-result.json" \
             --contract-result "$CONTRACT_RESULT" --suite-result "$SUITE_RESULT"
+      - name: Generate exact-candidate status without changing source claims
+        if: ${{ always() }}
+        env:
+          CANDIDATE_BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          python3 -B scripts/qualification/runtime_agentd_current_status.py \
+            --repository "$GITHUB_WORKSPACE" --sha "$EXPECTED_SHA" \
+            --branch "$CANDIDATE_BRANCH" --run-id "$GITHUB_RUN_ID" \
+            --attempt "$GITHUB_RUN_ATTEMPT" \
+            --engineering-result "$RUNNER_TEMP/agentd-engineering-result.json" \
+            --output "$RUNNER_TEMP/runtime-agentd-current-status.json"
       - name: Require every independent job to succeed
         if: ${{ always() }}
         env:
@@ -133,5 +147,7 @@ jobs:
         if: ${{ always() }}
         with:
           name: agentd-engineering-result-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/agentd-engineering-result.json
+          path: |
+            ${{ runner.temp }}/agentd-engineering-result.json
+            ${{ runner.temp }}/runtime-agentd-current-status.json
           if-no-files-found: error
