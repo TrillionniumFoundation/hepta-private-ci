@@ -271,3 +271,20 @@ The bootstrap source-location obligation for `auth.authbus` is implemented by wo
 - `codex-rs/hepta-authbus-p1-3-qualification`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. Ownership, failure outcomes and exact-candidate validation
+
+The owner/store lifecycle, mutation outcomes, checkpoint failure recovery and
+bounded diagnostics are specified in [OWNERSHIP_AND_FAILURES.md](OWNERSHIP_AND_FAILURES.md).
+The implementation binds the owner fence to store/pool capabilities, not merely
+to the original host variable. `AuthBusAuthorityWorker` retains `Arc<Host>`.
+Every owner mutation holds one gate through preflight reconciliation, the domain
+transaction and independent checkpoint publication. `issuer_record` is readback,
+not a sealed admission capability. `close(self)` drains the pool after a final
+publication attempt; it preserves dirty state if that attempt fails.
+
+The immutable verification workflow never changes source, regenerates a lockfile,
+or commits code. Its artifacts bind `source-sha.txt`, `source-tree.txt`, toolchain,
+individual suite logs and the measured diagnostic workload to the checked-out
+candidate. Missing, failed or cancelled steps are not pass evidence. The old
+source-mutating migration workflows are retired in this candidate.

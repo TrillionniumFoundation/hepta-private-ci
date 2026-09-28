@@ -35,6 +35,18 @@ async fn configured() -> (
     let store = AuthBusAuthorityStore::open(&root.path().join("authbus.sqlite"))
         .await
         .expect("open authority store");
+    let settlement_key = SigningKey::from_bytes(&[9; 32]);
+    store
+        .enroll_issuer(
+            crate::IssuerPurpose::Settlement,
+            crate::IssuerSpec {
+                issuer_id: id("issuer:settlement"),
+                key_epoch: Generation::new(1).expect("generation"),
+                verifying_key: settlement_key.verifying_key(),
+            },
+        )
+        .await
+        .expect("enroll settlement issuer");
     let scope = Digest32::of_bytes(b"provider-scope");
     let policy = store
         .create_policy(
@@ -94,12 +106,15 @@ async fn configured() -> (
 }
 
 fn issuer(key: &SigningKey) -> SettlementIssuerRegistration {
-    SettlementIssuerRegistration {
+    SettlementIssuerRegistration::from_record(&crate::IssuerRecord {
         issuer_id: id("issuer:settlement"),
+        purpose: crate::IssuerPurpose::Settlement,
         key_epoch: Generation::new(1).expect("generation"),
         verifying_key: key.verifying_key(),
-        revoked: false,
-    }
+        state: crate::IssuerLifecycleState::Active,
+        revision: 1,
+    })
+    .expect("settlement issuer registration")
 }
 
 fn evidence(
@@ -228,7 +243,7 @@ async fn unknown_expired_effect_keeps_reserve_until_signed_terminal_evidence() {
         .expect("quota snapshot");
     assert_eq!((held.available, held.reserved, held.consumed), (3, 7, 0));
 
-    let key = SigningKey::from_bytes(&[10; 32]);
+    let key = SigningKey::from_bytes(&[9; 32]);
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 5_200);
     store
         .settle(&issuer(&key), &signed, sample(7, 5_200))
@@ -349,7 +364,7 @@ async fn terminal_compaction_preserves_operation_idempotency_without_lifetime_ca
         )
         .await
         .expect("mark dispatch");
-    let key = SigningKey::from_bytes(&[33; 32]);
+    let key = SigningKey::from_bytes(&[9; 32]);
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
     store
         .settle(&issuer(&key), &signed, sample(6, 1_600))

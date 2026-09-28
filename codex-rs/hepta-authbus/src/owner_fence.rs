@@ -16,8 +16,10 @@ static PROCESS_OWNERS: OnceLock<Mutex<HashSet<PathBuf>>> = OnceLock::new();
 /// this value, so normal exit and process death both release the fence. A local
 /// registry closes the process-associated `fcntl` same-process gap.
 pub(crate) struct OwnerFence {
-    file: File,
-    path: PathBuf,
+    // Rust drops fields in declaration order: close BEFORE releasing the
+    // in-process reservation, including when another thread is acquiring.
+    _file: File,
+    _claim: ProcessOwnerClaim,
 }
 
 impl OwnerFence {
@@ -32,27 +34,38 @@ impl OwnerFence {
         }
         let path = lock_path(database_path)?;
         validate_parent(&path)?;
+        // Reserve before opening: closing ANY descriptor for a POSIX-locked
+        // inode releases this process's locks, even on duplicate-open failure.
+        let claim = ProcessOwnerClaim::acquire(&path)?;
         let file = open_lock_file(&path)?;
         validate_open_lock_file(&file, &path)?;
-        claim_process_owner(&path)?;
-        if let Err(error) = acquire_process_lock(&file) {
-            release_process_owner(&path);
-            return Err(error);
-        }
+        acquire_process_lock(&file)?;
         // Ensure the pathname still names the locked inode before exposing the
         // host. Protected owner directories exclude unprivileged replacement.
-        if let Err(error) = validate_open_lock_file(&file, &path) {
-            release_process_lock(&file);
-            release_process_owner(&path);
-            return Err(error);
-        }
-        Ok(Self { file, path })
+        validate_open_lock_file(&file, &path)?;
+        Ok(Self {
+            _file: file,
+            _claim: claim,
+        })
     }
 }
 
-impl Drop for OwnerFence {
+// This reservation also rolls back failed open/validation/OS-lock attempts.
+struct ProcessOwnerClaim {
+    path: PathBuf,
+}
+
+impl ProcessOwnerClaim {
+    fn acquire(path: &Path) -> Result<Self, AuthBusAuthorityError> {
+        claim_process_owner(path)?;
+        Ok(Self {
+            path: path.to_path_buf(),
+        })
+    }
+}
+
+impl Drop for ProcessOwnerClaim {
     fn drop(&mut self) {
-        release_process_lock(&self.file);
         release_process_owner(&self.path);
     }
 }
@@ -144,14 +157,9 @@ fn open_lock_file(_path: &Path) -> Result<File, AuthBusAuthorityError> {
 
 #[cfg(unix)]
 fn acquire_process_lock(file: &File) -> Result<(), AuthBusAuthorityError> {
-    match rustix::fs::fcntl_lock(
-        file,
-        rustix::fs::FlockOperation::NonBlockingLockExclusive,
-    ) {
+    match rustix::fs::fcntl_lock(file, rustix::fs::FlockOperation::NonBlockingLockExclusive) {
         Ok(()) => Ok(()),
-        Err(error)
-            if error == rustix::io::Errno::AGAIN || error == rustix::io::Errno::ACCESS =>
-        {
+        Err(error) if error == rustix::io::Errno::AGAIN || error == rustix::io::Errno::ACCESS => {
             Err(AuthBusAuthorityError::OwnerAlreadyActive)
         }
         Err(error) => Err(AuthBusAuthorityError::Storage(error.to_string())),
@@ -162,14 +170,6 @@ fn acquire_process_lock(file: &File) -> Result<(), AuthBusAuthorityError> {
 fn acquire_process_lock(_file: &File) -> Result<(), AuthBusAuthorityError> {
     Err(AuthBusAuthorityError::UnsafeCheckpoint)
 }
-
-#[cfg(unix)]
-fn release_process_lock(file: &File) {
-    let _ = rustix::fs::fcntl_lock(file, rustix::fs::FlockOperation::Unlock);
-}
-
-#[cfg(not(unix))]
-fn release_process_lock(_file: &File) {}
 
 #[cfg(unix)]
 fn validate_open_lock_file(file: &File, path: &Path) -> Result<(), AuthBusAuthorityError> {
@@ -223,7 +223,11 @@ mod tests {
     #[tokio::test]
     async fn rejects_a_second_live_owner_and_releases_after_drop() {
         let root = private_root();
-        let database = root.path().join("authority.sqlite");
+        let database = root
+            .path()
+            .canonicalize()
+            .expect("canonical root")
+            .join("authority.sqlite");
         let first = OwnerFence::acquire(&database, "owner:first")
             .await
             .expect("first owner");
@@ -240,7 +244,11 @@ mod tests {
     #[tokio::test]
     async fn rejects_symlink_without_touching_its_target() {
         let root = private_root();
-        let database = root.path().join("authority.sqlite");
+        let database = root
+            .path()
+            .canonicalize()
+            .expect("canonical root")
+            .join("authority.sqlite");
         let target = root.path().join("target");
         std::fs::write(&target, b"unchanged").expect("target");
         std::fs::set_permissions(&target, std::fs::Permissions::from_mode(0o640))
@@ -252,24 +260,131 @@ mod tests {
         ));
         let metadata = std::fs::metadata(&target).expect("target metadata");
         assert_eq!(metadata.mode() & 0o777, 0o640);
-        assert_eq!(std::fs::read(&target).expect("target contents"), b"unchanged");
+        assert_eq!(
+            std::fs::read(&target).expect("target contents"),
+            b"unchanged"
+        );
     }
 
     #[tokio::test]
     async fn rejects_a_hard_link() {
         let root = private_root();
-        let database = root.path().join("authority.sqlite");
+        let database = root
+            .path()
+            .canonicalize()
+            .expect("canonical root")
+            .join("authority.sqlite");
         let target = root.path().join("target");
         std::fs::write(&target, b"unchanged").expect("target");
         std::fs::set_permissions(&target, std::fs::Permissions::from_mode(0o600))
             .expect("target mode");
-        std::fs::hard_link(&target, lock_path(&database).expect("lock path"))
-            .expect("hard link");
+        std::fs::hard_link(&target, lock_path(&database).expect("lock path")).expect("hard link");
         assert!(matches!(
             OwnerFence::acquire(&database, "owner").await,
             Err(AuthBusAuthorityError::UnsafeCheckpoint)
         ));
         assert_eq!(std::fs::metadata(&target).expect("metadata").nlink(), 2);
-        assert_eq!(std::fs::read(&target).expect("target contents"), b"unchanged");
+        assert_eq!(
+            std::fs::read(&target).expect("target contents"),
+            b"unchanged"
+        );
+    }
+}
+
+#[cfg(all(test, unix))]
+mod regression_tests {
+    use super::*;
+    use std::process::Command;
+    use std::time::Duration;
+    use std::time::Instant;
+
+    fn probe(database: &Path, expected_blocked: bool) {
+        let mut child = Command::new(std::env::current_exe().expect("test executable"))
+            .arg("owner_fence::regression_tests::child_probes_os_lock")
+            .arg("--exact")
+            .arg("--nocapture")
+            .env("AUTHBUS_FENCE_PROBE_DB", database)
+            .env(
+                "AUTHBUS_FENCE_EXPECT_BLOCKED",
+                if expected_blocked { "1" } else { "0" },
+            )
+            .spawn()
+            .expect("spawn lock probe");
+        let deadline = Instant::now() + Duration::from_secs(10);
+        loop {
+            if let Some(status) = child.try_wait().expect("poll probe") {
+                assert!(status.success(), "OS lock probe failed");
+                break;
+            }
+            if Instant::now() >= deadline {
+                let _ = child.kill();
+                let _ = child.wait();
+                panic!("OS lock probe exceeded deadline");
+            }
+            std::thread::sleep(Duration::from_millis(10));
+        }
+    }
+
+    #[tokio::test]
+    async fn duplicate_open_does_not_release_existing_process_lock() {
+        let root = tempfile::tempdir().expect("root");
+        let database = root
+            .path()
+            .canonicalize()
+            .expect("canonical")
+            .join("authority.sqlite");
+        let first = OwnerFence::acquire(&database, "first")
+            .await
+            .expect("first owner");
+        for _ in 0..3 {
+            assert!(matches!(
+                OwnerFence::acquire(&database, "duplicate").await,
+                Err(AuthBusAuthorityError::OwnerAlreadyActive)
+            ));
+        }
+        probe(&database, true);
+        drop(first);
+        probe(&database, false);
+    }
+
+    #[tokio::test]
+    async fn failed_lock_file_validation_releases_process_reservation() {
+        use std::os::unix::fs::PermissionsExt;
+        let root = tempfile::tempdir().expect("root");
+        let database = root
+            .path()
+            .canonicalize()
+            .expect("canonical")
+            .join("authority.sqlite");
+        let path = lock_path(&database).expect("lock path");
+        std::fs::write(&path, b"").expect("unsafe file");
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o644)).expect("mode");
+        assert!(matches!(
+            OwnerFence::acquire(&database, "unsafe").await,
+            Err(AuthBusAuthorityError::UnsafeCheckpoint)
+        ));
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).expect("fix mode");
+        let owner = OwnerFence::acquire(&database, "fixed")
+            .await
+            .expect("reservation rolled back");
+        probe(&database, true);
+        drop(owner);
+    }
+
+    #[tokio::test]
+    async fn child_probes_os_lock() {
+        let Some(database) = std::env::var_os("AUTHBUS_FENCE_PROBE_DB") else {
+            return;
+        };
+        let expected = std::env::var("AUTHBUS_FENCE_EXPECT_BLOCKED").expect("expected") == "1";
+        let result = OwnerFence::acquire(Path::new(&database), "child").await;
+        if expected {
+            assert!(matches!(
+                result,
+                Err(AuthBusAuthorityError::OwnerAlreadyActive)
+            ));
+        } else {
+            assert!(result.is_ok(), "unlocked inode should be available");
+        }
     }
 }

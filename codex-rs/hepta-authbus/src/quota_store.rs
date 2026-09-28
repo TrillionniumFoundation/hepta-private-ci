@@ -30,7 +30,7 @@ const MAX_ACTIVE_RESERVATIONS: i64 = 16_384;
 const MAX_ACTIVE_RESERVATIONS_PER_PRINCIPAL: i64 = 1024;
 
 impl AuthBusAuthorityStore {
-    pub async fn create_quota(
+    pub(crate) async fn create_quota(
         &self,
         spec: QuotaSpec,
         time: TrustedTimeSample,
@@ -73,7 +73,9 @@ impl AuthBusAuthorityStore {
             }
             return Err(storage(error));
         }
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(QuotaSnapshot {
             quota_key: spec.quota_key,
             principal: spec.principal,
@@ -88,7 +90,7 @@ impl AuthBusAuthorityStore {
         })
     }
 
-    pub async fn replace_quota(
+    pub(crate) async fn replace_quota(
         &self,
         spec: QuotaSpec,
         expected_revision: u64,
@@ -141,11 +143,13 @@ impl AuthBusAuthorityStore {
         .execute(&mut *tx)
         .await
         .map_err(storage)?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(quota)
     }
 
-    pub async fn reserve(
+    pub(crate) async fn reserve(
         &self,
         decision: &PolicyDecision,
         request: ReservationRequest,
@@ -168,7 +172,9 @@ impl AuthBusAuthorityStore {
             load_reservation_by_operation(&mut tx, &request.operation_id).await?
         {
             if reservation_matches(&existing, decision, &request) {
-                tx.commit().await.map_err(storage)?;
+                tx.commit()
+                    .await
+                    .map_err(crate::authority_store::commit_error)?;
                 return Ok(existing);
             }
             return Err(AuthBusAuthorityError::IdempotencyConflict);
@@ -266,34 +272,40 @@ impl AuthBusAuthorityStore {
         .await
         .map_err(storage)?;
         let reservation = load_reservation(&mut tx, &reservation_id).await?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(reservation)
     }
 
-    pub async fn quota_snapshot(
+    pub(crate) async fn quota_snapshot(
         &self,
         quota_key: &StableId,
     ) -> Result<QuotaSnapshot, AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
         let quota = load_quota(&mut tx, quota_key).await?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(quota)
     }
 
-    pub async fn reservation(
+    pub(crate) async fn reservation(
         &self,
         reservation_id: &StableId,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
         let reservation = load_reservation(&mut tx, reservation_id).await?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(reservation)
     }
 
     /// Move bounded terminal history out of the hot reservation table while
     /// retaining the complete immutable row and operation identity for exact
     /// retry/conflict detection. Live and indeterminate rows are never deleted.
-    pub async fn compact_terminal_reservations(
+    pub(crate) async fn compact_terminal_reservations(
         &self,
         older_than_ms: u64,
         limit: u32,
@@ -339,7 +351,9 @@ impl AuthBusAuthorityStore {
                 .await
                 .map_err(storage)?;
         }
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         u32::try_from(ids.len()).map_err(|_| AuthBusAuthorityError::CapacityExceeded)
     }
 }

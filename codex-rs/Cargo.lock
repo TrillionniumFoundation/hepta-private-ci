@@ -3474,6 +3474,7 @@ dependencies = [
  "codex-features",
  "codex-hepta-agent-protocol",
  "codex-hepta-authbus",
+ "codex-hepta-authbus-p1-3-qualification",
  "codex-hepta-automation",
  "codex-hepta-bellman-operator",
  "codex-hepta-codex-adapter",
@@ -3534,6 +3535,7 @@ dependencies = [
  "codex-hepta-types",
  "ed25519-dalek",
  "pretty_assertions",
+ "rustix 1.1.4",
  "serde",
  "serde_json",
  "sqlx",
@@ -3548,6 +3550,10 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-authbus",
  "codex-hepta-types",
+ "ed25519-dalek",
+ "serde_json",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]
@@ -3701,6 +3707,7 @@ name = "codex-hepta-evidence"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-authbus",
+ "codex-hepta-authbus-p1-3-qualification",
  "codex-hepta-contracts",
  "codex-hepta-types",
  "codex-state",

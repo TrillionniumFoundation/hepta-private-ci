@@ -27,7 +27,7 @@ pub struct IssuerSpec {
     pub verifying_key: VerifyingKey,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct IssuerRecord {
     pub issuer_id: StableId,
     pub purpose: IssuerPurpose,

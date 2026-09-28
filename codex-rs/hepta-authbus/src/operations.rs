@@ -149,9 +149,7 @@ impl AuthBusOperationalSnapshot {
                 policy.max_quota_utilization_basis_points,
             ));
         }
-        if self.oldest_active_reservation_age_ms
-            >= policy.max_oldest_active_reservation_age_ms
-        {
+        if self.oldest_active_reservation_age_ms >= policy.max_oldest_active_reservation_age_ms {
             alerts.push(alert(
                 AuthBusAlertKind::OldestActiveReservation,
                 AuthBusAlertSeverity::Warning,
@@ -169,6 +167,7 @@ pub struct AuthBusMaintenanceReport {
     pub expired_reservation_sweep: ExpiredReservationSweep,
     pub snapshot: AuthBusOperationalSnapshot,
     pub alerts: Vec<AuthBusOperationalAlert>,
+    pub owner_diagnostics: crate::AuthBusOwnerDiagnostics,
 }
 
 impl AuthBusAuthorityHost {
@@ -192,12 +191,22 @@ impl AuthBusAuthorityHost {
                 "authority worker batch must be in 1..=1024",
             ));
         }
-        let recovery_complete = self.store.reconcile_after_restart(limit).await?;
-        let expired_reservation_sweep = self
-            .store
-            .sweep_expired_reservations(time.clone(), limit)
+        let policy = policy.validate()?;
+        let (recovery_complete, expired_reservation_sweep) = self
+            .mutate(async {
+                let result: Result<_, AuthBusAuthorityError> = async {
+                    let recovery_complete = self.store.reconcile_after_restart(limit).await?;
+                    let sweep = self
+                        .store
+                        .sweep_expired_reservations(time.clone(), limit)
+                        .await?;
+                    Ok((recovery_complete, sweep))
+                }
+                .await;
+                result
+                    .map_err(|error| AuthBusAuthorityError::MaintenanceIncomplete(Box::new(error)))
+            })
             .await?;
-        self.sync_checkpoint().await?;
         let snapshot = self.store.operational_snapshot(&time).await?;
         let alerts = snapshot.evaluate(policy)?;
         Ok(AuthBusMaintenanceReport {
@@ -205,6 +214,7 @@ impl AuthBusAuthorityHost {
             expired_reservation_sweep,
             snapshot,
             alerts,
+            owner_diagnostics: self.owner_diagnostics(),
         })
     }
 }
@@ -308,7 +318,10 @@ impl AuthBusAuthorityStore {
                 )?,
             )?;
         }
-        let quota_endowment = checked_sum(checked_sum(quota_available, quota_reserved)?, quota_consumed)?;
+        let quota_endowment = checked_sum(
+            checked_sum(quota_available, quota_reserved)?,
+            quota_consumed,
+        )?;
         let quota_used = checked_sum(quota_reserved, quota_consumed)?;
         let quota_utilization_basis_points = if quota_endowment == 0 {
             0
@@ -340,7 +353,9 @@ impl AuthBusAuthorityStore {
                 }
             }
         }
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(AuthBusOperationalSnapshot {
             observed_at_ms: time.wall_time_ms(),
             checkpoint_generation,

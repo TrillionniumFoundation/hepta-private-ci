@@ -145,6 +145,18 @@ impl PolicyDecision {
     }
 }
 
+/// Outcome of the requested domain transition, not a promise that trusted
+/// time or maintenance metadata stayed unchanged. Never retry an uncertain
+/// identity with different semantics; reconcile using readback first.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AuthBusMutationDisposition {
+    NotStarted,
+    Rejected,
+    Committed,
+    ReconcileRequired,
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum AuthBusAuthorityError {
     #[error("invalid AuthBus authority input: {0}")]
@@ -153,6 +165,26 @@ pub enum AuthBusAuthorityError {
     CorruptState(&'static str),
     #[error("AuthBus authority storage is unavailable: {0}")]
     Storage(String),
+    #[error("AuthBus COMMIT result requires durable readback: {0}")]
+    CommitIndeterminate(String),
+    #[error(
+        "AuthBus operation was not started because prior checkpoint reconciliation failed: {source}"
+    )]
+    MutationNotStarted {
+        #[source]
+        source: Box<AuthBusAuthorityError>,
+    },
+    #[error(
+        "AuthBus operation is {disposition:?}; checkpoint publication failed: {checkpoint_error}"
+    )]
+    MutationIncomplete {
+        disposition: AuthBusMutationDisposition,
+        mutation_error: Option<Box<AuthBusAuthorityError>>,
+        #[source]
+        checkpoint_error: Box<AuthBusAuthorityError>,
+    },
+    #[error("AuthBus maintenance batch needs reconciliation after partial progress: {0}")]
+    MaintenanceIncomplete(#[source] Box<AuthBusAuthorityError>),
     #[error("another AuthBus authority owner is already active")]
     OwnerAlreadyActive,
     #[error("AuthBus authority record was not found")]
@@ -211,4 +243,19 @@ pub enum AuthBusAuthorityError {
     UnsafeCheckpoint,
     #[error("AuthBus policy cannot be retired while reservations still reference it")]
     PolicyInUse,
+}
+
+impl AuthBusAuthorityError {
+    /// `Ok` from an owner mutation is committed and externally checkpointed.
+    /// This classifies only errors; rejection may still persist trusted time.
+    pub fn mutation_disposition(&self) -> AuthBusMutationDisposition {
+        match self {
+            Self::MutationNotStarted { .. } => AuthBusMutationDisposition::NotStarted,
+            Self::MutationIncomplete { disposition, .. } => *disposition,
+            Self::CommitIndeterminate(_) | Self::Storage(_) | Self::MaintenanceIncomplete(_) => {
+                AuthBusMutationDisposition::ReconcileRequired
+            }
+            _ => AuthBusMutationDisposition::Rejected,
+        }
+    }
 }

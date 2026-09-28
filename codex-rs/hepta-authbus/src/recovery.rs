@@ -18,23 +18,29 @@ pub struct AuthorityCheckpoint {
 }
 
 impl AuthBusAuthorityStore {
-    pub async fn authority_frontier_digest(&self) -> Result<Digest32, AuthBusAuthorityError> {
+    pub(crate) async fn authority_frontier_digest(
+        &self,
+    ) -> Result<Digest32, AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
         let digest = authority_frontier_digest_tx(&mut tx).await?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(digest)
     }
 
-    pub async fn authority_checkpoint(
+    pub(crate) async fn authority_checkpoint(
         &self,
     ) -> Result<Option<AuthorityCheckpoint>, AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
         let checkpoint = load_checkpoint(&mut tx).await?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(checkpoint)
     }
 
-    pub async fn initialize_authority_checkpoint(
+    pub(crate) async fn initialize_authority_checkpoint(
         &self,
         checkpoint: AuthorityCheckpoint,
     ) -> Result<(), AuthBusAuthorityError> {
@@ -65,7 +71,9 @@ impl AuthBusAuthorityStore {
             }
         }
         set_dirty(&mut tx, false).await?;
-        tx.commit().await.map_err(storage)
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)
     }
 
     /// Compare the independently retained witness with the local committed
@@ -73,7 +81,7 @@ impl AuthBusAuthorityStore {
     /// after the last external publication. The host may publish exactly the
     /// returned successor. If the external witness already names that successor,
     /// this method promotes it locally after recomputing the complete frontier.
-    pub async fn reconcile_authority_checkpoint(
+    pub(crate) async fn reconcile_authority_checkpoint(
         &self,
         external: AuthorityCheckpoint,
     ) -> Result<Option<AuthorityCheckpoint>, AuthBusAuthorityError> {
@@ -84,7 +92,9 @@ impl AuthBusAuthorityStore {
         let dirty = is_dirty(&mut tx).await?;
         if external == current {
             if !dirty {
-                tx.commit().await.map_err(storage)?;
+                tx.commit()
+                    .await
+                    .map_err(crate::authority_store::commit_error)?;
                 return Ok(None);
             }
             let next = AuthorityCheckpoint {
@@ -94,7 +104,9 @@ impl AuthBusAuthorityStore {
                     .ok_or(AuthBusAuthorityError::CapacityExceeded)?,
                 digest: authority_frontier_digest_tx(&mut tx).await?,
             };
-            tx.commit().await.map_err(storage)?;
+            tx.commit()
+                .await
+                .map_err(crate::authority_store::commit_error)?;
             return Ok(Some(next));
         }
         if dirty
@@ -107,13 +119,15 @@ impl AuthBusAuthorityStore {
         {
             persist_checkpoint(&mut tx, external).await?;
             set_dirty(&mut tx, false).await?;
-            tx.commit().await.map_err(storage)?;
+            tx.commit()
+                .await
+                .map_err(crate::authority_store::commit_error)?;
             return Ok(None);
         }
         Err(AuthBusAuthorityError::RollbackDetected)
     }
 
-    pub async fn advance_authority_checkpoint(
+    pub(crate) async fn advance_authority_checkpoint(
         &self,
         expected_generation: u64,
         external: AuthorityCheckpoint,
@@ -134,10 +148,12 @@ impl AuthBusAuthorityStore {
         }
         persist_checkpoint(&mut tx, external).await?;
         set_dirty(&mut tx, false).await?;
-        tx.commit().await.map_err(storage)
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)
     }
 
-    pub async fn recovery_required(&self) -> Result<bool, AuthBusAuthorityError> {
+    pub(crate) async fn recovery_required(&self) -> Result<bool, AuthBusAuthorityError> {
         let value: i64 = sqlx::query_scalar(
             "SELECT recovery_required FROM authbus_recovery_state WHERE singleton = 1",
         )
@@ -150,7 +166,10 @@ impl AuthBusAuthorityStore {
     /// Classify pre-crash dispatch attempts as indeterminate before new quota
     /// issuance. Held reservations remain safe and indeterminate reservations
     /// retain their quota until authenticated terminal evidence arrives.
-    pub async fn reconcile_after_restart(&self, limit: u32) -> Result<bool, AuthBusAuthorityError> {
+    pub(crate) async fn reconcile_after_restart(
+        &self,
+        limit: u32,
+    ) -> Result<bool, AuthBusAuthorityError> {
         if limit == 0 || limit > 1024 {
             return Err(AuthBusAuthorityError::InvalidInput(
                 "recovery batch must be in 1..=1024",
@@ -199,7 +218,9 @@ impl AuthBusAuthorityStore {
             .await
             .map_err(storage)?;
         }
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(remaining == 0)
     }
 }

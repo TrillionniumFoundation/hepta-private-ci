@@ -28,7 +28,7 @@ use crate::quota_store::load_reservation;
 use crate::trust_store::load_issuer;
 
 impl AuthBusAuthorityStore {
-    pub async fn mark_dispatch_attempted(
+    pub(crate) async fn mark_dispatch_attempted(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -52,7 +52,9 @@ impl AuthBusAuthorityStore {
         if reservation.state == ReservationState::DispatchAttempted
             && reservation.dispatch_digest == Some(dispatch_digest)
         {
-            tx.commit().await.map_err(storage)?;
+            tx.commit()
+                .await
+                .map_err(crate::authority_store::commit_error)?;
             return Ok(reservation);
         }
         if reservation.revision != expected_revision {
@@ -78,11 +80,13 @@ impl AuthBusAuthorityStore {
         .execute(&mut *tx)
         .await
         .map_err(storage)?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(reservation)
     }
 
-    pub async fn mark_indeterminate(
+    pub(crate) async fn mark_indeterminate(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -93,7 +97,9 @@ impl AuthBusAuthorityStore {
         advance_time(&mut tx, &time).await?;
         let mut reservation = load_reservation(&mut tx, reservation_id).await?;
         if reservation.state == ReservationState::Indeterminate {
-            tx.commit().await.map_err(storage)?;
+            tx.commit()
+                .await
+                .map_err(crate::authority_store::commit_error)?;
             return Ok(reservation);
         }
         if reservation.revision != expected_revision {
@@ -106,11 +112,13 @@ impl AuthBusAuthorityStore {
         reservation.revision = next_revision(reservation.revision)?;
         reservation.updated_at_ms = time.wall_time_ms;
         update_reservation_state(&mut tx, &reservation, "indeterminate").await?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(reservation)
     }
 
-    pub async fn cancel_reservation(
+    pub(crate) async fn cancel_reservation(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -121,7 +129,9 @@ impl AuthBusAuthorityStore {
         advance_time(&mut tx, &time).await?;
         let mut reservation = load_reservation(&mut tx, reservation_id).await?;
         if reservation.state == ReservationState::Cancelled {
-            tx.commit().await.map_err(storage)?;
+            tx.commit()
+                .await
+                .map_err(crate::authority_store::commit_error)?;
             return Ok(reservation);
         }
         if reservation.revision != expected_revision {
@@ -137,11 +147,13 @@ impl AuthBusAuthorityStore {
         reservation.revision = next_revision(reservation.revision)?;
         reservation.updated_at_ms = time.wall_time_ms;
         update_reservation_state(&mut tx, &reservation, "cancelled").await?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(reservation)
     }
 
-    pub async fn reconcile_expired_reservation(
+    pub(crate) async fn reconcile_expired_reservation(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -158,13 +170,15 @@ impl AuthBusAuthorityStore {
             return Err(AuthBusAuthorityError::InvalidTransition);
         }
         reconcile_one_expired(&mut tx, &mut reservation, &time).await?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(reservation)
     }
 
     /// Reconcile a bounded batch of expired reservations. Undispatched holds are
     /// refunded; attempted effects become indeterminate and retain their quota.
-    pub async fn sweep_expired_reservations(
+    pub(crate) async fn sweep_expired_reservations(
         &self,
         time: TrustedTimeSample,
         limit: u32,
@@ -212,7 +226,9 @@ impl AuthBusAuthorityStore {
         .fetch_one(&mut *tx)
         .await
         .map_err(storage)?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(ExpiredReservationSweep {
             examined: u32::try_from(ids.len())
                 .map_err(|_| AuthBusAuthorityError::CapacityExceeded)?,
@@ -222,7 +238,7 @@ impl AuthBusAuthorityStore {
         })
     }
 
-    pub async fn settle(
+    pub(crate) async fn settle(
         &self,
         issuer: &SettlementIssuerRegistration,
         evidence: &SignedSettlementEvidence,
@@ -265,7 +281,9 @@ impl AuthBusAuthorityStore {
             {
                 return Err(AuthBusAuthorityError::IdempotencyConflict);
             }
-            tx.commit().await.map_err(storage)?;
+            tx.commit()
+                .await
+                .map_err(crate::authority_store::commit_error)?;
             return settlement_from(&reservation);
         }
         if !matches!(
@@ -322,7 +340,9 @@ impl AuthBusAuthorityStore {
         .execute(&mut *tx)
         .await
         .map_err(storage)?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         settlement_from(&reservation)
     }
 }

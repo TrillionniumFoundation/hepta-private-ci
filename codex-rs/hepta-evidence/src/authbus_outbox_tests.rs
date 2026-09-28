@@ -5,7 +5,6 @@ use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -14,17 +13,13 @@ use ed25519_dalek::SigningKey;
 use tempfile::TempDir;
 
 use crate::authbus_outbox::maintain;
+use crate::authbus_test_support::issuer_registration;
 use crate::store::now_millis;
 use crate::*;
 
 fn fixture(sequence: u64, expiry: u64) -> (IssuerRegistration, SignedMessage) {
     let key = SigningKey::from_bytes(&[37; 32]);
-    let issuer = IssuerRegistration {
-        issuer_id: StableId::new("issuer:queue").unwrap(),
-        key_epoch: Generation::new(1).unwrap(),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    };
+    let issuer = issuer_registration("issuer:queue", 1, &key, false);
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,
@@ -462,10 +457,7 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
     ));
     // Retire the fixture epoch, release only terminal capacity, and still reject
     // the consumed old sequence after all terminal rows are old enough to prune.
-    let revoked = IssuerRegistration {
-        revoked: true,
-        ..issuer
-    };
+    let revoked = issuer_registration("issuer:queue", 1, &SigningKey::from_bytes(&[37; 32]), true);
     store.quarantine_authbus_issuer(&revoked).await.unwrap();
     let mut tx = store.pool.begin_with("BEGIN IMMEDIATE").await.unwrap();
     maintain(&mut tx, now_millis().unwrap() + 86_400_001)
@@ -607,4 +599,66 @@ async fn one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs() {
             .await,
         Err(AuthBusOutboxError::Capacity)
     ));
+}
+
+#[tokio::test]
+async fn diagnostics_distinguish_backoff_lease_retries_and_ack_without_mutating() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(temp.path()))
+        .await
+        .unwrap();
+    let queued = enqueue(&store, 1).await;
+    let (issuer, _) = fixture(1, u64::MAX);
+    let first = claim(&store, queued.delivery_id, 60_000).await.unwrap();
+    let leased = store.authbus_outbox_diagnostics().await.unwrap();
+    assert_eq!(
+        (leased.queued, leased.leased, leased.retained_claim_retries),
+        (0, 1, 0)
+    );
+    store
+        .retry_authbus_delivery(&issuer, &first.lease, 60_000)
+        .await
+        .unwrap();
+    let before = store
+        .authbus_delivery_status(queued.delivery_id)
+        .await
+        .unwrap();
+    let backoff = store.authbus_outbox_diagnostics().await.unwrap();
+    assert_eq!((backoff.queued, backoff.waiting_for_backoff), (1, 1));
+    assert_eq!(
+        store
+            .authbus_delivery_status(queued.delivery_id)
+            .await
+            .unwrap(),
+        before
+    );
+    sqlx::query(
+        "UPDATE authbus_outbox SET available_at_ms = 0, fence = fence + 1 WHERE delivery_id = ?",
+    )
+    .bind(queued.delivery_id.as_array().as_slice())
+    .execute(&store.pool)
+    .await
+    .unwrap();
+    let second = claim(&store, queued.delivery_id, 60_000).await.unwrap();
+    assert_eq!(
+        store
+            .authbus_outbox_diagnostics()
+            .await
+            .unwrap()
+            .retained_claim_retries,
+        1
+    );
+    assert!(matches!(
+        store
+            .ack_authbus_delivery(&issuer, &first.lease, Digest32::of_bytes(b"stale"))
+            .await,
+        Err(AuthBusOutboxError::StaleLease)
+    ));
+    store
+        .ack_authbus_delivery(&issuer, &second.lease, Digest32::of_bytes(b"receipt"))
+        .await
+        .unwrap();
+    let done = store.authbus_outbox_diagnostics().await.unwrap();
+    assert_eq!((done.acked, done.retained_ack_latency_samples), (1, 1));
+    assert_eq!(done.oldest_unsettled_age_ms, None);
 }

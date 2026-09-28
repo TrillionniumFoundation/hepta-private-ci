@@ -1,10 +1,13 @@
 #![forbid(unsafe_code)]
 
+mod authbus_diagnostics;
 mod authbus_outbox;
 mod authbus_outbox_record;
 mod authbus_outbox_worker;
 mod authbus_recovery;
 mod authbus_store;
+#[cfg(test)]
+mod authbus_test_support;
 mod canonical;
 mod governance_store;
 mod governance_validation;
@@ -20,6 +23,7 @@ mod schema_validation;
 mod store;
 mod summary;
 
+pub use authbus_diagnostics::AuthBusOutboxDiagnostics;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ATTEMPTS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_LEASE_MS;

@@ -29,7 +29,7 @@ use crate::authority_store::u64_bytes;
 const MAX_ISSUER_EPOCHS: i64 = 4096;
 
 impl AuthBusAuthorityStore {
-    pub async fn enroll_issuer(
+    pub(crate) async fn enroll_issuer(
         &self,
         purpose: IssuerPurpose,
         spec: IssuerSpec,
@@ -58,11 +58,13 @@ impl AuthBusAuthorityStore {
         }
         insert_issuer(&mut tx, purpose, &spec).await?;
         let record = load_issuer(&mut tx, purpose, &spec.issuer_id, spec.key_epoch).await?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(record)
     }
 
-    pub async fn rotate_issuer(
+    pub(crate) async fn rotate_issuer(
         &self,
         purpose: IssuerPurpose,
         spec: IssuerSpec,
@@ -100,11 +102,13 @@ impl AuthBusAuthorityStore {
         .map_err(storage)?;
         insert_issuer(&mut tx, purpose, &spec).await?;
         let record = load_issuer(&mut tx, purpose, &spec.issuer_id, spec.key_epoch).await?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(record)
     }
 
-    pub async fn revoke_issuer(
+    pub(crate) async fn revoke_issuer(
         &self,
         purpose: IssuerPurpose,
         issuer_id: &StableId,
@@ -116,7 +120,9 @@ impl AuthBusAuthorityStore {
         if record.state == IssuerLifecycleState::Revoked
             && record.revision == expected_revision.saturating_add(1)
         {
-            tx.commit().await.map_err(storage)?;
+            tx.commit()
+                .await
+                .map_err(crate::authority_store::commit_error)?;
             return Ok(record);
         }
         if record.state != IssuerLifecycleState::Active || record.revision != expected_revision {
@@ -125,11 +131,13 @@ impl AuthBusAuthorityStore {
         record.state = IssuerLifecycleState::Revoked;
         record.revision = next_revision(record.revision)?;
         persist_issuer_state(&mut tx, &record).await?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(record)
     }
 
-    pub async fn retire_issuer_epoch(
+    pub(crate) async fn retire_issuer_epoch(
         &self,
         purpose: IssuerPurpose,
         issuer_id: &StableId,
@@ -141,7 +149,9 @@ impl AuthBusAuthorityStore {
         if record.state == IssuerLifecycleState::Retired
             && record.revision == expected_revision.saturating_add(1)
         {
-            tx.commit().await.map_err(storage)?;
+            tx.commit()
+                .await
+                .map_err(crate::authority_store::commit_error)?;
             return Ok(IssuerRetirement::from_record(&record));
         }
         if record.state != IssuerLifecycleState::Revoked || record.revision != expected_revision {
@@ -151,11 +161,13 @@ impl AuthBusAuthorityStore {
         record.revision = next_revision(record.revision)?;
         persist_issuer_state(&mut tx, &record).await?;
         let retirement = IssuerRetirement::from_record(&record);
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(retirement)
     }
 
-    pub async fn issuer_record(
+    pub(crate) async fn issuer_record(
         &self,
         purpose: IssuerPurpose,
         issuer_id: &StableId,
@@ -163,11 +175,13 @@ impl AuthBusAuthorityStore {
     ) -> Result<IssuerRecord, AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
         let record = load_issuer(&mut tx, purpose, issuer_id, key_epoch).await?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(record)
     }
 
-    pub async fn message_issuer(
+    pub(crate) async fn message_issuer(
         &self,
         issuer_id: &StableId,
         key_epoch: Generation,
@@ -178,7 +192,7 @@ impl AuthBusAuthorityStore {
         IssuerRegistration::from_record(&record)
     }
 
-    pub async fn settlement_issuer(
+    pub(crate) async fn settlement_issuer(
         &self,
         issuer_id: &StableId,
         key_epoch: Generation,
@@ -189,7 +203,7 @@ impl AuthBusAuthorityStore {
         SettlementIssuerRegistration::from_record(&record)
     }
 
-    pub async fn observe_trusted_time_attestation(
+    pub(crate) async fn observe_trusted_time_attestation(
         &self,
         attestation: &SignedTrustedTimeAttestation,
     ) -> Result<TrustedTimeSample, AuthBusAuthorityError> {
@@ -203,7 +217,9 @@ impl AuthBusAuthorityStore {
         .await?;
         let sample = attestation.verify(&record)?;
         advance_time(&mut tx, &sample).await?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(sample)
     }
 }

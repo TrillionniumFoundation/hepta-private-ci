@@ -23,12 +23,30 @@ const MAX_POLICIES: i64 = 4096;
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 #[derive(Clone)]
-pub struct AuthBusAuthorityStore {
+pub(crate) struct AuthBusAuthorityStore {
     pub(crate) pool: SqlitePool,
+    // Pool goes away before the last direct owner guard. The pool callback
+    // below additionally retains the fence across cloned/in-flight pool work.
+    _owner_fence: Option<std::sync::Arc<crate::owner_fence::OwnerFence>>,
 }
 
 impl AuthBusAuthorityStore {
-    pub async fn open(path: &Path) -> Result<Self, AuthBusAuthorityError> {
+    #[cfg(test)]
+    pub(crate) async fn open(path: &Path) -> Result<Self, AuthBusAuthorityError> {
+        Self::open_internal(path, None).await
+    }
+
+    pub(crate) async fn open_owned(
+        path: &Path,
+        fence: crate::owner_fence::OwnerFence,
+    ) -> Result<Self, AuthBusAuthorityError> {
+        Self::open_internal(path, Some(std::sync::Arc::new(fence))).await
+    }
+
+    async fn open_internal(
+        path: &Path,
+        owner_fence: Option<std::sync::Arc<crate::owner_fence::OwnerFence>>,
+    ) -> Result<Self, AuthBusAuthorityError> {
         let options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(true)
@@ -36,7 +54,15 @@ impl AuthBusAuthorityStore {
             .synchronous(SqliteSynchronous::Full)
             .foreign_keys(true)
             .busy_timeout(Duration::from_secs(5));
+        let pool_fence = owner_fence.clone();
         let pool = SqlitePoolOptions::new()
+            .after_connect(move |_connection, _metadata| {
+                let fence = pool_fence.clone();
+                Box::pin(async move {
+                    let _fence = fence;
+                    Ok(())
+                })
+            })
             .max_connections(5)
             .connect_with(options)
             .await
@@ -72,16 +98,24 @@ impl AuthBusAuthorityStore {
         .execute(&pool)
         .await
         .map_err(storage)?;
-        Ok(Self { pool })
+        Ok(Self {
+            pool,
+            _owner_fence: owner_fence,
+        })
     }
 
-    pub async fn observe_time(&self, time: TrustedTimeSample) -> Result<(), AuthBusAuthorityError> {
+    pub(crate) async fn observe_time(
+        &self,
+        time: TrustedTimeSample,
+    ) -> Result<(), AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
-        tx.commit().await.map_err(storage)
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)
     }
 
-    pub async fn last_trusted_time(
+    pub(crate) async fn last_trusted_time(
         &self,
     ) -> Result<Option<TrustedTimeSample>, AuthBusAuthorityError> {
         let row = sqlx::query(
@@ -94,7 +128,7 @@ impl AuthBusAuthorityStore {
         row.map(|row| trusted_time_from_row(&row)).transpose()
     }
 
-    pub async fn create_policy(
+    pub(crate) async fn create_policy(
         &self,
         spec: PolicySpec,
         time: TrustedTimeSample,
@@ -154,11 +188,13 @@ impl AuthBusAuthorityStore {
             revoked: false,
         };
         record_policy_history(&mut tx, &policy).await?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(policy)
     }
 
-    pub async fn replace_policy(
+    pub(crate) async fn replace_policy(
         &self,
         spec: PolicySpec,
         expected_revision: u64,
@@ -196,11 +232,13 @@ impl AuthBusAuthorityStore {
         .await
         .map_err(storage)?;
         record_policy_history(&mut tx, &current).await?;
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(current)
     }
 
-    pub async fn revoke_policy(
+    pub(crate) async fn revoke_policy(
         &self,
         policy_id: &StableId,
         expected_revision: u64,
@@ -224,11 +262,13 @@ impl AuthBusAuthorityStore {
                 .map_err(storage)?;
             record_policy_history(&mut tx, &current).await?;
         }
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(current)
     }
 
-    pub async fn retire_policy(
+    pub(crate) async fn retire_policy(
         &self,
         policy_id: &StableId,
         expected_revision: u64,
@@ -278,10 +318,12 @@ impl AuthBusAuthorityStore {
             .execute(&mut *tx)
             .await
             .map_err(storage)?;
-        tx.commit().await.map_err(storage)
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)
     }
 
-    pub async fn authorize(
+    pub(crate) async fn authorize(
         &self,
         principal: &StableId,
         action: &StableId,
@@ -320,7 +362,9 @@ impl AuthBusAuthorityStore {
             return Err(AuthBusAuthorityError::PolicyUnavailable);
         }
         let decision = PolicyDecision::new(&policy, &time);
-        tx.commit().await.map_err(storage)?;
+        tx.commit()
+            .await
+            .map_err(crate::authority_store::commit_error)?;
         Ok(decision)
     }
 }
@@ -531,3 +575,8 @@ pub(crate) fn storage(error: impl ToString) -> AuthBusAuthorityError {
 #[cfg(test)]
 #[path = "authority_store_tests.rs"]
 mod tests;
+
+// A driver error from COMMIT is not evidence that the transition did not land.
+pub(crate) fn commit_error(error: sqlx::Error) -> AuthBusAuthorityError {
+    AuthBusAuthorityError::CommitIndeterminate(error.to_string())
+}
