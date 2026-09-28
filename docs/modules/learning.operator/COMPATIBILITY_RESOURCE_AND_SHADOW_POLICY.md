@@ -1,41 +1,62 @@
+
 # `learning.operator` compatibility, resource, and shadow policy
 
 ## Schema and backward compatibility
 
-- V1 payload bytes remain decodable only while their schema is explicitly pinned.
-- V1 pins and V2 dataset wrappers are read-only compatibility inputs; neither independently authorizes promotion.
-- V2 payload pins bind artifact and producer identity, artifact/payload schemas, runtime profile, trust snapshot, authority epoch, and registry head in addition to the V1 numerical digests.
-- Every new schema version uses a new domain separator and an explicit decoder. Unknown versions fail closed. There is no best-effort field defaulting.
-- Migration is: decode old → fully validate old → encode new → compare the complete semantic projection → persist create-only → independently re-evaluate. In-place mutation of an accepted artifact is forbidden.
-- Downgrade is accepted only by reopening the original immutable predecessor and original pin. Re-encoding a predecessor is a new artifact and requires evaluation.
+- V1 payload bytes remain decodable only while their schema is pinned.
+- V1 pins and V2 dataset wrappers are structural compatibility inputs;
+  neither independently authorizes promotion.
+- V3 owner-bound inputs establish exact frozen-source and signed-row
+  admission and are revalidated immediately before fit.
+- V2 payload pins bind artifact and producer identity, artifact/payload
+  schemas, runtime profile, trust snapshot, authority epoch, and
+  registry head in addition to numerical digests.
+- Every schema version uses a new domain separator and explicit
+  decoder. Unknown versions fail closed.
+- Migration is decode old → validate old → encode new → compare full
+  semantics → persist create-only → independently re-evaluate.
+- Downgrade reopens the original immutable predecessor and original pin.
 
 ## Resource budgets
 
-Hard input ceilings remain:
+Compatibility/storage ceilings:
 
-- at most 1,000,000 training rows;
+- at most 1,000,000 represented training samples;
 - at most 262,144 tabular cells;
 - at most 4,096 sensors;
 - at most 128 actions;
 - at most 64 MiB persisted payload.
 
-Qualification must also publish peak resident memory, wall time, and prediction p50/p95/p99 for the largest admitted profile. A structural ceiling without a measured budget is not acceptance evidence. Inputs that cannot satisfy `cell_count × minimum_samples_per_cell ≤ row_limit` must fail during preflight before allocation or sorting.
+Owner-authenticated V3 admission is narrower:
+
+- at most 4,096 signed rows and frozen source records;
+- `sensors × actions × minimum_samples_per_cell ≤ rows ≤ 4096`.
+
+Impossible profiles fail during allocation-free preflight. The larger
+compatibility ceiling must never be presented as the V3 admission
+capacity.
+
+Qualification publishes peak resident memory, total wall time, and
+stage timings for freeze, canonicalization, owner admission, fit-time
+revalidation, encoding, create-only persistence, reload, and first
+prediction. Structural ceilings alone are not acceptance evidence.
 
 ## Longitudinal shadow acceptance
 
-Thresholds are preregistered and stored with the evaluator receipt before final outcomes. Promotion requires all of the following over the declared window:
+Thresholds are preregistered before final outcomes. Promotion requires
+zero identity/trust/authority violations, zero unauthorized writes,
+fresh-process load and immutable rollback, stable calibration and
+subgroup coverage, bounded abstention/OOD, no independently measured
+utility regression, no budget breach, and restart/permutation/read
+concurrency stability.
 
-- zero identity, ledger, registry, trust, signature, revocation, and authority violations;
-- zero unauthorized writes;
-- successful fresh-process load and immutable predecessor rollback;
-- stable calibration and subgroup coverage with declared confidence bounds;
-- bounded abstention and OOD rates;
-- no regression in independently measured task utility;
-- no resource-budget breach;
-- no material result change under restart, input permutation, or concurrent read pressure.
-
-A single hard-bound violation rejects the candidate. Passing shadow acceptance authorizes only the separately declared next admission stage; it does not grant the model authority to activate itself.
+A hard-bound violation rejects the candidate. Passing shadow
+acceptance authorizes only the separately declared next stage.
 
 ## Required robustness suites
 
-The module gate must include decoder fuzzing, property tests for determinism and ordering, semantic-row mutation tests, trust rotation and revocation races, registry movement during reads, restart/crash recovery, immutable rollback, maximum-profile benchmarks, and mutation testing of fail-closed branches. Any skipped suite is reported as missing evidence rather than success.
+The gate includes decoder fuzzing, determinism/order properties,
+semantic-row mutation, trust rotation/revocation races, registry
+movement, restart recovery, immutable rollback, maximum-profile
+measurements, and fail-closed mutation tests. Missing or skipped
+execution is reported as missing evidence, never success.

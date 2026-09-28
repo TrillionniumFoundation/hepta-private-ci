@@ -3,7 +3,13 @@
 #![cfg(unix)]
 
 use super::*;
+use crate::LoadedTabularOperatorV2;
+use crate::OperatorAdmissionStageV1;
+use crate::TABULAR_ARTIFACT_SCHEMA_V1;
+use crate::TABULAR_PAYLOAD_SCHEMA_V1;
 use crate::TabularOperatorSampleV1;
+use crate::TabularPayloadPinV2;
+use crate::encode_tabular_payload_v1;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
@@ -13,9 +19,12 @@ use ed25519_dalek::SigningKey;
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::Read;
+use std::io::Write;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
+use std::time::Instant;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 fn id(value: &str) -> StableId {
@@ -376,4 +385,121 @@ fn owner_dataset_rejects_oversized_signed_rows_before_canonicalization() {
         tabular_training_signing_payload_v2(&input, &receipt, &fixture.owner),
         Err(OperatorDatasetBindingError::Bounds)
     ));
+}
+
+fn peak_rss_kib() -> u64 {
+    fs::read_to_string("/proc/self/status")
+        .ok()
+        .and_then(|status| {
+            status
+                .lines()
+                .find(|line| line.starts_with("VmHWM:"))
+                .and_then(|line| line.split_whitespace().nth(1))
+                .and_then(|value| value.parse().ok())
+        })
+        .unwrap_or(0)
+}
+
+#[test]
+#[ignore = "explicit qualification performance profile"]
+fn full_v3_qualification_path_profile() {
+    let total = Instant::now();
+    let fixture = Fixture::new();
+
+    let started = Instant::now();
+    let (receipt, freeze) = fixture.dataset();
+    let freeze_us = started.elapsed().as_micros();
+
+    let input = plan(&receipt);
+    let started = Instant::now();
+    let payload = tabular_training_signing_payload_v2(&input, &receipt, &fixture.owner).unwrap();
+    let row = sign(
+        &fixture.owner,
+        "observer",
+        2,
+        LearningEvidenceRoleV1::Observer,
+        &payload,
+    );
+    let canonicalize_and_sign_us = started.elapsed().as_micros();
+
+    let started = Instant::now();
+    let verified =
+        verify_tabular_operator_plan_v3(input, &receipt, &fixture.owner, &freeze, &row, 50)
+            .unwrap();
+    assert_eq!(
+        verified.admission_stage(),
+        OperatorAdmissionStageV1::SourceAuthenticated
+    );
+    let owner_admission_us = started.elapsed().as_micros();
+
+    let started = Instant::now();
+    let artifact = fit_tabular_operator_verified_v3(verified, 51).unwrap();
+    let fit_with_revalidation_us = started.elapsed().as_micros();
+
+    let started = Instant::now();
+    let bytes = encode_tabular_payload_v1(&artifact).unwrap();
+    let encode_us = started.elapsed().as_micros();
+
+    let payload_path = fixture.root.join("operator-payload");
+    let started = Instant::now();
+    let mut output = OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&payload_path)
+        .unwrap();
+    output.write_all(&bytes).unwrap();
+    output.sync_all().unwrap();
+    drop(output);
+    let persist_us = started.elapsed().as_micros();
+
+    let started = Instant::now();
+    let mut reopened = Vec::new();
+    File::open(&payload_path)
+        .unwrap()
+        .read_to_end(&mut reopened)
+        .unwrap();
+    let pin = TabularPayloadPinV2 {
+        artifact_id: artifact.artifact_id.clone(),
+        producer_id: artifact.producer_id.clone(),
+        artifact_schema_version: TABULAR_ARTIFACT_SCHEMA_V1,
+        payload_schema_version: TABULAR_PAYLOAD_SCHEMA_V1,
+        payload_digest: Digest32::of_bytes(&reopened),
+        artifact_digest: artifact.artifact_digest,
+        objective_digest: artifact.objective_digest,
+        dataset_digest: artifact.dataset_digest,
+        sensor_core_digest: artifact.sensor_core_digest,
+        training_profile_digest: artifact.training_profile_digest,
+        runtime_profile_digest: hash("runtime-profile"),
+        trust_digest: fixture.owner.verifier().trust_digest(),
+        registry_head_digest: receipt.snapshot.ledger_head_digest,
+        authority_epoch: fixture.owner.verifier().authority_epoch(),
+        generation: artifact.generation,
+    };
+    let loaded = LoadedTabularOperatorV2::from_pinned_payload_v2(&reopened, &pin).unwrap();
+    assert_eq!(
+        loaded.admission_stage(),
+        OperatorAdmissionStageV1::ImmutableCandidate
+    );
+    let reload_us = started.elapsed().as_micros();
+
+    let started = Instant::now();
+    let prediction = loaded.predict(&id("sensor"), &id("action")).unwrap();
+    let first_prediction_us = started.elapsed().as_micros();
+    assert_eq!(prediction.value.raw(), 20);
+
+    println!(
+        "LEARNING_OPERATOR_FULL_PATH_PROFILE={{\"rows\":{},\"payload_bytes\":{},\"peak_rss_kib\":{},\"freeze_us\":{},\"canonicalize_and_sign_us\":{},\"owner_admission_us\":{},\"fit_with_revalidation_us\":{},\"encode_us\":{},\"persist_us\":{},\"reload_us\":{},\"first_prediction_us\":{},\"total_us\":{}}}",
+        receipt.snapshot.source_record_digests.len(),
+        reopened.len(),
+        peak_rss_kib(),
+        freeze_us,
+        canonicalize_and_sign_us,
+        owner_admission_us,
+        fit_with_revalidation_us,
+        encode_us,
+        persist_us,
+        reload_us,
+        first_prediction_us,
+        total.elapsed().as_micros(),
+    );
 }

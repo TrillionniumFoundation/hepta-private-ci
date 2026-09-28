@@ -17,6 +17,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+mod admission;
 mod authenticated;
 mod dataset_bound;
 mod owner_terminal;
@@ -41,6 +42,11 @@ mod learned_strict;
 mod reference;
 mod world_model;
 
+pub use admission::ClassifyOperatorAdmissionFailure;
+pub use admission::OperatorAdmissionStageV1;
+pub use admission::OperatorFailureDispositionV1;
+pub use admission::OperatorFailureScopeV1;
+pub use admission::OperatorRecoveryActionV1;
 pub use authenticated::AuthenticatedApplicabilityAdmissionV2;
 pub use authenticated::AuthenticatedOperatorError;
 pub use authenticated::AuthenticatedOperatorRegularityAdmissionV2;
@@ -49,6 +55,8 @@ pub use authenticated::admit_operator_regularity_with_signed_evidence_v2;
 pub use authenticated::validate_applicability_with_signed_evidence_v2;
 pub use dataset_bound::MAX_SIGNED_OPERATOR_ROWS;
 pub use dataset_bound::OperatorDatasetBindingError;
+pub use dataset_bound::OwnerDatasetFailureV1;
+pub use dataset_bound::OwnerDatasetOperationV1;
 #[cfg(feature = "qualification-unverified-input")]
 pub use dataset_bound::VerifiedTabularOperatorPlanV2;
 #[cfg(not(feature = "qualification-unverified-input"))]

@@ -11,6 +11,7 @@ use std::sync::Mutex;
 
 #[cfg(test)]
 use codex_hepta_bellman_operator::LoadedTabularOperatorV1;
+use codex_hepta_bellman_operator::OperatorAdmissionStageV1;
 use codex_hepta_bellman_operator::TabularPayloadError;
 #[cfg(test)]
 use codex_hepta_bellman_operator::TabularPayloadPinV1;
@@ -162,6 +163,15 @@ pub fn cognitive_action_id(item: &CognitiveContextItem) -> Result<StableId, Stri
 }
 
 impl PinnedCognitiveRanker {
+    #[must_use]
+    pub fn admission_stage(&self) -> OperatorAdmissionStageV1 {
+        if self.admission.is_some() {
+            OperatorAdmissionStageV1::SelectedReadOnly
+        } else {
+            OperatorAdmissionStageV1::StructurallyValidated
+        }
+    }
+
     #[cfg(test)]
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn load(

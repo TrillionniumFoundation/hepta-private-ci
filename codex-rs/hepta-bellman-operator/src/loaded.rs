@@ -10,6 +10,7 @@ use std::error::Error;
 use std::fmt;
 use std::sync::Arc;
 
+use crate::OperatorAdmissionStageV1;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorCellV1;
 use crate::TabularOperatorPredictionV1;
@@ -80,6 +81,11 @@ pub struct LoadedTabularOperatorV1 {
 }
 
 impl LoadedTabularOperatorV1 {
+    #[must_use]
+    pub const fn admission_stage(&self) -> OperatorAdmissionStageV1 {
+        OperatorAdmissionStageV1::StructurallyValidated
+    }
+
     /// Verify a host-selected pin before decoding or permitting predictions.
     /// A pin computed from untrusted payload bytes is not independent admission.
     pub fn from_pinned_payload(
@@ -135,6 +141,11 @@ pub struct ValidatedTabularOperatorV1 {
 
 impl ValidatedTabularOperatorV1 {
     #[must_use]
+    pub const fn admission_stage(&self) -> OperatorAdmissionStageV1 {
+        OperatorAdmissionStageV1::StructurallyValidated
+    }
+
+    #[must_use]
     pub fn artifact_id(&self) -> &StableId {
         &self.artifact.artifact_id
     }
@@ -176,6 +187,11 @@ pub struct LoadedTabularOperatorV2 {
 }
 
 impl LoadedTabularOperatorV2 {
+    #[must_use]
+    pub const fn admission_stage(&self) -> OperatorAdmissionStageV1 {
+        OperatorAdmissionStageV1::ImmutableCandidate
+    }
+
     pub fn from_pinned_payload_v2(
         bytes: &[u8],
         pin: &TabularPayloadPinV2,

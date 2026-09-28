@@ -63,8 +63,8 @@ impl RankerModel {
 }
 
 enum Authorization {
-    Selection(VerifiedSelfEvolutionSelectionV1),
-    Rollback(VerifiedSelfEvolutionRollbackV1),
+    Selection(Box<VerifiedSelfEvolutionSelectionV1>),
+    Rollback(Box<VerifiedSelfEvolutionRollbackV1>),
 }
 
 impl Authorization {
@@ -149,7 +149,7 @@ impl PinnedCognitiveRanker {
             model_pin,
             current,
             admission,
-            Authorization::Selection(selection.clone()),
+            Authorization::Selection(Box::new(selection.clone())),
         )
     }
 
@@ -189,7 +189,7 @@ impl PinnedCognitiveRanker {
             model_pin,
             current,
             admission,
-            Authorization::Rollback(rollback.clone()),
+            Authorization::Rollback(Box::new(rollback.clone())),
         )
     }
 

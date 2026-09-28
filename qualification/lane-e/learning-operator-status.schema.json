@@ -1,0 +1,127 @@
+{
+  "$id": "hepta.learning-operator-gate-status.v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "candidate": {
+      "oneOf": [
+        {
+          "properties": {
+            "sha": {
+              "pattern": "^[0-9a-f]{40}$",
+              "type": "string"
+            },
+            "tree": {
+              "pattern": "^[0-9a-f]{40}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "sha",
+            "tree"
+          ]
+        },
+        {
+          "properties": {
+            "baseSha": {
+              "pattern": "^[0-9a-f]{40}$",
+              "type": "string"
+            },
+            "mergeSha": {
+              "pattern": "^[0-9a-f]{40}$",
+              "type": "string"
+            },
+            "mergeTree": {
+              "pattern": "^[0-9a-f]{40}$",
+              "type": "string"
+            },
+            "sourceSha": {
+              "pattern": "^[0-9a-f]{40}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "sourceSha",
+            "baseSha",
+            "mergeSha",
+            "mergeTree"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "environment": {
+      "type": "object"
+    },
+    "externalAcceptanceIncluded": {
+      "const": false
+    },
+    "gates": {
+      "items": {
+        "properties": {
+          "command": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "durationMs": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "exitCode": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "pass",
+              "fail",
+              "timeout"
+            ]
+          },
+          "stderr": {
+            "type": "string"
+          },
+          "stdout": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "command",
+          "state",
+          "durationMs",
+          "stdout",
+          "stderr"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "overall": {
+      "enum": [
+        "pass",
+        "fail"
+      ]
+    },
+    "schema": {
+      "const": "hepta.learning-operator-gate-status.v1"
+    }
+  },
+  "required": [
+    "schema",
+    "candidate",
+    "environment",
+    "gates",
+    "overall",
+    "externalAcceptanceIncluded"
+  ],
+  "title": "learning.operator exact-candidate gate status",
+  "type": "object"
+}

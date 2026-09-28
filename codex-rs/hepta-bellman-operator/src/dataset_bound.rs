@@ -22,6 +22,7 @@ use codex_hepta_learning_ledger::verify_signed_independent_roles_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use crate::OperatorAdmissionStageV1;
 use crate::StrictLearnedOperatorError;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
@@ -94,7 +95,19 @@ impl fmt::Debug for VerifiedWorldModelDatasetV3<'_> {
     }
 }
 
+impl VerifiedTabularOperatorPlanV2 {
+    #[must_use]
+    pub const fn admission_stage(&self) -> OperatorAdmissionStageV1 {
+        OperatorAdmissionStageV1::StructurallyValidated
+    }
+}
+
 impl VerifiedTabularOperatorPlanV3<'_> {
+    #[must_use]
+    pub const fn admission_stage(&self) -> OperatorAdmissionStageV1 {
+        OperatorAdmissionStageV1::SourceAuthenticated
+    }
+
     #[must_use]
     pub fn ledger_head_digest(&self) -> Digest32 {
         self.admission.receipt.snapshot.ledger_head_digest
@@ -109,7 +122,19 @@ impl VerifiedTabularOperatorPlanV3<'_> {
     }
 }
 
+impl VerifiedWorldModelDatasetV2 {
+    #[must_use]
+    pub const fn admission_stage(&self) -> OperatorAdmissionStageV1 {
+        OperatorAdmissionStageV1::StructurallyValidated
+    }
+}
+
 impl VerifiedWorldModelDatasetV3<'_> {
+    #[must_use]
+    pub const fn admission_stage(&self) -> OperatorAdmissionStageV1 {
+        OperatorAdmissionStageV1::SourceAuthenticated
+    }
+
     #[must_use]
     pub fn ledger_head_digest(&self) -> Digest32 {
         self.admission.receipt.snapshot.ledger_head_digest
@@ -263,19 +288,19 @@ impl OwnerAdmission<'_> {
         let expected = self
             .owner
             .freeze_dataset(plan.clone(), &self.freeze_evidence, now)
-            .map_err(|error| OperatorDatasetBindingError::Owner(error.to_string()))?;
+            .map_err(|error| owner_failure(OwnerDatasetOperationV1::FreezeDataset, error))?;
         if expected != self.receipt {
             return Err(OperatorDatasetBindingError::TrustContextMismatch);
         }
         self.owner
             .read_dataset_records(&self.receipt, now)
-            .map_err(|error| OperatorDatasetBindingError::Owner(error.to_string()))?;
+            .map_err(|error| owner_failure(OwnerDatasetOperationV1::ReadDatasetRecords, error))?;
         let snapshot = self
             .owner
             .snapshot()
-            .map_err(|error| OperatorDatasetBindingError::Owner(error.to_string()))?;
+            .map_err(|error| owner_failure(OwnerDatasetOperationV1::Snapshot, error))?;
         let freeze_payload = dataset_freeze_signing_payload_v2(&snapshot, &plan)
-            .map_err(|error| OperatorDatasetBindingError::Owner(error.to_string()))?;
+            .map_err(|error| owner_failure(OwnerDatasetOperationV1::EncodeFreezePayload, error))?;
         let verifier = self.owner.verifier();
         let evaluator = verifier.verify(
             LearningEvidenceRoleV1::Evaluator,
@@ -339,6 +364,37 @@ use row_commitment::canonical_world_model_row_semantics_v1;
 pub use row_commitment::tabular_training_signing_payload_v2;
 pub use row_commitment::world_model_training_signing_payload_v2;
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum OwnerDatasetOperationV1 {
+    FreezeDataset,
+    ReadDatasetRecords,
+    Snapshot,
+    EncodeFreezePayload,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct OwnerDatasetFailureV1 {
+    pub operation: OwnerDatasetOperationV1,
+    pub message: String,
+}
+
+impl fmt::Display for OwnerDatasetFailureV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{:?}: {}", self.operation, self.message)
+    }
+}
+impl StdError for OwnerDatasetFailureV1 {}
+
+fn owner_failure(
+    operation: OwnerDatasetOperationV1,
+    error: impl fmt::Display,
+) -> OperatorDatasetBindingError {
+    OperatorDatasetBindingError::Owner(OwnerDatasetFailureV1 {
+        operation,
+        message: error.to_string(),
+    })
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum OperatorDatasetBindingError {
     DatasetReceipt(DatasetReceiptError),
@@ -352,7 +408,7 @@ pub enum OperatorDatasetBindingError {
     Bounds,
     ClockRegression,
     Arithmetic,
-    Owner(String),
+    Owner(OwnerDatasetFailureV1),
     Learned(StrictLearnedOperatorError),
     WorldModel(WorldModelError),
 }
@@ -362,7 +418,26 @@ impl fmt::Display for OperatorDatasetBindingError {
         write!(f, "{self:?}")
     }
 }
-impl StdError for OperatorDatasetBindingError {}
+impl StdError for OperatorDatasetBindingError {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match self {
+            Self::DatasetReceipt(error) => Some(error),
+            Self::SignedEvidence(error) => Some(error),
+            Self::Owner(error) => Some(error),
+            Self::Learned(error) => Some(error),
+            Self::WorldModel(error) => Some(error),
+            Self::DatasetDigestMismatch
+            | Self::ObjectiveDigestMismatch
+            | Self::EvidenceSetMismatch
+            | Self::TrustContextMismatch
+            | Self::DuplicateEvidence
+            | Self::DuplicateIdentity
+            | Self::Bounds
+            | Self::ClockRegression
+            | Self::Arithmetic => None,
+        }
+    }
+}
 impl From<DatasetReceiptError> for OperatorDatasetBindingError {
     fn from(value: DatasetReceiptError) -> Self {
         Self::DatasetReceipt(value)

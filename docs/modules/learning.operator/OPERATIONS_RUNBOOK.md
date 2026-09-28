@@ -1,31 +1,58 @@
+
 # `learning.operator` operations runbook
+
+State and error semantics are defined in
+[ADMISSION_CONTRACT.md](ADMISSION_CONTRACT.md).
 
 ## Trust rotation and revocation
 
-Every selection must pin the trust digest and authority epoch used to verify its generator, observer, evaluator, and selector evidence. A key rotation creates a new immutable trust snapshot; it never rewrites old evidence. At or after a signer's `revoked_at`, re-verification must fail and the candidate must leave the eligible shadow set.
+Every selection pins the trust digest and authority epoch used for
+generator, observer, evaluator, and selector evidence. Rotation creates
+a new immutable trust snapshot; it never rewrites old evidence. At or
+after `revoked_at`, re-verification fails and the candidate leaves the
+eligible shadow set.
 
-Trust material comes from the host authority store. Candidate payloads, manifests, receipts, and remote callers may not supply or replace the verifier's keys, controller mapping, scope, objective, or epoch.
+Trust material comes from the host authority store. Candidate payloads,
+manifests, receipts, and remote callers cannot replace verifier keys,
+controller mapping, scope, objective, or epoch.
+
+## Actionable failure handling
+
+- `CorrectRequest`: reject the unchanged request; do not busy-retry.
+- `ObtainFreshOwnerEvidence`: rebuild the freeze/attestation chain
+  against the current owner.
+- `RejectCandidate`: quarantine the immutable candidate identity and
+  preserve its evidence.
+- `ReloadSelectedCandidate`: reopen the independently selected bytes and
+  complete pin; never synthesize a replacement.
+- `AbstainUnsupportedCell`: leave the candidate loaded and abstain for
+  that decision.
+- `StopConsumer`: stop reads and preserve diagnostics until explicit
+  operator recovery.
+
+Owner failures include the exact failed operation (`FreezeDataset`,
+`ReadDatasetRecords`, `Snapshot`, or `EncodeFreezePayload`).
 
 ## Registry movement
 
-Before each read-only use, verify a signed current-registry view and exact predecessor/head binding. A stale registry head, generation regression, predecessor mismatch, revocation, or unavailable witness closes the consumer. Do not fall back to an unverified baseline while retaining learned-policy observability claims.
+Before each read-only use, verify a signed current-registry view and
+exact predecessor/head binding. A stale head, generation regression,
+predecessor mismatch, revocation, or unavailable witness closes the
+consumer. Do not fall back while retaining learned-policy claims.
 
 ## Rollback
 
-Rollback selects an already persisted immutable predecessor payload and its original complete pin. Do not retrain, rewrite, re-sign, or recompute the predecessor. Verify artifact ID, producer ID, generation, artifact and payload schema versions, runtime profile, trust digest, authority epoch, and registry head before opening bytes.
+Reopen an already persisted immutable predecessor and its original
+complete pin. Verify artifact/producer identity, generations, schemas,
+runtime profile, trust digest, authority epoch, and registry head.
 
-Rollback success requires a fresh process load and a read-only prediction smoke test. Failure to reopen the exact predecessor is a stop condition, not permission to synthesize a replacement.
+Success requires a fresh-process load and read-only prediction smoke
+test. Failure to reopen the exact predecessor is a stop condition.
 
 ## Incident stop conditions
 
-Stop candidate admission and preserve evidence on any of the following:
-
-- ledger replay or dataset-source-set mismatch;
-- signature, controller-separation, trust-epoch, or revocation failure;
-- canonical row-semantics digest drift;
-- registry-head or immutable artifact identity mismatch;
-- unsupported-cell, OOD, calibration, subgroup-coverage, or resource-budget breach;
-- missing independent evaluation or selector evidence;
-- any attempted production write by the shadow consumer.
-
-Production writes remain disabled throughout qualification. Recovery must produce a new evidence chain; operators must not edit receipts in place.
+Stop admission and preserve evidence on ledger/source-set mismatch,
+signature/controller/trust/revocation failure, row-semantics drift,
+registry or immutable identity mismatch, calibration/coverage/resource
+breach, missing independent evaluation/selection, or any attempted
+production write by the shadow consumer.

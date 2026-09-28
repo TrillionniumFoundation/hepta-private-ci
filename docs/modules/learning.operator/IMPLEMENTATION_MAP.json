@@ -34,6 +34,21 @@
       "delegatedCallees": []
     },
     {
+      "operation": "classify_operator_admission_failure",
+      "designOperation": "classify_operator_admission_failure",
+      "nativeSymbol": "ClassifyOperatorAdmissionFailure::disposition",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/admission.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/admission.rs::unsupported_cells_abstain_without_invalidating_the_candidate",
+        "codex-rs/hepta-bellman-operator/src/admission.rs::revoked_evidence_requires_fresh_owner_admission"
+      ],
+      "state": "source_implemented_not_default_product_loop_composed",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
       "operation": "build_sensor_core",
       "nativeSymbol": "build_sensor_core",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
