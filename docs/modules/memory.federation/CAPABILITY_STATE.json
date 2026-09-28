@@ -28,14 +28,22 @@
     "durableAttemptReplayRecovery": "host_store_snapshot_source_candidate_pending_selected_backend",
     "clientInboundAtomicity": "staged_replay_and_recovery_commit_retryable_without_restart",
     "logicalCapacityProbe": "source_candidate_retained_metrics_pending_execution",
-    "realHostQualification": "not_executed"
+    "realHostQualification": "not_executed",
+    "terminalRequestCredentialRevalidation": "source_candidate_directional_key_generation_and_issuing_host_bound",
+    "availableRecoveryBackends": [
+      "in_memory_test_double",
+      "unix_atomic_file_candidate_pending_selected_host"
+    ]
   },
   "execution": {
     "exactHead": "pending_current_head_qualification",
     "deterministicCurrentBaseMerge": "pending_current_base_merge_qualification",
     "executionGuard": "source_candidate_pending_execution",
     "receiptsBindCapabilityState": true,
-    "successfulReceiptsRequireCapacityMetrics": true
+    "successfulReceiptsRequireCapacityMetrics": true,
+    "successfulReceiptsRequireCommandExecution": true,
+    "successfulReceiptsRequireTrackedLock": true,
+    "receiptsBindWorkflowAttempt": true
   },
   "claims": {
     "sourceRootPresent": true,
