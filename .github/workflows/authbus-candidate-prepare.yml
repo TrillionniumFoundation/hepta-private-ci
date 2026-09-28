@@ -1,4 +1,4 @@
-name: AuthBus scoped source preparation
+name: AuthBus scoped source preparation and qualification
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: authbus-scoped-preparation-${{ github.sha }}
@@ -20,8 +20,13 @@ concurrency:
 jobs:
   prepare:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/authbus-final-hardening-20260928'
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      source: ${{ steps.publish.outputs.source }}
+      base: ${{ steps.publish.outputs.base }}
     env:
       PYTHONDONTWRITEBYTECODE: 1
     steps:
@@ -36,6 +41,9 @@ jobs:
           python3 scripts/authbus-preflight-repair.py
           python3 scripts/prepare-authbus-candidate.py
           python3 scripts/finalize-authbus-candidate.py
+          # Bot writes are confined to source, tests and module documents. The
+          # authorized connector, not this token, manages workflow definitions.
+          git restore --source=HEAD -- .github/workflows/authbus-authority-qualification.yml .github/workflows/authbus-trust-boundary-migrate.yml
       - name: Install pinned formatter
         run: |
           set -euo pipefail
@@ -61,13 +69,14 @@ jobs:
           python3 scripts/generate-authbus-implementation-map.py --check
           python3 scripts/test-authbus-exact-head-evidence.py
           python3 scripts/test-authbus-operations.py
-      - name: Push only the prepared source candidate, without rebase or force
+      - name: Push prepared source without rebase or force and freeze both identities
+        id: publish
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import subprocess
           allowed = ('codex-rs/hepta-authbus/', 'codex-rs/hepta-authbus-p1-3-qualification/', 'codex-rs/hepta-evidence/src/authbus_', 'codex-rs/hepta-agentd/src/authbus_', 'codex-rs/hepta-bao-adapter/src/https_consumer', 'docs/modules/auth.authbus/')
-          exact = {'codex-rs/hepta-evidence/src/lib.rs', 'codex-rs/hepta-evidence/src/qualification_tests.rs', 'codex-rs/hepta-agentd/tests/kernel_evidence_product.rs', 'scripts/authbus-exact-head-evidence.py', 'scripts/check-authbus-closed-world.py', '.github/workflows/authbus-authority-qualification.yml', '.github/workflows/authbus-trust-boundary-migrate.yml'}
+          exact = {'codex-rs/hepta-evidence/src/lib.rs', 'codex-rs/hepta-evidence/src/qualification_tests.rs', 'codex-rs/hepta-agentd/tests/kernel_evidence_product.rs', 'scripts/authbus-exact-head-evidence.py', 'scripts/test-authbus-exact-head-evidence.py', 'scripts/check-authbus-closed-world.py'}
           paths = [p for p in subprocess.check_output(['git','diff','--name-only','-z']).decode().split('\0') if p]
           bad = [p for p in paths if p not in exact and not p.startswith(allowed)]
           if bad: raise SystemExit('Refusing out-of-scope changes: '+repr(bad))
@@ -80,8 +89,11 @@ jobs:
           REMOTE=$(git ls-remote origin "$GITHUB_REF" | cut -f1)
           test "$REMOTE" = "$GITHUB_SHA"
           git push origin "HEAD:$GITHUB_REF"
+          git fetch --no-tags origin main
+          echo "source=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "base=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
           git rev-parse HEAD
-      - name: Retain prepared source patch even if the remote write is rejected
+      - name: Retain prepared patch on every outcome
         if: always()
         run: |
           mkdir -p "$RUNNER_TEMP/authbus-prepared"
@@ -93,3 +105,73 @@ jobs:
           name: authbus-prepared-${{ github.sha }}
           path: ${{ runner.temp }}/authbus-prepared
           if-no-files-found: error
+
+  native:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [source-head, synthetic-merge]
+    env:
+      PYTHONDONTWRITEBYTECODE: 1
+      SOURCE: ${{ needs.prepare.outputs.source }}
+      BASE: ${{ needs.prepare.outputs.base }}
+      MODE: ${{ matrix.mode }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.source }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Assemble the exact candidate using the common frozen base
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          git cat-file -e "$BASE^{commit}"
+          git config user.name 'authbus-qualification'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if [ "$MODE" = 'synthetic-merge' ]; then
+            git checkout --detach "$BASE"
+            git merge --no-ff --no-commit "$SOURCE"
+            TREE=$(git write-tree)
+            COMMIT=$(printf 'AuthBus fixed source/base qualification\n' | git commit-tree "$TREE" -p "$BASE" -p "$SOURCE")
+            git reset --hard "$COMMIT"
+          fi
+      - name: Install pinned native toolchain
+        run: |
+          set -euo pipefail
+          TOOLCHAIN=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$TOOLCHAIN" --profile minimal --component rustfmt --component clippy
+          echo "RUSTUP_TOOLCHAIN=$TOOLCHAIN" >> "$GITHUB_ENV"
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: authbus-cargo-dependencies-${{ runner.os }}-${{ hashFiles('codex-rs/Cargo.lock') }}
+      - name: Execute all exact-candidate native gates
+        run: |
+          python3 scripts/authbus-exact-head-evidence.py \
+            --output "$RUNNER_TEMP/authbus-evidence/receipt.json" \
+            --mode "$MODE" --source-head "$SOURCE" --base-sha "$BASE"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: authbus-native-${{ matrix.mode }}-${{ needs.prepare.outputs.source }}
+          path: ${{ runner.temp }}/authbus-evidence
+          if-no-files-found: error
+
+  qualified:
+    if: always()
+    needs: [prepare, native]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require preparation and both actual native candidates to succeed
+        env:
+          PREPARE_RESULT: ${{ needs.prepare.result }}
+          NATIVE_RESULT: ${{ needs.native.result }}
+        run: |
+          test "$PREPARE_RESULT" = success
+          test "$NATIVE_RESULT" = success
