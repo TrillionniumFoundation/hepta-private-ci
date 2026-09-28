@@ -214,7 +214,7 @@ fn generator_identity_digest_binds_every_owned_field_and_order() {
         );
     }
 
-    let mut ordered = request.candidates.clone();
+    let mut ordered = request.candidates;
     let mut second = ordered[0].clone();
     second.candidate_id = id("candidate:b");
     second.support_digest = d("support:b");
