@@ -198,10 +198,10 @@ mod trust_frontier_tests {
             authority_epoch: previous.authority_epoch + 1,
             ..previous
         };
-        assert_eq!(
-            rotated.validate(100, Some(previous)).map(|value| value.generation),
-            Ok(rotated.generation)
-        );
+        assert!(matches!(
+            rotated.validate(100, Some(previous)),
+            Ok(value) if value.generation == rotated.generation
+        ));
     }
 }
 
