@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "9503d177a5afe8e820d774f42cfd1a44553f6208",
-    "tree": "f649f7f64f76f178df3f71504f2f00412b119e01"
+    "commit": "540750ca5675100a4d18fc18d4ac0afea2e33306",
+    "tree": "993bcee6d34a681477af358c500482fed7d2ed50"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -58,7 +58,7 @@
   ],
   "repositoryControlledGaps": [
     "Run the exact current head and deterministic current-base merge through the retained guarded qualification matrix before changing productExecutionProved.",
-    "Promote the reviewed standalone wire Cargo.lock to tracked locked input after a successful resolved-dependency receipt.",
+    "Keep tracked standalone and workspace lockfiles unchanged while obtaining final exact-head and deterministic-merge execution receipts.",
     "Select and compose the authenticated transport, secure credential provider and crash-safe recovery-store backend through the source host boundary without widening the read-only contract.",
     "Produce target-host latency, capacity, backpressure, replay-pressure, cancellation-tail and restart-recovery evidence."
   ],
@@ -87,9 +87,9 @@
   "headAttestation": {
     "candidateBranch": "feat/memory-federation-full-closure-20260927",
     "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "candidateHead": "9503d177a5afe8e820d774f42cfd1a44553f6208",
-    "candidateTree": "f649f7f64f76f178df3f71504f2f00412b119e01",
-    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics",
+    "candidateHead": "540750ca5675100a4d18fc18d4ac0afea2e33306",
+    "candidateTree": "993bcee6d34a681477af358c500482fed7d2ed50",
+    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -125,7 +125,15 @@
       "execution_guard_binds_sha_tree_source_and_commands_before_after",
       "canonical_status_projection_and_receipt_binding",
       "exact_head_and_full_synthetic_merge_same_suite",
-      "machine_readable_payload_and_artifact_digest_envelope"
+      "machine_readable_payload_and_artifact_digest_envelope",
+      "terminal_request_credential_revocation_rotation_expiry_fence",
+      "cross_host_admission_token_reuse_rejection",
+      "retained_actual_command_exit_status_and_raw_logs",
+      "complete_workspace_build_input_manifest",
+      "tracked_lockfile_byte_identity",
+      "workflow_run_attempt_and_job_binding",
+      "ordered_base_then_source_merge_parents",
+      "exact_capacity_workload_and_execution_binding"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
@@ -138,10 +146,8 @@
       ".github/workflows/memory-federation-pr-qualification.yml",
       ".github/workflows/memory-federation-slim-smoke.yml",
       ".github/workflows/memory-federation-v2-final-verify.yml",
-      "codex-rs/hepta-memory-federation/src/lib.rs",
-      "codex-rs/hepta-memory-federation/src/legacy_v1.rs",
-      "codex-rs/hepta-memory-federation/src/v2.rs",
-      "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+      "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "codex-rs/hepta-memory-federation-wire",
       "codex-rs/hepta-memory-federation-wire/Cargo.toml",
       "codex-rs/hepta-memory-federation-wire/src/attempt.rs",
       "codex-rs/hepta-memory-federation-wire/src/bin/memory_federation_capacity_probe.rs",
@@ -152,37 +158,79 @@
       "codex-rs/hepta-memory-federation-wire/src/protocol.rs",
       "codex-rs/hepta-memory-federation-wire/src/recovery.rs",
       "codex-rs/hepta-memory-federation-wire/src/replay.rs",
+      "codex-rs/hepta-memory-federation/src/legacy_v1.rs",
+      "codex-rs/hepta-memory-federation/src/lib.rs",
+      "codex-rs/hepta-memory-federation/src/v2.rs",
+      "codex-rs/hepta-memory-federation/src/v2_tests.rs",
       "codex-rs/hepta-memory/src/cognitive_runtime.rs",
       "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
-      "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
       "docs/modules/memory.federation/CAPABILITY_STATE.json",
       "docs/modules/memory.federation/TECHNICAL.md",
       "docs/modules/memory.federation/V2_HARDENING.md",
-      "docs/modules/memory.federation/WIRE_V1.md",
       "docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json",
+      "docs/modules/memory.federation/WIRE_V1.md",
       "qualification/memory-federation/FULL_CLOSURE.md",
       "qualification/module-execution-dossiers/detail/memory.federation.md",
       "scripts/memory_federation_attestation.py",
       "scripts/memory_federation_execution_guard.py",
+      "scripts/memory_federation_execution_receipt.py",
       "scripts/memory_federation_full_attestation.py",
       "scripts/run_memory_federation_qualification.sh",
+      "scripts/test_memory_federation_execution_receipt.py",
       "scripts/verify_memory_federation_implementation.py",
       "scripts/verify_memory_federation_status.py"
     ],
-    "note": "sourceBase and observedAtHead bind the immediately preceding source-and-document state. This implementation-map-only commit does not manufacture execution or performance evidence. The in-process caller reserves read time after discovery; verified wire values are immutable outside the verifier; replay admission rejects clock rollback and isolates directional credentials; the transport-neutral host persists replay and pending/cancel/terminal state around a read-only handler. The logical-host capacity probe is retained diagnostic evidence only and cannot satisfy selected-host or two-real-host gates. Product execution, real transport selection, independent acceptance, activation and release remain false until their separate gates pass.",
+    "note": "sourceBase and observedAtHead bind the immediately preceding source-and-document candidate. This implementation-map-only rebind records actual current Git objects, not execution success. The existing V2 product path and half-budget read reservation remain unchanged. Terminal completion rechecks incoming directional credentials and issuing host identity; qualification retains real subprocess outcomes and logs under one locked command contract. Full exact-head/synthetic-merge qualification, selected authenticated transport, selected-host durable recovery, real-host faults/SLOs, independent acceptance and activation/release remain separately gated.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
     ]
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "9503d177a5afe8e820d774f42cfd1a44553f6208",
-    "tree": "f649f7f64f76f178df3f71504f2f00412b119e01"
+    "commit": "540750ca5675100a4d18fc18d4ac0afea2e33306",
+    "tree": "993bcee6d34a681477af358c500482fed7d2ed50"
   },
   "observedSourcePaths": [
+    ".github/workflows/blocking-ci.yml",
+    ".github/workflows/memory-federation-pr-qualification.yml",
+    ".github/workflows/memory-federation-slim-smoke.yml",
+    ".github/workflows/memory-federation-v2-final-verify.yml",
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-memory-federation"
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "codex-rs/hepta-memory-federation",
+    "codex-rs/hepta-memory-federation-wire",
+    "codex-rs/hepta-memory-federation-wire/Cargo.toml",
+    "codex-rs/hepta-memory-federation-wire/src/attempt.rs",
+    "codex-rs/hepta-memory-federation-wire/src/bin/memory_federation_capacity_probe.rs",
+    "codex-rs/hepta-memory-federation-wire/src/codec.rs",
+    "codex-rs/hepta-memory-federation-wire/src/credential.rs",
+    "codex-rs/hepta-memory-federation-wire/src/host.rs",
+    "codex-rs/hepta-memory-federation-wire/src/host_tests.rs",
+    "codex-rs/hepta-memory-federation-wire/src/protocol.rs",
+    "codex-rs/hepta-memory-federation-wire/src/recovery.rs",
+    "codex-rs/hepta-memory-federation-wire/src/replay.rs",
+    "codex-rs/hepta-memory-federation/src/legacy_v1.rs",
+    "codex-rs/hepta-memory-federation/src/lib.rs",
+    "codex-rs/hepta-memory-federation/src/v2.rs",
+    "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+    "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+    "docs/modules/memory.federation/CAPABILITY_STATE.json",
+    "docs/modules/memory.federation/TECHNICAL.md",
+    "docs/modules/memory.federation/V2_HARDENING.md",
+    "docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json",
+    "docs/modules/memory.federation/WIRE_V1.md",
+    "qualification/memory-federation/FULL_CLOSURE.md",
+    "qualification/module-execution-dossiers/detail/memory.federation.md",
+    "scripts/memory_federation_attestation.py",
+    "scripts/memory_federation_execution_guard.py",
+    "scripts/memory_federation_execution_receipt.py",
+    "scripts/memory_federation_full_attestation.py",
+    "scripts/run_memory_federation_qualification.sh",
+    "scripts/test_memory_federation_execution_receipt.py",
+    "scripts/verify_memory_federation_implementation.py",
+    "scripts/verify_memory_federation_status.py"
   ],
   "productCallers": [
     {
@@ -198,6 +246,22 @@
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/blocking-ci.yml",
+      "object": "52efd785dc1c102992cfd6a801fbcb24383dad75"
+    },
+    {
+      "path": ".github/workflows/memory-federation-pr-qualification.yml",
+      "object": "2d2d3bfa5200b7b18be8531598e0bd2840a9e360"
+    },
+    {
+      "path": ".github/workflows/memory-federation-slim-smoke.yml",
+      "object": "c7932f78e31261cc64189513884608cb57c4e8af"
+    },
+    {
+      "path": ".github/workflows/memory-federation-v2-final-verify.yml",
+      "object": "c2194e41e3ad38d2218ce95b049eb963579da2f1"
+    },
+    {
       "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
       "object": "b06400024167d156fe5a89530e45dcd33dd3679b"
     },
@@ -207,11 +271,63 @@
     },
     {
       "path": "codex-rs/hepta-memory-federation",
-      "object": "3792309b6b30ee8d295ea00da08ed88ad3e6926e"
+      "object": "3f38382e5b9d093ec691eca88256114fe23ca260"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire",
+      "object": "961c4a027735571063a32ab605c68c36cd64b391"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/Cargo.toml",
+      "object": "1ea347f34d25d60f0f12064c655d82f7d768cfea"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/attempt.rs",
+      "object": "caecf8008f6aa2dec8f34361103d52e6f7cedbbd"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/bin/memory_federation_capacity_probe.rs",
+      "object": "09d0970c6d747501e9862a397fb2ebb4eb73b33a"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/codec.rs",
+      "object": "ede91168f098e2a71bcd59bbf9c6b3b9cbc763af"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/credential.rs",
+      "object": "3d4580d085f0c3733963592b71c03a3f399f2bcc"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/host.rs",
+      "object": "534939600fa62f06d6a86c4d80e7a17c47df1aad"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/host_tests.rs",
+      "object": "1a264642cd9e0376d669dd1f11447e3b47b61b2b"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/protocol.rs",
+      "object": "abdd02c0c28f2e076573d2bac7cd2f0232576a9d"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/recovery.rs",
+      "object": "548f737be1e33908071e1bcdba67de3680797ba6"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/replay.rs",
+      "object": "15e1c216a146f4f4f48e3c9cf2b6651a284e1a99"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation/src/legacy_v1.rs",
+      "object": "920aaf8da472afecc41bc1bed04d736c808940db"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation/src/lib.rs",
+      "object": "82a44bc1126b677c804e00bdf98e2afbc98c006c"
     },
     {
       "path": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "object": "c5a8df03b1946beaedf85492391ed7608325136e"
+      "object": "cdc64c3f00838c613a88b325ae6817f6566bdc22"
     },
     {
       "path": "codex-rs/hepta-memory-federation/src/v2_tests.rs",
@@ -219,15 +335,71 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
-      "object": "6a3f186c004bffb1d0dc3361512f243a0e0bfaa2"
+      "object": "a611757d6e364456ca11b756a358d5b5a5bfc265"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
       "object": "7f397fe3e35205bae51ef95c4475315559c2b0ea"
     },
     {
+      "path": "docs/modules/memory.federation/CAPABILITY_STATE.json",
+      "object": "33b5d1953aac9da9ae85458024ba5db373beb2ba"
+    },
+    {
       "path": "docs/modules/memory.federation/TECHNICAL.md",
       "object": "31bb14093088d7c22ec779daee8d8282a7456a75"
+    },
+    {
+      "path": "docs/modules/memory.federation/V2_HARDENING.md",
+      "object": "3515c72ad768cbb3b6b9e0bdf364d9fc3f643580"
+    },
+    {
+      "path": "docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json",
+      "object": "934fe081e4ea7be606c1222511410ea61709d8c2"
+    },
+    {
+      "path": "docs/modules/memory.federation/WIRE_V1.md",
+      "object": "039ad341aa74f987c100348b9d809ba30ce19495"
+    },
+    {
+      "path": "qualification/memory-federation/FULL_CLOSURE.md",
+      "object": "2fb6ebbd6d0bf2577f2051a50769bac36c9b7c39"
+    },
+    {
+      "path": "qualification/module-execution-dossiers/detail/memory.federation.md",
+      "object": "b1ad61774fcfdf6dbeace6276a365e0eda0f47f7"
+    },
+    {
+      "path": "scripts/memory_federation_attestation.py",
+      "object": "e9adfb5de6def786edab2d914fb29494f5bdec3f"
+    },
+    {
+      "path": "scripts/memory_federation_execution_guard.py",
+      "object": "e1d1783df4ca270581d46bc027fcdb5bcd6f8044"
+    },
+    {
+      "path": "scripts/memory_federation_execution_receipt.py",
+      "object": "55a0f3350d6303d98f0efec0dc1e1389807d607c"
+    },
+    {
+      "path": "scripts/memory_federation_full_attestation.py",
+      "object": "d9e4e2089df9efc56ed584844b92cc231716e566"
+    },
+    {
+      "path": "scripts/run_memory_federation_qualification.sh",
+      "object": "cbfac9b931307b0a9ba04e9f14deb6e6e3e9233d"
+    },
+    {
+      "path": "scripts/test_memory_federation_execution_receipt.py",
+      "object": "8c999d63e6c77e6d252d508cbb248a7fdb1d2da4"
+    },
+    {
+      "path": "scripts/verify_memory_federation_implementation.py",
+      "object": "3e422282807adcca2da29c2557be05efff854e2a"
+    },
+    {
+      "path": "scripts/verify_memory_federation_status.py",
+      "object": "7ed43ffa0df3bda09601c63b61cf9edfe9d13c36"
     }
   ]
 }
