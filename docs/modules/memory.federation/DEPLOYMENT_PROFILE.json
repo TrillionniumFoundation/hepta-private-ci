@@ -19,7 +19,23 @@
       "channel binding digest is nonzero and derived from the verified channel",
       "transport lifetime covers query and response admission",
       "dropping an attempt future stops subsequent network I/O"
-    ]
+    ],
+    "contextAttestation": {
+      "algorithm": "HMAC-SHA-256",
+      "issuerOwner": "selected_authenticated_transport",
+      "verifierOwner": "memory_federation_product_bridge",
+      "binds": [
+        "peer identity",
+        "transport profile identity",
+        "channel binding digest",
+        "channel establishment and expiry",
+        "context key identity and generation"
+      ],
+      "secretMaterialInProfile": false,
+      "keySelection": null,
+      "generationSelection": null,
+      "rotationRevocationAndRecoveryRequired": true
+    }
   },
   "credentials": {
     "owner": "external_secure_host_credential_owner",
@@ -40,13 +56,15 @@
     "maximumCanonicalEvidenceItems": 512
   },
   "atomicity": {
+    "transportContextVerifiedBeforePacketDecode": true,
     "queryBodyPreflightBeforeReplayCommit": true,
     "responseBodyDigestPreflightBeforeTerminalCommit": true,
-    "invalidBodyMayNotConsumeReplayOrAttemptState": true
+    "invalidTransportContextOrBodyMayNotConsumeReplayOrAttemptState": true
   },
   "qualification": {
     "exactHeadAndDeterministicMergeRequired": true,
     "tests": "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
+    "transportContextCompileFailRequired": true,
     "twoRealHostFaultQualification": "not_executed",
     "targetHostSloQualification": "not_executed"
   },
@@ -54,6 +72,7 @@
     "sourceCandidate": true,
     "agentdServingComposed": false,
     "mutuallyAuthenticatedTransportSelected": false,
+    "transportContextKeySelected": false,
     "productionRecoveryBackendSelected": false,
     "productExecutionProved": false,
     "independentAcceptance": false,

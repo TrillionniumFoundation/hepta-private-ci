@@ -23,11 +23,12 @@ use super::body::validate_response_for_query;
 use super::body::validate_response_shape;
 use super::context::FederationAuthenticatedTransportV1;
 use super::context::FederationProductProfileV1;
+use super::context::FederationTransportContextVerifierV1;
 use super::error::FederationProductErrorV1;
 use super::packet::FederationProductPacketV1;
 
-/// Query admitted only after the authenticated frame and canonical V2 body have
-/// both been checked.
+/// Query admitted only after the selected transport context, authenticated
+/// frame and canonical V2 body have all been checked.
 pub struct AdmittedFederationProductQueryV1 {
     wire: AdmittedFederationQueryV1,
     query: FederatedQueryV2,
@@ -56,14 +57,26 @@ where
 {
     wire: FederationWireHostV1<S>,
     profile: FederationProductProfileV1,
+    transport_context_verifier: FederationTransportContextVerifierV1,
 }
 
 impl<S> FederationProductHostV1<S>
 where
     S: FederationRecoveryStoreV1,
 {
-    pub fn new(wire: FederationWireHostV1<S>, profile: FederationProductProfileV1) -> Self {
-        Self { wire, profile }
+    pub fn new(
+        wire: FederationWireHostV1<S>,
+        profile: FederationProductProfileV1,
+        transport_context_verifier: FederationTransportContextVerifierV1,
+    ) -> Result<Self, FederationProductErrorV1> {
+        if transport_context_verifier.transport_profile_id() != profile.transport_profile_id() {
+            return Err(FederationProductErrorV1::TransportProfileMismatch);
+        }
+        Ok(Self {
+            wire,
+            profile,
+            transport_context_verifier,
+        })
     }
 
     pub fn local_peer_id(&self) -> &StableId {
@@ -80,7 +93,11 @@ where
         payload: &[u8],
         now_unix_ms: u64,
     ) -> Result<FederationProductHostAdmissionV1, FederationProductErrorV1> {
-        transport.require_current_profile(self.profile.transport_profile_id(), now_unix_ms)?;
+        self.transport_context_verifier.require_current_context(
+            transport,
+            self.profile.transport_profile_id(),
+            now_unix_ms,
+        )?;
         let packet = FederationProductPacketV1::decode(payload, &self.profile)?;
         let preflight = decode_untrusted_frame(packet.authenticated_frame())?;
         if &preflight.sender_peer_id != transport.peer_id() {
@@ -178,14 +195,26 @@ where
 {
     wire: FederationWireClientV1<S>,
     profile: FederationProductProfileV1,
+    transport_context_verifier: FederationTransportContextVerifierV1,
 }
 
 impl<S> FederationProductClientV1<S>
 where
     S: FederationRecoveryStoreV1,
 {
-    pub fn new(wire: FederationWireClientV1<S>, profile: FederationProductProfileV1) -> Self {
-        Self { wire, profile }
+    pub fn new(
+        wire: FederationWireClientV1<S>,
+        profile: FederationProductProfileV1,
+        transport_context_verifier: FederationTransportContextVerifierV1,
+    ) -> Result<Self, FederationProductErrorV1> {
+        if transport_context_verifier.transport_profile_id() != profile.transport_profile_id() {
+            return Err(FederationProductErrorV1::TransportProfileMismatch);
+        }
+        Ok(Self {
+            wire,
+            profile,
+            transport_context_verifier,
+        })
     }
 
     pub fn profile(&self) -> &FederationProductProfileV1 {
@@ -222,7 +251,11 @@ where
         payload: &[u8],
         now_unix_ms: u64,
     ) -> Result<RemoteFederatedResponseV2, FederationProductErrorV1> {
-        transport.require_current_profile(self.profile.transport_profile_id(), now_unix_ms)?;
+        self.transport_context_verifier.require_current_context(
+            transport,
+            self.profile.transport_profile_id(),
+            now_unix_ms,
+        )?;
         let packet = FederationProductPacketV1::decode(payload, &self.profile)?;
         if packet.body().is_empty() {
             return Err(FederationProductErrorV1::MissingBody);

@@ -18,12 +18,23 @@ own single-attempt execution, authority revalidation, deadline/cancellation
 racing, result semantics, and the no-blind-retry rule. The bridge does not add a
 second peer registry, scheduler, authority store, or retry queue.
 
-`FederationProductExchangeV1` is the only selected-transport seam. A concrete
+`FederationProductExchangeV1` is the only selected-network seam. A concrete
 implementation must obtain the peer identity and channel-binding digest from the
-same mutually authenticated channel that carries the product packet. A caller
-cannot substitute a bare peer string for `FederationAuthenticatedTransportV1`.
-The bridge validates the source-controlled transport profile and the channel
-lifetime before wire admission.
+same mutually authenticated channel that carries the product packet. The
+selected transport receives a `FederationTransportContextIssuerV1`; the product
+host and client receive the corresponding
+`FederationTransportContextVerifierV1`. The issuer HMAC-attests peer, transport
+profile, channel binding, channel lifetime, context-key identity and generation.
+The bridge verifies that attestation before packet parsing, replay admission or
+attempt-state mutation. A caller cannot make a trusted context by supplying a
+bare peer string, arbitrary nonzero digest or independently chosen issuer key.
+
+The transport-context attestation secret is deployment-owned secret material. It
+is separate from the directional frame credential, absent from the
+source-controlled product profile, never serialized into a packet or recovery
+snapshot, and redacted from debug output. Key selection, rotation, revocation,
+storage and process placement remain part of the selected transport and host
+credential design.
 
 ## Packet and body binding
 
@@ -33,20 +44,22 @@ A product packet contains:
 2. one bounded canonical V2 body.
 
 For queries, the authenticated frame carries the canonical query binding digest
-and all duplicated routing fields. The host decodes and validates the bounded
-body, checks the exact canonical binding, recipient, deadline, and transport
-horizon, and only then calls the durable wire admission boundary.
+and all duplicated routing fields. The host first verifies the selected
+transport's context attestation, then decodes and validates the bounded body,
+checks the exact canonical binding, recipient, deadline, and transport horizon,
+and only then calls the durable wire admission boundary.
 
 For responses, the authenticated frame carries both the canonical response
-digest and a digest of the exact encoded body. The client verifies packet
-bounds, transport identity/profile/currentness, the body digest, canonical
-response digest, query binding, peer, expiry horizon, and frontier number before
-calling the durable client admission boundary.
+digest and a digest of the exact encoded body. The client verifies the transport
+context attestation, packet bounds, transport identity/profile/currentness, body
+digest, canonical response digest, query binding, peer, expiry horizon, and
+frontier number before calling the durable client admission boundary.
 
-This order is deliberate. A malformed or tampered outer body must not consume a
-replay nonce, create a durable query attempt, or terminally close a valid client
-attempt. Regression tests submit a tampered packet first and then prove that the
-original authenticated packet remains admissible.
+This order is deliberate. A forged transport context, malformed outer packet or
+tampered body must not consume a replay nonce, create a durable query attempt, or
+terminally close a valid client attempt. Regression tests submit an untrusted
+transport context and tampered packet first, then prove that the original
+trusted packet remains admissible.
 
 ## Time and cancellation
 
@@ -72,22 +85,25 @@ source-controlled profile or architecture ceiling.
 
 The checked-in deployment profile is
 `docs/modules/memory.federation/DEPLOYMENT_PROFILE.json`. It contains no secret
-material and deliberately leaves concrete transport and production recovery
-selection unset.
+material and deliberately leaves concrete transport, transport-context key and
+production recovery selection unset.
 
 ## Qualification
 
 The existing exact-head and deterministic-current-base qualification command
 runs the standalone wire crate's full library tests, doctests, capacity probe,
-strict Clippy, and tracked-lock verification. Because the attestation selects
-the whole wire source root and module documentation directory, the product
-bridge, tests, deployment profile, implementation map, and canonical capability
-state are bound into the same source identity and artifact receipt.
+strict Clippy, and tracked-lock verification. Compile-fail documentation rejects
+direct construction of authenticated transport context, and product tests reject
+a correctly shaped context minted under an untrusted key before replay state is
+consumed. Because the attestation selects the whole wire source root and module
+documentation directory, the product bridge, tests, deployment profile,
+implementation map, and canonical capability state are bound into the same
+source identity and artifact receipt.
 
 Repository-controlled source qualification is necessary but not sufficient for
 production claims. Remaining external gates are a selected mutually
-authenticated transport, secure credential operations, deployment-specific
-persistent recovery policy, two independently provisioned real-host fault
-qualification, target-host latency/capacity/backpressure/cancellation evidence,
-independent security and semantic acceptance, and operator-controlled canary,
-promotion, and release.
+authenticated transport, secure frame and transport-context credential
+operations, deployment-specific persistent recovery policy, two independently
+provisioned real-host fault qualification, target-host
+latency/capacity/backpressure/cancellation evidence, independent security and
+semantic acceptance, and operator-controlled canary, promotion, and release.

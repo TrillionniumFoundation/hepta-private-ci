@@ -12,6 +12,10 @@ use codex_hepta_types::StableId;
 use crate::*;
 
 const NOW: u64 = 9_000_000;
+const TRANSPORT_CONTEXT_SECRET: [u8; FEDERATION_TRANSPORT_CONTEXT_KEY_BYTES] =
+    [93; FEDERATION_TRANSPORT_CONTEXT_KEY_BYTES];
+const UNTRUSTED_TRANSPORT_CONTEXT_SECRET: [u8; FEDERATION_TRANSPORT_CONTEXT_KEY_BYTES] =
+    [94; FEDERATION_TRANSPORT_CONTEXT_KEY_BYTES];
 
 fn id(value: &str) -> StableId {
     StableId::new(value.to_string()).expect("stable id")
@@ -30,15 +34,36 @@ fn profile() -> FederationProductProfileV1 {
     .expect("product profile")
 }
 
-fn transport(peer: &str, label: &[u8]) -> FederationAuthenticatedTransportV1 {
-    FederationAuthenticatedTransportV1::from_verified_channel(
-        id(peer),
+fn transport_issuer_with_secret(
+    secret: [u8; FEDERATION_TRANSPORT_CONTEXT_KEY_BYTES],
+) -> FederationTransportContextIssuerV1 {
+    FederationTransportContextIssuerV1::new(
         id("authenticated-channel-v1"),
-        digest(label),
-        NOW,
-        NOW + 100_000,
+        id("transport-context-key-v1"),
+        1,
+        secret,
     )
-    .expect("transport context")
+    .expect("transport context issuer")
+}
+
+fn transport_issuer() -> FederationTransportContextIssuerV1 {
+    transport_issuer_with_secret(TRANSPORT_CONTEXT_SECRET)
+}
+
+fn transport_verifier() -> FederationTransportContextVerifierV1 {
+    transport_issuer().verifier()
+}
+
+fn transport(peer: &str, label: &[u8]) -> FederationAuthenticatedTransportV1 {
+    transport_issuer()
+        .issue_verified_channel(id(peer), digest(label), NOW, NOW + 100_000)
+        .expect("transport context")
+}
+
+fn untrusted_transport(peer: &str, label: &[u8]) -> FederationAuthenticatedTransportV1 {
+    transport_issuer_with_secret(UNTRUSTED_TRANSPORT_CONTEXT_SECRET)
+        .issue_verified_channel(id(peer), digest(label), NOW, NOW + 100_000)
+        .expect("untrusted transport context")
 }
 
 fn credential(
@@ -96,7 +121,8 @@ fn client() -> FederationProductClientV1<InMemoryFederationRecoveryStoreV1> {
         FederationOutboundCredentialV1::new(id("key-a-b"), 1).expect("selector"),
     )
     .expect("bind client credential");
-    FederationProductClientV1::new(wire, profile())
+    FederationProductClientV1::new(wire, profile(), transport_verifier())
+        .expect("product client")
 }
 
 fn server() -> FederationProductHostV1<InMemoryFederationRecoveryStoreV1> {
@@ -115,7 +141,8 @@ fn server() -> FederationProductHostV1<InMemoryFederationRecoveryStoreV1> {
         FederationOutboundCredentialV1::new(id("key-b-a"), 1).expect("selector"),
     )
     .expect("bind server credential");
-    FederationProductHostV1::new(wire, profile())
+    FederationProductHostV1::new(wire, profile(), transport_verifier())
+        .expect("product host")
 }
 
 fn query() -> FederatedQueryV2 {
@@ -209,6 +236,35 @@ fn canonical_product_body_encoding_is_stable() {
         encode_response_v2(&decoded_response).expect("re-encode response"),
         encoded_response
     );
+}
+
+#[test]
+fn transport_context_from_untrusted_issuer_is_rejected_before_replay_commit() {
+    let mut client = client();
+    let mut server = server();
+    let query = query();
+    let request = client.begin_query(&query, NOW + 1).expect("request");
+
+    let error = match server.admit(
+        &untrusted_transport("peer-a", b"forged-server-channel"),
+        &request,
+        NOW + 2,
+    ) {
+        Ok(_) => panic!("untrusted context must fail"),
+        Err(error) => error,
+    };
+    assert!(matches!(
+        error,
+        FederationProductErrorV1::InvalidTransportContext
+    ));
+
+    let FederationProductHostAdmissionV1::Query(admitted) = server
+        .admit(&transport("peer-a", b"server-channel"), &request, NOW + 2)
+        .expect("trusted context remains admissible")
+    else {
+        panic!("query admission");
+    };
+    assert_eq!(admitted.query(), &query);
 }
 
 #[test]
