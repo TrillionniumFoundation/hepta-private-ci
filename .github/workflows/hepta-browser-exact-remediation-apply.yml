@@ -14,7 +14,6 @@ concurrency:
 
 jobs:
   apply:
-    if: "${{ github.event.head_commit.message == 'stage-browser-remediation-apply-v2' }}"
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -22,7 +21,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 3
+          fetch-depth: 4
           persist-credentials: true
 
       - name: Install exact Node runtime
@@ -31,121 +30,7 @@ jobs:
           node-version: 22.16.0
 
       - name: Apply exact reviewed remediation
-        shell: bash
-        env:
-          EXPECTED_BASE: d1a5c47965be4a1a01ef7753e346b99184d6982b
-          TARGET_BRANCH: codex/browser-servo-full-convergence-20260927
-        run: |
-          set -euo pipefail
-          test "$(git merge-base "$EXPECTED_BASE" HEAD)" = "$EXPECTED_BASE"
-          test -z "$(git diff --name-only "$EXPECTED_BASE"...HEAD | grep -v '^.github/workflows/hepta-browser-exact-remediation-apply.yml$' || true)"
-          python3 - <<'PY'
-          from pathlib import Path
-
-          root = Path('.')
-
-          p = root / 'codex-rs/hepta-agentd/src/browser_servo_persistent.rs'
-          s = p.read_text()
-          old_comment = '`FinalUseAuthority::with_verified_use` holds the live revocation'
-          old_call = '.with_verified_use(token, &invocation.binding, || {'
-          if s.count(old_comment) != 1 or s.count(old_call) != 1:
-              raise SystemExit('Agentd dispatch-boundary anchors drifted')
-          s = s.replace(old_comment, '`FinalUseAuthority::with_dispatch_boundary` holds the live revocation')
-          s = s.replace(old_call, '.with_dispatch_boundary(token, &invocation.binding, || {')
-          p.write_text(s)
-
-          p = root / '.github/workflows/hepta-browser-servo-worker-dev.yml'
-          s = p.read_text()
-          old = '''          command -v llvm-objdump
-          llvm-objdump --version | head -n 1
-          command -v bwrap
-          bwrap --version
-          command -v prlimit
-          prlimit --version | head -n 1
-'''
-          new = '''          sudo sysctl -w kernel.unprivileged_userns_clone=1
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          fi
-          command -v llvm-objdump
-          llvm-objdump --version | head -n 1
-          command -v bwrap
-          bwrap --version
-          command -v prlimit
-          prlimit --version | head -n 1
-'''
-          if s.count(old) != 1:
-              raise SystemExit('worker prerequisite anchor drifted')
-          s = s.replace(old, new, 1)
-          old = '          node apps/hepta-browser/scripts/linux-sandbox-probe.js | tee worker-evidence/linux-sandbox-probe.json\n'
-          new = '''          node apps/hepta-browser/scripts/linux-sandbox-probe.js \\
-            2> >(tee worker-evidence/linux-sandbox-probe.stderr.log >&2) \\
-            | tee worker-evidence/linux-sandbox-probe.json
-'''
-          if s.count(old) != 1:
-              raise SystemExit('sandbox probe anchor drifted')
-          p.write_text(s.replace(old, new, 1))
-
-          for rel in [
-              'docs/modules/browser.servo/TECHNICAL.md',
-              'qualification/module-execution-dossiers/detail/browser.servo.md',
-          ]:
-              p = root / rel
-              s = p.read_text()
-              if 'FinalUseAuthority::with_verified_use' not in s:
-                  raise SystemExit(f'{rel} API anchor drifted')
-              p.write_text(s.replace('FinalUseAuthority::with_verified_use', 'FinalUseAuthority::with_dispatch_boundary'))
-
-          p = root / 'docs/modules/browser.servo/IMPLEMENTATION_MAP.json'
-          s = p.read_text()
-          old = '"symbol": "with_verified_use"'
-          if s.count(old) != 1:
-              raise SystemExit('implementation-map API anchor drifted')
-          p.write_text(s.replace(old, '"symbol": "with_dispatch_boundary"'))
-
-          p = root / 'docs/modules/browser.servo/REMEDIATION_20260927.md'
-          s = p.read_text()
-          if '## 2026-09-28 exact-head native follow-up' in s:
-              raise SystemExit('exact-head follow-up already exists')
-          s += '''
-
-## 2026-09-28 exact-head native follow-up
-
-The exact candidate `d1a5c47965be4a1a01ef7753e346b99184d6982b`
-produced two actionable native diagnostics. They are retained as failures and
-are not relabelled as passes.
-
-The Agentd Browser service tests showed that revocation updates could commit
-before the worker emitted its dispatch or proven-rejection boundary. The
-persistent port was still calling `FinalUseAuthority::with_verified_use`, whose
-contract releases the owner mutex before executing the callback. The port now
-uses `FinalUseAuthority::with_dispatch_boundary`, so the bounded callback that
-sends `authority_enter` and waits for exactly one worker admission/rejection
-receipt runs under the live revocation linearization fence. Remote execution
-and terminal reconciliation remain outside that fence. The implementation map
-and human technical documents bind the same API.
-
-The standalone Linux sandbox diagnostic passed after explicitly enabling the
-Ubuntu runner's unprivileged user namespace and disabling the AppArmor
-restriction when that sysctl exists. The primary worker workflow previously
-installed Bubblewrap without applying those host prerequisites. It now applies
-the same fail-closed prerequisite ceremony and retains bounded sandbox-probe
-stderr in the worker evidence directory on failure. No failed probe is inferred
-to have passed.
-
-The temporary branch-only diagnostic workflow used to isolate these failures
-is removed from the candidate after transferring its proven prerequisites and
-diagnostics into the canonical Agentd and worker workflows. It is not retained
-as a parallel qualification or release path.
-
-A fresh exact-head and deterministic-merge execution remains mandatory. The
-repository-controlled source boundary, production implementation, product
-execution, deployment qualification, operator acceptance, activation,
-promotion and release booleans remain false until their designated terminal
-evidence exists.
-'''
-          p.write_text(s)
-          PY
+        run: python3 scripts/hepta_browser_exact_remediation_apply.py
 
       - name: Regenerate and verify exact source closure
         shell: bash
