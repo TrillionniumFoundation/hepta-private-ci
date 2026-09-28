@@ -122,7 +122,7 @@ def validate_anchor(anchor: dict[str, Any], owner: str) -> None:
     validate_sha(anchor["state_digest"], "anchor state digest")
 
 
-def validate_authority(authority: dict[str, Any], owner: str, now: int) -> None:
+def validate_authority(authority: dict[str, Any], owner: str, now: int | None) -> None:
     required = {
         "agent_id",
         "grant_digest",
@@ -140,16 +140,24 @@ def validate_authority(authority: dict[str, Any], owner: str, now: int) -> None:
         raise ValueError("authority epoch must be positive")
     if type(authority["owner_epoch"]) is not int or authority["owner_epoch"] <= 0:
         raise ValueError("owner epoch must be positive")
-    if type(authority["lease_expires_at_unix_seconds"]) is not int or authority["lease_expires_at_unix_seconds"] <= now:
+    expiry = authority["lease_expires_at_unix_seconds"]
+    if type(expiry) is not int or expiry <= 0:
+        raise ValueError("authority lease expiry must be a positive integer")
+    if now is not None and expiry <= now:
         raise ValueError("authority lease is already expired")
 
 
-def verify(envelope: dict[str, Any], key: bytes, *, now: int | None = None) -> dict[str, Any]:
+def authenticate(envelope: dict[str, Any], key: bytes) -> dict[str, Any]:
+    """Authenticate historical evidence; this never authorizes admission.
+
+    Expiry restricts new production use, not observation of a signed past event.
+    The caller must separately enforce current authority for live transitions.
+    """
     if set(envelope) != {"payload", "signature"} or not isinstance(envelope["payload"], dict):
         raise ValueError("invalid bootstrap envelope")
     payload = envelope["payload"]
     expected = sign(payload, key)
-    if not hmac.compare_digest(expected, envelope["signature"]):
+    if not isinstance(envelope["signature"], str) or not hmac.compare_digest(expected, envelope["signature"]):
         raise ValueError("bootstrap signature mismatch")
     if payload.get("schema") != SCHEMA or payload.get("state") not in ALLOWED:
         raise ValueError("unsupported bootstrap schema/state")
@@ -157,7 +165,7 @@ def verify(envelope: dict[str, Any], key: bytes, *, now: int | None = None) -> d
     if not isinstance(owner, str) or not owner:
         raise ValueError("missing owner")
     validate_anchor(payload["recovery_anchor"], owner)
-    validate_authority(payload["authority"], owner, int(time.time()) if now is None else now)
+    validate_authority(payload["authority"], owner, None)
     if type(payload.get("writer_generation")) is not int or payload["writer_generation"] <= 0:
         raise ValueError("writer generation must be positive")
     validate_sha(payload["active_pointer_sha256"], "active pointer digest")
@@ -165,6 +173,16 @@ def verify(envelope: dict[str, Any], key: bytes, *, now: int | None = None) -> d
     predecessor = payload.get("predecessor_bundle_sha256")
     if predecessor is not None:
         validate_sha(predecessor, "predecessor bundle digest")
+    return payload
+
+
+def verify(envelope: dict[str, Any], key: bytes, *, now: int | None = None) -> dict[str, Any]:
+    """Validate a currently usable evidence bundle, not a production grant."""
+    payload = authenticate(envelope, key)
+    validate_authority(payload["authority"], payload["owner_agent_id"],
+                       int(time.time()) if now is None else now)
+    if payload["state"] not in {"prepared", "active"}:
+        raise ValueError("historical or terminal evidence cannot admit a writer")
     return payload
 
 
@@ -186,9 +204,11 @@ def prepare(
     now: int | None = None,
 ) -> dict[str, Any]:
     observed = int(time.time()) if now is None else now
+    if purpose not in {"activate", "rollback"}:
+        raise ValueError("unknown bootstrap purpose")
     validate_anchor(anchor, owner)
     validate_authority(authority, owner, observed)
-    if not lease_id or generation <= 0:
+    if not isinstance(lease_id, str) or not lease_id or type(generation) is not int or generation <= 0:
         raise ValueError("lease id and positive writer generation are required")
     validate_sha(pointer_digest, "active pointer digest")
     validate_sha(database_digest, "database digest")
@@ -221,11 +241,18 @@ def transition(
     state = current["state"]
     if target not in ALLOWED[state]:
         raise ValueError(f"illegal bootstrap transition {state!r} -> {target!r}")
+    observed = int(time.time()) if now is None else now
+    if "observed_at_unix_seconds" in details or "issued_at_unix_seconds" in details:
+        raise ValueError("observation timestamps are host-owned")
+    # Terminal observation and rollback preparation are evidence operations.
+    # They preserve the expired grant verbatim and confer no new write authority.
+    validate_authority(current["authority"], current["owner_agent_id"],
+                       observed if target in {"active", "prepared"} else None)
     next_payload = json.loads(json.dumps(current))
     next_payload["state"] = target
     next_payload["predecessor_bundle_sha256"] = sha256(current)
     next_payload["observation"] = {
-        "observed_at_unix_seconds": int(time.time()) if now is None else now,
+        "observed_at_unix_seconds": observed,
         **details,
     }
     if target == "active":
@@ -275,6 +302,9 @@ def cli() -> None:
     verify_p.add_argument("--expected-owner")
     verify_p.add_argument("--minimum-generation", type=int, default=1)
 
+    inspect_p = sub.add_parser("inspect")
+    inspect_p.add_argument("--input", type=Path, required=True)
+
     transition_p = sub.add_parser("transition")
     transition_p.add_argument("--input", type=Path, required=True)
     transition_p.add_argument("--target", choices=sorted({state for states in ALLOWED.values() for state in states}), required=True)
@@ -303,8 +333,12 @@ def cli() -> None:
         if payload["writer_generation"] < args.minimum_generation:
             raise SystemExit("writer generation below minimum")
         print(json.dumps({"state": payload["state"], "bundle_sha256": sha256(payload)}, sort_keys=True))
+    elif args.command == "inspect":
+        payload = authenticate(load_json(args.input), key)
+        print(json.dumps({"state": payload["state"], "bundle_sha256": sha256(payload),
+                          "admission_authority": False}, sort_keys=True))
     else:
-        _, current = load_verified(args.input, key)
+        current = authenticate(load_json(args.input), key)
         details = load_json(args.details)
         next_payload = transition(current, args.target, details=details)
         if next_payload["writer_generation"] < current["writer_generation"]:
