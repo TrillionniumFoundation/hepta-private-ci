@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: b6cdf7d069a84592c610d57f2685096bb1cf0859
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: true
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
