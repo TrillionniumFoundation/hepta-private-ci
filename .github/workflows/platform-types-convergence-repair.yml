@@ -65,12 +65,10 @@ jobs:
           path.write_text(text.replace(old, new), encoding="utf-8")
           PY
           python3 scripts/platform_types_apply_closure_repair.py
-          rustfmt --edition 2024 --emit files \
-            codex-rs/hepta-types/src/registry.rs \
-            codex-rs/hepta-types/src/registry_tests.rs \
-            codex-rs/hepta-types/src/numeric_registry_v2.rs \
-            codex-rs/hepta-types/src/bin/platform-types-registry-bench.rs \
-            codex-rs/hepta-wire/src/platform_manifest_json.rs
+          # Use the workspace Cargo metadata and pinned rustfmt exactly as the
+          # later qualification check does. Per-file rustfmt can miss workspace
+          # edition/configuration and unrelated drift in selected consumers.
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
 
       - name: Regenerate the authoritative Cargo lock
         run: |
@@ -124,4 +122,4 @@ jobs:
           git commit -m "fix(platform.types): close exact-candidate qualification gaps"
           git push origin "HEAD:$BRANCH"
 
-# API retrigger v2: unlock the shared Tokio runtime before Rama convergence.
+# API retrigger v3: normalize the complete workspace with pinned rustfmt.
