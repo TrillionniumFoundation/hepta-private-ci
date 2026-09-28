@@ -59,6 +59,32 @@ jobs:
           sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl build-essential pkg-config libssl-dev python3
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.95.0 --component rustfmt,clippy
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+      - name: Retain offline native reproduction inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/memory-federation-offline"
+          mkdir -p "$OUT"
+          rustc --version --verbose > "$OUT/toolchain.txt"
+          git rev-parse HEAD HEAD^{tree} > "$OUT/identity.txt"
+          # Only public toolchain and crate sources, never Cargo credentials,
+          # configuration, caches containing tokens, or runner environment.
+          cargo vendor --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml "$OUT/vendor" > "$OUT/vendor-config.toml"
+          cp codex-rs/hepta-memory-federation-wire/Cargo.lock "$OUT/Cargo.lock"
+          SYSROOT="$(rustc --print sysroot)"
+          tar --exclude='lib/rustlib/src' -czf "$OUT/toolchain.tar.gz" -C "$SYSROOT" bin lib
+          tar -czf "$OUT/vendor.tar.gz" -C "$OUT" vendor
+          rm -rf "$OUT/vendor"
+          cd "$OUT"
+          sha256sum toolchain.tar.gz vendor.tar.gz Cargo.lock toolchain.txt identity.txt vendor-config.toml > SHA256SUMS
+      - name: Upload offline native reproduction inputs
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-offline-${{ github.sha }}
+          path: ${{ runner.temp }}/memory-federation-offline
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
       - name: Read-only native wire diagnostics
         shell: bash
         run: |
