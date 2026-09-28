@@ -84,7 +84,7 @@ fn exact_id_v1_golden_vector_is_stable() {
 
     let expected_external = format!(
         concat!(
-            "{\n",
+            "{{\n",
             "  \"schema\": \"hepta.cognitive.read.golden-vector.v1\",\n",
             "  \"vector\": \"exact_id_v1_one_live_one_missing\",\n",
             "  \"snapshot_digest\": ",
@@ -96,7 +96,7 @@ fn exact_id_v1_golden_vector_is_stable() {
             "  \"receipt_digest\": ",
             "\"2d24dd6740b939f3ab812490cb83a9388978476fa4887c053fd0f267c864e56a\",\n",
             "  \"canonical_hex\": \"{}\"\n",
-            "}"
+            "}}"
         ),
         EXPECTED_CANONICAL_HEX
     );
