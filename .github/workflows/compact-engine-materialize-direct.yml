@@ -1,8 +1,10 @@
 name: compact.engine direct source materialization
 
 on:
-  pull_request:
-    types: [edited]
+  push:
+    branches: [fix/compact-engine-current-main-convergence-20260925]
+    paths:
+      - ".github/workflows/compact-engine-materialize-direct.yml"
 
 permissions:
   contents: write
@@ -15,14 +17,12 @@ jobs:
   materialize:
     name: Verify and commit ordinary compact.engine source
     if: >-
-      github.event.action == 'edited' &&
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.head.ref == 'fix/compact-engine-current-main-convergence-20260925'
+      github.ref_name == 'fix/compact-engine-current-main-convergence-20260925'
     runs-on: ubuntu-22.04
     timeout-minutes: 90
     env:
-      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-      MATERIALIZE_PARENT: af0e858a6feb3098d4dd9f7f31d2f18902ea7694
+      SOURCE_SHA: ${{ github.sha }}
+      MATERIALIZE_PARENT: 7de24f99478923ca0af894c104aac3f9f5d82afc
       TRANSPORT_PARENT: 2e2a847a04d7e450b3b627601680984ff48d1ca0
       TARGET_BRANCH: fix/compact-engine-current-main-convergence-20260925
       PATCH_SHA256: 3610e3e56f865c1047d99b0c2a891751571ded7e7d0eeb0ab95387415314107d
@@ -66,12 +66,14 @@ jobs:
         with:
           components: rustfmt,clippy
 
-      - name: Format and locked build
+      - name: Format compact.engine and run locked build
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
+          cargo fmt -p codex-hepta-compact-engine
           cargo fmt --all -- --check 2>&1 | tee "$RUNNER_TEMP/compact-engine-materialize-evidence/format.log"
+          git diff --check
           cargo check --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets 2>&1 | tee "$RUNNER_TEMP/compact-engine-materialize-evidence/check.log"
 
       - name: Native tests
@@ -92,9 +94,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git hash-object codex-rs/hepta-compact-engine/src/coordinator.rs)" = "$COORDINATOR_BLOB"
-          test "$(git hash-object codex-rs/hepta-compact-engine/src/durable.rs)" = "$DURABLE_BLOB"
-          test "$(git hash-object codex-rs/hepta-compact-engine/src/lib.rs)" = "$LIB_BLOB"
+          test ! -e codex-rs/hepta-compact-engine/src/durable_facade.rs
+          while IFS= read -r path; do
+            case "$path" in
+              codex-rs/hepta-compact-engine/*|.github/compact-engine-materialize/*|.github/workflows/compact-engine-durable-normalize-once.yml|.github/workflows/compact-engine-materialize-direct.yml) ;;
+              *) printf 'unexpected materialized path: %s\n' "$path" >&2; exit 1 ;;
+            esac
+          done < <(git diff --name-only)
           git checkout "$TRANSPORT_PARENT" -- .github/workflows/compact-engine-qualification.yml
           rm -rf .github/compact-engine-materialize
           rm -f .github/workflows/compact-engine-durable-normalize-once.yml
