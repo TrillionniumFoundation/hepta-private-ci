@@ -1,0 +1,159 @@
+name: Cognitive read source preparation (not qualification)
+
+on:
+  push:
+    branches: [work/cognitive-read-source-preparation-20260928]
+    paths: [.github/workflows/cognitive-read-source-preparation.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-read-source-preparation-20260928
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: 4fb91f9ebf7883d7b5e0202a90e8091383991d2c
+  REVIEW_BRANCH: work/cognitive-read-build-inputs-20260928
+
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      # This is a source-authoring work branch, never a qualification lane.
+      # Only the separately published review branch contains the proposed source.
+      # The existing product branch and all qualification verdicts are untouched.
+      - name: Check out the frozen source, not the authoring workflow commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Prepare repository tools
+        uses: ./.github/actions/setup-ci
+      - name: Prepare bounded diagnostics
+        run: |
+          mkdir -p "$RUNNER_TEMP/cognitive-read-source-preparation"
+          printf '%s\n' "$SOURCE_SHA" > "$RUNNER_TEMP/cognitive-read-source-preparation/base.txt"
+          printf '%s\n' 'Source-authoring proposal only. No test, qualification, activation, independent acceptance or release claim.' > "$RUNNER_TEMP/cognitive-read-source-preparation/SCOPE.txt"
+      - name: Add the missing pinned nextest tool to both read-only qualification lanes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('.github/workflows/cognitive-read-qualification.yml')
+          text = path.read_text()
+          anchor = '      - name: Prepare CI tools\n        uses: ./.github/actions/setup-ci\n'
+          if text.count(anchor) != 2:
+              raise SystemExit('expected exactly two qualified tool-setup sites')
+          addition = '''      - name: Install pinned repository test runner
+                  uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+                  with:
+                    tool: cargo-nextest@0.9.103
+                - name: Verify repository test entry points
+                  shell: bash
+                  run: |
+                    set -euo pipefail
+                    just --version
+                    cargo nextest --version
+          '''
+          # Keep YAML indentation explicit and identical in both lanes.
+          addition = '\n'.join(line[10:] if line.startswith('          ') else line for line in addition.splitlines()) + '\n'
+          path.write_text(text.replace(anchor, anchor + addition))
+          PY
+      - name: Reconcile workspace lock without upgrading unrelated packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo update --manifest-path codex-rs/Cargo.toml --workspace \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-read-source-preparation/lock-resolution.log"
+          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --format-version=1 \
+            --all-features --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --format-version=1 \
+            --all-features --filter-platform aarch64-unknown-linux-gnu > /dev/null
+      - name: Apply scoped formatting as ordinary source changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-cognitive-read --package codex-hepta-agentd
+          git diff --check
+      - name: Refresh the repository Bazel lock when Cargo resolution changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! git diff --quiet -- codex-rs/Cargo.lock; then
+            just bazel-lock-update 2>&1 | tee "$RUNNER_TEMP/cognitive-read-source-preparation/bazel-lock.log"
+          fi
+      - name: Commit proposed source and rebind only current source identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          python3 - <<'PY'
+          import subprocess
+          allowed = ('.github/workflows/cognitive-read-qualification.yml', 'codex-rs/Cargo.lock', 'MODULE.bazel.lock')
+          paths = subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()
+          for path in paths:
+              if path not in allowed and not path.startswith(('codex-rs/hepta-agentd/', 'codex-rs/hepta-cognitive-read/')):
+                  raise SystemExit(f'unexpected proposed write: {path}')
+          PY
+          git add -u
+          git commit --signoff -m 'fix(cognitive.read): reconcile locked build inputs and install pinned nextest'
+          python3 - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+          def git(*args):
+              return subprocess.check_output(['git', *args], text=True).strip()
+          path = Path('docs/modules/cognitive.read/IMPLEMENTATION_MAP.json')
+          data = json.loads(path.read_text())
+          identity = {'commit': git('rev-parse', 'HEAD'), 'tree': git('rev-parse', 'HEAD^{tree}')}
+          data['sourceBase'] = identity
+          data['observedAtHead'] = identity
+          for entry in data['sourceObjects']:
+              entry['object'] = git('rev-parse', 'HEAD:' + entry['path'])
+          for entry in data.get('operations', []):
+              if 'sourceBlob' in entry:
+                  entry['sourceBlob'] = git('rev-parse', 'HEAD:' + entry['sourcePath'])
+          for entry in data.get('productCallers', []):
+              if 'blobSha' in entry:
+                  entry['blobSha'] = git('rev-parse', 'HEAD:' + entry['sourcePath'])
+          for entry in data.get('exactSourceEvidence', {}).get('entries', []):
+              entry['blobSha'] = git('rev-parse', 'HEAD:' + entry['path'])
+          for key in ('activation', 'release', 'productionImplementation', 'productExecutionProved', 'independentAcceptance'):
+              if data.get('claimBoundary', {}).get(key, False) is not False:
+                  raise SystemExit(f'non-false claim: {key}')
+          path.write_text(json.dumps(data, indent=2) + '\n')
+          PY
+          git add docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
+          git commit --signoff -m 'docs(cognitive.read): bind proposed build corrections without qualification claims'
+          python3 scripts/verify-cognitive-read-map.py --expected-sha "$(git rev-parse HEAD)"
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Publish a separate review branch, never update the product candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git ls-remote --heads origin "$REVIEW_BRANCH")"
+          git push origin "HEAD:refs/heads/$REVIEW_BRANCH"
+          out="$RUNNER_TEMP/cognitive-read-source-preparation"
+          git rev-parse HEAD > "$out/proposed-commit.txt"
+          git rev-parse 'HEAD^{tree}' > "$out/proposed-tree.txt"
+          git diff --stat "$SOURCE_SHA" HEAD > "$out/diff-stat.txt"
+          git diff --binary "$SOURCE_SHA" HEAD > "$out/proposed.patch"
+          git archive --format=tar.gz --output="$out/source.tar.gz" HEAD
+          git bundle create "$out/source.bundle" HEAD
+          (cd "$out" && sha256sum proposed.patch source.tar.gz source.bundle > SHA256SUMS)
+      - name: Preserve source proposal or failed preparation diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-read-source-proposal-${{ github.run_id }}
+          path: ${{ runner.temp }}/cognitive-read-source-preparation
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
