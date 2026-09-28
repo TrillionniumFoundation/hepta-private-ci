@@ -1,0 +1,43 @@
+{
+  "capabilities": [
+    {
+      "capability": "canonical_request_identity",
+      "codeWritten": true,
+      "executed": false,
+      "implementation": "codex-rs/hepta-learning-artifacts/src/owner/request_identity.rs",
+      "nativeQualified": false,
+      "onMain": false,
+      "remainingLimit": "exact-source native evidence pending"
+    },
+    {
+      "capability": "typed_owner_control_transitions",
+      "codeWritten": true,
+      "executed": false,
+      "implementation": "codex-rs/hepta-learning-artifacts/src/owner/operational_state.rs",
+      "nativeQualified": false,
+      "onMain": false,
+      "remainingLimit": "external whole-store rollback floor remains deployment-owned"
+    },
+    {
+      "capability": "actionable_operational_metrics",
+      "codeWritten": true,
+      "executed": false,
+      "implementation": "codex-rs/hepta-learning-artifacts/src/owner/operational_metrics.rs",
+      "nativeQualified": false,
+      "onMain": false,
+      "remainingLimit": "exporter and target-host resource observations remain external"
+    },
+    {
+      "capability": "stage_measurement",
+      "codeWritten": true,
+      "executed": false,
+      "implementation": "codex-rs/hepta-learning-artifacts/PERFORMANCE_PROTOCOL.md",
+      "nativeQualified": false,
+      "onMain": false,
+      "remainingLimit": "no target-host SLO claim"
+    }
+  ],
+  "module": "learning.artifacts",
+  "schema": "hepta.learning-artifacts.delivery-index.v1",
+  "sourceCommit": "6fdf4ddba394c60b04d2f9c5c46ae629bc47b61f"
+}

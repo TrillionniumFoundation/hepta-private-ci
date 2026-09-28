@@ -1,30 +1,22 @@
 {
-  "schema": "hepta.learning-artifacts-qualification-status.v1",
+  "integrationBase": "a126987b84737dbc2ee2592442a314117bddb4a2",
+  "latestEvidence": null,
   "module": "learning.artifacts",
-  "unifiedComplete": false,
-  "dimensions": {
-    "sourceImplementation": "implemented",
-    "readProductComposition": "implemented",
-    "writerServiceComposition": "implemented",
-    "referenceHost": "repository_candidate_under_qualification",
-    "exactHeadQualification": "pending_current_candidate",
-    "targetHostDurability": "external_not_established",
-    "productionActivation": "external_not_established",
-    "independentAcceptance": "external_not_established",
-    "release": "external_not_established"
-  },
-  "qualificationPolicy": {
-    "requiredTaskCount": 10,
-    "skippedAccepted": false,
-    "historicalResultAccepted": false,
-    "exactCommitAndTreeRequired": true,
-    "sourceObjectBindingRequired": true,
-    "receiptArtifact": "learning-artifacts-exact-head-<sha>.json"
-  },
-  "externalGates": [
-    "target-host power-loss qualification",
-    "production owner and selector trust provisioning",
-    "independent semantic and operator acceptance",
-    "canary, promotion and release authority"
-  ]
+  "remainingLimits": [
+    "exact-head and ordered-parent native qualification pending",
+    "target-host power-loss and performance qualification pending",
+    "independent external withdrawal/stop floor pending",
+    "production exporter, alerting, backup/migration rehearsal and activation pending"
+  ],
+  "schema": "hepta.learning-artifacts.delivery-status.v2",
+  "sourceCommit": "6fdf4ddba394c60b04d2f9c5c46ae629bc47b61f",
+  "states": {
+    "codeWritten": true,
+    "executed": false,
+    "independentAcceptance": false,
+    "nativeQualified": false,
+    "onMain": false,
+    "productionActivated": false,
+    "release": false
+  }
 }
