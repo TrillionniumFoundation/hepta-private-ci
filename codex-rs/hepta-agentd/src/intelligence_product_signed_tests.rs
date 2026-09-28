@@ -39,20 +39,43 @@ fn signed_fixture() -> (
     (value, trust)
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn signed_evaluation_completes_existing_owner_preparation_and_run_admission() {
-    let (value, trust) = signed_fixture();
-    let directory = tempfile::tempdir().expect("directory");
-    let path = directory.path().join("authority.json");
+fn signed_authority_profile(
+    directory: &tempfile::TempDir,
+    value: &Fixture,
+) -> (PathBuf, Arc<crate::IntelligenceAuthorityRollbackGuardV1>) {
+    // Resolve the OS temporary-directory alias while provisioning the fixture.
+    // The production reader must still reject every symlink at final use.
+    let root = directory.path().canonicalize().expect("canonical test root");
+    let path = root.join("authority.json");
     write_authority_file(
         &path,
         &value.owners,
         value.request.snapshot.revocation_frontier_digest(),
     );
+    let manifest: IntelligenceAuthorityFileV1 =
+        serde_json::from_slice(&std::fs::read(&path).expect("manifest bytes"))
+            .expect("manifest");
+    let guard = crate::IntelligenceAuthorityRollbackGuardV1::open(
+        &root.join("authority-floor.json"),
+        manifest.authority_epoch,
+        intelligence_authority_manifest_digest_v1(&manifest).expect("manifest identity"),
+    )
+    .expect("independently provisioned test floor");
+    (path, Arc::new(guard))
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn signed_evaluation_completes_existing_owner_preparation_and_run_admission() {
+    let (value, trust) = signed_fixture();
+    let directory = tempfile::tempdir().expect("directory");
+    let (path, guard) = signed_authority_profile(&directory, &value);
     let runner = AgentdIntelligenceProductRunnerV1::new(path, authority_verifier())
         .expect("runner")
+        .with_authority_rollback_guard(guard)
+        .expect("host rollback witness")
         .with_evaluation_trust(trust)
         .expect("host-root trust");
+    assert!(runner.canonical_profile_ready());
     let mut coordinator = product_test_coordinator();
     let outcome = runner
         .prepare_and_admit(&mut coordinator, value.request, value.inputs)
@@ -75,14 +98,11 @@ async fn signed_evaluation_completes_existing_owner_preparation_and_run_admissio
 async fn signed_input_cannot_install_host_trust_or_change_actual_context() {
     let (value, _) = signed_fixture();
     let directory = tempfile::tempdir().expect("directory");
-    let path = directory.path().join("authority.json");
-    write_authority_file(
-        &path,
-        &value.owners,
-        value.request.snapshot.revocation_frontier_digest(),
-    );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(path.clone(), authority_verifier()).expect("runner");
+    let (path, guard) = signed_authority_profile(&directory, &value);
+    let runner = AgentdIntelligenceProductRunnerV1::new(path.clone(), authority_verifier())
+        .expect("runner")
+        .with_authority_rollback_guard(Arc::clone(&guard))
+        .expect("host rollback witness");
     assert!(matches!(
         runner
             .prepare(&product_test_coordinator(), value.request, value.inputs)
@@ -96,6 +116,8 @@ async fn signed_input_cannot_install_host_trust_or_change_actual_context() {
     value.inputs.context_request.items[0].content_digest = digest("substituted-context");
     let runner = AgentdIntelligenceProductRunnerV1::new(path, authority_verifier())
         .expect("runner")
+        .with_authority_rollback_guard(guard)
+        .expect("host rollback witness")
         .with_evaluation_trust(trust)
         .expect("trust");
     assert!(matches!(
