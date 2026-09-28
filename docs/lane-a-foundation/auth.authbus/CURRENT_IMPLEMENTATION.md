@@ -35,10 +35,10 @@ On supported Unix hosts, owner acquisition proceeds in this order:
 2. reserve the lock path in a process-local RAII registry **before opening the lock inode**;
 3. open the deployed lock pathname with `O_NOFOLLOW`, private mode and close-on-exec;
 4. validate regular-file identity, ownership, link count and pathname/inode stability;
-5. acquire a non-blocking exclusive `fcntl` record lock;
+5. acquire a non-blocking exclusive descriptor-lifetime `flock`;
 6. revalidate the locked inode before exposing the host.
 
-The pre-open process reservation is security-sensitive. Traditional POSIX record locks are process-associated; closing a second descriptor for the same inode can release the first descriptor's lock. Rejecting a duplicate owner before `open(2)` prevents failed same-process initialization from weakening the live owner's cross-process fence. Unsupported non-Unix platforms fail closed rather than silently degrading to process-local exclusion.
+The pre-open process reservation keeps same-process uniqueness explicit instead of relying on platform-specific `flock` behavior. Cross-process exclusion is attached to the live lock-file description, so closing an unrelated descriptor for the same inode cannot release the owner fence. Tests cover both rejected duplicate initialization and unrelated-descriptor close before probing from a third process. Unsupported non-Unix, Solaris and illumos targets fail closed rather than silently degrading to process-local exclusion.
 
 ## One authority-use and transaction boundary
 
@@ -46,7 +46,7 @@ All durable mutations, bounded recovery maintenance, checkpoint publication and 
 
 The SQLite store uses WAL, `synchronous=FULL`, foreign keys, ordered checksum-bound migrations, schema comparison, `quick_check` and foreign-key validation. Authoritative mutations mark the semantic frontier dirty in the same database commit. The host then publishes exactly one successor checkpoint using write, file fsync, atomic rename and directory fsync before locally promoting the checkpoint.
 
-Some logical APIs may internally advance trusted time before their main domain row; a storage error at such a boundary is deliberately classified as outcome-unknown. The public contract does not pretend every failure occurred before all durable work.
+Some logical APIs may internally advance trusted time before their main domain row; a storage error at such a boundary is deliberately classified as outcome-unknown. A deterministic domain rejection means the requested domain mutation did not commit, but it does not claim that a separately authenticated trusted-time observation was rolled back. The public contract does not pretend every failure occurred before all durable work.
 
 ## Mutation result contract
 
@@ -55,7 +55,7 @@ Some logical APIs may internally advance trusted time before their main domain r
 | Result | Durable meaning | Caller rule |
 | --- | --- | --- |
 | `Ok(value)` | SQLite mutation and independent checkpoint are durable. | Continue. |
-| deterministic domain error | Requested mutation did not commit. | Correct or stop; disposition is `NotCommitted`. |
+| deterministic domain error | Requested domain mutation did not commit; a separately authenticated trusted-time observation may already be durable. | Correct or stop; disposition is `NotCommitted` for the requested mutation. |
 | `AuthorityUseBlocked` | Checkpoint/recovery admission failed before the requested operation was polled. | Stop authority use and reconcile. |
 | `CheckpointReconciliationRequired` | SQLite mutation committed but checkpoint publication/promotion did not complete. | Query by stable identity and reconcile before retry; disposition is `CommittedNeedsReconciliation`. |
 | `MutationOutcomeUnknown` | Commit status cannot be inferred safely after a storage failure. | Never blindly retry; query/reconcile by stable identity. |
@@ -123,14 +123,15 @@ Agentd is the named signed-ingress/outbox caller. Evidence outbox quarantine, cl
 
 ## Failure-focused validation
 
-The host test suite proves, rather than merely asserts in documentation, that:
+The host and integration test suites prove, rather than merely assert in documentation, that:
 
 - a failed same-process duplicate initialization does not release the live cross-process fence;
+- closing an unrelated descriptor for the lock inode does not release the live cross-process fence;
 - a worker retains the host and fence until the worker is dropped;
 - `SIGKILL` releases the operating-system fence while restart recovery preserves ambiguous effects;
 - checkpoint failures at write, file-sync, rename and directory-sync stages are classified as committed-needs-reconciliation and recover successfully;
 - enrollment, rotation, revocation and retirement share the same checkpoint-failure contract;
-- deterministic revision rejection is classified as not committed.
+- deterministic revision rejection is classified as not committed for the requested mutation while separately observed trusted time remains authoritative.
 
 Evidence tests cover restart replay, outbox identity/lease behavior, retained claim/retry projection, oldest active delivery age, enqueue-to-ack latency and snapshot side-effect freedom. Bao tests retain ownership of dispatch/settlement ambiguity and provider-boundary behavior.
 
@@ -144,6 +145,6 @@ A skipped/cancelled/queued job, a run for another SHA, or a source-mutating work
 
 ## Remaining external gates and non-claims
 
-The repository candidate does not prove production provisioning of independent checkpoint storage, non-exportable KMS/HSM keys, trusted-time service, target-host disk semantics or an external durable `kernel.operations` owner. Distributed multi-host consensus is not implemented; the supported model is one active authority owner per database on qualified Unix hosts.
+The repository candidate does not prove production provisioning of independent checkpoint storage, non-exportable KMS/HSM keys, trusted-time service, target-host disk semantics or an external durable `kernel.operations` owner. Distributed multi-host consensus is not implemented; the supported model is one active authority owner per database on a qualified Unix target with supported descriptor-lifetime `flock` semantics.
 
 Production activation remains blocked until one unchanged candidate obtains terminal-success exact-head and synthetic-merge receipts, target-host ENOSPC and power-loss evidence, KMS/operator acceptance and independent release approval. An indeterminate reservation is never automatically refunded merely to restore availability.

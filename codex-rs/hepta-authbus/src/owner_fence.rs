@@ -12,11 +12,10 @@ static PROCESS_OWNERS: OnceLock<Mutex<HashSet<PathBuf>>> = OnceLock::new();
 /// Process-lifetime single-owner fence held on one securely opened inode.
 ///
 /// The process-local claim is acquired before the lock file is opened. That
-/// ordering is security-sensitive: traditional POSIX record locks are process
-/// associated, so closing a second descriptor for the same inode can release a
-/// lock held through the first descriptor. Rejecting duplicate same-process
-/// owners before `open(2)` prevents a failed duplicate initialization from
-/// weakening the live owner's cross-process fence.
+/// ordering preserves a single in-process owner and prevents a failed duplicate
+/// initialization from opening the live lock inode. The kernel fence itself
+/// uses descriptor-lifetime `flock`, so closing an unrelated descriptor for the
+/// same inode cannot release the live owner's cross-process exclusion.
 ///
 /// Existing authority databases must also be canonical, regular, single-link
 /// files owned by the private database directory owner. This prevents a second
@@ -41,8 +40,8 @@ impl OwnerFence {
         validate_parent(&path)?;
         validate_existing_database_path(database_path)?;
 
-        // This claim must precede opening the lock inode. See the type-level
-        // comment above for the POSIX close/release hazard it prevents.
+        // Preserve one in-process owner and avoid opening a second descriptor
+        // for the live lock inode on a rejected duplicate initialization.
         let process_claim = ProcessOwnerClaim::acquire(&path)?;
         let file = open_lock_file(&path)?;
         validate_open_lock_file(&file, &path)?;
@@ -193,9 +192,12 @@ fn open_lock_file(_path: &Path) -> Result<File, AuthBusAuthorityError> {
     Err(AuthBusAuthorityError::UnsafeCheckpoint)
 }
 
-#[cfg(unix)]
+#[cfg(all(
+    unix,
+    not(any(target_os = "illumos", target_os = "solaris"))
+))]
 fn acquire_process_lock(file: &File) -> Result<(), AuthBusAuthorityError> {
-    match rustix::fs::fcntl_lock(file, rustix::fs::FlockOperation::NonBlockingLockExclusive) {
+    match rustix::fs::flock(file, rustix::fs::FlockOperation::NonBlockingLockExclusive) {
         Ok(()) => Ok(()),
         Err(error) if error == rustix::io::Errno::AGAIN || error == rustix::io::Errno::ACCESS => {
             Err(AuthBusAuthorityError::OwnerAlreadyActive)
@@ -204,17 +206,20 @@ fn acquire_process_lock(file: &File) -> Result<(), AuthBusAuthorityError> {
     }
 }
 
-#[cfg(not(unix))]
+#[cfg(any(not(unix), target_os = "illumos", target_os = "solaris"))]
 fn acquire_process_lock(_file: &File) -> Result<(), AuthBusAuthorityError> {
     Err(AuthBusAuthorityError::UnsafeCheckpoint)
 }
 
-#[cfg(unix)]
+#[cfg(all(
+    unix,
+    not(any(target_os = "illumos", target_os = "solaris"))
+))]
 fn release_process_lock(file: &File) {
-    let _ = rustix::fs::fcntl_lock(file, rustix::fs::FlockOperation::Unlock);
+    let _ = rustix::fs::flock(file, rustix::fs::FlockOperation::Unlock);
 }
 
-#[cfg(not(unix))]
+#[cfg(any(not(unix), target_os = "illumos", target_os = "solaris"))]
 fn release_process_lock(_file: &File) {}
 
 #[cfg(unix)]
@@ -251,7 +256,11 @@ fn storage_io(error: std::io::Error) -> AuthBusAuthorityError {
     AuthBusAuthorityError::Storage(error.to_string())
 }
 
-#[cfg(all(test, unix))]
+#[cfg(all(
+    test,
+    unix,
+    not(any(target_os = "illumos", target_os = "solaris"))
+))]
 mod tests {
     use std::os::unix::fs::MetadataExt;
     use std::os::unix::fs::PermissionsExt;

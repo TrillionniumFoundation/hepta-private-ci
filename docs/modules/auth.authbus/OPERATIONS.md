@@ -2,7 +2,7 @@
 
 ## Deployment topology
 
-Run one `AuthBusAuthorityHost` per authority database on a qualified Unix host. Place the SQLite database and its owner-lock file in a private local directory. Place the checkpoint in a separate private filesystem or independently retained volume so one rollback cannot restore both state domains. Agentd owns signed-message replay/outbox state; Bao is a product caller and never becomes an AuthBus writer.
+Run one `AuthBusAuthorityHost` per authority database on a qualified Unix host with supported descriptor-lifetime `flock` semantics. Place the SQLite database and its owner-lock file in a private local directory. Place the checkpoint in a separate private filesystem or independently retained volume so one rollback cannot restore both state domains. Agentd owns signed-message replay/outbox state; Bao is a product caller and never becomes an AuthBus writer.
 
 The production topology has four named roles:
 
@@ -18,7 +18,7 @@ The production topology has four named roles:
 2. Resolve immutable absolute database/checkpoint paths and owner identity.
 3. For first installation only, call `bootstrap` when neither database nor checkpoint exists.
 4. For every later start, call `open`; never reconstruct a missing witness.
-5. Acquire the process-local claim before opening the owner-lock inode, then acquire and validate the cross-process POSIX lock.
+5. Acquire the process-local claim before opening the owner-lock inode, then open and validate the inode and acquire its non-blocking exclusive descriptor-lifetime `flock`.
 6. Verify SQLite integrity, migrations, live schema and checkpoint generation/digest.
 7. Run one bounded restart-reconciliation and expiration-maintenance batch.
 8. Keep authority use fail-closed while checkpoint reconciliation or durable `recovery_required` remains outstanding.
@@ -32,7 +32,7 @@ Never reduce every error to “retry now.” Use `AuthBusAuthorityError::mutatio
 
 | Result | Operator/caller action |
 | --- | --- |
-| deterministic domain error / `NotCommitted` | Correct the request or stop. The requested operation did not commit. |
+| deterministic domain error / `NotCommitted` | Correct the request or stop. The requested domain mutation did not commit. A separately authenticated trusted-time observation may already be durable and is not rolled back by this classification. |
 | `AuthorityUseBlocked` | Stop new authority use. Preserve database and witness; repair or reconcile the checkpoint/recovery condition before resuming. |
 | `CheckpointReconciliationRequired` / `CommittedNeedsReconciliation` | Treat the domain mutation as committed. Run checkpoint reconciliation, then query the stable operation/issuer identity. Do not submit a duplicate mutation blindly. |
 | `MutationOutcomeUnknown` / `OutcomeUnknown` | Freeze blind retries. Query durable state by stable identity and reconcile first; escalate if state cannot be proven. |
@@ -121,7 +121,7 @@ Take a consistent SQLite backup and capture the current external checkpoint sepa
 
 ## Incident classes
 
-- **Owner collision:** do not steal or unlink the lock. Identify the live service generation and stop the duplicate deployment. Repeated same-process open failures must not release the live cross-process lock.
+- **Owner collision:** do not steal or unlink the lock. Identify the live service generation and stop the duplicate deployment. A rejected same-process open or closing an unrelated descriptor for the lock inode must not release the live cross-process fence; page security engineering if the cross-process probe succeeds before owner drop.
 - **Unsafe owner/checkpoint path:** stop startup. Correct ownership, mode, symlink/hard-link or path identity; do not bypass validation.
 - **Checkpoint reconciliation required:** preserve both state domains and follow the reconciliation procedure above.
 - **Mutation outcome unknown:** freeze blind retry and resolve by stable identity before any compensating action.
