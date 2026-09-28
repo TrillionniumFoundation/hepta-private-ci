@@ -1,9 +1,10 @@
 //! Canonical cognitive-store boundaries over the single durable SQLite owner.
 //!
 //! `hepta-memory::CognitiveStore` remains the physical database owner. Product
-//! serving code receives [`DurableCognitiveReadStore`], which exposes only
-//! bounded read/revalidation operations. The mutable raw backend is visible
-//! only to the named Agentd production host or explicit qualification builds.
+//! serving code receives [`DurableCognitiveReadStore`], which exposes bounded
+//! reads and, only for the named Agentd host, bounded owner-policy controls.
+//! The mutable raw backend is visible only to the named Agentd production host
+//! or explicit qualification builds.
 
 use std::fmt;
 use std::sync::Arc;
@@ -22,6 +23,11 @@ pub use codex_hepta_memory::CognitiveWriteReceipt;
 pub use codex_hepta_memory::DurableCognitiveSnapshot;
 pub use codex_hepta_memory::DurableCognitiveSnapshotCursor;
 pub use codex_hepta_memory::DurableCognitiveSnapshotPage;
+pub use codex_hepta_memory::FederationCapability;
+pub use codex_hepta_memory::FederationCapabilityId;
+pub use codex_hepta_memory::FederationCapabilityStatus;
+pub use codex_hepta_memory::FederationGrantRequest;
+pub use codex_hepta_memory::FederationRevocation;
 pub use codex_hepta_memory::ForgetMemoryDraft;
 pub use codex_hepta_memory::KgFactSetDraft;
 pub use codex_hepta_memory::LedgerSourceKind;
@@ -81,12 +87,14 @@ pub use codex_hepta_memory::CognitiveStore as QualificationDurableCognitiveStore
 #[doc(hidden)]
 pub use codex_hepta_memory::ProductionDurableWriter;
 
-/// Read-only product capability for one exact durable cognitive owner.
+/// Bounded product capability for one exact durable cognitive owner.
 ///
-/// This wrapper has no mutation, source-append, lease-creation, migration or
-/// raw-backend escape method. It can only be constructed from the already
-/// composed `CognitiveRuntime`, so normal serving code cannot open a second
-/// writer or bypass recovery/authority composition.
+/// Normal consumers receive read and revalidation operations only. The named
+/// Agentd host additionally receives the registered federation-policy
+/// grant/revoke methods through its explicit host feature. The wrapper exposes
+/// no semantic memory mutation, source append, lease creation, migration, or
+/// raw-backend escape method. It can only be constructed from an already
+/// composed `CognitiveRuntime`, so no caller can open a second writer here.
 #[derive(Clone)]
 pub struct DurableCognitiveReadStore {
     backend: Arc<codex_hepta_memory::CognitiveStore>,
@@ -102,7 +110,7 @@ impl fmt::Debug for DurableCognitiveReadStore {
 }
 
 impl DurableCognitiveReadStore {
-    /// Derive a read-only capability from a host-composed runtime. No file is
+    /// Derive a bounded capability from a host-composed runtime. No file is
     /// opened and no authority is manufactured here.
     pub fn from_runtime(runtime: &codex_hepta_memory::CognitiveRuntime) -> Option<Self> {
         runtime.available_store().map(|backend| Self {
@@ -164,6 +172,59 @@ impl DurableCognitiveReadStore {
     ) -> Result<DurableCognitiveSnapshot, DurableCognitiveStoreError> {
         self.backend
             .revalidate_lane_c_snapshot(access, scope, expected, now_unix_seconds)
+            .await
+    }
+
+    pub async fn federation_capability_status(
+        &self,
+        capability_id: &FederationCapabilityId,
+    ) -> Result<Option<FederationCapabilityStatus>, DurableCognitiveStoreError> {
+        self.backend
+            .federation_capability_status(capability_id)
+            .await
+    }
+
+    pub async fn list_federation_capabilities(
+        &self,
+        limit: usize,
+    ) -> Result<Vec<FederationCapabilityStatus>, DurableCognitiveStoreError> {
+        self.backend.list_federation_capabilities(limit).await
+    }
+
+    /// Named-host-only owner-policy mutation. This does not expose semantic
+    /// memory writes or the raw SQLite owner.
+    #[cfg(any(
+        feature = "agentd-production-host",
+        feature = "qualification-cognitive-write"
+    ))]
+    pub async fn grant_federated_recall(
+        &self,
+        owner_access: &CognitiveAccess,
+        request: &FederationGrantRequest,
+    ) -> Result<FederationCapability, DurableCognitiveStoreError> {
+        self.backend
+            .grant_federated_recall(owner_access, request)
+            .await
+    }
+
+    /// Named-host-only owner-policy mutation. Revocation remains fenced by the
+    /// exact capability head and cannot mutate Memory or fact revisions.
+    #[cfg(any(
+        feature = "agentd-production-host",
+        feature = "qualification-cognitive-write"
+    ))]
+    pub async fn revoke_federated_recall_by_id(
+        &self,
+        owner_access: &CognitiveAccess,
+        capability_id: &FederationCapabilityId,
+        revoked_at_unix_seconds: i64,
+    ) -> Result<FederationRevocation, DurableCognitiveStoreError> {
+        self.backend
+            .revoke_federated_recall_by_id(
+                owner_access,
+                capability_id,
+                revoked_at_unix_seconds,
+            )
             .await
     }
 }
