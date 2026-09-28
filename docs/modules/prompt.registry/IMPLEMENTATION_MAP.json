@@ -1,83 +1,898 @@
 {
-  "schema": "hepta.module-implementation-map.v3",
-  "schemaVersion": 3,
-  "sourceBase": {
-    "commit": "3ad190f399af8e6af3a09891702e72bc07883870",
-    "tree": "ad30401a9da8faf67bd276fe9b0ebbd8625a1a9d"
+  "activePersistentSchema": 4,
+  "claimBoundary": {
+    "activation": false,
+    "implementedOperationMappingComplete": true,
+    "independentAcceptance": false,
+    "nativeSourceMappingComplete": false,
+    "productExecutionProved": false,
+    "productionImplementation": false,
+    "release": false,
+    "sourceRootPresent": true
   },
-  "laneId": "LANE-C-MEMORY",
-  "module": "prompt.registry",
-  "owner": "intelligence-platform",
-  "deputy": "cognitive-platform",
-  "technicalGuide": "docs/modules/prompt.registry/TECHNICAL.md",
+  "closedWorldPublicFunctions": false,
   "declaredRoots": [
     "codex-rs/hepta-prompt-registry"
+  ],
+  "deputy": "cognitive-platform",
+  "exactSourceEvidence": {
+    "entries": [
+      {
+        "blobSha": "cd6650b68a815d69038166b7de50c2857f358641",
+        "path": "codex-rs/Cargo.lock"
+      },
+      {
+        "blobSha": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a",
+        "path": "codex-rs/Cargo.toml"
+      },
+      {
+        "blobSha": "c54118da203938658de9cbc5ddd4f2a4dc8559b0",
+        "path": "codex-rs/ext/hepta-prompt/BUILD.bazel"
+      },
+      {
+        "blobSha": "152fea264155931b3994e98e3c754b8f79c57718",
+        "path": "codex-rs/ext/hepta-prompt/Cargo.toml"
+      },
+      {
+        "blobSha": "74978ec6a00bfb0fc8e1269e3c57b05fb4dc7ec8",
+        "path": "codex-rs/ext/hepta-prompt/src/lib.rs"
+      },
+      {
+        "blobSha": "4d2c3e7f197e24fbef75384f37f549c83dc3bf63",
+        "path": "codex-rs/ext/hepta-prompt/src/lib_tests.rs"
+      },
+      {
+        "blobSha": "5d13cd8f355bab3ecb95f8c068517de200dd143f",
+        "path": "codex-rs/hepta-agentd/Cargo.toml"
+      },
+      {
+        "blobSha": "4bc32510eb33f3707e8a9a5e3c0f24baf4c01bc3",
+        "path": "codex-rs/hepta-agentd/src/prompt_final_use.rs"
+      },
+      {
+        "blobSha": "eb502467aefe5707b1840298de54d53cbbe1f9fa",
+        "path": "codex-rs/hepta-agentd/src/prompt_final_use_store.rs"
+      },
+      {
+        "blobSha": "78fa801b613a6e1ddf7d2c12e9a76efa37017b9d",
+        "path": "codex-rs/hepta-agentd/src/prompt_final_use_tests.rs"
+      },
+      {
+        "blobSha": "358d364df77e572955314b183cc150cb752862fb",
+        "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs"
+      },
+      {
+        "blobSha": "c1feb1e486b68a733eedc2f7e9cd986190a88459",
+        "path": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs"
+      },
+      {
+        "blobSha": "18cbfac8545b081ef42729ef44f67a1047f2e996",
+        "path": "codex-rs/hepta-codex-adapter/Cargo.toml"
+      },
+      {
+        "blobSha": "521526bebf785104d714432cbf9613e71b233afc",
+        "path": "codex-rs/hepta-codex-adapter/src/lib.rs"
+      },
+      {
+        "blobSha": "162205d6bc62834e1b04fed33dd67f5955f218d1",
+        "path": "codex-rs/hepta-intelligence/Cargo.toml"
+      },
+      {
+        "blobSha": "803989e30f19c8f6cce78cde09434925f4f0a522",
+        "path": "codex-rs/hepta-intelligence/src/prompt_delivery.rs"
+      },
+      {
+        "blobSha": "7a0f89b1643001dfd2bfb3c9f258c99c965855b5",
+        "path": "codex-rs/hepta-prompt-optimizer/BUILD.bazel"
+      },
+      {
+        "blobSha": "f463e790c182452434287c7ccba68dd78a7c69ca",
+        "path": "codex-rs/hepta-prompt-optimizer/Cargo.toml"
+      },
+      {
+        "blobSha": "1e11c2904acdee472c712a10f84dcc9455424223",
+        "path": "codex-rs/hepta-prompt-optimizer/src/canonical.rs"
+      },
+      {
+        "blobSha": "100a37fd11a9d73285423e9954d9cbdd02afa280",
+        "path": "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs"
+      },
+      {
+        "blobSha": "b62625d64b790fed68a80f1a0d3a73ad51534cfd",
+        "path": "codex-rs/hepta-prompt-optimizer/src/consumer.rs"
+      },
+      {
+        "blobSha": "ead1df5ef6ec164fdeb4815694a7fdf690b3ddc5",
+        "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs"
+      },
+      {
+        "blobSha": "bc36cfb0bbe50810ff3ce338af79264cc854666f",
+        "path": "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs"
+      },
+      {
+        "blobSha": "8e4b535c6d866cd5569e3ca2bbe21fa90ff9e349",
+        "path": "codex-rs/hepta-prompt-optimizer/src/lib.rs"
+      },
+      {
+        "blobSha": "7a61264c37f9941b8ca0d057b48daef236cece88",
+        "path": "codex-rs/hepta-prompt-optimizer/src/lib_tests.rs"
+      },
+      {
+        "blobSha": "0f75e0589c066df5287465ab38868db63d97e3c7",
+        "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow.rs"
+      },
+      {
+        "blobSha": "449223590ded07d2f9ced6e7962b6be2e1a13173",
+        "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow_digest.rs"
+      },
+      {
+        "blobSha": "9ff91efc880f331648c0363d605c41e92e8fd532",
+        "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs"
+      },
+      {
+        "blobSha": "52154aca63828c5aec7879cc056beae77914762e",
+        "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow_validation.rs"
+      },
+      {
+        "blobSha": "e46e77ba482f1846c3d780e263e3e608db305054",
+        "path": "codex-rs/hepta-prompt-optimizer/src/policy.rs"
+      },
+      {
+        "blobSha": "44f1dd5ace1a7c45dc0cac6b180be79d22ec2437",
+        "path": "codex-rs/hepta-prompt-optimizer/src/policy_contracts.rs"
+      },
+      {
+        "blobSha": "612c424fdd92a613dbafe85d24234511121489e2",
+        "path": "codex-rs/hepta-prompt-optimizer/src/policy_digest.rs"
+      },
+      {
+        "blobSha": "3f2f416c2eb20c283ccb23aead1ef9c7c2101144",
+        "path": "codex-rs/hepta-prompt-optimizer/src/policy_enumeration_pricing.rs"
+      },
+      {
+        "blobSha": "b9adc95254725cdc2f5581d2b731c1c566eadeb9",
+        "path": "codex-rs/hepta-prompt-optimizer/src/policy_exercise_helpers.rs"
+      },
+      {
+        "blobSha": "dceb1c25325b9c75e4eeb0ffe76ccd950471c32e",
+        "path": "codex-rs/hepta-prompt-optimizer/src/policy_portfolio.rs"
+      },
+      {
+        "blobSha": "3b940be370731ce411145f4781c676a55e20647a",
+        "path": "codex-rs/hepta-prompt-optimizer/src/policy_portfolio_helpers.rs"
+      },
+      {
+        "blobSha": "77e067d1efd2019878487f7f7f789bd40a5d68cc",
+        "path": "codex-rs/hepta-prompt-registry/BUILD.bazel"
+      },
+      {
+        "blobSha": "61676abe534702cd1c665197212065ec2d267f3f",
+        "path": "codex-rs/hepta-prompt-registry/Cargo.toml"
+      },
+      {
+        "blobSha": "cbb80be7237bc1bba79c6ba330af2576248ca5ad",
+        "path": "codex-rs/hepta-prompt-registry/src/admission.rs"
+      },
+      {
+        "blobSha": "81d584fd042e4a3cd5a2839303ef012c38548133",
+        "path": "codex-rs/hepta-prompt-registry/src/delivery.rs"
+      },
+      {
+        "blobSha": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+        "path": "codex-rs/hepta-prompt-registry/src/durable.rs"
+      },
+      {
+        "blobSha": "e9cfde69eaf0c8d2302b00bb9193075c18fadafa",
+        "path": "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs"
+      },
+      {
+        "blobSha": "9db63a18fc2f116af72f867bfda02bcfd2964b6e",
+        "path": "codex-rs/hepta-prompt-registry/src/durable_maintenance_tests.rs"
+      },
+      {
+        "blobSha": "21b5b069110b9c36c5f682a3efd984ea64dd113e",
+        "path": "codex-rs/hepta-prompt-registry/src/durable_payloads.rs"
+      },
+      {
+        "blobSha": "1cc087f9b9b7f96d19e390164400462a8a7a6a25",
+        "path": "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs"
+      },
+      {
+        "blobSha": "ab3d0844db07c029e5d7613c975089825f6bc712",
+        "path": "codex-rs/hepta-prompt-registry/src/lib.rs"
+      },
+      {
+        "blobSha": "7dec1d918cdbce1c4bef99f3f4de76e1528ce793",
+        "path": "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+      },
+      {
+        "blobSha": "fd961aee93f67b4309e1592909c7613f34dfdfb3",
+        "path": "codex-rs/hepta-prompt-registry/src/protocol.rs"
+      },
+      {
+        "blobSha": "975ecaf4f3c5adbcecb0eba45bc70f7f2d0227f2",
+        "path": "codex-rs/hepta-prompt-registry/src/v2.rs"
+      },
+      {
+        "blobSha": "4e78cd11b200971314fcb8634d1540d6ca79f91e",
+        "path": "codex-rs/hepta-prompt-registry/src/v2_tests.rs"
+      },
+      {
+        "blobSha": "acf612c6afd22e5e1f575d0098479ed54bc42c09",
+        "path": "codex-rs/hepta-prompt-registry/tests/durable_relations_v4.rs"
+      },
+      {
+        "blobSha": "910c65114ec128a8317ee8257428451f3cd28230",
+        "path": "codex-rs/rust-toolchain.toml"
+      },
+      {
+        "blobSha": "08ad6588fb64da33884768093c514f6498605b6c",
+        "path": "docs/modules/prompt.registry/API_CONTRACT.md"
+      },
+      {
+        "blobSha": "a6eed7c6e57da10fc7bd943211c1bb76f457ca41",
+        "path": "docs/modules/prompt.registry/OPERATIONS.md"
+      },
+      {
+        "blobSha": "29c9d136fe66273ee6680edb9b03285211ee5c3d",
+        "path": "docs/modules/prompt.registry/PERFORMANCE.md"
+      },
+      {
+        "blobSha": "ad782d93e1345ec57a7bb3969b2b326458234f99",
+        "path": "docs/modules/prompt.registry/TECHNICAL.md"
+      },
+      {
+        "blobSha": "ba325204445c2cda584badeb7a795cdef4308280",
+        "path": "scripts/hepta-implementation-maps.py"
+      },
+      {
+        "blobSha": "0c3713fa234d8087e62b21f6dc7fc64a3bce0b6f",
+        "path": "scripts/hepta-prompt-registry-map.py"
+      },
+      {
+        "blobSha": "1dedae50bb874fead519713605d45272afa7f809",
+        "path": "scripts/hepta-prompt-registry-qualify.py"
+      },
+      {
+        "blobSha": "25c028baa4341885bfacf42d3a5f94ece5a6e784",
+        "path": "scripts/hepta_module_source_roots.py"
+      }
+    ],
+    "kind": "path_blob_manifest_v1"
+  },
+  "externalEvidenceGates": [
+    "independent security/semantic review",
+    "target-host and deployed provider qualification",
+    "operator activation, acceptance and release"
+  ],
+  "laneId": "LANE-C-MEMORY",
+  "lifecycleStates": {
+    "accepted": false,
+    "productActivated": false,
+    "released": false,
+    "sourceComposed": true,
+    "sourceImplemented": true
+  },
+  "mappingCoverage": "curated_owner_and_boundary_operations_not_all_public_functions",
+  "mappingSourceIdentityMode": "exact_blob",
+  "module": "prompt.registry",
+  "observedAtHead": {
+    "commit": "bfe907f8b1aa99543eba20f8d77d17fc48e56e3c",
+    "tree": "90df5ab5cd2bd8380c00a4f194560f8161ef1b4d"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/ext/hepta-prompt",
+    "codex-rs/hepta-agentd/Cargo.toml",
+    "codex-rs/hepta-agentd/src/prompt_final_use.rs",
+    "codex-rs/hepta-agentd/src/prompt_final_use_store.rs",
+    "codex-rs/hepta-agentd/src/prompt_final_use_tests.rs",
+    "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+    "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+    "codex-rs/hepta-codex-adapter/Cargo.toml",
+    "codex-rs/hepta-codex-adapter/src/lib.rs",
+    "codex-rs/hepta-intelligence/Cargo.toml",
+    "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+    "codex-rs/hepta-prompt-optimizer",
+    "codex-rs/hepta-prompt-registry",
+    "codex-rs/rust-toolchain.toml",
+    "docs/modules/prompt.registry/API_CONTRACT.md",
+    "docs/modules/prompt.registry/OPERATIONS.md",
+    "docs/modules/prompt.registry/PERFORMANCE.md",
+    "docs/modules/prompt.registry/TECHNICAL.md",
+    "scripts/hepta-implementation-maps.py",
+    "scripts/hepta-prompt-registry-map.py",
+    "scripts/hepta-prompt-registry-qualify.py",
+    "scripts/hepta_module_source_roots.py"
+  ],
+  "operations": [
+    {
+      "authority": "exclusive_owner_and_operation_bound_authority",
+      "delegatedCallees": [],
+      "designOperation": "open_state_dir",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::open_state_dir",
+      "operation": "open_state_dir",
+      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable.rs"
+      ]
+    },
+    {
+      "authority": "exclusive_owner_and_operation_bound_authority",
+      "delegatedCallees": [],
+      "designOperation": "register_factor_final_use",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::register_factor_final_use",
+      "operation": "register_factor_final_use",
+      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+      ]
+    },
+    {
+      "authority": "exclusive_owner_and_operation_bound_authority",
+      "delegatedCallees": [],
+      "designOperation": "admit_factor_final_use",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::admit_factor_final_use",
+      "operation": "admit_factor_final_use",
+      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+      ]
+    },
+    {
+      "authority": "exclusive_owner_and_operation_bound_authority",
+      "delegatedCallees": [],
+      "designOperation": "register_factor_relation_final_use",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::register_factor_relation_final_use",
+      "operation": "register_factor_relation_final_use",
+      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+      ]
+    },
+    {
+      "authority": "exclusive_owner_and_operation_bound_authority",
+      "delegatedCallees": [],
+      "designOperation": "register_realization_payload_final_use_v2",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::register_realization_payload_final_use_v2",
+      "operation": "register_realization_payload_final_use_v2",
+      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/v2_tests.rs"
+      ]
+    },
+    {
+      "authority": "exclusive_owner_and_operation_bound_authority",
+      "delegatedCallees": [],
+      "designOperation": "retire_factor_final_use",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::retire_factor_final_use",
+      "operation": "retire_factor_final_use",
+      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+      ]
+    },
+    {
+      "authority": "exclusive_owner_and_operation_bound_authority",
+      "delegatedCallees": [],
+      "designOperation": "revoke_factor_final_use",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::revoke_factor_final_use",
+      "operation": "revoke_factor_final_use",
+      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+      ]
+    },
+    {
+      "authority": "read_evidence_only",
+      "delegatedCallees": [],
+      "designOperation": "snapshot_v2",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::snapshot_v2",
+      "operation": "snapshot_v2",
+      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/v2_tests.rs"
+      ]
+    },
+    {
+      "authority": "read_evidence_only",
+      "delegatedCallees": [],
+      "designOperation": "read_compatible_v2",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::read_compatible_v2",
+      "operation": "read_compatible_v2",
+      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/v2_tests.rs"
+      ]
+    },
+    {
+      "authority": "read_evidence_only",
+      "delegatedCallees": [],
+      "designOperation": "dereference_realization_v2",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::dereference_realization_v2",
+      "operation": "dereference_realization_v2",
+      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/v2_tests.rs"
+      ]
+    },
+    {
+      "authority": "local_diagnostic_or_checkpoint_no_activation",
+      "delegatedCallees": [],
+      "designOperation": "operational_metrics",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::operational_metrics",
+      "operation": "operational_metrics",
+      "sourceBlob": "e9cfde69eaf0c8d2302b00bb9193075c18fadafa",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable_maintenance_tests.rs::operational_poisoned_owner_exposes_diagnostics_but_not_authority"
+      ]
+    },
+    {
+      "authority": "local_diagnostic_or_checkpoint_no_activation",
+      "delegatedCallees": [],
+      "designOperation": "export_consistent_checkpoint",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::export_consistent_checkpoint",
+      "operation": "export_consistent_checkpoint",
+      "sourceBlob": "e9cfde69eaf0c8d2302b00bb9193075c18fadafa",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable_maintenance_tests.rs::operational_consistent_export_reopens_exactly"
+      ]
+    },
+    {
+      "authority": "local_diagnostic_or_checkpoint_no_activation",
+      "delegatedCallees": [],
+      "designOperation": "checkpoint_compacted",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::checkpoint_compacted",
+      "operation": "checkpoint_compacted",
+      "sourceBlob": "e9cfde69eaf0c8d2302b00bb9193075c18fadafa",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable_maintenance_tests.rs::operational_compaction_retry_is_idempotent_and_conflicting_destination_is_untouched"
+      ]
+    },
+    {
+      "authority": "local_diagnostic_or_checkpoint_no_activation",
+      "delegatedCallees": [],
+      "designOperation": "verify_restore_checkpoint",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::verify_restore_checkpoint",
+      "operation": "verify_restore_checkpoint",
+      "sourceBlob": "e9cfde69eaf0c8d2302b00bb9193075c18fadafa",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable_maintenance_tests.rs::operational_stale_restore_is_rejected_after_revocation"
+      ]
+    },
+    {
+      "authority": "local_diagnostic_or_checkpoint_no_activation",
+      "delegatedCallees": [],
+      "designOperation": "probe_fsync",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::probe_fsync",
+      "operation": "probe_fsync",
+      "sourceBlob": "e9cfde69eaf0c8d2302b00bb9193075c18fadafa",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable_maintenance_tests.rs::operational_fsync_probe_is_bounded_and_cleans_up"
+      ]
+    },
+    {
+      "authority": "deny_without_current_owner_validation",
+      "delegatedCallees": [],
+      "designOperation": "current_use_gate",
+      "mappingClass": "composed_boundary",
+      "nativeSymbol": "PromptFinalUseLeaseV1::validate_at_boundary",
+      "operation": "current_use_gate",
+      "sourceBlob": "4bc32510eb33f3707e8a9a5e3c0f24baf4c01bc3",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_final_use.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-agentd/src/prompt_final_use_tests.rs::final_use_revocation_precedes_snapshot_error_and_survives_restart"
+      ]
+    },
+    {
+      "authority": "same_owner_current_use_gate",
+      "delegatedCallees": [],
+      "designOperation": "prepare_current_attachment",
+      "mappingClass": "composed_boundary",
+      "nativeSymbol": "AgentdPromptPipelineOwner::prepare_final_use",
+      "operation": "prepare_current_attachment",
+      "sourceBlob": "358d364df77e572955314b183cc150cb752862fb",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host"
+      ]
+    },
+    {
+      "authority": "locked_durable_dispatch_claim_not_terminal_success",
+      "delegatedCallees": [],
+      "designOperation": "record_current_dispatch",
+      "mappingClass": "composed_boundary",
+      "nativeSymbol": "AgentdPromptPipelineOwner::record_dispatch_final_use",
+      "operation": "record_current_dispatch",
+      "sourceBlob": "358d364df77e572955314b183cc150cb752862fb",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host"
+      ]
+    },
+    {
+      "authority": "same_host_current_use_gate",
+      "delegatedCallees": [],
+      "designOperation": "revalidate_cached_attachment",
+      "mappingClass": "composed_boundary",
+      "nativeSymbol": "resolve",
+      "operation": "revalidate_cached_attachment",
+      "sourceBlob": "74978ec6a00bfb0fc8e1269e3c57b05fb4dc7ec8",
+      "sourcePath": "codex-rs/ext/hepta-prompt/src/lib.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/ext/hepta-prompt/src/lib_tests.rs::cached_prompt_revalidates_owner_withdrawal_before_provider_begin"
+      ]
+    }
+  ],
+  "owner": "intelligence-platform",
+  "productCallerState": "source_composed",
+  "productCallers": [
+    {
+      "blobSha": "358d364df77e572955314b183cc150cb752862fb",
+      "nativeSymbol": "AgentdPromptPipelineOwner",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "state": "source_composed_activation_not_proved"
+    },
+    {
+      "blobSha": "4bc32510eb33f3707e8a9a5e3c0f24baf4c01bc3",
+      "nativeSymbol": "PromptFinalUseValidator",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_final_use.rs",
+      "state": "source_composed_activation_not_proved"
+    },
+    {
+      "blobSha": "803989e30f19c8f6cce78cde09434925f4f0a522",
+      "nativeSymbol": "compile_prompt_registry_v2",
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+      "state": "source_composed_activation_not_proved"
+    },
+    {
+      "blobSha": "74978ec6a00bfb0fc8e1269e3c57b05fb4dc7ec8",
+      "nativeSymbol": "PromptRuntimeExtension",
+      "sourcePath": "codex-rs/ext/hepta-prompt/src/lib.rs",
+      "state": "source_composed_activation_not_proved"
+    }
+  ],
+  "productionImplementation": false,
+  "productionWriterState": "not_activated",
+  "repositoryControlledGaps": [
+    "Require passing exact-head and bound-base synthetic-merge execution receipts for this candidate.",
+    "Prove actual transport/stream/final-output revocation behavior beyond the durable dispatch-claim boundary.",
+    "Checkpoint handoff and old-source/backup disposal require externally fenced retention decisions.",
+    "Oldest-reclaimable age requires a durable timestamp/schema policy; current value is unknown, not zero."
   ],
   "resolvedRoots": [
     "codex-rs/hepta-prompt-registry"
   ],
-  "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
-  "operations": [
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "tree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30"
+  },
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "sourceObjects": [
     {
-      "operation": "promptregistry",
-      "nativeSymbol": "PromptRegistry",
-      "sourcePath": "codex-rs/hepta-prompt-registry/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "promptregistry",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "object": "cd6650b68a815d69038166b7de50c2857f358641",
+      "path": "codex-rs/Cargo.lock"
     },
     {
-      "operation": "register_realization_v2",
-      "nativeSymbol": "register_realization_v2",
-      "sourcePath": "codex-rs/hepta-prompt-registry/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "register_realization_v2",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a",
+      "path": "codex-rs/Cargo.toml"
     },
     {
-      "operation": "read_compatible_v2",
-      "nativeSymbol": "read_compatible_v2",
-      "sourcePath": "codex-rs/hepta-prompt-registry/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "read_compatible_v2",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "object": "c54118da203938658de9cbc5ddd4f2a4dc8559b0",
+      "path": "codex-rs/ext/hepta-prompt/BUILD.bazel"
+    },
+    {
+      "object": "152fea264155931b3994e98e3c754b8f79c57718",
+      "path": "codex-rs/ext/hepta-prompt/Cargo.toml"
+    },
+    {
+      "object": "74978ec6a00bfb0fc8e1269e3c57b05fb4dc7ec8",
+      "path": "codex-rs/ext/hepta-prompt/src/lib.rs"
+    },
+    {
+      "object": "4d2c3e7f197e24fbef75384f37f549c83dc3bf63",
+      "path": "codex-rs/ext/hepta-prompt/src/lib_tests.rs"
+    },
+    {
+      "object": "5d13cd8f355bab3ecb95f8c068517de200dd143f",
+      "path": "codex-rs/hepta-agentd/Cargo.toml"
+    },
+    {
+      "object": "4bc32510eb33f3707e8a9a5e3c0f24baf4c01bc3",
+      "path": "codex-rs/hepta-agentd/src/prompt_final_use.rs"
+    },
+    {
+      "object": "eb502467aefe5707b1840298de54d53cbbe1f9fa",
+      "path": "codex-rs/hepta-agentd/src/prompt_final_use_store.rs"
+    },
+    {
+      "object": "78fa801b613a6e1ddf7d2c12e9a76efa37017b9d",
+      "path": "codex-rs/hepta-agentd/src/prompt_final_use_tests.rs"
+    },
+    {
+      "object": "358d364df77e572955314b183cc150cb752862fb",
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs"
+    },
+    {
+      "object": "c1feb1e486b68a733eedc2f7e9cd986190a88459",
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs"
+    },
+    {
+      "object": "18cbfac8545b081ef42729ef44f67a1047f2e996",
+      "path": "codex-rs/hepta-codex-adapter/Cargo.toml"
+    },
+    {
+      "object": "521526bebf785104d714432cbf9613e71b233afc",
+      "path": "codex-rs/hepta-codex-adapter/src/lib.rs"
+    },
+    {
+      "object": "162205d6bc62834e1b04fed33dd67f5955f218d1",
+      "path": "codex-rs/hepta-intelligence/Cargo.toml"
+    },
+    {
+      "object": "803989e30f19c8f6cce78cde09434925f4f0a522",
+      "path": "codex-rs/hepta-intelligence/src/prompt_delivery.rs"
+    },
+    {
+      "object": "7a0f89b1643001dfd2bfb3c9f258c99c965855b5",
+      "path": "codex-rs/hepta-prompt-optimizer/BUILD.bazel"
+    },
+    {
+      "object": "f463e790c182452434287c7ccba68dd78a7c69ca",
+      "path": "codex-rs/hepta-prompt-optimizer/Cargo.toml"
+    },
+    {
+      "object": "1e11c2904acdee472c712a10f84dcc9455424223",
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical.rs"
+    },
+    {
+      "object": "100a37fd11a9d73285423e9954d9cbdd02afa280",
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs"
+    },
+    {
+      "object": "b62625d64b790fed68a80f1a0d3a73ad51534cfd",
+      "path": "codex-rs/hepta-prompt-optimizer/src/consumer.rs"
+    },
+    {
+      "object": "ead1df5ef6ec164fdeb4815694a7fdf690b3ddc5",
+      "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs"
+    },
+    {
+      "object": "bc36cfb0bbe50810ff3ce338af79264cc854666f",
+      "path": "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs"
+    },
+    {
+      "object": "8e4b535c6d866cd5569e3ca2bbe21fa90ff9e349",
+      "path": "codex-rs/hepta-prompt-optimizer/src/lib.rs"
+    },
+    {
+      "object": "7a61264c37f9941b8ca0d057b48daef236cece88",
+      "path": "codex-rs/hepta-prompt-optimizer/src/lib_tests.rs"
+    },
+    {
+      "object": "0f75e0589c066df5287465ab38868db63d97e3c7",
+      "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow.rs"
+    },
+    {
+      "object": "449223590ded07d2f9ced6e7962b6be2e1a13173",
+      "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow_digest.rs"
+    },
+    {
+      "object": "9ff91efc880f331648c0363d605c41e92e8fd532",
+      "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs"
+    },
+    {
+      "object": "52154aca63828c5aec7879cc056beae77914762e",
+      "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow_validation.rs"
+    },
+    {
+      "object": "e46e77ba482f1846c3d780e263e3e608db305054",
+      "path": "codex-rs/hepta-prompt-optimizer/src/policy.rs"
+    },
+    {
+      "object": "44f1dd5ace1a7c45dc0cac6b180be79d22ec2437",
+      "path": "codex-rs/hepta-prompt-optimizer/src/policy_contracts.rs"
+    },
+    {
+      "object": "612c424fdd92a613dbafe85d24234511121489e2",
+      "path": "codex-rs/hepta-prompt-optimizer/src/policy_digest.rs"
+    },
+    {
+      "object": "3f2f416c2eb20c283ccb23aead1ef9c7c2101144",
+      "path": "codex-rs/hepta-prompt-optimizer/src/policy_enumeration_pricing.rs"
+    },
+    {
+      "object": "b9adc95254725cdc2f5581d2b731c1c566eadeb9",
+      "path": "codex-rs/hepta-prompt-optimizer/src/policy_exercise_helpers.rs"
+    },
+    {
+      "object": "dceb1c25325b9c75e4eeb0ffe76ccd950471c32e",
+      "path": "codex-rs/hepta-prompt-optimizer/src/policy_portfolio.rs"
+    },
+    {
+      "object": "3b940be370731ce411145f4781c676a55e20647a",
+      "path": "codex-rs/hepta-prompt-optimizer/src/policy_portfolio_helpers.rs"
+    },
+    {
+      "object": "03b59ca3a4af9619caa4046c90213b7ba3d57195",
+      "path": "codex-rs/hepta-prompt-registry"
+    },
+    {
+      "object": "77e067d1efd2019878487f7f7f789bd40a5d68cc",
+      "path": "codex-rs/hepta-prompt-registry/BUILD.bazel"
+    },
+    {
+      "object": "61676abe534702cd1c665197212065ec2d267f3f",
+      "path": "codex-rs/hepta-prompt-registry/Cargo.toml"
+    },
+    {
+      "object": "cbb80be7237bc1bba79c6ba330af2576248ca5ad",
+      "path": "codex-rs/hepta-prompt-registry/src/admission.rs"
+    },
+    {
+      "object": "81d584fd042e4a3cd5a2839303ef012c38548133",
+      "path": "codex-rs/hepta-prompt-registry/src/delivery.rs"
+    },
+    {
+      "object": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "path": "codex-rs/hepta-prompt-registry/src/durable.rs"
+    },
+    {
+      "object": "e9cfde69eaf0c8d2302b00bb9193075c18fadafa",
+      "path": "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs"
+    },
+    {
+      "object": "9db63a18fc2f116af72f867bfda02bcfd2964b6e",
+      "path": "codex-rs/hepta-prompt-registry/src/durable_maintenance_tests.rs"
+    },
+    {
+      "object": "21b5b069110b9c36c5f682a3efd984ea64dd113e",
+      "path": "codex-rs/hepta-prompt-registry/src/durable_payloads.rs"
+    },
+    {
+      "object": "1cc087f9b9b7f96d19e390164400462a8a7a6a25",
+      "path": "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs"
+    },
+    {
+      "object": "ab3d0844db07c029e5d7613c975089825f6bc712",
+      "path": "codex-rs/hepta-prompt-registry/src/lib.rs"
+    },
+    {
+      "object": "7dec1d918cdbce1c4bef99f3f4de76e1528ce793",
+      "path": "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+    },
+    {
+      "object": "fd961aee93f67b4309e1592909c7613f34dfdfb3",
+      "path": "codex-rs/hepta-prompt-registry/src/protocol.rs"
+    },
+    {
+      "object": "975ecaf4f3c5adbcecb0eba45bc70f7f2d0227f2",
+      "path": "codex-rs/hepta-prompt-registry/src/v2.rs"
+    },
+    {
+      "object": "4e78cd11b200971314fcb8634d1540d6ca79f91e",
+      "path": "codex-rs/hepta-prompt-registry/src/v2_tests.rs"
+    },
+    {
+      "object": "acf612c6afd22e5e1f575d0098479ed54bc42c09",
+      "path": "codex-rs/hepta-prompt-registry/tests/durable_relations_v4.rs"
+    },
+    {
+      "object": "910c65114ec128a8317ee8257428451f3cd28230",
+      "path": "codex-rs/rust-toolchain.toml"
+    },
+    {
+      "object": "08ad6588fb64da33884768093c514f6498605b6c",
+      "path": "docs/modules/prompt.registry/API_CONTRACT.md"
+    },
+    {
+      "object": "a6eed7c6e57da10fc7bd943211c1bb76f457ca41",
+      "path": "docs/modules/prompt.registry/OPERATIONS.md"
+    },
+    {
+      "object": "29c9d136fe66273ee6680edb9b03285211ee5c3d",
+      "path": "docs/modules/prompt.registry/PERFORMANCE.md"
+    },
+    {
+      "object": "ad782d93e1345ec57a7bb3969b2b326458234f99",
+      "path": "docs/modules/prompt.registry/TECHNICAL.md"
+    },
+    {
+      "object": "ba325204445c2cda584badeb7a795cdef4308280",
+      "path": "scripts/hepta-implementation-maps.py"
+    },
+    {
+      "object": "0c3713fa234d8087e62b21f6dc7fc64a3bce0b6f",
+      "path": "scripts/hepta-prompt-registry-map.py"
+    },
+    {
+      "object": "1dedae50bb874fead519713605d45272afa7f809",
+      "path": "scripts/hepta-prompt-registry-qualify.py"
+    },
+    {
+      "object": "25c028baa4341885bfacf42d3a5f94ece5a6e784",
+      "path": "scripts/hepta_module_source_roots.py"
     }
   ],
-  "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
-  ],
-  "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
-  ],
-  "claimBoundary": {
-    "nativeSourceMappingComplete": true,
-    "sourceRootPresent": true,
-    "productionImplementation": false,
-    "productExecutionProved": false,
-    "independentAcceptance": false,
-    "activation": false,
-    "release": false,
-    "implementedOperationMappingComplete": true
-  },
   "sourceRoot": [
     "codex-rs/hepta-prompt-registry"
-  ]
+  ],
+  "sourceRootPresent": true,
+  "status": {
+    "composed": true,
+    "implemented": true,
+    "qualified": false
+  },
+  "technicalGuide": "docs/modules/prompt.registry/TECHNICAL.md"
 }
