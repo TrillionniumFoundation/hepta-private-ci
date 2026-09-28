@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   apply-verify-commit:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     timeout-minutes: 120
     steps:
       - name: Check out exact staged candidate
