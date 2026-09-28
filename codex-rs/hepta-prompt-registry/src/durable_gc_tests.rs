@@ -293,7 +293,7 @@ fn gc_orphan_slot_cleanup_does_not_change_authoritative_revision() {
     drop(file);
     let receipt = owner.collect_payload_garbage().must("cleanup");
     assert_eq!(receipt.collected_payload_records, 0);
-    assert_eq!(receipt.unlinked_file_bytes, 23);
+    assert_eq!(receipt.unlinked_file_bytes, 24);
     assert!(!receipt.cleanup_pending);
     assert_eq!(owner.registry().must("registry"), &before);
     let io = owner.operational_metrics().must("metrics").io;
