@@ -1,23 +1,35 @@
-name: Prompt registry operational closure bootstrap
+
+name: Prompt registry exact implementation map refresh
 
 on:
+  workflow_dispatch:
   push:
-    branches: [codex/prompt-registry-remediation-20260927]
+    branches: [codex/prompt-registry-full-remediation-20260928]
     paths:
-      - "scripts/apply-prompt-registry-operations.py"
+      - "codex-rs/hepta-prompt-registry/**"
+      - "codex-rs/hepta-prompt-optimizer/**"
+      - "codex-rs/hepta-agentd/src/prompt_*.rs"
+      - "codex-rs/hepta-intelligence/src/prompt_delivery.rs"
+      - "docs/modules/prompt.registry/TECHNICAL.md"
+      - "docs/modules/prompt.registry/QUALIFICATION_STATUS.md"
+      - "qualification/module-execution-dossiers/detail/prompt.registry.md"
+      - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
+      - "scripts/hepta-prompt-registry-map.py"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/workflows/hepta-prompt-registry-qualification.yml"
       - ".github/workflows/prompt-registry-map-refresh.yml"
 
 permissions:
   contents: write
 
 concurrency:
-  group: prompt-registry-operational-closure-${{ github.ref }}
+  group: prompt-registry-map-refresh-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  apply:
+  refresh:
     runs-on: ubuntu-slim
-    timeout-minutes: 60
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -25,57 +37,62 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Bind exact bootstrap source
+      - name: Bind clean exact candidate
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
           git diff --quiet
           git diff --cached --quiet
+          git rev-parse HEAD HEAD^{tree}
 
-      - name: Install pinned Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-        with:
-          toolchain: 1.95.0
-          components: rustfmt, clippy
-
-      - name: Apply bounded operational closure
-        run: python3 scripts/apply-prompt-registry-operations.py
-
-      - name: Format and test prompt registry
-        working-directory: codex-rs
+      - name: Generate prompt.registry map from current source
         shell: bash
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
         run: |
           set -euo pipefail
-          cargo fmt --package codex-hepta-prompt-registry
-          cargo test --locked -p codex-hepta-prompt-registry -- --nocapture --test-threads=1
-          cargo test --locked -p codex-hepta-prompt-registry operational_ -- --ignored --nocapture --test-threads=1
-          cargo clippy --locked -p codex-hepta-prompt-registry --all-targets --no-deps -- -D warnings
-
-      - name: Validate generated Python and documents
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          compile(
-              Path("scripts/hepta-prompt-registry-map.py").read_text(encoding="utf-8"),
-              "scripts/hepta-prompt-registry-map.py",
-              "exec",
-          )
-          PY
           python3 scripts/hepta-prompt-registry-map.py
           python3 scripts/hepta-implementation-maps.py migrate --module prompt.registry
-          git checkout -- docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
-          git diff --check
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path("docs/modules/prompt.registry/IMPLEMENTATION_MAP.json")
+          row = json.loads(path.read_text(encoding="utf-8"))
+          if row.get("schema") != "hepta.module-implementation-map.v3":
+              raise SystemExit("unexpected implementation-map schema")
+          if row.get("module") != "prompt.registry":
+              raise SystemExit("wrong implementation-map module")
+          if not row.get("operations"):
+              raise SystemExit("empty prompt.registry operation inventory")
+          expected = {
+              "sourceImplemented": True,
+              "sourceComposed": True,
+              "productActivated": False,
+              "accepted": False,
+              "released": False,
+          }
+          if row.get("lifecycleStates") != expected:
+              raise SystemExit("prompt.registry lifecycle states drifted")
+          print(json.dumps({
+              "module": row["module"],
+              "sourceBase": row.get("sourceBase"),
+              "observedAtHead": row.get("observedAtHead"),
+              "operations": len(row["operations"]),
+              "lifecycleStates": row["lifecycleStates"],
+          }, sort_keys=True))
+          PY
+          git diff --check -- docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
 
-      - name: Commit operational closure
+      - name: Commit exact generated map
         shell: bash
         run: |
           set -euo pipefail
+          if git diff --quiet -- docs/modules/prompt.registry/IMPLEMENTATION_MAP.json; then
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff --cached --check
-          git commit -m "prompt.registry: add operational checkpoint and qualification"
+          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
+          git commit -m "prompt.registry: refresh exact implementation map [prompt-registry-map]"
           git push origin "HEAD:${GITHUB_REF_NAME}"

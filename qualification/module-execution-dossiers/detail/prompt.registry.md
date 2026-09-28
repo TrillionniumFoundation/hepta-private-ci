@@ -75,10 +75,13 @@ The current canonical bounds include the registry record limit and a 64 KiB
 maximum realization payload. Storage remains bounded by the payload extent
 limit and metadata-size limit. These are safety ceilings, not scale evidence.
 
-Payload-generation compaction/GC, unified logical-record/payload/byte quota,
-operational metrics, online consistent export/restore verification and
-1k/8k/16k measurements remain qualification work. No WAL, Merkle or incremental
-digest design is justified until those measurements exist.
+The source owner now exposes unified logical-record/payload/byte quota
+metrics, consistent checkpoint export, copy-compaction/GC into a fresh V4
+directory, restore verification and bounded fsync probes. The qualification
+workflow executes the 1k/8k/16k logical-scale and fsync profiles and binds the
+profile digest into each exact-candidate receipt. No WAL, Merkle or incremental
+digest design is justified unless those measurements identify a material
+bottleneck.
 
 ## 6. Required verification
 
@@ -123,7 +126,9 @@ Implemented source includes:
 - payload-digest verification and bounded dereference;
 - Agentd prompt owner/runtime composition;
 - dispatch-time final-use lease and durable final-use records;
-- included optimizer relation graph tests rather than an orphan source file.
+- included optimizer relation graph tests rather than an orphan source file;
+- copy-compacted V4 checkpoints, unified quota metrics, restore verification,
+  bounded fsync probes and operational scale profiles.
 
 The machine-generated implementation map and qualification receipts, not this
 narrative, are authoritative for exact source identities and executed tests.
@@ -135,12 +140,11 @@ Before any production-ready statement:
 1. make both exact-head and base-merge module qualification lanes green;
 2. commit the exact generated implementation map for the qualified candidate;
 3. complete the end-to-end revoke-before-dispatch and restart scenario;
-4. implement and qualify payload checkpoint/compaction/GC and unified quotas;
-5. add capacity/fsync metrics, consistent export/restore verification and the
-   named crash-injection matrix;
-6. run 1k/8k/16k measurements and record the decision on WAL/incremental
-   digest work;
-7. obtain independent product activation, acceptance and release decisions.
+4. review the emitted 1k/8k/16k and fsync profiles and record whether any
+   WAL, Merkle or incremental-digest work is justified;
+5. qualify external quiescent checkpoint activation and rollback in the named
+   product environment;
+6. obtain independent product activation, acceptance and release decisions.
 
 No source change in this dossier self-accepts, self-merges, self-deploys or
 self-releases the module.

@@ -58,6 +58,16 @@ use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 
 #[path = "durable_payloads.rs"]
 mod payloads;
+#[path = "durable_maintenance.rs"]
+mod maintenance;
+
+pub use maintenance::PromptRegistryCheckpointKind;
+pub use maintenance::PromptRegistryCheckpointReceipt;
+pub use maintenance::PromptRegistryFsyncProbe;
+pub use maintenance::PromptRegistryMaintenanceError;
+pub use maintenance::PromptRegistryOperationalMetrics;
+pub use maintenance::PromptRegistryQuota;
+pub use maintenance::PromptRegistryRestoreReceipt;
 
 const LEGACY_STORE_SCHEMA_V2: u32 = 2;
 const STORE_SCHEMA_V4: u32 = 4;

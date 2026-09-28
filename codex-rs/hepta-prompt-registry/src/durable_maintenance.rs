@@ -1,3 +1,4 @@
+
 //! Bounded operational maintenance for the durable prompt registry.
 //!
 //! Maintenance never rewrites the live owner in place. It produces a fresh,
@@ -493,7 +494,10 @@ fn ensure_fresh_destination(
     Ok(())
 }
 
-fn file_bytes(store: &Store, name: &str) -> Result<u64, PromptRegistryMaintenanceError> {
+fn file_bytes(
+    store: &Store,
+    name: &str,
+) -> Result<u64, PromptRegistryMaintenanceError> {
     if !entry_exists(&store.root, name)? {
         return Ok(0);
     }
@@ -609,7 +613,8 @@ mod tests {
         let temporary = tempfile::tempdir().must("tempdir");
         let source = temporary.path().join("source");
         let destination = temporary.path().join("export");
-        let mut owner = DurablePromptRegistry::open_state_dir(&source, 64).must("source owner");
+        let mut owner =
+            DurablePromptRegistry::open_state_dir(&source, 64).must("source owner");
         owner
             .commit(|registry| add_payload(registry, 0))
             .must("seed payload");
@@ -620,7 +625,10 @@ mod tests {
             .must("consistent export");
         assert_eq!(receipt.kind, PromptRegistryCheckpointKind::ConsistentExport);
         assert_eq!(receipt.source_revision, receipt.checkpoint_revision);
-        assert_eq!(receipt.source_registry_digest, receipt.checkpoint_registry_digest);
+        assert_eq!(
+            receipt.source_registry_digest,
+            receipt.checkpoint_registry_digest
+        );
         assert!(receipt.verified_by_reopen);
 
         let restored = DurablePromptRegistry::verify_restore_checkpoint(
@@ -639,7 +647,8 @@ mod tests {
         let temporary = tempfile::tempdir().must("tempdir");
         let source = temporary.path().join("source");
         let destination = temporary.path().join("compacted");
-        let mut owner = DurablePromptRegistry::open_state_dir(&source, 64).must("source owner");
+        let mut owner =
+            DurablePromptRegistry::open_state_dir(&source, 64).must("source owner");
         owner
             .commit(|registry| add_payload(registry, 0))
             .must("seed payload");
@@ -661,9 +670,16 @@ mod tests {
         assert_eq!(receipt.reclaimed_payload_records, 1);
         assert_eq!(receipt.reclaimed_payload_bytes, 16 * 1024);
         assert_eq!(receipt.checkpoint_payload_records, 0);
-        assert!(owner.registry().must("source registry").realization_payloads.contains_key(&id("realization:0")));
+        assert!(
+            owner
+                .registry()
+                .must("source registry")
+                .realization_payloads
+                .contains_key(&id("realization:0"))
+        );
 
-        let compacted = DurablePromptRegistry::open_state_dir(&destination, 64).must("open compacted");
+        let compacted =
+            DurablePromptRegistry::open_state_dir(&destination, 64).must("open compacted");
         let compacted_registry = compacted.registry().must("compacted registry");
         assert_eq!(
             compacted_registry
@@ -672,14 +688,19 @@ mod tests {
                 .map(|realization| realization.active),
             Some(false)
         );
-        assert!(!compacted_registry.realization_payloads.contains_key(&id("realization:0")));
+        assert!(
+            !compacted_registry
+                .realization_payloads
+                .contains_key(&id("realization:0"))
+        );
     }
 
     #[test]
     fn operational_metrics_unify_logical_payload_and_byte_quotas() {
         let temporary = tempfile::tempdir().must("tempdir");
         let source = temporary.path().join("source");
-        let mut owner = DurablePromptRegistry::open_state_dir(&source, 64).must("source owner");
+        let mut owner =
+            DurablePromptRegistry::open_state_dir(&source, 64).must("source owner");
         owner
             .commit(|registry| add_payload(registry, 0))
             .must("seed payload");
@@ -707,9 +728,15 @@ mod tests {
     fn operational_fsync_probe_is_bounded_and_cleans_up() {
         let temporary = tempfile::tempdir().must("tempdir");
         let directory = temporary.path().join("probe");
-        let receipt = DurablePromptRegistry::probe_fsync(&directory, 4096).must("fsync probe");
+        let receipt =
+            DurablePromptRegistry::probe_fsync(&directory, 4096).must("fsync probe");
         assert_eq!(receipt.bytes, 4096);
-        assert!(std::fs::read_dir(directory).must("read probe directory").next().is_none());
+        assert!(
+            std::fs::read_dir(directory)
+                .must("read probe directory")
+                .next()
+                .is_none()
+        );
         assert!(matches!(
             DurablePromptRegistry::probe_fsync(temporary.path(), 0),
             Err(PromptRegistryMaintenanceError::FsyncProbeSizeOutOfRange)
@@ -720,14 +747,16 @@ mod tests {
     fn operational_unrenamed_metadata_is_never_selected() {
         let temporary = tempfile::tempdir().must("tempdir");
         let source = temporary.path().join("source");
-        let mut owner = DurablePromptRegistry::open_state_dir(&source, 64).must("source owner");
+        let mut owner =
+            DurablePromptRegistry::open_state_dir(&source, 64).must("source owner");
         owner
             .commit(|registry| add_payload(registry, 0))
             .must("seed payload");
         let expected = owner.registry().must("registry").clone();
 
-        let mut staged = open_private(&owner.store.root, "registry.next", Access::Create)
-            .must("staged metadata");
+        let mut staged =
+            open_private(&owner.store.root, "registry.next", Access::Create)
+                .must("staged metadata");
         staged.set_len(0).must("truncate staged metadata");
         staged
             .write_all(br#"{"schema":4,"state":{"schema":4}}"#)
@@ -736,7 +765,8 @@ mod tests {
         drop(staged);
         drop(owner);
 
-        let reopened = DurablePromptRegistry::open_state_dir(&source, 64).must("reopen source");
+        let reopened =
+            DurablePromptRegistry::open_state_dir(&source, 64).must("reopen source");
         assert_eq!(reopened.registry().must("registry"), &expected);
     }
 
@@ -744,14 +774,16 @@ mod tests {
     fn operational_orphan_payload_tail_reconciliation_is_idempotent() {
         let temporary = tempfile::tempdir().must("tempdir");
         let source = temporary.path().join("source");
-        let mut owner = DurablePromptRegistry::open_state_dir(&source, 64).must("source owner");
+        let mut owner =
+            DurablePromptRegistry::open_state_dir(&source, 64).must("source owner");
         owner
             .commit(|registry| add_payload(registry, 0))
             .must("seed payload");
         let expected = owner.registry().must("registry").clone();
         let committed = file_bytes(&owner.store, payloads::FILE_NAME).must("file bytes");
-        let mut payload = open_private(&owner.store.root, payloads::FILE_NAME, Access::Create)
-            .must("payload file");
+        let mut payload =
+            open_private(&owner.store.root, payloads::FILE_NAME, Access::Create)
+                .must("payload file");
         payload.seek(SeekFrom::End(0)).must("seek payload tail");
         payload
             .write_all(b"orphan payload tail")
@@ -760,13 +792,21 @@ mod tests {
         drop(payload);
         drop(owner);
 
-        let first = DurablePromptRegistry::open_state_dir(&source, 64).must("first reopen");
+        let first =
+            DurablePromptRegistry::open_state_dir(&source, 64).must("first reopen");
         assert_eq!(first.registry().must("registry"), &expected);
-        assert_eq!(file_bytes(&first.store, payloads::FILE_NAME).must("first length"), committed);
+        assert_eq!(
+            file_bytes(&first.store, payloads::FILE_NAME).must("first length"),
+            committed
+        );
         drop(first);
-        let second = DurablePromptRegistry::open_state_dir(&source, 64).must("second reopen");
+        let second =
+            DurablePromptRegistry::open_state_dir(&source, 64).must("second reopen");
         assert_eq!(second.registry().must("registry"), &expected);
-        assert_eq!(file_bytes(&second.store, payloads::FILE_NAME).must("second length"), committed);
+        assert_eq!(
+            file_bytes(&second.store, payloads::FILE_NAME).must("second length"),
+            committed
+        );
     }
 
     #[test]
@@ -823,7 +863,8 @@ mod tests {
         let temporary = tempfile::tempdir().must("tempdir");
         for bytes in [4096_u64, 64 * 1024, 1024 * 1024] {
             let directory = temporary.path().join(format!("probe-{bytes}"));
-            let receipt = DurablePromptRegistry::probe_fsync(&directory, bytes).must("probe");
+            let receipt =
+                DurablePromptRegistry::probe_fsync(&directory, bytes).must("probe");
             println!(
                 "{}",
                 serde_json::to_string(&receipt).must("serialize fsync receipt")
@@ -835,8 +876,9 @@ mod tests {
         let mut registry = PromptRegistry::new(count).must("registry");
         for index in 0..count {
             let factor = factor(index);
-            let event_revision = Revision::new(u64::try_from(index).unwrap_or(u64::MAX) + 2)
-                .must("event revision");
+            let event_revision =
+                Revision::new(u64::try_from(index).unwrap_or(u64::MAX) + 2)
+                    .must("event revision");
             let mut event = LifecycleEvent {
                 revision: event_revision,
                 factor_id: factor.factor_id.clone(),
@@ -852,11 +894,14 @@ mod tests {
                 event_digest: Digest32::ZERO,
             };
             event.event_digest = event.compute_digest();
-            registry.factors.insert(factor.factor_id.clone(), factor);
+            registry
+                .factors
+                .insert(factor.factor_id.clone(), factor);
             registry.lifecycle_events.push(event);
         }
-        registry.revision = Revision::new(u64::try_from(count).unwrap_or(u64::MAX) + 1)
-            .must("final revision");
+        registry.revision =
+            Revision::new(u64::try_from(count).unwrap_or(u64::MAX) + 1)
+                .must("final revision");
         registry.lifecycle_frontier = registry.revision.get();
         validate_restored(&registry).must("profile registry");
         registry

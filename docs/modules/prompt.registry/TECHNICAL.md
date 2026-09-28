@@ -349,3 +349,29 @@ The bootstrap source-location obligation for `prompt.registry` is implemented by
 - `codex-rs/hepta-prompt-registry`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## Operational checkpoints, quotas and measurement
+
+`DurablePromptRegistry` exposes a read-only operational metrics snapshot that
+unifies logical-record, payload-record, selected/physical payload-byte,
+single-payload and metadata ceilings. The metrics distinguish selected active
+payload bytes from reclaimable inactive payload bytes and report a bounded
+high-water value. These are owner-local facts, not acceptance or deployment
+authority.
+
+`export_consistent_checkpoint` writes the current committed V4 image to a fresh
+private directory and reopens it before issuing a receipt.
+`checkpoint_compacted` copy-compacts into another fresh directory, retaining
+factor, realization, binding, relation, supersession and lifecycle history while
+omitting payload bytes for inactive realizations. Neither operation rewrites or
+switches the live owner. Activation of a verified checkpoint requires an
+external quiescent owner protocol.
+
+`verify_restore_checkpoint` reopens and reconciles one candidate against an
+optional exact revision and registry digest. `probe_fsync` measures a bounded
+private temporary-file write, file synchronization and directory
+synchronization, then removes the probe. The module qualification workflow runs
+the named 1k/8k/16k logical-scale and bounded fsync profiles and binds their log
+digest into the exact qualification receipt. A WAL, Merkle tree or incremental
+digest remains unjustified until those measurements show a material bottleneck.

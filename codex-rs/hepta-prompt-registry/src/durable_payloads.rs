@@ -28,7 +28,7 @@ use codex_hepta_types::StableId;
 
 pub(super) const FILE_NAME: &str = "registry.payloads";
 const MAGIC: &[u8] = b"HEPTA-PROMPT-PAYLOADS-V1\0";
-const MAX_PAYLOAD_BYTES: u64 = 32 * 1024 * 1024;
+pub(super) const MAX_PAYLOAD_BYTES: u64 = 32 * 1024 * 1024;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]

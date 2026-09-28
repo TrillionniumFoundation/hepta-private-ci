@@ -1,10 +1,6 @@
-#!/usr/bin/env python3
-"""Generate curated prompt.registry claims before exact-blob materialization.
 
-The generic implementation-map tool remains responsible for binding each claim
-to the exact candidate SHA/tree/blob observations. This generator owns only the
-human-reviewed operation inventory and conservative lifecycle state.
-"""
+#!/usr/bin/env python3
+"""Generate the curated prompt.registry implementation claims before exact-blob materialization."""
 
 from __future__ import annotations
 
@@ -90,7 +86,7 @@ def main() -> None:
 
     durable_tests = [
         "codex-rs/hepta-prompt-registry/src/durable.rs",
-        "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs",
+        "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs::metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifest",
     ]
     maintenance_tests = [
         "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",

@@ -13,6 +13,7 @@ on:
       - "docs/modules/prompt.registry/**"
       - "qualification/module-execution-dossiers/detail/prompt.registry.md"
       - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta-prompt-registry-map.py"
       - ".github/actions/hepta-synthetic-merge/**"
       - ".github/workflows/hepta-prompt-registry-qualification.yml"
   push:
@@ -20,6 +21,7 @@ on:
       - main
       - codex/prompt-registry-v4-production-closure-20260926
       - codex/prompt-registry-remediation-20260927
+      - codex/prompt-registry-full-remediation-20260928
     paths:
       - "codex-rs/hepta-prompt-registry/**"
       - "codex-rs/hepta-prompt-optimizer/**"
@@ -30,6 +32,7 @@ on:
       - "docs/modules/prompt.registry/**"
       - "qualification/module-execution-dossiers/detail/prompt.registry.md"
       - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta-prompt-registry-map.py"
       - ".github/actions/hepta-synthetic-merge/**"
       - ".github/workflows/hepta-prompt-registry-qualification.yml"
 
@@ -215,6 +218,26 @@ jobs:
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-agentd prompt_ -- --nocapture --test-threads=1
 
+
+      - name: Measure prompt registry scale and fsync profiles
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ../qualification-operational
+          cargo test --locked -p codex-hepta-prompt-registry operational_ \
+            -- --ignored --nocapture --test-threads=1 2>&1 \
+            | tee ../qualification-operational/prompt-registry-${{ matrix.lane }}.log
+
+      - name: Upload prompt registry operational profile
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-operational-${{ matrix.lane }}-${{ github.run_id }}
+          path: qualification-operational/prompt-registry-${{ matrix.lane }}.log
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Strict prompt-owned Clippy
         working-directory: codex-rs
         run: |
@@ -297,6 +320,9 @@ jobs:
               "accepted": False,
               "released": False,
           }
+          profile_path = pathlib.Path("qualification-operational") / f"prompt-registry-{os.environ['MATRIX_LANE']}.log"
+          receipt["operationalProfileSha256"] = hashlib.sha256(profile_path.read_bytes()).hexdigest()
+          receipt["operationalProfilePath"] = profile_path.as_posix()
           target = pathlib.Path("qualification-receipts") / f"prompt-registry-{os.environ['MATRIX_LANE']}.json"
           target.write_text(json.dumps(receipt, sort_keys=True, indent=2) + "\n", encoding="utf-8")
           print(target)
