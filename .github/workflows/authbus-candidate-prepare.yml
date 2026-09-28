@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: authbus-scoped-preparation-${{ github.sha }}
+  group: authbus-scoped-preparation-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -41,8 +41,6 @@ jobs:
           python3 scripts/authbus-preflight-repair.py
           python3 scripts/prepare-authbus-candidate.py
           python3 scripts/finalize-authbus-candidate.py
-          # Bot writes are confined to source, tests and module documents. The
-          # authorized connector, not this token, manages workflow definitions.
           git restore --source=HEAD -- .github/workflows/authbus-authority-qualification.yml .github/workflows/authbus-trust-boundary-migrate.yml
       - name: Install pinned formatter
         run: |
@@ -50,7 +48,7 @@ jobs:
           TOOLCHAIN=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
           rustup toolchain install "$TOOLCHAIN" --profile minimal --component rustfmt
           echo "RUSTUP_TOOLCHAIN=$TOOLCHAIN" >> "$GITHUB_ENV"
-      - name: Format scoped sources and generate current maps
+      - name: Format tracked and newly created scoped sources
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -58,9 +56,9 @@ jobs:
           roots = ('codex-rs/hepta-authbus/', 'codex-rs/hepta-authbus-p1-3-qualification/')
           exact = {'codex-rs/hepta-evidence/src/lib.rs', 'codex-rs/hepta-evidence/src/qualification_tests.rs', 'codex-rs/hepta-agentd/tests/kernel_evidence_product.rs', 'codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs'}
           prefixes = ('codex-rs/hepta-evidence/src/authbus_', 'codex-rs/hepta-agentd/src/authbus_', 'codex-rs/hepta-bao-adapter/src/https_consumer')
-          names = subprocess.check_output(['git', 'ls-files', '-z', '--', 'codex-rs']).decode().split('\0')
-          for path in names:
-              if path.endswith('.rs') and (path.startswith(roots + prefixes) or path in exact):
+          names = subprocess.check_output(['git', 'ls-files', '--cached', '--others', '--exclude-standard', '-z', '--', 'codex-rs']).decode().split('\0')
+          for path in sorted(set(names)):
+              if path.endswith('.rs') and pathlib.Path(path).is_file() and (path.startswith(roots + prefixes) or path in exact):
                   subprocess.run(['rustfmt', '--edition', '2024', '--config', 'skip_children=true', str(pathlib.Path(path).resolve())], cwd='codex-rs', check=True)
           PY
           python3 scripts/check-authbus-closed-world.py --write
@@ -69,23 +67,29 @@ jobs:
           python3 scripts/generate-authbus-implementation-map.py --check
           python3 scripts/test-authbus-exact-head-evidence.py
           python3 scripts/test-authbus-operations.py
-      - name: Push prepared source without rebase or force and freeze both identities
+      - name: Push complete scoped source without rebase or force
         id: publish
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import subprocess
+          import pathlib, subprocess
           allowed = ('codex-rs/hepta-authbus/', 'codex-rs/hepta-authbus-p1-3-qualification/', 'codex-rs/hepta-evidence/src/authbus_', 'codex-rs/hepta-agentd/src/authbus_', 'codex-rs/hepta-bao-adapter/src/https_consumer', 'docs/modules/auth.authbus/')
-          exact = {'codex-rs/hepta-evidence/src/lib.rs', 'codex-rs/hepta-evidence/src/qualification_tests.rs', 'codex-rs/hepta-agentd/tests/kernel_evidence_product.rs', 'scripts/authbus-exact-head-evidence.py', 'scripts/test-authbus-exact-head-evidence.py', 'scripts/check-authbus-closed-world.py'}
-          paths = [p for p in subprocess.check_output(['git','diff','--name-only','-z']).decode().split('\0') if p]
-          bad = [p for p in paths if p not in exact and not p.startswith(allowed)]
-          if bad: raise SystemExit('Refusing out-of-scope changes: '+repr(bad))
-          if not paths: raise SystemExit('No source changes were prepared')
-          subprocess.run(['git','add','--',*paths],check=True)
+          exact = {'codex-rs/Cargo.lock', 'codex-rs/hepta-evidence/src/lib.rs', 'codex-rs/hepta-evidence/src/qualification_tests.rs', 'codex-rs/hepta-agentd/tests/kernel_evidence_product.rs', 'scripts/authbus-exact-head-evidence.py', 'scripts/test-authbus-exact-head-evidence.py', 'scripts/check-authbus-closed-world.py'}
+          def names(*args):
+              return {p for p in subprocess.check_output(['git', *args, '-z']).decode().split('\0') if p}
+          paths = sorted(names('diff', '--name-only') | names('diff', '--cached', '--name-only') | names('ls-files', '--others', '--exclude-standard'))
+          bad = [p for p in paths if (p not in exact and not p.startswith(allowed)) or pathlib.Path(p).is_symlink()]
+          if bad:
+              raise SystemExit('Refusing out-of-scope or symbolic-link changes: '+repr(bad))
+          if paths:
+              subprocess.run(['git', 'add', '--all', '--', *paths], check=True)
           PY
           git config user.name 'hepta-authbus-remediation-bot'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -s -m 'fix(authbus): materialize sealed callers, dual owner fencing, native privacy tests, and source-bound maps'
+          if ! git diff --cached --quiet; then
+            git commit -s -m 'fix(authbus): materialize complete sealed authority source and native contracts'
+          fi
+          test -z "$(git status --porcelain)"
           REMOTE=$(git ls-remote origin "$GITHUB_REF" | cut -f1)
           test "$REMOTE" = "$GITHUB_SHA"
           git push origin "HEAD:$GITHUB_REF"
@@ -93,18 +97,38 @@ jobs:
           echo "source=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "base=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
           git rev-parse HEAD
-      - name: Retain prepared patch on every outcome
+      - name: Retain source, patch and identity on every outcome
         if: always()
         run: |
-          mkdir -p "$RUNNER_TEMP/authbus-prepared"
-          git diff "$GITHUB_SHA" --binary > "$RUNNER_TEMP/authbus-prepared/prepared.patch"
-          git rev-parse HEAD > "$RUNNER_TEMP/authbus-prepared/head.txt"
+          set -euo pipefail
+          DEST="$RUNNER_TEMP/authbus-prepared"
+          mkdir -p "$DEST"
+          git diff "$GITHUB_SHA" --binary > "$DEST/prepared.patch"
+          git rev-parse HEAD > "$DEST/head.txt"
+          git status --porcelain=v1 > "$DEST/status.txt"
+          git ls-files --cached --others --exclude-standard -z -- codex-rs scripts docs/modules/auth.authbus .github/workflows > "$DEST/source-paths.nul"
+          python3 - "$DEST" <<'PY'
+          import hashlib, json, os, pathlib, subprocess, sys, tarfile
+          dest = pathlib.Path(sys.argv[1])
+          paths = sorted(set(p for p in (dest/'source-paths.nul').read_bytes().split(b'\0') if p))
+          manifest = {'workflow_run_id': os.environ['GITHUB_RUN_ID'], 'input_sha': os.environ['GITHUB_SHA'], 'checkout_sha': subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip(), 'clean_tree': not subprocess.check_output(['git','status','--porcelain']), 'files': {}}
+          with tarfile.open(dest/'candidate-source.tar.gz', 'w:gz') as bundle:
+              for raw in paths:
+                  path = pathlib.Path(os.fsdecode(raw))
+                  if not path.is_file() or path.is_symlink():
+                      continue
+                  manifest['files'][str(path)] = hashlib.sha256(path.read_bytes()).hexdigest()
+                  bundle.add(path, arcname=str(path), recursive=False)
+          manifest['bundle_sha256'] = hashlib.sha256((dest/'candidate-source.tar.gz').read_bytes()).hexdigest()
+          (dest/'source-manifest.json').write_text(json.dumps(manifest, indent=2, sort_keys=True)+'\n')
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: authbus-prepared-${{ github.sha }}
           path: ${{ runner.temp }}/authbus-prepared
           if-no-files-found: error
+          retention-days: 14
 
   native:
     needs: prepare
