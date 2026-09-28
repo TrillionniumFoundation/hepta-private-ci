@@ -1,17 +1,20 @@
 //! Agentd ownership boundary for the unified V2 Neuron runtime.
 //!
 //! Product construction requires a durable inference-control port. The shared
-//! handle exposes only guarded invocations; it does not expose the mutable
-//! runtime or a mechanism-only execution bypass.
+//! handle exposes guarded invocations plus serialized administrative query and
+//! reconciliation; it does not expose the mutable runtime or an execution bypass.
 
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::MutexGuard;
 
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::DurableInferenceControlModelPort;
 use codex_hepta_neuron::DurableNeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronAdmissionError;
 use codex_hepta_neuron::NeuronAdmissionGuard;
+use codex_hepta_neuron::NeuronOperationStatusV2;
+use codex_hepta_neuron::NeuronRuntimeCapacityV2;
 use codex_hepta_neuron::NeuronRuntimeCommitV2;
 use codex_hepta_neuron::NeuronRuntimeConfigV1;
 use codex_hepta_neuron::NeuronRuntimeV2;
@@ -82,6 +85,16 @@ trait ProductNeuronOwnerV2: Send + Sync {
         input: NeuronTickInputV1,
         guard: &mut dyn NeuronAdmissionGuard,
     ) -> Result<NeuronRuntimeCommitV2, NeuronRuntimeV2Error>;
+
+    fn reconcile(&self) -> Result<(), NeuronRuntimeV2Error>;
+
+    fn query_operation(
+        &self,
+        tick_id: &StableId,
+        input_digest: Digest32,
+    ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error>;
+
+    fn capacity_snapshot(&self) -> Result<NeuronRuntimeCapacityV2, NeuronRuntimeV2Error>;
 }
 
 struct CombinedAdmission<'a> {
@@ -100,6 +113,15 @@ impl NeuronAdmissionGuard for CombinedAdmission<'_> {
     }
 }
 
+fn lock_owner<T>(owner: &Mutex<T>) -> Result<MutexGuard<'_, T>, NeuronRuntimeV2Error> {
+    owner.try_lock().map_err(|error| match error {
+        std::sync::TryLockError::WouldBlock => {
+            NeuronRuntimeV2Error::Admission(NeuronAdmissionError::Unavailable)
+        }
+        std::sync::TryLockError::Poisoned(_) => NeuronRuntimeV2Error::PendingOperation,
+    })
+}
+
 impl<W, P, G> ProductNeuronOwnerV2 for Mutex<GuardedOwnerV2<W, P, G>>
 where
     W: AnchorWitnessStore + Send,
@@ -111,12 +133,7 @@ where
         input: NeuronTickInputV1,
         stage: &mut dyn NeuronAdmissionGuard,
     ) -> Result<NeuronRuntimeCommitV2, NeuronRuntimeV2Error> {
-        let mut locked = self.try_lock().map_err(|error| match error {
-            std::sync::TryLockError::WouldBlock => {
-                NeuronRuntimeV2Error::Admission(NeuronAdmissionError::Unavailable)
-            }
-            std::sync::TryLockError::Poisoned(_) => NeuronRuntimeV2Error::PendingOperation,
-        })?;
+        let mut locked = lock_owner(self)?;
         let GuardedOwnerV2 { owner, admission } = &mut *locked;
         let AgentdNeuronOwnerV2 {
             runtime,
@@ -128,6 +145,28 @@ where
             stage,
         };
         runtime.tick_guarded(&mut model, input, &mut guard)
+    }
+
+    fn reconcile(&self) -> Result<(), NeuronRuntimeV2Error> {
+        let mut locked = lock_owner(self)?;
+        locked.owner.reconcile()
+    }
+
+    fn query_operation(
+        &self,
+        tick_id: &StableId,
+        input_digest: Digest32,
+    ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
+        let mut locked = lock_owner(self)?;
+        locked
+            .owner
+            .runtime
+            .query_operation(tick_id, input_digest)
+    }
+
+    fn capacity_snapshot(&self) -> Result<NeuronRuntimeCapacityV2, NeuronRuntimeV2Error> {
+        let locked = lock_owner(self)?;
+        locked.owner.runtime.capacity_snapshot()
     }
 }
 
@@ -155,6 +194,30 @@ where
 }
 
 impl AgentdNeuronHandleV2 {
+    pub fn configuration_digest(&self) -> Digest32 {
+        self.config_digest
+    }
+
+    /// Administrative local reconciliation. This never dispatches model work.
+    pub fn reconcile(&self) -> Result<(), NeuronRuntimeV2Error> {
+        self.owner.reconcile()
+    }
+
+    /// Query exact operation truth through the same serialized product owner.
+    pub fn query_operation(
+        &self,
+        tick_id: &StableId,
+        input_digest: Digest32,
+    ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
+        self.owner.query_operation(tick_id, input_digest)
+    }
+
+    /// Advisory capacity through the same serialized product owner. Admission
+    /// remains authoritative and may reject payload-specific work sooner.
+    pub fn capacity_snapshot(&self) -> Result<NeuronRuntimeCapacityV2, NeuronRuntimeV2Error> {
+        self.owner.capacity_snapshot()
+    }
+
     pub fn prepare(
         &self,
         run_id: StableId,
