@@ -55,7 +55,7 @@ impl AgentdCanonicalRecallInputV1 {
         validate_retrieval_owner_binding(&self.retrieval_owner)?;
         self.intelligence.validate()?;
         let upstream = self.retrieval.consumer_binding();
-        if self.intelligence.packet != *self.retrieval.packet()
+        if &self.intelligence.packet != self.retrieval.packet()
             || self
                 .intelligence
                 .consumer_binding
