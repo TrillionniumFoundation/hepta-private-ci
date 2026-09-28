@@ -86,7 +86,9 @@ impl StdError for AgentdIntuitionServiceErrorV1 {
             Self::Agentd(source) => Some(source),
             Self::Policy(source) => Some(source),
             Self::AdmissionFailedAfterPolicy { source, .. } => Some(source.as_ref()),
-            Self::NotConfigured | Self::NotReady | Self::GenerationChangedAfterCommit { .. } => None,
+            Self::NotConfigured | Self::NotReady | Self::GenerationChangedAfterCommit { .. } => {
+                None
+            }
         }
     }
 }

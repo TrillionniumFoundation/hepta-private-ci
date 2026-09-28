@@ -74,7 +74,11 @@ fn intuition_policy_admission_preserves_complete_slow_path_receipt() {
     .expect("bound slow path");
     assert_eq!(admitted.disposition(), "canonical_slow_path");
     assert_eq!(admitted.policy_receipt(), Some(&expected));
-    assert!(admitted.binding_digest().is_some_and(|value| !value.is_zero()));
+    assert!(
+        admitted
+            .binding_digest()
+            .is_some_and(|value| !value.is_zero())
+    );
 }
 
 #[test]

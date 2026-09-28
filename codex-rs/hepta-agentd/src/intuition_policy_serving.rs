@@ -177,11 +177,13 @@ pub(crate) fn authenticate_canonical_intuition(
             }
         })();
         if let Err(source) = final_check {
-            return Err(crate::AgentdIntuitionServiceErrorV1::AdmissionFailedAfterPolicy {
-                receipt: committed,
-                source: Box::new(source),
-            }
-            .into());
+            return Err(
+                crate::AgentdIntuitionServiceErrorV1::AdmissionFailedAfterPolicy {
+                    receipt: committed,
+                    source: Box::new(source),
+                }
+                .into(),
+            );
         }
         Ok(Some(committed))
     })();
@@ -265,7 +267,11 @@ fn record_failure(profile: &'static str, elapsed: Duration, error: &AgentdError)
     let reason_code = agentd_error_reason(error);
     emit_counter(
         FAILURE_METRIC,
-        &[("profile", profile), ("error_class", error_class), ("reason_code", reason_code)],
+        &[
+            ("profile", profile),
+            ("error_class", error_class),
+            ("reason_code", reason_code),
+        ],
     );
     emit_duration(
         DURATION_METRIC,
@@ -400,8 +406,14 @@ mod tests {
 
     #[test]
     fn missing_profile_defaults_to_production_in_all_builds() {
-        assert_eq!(ServingProfile::parse(None, false), Ok(ServingProfile::Production));
-        assert_eq!(ServingProfile::parse(None, true), Ok(ServingProfile::Production));
+        assert_eq!(
+            ServingProfile::parse(None, false),
+            Ok(ServingProfile::Production)
+        );
+        assert_eq!(
+            ServingProfile::parse(None, true),
+            Ok(ServingProfile::Production)
+        );
     }
 
     #[test]
@@ -412,16 +424,30 @@ mod tests {
 
     #[test]
     fn compatibility_profile_must_be_explicit() {
-        assert_eq!(ServingProfile::parse(Some("development"), false), Ok(ServingProfile::Development));
+        assert_eq!(
+            ServingProfile::parse(Some("development"), false),
+            Ok(ServingProfile::Development)
+        );
         assert!(ServingProfile::Development.require_host(false).is_ok());
-        assert_eq!(ServingProfile::parse(Some("test"), true), Ok(ServingProfile::Test));
+        assert_eq!(
+            ServingProfile::parse(Some("test"), true),
+            Ok(ServingProfile::Test)
+        );
         assert!(ServingProfile::Test.require_host(false).is_ok());
         assert!(ServingProfile::parse(Some("test"), false).is_err());
     }
 
     #[test]
     fn malformed_profiles_do_not_fall_back() {
-        for value in ["", "Production", " production", "production ", "fixture", "prod", "unknown"] {
+        for value in [
+            "",
+            "Production",
+            " production",
+            "production ",
+            "fixture",
+            "prod",
+            "unknown",
+        ] {
             assert!(ServingProfile::parse(Some(value), true).is_err());
         }
     }
@@ -431,9 +457,20 @@ mod tests {
         assert_eq!(ServingProfile::Development.as_str(), "development");
         assert_eq!(ServingProfile::Test.as_str(), "test");
         assert_eq!(ServingProfile::Production.as_str(), "production");
-        assert_eq!(agentd_error_class(&AgentdError::Invalid("request-specific detail".to_string())), "invalid");
-        assert_eq!(agentd_error_class(&AgentdError::Protocol("request-specific detail".to_string())), "protocol");
-        assert_eq!(agentd_error_class(&AgentdError::Overloaded { retry_after_ms: 10 }), "overloaded");
+        assert_eq!(
+            agentd_error_class(&AgentdError::Invalid("request-specific detail".to_string())),
+            "invalid"
+        );
+        assert_eq!(
+            agentd_error_class(&AgentdError::Protocol(
+                "request-specific detail".to_string()
+            )),
+            "protocol"
+        );
+        assert_eq!(
+            agentd_error_class(&AgentdError::Overloaded { retry_after_ms: 10 }),
+            "overloaded"
+        );
     }
 
     #[test]
@@ -441,7 +478,10 @@ mod tests {
         let expiry = AgentdError::from(crate::AgentdIntuitionServiceErrorV1::Policy(
             crate::AgentdIntuitionPolicyError::PreparedEvidenceExpired,
         ));
-        assert_eq!(agentd_error_reason(&expiry), "agentd.intuition.prepared_evidence_expired");
+        assert_eq!(
+            agentd_error_reason(&expiry),
+            "agentd.intuition.prepared_evidence_expired"
+        );
         let arbitrary = AgentdError::Invalid("secret/request/arbitrary text".to_string());
         assert_eq!(agentd_error_reason(&arbitrary), "invalid");
     }
@@ -457,8 +497,16 @@ mod tests {
             candidate_id: candidate.clone(),
             probability: ProbabilityQ32::ONE,
         }];
-        assert!(require_decision_parity(&canonical, &ProductionDispositionV1::Selected(candidate), &rows));
-        assert!(!require_decision_parity(&canonical, &ProductionDispositionV1::Selected(id("candidate:two")), &rows));
+        assert!(require_decision_parity(
+            &canonical,
+            &ProductionDispositionV1::Selected(candidate),
+            &rows
+        ));
+        assert!(!require_decision_parity(
+            &canonical,
+            &ProductionDispositionV1::Selected(id("candidate:two")),
+            &rows
+        ));
     }
 
     #[test]
@@ -474,23 +522,50 @@ mod tests {
             probability: ProbabilityQ32::ONE,
         };
         assert!(!require_decision_parity(&canonical, &selected, &[]));
-        assert!(!require_decision_parity(&canonical, &selected, &[row.clone(), row]));
+        assert!(!require_decision_parity(
+            &canonical,
+            &selected,
+            &[row.clone(), row]
+        ));
         let zero_row = CalibratedCandidatePropensityV1 {
             candidate_id: candidate.clone(),
             probability: ProbabilityQ32::ZERO,
         };
-        assert!(!require_decision_parity(&canonical, &selected, std::slice::from_ref(&zero_row)));
+        assert!(!require_decision_parity(
+            &canonical,
+            &selected,
+            std::slice::from_ref(&zero_row)
+        ));
         let zero_canonical = AdvisoryDecisionV1::Selected {
             candidate_id: candidate,
             propensity: ProbabilityQ32::ZERO,
         };
-        assert!(!require_decision_parity(&zero_canonical, &selected, &[zero_row]));
+        assert!(!require_decision_parity(
+            &zero_canonical,
+            &selected,
+            &[zero_row]
+        ));
     }
 
     #[test]
     fn terminal_outcome_parity_preserves_disposition_class() {
-        let authenticated = ProductionDispositionV1::SlowPath(ProductionSlowPathReasonV1::ProfileRiskRule);
-        assert!(require_outcome_parity(&AgentdIntelligenceProductOutcomeV1::SlowPath, &authenticated, &[]).is_ok());
-        assert!(require_outcome_parity(&AgentdIntelligenceProductOutcomeV1::Abstained, &authenticated, &[]).is_err());
+        let authenticated =
+            ProductionDispositionV1::SlowPath(ProductionSlowPathReasonV1::ProfileRiskRule);
+        assert!(
+            require_outcome_parity(
+                &AgentdIntelligenceProductOutcomeV1::SlowPath,
+                &authenticated,
+                &[]
+            )
+            .is_ok()
+        );
+        assert!(
+            require_outcome_parity(
+                &AgentdIntelligenceProductOutcomeV1::Abstained,
+                &authenticated,
+                &[]
+            )
+            .is_err()
+        );
     }
 }

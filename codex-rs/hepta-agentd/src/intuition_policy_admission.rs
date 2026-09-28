@@ -108,10 +108,14 @@ fn bind_admitted_outcome(
             let rows = &receipt.decision.decision.propensities;
             if candidate_id != selected
                 || propensity.raw() == 0
-                || rows.iter().filter(|row| &row.candidate_id == selected).count() != 1
-                || !rows.iter().any(|row| {
-                    &row.candidate_id == selected && row.probability == *propensity
-                })
+                || rows
+                    .iter()
+                    .filter(|row| &row.candidate_id == selected)
+                    .count()
+                    != 1
+                || !rows
+                    .iter()
+                    .any(|row| &row.candidate_id == selected && row.probability == *propensity)
                 || receipt.learning.is_none()
                 || receipt.production_record_id.is_none()
             {
@@ -147,19 +151,13 @@ fn bind_admitted_outcome(
                 run_receipt.idempotent,
             ))?
         }
-        (
-            AgentdIntelligenceAdmittedOutcomeV1::Abstained,
-            ProductionDispositionV1::Abstained(_),
-        ) => {
+        (AgentdIntelligenceAdmittedOutcomeV1::Abstained, ProductionDispositionV1::Abstained(_)) => {
             if receipt.learning.is_some() || receipt.production_record_id.is_some() {
                 return Err(mismatch());
             }
             serde_json::to_vec(&(identity, "abstained"))?
         }
-        (
-            AgentdIntelligenceAdmittedOutcomeV1::SlowPath,
-            ProductionDispositionV1::SlowPath(_),
-        ) => {
+        (AgentdIntelligenceAdmittedOutcomeV1::SlowPath, ProductionDispositionV1::SlowPath(_)) => {
             if receipt.learning.is_some() || receipt.production_record_id.is_some() {
                 return Err(mismatch());
             }

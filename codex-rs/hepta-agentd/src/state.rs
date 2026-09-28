@@ -588,7 +588,11 @@ impl AgentdState {
 
     pub(crate) fn require_intuition_host_configuration(&self) -> Result<(), AgentdError> {
         self.intuition_serving_profile
-            .require_host(self.intuition_policy.get().is_some_and(|host| host.is_product_ready()))
+            .require_host(
+                self.intuition_policy
+                    .get()
+                    .is_some_and(|host| host.is_product_ready()),
+            )
             .map_err(|code| AgentdError::Invalid(code.to_string()))
     }
 
@@ -598,7 +602,8 @@ impl AgentdState {
     pub(crate) async fn start_canonical_intelligence(
         &self,
         record: &RunStartRecordV1,
-    ) -> Result<Option<crate::intuition_policy_service::CanonicalIntuitionAdmissionV2>, AgentdError> {
+    ) -> Result<Option<crate::intuition_policy_service::CanonicalIntuitionAdmissionV2>, AgentdError>
+    {
         // This check precedes every early return, including an entirely absent
         // canonical composition. The inner serving gate alone cannot guard it.
         self.require_intuition_host_configuration()?;
