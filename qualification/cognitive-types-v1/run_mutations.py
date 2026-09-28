@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Targeted source mutants in disposable worktrees, never the candidate tree.
 
-A mutant only counts as killed when it compiles and the same real Rust probe
-returns an observable wrong semantic result. Compilation errors, crashes and
-missing tools are invalid experiments, not kills. No mutant is pushed or
-qualified as a release candidate.
+A mutant only counts as killed when it compiles and the same real Rust probe or
+exact Rust regression produces an observable wrong semantic result. Compilation
+errors, crashes and missing tools are invalid experiments, not kills. No mutant
+is pushed or qualified as a release candidate.
 """
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ import tempfile
 import quality_checks as quality
 from run_qualification import git, run_check
 
-TARGETED_MUTATION_SCOPE = "eight-targeted-source-mutants-not-global-mutation-coverage"
+TARGETED_MUTATION_SCOPE = "nine-targeted-source-mutants-not-global-mutation-coverage"
 
 RECIPES = [
     {
@@ -107,6 +107,19 @@ RECIPES = [
         "case": "ModalitySpanRefV1:golden",
         "negative": False,
     },
+    {
+        "name": "consumer-payload-family",
+        "file": "codex-rs/hepta-cognitive-types/src/consumer.rs",
+        "old": '''        CanonicalPayloadKindV1::MemoryEvent => matches!(
+            consumer,
+            CanonicalConsumerV1::CognitiveRead
+                | CanonicalConsumerV1::CognitiveStore
+                | CanonicalConsumerV1::CompactEngine
+        ),''',
+        "new": '''        CanonicalPayloadKindV1::MemoryEvent => true,''',
+        "mode": "rust_test",
+        "test": "consumer_tests::payload_consumer_matrix_fails_closed",
+    },
 ]
 
 
@@ -122,6 +135,32 @@ def observed_kill(result):
         and result.get("report", {}).get("outcome") == "accepted"
         and result.get("passed") is False
         and result.get("status") == "failed"
+    )
+
+
+def rust_test_command(test_name, *, no_run=False):
+    command = [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-cognitive-types",
+        "--lib",
+    ]
+    if no_run:
+        command.append("--no-run")
+    command.append(test_name)
+    if not no_run:
+        command.extend(["--", "--exact", "--nocapture"])
+    return command
+
+
+def observed_rust_test_kill(result, log_text, test_name):
+    return (
+        result.get("exit_code") not in (None, 0)
+        and result.get("status") == "failed"
+        and f"test {test_name} ... FAILED" in log_text
+        and "test result: FAILED" in log_text
     )
 
 
@@ -143,23 +182,39 @@ def main():
     results = []
     output.mkdir(parents=True, exist_ok=True)
     for recipe in RECIPES:
-        expected = None if recipe["negative"] else quality.digests(positive[recipe["case"]])
-        wire = (
-            negative[recipe["case"]]
-            if recipe["negative"]
-            else quality.canonical(positive[recipe["case"]])
-        )
-        baseline = quality.invoke([str(args.probe.resolve())], wire, expected)
+        mode = recipe.get("mode", "wire")
+        if mode == "wire":
+            expected = None if recipe["negative"] else quality.digests(positive[recipe["case"]])
+            wire = (
+                negative[recipe["case"]]
+                if recipe["negative"]
+                else quality.canonical(positive[recipe["case"]])
+            )
+            baseline = quality.invoke([str(args.probe.resolve())], wire, expected)
+            baseline_passed = baseline["passed"]
+            evidence_identity = {"wire_sha256": hashlib.sha256(wire).hexdigest()}
+        elif mode == "rust_test":
+            baseline = run_check(
+                recipe["name"] + "-baseline",
+                rust_test_command(recipe["test"]),
+                root / "codex-rs",
+                output,
+                timeout=1800,
+            )
+            baseline_passed = baseline["status"] == "passed"
+            evidence_identity = {"test": recipe["test"]}
+        else:
+            raise ValueError("unknown mutation mode: " + mode)
         row = {
             "recipe": recipe,
             "baseline": baseline,
             "candidate_commit": candidate,
             "candidate_tree": tree,
-            "wire_sha256": hashlib.sha256(wire).hexdigest(),
+            **evidence_identity,
             "killed": False,
             "status": "infrastructure_invalid",
         }
-        if not baseline["passed"]:
+        if not baseline_passed:
             row["error"] = "baseline must pass before mutation sensitivity is measured"
             results.append(row)
             continue
@@ -177,40 +232,72 @@ def main():
                     original_source_sha256=hashlib.sha256(original).hexdigest(),
                     mutant_source_sha256=hashlib.sha256(modified).hexdigest(),
                 )
-                target = output.parent / "cognitive-mutation-target"
-                build = run_check(
-                    recipe["name"] + "-build",
-                    [
-                        "cargo",
-                        "build",
-                        "--locked",
-                        "-p",
-                        "codex-hepta-cognitive-types",
-                        "--example",
-                        "canonical_probe",
-                        "--target-dir",
-                        str(target),
-                    ],
-                    worktree / "codex-rs",
-                    output,
-                    timeout=1800,
-                )
-                row["build"] = build
-                if build["status"] == "passed":
-                    experiment = quality.invoke(
-                        [str(target / "debug/examples/canonical_probe")], wire, expected
+                if mode == "wire":
+                    target = output.parent / "cognitive-mutation-target"
+                    build = run_check(
+                        recipe["name"] + "-build",
+                        [
+                            "cargo",
+                            "build",
+                            "--locked",
+                            "-p",
+                            "codex-hepta-cognitive-types",
+                            "--example",
+                            "canonical_probe",
+                            "--target-dir",
+                            str(target),
+                        ],
+                        worktree / "codex-rs",
+                        output,
+                        timeout=1800,
                     )
-                    row["experiment"] = experiment
-                    row["killed"] = observed_kill(experiment)
-                    row["status"] = (
-                        "killed"
-                        if row["killed"]
-                        else (
-                            "survived"
-                            if experiment.get("passed")
-                            else "infrastructure_invalid"
+                    row["build"] = build
+                    if build["status"] == "passed":
+                        experiment = quality.invoke(
+                            [str(target / "debug/examples/canonical_probe")], wire, expected
                         )
+                        row["experiment"] = experiment
+                        row["killed"] = observed_kill(experiment)
+                        row["status"] = (
+                            "killed"
+                            if row["killed"]
+                            else (
+                                "survived"
+                                if experiment.get("passed")
+                                else "infrastructure_invalid"
+                            )
+                        )
+                else:
+                    build = run_check(
+                        recipe["name"] + "-build",
+                        rust_test_command(recipe["test"], no_run=True),
+                        worktree / "codex-rs",
+                        output,
+                        timeout=1800,
                     )
+                    row["build"] = build
+                    if build["status"] == "passed":
+                        experiment = run_check(
+                            recipe["name"] + "-experiment",
+                            rust_test_command(recipe["test"]),
+                            worktree / "codex-rs",
+                            output,
+                            timeout=1800,
+                        )
+                        row["experiment"] = experiment
+                        log_text = (output / experiment["log"]).read_text(errors="replace")
+                        row["killed"] = observed_rust_test_kill(
+                            experiment, log_text, recipe["test"]
+                        )
+                        row["status"] = (
+                            "killed"
+                            if row["killed"]
+                            else (
+                                "survived"
+                                if experiment["status"] == "passed"
+                                else "infrastructure_invalid"
+                            )
+                        )
             except (OSError, subprocess.SubprocessError, ValueError) as error:
                 row["error"] = f"{type(error).__name__}: {error}"
             finally:
