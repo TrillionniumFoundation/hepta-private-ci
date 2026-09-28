@@ -44,3 +44,37 @@ Local `not_recorded` is not evidence that a previous process did nothing. Durabl
 lookup and terminal reconciliation belong to the existing platform/kernel owners.
 The deadline is checked again on promise settlement, independently of Node timer
 callback ordering. A result arriving after the monotonic deadline is not timely.
+
+## Bounded Linux/X11 clipboard adapter
+
+`src/x11-clipboard.js` supplies an optional `X11ClipboardPlatform` implementation
+for the existing `NativeShellRuntime` platform port. It admits only `copy_text`
+and immutable `text.sha256:<content-sha256>` resources. The selected host provides
+the local display, exact executable digest, shared monotonic clock and a synchronous
+`withVerifiedUse(request, dispatch)` authorizer. Availability is not authorization;
+no default permissive authorizer or ambient display/shell is installed.
+
+The exact checked executable is launched through its inherited Linux descriptor.
+The complete HAC1 source-action digest, session/operation identity, content-bound
+payload and deadline reach the final-use callback. One foreground writer is started;
+bounded separate read-only processes check the clipboard contents. Observation
+retries never create another writer. Receipts expose digests rather than clipboard
+text. At most four live writer handles are retained. Close requests termination,
+escalates after a bounded interval, and reports unresolved cleanup rather than
+claiming an unobserved process exit.
+
+This adapter has no persistent effect ledger. Same-process deduplication remains in
+`NativeShellRuntime`; crash/restart can still leave an unknown effect requiring the
+existing durable operation owner. Clipboard ownership is ephemeral and ends when
+its writer exits. A matching readback is a point-in-time postcondition, not proof
+of permanent clipboard contents or an independent acceptance decision. Dynamic
+libraries, X server authenticity, other clients and filesystem parents remain
+selected-host assumptions. macOS/Wayland and normal daemon installation are not
+provided by this Linux/X11 profile.
+
+`qualification/x11-clipboard.mjs` is an explicit disposable-display real-OS probe;
+its backend and final-use callbacks are fixtures, not production trust. It uses no
+user clipboard or secrets and starts no TCP listener. Its presence and unit-test
+results are not a passed OS probe. A successful probe must retain the actual source,
+executable, action, readback and cleanup receipt. Run it only in the authorized
+qualification host; normal test discovery does not start an X server.

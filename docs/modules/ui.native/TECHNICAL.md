@@ -328,3 +328,22 @@ The platform owner must still implement authenticated final-use authority, persi
 operation reconciliation, resource resolution and trusted terminal observation.
 Native binary consumer installation, packaged OS integration and deployment acceptance
 are not implied by these local request/lifecycle checks.
+
+### Optional Linux/X11 clipboard source profile
+
+The optional [X11 clipboard adapter](../../../apps/hepta-native/src/x11-clipboard.js)
+implements only the existing native `copy_text` platform port with exact
+content-addressed resources and a host-installed final-use callback. It starts one
+pinned foreground helper and observes clipboard contents through a separate bounded
+read process. It does not install a daemon profile, issue authority, own a durable
+effect ledger or establish independent acceptance. Process-local history still
+cannot recover an unknown effect after a native-shell restart.
+
+[Focused tests](../../../apps/hepta-native/test/x11-clipboard.test.js) exercise
+resource/payload substitution, explicit host configuration, accessors, deadlines,
+closed authorizers and retirement without launching an OS effect. The separate
+[real-OS qualification entry](../../../apps/hepta-native/qualification/x11-clipboard.mjs)
+requires an explicitly authorized disposable X display and uses test-only
+backend/authorization ports. Its presence does not imply successful execution.
+The [native operating notes](../../../apps/hepta-native/README.md) retain clipboard
+lifetime, external-host assumptions and unresolved-stop handling.
