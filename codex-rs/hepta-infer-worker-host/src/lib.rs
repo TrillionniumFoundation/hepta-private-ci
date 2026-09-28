@@ -7,11 +7,17 @@
 
 #![forbid(unsafe_code)]
 
-/// Model-manifest/grant state machine for native driver implementations.
-pub mod model_worker;
-
 pub mod final_use_authorizer;
 pub mod native_app_server;
+pub mod profile_status;
+
+/// Experimental model-manifest/grant state machine for local driver work.
+///
+/// This surface is deliberately absent from default builds. Enabling it does
+/// not establish real weights, device isolation, durable recovery or production
+/// qualification; see [`profile_status::LOCAL_MODEL_STATUS`].
+#[cfg(feature = "local-model-experimental")]
+pub mod model_worker;
 
 use std::error::Error as StdError;
 use std::fmt;

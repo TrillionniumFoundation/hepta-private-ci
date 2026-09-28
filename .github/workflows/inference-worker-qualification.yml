@@ -1,0 +1,225 @@
+name: inference.worker qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-agentd/**"
+      - "docs/modules/inference.worker/**"
+      - "qualification/module-execution-dossiers/detail/inference.worker.md"
+      - "scripts/hepta-inference-worker-status.py"
+      - ".github/workflows/inference-worker-qualification.yml"
+      - ".github/workflows/hepta-gap-agentd-process.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-agentd/**"
+      - "docs/modules/inference.worker/**"
+      - "qualification/module-execution-dossiers/detail/inference.worker.md"
+      - "scripts/hepta-inference-worker-status.py"
+      - ".github/workflows/inference-worker-qualification.yml"
+      - ".github/workflows/hepta-gap-agentd-process.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: inference-worker-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_BUILD_JOBS: "2"
+  RUST_BACKTRACE: "1"
+
+jobs:
+  source-truth:
+    name: Exact source and derived truth
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source head
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+      - name: Verify module projections independently
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta_module_registry.py --strict
+          python3 scripts/hepta-implementation-maps.py verify
+      - name: Verify owner formatting
+        working-directory: codex-rs
+        run: |
+          cargo fmt --manifest-path Cargo.toml \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-infer-worker-host \
+            --package codex-hepta-agentd -- --check
+      - name: Require a clean exact candidate
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  owner-qualification:
+    name: ${{ matrix.label }} (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { label: inference-control, package: codex-hepta-infer-core, features: "", binary: hepta-infer-control, os: ubuntu-24.04 }
+          - { label: inference-control, package: codex-hepta-infer-core, features: "", binary: hepta-infer-control, os: macos-15 }
+          - { label: HostedAppServerWorker, package: codex-hepta-infer-worker-host, features: "", binary: hepta-infer-worker, os: ubuntu-24.04 }
+          - { label: HostedAppServerWorker, package: codex-hepta-infer-worker-host, features: "", binary: hepta-infer-worker, os: macos-15 }
+          - { label: LocalModelWorker-experimental, package: codex-hepta-infer-worker-host, features: local-model-experimental, binary: "", os: ubuntu-24.04 }
+          - { label: LocalModelWorker-experimental, package: codex-hepta-infer-worker-host, features: local-model-experimental, binary: "", os: macos-15 }
+          - { label: inference-owner-agentd, package: codex-hepta-agentd, features: "", binary: "", os: ubuntu-24.04 }
+          - { label: inference-owner-agentd, package: codex-hepta-agentd, features: "", binary: "", os: macos-15 }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+      - name: Resolve verified sandboxed V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Run focused library tests
+        working-directory: codex-rs
+        env:
+          PACKAGE: ${{ matrix.package }}
+          FEATURES: ${{ matrix.features }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(nextest run --locked --profile default --no-fail-fast -p "$PACKAGE" --lib)
+          if [[ -n "$FEATURES" ]]; then args+=(--features "$FEATURES"); fi
+          cargo "${args[@]}"
+      - name: Compile explicit binary where present
+        if: matrix.binary != ''
+        working-directory: codex-rs
+        env:
+          PACKAGE: ${{ matrix.package }}
+          BINARY: ${{ matrix.binary }}
+        run: cargo test --locked -p "$PACKAGE" --bin "$BINARY"
+      - name: Check every target
+        working-directory: codex-rs
+        env:
+          PACKAGE: ${{ matrix.package }}
+          FEATURES: ${{ matrix.features }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(check --locked -p "$PACKAGE" --all-targets)
+          if [[ -n "$FEATURES" ]]; then args+=(--features "$FEATURES"); fi
+          cargo "${args[@]}"
+      - name: Strict owner lint
+        working-directory: codex-rs
+        env:
+          PACKAGE: ${{ matrix.package }}
+          FEATURES: ${{ matrix.features }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(clippy --locked -p "$PACKAGE" --all-targets --no-deps)
+          if [[ -n "$FEATURES" ]]; then args+=(--features "$FEATURES"); fi
+          cargo "${args[@]}" -- -D warnings
+      - name: Upload nextest JUnit receipt
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ${{ matrix.label }}-nextest-${{ matrix.os }}
+          path: codex-rs/target/nextest/default/junit.xml
+          if-no-files-found: warn
+      - name: Require an unchanged candidate
+        if: always()
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  synthetic-merge:
+    name: Deterministic synthetic merge
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Resolve current base
+        id: current-base
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          echo "sha=$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+      - name: Construct deterministic synthetic merge
+        id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.current-base.outputs.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: inference.worker qualification
+          author-email: inference-worker-ci@users.noreply.github.com
+          message: Synthetic inference.worker merge
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+      - name: Resolve verified sandboxed V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Verify merged source truth
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta_module_registry.py --strict
+          python3 scripts/hepta-implementation-maps.py verify
+      - name: Exercise each owner independently
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo nextest run --locked --profile default --no-fail-fast -p codex-hepta-infer-core --lib
+          cargo nextest run --locked --profile default --no-fail-fast -p codex-hepta-infer-worker-host --lib
+          cargo nextest run --locked --profile default --no-fail-fast -p codex-hepta-infer-worker-host --lib --features local-model-experimental
+          cargo nextest run --locked --profile default --no-fail-fast -p codex-hepta-agentd --lib
+          cargo check --locked -p codex-hepta-infer-worker-host --all-targets --features local-model-experimental
+          cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets --features local-model-experimental --no-deps -- -D warnings
+      - name: Require a clean merge candidate
+        if: always()
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
