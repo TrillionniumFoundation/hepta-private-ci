@@ -119,15 +119,23 @@ fn finishing_requires_the_same_request_digest() {
     let digest = Digest32::of_bytes(BODY);
     observer.bind_attempt(attempt.clone()).expect("bind");
     observer.begin_body(digest).expect("claim");
-    assert!(observer.finish_body(&attempt, Digest32::of_bytes(b"other")).is_err());
+    assert!(
+        observer
+            .finish_body(&attempt, Digest32::of_bytes(b"other"))
+            .is_err()
+    );
     observer.finish_body(&attempt, digest).expect("same proof");
 }
 
 #[test]
 fn indeterminate_and_abandoned_observations_do_not_unlock_dispatch() {
     for terminal in [
-        EncodedRequestTerminal::Indeterminate { reason_code: "lost".to_owned() },
-        EncodedRequestTerminal::Abandoned { reason_code: "cancelled".to_owned() },
+        EncodedRequestTerminal::Indeterminate {
+            reason_code: "lost".to_owned(),
+        },
+        EncodedRequestTerminal::Abandoned {
+            reason_code: "cancelled".to_owned(),
+        },
     ] {
         let observer = observer();
         let attempt = attempt();
@@ -135,11 +143,17 @@ fn indeterminate_and_abandoned_observations_do_not_unlock_dispatch() {
         observer.bind_attempt(attempt.clone()).expect("bind");
         observer.begin_body(digest).expect("claim");
         observer.finish_body(&attempt, digest).expect("proof");
-        observer.record_terminal(terminal).expect("retain unresolved");
+        observer
+            .record_terminal(terminal)
+            .expect("retain unresolved");
         assert!(observer.bind_attempt(attempt).is_err());
-        assert!(observer.record_terminal(EncodedRequestTerminal::Completed {
-            response_id: "late-unbound-terminal".to_owned(),
-        }).is_err());
+        assert!(
+            observer
+                .record_terminal(EncodedRequestTerminal::Completed {
+                    response_id: "late-unbound-terminal".to_owned(),
+                })
+                .is_err()
+        );
     }
 }
 
@@ -148,18 +162,30 @@ fn terminal_during_proof_does_not_reset_the_claim() {
     let observer = observer();
     let attempt = attempt();
     observer.bind_attempt(attempt.clone()).expect("bind");
-    observer.begin_body(Digest32::of_bytes(BODY)).expect("claim");
-    assert!(observer.record_terminal(EncodedRequestTerminal::Rejected {
-        reason_code: "observer-failure".to_owned(),
-    }).is_err());
+    observer
+        .begin_body(Digest32::of_bytes(BODY))
+        .expect("claim");
+    assert!(
+        observer
+            .record_terminal(EncodedRequestTerminal::Rejected {
+                reason_code: "observer-failure".to_owned(),
+            })
+            .is_err()
+    );
     assert!(observer.bind_attempt(attempt).is_err());
 }
 
 #[test]
 fn expiry_is_exclusive_including_after_expensive_preparation() {
     assert_eq!(check_deadline(99, 100), Ok(()));
-    assert_eq!(check_deadline(100, 100), Err("context_attachment_expired".to_owned()));
-    assert_eq!(check_deadline(101, 100), Err("context_attachment_expired".to_owned()));
+    assert_eq!(
+        check_deadline(100, 100),
+        Err("context_attachment_expired".to_owned())
+    );
+    assert_eq!(
+        check_deadline(101, 100),
+        Err("context_attachment_expired".to_owned())
+    );
 }
 
 #[test]

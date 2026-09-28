@@ -97,8 +97,7 @@ impl ContextDeliveryPreparationV2 {
 }
 
 fn parse_digest(value: &str) -> Result<Digest32, ContextCompilerV2Error> {
-    let digest = Digest32::from_str(value)
-        .map_err(|_| ContextCompilerV2Error::DeliveryMismatch)?;
+    let digest = Digest32::from_str(value).map_err(|_| ContextCompilerV2Error::DeliveryMismatch)?;
     if digest.is_zero() {
         return Err(ContextCompilerV2Error::DeliveryMismatch);
     }

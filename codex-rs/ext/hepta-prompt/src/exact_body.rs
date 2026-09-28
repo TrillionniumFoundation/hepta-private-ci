@@ -232,7 +232,9 @@ impl PromptRuntimeExactBodyObserver {
                     ExactBodyPhase::Empty => Ok(()),
                     ExactBodyPhase::Bound(_)
                     | ExactBodyPhase::Proving { .. }
-                    | ExactBodyPhase::Blocked => Err("context_terminal_requires_reconciliation".to_owned()),
+                    | ExactBodyPhase::Blocked => {
+                        Err("context_terminal_requires_reconciliation".to_owned())
+                    }
                 }
             }
         }
@@ -271,7 +273,9 @@ impl EncodedRequestBodyObserver for PromptRuntimeExactBodyObserver {
         body: &'a [u8],
     ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'a>> {
         Box::pin(async move {
-            self.attachment.validate().map_err(|_| "context_attachment_invalid")?;
+            self.attachment
+                .validate()
+                .map_err(|_| "context_attachment_invalid")?;
             let [fragment] = self.attachment.developer_fragments.as_slice() else {
                 return Err("context_canonical_bundle_required".to_owned());
             };

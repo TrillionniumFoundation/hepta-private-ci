@@ -20,6 +20,7 @@ production-cognitive-write = []
 # product mutation profile. It never substitutes for production authority.
 qualification-cognitive-write = ["production-cognitive-write"]
 qualification-legacy-learning-write = ["codex-hepta-learning-ledger/qualification-legacy-write"]
+legacy-prompt-context-v1 = ["codex-hepta-intelligence/legacy-prompt-context-v1"]
 
 [[bin]]
 name = "codex-hepta-agentd"

@@ -33,7 +33,8 @@ impl<'de> Deserialize<'de> for UniqueValue {
                 Ok(UniqueValue(Value::Number(value.into())))
             }
             fn visit_f64<E: Error>(self, value: f64) -> Result<Self::Value, E> {
-                serde_json::Number::from_f64(value).map(|value| UniqueValue(Value::Number(value)))
+                serde_json::Number::from_f64(value)
+                    .map(|value| UniqueValue(Value::Number(value)))
                     .ok_or_else(|| E::custom("nonfinite provider number"))
             }
             fn visit_str<E: Error>(self, value: &str) -> Result<Self::Value, E> {
@@ -48,7 +49,10 @@ impl<'de> Deserialize<'de> for UniqueValue {
             fn visit_none<E: Error>(self) -> Result<Self::Value, E> {
                 Ok(UniqueValue(Value::Null))
             }
-            fn visit_seq<A: SeqAccess<'de>>(self, mut sequence: A) -> Result<Self::Value, A::Error> {
+            fn visit_seq<A: SeqAccess<'de>>(
+                self,
+                mut sequence: A,
+            ) -> Result<Self::Value, A::Error> {
                 let mut values = Vec::new();
                 while let Some(value) = sequence.next_element::<UniqueValue>()? {
                     if values.len() >= MAX_CONTAINER_ITEMS {
@@ -77,7 +81,8 @@ pub(super) fn parse(bytes: &[u8]) -> Result<Value, String> {
     if bytes.len() > codex_hepta_context_compiler::MAX_FINAL_PROVIDER_REQUEST_BYTES_V2 {
         return Err("provider_request_too_large".to_owned());
     }
-    serde_json::from_slice::<UniqueValue>(bytes).map(|value| value.0)
+    serde_json::from_slice::<UniqueValue>(bytes)
+        .map(|value| value.0)
         .map_err(|_| "invalid_or_duplicate_provider_json".to_owned())
 }
 

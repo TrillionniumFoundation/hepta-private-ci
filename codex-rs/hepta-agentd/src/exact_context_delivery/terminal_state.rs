@@ -7,7 +7,10 @@ pub(super) const fn legacy_observation_version() -> u32 {
 
 impl StoredTerminal {
     pub(super) fn is_final(&self) -> bool {
-        matches!(self.disposition.as_str(), "Delivered" | "Rejected" | "NotDispatched")
+        matches!(
+            self.disposition.as_str(),
+            "Delivered" | "Rejected" | "NotDispatched"
+        )
     }
 
     fn same_semantics(&self, other: &Self) -> bool {
@@ -18,20 +21,34 @@ impl StoredTerminal {
     }
 }
 
-pub(super) fn migrate_state(state: &mut StoredExactDeliveryState) -> Result<(), ExactContextDeliveryError> {
+pub(super) fn migrate_state(
+    state: &mut StoredExactDeliveryState,
+) -> Result<(), ExactContextDeliveryError> {
     match state.schema {
         EXACT_DELIVERY_SCHEMA => return Ok(()),
+        2 => {
+            state.schema = EXACT_DELIVERY_SCHEMA;
+            return Ok(());
+        }
         1 if state.observations.is_empty() => {}
         _ => return Err(ExactContextDeliveryError::CorruptState),
     }
-    let unresolved = state.terminals.iter()
+    let unresolved = state
+        .terminals
+        .iter()
         .filter(|(_, observation)| observation.disposition == "Indeterminate")
         .map(|(attempt, _)| attempt.clone())
         .collect::<Vec<_>>();
     for attempt in unresolved {
-        let observation = state.terminals.remove(&attempt)
+        let observation = state
+            .terminals
+            .remove(&attempt)
             .ok_or(ExactContextDeliveryError::CorruptState)?;
-        if state.observations.insert(observation_key(&observation), observation).is_some() {
+        if state
+            .observations
+            .insert(observation_key(&observation), observation)
+            .is_some()
+        {
             return Err(ExactContextDeliveryError::CorruptState);
         }
     }
@@ -53,22 +70,33 @@ pub(super) fn apply_observation(
     state: &mut StoredExactDeliveryState,
     observation: StoredTerminal,
 ) -> Result<bool, ExactContextDeliveryError> {
-    let pre_send = state.pre_sends.get(&observation.attempt_id)
+    let pre_send = state
+        .pre_sends
+        .get(&observation.attempt_id)
         .ok_or(ExactContextDeliveryError::MissingPreSendEvidence)?;
     validate_observation(pre_send, &observation)?;
     let key = observation_key(&observation);
     if let Some(existing) = state.observations.get(&key) {
-        return if existing.same_semantics(&observation) { Ok(false) }
-        else { Err(ExactContextDeliveryError::CorruptState) };
+        return if existing.same_semantics(&observation) {
+            Ok(false)
+        } else {
+            Err(ExactContextDeliveryError::CorruptState)
+        };
     }
     if let Some(existing) = state.terminals.get(&observation.attempt_id) {
-        return if existing.same_semantics(&observation) { Ok(false) }
-        else { Err(ExactContextDeliveryError::Conflict("terminal is immutable")) };
+        return if existing.same_semantics(&observation) {
+            Ok(false)
+        } else {
+            Err(ExactContextDeliveryError::Conflict("terminal is immutable"))
+        };
     }
-    let latest = state.observations.values()
+    let latest = state
+        .observations
+        .values()
         .filter(|existing| existing.attempt_id == observation.attempt_id)
         .map(|existing| existing.observed_unix_ms)
-        .max().unwrap_or(pre_send.recorded_unix_ms);
+        .max()
+        .unwrap_or(pre_send.recorded_unix_ms);
     if observation.observed_unix_ms < latest {
         return Err(ExactContextDeliveryError::Clock);
     }
@@ -76,7 +104,9 @@ pub(super) fn apply_observation(
         if state.terminals.len() >= MAX_TERMINAL_RECORDS {
             return Err(ExactContextDeliveryError::Capacity);
         }
-        state.terminals.insert(observation.attempt_id.clone(), observation);
+        state
+            .terminals
+            .insert(observation.attempt_id.clone(), observation);
     } else {
         if state.observations.len() >= MAX_TERMINAL_OBSERVATIONS {
             return Err(ExactContextDeliveryError::Capacity);
@@ -96,17 +126,29 @@ fn validate_observation(
         || observation.provider_receipt_digest == [0; 32]
         || observation.context_delivery_receipt_digest == [0; 32]
         || observation.observed_unix_ms < pre_send.recorded_unix_ms
-        || !matches!(observation.disposition.as_str(), "Delivered" | "Rejected" | "NotDispatched" | "Indeterminate")
+        || !matches!(
+            observation.disposition.as_str(),
+            "Delivered" | "Rejected" | "NotDispatched" | "Indeterminate"
+        )
         || !matches!(observation.observation_version, 2 | 3)
     {
         return Err(ExactContextDeliveryError::CorruptState);
     }
     if let Some(receipt) = &observation.provider_receipt {
-        receipt.validate().map_err(|_| ExactContextDeliveryError::CorruptState)?;
-        let wire = receipt.canonical_wire_bytes().map_err(|_| ExactContextDeliveryError::CorruptState)?;
-        let intent = receipt.intent.canonical_wire_bytes().map_err(|_| ExactContextDeliveryError::CorruptState)?;
+        receipt
+            .validate()
+            .map_err(|_| ExactContextDeliveryError::CorruptState)?;
+        let wire = receipt
+            .canonical_wire_bytes()
+            .map_err(|_| ExactContextDeliveryError::CorruptState)?;
+        let intent = receipt
+            .intent
+            .canonical_wire_bytes()
+            .map_err(|_| ExactContextDeliveryError::CorruptState)?;
         let expected = match &receipt.terminal {
-            ProviderTerminal::Completed { .. } | ProviderTerminal::CompletedUnary { .. } => "Delivered",
+            ProviderTerminal::Completed { .. } | ProviderTerminal::CompletedUnary { .. } => {
+                "Delivered"
+            }
             ProviderTerminal::Rejected { .. } => "Rejected",
             ProviderTerminal::NotDispatched { .. } => "NotDispatched",
             ProviderTerminal::Indeterminate { .. } => "Indeterminate",
@@ -133,40 +175,93 @@ pub(super) fn validate(state: &StoredExactDeliveryState) -> Result<(), ExactCont
         return Err(ExactContextDeliveryError::CorruptState);
     }
     for (attempt, pre_send) in &state.pre_sends {
-        for identity in [attempt, &pre_send.thread_id, &pre_send.turn_id, &pre_send.attempt_id] {
+        for identity in [
+            attempt,
+            &pre_send.thread_id,
+            &pre_send.turn_id,
+            &pre_send.attempt_id,
+        ] {
             validate_runtime_id(identity, "durable identity")
                 .map_err(|_| ExactContextDeliveryError::CorruptState)?;
         }
-        if attempt != &pre_send.attempt_id || pre_send.recorded_unix_ms == 0
+        if attempt != &pre_send.attempt_id
+            || pre_send.recorded_unix_ms == 0
             || pre_send.token_count == 0
             || pre_send.token_count > codex_hepta_context_compiler::MAX_CONTEXT_TOKENS_V2
         {
             return Err(ExactContextDeliveryError::CorruptState);
         }
-        for digest in [pre_send.provider_intent_digest, pre_send.registry_snapshot_digest,
-            pre_send.final_use_materialization_digest, pre_send.preparation_digest,
-            pre_send.final_request_proof_digest, pre_send.provider_request_digest,
-            pre_send.provider_wire_semantic_digest, pre_send.tokenizer_identity_digest,
-            pre_send.tokenization_receipt_digest, pre_send.segment_map_digest]
-        {
-            if digest == [0; 32] { return Err(ExactContextDeliveryError::CorruptState); }
+        for digest in [
+            pre_send.provider_intent_digest,
+            pre_send.authority_snapshot_digest,
+            pre_send.preparation_binding_digest,
+            pre_send.preparation_digest,
+            pre_send.final_request_proof_digest,
+            pre_send.provider_request_digest,
+            pre_send.provider_wire_semantic_digest,
+            pre_send.tokenizer_identity_digest,
+            pre_send.tokenization_receipt_digest,
+            pre_send.segment_map_digest,
+        ] {
+            if digest == [0; 32] {
+                return Err(ExactContextDeliveryError::CorruptState);
+            }
+        }
+        match &pre_send.recovery_archive {
+            Some(archive) => {
+                if archive.is_empty()
+                    || archive.len() > MAX_RECOVERY_ARCHIVE_BYTES
+                    || pre_send.recovery_binding_digest == [0; 32]
+                {
+                    return Err(ExactContextDeliveryError::CorruptState);
+                }
+                let recovery = ContextDeliveryRecoveryBindingV2::reopen_canonical_archive(archive)
+                    .map_err(|_| ExactContextDeliveryError::CorruptState)?;
+                if recovery.binding_digest().into_array() != pre_send.recovery_binding_digest
+                    || recovery.final_request_proof_digest().into_array()
+                        != pre_send.final_request_proof_digest
+                    || recovery.provider_request_digest().into_array()
+                        != pre_send.provider_request_digest
+                    || recovery.provider_wire_semantic_digest().into_array()
+                        != pre_send.provider_wire_semantic_digest
+                    || Digest32::of_bytes(
+                        &recovery
+                            .provider_intent()
+                            .canonical_wire_bytes()
+                            .map_err(|_| ExactContextDeliveryError::CorruptState)?,
+                    )
+                    .into_array()
+                        != pre_send.provider_intent_digest
+                {
+                    return Err(ExactContextDeliveryError::CorruptState);
+                }
+            }
+            None if pre_send.recovery_binding_digest == [0; 32] => {}
+            None => return Err(ExactContextDeliveryError::CorruptState),
         }
     }
     for (key, observation) in &state.terminals {
         if key != &observation.attempt_id || !observation.is_final() {
             return Err(ExactContextDeliveryError::CorruptState);
         }
-        let pre_send = state.pre_sends.get(key).ok_or(ExactContextDeliveryError::CorruptState)?;
+        let pre_send = state
+            .pre_sends
+            .get(key)
+            .ok_or(ExactContextDeliveryError::CorruptState)?;
         validate_observation(pre_send, observation)?;
     }
     for (key, observation) in &state.observations {
         if key != &observation_key(observation) || observation.is_final() {
             return Err(ExactContextDeliveryError::CorruptState);
         }
-        let pre_send = state.pre_sends.get(&observation.attempt_id)
+        let pre_send = state
+            .pre_sends
+            .get(&observation.attempt_id)
             .ok_or(ExactContextDeliveryError::CorruptState)?;
         validate_observation(pre_send, observation)?;
-        if state.terminals.get(&observation.attempt_id)
+        if state
+            .terminals
+            .get(&observation.attempt_id)
             .is_some_and(|terminal| terminal.observed_unix_ms < observation.observed_unix_ms)
         {
             return Err(ExactContextDeliveryError::CorruptState);

@@ -39,9 +39,11 @@ pub fn verify_responses_developer_context(
     }
     let mut budget = MAX_JSON_NODES;
     let mut decoder = serde_json::Deserializer::from_slice(body);
-    let value = StrictSeed { budget: &mut budget }
-        .deserialize(&mut decoder)
-        .map_err(|_| "context_slot_json")?;
+    let value = StrictSeed {
+        budget: &mut budget,
+    }
+    .deserialize(&mut decoder)
+    .map_err(|_| "context_slot_json")?;
     decoder.end().map_err(|_| "context_slot_json")?;
     let object = value.as_object().ok_or("context_slot_request")?;
     if object.get("model").and_then(Value::as_str) != Some(expected_model) {
@@ -121,7 +123,9 @@ impl<'de> DeserializeSeed<'de> for StrictSeed<'_> {
             return Err(D::Error::custom("JSON node limit"));
         }
         *self.budget -= 1;
-        decoder.deserialize_any(StrictVisitor { budget: self.budget })
+        decoder.deserialize_any(StrictVisitor {
+            budget: self.budget,
+        })
     }
 }
 

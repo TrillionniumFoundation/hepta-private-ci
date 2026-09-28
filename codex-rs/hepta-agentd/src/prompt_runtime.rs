@@ -33,9 +33,16 @@ use codex_hepta_codex_adapter::PromptRuntimePrepareRequest;
 use codex_hepta_codex_adapter::PromptRuntimeRecordFuture;
 use codex_hepta_codex_adapter::PromptRuntimeTerminalOutcomeV1;
 use codex_hepta_codex_adapter::PromptRuntimeTerminalRecordV1;
+use codex_hepta_intelligence::PromptExactTokenizerV3;
+#[cfg(feature = "legacy-prompt-context-v1")]
 use codex_hepta_intelligence::PromptRegistryCompilationRequestV2;
+use codex_hepta_intelligence::PromptRegistryCompilationRequestV3;
+#[cfg(feature = "legacy-prompt-context-v1")]
 use codex_hepta_intelligence::PromptRegistryCompiledContextV2;
+use codex_hepta_intelligence::PromptRegistryCompiledContextV3;
+#[cfg(feature = "legacy-prompt-context-v1")]
 use codex_hepta_intelligence::compile_prompt_registry_v2;
+use codex_hepta_intelligence::compile_prompt_registry_v3;
 use codex_hepta_prompt_optimizer::canonical::EnumeratedPromptCandidatesV1;
 use codex_hepta_prompt_optimizer::canonical::PromptEnumerationRequestV1;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
@@ -170,8 +177,9 @@ impl AgentdPromptRuntimeOwner {
         self.poisoned.load(Ordering::Acquire)
     }
 
-    /// Stage one exact optimizer-exercised/registry-dereferenced context for a
-    /// real Codex turn. Only DeveloperInstruction is activated in this profile.
+    /// Compatibility-only V2 staging. It cannot arm the authoritative
+    /// registry-owned V3 exact-body proof path and is default-off.
+    #[cfg(feature = "legacy-prompt-context-v1")]
     pub fn stage_compiled_prompt_context(
         &self,
         thread_id: &str,
@@ -222,6 +230,83 @@ impl AgentdPromptRuntimeOwner {
         )
         .map_err(|error| AgentdPromptRuntimeError::Adapter(error.to_string()))?;
 
+        let key = PromptRuntimeKey {
+            thread_id: thread_id.to_owned(),
+            turn_id: turn_id.to_owned(),
+        };
+        self.commit_state(|state| {
+            if let Some(existing) = state.staged.get(&key) {
+                return if existing == &attachment {
+                    Ok(PromptRuntimeStageDisposition::Unchanged)
+                } else {
+                    Err(AgentdPromptRuntimeError::StageConflict)
+                };
+            }
+            if state
+                .dispatch_records
+                .values()
+                .any(|record| dispatch_key(record) == key)
+            {
+                return Err(AgentdPromptRuntimeError::StageConflict);
+            }
+            if state.staged.len() >= MAX_STAGED_TURNS {
+                return Err(AgentdPromptRuntimeError::CapacityExceeded);
+            }
+            state.staged.insert(key, attachment);
+            Ok(PromptRuntimeStageDisposition::Inserted)
+        })
+    }
+
+    /// Stage the registry-owned V3 context consumed by the exact encoded-body
+    /// provider observer. The product profile currently accepts only the exact
+    /// developer-policy slot; unsupported roles fail during V3 compilation.
+    pub fn stage_compiled_prompt_context_v3(
+        &self,
+        thread_id: &str,
+        turn_id: &str,
+        model: &str,
+        requested_deadline_ms: u64,
+        compiled: &PromptRegistryCompiledContextV3,
+    ) -> Result<PromptRuntimeStageDisposition, AgentdPromptRuntimeError> {
+        validate_thread_id(thread_id)?;
+        validate_turn_id(turn_id)?;
+        validate_model(model)?;
+        if requested_deadline_ms == 0 || model != compiled.execution_profile.provider_model {
+            return Err(AgentdPromptRuntimeError::InvalidDeadline);
+        }
+        compiled
+            .validate()
+            .map_err(|_| AgentdPromptRuntimeError::SourceValidationFailed)?;
+        if compiled.selected_deliveries.is_empty() || compiled.payload().is_empty() {
+            return Err(AgentdPromptRuntimeError::EmptySelection);
+        }
+        let mut effective_deadline_ms =
+            requested_deadline_ms.min(compiled.portfolio_valid_until_unix_ms());
+        for delivery in &compiled.selected_deliveries {
+            if delivery.binding.role != PromptRoleV2::DeveloperInstruction {
+                return Err(AgentdPromptRuntimeError::UnsupportedPromptRole);
+            }
+            if let Some(expires_unix_ms) = delivery.binding.expires_unix_ms {
+                if expires_unix_ms == 0 {
+                    return Err(AgentdPromptRuntimeError::InvalidDeadline);
+                }
+                effective_deadline_ms = effective_deadline_ms.min(expires_unix_ms);
+            }
+        }
+        let canonical_bundle = std::str::from_utf8(compiled.payload())
+            .map_err(|_| AgentdPromptRuntimeError::PayloadNotUtf8)?;
+        let attachment = PromptRuntimeAttachmentV1::new(
+            compiled.compiled.receipt().compilation_id().clone(),
+            compiled.attachment.attachment_digest(),
+            compiled.attachment.payload_digest(),
+            model.to_owned(),
+            effective_deadline_ms,
+            vec![
+                PromptRuntimeDeveloperFragmentV1::new(canonical_bundle.to_owned())
+                    .map_err(|error| AgentdPromptRuntimeError::Adapter(error.to_string()))?,
+            ],
+        )
+        .map_err(|error| AgentdPromptRuntimeError::Adapter(error.to_string()))?;
         let key = PromptRuntimeKey {
             thread_id: thread_id.to_owned(),
             turn_id: turn_id.to_owned(),
@@ -602,6 +687,7 @@ impl AgentdPromptPipelineOwner {
             .map_err(|error| AgentdPromptPipelineError::CandidateSource(error.to_string()))
     }
 
+    #[cfg(feature = "legacy-prompt-context-v1")]
     #[allow(clippy::too_many_arguments)]
     pub fn compile_and_stage(
         &self,
@@ -621,11 +707,52 @@ impl AgentdPromptPipelineOwner {
             compile_prompt_registry_v2(&registry, portfolio, exercise_request, compilation_request)
                 .map_err(|error| AgentdPromptPipelineError::Compilation(error.to_string()))?
         };
+        self.runtime
+            .stage_compiled_prompt_context(
+                thread_id,
+                turn_id,
+                model,
+                requested_deadline_ms,
+                &compiled,
+            )
+            .map_err(AgentdPromptPipelineError::Stage)
+    }
+
+    /// Canonical source-composed product entrypoint. The supplied capability
+    /// must execute the exact tokenizer identity declared by the V3 execution
+    /// profile over the provided bytes; digest lookup tables do not satisfy the
+    /// trait contract.
+    #[allow(clippy::too_many_arguments)]
+    pub fn compile_and_stage_v3<T: PromptExactTokenizerV3>(
+        &self,
+        thread_id: &str,
+        turn_id: &str,
+        model: &str,
+        requested_deadline_ms: u64,
+        portfolio: &SelectedPromptPortfolioV1,
+        exercise_request: &PromptExerciseRequestV1,
+        compilation_request: PromptRegistryCompilationRequestV3,
+        tokenizer: &T,
+    ) -> Result<PromptRuntimeStageDisposition, AgentdPromptPipelineError> {
+        let compiled = {
+            let registry = self
+                .registry
+                .lock()
+                .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?;
+            compile_prompt_registry_v3(
+                &registry,
+                portfolio,
+                exercise_request,
+                compilation_request,
+                tokenizer,
+            )
+            .map_err(|error| AgentdPromptPipelineError::Compilation(error.to_string()))?
+        };
         self.exact
             .stage(thread_id, turn_id, compiled.clone())
             .map_err(AgentdPromptPipelineError::ExactStage)?;
         self.runtime
-            .stage_compiled_prompt_context(
+            .stage_compiled_prompt_context_v3(
                 thread_id,
                 turn_id,
                 model,
@@ -1285,6 +1412,6 @@ fn host_error(error: AgentdPromptRuntimeError) -> PromptRuntimeHostError {
     PromptRuntimeHostError::new("agentd_prompt_runtime_error", error.to_string())
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "legacy-prompt-context-v1"))]
 #[path = "prompt_runtime_tests.rs"]
 mod tests;

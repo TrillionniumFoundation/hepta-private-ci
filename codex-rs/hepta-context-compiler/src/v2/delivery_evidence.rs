@@ -53,9 +53,7 @@ impl ContextDeliveryReceiptV2 {
             provider_attempt_digest: self.provider_attempt_digest.to_string(),
             provider_receipt_digest: self.provider_receipt_digest.to_string(),
             provider_terminal_digest: self.provider_terminal_digest.to_string(),
-            provider_evidence_verifier_digest: self
-                .provider_evidence_verifier_digest
-                .to_string(),
+            provider_evidence_verifier_digest: self.provider_evidence_verifier_digest.to_string(),
             provider_evidence_digest: self.provider_evidence_digest.to_string(),
             provider_recorded_at_unix_ms: self.provider_recorded_at_unix_ms,
             admission_snapshot_digest: self.admission_snapshot_digest.to_string(),

@@ -26,11 +26,8 @@ use super::ContextDeliveryReceiptV2;
 use super::ContextModelProfileV2;
 use super::ContextProviderDeliveryVerifierV2;
 use super::SerializedContextV2;
-use super::delivery_disposition_code;
 use super::ensure_digest;
 use super::push_digest;
-use super::push_id;
-use super::push_u64;
 use crate::FinalProviderRequestProofV2;
 
 const RECOVERY_BINDING_DOMAIN: &[u8] = b"hepta.context-delivery-recovery-binding.v2";
@@ -52,7 +49,10 @@ impl std::fmt::Debug for ContextDeliveryRecoveryBindingV2 {
         formatter
             .debug_struct("ContextDeliveryRecoveryBindingV2")
             .field("preparation_digest", &self.preparation.preparation_digest)
-            .field("final_request_proof_digest", &self.final_request_proof_digest)
+            .field(
+                "final_request_proof_digest",
+                &self.final_request_proof_digest,
+            )
             .field("provider_request_digest", &self.provider_request_digest)
             .field(
                 "provider_wire_semantic_digest",
@@ -145,12 +145,7 @@ impl ContextDeliveryRecoveryBindingV2 {
             Digest32::of_bytes(self.provider_intent.binding.provider_id.as_bytes());
         let provider_model_digest =
             Digest32::of_bytes(self.provider_intent.binding.model.as_bytes());
-        let wire_digest = parse_sha256(
-            self.provider_intent
-                .binding
-                .wire_semantic_sha256
-                .as_str(),
-        )?;
+        let wire_digest = parse_sha256(self.provider_intent.binding.wire_semantic_sha256.as_str())?;
         let request_digest = self
             .provider_intent
             .binding
@@ -250,9 +245,7 @@ pub fn observe_recovered_final_provider_delivery_v2(
         .map_err(ContextCompilerV2Error::ProviderEvidenceInvalid)?;
     ensure_digest("provider_evidence", delivery_evidence.evidence_digest)?;
     if delivery_evidence.recorded_at_unix_ms
-        < recovery
-            .preparation
-            .admission_snapshot_observed_unix_ms
+        < recovery.preparation.admission_snapshot_observed_unix_ms
         || observed_unix_ms < delivery_evidence.recorded_at_unix_ms
     {
         return Err(ContextCompilerV2Error::InvalidObservationTime);
@@ -304,10 +297,8 @@ pub fn observe_recovered_final_provider_delivery_v2(
         provider_evidence_digest: delivery_evidence.evidence_digest,
         provider_recorded_at_unix_ms: delivery_evidence.recorded_at_unix_ms,
         admission_snapshot_digest: preparation.admission_snapshot_digest,
-        admission_snapshot_verification_digest: preparation
-            .admission_snapshot_verification_digest,
-        admission_snapshot_observed_unix_ms: preparation
-            .admission_snapshot_observed_unix_ms,
+        admission_snapshot_verification_digest: preparation.admission_snapshot_verification_digest,
+        admission_snapshot_observed_unix_ms: preparation.admission_snapshot_observed_unix_ms,
         revocation_epoch: preparation.revocation_epoch,
         terminal_observed,
         disposition,
@@ -326,7 +317,10 @@ fn validate_preparation_shape(
     for (name, digest) in [
         ("delivery_preparation", preparation.preparation_digest),
         ("attachment", preparation.attachment_digest),
-        ("serialization_receipt", preparation.serialization_receipt_digest),
+        (
+            "serialization_receipt",
+            preparation.serialization_receipt_digest,
+        ),
         ("payload", preparation.payload_digest),
         ("model_profile", preparation.model_profile_digest),
         ("provider_id", preparation.provider_id_digest),
@@ -355,7 +349,10 @@ fn validate_recovered_receipt(
 ) -> Result<(), ContextCompilerV2Error> {
     let preparation = &recovery.preparation;
     for (name, digest) in [
-        ("provider_request_binding", receipt.provider_request_binding_digest),
+        (
+            "provider_request_binding",
+            receipt.provider_request_binding_digest,
+        ),
         ("provider_attempt", receipt.provider_attempt_digest),
         ("provider_receipt", receipt.provider_receipt_digest),
         ("provider_terminal", receipt.provider_terminal_digest),
@@ -381,8 +378,7 @@ fn validate_recovered_receipt(
         || receipt.admission_snapshot_observed_unix_ms
             != preparation.admission_snapshot_observed_unix_ms
         || receipt.revocation_epoch != preparation.revocation_epoch
-        || receipt.provider_recorded_at_unix_ms
-            < preparation.admission_snapshot_observed_unix_ms
+        || receipt.provider_recorded_at_unix_ms < preparation.admission_snapshot_observed_unix_ms
         || receipt.observed_unix_ms < receipt.provider_recorded_at_unix_ms
         || receipt.authority.grants_any()
         || receipt.receipt_digest != receipt.compute_receipt_digest()
@@ -392,7 +388,8 @@ fn validate_recovered_receipt(
     match receipt.disposition {
         ContextDeliveryDispositionV2::Delivered
         | ContextDeliveryDispositionV2::Rejected
-        | ContextDeliveryDispositionV2::NotDispatched if receipt.terminal_observed => {}
+        | ContextDeliveryDispositionV2::NotDispatched
+            if receipt.terminal_observed => {}
         ContextDeliveryDispositionV2::Indeterminate if !receipt.terminal_observed => {}
         _ => return Err(ContextCompilerV2Error::InvalidDeliveryDisposition),
     }
@@ -440,8 +437,7 @@ impl RecoveryArchiveV2 {
             admission_snapshot_verification_digest: preparation
                 .admission_snapshot_verification_digest
                 .to_string(),
-            admission_snapshot_observed_unix_ms: preparation
-                .admission_snapshot_observed_unix_ms,
+            admission_snapshot_observed_unix_ms: preparation.admission_snapshot_observed_unix_ms,
             revocation_epoch: preparation.revocation_epoch,
             preparation_digest: preparation.preparation_digest.to_string(),
             final_request_proof_digest: binding.final_request_proof_digest.to_string(),
@@ -458,9 +454,7 @@ impl RecoveryArchiveV2 {
                 preparation_id: StableId::new(self.preparation_id)
                     .map_err(|_| ContextCompilerV2Error::RecoveryEvidenceInvalid)?,
                 attachment_digest: parse_digest(&self.attachment_digest)?,
-                serialization_receipt_digest: parse_digest(
-                    &self.serialization_receipt_digest,
-                )?,
+                serialization_receipt_digest: parse_digest(&self.serialization_receipt_digest)?,
                 payload_digest: parse_digest(&self.payload_digest)?,
                 model_profile_digest: parse_digest(&self.model_profile_digest)?,
                 provider_id_digest: parse_digest(&self.provider_id_digest)?,
@@ -470,17 +464,14 @@ impl RecoveryArchiveV2 {
                 admission_snapshot_verification_digest: parse_digest(
                     &self.admission_snapshot_verification_digest,
                 )?,
-                admission_snapshot_observed_unix_ms: self
-                    .admission_snapshot_observed_unix_ms,
+                admission_snapshot_observed_unix_ms: self.admission_snapshot_observed_unix_ms,
                 revocation_epoch: self.revocation_epoch,
                 preparation_digest: parse_digest(&self.preparation_digest)?,
                 authority: AuthorityPosture::DENY_ALL,
             },
             final_request_proof_digest: parse_digest(&self.final_request_proof_digest)?,
             provider_request_digest: parse_digest(&self.provider_request_digest)?,
-            provider_wire_semantic_digest: parse_digest(
-                &self.provider_wire_semantic_digest,
-            )?,
+            provider_wire_semantic_digest: parse_digest(&self.provider_wire_semantic_digest)?,
             provider_intent: self.provider_intent,
             binding_digest: parse_digest(&self.binding_digest)?,
             authority: AuthorityPosture::DENY_ALL,
@@ -489,8 +480,8 @@ impl RecoveryArchiveV2 {
 }
 
 fn parse_digest(value: &str) -> Result<Digest32, ContextCompilerV2Error> {
-    let digest = Digest32::from_str(value)
-        .map_err(|_| ContextCompilerV2Error::RecoveryEvidenceInvalid)?;
+    let digest =
+        Digest32::from_str(value).map_err(|_| ContextCompilerV2Error::RecoveryEvidenceInvalid)?;
     if digest.is_zero() {
         return Err(ContextCompilerV2Error::RecoveryEvidenceInvalid);
     }

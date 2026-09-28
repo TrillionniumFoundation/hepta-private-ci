@@ -75,9 +75,7 @@ impl ContextCompilerV2Error {
             }
             Self::StaleAdmissionSnapshot => "context_v2_stale_admission_snapshot",
             Self::MandatoryReferenceLimitExceeded => "context_v2_mandatory_reference_limit",
-            Self::InsufficientMandatoryBudget { .. } => {
-                "context_v2_insufficient_mandatory_budget"
-            }
+            Self::InsufficientMandatoryBudget { .. } => "context_v2_insufficient_mandatory_budget",
             Self::TokenBudgetExceeded => "context_v2_token_budget_exceeded",
             Self::SelectedSetMismatch => "context_v2_selected_set_mismatch",
             Self::SelectedTokenCountMismatch => "context_v2_selected_token_count_mismatch",
@@ -105,9 +103,7 @@ impl ContextCompilerV2Error {
             Self::MissingTerminalObservation => "context_v2_missing_terminal_observation",
             Self::InvalidDeliveryDisposition => "context_v2_invalid_delivery_disposition",
             Self::InvalidObservationTime => "context_v2_invalid_observation_time",
-            Self::DeliveryEvidenceEncodingFailed => {
-                "context_v2_delivery_evidence_encoding_failed"
-            }
+            Self::DeliveryEvidenceEncodingFailed => "context_v2_delivery_evidence_encoding_failed",
             Self::RecoveryEvidenceInvalid => "context_v2_recovery_evidence_invalid",
             Self::AuthorityGranted => "context_v2_authority_granted",
             Self::Arithmetic => "context_v2_arithmetic",

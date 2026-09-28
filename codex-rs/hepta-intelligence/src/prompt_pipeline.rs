@@ -660,7 +660,7 @@ fn find_subslice(haystack: &[u8], needle: &[u8]) -> Option<usize> {
         .position(|window| window == needle)
 }
 
-fn prompt_payload_bundle_digest(payloads: &[RealizationDeliveryV2]) -> Digest32 {
+pub(crate) fn prompt_payload_bundle_digest(payloads: &[RealizationDeliveryV2]) -> Digest32 {
     let mut bytes = b"hepta.prompt-pipeline.payload-materialization.v1".to_vec();
     push_len(&mut bytes, payloads.len());
     for payload in payloads {

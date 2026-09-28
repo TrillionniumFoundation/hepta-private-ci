@@ -37,11 +37,12 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-use crate::PromptContextCompileRequestV1;
-use crate::PromptDeliveryPrepareRequestV1;
-use crate::PromptPipelineErrorV1;
-use crate::compile_exercised_prompt_context_v1;
-use crate::prepare_prompt_delivery_v1;
+use crate::prompt_pipeline::PromptContextCompileRequestV1;
+use crate::prompt_pipeline::PromptDeliveryPrepareRequestV1;
+use crate::prompt_pipeline::PromptPipelineErrorV1;
+use crate::prompt_pipeline::compile_exercised_prompt_context_v1;
+use crate::prompt_pipeline::prepare_prompt_delivery_v1;
+use crate::prompt_pipeline::prompt_payload_bundle_digest;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
 use codex_hepta_prompt_optimizer::canonical::SelectedPromptPortfolioV1;
 

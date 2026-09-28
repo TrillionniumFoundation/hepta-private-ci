@@ -44,7 +44,7 @@ const CANONICAL_CONTEXT_BUNDLE_SCHEMA_V2: &str = "hepta.context-bundle.v2";
 pub const MAX_FINAL_PROVIDER_REQUEST_BYTES_V2: usize = 32 * 1024 * 1024;
 pub const MAX_FINAL_PROVIDER_REQUEST_SEGMENTS_V2: usize = 3;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub enum ProviderClosureErrorV2 {
     Core(ContextCompilerV2Error),
     EmptyDigest(&'static str),
@@ -62,9 +62,39 @@ pub enum ProviderClosureErrorV2 {
     Arithmetic,
 }
 
+impl ProviderClosureErrorV2 {
+    #[must_use]
+    pub const fn code(&self) -> &'static str {
+        match self {
+            Self::Core(_) => "provider_closure_v2_core",
+            Self::EmptyDigest(_) => "provider_closure_v2_empty_digest",
+            Self::SnapshotPredecessorMismatch => {
+                "provider_closure_v2_snapshot_predecessor_mismatch"
+            }
+            Self::InvalidTokenizerIdentity => "provider_closure_v2_invalid_tokenizer_identity",
+            Self::TokenizerFailed(_) => "provider_closure_v2_tokenizer_failed",
+            Self::InvalidTokenCount => "provider_closure_v2_invalid_token_count",
+            Self::FinalRequestEmpty => "provider_closure_v2_final_request_empty",
+            Self::FinalRequestTooLarge => "provider_closure_v2_final_request_too_large",
+            Self::ContextPayloadNotUtf8 => "provider_closure_v2_context_payload_not_utf8",
+            Self::ContextPayloadMissing => "provider_closure_v2_context_payload_missing",
+            Self::ContextPayloadAmbiguous => "provider_closure_v2_context_payload_ambiguous",
+            Self::FramingVerifierRejected(_) => "provider_closure_v2_framing_verifier_rejected",
+            Self::SegmentCoverageInvalid => "provider_closure_v2_segment_coverage_invalid",
+            Self::Arithmetic => "provider_closure_v2_arithmetic",
+        }
+    }
+}
+
+impl fmt::Debug for ProviderClosureErrorV2 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(self.code())
+    }
+}
+
 impl fmt::Display for ProviderClosureErrorV2 {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
+        formatter.write_str(self.code())
     }
 }
 

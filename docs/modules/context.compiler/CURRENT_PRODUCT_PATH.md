@@ -1,7 +1,7 @@
 # context.compiler current product path
 <!-- GENERATED CURRENT STATE: edit CURRENT_STATE.json; detailed design is retained separately. -->
 
-State SHA-256: `734e7ba75c5242ef8a7488ad517369ff6602422a26b12c09346f723b589b020c`. Source anchor: `c21a781119e9fc241197b61a304698f023c8979b`.
+State SHA-256: `e18ab1e9371f0e436c5b9b7da2bffbccf77bdfab25491f80116d8b0af942538a`. Source anchor: `c21a781119e9fc241197b61a304698f023c8979b`.
 The source anchor is provenance, not the final tested head. Only external execution receipts bind a final source/merge object.
 
 ## 1. Current implementation and evidence state
@@ -9,8 +9,8 @@ The source anchor is provenance, not the final tested head. Only external execut
 | Dimension | Current state |
 |---|---|
 | `sourceExists` | `true` |
-| `compiledModuleReachability` | `partial` |
-| `productCallPath` | `partial` |
+| `compiledModuleReachability` | `source_composed_pending_exact_head_execution` |
+| `productCallPath` | `named_agentd_entrypoint_source_composed` |
 | `exactHeadExecution` | `unverified` |
 | `independentAcceptance` | `false` |
 | `activation` | `false` |
@@ -28,54 +28,62 @@ The source anchor is provenance, not the final tested head. Only external execut
 - An uncertain post-rename directory sync fences the exact-delivery store until reopen; poisoned mutexes are not silently recovered. New owner errors expose only stable reason codes in Display and Debug.
 - Compiled context is shared by Arc instead of repeatedly copying raw payloads. This is a source-level allocation reduction, not a measured target-host performance result.
 - Twenty-one additional Rust regression functions are registered in the active Agentd module, including real signed-registry revocation during a child-process barrier, expiry, concurrent preparation, durable migration and failure fencing. Native execution is not asserted.
-- The existing read-only exact-head and deterministic synthetic-merge workflows remain in place. No source repair script or workflow write-back is added by this runtime follow-up.
+- Registry-owned context authority is registered by hepta-prompt-registry and consumed through construction-closed V3 snapshots and successors.
+- hepta-intelligence exports the canonical V3 compiler-owned serializer and exact-tokenizer contract; the legacy V1/V2 composition surface is default-off and remains available only through an explicit compatibility feature.
+- Agentd exposes compile_and_stage_v3 on the existing prompt pipeline owner and stages the same V3 object into the existing exact encoded-body owner; no second provider execution spine is activated.
+- The exact-body owner preserves tokenizer-before-final-authority ordering, then holds the registry owner through proof construction and durable pre-send with no await in the authorization interval.
+- Concrete tokenizer configuration is additionally bound to the V3 provider/model/version/binary/vocabulary/normalization execution profile while retaining external artifact pins and before/after drift checks.
+- Canonical status now distinguishes direct source, module reachability, named product entrypoint, exact-head execution, independent acceptance, activation and release.
+- A construction-closed ContextDeliveryRecoveryBindingV2 archives preparation identity, final-request proof identity and exact ProviderInvocationIntent without raw prompt bytes or dispatch authority.
+- Agentd schema 3 persists the bounded recovery archive before transport release; after process reopen it can reconcile Indeterminate and final observations for the same attempt without invoking the request observer or transport again.
+- Schema-2 digest-only pre-send history remains fail-closed and non-recoverable; migration never fabricates missing recovery evidence.
+- Recovery archive tampering, intent drift, request-body drift, wire-semantic drift, context attachment drift and conflicting terminal replacement are rejected.
+- V2 compiler errors and raw payload holders use stable redacted diagnostics; dynamic error detail and prompt bytes are excluded from Debug and Display output.
 
 ## 3. Current product call path
 
 ```text
-current registry/optimizer path (provisional admission remains open)
-  -> compile_prompt_registry_v2 -> compile_v2
-  -> compiler-owned canonical bundle -> build_attachment
-  -> Agentd staging (shared compiled context)
-  -> Core/codex-api exact encoded HTTP body
-  -> extension typed-slot guard and exclusive observer claim
-  -> Agentd exclusive per-turn preparation reservation
-  -> frozen artifact pins + bounded concurrent tokenizer I/O
-  -> current registry re-read after tokenizer completion
-  -> registry lock: current preparation + final proof + durable pre-send
-  -> post-fsync exclusive expiry check -> same-body transport
-  -> canonical provider observation -> schema-2 durable outcome
+registry-owned V3 authority / optimizer portfolio
+  -> compile_prompt_registry_v3 -> compile_v2
+  -> compiler-owned canonical bundle -> typed attachment
+  -> AgentdPromptPipelineOwner::compile_and_stage_v3
+  -> exact encoded HTTP body -> strict developer/input_text slot
+  -> bounded real tokenizer -> current authority successor
+  -> registry lock: final proof + schema-3 durable pre-send (no await)
+  -> same encoded body transport
+  -> canonical provider observation
+  -> live terminal path OR process reopen
+       -> raw-free recovery archive
+       -> same ProviderInvocationIntent only
+       -> independent delivery verifier
+       -> monotone Indeterminate/final durable observation
 ```
-The durable authorization commit is the registry-revocation linearization point.
-No await occurs while that registry lock is held. Revocation after authorization
-still needs the transport owner's final-use/cancellation policy. Indeterminate
-remains nonfinal and blocks blind replay; complete post-crash proof restoration
-and independent terminal acknowledgement remain open. Dormant V3 files do not
-count as current product composition.
+The recovery archive grants no dispatch authority and cannot re-release request
+bytes. Legacy digest-only records continue to block blind replay and require
+external reconciliation rather than being upgraded into evidence.
 
 ## 4. Dormant integration inputs
 
-- `codex-rs/hepta-prompt-registry/src/context_authority.rs`: Registry-owned V3 authority is still not registered by the crate root; it is not active merely because its file exists.
-- `codex-rs/hepta-intelligence/src/prompt_product_v3.rs`: V3 materialization is not yet the current compiled product path.
-- `codex-rs/hepta-agentd/src/prompt_product_v3.rs`: The active Agentd path remains prompt_runtime plus exact_context_delivery; no second delivery owner was activated.
+- `codex-rs/hepta-agentd/src/prompt_product_v3.rs`: Historical alternate owner remains unregistered and is not part of the product call graph; the canonical path is prompt_runtime plus exact_context_delivery.
 
 ## 5. Remaining implementation and qualification gates
 
-- Complete and compile direct V3 authority/product integration and default-off legacy gating. This runtime follow-up does not activate the dormant V3 files or run source-migration scripts.
-- Replace provisional product-owned admission with independently controlled registry/authority capabilities; the post-tokenization registry re-read is not independent admission authentication.
-- Provision and independently qualify the real provider/model tokenizer, immutable executable/interpreter/runtime, vocabulary and normalization. Hash pins detect observed artifact drift but do not exclude adversarial replace-and-restore or attest semantic token accuracy.
-- Integrate the transport owner final-use token and cancellation policy with the documented durable authorization linearization point. The registry lock prevents pre-authorization revocation races, not every revocation after a committed authorization.
-- Complete post-crash reconstruction/verification of opaque preparation and final-request proofs and independently authenticated late-terminal reconciliation. Digest-only unresolved pre-sends still return RecoveryRequired rather than being fabricated into a delivered receipt.
-- Bind terminal acknowledgement to exact attempt identity before reusing the turn observer. An identity-free encoded terminal callback is not independent reconciliation.
-- Finish cross-holder raw-content redaction, remaining provider typed slots and full provider-framing policy qualification; the active profile remains developer-only.
-- Qualify durable filesystem ownership, rollback resistance, symlink/race resistance and safe retention/retirement beyond bounded JSON state. Schema-2 rollback requires a compatible backup plus external-attempt reconciliation, never deletion of unresolved claims.
-- Run pinned Rust formatting, compilation, all native regressions, affected product E2E, strict lint, dependencies and full source/document checks on the final exact source and merge objects. Local source checks do not establish native execution.
-- Measure named-host p50/p95/p99, allocation and peak memory, concurrent admission, cold/warm tokenizer and long-lived recovery/backlog capacity.
+- Wire the named Agentd compile_and_stage_v3 entrypoint into ordinary authenticated App Server turn admission and prove that exact product call on the immutable source/merge objects.
+- Provision and independently qualify the real provider/model tokenizer, immutable executable/interpreter/runtime, vocabulary and normalization. Hash pins detect observed artifact drift but do not attest semantic token accuracy or exclude a privileged replace-and-restore adversary.
+- Integrate transport-owner final-use/cancellation authority after the durable authorization linearization point; a revocation committed before authorization is rejected, while post-authorization cancellation remains a separate effect-owner contract.
+- Bind terminal acknowledgement to exact attempt identity before reusing a turn observer and qualify the provider evidence owner independently from Agentd.
+- Finish cross-holder raw-content redaction, remaining provider typed slots and provider/model-specific framing policies beyond the current developer-only profile.
+- Qualify durable filesystem ownership, rollback resistance, symlink/race resistance and safe retention/retirement beyond bounded JSON state.
+- Run pinned formatting, compilation, native regressions, product E2E, strict lint, dependency policy, exact-head and deterministic synthetic-merge qualification for the final committed source.
+- Measure named-host p50/p95/p99, allocation and peak memory, concurrent admission, cold/warm tokenizer, revocation contention and long-lived recovery/backlog capacity.
 - Obtain independent security acceptance and operator-controlled activation/release; repository source changes grant none of these authorities.
+- Qualify the independent provider evidence owner and its authenticated receipt acquisition; Agentd remains an evidence consumer and must not self-attest provider truth.
+- Qualify schema-3 storage on the selected host for ownership, rollback resistance, power-loss behavior, symlink/race resistance, retention and capacity; bounded JSON source semantics are not target-host durability evidence.
+- Run immutable source-head and deterministic synthetic-merge qualification over the final direct-source commit; pre-commit materialization tests do not transfer qualification to the generated successor commit.
 
 ## 6. Verification
 
-The prior follow-up recorded 20 local Python tests; that historical result is not native qualification for this commit. This runtime follow-up adds 21 Rust regression functions (40 across the two follow-ups), none executed locally. The original owner and all six new/changed runtime source blobs were verified against Git object identities; a local patch whitespace check passed. Generator/unit-test execution is documented separately in RUNTIME_FOLLOWUP_20260927.md. No Rust toolchain, complete workspace build or target-host measurement was available locally.
+Materialization must execute generated-truth checks, default V3 and explicit legacy profiles, V3 product regressions, typed-slot tests, tokenizer revocation/expiry races, process-reopen recovery tests, strict all-feature Clippy and dependency policy before creating direct source. The successor commit still requires independent source-head and synthetic-merge receipts; acceptance, activation and release remain false.
 
 The canonical workflow uses separate source-head and deterministic synthetic-merge lanes. Both must retain passing receipts with source/base/tested commit/tree, run/attempt, command exit codes, nonempty native test counts and log digests. Candidate identity is revalidated before and after each command. Pending, skipped, cancelled and missing artifacts are not passes.
 

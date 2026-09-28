@@ -23,23 +23,38 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 CODEX_RS = ROOT / "codex-rs"
-MANIFEST = ROOT / "docs/modules/context.compiler/MODULE_MANIFEST.json"
+MANIFEST = ROOT / "docs/modules/context.compiler/CURRENT_STATE.json"
 TRUTH_FILES = (
     MANIFEST,
+    ROOT / "docs/modules/context.compiler/MODULE_MANIFEST.json",
     ROOT / "docs/modules/context.compiler/TECHNICAL.md",
     ROOT / "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
+    ROOT / "docs/modules/context.compiler/CURRENT_PRODUCT_PATH.md",
     ROOT / "qualification/module-execution-dossiers/detail/context.compiler.md",
 )
 SOURCE_EVIDENCE_FILES = (
+    ROOT / "codex-rs/hepta-context-compiler/src/lib.rs",
     ROOT / "codex-rs/hepta-context-compiler/src/provider_closure.rs",
     ROOT / "codex-rs/hepta-context-compiler/src/v2.rs",
-    ROOT / "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+    ROOT / "codex-rs/hepta-context-compiler/src/v2/delivery_evidence.rs",
+    ROOT / "codex-rs/hepta-context-compiler/src/v2/preparation_archive.rs",
+    ROOT / "codex-rs/hepta-context-compiler/src/v2/recovery.rs",
+    ROOT / "codex-rs/hepta-context-compiler/src/v2/redaction.rs",
+    ROOT / "codex-rs/hepta-prompt-registry/src/context_authority.rs",
+    ROOT / "codex-rs/hepta-intelligence/src/lib.rs",
+    ROOT / "codex-rs/hepta-intelligence/src/prompt_product_v3.rs",
+    ROOT / "codex-rs/hepta-agentd/src/prompt_runtime.rs",
     ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
-    ROOT / "codex-rs/ext/hepta-prompt/src/exact_body.rs",
-    ROOT / "codex-rs/ext/hepta-prompt/src/lib.rs",
+    ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/framing_json.rs",
+    ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/registry_race_tests.rs",
+    ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/runtime_tests.rs",
+    ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/terminal_state.rs",
+    ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/tokenizer_io.rs",
+    ROOT / "codex-rs/codex-api/src/context_slot.rs",
     ROOT / "codex-rs/codex-api/src/encoded_body_observer.rs",
     ROOT / "codex-rs/codex-api/src/endpoint/responses.rs",
     ROOT / "codex-rs/core/src/client.rs",
+    ROOT / "codex-rs/ext/hepta-prompt/src/exact_body.rs",
 )
 
 
@@ -85,6 +100,8 @@ def command_specs() -> list[dict[str, Any]]:
         "codex-api",
         "codex-core",
         "codex-hepta-context-compiler",
+        "codex-hepta-prompt-registry",
+        "codex-hepta-prompt-optimizer",
         "codex-hepta-intelligence",
         "codex-hepta-prompt-extension",
         "codex-hepta-agentd",
@@ -122,6 +139,16 @@ def command_specs() -> list[dict[str, Any]]:
                 "codex-hepta-prompt-extension",
                 "-p",
                 "codex-hepta-agentd",
+            ],
+        },
+        {
+            "name": "legacy-context-compatibility-tests",
+            "cwd": CODEX_RS,
+            "argv": [
+                "cargo", "test", "--locked",
+                "-p", "codex-hepta-intelligence",
+                "-p", "codex-hepta-agentd",
+                "--features", "legacy-prompt-context-v1",
             ],
         },
         {
@@ -163,6 +190,7 @@ def command_specs() -> list[dict[str, Any]]:
                 "--locked",
                 *package_args,
                 "--all-targets",
+                "--all-features",
                 "--",
                 "-D",
                 "warnings",

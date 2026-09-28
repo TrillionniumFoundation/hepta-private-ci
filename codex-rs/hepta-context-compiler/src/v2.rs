@@ -30,6 +30,19 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+#[path = "v2/delivery_evidence.rs"]
+mod delivery_evidence;
+#[path = "v2/preparation_archive.rs"]
+mod preparation_archive;
+#[path = "v2/recovery.rs"]
+mod recovery;
+#[path = "v2/redaction.rs"]
+mod redaction;
+
+pub use recovery::ContextDeliveryRecoveryBindingV2;
+pub use recovery::build_delivery_recovery_binding_v2;
+pub use recovery::observe_recovered_final_provider_delivery_v2;
+
 pub const MAX_CONTEXT_CANDIDATES_V2: usize = 4_096;
 pub const MAX_CONTEXT_GROUPS_V2: usize = 256;
 pub const MAX_MANDATORY_REFERENCES_V2: usize = 4_096;
@@ -1250,7 +1263,7 @@ pub fn compile_v2(
     Ok(compiled)
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct ContextRealizedItemV2 {
     pub item_id: StableId,
     pub role: ContextRoleV2,
@@ -1388,7 +1401,7 @@ impl ContextSerializationReceiptV2 {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct SerializedContextV2 {
     receipt: ContextSerializationReceiptV2,
     payload: Vec<u8>,
@@ -2386,7 +2399,7 @@ fn value_per_token_order(left: &ContextCandidateV2, right: &ContextCandidateV2) 
         .then_with(|| left.item_id.cmp(&right.item_id))
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub enum ContextCompilerV2Error {
     EmptyDigest(&'static str),
     DigestMismatch(&'static str),
@@ -2461,13 +2474,15 @@ pub enum ContextCompilerV2Error {
     MissingTerminalObservation,
     InvalidDeliveryDisposition,
     InvalidObservationTime,
+    DeliveryEvidenceEncodingFailed,
+    RecoveryEvidenceInvalid,
     AuthorityGranted,
     Arithmetic,
 }
 
 impl fmt::Display for ContextCompilerV2Error {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
+        formatter.write_str(self.code())
     }
 }
 
