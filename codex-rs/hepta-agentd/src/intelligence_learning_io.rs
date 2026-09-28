@@ -12,6 +12,23 @@ const IO_BUDGET: Duration = Duration::from_secs(30);
 const IO_HARD_TIMEOUT_GRACE: Duration = Duration::from_secs(30);
 const HARD_TIMEOUT_EXIT_CODE: i32 = 70;
 
+fn spawn_learning_io_watchdog_v1<T, F>(
+    permit: tokio::sync::OwnedSemaphorePermit,
+    budget: Duration,
+    grace: Duration,
+    work: F,
+) -> std::io::Result<
+    tokio::task::JoinHandle<Result<T, AgentdIntelligenceLearningErrorV1>>,
+>
+where
+    T: Send + 'static,
+    F: FnOnce() -> Result<T, AgentdIntelligenceLearningErrorV1> + Send + 'static,
+{
+    crate::AgentdIntelligenceProductRunnerV1::spawn_unobserved_blocking(
+        permit, budget, grace, work,
+    )
+}
+
 async fn run_bounded_learning_io_v1<T, F>(
     io_slots: Arc<tokio::sync::Semaphore>,
     budget: Duration,
@@ -25,10 +42,7 @@ where
     let permit = io_slots
         .try_acquire_owned()
         .map_err(|_| AgentdIntelligenceLearningErrorV1::IoBusy)?;
-    let mut worker = crate::AgentdIntelligenceProductRunnerV1::spawn_unobserved_blocking(
-        permit, budget, grace, work,
-    )
-    .map_err(|error| {
+    let mut worker = spawn_learning_io_watchdog_v1(permit, budget, grace, work).map_err(|error| {
         AgentdIntelligenceLearningErrorV1::Io(format!(
             "learning I/O watchdog failed to start: {error}"
         ))
