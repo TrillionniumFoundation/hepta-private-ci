@@ -103,10 +103,29 @@ def verify_snapshot_files(root: Path, revision: str,
 def snapshot_supply_chain_admission(base: dict[str, Any]) -> dict[str, bool]:
     identity = base.get("upstream_identity") or {}
     revision = base.get("revision")
+    # The upstream verifier hashes compact JSON; the pre-existing bakeoff
+    # manifest hashes that same byte list plus its trailing newline. Bind both
+    # domains to the actual consumed list instead of comparing unlike digests.
+    rows = base.get("files")
+    valid_rows = (isinstance(rows, list) and 0 < len(rows) <= MAX_FILES and
+                  all(isinstance(row, dict) and set(row) == {"path", "bytes", "sha256"} and
+                      isinstance(row["path"], str) and type(row["bytes"]) is int and
+                      0 < row["bytes"] <= MAX_FILE_BYTES and
+                      isinstance(row["sha256"], str) and HEX64.fullmatch(row["sha256"]) is not None
+                      for row in rows))
+    if valid_rows:
+        paths = [row["path"] for row in rows]
+        valid_rows = (paths == sorted(set(paths)) and all(
+            not PurePosixPath(path).is_absolute() and ".." not in PurePosixPath(path).parts and
+            str(PurePosixPath(path)) == path for path in paths))
+    compact = canonical(rows) if valid_rows else b""
+    byte_proof = (valid_rows and identity.get("verified_file_count") == len(rows) and
+                  identity.get("verified_files_sha256") == hashlib.sha256(compact).hexdigest() and
+                  base.get("snapshot_digest") == hashlib.sha256(compact + b"\n").hexdigest())
     exact = (isinstance(revision, str) and HEX40.fullmatch(revision) is not None
              and revision == base.get("observed_hub_sha")
              and identity.get("revision") == revision
-             and identity.get("verified_files_sha256") == base.get("snapshot_digest")
+             and byte_proof
              and base.get("snapshot_matches_pinned_revision") is True
              and identity.get("snapshot_matches_pinned_revision") is True)
     snapshot = base.get("snapshot_digest")

@@ -5,7 +5,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from snapshot_identity import snapshot_supply_chain_admission, verify_snapshot_files
+from snapshot_identity import canonical, snapshot_supply_chain_admission, verify_snapshot_files
 
 
 class SnapshotIdentityTests(unittest.TestCase):
@@ -96,9 +96,26 @@ class SnapshotIdentityTests(unittest.TestCase):
         base.update({"snapshot_matches_pinned_revision": True,
                      "upstream_identity": {"revision": self.revision,
                         "verified_files_sha256": "d" * 64, "snapshot_matches_pinned_revision": True}})
+        # Equal arbitrary digest strings alone are still not a byte manifest.
+        self.assertFalse(snapshot_supply_chain_admission(base)["exact_revision_bound"])
+        base.update({"files": self.rows, "upstream_identity": self.verify(),
+                     "snapshot_digest": hashlib.sha256(canonical(self.rows) + b"\n").hexdigest()})
         self.assertTrue(all(snapshot_supply_chain_admission(base).values()))
         base["upstream_identity"]["verified_files_sha256"] = "e" * 64
         self.assertFalse(snapshot_supply_chain_admission(base)["exact_revision_bound"])
+
+    def test_actual_producer_hash_domains_bind_the_same_consumed_bytes(self):
+        base = {"revision": self.revision, "observed_hub_sha": self.revision,
+                "snapshot_matches_pinned_revision": True, "files": self.rows,
+                "snapshot_digest": hashlib.sha256(canonical(self.rows) + b"\n").hexdigest(),
+                "upstream_identity": self.verify()}
+        self.assertTrue(snapshot_supply_chain_admission(base)["exact_revision_bound"])
+        changed = copy.deepcopy(base)
+        changed["files"][0]["sha256"] = "d" * 64
+        self.assertFalse(snapshot_supply_chain_admission(changed)["exact_revision_bound"])
+        changed = copy.deepcopy(base)
+        changed["upstream_identity"]["verified_file_count"] = 2
+        self.assertFalse(snapshot_supply_chain_admission(changed)["exact_revision_bound"])
 
     def test_missing_code_review_or_custom_license_does_not_pass_distribution(self):
         base = {"revision": self.revision, "observed_hub_sha": None,

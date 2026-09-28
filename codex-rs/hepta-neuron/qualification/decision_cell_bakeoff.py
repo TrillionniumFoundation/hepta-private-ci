@@ -733,38 +733,17 @@ class EncoderAdapter:
             torch.cuda.empty_cache()
 
 
-class TypedHeads(nn.Module):
-    def __init__(self, hidden_size: int, width: int = HEAD_WIDTH) -> None:
-        super().__init__()
-        self.organ_adapter = nn.Sequential(nn.Linear(hidden_size, width), nn.Tanh())
-        self.cell_adapter = nn.Sequential(nn.Linear(width, width), nn.Tanh())
-        # Target selection is a pointer over the admitted candidate set.  Each
-        # candidate is encoded together with the same frozen state rather than
-        # guessed from an arbitrary slot number.  This keeps candidate order
-        # non-semantic and matches the runtime DecisionCell contract.
-        self.target_score = nn.Linear(width, 1)
-        self.action = nn.Linear(width, len(ACTIONS))
-        self.disposition = nn.Linear(width, len(DISPOSITIONS))
-        self.postcondition = nn.Linear(width, len(ACTIONS))
-        self.ood = nn.Linear(width, 2)
-        self.value_cost = nn.Linear(width, 2)
-
-    def forward(
-        self, value: torch.Tensor, target_pairs: torch.Tensor
-    ) -> dict[str, torch.Tensor]:
-        if target_pairs.ndim != 3 or target_pairs.shape[:2] != (value.shape[0], TARGET_COUNT):
-            raise RuntimeError("candidate-aware target embedding shape mismatch")
-        hidden = self.cell_adapter(self.organ_adapter(value))
-        target_hidden = self.cell_adapter(self.organ_adapter(target_pairs))
-        return {
-            "action": self.action(hidden),
-            "target": self.target_score(target_hidden).squeeze(-1),
-            "disposition": self.disposition(hidden),
-            "postcondition": self.postcondition(hidden),
-            "ood": self.ood(hidden),
-            "value_cost": self.value_cost(hidden),
-        }
-
+# Reuse the exact inference.worker tensor graph; do not maintain a divergent
+# training-only adapter/head implementation.
+import importlib.util as _importlib_util
+_TENSOR_PATH = Path(__file__).resolve().parents[2] / "hepta-infer-worker-host/python/decision_cell_tensors.py"
+_TENSOR_SPEC = _importlib_util.spec_from_file_location("hepta_decision_cell_tensors", _TENSOR_PATH)
+if _TENSOR_SPEC is None or _TENSOR_SPEC.loader is None:
+    raise RuntimeError("shared DecisionCell tensor profile is missing")
+_tensor_module = _importlib_util.module_from_spec(_TENSOR_SPEC)
+sys.modules[_TENSOR_SPEC.name] = _tensor_module
+_TENSOR_SPEC.loader.exec_module(_tensor_module)
+TypedHeads = _tensor_module.TypedHeads
 
 def tensors(
     rows: Sequence[Example],
@@ -1163,19 +1142,7 @@ def state_dict_for_safetensors(model: nn.Module) -> dict[str, torch.Tensor]:
     }
 
 
-def parameter_group_digests(model: nn.Module) -> dict[str, str]:
-    groups = {name: hashlib.sha256(b"hepta.decision-cell-parameter-group.v2\0" + name.encode())
-              for name in ("organ_adapter", "cell_adapter", "heads")}
-    for name, tensor in sorted(model.state_dict().items()):
-        group = name.split(".")[0]
-        group = group if group in groups else "heads"
-        value = tensor.detach().cpu().contiguous()
-        descriptor = canonical_json({"name": name, "shape": list(value.shape), "dtype": str(value.dtype)})
-        groups[group].update(len(descriptor).to_bytes(8, "big"))
-        groups[group].update(descriptor)
-        groups[group].update(value.view(torch.uint8).numpy().tobytes())
-    return {name: digest.hexdigest() for name, digest in groups.items()}
-
+parameter_group_digests = _tensor_module.parameter_group_digests
 
 def save_head_artifact(
     output_dir: Path,
@@ -1211,7 +1178,7 @@ def save_head_artifact(
             "dispositions": list(DISPOSITIONS),
             "target_count": TARGET_COUNT,
             "maximum_length": MAX_LENGTH,
-            "head_width": HEAD_WIDTH,
+            "head_width": model.organ_adapter[0].out_features,
             "target_pointer_profile": TARGET_POINTER_PROFILE,
             "pooling": "attention-mask-mean-v1",
             "parameter_values": "none-v1",

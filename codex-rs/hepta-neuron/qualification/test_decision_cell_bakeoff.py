@@ -184,7 +184,7 @@ class DecisionCellBakeoffTests(unittest.TestCase):
                     "dispositions": bakeoff.DISPOSITIONS,
                     "target_count": bakeoff.TARGET_COUNT,
                     "maximum_length": bakeoff.MAX_LENGTH,
-                    "head_width": bakeoff.HEAD_WIDTH,
+                    "head_width": 4,
                     "target_pointer_profile": bakeoff.TARGET_POINTER_PROFILE,
                     "pooling": "attention-mask-mean-v1",
                     "parameter_values": "none-v1",
@@ -207,6 +207,14 @@ class DecisionCellBakeoffTests(unittest.TestCase):
                 "trust_remote_code": False,
             }
         }
+        import hashlib
+        from snapshot_identity import canonical
+        files = [{"path": "config.json", "bytes": 12, "sha256": "c" * 64}]
+        receipt["base_model"]["files"] = files
+        receipt["base_model"]["snapshot_digest"] = hashlib.sha256(canonical(files) + b"\n").hexdigest()
+        receipt["base_model"]["upstream_identity"].update({
+            "verified_files_sha256": hashlib.sha256(canonical(files)).hexdigest(),
+            "verified_file_count": 1})
         self.assertTrue(all(bakeoff.supply_chain_admission(receipt).values()))
         receipt["base_model"]["trust_remote_code"] = True
         self.assertFalse(
