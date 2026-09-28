@@ -106,6 +106,7 @@ impl AutomationHostFenceClaimsV1 {
 #[serde(deny_unknown_fields)]
 pub struct SignedAutomationHostFenceV1 {
     pub claims: AutomationHostFenceClaimsV1,
+    #[serde(with = "signature_bytes")]
     pub signature: [u8; 64],
 }
 
@@ -189,12 +190,91 @@ fn push_text(bytes: &mut Vec<u8>, value: &str) -> Result<(), AutomationError> {
     Ok(())
 }
 
+// Keep the public fixed-size signature and the JSON array encoding. Decode
+// directly into fixed storage rather than allocating an unbounded Vec first.
+mod signature_bytes {
+    use std::fmt;
+
+    use serde::Deserializer;
+    use serde::Serializer;
+    use serde::de::Error;
+    use serde::de::SeqAccess;
+    use serde::de::Visitor;
+    use serde::ser::SerializeTuple;
+
+    pub(super) fn serialize<S>(value: &[u8; 64], serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut sequence = serializer.serialize_tuple(64)?;
+        for byte in value {
+            sequence.serialize_element(byte)?;
+        }
+        sequence.end()
+    }
+
+    pub(super) fn deserialize<'de, D>(deserializer: D) -> Result<[u8; 64], D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct SignatureVisitor;
+
+        impl<'de> Visitor<'de> for SignatureVisitor {
+            type Value = [u8; 64];
+
+            fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+                formatter.write_str("exactly 64 signature bytes")
+            }
+
+            fn visit_seq<A>(self, mut sequence: A) -> Result<Self::Value, A::Error>
+            where
+                A: SeqAccess<'de>,
+            {
+                let mut bytes = [0_u8; 64];
+                for (index, byte) in bytes.iter_mut().enumerate() {
+                    *byte = sequence
+                        .next_element()?
+                        .ok_or_else(|| A::Error::invalid_length(index, &self))?;
+                }
+                if sequence.next_element::<u8>()?.is_some() {
+                    return Err(A::Error::invalid_length(65, &self));
+                }
+                Ok(bytes)
+            }
+        }
+
+        deserializer.deserialize_tuple(64, SignatureVisitor)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
 
     use super::*;
+
+    #[test]
+    fn signed_fence_json_has_exactly_sixty_four_bytes() {
+        let (trust, signed) = signed_fence();
+        let bytes = serde_json::to_vec(&signed).expect("encode fixed signature");
+        let decoded: SignedAutomationHostFenceV1 =
+            serde_json::from_slice(&bytes).expect("decode fixed signature");
+        assert_eq!(decoded, signed);
+        VerifiedAutomationHostFenceV1::verify(&trust, &decoded, 2_000)
+            .expect("decoded signature remains authentic");
+
+        for length in [0, 63, 65, 1_024] {
+            let mut value = serde_json::to_value(&signed).expect("signature JSON");
+            value["signature"] = serde_json::json!(vec![0_u8; length]);
+            assert!(serde_json::from_value::<SignedAutomationHostFenceV1>(value).is_err());
+        }
+        for invalid_byte in [serde_json::json!(-1), serde_json::json!(256), serde_json::json!(true)] {
+            let mut value = serde_json::to_value(&signed).expect("signature JSON");
+            value["signature"][0] = invalid_byte;
+            assert!(serde_json::from_value::<SignedAutomationHostFenceV1>(value).is_err());
+        }
+    }
 
     fn signed_fence() -> (AutomationHostFenceTrustV1, SignedAutomationHostFenceV1) {
         let signing_key = SigningKey::from_bytes(&[7_u8; 32]);
