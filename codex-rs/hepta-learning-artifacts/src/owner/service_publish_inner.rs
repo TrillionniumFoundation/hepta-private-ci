@@ -26,8 +26,18 @@ impl LearningArtifactOwnerService {
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
         }
-        self.operational_state
-            .require_publish(&request.operation_id, checkpoint.is_some())?;
+        if let Err(error) = self
+            .operational_state
+            .require_publish(&request.operation_id, checkpoint.is_some())
+        {
+            if matches!(
+                error,
+                LearningArtifactOwnerServiceError::WithdrawalDurabilityUnknown
+            ) {
+                self.metrics.increment_withdrawal_blocked();
+            }
+            return Err(error);
+        }
         self.operational_state
             .begin_request_identity_persist(request.operation_id.clone(), request.now);
         let identity_result = self.metrics.measure(
@@ -40,6 +50,13 @@ impl LearningArtifactOwnerService {
                 self.operational_state.cancel_request_identity_persist();
                 self.metrics.increment_request_identity_conflict();
                 return Err(LearningArtifactOwnerServiceError::RequestIdentityConflict);
+            }
+            Err(LearningArtifactOwnerServiceError::CapacityExceeded) => {
+                // Capacity rejection occurs before any create-only identity write.
+                // It is not a persistence-unknown state and must not fence reads.
+                self.operational_state.cancel_request_identity_persist();
+                self.metrics.increment_capacity_rejection();
+                return Err(LearningArtifactOwnerServiceError::CapacityExceeded);
             }
             Err(error) => {
                 self.operational_state.fail_request_identity_persist(
