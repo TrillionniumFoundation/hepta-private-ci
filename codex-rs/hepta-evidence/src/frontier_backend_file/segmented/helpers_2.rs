@@ -36,6 +36,7 @@ fn parse_active_records(
     identity: &EvidenceFrontierBackendIdentityV1,
     identity_sha256: &Sha256Digest,
     cursor: &ChainCursor,
+    sealed_segment: Option<&EvidenceFrontierSegmentMetadataV1>,
 ) -> Result<Vec<EvidenceFrontierAuditRecordV1>, EvidenceFrontierBackendError> {
     if bytes.is_empty() {
         return Ok(Vec::new());
@@ -43,12 +44,25 @@ fn parse_active_records(
     match parse_records(bytes, store_id, identity, identity_sha256, cursor.clone()) {
         Ok(records) => Ok(records),
         Err(primary_error) if cursor.next_audit_sequence > 1 => {
+            let Some(metadata) = sealed_segment else {
+                return Err(primary_error);
+            };
+            // The duplicate starts at the most recently sealed segment, not
+            // necessarily at genesis. Its starting edge is metadata-bound.
+            let duplicate_cursor = ChainCursor {
+                next_audit_sequence: metadata.first_audit_sequence,
+                previous_generation: metadata
+                    .first_generation
+                    .checked_sub(1)
+                    .filter(|value| *value > 0),
+                previous_record_sha256: metadata.previous_record_sha256.clone(),
+            };
             let complete = parse_records(
                 bytes,
                 store_id,
                 identity,
                 identity_sha256,
-                ChainCursor::initial(),
+                duplicate_cursor,
             )?;
             let boundary_sequence = cursor.next_audit_sequence - 1;
             let Some(boundary) = complete

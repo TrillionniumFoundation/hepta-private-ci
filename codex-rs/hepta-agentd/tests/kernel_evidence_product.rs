@@ -17,7 +17,6 @@ use codex_hepta_agentd::KernelEvidenceQueryV1;
 use codex_hepta_agentd::KernelEvidenceVerifyV1;
 use codex_hepta_agentd::evidence_recovery_frontier_signing_bytes;
 use codex_hepta_agentd::kernel_evidence_claims;
-use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_evidence::EvidenceCandidateV1;
@@ -31,10 +30,9 @@ use codex_hepta_evidence::IndependentDecisionReceiptV1;
 use codex_hepta_evidence::IndependentDecisionRoleV1;
 use codex_hepta_evidence::IndependentDecisionV1;
 use codex_hepta_evidence::QualificationEvidenceEnvelopeV1;
+use codex_hepta_evidence::VerifiedEvidenceTrustSnapshot;
 use codex_hepta_evidence::evidence_set_digest;
 use codex_hepta_evidence::qualification_envelope_bytes;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use ed25519_dalek::Signer;
@@ -551,7 +549,16 @@ async fn signed_recovery_frontier_allows_exact_current_database() -> Result<()> 
         None,
         json!({"frontier": "current"}),
     );
-    append_direct_evidence(&store, ARCHITECTURE_ISSUER, &architecture_key, 1, &envelope).await?;
+    append_direct_evidence(
+        &store,
+        &trust_file,
+        &agent.agent_id.to_string(),
+        ARCHITECTURE_ISSUER,
+        &architecture_key,
+        1,
+        &envelope,
+    )
+    .await?;
     let snapshot = store.recovery_snapshot().await?;
     store.close().await;
 
@@ -635,6 +642,8 @@ async fn signed_recovery_frontier_rejects_valid_older_database_image() -> Result
     );
     append_direct_evidence(
         &current_store,
+        &trust_file,
+        &agent.agent_id.to_string(),
         ARCHITECTURE_ISSUER,
         &architecture_key,
         1,
@@ -766,6 +775,8 @@ fn signed_request_with_expiry(
 
 async fn append_direct_evidence(
     store: &HeptaEvidenceStore,
+    trust_file: &Path,
+    agent_id: &str,
     issuer_id: &str,
     key: &SigningKey,
     sequence: u64,
@@ -783,12 +794,13 @@ async fn append_direct_evidence(
         signature: key.sign(&claims.signing_bytes()).to_bytes(),
         claims,
     };
-    let issuer = IssuerRegistration {
-        issuer_id: StableId::new(issuer_id.to_string()).map_err(anyhow::Error::msg)?,
-        key_epoch: Generation::new(1).map_err(anyhow::Error::msg)?,
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    };
+    let trust = VerifiedEvidenceTrustSnapshot::load_owner_registry(
+        store,
+        trust_file,
+        agent_id,
+        None,
+    )?;
+    let issuer = trust.issuer_for(issuer_id, 1, envelope.issuer_role)?;
     store
         .qualification()
         .append_receipt(&issuer, &message, envelope)

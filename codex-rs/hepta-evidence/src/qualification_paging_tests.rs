@@ -191,7 +191,10 @@ async fn cursor_query_uses_the_candidate_claim_sequence_index() {
         .collect::<Vec<_>>()
         .join("\n");
     assert!(
-        details.contains("idx_qualification_evidence_candidate_claim"),
+        details.contains("qualification_evidence_candidate_claim_seq")
+            && details.contains("SEARCH qualification_evidence")
+            && !details.contains("SCAN qualification_evidence")
+            && !details.contains("USE TEMP B-TREE"),
         "unexpected query plan for {EVIDENCE_DATABASE_LINEAGE}: {details}"
     );
 }

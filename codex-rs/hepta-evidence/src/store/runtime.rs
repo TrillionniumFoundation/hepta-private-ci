@@ -33,6 +33,7 @@ impl HeptaEvidenceStore {
 #[cfg(test)]
 mod tests {
     use codex_utils_absolute_path::AbsolutePathBuf;
+    use sqlx::Connection;
     use tempfile::TempDir;
 
     use super::*;
@@ -118,8 +119,9 @@ mod tests {
         .await
         .expect("create isolated fault-injection table");
 
+        let mut connection = store.pool.acquire().await.expect("pin fault-injection connection");
         let page_count: i64 = sqlx::query_scalar("PRAGMA page_count")
-            .fetch_one(&store.pool)
+            .fetch_one(&mut *connection)
             .await
             .expect("read current page count");
         let requested_limit = page_count.checked_add(1).expect("page-count headroom");
@@ -129,35 +131,49 @@ mod tests {
         pragma.push(requested_limit);
         let configured_limit: i64 = pragma
             .build_query_scalar()
-            .fetch_one(&store.pool)
+            .fetch_one(&mut *connection)
             .await
             .expect("install disk-full injection ceiling");
         assert_eq!(configured_limit, requested_limit);
 
-        let mut transaction = store.pool.begin().await.expect("begin injected write");
+        let mut transaction = connection.begin().await.expect("begin injected write");
+        sqlx::query("INSERT INTO kernel_evidence_disk_full_probe (payload) VALUES (x'01')")
+            .execute(&mut *transaction)
+            .await
+            .expect("write a pre-failure row in the same transaction");
         let result = sqlx::query(
             "INSERT INTO kernel_evidence_disk_full_probe (payload) VALUES (zeroblob(?))",
         )
         .bind(8_i64 * 1024 * 1024)
         .execute(&mut *transaction)
         .await;
-        assert!(
-            result.is_err(),
-            "disk-full injection unexpectedly committed"
+        let error = result.expect_err("disk-full injection unexpectedly succeeded");
+        assert_eq!(
+            error.as_database_error().and_then(|error| error.code()).as_deref(),
+            Some("13"),
+            "fault must be SQLITE_FULL, not an unrelated SQL failure: {error}"
         );
-        transaction
-            .rollback()
-            .await
-            .expect("rollback failed disk-full transaction");
+        // SQLITE_FULL can roll back the transaction automatically. No other
+        // rollback failure may be ignored, and the prior row must also vanish.
+        if let Err(error) = transaction.rollback().await {
+            assert!(
+                error.as_database_error().is_some_and(|error| {
+                    error.code().as_deref() == Some("1")
+                        && error.message().contains("no transaction is active")
+                }),
+                "unexpected rollback failure after SQLITE_FULL: {error}"
+            );
+        }
 
         let rows: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM kernel_evidence_disk_full_probe")
-            .fetch_one(&store.pool)
+            .fetch_one(&mut *connection)
             .await
             .expect("count probe rows after rollback");
         assert_eq!(
             rows, 0,
             "disk-full failure left a partial authoritative row"
         );
+        drop(connection);
         verify_quick_check(&store.pool)
             .await
             .expect("database remains integrity-checkable after disk-full rollback");

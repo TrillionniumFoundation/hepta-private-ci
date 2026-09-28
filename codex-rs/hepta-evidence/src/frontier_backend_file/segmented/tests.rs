@@ -210,4 +210,100 @@ mod tests {
         assert_eq!(history.len(), 6);
         assert_eq!(history.last().unwrap().frontier_generation, 6);
     }
+
+    #[test]
+    fn repeated_rollovers_reopen_with_exact_history_and_archived_acknowledgements() {
+        let fixture = Fixture::new();
+        for generation in 1_u64..=13 {
+            let mut backend = fixture.open();
+            let proposed = frontier(generation, fixture.identity_sha256.clone());
+            backend
+                .compare_and_swap(
+                    "store:segmented-test",
+                    generation.checked_sub(1).filter(|value| *value > 0),
+                    &proposed,
+                )
+                .unwrap();
+            drop(backend);
+            let mut reopened = fixture.open();
+            let history = reopened
+                .get_history(
+                    "store:segmented-test",
+                    EvidenceFrontierHistoryRangeV1::new(1, generation).unwrap(),
+                )
+                .unwrap();
+            assert_eq!(
+                history.iter().map(|entry| entry.frontier_generation).collect::<Vec<_>>(),
+                (1..=generation).collect::<Vec<_>>()
+            );
+            for acknowledged in 1..=generation {
+                let digest = evidence_recovery_frontier_v2_sha256(&frontier(
+                    acknowledged,
+                    fixture.identity_sha256.clone(),
+                ))
+                .unwrap();
+                let acknowledgement = reopened
+                    .recover_durable_acknowledgement("store:segmented-test", acknowledged, &digest)
+                    .unwrap()
+                    .unwrap();
+                assert_eq!(acknowledgement.audit_sequence, acknowledged);
+                assert_eq!(acknowledgement.frontier_sha256, digest);
+            }
+        }
+    }
+
+    #[test]
+    fn later_duplicate_prefix_is_anchored_and_allows_subsequent_publication() {
+        let fixture = Fixture::new();
+        let mut backend = fixture.open();
+        for generation in 1_u64..=10 {
+            backend
+                .compare_and_swap(
+                    "store:segmented-test",
+                    generation.checked_sub(1).filter(|value| *value > 0),
+                    &frontier(generation, fixture.identity_sha256.clone()),
+                )
+                .unwrap();
+        }
+        let paths = backend.paths("store:segmented-test").unwrap();
+        let index = backend.read_index(&paths, "store:segmented-test").unwrap().unwrap();
+        let metadata = backend
+            .read_segment_metadata(index.latest_segment.as_ref().unwrap(), "store:segmented-test")
+            .unwrap();
+        assert_eq!(metadata.first_generation, 5);
+        let segment = std::fs::read(backend.legacy.journals.join(metadata.segment_file_name)).unwrap();
+        let mut duplicate = segment.clone();
+        duplicate.extend_from_slice(&std::fs::read(&paths.active).unwrap());
+        std::fs::write(&paths.active, &duplicate).unwrap();
+        drop(backend);
+        let mut reopened = fixture.open();
+        let history = reopened
+            .get_history("store:segmented-test", EvidenceFrontierHistoryRangeV1::new(1, 10).unwrap())
+            .unwrap();
+        assert_eq!(history.len(), 10);
+
+        // A partial duplicate cannot choose its own starting chain anchor.
+        let first_end = segment.iter().position(|byte| *byte == b'\n').unwrap() + 1;
+        std::fs::write(&paths.active, &duplicate[first_end..]).unwrap();
+        assert!(reopened.get_history(
+            "store:segmented-test",
+            EvidenceFrontierHistoryRangeV1::new(1, 10).unwrap(),
+        ).is_err());
+        std::fs::write(&paths.active, &duplicate).unwrap();
+        for generation in 11_u64..=13 {
+            reopened
+                .compare_and_swap(
+                    "store:segmented-test",
+                    Some(generation - 1),
+                    &frontier(generation, fixture.identity_sha256.clone()),
+                )
+                .unwrap();
+        }
+        let history = reopened
+            .get_history("store:segmented-test", EvidenceFrontierHistoryRangeV1::new(1, 13).unwrap())
+            .unwrap();
+        assert_eq!(history.iter().map(|entry| entry.frontier_generation).collect::<Vec<_>>(),
+            (1..=13).collect::<Vec<_>>());
+    }
+
 }

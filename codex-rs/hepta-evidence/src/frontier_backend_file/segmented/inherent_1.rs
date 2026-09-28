@@ -184,6 +184,7 @@ impl SegmentedFileEvidenceFrontierBackend {
                     &self.legacy.identity,
                     &self.legacy.identity_sha256,
                     &cursor,
+                    latest_segment_metadata.as_ref(),
                 )?;
                 (records, length, digest)
             }
