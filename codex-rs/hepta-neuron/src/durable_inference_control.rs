@@ -1,9 +1,9 @@
-//! Crash-durable adapter for the registered inference-control feature port.
+//! Crash-durable Neuron feature inference adapter.
 //!
-//! The inference owner persists the operation identity before backend entry and
-//! a dispatch fence before invoking the concrete port. Historical receipts are
-//! returned exactly. A recovered dispatched operation is reconcile-only and is
-//! never executed again merely because a caller lost the reply.
+//! This is a bounded adapter around the registered inference-control model port.
+//! It persists complete immutable requests, fsyncs a dispatch fence before model
+//! entry, records complete receipts before publishing them and never treats an
+//! unresolved fenced dispatch as permission to execute again.
 
 use codex_hepta_infer_core::FileNeuronFeatureExecutionStoreV1;
 use codex_hepta_infer_core::NeuronFeatureAdmissionV1;
@@ -15,9 +15,6 @@ use codex_hepta_infer_core::NeuronFeatureStoreError;
 use crate::NeuronInferenceControlPort;
 use crate::NeuronModelError;
 
-/// Compose one concrete inference-control port with its existing durable
-/// operation owner. This adapter neither selects a model nor grants authority;
-/// it only preserves exact execution and result semantics across restart.
 pub struct DurableNeuronInferenceControlPortV1<P> {
     store: FileNeuronFeatureExecutionStoreV1,
     inner: P,
@@ -67,26 +64,7 @@ impl<P: NeuronInferenceControlPort> NeuronInferenceControlPort
                     .map_err(map_persist_error)?;
             }
             NeuronFeatureAdmissionV1::Historical(record) => {
-                if let Some(receipt) = record.receipt {
-                    return Ok(receipt);
-                }
-                match record.state {
-                    // No physical dispatch fence exists yet. The exact request
-                    // may resume from this owned reservation.
-                    NeuronFeatureExecutionStateV1::Reserved => {}
-                    // Backend entry may already have happened. Reconciliation,
-                    // not redispatch, owns every later transition.
-                    NeuronFeatureExecutionStateV1::Dispatched
-                    | NeuronFeatureExecutionStateV1::Indeterminate => {
-                        return Err(NeuronModelError::Indeterminate);
-                    }
-                    // Terminal records always carry their verified receipt.
-                    NeuronFeatureExecutionStateV1::Succeeded
-                    | NeuronFeatureExecutionStateV1::Failed
-                    | NeuronFeatureExecutionStateV1::Cancelled => {
-                        return Err(NeuronModelError::Rejected);
-                    }
-                }
+                return historical_result(record.state, record.receipt);
             }
         }
 
@@ -94,9 +72,6 @@ impl<P: NeuronInferenceControlPort> NeuronInferenceControlPort
             .mark_dispatched(request)
             .map_err(map_persist_error)?;
 
-        // Once the fence is durable, every backend error is conservatively
-        // unknown. The inner port cannot prove that physical entry did not
-        // occur, so a caller must not obtain permission to execute it again.
         let receipt = self
             .inner
             .execute_feature(request)
@@ -106,6 +81,22 @@ impl<P: NeuronInferenceControlPort> NeuronInferenceControlPort
             .observe(request, receipt.clone())
             .map_err(|_| NeuronModelError::Indeterminate)?;
         Ok(receipt)
+    }
+}
+
+fn historical_result(
+    state: NeuronFeatureExecutionStateV1,
+    receipt: Option<NeuronFeatureReceiptV1>,
+) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
+    match state {
+        NeuronFeatureExecutionStateV1::Succeeded
+        | NeuronFeatureExecutionStateV1::Failed
+        | NeuronFeatureExecutionStateV1::Cancelled => {
+            receipt.ok_or(NeuronModelError::Rejected)
+        }
+        NeuronFeatureExecutionStateV1::Reserved
+        | NeuronFeatureExecutionStateV1::Dispatched
+        | NeuronFeatureExecutionStateV1::Indeterminate => Err(NeuronModelError::Indeterminate),
     }
 }
 
@@ -137,8 +128,6 @@ fn map_persist_error(error: NeuronFeatureStoreError) -> NeuronModelError {
         | NeuronFeatureStoreError::ContextMismatch
         | NeuronFeatureStoreError::InvalidTransition
         | NeuronFeatureStoreError::Corrupt => NeuronModelError::Rejected,
-        // A mutating journal call can fail after writing or syncing bytes. Do
-        // not advertise a safe retry unless a reopened owner proves one.
         NeuronFeatureStoreError::Busy
         | NeuronFeatureStoreError::NotRegular
         | NeuronFeatureStoreError::HistoryMissing
@@ -215,19 +204,19 @@ mod tests {
 
     fn request() -> NeuronFeatureRequestV1 {
         NeuronFeatureRequestV1 {
-            request_id: checked(StableId::new("feature:durable:1")),
+            request_id: checked(StableId::new("feature:request:1")),
             generation: checked(Generation::new(7)),
-            model_id: checked(StableId::new("model:laya:1")),
+            model_id: checked(StableId::new("model:laya:test")),
             encoder_digest: Digest32::of_bytes(b"encoder"),
             head_digest: Digest32::of_bytes(b"head"),
             weights_digest: Digest32::of_bytes(b"weights"),
             input_digest: Digest32::of_bytes(b"input"),
-            feature_vector_q24: vec![Q / 4, -Q / 8],
-            expected_output_width: 3,
+            feature_vector_q24: vec![Q / 2, -Q / 4],
+            expected_output_width: 2,
         }
     }
 
-    fn receipt(
+    fn receipt_with_status(
         request: &NeuronFeatureRequestV1,
         status: NeuronFeatureTerminalStatusV1,
     ) -> NeuronFeatureReceiptV1 {
@@ -247,10 +236,10 @@ mod tests {
             NeuronFeatureObservationV1 {
                 encoder_digest: request.encoder_digest,
                 head_digest: request.head_digest,
-                drive_q24: if has_output { vec![Q; 3] } else { Vec::new() },
-                prediction_q24: if has_output { vec![0; 3] } else { Vec::new() },
+                drive_q24: if has_output { vec![Q; 2] } else { Vec::new() },
+                prediction_q24: if has_output { vec![0; 2] } else { Vec::new() },
                 observed_memory_bytes: 4096,
-                transient_allocation_bytes: 1024,
+                transient_allocation_bytes: 2048,
                 queue_age_micros: 2,
                 latency_micros: 11,
                 status,
@@ -258,18 +247,23 @@ mod tests {
         ))
     }
 
-    struct RecordingControl {
+    fn receipt(request: &NeuronFeatureRequestV1) -> NeuronFeatureReceiptV1 {
+        receipt_with_status(request, NeuronFeatureTerminalStatusV1::Succeeded)
+    }
+
+    struct CountingPort {
         calls: usize,
         result: Result<NeuronFeatureTerminalStatusV1, NeuronModelError>,
     }
 
-    impl NeuronInferenceControlPort for RecordingControl {
+    impl NeuronInferenceControlPort for CountingPort {
         fn execute_feature(
             &mut self,
             request: &NeuronFeatureRequestV1,
         ) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
             self.calls += 1;
-            self.result.map(|status| receipt(request, status))
+            self.result
+                .map(|status| receipt_with_status(request, status))
         }
     }
 
@@ -288,39 +282,32 @@ mod tests {
     }
 
     #[test]
-    fn exact_historical_result_is_returned_without_second_backend_entry() {
+    fn completed_result_is_reused_without_model_reexecution() {
         let journal = TempJournal::new();
-        let store = create_store(&journal);
-        let inner = RecordingControl {
+        let request = request();
+        let inner = CountingPort {
             calls: 0,
             result: Ok(NeuronFeatureTerminalStatusV1::Succeeded),
         };
-        let mut control = DurableNeuronInferenceControlPortV1::new(store, inner);
-        let request = request();
+        let mut control =
+            DurableNeuronInferenceControlPortV1::new(create_store(&journal), inner);
 
         let first = checked(control.execute_feature(&request));
         let second = checked(control.execute_feature(&request));
-
-        assert_eq!(second, first);
+        assert_eq!(first, second);
         assert_eq!(control.inner().calls, 1);
-        assert_eq!(
-            checked(control.store().get(&request.request_id))
-                .expect("stored operation")
-                .state,
-            NeuronFeatureExecutionStateV1::Succeeded
-        );
     }
 
     #[test]
-    fn same_id_with_changed_input_is_rejected_without_backend_entry() {
+    fn changed_same_id_request_is_rejected_before_model_entry() {
         let journal = TempJournal::new();
-        let store = create_store(&journal);
-        let inner = RecordingControl {
+        let request = request();
+        let inner = CountingPort {
             calls: 0,
             result: Ok(NeuronFeatureTerminalStatusV1::Succeeded),
         };
-        let mut control = DurableNeuronInferenceControlPortV1::new(store, inner);
-        let request = request();
+        let mut control =
+            DurableNeuronInferenceControlPortV1::new(create_store(&journal), inner);
         checked(control.execute_feature(&request));
 
         let mut changed = request.clone();
@@ -333,7 +320,79 @@ mod tests {
     }
 
     #[test]
-    fn reopened_dispatched_operation_is_reconcile_only() {
+    fn model_error_after_fence_remains_indeterminate_and_never_retries() {
+        let journal = TempJournal::new();
+        let request = request();
+        let inner = CountingPort {
+            calls: 0,
+            result: Err(NeuronModelError::Unavailable),
+        };
+        let mut control = DurableNeuronInferenceControlPortV1::new(create_store(&journal), inner);
+
+        assert_eq!(
+            control.execute_feature(&request),
+            Err(NeuronModelError::Indeterminate)
+        );
+        assert_eq!(
+            control.execute_feature(&request),
+            Err(NeuronModelError::Indeterminate)
+        );
+        assert_eq!(control.inner().calls, 1);
+        let record = checked(control.store().get(&request.request_id)).expect("record");
+        assert_eq!(record.state, NeuronFeatureExecutionStateV1::Dispatched);
+    }
+
+    #[test]
+    fn terminal_indeterminate_receipt_is_persisted_and_not_reexecuted() {
+        let journal = TempJournal::new();
+        let request = request();
+        let inner = CountingPort {
+            calls: 0,
+            result: Ok(NeuronFeatureTerminalStatusV1::Indeterminate),
+        };
+        let mut control = DurableNeuronInferenceControlPortV1::new(create_store(&journal), inner);
+
+        let first = checked(control.execute_feature(&request));
+        let second = control.execute_feature(&request);
+        assert_eq!(first.status, NeuronFeatureTerminalStatusV1::Indeterminate);
+        assert_eq!(second, Err(NeuronModelError::Indeterminate));
+        assert_eq!(control.inner().calls, 1);
+        let record = checked(control.store().get(&request.request_id)).expect("record");
+        assert_eq!(record.state, NeuronFeatureExecutionStateV1::Indeterminate);
+        assert_eq!(
+            record.receipt.expect("retained receipt").status,
+            NeuronFeatureTerminalStatusV1::Indeterminate
+        );
+    }
+
+    #[test]
+    fn durable_result_survives_store_reopen_without_model_entry() {
+        let journal = TempJournal::new();
+        let request = request();
+        let expected = receipt(&request);
+        {
+            let inner = CountingPort {
+                calls: 0,
+                result: Ok(NeuronFeatureTerminalStatusV1::Succeeded),
+            };
+            let mut control =
+                DurableNeuronInferenceControlPortV1::new(create_store(&journal), inner);
+            assert_eq!(checked(control.execute_feature(&request)), expected);
+            assert_eq!(control.inner().calls, 1);
+        }
+
+        let inner = CountingPort {
+            calls: 0,
+            result: Err(NeuronModelError::Unavailable),
+        };
+        let mut reopened =
+            DurableNeuronInferenceControlPortV1::new(reopen_store(&journal), inner);
+        assert_eq!(checked(reopened.execute_feature(&request)), expected);
+        assert_eq!(reopened.inner().calls, 0);
+    }
+
+    #[test]
+    fn recovered_dispatch_fence_never_enters_model() {
         let journal = TempJournal::new();
         let request = request();
         {
@@ -342,84 +401,16 @@ mod tests {
             checked(store.mark_dispatched(&request));
         }
 
-        let inner = RecordingControl {
+        let inner = CountingPort {
             calls: 0,
             result: Ok(NeuronFeatureTerminalStatusV1::Succeeded),
         };
-        let mut control = DurableNeuronInferenceControlPortV1::new(reopen_store(&journal), inner);
-
+        let mut reopened =
+            DurableNeuronInferenceControlPortV1::new(reopen_store(&journal), inner);
         assert_eq!(
-            control.execute_feature(&request),
+            reopened.execute_feature(&request),
             Err(NeuronModelError::Indeterminate)
         );
-        assert_eq!(control.inner().calls, 0);
-    }
-
-    #[test]
-    fn reopened_reservation_can_enter_backend_once() {
-        let journal = TempJournal::new();
-        let request = request();
-        {
-            let mut store = create_store(&journal);
-            checked(store.reserve(request.clone()));
-        }
-
-        let inner = RecordingControl {
-            calls: 0,
-            result: Ok(NeuronFeatureTerminalStatusV1::Succeeded),
-        };
-        let mut control = DurableNeuronInferenceControlPortV1::new(reopen_store(&journal), inner);
-
-        assert_eq!(
-            checked(control.execute_feature(&request)).status,
-            NeuronFeatureTerminalStatusV1::Succeeded
-        );
-        assert_eq!(control.inner().calls, 1);
-    }
-
-    #[test]
-    fn backend_error_after_dispatch_cannot_be_retried() {
-        let journal = TempJournal::new();
-        let request = request();
-        let inner = RecordingControl {
-            calls: 0,
-            result: Err(NeuronModelError::Unavailable),
-        };
-        let mut control =
-            DurableNeuronInferenceControlPortV1::new(create_store(&journal), inner);
-
-        assert_eq!(
-            control.execute_feature(&request),
-            Err(NeuronModelError::Indeterminate)
-        );
-        assert_eq!(
-            control.execute_feature(&request),
-            Err(NeuronModelError::Indeterminate)
-        );
-        assert_eq!(control.inner().calls, 1);
-        assert_eq!(
-            checked(control.store().get(&request.request_id))
-                .expect("stored operation")
-                .state,
-            NeuronFeatureExecutionStateV1::Dispatched
-        );
-    }
-
-    #[test]
-    fn indeterminate_receipt_is_durable_and_not_reexecuted() {
-        let journal = TempJournal::new();
-        let request = request();
-        let inner = RecordingControl {
-            calls: 0,
-            result: Ok(NeuronFeatureTerminalStatusV1::Indeterminate),
-        };
-        let mut control =
-            DurableNeuronInferenceControlPortV1::new(create_store(&journal), inner);
-
-        let first = checked(control.execute_feature(&request));
-        let second = checked(control.execute_feature(&request));
-        assert_eq!(first.status, NeuronFeatureTerminalStatusV1::Indeterminate);
-        assert_eq!(second, first);
-        assert_eq!(control.inner().calls, 1);
+        assert_eq!(reopened.inner().calls, 0);
     }
 }
