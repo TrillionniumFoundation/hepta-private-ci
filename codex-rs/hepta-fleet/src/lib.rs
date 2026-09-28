@@ -76,6 +76,8 @@ pub use durable_model::MAX_DURABLE_HISTORY_ROWS;
 pub use durable_model::WorkspaceReservationV1;
 pub use durable_store::DurableFleetStore;
 pub use error::FleetRegistryError;
+pub use lease_model::AllocationGrant;
+pub use lease_model::HostObservation;
 pub use model::AGENT_MANIFEST_SCHEMA_VERSION;
 pub use model::AGENT_STATE_SCHEMA_VERSION;
 pub use model::AgentLifecycle;
