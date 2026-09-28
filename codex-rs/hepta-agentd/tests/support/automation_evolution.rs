@@ -341,7 +341,22 @@ async fn normal_due_automation_reaches_app_server_terminal_and_does_not_replay_a
     let deadline = Instant::now() + Duration::from_secs(20);
     let terminal = loop {
         let tasks = control.automation_list(4).await?;
-        let snapshot = product.read_thread(&thread).await?;
+        let snapshot = match product.read_thread(&thread).await {
+            Ok(snapshot) => snapshot,
+            // Thread creation is lazy: before the first admitted user message
+            // App Server explicitly refuses includeTurns. This is not a
+            // terminal result and must not be confused with missing history
+            // after a completed operation or any other transport/read failure.
+            Err(error) if error.to_string().contains(
+                "is not materialized yet; includeTurns is unavailable before first user message",
+            ) => {
+                ensure!(Instant::now() < deadline,
+                    "due task never materialized the owning thread: {error:#}; tasks={tasks:?}");
+                tokio::time::sleep(Duration::from_millis(25)).await;
+                continue;
+            }
+            Err(error) => return Err(error),
+        };
         // The task's Completed state records queue admission. Require an
         // independently observed App Server terminal, not an ACK-as-success.
         if tasks.iter().any(|value| {
