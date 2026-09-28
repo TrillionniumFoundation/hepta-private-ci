@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import asdict
+import hashlib
 import json
 from pathlib import Path
+import subprocess
 import time
 
 from .production_adapters import (
@@ -27,11 +29,41 @@ def _unique_pairs(items):
     return result
 
 
+def _normalized_public_key_digest(path: Path) -> str:
+    if not path.is_absolute() or not path.is_file() or path.is_symlink():
+        raise ValueError("public key path must be an absolute regular file")
+    try:
+        result = subprocess.run(
+            [
+                "/usr/bin/openssl",
+                "pkey",
+                "-pubin",
+                "-in",
+                str(path),
+                "-outform",
+                "DER",
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            timeout=10,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise ValueError("public key normalization failed") from error
+    if result.returncode != 0 or not result.stdout or len(result.stdout) > 1_048_576:
+        raise ValueError("public key normalization failed")
+    return hashlib.sha256(result.stdout).hexdigest()
+
+
 def _load_bindings(path: Path) -> dict[tuple[str, str], PublicKeyBinding]:
+    if not path.is_file() or path.is_symlink():
+        raise ValueError("public key manifest must be a regular file")
     value = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=_unique_pairs)
     if not isinstance(value, list) or not value:
         raise ValueError("public key manifest must be a nonempty array")
     result: dict[tuple[str, str], PublicKeyBinding] = {}
+    fingerprints: dict[str, tuple[str, str]] = {}
     for row in value:
         if not isinstance(row, dict):
             raise ValueError("invalid public key manifest row")
@@ -44,7 +76,16 @@ def _load_bindings(path: Path) -> dict[tuple[str, str], PublicKeyBinding]:
         key = (issuer, identity)
         if key in result:
             raise ValueError("duplicate public key identity")
-        result[key] = PublicKeyBinding(public_key_path, algorithm)
+        key_path = Path(public_key_path)
+        fingerprint = _normalized_public_key_digest(key_path)
+        reused_by = fingerprints.get(fingerprint)
+        if reused_by is not None:
+            raise ValueError(
+                "public key material reused across identities: "
+                f"{reused_by[0]}/{reused_by[1]} and {issuer}/{identity}"
+            )
+        fingerprints[fingerprint] = key
+        result[key] = PublicKeyBinding(str(key_path), algorithm)
     return result
 
 

@@ -1,7 +1,7 @@
 """Fail-closed adapters for externally governed production evidence.
 
 The repository cannot manufacture distributed consensus, immutable audit storage,
-HSM/KMS custody, deployment observation or operator acceptance.  It can define a
+HSM/KMS custody, deployment observation or operator acceptance. It can define a
 bounded HTTPS transport, verify role-separated externally signed receipts and emit
 one evidence decision whose authority fields remain false.
 """
@@ -36,6 +36,7 @@ REQUIRED_EXTERNAL_ROLES = (
     "independent_ci_completion",
     "integration_terminal_observer",
     "target_deployment_observer",
+    "backup_restore_rehearsal_observer",
     "rollback_rehearsal_observer",
     "operator_acceptance",
 )
@@ -75,6 +76,7 @@ class ProductionEvidenceDecision:
     evidence_digest: str
     production_evidence_complete: bool
     deployment_observed: bool
+    backup_restore_rehearsed: bool
     rollback_rehearsed: bool
     operator_accepted: bool
     runtime_authority: bool = False
@@ -358,18 +360,38 @@ def verify_external_production_bundle(
         True,
         True,
         True,
+        True,
     )
 
 
+def _unique_json_pairs(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise EngineeringError("external_evidence_duplicate_json_key")
+        result[key] = value
+    return result
+
+
 def load_external_receipts(path: str | Path) -> dict[str, ExternalProductionReceipt]:
+    receipt_path = Path(path)
     try:
-        raw = Path(path).read_bytes()
+        if not receipt_path.is_file() or receipt_path.is_symlink():
+            raise EngineeringError("external_evidence_file")
+        raw = receipt_path.read_bytes()
+    except EngineeringError:
+        raise
     except OSError as error:
         raise EngineeringError("external_evidence_file") from error
     if not raw or len(raw) > MAX_EXTERNAL_RECEIPT_BYTES:
         raise EngineeringError("external_evidence_file")
     try:
-        value = json.loads(raw.decode("utf-8"))
+        value = json.loads(
+            raw.decode("utf-8"),
+            object_pairs_hook=_unique_json_pairs,
+        )
+    except EngineeringError:
+        raise
     except (UnicodeDecodeError, json.JSONDecodeError):
         raise EngineeringError("external_evidence_file") from None
     if not isinstance(value, dict):

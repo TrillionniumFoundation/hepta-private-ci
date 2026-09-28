@@ -1,18 +1,21 @@
 from dataclasses import replace
 from pathlib import Path
 import base64
+import json
 import subprocess
 import tempfile
 import unittest
 
 from control_engineering_v2 import HmacTrustStore
 from control_engineering_v2.control_plane import EngineeringError
+from control_engineering_v2.production_acceptance import _load_bindings
 from control_engineering_v2.production_adapters import (
     ExternalProductionReceipt,
     OpenSslPublicKeyTrustStore,
     ProductionEvidenceDecision,
     PublicKeyBinding,
     REQUIRED_EXTERNAL_ROLES,
+    load_external_receipts,
     verify_external_production_bundle,
 )
 
@@ -65,6 +68,9 @@ class ExternalProductionAdapterTests(unittest.TestCase):
         self.assertIsInstance(decision, ProductionEvidenceDecision)
         self.assertTrue(decision.production_evidence_complete)
         self.assertTrue(decision.deployment_observed)
+        self.assertTrue(decision.backup_restore_rehearsed)
+        self.assertTrue(decision.rollback_rehearsed)
+        self.assertIn("backup_restore_rehearsal_observer", decision.verified_roles)
         self.assertFalse(decision.runtime_authority)
         self.assertFalse(decision.release_authority)
 
@@ -109,7 +115,28 @@ class ExternalProductionAdapterTests(unittest.TestCase):
                 now_ns=self.now + 1,
             )
 
-    def test_openssl_ed25519_verifier_is_read_only(self):
+    def test_receipt_file_rejects_duplicate_keys_and_symlink(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            duplicate = root / "duplicate.json"
+            duplicate.write_text(
+                '{"operator_acceptance": {}, "operator_acceptance": {}}',
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                EngineeringError,
+                "external_evidence_duplicate_json_key",
+            ):
+                load_external_receipts(duplicate)
+
+            target = root / "receipts.json"
+            target.write_text("{}\n", encoding="utf-8")
+            link = root / "receipts-link.json"
+            link.symlink_to(target)
+            with self.assertRaisesRegex(EngineeringError, "external_evidence_file"):
+                load_external_receipts(link)
+
+    def test_openssl_ed25519_verifier_is_read_only_and_key_material_is_unique(self):
         if not Path("/usr/bin/openssl").is_file():
             self.skipTest("OpenSSL unavailable")
         with tempfile.TemporaryDirectory() as temporary:
@@ -134,35 +161,97 @@ class ExternalProductionAdapterTests(unittest.TestCase):
                 "nonce",
             )
             from control_engineering_v2.evidence import HmacTrustStore as PayloadCodec
+
             payload.write_bytes(PayloadCodec.payload(value))
             subprocess.run(
-                ["/usr/bin/openssl", "genpkey", "-algorithm", "ED25519", "-out", str(private_key)],
-                check=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-            subprocess.run(
-                ["/usr/bin/openssl", "pkey", "-in", str(private_key), "-pubout", "-out", str(public_key)],
+                [
+                    "/usr/bin/openssl",
+                    "genpkey",
+                    "-algorithm",
+                    "ED25519",
+                    "-out",
+                    str(private_key),
+                ],
                 check=True,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
             subprocess.run(
                 [
-                    "/usr/bin/openssl", "pkeyutl", "-sign", "-inkey", str(private_key),
-                    "-rawin", "-in", str(payload), "-out", str(signature),
+                    "/usr/bin/openssl",
+                    "pkey",
+                    "-in",
+                    str(private_key),
+                    "-pubout",
+                    "-out",
+                    str(public_key),
                 ],
                 check=True,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
-            signed = replace(value, signature=base64.b64encode(signature.read_bytes()).decode())
-            trust = OpenSslPublicKeyTrustStore(
-                {("operator-authority", "operator-key"): PublicKeyBinding(str(public_key), "ed25519")}
+            subprocess.run(
+                [
+                    "/usr/bin/openssl",
+                    "pkeyutl",
+                    "-sign",
+                    "-inkey",
+                    str(private_key),
+                    "-rawin",
+                    "-in",
+                    str(payload),
+                    "-out",
+                    str(signature),
+                ],
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
             )
-            self.assertTrue(trust.verify(signed, signed.issuer, signed.signing_identity, signed.signature))
+            signed = replace(
+                value,
+                signature=base64.b64encode(signature.read_bytes()).decode(),
+            )
+            trust = OpenSslPublicKeyTrustStore(
+                {
+                    ("operator-authority", "operator-key"): PublicKeyBinding(
+                        str(public_key),
+                        "ed25519",
+                    )
+                }
+            )
+            self.assertTrue(
+                trust.verify(
+                    signed,
+                    signed.issuer,
+                    signed.signing_identity,
+                    signed.signature,
+                )
+            )
             with self.assertRaisesRegex(RuntimeError, "external_private_key_unavailable"):
                 trust.sign(signed, signed.issuer, signed.signing_identity)
+
+            manifest = root / "public-keys.json"
+            manifest.write_text(
+                json.dumps(
+                    [
+                        {
+                            "issuer": "role-a",
+                            "signingIdentity": "identity-a",
+                            "publicKeyPath": str(public_key),
+                            "algorithm": "ed25519",
+                        },
+                        {
+                            "issuer": "role-b",
+                            "signingIdentity": "identity-b",
+                            "publicKeyPath": str(public_key),
+                            "algorithm": "ed25519",
+                        },
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "reused across identities"):
+                _load_bindings(manifest)
 
 
 if __name__ == "__main__":
