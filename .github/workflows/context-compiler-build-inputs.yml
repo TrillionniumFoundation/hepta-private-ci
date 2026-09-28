@@ -11,6 +11,35 @@ permissions:
 
 # Developer inputs only. This job never repairs source or grants qualification.
 jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Export immutable tracked source without Git credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/context-source-inputs"
+          mkdir -p "$output"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git archive --format=tar HEAD | gzip -n > "$output/source.tar.gz"
+          git rev-parse HEAD > "$output/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$output/source-tree.txt"
+          (cd "$output" && sha256sum source.tar.gz > SHA256SUMS)
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: context-compiler-source-${{ github.sha }}
+          path: ${{ runner.temp }}/context-source-inputs/
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
   compiler:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
