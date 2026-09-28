@@ -122,10 +122,8 @@ fn percentile(
     if total == 0 {
         return 0;
     }
-    let target = u64::try_from(
-        (u128::from(total) * u128::from(percentile)).div_ceil(100),
-    )
-    .unwrap_or(u64::MAX);
+    let numerator = u128::from(total) * u128::from(percentile) + 99;
+    let target = u64::try_from(numerator / 100).unwrap_or(u64::MAX);
     let mut cumulative = 0_u64;
     for (index, count) in counts.iter().copied().enumerate() {
         cumulative = cumulative.saturating_add(count);
@@ -171,6 +169,10 @@ impl AuthBusRuntimeMetrics {
         }
     }
 
+    pub(crate) fn record_authority_use_block(&self) {
+        self.authority_use_blocks.fetch_add(1, Ordering::Relaxed);
+    }
+
     pub(crate) fn record_mutation<T>(
         &self,
         duration: Duration,
@@ -183,7 +185,7 @@ impl AuthBusRuntimeMetrics {
         };
         match error {
             AuthBusAuthorityError::AuthorityUseBlocked(_) => {
-                self.authority_use_blocks.fetch_add(1, Ordering::Relaxed);
+                self.record_authority_use_block();
             }
             AuthBusAuthorityError::CheckpointReconciliationRequired(_) => {
                 self.mutation_committed_reconciliation_required
@@ -211,6 +213,10 @@ impl AuthBusRuntimeMetrics {
             Ok((false, _)) => {
                 self.recovery_incomplete_ticks
                     .fetch_add(1, Ordering::Relaxed);
+            }
+            Err(AuthBusAuthorityError::AuthorityUseBlocked(_)) => {
+                self.record_authority_use_block();
+                self.maintenance_failures.fetch_add(1, Ordering::Relaxed);
             }
             Err(_) => {
                 self.maintenance_failures.fetch_add(1, Ordering::Relaxed);
