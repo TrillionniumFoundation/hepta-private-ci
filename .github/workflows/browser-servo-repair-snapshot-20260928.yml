@@ -31,12 +31,13 @@ jobs:
           git archive --format=tar.gz HEAD > "$RUNNER_TEMP/browser-repair/source.tar.gz"
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/browser-repair/source-identity.txt"
           git ls-tree -r HEAD > "$RUNNER_TEMP/browser-repair/source-tree.txt"
-          for run in 36375483629 36375483674 36375483680 36375483707; do
+          sha256sum "$RUNNER_TEMP/browser-repair/source.tar.gz" > "$RUNNER_TEMP/browser-repair/source.sha256"
+          for run in 36375483629 36375483673 36375483680 36375483726; do
             gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run/jobs?per_page=100" > "$RUNNER_TEMP/browser-repair/jobs-$run.json"
             gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run/logs" > "$RUNNER_TEMP/browser-repair/logs-$run.zip"
           done
-          sha256sum "$RUNNER_TEMP/browser-repair/source.tar.gz" > "$RUNNER_TEMP/browser-repair/source.sha256"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
         with:
           name: browser-servo-repair-source-4b6e8af177
           path: ${{ runner.temp }}/browser-repair
