@@ -1,4 +1,6 @@
 import json
+import os
+import sys
 import subprocess
 import tomllib
 import tempfile
@@ -330,6 +332,52 @@ class ExactModuleRiskTests(unittest.TestCase):
         self.assertEqual(
             assess_changes(self.root, [self.source], self.base, head)[0], "ordinary"
         )
+
+    def test_prose_scope_runs_through_python_module_entry(self):
+        self.put("docs/notes.md", "ordinary prose\n")
+        head = self.commit()
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "scripts.hepta_ci_risk",
+                "--base",
+                self.base,
+                "--head",
+                head,
+            ],
+            cwd=self.root,
+            env={**os.environ, "PYTHONPATH": str(ROOT), "PYTHONDONTWRITEBYTECODE": "1"},
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        report = json.loads(result.stdout)
+        self.assertEqual(report["risk"], "ordinary")
+        self.assertEqual(report["lanes"], ["source-head"])
+        self.assertFalse(report["scope"]["native"])
+
+    def test_canonical_catalog_cannot_fall_back_to_empty_legacy_projection(self):
+        self.put(
+            "docs/modules/registry.toml",
+            'schema = "hepta.module-manifest-registry.v1"\n',
+        )
+        self.put("docs/modules/MODULES.json", '{"modules": []}')
+        (self.root / self.manifest).unlink()
+        with self.assertRaisesRegex(ValueError, "no module manifests"):
+            self.risk([self.manifest])
+
+    def test_malformed_authority_cannot_acquire_ordinary_classification(self):
+        original = (self.root / self.manifest).read_text()
+        for replacement in (
+            "writes = [1]",
+            'writes = [""]',
+            'writes = ["fact", "fact"]',
+        ):
+            with self.subTest(replacement=replacement):
+                self.put(self.manifest, original.replace("writes = []", replacement))
+                with self.assertRaisesRegex(ValueError, "invalid module authority"):
+                    self.risk([self.manifest])
 
     def test_duplicate_package_owner_is_rejected(self):
         self.put(

@@ -69,6 +69,8 @@ def load_catalog(
         )
     names = sorted(path for path in paths if MANIFEST.fullmatch(path))
     legacy = not names
+    if legacy and "docs/modules/registry.toml" in paths:
+        raise ValueError("canonical module registry has no module manifests")
     if legacy:
         names = [
             p
@@ -111,14 +113,28 @@ def load_catalog(
     seen_roots = {}
     for path, row in documents.items():
         match = MANIFEST.fullmatch(path)
+        if not isinstance(row, dict):
+            raise ValueError(f"invalid module object: {path}")
         if not legacy and row.get("schema") != "hepta.module-manifest.v1":
             raise ValueError(f"unsupported module schema: {path}")
         if not match or row.get("id") != match[1]:
             raise ValueError(f"module identity does not match path: {path}")
-        if row.get("state") not in READ_ONLY_STATES | STATEFUL_STATES:
+        if (
+            not isinstance(row.get("state"), str)
+            or row["state"] not in READ_ONLY_STATES | STATEFUL_STATES
+        ):
             raise ValueError(f"unknown module state: {path}")
-        if not isinstance(row.get("writes"), list) or not isinstance(
-            row.get("owner"), str
+        owner, writes = row.get("owner"), row.get("writes")
+        if (
+            not isinstance(owner, str)
+            or not owner
+            or owner.strip() != owner
+            or not isinstance(writes, list)
+            or any(
+                not isinstance(domain, str) or not domain or domain.strip() != domain
+                for domain in writes
+            )
+            or len(writes) != len(set(writes))
         ):
             raise ValueError(f"invalid module authority: {path}")
         packages = row.get("cargoPackages", [])

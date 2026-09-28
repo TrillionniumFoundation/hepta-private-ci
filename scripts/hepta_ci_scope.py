@@ -263,7 +263,12 @@ def include_input_scope(
     static_paths = [path for path in paths if not select([path])["native"]]
     if not static_paths:
         return scope
-    from hepta_ci_dependencies import graph, select_packages
+    try:
+        from scripts.hepta_ci_dependencies import graph, select_packages
+    except ModuleNotFoundError as error:
+        if error.name != "scripts":
+            raise
+        from hepta_ci_dependencies import graph, select_packages
     import tomllib
 
     # An invalid candidate graph is a failure, never an empty test plan.
