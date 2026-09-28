@@ -20,6 +20,7 @@ mod durable_grant_tx;
 mod durable_grants;
 mod durable_metrics;
 mod durable_model;
+mod durable_product;
 mod durable_receipt;
 mod durable_revocation;
 mod durable_rows;
