@@ -6,6 +6,7 @@ use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronModelError;
 use codex_hepta_neuron::WitnessStoreError;
 
+use super::AgentdDurableNeuronOwner;
 use super::AgentdNeuronOwner;
 
 struct StubWitness;
@@ -46,4 +47,13 @@ impl NeuronInferenceControlPort for StubInferenceControl {
 fn agentd_neuron_owner_is_a_compiled_product_surface() {
     let name = std::any::type_name::<AgentdNeuronOwner<StubWitness, StubInferenceControl>>();
     assert!(name.contains("AgentdNeuronOwner"));
+}
+
+#[test]
+fn agentd_durable_neuron_owner_is_the_existing_product_owner_shape() {
+    let name = std::any::type_name::<
+        AgentdDurableNeuronOwner<StubWitness, StubInferenceControl>,
+    >();
+    assert!(name.contains("AgentdNeuronOwner"));
+    assert!(name.contains("DurableNeuronInferenceControlPortV1"));
 }
