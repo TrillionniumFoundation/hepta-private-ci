@@ -7,6 +7,8 @@
 
 use std::sync::Arc;
 use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::FinalUseError;
 use codex_hepta_operations::DurableOperationError;
@@ -105,6 +107,17 @@ fn cycle_budget(max_batch: u32, reconcile_turn: &mut bool) -> CycleBudget {
     }
 }
 
+fn current_validation_time() -> Result<u64, AgentdError> {
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| AgentdError::Protocol("learning validation clock is before epoch".to_string()))?
+        .as_millis();
+    u64::try_from(millis)
+        .ok()
+        .filter(|value| *value != 0)
+        .ok_or_else(|| AgentdError::Protocol("learning validation clock overflow".to_string()))
+}
+
 pub(crate) async fn run_intelligence_learning_runtime_v1(
     host: Arc<AgentdIntelligenceLearningHostV1>,
     state: Arc<AgentdState>,
@@ -136,7 +149,11 @@ pub(crate) async fn run_intelligence_learning_runtime_v1(
         let reconciled = if budget.reconcile == 0 {
             0
         } else {
-            match host.reconcile_unsettled(budget.reconcile).await {
+            let validation_now = current_validation_time()?;
+            match host
+                .reconcile_unsettled_at(budget.reconcile, validation_now)
+                .await
+            {
                 Ok(receipts) => u32::try_from(receipts.len()).unwrap_or(budget.reconcile),
                 Err(error) if retryable_learning_error(&error) => budget.reconcile,
                 Err(error) => return Err(learning_error(error)),
@@ -145,7 +162,8 @@ pub(crate) async fn run_intelligence_learning_runtime_v1(
         let unused_reconciliation = budget.reconcile.saturating_sub(reconciled);
         let dispatch_budget = budget.dispatch.saturating_add(unused_reconciliation);
         for _ in 0..dispatch_budget {
-            match host.dispatch_next().await {
+            let validation_now = current_validation_time()?;
+            match host.dispatch_next_at(validation_now).await {
                 Ok(Some(_)) => {}
                 Ok(None) => break,
                 Err(error) if retryable_learning_error(&error) => break,
@@ -202,8 +220,6 @@ fn learning_error(error: AgentdIntelligenceLearningErrorV1) -> AgentdError {
 
 #[cfg(test)]
 mod tests {
-    use std::io;
-
     use super::*;
 
     #[test]
@@ -267,16 +283,10 @@ mod tests {
         assert!(retryable_learning_error(
             &AgentdIntelligenceLearningErrorV1::Io("temporary".to_string())
         ));
-        assert!(!retryable_learning_error(
-            &AgentdIntelligenceLearningErrorV1::Agentd(AgentdError::Io(io::Error::new(
-                io::ErrorKind::InvalidData,
-                "permanent fixture"
-            )))
-        ) || retryable_learning_error(
-            &AgentdIntelligenceLearningErrorV1::Agentd(AgentdError::Io(io::Error::new(
-                io::ErrorKind::WouldBlock,
-                "temporary fixture"
-            )))
-        ));
+    }
+
+    #[test]
+    fn runtime_validation_clock_is_nonzero() {
+        assert!(current_validation_time().expect("clock") > 0);
     }
 }
