@@ -16,6 +16,7 @@ pub enum ConsumerConvergenceStateV1 {
     CanonicalAuthoritative,
     CanonicalShadow,
     RegisteredPendingCutover,
+    LegacyRetired,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

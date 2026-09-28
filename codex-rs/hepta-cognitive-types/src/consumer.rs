@@ -9,6 +9,8 @@ use std::fmt;
 
 use codex_hepta_types::Digest32;
 
+use crate::consumer_adapters::ConsumerConvergenceStateV1;
+use crate::consumer_adapters::registered_consumer_v1;
 use crate::hnmf::ContractDigestV1;
 use crate::hnmf::ContractIdV1;
 use crate::hnmf::MemoryEventV1;
@@ -124,6 +126,7 @@ impl CanonicalConsumerBindingV1 {
     }
 
     pub fn validate(&self) -> Result<(), CanonicalConsumerBindingError> {
+        authorize_migration_posture_v1(self.consumer, self.migration_posture)?;
         match self.migration_posture {
             CanonicalMigrationPostureV1::CompatibilityBound
                 if self.compatibility_payload_sha256.is_none() =>
@@ -172,6 +175,43 @@ impl CanonicalConsumerBindingV1 {
         bytes.push(self.migration_posture.code());
         bytes.push(u8::from(self.currentness_revalidation_required));
         digest(Digest32::of_bytes(&bytes))
+    }
+}
+
+/// Fail closed when a caller tries to promote or retire a consumer by choosing
+/// a posture in the request. The reviewed registry state, not the payload
+/// producer, authorizes migration. Current shadow and pending-cutover consumers
+/// therefore require an exact compatibility digest.
+pub fn authorize_migration_posture_v1(
+    consumer: CanonicalConsumerV1,
+    posture: CanonicalMigrationPostureV1,
+) -> Result<(), CanonicalConsumerBindingError> {
+    let registration = registered_consumer_v1(consumer.as_str()).ok_or(
+        CanonicalConsumerBindingError::ConsumerNotRegistered { consumer },
+    )?;
+    let authorized = match registration.state {
+        ConsumerConvergenceStateV1::CanonicalShadow
+        | ConsumerConvergenceStateV1::RegisteredPendingCutover => {
+            matches!(posture, CanonicalMigrationPostureV1::CompatibilityBound)
+        }
+        ConsumerConvergenceStateV1::CanonicalAuthoritative => matches!(
+            posture,
+            CanonicalMigrationPostureV1::Native
+                | CanonicalMigrationPostureV1::CompatibilityBound
+        ),
+        ConsumerConvergenceStateV1::LegacyRetired => matches!(
+            posture,
+            CanonicalMigrationPostureV1::Native | CanonicalMigrationPostureV1::LegacyRetired
+        ),
+    };
+    if authorized {
+        Ok(())
+    } else {
+        Err(CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
+            consumer,
+            posture,
+            state: registration.state,
+        })
     }
 }
 
@@ -284,6 +324,14 @@ pub enum CanonicalConsumerBindingError {
     CompatibilityDigestRequired,
     UnexpectedCompatibilityDigest,
     CurrentnessRevalidationRequired,
+    ConsumerNotRegistered {
+        consumer: CanonicalConsumerV1,
+    },
+    MigrationPostureNotAuthorized {
+        consumer: CanonicalConsumerV1,
+        posture: CanonicalMigrationPostureV1,
+        state: ConsumerConvergenceStateV1,
+    },
     ConsumerPayloadMismatch {
         consumer: CanonicalConsumerV1,
         payload: CanonicalPayloadKindV1,

@@ -107,6 +107,62 @@ fn compatibility_binding_is_exact_and_currentness_required() {
 }
 
 #[test]
+fn every_registered_consumer_requires_registry_authorized_migration_posture() {
+    for consumer in CanonicalConsumerV1::ALL {
+        let registration = registered_consumer_v1(consumer.as_str()).expect("registered consumer");
+        assert!(matches!(
+            registration.state,
+            ConsumerConvergenceStateV1::CanonicalShadow
+                | ConsumerConvergenceStateV1::RegisteredPendingCutover
+        ));
+        authorize_migration_posture_v1(
+            consumer,
+            CanonicalMigrationPostureV1::CompatibilityBound,
+        )
+        .expect("compatibility-bound migration remains authorized");
+        assert_eq!(
+            authorize_migration_posture_v1(consumer, CanonicalMigrationPostureV1::Native),
+            Err(CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
+                consumer,
+                posture: CanonicalMigrationPostureV1::Native,
+                state: registration.state,
+            })
+        );
+        assert_eq!(
+            authorize_migration_posture_v1(
+                consumer,
+                CanonicalMigrationPostureV1::LegacyRetired,
+            ),
+            Err(CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
+                consumer,
+                posture: CanonicalMigrationPostureV1::LegacyRetired,
+                state: registration.state,
+            })
+        );
+    }
+}
+
+#[test]
+fn binding_constructor_cannot_self_promote_a_pending_consumer() {
+    assert_eq!(
+        bind_recall_packet_consumer_v1(
+            id("operation:self-promote"),
+            CanonicalConsumerV1::MemoryRetrieval,
+            &recall(),
+            digest('5').digest(),
+            digest('6').digest(),
+            None,
+            CanonicalMigrationPostureV1::Native,
+        ),
+        Err(CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
+            consumer: CanonicalConsumerV1::MemoryRetrieval,
+            posture: CanonicalMigrationPostureV1::Native,
+            state: ConsumerConvergenceStateV1::RegisteredPendingCutover,
+        })
+    );
+}
+
+#[test]
 fn payload_consumer_matrix_fails_closed() {
     assert!(
         bind_recall_packet_consumer_v1(
@@ -115,8 +171,8 @@ fn payload_consumer_matrix_fails_closed() {
             &recall(),
             digest('5').digest(),
             digest('6').digest(),
-            None,
-            CanonicalMigrationPostureV1::Native,
+            Some(digest('7').digest()),
+            CanonicalMigrationPostureV1::CompatibilityBound,
         )
         .is_err()
     );
