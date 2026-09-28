@@ -26,7 +26,7 @@ env:
 jobs:
   materialize:
     name: Materialize and gate final hardening
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 90
     steps:
       - name: Checkout exact candidate
