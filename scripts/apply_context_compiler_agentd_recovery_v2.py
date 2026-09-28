@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Activate schema-3 terminal-only recovery on the post-V3 Agentd source."""
+"""Activate schema-3 terminal-only recovery on the materialized V3 Agentd source."""
 
 from pathlib import Path
 
@@ -12,6 +12,17 @@ def replace(path: str, old: str, new: str) -> None:
     count = text.count(old)
     if count != 1:
         raise SystemExit(f"{path}: expected exactly one anchor, found {count}: {old[:120]!r}")
+    target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+
+def replace_one_of(path: str, variants: tuple[str, ...], new: str) -> None:
+    target = ROOT / path
+    text = target.read_text(encoding="utf-8")
+    matches = [(old, text.count(old)) for old in variants if text.count(old)]
+    if len(matches) != 1 or matches[0][1] != 1:
+        detail = ", ".join(str(count) for _, count in matches) or "none"
+        raise SystemExit(f"{path}: expected one compatible anchor, found {detail}")
+    old = matches[0][0]
     target.write_text(text.replace(old, new, 1), encoding="utf-8")
 
 
@@ -41,14 +52,25 @@ replace(
     "const MAX_RECOVERY_ARCHIVE_BYTES: usize = 64 * 1024;",
 )
 
-replace(
+replace_one_of(
     exact,
-    '''        let intent = provider_intent(&request.attempt)?;
+    (
+        '''        let intent = provider_intent(&request.attempt)?;
         check_send_time(now_unix_ms, current_unix_ms()?, request.attachment.deadline_ms)?;
         let pre_send = StoredPreSend::new(
             &request, &fresh, &final_request_proof, &intent, now_unix_ms,
         )?;
 ''',
+        '''        let intent = provider_intent(&request.attempt)?;
+        check_send_time(
+            now_unix_ms,
+            current_unix_ms()?,
+            request.attachment.deadline_ms,
+        )?;
+        let pre_send =
+            StoredPreSend::new(&request, &fresh, &final_request_proof, &intent, now_unix_ms)?;
+''',
+    ),
     '''        let intent = provider_intent(&request.attempt)?;
         let recovery = build_delivery_recovery_binding_v2(
             &fresh.preparation,
@@ -59,7 +81,11 @@ replace(
             &intent,
         )
         .map_err(|_| ExactContextDeliveryError::InvalidProof)?;
-        check_send_time(now_unix_ms, current_unix_ms()?, request.attachment.deadline_ms)?;
+        check_send_time(
+            now_unix_ms,
+            current_unix_ms()?,
+            request.attachment.deadline_ms,
+        )?;
         let pre_send = StoredPreSend::new(
             &request,
             &fresh,
@@ -261,9 +287,10 @@ replace(
         1 if state.observations.is_empty() => {}
 ''',
 )
-replace(
+replace_one_of(
     terminal,
-    '''        for digest in [pre_send.provider_intent_digest, pre_send.registry_snapshot_digest,
+    (
+        '''        for digest in [pre_send.provider_intent_digest, pre_send.registry_snapshot_digest,
             pre_send.final_use_materialization_digest, pre_send.preparation_digest,
             pre_send.final_request_proof_digest, pre_send.provider_request_digest,
             pre_send.provider_wire_semantic_digest, pre_send.tokenizer_identity_digest,
@@ -272,13 +299,48 @@ replace(
             if digest == [0; 32] { return Err(ExactContextDeliveryError::CorruptState); }
         }
 ''',
-    '''        for digest in [pre_send.provider_intent_digest, pre_send.authority_snapshot_digest,
+        '''        for digest in [
+            pre_send.provider_intent_digest,
+            pre_send.registry_snapshot_digest,
+            pre_send.final_use_materialization_digest,
+            pre_send.preparation_digest,
+            pre_send.final_request_proof_digest,
+            pre_send.provider_request_digest,
+            pre_send.provider_wire_semantic_digest,
+            pre_send.tokenizer_identity_digest,
+            pre_send.tokenization_receipt_digest,
+            pre_send.segment_map_digest,
+        ] {
+            if digest == [0; 32] {
+                return Err(ExactContextDeliveryError::CorruptState);
+            }
+        }
+''',
+        '''        for digest in [pre_send.provider_intent_digest, pre_send.authority_snapshot_digest,
             pre_send.preparation_binding_digest, pre_send.preparation_digest,
             pre_send.final_request_proof_digest, pre_send.provider_request_digest,
             pre_send.provider_wire_semantic_digest, pre_send.tokenizer_identity_digest,
             pre_send.tokenization_receipt_digest, pre_send.segment_map_digest]
         {
             if digest == [0; 32] { return Err(ExactContextDeliveryError::CorruptState); }
+        }
+''',
+    ),
+    '''        for digest in [
+            pre_send.provider_intent_digest,
+            pre_send.authority_snapshot_digest,
+            pre_send.preparation_binding_digest,
+            pre_send.preparation_digest,
+            pre_send.final_request_proof_digest,
+            pre_send.provider_request_digest,
+            pre_send.provider_wire_semantic_digest,
+            pre_send.tokenizer_identity_digest,
+            pre_send.tokenization_receipt_digest,
+            pre_send.segment_map_digest,
+        ] {
+            if digest == [0; 32] {
+                return Err(ExactContextDeliveryError::CorruptState);
+            }
         }
         match &pre_send.recovery_archive {
             Some(archive) => {
