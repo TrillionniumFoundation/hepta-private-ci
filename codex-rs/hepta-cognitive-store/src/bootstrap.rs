@@ -46,9 +46,7 @@ pub struct CognitiveBootstrapTrustV1 {
 
 impl CognitiveBootstrapTrustV1 {
     pub fn validate(&self) -> Result<(), CognitiveBootstrapContractError> {
-        if self.schema_version != COGNITIVE_BOOTSTRAP_SCHEMA_VERSION
-            || self.signer_key_epoch == 0
-        {
+        if self.schema_version != COGNITIVE_BOOTSTRAP_SCHEMA_VERSION || self.signer_key_epoch == 0 {
             return Err(CognitiveBootstrapContractError::invalid(
                 "invalid cognitive bootstrap trust schema or key epoch",
             ));
@@ -107,10 +105,7 @@ impl CognitiveAuthorityStateV1 {
                 "authority state successor requires a predecessor digest",
             ));
         }
-        if self
-            .predecessor_state_sha256
-            .is_some_and(Digest32::is_zero)
-        {
+        if self.predecessor_state_sha256.is_some_and(Digest32::is_zero) {
             return Err(CognitiveBootstrapContractError::invalid(
                 "authority predecessor digest cannot be zero",
             ));
