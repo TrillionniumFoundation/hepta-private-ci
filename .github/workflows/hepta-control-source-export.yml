@@ -1,0 +1,54 @@
+name: Hepta control engineering source export
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hepta-control-source-export.yml'
+      - '.github/workflows/blocking-ci.yml'
+      - 'scripts/**'
+      - 'tools/hepta-engineering-control/**'
+      - 'docs/modules/control.engineering/**'
+      - 'docs/modules/**'
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind and export exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          mkdir -p "$RUNNER_TEMP/control-source"
+          git rev-parse HEAD > "$RUNNER_TEMP/control-source/source-head.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/control-source/source-tree.txt"
+          git archive --format=tar.gz \
+            --output "$RUNNER_TEMP/control-source/source.tar.gz" \
+            HEAD \
+            .github/actions \
+            .github/scripts \
+            .github/workflows/blocking-ci.yml \
+            scripts \
+            tools/hepta-engineering-control \
+            docs/modules \
+            docs/delivery \
+            qualification/module-execution-dossiers \
+            pyproject.toml
+          sha256sum "$RUNNER_TEMP/control-source/source.tar.gz" \
+            > "$RUNNER_TEMP/control-source/source.tar.gz.sha256"
+      - name: Retain exact source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-source-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/control-source/*
+          if-no-files-found: error
+          retention-days: 7
