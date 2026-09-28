@@ -2,7 +2,9 @@ name: Runtime supervisor control recovery
 
 on:
   push:
-    branches: [fix/runtime-supervisor-control-recovery-20260928]
+    branches:
+      - fix/runtime-supervisor-control-recovery-20260928
+      - codex/runtime-supervisor-final-convergence-20260928
   workflow_dispatch:
 
 permissions:
@@ -29,23 +31,32 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Export exact review source and branch comparison
+      - name: Export exact source identity and bounded branch delta
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/supervisor-source"
           git archive --format=tar.gz HEAD > "$RUNNER_TEMP/supervisor-source/source.tar.gz"
-          git diff e4f22243d65e1bcd6bb6788e2127afe7fcd4003e f4bb277f70bf922f77e0242031bdb021e2f4acb3 -- codex-rs/hepta-supervisor docs/modules/runtime.supervisor scripts/hepta_supervisor_ci.py > "$RUNNER_TEMP/supervisor-source/other-branch.patch"
+          git diff 933f35cfaa240d1365e561e0ea4519fe3e227edc HEAD -- \
+            codex-rs/hepta-supervisor \
+            codex-rs/hepta-agentd \
+            docs/modules/runtime.supervisor \
+            qualification/module-execution-dossiers/detail/runtime.supervisor.md \
+            scripts/hepta_supervisor_ci.py \
+            .github/workflows/runtime-supervisor-control-recovery.yml \
+            > "$RUNNER_TEMP/supervisor-source/candidate.patch"
           git log -1 --format='%H%n%T%n%P' > "$RUNNER_TEMP/supervisor-source/identity.txt"
+          git status --short > "$RUNNER_TEMP/supervisor-source/worktree.txt"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: supervisor-source-${{ github.sha }}
           path: ${{ runner.temp }}/supervisor-source/
-          retention-days: 7
+          retention-days: 14
           if-no-files-found: error
+
   native:
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     defaults:
       run:
         shell: bash
@@ -53,12 +64,14 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
+          fetch-depth: 0
           persist-credentials: false
       - name: Prepare exact compiler and host dependencies
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/supervisor-evidence"
           git log -1 --format='%H%n%T%n%P' > "$RUNNER_TEMP/supervisor-evidence/identity.txt"
+          git status --short > "$RUNNER_TEMP/supervisor-evidence/worktree-before.txt"
           uname -a > "$RUNNER_TEMP/supervisor-evidence/host.txt"
           sudo apt-get update
           sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
@@ -66,28 +79,122 @@ jobs:
           rustup toolchain install "$channel" --profile minimal --component clippy,rustfmt
           printf 'RUSTUP_TOOLCHAIN=%s\n' "$channel" >> "$GITHUB_ENV"
           printf 'CARGO_TARGET_DIR=%s/supervisor-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
-      - name: Check native production targets
-        id: check
+          rustc --version --verbose > "$RUNNER_TEMP/supervisor-evidence/rustc.txt"
+          cargo --version > "$RUNNER_TEMP/supervisor-evidence/cargo.txt"
+      - name: Check formatting
+        id: fmt
         continue-on-error: true
         run: |
           set -o pipefail
-          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-targets --features production-authority 2>&1 | tee "$RUNNER_TEMP/supervisor-evidence/check.log"
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check \
+            2>&1 | tee "$RUNNER_TEMP/supervisor-evidence/fmt.log"
+      - name: Check native default targets
+        id: check_default
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-supervisor --all-targets \
+            2>&1 | tee "$RUNNER_TEMP/supervisor-evidence/check-default.log"
+      - name: Check production authority targets
+        id: check_production
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-supervisor --all-targets --features production-authority \
+            2>&1 | tee "$RUNNER_TEMP/supervisor-evidence/check-production.log"
+      - name: Check qualification targets
+        id: check_qualification
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-supervisor --all-targets --features qualification \
+            2>&1 | tee "$RUNNER_TEMP/supervisor-evidence/check-qualification.log"
+      - name: Test native default package
+        id: test_default
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-supervisor \
+            2>&1 | tee "$RUNNER_TEMP/supervisor-evidence/test-default.log"
+      - name: Test production authority package
+        id: test_production
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-supervisor --features production-authority \
+            2>&1 | tee "$RUNNER_TEMP/supervisor-evidence/test-production.log"
+      - name: Test named Agentd integration package
+        id: test_agentd
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-agentd \
+            2>&1 | tee "$RUNNER_TEMP/supervisor-evidence/test-agentd.log"
+      - name: Run strict supervisor lint
+        id: clippy
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-supervisor --all-targets --all-features -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/supervisor-evidence/clippy.log"
       - name: Preserve exact outcomes
         if: always()
         env:
-          CHECK: ${{ steps.check.outcome }}
+          FMT: ${{ steps.fmt.outcome }}
+          CHECK_DEFAULT: ${{ steps.check_default.outcome }}
+          CHECK_PRODUCTION: ${{ steps.check_production.outcome }}
+          CHECK_QUALIFICATION: ${{ steps.check_qualification.outcome }}
+          TEST_DEFAULT: ${{ steps.test_default.outcome }}
+          TEST_PRODUCTION: ${{ steps.test_production.outcome }}
+          TEST_AGENTD: ${{ steps.test_agentd.outcome }}
+          CLIPPY: ${{ steps.clippy.outcome }}
         run: |
+          set -euo pipefail
           mkdir -p "$RUNNER_TEMP/supervisor-evidence"
-          printf 'sha=%s\ncheck=%s\n' "$GITHUB_SHA" "$CHECK" > "$RUNNER_TEMP/supervisor-evidence/outcomes.txt"
+          cat > "$RUNNER_TEMP/supervisor-evidence/outcomes.txt" <<EOF
+          sha=$GITHUB_SHA
+          fmt=$FMT
+          check_default=$CHECK_DEFAULT
+          check_production=$CHECK_PRODUCTION
+          check_qualification=$CHECK_QUALIFICATION
+          test_default=$TEST_DEFAULT
+          test_production=$TEST_PRODUCTION
+          test_agentd=$TEST_AGENTD
+          clippy=$CLIPPY
+          EOF
+          git status --short > "$RUNNER_TEMP/supervisor-evidence/worktree-after.txt"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: supervisor-evidence-${{ github.sha }}
           path: ${{ runner.temp }}/supervisor-evidence/
-          retention-days: 7
+          retention-days: 14
           if-no-files-found: error
-      - name: Require success
+      - name: Require complete candidate success
         if: always()
         env:
-          CHECK: ${{ steps.check.outcome }}
-        run: test "$CHECK" = success
+          FMT: ${{ steps.fmt.outcome }}
+          CHECK_DEFAULT: ${{ steps.check_default.outcome }}
+          CHECK_PRODUCTION: ${{ steps.check_production.outcome }}
+          CHECK_QUALIFICATION: ${{ steps.check_qualification.outcome }}
+          TEST_DEFAULT: ${{ steps.test_default.outcome }}
+          TEST_PRODUCTION: ${{ steps.test_production.outcome }}
+          TEST_AGENTD: ${{ steps.test_agentd.outcome }}
+          CLIPPY: ${{ steps.clippy.outcome }}
+        run: |
+          set -euo pipefail
+          test "$FMT" = success
+          test "$CHECK_DEFAULT" = success
+          test "$CHECK_PRODUCTION" = success
+          test "$CHECK_QUALIFICATION" = success
+          test "$TEST_DEFAULT" = success
+          test "$TEST_PRODUCTION" = success
+          test "$TEST_AGENTD" = success
+          test "$CLIPPY" = success
