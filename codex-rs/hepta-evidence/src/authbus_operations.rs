@@ -97,7 +97,7 @@ impl HeptaEvidenceStore {
             snapshot.retained_claim_retries = snapshot
                 .retained_claim_retries
                 .checked_add(nonnegative(
-                    attempts.saturating_sub(1),
+                    (attempts - 1).max(0),
                     "negative AuthBus retry count",
                 )?)
                 .ok_or_else(|| EvidenceError::Corrupt("AuthBus retry count overflow".into()))?;
@@ -177,11 +177,11 @@ fn record_active(
         snapshot.exhausted_active_deliveries =
             snapshot.exhausted_active_deliveries.saturating_add(1);
     }
-    *oldest_active_created_at_ms = Some(
-        oldest_active_created_at_ms
-            .map(|oldest| oldest.min(created_at_ms))
-            .unwrap_or(created_at_ms),
-    );
+    let oldest = match *oldest_active_created_at_ms {
+        Some(oldest) => oldest.min(created_at_ms),
+        None => created_at_ms,
+    };
+    *oldest_active_created_at_ms = Some(oldest);
 }
 
 fn latency_summary(samples: &mut [u64]) -> AuthBusOutboxLatencySummary {
