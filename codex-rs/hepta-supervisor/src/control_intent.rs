@@ -6,7 +6,6 @@
 //! represented separately from terminal exit observation.
 
 use std::fs::OpenOptions;
-use std::io::ErrorKind;
 use std::io::Write;
 use std::path::Path;
 use std::sync::atomic::AtomicU64;
@@ -26,6 +25,9 @@ use thiserror::Error;
 
 use crate::ProcessIdentity;
 use crate::control::pending::PendingControl;
+
+#[path = "control_intent_io.rs"]
+mod bounded_io;
 
 pub(crate) const CONTROL_INTENT_SCHEMA_VERSION: u32 = 1;
 pub(crate) const CONTROL_INTENT_FILE: &str = "supervisor-control-intent.json";
@@ -338,9 +340,7 @@ pub(crate) fn reconcile_absent(
     )
 }
 
-pub(crate) fn has_unresolved(
-    run_root: &Path,
-) -> Result<bool, DurableControlIntentError> {
+pub(crate) fn has_unresolved(run_root: &Path) -> Result<bool, DurableControlIntentError> {
     Ok(read_control_intent(run_root)?.is_some_and(|intent| !intent.phase.terminal()))
 }
 
@@ -395,16 +395,9 @@ fn read_control_intent(
     run_root: &Path,
 ) -> Result<Option<DurableControlIntent>, DurableControlIntentError> {
     let path = run_root.join(CONTROL_INTENT_FILE);
-    let bytes = match std::fs::read(path) {
-        Ok(bytes) => bytes,
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error.into()),
+    let Some(bytes) = bounded_io::read(&path, MAX_CONTROL_INTENT_BYTES)? else {
+        return Ok(None);
     };
-    if bytes.len() > MAX_CONTROL_INTENT_BYTES {
-        return Err(DurableControlIntentError::Invalid(
-            "control intent exceeds the bounded file size".to_string(),
-        ));
-    }
     let intent: DurableControlIntent = serde_json::from_slice(&bytes)?;
     intent.validate()?;
     Ok(Some(intent))
@@ -504,16 +497,21 @@ mod tests {
                 Instant::now(),
             )
             .expect("recover"),
-            Some(PendingControl::Stop { spawn_generation: 7, .. })
+            Some(PendingControl::Stop {
+                spawn_generation: 7,
+                ..
+            })
         ));
-        assert!(recover_pending(
-            dir.path(),
-            &agent(),
-            7,
-            &identity("incarnation-b"),
-            Instant::now(),
-        )
-        .is_err());
+        assert!(
+            recover_pending(
+                dir.path(),
+                &agent(),
+                7,
+                &identity("incarnation-b"),
+                Instant::now(),
+            )
+            .is_err()
+        );
     }
 
     #[test]
@@ -571,5 +569,32 @@ mod tests {
         reconcile_absent(dir.path(), &agent(), AgentLifecycle::Stopped)
             .expect("terminal absence");
         assert!(!has_unresolved(dir.path()).expect("status"));
+    }
+
+    #[test]
+    fn oversized_intent_is_rejected_before_unbounded_allocation() {
+        let dir = tempfile::tempdir().expect("temp");
+        std::fs::write(
+            dir.path().join(CONTROL_INTENT_FILE),
+            vec![b'x'; MAX_CONTROL_INTENT_BYTES + 1],
+        )
+        .expect("write");
+        assert!(matches!(
+            read_control_intent(dir.path()),
+            Err(DurableControlIntentError::Invalid(message))
+                if message.contains("bounded regular file")
+        ));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn symbolic_link_intent_is_rejected() {
+        use std::os::unix::fs::symlink;
+
+        let dir = tempfile::tempdir().expect("temp");
+        let target = dir.path().join("target.json");
+        std::fs::write(&target, b"{}").expect("target");
+        symlink(&target, dir.path().join(CONTROL_INTENT_FILE)).expect("symlink");
+        assert!(read_control_intent(dir.path()).is_err());
     }
 }
