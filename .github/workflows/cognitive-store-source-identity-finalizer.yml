@@ -1,0 +1,197 @@
+name: Cognitive store source-identity finalizer
+
+on:
+  push:
+    branches:
+      - codex/cognitive-store-full-closure-20260927
+    paths:
+      - '.github/workflows/cognitive-store-source-identity-finalizer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-store-source-identity-finalizer
+  cancel-in-progress: false
+
+env:
+  EXPECTED_SOURCE_HEAD: 46b68b5d7ad270b86096780726e7ad783c495ace
+  TARGET_BRANCH: codex/cognitive-store-full-closure-20260927
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/cognitive-store-full-closure-20260927
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify bounded authoring head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          git merge-base --is-ancestor "$EXPECTED_SOURCE_HEAD" HEAD
+          mapfile -t changed < <(git diff --name-only "$EXPECTED_SOURCE_HEAD" HEAD | sort)
+          expected=(
+            ".github/workflows/cognitive-store-source-identity-finalizer.yml"
+            "scripts/cognitive_source_identity.patch"
+          )
+          test "${changed[*]}" = "${expected[*]}"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Apply fail-closed source identity patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git apply --check scripts/cognitive_source_identity.patch
+          git apply scripts/cognitive_source_identity.patch
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          state_path = Path("docs/modules/cognitive.store/CURRENT_STATE.json")
+          state = json.loads(state_path.read_text(encoding="utf-8"))
+          invariant = {
+              "id": "CS-SRC-001",
+              "invariant": "A signed bootstrap can admit only the trusted host's exact deployed source identity",
+              "sources": ["codex-rs/hepta-agentd/src/cognitive_bootstrap.rs"],
+              "tests": [
+                  "codex-rs/hepta-agentd/tests/cognitive_bootstrap.rs::signed_bootstrap_rotates_restarts_canaries_and_revokes_live"
+              ],
+              "records": ["bootstrap-tests.json"],
+              "scope": "Signed commit/tree equality at product admission; build attestation and release acceptance remain external",
+          }
+          invariants = state["invariants"]
+          if any(item["id"] == invariant["id"] for item in invariants):
+              raise SystemExit("CS-SRC-001 already exists")
+          position = next(
+              (index + 1 for index, item in enumerate(invariants) if item["id"] == "CS-WIT-001"),
+              len(invariants),
+          )
+          invariants.insert(position, invariant)
+          state_path.write_text(
+              json.dumps(state, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+          )
+
+          map_path = Path("docs/modules/cognitive.store/IMPLEMENTATION_MAP.json")
+          implementation_map = json.loads(map_path.read_text(encoding="utf-8"))
+          runbook = "docs/modules/cognitive.store/BOOTSTRAP_RUNBOOK.md"
+          if runbook not in implementation_map["qualificationInputs"]:
+              implementation_map["qualificationInputs"].append(runbook)
+          map_path.write_text(
+              json.dumps(implementation_map, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          git diff --check
+
+      - name: Prepare native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Expose DotSlash
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Resolve verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Format and regenerate retained status
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --package codex-hepta-agentd
+          cd ..
+          python3 scripts/cognitive_store_status.py --write
+          python3 scripts/cognitive_store_status.py --check
+          git diff --check
+
+      - name: Test signed source binding
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd \
+            --test cognitive_bootstrap \
+            --features qualification-cognitive-write
+          cargo clippy --locked -p codex-hepta-agentd \
+            --test cognitive_bootstrap \
+            --features qualification-cognitive-write \
+            --no-deps -- -D warnings
+
+      - name: Commit authored source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Cognitive Store Finalizer"
+          git config user.email "hepta-cognitive-store@users.noreply.github.com"
+          git rm \
+            .github/workflows/cognitive-store-source-identity-finalizer.yml \
+            scripts/cognitive_source_identity.patch
+          git add \
+            codex-rs/hepta-agentd/src/cognitive_bootstrap.rs \
+            codex-rs/hepta-agentd/tests/cognitive_bootstrap.rs \
+            docs/modules/cognitive.store/BOOTSTRAP_RUNBOOK.md \
+            docs/modules/cognitive.store/PRODUCTION_CLOSURE.md \
+            docs/modules/cognitive.store/THREAT_MODEL.md \
+            docs/modules/cognitive.store/CURRENT_STATE.json \
+            docs/modules/cognitive.store/CURRENT_STATUS.md \
+            docs/modules/cognitive.store/EXECUTION_DOSSIER.md \
+            docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          test -z "$(git diff --name-only)"
+          git diff --cached --check
+          git commit -s -m "cognitive.store: bind signed bootstrap to deployed source identity"
+          echo "SOURCE_SNAPSHOT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Generate exact implementation bindings
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/cognitive_store_map_generate.py \
+            --source-commit "$SOURCE_SNAPSHOT" \
+            > "$RUNNER_TEMP/IMPLEMENTATION_MAP.json"
+          mv "$RUNNER_TEMP/IMPLEMENTATION_MAP.json" \
+            docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git diff --cached --check
+          git commit -s -m "docs(cognitive-store): refresh exact source bindings"
+
+      - name: Verify final candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/cognitive_store_map_verify.py \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          python3 scripts/test_cognitive_store_map.py -v
+          python3 scripts/cognitive_store_status.py --check
+          cargo fmt \
+            --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-agentd \
+            -- --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Push final candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
