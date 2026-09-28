@@ -307,6 +307,7 @@ impl AgentdIntelligenceInvocationProviderV1 for AuthoritativeInvocationProviderV
                 neural_config,
                 neural_tick,
                 neural_previous,
+                neuron_seal: None,
                 prompt_request,
                 intuition,
                 context_request,
