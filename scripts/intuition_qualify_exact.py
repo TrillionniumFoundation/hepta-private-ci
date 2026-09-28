@@ -31,6 +31,12 @@ PACKAGES = [
     "-p",
     "codex-hepta-agentd",
 ]
+
+
+def cargo_test(package: str, *args: str) -> list[str]:
+    return ["cargo", "test", "--locked", "-p", package, *args]
+
+
 COMMANDS = [
     (
         "golden-vectors-python",
@@ -56,81 +62,33 @@ COMMANDS = [
             "warnings",
         ],
     ),
-    ("policy-tests", ["cargo", "test", "--locked", "-p", "codex-hepta-intuition"]),
-    (
-        "qualification-tests",
-        ["cargo", "test", "--locked", "-p", "codex-hepta-intelligence"],
-    ),
+    ("policy-tests", cargo_test("codex-hepta-intuition")),
+    ("qualification-tests", cargo_test("codex-hepta-intelligence")),
     (
         "agentd-policy-tests",
-        [
-            "cargo",
-            "test",
-            "--locked",
-            "-p",
-            "codex-hepta-agentd",
-            "--lib",
-            "intuition_policy",
-        ],
+        cargo_test("codex-hepta-agentd", "--lib", "intuition_policy"),
     ),
     (
         "agentd-product-tests",
-        [
-            "cargo",
-            "test",
-            "--locked",
-            "-p",
-            "codex-hepta-agentd",
-            "--test",
-            "intuition_policy_product",
-        ],
+        cargo_test("codex-hepta-agentd", "--test", "intuition_policy_product"),
     ),
     (
         "agentd-v3-product-tests",
-        [
-            "cargo",
-            "test",
-            "--locked",
-            "-p",
-            "codex-hepta-agentd",
-            "--test",
-            "intuition_policy_product_v3",
-        ],
+        cargo_test("codex-hepta-agentd", "--test", "intuition_policy_product_v3"),
     ),
     (
         "agentd-commit-boundary-tests",
-        [
-            "cargo",
-            "test",
-            "--locked",
-            "-p",
-            "codex-hepta-agentd",
-            "--test",
-            "intuition_policy_commit_boundary",
-        ],
+        cargo_test(
+            "codex-hepta-agentd", "--test", "intuition_policy_commit_boundary"
+        ),
     ),
     (
-        "agentd-runtime-tests",
-        [
-            "cargo",
-            "test",
-            "--locked",
-            "-p",
-            "codex-hepta-agentd",
-            "--test",
-            "intuition_policy_runtime",
-        ],
+        "agentd-serving-runtime-tests",
+        cargo_test("codex-hepta-agentd", "--lib", "intuition_policy_serving"),
     ),
     (
         "ledger-production-tests",
-        [
-            "cargo",
-            "test",
-            "--locked",
-            "-p",
-            "codex-hepta-learning-ledger",
-            "production",
-        ],
+        cargo_test("codex-hepta-learning-ledger", "production"),
     ),
     (
         "kernel-fast-gate",
@@ -174,57 +132,25 @@ COMMANDS = [
     ),
 ]
 INDEPENDENT_COMMANDS = [
-    ("independent-policy", ["cargo", "test", "--locked", "-p", "codex-hepta-intuition"]),
-    (
-        "independent-qualification",
-        ["cargo", "test", "--locked", "-p", "codex-hepta-intelligence"],
-    ),
+    ("independent-policy", cargo_test("codex-hepta-intuition")),
+    ("independent-qualification", cargo_test("codex-hepta-intelligence")),
     (
         "independent-product",
-        [
-            "cargo",
-            "test",
-            "--locked",
-            "-p",
-            "codex-hepta-agentd",
-            "--test",
-            "intuition_policy_product_v3",
-        ],
+        cargo_test("codex-hepta-agentd", "--test", "intuition_policy_product_v3"),
     ),
     (
         "independent-boundary",
-        [
-            "cargo",
-            "test",
-            "--locked",
-            "-p",
-            "codex-hepta-agentd",
-            "--test",
-            "intuition_policy_commit_boundary",
-        ],
+        cargo_test(
+            "codex-hepta-agentd", "--test", "intuition_policy_commit_boundary"
+        ),
     ),
     (
-        "independent-runtime",
-        [
-            "cargo",
-            "test",
-            "--locked",
-            "-p",
-            "codex-hepta-agentd",
-            "--test",
-            "intuition_policy_runtime",
-        ],
+        "independent-serving-runtime",
+        cargo_test("codex-hepta-agentd", "--lib", "intuition_policy_serving"),
     ),
     (
         "independent-ledger",
-        [
-            "cargo",
-            "test",
-            "--locked",
-            "-p",
-            "codex-hepta-learning-ledger",
-            "production",
-        ],
+        cargo_test("codex-hepta-learning-ledger", "production"),
     ),
 ]
 
@@ -262,8 +188,12 @@ def external_directory(path: Path) -> Path:
     return path
 
 
-def identity_error(head: str, expected: str, source: str, base: str, lane: str) -> str | None:
-    if not all(re.fullmatch(r"[0-9a-f]{40}", value) for value in (head, expected, source)):
+def identity_error(
+    head: str, expected: str, source: str, base: str, lane: str
+) -> str | None:
+    if not all(
+        re.fullmatch(r"[0-9a-f]{40}", value) for value in (head, expected, source)
+    ):
         return "full_commit_sha_required"
     if head != expected:
         return "checkout_sha_mismatch"
@@ -315,13 +245,16 @@ def execute(command: list[str], log: Path, cwd: Path, timeout: int) -> int:
 def log_summary(path: Path) -> str:
     with path.open("rb") as stream:
         stream.seek(max(0, path.stat().st_size - 16384))
-        return "\n".join(stream.read().decode("utf-8", "replace").splitlines()[-60:])
+        return "\n".join(
+            stream.read().decode("utf-8", "replace").splitlines()[-60:]
+        )
 
 
 def nonzero_tests(path: Path) -> bool:
     with path.open(encoding="utf-8", errors="replace") as stream:
         return any(
-            re.search(r"test result: ok\. [1-9][0-9]* passed;", line) for line in stream
+            re.search(r"test result: ok\. [1-9][0-9]* passed;", line)
+            for line in stream
         )
 
 
@@ -333,12 +266,14 @@ def release_artifacts(path: Path) -> list[dict[str, str]]:
                 message = json.loads(line)
             except ValueError:
                 continue
-            if message.get("reason") == "compiler-artifact" and message.get("executable"):
-                binary = Path(message["executable"])
-                if "bin" in message.get("target", {}).get("kind", []) and binary.is_file():
-                    artifacts.append(
-                        {"name": message["target"]["name"], "sha256": sha256(binary)}
-                    )
+            executable = message.get("executable")
+            if message.get("reason") != "compiler-artifact" or not executable:
+                continue
+            binary = Path(executable)
+            if "bin" in message.get("target", {}).get("kind", []) and binary.is_file():
+                artifacts.append(
+                    {"name": message["target"]["name"], "sha256": sha256(binary)}
+                )
     return artifacts
 
 
@@ -386,6 +321,7 @@ def project(record: dict, evidence: Path) -> None:
         "release": False,
     }
     write_json(evidence / "IMPLEMENTATION_MAP.json", mapping)
+
     lines = [
         "# intuition.policy exact execution dossier",
         "",
@@ -393,10 +329,16 @@ def project(record: dict, evidence: Path) -> None:
         f"- Tested tree: `{record['testedTree']}`",
         f"- Source commit: `{record['sourceSha']}`",
         f"- Mode/lane: `{record['mode']}/{record['lane']}`",
-        f"- Workflow run: `{record['runId']}`; job: `{record['jobId']}`; attempt: `{record['runAttempt']}`",
+        (
+            f"- Workflow run: `{record['runId']}`; job: `{record['jobId']}`; "
+            f"attempt: `{record['runAttempt']}`"
+        ),
         f"- Result: `{record['status']}`",
         "",
-        "This single execution does not authorize production, independent semantic acceptance, or release.",
+        (
+            "This single execution does not authorize production, independent "
+            "semantic acceptance, or release."
+        ),
         "",
         "| Command | Exit | Status | Log SHA-256 |",
         "|---|---:|---|---|",
@@ -426,6 +368,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.command_timeout < 1:
         parser.error("--command-timeout must be positive")
+
     source = args.source_commit or args.source_sha
     if not source or (
         args.source_commit and args.source_sha and args.source_commit != args.source_sha
@@ -438,6 +381,7 @@ def main(argv: list[str] | None = None) -> int:
         )
     except ValueError as error:
         parser.error(str(error))
+
     head, tree = git("rev-parse", "HEAD"), git("rev-parse", "HEAD^{tree}")
     record = {
         "schema": SCHEMA,
@@ -461,6 +405,7 @@ def main(argv: list[str] | None = None) -> int:
     }
     receipt = evidence / "command-record.json"
     write_json(receipt, record)
+
     initial = git("status", "--porcelain", "--untracked-files=all")
     failure = identity_error(head, expected, source, args.base_sha, args.lane)
     if initial or failure:
@@ -474,6 +419,7 @@ def main(argv: list[str] | None = None) -> int:
         project(record, evidence)
         seal(evidence)
         return 1
+
     toolchain = evidence / "toolchain.txt"
     with toolchain.open("w", encoding="utf-8") as stream:
         for command in (
@@ -499,6 +445,7 @@ def main(argv: list[str] | None = None) -> int:
     record["toolchainLogSha256"] = sha256(toolchain)
     lockfile = ROOT / "codex-rs/Cargo.lock"
     record["cargoLockSha256"] = sha256(lockfile) if lockfile.is_file() else None
+
     failed = False
     selected_commands = INDEPENDENT_COMMANDS if args.independent else COMMANDS
     for name, command in selected_commands:
@@ -532,10 +479,14 @@ def main(argv: list[str] | None = None) -> int:
             logSummary=log_summary(log),
         )
         failed = failed or not passed
-        print(result["logSummary"] + f"\nexit_code={code}\n::endgroup::", flush=True)
+        print(
+            result["logSummary"] + f"\nexit_code={code}\n::endgroup::",
+            flush=True,
+        )
         write_json(receipt, record)
         if code == 130:
             break
+
     final = git("status", "--porcelain", "--untracked-files=all")
     unchanged = (
         git("rev-parse", "HEAD") == head
@@ -551,7 +502,11 @@ def main(argv: list[str] | None = None) -> int:
     write_json(receipt, record)
     write_json(
         evidence
-        / ("independent-report.json" if args.independent else "qualification-report.json"),
+        / (
+            "independent-report.json"
+            if args.independent
+            else "qualification-report.json"
+        ),
         record,
     )
     project(record, evidence)
