@@ -6,133 +6,155 @@
 **Candidate ref:** `codex/control-runtime-convergence-v1`  
 **Authority delta:** none
 
-This document describes the source candidate introduced to close planner integrity,
-durability and execution-boundary gaps. It is not an activation, independent
-acceptance, promotion or release receipt. The machine-readable current claim
-boundary remains `docs/readiness/LANE_D_MATURITY.json`; native symbol mapping
-remains `docs/modules/control.runtime/IMPLEMENTATION_MAP.json`.
+This document describes the current source candidate for planner integrity,
+durable recovery, authority-separated dispatch, and read-only organ fanout. It
+is not an activation, production-selection, independent-acceptance, promotion,
+or release receipt. The canonical stage facts remain in
+`docs/modules/control.runtime/CURRENT_STATE.json`; native symbols and tests
+remain mapped by `docs/modules/control.runtime/IMPLEMENTATION_MAP.json`.
 
-## 1. Subsystem boundaries
+## 1. Boundaries that remain unchanged
 
-The crate contains several independently mature surfaces and must not be reported
-with one undifferentiated completion bit.
+The planner, utility owner, authority owner, and effect owner remain separate.
+`control.runtime` constructs bounded snapshots, enforces resource floors, binds
+the NDU evaluation, and emits authority-free decisions and grant requests. It
+does not mint a capability, execute an effect by itself, or treat a test receipt
+as production authority.
 
-| Subsystem | Current candidate role | Production claim |
-|---|---|---|
-| Global planner | bounded snapshot, resource floors, NDU projection, immutable decision and grant requests | read-only Agentd caller exists; effectful global caller remains uncomposed |
-| Planner durability | owner-local complete-envelope framed store with recovery and external checkpoints | source candidate only; no selected production writer profile |
-| Planner execution closure | authority adapter, immediate revalidation, effect adapter, terminal receipt and reconciliation | boundary candidate only; no named production authority/executor |
-| Organ host | compiled-in read-only, single-hop host with generation replacement and quarantine | product caller and activation not established |
-| Embodiment reference | synthetic cart and fixed-priority timing fixtures | reference only; no hardware activation |
+The Agentd cognitive-context caller is a read-only product composition. It binds
+exact records, owner generation, request identity, retrieval policy, ranker
+policy, the complete plan receipt, and a bounded monotonic process lease before
+final use. This local read decision is not a global-effect product caller.
 
-## 2. Strict public planning admission
+## 2. Public planning admission
 
-The public planner facade rejects supplied owner summaries that are outside the
-exact requested owner set. Extra summaries can no longer shorten snapshot expiry
-or poison required-owner readiness masks.
+The public facade rejects owner summaries outside the exact requested set,
+cardinality excess before normalization, duplicate final-payload identity,
+planning time before collection, expired owner observations, and an `abstain`
+candidate carrying an effect payload. Finalization and grant-request construction
+recheck the original snapshot and owner freshness. All planner outputs remain
+`DENY_ALL`.
 
-The facade also rejects duplicate final-payload digests. The lower-level canonical
-planner remains responsible for stable sorting and digest construction, but the
-public boundary no longer treats duplicated effect identity as harmless input that
-may be silently repaired.
+## 3. Closed planner journal
 
-These checks preserve the existing missing-owner observation semantics: a snapshot
-may record a missing required owner, but it cannot admit an unrequested owner.
+Typed mutations, raw append, and reopen all cross the same lifecycle validator.
+A structurally valid hash chain cannot select an unrecorded decision or reselect
+a revoked decision merely by bypassing a typed helper. Exact retries remain
+idempotent; conflicting identity reuse fails closed.
 
-## 3. Durable planner store candidate
+## 4. Durable planner store
 
-`PlannerStoreV1` persists complete canonical envelope bytes rather than only a
-receipt digest. Its v1 format provides:
+`PlannerStoreV1` remains an owner-local, authority-free source candidate. The
+public wrapper now enforces the following additional invariants around the
+versioned frame codec:
 
-- an explicit schema version and record kind;
-- bounded record and envelope counts;
-- an owner-local create-new writer lock;
-- operation-identity idempotency and conflicting-reuse rejection;
-- framed records with semantic digests;
-- `sync_data` before in-memory publication;
-- recovery to the last complete verified frame when only the final frame is partial;
-- fail-closed behavior for corruption inside a complete frame;
-- deterministic crash failpoints before write, after write, after log sync and around atomic replacement;
-- same-directory temporary files, file synchronization, atomic rename and directory synchronization;
-- complete-log checkpoints bound to a non-zero externally supplied anchor;
-- suffix compaction that invalidates the predecessor checkpoint;
-- checkpoint-required backup and verified restore.
+- an operating-system-backed owner lock is held for the complete public open,
+  backup, and restore windows; the lock file is not deleted for stale takeover;
+- store size is bounded before `read_to_end`, and per-record limits are checked
+  while scanning fixed frame prefixes;
+- a truly incomplete final fixed prefix may be truncated by the codec, but a
+  complete prefix that declares a missing body fails closed instead of being
+  silently treated as a crash tail;
+- any mutation error whose durable outcome may be uncertain permanently poisons
+  the current handle; further mutation requires drop and verified reopen;
+- compaction treats `retain_last` as a lower bound and preserves every
+  non-snapshot identity/decision/revocation/dispatch/terminal record plus the
+  latest snapshot needed to interpret the preserved semantic history;
+- backup requires a verified checkpoint and holds destination ownership before
+  replacement; restore holds shared backup ownership and exclusive destination
+  ownership before changing the destination.
 
-The external anchor is not minted by `control.runtime`. A production owner must bind
-it to an independently retained signed evidence receipt, TPM/TEE measurement or
-another approved ledger. The current create-new lock is an owner-local single-writer
-candidate; selected-host crash ownership and stale-lock recovery remain part of
-host qualification.
+The existing core PID lock remains a compatibility layer for the current schema.
+All selected product callers must use the public wrapper. A named independent
+anchor owner, target-filesystem profile, and two-process crash qualification are
+still external gates.
 
-## 4. Authority-separated execution closure
+## 5. Durable dispatch and recovery state machine
 
-The execution candidate follows this sequence:
+Dispatch uses one exact operation identity and a stable v2 claim binding. The v2
+claim digest excludes attempt time, so a retry at a later time cannot conflict
+with the same request merely because its local clock advanced. Existing v1 claim
+envelopes remain readable.
+
+The public sequence is:
 
 ```text
-authenticated owner inputs
-  -> global snapshot
-  -> prepared candidate set
-  -> NDU evaluation
-  -> durable plan decision
-  -> authority-free grant request
-  -> independent authority decision
-  -> immediate current-state authority revalidation
-  -> final-payload-bound effect executor
-  -> terminal or indeterminate observation
-  -> durable terminal receipt
-  -> reconciliation without blind redispatch
+inspect exact durable operation state
+  -> conclusive terminal: return the original receipt unchanged
+  -> unresolved claim/indeterminate receipt: query effect owner by identity
+  -> no state: validate request expiry and obtain an independent grant
+       -> persist exact request/grant/payload claim
+       -> revalidate authority immediately before executor invocation
+       -> persist terminal or indeterminate observation
 ```
 
-`PlannerAuthorityConsumerV1` and `PlannerEffectExecutorV1` are composition
-boundaries. The planner cannot implement either trait for itself by declaration,
-and the source candidate does not name or activate a production authority or
-effect owner.
+A retry never redispatches. Reconciliation preserves the original grant digest;
+a refreshed authorization cannot be reported as the grant used by the first
+attempt. A conclusive receipt can be returned after the original execution
+request expires because this path authorizes no new effect.
 
-Before dispatch, the closure verifies request expiry, all critical digests, grant
-expiry, the exact final payload and the revocation frontier. A revocation or
-indeterminate authority state stops before the executor. A terminal receipt carries
-`DENY_ALL`; it is evidence, not a reusable capability.
+If final authority revalidation is revoked or indeterminate after the claim is
+durable, the wrapper persists a deterministic failed receipt stating that the
+executor was not invoked, then returns the authority error. This prevents a
+known non-dispatch from becoming a permanent unknown-effect claim. Executor or
+transport failure after invocation remains unresolved and must be reconciled.
 
-`PlannerStoreV1` implements the terminal-receipt sink so succeeded, failed and
-indeterminate observations can be persisted with operation idempotency. An
-indeterminate operation is reconciled by identity and is not blindly replayed.
+The public reconciliation entry requires an existing durable claim, rejects a
+mismatched grant, never creates a claim, and returns an existing conclusive
+terminal receipt without appending a later contradictory observation.
 
-## 5. Qualification fixtures
+## 6. Read-only organ fanout
 
-The source candidate adds negative and recovery fixtures for:
+`OrganHostV1` remains a trusted compiled-in, synchronous, read-only host—not a
+sandbox and not a model/plugin/I/O executor. The receipt-preserving fanout path
+returns one stable target slot for every admitted route and distinguishes
+`Delivered`, `DeliveredOutputUnavailable`, `Failed`, and `NotAttempted`. The
+host retains generation fencing, input/output limits, quarantine, startup
+cleanup, and migration rollback semantics.
 
-- unexpected owner injection;
-- duplicate final payload identity;
-- simultaneous writer exclusion;
-- complete-envelope reopen;
-- partial final-frame recovery;
-- complete-frame corruption rejection;
-- crash after frame write and idempotent reopen;
-- compaction followed by independently anchored backup and restore;
-- revocation after initial authorization but before dispatch;
-- final-payload drift between request and grant;
-- terminal receipt persistence;
-- indeterminate-effect reconciliation without redispatch.
+Blocking handlers, external plugins, model calls, and effectful work require a
+separate bounded owner and cannot be admitted by implementing the read-only
+trait alone. Product-level fanout retry and downstream target idempotency remain
+composition work.
 
-These are source fixtures until the exact source head and deterministic synthetic
-merge complete package tests, all-target compilation, strict lint and named-host
-qualification.
+## 7. Qualification matrix
 
-## 6. Remaining product work
+The branch workflow runs the same non-mutating checks against the exact source
+head and a deterministic synthetic merge:
 
-The following states remain explicitly false:
+- canonical state validation;
+- `cargo fmt --check`;
+- package regression tests for control plane, Agentd, and NDU;
+- all-target compilation;
+- strict Clippy with warnings denied;
+- clean tracked source and immutable candidate identity capture.
 
-- selected production planner store and stale-lock recovery policy;
-- named effectful global planner caller;
-- named `kernel.authority` adapter with current revocation evidence;
-- named effect executor and terminal observation owner;
-- request-level final-use binding of the complete context plan receipt;
-- monotonic request lease profile for the Agentd cognitive-context adapter;
-- disk-full and filesystem-loss target-host evidence;
-- long-running overload and backpressure evidence;
-- organ fan-out idempotency and partial-delivery reconciliation;
-- independent semantic acceptance;
-- canary, rollback rehearsal, activation, promotion and release.
+Source tests include request-time and owner-age rejection, effect-free abstain,
+closed journal replay, uncertain-handle poisoning, public writer exclusion,
+missing-body corruption rejection, semantic compaction, v1/v2 claim recovery,
+terminal replay after expiry, no-claim reconciliation rejection, authority
+revocation before executor invocation, process reopen, and reconciliation
+without redispatch.
 
-No document or source fixture may advance these states. Each requires the named
-product composition and its exact-candidate execution receipt.
+A queued, skipped, or historical run is not a pass. Stage booleans remain false
+until current exact-head and fixed-merge receipts exist.
+
+## 8. Remaining external work
+
+The candidate deliberately does not assert completion of:
+
+- a named production planner writer and independently retained checkpoint anchor;
+- a named effectful product caller, authority adapter, and effect owner using
+  the durable protocol end to end;
+- two-process kill/restart, disk-full, filesystem-loss, stale-owner, and restore
+  qualification on the selected target host;
+- semantic garbage collection once non-snapshot operation history reaches the
+  configured retention ceiling;
+- long-running overload, fair pending-reconciliation scheduling, and product
+  backpressure evidence;
+- product fanout idempotency for partially delivered organ routes;
+- independent semantic acceptance, operator approval, canary, rollback
+  rehearsal, activation, promotion, and release.
+
+Those gates require named owners and execution evidence. They cannot be advanced
+by source presence or documentation alone.

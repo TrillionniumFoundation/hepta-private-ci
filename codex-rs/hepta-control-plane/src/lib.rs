@@ -12,12 +12,43 @@
 mod legacy_root;
 pub use legacy_root::*;
 
+/// Result of consulting the durable dispatch owner for one exact operation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum PlannerDispatchClaimOutcomeV1 {
+    /// This caller durably acquired the first claim and may proceed to final
+    /// authority revalidation and effect dispatch.
+    Acquired,
+    /// A claim exists without a conclusive terminal observation. The grant is
+    /// the exact grant recorded by the first attempt and may only bind an
+    /// effect-owner reconciliation query; the effect must not be replayed.
+    ExistingClaim {
+        original_grant_digest: codex_hepta_types::Digest32,
+    },
+    /// A conclusive durable terminal observation already exists. Idempotent
+    /// retries return it unchanged without invoking the executor or reconciler.
+    ExistingTerminal {
+        receipt: Box<PlannerTerminalReceiptV1>,
+    },
+}
+
 /// Persistent admission boundary used before any planner effect dispatch.
 ///
-/// `Ok(true)` means this caller acquired the first durable claim for the exact
-/// operation/request/grant tuple. `Ok(false)` means a claim or terminal record
-/// already exists and dispatch must not be replayed; the caller must reconcile.
+/// `Acquired` permits the first dispatch. `ExistingClaim` requires
+/// reconciliation against the stable operation identity and never permits
+/// replay. `ExistingTerminal` returns the already committed receipt. The sink
+/// stores the original grant digest so a later authorization refresh cannot be
+/// misreported as the grant used by the first attempt.
 pub trait PlannerDispatchClaimSinkV1: PlannerTerminalReceiptSinkV1 {
+    /// Inspect an exact operation without creating or changing durable state.
+    /// A conclusive terminal result may be returned after the original request
+    /// expires because this path does not authorize or dispatch a new effect.
+    fn inspect_dispatch(
+        &self,
+        operation_identity_digest: codex_hepta_types::Digest32,
+        request_digest: codex_hepta_types::Digest32,
+        final_payload_digest: codex_hepta_types::Digest32,
+    ) -> Result<Option<PlannerDispatchClaimOutcomeV1>, PlannerExecutionError>;
+
     fn claim_dispatch(
         &mut self,
         operation_identity_digest: codex_hepta_types::Digest32,
@@ -25,7 +56,7 @@ pub trait PlannerDispatchClaimSinkV1: PlannerTerminalReceiptSinkV1 {
         grant_digest: codex_hepta_types::Digest32,
         final_payload_digest: codex_hepta_types::Digest32,
         claimed_at_micros: u64,
-    ) -> Result<bool, PlannerExecutionError>;
+    ) -> Result<PlannerDispatchClaimOutcomeV1, PlannerExecutionError>;
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

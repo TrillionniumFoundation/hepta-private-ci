@@ -54,7 +54,7 @@
       "activated": false,
       "released": false,
       "notes": [
-        "Exact records, request identity, retrieval policy, ranker policy, body generation and a monotonic process lease are bound before final use."
+        "Exact records, request identity, retrieval policy, ranker policy, body generation, complete plan receipt and a monotonic process lease are bound before final use."
       ]
     },
     "plannerJournal": {
@@ -84,8 +84,8 @@
       "activated": false,
       "released": false,
       "notes": [
-        "Uncertain mutation errors poison the current handle until drop and reopen.",
-        "Independent anchor ownership and two-process target-host recovery remain external gates."
+        "The public owner wrapper holds an operating-system-backed lock across open, backup and restore; uncertain mutation errors poison the current handle until drop and reopen.",
+        "Compaction preserves all non-snapshot semantic evidence and its preceding snapshot; independent anchor ownership and two-process target-host recovery remain external gates."
       ]
     },
     "authorityExecutionLoop": {
@@ -100,8 +100,9 @@
       "activated": false,
       "released": false,
       "notes": [
-        "A durable request/grant dispatch claim is persisted before final authority revalidation and executor invocation.",
-        "Existing claims fail closed into reconciliation rather than replay."
+        "A stable request/grant dispatch claim is persisted before final authority revalidation and executor invocation; v1 claim envelopes remain readable.",
+        "Conclusive receipts are returned unchanged, unresolved claims reconcile by stable operation identity with the original grant, and public reconciliation requires an existing durable claim.",
+        "Authority failure after claim persists an explicit not-dispatched terminal receipt instead of leaving a false unknown-effect state."
       ]
     },
     "organHost": {
