@@ -18,6 +18,11 @@ import {
   validateAuthorityEvidence,
   validateChaosEvidence,
 } from "./external-evidence-lib.mjs";
+import {
+  assertOperationObservation,
+  assertSessionReconnection,
+  assertSnapshotNotRegressed,
+} from "./real-backend-invariants.mjs";
 
 const required = name => {
   const value = process.env[name];
@@ -219,13 +224,17 @@ try {
     });
   }
 
-  const terminal = new Set(["succeeded", "failed", "rejected", "cancelled"]);
   async function waitForTerminal(session, body, cookie) {
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       const { response, payload } = await lookup(session, body, cookie);
       assertEvidence(response.ok, "UI_CONTROL_BACKEND_LOOKUP", `lookup failed with ${response.status}`);
-      if (payload?.found === true && terminal.has(payload.status)) return payload;
+      if (payload?.found === true) {
+        assertOperationObservation(payload, body);
+        if (["succeeded", "failed", "rejected", "cancelled"].includes(payload.status)) {
+          return assertOperationObservation(payload, body, { requireTerminal: true });
+        }
+      }
       await sleep(500);
     }
     const error = new Error(`operation ${body.operationId} did not reach a terminal observation within ${timeoutMs}ms`);
@@ -267,14 +276,6 @@ try {
   assertEvidence(rejectedLookup.response.ok && rejectedLookup.payload?.found === false, "UI_CONTROL_REJECTED_RECORD", "pre-admission rejection created a durable operation");
   completedCases.push("rejected-before-admission-no-record");
 
-  stage = "accepted-response-loss";
-  const lossId = `uiq:${randomUUID()}`;
-  const lossBody = await operationBody(primary, snapshot, lossId, "Qualification: discard accepted acknowledgement and recover by operation ID.");
-  await discardAcknowledgement(lossBody);
-  const lossLookup = await lookup(primary, lossBody, primaryCookie);
-  assertEvidence(lossLookup.response.ok && lossLookup.payload?.found === true, "UI_CONTROL_RESPONSE_LOSS_LOOKUP", "accepted response loss was not recoverable by operation ID");
-  completedCases.push("accepted-response-loss-lookup");
-
   stage = "cross-identity-isolation";
   const crossIdentity = await lookup(secondary, duplicateBody, secondaryCookie);
   assertEvidence(
@@ -285,10 +286,36 @@ try {
   );
   completedCases.push("cross-identity-lookup-denied");
 
-  stage = "terminal-observation";
+  stage = "first-operation-terminal-observation";
   const duplicateTerminal = await waitForTerminal(primary, duplicateBody, primaryCookie);
+  completedCases.push("first-operation-terminal-lookup");
+
+  stage = "post-terminal-snapshot-refresh";
+  const refreshedSnapshot = assertSnapshotNotRegressed(
+    snapshot,
+    await readSnapshot(primary, primaryCookie),
+  );
+  completedCases.push("fresh-snapshot-before-next-mutation");
+
+  stage = "accepted-response-loss";
+  const lossId = `uiq:${randomUUID()}`;
+  const lossBody = await operationBody(primary, refreshedSnapshot, lossId, "Qualification: discard accepted acknowledgement and recover by operation ID.");
+  await discardAcknowledgement(lossBody);
+  const lossLookup = await lookup(primary, lossBody, primaryCookie);
+  assertEvidence(lossLookup.response.ok, "UI_CONTROL_RESPONSE_LOSS_LOOKUP", `accepted response loss lookup failed with ${lossLookup.response.status}`);
+  assertOperationObservation(lossLookup.payload, lossBody);
+  completedCases.push("accepted-response-loss-lookup");
+
+  stage = "response-loss-terminal-observation";
   const lossTerminal = await waitForTerminal(primary, lossBody, primaryCookie);
-  completedCases.push("terminal-lookup");
+  completedCases.push("response-loss-terminal-lookup");
+
+  stage = "final-snapshot-refresh";
+  const finalSnapshot = assertSnapshotNotRegressed(
+    refreshedSnapshot,
+    await readSnapshot(primary, primaryCookie),
+  );
+  completedCases.push("post-qualification-snapshot-continuity");
 
   stage = "session-revocation";
   const revoke = await requestJson(new URL("session/revoke", apiBase), {
@@ -307,19 +334,17 @@ try {
   completedCases.push("session-revocation");
 
   stage = "session-switch-and-principal-continuity";
-  const reconnectedPrimary = await connect(primaryCookie, primaryCsrf);
-  assertEvidence(
-    reconnectedPrimary.sessionId !== primary.sessionId || reconnectedPrimary.connectionGeneration !== primary.connectionGeneration,
-    "UI_CONTROL_SESSION_SWITCH_GENERATION",
-    "reconnect reused the revoked session identity and generation",
+  const reconnectedPrimary = assertSessionReconnection(
+    primary,
+    await connect(primaryCookie, primaryCsrf),
   );
   await readSnapshot(reconnectedPrimary, primaryCookie);
   const lookupAfterSessionSwitch = await lookup(reconnectedPrimary, duplicateBody, primaryCookie);
-  assertEvidence(
-    lookupAfterSessionSwitch.response.ok && lookupAfterSessionSwitch.payload?.found === true,
-    "UI_CONTROL_SESSION_SWITCH_LOOKUP",
-    "durable operation identity was not discoverable after a same-principal session switch",
-  );
+  assertEvidence(lookupAfterSessionSwitch.response.ok, "UI_CONTROL_SESSION_SWITCH_LOOKUP", `same-principal lookup failed with ${lookupAfterSessionSwitch.response.status}`);
+  assertOperationObservation(lookupAfterSessionSwitch.payload, duplicateBody, { requireTerminal: true });
+  const lossLookupAfterSessionSwitch = await lookup(reconnectedPrimary, lossBody, primaryCookie);
+  assertEvidence(lossLookupAfterSessionSwitch.response.ok, "UI_CONTROL_SESSION_SWITCH_LOOKUP", `response-loss lookup after session switch failed with ${lossLookupAfterSessionSwitch.response.status}`);
+  assertOperationObservation(lossLookupAfterSessionSwitch.payload, lossBody, { requireTerminal: true });
   const closeReconnected = await requestJson(new URL("session/close", apiBase), {
     cookie: primaryCookie,
     csrf: primaryCsrf,
@@ -351,8 +376,8 @@ try {
       observedAt: new Date().toISOString(),
       primaryIdentity: primary.identityId,
       secondaryIdentity: secondary.identityId,
-      runtimeGeneration: snapshot.generation,
-      runtimeRevision: snapshot.revision,
+      runtimeGeneration: finalSnapshot.generation,
+      runtimeRevision: finalSnapshot.revision,
     },
     cases: completedCases,
     terminalObservations: {
