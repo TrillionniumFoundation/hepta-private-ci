@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 90
     env:
       SOURCE_SHA: ${{ github.sha }}
-      MATERIALIZE_PARENT: 140d5f46ab1e8b05a5e110b4c62497463a6ab487
+      MATERIALIZE_PARENT: 608395e189abf9b539f1f32f55e4546607a4b3f0
       TRANSPORT_PARENT: 2e2a847a04d7e450b3b627601680984ff48d1ca0
       TARGET_BRANCH: fix/compact-engine-current-main-convergence-20260925
       PATCH_SHA256: 3610e3e56f865c1047d99b0c2a891751571ded7e7d0eeb0ab95387415314107d
@@ -61,6 +61,20 @@ jobs:
           test "$(git hash-object codex-rs/hepta-compact-engine/src/lib.rs)" = "$LIB_BLOB"
           test ! -e codex-rs/hepta-compact-engine/src/durable_facade.rs
           git diff --check
+
+      - name: Retain materialized source for diagnosis
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -czf "$RUNNER_TEMP/compact-engine-materialize-evidence/materialized-source.tar.gz" \
+            codex-rs/hepta-compact-engine \
+            codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs
+          git diff --binary -- \
+            codex-rs/hepta-compact-engine \
+            codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs \
+            > "$RUNNER_TEMP/compact-engine-materialize-evidence/materialized-source.patch"
+          (cd "$RUNNER_TEMP/compact-engine-materialize-evidence" && \
+            sha256sum materialized-source.tar.gz materialized-source.patch > materialized-source.SHA256SUMS)
 
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
