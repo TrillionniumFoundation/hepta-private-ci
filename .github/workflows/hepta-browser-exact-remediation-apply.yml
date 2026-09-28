@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   apply:
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, linux, x64, rog]
     timeout-minutes: 30
     steps:
       - name: Checkout exact helper commit
@@ -23,6 +23,7 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 10
           persist-credentials: true
+          clean: true
 
       - name: Install exact Node runtime
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
