@@ -1,0 +1,63 @@
+{
+  "modules": {
+    "control_engineering_v2/durability_soak.py": [
+      "DurabilitySoakReport",
+      "run_durability_soak"
+    ],
+    "control_engineering_v2/external_runtime.py": [
+      "ExternalProviderEndpoint",
+      "ExternalProviderObservation",
+      "ExternalReceiptClient",
+      "HttpsJsonTransport",
+      "JsonTransport",
+      "ProductionProviderSet",
+      "decode_external_receipt"
+    ],
+    "control_engineering_v2/governance.py": [
+      "AuditCheckpoint",
+      "Clock",
+      "ClockSkewPolicy",
+      "EngineeringCapacityDecision",
+      "EngineeringCapacityPolicy",
+      "EngineeringCapacitySnapshot",
+      "FixedClock",
+      "ReceiptWindow",
+      "SystemClock",
+      "WorkerRegistrationRotationReceipt",
+      "build_audit_checkpoint",
+      "evaluate_engineering_capacity",
+      "measure_engineering_capacity",
+      "rotate_worker_registration",
+      "validate_receipt_window",
+      "verify_audit_checkpoint",
+      "verify_checkpoint_digest"
+    ],
+    "control_engineering_v2/quality_gate.py": [
+      "QualityGateDecision",
+      "QualityGatePolicy",
+      "QualityGateReceipt",
+      "verify_quality_gate"
+    ],
+    "control_engineering_v2/release_qualification.py": [
+      "DeploymentObservationReceipt",
+      "IndependentReviewAcceptanceReceipt",
+      "OperatorAcceptanceReceipt",
+      "PostMergeMainReceipt",
+      "ReleaseQualificationDecision",
+      "ReleaseQualificationFacts",
+      "RollbackRehearsalReceipt",
+      "VerifiedReleaseReceipts",
+      "evaluate_release_qualification",
+      "verify_release_receipts"
+    ],
+    "control_engineering_v2/status.py": [
+      "ControlEngineeringStatus",
+      "build_status",
+      "main",
+      "status_json",
+      "verify_status_digest",
+      "write_status"
+    ]
+  },
+  "schema": "hepta.control-engineering-api.v1"
+}

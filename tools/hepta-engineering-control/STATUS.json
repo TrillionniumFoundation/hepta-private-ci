@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.control-engineering-status-source.v1",
+  "module": "control.engineering",
+  "sourceIdentity": {
+    "mode": "exact_runtime_receipt",
+    "embeddedCommit": false,
+    "reason": "A tracked source file cannot embed the commit that hashes itself. CI binds the exact commit and tree in retained receipts."
+  },
+  "states": {
+    "nativeSourceImplemented": true,
+    "namedProductComposed": true,
+    "pullRequestDualLaneDefined": true,
+    "postMergeMainRequired": true,
+    "qualityEvidenceRequired": true,
+    "independentReviewAccepted": false,
+    "externalControlsVerified": false,
+    "deploymentObserved": false,
+    "rollbackRehearsed": false,
+    "operatorAccepted": false,
+    "productionImplementation": false,
+    "deploymentReady": false
+  },
+  "repositoryBlockers": [
+    "exact post-merge main product receipt must be retained for the final protected-branch commit",
+    "signed coverage, type-check, lint, API-compatibility, mutation, and durability-soak reports must satisfy policy"
+  ],
+  "externalBlockers": [
+    "independent semantic review acceptance",
+    "real distributed lease/fence provider",
+    "external immutable audit anchor",
+    "role-separated HSM/KMS custody",
+    "non-fixture independent completion and terminal observers",
+    "target deployment, rollback rehearsal, and operator acceptance"
+  ],
+  "authority": {
+    "runtime": false,
+    "merge": false,
+    "deployment": false,
+    "promotion": false,
+    "release": false
+  }
+}
