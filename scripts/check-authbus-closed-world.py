@@ -108,6 +108,8 @@ def verify_boundaries() -> list[str]:
     errors = []
     for path in rust_sources():
         text = path.read_text(encoding="utf-8")
+        if "IssuerRegistration" not in text and "AuthBusAuthorityStore" not in text:
+            continue
         for name, allowed in [("IssuerRegistration", "signed.rs"),
                               ("SettlementIssuerRegistration", "settlement.rs")]:
             if path != AUTHBUS / allowed and has_struct_literal(text, name):

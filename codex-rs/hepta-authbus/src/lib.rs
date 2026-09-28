@@ -7,12 +7,14 @@
 //! `AuthorityPosture::DENY_ALL`.
 
 #![forbid(unsafe_code)]
+#![doc = include_str!("../SEALED_API.md")]
 
 mod authority;
 mod authority_schema;
 mod authority_store;
 mod host;
 mod issuer_registry;
+mod metrics;
 mod operations;
 mod owner_fence;
 mod quota;

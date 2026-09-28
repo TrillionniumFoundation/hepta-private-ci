@@ -100,10 +100,20 @@ impl AuthBusOperationalSnapshot {
         let policy = policy.validate()?;
         let mut alerts = Vec::new();
         if self.checkpoint_dirty {
-            alerts.push(alert(AuthBusAlertKind::CheckpointDirty, AuthBusAlertSeverity::Critical, 1, 0));
+            alerts.push(alert(
+                AuthBusAlertKind::CheckpointDirty,
+                AuthBusAlertSeverity::Critical,
+                1,
+                0,
+            ));
         }
         if self.recovery_required {
-            alerts.push(alert(AuthBusAlertKind::RecoveryRequired, AuthBusAlertSeverity::Critical, 1, 0));
+            alerts.push(alert(
+                AuthBusAlertKind::RecoveryRequired,
+                AuthBusAlertSeverity::Critical,
+                1,
+                0,
+            ));
         }
         if self.expired_active_reservations > 0 {
             alerts.push(alert(
@@ -184,7 +194,10 @@ impl AuthBusAuthorityHost {
         let _mutation = self.begin_mutation().await?;
         let result: Result<_, AuthBusAuthorityError> = async {
             let recovery_complete = self.store.reconcile_after_restart(limit).await?;
-            let sweep = self.store.sweep_expired_reservations(time.clone(), limit).await?;
+            let sweep = self
+                .store
+                .sweep_expired_reservations(time.clone(), limit)
+                .await?;
             Ok((recovery_complete, sweep))
         }
         .await;
@@ -279,18 +292,30 @@ impl AuthBusAuthorityStore {
         {
             quota_available = checked_sum(
                 quota_available,
-                blob_u64(&row.try_get::<Vec<u8>, _>("available").map_err(storage)?, "invalid available quota")?,
+                blob_u64(
+                    &row.try_get::<Vec<u8>, _>("available").map_err(storage)?,
+                    "invalid available quota",
+                )?,
             )?;
             quota_reserved = checked_sum(
                 quota_reserved,
-                blob_u64(&row.try_get::<Vec<u8>, _>("reserved").map_err(storage)?, "invalid reserved quota")?,
+                blob_u64(
+                    &row.try_get::<Vec<u8>, _>("reserved").map_err(storage)?,
+                    "invalid reserved quota",
+                )?,
             )?;
             quota_consumed = checked_sum(
                 quota_consumed,
-                blob_u64(&row.try_get::<Vec<u8>, _>("consumed").map_err(storage)?, "invalid consumed quota")?,
+                blob_u64(
+                    &row.try_get::<Vec<u8>, _>("consumed").map_err(storage)?,
+                    "invalid consumed quota",
+                )?,
             )?;
         }
-        let quota_endowment = checked_sum(checked_sum(quota_available, quota_reserved)?, quota_consumed)?;
+        let quota_endowment = checked_sum(
+            checked_sum(quota_available, quota_reserved)?,
+            quota_consumed,
+        )?;
         let quota_used = checked_sum(quota_reserved, quota_consumed)?;
         let quota_utilization_basis_points = if quota_endowment == 0 {
             0
@@ -314,7 +339,11 @@ impl AuthBusAuthorityStore {
                 "active" => active_issuer_epochs = value,
                 "revoked" => revoked_issuer_epochs = value,
                 "retired" => retired_issuer_epochs = value,
-                _ => return Err(AuthBusAuthorityError::CorruptState("invalid issuer lifecycle state")),
+                _ => {
+                    return Err(AuthBusAuthorityError::CorruptState(
+                        "invalid issuer lifecycle state",
+                    ));
+                }
             }
         }
         tx.commit().await.map_err(storage)?;
@@ -344,7 +373,12 @@ fn alert(
     observed: u64,
     threshold: u64,
 ) -> AuthBusOperationalAlert {
-    AuthBusOperationalAlert { kind, severity, observed, threshold }
+    AuthBusOperationalAlert {
+        kind,
+        severity,
+        observed,
+        threshold,
+    }
 }
 
 fn count(value: i64) -> Result<u64, AuthBusAuthorityError> {
@@ -352,14 +386,23 @@ fn count(value: i64) -> Result<u64, AuthBusAuthorityError> {
 }
 
 fn checked_sum(left: u64, right: u64) -> Result<u64, AuthBusAuthorityError> {
-    left.checked_add(right).ok_or(AuthBusAuthorityError::CapacityExceeded)
+    left.checked_add(right)
+        .ok_or(AuthBusAuthorityError::CapacityExceeded)
 }
 
-fn required_blob_u64(value: Option<Vec<u8>>, missing: &'static str) -> Result<u64, AuthBusAuthorityError> {
-    blob_u64(&value.ok_or(AuthBusAuthorityError::CorruptState(missing))?, missing)
+fn required_blob_u64(
+    value: Option<Vec<u8>>,
+    missing: &'static str,
+) -> Result<u64, AuthBusAuthorityError> {
+    blob_u64(
+        &value.ok_or(AuthBusAuthorityError::CorruptState(missing))?,
+        missing,
+    )
 }
 
 fn blob_u64(value: &[u8], invalid: &'static str) -> Result<u64, AuthBusAuthorityError> {
-    let bytes: [u8; 8] = value.try_into().map_err(|_| AuthBusAuthorityError::CorruptState(invalid))?;
+    let bytes: [u8; 8] = value
+        .try_into()
+        .map_err(|_| AuthBusAuthorityError::CorruptState(invalid))?;
     Ok(u64::from_be_bytes(bytes))
 }

@@ -264,7 +264,8 @@ mod tests {
         let database = PathBuf::from(database);
         let mode = std::env::var("AUTHBUS_OWNER_PROBE_MODE").expect("probe mode");
         if mode == "legacy_busy" {
-            let file = open_lock_file(&lock_path(&database).expect("lock path")).expect("lock file");
+            let file =
+                open_lock_file(&lock_path(&database).expect("lock path")).expect("lock file");
             assert!(matches!(
                 rustix::fs::fcntl_lock(&file, rustix::fs::FlockOperation::NonBlockingLockExclusive),
                 Err(error) if error == rustix::io::Errno::AGAIN || error == rustix::io::Errno::ACCESS
@@ -278,7 +279,9 @@ mod tests {
             ));
             return;
         }
-        let _owner = OwnerFence::acquire(&database, "probe").await.expect("probe owner");
+        let _owner = OwnerFence::acquire(&database, "probe")
+            .await
+            .expect("probe owner");
         if mode == "hold" {
             std::fs::write(database.with_extension("ready"), b"locked").expect("ready marker");
             std::thread::sleep(Duration::from_secs(30));
@@ -291,26 +294,50 @@ mod tests {
     async fn duplicate_rejection_preserves_the_original_cross_process_lock() {
         let root = private_root();
         let database = root.path().join("authority.sqlite");
-        let first = OwnerFence::acquire(&database, "first").await.expect("first owner");
+        let first = OwnerFence::acquire(&database, "first")
+            .await
+            .expect("first owner");
         assert!(matches!(
             OwnerFence::acquire(&database, "second").await,
             Err(AuthBusAuthorityError::OwnerAlreadyActive)
         ));
-        assert!(probe(&database, "legacy_busy").status().expect("legacy probe").success());
-        assert!(probe(&database, "busy").status().expect("modern probe").success());
+        assert!(
+            probe(&database, "legacy_busy")
+                .status()
+                .expect("legacy probe")
+                .success()
+        );
+        assert!(
+            probe(&database, "busy")
+                .status()
+                .expect("modern probe")
+                .success()
+        );
         drop(first);
-        assert!(probe(&database, "free").status().expect("replacement probe").success());
+        assert!(
+            probe(&database, "free")
+                .status()
+                .expect("replacement probe")
+                .success()
+        );
     }
 
     #[tokio::test]
     async fn unrelated_descriptor_close_does_not_release_the_modern_fence() {
         let root = private_root();
         let database = root.path().join("authority.sqlite");
-        let first = OwnerFence::acquire(&database, "first").await.expect("first owner");
+        let first = OwnerFence::acquire(&database, "first")
+            .await
+            .expect("first owner");
         drop(File::open(lock_path(&database).expect("lock path")).expect("unrelated open"));
         assert!(probe(&database, "busy").status().expect("probe").success());
         drop(first);
-        assert!(probe(&database, "free").status().expect("replacement probe").success());
+        assert!(
+            probe(&database, "free")
+                .status()
+                .expect("replacement probe")
+                .success()
+        );
     }
 
     #[tokio::test]
@@ -320,7 +347,10 @@ mod tests {
         let mut child = ChildGuard(probe(&database, "hold").spawn().expect("owner process"));
         let deadline = Instant::now() + Duration::from_secs(10);
         while !database.with_extension("ready").exists() {
-            assert!(Instant::now() < deadline, "child owner did not become ready");
+            assert!(
+                Instant::now() < deadline,
+                "child owner did not become ready"
+            );
             assert!(child.0.try_wait().expect("child state").is_none());
             std::thread::sleep(Duration::from_millis(10));
         }
@@ -331,7 +361,9 @@ mod tests {
         child.0.kill().expect("kill owner process");
         child.0.wait().expect("reap owner process");
         assert!(lock_path(&database).expect("lock path").exists());
-        OwnerFence::acquire(&database, "replacement").await.expect("owner after process death");
+        OwnerFence::acquire(&database, "replacement")
+            .await
+            .expect("owner after process death");
     }
 
     #[tokio::test]
@@ -342,7 +374,9 @@ mod tests {
         std::fs::create_dir(&path).expect("invalid lock file");
         assert!(OwnerFence::acquire(&database, "failed").await.is_err());
         std::fs::remove_dir(&path).expect("remove invalid lock file");
-        OwnerFence::acquire(&database, "replacement").await.expect("reservation released");
+        OwnerFence::acquire(&database, "replacement")
+            .await
+            .expect("reservation released");
     }
 
     #[tokio::test]
@@ -351,13 +385,17 @@ mod tests {
         let database = root.path().join("authority.sqlite");
         let target = root.path().join("target");
         std::fs::write(&target, b"unchanged").expect("target");
-        std::fs::set_permissions(&target, std::fs::Permissions::from_mode(0o640)).expect("target mode");
+        std::fs::set_permissions(&target, std::fs::Permissions::from_mode(0o640))
+            .expect("target mode");
         symlink(&target, lock_path(&database).expect("lock path")).expect("symlink");
         assert!(matches!(
             OwnerFence::acquire(&database, "owner").await,
             Err(AuthBusAuthorityError::UnsafeCheckpoint)
         ));
-        assert_eq!(std::fs::metadata(&target).expect("metadata").mode() & 0o777, 0o640);
+        assert_eq!(
+            std::fs::metadata(&target).expect("metadata").mode() & 0o777,
+            0o640
+        );
         assert_eq!(std::fs::read(&target).expect("contents"), b"unchanged");
     }
 
@@ -367,7 +405,8 @@ mod tests {
         let database = root.path().join("authority.sqlite");
         let target = root.path().join("target");
         std::fs::write(&target, b"unchanged").expect("target");
-        std::fs::set_permissions(&target, std::fs::Permissions::from_mode(0o600)).expect("target mode");
+        std::fs::set_permissions(&target, std::fs::Permissions::from_mode(0o600))
+            .expect("target mode");
         std::fs::hard_link(&target, lock_path(&database).expect("lock path")).expect("hard link");
         assert!(matches!(
             OwnerFence::acquire(&database, "owner").await,

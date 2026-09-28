@@ -6,11 +6,7 @@ use crate::IssuerLifecycleState;
 use crate::IssuerPurpose;
 use crate::IssuerRecord;
 
-fn registration(
-    key: &SigningKey,
-    epoch: u64,
-    state: IssuerLifecycleState,
-) -> IssuerRegistration {
+fn registration(key: &SigningKey, epoch: u64, state: IssuerLifecycleState) -> IssuerRegistration {
     IssuerRegistration::from_record(&IssuerRecord {
         issuer_id: StableId::new("issuer:one").unwrap(),
         purpose: IssuerPurpose::Message,

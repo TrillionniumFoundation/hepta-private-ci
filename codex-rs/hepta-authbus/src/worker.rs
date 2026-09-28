@@ -91,12 +91,16 @@ impl AuthBusAuthorityWorker {
                 let time = tokio::time::timeout(self.config.interval, trusted_time())
                     .await
                     .map_err(|_| {
-                        AuthBusAuthorityError::Storage("trusted-time provider deadline exceeded".into())
+                        AuthBusAuthorityError::Storage(
+                            "trusted-time provider deadline exceeded".into(),
+                        )
                     })??;
                 tokio::time::timeout(self.config.interval, self.run_once(time))
                     .await
                     .map_err(|_| {
-                        AuthBusAuthorityError::Storage("authority maintenance deadline exceeded".into())
+                        AuthBusAuthorityError::Storage(
+                            "authority maintenance deadline exceeded".into(),
+                        )
                     })?
             };
             tokio::select! {
@@ -110,7 +114,11 @@ impl AuthBusAuthorityWorker {
 
 async fn shutdown_requested(shutdown: &mut watch::Receiver<bool>) {
     loop {
-        if *shutdown.borrow_and_update() || shutdown.changed().await.is_err() {
+        let requested = *shutdown.borrow_and_update();
+        if requested {
+            return;
+        }
+        if shutdown.changed().await.is_err() {
             return;
         }
     }
@@ -187,7 +195,11 @@ mod tests {
         let (_sender, receiver) = watch::channel(false);
         let result = tokio::time::timeout(
             Duration::from_secs(3),
-            worker.run_until_shutdown(std::future::pending, |_| panic!("no report exists"), receiver),
+            worker.run_until_shutdown(
+                std::future::pending,
+                |_| panic!("no report exists"),
+                receiver,
+            ),
         )
         .await
         .expect("bounded provider deadline");

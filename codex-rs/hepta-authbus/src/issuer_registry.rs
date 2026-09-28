@@ -106,25 +106,25 @@ fn collect_entries(
                 let issuer = issuer.as_str().ok_or(IssuerRegistryError::InvalidDocument(
                     "issuer_id must be a string",
                 ))?;
-                let issuer_id = StableId::new(issuer).map_err(|_| {
-                    IssuerRegistryError::InvalidDocument("issuer_id is invalid")
-                })?;
+                let issuer_id = StableId::new(issuer)
+                    .map_err(|_| IssuerRegistryError::InvalidDocument("issuer_id is invalid"))?;
                 let epoch = epoch.as_u64().ok_or(IssuerRegistryError::InvalidDocument(
                     "key_epoch must be a positive integer",
                 ))?;
-                let key_epoch = Generation::new(epoch).map_err(|_| {
-                    IssuerRegistryError::InvalidDocument("key_epoch is invalid")
-                })?;
+                let key_epoch = Generation::new(epoch)
+                    .map_err(|_| IssuerRegistryError::InvalidDocument("key_epoch is invalid"))?;
                 let key = key.as_str().ok_or(IssuerRegistryError::InvalidDocument(
                     "public_key_hex must be a string",
                 ))?;
-                let verifying_key = VerifyingKey::from_bytes(&hex_bytes::<32>(key)?)
-                    .map_err(|_| {
+                let verifying_key =
+                    VerifyingKey::from_bytes(&hex_bytes::<32>(key)?).map_err(|_| {
                         IssuerRegistryError::InvalidDocument("Ed25519 public key is invalid")
                     })?;
-                let revoked = revoked.as_bool().ok_or(
-                    IssuerRegistryError::InvalidDocument("revoked must be a boolean"),
-                )?;
+                let revoked = revoked
+                    .as_bool()
+                    .ok_or(IssuerRegistryError::InvalidDocument(
+                        "revoked must be a boolean",
+                    ))?;
                 if entries.len() >= MAX_REGISTRY_ENTRIES {
                     return Err(IssuerRegistryError::InvalidDocument(
                         "issuer registry capacity exceeded",
@@ -189,10 +189,7 @@ fn read_private_registry(
     if !path.is_absolute()
         || !expected_parent.is_absolute()
         || path.parent() != Some(expected_parent)
-        || expected_parent
-            .canonicalize()
-            .map_err(io_error)?
-            != expected_parent
+        || expected_parent.canonicalize().map_err(io_error)? != expected_parent
         || path.canonicalize().map_err(io_error)? != path
     {
         return Err(IssuerRegistryError::UnsafeFile);

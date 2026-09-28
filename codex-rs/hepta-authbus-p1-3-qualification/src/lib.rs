@@ -220,8 +220,11 @@ pub fn persisted_message_issuer(
             "revoked": revoked,
             "thread_ids": ["qualification"]
         });
-        std::fs::write(&path, serde_json::to_vec(&document).map_err(|error| error.to_string())?)
-            .map_err(|error| error.to_string())?;
+        std::fs::write(
+            &path,
+            serde_json::to_vec(&document).map_err(|error| error.to_string())?,
+        )
+        .map_err(|error| error.to_string())?;
         std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))
             .map_err(|error| error.to_string())?;
         let registry = PrivateIssuerRegistryDocument::load(&path, root.path(), 16_384)

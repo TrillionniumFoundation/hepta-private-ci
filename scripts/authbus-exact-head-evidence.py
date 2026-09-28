@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -22,10 +23,23 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = (
-    "inventory", "receipt_tests", "format", "authbus", "qualification",
-    "evidence", "agentd", "bao", "workspace", "clippy", "clean_tree",
+    'inventory',
+    'inventory_tests',
+    'implementation_map',
+    'operations_contract',
+    'receipt_tests',
+    'format',
+    'authbus',
+    'doc_tests',
+    'qualification',
+    'evidence',
+    'agentd',
+    'bao',
+    'workspace',
+    'clippy',
+    'clean_tree',
 )
-TEST_STEPS = frozenset(("authbus", "qualification", "evidence", "agentd", "bao", "workspace"))
+TEST_STEPS = frozenset(("authbus", "doc_tests", "qualification", "evidence", "agentd", "bao", "workspace"))
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 
 
@@ -63,18 +77,25 @@ def clean_tree() -> bool:
 
 
 def gates_pass(rows: list[dict[str, Any]], candidate: str) -> bool:
-    if [row.get("id") for row in rows] != list(REQUIRED):
+    if not isinstance(candidate, str) or SHA.fullmatch(candidate) is None:
+        return False
+    if (not isinstance(rows, list) or not all(isinstance(row, dict) for row in rows)
+            or [row.get("id") for row in rows] != list(REQUIRED)):
         return False
     for row in rows:
-        if (row.get("state") != "success" or row.get("exit_code") != 0
+        elapsed = row.get("elapsed_seconds")
+        code = row.get("exit_code")
+        if (row.get("state") != "success" or type(code) is not int or code != 0
                 or row.get("candidate") != candidate
                 or not isinstance(row.get("log_sha256"), str)
-                or not re.fullmatch(r"[0-9a-f]{64}", row["log_sha256"])
-                or not isinstance(row.get("elapsed_seconds"), (float, int))
-                or row["elapsed_seconds"] < 0):
+                or re.fullmatch(r"[0-9a-f]{64}", row["log_sha256"]) is None
+                or type(elapsed) not in (float, int)
+                or not math.isfinite(elapsed) or elapsed < 0):
             return False
-        if row["id"] in TEST_STEPS and row.get("passed_tests", 0) <= 0:
-            return False
+        if row["id"] in TEST_STEPS:
+            passed = row.get("passed_tests")
+            if type(passed) is not int or passed <= 0:
+                return False
     return True
 
 
@@ -88,15 +109,7 @@ def commands() -> dict[str, list[str]]:
         "agentd": "codex-hepta-agentd",
         "bao": "codex-hepta-bao-adapter",
     }
-    result = {
-        "inventory": [sys.executable, "scripts/check-authbus-closed-world.py", "--check"],
-        "receipt_tests": [sys.executable, "scripts/test-authbus-exact-head-evidence.py"],
-        "format": ["cargo", "fmt", "--all", "--manifest-path", "codex-rs/Cargo.toml", "--", "--check"],
-        "workspace": cargo + ["--workspace", "--all-targets", "--no-fail-fast"],
-        "clippy": ["cargo", "clippy", "--locked", "--manifest-path", "codex-rs/Cargo.toml",
-                   "--workspace", "--all-targets", "--", "-D", "warnings"],
-        "clean_tree": [sys.executable, "-c", "import subprocess; s=subprocess.check_output(['git','status','--porcelain=v1','--untracked-files=all','--ignore-submodules=none'],text=True); print(s,end=''); raise SystemExit(bool(s))"],
-    }
+    result = {'inventory': [sys.executable, 'scripts/check-authbus-closed-world.py', '--check'], 'receipt_tests': [sys.executable, 'scripts/test-authbus-exact-head-evidence.py'], 'inventory_tests': [sys.executable, 'scripts/test-authbus-closed-world.py'], 'doc_tests': cargo + ['-p', 'codex-hepta-authbus', '--doc'], 'format': ['cargo', 'fmt', '--all', '--manifest-path', 'codex-rs/Cargo.toml', '--', '--check'], 'workspace': cargo + ['--workspace', '--all-targets', '--no-fail-fast'], 'clippy': ['cargo', 'clippy', '--locked', '--manifest-path', 'codex-rs/Cargo.toml', '--workspace', '--all-targets', '--', '-D', 'warnings'], 'clean_tree': [sys.executable, '-c', "import subprocess; s=subprocess.check_output(['git','status','--porcelain=v1','--untracked-files=all','--ignore-submodules=none'],text=True); print(s,end=''); raise SystemExit(bool(s))"], 'implementation_map': [sys.executable, 'scripts/generate-authbus-implementation-map.py', '--check'], 'operations_contract': [sys.executable, 'scripts/test-authbus-operations.py']}
     for name, package in packages.items():
         result[name] = cargo + ["-p", package, "--all-targets"]
     return result
@@ -157,6 +170,9 @@ def run_step(row: dict[str, Any], command: list[str], directory: Path,
                     row["state"] = "failure"
                     row["error"] = "no executed passing tests in the test command output"
         atomic_json(state_file, row)
+        print(f"{row['id']}: {row['state']} (exit={row.get('exit_code')})", flush=True)
+        if row['state'] != 'success' and log.exists():
+            print("\n".join(log.read_text(errors="replace").splitlines()[-80:]), flush=True)
 
 
 def executable_evidence(directory: Path, target: Path) -> list[dict[str, str]]:
@@ -207,7 +223,7 @@ def main() -> int:
     parser.add_argument("--base-sha", required=True)
     parser.add_argument("--step-timeout", type=float, default=1800)
     args = parser.parse_args()
-    if args.step_timeout <= 0:
+    if not math.isfinite(args.step_timeout) or args.step_timeout <= 0:
         parser.error("step timeout must be positive")
     destination = args.output.resolve()
     if destination.is_relative_to(ROOT):
@@ -248,8 +264,6 @@ def main() -> int:
             print(f"AuthBus {args.mode}: executing {row['id']}", flush=True)
             run_step(row, plan[row["id"]], steps, environment, args.step_timeout)
             atomic_json(destination, receipt)
-            if row["state"] != "success":
-                break
         receipt["build_artifacts"] = executable_evidence(steps, target)
         receipt["build_artifacts_sha256"] = aggregate(receipt["build_artifacts"])
         receipt["clean_tree"] = clean_tree()

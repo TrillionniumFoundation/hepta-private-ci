@@ -12,13 +12,9 @@ use super::*;
 
 fn fixture(sequence: u64) -> (IssuerRegistration, SignedMessage) {
     let key = SigningKey::from_bytes(&[19; 32]);
-    let issuer = persisted_message_issuer(
-        "issuer:durable",
-        1,
-        key.verifying_key().to_bytes(),
-        false,
-    )
-    .unwrap();
+    let issuer =
+        persisted_message_issuer("issuer:durable", 1, key.verifying_key().to_bytes(), false)
+            .unwrap();
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,

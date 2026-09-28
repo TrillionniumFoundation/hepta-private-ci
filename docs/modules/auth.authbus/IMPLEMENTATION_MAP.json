@@ -1,86 +1,1371 @@
 {
-  "schema": "hepta.module-implementation-map.v3",
-  "schemaVersion": 3,
-  "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+  "callsiteCaveat": "Lexical candidates are navigation aids; generic method names are not typed call-graph proof.",
+  "claimBoundary": {
+    "activation": false,
+    "implementedOperationMappingComplete": false,
+    "independentAcceptance": false,
+    "nativeSourceMappingComplete": false,
+    "productExecutionProved": false,
+    "productionImplementation": false,
+    "release": false,
+    "sourceRootPresent": true
   },
-  "laneId": "LANE-A-FOUNDATION",
-  "module": "auth.authbus",
-  "owner": "identity-access",
-  "deputy": "security-authority",
-  "technicalGuide": "docs/modules/auth.authbus/TECHNICAL.md",
   "declaredRoots": [
     "codex-rs/hepta-authbus",
     "codex-rs/hepta-authbus-p1-3-qualification"
+  ],
+  "deputy": "security-authority",
+  "externalEvidenceGates": [
+    "independent security review",
+    "named provider/key custody and target-host qualification",
+    "operator canary and explicit activation decision"
+  ],
+  "laneId": "LANE-A-FOUNDATION",
+  "module": "auth.authbus",
+  "operations": [
+    {
+      "delegatedCallees": [],
+      "designOperation": "authorize",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "authorize",
+      "operation": "authorize",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "bootstrap",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "bootstrap",
+      "operation": "bootstrap",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "cancel_reservation",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "cancel_reservation",
+      "operation": "cancel_reservation",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "compact_terminal_reservations",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "compact_terminal_reservations",
+      "operation": "compact_terminal_reservations",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "create_policy",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "create_policy",
+      "operation": "create_policy",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "create_quota",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "create_quota",
+      "operation": "create_quota",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "enroll_issuer",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "enroll_issuer",
+      "operation": "enroll_issuer",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "maintenance_tick",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "maintenance_tick",
+      "operation": "maintenance_tick",
+      "sourcePath": "codex-rs/hepta-authbus/src/operations.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "mark_dispatch_attempted",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "mark_dispatch_attempted",
+      "operation": "mark_dispatch_attempted",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "mark_indeterminate",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "mark_indeterminate",
+      "operation": "mark_indeterminate",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "message_issuer",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "message_issuer",
+      "operation": "message_issuer",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "observe_trusted_time_attestation",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "observe_trusted_time_attestation",
+      "operation": "observe_trusted_time_attestation",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "open",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "open",
+      "operation": "open",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "operational_snapshot",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "operational_snapshot",
+      "operation": "operational_snapshot",
+      "sourcePath": "codex-rs/hepta-authbus/src/operations.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "quota_snapshot",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "quota_snapshot",
+      "operation": "quota_snapshot",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "reconcile_expired_reservation",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "reconcile_expired_reservation",
+      "operation": "reconcile_expired_reservation",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "replace_policy",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "replace_policy",
+      "operation": "replace_policy",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "replace_quota",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "replace_quota",
+      "operation": "replace_quota",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "reservation",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "reservation",
+      "operation": "reservation",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "reserve",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "reserve",
+      "operation": "reserve",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "retire_issuer_epoch",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "retire_issuer_epoch",
+      "operation": "retire_issuer_epoch",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "retire_policy",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "retire_policy",
+      "operation": "retire_policy",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "revoke_issuer",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "revoke_issuer",
+      "operation": "revoke_issuer",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "revoke_policy",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "revoke_policy",
+      "operation": "revoke_policy",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "rotate_issuer",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "rotate_issuer",
+      "operation": "rotate_issuer",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "settle",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "settle",
+      "operation": "settle",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "settlement_issuer",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "settlement_issuer",
+      "operation": "settlement_issuer",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "sweep_expired_reservations",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "sweep_expired_reservations",
+      "operation": "sweep_expired_reservations",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    },
+    {
+      "delegatedCallees": [],
+      "designOperation": "sync_checkpoint",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "sync_checkpoint",
+      "operation": "sync_checkpoint",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "sourcePathExists": true,
+      "state": "source_present_execution_not_asserted",
+      "tests": []
+    }
+  ],
+  "owner": "identity-access",
+  "productCallerState": "source_composed_native_evidence_required",
+  "productCallsiteCandidates": [
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 243,
+      "path": "codex-rs/hepta-agentd/src/authbus_checkpoint.rs",
+      "sourceExpression": ".open("
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 10,
+      "path": "codex-rs/hepta-agentd/src/authbus_trust.rs",
+      "sourceExpression": "PrivateIssuerRegistryDocument"
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 42,
+      "path": "codex-rs/hepta-agentd/src/authbus_trust.rs",
+      "sourceExpression": "PrivateIssuerRegistryDocument"
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 63,
+      "path": "codex-rs/hepta-agentd/src/authbus_trust.rs",
+      "sourceExpression": ".message_issuer("
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 9,
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "sourceExpression": "AuthBusAuthorityHost"
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 235,
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "sourceExpression": "AuthBusAuthorityHost"
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 259,
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "sourceExpression": ".observe_trusted_time_attestation("
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 261,
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "sourceExpression": ".authorize("
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 270,
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "sourceExpression": ".reserve("
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 288,
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "sourceExpression": ".observe_trusted_time_attestation("
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 291,
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "sourceExpression": ".mark_dispatch_attempted("
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 324,
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "sourceExpression": ".observe_trusted_time_attestation("
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 329,
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "sourceExpression": ".mark_indeterminate("
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 510,
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "sourceExpression": "AuthBusAuthorityHost"
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 519,
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "sourceExpression": ".observe_trusted_time_attestation("
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 539,
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "sourceExpression": ".settlement_issuer("
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 551,
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "sourceExpression": ".settle("
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 7,
+      "path": "codex-rs/hepta-evidence/src/authbus_test_support.rs",
+      "sourceExpression": "PrivateIssuerRegistryDocument"
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 47,
+      "path": "codex-rs/hepta-evidence/src/authbus_test_support.rs",
+      "sourceExpression": "PrivateIssuerRegistryDocument"
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 49,
+      "path": "codex-rs/hepta-evidence/src/authbus_test_support.rs",
+      "sourceExpression": ".message_issuer("
+    }
+  ],
+  "productionImplementation": false,
+  "productionWriterState": "host_only_crate_private_store",
+  "repositoryControlledGaps": [
+    "Require successful native source-head and fixed-base synthetic-merge receipts.",
+    "Validate typed product execution and fault-injection outcomes for this candidate."
   ],
   "resolvedRoots": [
     "codex-rs/hepta-authbus",
     "codex-rs/hepta-authbus-p1-3-qualification"
   ],
-  "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
-  "operations": [
-    {
-      "operation": "authenticate",
-      "nativeSymbol": "authenticate",
-      "sourcePath": "codex-rs/hepta-authbus/src/signed.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "authenticate",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "admit_authbus_message",
-      "nativeSymbol": "admit_authbus_message",
-      "sourcePath": "codex-rs/hepta-evidence/src/authbus_store.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "admit_authbus_message",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "enqueue_authbus_message",
-      "nativeSymbol": "enqueue_authbus_message",
-      "sourcePath": "codex-rs/hepta-evidence/src/authbus_outbox.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "enqueue_authbus_message",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    }
-  ],
-  "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
-  ],
-  "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
-  ],
-  "claimBoundary": {
-    "nativeSourceMappingComplete": true,
-    "sourceRootPresent": true,
-    "productionImplementation": false,
-    "productExecutionProved": false,
-    "independentAcceptance": false,
-    "activation": false,
-    "release": false,
-    "implementedOperationMappingComplete": true
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "a6b33095672a48abc9a2b3c4b2c238026523c0dd",
+    "role": "inherited_remediation_base_NOT_current_candidate",
+    "tree": "863b19d9ed3248eff43d8e848be96922c1b61481"
+  },
+  "sourceBinding": {
+    "digest": "80664a072c917b060f41e6dfbfbcf5fef4b73e81342ee599a86a90129c7727e7",
+    "exactCandidateAuthority": "external exact-head qualification receipt",
+    "manifest": [
+      {
+        "path": "codex-rs/Cargo.lock",
+        "sha256": "091f53f0378a2704026c43384b1658bceea94e3e6b6bf1ccc92ccacac3cff7d8"
+      },
+      {
+        "path": "codex-rs/Cargo.toml",
+        "sha256": "1d330229883da5d44681b4e7387ab1133c6edbe5ba46ff577543c29532c4d63b"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/Cargo.toml",
+        "sha256": "f8c4bcd9445a78af69e9344143956929ca8417682649291137e292a5bacd0500"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authbus_checkpoint.rs",
+        "sha256": "b950b82cf93ee24819c9ef1359bb2e31c505bcf9748a3e7a39b99ea06a197ea3"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authbus_dispatch.rs",
+        "sha256": "efb82bb3991197b914c6b4cdbb4ed642df070d8242a22b67e869910a9fe1ad86"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+        "sha256": "bf10d44ccf16516ec2e104b1d1bc1f8843348cab029b453dd1dd18cd639ed393"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+        "sha256": "bec2b35373a7fd6cb9c4ccd1808c827d800a974c2d431870f12bbe70336ccfa0"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authbus_trust.rs",
+        "sha256": "bd30c6a0c29352b97be3e229a58e5ca615471272acf7a999c137e176d1615641"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "sha256": "f386181fd1d37fff906a96f9511f246feddded4c557bd160ec1e03bd5c98542d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+        "sha256": "67c467d7a23a42fe835b34164a0f67c40e5c5658d5ea06feb7fd4d6d39e18268"
+      },
+      {
+        "path": "codex-rs/hepta-authbus-p1-3-qualification/Cargo.toml",
+        "sha256": "28ce34ca666f8247e513f8611a0fb2b8cc8408f92a53e27cb6aa4d04e3c05bc1"
+      },
+      {
+        "path": "codex-rs/hepta-authbus-p1-3-qualification/src/lib.rs",
+        "sha256": "e79e7e2653b57c2a7bf3f98bc5bb82331949fa5ea211d3a853f35c4e9e02b6b6"
+      },
+      {
+        "path": "codex-rs/hepta-authbus-p1-3-qualification/src/lib_tests.rs",
+        "sha256": "23fe3e4a464e461d852f8426e874a8b9a19dcb0d65a153d1c3c1cd6c741677f8"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/Cargo.toml",
+        "sha256": "cee5d7641eaabcc64d870a5237c6a209b823e046f2d17d2cab4abf784834bc87"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/SEALED_API.md",
+        "sha256": "5757c82dbea6873158dae5e9bf59718a5e88aef890ea6f89c91170a9fde9f3c6"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/SIGNED_ADMISSION.md",
+        "sha256": "32825e08dd8d7271ce3f7d4947f719c31077321678a9f321d92c102489f49294"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/migrations/0001_authority.sql",
+        "sha256": "dc04e069132676687376755b548dbf3d3fc18b094b2da6d50f64cc4d36eaa6a7"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/migrations/0002_quota_reservation.sql",
+        "sha256": "c1b5ddafc0008e55d9b31c16b8698dd02396689ae3aebbaef48de9194956bef6"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/migrations/0003_issuer_registry.sql",
+        "sha256": "8430d5d9a58b062584e2169b803dfa655d88d8755ed61966099c21f8477a4fb5"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/migrations/0004_recovery_retention.sql",
+        "sha256": "6e4160de7d9ed3c7c283bedbd099d33218a58aa6f01c5e91339e657931c840b5"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/authority.rs",
+        "sha256": "00a76a5af281ba06f07d347561b331cfeacffcd249cf69da8142711806059f5c"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/authority_schema.rs",
+        "sha256": "0feb2a1ddcc6d331531ec148190a02c005054b706f8b2507e4ee3396aff41307"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/authority_schema_tests.rs",
+        "sha256": "a5a342c2a8bfbf3d3826802e54eedf5389a36520258b10509ba5b75472172537"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/authority_store.rs",
+        "sha256": "5e68ad90822307b13f92919909e683399418f4306d18bcb8f67dbd2c588b5175"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/authority_store_tests.rs",
+        "sha256": "07e2ab92bcebbc177a838ea6c06da5b391a46bb8b4b9307be8f0dd99b5112441"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/host.rs",
+        "sha256": "44879f0e395177306c67bf797ac67dd7f508fbc30852c634a42c7b00fa322cd1"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/host_tests.rs",
+        "sha256": "4d93ef17126328b9b1f26796e653d13b689d278ce4f024b397316ede50d23af8"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/issuer_registry.rs",
+        "sha256": "1a1e66c77af41d44aef3f2f1ad59235c210b64cc7833e47474054afac49f02d2"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/lib.rs",
+        "sha256": "8263bbf12917b2a473ae77f18438a78432ee8c401bc62525de27a2a2277726c9"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/lib_tests.rs",
+        "sha256": "40cbd00c00eae527df9bbc8e9ad0e5abda2be1949527d99546d3e1d2166427d4"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/metrics.rs",
+        "sha256": "1c7cfe160ca189c22eda3a5b7d57e73c3fdccadfa3e17026100352cf61f225b2"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/operations.rs",
+        "sha256": "3919fbe3ea81ba7175e1d5f78c39c54efe9e7261249179f82456f5d68f93530a"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/owner_fence.rs",
+        "sha256": "a3d73318672033fb9d1de0bf7e9f94eecdf337af171bb0c9f51127f6a34574cd"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/quota.rs",
+        "sha256": "9d9dc7149f7454d3e0b0192551edbf470b264e027bb14384544b3a8901d331ef"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/quota_store.rs",
+        "sha256": "08a535003f604bba6e49fae1a07a3cf7b07e395f11e98880b725da8b7e507e62"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/quota_store_tests.rs",
+        "sha256": "487e2fdaac2d62b0a71c0c8e31f1c65fa60acfba65d5b58eb2922322de9eac7a"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/recovery.rs",
+        "sha256": "638beaaabb388138f416629ebf0f8d4dfe5f0589c8f328c168a87dba50a632b8"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/recovery_tests.rs",
+        "sha256": "1a0ebf33bb6d88f43ceb16fc1b9597ad6e5a56514e6e0a5735045be764b4dd8c"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/settlement.rs",
+        "sha256": "33ad1a9f0028924af0ae29e9ffd61e6e98cda3a12c4e5208fb343ccc9c73c219"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/settlement_store.rs",
+        "sha256": "800c6786dd87013de84a6e321c452622ee40a0188e63ceffc01e7de0596abc19"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/settlement_store_tests.rs",
+        "sha256": "43223932285c38c9b2c09a31e0a7b0f4bc93cf03d15563670743694216a81c71"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/signed.rs",
+        "sha256": "821a8a41ebaac4844df1abd6a3639f9502d212deb75b5560cddb82df994a30ab"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/signed_tests.rs",
+        "sha256": "48babbfaf77ce7fee6719df221db3a17d3838617cdac19665e5e72be82cf3418"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/trust.rs",
+        "sha256": "fe2edfeebae33225bca32e3b99b91e345c2c1ee6b6f6c422791ec789ca2783fa"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/trust_store.rs",
+        "sha256": "5add55999fdbffc4211e467becf72cb03e9df7056721d7156b7a5b6fc188bbd0"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/trust_store_tests.rs",
+        "sha256": "5311b3ae6b1d190cbc326b173cd6f4e698963422d7ff417a960e134753e4baac"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/worker.rs",
+        "sha256": "31c1809e374deead7807f125a4180c28e20b8f925c3d4996959dc239956a189f"
+      },
+      {
+        "path": "codex-rs/hepta-bao-adapter/Cargo.toml",
+        "sha256": "85bdbdc0975b8029d75dbf141bddef8e2fe33775fb8191eb07a109758d5d288c"
+      },
+      {
+        "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+        "sha256": "73d928dde7a07761eea47fd910d461bbd01deeb7799bab2c012598e13e987fea"
+      },
+      {
+        "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+        "sha256": "ed1ff0b5aa5532dbafc33e2594b60785a462fcbb1198c795415bb2ae08a637f5"
+      },
+      {
+        "path": "codex-rs/hepta-bao-adapter/src/lib.rs",
+        "sha256": "34c8dc5e11bbf51c6a805562f038022a6fce9844fe2eb63edfa389d829a929f2"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/Cargo.toml",
+        "sha256": "774b4f34a0abd1dbd6371b345d046ab588474776bd2b97d8ad4847ace159f3a3"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/authbus_outbox.rs",
+        "sha256": "fafa6e3064cfc8aee391990334cda4753ab9c65f0da0c36fdd13c4c5fb77a008"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs",
+        "sha256": "8bb0cce40aef1b7ffb65f4909341ab44717bc5eca8cbdeeada6968b707ab0e57"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs",
+        "sha256": "405cc19d4b61ceb9c5ff7c95e495f10df5a7554a617880fc6320795f84c9c7f3"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/authbus_outbox_record.rs",
+        "sha256": "440560a3be2d7b5265ae1be3f4eabafbc6389979131b61205aea74b88571cbb0"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+        "sha256": "b23c92774865787a1b9018a30025fe9fd060cf36d49320973c35ebe8e94e643d"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/authbus_outbox_worker.rs",
+        "sha256": "ea0f5a068fae62eb683d57a3a0512d4ac0fd238852b005bae8ece215d4caf7e5"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/authbus_recovery.rs",
+        "sha256": "0f5f733f0075b9c73cbc570e510315cbddd9150617b3663c8c51391297c47e72"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/authbus_recovery_schema.rs",
+        "sha256": "95cdf70a0a24a5dc79c1014e3415ea8518c58168b7f0d9f503abff23200517de"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/authbus_recovery_tests.rs",
+        "sha256": "98d4ac2325d6e32c5ea2e44d234115225ebb685a792d6d49a06251d2754b55a4"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/authbus_store.rs",
+        "sha256": "90c8f3b6dcb1f505bfae03caaf826ffb4f77a90d812d8b6fe3a6cbb2a721ae30"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/authbus_store_tests.rs",
+        "sha256": "264398ff366c24bccf0ee7f050315eaa82ea026963d1ce62d8d3a4080e1bd91d"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/authbus_test_support.rs",
+        "sha256": "4286ae2b893300978d30e1c7e14405e321e554bdffd94f56b92a4d01f03de5a4"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/lib.rs",
+        "sha256": "b256f6ca98445d2a731b43da748cc151d4fa9bf146867c5511c0dca3e66d6f84"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "sha256": "2a33f6fbbfa531ad99f58fa39b48de347e303ecdd1d7d3075dcd64b23a1190e6"
+      },
+      {
+        "path": "codex-rs/rust-toolchain.toml",
+        "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64"
+      },
+      {
+        "path": "docs/modules/auth.authbus/PUBLIC_API_INVENTORY.json",
+        "sha256": "a4c0ac4e2f47c574ff6f2a96d5caea1390a384562d2c40840e667758a5093643"
+      }
+    ],
+    "selfReferentialCommitClaim": false,
+    "strategy": "sha256-source-file-manifest"
   },
   "sourceRoot": [
     "codex-rs/hepta-authbus",
     "codex-rs/hepta-authbus-p1-3-qualification"
+  ],
+  "sourceRootPresent": true,
+  "technicalGuide": "docs/modules/auth.authbus/TECHNICAL.md",
+  "testDeclarationCaveat": "Declarations may be cfg-gated and are NOT executed coverage or per-operation proof.",
+  "testDeclarations": [
+    {
+      "line": 247,
+      "name": "lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+      "path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs"
+    },
+    {
+      "line": 299,
+      "name": "abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+      "path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs"
+    },
+    {
+      "line": 348,
+      "name": "revocation_during_queue_request_prevents_success_ack",
+      "path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs"
+    },
+    {
+      "line": 371,
+      "name": "ready_generation_and_owner_private_trust_are_required_before_admission",
+      "path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs"
+    },
+    {
+      "line": 449,
+      "name": "matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+      "path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs"
+    },
+    {
+      "line": 54,
+      "name": "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+      "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+    },
+    {
+      "line": 510,
+      "name": "signed_recovery_frontier_allows_exact_current_database",
+      "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+    },
+    {
+      "line": 585,
+      "name": "signed_recovery_frontier_rejects_valid_older_database_image",
+      "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+    },
+    {
+      "line": 111,
+      "name": "complete_negative_matrix_qualifies_without_authority",
+      "path": "codex-rs/hepta-authbus-p1-3-qualification/src/lib_tests.rs"
+    },
+    {
+      "line": 120,
+      "name": "missing_case_is_rejected",
+      "path": "codex-rs/hepta-authbus-p1-3-qualification/src/lib_tests.rs"
+    },
+    {
+      "line": 127,
+      "name": "unexpected_success_fails_qualification",
+      "path": "codex-rs/hepta-authbus-p1-3-qualification/src/lib_tests.rs"
+    },
+    {
+      "line": 137,
+      "name": "persisted_registration_rejects_forged_revoked_and_epoch_substitution",
+      "path": "codex-rs/hepta-authbus-p1-3-qualification/src/lib_tests.rs"
+    },
+    {
+      "line": 206,
+      "name": "authority_host_executes_modern_owner_purpose_sweep_and_settlement_matrix",
+      "path": "codex-rs/hepta-authbus-p1-3-qualification/src/lib_tests.rs"
+    },
+    {
+      "line": 4,
+      "name": "missing_and_replaced_authority_triggers_fail_closed_on_reopen",
+      "path": "codex-rs/hepta-authbus/src/authority_schema_tests.rs"
+    },
+    {
+      "line": 56,
+      "name": "missing_tables_and_unrecognized_schema_objects_fail_closed",
+      "path": "codex-rs/hepta-authbus/src/authority_schema_tests.rs"
+    },
+    {
+      "line": 39,
+      "name": "authorization_is_revision_bound_and_explicit_deny_grants_no_authority",
+      "path": "codex-rs/hepta-authbus/src/authority_store_tests.rs"
+    },
+    {
+      "line": 120,
+      "name": "trusted_time_floor_survives_reopen_and_failed_authorization",
+      "path": "codex-rs/hepta-authbus/src/authority_store_tests.rs"
+    },
+    {
+      "line": 52,
+      "name": "bootstrap_requires_both_state_domains_to_be_new",
+      "path": "codex-rs/hepta-authbus/src/host_tests.rs"
+    },
+    {
+      "line": 78,
+      "name": "second_owner_is_rejected_and_release_allows_reopen",
+      "path": "codex-rs/hepta-authbus/src/host_tests.rs"
+    },
+    {
+      "line": 95,
+      "name": "checkpoint_stage_failures_remain_recoverable",
+      "path": "codex-rs/hepta-authbus/src/host_tests.rs"
+    },
+    {
+      "line": 136,
+      "name": "kill_nine_releases_the_process_owner_fence",
+      "path": "codex-rs/hepta-authbus/src/host_tests.rs"
+    },
+    {
+      "line": 179,
+      "name": "owner_child_process_holds_fence",
+      "path": "codex-rs/hepta-authbus/src/host_tests.rs"
+    },
+    {
+      "line": 197,
+      "name": "concurrent_mutations_checkpoint_and_reopen_without_lost_publication",
+      "path": "codex-rs/hepta-authbus/src/host_tests.rs"
+    },
+    {
+      "line": 249,
+      "name": "cancelled_waiting_mutation_has_no_effect",
+      "path": "codex-rs/hepta-authbus/src/host_tests.rs"
+    },
+    {
+      "line": 283,
+      "name": "checkpoint_faults_do_not_cross_host_boundaries",
+      "path": "codex-rs/hepta-authbus/src/host_tests.rs"
+    },
+    {
+      "line": 325,
+      "name": "failed_create_does_not_unlink_an_existing_checkpoint",
+      "path": "codex-rs/hepta-authbus/src/host_tests.rs"
+    },
+    {
+      "line": 343,
+      "name": "failed_temporary_create_preserves_a_preexisting_file",
+      "path": "codex-rs/hepta-authbus/src/host_tests.rs"
+    },
+    {
+      "line": 371,
+      "name": "distinct_databases_cannot_share_an_active_checkpoint_owner",
+      "path": "codex-rs/hepta-authbus/src/host_tests.rs"
+    },
+    {
+      "line": 42,
+      "name": "exact_envelope_is_replay_checked_without_authority_grant",
+      "path": "codex-rs/hepta-authbus/src/lib_tests.rs"
+    },
+    {
+      "line": 54,
+      "name": "a_nonzero_signature_reference_is_not_cryptographic_authority",
+      "path": "codex-rs/hepta-authbus/src/lib_tests.rs"
+    },
+    {
+      "line": 67,
+      "name": "replay_is_rejected_within_one_issuer_epoch_subject_and_scope",
+      "path": "codex-rs/hepta-authbus/src/lib_tests.rs"
+    },
+    {
+      "line": 81,
+      "name": "scope_issuer_and_key_epoch_have_independent_replay_sequences",
+      "path": "codex-rs/hepta-authbus/src/lib_tests.rs"
+    },
+    {
+      "line": 130,
+      "name": "trusted_revocation_context_is_fail_closed",
+      "path": "codex-rs/hepta-authbus/src/lib_tests.rs"
+    },
+    {
+      "line": 140,
+      "name": "payload_drift_is_rejected",
+      "path": "codex-rs/hepta-authbus/src/lib_tests.rs"
+    },
+    {
+      "line": 148,
+      "name": "expiration_is_fail_closed",
+      "path": "codex-rs/hepta-authbus/src/lib_tests.rs"
+    },
+    {
+      "line": 158,
+      "name": "zero_digest_and_zero_sequence_are_rejected",
+      "path": "codex-rs/hepta-authbus/src/lib_tests.rs"
+    },
+    {
+      "line": 172,
+      "name": "replay_key_capacity_is_bounded",
+      "path": "codex-rs/hepta-authbus/src/lib_tests.rs"
+    },
+    {
+      "line": 98,
+      "name": "exports_all_gauges_without_identity_labels",
+      "path": "codex-rs/hepta-authbus/src/metrics.rs"
+    },
+    {
+      "line": 118,
+      "name": "rendering_an_old_snapshot_does_not_refresh_its_observation_time",
+      "path": "codex-rs/hepta-authbus/src/metrics.rs"
+    },
+    {
+      "line": 259,
+      "name": "process_probe",
+      "path": "codex-rs/hepta-authbus/src/owner_fence.rs"
+    },
+    {
+      "line": 293,
+      "name": "duplicate_rejection_preserves_the_original_cross_process_lock",
+      "path": "codex-rs/hepta-authbus/src/owner_fence.rs"
+    },
+    {
+      "line": 325,
+      "name": "unrelated_descriptor_close_does_not_release_the_modern_fence",
+      "path": "codex-rs/hepta-authbus/src/owner_fence.rs"
+    },
+    {
+      "line": 343,
+      "name": "process_death_releases_owner_without_deleting_the_lock_file",
+      "path": "codex-rs/hepta-authbus/src/owner_fence.rs"
+    },
+    {
+      "line": 369,
+      "name": "failed_open_does_not_leak_the_process_reservation",
+      "path": "codex-rs/hepta-authbus/src/owner_fence.rs"
+    },
+    {
+      "line": 382,
+      "name": "rejects_symlink_without_touching_its_target",
+      "path": "codex-rs/hepta-authbus/src/owner_fence.rs"
+    },
+    {
+      "line": 402,
+      "name": "rejects_a_hard_link",
+      "path": "codex-rs/hepta-authbus/src/owner_fence.rs"
+    },
+    {
+      "line": 76,
+      "name": "simultaneous_last_unit_reservations_cannot_both_succeed",
+      "path": "codex-rs/hepta-authbus/src/quota_store_tests.rs"
+    },
+    {
+      "line": 114,
+      "name": "exact_reservation_retry_is_idempotent_and_changed_amount_conflicts",
+      "path": "codex-rs/hepta-authbus/src/quota_store_tests.rs"
+    },
+    {
+      "line": 37,
+      "name": "advanced_external_checkpoint_rejects_real_old_database_restore",
+      "path": "codex-rs/hepta-authbus/src/recovery_tests.rs"
+    },
+    {
+      "line": 91,
+      "name": "restart_fences_new_reservations_until_dispatch_attempts_become_indeterminate",
+      "path": "codex-rs/hepta-authbus/src/recovery_tests.rs"
+    },
+    {
+      "line": 142,
+      "name": "dispatch_rejects_effect_digest_drift_before_crossing_the_boundary",
+      "path": "codex-rs/hepta-authbus/src/settlement_store_tests.rs"
+    },
+    {
+      "line": 164,
+      "name": "completed_settlement_is_conservative_and_idempotent",
+      "path": "codex-rs/hepta-authbus/src/settlement_store_tests.rs"
+    },
+    {
+      "line": 219,
+      "name": "unknown_expired_effect_keeps_reserve_until_signed_terminal_evidence",
+      "path": "codex-rs/hepta-authbus/src/settlement_store_tests.rs"
+    },
+    {
+      "line": 262,
+      "name": "revoked_policy_blocks_dispatch_and_held_expiry_refunds",
+      "path": "codex-rs/hepta-authbus/src/settlement_store_tests.rs"
+    },
+    {
+      "line": 303,
+      "name": "explicit_cancel_refunds_only_undispatched_reservation",
+      "path": "codex-rs/hepta-authbus/src/settlement_store_tests.rs"
+    },
+    {
+      "line": 336,
+      "name": "sqlite_rejects_illegal_state_jump_and_live_row_deletion",
+      "path": "codex-rs/hepta-authbus/src/settlement_store_tests.rs"
+    },
+    {
+      "line": 355,
+      "name": "terminal_compaction_preserves_operation_idempotency_without_lifetime_capacity_use",
+      "path": "codex-rs/hepta-authbus/src/settlement_store_tests.rs"
+    },
+    {
+      "line": 38,
+      "name": "signed_admission_rejects_payload_and_replay_identity_substitution",
+      "path": "codex-rs/hepta-authbus/src/signed_tests.rs"
+    },
+    {
+      "line": 67,
+      "name": "trusted_registration_and_current_expiry_are_required",
+      "path": "codex-rs/hepta-authbus/src/signed_tests.rs"
+    },
+    {
+      "line": 31,
+      "name": "issuer_rotation_revocation_and_retirement_are_monotonic",
+      "path": "codex-rs/hepta-authbus/src/trust_store_tests.rs"
+    },
+    {
+      "line": 104,
+      "name": "trusted_time_requires_an_active_registered_signer",
+      "path": "codex-rs/hepta-authbus/src/trust_store_tests.rs"
+    },
+    {
+      "line": 160,
+      "name": "shutdown_interrupts_a_stalled_trusted_time_provider",
+      "path": "codex-rs/hepta-authbus/src/worker.rs"
+    },
+    {
+      "line": 178,
+      "name": "dropped_supervisor_stops_a_stalled_provider",
+      "path": "codex-rs/hepta-authbus/src/worker.rs"
+    },
+    {
+      "line": 192,
+      "name": "provider_deadline_is_an_error_not_a_successful_tick",
+      "path": "codex-rs/hepta-authbus/src/worker.rs"
+    },
+    {
+      "line": 143,
+      "name": "real_tls_read_uses_headers_exact_version_and_secret_only_consumer",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+    },
+    {
+      "line": 178,
+      "name": "invalid_signature_and_provider_denial_do_not_release_secret",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+    },
+    {
+      "line": 209,
+      "name": "revocation_during_network_wait_prevents_consumer_delivery",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+    },
+    {
+      "line": 249,
+      "name": "untrusted_tls_certificate_fails_before_secret_delivery",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+    },
+    {
+      "line": 276,
+      "name": "oversized_reply_fails_without_consumer_delivery",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+    },
+    {
+      "line": 299,
+      "name": "timeout_does_not_retry_or_release_a_secret",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+    },
+    {
+      "line": 335,
+      "name": "consumer_failure_after_delivery_is_indeterminate",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+    },
+    {
+      "line": 362,
+      "name": "version_and_digest_mismatches_never_deliver",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+    },
+    {
+      "line": 407,
+      "name": "provider_not_found_and_malformed_success_are_denied",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+    },
+    {
+      "line": 452,
+      "name": "root_namespace_omits_namespace_header",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+    },
+    {
+      "line": 638,
+      "name": "authbus_product_path_reserves_fences_final_use_and_settles_observed_cost",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+    },
+    {
+      "line": 678,
+      "name": "authbus_timeout_keeps_quota_held_as_indeterminate",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+    },
+    {
+      "line": 50,
+      "name": "current_issuer_scan_cannot_be_starved_by_older_epochs_or_other_issuers",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs"
+    },
+    {
+      "line": 80,
+      "name": "quarantine_requires_current_fence_and_survives_reopen_without_acknowledgement",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs"
+    },
+    {
+      "line": 159,
+      "name": "recovered_claim_reports_attempt_and_fences_expired_quarantine_worker",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs"
+    },
+    {
+      "line": 223,
+      "name": "quarantine_rechecks_current_issuer_and_does_not_retire_other_messages",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs"
+    },
+    {
+      "line": 83,
+      "name": "enqueue_commit_response_loss_is_idempotent_across_reopen",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+    },
+    {
+      "line": 130,
+      "name": "failed_insert_rolls_back_replay_and_direct_admission_cannot_be_upgraded",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+    },
+    {
+      "line": 188,
+      "name": "payload_route_and_retained_message_identity_cannot_be_substituted",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+    },
+    {
+      "line": 245,
+      "name": "two_handles_serialize_claim_and_every_new_fence_rejects_old_worker",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+    },
+    {
+      "line": 290,
+      "name": "expiry_and_current_revocation_are_terminal_and_never_acknowledged",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+    },
+    {
+      "line": 345,
+      "name": "expired_lease_cannot_renew_retry_or_ack_before_or_after_reclaim",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+    },
+    {
+      "line": 387,
+      "name": "delivery_attempt_budget_quarantines_without_resending_forever",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+    },
+    {
+      "line": 410,
+      "name": "bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+    },
+    {
+      "line": 502,
+      "name": "crash_delivery_child",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+    },
+    {
+      "line": 517,
+      "name": "actual_process_crash_after_send_before_ack_redelivers_same_id",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+    },
+    {
+      "line": 554,
+      "name": "missing_outbox_guard_is_rejected_on_reopen",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+    },
+    {
+      "line": 570,
+      "name": "one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs",
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+    },
+    {
+      "line": 77,
+      "name": "every_replay_mutation_requires_exact_external_checkpoint_ack",
+      "path": "codex-rs/hepta-evidence/src/authbus_recovery_tests.rs"
+    },
+    {
+      "line": 116,
+      "name": "external_checkpoint_detects_real_old_database_restore",
+      "path": "codex-rs/hepta-evidence/src/authbus_recovery_tests.rs"
+    },
+    {
+      "line": 163,
+      "name": "issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resurrection",
+      "path": "codex-rs/hepta-evidence/src/authbus_recovery_tests.rs"
+    },
+    {
+      "line": 240,
+      "name": "altered_replay_checkpoint_schema_is_rejected_before_recovery",
+      "path": "codex-rs/hepta-evidence/src/authbus_recovery_tests.rs"
+    },
+    {
+      "line": 52,
+      "name": "replay_fence_survives_reopen_and_preserves_full_unsigned_sequence",
+      "path": "codex-rs/hepta-evidence/src/authbus_store_tests.rs"
+    },
+    {
+      "line": 72,
+      "name": "independent_database_handles_cannot_both_admit_one_sequence",
+      "path": "codex-rs/hepta-evidence/src/authbus_store_tests.rs"
+    },
+    {
+      "line": 87,
+      "name": "rejected_authentication_does_not_consume_sequence",
+      "path": "codex-rs/hepta-evidence/src/authbus_store_tests.rs"
+    },
+    {
+      "line": 111,
+      "name": "capacity_failure_does_not_burn_a_new_replay_key",
+      "path": "codex-rs/hepta-evidence/src/authbus_store_tests.rs"
+    },
+    {
+      "line": 186,
+      "name": "evid_01_one_principal_cannot_satisfy_generator_and_evaluator_independence",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 247,
+      "name": "evid_01_distinct_authenticated_principals_satisfy_independence",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 306,
+      "name": "evid_01_distinct_principals_sharing_one_signing_identity_are_not_independent",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 369,
+      "name": "current_trust_rotation_or_revocation_invalidates_positive_verification",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 432,
+      "name": "evid_02_wrong_tree_and_expired_candidate_are_unavailable",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 495,
+      "name": "evid_03_corrupted_canonical_payload_fails_reopen",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 549,
+      "name": "evid_03_broken_predecessor_fails_reopen",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 618,
+      "name": "evid_04_fixture_cannot_satisfy_hardware_claim",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 666,
+      "name": "independent_decision_binds_candidate_principal_key_role_and_evidence_set",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 740,
+      "name": "independent_decision_validity_outlives_short_ingress_auth_ttl",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 824,
+      "name": "independent_decision_becomes_conflicting_when_candidate_evidence_set_changes",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 926,
+      "name": "exact_authenticated_retry_is_idempotent_but_payload_drift_conflicts",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 968,
+      "name": "correction_and_revocation_are_append_only_and_non_resurrecting",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 1037,
+      "name": "lineage_mutation_is_principal_scoped_with_security_revocation_exception",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 1125,
+      "name": "replay_sequence_is_consumed_atomically_with_insert",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 1174,
+      "name": "claim_query_rejects_more_than_512_references",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 1209,
+      "name": "predecessor_traversal_fails_closed_beyond_256_edges",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 1264,
+      "name": "concurrent_store_handles_serialize_conflicting_evidence_identity",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    },
+    {
+      "line": 1311,
+      "name": "failed_evidence_insert_rolls_back_authbus_replay_advance",
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs"
+    }
   ]
 }

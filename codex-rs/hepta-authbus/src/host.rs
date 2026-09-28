@@ -86,7 +86,9 @@ fn checkpoint_failpoint(path: &Path, stage: u8) -> Result<(), AuthBusAuthorityEr
     if CHECKPOINT_FAILPOINTS
         .get_or_init(|| Mutex::new(HashMap::new()))
         .lock()
-        .map_err(|_| AuthBusAuthorityError::Storage("checkpoint failpoint registry poisoned".into()))?
+        .map_err(|_| {
+            AuthBusAuthorityError::Storage("checkpoint failpoint registry poisoned".into())
+        })?
         .get(path)
         .copied()
         == Some(stage)
@@ -104,6 +106,7 @@ pub struct AuthBusAuthorityHost {
     pub(crate) store: AuthBusAuthorityStore,
     checkpoint: AuthorityCheckpointFile,
     _owner_fence: OwnerFence,
+    _checkpoint_owner_fence: OwnerFence,
     // AuthBus concurrency closure: one mutation-to-witness critical section.
     pub(crate) mutation: tokio::sync::Mutex<()>,
 }
@@ -141,6 +144,8 @@ impl AuthBusAuthorityHost {
             return Err(AuthBusAuthorityError::RollbackDetected);
         }
         let owner_fence = OwnerFence::acquire(database_path, owner_id).await?;
+        // A distinct database must not share this host's external witness.
+        let checkpoint_owner_fence = OwnerFence::acquire(&checkpoint_path, owner_id).await?;
         let store = AuthBusAuthorityStore::open(database_path).await?;
         let (checkpoint, external) = if checkpoint_exists {
             AuthorityCheckpointFile::open(checkpoint_path, database_path, owner_id)?
@@ -169,12 +174,15 @@ impl AuthBusAuthorityHost {
         // maintenance worker and remain inside its mutation/publication gate.
         let _ = store.reconcile_after_restart(RECOVERY_BATCH).await?;
         if let Some(time) = store.last_trusted_time().await? {
-            let _ = store.sweep_expired_reservations(time, RECOVERY_BATCH).await?;
+            let _ = store
+                .sweep_expired_reservations(time, RECOVERY_BATCH)
+                .await?;
         }
         let host = Self {
             store,
             checkpoint,
             _owner_fence: owner_fence,
+            _checkpoint_owner_fence: checkpoint_owner_fence,
             mutation: tokio::sync::Mutex::new(()),
         };
         host.sync_checkpoint().await?;
@@ -277,7 +285,10 @@ impl AuthBusAuthorityHost {
         attestation: &SignedTrustedTimeAttestation,
     ) -> Result<TrustedTimeSample, AuthBusAuthorityError> {
         let _mutation = self.begin_mutation().await?;
-        let result = self.store.observe_trusted_time_attestation(attestation).await;
+        let result = self
+            .store
+            .observe_trusted_time_attestation(attestation)
+            .await;
         self.finish(result).await
     }
 
@@ -316,7 +327,10 @@ impl AuthBusAuthorityHost {
         time: TrustedTimeSample,
     ) -> Result<AuthPolicy, AuthBusAuthorityError> {
         let _mutation = self.begin_mutation().await?;
-        let result = self.store.replace_policy(spec, expected_revision, time).await;
+        let result = self
+            .store
+            .replace_policy(spec, expected_revision, time)
+            .await;
         self.finish(result).await
     }
 
@@ -327,7 +341,10 @@ impl AuthBusAuthorityHost {
         time: TrustedTimeSample,
     ) -> Result<AuthPolicy, AuthBusAuthorityError> {
         let _mutation = self.begin_mutation().await?;
-        let result = self.store.revoke_policy(policy_id, expected_revision, time).await;
+        let result = self
+            .store
+            .revoke_policy(policy_id, expected_revision, time)
+            .await;
         self.finish(result).await
     }
 
@@ -338,7 +355,10 @@ impl AuthBusAuthorityHost {
         retired_at_ms: u64,
     ) -> Result<(), AuthBusAuthorityError> {
         let _mutation = self.begin_mutation().await?;
-        let result = self.store.retire_policy(policy_id, expected_revision, retired_at_ms).await;
+        let result = self
+            .store
+            .retire_policy(policy_id, expected_revision, retired_at_ms)
+            .await;
         self.finish(result).await
     }
 
@@ -375,7 +395,10 @@ impl AuthBusAuthorityHost {
         time: TrustedTimeSample,
     ) -> Result<QuotaSnapshot, AuthBusAuthorityError> {
         let _mutation = self.begin_mutation().await?;
-        let result = self.store.replace_quota(spec, expected_revision, time).await;
+        let result = self
+            .store
+            .replace_quota(spec, expected_revision, time)
+            .await;
         self.finish(result).await
     }
 
@@ -412,7 +435,10 @@ impl AuthBusAuthorityHost {
         time: TrustedTimeSample,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
         let _mutation = self.begin_mutation().await?;
-        let result = self.store.mark_indeterminate(reservation_id, expected_revision, time).await;
+        let result = self
+            .store
+            .mark_indeterminate(reservation_id, expected_revision, time)
+            .await;
         self.finish(result).await
     }
 
@@ -423,7 +449,10 @@ impl AuthBusAuthorityHost {
         time: TrustedTimeSample,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
         let _mutation = self.begin_mutation().await?;
-        let result = self.store.cancel_reservation(reservation_id, expected_revision, time).await;
+        let result = self
+            .store
+            .cancel_reservation(reservation_id, expected_revision, time)
+            .await;
         self.finish(result).await
     }
 
@@ -468,7 +497,10 @@ impl AuthBusAuthorityHost {
         limit: u32,
     ) -> Result<u32, AuthBusAuthorityError> {
         let _mutation = self.begin_mutation().await?;
-        let result = self.store.compact_terminal_reservations(older_than_ms, limit).await;
+        let result = self
+            .store
+            .compact_terminal_reservations(older_than_ms, limit)
+            .await;
         self.finish(result).await
     }
 
@@ -511,7 +543,10 @@ impl AuthorityCheckpointFile {
     ) -> Result<(Self, AuthorityCheckpoint), AuthBusAuthorityError> {
         validate_owner(owner_id)?;
         validate_path(&path, database_path)?;
-        let file = Self { path, owner_id: owner_id.to_owned() };
+        let file = Self {
+            path,
+            owner_id: owner_id.to_owned(),
+        };
         let checkpoint = file.read()?;
         Ok((file, checkpoint))
     }
@@ -541,12 +576,17 @@ impl AuthorityCheckpointFile {
         {
             return Err(AuthBusAuthorityError::UnsafeCheckpoint);
         }
-        let digest = document.digest.parse::<Digest32>()
+        let digest = document
+            .digest
+            .parse::<Digest32>()
             .map_err(|_| AuthBusAuthorityError::UnsafeCheckpoint)?;
         if digest.is_zero() {
             return Err(AuthBusAuthorityError::UnsafeCheckpoint);
         }
-        Ok(AuthorityCheckpoint { generation: document.generation, digest })
+        Ok(AuthorityCheckpoint {
+            generation: document.generation,
+            digest,
+        })
     }
 
     fn replace(
@@ -559,8 +599,11 @@ impl AuthorityCheckpointFile {
             return Ok(());
         }
         if current != expected
-            || next.generation != expected.generation.checked_add(1)
-                .ok_or(AuthBusAuthorityError::CapacityExceeded)?
+            || next.generation
+                != expected
+                    .generation
+                    .checked_add(1)
+                    .ok_or(AuthBusAuthorityError::CapacityExceeded)?
             || next.digest.is_zero()
         {
             return Err(AuthBusAuthorityError::RollbackDetected);
@@ -587,11 +630,17 @@ fn validate_parent_paths(path: &Path, database_path: &Path) -> Result<(), AuthBu
     if !path.is_absolute() || !database_path.is_absolute() {
         return Err(AuthBusAuthorityError::UnsafeCheckpoint);
     }
-    let parent = path.parent().ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
-    let db_parent = database_path.parent().ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
-    let parent = parent.canonicalize()
+    let parent = path
+        .parent()
+        .ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
+    let db_parent = database_path
+        .parent()
+        .ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
+    let parent = parent
+        .canonicalize()
         .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
-    let db_parent = db_parent.canonicalize()
+    let db_parent = db_parent
+        .canonicalize()
         .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
     if parent == db_parent {
         return Err(AuthBusAuthorityError::UnsafeCheckpoint);
@@ -614,7 +663,9 @@ fn validate_path(path: &Path, database_path: &Path) -> Result<(), AuthBusAuthori
     use std::os::unix::fs::MetadataExt;
 
     validate_parent_paths(path, database_path)?;
-    let parent = path.parent().ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
+    let parent = path
+        .parent()
+        .ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
     let directory = std::fs::metadata(parent)
         .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
     let file = std::fs::symlink_metadata(path)
@@ -624,8 +675,10 @@ fn validate_path(path: &Path, database_path: &Path) -> Result<(), AuthBusAuthori
         || file.uid() != directory.uid()
         || file.mode() & 0o077 != 0
         || file.len() > MAX_CHECKPOINT_BYTES
-        || path.canonicalize()
-            .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))? != path
+        || path
+            .canonicalize()
+            .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?
+            != path
     {
         return Err(AuthBusAuthorityError::UnsafeCheckpoint);
     }
@@ -643,25 +696,39 @@ fn read_private_file(path: &Path) -> Result<Vec<u8>, AuthBusAuthorityError> {
 
     let before = std::fs::symlink_metadata(path)
         .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
-    let mut file = File::open(path)
-        .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
-    let opened = file.metadata()
+    let mut file =
+        File::open(path).map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
+    let opened = file
+        .metadata()
         .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
     let identity = |m: &std::fs::Metadata| {
-        (m.dev(), m.ino(), m.len(), m.mtime(), m.mtime_nsec(), m.ctime(), m.ctime_nsec())
+        (
+            m.dev(),
+            m.ino(),
+            m.len(),
+            m.mtime(),
+            m.mtime_nsec(),
+            m.ctime(),
+            m.ctime_nsec(),
+        )
     };
     if identity(&opened) != identity(&before) {
         return Err(AuthBusAuthorityError::UnsafeCheckpoint);
     }
     let mut bytes = Vec::new();
-    std::io::Read::by_ref(&mut file).take(MAX_CHECKPOINT_BYTES + 1).read_to_end(&mut bytes)
+    std::io::Read::by_ref(&mut file)
+        .take(MAX_CHECKPOINT_BYTES + 1)
+        .read_to_end(&mut bytes)
         .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
     let after = std::fs::symlink_metadata(path)
         .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
     if bytes.len() as u64 > MAX_CHECKPOINT_BYTES
         || identity(&after) != identity(&before)
-        || identity(&file.metadata()
-            .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?) != identity(&before)
+        || identity(
+            &file
+                .metadata()
+                .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?,
+        ) != identity(&before)
     {
         return Err(AuthBusAuthorityError::UnsafeCheckpoint);
     }
@@ -682,16 +749,24 @@ fn create_private_checkpoint(
     use std::os::unix::fs::OpenOptionsExt;
 
     let payload = checkpoint_payload(owner_id, checkpoint)?;
-    let parent = path.parent().ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
+    let parent = path
+        .parent()
+        .ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
     // Open before entering the cleanup scope: a failed create_new must never
     // remove a checkpoint which another database owner has already created.
-    let mut file = OpenOptions::new().create_new(true).write(true).mode(0o600).open(path)
+    let mut file = OpenOptions::new()
+        .create_new(true)
+        .write(true)
+        .mode(0o600)
+        .open(path)
         .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
     let result = (|| -> Result<(), AuthBusAuthorityError> {
         file.write_all(&payload)
             .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
-        file.sync_all().map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
-        File::open(parent).and_then(|directory| directory.sync_all())
+        file.sync_all()
+            .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
+        File::open(parent)
+            .and_then(|directory| directory.sync_all())
             .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
         Ok(())
     })();
@@ -719,7 +794,8 @@ fn checkpoint_payload(
         owner_id: owner_id.to_owned(),
         generation: checkpoint.generation,
         digest: checkpoint.digest.to_string(),
-    }).map_err(|_| AuthBusAuthorityError::UnsafeCheckpoint)?;
+    })
+    .map_err(|_| AuthBusAuthorityError::UnsafeCheckpoint)?;
     if payload.len() as u64 > MAX_CHECKPOINT_BYTES {
         return Err(AuthBusAuthorityError::UnsafeCheckpoint);
     }
@@ -734,25 +810,39 @@ fn write_private_atomic(
 ) -> Result<(), AuthBusAuthorityError> {
     use std::os::unix::fs::OpenOptionsExt;
 
-    let parent = path.parent().ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
-    let name = path.file_name().and_then(|value| value.to_str())
+    let parent = path
+        .parent()
         .ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
-    let temporary = parent.join(format!(".{name}.{}.{}.tmp", std::process::id(), next.generation));
+    let name = path
+        .file_name()
+        .and_then(|value| value.to_str())
+        .ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
+    let temporary = parent.join(format!(
+        ".{name}.{}.{}.tmp",
+        std::process::id(),
+        next.generation
+    ));
     let payload = checkpoint_payload(owner_id, next)?;
     // As with bootstrap, do not unlink a pre-existing path after create_new fails.
-    let mut file = OpenOptions::new().create_new(true).write(true).mode(0o600).open(&temporary)
+    let mut file = OpenOptions::new()
+        .create_new(true)
+        .write(true)
+        .mode(0o600)
+        .open(&temporary)
         .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
     let result = (|| -> Result<(), AuthBusAuthorityError> {
         checkpoint_failpoint(path, 1)?;
         file.write_all(&payload)
             .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
         checkpoint_failpoint(path, 2)?;
-        file.sync_all().map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
+        file.sync_all()
+            .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
         checkpoint_failpoint(path, 3)?;
         std::fs::rename(&temporary, path)
             .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
         checkpoint_failpoint(path, 4)?;
-        File::open(parent).and_then(|directory| directory.sync_all())
+        File::open(parent)
+            .and_then(|directory| directory.sync_all())
             .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
         Ok(())
     })();

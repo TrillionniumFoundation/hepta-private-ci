@@ -49,6 +49,20 @@ class ReceiptContract(unittest.TestCase):
                 rows[0][field] = value
                 self.assertFalse(receipt.gates_pass(rows, self.candidate))
 
+    def test_malformed_scalars_and_rows_fail_closed(self):
+        for field, value in (("elapsed_seconds", float("nan")),
+                             ("elapsed_seconds", float("inf")),
+                             ("elapsed_seconds", True), ("exit_code", False)):
+            rows = copy.deepcopy(self.rows)
+            rows[0][field] = value
+            self.assertFalse(receipt.gates_pass(rows, self.candidate))
+        self.assertFalse(receipt.gates_pass(None, self.candidate))
+        self.assertFalse(receipt.gates_pass([None], self.candidate))
+        for value in (True, 1.5, "1", None):
+            rows = copy.deepcopy(self.rows)
+            next(row for row in rows if row["id"] == "authbus")["passed_tests"] = value
+            self.assertFalse(receipt.gates_pass(rows, self.candidate))
+
     def test_zero_test_execution_is_not_qualification(self):
         for name in receipt.TEST_STEPS:
             rows = copy.deepcopy(self.rows)
@@ -59,7 +73,7 @@ class ReceiptContract(unittest.TestCase):
         self.assertEqual(set(receipt.REQUIRED), set(receipt.commands()))
         for name in receipt.TEST_STEPS:
             self.assertIn("--locked", receipt.commands()[name])
-            self.assertIn("--all-targets", receipt.commands()[name])
+            self.assertIn("--doc" if name == "doc_tests" else "--all-targets", receipt.commands()[name])
 
     def test_real_subprocess_failure_is_recorded(self):
         with tempfile.TemporaryDirectory() as raw:
