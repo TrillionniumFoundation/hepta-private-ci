@@ -13,6 +13,7 @@ use crate::ArtifactClosureError;
 use crate::ArtifactOwnerHostError;
 use crate::ArtifactPublicationError;
 use crate::ArtifactPublicationReceiptV1;
+use crate::ArtifactRegistryError;
 use crate::DatasetWithdrawalRegistry;
 
 impl LearningArtifactOwnerService {
@@ -37,9 +38,24 @@ impl LearningArtifactOwnerService {
         let outcome = self.publish_recorded(request);
         self.observations.record(Phase::Publish, started, &outcome);
         if let Err(error) = &outcome {
-            if matches!(error, LearningArtifactOwnerServiceError::RequestMismatch) {
+            if error.code() == "artifact.identity_conflict" {
                 self.observations.identity_conflicts =
                     self.observations.identity_conflicts.saturating_add(1);
+            }
+            match error.code() {
+                "artifact.owner_context" | "artifact.authority_stale" => {
+                    self.observations.owner_context_rejections =
+                        self.observations.owner_context_rejections.saturating_add(1);
+                }
+                "artifact.owner_busy" => {
+                    self.observations.owner_busy_rejections =
+                        self.observations.owner_busy_rejections.saturating_add(1);
+                }
+                "artifact.capacity" => {
+                    self.observations.capacity_rejections =
+                        self.observations.capacity_rejections.saturating_add(1);
+                }
+                _ => {}
             }
             if error.is_withdrawal_block() {
                 self.observations.withdrawal_blocked_publications =
@@ -96,21 +112,41 @@ impl LearningArtifactOwnerServiceError {
     #[must_use]
     pub fn code(&self) -> &'static str {
         match self {
-            Self::Host(ArtifactOwnerHostError::WriterFenceBusy) => "artifact.owner_busy",
-            Self::Host(ArtifactOwnerHostError::WriterLeaseContext) => "artifact.owner_context",
-            Self::Host(_) => "artifact.owner_failure",
-            Self::Publication(error) => match error {
-                ArtifactPublicationError::Admission(admission) => match admission {
-                    ArtifactAdmissionError::WithdrawalHeadChanged => "artifact.withdrawal_frontier",
-                    ArtifactAdmissionError::WithdrawalScopeChanged
-                    | ArtifactAdmissionError::WithdrawalScopeRequired => "artifact.withdrawal_scope",
-                    ArtifactAdmissionError::Manifest(ArtifactClosureError::WithdrawnDataset) => {
-                        "artifact.dataset_withdrawn"
-                    }
-                    _ => "artifact.admission_rejected",
+            Self::Host(error) => match error {
+                ArtifactOwnerHostError::Storage(_) => "artifact.storage_failure",
+                ArtifactOwnerHostError::Publication(error) => publication_code(error),
+                ArtifactOwnerHostError::Registry(error) => match error {
+                    ArtifactRegistryError::RecordLimitExceeded => "artifact.capacity",
+                    ArtifactRegistryError::IdentityConflict(_)
+                    | ArtifactRegistryError::ArtifactAlreadyExists(_) => "artifact.identity_conflict",
+                    _ => error.code(),
                 },
-                _ => "artifact.publication_rejected",
+                ArtifactOwnerHostError::Io(_) | ArtifactOwnerHostError::Indeterminate => {
+                    "artifact.persistence_unknown"
+                }
+                ArtifactOwnerHostError::InvalidTrust => "artifact.invalid_configuration",
+                ArtifactOwnerHostError::InvalidKey
+                | ArtifactOwnerHostError::UnknownSigner
+                | ArtifactOwnerHostError::InvalidSignature => "artifact.authentication_rejected",
+                ArtifactOwnerHostError::SignerContext
+                | ArtifactOwnerHostError::WriterLeaseContext => "artifact.owner_context",
+                ArtifactOwnerHostError::SignerRevoked
+                | ArtifactOwnerHostError::CurrentHeadExpired => "artifact.authority_stale",
+                ArtifactOwnerHostError::WriterFenceBusy => "artifact.owner_busy",
+                ArtifactOwnerHostError::RegistryPredecessorMismatch
+                | ArtifactOwnerHostError::IdentityConflict => "artifact.identity_conflict",
+                ArtifactOwnerHostError::CurrentHeadContext
+                | ArtifactOwnerHostError::CurrentHeadConflict
+                | ArtifactOwnerHostError::CurrentHeadFork
+                | ArtifactOwnerHostError::CurrentHeadRollback => "artifact.current_frontier_conflict",
+                ArtifactOwnerHostError::CheckpointMissing
+                | ArtifactOwnerHostError::CheckpointGap
+                | ArtifactOwnerHostError::CheckpointMismatch => "artifact.checkpoint_mismatch",
+                ArtifactOwnerHostError::PathBoundary => "artifact.path_boundary",
+                ArtifactOwnerHostError::Capacity => "artifact.capacity",
+                ArtifactOwnerHostError::InternalInvariant => "artifact.internal_invariant",
             },
+            Self::Publication(error) => publication_code(error),
             Self::ControlIo(_) => "artifact.persistence_unknown",
             Self::InvalidConfiguration => "artifact.invalid_configuration",
             Self::WithdrawalFrontierConflict => "artifact.withdrawal_conflict",
@@ -126,14 +162,42 @@ impl LearningArtifactOwnerServiceError {
     }
 
     fn is_withdrawal_block(&self) -> bool {
-        matches!(self,
-            Self::WithdrawalDurabilityUnknown
-            | Self::Publication(ArtifactPublicationError::Admission(
-                ArtifactAdmissionError::WithdrawalHeadChanged
-                | ArtifactAdmissionError::WithdrawalScopeChanged
-                | ArtifactAdmissionError::WithdrawalScopeRequired
-                | ArtifactAdmissionError::Manifest(ArtifactClosureError::WithdrawnDataset)
-            ))
+        matches!(self.code(),
+            "artifact.withdrawal_durability_unknown"
+            | "artifact.withdrawal_frontier"
+            | "artifact.withdrawal_scope"
+            | "artifact.dataset_withdrawn"
         )
     }
 }
+
+fn publication_code(error: &ArtifactPublicationError) -> &'static str {
+    match error {
+        ArtifactPublicationError::Admission(admission) => match admission {
+            ArtifactAdmissionError::WithdrawalHeadChanged => "artifact.withdrawal_frontier",
+            ArtifactAdmissionError::WithdrawalScopeChanged
+            | ArtifactAdmissionError::WithdrawalScopeRequired => "artifact.withdrawal_scope",
+            ArtifactAdmissionError::Manifest(ArtifactClosureError::WithdrawnDataset) => {
+                "artifact.dataset_withdrawn"
+            }
+            ArtifactAdmissionError::Manifest(_)
+            | ArtifactAdmissionError::AuthorityGrant
+            | ArtifactAdmissionError::AdmissionTimeWindow
+            | ArtifactAdmissionError::ManifestDigestMismatch
+            | ArtifactAdmissionError::AdmissionDigestMismatch => "artifact.admission_rejected",
+        },
+        ArtifactPublicationError::InvalidPhase
+        | ArtifactPublicationError::PayloadMismatch
+        | ArtifactPublicationError::RegistryPredecessorMismatch
+        | ArtifactPublicationError::RegistryProjectionMismatch
+        | ArtifactPublicationError::RegistryReceiptMismatch
+        | ArtifactPublicationError::WitnessReceiptMismatch
+        | ArtifactPublicationError::AcknowledgementTime
+        | ArtifactPublicationError::SnapshotMismatch
+        | ArtifactPublicationError::InternalInvariant => "artifact.publication_rejected",
+    }
+}
+
+#[cfg(all(test, unix))]
+#[path = "observation_tests.rs"]
+mod tests;

@@ -2,7 +2,7 @@ name: Hepta learning.artifacts qualification
 
 on:
   push:
-    branches: [main, 'codex/learning-artifacts-qualification-recovery-*', 'codex/learning-artifacts-qualified-host-*']
+    branches: [main, 'codex/learning-artifacts-qualification-recovery-*', 'codex/learning-artifacts-qualified-host-*', 'work/learning-artifacts-runtime-convergence-*']
   pull_request:
   merge_group:
   workflow_dispatch:
@@ -35,6 +35,8 @@ jobs:
         lane: [exact-head, synthetic-merge]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 100
+    env:
+      HEPTA_ARTIFACT_PHASE_OUTPUT: ${{ runner.temp }}/artifact-phase-measurements
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -101,12 +103,31 @@ jobs:
           python3 scripts/hepta_artifact_receipt_guard.py \
             --source "$SOURCE_SHA" --base "$BASE_SHA" --lane "$LANE" \
             --out "$RUNNER_TEMP/artifact-evidence"
+      - name: Index exact source and native fixture measurements
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_artifact_convergence.py \
+            --source "$(git rev-parse HEAD)" \
+            --phase-dir "$HEPTA_ARTIFACT_PHASE_OUTPUT" \
+            --out "$RUNNER_TEMP/artifact-observations/delivery-index.json"
       - name: Retain failure or success evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: learning-artifacts-${{ env.SOURCE_SHA }}-${{ matrix.os }}-${{ matrix.lane }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/artifact-evidence
+          if-no-files-found: error
+          retention-days: 14
+      - name: Retain separate phase observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-artifacts-observations-${{ env.SOURCE_SHA }}-${{ matrix.os }}-${{ matrix.lane }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/artifact-phase-measurements
+            ${{ runner.temp }}/artifact-observations
           if-no-files-found: error
           retention-days: 14
 

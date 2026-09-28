@@ -1,0 +1,68 @@
+name: Learning artifacts source preparation only
+on:
+  push:
+    branches: ['work/learning-artifacts-runtime-convergence-20260928']
+permissions:
+  contents: read
+concurrency:
+  group: artifact-source-preparation-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  prepare:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      BRANCH: work/learning-artifacts-runtime-convergence-20260928
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+      - name: Format owned source and refresh explicit source bindings
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/$BRANCH"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git fetch origin "refs/heads/$BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+          python3 -m unittest discover -s scripts -p test_hepta_artifact_convergence.py -v
+          find codex-rs/hepta-learning-artifacts -name '*.rs' -print0 | xargs -0 rustfmt --edition 2024
+          python3 - <<'PYDOC'
+          from pathlib import Path
+          path = Path('docs/modules/learning.artifacts/TECHNICAL.md')
+          text = path.read_text()
+          marker = '## Runtime convergence and exact-source observations (2026-09-28)'
+          if marker not in text:
+              text += '\n\n' + marker + '\n\nSee [runtime convergence](../../../codex-rs/hepta-learning-artifacts/RUNTIME_CONVERGENCE.md) for the candidate identity, implemented observation boundaries, test-to-source index, measurement producer and remaining A-C acceptance gates. These additions do not imply native qualification or production activation.\n'
+              path.write_text(text)
+          PYDOC
+          git add codex-rs/hepta-learning-artifacts docs/modules/learning.artifacts/TECHNICAL.md
+          python3 scripts/hepta_artifact_convergence.py --write-map
+          git add docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json
+          python3 scripts/hepta_artifact_source_binding.py --tree "$(git write-tree)"
+          git diff --cached --name-only | while IFS= read -r path; do
+            case "$path" in
+              codex-rs/hepta-learning-artifacts/*|docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json|docs/modules/learning.artifacts/TECHNICAL.md) ;;
+              *) printf 'Unexpected source-preparation path: %s\n' "$path"; exit 1 ;;
+            esac
+          done
+          if git diff --cached --quiet; then
+            printf 'Source already prepared: %s\n' "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git config user.name 'Artifact source preparation'
+          git config user.email 'artifact-source-preparation@users.noreply.github.com'
+          git commit -m 'style(learning.artifacts): format owned source and bind current source objects'
+          git fetch origin "refs/heads/$BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+          git push origin "HEAD:refs/heads/$BRANCH"
+          printf 'Prepared source: `%s`\n\nThis is source preparation, NOT native qualification or activation. Fresh exact-head and actual-base qualification is required.\n' "$(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
