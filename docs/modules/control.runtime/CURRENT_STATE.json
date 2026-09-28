@@ -1,0 +1,139 @@
+{
+  "schema": "hepta.module-current-state.v2",
+  "schemaVersion": 2,
+  "module": "control.runtime",
+  "owner": "runtime-control",
+  "deputy": "security-authority",
+  "canonicalStatusSource": true,
+  "candidateBinding": {
+    "branch": "codex/control-runtime-convergence-v1",
+    "exactHead": null,
+    "exactTree": null,
+    "bindingMode": "workflow_resolved_from_pull_request_head",
+    "qualificationState": "pending_exact_head_and_fixed_merge_receipts"
+  },
+  "authorityDelta": "none",
+  "stageOrder": [
+    "designDefined",
+    "sourcePresent",
+    "guardedPublicEntry",
+    "productCallsiteIntegrated",
+    "exactSourceTestsPassed",
+    "fixedMergeCandidatePassed",
+    "targetHostRecoveryPassed",
+    "independentlyAccepted",
+    "activated",
+    "released"
+  ],
+  "subsystems": {
+    "boundedPlanner": {
+      "designDefined": true,
+      "sourcePresent": true,
+      "guardedPublicEntry": true,
+      "productCallsiteIntegrated": true,
+      "exactSourceTestsPassed": false,
+      "fixedMergeCandidatePassed": false,
+      "targetHostRecoveryPassed": false,
+      "independentlyAccepted": false,
+      "activated": false,
+      "released": false,
+      "notes": [
+        "Agentd read-only context planning is source-composed.",
+        "Global effect execution is not a production product callsite."
+      ]
+    },
+    "authenticatedAgentdFinalUse": {
+      "designDefined": true,
+      "sourcePresent": true,
+      "guardedPublicEntry": true,
+      "productCallsiteIntegrated": true,
+      "exactSourceTestsPassed": false,
+      "fixedMergeCandidatePassed": false,
+      "targetHostRecoveryPassed": false,
+      "independentlyAccepted": false,
+      "activated": false,
+      "released": false,
+      "notes": [
+        "Exact records, request identity, retrieval policy, ranker policy, body generation and a monotonic process lease are bound before final use."
+      ]
+    },
+    "plannerJournal": {
+      "designDefined": true,
+      "sourcePresent": true,
+      "guardedPublicEntry": true,
+      "productCallsiteIntegrated": false,
+      "exactSourceTestsPassed": false,
+      "fixedMergeCandidatePassed": false,
+      "targetHostRecoveryPassed": false,
+      "independentlyAccepted": false,
+      "activated": false,
+      "released": false,
+      "notes": [
+        "Typed append, raw append and reopen share one transition validator."
+      ]
+    },
+    "plannerStore": {
+      "designDefined": true,
+      "sourcePresent": true,
+      "guardedPublicEntry": true,
+      "productCallsiteIntegrated": false,
+      "exactSourceTestsPassed": false,
+      "fixedMergeCandidatePassed": false,
+      "targetHostRecoveryPassed": false,
+      "independentlyAccepted": false,
+      "activated": false,
+      "released": false,
+      "notes": [
+        "Uncertain mutation errors poison the current handle until drop and reopen.",
+        "Independent anchor ownership and two-process target-host recovery remain external gates."
+      ]
+    },
+    "authorityExecutionLoop": {
+      "designDefined": true,
+      "sourcePresent": true,
+      "guardedPublicEntry": true,
+      "productCallsiteIntegrated": false,
+      "exactSourceTestsPassed": false,
+      "fixedMergeCandidatePassed": false,
+      "targetHostRecoveryPassed": false,
+      "independentlyAccepted": false,
+      "activated": false,
+      "released": false,
+      "notes": [
+        "A durable request/grant dispatch claim is persisted before final authority revalidation and executor invocation.",
+        "Existing claims fail closed into reconciliation rather than replay."
+      ]
+    },
+    "organHost": {
+      "designDefined": true,
+      "sourcePresent": true,
+      "guardedPublicEntry": true,
+      "productCallsiteIntegrated": false,
+      "exactSourceTestsPassed": false,
+      "fixedMergeCandidatePassed": false,
+      "targetHostRecoveryPassed": false,
+      "independentlyAccepted": false,
+      "activated": false,
+      "released": false,
+      "notes": [
+        "Trusted in-process read-only handlers are not a sandbox.",
+        "Fanout receipts preserve every admitted target identity and partial-delivery disposition."
+      ]
+    }
+  },
+  "externalEvidenceGates": {
+    "targetHostRecovery": false,
+    "independentSemanticReview": false,
+    "operatorAcceptance": false,
+    "canary": false,
+    "activation": false,
+    "promotion": false,
+    "release": false
+  },
+  "nonClaims": [
+    "Source presence is not production activation.",
+    "Repository tests are not independent acceptance.",
+    "A deny-all plan or grant request is not an execution capability.",
+    "No target-host recovery, operator acceptance, canary, activation, promotion or release is asserted by this file."
+  ]
+}

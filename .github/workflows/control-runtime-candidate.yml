@@ -94,6 +94,12 @@ jobs:
           record = {'source_commit': os.environ['SOURCE_SHA'], 'source_tree': git('rev-parse', os.environ['SOURCE_SHA'] + '^{tree}'), 'base_commit': os.environ['BASE_SHA'], 'tested_commit': git('rev-parse', 'HEAD'), 'tested_tree': git('rev-parse', 'HEAD^{tree}'), 'lane': os.environ['HEPTA_CI_LANE'], 'run_id': os.environ['GITHUB_RUN_ID'], 'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'], 'workflow_sha': os.environ['GITHUB_WORKFLOW_SHA'], 'runner_os': os.environ['RUNNER_OS'], 'runner_arch': os.environ['RUNNER_ARCH'], 'image_os': os.environ.get('ImageOS'), 'image_version': os.environ.get('ImageVersion')}
           Path(os.environ['RUNNER_TEMP'], 'control-runtime-records', 'identity.json').write_text(json.dumps(record, indent=2) + '\n')
           PY
+      - name: Validate canonical module state
+        id: state
+        continue-on-error: true
+        run: >-
+          python3 scripts/control_runtime_validate_state.py
+          --output "$RUNNER_TEMP/control-runtime-records/state.json"
       - name: Install native prerequisites
         run: |
           sudo apt-get update
@@ -132,6 +138,7 @@ jobs:
       - name: Require every independent check and unchanged tracked source
         if: always()
         env:
+          STATE_RESULT: ${{ steps.state.outcome }}
           FMT_RESULT: ${{ steps.fmt.outcome }}
           TEST_RESULT: ${{ steps.tests.outcome }}
           CHECK_RESULT: ${{ steps.check.outcome }}
@@ -142,6 +149,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           git diff --exit-code
           git diff --cached --exit-code
+          test "$STATE_RESULT" = success
           test "$FMT_RESULT" = success
           test "$TEST_RESULT" = success
           test "$CHECK_RESULT" = success
