@@ -1,0 +1,68 @@
+name: Neuron exact-head source snapshot
+
+on:
+  push:
+    branches:
+      - codex/neuron-runtime-durable-closure-v1
+    paths:
+      - 'codex-rs/hepta-neuron/**'
+      - 'codex-rs/hepta-agentd/src/neuron_**'
+      - 'codex-rs/hepta-agentd/src/config.rs'
+      - 'codex-rs/hepta-agentd/src/state.rs'
+      - 'codex-rs/hepta-agentd/src/runtime.rs'
+      - 'codex-rs/hepta-agentd/src/intelligence_ingress.rs'
+      - 'docs/modules/neuron.runtime/**'
+      - 'qualification/module-execution-dossiers/detail/neuron.runtime.md'
+      - 'scripts/neuron/**'
+      - '.github/workflows/neuron-exact-head-source-snapshot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neuron-exact-head-source-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Freeze exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          out="$RUNNER_TEMP/neuron-exact-head-source"
+          mkdir -p "$out"
+          source_sha="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse HEAD^{tree})"
+          base_sha="$(git rev-parse origin/main)"
+          cat > "$out/identity.json" <<JSON
+          {
+            "schema": "hepta.neuron.exact-head-source.v1",
+            "source_commit": "$source_sha",
+            "source_tree": "$source_tree",
+            "base_commit": "$base_sha",
+            "qualification_passed": false,
+            "production_activation": false,
+            "independent_acceptance": false
+          }
+          JSON
+          git archive --format=tar.gz --prefix=source/ --output="$out/source.tar.gz" HEAD
+          (
+            cd "$out"
+            sha256sum identity.json source.tar.gz > SHA256SUMS
+          )
+      - uses: actions/upload-artifact@v4
+        with:
+          name: neuron-exact-head-source-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/neuron-exact-head-source/
+          retention-days: 3
+          if-no-files-found: error
