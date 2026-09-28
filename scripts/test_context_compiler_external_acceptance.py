@@ -63,7 +63,7 @@ def receipt(mode="release"):
             "environmentId": "context-compiler-acceptance:v1",
             "runnerIdentity": "self-hosted:context-acceptance-01",
             "runnerImageDigest": DIGEST,
-            "hostImaeDigest": DIGEST,
+            "hostImageDigest": DIGEST,
             "kernelIdentity": "linux:acceptance-kernel-v1",
             "filesystemIdentity": "ext4:acceptance-volume-v1",
             "providerTenant": "provider:non-production-context-v1",
