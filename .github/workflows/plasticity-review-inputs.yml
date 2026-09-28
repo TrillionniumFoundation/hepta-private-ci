@@ -1,0 +1,54 @@
+name: Plasticity offline review inputs
+on:
+  push:
+    branches: [author/plasticity-review-inputs-20260928]
+permissions:
+  contents: read
+jobs:
+  inputs:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 4325a520da597972aa5930ec1293882bd62d904c
+          persist-credentials: false
+      - name: Download checksum-verified pinned Linux review toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/review-inputs"
+          cd "$RUNNER_TEMP/review-inputs"
+          for component in rustc cargo rust-std rustfmt clippy; do
+            archive="$component-1.95.0-x86_64-unknown-linux-gnu.tar.xz"
+            curl --fail --silent --show-error --location "https://static.rust-lang.org/dist/$archive" -o "$archive"
+            curl --fail --silent --show-error --location "https://static.rust-lang.org/dist/$archive.sha256" -o "$archive.sha256"
+            shasum -a 256 -c "$archive.sha256"
+          done
+      - name: Resolve locked public dependency inputs without building
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fetch --locked
+          git diff --exit-code
+      - name: Export dependency caches only, never credentials or global configuration
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          paths=()
+          for p in registry/src registry/cache registry/index git/db git/checkouts; do
+            if [ -d "$HOME/.cargo/$p" ]; then paths+=("$p"); fi
+          done
+          if [ "${#paths[@]}" -gt 0 ]; then
+            tar -czf "$RUNNER_TEMP/review-inputs/dependencies.tar.gz" -C "$HOME/.cargo" "${paths[@]}"
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: plasticity-offline-inputs-1.95.0
+          path: ${{ runner.temp }}/review-inputs/
+          compression-level: 0
+          retention-days: 1
+          if-no-files-found: error
