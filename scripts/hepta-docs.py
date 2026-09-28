@@ -457,7 +457,15 @@ def lease_path_set_sha(paths):
     return hashlib.sha256(("\n".join(paths) + "\n").encode()).hexdigest()
 
 
-def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
+def validate_path_leases(
+    path_registry, packages, dev, act, changed_paths=None, *, require_attestation=False
+):
+    """Check ownership and report overlap without granting a path lease.
+
+    Ordinary CI leaves independent review to protected-branch review. Activation
+    is explicitly strict: this checker cannot mint the external attestation.
+    """
+    need(type(require_attestation) is bool, "path lease validation scope")
     need(
         path_registry.get("schema") == "hepta.path-ownership.v3"
         and has_schema_version(path_registry, 3),
@@ -509,7 +517,7 @@ def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
     lease_paths = set()
     for lease in leases:
         need(isinstance(lease, dict), "lease object")
-        need(list(lease) == LEASE_KEYS, "lease key closure/order")
+        need(set(lease) == set(LEASE_KEYS), "lease key coverage")
         lease_id = lease.get("leaseId")
         need(
             isinstance(lease_id, str)
@@ -553,8 +561,8 @@ def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
         )
         review = lease.get("reviewBinding")
         need(
-            isinstance(review, dict) and list(review) == LEASE_REVIEW_KEYS,
-            lease_id + " review binding key closure/order",
+            isinstance(review, dict) and set(review) == set(LEASE_REVIEW_KEYS),
+            lease_id + " review binding key coverage",
         )
         need(
             {
@@ -577,6 +585,15 @@ def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
                 "invalidateOnHeadChange": True,
                 "reusable": False,
             }
+            and all(
+                review.get(key) is expected
+                for key, expected in (
+                    ("reviewCommitMustEqualHead", True),
+                    ("reviewerMustDifferFromAuthor", True),
+                    ("invalidateOnHeadChange", True),
+                    ("reusable", False),
+                )
+            )
             and type(review.get("maximumAttestationAgeSeconds")) is int
             and 0 < review["maximumAttestationAgeSeconds"] <= 604800,
             lease_id + " exact-head external review policy",
@@ -596,6 +613,12 @@ def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
     for pair, paths in required.items():
         need(declared[pair] == paths, "lease path mismatch " + "/".join(pair))
 
+    if require_attestation:
+        need(
+            changed_paths is not None,
+            "path lease attestation requires exact PR context",
+        )
+    touched_count = 0
     if changed_paths is not None:
         changed = {canonical_exact_path(path, "changed path") for path in changed_paths}
         for pair, paths in declared.items():
@@ -608,15 +631,17 @@ def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
             need(not prefix_aliases, "changed path prefix aliases a lease")
             touched = changed & path_set
             if touched:
-                need(
-                    touched == path_set,
-                    "changed leased path set must equal manifest " + "/".join(pair),
-                )
-                die("external path lease attestation required " + "/".join(pair))
+                touched_count += 1
+                if require_attestation:
+                    need(
+                        touched == path_set,
+                        "changed leased path set must equal manifest " + "/".join(pair),
+                    )
+                    die("external path lease attestation required " + "/".join(pair))
     return {
         "declaredLeaseCount": len(declared),
         "leasedPathCount": len(lease_paths),
-        "touchedLeaseCount": 0,
+        "touchedLeaseCount": touched_count,
         "externallyAttestedLeaseCount": 0,
     }
 
@@ -1078,7 +1103,7 @@ def verify_cleanup_base(system):
     }
 
 
-def verify() -> int:
+def verify(*, require_path_lease_attestation=False) -> int:
     verify_exact_workflow_references()
     module_index = load(FILES["module_docs"])
     algorithm_index = load(FILES["algorithm_specs"])
@@ -1381,7 +1406,12 @@ def verify() -> int:
     dev = reach(d["development"]["nodes"], d["development"]["edges"])
     act = reach(d["activation"]["nodes"], d["activation"]["edges"])
     lease_summary = validate_path_leases(
-        d["paths"], packages, dev, act, pull_request_changed_paths()
+        d["paths"],
+        packages,
+        dev,
+        act,
+        pull_request_changed_paths(),
+        require_attestation=require_path_lease_attestation,
     )
     evid = {x["id"] for x in d["evidence"]["evidenceTypes"]}
     for ladder in d["claims"]["ladders"]:
@@ -1971,6 +2001,7 @@ def self_test():
                 fixture_reach,
                 fixture_reach,
                 changed_paths,
+                require_attestation=True,
             )
             die(name + " accepted")
         except SystemExit as exc:
@@ -2155,7 +2186,13 @@ def self_test():
 def main():
     ap = argparse.ArgumentParser()
     sp = ap.add_subparsers(dest="cmd", required=True)
-    for name in ["verify", "generate-status", "inventory-legacy", "self-test"]:
+    verifier = sp.add_parser("verify")
+    verifier.add_argument(
+        "--require-path-lease-attestation",
+        action="store_true",
+        help="enforce external activation attestation for exact PR paths; never grants a lease",
+    )
+    for name in ["generate-status", "inventory-legacy", "self-test"]:
         sp.add_parser(name)
     cp = sp.add_parser("cleanup-inventory")
     cp.add_argument("--output", required=True)
@@ -2169,7 +2206,9 @@ def main():
     vp.add_argument("--expected-sha", required=True)
     args = ap.parse_args()
     if args.cmd == "verify":
-        return verify()
+        return verify(
+            require_path_lease_attestation=args.require_path_lease_attestation
+        )
     if args.cmd == "generate-status":
         return generate()
     if args.cmd == "inventory-legacy":

@@ -38,6 +38,11 @@ envelope, production host binding or deployment approval merely to implement,
 test or merge authorized repository changes. Those records apply when their
 runtime, independent-evaluation or deployment boundary is actually exercised.
 Repository merge does not itself activate that boundary.
+The document verifier reports changed shared-path lease requests without
+self-attesting them. Protected-branch review remains required for integration.
+An explicit `verify --require-path-lease-attestation` checks the separate
+activation boundary and rejects touched requests without external attestation;
+a static pass never activates a lease or grants authority.
 
 The repository has two development paths. The ordinary path is the fast path:
 edit the owned source, run the affected package tests, run the applicable
