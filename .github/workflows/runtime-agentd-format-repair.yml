@@ -49,26 +49,7 @@ jobs:
           # The reviewed source patch predates AnchorWitnessStore::admit_new_anchor.
           # Keep the test double aligned with the current owner contract; this is
           # deliberately a no-op admission implementation for the compiled surface test.
-          python3 - <<'PY'
-          from pathlib import Path
-
-          path = Path("codex-rs/hepta-agentd/src/neuron_runtime_tests.rs")
-          text = path.read_text(encoding="utf-8")
-          needle = "\n    fn compare_and_swap(\n"
-          replacement = """
-    fn admit_new_anchor(
-        &self,
-        _expected: Option<JournalAnchor>,
-    ) -> Result<(), WitnessStoreError> {
-        Ok(())
-    }
-
-    fn compare_and_swap(
-"""
-          if text.count(needle) != 1:
-              raise SystemExit("expected exactly one StubWitness compare_and_swap insertion point")
-          path.write_text(text.replace(needle, replacement, 1), encoding="utf-8")
-          PY
+          python3 -c 'from pathlib import Path; p=Path("codex-rs/hepta-agentd/src/neuron_runtime_tests.rs"); t=p.read_text(encoding="utf-8"); n="\n    fn compare_and_swap(\n"; r="\n    fn admit_new_anchor(\n        &self,\n        _expected: Option<JournalAnchor>,\n    ) -> Result<(), WitnessStoreError> {\n        Ok(())\n    }\n\n    fn compare_and_swap(\n"; assert t.count(n) == 1, "expected exactly one StubWitness compare_and_swap insertion point"; p.write_text(t.replace(n, r, 1), encoding="utf-8")'
           rm .github/runtime-agentd-instance.patch.gz
           rm .github/runtime-agentd-source.patch.b64.part*
           rm .github/workflows/runtime-agentd-apply-instance-patch.yml
