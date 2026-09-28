@@ -39,7 +39,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test -z "$(git status --porcelain --untracked-files=normal)"
           source_sha="$(git rev-parse HEAD)"
           base_sha="$(git rev-parse origin/main)"
           printf 'CE_SOURCE_SHA=%s\nCE_BASE_SHA=%s\n' "$source_sha" "$base_sha" >> "$GITHUB_ENV"
@@ -87,7 +87,7 @@ jobs:
           python3 -m pip freeze > "$RUNNER_TEMP/control-engineering-toolchain.txt"
           git --version >> "$RUNNER_TEMP/control-engineering-toolchain.txt"
           bwrap --version >> "$RUNNER_TEMP/control-engineering-toolchain.txt"
-          sqlite3 --version >> "$RUNNER_TEMP/control-engineering-toolchain.txt"
+          python3 -c 'import sqlite3; print(sqlite3.sqlite_version)' >> "$RUNNER_TEMP/control-engineering-toolchain.txt"
       - name: Qualify unmodified source and fixed synthetic merge
         if: ${{ always() && steps.identity.outcome == 'success' }}
         env:
@@ -101,13 +101,13 @@ jobs:
             --base-commit "$CE_BASE_SHA" \
             --output "$RUNNER_TEMP/control-engineering-qualification" \
             2>&1 | tee "$RUNNER_TEMP/control-engineering-qualification.log"
-      - name: Check tracked source remained unchanged
+      - name: Check source checkout remained unchanged
         if: always()
         shell: bash
         run: |
           set -euo pipefail
           git diff --exit-code HEAD
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test -z "$(git status --porcelain --untracked-files=normal)"
       - name: Retain all execution evidence including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -117,5 +117,6 @@ jobs:
             ${{ runner.temp }}/control-engineering-qualification
             ${{ runner.temp }}/control-engineering-qualification.log
             ${{ runner.temp }}/control-engineering-toolchain.txt
+          include-hidden-files: true
           if-no-files-found: warn
           retention-days: 30
