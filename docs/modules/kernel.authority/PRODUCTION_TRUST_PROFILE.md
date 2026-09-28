@@ -24,12 +24,21 @@ The qualification artifact MUST identify the clock source and prove:
 A wall-clock implementation backed only by ordinary `SystemTime` is compatibility
 behavior, not production time evidence.
 
-The repository now contains one named source composition for Agentd automation:
+The repository contains one named local source composition for Agentd automation:
 `AgentdFinalUseTrustStore` persists a non-decreasing wall-clock floor in an
 owner-only directory outside the Agent home rollback domain and fails closed if
-the host clock reopens behind that floor. This closes the repository-controlled
-host wiring and recovery contract, but it is not an attested clock and does not
-satisfy target-platform qualification by itself.
+the host clock reopens behind that floor. This provides host wiring and recovery
+semantics, but it is not an attested clock and does not satisfy target-platform
+qualification by itself.
+
+Production constructors now retain a runtime clock/custody adapter, rather than
+validating custody only during open. `AuthorityClock::now_with_uncertainty`
+supplies a centre and radius. FinalUse requires the complete possible interval
+to lie in the signed half-open validity window at claim, after durable nonce
+persistence, and at every final-use boundary. Overflow rejects admission.
+Compatibility clocks retain their explicit zero-radius point policy. Ordinary
+general-lease validity still needs equivalent interval enforcement; this is a
+repository-controlled gap, not an externally supplied attestation.
 
 ## 2. External anti-rollback frontier
 
@@ -48,16 +57,16 @@ The backend MUST provide durable compare-and-set semantics for the owner identit
 
 The repository intentionally advances the external frontier before committing the
 local replacement. If the external advance succeeds and local commit fails, the
-owner fences itself. Recovery requires an explicit operator/backend procedure; it
-must never infer that the mutation did not happen.
+owner fences itself. Recovery requires the documented exact-frontier procedure;
+it must never infer that the mutation did not happen or reset authority history.
 
 The named Agentd automation host supplies a concrete single-writer
 `AuthorityFrontierStore<FinalUseFrontier>` outside the Agent home directory. Its
 source tests cover exact CAS conflict, restart persistence, exclusive-owner
 handoff, missing-frontier rejection and restored-local-snapshot rejection. This
-local source backend establishes the composition and failure semantics used by
-that host; a selected deployment still has to prove that the chosen filesystem,
-volume and backup domain are rollback-independent from the authority directory.
+local source backend establishes composition and failure semantics for that host;
+a selected deployment still has to prove that the filesystem, volume, backup and
+boot rollback domains are independent of the authority directory.
 
 ## 3. Revocation distribution and fleet freshness
 
@@ -78,13 +87,20 @@ closed enrolled-node set, configured convergence SLA, feed lifetime, measured
 delivery/ack latency, packet-loss/partition behavior, restart catch-up behavior and
 the exact candidate digest. There is no "last known good forever" fallback.
 
-The Agentd automation host authenticates a complete signed revocation feed at
-open and refreshes that signed file before every provider dispatch. If an update
-arrives while a guarded effect is active, the authority records a process-local
-revocation-pending fence: the update returns `DispatchInProgress`, all new claims
-and entries fail with `RevocationPending`, and the exact monotonic update must be
-retried when the active effect drains. Restart re-reads the signed feed; this is
-not a replacement for deployed fleet fanout or convergence evidence.
+The Agentd automation host authenticates a complete signed feed at open and refreshes
+that file before new effect work. A private feed-bound clock enforces its verified
+validity interval at each authority time sample; the HTTP driver rechecks after
+witness persistence and before provider entry. Refresh invalidates the window before
+changing the authority head and publishes only after success. A database wait cannot
+silently extend formerly fresh revocation knowledge.
+
+If a signed update arrives during a guarded effect, the authority durably records
+its exact monotonic head in V4 `pending_revocations` and advances the external
+frontier before returning `DispatchInProgress`. New claims and entries then fail
+with `RevocationPending`. The exact head or a strictly stronger monotonic head must
+be retried after the active effect drains. This is not a process-local pending bit.
+Recovery may complete only a candidate exactly matching the independently retained
+frontier; feed reread alone cannot replace kernel recovery.
 
 ## 4. Key custody and rotation
 
@@ -102,7 +118,17 @@ custody identity and record:
   that role explicitly requires signing.
 
 Repository signer utilities consume externally provisioned keys and are not a key
-custody system.
+custody system. The production runtime-clock adapter retains the exact provider,
+role, trust domain, active key-set digest, generation, revocation floor and
+non-exportability checks. An observed identity/generation drift fences the adapter;
+a later rollback to a previously accepted report cannot un-fence it. Unavailable
+custody supplies no admission time. Provider implementations must bound these calls;
+any authenticated local cache must expire fail-closed and preserve known revocations.
+
+The normal Agentd bootstrap in this candidate still uses the local trust store,
+not a deployed production bundle. Real provider selection, lifecycle invalidation,
+rotation ceremonies and normal-product integration remain open. Source fixtures
+implementing production traits are tests, not external custody evidence.
 
 ## 5. Machine-checkable evidence admission
 
@@ -144,4 +170,5 @@ A production evidence bundle MUST contain, at minimum:
 
 Until all applicable fields exist for the selected host, implementation maps MUST
 keep `productionImplementation`, `productExecutionProved`, `activation` and
-`release` false.
+`release` false. The source target-port matrix separately records uncomposed ports
+and distinguishes owner reopen tests from two normal product-process cold starts.

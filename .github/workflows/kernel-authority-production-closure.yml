@@ -2,27 +2,50 @@ name: Kernel authority production closure
 
 on:
   push:
-    branches:
-      - work/kernel-authority-convergence-20260925
+    branches: [main, work/kernel-authority-convergence-20260925]
     paths:
-      - 'codex-rs/hepta-contracts/src/authority_trust.rs'
-      - 'codex-rs/hepta-contracts/src/authority_trust_tests.rs'
-      - 'codex-rs/hepta-contracts/tests/kernel_authority_benchmark.rs'
+      - 'codex-rs/hepta-contracts/**'
       - 'codex-rs/hepta-fleet/**'
       - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-automation/**'
+      - 'codex-rs/hepta-prompt-registry/**'
+      - 'codex-rs/hepta-bao-adapter/**'
+      - 'codex-rs/model-provider/**'
+      - 'codex-rs/Cargo.*'
+      - 'codex-rs/rust-toolchain*'
+      - 'codex-rs/.cargo/**'
+      - 'codex-rs/.config/**'
+      - 'justfile'
+      - 'scripts/just-shell.py'
+      - 'CALLERS.toml'
+      - 'qa/b4-no-bypass/**'
+      - 'scripts/verify_hepta_callers.py'
+      - 'scripts/kernel_authority_status.py'
       - 'qualification/kernel-authority/**'
       - 'docs/modules/kernel.authority/**'
-      - '.github/workflows/kernel-authority-production-closure.yml'
+      - '.github/workflows/kernel-authority*.yml'
   pull_request:
     paths:
-      - 'codex-rs/hepta-contracts/src/authority_trust.rs'
-      - 'codex-rs/hepta-contracts/src/authority_trust_tests.rs'
-      - 'codex-rs/hepta-contracts/tests/kernel_authority_benchmark.rs'
+      - 'codex-rs/hepta-contracts/**'
       - 'codex-rs/hepta-fleet/**'
       - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-automation/**'
+      - 'codex-rs/hepta-prompt-registry/**'
+      - 'codex-rs/hepta-bao-adapter/**'
+      - 'codex-rs/model-provider/**'
+      - 'codex-rs/Cargo.*'
+      - 'codex-rs/rust-toolchain*'
+      - 'codex-rs/.cargo/**'
+      - 'codex-rs/.config/**'
+      - 'justfile'
+      - 'scripts/just-shell.py'
+      - 'CALLERS.toml'
+      - 'qa/b4-no-bypass/**'
+      - 'scripts/verify_hepta_callers.py'
+      - 'scripts/kernel_authority_status.py'
       - 'qualification/kernel-authority/**'
       - 'docs/modules/kernel.authority/**'
-      - '.github/workflows/kernel-authority-production-closure.yml'
+      - '.github/workflows/kernel-authority*.yml'
   workflow_dispatch:
 
 permissions:
@@ -41,15 +64,14 @@ jobs:
       source: ${{ steps.pin.outputs.source }}
       source_tree: ${{ steps.pin.outputs.source_tree }}
       base: ${{ steps.pin.outputs.base }}
+      modes: ${{ steps.pin.outputs.modes }}
     steps:
-      - name: Checkout exact event source
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - id: pin
-        name: Verify immutable identities
         shell: bash
         env:
           EVENT_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -66,11 +88,12 @@ jobs:
             git fetch --no-tags origin refs/heads/main:refs/remotes/origin/main
             base="$(git rev-parse refs/remotes/origin/main)"
           fi
-          test -n "$source_tree"
-          test -n "$base"
-          printf 'source=%s\n' "$source" >> "$GITHUB_OUTPUT"
-          printf 'source_tree=%s\n' "$source_tree" >> "$GITHUB_OUTPUT"
-          printf 'base=%s\n' "$base" >> "$GITHUB_OUTPUT"
+          modes='["exact-head","synthetic-merge"]'
+          if [ "$GITHUB_REF" = refs/heads/main ] && [ -z "$EVENT_BASE" ]; then
+            modes='["exact-head"]'
+          fi
+          printf 'source=%s\nsource_tree=%s\nbase=%s\nmodes=%s\n' \
+            "$source" "$source_tree" "$base" "$modes" >> "$GITHUB_OUTPUT"
           test -z "$(git status --porcelain)"
 
   qualify:
@@ -82,7 +105,7 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix:
-        mode: [exact-head, synthetic-merge]
+        mode: ${{ fromJSON(needs.identity.outputs.modes) }}
         lane: [trust-bundle, product-pilot, performance]
     env:
       CARGO_BUILD_JOBS: 2
@@ -90,31 +113,29 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: 0
       CARGO_INCREMENTAL: 0
       RUST_BACKTRACE: 1
+      RUST_MIN_STACK: 8388608
+      PYTHONDONTWRITEBYTECODE: 1
     steps:
-      - name: Checkout pinned source
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           ref: ${{ needs.identity.outputs.source }}
           persist-credentials: false
-      - name: Verify checkout before candidate preparation
+      - name: Verify source then prepare immutable candidate
         shell: bash
         env:
           EXPECTED_SOURCE: ${{ needs.identity.outputs.source }}
           EXPECTED_TREE: ${{ needs.identity.outputs.source_tree }}
+          EXPECTED_BASE: ${{ needs.identity.outputs.base }}
+          MODE: ${{ matrix.mode }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
           test "$(git rev-parse 'HEAD^{tree}')" = "$EXPECTED_TREE"
           test -z "$(git status --porcelain)"
-      - name: Prepare immutable candidate
-        shell: bash
-        run: |
-          set -euo pipefail
           mkdir -p "$RUNNER_TEMP/authority-evidence"
-          python3 qualification/kernel-authority/prepare_candidate.py \
-            --mode '${{ matrix.mode }}' \
-            --base-sha '${{ needs.identity.outputs.base }}' \
+          python3 -B qualification/kernel-authority/prepare_candidate.py \
+            --mode "$MODE" --base-sha "$EXPECTED_BASE" \
             --output "$RUNNER_TEMP/authority-evidence/identity.json"
       - name: Reject stale or cross-candidate identity
         shell: bash
@@ -122,68 +143,54 @@ jobs:
           MODE: ${{ matrix.mode }}
           SOURCE: ${{ needs.identity.outputs.source }}
           BASE: ${{ needs.identity.outputs.base }}
-          IDENTITY_PATH: ${{ runner.temp }}/authority-evidence/identity.json
         run: |
           set -euo pipefail
-          python3 - <<'PY'
+          python3 -B - <<'PY'
           import json, os, pathlib, subprocess
-          path = pathlib.Path(os.environ["IDENTITY_PATH"])
-          identity = json.loads(path.read_text(encoding="utf-8"))
-          expected = {"schema", "mode", "sourceCommit", "baseCommit", "candidateCommit", "candidateTree", "activationGranted", "releaseGranted"}
-          if set(identity) != expected: raise SystemExit("candidate identity fields drifted")
-          if identity["schema"] != "hepta.kernel-authority-candidate.v1": raise SystemExit("candidate identity schema mismatch")
-          if identity["mode"] != os.environ["MODE"]: raise SystemExit("candidate mode mismatch")
-          if identity["sourceCommit"] != os.environ["SOURCE"]: raise SystemExit("candidate source mismatch")
-          if identity["baseCommit"] != os.environ["BASE"]: raise SystemExit("candidate base mismatch")
-          if identity["candidateCommit"] != subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(): raise SystemExit("candidate commit mismatch")
-          if identity["candidateTree"] != subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(): raise SystemExit("candidate tree mismatch")
-          if identity["activationGranted"] is not False or identity["releaseGranted"] is not False: raise SystemExit("qualification cannot grant activation or release")
+          identity = json.loads((pathlib.Path(os.environ["RUNNER_TEMP"]) / "authority-evidence/identity.json").read_text())
+          fields = {"schema", "mode", "sourceCommit", "baseCommit", "candidateCommit", "candidateTree", "activationGranted", "releaseGranted"}
+          if set(identity) != fields: raise SystemExit("candidate identity fields drifted")
+          if identity["schema"] != "hepta.kernel-authority-candidate.v1": raise SystemExit("candidate schema mismatch")
+          for key, variable in (("mode", "MODE"), ("sourceCommit", "SOURCE"), ("baseCommit", "BASE")):
+              if identity[key] != os.environ[variable]: raise SystemExit(f"candidate {key} mismatch")
+          for key, ref in (("candidateCommit", "HEAD"), ("candidateTree", "HEAD^{tree}")):
+              if identity[key] != subprocess.check_output(["git", "rev-parse", ref], text=True).strip(): raise SystemExit(f"candidate {key} mismatch")
+          if identity["activationGranted"] is not False or identity["releaseGranted"] is not False: raise SystemExit("qualification cannot grant authority")
           PY
-      - name: Install pinned Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
         with:
           toolchain: 1.95.0
           components: rustfmt, clippy
-      - name: Install pinned repository test tools
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         if: matrix.lane == 'trust-bundle'
-        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
           tool: just@1.51.0,nextest@0.9.103
-      - name: Execute candidate-bound closure lane
+      - name: Execute exact-candidate read-only lane
         shell: bash
         env:
           LANE: ${{ matrix.lane }}
-          IDENTITY: ${{ runner.temp }}/authority-evidence/identity.json
-          OUTPUT_ROOT: ${{ runner.temp }}/authority-evidence/${{ matrix.lane }}
         run: |
           set -euo pipefail
+          identity="$RUNNER_TEMP/authority-evidence/identity.json"
+          output="$RUNNER_TEMP/authority-evidence/$LANE"
           case "$LANE" in
             trust-bundle)
-              cd codex-rs
-              cargo fmt --check -p codex-hepta-contracts
-              just test --locked -p codex-hepta-contracts --retries 0
-              cargo clippy --locked -p codex-hepta-contracts --all-targets -- -D warnings
+              python3 -B qualification/kernel-authority/run_native_checks.py \
+                --identity "$identity" --output-dir "$output"
               ;;
             product-pilot)
-              python3 qualification/kernel-authority/runtime_qualification.py \
-                --identity "$IDENTITY" \
-                --output-dir "$OUTPUT_ROOT" \
-                pilot
+              python3 -B qualification/kernel-authority/runtime_qualification.py \
+                --identity "$identity" --output-dir "$output" pilot
               ;;
             performance)
-              python3 qualification/kernel-authority/runtime_qualification.py \
-                --identity "$IDENTITY" \
-                --output-dir "$OUTPUT_ROOT" \
-                benchmark --samples 128
+              python3 -B qualification/kernel-authority/runtime_qualification.py \
+                --identity "$identity" --output-dir "$output" benchmark --samples 128
               ;;
-            *)
-              printf 'unknown lane: %s\n' "$LANE" >&2
-              exit 2
-              ;;
+            *) exit 2 ;;
           esac
           git diff --check
           test -z "$(git status --porcelain)"
-      - name: Retain candidate-bound closure evidence
+      - name: Retain results including partial or failed execution
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
@@ -199,7 +206,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Require exact-head and synthetic-merge closure
+      - name: Require all applicable immutable subjects
         shell: bash
         env:
           IDENTITY_RESULT: ${{ needs.identity.result }}
@@ -214,5 +221,5 @@ jobs:
           test "${#SOURCE}" -eq 40
           test "${#SOURCE_TREE}" -eq 40
           test "${#BASE}" -eq 40
-          printf 'closure qualified source=%s tree=%s base=%s\n' \
+          printf 'repository checks passed source=%s tree=%s base=%s; no deployment/release authority\n' \
             "$SOURCE" "$SOURCE_TREE" "$BASE"

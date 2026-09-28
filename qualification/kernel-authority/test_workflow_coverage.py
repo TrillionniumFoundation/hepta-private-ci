@@ -1,0 +1,54 @@
+"""Standard-library checks for security-critical workflow triggers and identity."""
+import fnmatch
+from pathlib import Path
+import re
+import unittest
+
+ROOT = Path(__file__).resolve().parents[2]
+WORKFLOW = ROOT / '.github/workflows/kernel-authority-production-closure.yml'
+
+
+def event_paths(text, event):
+    match = re.search(r'^  ' + event + r':\n(.*?)(?=^  [a-z_]+:|^permissions:)', text, re.M | re.S)
+    if not match:
+        return []
+    return re.findall(r"^      - '([^']+)'$", match.group(1), re.M)
+
+
+class WorkflowCoverageTests(unittest.TestCase):
+    def test_every_authority_and_changed_host_file_triggers_both_events(self):
+        text = WORKFLOW.read_text()
+        critical = [
+            'codex-rs/hepta-contracts/src/authority_lease.rs',
+            'codex-rs/hepta-contracts/src/final_use.rs',
+            'codex-rs/hepta-contracts/src/final_use_store.rs',
+            'codex-rs/hepta-contracts/src/final_use_control.rs',
+            'codex-rs/hepta-contracts/src/authority_runtime_clock.rs',
+            'codex-rs/hepta-agentd/src/authority_feed_clock.rs',
+            'codex-rs/hepta-agentd/src/authority_effect_tasks.rs',
+            'codex-rs/hepta-automation/src/authorized_effect.rs',
+            'codex-rs/Cargo.lock', 'CALLERS.toml',
+            'qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json',
+            'qualification/kernel-authority/status_manifest.json',
+        ]
+        for event in ('push', 'pull_request'):
+            paths = event_paths(text, event)
+            self.assertTrue(paths)
+            for path in critical:
+                self.assertTrue(any(fnmatch.fnmatchcase(path, pattern) for pattern in paths), (event, path))
+
+    def test_read_only_qualification_and_post_merge_source(self):
+        text = WORKFLOW.read_text()
+        self.assertIn('branches: [main, work/kernel-authority-convergence-20260925]', text)
+        self.assertIn('contents: read', text)
+        self.assertNotIn('contents: write', text)
+        self.assertIn('persist-credentials: false', text)
+        self.assertIn('run_native_checks.py', text)
+        self.assertIn('fromJSON(needs.identity.outputs.modes)', text)
+        self.assertIn("modes='[\"exact-head\"]'", text)
+        self.assertNotIn('git push', text)
+        self.assertNotIn('--fix', text)
+
+
+if __name__ == '__main__':
+    unittest.main()
