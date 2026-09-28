@@ -1,0 +1,68 @@
+name: cognitive-types-working-copy
+
+on:
+  push:
+    branches:
+      - 'codex/cognitive-types-full-closure-20260927'
+    paths:
+      - '.github/workflows/cognitive-types-working-copy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cognitive-types-working-copy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Record immutable source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > cognitive-types-working-copy-sha.txt
+          git rev-parse HEAD^{tree} > cognitive-types-working-copy-tree.txt
+
+      - name: Upload exact cognitive.types working slice
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
+        with:
+          name: cognitive-types-working-copy-${{ github.sha }}
+          path: |
+            cognitive-types-working-copy-sha.txt
+            cognitive-types-working-copy-tree.txt
+            .github/workflows/cognitive-types-qualification.yml
+            .github/workflows/hnmf-qualification.yml
+            .github/workflows/cognitive-types-working-copy.yml
+            codex-rs/Cargo.toml
+            codex-rs/Cargo.lock
+            codex-rs/hepta-types
+            codex-rs/hepta-cognitive-types
+            codex-rs/hepta-cognitive-store
+            codex-rs/hepta-cognitive-read
+            codex-rs/hepta-memory-retrieval
+            codex-rs/hepta-compact-engine
+            codex-rs/hepta-intelligence
+            codex-rs/hepta-memory/src/shared_experience.rs
+            codex-rs/hepta-memory/src/shared_experience_tests.rs
+            codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs
+            codex-rs/hepta-agentd/src/intelligence_product.rs
+            codex-rs/hepta-agentd/src/intelligence_product_tests.rs
+            codex-rs/hepta-operations
+            codex-rs/state
+            docs/modules/cognitive.types
+            qualification/cognitive-types-v1
+            qualification/cognitive-types-v2
+            scripts/hepta-hnmf.py
+          if-no-files-found: error
+          retention-days: 1
