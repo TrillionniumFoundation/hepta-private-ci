@@ -1,0 +1,57 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
+const root = fileURLToPath(new URL("../../../", import.meta.url));
+const external = readFileSync(`${root}.github/workflows/ui-control-external-qualification.yml`, "utf8");
+
+function section(text, start, end) {
+  const from = text.indexOf(start);
+  assert.notEqual(from, -1, `missing section ${start}`);
+  const to = end ? text.indexOf(end, from + start.length) : text.length;
+  assert.notEqual(to, -1, `missing section terminator ${end}`);
+  return text.slice(from, to);
+}
+
+test("external qualification performs a secretless main-bound repository preflight", () => {
+  const input = section(
+    external,
+    "      repository_qualification_run_id:\n",
+    "      run_real_backend:\n",
+  );
+  assert.match(input, /required:\s*true/u);
+  assert.doesNotMatch(input, /default:/u);
+
+  const preflight = section(
+    external,
+    "  repository-preflight:\n",
+    "  protected-external-qualification:\n",
+  );
+  assert.doesNotMatch(preflight, /\$\{\{\s*secrets\./u);
+  assert.match(preflight, /test "\$WORKFLOW_REF" = refs\/heads\/main/u);
+  assert.match(preflight, /ref: main/u);
+  assert.match(preflight, /path: \.ui-control-trusted/u);
+  assert.match(preflight, /git merge-base --is-ancestor "\$CANDIDATE_SHA" refs\/remotes\/origin\/main/u);
+  assert.match(preflight, /actions\/runs\/\$QUALIFICATION_RUN_ID/u);
+  assert.match(preflight, /node \.\.\/\.ui-control-trusted\/qualification\/ui-control\/validate-repository-preflight\.mjs/u);
+  assert.match(preflight, /protectedSecretsEligible:\s*false/u);
+
+  const metadata = preflight.indexOf("Fetch official workflow-run metadata");
+  const sourceDownload = preflight.indexOf("Download exact-head qualification artifact");
+  const semantic = preflight.indexOf("Validate official run metadata and mutually bound exact source/merge receipts");
+  assert.ok(metadata >= 0 && sourceDownload > metadata && semantic > sourceDownload);
+});
+
+test("the protected job cannot run before preflight and maps secrets only after candidate tests", () => {
+  const job = section(external, "  protected-external-qualification:\n");
+  assert.match(job, /needs:\s*repository-preflight/u);
+  assert.match(job, /needs\.repository-preflight\.result == 'success'/u);
+  assert.match(job, /environment:\s*ui-control-production-qualification/u);
+  assert.match(job, /git merge-base --is-ancestor "\$CANDIDATE_SHA" refs\/remotes\/origin\/main/u);
+  const tests = job.indexOf("Build and test the exact locked candidate before mapping deployment credentials");
+  const firstSecret = job.indexOf("${{ secrets.");
+  assert.ok(tests >= 0 && firstSecret > tests);
+  assert.match(job, /HEPTA_UI_CONTROL_ALLOW_MUTATION: I_UNDERSTAND_THIS_USES_A_DISPOSABLE_QUALIFICATION_TARGET/u);
+  assert.match(job, /if: \$\{\{ inputs\.run_production_evidence \}\}/u);
+});

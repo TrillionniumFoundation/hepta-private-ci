@@ -1,16 +1,17 @@
 name: ui.control external deployment qualification
 
+run-name: ui.control external qualification ${{ inputs.candidate_sha }}
+
 on:
   workflow_dispatch:
     inputs:
       candidate_sha:
-        description: Exact candidate commit SHA to qualify
+        description: Exact candidate commit SHA; it must already be reachable from main
         required: true
         type: string
       repository_qualification_run_id:
-        description: Workflow run containing exact-head and synthetic-merge receipts for candidate_sha
-        required: false
-        default: ""
+        description: Successful official pull-request run containing exact-head and synthetic-merge receipts
+        required: true
         type: string
       run_real_backend:
         description: Execute disposable-target Agentd/backend mutation scenarios
@@ -33,51 +34,233 @@ concurrency:
 
 env:
   UI_CONTROL_APP: apps/hepta-control-ui
+  UI_CONTROL_PROTECTED_ENVIRONMENT: ui-control-production-qualification
 
 jobs:
-  deployment-security:
-    name: observed HTTPS / exact assets / CSP / CSRF / CORS / cookie qualification
+  repository-preflight:
+    name: secretless main ancestry / official run / exact receipt preflight
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 15
     steps:
-      - name: Validate candidate input
+      - id: inputs
+        name: Reject non-main dispatches and malformed exact identities before checkout
         env:
           CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          QUALIFICATION_RUN_ID: ${{ inputs.repository_qualification_run_id }}
+          WORKFLOW_REF: ${{ github.ref }}
+          RUN_REAL_BACKEND: ${{ inputs.run_real_backend }}
+          RUN_PRODUCTION_EVIDENCE: ${{ inputs.run_production_evidence }}
         shell: bash
         run: |
           set -euo pipefail
+          test "$WORKFLOW_REF" = refs/heads/main
           [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$QUALIFICATION_RUN_ID" =~ ^[1-9][0-9]{0,18}$ ]]
+          if [ "$RUN_PRODUCTION_EVIDENCE" = true ]; then
+            test "$RUN_REAL_BACKEND" = true
+          fi
+          mkdir -p ui-control-preflight-evidence
+          printf 'workflow_ref=%s\ncandidate_sha=%s\nqualification_run_id=%s\n' \
+            "$WORKFLOW_REF" "$CANDIDATE_SHA" "$QUALIFICATION_RUN_ID" \
+            > ui-control-preflight-evidence/requested-subject.txt
 
-      - name: Check out exact candidate
+      - name: Check out the trusted preflight implementation from main
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: main
+          path: .ui-control-trusted
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Check out exact candidate without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          path: .ui-control-candidate
+          persist-credentials: false
+          fetch-depth: 0
+
+      - id: ancestry
+        name: Require exact candidate ancestry from main before protected-environment eligibility
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+        shell: bash
+        working-directory: .ui-control-candidate
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          git fetch --no-tags --force origin main:refs/remotes/origin/main
+          git merge-base --is-ancestor "$CANDIDATE_SHA" refs/remotes/origin/main
+          printf 'sha=%s\ntree=%s\nmain=%s\n' \
+            "$(git rev-parse HEAD)" \
+            "$(git rev-parse HEAD^{tree})" \
+            "$(git rev-parse refs/remotes/origin/main)" \
+            > ../ui-control-preflight-evidence/source.txt
+
+      - name: Fetch official workflow-run metadata with the read-only repository token
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          EXPECTED_REPOSITORY: ${{ github.repository }}
+          QUALIFICATION_RUN_ID: ${{ inputs.repository_qualification_run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header 'Accept: application/vnd.github+json' \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "$GITHUB_API_URL/repos/$EXPECTED_REPOSITORY/actions/runs/$QUALIFICATION_RUN_ID" \
+            --output ui-control-preflight-evidence/qualification-run.json
+
+      - name: Setup Node.js 22 for candidate-owned semantic receipt validation
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+
+      - name: Download exact-head qualification artifact from the selected run
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ui-control-exact-head-${{ inputs.candidate_sha }}
+          path: ui-control-preflight-evidence/source-head
+          run-id: ${{ inputs.repository_qualification_run_id }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+
+      - name: Download synthetic-merge qualification artifact from the selected run
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: ui-control-synthetic-merge-*
+          path: ui-control-preflight-evidence/merge-tree
+          merge-multiple: true
+          run-id: ${{ inputs.repository_qualification_run_id }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+
+      - id: receipts
+        name: Resolve exactly one immutable receipt per repository qualification path
+        shell: bash
+        run: |
+          set -euo pipefail
+          resolve_one() {
+            local root="$1"
+            local variable="$2"
+            mapfile -t matches < <(find "$root" -type f -name receipt.json -print | sort)
+            test "${#matches[@]}" -eq 1
+            printf '%s=%s\n' "$variable" "${matches[0]}" >> "$GITHUB_ENV"
+          }
+          resolve_one ui-control-preflight-evidence/source-head UI_CONTROL_SOURCE_HEAD_RECEIPT
+          resolve_one ui-control-preflight-evidence/merge-tree UI_CONTROL_MERGE_TREE_RECEIPT
+
+      - id: semantic
+        name: Validate official run metadata and mutually bound exact source/merge receipts
+        env:
+          UI_CONTROL_WORKFLOW_REF: ${{ github.ref }}
+          UI_CONTROL_CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          UI_CONTROL_EXPECTED_REPOSITORY: ${{ github.repository }}
+          UI_CONTROL_QUALIFICATION_RUN_ID: ${{ inputs.repository_qualification_run_id }}
+          UI_CONTROL_QUALIFICATION_RUN_METADATA: ../ui-control-preflight-evidence/qualification-run.json
+          UI_CONTROL_SOURCE_HEAD_RECEIPT: ../${{ env.UI_CONTROL_SOURCE_HEAD_RECEIPT }}
+          UI_CONTROL_MERGE_TREE_RECEIPT: ../${{ env.UI_CONTROL_MERGE_TREE_RECEIPT }}
+          UI_CONTROL_MAIN_REF: refs/remotes/origin/main
+        working-directory: .ui-control-candidate
+        run: node ../.ui-control-trusted/qualification/ui-control/validate-repository-preflight.mjs ../ui-control-preflight-evidence/repository-preflight-observation.json
+
+      - name: Emit an infrastructure-invalid observation when semantic validation could not run
+        if: always()
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          INPUTS_OUTCOME: ${{ steps.inputs.outcome }}
+          ANCESTRY_OUTCOME: ${{ steps.ancestry.outcome }}
+          RECEIPTS_OUTCOME: ${{ steps.receipts.outcome }}
+          SEMANTIC_OUTCOME: ${{ steps.semantic.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          output=ui-control-preflight-evidence/repository-preflight-observation.json
+          if test -f "$output"; then exit 0; fi
+          node - "$output" <<'NODE'
+          const fs = require("node:fs");
+          const [output] = process.argv.slice(2);
+          const receipt = {
+            schema: "hepta.ui-control.repository-preflight-observation.v1",
+            status: "failed",
+            observedAt: new Date().toISOString(),
+            candidate: { commit: process.env.CANDIDATE_SHA, tree: null },
+            checks: [],
+            infrastructureOutcomes: {
+              inputs: process.env.INPUTS_OUTCOME,
+              ancestry: process.env.ANCESTRY_OUTCOME,
+              receipts: process.env.RECEIPTS_OUTCOME,
+              semantic: process.env.SEMANTIC_OUTCOME,
+            },
+            failure: { stage: "workflow-infrastructure", code: "UI_CONTROL_PREFLIGHT_INFRASTRUCTURE", message: "repository preflight did not produce a semantic observation" },
+            claims: { protectedSecretsEligible: false, realBackendSemanticsQualified: false, productionDeploymentApproved: false, releaseAuthorized: false },
+          };
+          fs.mkdirSync(require("node:path").dirname(output), { recursive: true });
+          fs.writeFileSync(output, `${JSON.stringify(receipt, null, 2)}\n`);
+          NODE
+
+      - name: Upload repository-preflight evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-control-repository-preflight-${{ inputs.candidate_sha }}
+          path: ui-control-preflight-evidence/
+          if-no-files-found: error
+          retention-days: 90
+
+  protected-external-qualification:
+    name: protected deployment / optional real backend / optional production evidence
+    needs: repository-preflight
+    if: ${{ needs.repository-preflight.result == 'success' }}
+    environment: ui-control-production-qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - name: Check out exact main-reachable candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ inputs.candidate_sha }}
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Bind exact source identity
+      - name: Revalidate exact identity and main ancestry before mapping any protected value
         env:
           CANDIDATE_SHA: ${{ inputs.candidate_sha }}
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          git fetch --no-tags --force origin main:refs/remotes/origin/main
+          git merge-base --is-ancestor "$CANDIDATE_SHA" refs/remotes/origin/main
           mkdir -p ui-control-external-evidence
-          printf 'sha=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > ui-control-external-evidence/source.txt
+          printf 'sha=%s\ntree=%s\nmain=%s\n' \
+            "$(git rev-parse HEAD)" \
+            "$(git rev-parse HEAD^{tree})" \
+            "$(git rev-parse refs/remotes/origin/main)" \
+            > ui-control-external-evidence/source.txt
 
       - name: Setup Node.js 22
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: 22
 
-      - name: Build and test exact locked browser artifact
+      - name: Build and test the exact locked candidate before mapping deployment credentials
         working-directory: ${{ env.UI_CONTROL_APP }}
+        shell: bash
         run: |
+          set -euo pipefail
           npm ci --ignore-scripts --no-audit --no-fund
           npm run lint
           npm test
           npm run test:contract
           npm run build
+
+      - name: Download accepted repository-preflight evidence
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ui-control-repository-preflight-${{ inputs.candidate_sha }}
+          path: ui-control-external-evidence/repository-preflight
 
       - name: Probe selected HTTPS deployment
         env:
@@ -88,84 +271,22 @@ jobs:
           HEPTA_UI_CONTROL_COOKIE_PATH: ${{ secrets.HEPTA_UI_CONTROL_COOKIE_PATH }}
         run: node qualification/ui-control/deployment-security.mjs ui-control-external-evidence/deployment-security-receipt.json
 
-      - name: Publish deployment-security summary
-        if: always()
-        shell: bash
-        run: |
-          {
-            echo '## ui.control deployment-security observation'
-            echo
-            echo "- Candidate: \`${{ inputs.candidate_sha }}\`"
-            if test -f ui-control-external-evidence/deployment-security-receipt.json; then
-              node -e 'const r=require("./ui-control-external-evidence/deployment-security-receipt.json"); console.log(`- Outcome: ${r.status}`); console.log(`- Deployment digest: ${r.backendDeploymentDigest ?? "unresolved"}`); console.log(`- Failure: ${r.failure?.code ?? "none"}`)'
-            else
-              echo '- Outcome: infrastructure-invalid (receipt absent)'
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Upload deployment-security evidence
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: ui-control-deployment-security-${{ inputs.candidate_sha }}
-          path: ui-control-external-evidence/
-          if-no-files-found: error
-          retention-days: 90
-
-  real-backend:
-    name: real Agentd/backend durability, recovery, identity, and authority qualification
-    if: ${{ inputs.run_real_backend }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 35
-    steps:
-      - name: Validate candidate input
-        env:
-          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
-
-      - name: Check out exact candidate
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ inputs.candidate_sha }}
-          persist-credentials: false
-          fetch-depth: 0
-
-      - name: Bind exact source identity
-        env:
-          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
-          mkdir -p ui-control-real-backend-evidence
-          printf 'sha=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > ui-control-real-backend-evidence/source.txt
-
-      - name: Setup Node.js 22
-        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
-        with:
-          node-version: 22
-
-      - name: Install exact locked dependencies and run external-evidence tests
-        working-directory: ${{ env.UI_CONTROL_APP }}
-        run: |
-          npm ci --ignore-scripts --no-audit --no-fund
-          node --test test/external-evidence.test.js
-
       - name: Materialize independently retained Agentd and authority evidence
+        if: ${{ inputs.run_real_backend }}
         env:
           CHAOS_EVIDENCE_JSON: ${{ secrets.HEPTA_UI_CONTROL_CHAOS_EVIDENCE_JSON }}
           AUTHORITY_EVIDENCE_JSON: ${{ secrets.HEPTA_UI_CONTROL_AUTHORITY_EVIDENCE_JSON }}
         shell: bash
         run: |
-          set -u
+          set -euo pipefail
+          test -n "$CHAOS_EVIDENCE_JSON"
+          test -n "$AUTHORITY_EVIDENCE_JSON"
           umask 077
           printf '%s' "$CHAOS_EVIDENCE_JSON" > "$RUNNER_TEMP/ui-control-agentd-chaos-evidence.json"
           printf '%s' "$AUTHORITY_EVIDENCE_JSON" > "$RUNNER_TEMP/ui-control-authority-evidence.json"
 
       - name: Exercise real Agentd/backend semantics
+        if: ${{ inputs.run_real_backend }}
         env:
           HEPTA_UI_CONTROL_BASE_URL: ${{ secrets.HEPTA_UI_CONTROL_BASE_URL }}
           HEPTA_UI_CONTROL_DEPLOYMENT_ID: ${{ secrets.HEPTA_UI_CONTROL_DEPLOYMENT_ID }}
@@ -177,121 +298,27 @@ jobs:
           HEPTA_UI_CONTROL_CHAOS_EVIDENCE: ${{ runner.temp }}/ui-control-agentd-chaos-evidence.json
           HEPTA_UI_CONTROL_AUTHORITY_EVIDENCE: ${{ runner.temp }}/ui-control-authority-evidence.json
           HEPTA_UI_CONTROL_ALLOW_MUTATION: I_UNDERSTAND_THIS_USES_A_DISPOSABLE_QUALIFICATION_TARGET
-        run: node qualification/ui-control/real-backend-contract.mjs ui-control-real-backend-evidence/real-backend-receipt.json
+        run: node qualification/ui-control/real-backend-contract.mjs ui-control-external-evidence/real-backend-receipt.json
 
-      - name: Publish real-backend summary
-        if: always()
+      - name: Resolve repository receipts retained by the accepted preflight
+        if: ${{ inputs.run_production_evidence }}
         shell: bash
         run: |
-          {
-            echo '## ui.control real Agentd/backend observation'
-            echo
-            echo "- Candidate: \`${{ inputs.candidate_sha }}\`"
-            if test -f ui-control-real-backend-evidence/real-backend-receipt.json; then
-              node -e 'const r=require("./ui-control-real-backend-evidence/real-backend-receipt.json"); console.log(`- Outcome: ${r.status}`); console.log(`- Completed cases: ${(r.cases ?? r.completedCases ?? []).length}`); console.log(`- Failure: ${r.failure?.code ?? "none"}`)'
-            else
-              echo '- Outcome: infrastructure-invalid (receipt absent)'
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Upload real-backend evidence
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: ui-control-real-backend-${{ inputs.candidate_sha }}
-          path: ui-control-real-backend-evidence/
-          if-no-files-found: error
-          retention-days: 90
-
-  production-evidence:
-    name: exact evidence bundle / independent acceptance / security / operations / release authority
-    needs:
-      - deployment-security
-      - real-backend
-    if: ${{ always() && inputs.run_real_backend && inputs.run_production_evidence }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
-    steps:
-      - name: Check out exact candidate
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ inputs.candidate_sha }}
-          persist-credentials: false
-          fetch-depth: 0
-
-      - name: Setup Node.js 22
-        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
-        with:
-          node-version: 22
-
-      - name: Fetch main ancestry for release eligibility
-        continue-on-error: true
-        shell: bash
-        run: git fetch --no-tags origin main:refs/remotes/origin/main
-
-      - name: Download exact-head repository receipt
-        id: source_download
-        continue-on-error: true
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: ui-control-exact-head-${{ inputs.candidate_sha }}
-          path: ui-control-production-evidence/source-head
-          run-id: ${{ inputs.repository_qualification_run_id }}
-          github-token: ${{ github.token }}
-          repository: ${{ github.repository }}
-
-      - name: Download synthetic-merge repository receipt
-        id: merge_download
-        continue-on-error: true
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          pattern: ui-control-synthetic-merge-*
-          path: ui-control-production-evidence/merge-tree
-          merge-multiple: true
-          run-id: ${{ inputs.repository_qualification_run_id }}
-          github-token: ${{ github.token }}
-          repository: ${{ github.repository }}
-
-      - name: Download deployment-security receipt
-        id: deployment_download
-        continue-on-error: true
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: ui-control-deployment-security-${{ inputs.candidate_sha }}
-          path: ui-control-production-evidence/deployment-security
-
-      - name: Download real-backend receipt
-        id: backend_download
-        continue-on-error: true
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: ui-control-real-backend-${{ inputs.candidate_sha }}
-          path: ui-control-production-evidence/real-backend
-
-      - name: Resolve downloaded receipt paths without hiding missing or duplicate artifacts
-        if: always()
-        shell: bash
-        run: |
-          set -u
+          set -euo pipefail
           resolve_one() {
             local root="$1"
-            local basename="$2"
-            local variable="$3"
-            mapfile -t matches < <(find "$root" -type f -name "$basename" -print 2>/dev/null | sort)
-            if [ "${#matches[@]}" -eq 1 ]; then
-              printf '%s=%s\n' "$variable" "${matches[0]}" >> "$GITHUB_ENV"
-            else
-              printf '%s=%s\n' "$variable" "$RUNNER_TEMP/missing-${variable}.json" >> "$GITHUB_ENV"
-              printf 'receipt resolution failed for %s: found %s matching files under %s\n' "$variable" "${#matches[@]}" "$root" >&2
-            fi
+            local variable="$2"
+            mapfile -t matches < <(find "$root" -type f -name receipt.json -print | sort)
+            test "${#matches[@]}" -eq 1
+            printf '%s=%s\n' "$variable" "${matches[0]}" >> "$GITHUB_ENV"
           }
-          resolve_one ui-control-production-evidence/source-head receipt.json UI_CONTROL_SOURCE_HEAD_RECEIPT
-          resolve_one ui-control-production-evidence/merge-tree receipt.json UI_CONTROL_MERGE_TREE_RECEIPT
-          resolve_one ui-control-production-evidence/deployment-security deployment-security-receipt.json UI_CONTROL_DEPLOYMENT_SECURITY_RECEIPT
-          resolve_one ui-control-production-evidence/real-backend real-backend-receipt.json UI_CONTROL_REAL_BACKEND_RECEIPT
+          resolve_one ui-control-external-evidence/repository-preflight/source-head UI_CONTROL_SOURCE_HEAD_RECEIPT
+          resolve_one ui-control-external-evidence/repository-preflight/merge-tree UI_CONTROL_MERGE_TREE_RECEIPT
+          printf 'UI_CONTROL_DEPLOYMENT_SECURITY_RECEIPT=%s\n' "$PWD/ui-control-external-evidence/deployment-security-receipt.json" >> "$GITHUB_ENV"
+          printf 'UI_CONTROL_REAL_BACKEND_RECEIPT=%s\n' "$PWD/ui-control-external-evidence/real-backend-receipt.json" >> "$GITHUB_ENV"
 
       - name: Materialize independent and release-authority evidence
-        if: always()
+        if: ${{ inputs.run_production_evidence }}
         env:
           INDEPENDENT_ACCEPTANCE_JSON: ${{ secrets.HEPTA_UI_CONTROL_INDEPENDENT_ACCEPTANCE_JSON }}
           INDEPENDENT_SECURITY_JSON: ${{ secrets.HEPTA_UI_CONTROL_INDEPENDENT_SECURITY_REVIEW_JSON }}
@@ -299,52 +326,50 @@ jobs:
           PRODUCTION_APPROVAL_JSON: ${{ secrets.HEPTA_UI_CONTROL_PRODUCTION_APPROVAL_JSON }}
         shell: bash
         run: |
-          set -u
+          set -euo pipefail
+          for value in "$INDEPENDENT_ACCEPTANCE_JSON" "$INDEPENDENT_SECURITY_JSON" "$OPERATIONAL_EXERCISE_JSON" "$PRODUCTION_APPROVAL_JSON"; do test -n "$value"; done
           umask 077
-          mkdir -p ui-control-production-evidence/manual
-          printf '%s' "$INDEPENDENT_ACCEPTANCE_JSON" > ui-control-production-evidence/manual/independent-acceptance.json
-          printf '%s' "$INDEPENDENT_SECURITY_JSON" > ui-control-production-evidence/manual/independent-security.json
-          printf '%s' "$OPERATIONAL_EXERCISE_JSON" > ui-control-production-evidence/manual/operational-exercise.json
-          printf '%s' "$PRODUCTION_APPROVAL_JSON" > ui-control-production-evidence/manual/production-approval.json
+          mkdir -p ui-control-external-evidence/manual
+          printf '%s' "$INDEPENDENT_ACCEPTANCE_JSON" > ui-control-external-evidence/manual/independent-acceptance.json
+          printf '%s' "$INDEPENDENT_SECURITY_JSON" > ui-control-external-evidence/manual/independent-security.json
+          printf '%s' "$OPERATIONAL_EXERCISE_JSON" > ui-control-external-evidence/manual/operational-exercise.json
+          printf '%s' "$PRODUCTION_APPROVAL_JSON" > ui-control-external-evidence/manual/production-approval.json
           {
-            echo "UI_CONTROL_INDEPENDENT_ACCEPTANCE_RECEIPT=ui-control-production-evidence/manual/independent-acceptance.json"
-            echo "UI_CONTROL_INDEPENDENT_SECURITY_RECEIPT=ui-control-production-evidence/manual/independent-security.json"
-            echo "UI_CONTROL_OPERATIONAL_EXERCISE_RECEIPT=ui-control-production-evidence/manual/operational-exercise.json"
-            echo "UI_CONTROL_PRODUCTION_APPROVAL_RECEIPT=ui-control-production-evidence/manual/production-approval.json"
+            echo "UI_CONTROL_INDEPENDENT_ACCEPTANCE_RECEIPT=$PWD/ui-control-external-evidence/manual/independent-acceptance.json"
+            echo "UI_CONTROL_INDEPENDENT_SECURITY_RECEIPT=$PWD/ui-control-external-evidence/manual/independent-security.json"
+            echo "UI_CONTROL_OPERATIONAL_EXERCISE_RECEIPT=$PWD/ui-control-external-evidence/manual/operational-exercise.json"
+            echo "UI_CONTROL_PRODUCTION_APPROVAL_RECEIPT=$PWD/ui-control-external-evidence/manual/production-approval.json"
           } >> "$GITHUB_ENV"
 
       - name: Validate exact external evidence bundle
-        if: always()
+        if: ${{ inputs.run_production_evidence }}
         env:
           HEPTA_UI_CONTROL_BASE_URL: ${{ secrets.HEPTA_UI_CONTROL_BASE_URL }}
           HEPTA_UI_CONTROL_DEPLOYMENT_ID: ${{ secrets.HEPTA_UI_CONTROL_DEPLOYMENT_ID }}
-          UI_CONTROL_REQUIRE_MAIN_ANCESTRY: "true"
-          UI_CONTROL_MAIN_REF: refs/remotes/origin/main
-        run: node qualification/ui-control/validate-external-evidence.mjs ui-control-production-evidence/external-evidence-bundle.json
+        run: node qualification/ui-control/validate-external-evidence.mjs ui-control-external-evidence/external-evidence-bundle.json
 
-      - name: Publish production-evidence summary
+      - name: Publish protected external qualification summary
         if: always()
         shell: bash
         run: |
           {
-            echo '## ui.control production evidence bundle'
+            echo '## ui.control protected external qualification'
             echo
             echo "- Candidate: \`${{ inputs.candidate_sha }}\`"
             echo "- Repository qualification run: \`${{ inputs.repository_qualification_run_id }}\`"
-            echo "- Deployment job: ${{ needs['deployment-security'].result }}"
-            echo "- Real-backend job: ${{ needs['real-backend'].result }}"
-            if test -f ui-control-production-evidence/external-evidence-bundle.json; then
-              node -e 'const r=require("./ui-control-production-evidence/external-evidence-bundle.json"); console.log(`- Bundle status: ${r.status}`); console.log(`- Failure: ${r.failure?.code ?? "none"}`); console.log(`- Release authorized: ${r.claims?.releaseAuthorized === true}`)'
-            else
-              echo '- Bundle status: infrastructure-invalid (bundle absent)'
-            fi
+            echo "- Protected environment: \`${{ env.UI_CONTROL_PROTECTED_ENVIRONMENT }}\`"
+            for file in deployment-security-receipt.json real-backend-receipt.json external-evidence-bundle.json; do
+              if test -f "ui-control-external-evidence/$file"; then
+                FILE="ui-control-external-evidence/$file" node -e 'const r=require(`./${process.env.FILE}`); console.log(`- ${process.env.FILE}: ${r.status}; failure=${r.failure?.code ?? "none"}`)'
+              fi
+            done
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload exact external evidence bundle
+      - name: Upload protected external qualification evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ui-control-production-evidence-${{ inputs.candidate_sha }}
-          path: ui-control-production-evidence/
+          name: ui-control-external-evidence-${{ inputs.candidate_sha }}
+          path: ui-control-external-evidence/
           if-no-files-found: error
           retention-days: 180
