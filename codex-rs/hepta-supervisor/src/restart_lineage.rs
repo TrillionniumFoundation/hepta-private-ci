@@ -361,8 +361,19 @@ pub(crate) fn bind_replacement(
     })?;
     if lineage.agent_id != *agent_id
         || !lineage.same_operation(window_started_unix_ms, attempt)
-        || lineage.phase != RestartLineagePhase::ReplacementPending
     {
+        return Err(RestartLineageError::Invalid(
+            "restart lineage operation identity changed".to_string(),
+        ));
+    }
+    if matches!(
+        lineage.phase,
+        RestartLineagePhase::ReplacementStarted | RestartLineagePhase::Completed
+    ) && lineage.replacement.as_ref() == Some(&replacement)
+    {
+        return Ok(());
+    }
+    if lineage.phase != RestartLineagePhase::ReplacementPending {
         return Err(RestartLineageError::Invalid(
             "restart lineage is not awaiting a replacement".to_string(),
         ));
@@ -383,12 +394,23 @@ pub(crate) fn mark_predecessor_exited(
     let lineage = read(run_root)?.ok_or_else(|| {
         RestartLineageError::Invalid("restart lineage is absent".to_string())
     })?;
-    if lineage.agent_id != *agent_id
-        || lineage.phase != RestartLineagePhase::PredecessorOwned
-        || lineage.predecessor.as_ref() != Some(predecessor)
-    {
+    if lineage.agent_id != *agent_id || lineage.predecessor.as_ref() != Some(predecessor) {
         return Err(RestartLineageError::Invalid(
             "exit does not match the durable restart predecessor".to_string(),
+        ));
+    }
+    if matches!(
+        lineage.phase,
+        RestartLineagePhase::ReplacementPending
+            | RestartLineagePhase::ReplacementStarted
+            | RestartLineagePhase::Completed
+    ) && lineage.predecessor_exit_observed
+    {
+        return Ok(());
+    }
+    if lineage.phase != RestartLineagePhase::PredecessorOwned {
+        return Err(RestartLineageError::Invalid(
+            "restart lineage cannot accept a predecessor exit".to_string(),
         ));
     }
     write(
@@ -405,12 +427,17 @@ pub(crate) fn complete(
     let lineage = read(run_root)?.ok_or_else(|| {
         RestartLineageError::Invalid("restart lineage is absent".to_string())
     })?;
-    if lineage.agent_id != *agent_id
-        || lineage.phase != RestartLineagePhase::ReplacementStarted
-        || lineage.replacement.as_ref() != Some(replacement)
-    {
+    if lineage.agent_id != *agent_id || lineage.replacement.as_ref() != Some(replacement) {
         return Err(RestartLineageError::Invalid(
             "healthy process is not the durable restart replacement".to_string(),
+        ));
+    }
+    if lineage.phase == RestartLineagePhase::Completed {
+        return Ok(());
+    }
+    if lineage.phase != RestartLineagePhase::ReplacementStarted {
+        return Err(RestartLineageError::Invalid(
+            "restart lineage has not started the replacement".to_string(),
         ));
     }
     write(
@@ -628,7 +655,7 @@ mod tests {
     }
 
     #[test]
-    fn exact_exit_and_fresh_replacement_close_lineage() {
+    fn exact_exit_and_fresh_replacement_close_lineage_idempotently() {
         let directory = tempfile::tempdir().expect("tempdir");
         let predecessor = witness(11, "predecessor");
         let replacement = witness(12, "replacement");
@@ -636,6 +663,8 @@ mod tests {
             .expect("begin");
         mark_predecessor_exited(directory.path(), &agent(), &predecessor)
             .expect("predecessor exit");
+        mark_predecessor_exited(directory.path(), &agent(), &predecessor)
+            .expect("replayed predecessor exit");
         bind_replacement(
             directory.path(),
             &agent(),
@@ -644,7 +673,16 @@ mod tests {
             replacement.clone(),
         )
         .expect("replacement");
+        bind_replacement(
+            directory.path(),
+            &agent(),
+            100,
+            1,
+            replacement.clone(),
+        )
+        .expect("replayed replacement");
         complete(directory.path(), &agent(), &replacement).expect("complete");
+        complete(directory.path(), &agent(), &replacement).expect("replayed complete");
         assert_eq!(
             reconcile_pending(
                 directory.path(),
