@@ -1,49 +1,36 @@
-name: Runtime Agentd one-shot format repair
+name: Runtime Agentd formatting verification
 
 on:
   push:
     branches:
       - work/runtime-agentd-production-closure-20260928
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - '.github/workflows/runtime-agentd-format-repair.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: runtime-agentd-format-repair-${{ github.ref }}
+  group: runtime-agentd-format-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 
 jobs:
   format:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.ref_name }}
-          fetch-depth: 0
-          persist-credentials: true
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - name: Install exact Rust formatter
         shell: bash
         run: |
           set -euo pipefail
           toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
           rustup toolchain install "$toolchain" --profile minimal --component rustfmt
-          rustup override set "$toolchain"
-      - name: Apply package formatting
+      - name: Verify without mutating the candidate
         working-directory: codex-rs
-        run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd
-      - name: Commit deterministic formatting repair
-        shell: bash
-        run: |
-          set -euo pipefail
-          git diff --check
-          if git diff --quiet; then
-            echo 'No formatting changes were required.'
-            exit 0
-          fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add codex-rs/hepta-agentd
-          git commit -m 'style(runtime.agentd): apply exact rustfmt output'
-          git push origin HEAD:${{ github.ref_name }}
+        run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd -- --check

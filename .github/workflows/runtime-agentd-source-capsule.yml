@@ -1,0 +1,46 @@
+name: Runtime Agentd exact source capsule
+
+on:
+  push:
+    branches:
+      - work/runtime-agentd-production-closure-20260928
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - 'docs/modules/runtime.agentd/**'
+      - '.github/workflows/runtime-agentd-source-capsule.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  source:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - name: Retain only exact tracked Git objects, not credentials or worktree state
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          out="$RUNNER_TEMP/agentd-source"
+          mkdir -p "$out"
+          git archive --format=tar HEAD | gzip -n > "$out/source.tar.gz"
+          git cat-file commit HEAD > "$out/source.commit"
+          git rev-parse HEAD > "$out/HEAD_SHA"
+          git rev-parse HEAD^{tree} > "$out/HEAD_TREE"
+          (cd "$out" && sha256sum source.tar.gz source.commit HEAD_SHA HEAD_TREE > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: agentd-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/agentd-source
+          if-no-files-found: error
+          retention-days: 14
