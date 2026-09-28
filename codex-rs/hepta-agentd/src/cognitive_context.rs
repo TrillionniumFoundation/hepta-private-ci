@@ -1,5 +1,8 @@
 //! Connect the canonical SQLite owner to the newer bounded cognitive read port.
 
+#[path = "cognitive_read_view.rs"]
+mod read_view;
+
 use std::collections::BTreeMap;
 use std::time::Instant;
 use std::time::SystemTime;
@@ -30,6 +33,7 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
+use self::read_view::OwnerCutReadView;
 use crate::CognitiveContextItem;
 use crate::CognitiveContextPlan;
 use crate::CognitiveContextRevalidation;
@@ -187,6 +191,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     let mut pending_assignment = None;
 
     let cut = store.lane_c_snapshot(&access, &scope, now).await?;
+    let read_view = OwnerCutReadView::new(&cut).map_err(map_read_ids_error)?;
     let observation = store
         .observe_memory_retrieval(&access, &RetrievalRequest::new(query, now))
         .await?;
@@ -200,7 +205,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         .collect::<Result<Vec<_>, _>>()?;
     record_ids.sort();
     record_ids.dedup();
-    let admission_read = cut
+    let admission_read = read_view
         .read_ids(ReadIdsRequestV1 {
             snapshot_digest: cut.snapshot().snapshot_digest,
             record_ids,
@@ -409,7 +414,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         }
     }
 
-    let selected_read = read_selected_items(&cut, &response.items)?;
+    let selected_read = read_selected_items(&read_view, &response.items)?;
     let selected_read_binding =
         bind_selected_read(&cut, &selected_read, expected_retrieval_context_digest);
     response.snapshot_digest = selected_read.snapshot_digest().to_string();
@@ -670,7 +675,10 @@ pub(crate) async fn revalidate_with_retrieval_context(
         .into());
     }
 
-    let read = read_selected_items(&cut, items)?;
+    // This view is new for the freshly reacquired cut. The publication view
+    // never crosses the request boundary or supplies final-use authorization.
+    let read_view = OwnerCutReadView::new(&cut).map_err(map_read_ids_error)?;
+    let read = read_selected_items(&read_view, items)?;
     let retrieval_context_digest = match current_retrieval {
         Some(current) => Some(
             load_retrieval_context(current, owner, body_generation)
@@ -762,7 +770,7 @@ fn bind_selected_read(
 }
 
 fn read_selected_items(
-    cut: &DurableCognitiveSnapshot,
+    cut: &OwnerCutReadView<'_>,
     items: &[CognitiveContextItem],
 ) -> Result<ReadIdsResultV1, CognitiveContextError> {
     let record_ids = items
@@ -773,7 +781,7 @@ fn read_selected_items(
         })
         .collect::<Result<Vec<_>, _>>()?;
     cut.read_ids(ReadIdsRequestV1 {
-        snapshot_digest: cut.snapshot().snapshot_digest,
+        snapshot_digest: cut.snapshot_digest(),
         record_ids,
         fields: vec![ReadFieldV1::ContentDigest],
         maximum_encoded_bytes: MAX_CONTEXT_JSON_BYTES,
