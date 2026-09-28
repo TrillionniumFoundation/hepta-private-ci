@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.learning-artifacts.delivery-index.v1",
+  "module": "learning.artifacts",
+  "sourceCommit": "5a128fc3966218cd65ced02d8c52d9c3a660aa7a",
+  "capabilities": [
+    {
+      "capability": "canonical_request_identity",
+      "implementation": "codex-rs/hepta-learning-artifacts/src/owner/request_identity.rs",
+      "codeWritten": true,
+      "executed": false,
+      "nativeQualified": false,
+      "onMain": false,
+      "remainingLimit": "exact-source native evidence pending"
+    },
+    {
+      "capability": "typed_owner_control_transitions",
+      "implementation": "codex-rs/hepta-learning-artifacts/src/owner/operational_state.rs",
+      "codeWritten": true,
+      "executed": false,
+      "nativeQualified": false,
+      "onMain": false,
+      "remainingLimit": "external whole-store rollback floor remains deployment-owned"
+    },
+    {
+      "capability": "live_withdrawal_revalidation",
+      "implementation": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
+      "codeWritten": true,
+      "executed": false,
+      "nativeQualified": false,
+      "onMain": false,
+      "remainingLimit": "existing pinned-view and erasure policy remain separate"
+    },
+    {
+      "capability": "actionable_operational_metrics",
+      "implementation": "codex-rs/hepta-learning-artifacts/src/owner/operational_metrics.rs",
+      "codeWritten": true,
+      "executed": false,
+      "nativeQualified": false,
+      "onMain": false,
+      "remainingLimit": "exporter and target-host resource observations remain external"
+    },
+    {
+      "capability": "stage_measurement",
+      "implementation": "codex-rs/hepta-learning-artifacts/PERFORMANCE_PROTOCOL.md",
+      "codeWritten": true,
+      "executed": false,
+      "nativeQualified": false,
+      "onMain": false,
+      "remainingLimit": "no target-host SLO claim"
+    }
+  ]
+}

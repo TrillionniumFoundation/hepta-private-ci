@@ -1,0 +1,57 @@
+name: Hepta learning.artifacts operational closure
+
+on:
+  push:
+    branches:
+      - 'chatgpt/learning-artifacts-*'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'codex-rs/hepta-learning-artifacts/**'
+      - 'docs/modules/learning.artifacts/**'
+      - 'qualification/learning-artifacts/**'
+      - 'scripts/hepta_artifact_*.py'
+      - '.github/workflows/hepta-learning-artifacts-operational-closure.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-artifacts-operational-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    name: learning.artifacts operational native
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Python evidence regressions
+        run: python3 -m unittest discover -s scripts -p 'test_hepta_artifact_*.py' -v
+      - name: Rust format
+        run: cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts -- --check
+      - name: Compile all targets with fault hooks
+        run: cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-learning-artifacts --all-targets --features artifact_test_hooks
+      - name: Strict Clippy
+        run: cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-learning-artifacts --all-targets --features artifact_test_hooks -- -D warnings
+      - name: Execute package tests and process-crash fixtures
+        run: cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-learning-artifacts --features artifact_test_hooks -- --nocapture
+
+  required:
+    name: learning.artifacts operational closure required
+    if: ${{ always() }}
+    needs: [native]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Reject missing skipped cancelled or failed native evidence
+        env:
+          NATIVE: ${{ needs.native.result }}
+        run: test "$NATIVE" = success

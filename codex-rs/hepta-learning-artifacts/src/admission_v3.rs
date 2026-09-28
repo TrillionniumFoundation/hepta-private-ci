@@ -103,7 +103,16 @@ pub fn validate_artifact_publication_v3(
     if admission.withdrawal_scope_digest != scope_digest {
         return Err(ArtifactAdmissionError::WithdrawalScopeChanged);
     }
-    verify_artifact_admission_v3(admission, registry.head_digest(), now)
+    verify_artifact_admission_v3(admission, registry.head_digest(), now)?;
+    // The DTO is publicly constructible. A hash-consistent receipt at the
+    // current head is not proof that its datasets passed admission. Recheck
+    // authoritative membership at every live publication boundary. Historical
+    // receipt replay intentionally uses the separate integrity verifier above.
+    let validated = registry.admit_manifest(admission.validated_manifest.manifest.clone(), now)?;
+    if validated.manifest_digest != admission.validated_manifest.manifest_digest {
+        return Err(ArtifactAdmissionError::ManifestDigestMismatch);
+    }
+    Ok(())
 }
 
 fn digest_admission(
@@ -285,4 +294,8 @@ mod tests {
             Err(ArtifactAdmissionError::WithdrawalHeadChanged)
         );
     }
+
+    #[cfg(test)]
+    #[path = "admission_membership_tests.rs"]
+    mod membership_tests;
 }
