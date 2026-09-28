@@ -68,10 +68,11 @@ jobs:
               raise SystemExit('diagnostic shell does not match reviewed base')
           workflow.write_text(text.replace('          set -uo pipefail\n', '          set -uo pipefail\n          set +e\n'))
           PY
-          git add -A
-          git diff --cached --check
+          git add -- codex-rs/hepta-evidence/src/qualification.rs codex-rs/hepta-evidence/src/qualification_provenance.rs codex-rs/hepta-evidence/src/qualification_provenance_tests.rs .github/workflows/kernel-evidence-ad-integration.yml
           result_tree="$(git write-tree)"
+          echo "Reviewed result tree: $result_tree"
           test "$result_tree" = ca8d587a8e0ebda810067e26ca04db740f879afa
+          git diff --cached --check -- codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol .github/workflows/kernel-evidence-ad-integration.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           message='fix(kernel.evidence): integrate reviewed trust, provenance, paging and publication repairs [kernel-evidence-closure] [kernel-evidence-status-sync]'
