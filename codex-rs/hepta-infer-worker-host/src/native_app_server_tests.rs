@@ -5,6 +5,7 @@ use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStartedNotification;
+use codex_app_server_protocol::TurnStartParams;
 
 fn binding() -> CodexTurnBinding {
     let payload_digest = Digest32::of_bytes(b"test-turn-payload");
