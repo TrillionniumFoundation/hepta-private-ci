@@ -1,0 +1,177 @@
+name: Prompt registry canonical source final pass
+on:
+  push:
+    branches: [ops/prompt-registry-candidate-authoring-20260928]
+    paths: [scripts/prompt-registry-final-pass.py, .github/workflows/prompt-registry-final-pass.yml]
+permissions:
+  contents: write
+jobs:
+  author:
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    outputs:
+      source: ${{ steps.publish.outputs.source }}
+    env:
+      SOURCE_SHA: be3046379a980f6a56555c2feb56f20aad422b91
+      TARGET_BRANCH: codex/prompt-registry-delivery-consistency-20260928
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: tooling
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Author scoped source before qualification
+        run: python3 tooling/scripts/prompt-registry-final-pass.py source
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+      - id: publish
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustfmt --edition 2024 --config-path codex-rs/rustfmt.toml codex-rs/hepta-prompt-registry/tests/durable_relations_v4.rs
+          git diff --check
+          python3 - <<'PY'
+          import subprocess
+          allowed = {'docs/modules/prompt.registry/TECHNICAL.md','docs/modules/prompt.registry/PERFORMANCE.md','scripts/hepta-prompt-registry-map.py','scripts/hepta-prompt-registry-qualify.py','qualification/module-execution-dossiers/detail/prompt.registry.md','codex-rs/hepta-prompt-registry/tests/durable_relations_v4.rs'}
+          changed=set(subprocess.check_output(['git','diff','--name-only'],text=True).splitlines())
+          if changed-allowed: raise SystemExit('unreviewed changes: '+repr(sorted(changed-allowed)))
+          PY
+          git fetch --no-tags origin "+refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
+          test "$(git rev-parse refs/remotes/origin/$TARGET_BRANCH)" = "$SOURCE_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/modules/prompt.registry/TECHNICAL.md docs/modules/prompt.registry/PERFORMANCE.md scripts/hepta-prompt-registry-map.py scripts/hepta-prompt-registry-qualify.py qualification/module-execution-dossiers/detail/prompt.registry.md codex-rs/hepta-prompt-registry/tests/durable_relations_v4.rs
+          git commit -m 'fix(prompt.registry): bind current source inventory and strict test-helper errors'
+          python3 scripts/hepta-prompt-registry-map.py --write
+          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
+          git commit -m 'docs(prompt.registry): bind operation map to committed source and tests'
+          python3 scripts/hepta-prompt-registry-map.py --check
+          PYTHONPATH=scripts python3 - <<'PY'
+          import importlib.util,json,pathlib
+          spec=importlib.util.spec_from_file_location('maps','scripts/hepta-implementation-maps.py')
+          module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+          row=json.loads(pathlib.Path('docs/modules/prompt.registry/IMPLEMENTATION_MAP.json').read_text())
+          module.validate_claim_types(row)
+          module.verify_source_identity(row,row['resolvedRoots'],module.current_source_base())
+          failures=[];module.validate_path_blob_manifest(row,'prompt.registry',failures)
+          if failures or row['sourceObjects'] != module.current_source_objects(row):
+              raise SystemExit('shared framework rejected map: '+repr(failures))
+          print('shared identity framework accepted prompt.registry map')
+          PY
+          git diff --exit-code HEAD
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          echo "source=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          mkdir -p "$RUNNER_TEMP/prompt-final-source"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/prompt-final-source/identity.txt"
+          git archive --format=tar.gz -o "$RUNNER_TEMP/prompt-final-source/source.tar.gz" HEAD
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-canonical-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/prompt-final-source/
+          if-no-files-found: warn
+          retention-days: 14
+  core:
+    needs: author
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [exact-head, base-merge]
+    env:
+      SOURCE_SHA: ${{ needs.author.outputs.source }}
+      BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind source or deterministic synthetic merge
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/evidence"
+          echo "source=$SOURCE_SHA base=$BASE_SHA lane=${{ matrix.lane }}" > "$RUNNER_TEMP/evidence/setup.txt"
+          if test '${{ matrix.lane }}' = base-merge; then
+            git config user.name qualification
+            git config user.email qualification@users.noreply.github.com
+            export GIT_AUTHOR_DATE="$(git show -s --format=%cI "$SOURCE_SHA")"
+            export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+            git checkout --detach "$BASE_SHA"
+            git merge --no-ff --no-edit "$SOURCE_SHA"
+          fi
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - run: >-
+          python3 scripts/hepta-prompt-registry-qualify.py --profile core
+          --lane '${{ matrix.lane }}' --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA"
+          --output "$RUNNER_TEMP/evidence"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-current-core-${{ matrix.lane }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/evidence/
+          if-no-files-found: error
+          retention-days: 30
+  product-diagnostics:
+    needs: author
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      SOURCE_SHA: ${{ needs.author.outputs.source }}
+      BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - run: mkdir -p "$RUNNER_TEMP/evidence"
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Resolve checksum-verified native V8 input
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py > "$RUNNER_TEMP/evidence/v8-input.log" 2>&1
+      - name: Product compile and boundary diagnostics against committed source
+        run: >-
+          python3 scripts/hepta-prompt-registry-qualify.py --profile product
+          --lane exact-head --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA"
+          --output "$RUNNER_TEMP/evidence"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-current-product-${{ github.run_id }}
+          path: ${{ runner.temp }}/evidence/
+          if-no-files-found: warn
+          retention-days: 30
