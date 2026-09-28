@@ -15,7 +15,7 @@ use crate::AgentdIdentity;
 use crate::AgentdIntelligenceInvocationV1;
 use crate::AgentdIntelligenceProductContinuationV1;
 use crate::AgentdIntelligenceProductRunnerV1;
-use crate::HostOwnedAgentdIntelligenceInvocationProviderV1;
+use crate::SupervisedHostOwnedAgentdIntelligenceInvocationProviderV1;
 
 pub fn compose_canonical_intelligence_product_profile<F>(
     config: AgentdConfig,
@@ -29,10 +29,12 @@ where
         + Sync
         + 'static,
 {
-    let provider = HostOwnedAgentdIntelligenceInvocationProviderV1::new(factory)
+    let provider = SupervisedHostOwnedAgentdIntelligenceInvocationProviderV1::new(factory)
         .with_product_continuation(continuation)?;
-    runner.telemetry().set_provider_configured(true);
-    config
+    let telemetry = runner.telemetry();
+    let composed = config
         .with_intelligence_product_runner(runner)?
-        .with_intelligence_invocation_provider(Arc::new(provider))
+        .with_intelligence_invocation_provider(Arc::new(provider))?;
+    telemetry.set_provider_configured(true);
+    Ok(composed)
 }
