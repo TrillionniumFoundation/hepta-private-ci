@@ -3,7 +3,7 @@ name: Kernel authority status projections
 on:
   push:
     branches:
-      - work/kernel-authority-convergence-20260925
+      - ops/kernel-authority-finalizer-macos-20260928
     paths:
       - '.github/workflows/kernel-authority-status.yml'
 
@@ -12,16 +12,16 @@ permissions:
   actions: write
 
 concurrency:
-  group: kernel-authority-deterministic-finalizer-arm
+  group: kernel-authority-ops-finalizer-macos
   cancel-in-progress: true
 
 jobs:
   finalize:
-    name: Materialize reviewed source and projections
-    runs-on: ubuntu-24.04-arm
+    name: Materialize reviewed PR 1007 source and projections on macOS
+    runs-on: macos-15
     timeout-minutes: 180
     steps:
-      - name: Checkout exact repair branch
+      - name: Checkout exact PR branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: work/kernel-authority-convergence-20260925
@@ -40,6 +40,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "716f4a94bb2f029ccccac11c16e866421aa731c3"
           git show 2cec44fa700334099c2f17e1f15746a36d2dffee:.github/workflows/kernel-authority-status.yml > .github/workflows/kernel-authority-status.yml
           git show 4ab6e0ddafc209503432f07f5d485b0d72ff7f96:.github/workflows/kernel-authority-convergence.yml > .github/workflows/kernel-authority-convergence.yml
           rm -f .github/workflows/kernel-authority-finalize.yml
