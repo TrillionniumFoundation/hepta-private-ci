@@ -24,16 +24,55 @@ import time
 
 
 def git(*args: str) -> str:
-    return subprocess.check_output(["git", *args], text=True).strip()
+    # Observe this worktree, never a redirected repository, replacement object,
+    # lazy network fetch, global alias or executable filesystem-monitor hook.
+    environment = {key: value for key, value in os.environ.items()
+                   if not key.startswith("GIT_")}
+    environment.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull,
+                       GIT_CONFIG_SYSTEM=os.devnull, GIT_NO_REPLACE_OBJECTS="1",
+                       GIT_NO_LAZY_FETCH="1", GIT_TERMINAL_PROMPT="0",
+                       GIT_OPTIONAL_LOCKS="0")
+    return subprocess.check_output(
+        ["git", "--no-replace-objects", "--literal-pathspecs",
+         "-c", "core.fsmonitor=false", "-c", "core.untrackedCache=false", *args],
+        stderr=subprocess.PIPE, text=True, env=environment,
+    ).strip()
+
+
+def require_unambiguous_git_context() -> None:
+    # Ignoring these only in the observer is insufficient: the command being
+    # tested would still inherit them. Reject instead of silently testing a
+    # different execution context. Values (which can contain secrets) are not
+    # included in the rejection diagnostic.
+    redirects = {
+        "GIT_DIR", "GIT_COMMON_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE",
+        "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+        "GIT_REPLACE_REF_BASE", "GIT_NAMESPACE", "GIT_SHALLOW_FILE",
+        "GIT_CEILING_DIRECTORIES", "GIT_DISCOVERY_ACROSS_FILESYSTEM",
+        "GIT_LITERAL_PATHSPECS", "GIT_GLOB_PATHSPECS", "GIT_NOGLOB_PATHSPECS",
+        "GIT_ICASE_PATHSPECS",
+    }
+    if any(key in redirects or key.startswith("GIT_CONFIG") for key in os.environ):
+        raise ValueError("qualification forbids ambient Git repository/configuration overrides")
+    # The compiler and its build scripts also use Git. Ignoring a replacement
+    # in our observer alone would leave two incompatible views of the source.
+    if git("for-each-ref", "--format=%(refname)", "refs/replace/"):
+        raise ValueError("qualification forbids replacement objects")
+    if Path(git("rev-parse", "--git-path", "info/grafts")).exists():
+        raise ValueError("qualification forbids legacy graft metadata")
+    for entry in git("ls-files", "-v", "-z").split("\0"):
+        if entry and (entry[0].islower() or entry.startswith("S ")):
+            raise ValueError("qualification index hides tracked paths")
 
 
 def identity() -> dict:
+    require_unambiguous_git_context()
     metadata = git("cat-file", "-p", "HEAD").split("\n\n", 1)[0].splitlines()
     return {
         "commit": git("rev-parse", "HEAD"),
         "tree": git("rev-parse", "HEAD^{tree}"),
         "parents": [line[7:] for line in metadata if line.startswith("parent ")],
-        "dirty": bool(git("status", "--porcelain", "--untracked-files=normal")),
+        "dirty": bool(git("status", "--porcelain", "--untracked-files=all", "--ignore-submodules=none")),
     }
 
 

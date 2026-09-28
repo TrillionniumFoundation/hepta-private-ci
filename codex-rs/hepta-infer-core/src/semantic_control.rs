@@ -7,6 +7,7 @@
 //! not current source authorization, learned efficacy or external task success.
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
@@ -139,6 +140,8 @@ impl SemanticRecordV1 {
 #[derive(Clone, Debug, Default)]
 pub(super) struct SemanticJournal {
     pub(super) records: BTreeMap<String, SemanticRecordV1>,
+    // Rebuilt by the same replay reducer; never a second persisted authority.
+    reservation_ids: BTreeSet<String>,
     maximum_in_flight: Option<usize>,
     in_flight: usize,
     pending_bytes: u64,
@@ -459,10 +462,7 @@ impl SemanticJournal {
                 .is_some_and(|limit| limit != *maximum_in_flight)
                 || primary.contains_key(&input.operation_id)
                 || self.records.contains_key(&input.operation_id)
-                || self
-                    .records
-                    .values()
-                    .any(|record| record.admission.reservation_id == admission.reservation_id)
+                || self.reservation_ids.contains(&admission.reservation_id)
             {
                 return Err(Error::Conflict);
             }
@@ -635,6 +635,11 @@ impl SemanticJournal {
     fn publish(&mut self, prepared: Prepared, primary: &mut BTreeMap<String, RequestRecord>) {
         let (id, record, marker, limit, slots, pending) = prepared;
         if let Some(marker) = marker {
+            // Publication occurs only after the existing journal append/fsync,
+            // or after that exact event has been validated during replay. Keep
+            // terminal reservations: settlement does not permit ID reuse.
+            self.reservation_ids
+                .insert(record.admission.reservation_id.clone());
             primary.insert(id.clone(), marker);
         }
         self.records.insert(id, record);

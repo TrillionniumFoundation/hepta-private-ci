@@ -15,10 +15,10 @@ import subprocess
 from pathlib import Path
 
 
-def git(*args: str) -> str:
-    return subprocess.check_output(
-        ["git", "--no-replace-objects", *args], stderr=subprocess.PIPE, text=True
-    ).strip()
+try:
+    from scripts.hepta_ci_exec import git, require_unambiguous_git_context
+except ModuleNotFoundError:
+    from hepta_ci_exec import git, require_unambiguous_git_context
 
 
 def candidate_plan(*, source: str, tested: str, lane: str, base: str | None = None) -> dict:
@@ -28,6 +28,7 @@ def candidate_plan(*, source: str, tested: str, lane: str, base: str | None = No
     for identity in (source, tested, *([base] if merge_lane or base is not None else [])):
         if not isinstance(identity, str) or re.fullmatch(r"[0-9a-f]{40}", identity) is None:
             raise ValueError("candidate identities must be exact SHA-1 commits")
+    require_unambiguous_git_context()
     if git("rev-parse", "HEAD") != tested:
         raise ValueError("checked-out commit differs from tested identity")
     if git("status", "--porcelain=v1", "--untracked-files=all", "--ignore-submodules=none"):

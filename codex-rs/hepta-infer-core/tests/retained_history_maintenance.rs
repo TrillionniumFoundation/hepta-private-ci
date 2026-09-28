@@ -1,4 +1,5 @@
 use std::fs;
+use std::io::Write;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
@@ -236,7 +237,8 @@ fn exclusive_owner_turnover_retains_unknown_and_completed_work() {
             .expect("new fence");
         let mut observed = completion(&id);
         // Bind the existing binary reply to this exact generation's request.
-        observed.reply_wire[8..40].copy_from_slice(Digest32::of_bytes(&current.request_wire).as_array());
+        observed.reply_wire[8..40]
+            .copy_from_slice(Digest32::of_bytes(&current.request_wire).as_array());
         input
             .decode_reply(&observed.reply_wire)
             .expect("new-generation reply");
@@ -294,4 +296,100 @@ fn exclusive_owner_turnover_retains_unknown_and_completed_work() {
             "long_term_slo_established": false
         })
     );
+}
+
+#[test]
+fn semantic_reservation_identity_survives_all_terminal_states_and_reopen() {
+    for terminal in ["cancel", "stop", "complete"] {
+        let path = JournalPath::new();
+        let mut owner = DurableInferenceControl::open(&path.0, 32).expect("owner");
+        let first = admission("identity.original");
+        let reserved = owner.reserve_semantic(100, first.clone(), 2).expect("reserve");
+        match terminal {
+            "cancel" => {
+                owner.cancel_semantic("identity.original").expect("cancel");
+            }
+            "stop" => {
+                owner
+                    .stop_semantic_before_dispatch("identity.original", "not_entered".to_string())
+                    .expect("stop");
+            }
+            _ => {
+                owner
+                    .fence_semantic_dispatch("identity.original", reserved.revision, 101)
+                    .expect("fence");
+                owner
+                    .complete_semantic("identity.original", completion("identity.original"))
+                    .expect("complete");
+                owner
+                    .acknowledge_semantic_delivery("identity.original", "5".repeat(64))
+                    .expect("ack");
+            }
+        }
+        let mut collision = admission("identity.other");
+        collision.reservation_id = first.reservation_id.clone();
+        let bytes = fs::metadata(&path.0).expect("length").len();
+        assert!(matches!(
+            owner.reserve_semantic(100, collision.clone(), 2),
+            Err(Error::Conflict)
+        ));
+        assert_eq!(fs::metadata(&path.0).expect("unchanged").len(), bytes);
+        drop(owner);
+        let mut owner = DurableInferenceControl::open(&path.0, 32).expect("reopen");
+        assert!(matches!(
+            owner.reserve_semantic(100, collision, 2),
+            Err(Error::Conflict)
+        ));
+        assert_eq!(fs::metadata(&path.0).expect("unchanged replay").len(), bytes);
+        assert!(owner.reserve_semantic(10_000, first, 2).is_ok());
+    }
+}
+
+#[test]
+fn failed_admission_does_not_publish_a_reservation_identity() {
+    let path = JournalPath::new();
+    let mut owner = DurableInferenceControl::open(&path.0, 32).expect("owner");
+    owner
+        .reserve_semantic(100, admission("occupied"), 1)
+        .expect("occupied");
+    let attempted = admission("retry.admission");
+    let bytes = fs::metadata(&path.0).expect("length").len();
+    assert!(matches!(
+        owner.reserve_semantic(100, attempted.clone(), 1),
+        Err(Error::CapacityExceeded)
+    ));
+    assert_eq!(fs::metadata(&path.0).expect("unchanged").len(), bytes);
+    owner
+        .cancel_semantic("occupied")
+        .expect("cancel before dispatch");
+    assert!(owner.reserve_semantic(100, attempted.clone(), 1).is_ok());
+    drop(owner);
+    let mut owner = DurableInferenceControl::open(&path.0, 32).expect("reopen");
+    assert!(owner.reserve_semantic(10_000, attempted, 1).is_ok());
+}
+
+#[test]
+fn duplicate_reservation_in_a_replayed_event_rejects_owner_recovery() {
+    let path = JournalPath::new();
+    let mut owner = DurableInferenceControl::open(&path.0, 32).expect("owner");
+    let first = admission("reserved.original");
+    owner.reserve_semantic(100, first.clone(), 1).expect("reserve");
+    owner.cancel_semantic("reserved.original").expect("cancel");
+    drop(owner);
+    let mut collision = admission("reserved.substitution");
+    collision.reservation_id = first.reservation_id;
+    let event = serde_json::json!({"Reserve": {
+        "admission": collision, "maximum_in_flight": 1, "now_ms": 100
+    }});
+    let mut file = fs::OpenOptions::new()
+        .append(true)
+        .open(&path.0)
+        .expect("append fixture");
+    writeln!(file, "semantic-retrieval-v1|{event}").expect("fixture event");
+    file.sync_all().expect("fixture sync");
+    drop(file);
+    assert!(matches!(
+        DurableInferenceControl::open(&path.0, 32),
+        Err(Error::Conflict)
+    ));
 }

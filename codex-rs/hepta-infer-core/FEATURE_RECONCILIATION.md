@@ -46,3 +46,13 @@ All commands within each architecture scope retain their independent execution
 records even when an earlier command fails; any failure still makes the step
 fail. Source-head and fixed-base-merge remain separately executed, with the
 existing command/identity/zero-test and repository-control checks unchanged.
+
+Reservation uniqueness uses a derived ordered identity index rather than scanning
+all retained semantic records at each admission. The index is rebuilt through the
+same validated replay reducer and published only with the existing successful
+append/fsync. Terminal, cancelled and stopped identities stay reserved; failed
+admissions do not consume identities. No journal bytes, authority semantics or
+owner boundaries change. Conflict lookup is logarithmic in retained identity count;
+this removes one quadratic replay/admission component, not every history-dependent
+cost or the need for compaction. Live/reopen and forged-event tests cover these
+invariants; target-host timings must come from current execution records.
