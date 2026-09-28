@@ -2,9 +2,9 @@
 
 Status: **protected measurement procedure; not production acceptance, activation, or release authority**.
 
-This runbook closes the repository-controlled path from the strict
-`capacity_matrix.py` collector to one explicitly selected target host. It does
-not turn hosted CI, synthetic fixtures, a local benchmark, or a successful
+This runbook closes the repository-controlled path from the strict target
+collector and independent hot-path policy to one explicitly selected host. It
+does not turn hosted CI, synthetic fixtures, a local benchmark, or a successful
 collection into a production SLO or deployment decision.
 
 ## 1. Preserved authority boundaries
@@ -18,10 +18,11 @@ The collection workflow measures the existing authority owners. It must not:
 - change source, push a repair commit, activate a deployment, or issue authority;
 - report synthetic collector output as a target-host row.
 
-All collection receipts keep `productionEvidenceAdmissible`,
+Collection receipts keep `productionEvidenceAdmissible`,
 `productionSloGranted`, `independentAcceptance`, `activationGranted`, and
-`releaseGranted` false. A later independent admission process may consume the
-retained facts; this workflow cannot grant those states itself.
+`releaseGranted` false. Hot-path decisions additionally keep
+`runtimeOptimizationAuthorized=false`. A later independent admission process
+may consume the retained facts; this workflow cannot grant those states itself.
 
 ## 2. Protected dispatch and runner profile
 
@@ -60,17 +61,19 @@ The workflow uses two exact checkouts:
 2. `subject` is the requested candidate commit and is used only to obtain its
    immutable commit/tree identity.
 
-Only the collector under `control/qualification/kernel-authority` is executed.
-No script, action, build hook, or binary from `subject` is run on the privileged
-runner. This prevents an arbitrary candidate from replacing the evidence parser
-or executing repository code merely by being selected for measurement.
+Only the collector and hot-path evaluator under
+`control/qualification/kernel-authority` are executed. No script, action, build
+hook, or binary from `subject` is run on the privileged runner. This prevents an
+arbitrary candidate from replacing the evidence parser or executing repository
+code merely by being selected for measurement.
 
 The host-owned driver is separately installed and content-addressed. It is
 responsible for selecting and exercising the already provisioned candidate
-runtime that corresponds to the request identity. The artifact retains both
-control and candidate commit/tree identities plus collector and driver digests.
+runtime corresponding to the request identity. The artifact retains control and
+candidate commit/tree identities plus collector, evaluator, policy, and driver
+digests.
 
-## 4. Host-owned driver
+## 4. Host-owned driver and independently owned policy
 
 The runner operator installs one reviewed executable at:
 
@@ -78,10 +81,21 @@ The runner operator installs one reviewed executable at:
 /opt/hepta/bin/kernel-authority-capacity-driver
 ```
 
-The workflow accepts no caller-selected executable path. The dispatcher supplies
-an expected SHA-256, and the job refuses to execute the driver unless the exact
-installed bytes match it. Driver replacement therefore requires a new reviewed
-digest rather than silently changing an existing collection profile.
+The independently reviewed site policy is installed at:
+
+```text
+/opt/hepta/policies/kernel-authority-hot-path-policy.json
+```
+
+The workflow accepts no caller-selected driver or policy path. The dispatcher
+supplies an expected SHA-256 for each file, and the job refuses to execute or
+consume either unless the exact installed bytes match. Replacement therefore
+requires new reviewed digests rather than silently changing an existing profile.
+
+The policy must use schema `hepta.kernel-authority-hot-path-policy.v1`, bind the
+same candidate and profile as the plan, include all five metrics, and retain all
+authority/promotion flags as false. It contains no secrets and is copied into the
+retained evidence so a separate verifier can reproduce the decision.
 
 The driver receives exactly:
 
@@ -99,7 +113,7 @@ that returns constants, replays old rows, invokes compatibility-only trust, or
 sets `synthetic=true` is not a target driver. Secrets and private key bytes must
 not appear in responses, stdout, stderr, or uploaded artifacts.
 
-## 5. Required collection
+## 5. Required collection and independent decision
 
 The workflow creates and validates one immutable plan containing:
 
@@ -115,8 +129,7 @@ or synthetic rows; duplicate and missing identities; unsafe fault outcomes;
 percentile contradictions; p99 values above the declared row budget; and reserve
 observations that did not fire before the hard limit.
 
-The history-sensitive diagnostics measure the work that must be understood
-before changing runtime storage semantics:
+The history-sensitive metrics are:
 
 ```text
 final_use_frontier_hash
@@ -126,37 +139,48 @@ clock_floor_persist
 restart_rebuild
 ```
 
-They support an optimization decision; they do not authorize replacing the
-current frontier-first ordering with the qualification-only WAL/checkpoint model.
+After collection validation, `hot_path_gate.py` compares every metric/point with
+the separately owned policy's absolute p99 and byte budgets and its work-per-
+history growth limits. This prevents the driver from making a result pass only
+by reporting a permissive per-row budget.
+
+A passing hot-path decision still sets `runtimeOptimizationAuthorized=false`.
+It supports an optimization investigation; it does not authorize replacing the
+current owner, external-frontier-first order, complete replay identity, or the
+runtime store with the qualification-only WAL/checkpoint model.
 
 ## 6. Dispatch procedure
 
 1. Freeze the exact candidate commit and obtain its tree identity.
 2. Provision the selected target runner, candidate runtime, and reviewed driver.
-3. Compute the installed driver SHA-256 independently.
-4. Dispatch **Kernel authority target capacity collection** from `main` with:
+3. Review a candidate/profile-specific hot-path policy independently of the
+   driver implementation.
+4. Compute the installed driver and policy SHA-256 values independently.
+5. Dispatch **Kernel authority target capacity collection** from `main` with:
    - `candidate_sha`;
    - `profile_id`;
    - `samples` of at least 100;
-   - `driver_sha256`.
-5. Complete the protected-environment approval using a reviewer independent of
-   the driver/operator where practical.
-6. Confirm control, candidate, collector, and driver identities in the artifact.
-7. Review all 55 measurement rows, eight fault rows, 25 diagnostics, the reserve
-   observation, per-invocation logs, and artifact hashes.
-8. Re-run validation from a separate verifier environment using the retained
-   plan and collection.
-9. Keep the result separate from source-head and deterministic-merge receipts.
+   - `driver_sha256`;
+   - `policy_sha256`.
+6. Complete protected-environment approval using a reviewer independent of the
+   driver/operator where practical.
+7. Confirm control, candidate, collector, evaluator, policy, and driver
+   identities in the artifact.
+8. Review all 55 measurement rows, eight fault rows, 25 diagnostics, the reserve
+   observation, hot-path decision, per-invocation logs, and artifact hashes.
+9. Re-run the collector validation and hot-path evaluator from a separate
+   verifier environment using the retained plan, collection, and policy.
+10. Keep the result separate from source-head and deterministic-merge receipts.
 
-A cancelled, timed-out, skipped, partially uploaded, mixed-host, or missing-row
-run is not success. Re-running creates a new run identity; it must not overwrite
-or reinterpret an older artifact.
+A cancelled, timed-out, skipped, partially uploaded, mixed-host, missing-row, or
+policy-failing run is not success. Re-running creates a new run identity; it must
+not overwrite or reinterpret an older artifact.
 
 ## 7. Acceptance separation
 
-A validated collection establishes only that the strict collector accepted one
-candidate-bound target-host dataset. Production qualification still requires,
-as applicable:
+A validated collection and passing hot-path decision establish only that one
+candidate-bound target dataset stayed within one independently reviewed policy.
+Production qualification still requires, as applicable:
 
 - independently protected time and bounded uncertainty evidence;
 - rollback-independent linearizable frontier and disaster-recovery drills;
@@ -167,6 +191,6 @@ as applicable:
 - independent semantic and operator review;
 - approved SLOs, canary, promotion, and release decisions.
 
-The workflow and this runbook close the repository-controlled execution seam.
-They deliberately leave externally governed facts and decisions outside the
-repository's authority.
+The workflow and this runbook close the repository-controlled collection and
+policy-evaluation seams. They deliberately leave externally governed facts and
+decisions outside the repository's authority.

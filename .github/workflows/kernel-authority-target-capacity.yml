@@ -20,6 +20,10 @@ on:
         description: Expected SHA-256 of the protected host-owned measurement driver
         required: true
         type: string
+      policy_sha256:
+        description: Expected SHA-256 of the independently reviewed hot-path policy
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -37,10 +41,12 @@ jobs:
     timeout-minutes: 360
     env:
       DRIVER: /opt/hepta/bin/kernel-authority-capacity-driver
+      POLICY: /opt/hepta/policies/kernel-authority-hot-path-policy.json
       CANDIDATE_SHA: ${{ inputs.candidate_sha }}
       PROFILE_ID: ${{ inputs.profile_id }}
       SAMPLES: ${{ inputs.samples }}
       EXPECTED_DRIVER_SHA256: ${{ inputs.driver_sha256 }}
+      EXPECTED_POLICY_SHA256: ${{ inputs.policy_sha256 }}
       EVIDENCE_ROOT: ${{ runner.temp }}/kernel-authority-target-capacity
     steps:
       - name: Validate dispatch inputs
@@ -53,6 +59,7 @@ jobs:
           test "$SAMPLES" -ge 100
           test "$SAMPLES" -le 1000000
           [[ "$EXPECTED_DRIVER_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$EXPECTED_POLICY_SHA256" =~ ^[0-9a-f]{64}$ ]]
           mkdir -p "$EVIDENCE_ROOT"
 
       - name: Checkout trusted collector from exact main dispatch source
@@ -72,7 +79,7 @@ jobs:
           persist-credentials: false
 
       - id: identity
-        name: Pin control, candidate, collector, and driver identities
+        name: Pin control, candidate, collector, policy, and driver identities
         shell: bash
         run: |
           set -euo pipefail
@@ -83,19 +90,28 @@ jobs:
           test -z "$(git -C "$control" status --porcelain)"
           test -z "$(git -C "$subject" status --porcelain)"
           collector="$control/qualification/kernel-authority/capacity_matrix.py"
+          gate="$control/qualification/kernel-authority/hot_path_gate.py"
           test -f "$collector"
+          test -f "$gate"
+          test -f "$POLICY"
           test -f "$DRIVER"
           test -x "$DRIVER"
           candidate_tree="$(git -C "$subject" rev-parse 'HEAD^{tree}')"
           control_tree="$(git -C "$control" rev-parse 'HEAD^{tree}')"
           collector_sha256="$(python3 -c 'import hashlib,pathlib,sys; print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest())' "$collector")"
+          gate_sha256="$(python3 -c 'import hashlib,pathlib,sys; print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest())' "$gate")"
+          observed_policy_sha256="$(python3 -c 'import hashlib,pathlib,sys; print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest())' "$POLICY")"
           observed_driver_sha256="$(python3 -c 'import hashlib,pathlib,sys; print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest())' "$DRIVER")"
+          test "$observed_policy_sha256" = "$EXPECTED_POLICY_SHA256"
           test "$observed_driver_sha256" = "$EXPECTED_DRIVER_SHA256"
+          cp "$POLICY" "$EVIDENCE_ROOT/hot-path-policy.json"
           printf '%s\n' "$CANDIDATE_SHA" > "$EVIDENCE_ROOT/candidate-commit.txt"
           printf '%s\n' "$candidate_tree" > "$EVIDENCE_ROOT/candidate-tree.txt"
           printf '%s\n' "$GITHUB_SHA" > "$EVIDENCE_ROOT/control-commit.txt"
           printf '%s\n' "$control_tree" > "$EVIDENCE_ROOT/control-tree.txt"
           printf '%s\n' "$collector_sha256" > "$EVIDENCE_ROOT/collector-sha256.txt"
+          printf '%s\n' "$gate_sha256" > "$EVIDENCE_ROOT/hot-path-gate-sha256.txt"
+          printf '%s\n' "$observed_policy_sha256" > "$EVIDENCE_ROOT/policy-sha256.txt"
           printf '%s\n' "$observed_driver_sha256" > "$EVIDENCE_ROOT/driver-sha256.txt"
           printf '%s\n' "${RUNNER_NAME:-unknown}" > "$EVIDENCE_ROOT/runner-name.txt"
           printf 'candidate_tree=%s\n' "$candidate_tree" >> "$GITHUB_OUTPUT"
@@ -151,6 +167,36 @@ jobs:
               raise SystemExit("target collection does not contain eight fault rows")
           if len(receipt.get("hotPathDiagnostics", [])) != 25:
               raise SystemExit("target collection does not contain 25 diagnostics")
+          PY
+
+      - name: Apply independent hot-path policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$GITHUB_WORKSPACE/control/qualification/kernel-authority/hot_path_gate.py" \
+            --plan "$EVIDENCE_ROOT/plan.json" \
+            --collection "$EVIDENCE_ROOT/collection/capacity-collection.json" \
+            --policy "$EVIDENCE_ROOT/hot-path-policy.json" \
+            --output "$EVIDENCE_ROOT/hot-path-decision.json"
+          python3 - "$EVIDENCE_ROOT/hot-path-decision.json" <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          decision = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+          if decision.get("passed") is not True:
+              raise SystemExit("hot-path policy did not pass")
+          if len(decision.get("metricResults", [])) != 5:
+              raise SystemExit("hot-path decision does not contain five metrics")
+          for field in (
+              "runtimeOptimizationAuthorized",
+              "productionSloGranted",
+              "independentAcceptance",
+              "activationGranted",
+              "releaseGranted",
+          ):
+              if decision.get(field) is not False:
+                  raise SystemExit(f"hot-path decision overclaims {field}")
           PY
           git -C "$GITHUB_WORKSPACE/control" diff --check
           test -z "$(git -C "$GITHUB_WORKSPACE/control" status --porcelain)"

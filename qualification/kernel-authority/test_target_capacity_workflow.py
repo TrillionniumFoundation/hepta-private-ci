@@ -37,17 +37,26 @@ class TargetCapacityWorkflowTest(unittest.TestCase):
             "Checkout candidate as a non-executed identity subject",
             self.workflow,
         )
-        trusted = (
+        trusted_collector = (
             'python3 "$GITHUB_WORKSPACE/control/qualification/'
             'kernel-authority/capacity_matrix.py"'
         )
-        self.assertEqual(self.workflow.count(trusted), 3)
+        trusted_gate = (
+            'python3 "$GITHUB_WORKSPACE/control/qualification/'
+            'kernel-authority/hot_path_gate.py"'
+        )
+        self.assertEqual(self.workflow.count(trusted_collector), 3)
+        self.assertEqual(self.workflow.count(trusted_gate), 1)
         self.assertNotIn("subject/qualification/kernel-authority", self.workflow)
         self.assertIn("No script, action, build hook, or binary from `subject`", self.runbook)
 
-    def test_driver_is_fixed_and_content_addressed(self) -> None:
+    def test_driver_and_policy_are_fixed_and_content_addressed(self) -> None:
         self.assertIn(
             "DRIVER: /opt/hepta/bin/kernel-authority-capacity-driver",
+            self.workflow,
+        )
+        self.assertIn(
+            "POLICY: /opt/hepta/policies/kernel-authority-hot-path-policy.json",
             self.workflow,
         )
         self.assertIn("hashlib.sha256", self.workflow)
@@ -55,15 +64,23 @@ class TargetCapacityWorkflowTest(unittest.TestCase):
             'test "$observed_driver_sha256" = "$EXPECTED_DRIVER_SHA256"',
             self.workflow,
         )
+        self.assertIn(
+            'test "$observed_policy_sha256" = "$EXPECTED_POLICY_SHA256"',
+            self.workflow,
+        )
         self.assertNotIn("--driver ${{", self.workflow)
+        self.assertNotIn("--policy ${{", self.workflow)
         self.assertIn("expected SHA-256", self.runbook)
+        self.assertIn("independently reviewed site policy", self.runbook)
 
-    def test_exact_plan_collection_and_revalidation_are_required(self) -> None:
+    def test_exact_plan_collection_policy_and_revalidation_are_required(self) -> None:
         plan = self.workflow.index("capacity_matrix.py\" plan")
         collect = self.workflow.index("capacity_matrix.py\" collect")
         validate = self.workflow.index("capacity_matrix.py\" validate")
+        gate = self.workflow.index("hot_path_gate.py\"")
         self.assertLess(plan, collect)
         self.assertLess(collect, validate)
+        self.assertLess(validate, gate)
         self.assertIn(
             'test "$(git -C "$subject" rev-parse HEAD)" = "$CANDIDATE_SHA"',
             self.workflow,
@@ -71,11 +88,13 @@ class TargetCapacityWorkflowTest(unittest.TestCase):
         self.assertIn("55 measurement rows", self.workflow)
         self.assertIn("eight fault rows", self.workflow)
         self.assertIn("25 diagnostics", self.workflow)
+        self.assertIn("five metrics", self.workflow)
         self.assertIn("if: always()", self.workflow)
         self.assertIn("actions/upload-artifact@", self.workflow)
 
     def test_workflow_cannot_promote_collection_to_authority(self) -> None:
         for field in (
+            "runtimeOptimizationAuthorized",
             "productionEvidenceAdmissible",
             "productionSloGranted",
             "independentAcceptance",
