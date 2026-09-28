@@ -20,8 +20,8 @@ struct Fixture(PathBuf);
 impl Fixture {
     fn new() -> Self {
         let serial = NEXT.fetch_add(1, Ordering::Relaxed);
-        let path =
-            std::env::temp_dir().join(format!("neuron-file-v2-{}-{serial}", std::process::id()));
+        let process_id = std::process::id();
+        let path = std::env::temp_dir().join(format!("neuron-file-v2-{process_id}-{serial}"));
         checked(std::fs::create_dir(&path));
         Self(path)
     }
