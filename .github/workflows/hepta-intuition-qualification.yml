@@ -52,6 +52,45 @@ jobs:
           import base64
           import bz2
           from pathlib import Path
+
+          # The payload was authored against the immediately preceding runtime
+          # naming. Normalize the semantically identical current block before
+          # applying the bounded transformation; fail on any other drift.
+          runtime = Path("../codex-rs/hepta-agentd/src/runtime.rs")
+          text = runtime.read_text()
+          old = '''        let host = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(
+              &identity, &path,
+          )?);
+          let current_generation = state.current_generation()?;
+          host.reconcile(
+              &state,
+              current_generation,
+              crate::authbus_ingress::now_ms()?,
+          )?;
+          state
+              .objective_runtime
+              .set(host)
+              .map_err(|_| AgentdError::Protocol("objective runtime already attached".to_string()))?;
+          state.refresh_generation()?;
+          '''
+          new = '''        let objective_runtime = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(
+              &identity, &path,
+          )?);
+          objective_runtime.reconcile(
+              &state,
+              state.current_generation()?,
+              crate::authbus_ingress::now_ms()?,
+          )?;
+          state
+              .objective_runtime
+              .set(objective_runtime)
+              .map_err(|_| AgentdError::Protocol("objective runtime already attached".to_string()))?;
+          state.refresh_generation()?;
+          '''
+          if text.count(old) != 1:
+              raise SystemExit(f"runtime normalization expected one block, found {text.count(old)}")
+          runtime.write_text(text.replace(old, new, 1))
+
           payload = b"".join(
               path.read_bytes()
               for path in sorted(Path(".").glob("intuition_closure_author_once.b85.part*"))
