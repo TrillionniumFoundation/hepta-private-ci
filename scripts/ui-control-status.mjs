@@ -43,16 +43,7 @@ const gateMap = {
   evidenceSemantics: manifest.evidenceSemantics,
   stages: manifest.verificationStages,
   immutableOrdering: Object.keys(manifest.verificationStages),
-  outcomeAuthority: {
-    repositoryReceipts: "hepta.ui-control.qualification-receipt.v2",
-    realBackend: "hepta.ui-control.real-backend-receipt.v2",
-    deploymentSecurity: "hepta.ui-control.deployment-security-receipt.v2",
-    independentAcceptance: "hepta.ui-control.independent-acceptance-receipt.v2",
-    independentSecurity: "hepta.ui-control.independent-security-review-receipt.v1",
-    operationalExercise: "hepta.ui-control.operational-exercise-receipt.v1",
-    productionApproval: "hepta.ui-control.production-approval-receipt.v1",
-    externalEvidenceBundle: "hepta.ui-control.external-evidence-bundle.v1",
-  },
+  outcomeAuthority: manifest.receiptSchemas,
 };
 const outputs = new Map([
   ["qualification/ui-control/STATUS.md", markdown],

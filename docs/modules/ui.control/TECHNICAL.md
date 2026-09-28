@@ -6,7 +6,7 @@
 
 `ui.control` is an authority-free runtime-control client and browser console. It owns presentation state, authenticated session metadata, bounded local recovery records, and user interaction. Runtime owners retain authorization, durable operation identity, mutation authority, and terminal facts.
 
-The active convergence branch is `work/ui-control-authoritative-closure-20260927`. The repository baseline used to start this convergence is `a126987b84737dbc2ee2592442a314117bddb4a2` / tree `a22fd0074c45ae6f3cef2092cd6e273bf9c26c30`. Tracked documentation never self-certifies its own final commit; exact-head identity and outcomes are emitted by CI in `hepta.ui-control.qualification-receipt.v1`.
+The active convergence branch is `work/ui-control-authoritative-closure-20260927`. The repository baseline used to start this convergence is `a126987b84737dbc2ee2592442a314117bddb4a2` / tree `a22fd0074c45ae6f3cef2092cd6e273bf9c26c30`. Tracked documentation never self-certifies its own final commit; exact-head identity and outcomes are emitted by CI in `hepta.ui-control.qualification-receipt.v2`.
 
 | Dimension | Current state |
 |---|---|
@@ -142,7 +142,24 @@ Stable error codes include `UI_CONTROL_SESSION_EXPIRED`, `UI_CONTROL_PERMISSION_
 
 Callers branch on `code` and `retryable`; parsing message text is unsupported. Unknown exception messages are replaced by an operator-safe generic error before DOM rendering.
 
-## 10. Qualification
+## 10. Evidence semantics
+
+- **Observed outcome:** A concrete check ran and emitted a pass or failure observation for one exact subject. A later failure does not erase an earlier observation.
+- **Accepted evidence:** A receipt was validated against its exact candidate, tree, deployment, and authority rules. Accepted stage evidence is monotone within an evidence bundle.
+- **Overall acceptance:** The bundle is accepted only when every required stage and the final production approval are accepted. A failed bundle may retain earlier accepted stage evidence without authorizing production or release.
+
+Receipt schemas are sourced from the same manifest:
+
+- `repositoryReceipts`: `hepta.ui-control.qualification-receipt.v2`
+- `realBackend`: `hepta.ui-control.real-backend-receipt.v2`
+- `deploymentSecurity`: `hepta.ui-control.deployment-security-receipt.v2`
+- `independentAcceptance`: `hepta.ui-control.independent-acceptance-receipt.v2`
+- `independentSecurity`: `hepta.ui-control.independent-security-review-receipt.v1`
+- `operationalExercise`: `hepta.ui-control.operational-exercise-receipt.v1`
+- `productionApproval`: `hepta.ui-control.production-approval-receipt.v1`
+- `externalEvidenceBundle`: `hepta.ui-control.external-evidence-bundle.v1`
+
+## 11. Qualification
 
 Repository checks:
 
@@ -159,7 +176,7 @@ Repository checks:
 
 The dedicated workflow binds checkout SHA and tree, runs unit/contract/build/browser/axe/Lane-B/document checks, verifies a clean tracked tree, and uploads the generated receipt and browser build manifest. A passing mock/protocol-equivalent E2E proves repository composition, not a production deployment.
 
-## 11. Remaining external evidence gates
+## 12. Remaining external evidence gates
 
 - production identity-provider and permission-revision integration
 - deployed backend operation-id uniqueness and durable lookup evidence
@@ -167,6 +184,6 @@ The dedicated workflow binds checkout SHA and tree, runs unit/contract/build/bro
 - production monitoring, alert routing, and rollback exercise
 - independent assistive-technology and operator acceptance signature
 
-## 12. Definition of done
+## 13. Definition of done
 
 The repository portion is complete when the authoritative branch is merged, generated projections are current, exact-head and synthetic-merge checks pass, all three browser engines and axe pass, Lane B truth passes, and a receipt is uploaded. Production completion additionally requires every external gate above and an independent acceptance signature.

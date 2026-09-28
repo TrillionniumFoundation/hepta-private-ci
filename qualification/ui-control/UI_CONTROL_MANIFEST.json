@@ -37,6 +37,16 @@
     "acceptedEvidence": "A receipt was validated against its exact candidate, tree, deployment, and authority rules. Accepted stage evidence is monotone within an evidence bundle.",
     "overallAcceptance": "The bundle is accepted only when every required stage and the final production approval are accepted. A failed bundle may retain earlier accepted stage evidence without authorizing production or release."
   },
+  "receiptSchemas": {
+    "repositoryReceipts": "hepta.ui-control.qualification-receipt.v2",
+    "realBackend": "hepta.ui-control.real-backend-receipt.v2",
+    "deploymentSecurity": "hepta.ui-control.deployment-security-receipt.v2",
+    "independentAcceptance": "hepta.ui-control.independent-acceptance-receipt.v2",
+    "independentSecurity": "hepta.ui-control.independent-security-review-receipt.v1",
+    "operationalExercise": "hepta.ui-control.operational-exercise-receipt.v1",
+    "productionApproval": "hepta.ui-control.production-approval-receipt.v1",
+    "externalEvidenceBundle": "hepta.ui-control.external-evidence-bundle.v1"
+  },
   "verificationStages": {
     "designDefined": {
       "repositoryState": "defined_by_manifest",

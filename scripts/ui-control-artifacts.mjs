@@ -18,6 +18,9 @@ const statusRows = Object.entries(manifest.status)
 const invariantLines = manifest.invariants.map(value => `1. ${value}`).join("\n");
 const commandLines = manifest.verification.commands.map(value => `- ${q(value)}`).join("\n");
 const gateLines = manifest.externalEvidenceGates.map(value => `- ${value}`).join("\n");
+const receiptSchemaLines = Object.entries(manifest.receiptSchemas)
+  .map(([key, value]) => `- ${q(key)}: ${q(value)}`)
+  .join("\n");
 
 const technical = `# ui.control technical development guide
 
@@ -27,7 +30,7 @@ const technical = `# ui.control technical development guide
 
 ${q("ui.control")} is an authority-free runtime-control client and browser console. It owns presentation state, authenticated session metadata, bounded local recovery records, and user interaction. Runtime owners retain authorization, durable operation identity, mutation authority, and terminal facts.
 
-The active convergence branch is ${q(manifest.authoritativeDevelopmentBranch)}. The repository baseline used to start this convergence is ${q(manifest.baseline.commit)} / tree ${q(manifest.baseline.tree)}. Tracked documentation never self-certifies its own final commit; exact-head identity and outcomes are emitted by CI in ${q("hepta.ui-control.qualification-receipt.v1")}.
+The active convergence branch is ${q(manifest.authoritativeDevelopmentBranch)}. The repository baseline used to start this convergence is ${q(manifest.baseline.commit)} / tree ${q(manifest.baseline.tree)}. Tracked documentation never self-certifies its own final commit; exact-head identity and outcomes are emitted by CI in ${q(manifest.receiptSchemas.repositoryReceipts)}.
 
 | Dimension | Current state |
 |---|---|
@@ -131,7 +134,17 @@ Stable error codes include ${q("UI_CONTROL_SESSION_EXPIRED")}, ${q("UI_CONTROL_P
 
 Callers branch on ${q("code")} and ${q("retryable")}; parsing message text is unsupported. Unknown exception messages are replaced by an operator-safe generic error before DOM rendering.
 
-## 10. Qualification
+## 10. Evidence semantics
+
+- **Observed outcome:** ${manifest.evidenceSemantics.observedOutcome}
+- **Accepted evidence:** ${manifest.evidenceSemantics.acceptedEvidence}
+- **Overall acceptance:** ${manifest.evidenceSemantics.overallAcceptance}
+
+Receipt schemas are sourced from the same manifest:
+
+${receiptSchemaLines}
+
+## 11. Qualification
 
 Repository checks:
 
@@ -139,11 +152,11 @@ ${commandLines}
 
 The dedicated workflow binds checkout SHA and tree, runs unit/contract/build/browser/axe/Lane-B/document checks, verifies a clean tracked tree, and uploads the generated receipt and browser build manifest. A passing mock/protocol-equivalent E2E proves repository composition, not a production deployment.
 
-## 11. Remaining external evidence gates
+## 12. Remaining external evidence gates
 
 ${gateLines}
 
-## 12. Definition of done
+## 13. Definition of done
 
 The repository portion is complete when the authoritative branch is merged, generated projections are current, exact-head and synthetic-merge checks pass, all three browser engines and axe pass, Lane B truth passes, and a receipt is uploaded. Production completion additionally requires every external gate above and an independent acceptance signature.
 `;
@@ -159,6 +172,9 @@ const map = {
   resolvedRoots: manifest.sourceRoots,
   statusManifest: "qualification/ui-control/UI_CONTROL_MANIFEST.json",
   currentStatus: manifest.status,
+  evidenceSemantics: manifest.evidenceSemantics,
+  verificationStages: manifest.verificationStages,
+  receiptSchemas: manifest.receiptSchemas,
   stateOwnerDisposition:
     "Owns presentation/session state and bounded pending/recovery identities only; backend modules retain authority, durable operation uniqueness, and terminal facts.",
   terminalObserverDisposition:
@@ -242,7 +258,7 @@ const dossier = `# ui.control execution dossier
 - same-origin CSRF-protected HTTP adapter with no mutation retry;
 - semantic HTML browser shell with start/reconcile/stop confirmation, operator identity visibility, and deterministic DOM redaction for correlation identifiers;
 - Chromium, Firefox, WebKit, axe-core, keyboard, focus, stale-revision, duplicate-activation, accepted-timeout, storage-denial, and privacy-redaction tests;
-- single-manifest generated technical guide, implementation map, and this dossier.
+- single-manifest generated technical guide, implementation map, status/gate projections, and this dossier.
 
 ## Evidence matrix
 
@@ -264,9 +280,15 @@ const dossier = `# ui.control execution dossier
 
 ${commandLines}
 
-## Receipt semantics
+## Evidence and receipt semantics
 
-The CI receipt records exact SHA/tree, runner/Node identity, check outcomes, and browser build-manifest digest. It sets production deployment, identity-provider, deployed CSP, independent acceptance, and release authorization to false unless separately observed. The tracked repository does not pre-claim those facts.
+- **Observed outcome:** ${manifest.evidenceSemantics.observedOutcome}
+- **Accepted evidence:** ${manifest.evidenceSemantics.acceptedEvidence}
+- **Overall acceptance:** ${manifest.evidenceSemantics.overallAcceptance}
+
+${receiptSchemaLines}
+
+The CI repository receipt records exact SHA/tree, runner/Node identity, check outcomes, and browser build-manifest digest. It sets production deployment, identity-provider, deployed CSP, independent acceptance, and release authorization to false unless separately observed and accepted. The tracked repository does not pre-claim those facts.
 
 ## Remaining non-repository evidence
 
