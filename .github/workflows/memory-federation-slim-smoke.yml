@@ -12,6 +12,8 @@ on:
       - "codex-rs/hepta-memory/**"
       - "codex-rs/ext/hepta-memory/**"
       - "scripts/memory_federation_full_attestation.py"
+      - "scripts/memory_federation_execution_receipt.py"
+      - "scripts/test_memory_federation_execution_receipt.py"
       - "scripts/run_memory_federation_qualification.sh"
       - "docs/modules/memory.federation/**"
 
@@ -113,6 +115,7 @@ jobs:
           name: memory-federation-native-${{ github.sha }}
           path: |
             ${{ runner.temp }}/memory-federation-native
+            ${{ runner.temp }}/memory-federation-execution
             codex-rs/hepta-memory-federation-wire/Cargo.lock
           if-no-files-found: warn
           retention-days: 7
