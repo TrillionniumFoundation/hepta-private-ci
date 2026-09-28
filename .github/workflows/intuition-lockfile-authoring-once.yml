@@ -1,4 +1,4 @@
-name: Intuition lockfile authoring once
+name: Intuition read-only source and lockfile recovery
 
 on:
   push:
@@ -8,10 +8,10 @@ on:
       - ".github/workflows/intuition-lockfile-authoring-once.yml"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: intuition-lockfile-authoring-once
+  group: intuition-readonly-lockfile-recovery
   cancel-in-progress: true
 
 env:
@@ -21,57 +21,62 @@ env:
   CARGO_BUILD_JOBS: "2"
 
 jobs:
-  author-lockfile:
-    name: Generate reviewed Cargo.lock source commit
+  recover-inputs:
+    name: Retain exact source and generated lockfile without writeback
     runs-on: windows-2025
     timeout-minutes: 30
     steps:
-      - name: Check out immutable authoring source
+      - name: Check out immutable source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 0
-      - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-      - name: Generate and verify workspace lockfile
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Retain source before dependency resolution
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          if ((git rev-parse HEAD).Trim() -ne $env:GITHUB_SHA) {
-            throw "authoring checkout drifted from GITHUB_SHA"
-          }
-
+          $output = Join-Path $env:RUNNER_TEMP "intuition-source"
+          New-Item -ItemType Directory -Path $output | Out-Null
+          git archive --format=zip --output="$output/source.zip" HEAD
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git rev-parse HEAD | Set-Content "$output/source-sha.txt"
+          git rev-parse 'HEAD^{tree}' | Set-Content "$output/source-tree.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-source-${{ github.sha }}
+          path: ${{ runner.temp }}/intuition-source/
+          if-no-files-found: error
+          retention-days: 7
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Resolve lockfile online without changing manifests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $output = Join-Path $env:RUNNER_TEMP "intuition-lockfile"
+          New-Item -ItemType Directory -Path $output | Out-Null
           Push-Location codex-rs
           try {
-            cargo metadata --offline --format-version 1 | Out-Null
+            cargo metadata --format-version 1 1> "$output/metadata.json" 2> "$output/resolution.log"
+            $result = $LASTEXITCODE
+            $result | Set-Content "$output/exit-code.txt"
+            if ($result -ne 0) { exit $result }
+            cargo metadata --locked --format-version 1 --no-deps 1> "$output/locked-metadata.json" 2>> "$output/resolution.log"
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-            cargo check --locked -p codex-hepta-agentd --lib
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            Copy-Item Cargo.lock "$output/Cargo.lock"
           }
-          finally {
-            Pop-Location
-          }
-
+          finally { Pop-Location }
           git diff --check
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          git diff -- codex-rs/Cargo.lock
-
-          $lockStatus = @(git status --porcelain -- codex-rs/Cargo.lock)
-          if ($lockStatus.Count -eq 0) {
-            throw "Cargo.lock was not updated"
-          }
           $unexpected = @(git status --porcelain | Where-Object { $_ -ne " M codex-rs/Cargo.lock" })
-          if ($unexpected.Count -ne 0) {
-            throw "authoring changed files other than codex-rs/Cargo.lock: $($unexpected -join ', ')"
-          }
-      - name: Commit generated lockfile as ordinary source
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = "Stop"
-          git config user.name "Hepta Intuition Authoring"
-          git config user.email "hepta-intuition-authoring@users.noreply.github.com"
-          git add codex-rs/Cargo.lock
-          git commit -m "fix(intuition): synchronize workspace lockfile"
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          git push origin HEAD:codex/intuition-policy-production-closure-20260927
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($unexpected.Count -ne 0) { throw "unexpected source changes: $unexpected" }
+          git diff -- codex-rs/Cargo.lock | Set-Content "$output/Cargo.lock.diff"
+          git rev-parse HEAD | Set-Content "$output/source-sha.txt"
+          'Dependency-resolution artifact only; not compilation, qualification or acceptance.' | Set-Content "$output/CLAIM_BOUNDARY.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: intuition-lockfile-${{ github.sha }}
+          path: ${{ runner.temp }}/intuition-lockfile/
+          if-no-files-found: warn
+          retention-days: 7
