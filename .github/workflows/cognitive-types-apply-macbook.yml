@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   apply-verify-commit:
-    runs-on: ubuntu-slim
+    runs-on: macos-15
     timeout-minutes: 120
     steps:
       - name: Check out exact staged candidate
