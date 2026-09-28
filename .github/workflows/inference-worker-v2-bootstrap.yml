@@ -4,20 +4,17 @@ on:
   push:
     branches:
       - codex/inference-worker-hardening-v2-20260928
-  pull_request:
-    branches:
-      - main
 
 permissions:
   contents: write
 
 concurrency:
-  group: inference-worker-v2-bootstrap
+  group: inference-worker-v2-bootstrap-push
   cancel-in-progress: true
 
 jobs:
   repair:
-    if: ${{ !contains(github.event.head_commit.message || '', '[v2-bootstrap-applied]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[v2-bootstrap-applied]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     env:
