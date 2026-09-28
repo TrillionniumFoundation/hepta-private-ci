@@ -98,7 +98,14 @@ fn fixture() -> TestResult<Fixture> {
     let authority_dir = tempfile::tempdir()?;
     std::fs::set_permissions(store.path(), std::fs::Permissions::from_mode(0o700))?;
     std::fs::set_permissions(authority_dir.path(), std::fs::Permissions::from_mode(0o700))?;
-    let signing = SigningKey::from_bytes(&[93; 32]);
+    let signing_seed = format!(
+        "ndu-owner-tests:{}:{}:{}",
+        authority_dir.path().display(),
+        SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos(),
+        std::process::id(),
+    );
+    let signing_bytes = *digest(&signing_seed).as_array();
+    let signing = SigningKey::from_bytes(&signing_bytes);
     let authority = FinalUseAuthority::open_state_dir(
         authority_dir.path(),
         "ndu-product-issuer".to_string(),
@@ -137,9 +144,16 @@ impl Fixture {
         grant_id: &str,
     ) -> TestResult<SignedFinalUseGrant> {
         let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
-        let mut nonce = [0; 32];
-        nonce[0] = self.nonce;
+        let nonce_sequence = self.nonce;
         self.nonce = self.nonce.checked_add(1).ok_or("nonce bound")?;
+        let nonce_material = format!(
+            "ndu-owner-tests:{}:{}:{}:{}",
+            grant_id,
+            nonce_sequence,
+            now,
+            self.store.path().display(),
+        );
+        let nonce = *digest(&nonce_material).as_array();
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "ndu-product-issuer".to_string(),

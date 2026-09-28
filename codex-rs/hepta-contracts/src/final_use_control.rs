@@ -704,29 +704,41 @@ mod tests {
     );
 
     fn fixture() -> Result<Fixture, Box<dyn std::error::Error>> {
-        let issuer = SigningKey::from_bytes(&[41; 32]);
-        let approver = SigningKey::from_bytes(&[42; 32]);
-        let distributor = SigningKey::from_bytes(&[43; 32]);
+        let directory = tempfile::tempdir()?;
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
         let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
+        let fixture_seed = format!(
+            "final-use-control:{}:{now}:{}",
+            directory.path().display(),
+            std::process::id(),
+        );
+        let fixture_bytes = |label: &str| -> [u8; 32] {
+            let mut hasher = Sha256::new();
+            hasher.update(fixture_seed.as_bytes());
+            hasher.update([0]);
+            hasher.update(label.as_bytes());
+            hasher.finalize().into()
+        };
+        let issuer = SigningKey::from_bytes(&fixture_bytes("issuer"));
+        let approver = SigningKey::from_bytes(&fixture_bytes("approver"));
+        let distributor = SigningKey::from_bytes(&fixture_bytes("distributor"));
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "security-owner".into(),
             authority_epoch: 11,
             grant_id: "approved-use".into(),
-            nonce: [7; 32],
+            nonce: fixture_bytes("approved-use-nonce"),
             binding: FinalUseBinding {
                 subject_id: "agent-one".into(),
                 destination_id: "provider:heptabao".into(),
-                request_sha256: [1; 32],
-                scope_sha256: [2; 32],
-                payload_sha256: [3; 32],
+                request_sha256: fixture_bytes("request"),
+                scope_sha256: fixture_bytes("scope"),
+                payload_sha256: fixture_bytes("payload"),
             },
             not_before_unix_ms: now - 1_000,
             expires_at_unix_ms: now + 30_000,
         };
         let signature = issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
-        let directory = tempfile::tempdir()?;
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
         let authority = FinalUseAuthority::open_state_dir(
             directory.path(),
             "security-owner".into(),
