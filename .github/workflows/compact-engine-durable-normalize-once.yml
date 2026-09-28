@@ -1,4 +1,4 @@
-name: compact.engine durable source normalization (one shot)
+name: compact.engine source remediation (one shot)
 
 on:
   push:
@@ -9,29 +9,38 @@ permissions:
   contents: write
 
 concurrency:
-  group: compact-engine-durable-normalize-once
+  group: compact-engine-source-remediation-once
   cancel-in-progress: false
 
 jobs:
-  normalize:
+  remediate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
-      - name: Check out exact repair commit
+      - name: Check out exact remediation commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 2
           persist-credentials: true
 
-      - name: Verify one-shot parent and patch durable source
+      - name: Install pinned Rust formatter
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: stable
+          components: rustfmt
+
+      - name: Apply reviewed compact.engine remediation
         shell: bash
         env:
-          EXPECTED_PARENT: d9ac9a89a9373e3f344f40c8901a104030d7d0e4
+          EXPECTED_PARENT: d1edbcc8ead12267b6884c6c75344daf4693a58a
           WORKFLOW_PATH: .github/workflows/compact-engine-durable-normalize-once.yml
+          PATCH_PATH: .github/compact-engine-stage-bc.patch
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
           test "$(git diff --name-only HEAD^ HEAD)" = "$WORKFLOW_PATH"
+          git apply --check "$PATCH_PATH"
+          git apply "$PATCH_PATH"
           python3 - <<'PY'
           from pathlib import Path
           path = Path("codex-rs/hepta-compact-engine/src/durable.rs")
@@ -49,16 +58,19 @@ jobs:
           lines[:6] = [line[1:] for line in lines[:6]]
           path.write_text("".join(lines), encoding="utf-8")
           PY
-          rm -- "$WORKFLOW_PATH"
+          rm -- "$WORKFLOW_PATH" "$PATCH_PATH"
+          (cd codex-rs && cargo fmt --all)
           git diff --check
-          test "$(git diff --name-only | sort | tr '\n' ' ')" = ".github/workflows/compact-engine-durable-normalize-once.yml codex-rs/hepta-compact-engine/src/durable.rs "
+          actual="$(git diff --name-only | sort | tr '\n' ' ')"
+          expected=".github/compact-engine-stage-bc.patch .github/workflows/compact-engine-durable-normalize-once.yml codex-rs/hepta-compact-engine/src/coordinator.rs codex-rs/hepta-compact-engine/src/durable.rs codex-rs/hepta-compact-engine/src/durable_facade.rs codex-rs/hepta-compact-engine/src/durable_fence_tests.rs codex-rs/hepta-compact-engine/src/product_e2e_tests.rs codex-rs/hepta-compact-engine/src/publication.rs "
+          test "$actual" = "$expected"
 
-      - name: Commit reviewed source normalization and remove this workflow
+      - name: Commit source remediation and remove temporary inputs
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "compact-engine-remediation"
           git config user.email "compact-engine-remediation@users.noreply.github.com"
           git add -A
-          git commit -m "fix(compact.engine): make legacy durable source include-safe"
+          git commit -m "fix(compact.engine): fence lease time and trust roles"
           git push origin HEAD:fix/compact-engine-current-main-convergence-20260925
