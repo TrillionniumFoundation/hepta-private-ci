@@ -1,0 +1,43 @@
+name: runtime.codex native journal probe
+on:
+  push:
+    branches: [fix/runtime-codex-owner-recovery-20260928]
+    paths: [.github/workflows/runtime-codex-native-probe.yml]
+permissions:
+  contents: read
+jobs:
+  native-core:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
+      HEPTA_CI_LANE: source-head
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Native tests
+        working-directory: codex-rs
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/runtime-codex-probe/tests.json" --minimum-tests 1 -- just test --locked -p codex-hepta-infer-core --no-tests=fail
+      - name: Strict lint
+        if: always()
+        working-directory: codex-rs
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/runtime-codex-probe/clippy.json" -- cargo clippy --locked -p codex-hepta-infer-core --all-targets -- -D warnings
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: runtime-codex-native-journal-probe
+          path: ${{ runner.temp }}/runtime-codex-probe/*
+          if-no-files-found: error
+          retention-days: 30
