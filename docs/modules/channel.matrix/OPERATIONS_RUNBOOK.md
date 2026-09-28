@@ -2,7 +2,7 @@
 
 ## 1. Readiness
 
-Treat Matrix as ready only when the supervisor reports the exact companion healthy and matrixd reports: store/migrations 1-12 and their exact schema/invariants verified, final-use broker reachable, authenticated revocation feed current, Agentd connected, initial durable sync complete and continuous sync connected. Queue acceptance or process liveness alone is not readiness.
+Treat Matrix as ready only when the supervisor reports the exact companion healthy and matrixd reports: store/migrations 1-13 and their exact schema/invariants verified, final-use broker reachable, authenticated revocation feed current, Agentd connected, initial durable sync complete and continuous sync connected. Queue acceptance or process liveness alone is not readiness.
 
 ## 2. Required metrics
 
@@ -59,7 +59,7 @@ Drain the old companion, commit the new public binding/session generation throug
 
 ## 6. Rollout and rollback
 
-Roll out with a canary Agent and bounded room set. Require current exact-head and synthetic-merge receipts plus applicable real homeserver qualification before promotion. Roll back only to a binary compatible with migrations 1-12, including canonical pins, entered-use proofs, parked legacy holds and migration-12 cross-attempt terminal qualification; otherwise roll forward. Keep matrixd and agentd as one paired release and verify both program digests.
+Roll out with a canary Agent and bounded room set. Require current exact-head and synthetic-merge receipts plus applicable real homeserver qualification before promotion. Roll back only to a binary compatible with migrations 1-13, including canonical pins, entered-use proofs, parked legacy holds, migration-12 cross-attempt terminal qualification and migration-13 recovery scheduling/quarantine state; otherwise roll forward. Keep matrixd and agentd as one paired release and verify both program digests.
 
 ## 7. Evidence collection
 
@@ -72,7 +72,8 @@ Run the read-only diagnostic tool on the private owner database:
 ```sh
 python3 scripts/channel_matrix_diagnostics.py --database /private/matrix_1.sqlite3
 python3 scripts/channel_matrix_diagnostics.py --database /private/matrix_1.sqlite3 --transaction EXACT_TXN_ID
-python3 scripts/channel_matrix_diagnostics.py --database /private/matrix_1.sqlite3 --format prometheus
+python3 scripts/channel_matrix_diagnostics.py --database /private/matrix_1.sqlite3 --event EXACT_EVENT_ID
+python3 scripts/channel_matrix_diagnostics.py --database /private/matrix_1.sqlite3 --format prometheus --check
 ```
 
 The tool uses `mode=ro`, `query_only`, a consistent read transaction and a bounded

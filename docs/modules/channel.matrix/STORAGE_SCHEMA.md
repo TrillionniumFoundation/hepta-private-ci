@@ -13,6 +13,7 @@
 - Entered-use proof binding: `0010_matrix_entered_use_proofs.sql`
 - Legacy hold parking and anti-reactivation fence: `0011_matrix_legacy_hold_remediation.sql`
 - Stable-transaction terminal qualification across retry attempts: `0012_matrix_terminal_any_entered_attempt.sql`
+- Monotone inbox recovery scheduling and quarantine: `0013_matrix_inbox_recovery.sql`
 - Writer: one exact per-Agent `hepta-matrixd` process generation
 - Durability: SQLite durable-evidence configuration; migration, fingerprint or integrity mismatch fails startup closed
 
@@ -35,6 +36,7 @@
 | `matrix_dispatch_active_claims` | current claim phase | stable transaction ID |
 | `matrix_dispatch_authority_witnesses` | verified-use witness and revocation-head digests | transaction + attempt |
 | `matrix_dispatch_attempt_events` | complete append-only attempt lifecycle | event sequence |
+| `matrix_inbox_recovery` | bounded recovery scheduling, retry classification and monotone quarantine for an existing inbox event | event ID |
 
 ## 3. Dispatch ledger
 
@@ -102,8 +104,8 @@ Redaction follows the same rule. The cursor cannot commit without the matching d
 Store open verifies:
 
 - owner identity, schema version and migration history;
-- exact normalized SQL for every dispatch/claim/content/use-proof/legacy/terminal-qualification object from migrations 6-12;
-- all 76 required tables, indexes, views and triggers;
+- exact normalized SQL for every dispatch/claim/content/use-proof/legacy/terminal-qualification/recovery object from migrations 6-13;
+- all 76 foundational required tables, indexes, views and triggers, plus every exact dispatch/recovery object parsed from migrations 6-13;
 - `quick_check` and foreign-key checks;
 - dispatch-state, terminal-authority and entered-use invariants;
 - immutable/delete-prevention triggers;
@@ -126,5 +128,6 @@ count, last start, next due time, running/ready/retry/quarantined disposition an
 closed-set failure class. Update triggers reject identity/attempt/time rollback
 and quarantine reset. Deletion is forbidden. This is mutable operational
 scheduling, not append-only execution evidence. Exact store-open schema checking
-includes this migration. [Migration inventory](MIGRATIONS.md) is generated and
-verified against committed SQL filenames.
+includes this migration, so a binary compatible only through migration 12 is not
+a valid startup or rollback target. [Migration inventory](MIGRATIONS.md) is
+generated and verified against committed SQL filenames.

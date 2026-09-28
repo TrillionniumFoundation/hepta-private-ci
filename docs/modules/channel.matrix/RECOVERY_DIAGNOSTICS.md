@@ -73,8 +73,11 @@ unknown remote effects suggest authenticated reconciliation under the SAME txn.
 
 ## Evidence boundaries
 
-Python SQLite/receipt tests prove their narrow executed scope only. Native
-recovery tests Q24–Q29 must execute on the actual final source and deterministic
-merge candidates. Real encrypted rotation, protected restore, sustained capacity,
-process crash/replay and independent operator/security acceptance remain gates.
+Python SQLite/receipt tests prove their narrow executed scope only. The closed
+MATRIX-Q01–Q29 registry requires every test-bearing native scenario—including
+recovery tests Q24–Q29—to execute on the actual final source and deterministic
+merge candidates. The generated ledger binds each testcase result to the exact
+candidate, source snapshot, command receipt and JUnit digest. Real encrypted
+rotation, protected restore, sustained capacity, process crash/replay and
+independent operator/security acceptance remain gates.
 No tests are disabled, skipped or replaced by receipt-generator self-approval.

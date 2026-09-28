@@ -1,6 +1,6 @@
 # channel.matrix qualification matrix
 
-Status labels: `source` means implementation/fixture exists; `executed` requires a passing receipt for that exact execution scope; `external` requires the named real target host. Source presence, compilation or a workflow definition is never execution evidence. For the latest canonical-content, sealed-permit and legacy-hold changes, read [FINAL_CONTENT_BOUNDARY_V2.md](FINAL_CONTENT_BOUNDARY_V2.md). None of the local Python/SQLite results below establish native or homeserver qualification.
+Status labels: `source` means implementation/fixture exists; `executed` requires a passing receipt for that exact execution scope; `external` requires the named real target host. Source presence, compilation or a workflow definition is never execution evidence. `QUALIFICATION_SCENARIOS.json` is the closed, ordered machine inventory for MATRIX-Q01–Q29; every entry that declares native tests must be reported as passed by the exact-candidate JUnit ledger in both lanes. For the latest canonical-content, sealed-permit and legacy-hold changes, read [FINAL_CONTENT_BOUNDARY_V2.md](FINAL_CONTENT_BOUNDARY_V2.md). None of the local Python/SQLite results below establish native or homeserver qualification.
 
 ## 1. Required scenarios
 
@@ -34,7 +34,7 @@ Status labels: `source` means implementation/fixture exists; `executed` requires
 
 `codex-rs/hepta-matrix-sdk/tests/durable_transport.rs`, `final_poll_regressions.rs` and `pending_poll_regressions.rs` retain sender/retry/fencing source cases, including delayed server echo after a newer retry claim but before its adapter entry. `codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs` additionally binds the durable grant's absolute expiry through proof persistence and every transport poll; once kernel entry succeeds, persistence acknowledgement loss, expiry, revocation/frontier change, identity drift, payload drift or permit construction failure is returned only as an entered indeterminate result. New `src/content_tests.rs` and `authority_tests.rs` cover the version-2 message binding. `codex-rs/hepta-matrix-store/tests/content_binding.rs` adds reopen, pre-pin cancel, semantic drift, stale claim, malformed digest and weakened-schema cases. `scripts/tests/test_channel_matrix_legacy_remediation.py` exercises migration-11 ledger materialization, stale-claim closure, queue parking and the anti-reactivation trigger.
 
-`codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs` and `tests/fixtures/run-hermetic-synapse.sh` retain the pinned unencrypted target profile. It records image/version/source/runner identity; storing it is not a successful run. Supervisor fixtures remain the lifecycle/adoption source. Migration-7 histories, migration-8 pins, migration-9 holds, migration-10 entered-use rows, migration-11 parking and migration-12 stable-transaction terminal guards are durable owner facts, not an independent sender or authorization issuer.
+`codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs` and `tests/fixtures/run-hermetic-synapse.sh` retain the pinned unencrypted target profile. It records image/version/source/runner identity; storing it is not a successful run. Supervisor fixtures remain the lifecycle/adoption source. Migration-7 histories, migration-8 pins, migration-9 holds, migration-10 entered-use rows, migration-11 parking, migration-12 stable-transaction terminal guards and migration-13 recovery scheduling/quarantine are durable owner facts, not an independent sender or authorization issuer.
 
 ## 3. Executed-scenario receipts
 
@@ -97,15 +97,19 @@ The evidence directory's generated `status.json`/`status.md` separates those
 states from real target qualification and independent acceptance. Historical
 local pass counts above apply only to their stated snapshots and test scopes.
 
-## 7. Machine-checkable scenario ledger and new native regressions
+## 8. Machine-checkable scenario ledger and new native regressions
 
 `QUALIFICATION_SCENARIOS.json` is the current scenario-to-test inventory.
 `scenario-ledger.json` is derived outside the checkout from exact candidate and
 command receipts plus a hashed nextest JUnit report. Native binary+test identity
 must match; compilation or aggregate test success cannot substitute for a case.
-Missing reports, stale source/registry hashes, duplicate tests, XML DTDs, skips,
-flaky retries and failed cases cannot yield an unqualified pass. External fields
-remain not_proved even when native fixtures pass.
+The registry is closed and ordered, and every scenario with a native test mapping
+is a required exact-candidate gate—not only the newest recovery cases. Missing
+reports, stale source/registry hashes, duplicate tests, XML DTDs, skips, flaky
+retries and failed cases cannot yield an unqualified pass. The ledger records
+the exact candidate, source snapshot, command receipt and JUnit artifact digest;
+the later artifact manifest binds the ledger itself. External fields remain
+`not_proved` even when native fixtures pass.
 
 | ID | New required native fixture | Oracle |
 |---|---|---|
@@ -118,4 +122,6 @@ remain not_proved even when native fixtures pass.
 
 All six live in `codex-hepta-matrixd`'s `runtime::tests::recovery_tests` module.
 They are source fixtures until the final exact-candidate JUnit proves execution.
-Migration summary drift is blocked by `test_channel_matrix_migrations.py`.
+The same ledger also requires every earlier registry-mapped native testcase;
+external-only scenarios remain explicit target gates. Migration summary drift is
+blocked by `test_channel_matrix_migrations.py`.

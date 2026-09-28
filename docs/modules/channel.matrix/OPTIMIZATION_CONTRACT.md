@@ -81,15 +81,23 @@ hash-mismatched evidence cannot silently become success. The working directory
 is recorded as `codex-rs`, so the pinned Rust toolchain and Cargo configuration
 are used by all native commands.
 
+`QUALIFICATION_SCENARIOS.json` is a closed, ordered inventory. The generated
+`scenario-ledger.json` requires every scenario with a native testcase mapping to
+pass in both exact-candidate lanes. Each testcase result is bound to the exact
+candidate, source snapshot, focused-command receipt and hashed nextest JUnit
+artifact. Missing, skipped, flaky or failed mapped tests remain blockers even
+when some other native cases pass.
+
 Target qualification and independent acceptance remain `not_proved` in this
 local-command view. Their separately governed receipts cannot be manufactured
-by a generator. The final artifact manifest binds the generated status and
-logs. `sourceBase`/`observedAtHead` remain provenance ancestors; exact current
+by a generator. The final artifact manifest binds the generated status, ledger
+and logs. `sourceBase`/`observedAtHead` remain provenance ancestors; exact current
 commit, tree and blob identities belong to external candidate receipts.
 
-Migration compatibility is **12**, including stable-transaction terminal proof
-across attempts. Startup/rollback documentation must not approve an older
-binary that only understands migration 11.
+Migration compatibility is **13**: migration 12 preserves stable-transaction
+terminal proof across attempts, while migration 13 adds durable inbox recovery
+scheduling and monotone quarantine. Startup and rollback documentation must not
+approve an older binary that only understands migrations 1-12.
 
 ## 6. Regression inventory
 
@@ -102,6 +110,7 @@ binary that only understands migration 11.
 | Numeric telemetry saturation and identity-free output | `outbound_v2/telemetry_tests.rs` | locked native unit test |
 | Diagnostic read-only, missing measurement, capacity, parameterization and migration rejection | `test_channel_matrix_diagnostics.py` | Python with real SQLite migrations |
 | Receipt scope separation, stale/mutated/Boolean/duplicate rejection | `test_channel_matrix_status.py` | Python evidence fixtures |
+| Closed scenario inventory and per-test artifact binding | `test_channel_matrix_qualification.py` | Python evidence fixtures plus exact nextest JUnit |
 
 Real encrypted-session rotation, authenticated restore, sustained retention,
 paired-runtime Synapse qualification and independent operator/security

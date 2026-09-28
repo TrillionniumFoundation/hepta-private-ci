@@ -27,12 +27,13 @@ Before kernel final-use entry, cancellation releases the current claim and unsta
 
 1. Supervisor validates Matrix process lease against Agent generation, release, binding digest, process incarnation and plane epoch.
 2. An exact live orphan may be adopted; stale or unverifiable processes are killed/rejected.
-3. Matrixd obtains the process lock, verifies migrations 1-12, exact schema SQL and final-use/legacy-hold/terminal-qualification invariants, completes an initial durable sync, resumes exact threads and recovers pending inbox work.
+3. Matrixd obtains the process lock, verifies migrations 1-13, exact schema SQL and final-use/legacy-hold/terminal-qualification/recovery invariants, completes an initial durable sync, resumes exact threads and recovers pending inbox work.
 4. Expired active claims that never crossed kernel entry receive an append-only `expired` event before a later attempt mints a new capability.
 5. A dispatching attempt with a possible entered-use write or unknown proof acknowledgement is retained as unresolved; recovery never releases it by inference from process death.
 6. Expired outbox leases are reclaimed with the same stable transaction and a higher attempt only when the durable state permits another attempt, except sealed legacy holds.
 7. Migration 11 closes stale legacy claims, records claimed-only work as expired and later phases as indeterminate, materializes the unresolved ledger, and parks the queue row at the non-runnable maximum schedule.
 8. Accepted/indeterminate dispatches remain unresolved until authenticated sync supplies matching server evidence. If a later attempt is merely claimed when the echo arrives, migration 12 qualifies the stable transaction with the earlier matching entered-use proof and closes the current claim without another effect.
+9. Migration 13 preserves each pending inbox event identity while recording bounded recovery attempts, next-due time, closed-set failure class and monotone quarantine. Restart never manufactures a replacement event or clears quarantine by inference.
 
 ## 5. Corruption policy
 
@@ -40,7 +41,7 @@ Never delete the database, WAL, session store, authority state or audit rows to 
 
 ## 6. Rollback
 
-Binary rollback is allowed only when the predecessor understands every committed migration and durable record. Migrations 6-12 dispatch, claim, witness, canonical-content, entered-use, legacy-hold, remediation and cross-attempt terminal semantics cannot be ignored by an older sender. Otherwise keep the current store owner and roll forward. Release rollback retains stable transaction identities, current redaction/revocation frontiers, parked legacy holds and unresolved effects.
+Binary rollback is allowed only when the predecessor understands every committed migration and durable record. Migrations 6-13 dispatch, claim, witness, canonical-content, entered-use, legacy-hold, remediation, cross-attempt terminal and inbox-recovery scheduling semantics cannot be ignored by an older runtime. Otherwise keep the current store owner and roll forward. Release rollback retains stable transaction identities, current redaction/revocation frontiers, parked legacy holds, recovery/quarantine state and unresolved effects.
 
 ## 7. Fault-injection points
 

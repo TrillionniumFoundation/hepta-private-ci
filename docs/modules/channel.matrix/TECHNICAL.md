@@ -196,11 +196,12 @@ checks immutable canonical payload bytes once and measures their cost, while
 revocations, transport identity, expiry and cancellation are checked at every
 continuation poll. Diagnostic windows are observations, not dispatch truth.
 
-The schema compatibility floor for startup/rollback is migration **12**,
-including cross-attempt terminal qualification. A binary compatible only with
-migrations 1-11 is not a qualified rollback target.
+The schema compatibility floor for startup/rollback is migration **13**,
+including migration-12 cross-attempt terminal qualification and migration-13
+monotone inbox-recovery scheduling/quarantine. A binary compatible only with
+migrations 1-12 is not a qualified rollback target.
 
-## 18. Recovery isolation and executable qualification ledger
+## 19. Recovery isolation and executable qualification ledger
 
 See [Recovery and diagnostics](RECOVERY_DIAGNOSTICS.md) and the generated
 [Migration inventory](MIGRATIONS.md). The current native runtime selects only
