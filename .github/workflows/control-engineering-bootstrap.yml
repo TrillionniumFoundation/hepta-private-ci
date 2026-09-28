@@ -6,6 +6,7 @@ on:
       - codex/control-engineering-post-merge-closure-20260928
     paths:
       - scripts/patch_existing_control_engineering.py
+      - scripts/patch_control_engineering_stage2_v2.py
       - .github/workflows/control-engineering-bootstrap.yml
 
 permissions:
@@ -29,7 +30,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python3 -m py_compile \
+            scripts/patch_existing_control_engineering.py \
+            scripts/patch_control_engineering_stage2_v2.py
           python3 scripts/patch_existing_control_engineering.py
+          python3 scripts/patch_control_engineering_stage2_v2.py
           git diff --check
           git config user.name "Hepta Control Engineering Bot"
           git config user.email "hepta-control-engineering@users.noreply.github.com"
