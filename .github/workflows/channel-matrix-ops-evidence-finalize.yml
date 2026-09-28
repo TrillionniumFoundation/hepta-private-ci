@@ -1,0 +1,149 @@
+name: channel.matrix operator evidence finalize
+
+on:
+  push:
+    branches:
+      - codex/channel-matrix-full-closure-20260927
+    paths:
+      - '.github/workflows/channel-matrix-ops-evidence-finalize.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: channel-matrix-operator-evidence-finalize
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/channel-matrix-full-closure-20260927'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      SOURCE_HEAD: e88393d5f117c707a35e9278de4757b73116e770
+      EXPECTED_PAYLOAD_SHA256: 3ad03651989919489dfc3e4171b2fccad252e948247ecc7ab1ee15810aea11e9
+      STAGING_SHA: ${{ github.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout exact staging candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Materialize and verify reviewed files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$STAGING_SHA"
+          git merge-base --is-ancestor "$SOURCE_HEAD" HEAD
+
+          cat > "$RUNNER_TEMP/expected-staging-paths" <<'EOF'
+          .github/workflows/channel-matrix-ops-evidence-finalize.yml
+          .matrix-staging/channel-matrix-ops-evidence.part00
+          .matrix-staging/channel-matrix-ops-evidence.part01
+          .matrix-staging/channel-matrix-ops-evidence.part02
+          .matrix-staging/channel-matrix-ops-evidence.part03
+          .matrix-staging/channel-matrix-ops-evidence.part04
+          EOF
+          git diff --name-only "$SOURCE_HEAD" HEAD | LC_ALL=C sort > "$RUNNER_TEMP/actual-staging-paths"
+          diff -u "$RUNNER_TEMP/expected-staging-paths" "$RUNNER_TEMP/actual-staging-paths"
+
+          cat .matrix-staging/channel-matrix-ops-evidence.part* \
+            | base64 --decode > "$RUNNER_TEMP/channel-matrix-ops-evidence.tar.gz"
+          echo "$EXPECTED_PAYLOAD_SHA256  $RUNNER_TEMP/channel-matrix-ops-evidence.tar.gz" \
+            | sha256sum --check --strict
+
+          cat > "$RUNNER_TEMP/expected-payload-paths" <<'EOF'
+          .github/workflows/channel-matrix-preserve-unknown.yml
+          docs/modules/channel.matrix/RECOVERY_DIAGNOSTICS.md
+          scripts/channel_matrix_diagnostics.py
+          scripts/channel_matrix_status.py
+          scripts/tests/test_channel_matrix_diagnostics.py
+          scripts/tests/test_channel_matrix_documentation.py
+          scripts/tests/test_channel_matrix_status.py
+          EOF
+          tar -tzf "$RUNNER_TEMP/channel-matrix-ops-evidence.tar.gz" \
+            | sed 's#/$##' | LC_ALL=C sort > "$RUNNER_TEMP/actual-payload-paths"
+          diff -u "$RUNNER_TEMP/expected-payload-paths" "$RUNNER_TEMP/actual-payload-paths"
+          tar -xzf "$RUNNER_TEMP/channel-matrix-ops-evidence.tar.gz"
+
+          cat > "$RUNNER_TEMP/expected-file-digests" <<'EOF'
+          d9178777cbcab498c8e348bea89a634a75f4034769c1d2e10a3ac38606576aad  .github/workflows/channel-matrix-preserve-unknown.yml
+          a8744e46ff4ccd45c46ec47bd4516da8e3820434cd9233271df2aba1351d3853  docs/modules/channel.matrix/RECOVERY_DIAGNOSTICS.md
+          b52c6e233ed96f59b861cc52485010e5cb4070a985c621a7fd0fb02aea07bd62  scripts/channel_matrix_diagnostics.py
+          28af3373db4bc13c77a7a46b7fe9c002441b5e95fe2a0bbb904152b88097983c  scripts/channel_matrix_status.py
+          bc3eda909a7914f08fbd5a1ad100a0d3f6a10124e2c08fccb4879668cb1c2af5  scripts/tests/test_channel_matrix_diagnostics.py
+          87ac72eec8a4ddda191521e7552cc7dc0d7dacf330e5ac1ed154b28faeebbb6d  scripts/tests/test_channel_matrix_documentation.py
+          2e243a59564de413f097c9b9ac437f5e0d09ba5ffa182eed5875d7501212fe28  scripts/tests/test_channel_matrix_status.py
+          EOF
+          sha256sum --check --strict "$RUNNER_TEMP/expected-file-digests"
+          git diff --check
+
+      - name: Execute focused diagnostics and evidence tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q \
+            scripts/channel_matrix_diagnostics.py \
+            scripts/channel_matrix_status.py \
+            scripts/tests/test_channel_matrix_diagnostics.py \
+            scripts/tests/test_channel_matrix_status.py \
+            scripts/tests/test_channel_matrix_documentation.py
+          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix_diagnostics.py' -v
+          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix_status.py' -v
+          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix_documentation.py' -v
+
+      - name: Commit verified result and remove staging material
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -rf .matrix-staging
+          git rm .github/workflows/channel-matrix-ops-evidence-finalize.yml
+          git add \
+            .github/workflows/channel-matrix-preserve-unknown.yml \
+            docs/modules/channel.matrix/RECOVERY_DIAGNOSTICS.md \
+            scripts/channel_matrix_diagnostics.py \
+            scripts/channel_matrix_status.py \
+            scripts/tests/test_channel_matrix_diagnostics.py \
+            scripts/tests/test_channel_matrix_documentation.py \
+            scripts/tests/test_channel_matrix_status.py
+          git add -u .matrix-staging
+          git diff --cached --check
+
+          cat > "$RUNNER_TEMP/expected-staged-paths" <<'EOF'
+          .github/workflows/channel-matrix-ops-evidence-finalize.yml
+          .github/workflows/channel-matrix-preserve-unknown.yml
+          .matrix-staging/channel-matrix-ops-evidence.part00
+          .matrix-staging/channel-matrix-ops-evidence.part01
+          .matrix-staging/channel-matrix-ops-evidence.part02
+          .matrix-staging/channel-matrix-ops-evidence.part03
+          .matrix-staging/channel-matrix-ops-evidence.part04
+          docs/modules/channel.matrix/RECOVERY_DIAGNOSTICS.md
+          scripts/channel_matrix_diagnostics.py
+          scripts/channel_matrix_status.py
+          scripts/tests/test_channel_matrix_diagnostics.py
+          scripts/tests/test_channel_matrix_documentation.py
+          scripts/tests/test_channel_matrix_status.py
+          EOF
+          git diff --cached --name-only | LC_ALL=C sort > "$RUNNER_TEMP/actual-staged-paths"
+          diff -u "$RUNNER_TEMP/expected-staged-paths" "$RUNNER_TEMP/actual-staged-paths"
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit \
+            -m 'channel.matrix: require paired evidence and actionable diagnostics' \
+            -m 'Add identity-safe operator explanations and policy-backed alerts for aged indeterminate effects, authority denial, rate limiting and claim expiry. Revalidate both exact-candidate artifact chains together and require the paired repository-controlled status without granting target, operator, activation or release authority.'
+
+          final=$(git rev-parse HEAD)
+          auth=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')
+          echo "::add-mask::$auth"
+          remote=$(git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" \
+            ls-remote origin refs/heads/codex/channel-matrix-full-closure-20260927 | cut -f1)
+          test "$remote" = "$STAGING_SHA"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" \
+            push origin HEAD:refs/heads/codex/channel-matrix-full-closure-20260927
+          echo "FINAL_COMMIT=$final"
