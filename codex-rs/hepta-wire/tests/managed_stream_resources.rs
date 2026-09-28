@@ -10,6 +10,7 @@ use codex_hepta_wire::DecodedEnvelope;
 use codex_hepta_wire::FrozenSchemaRegistryBuilder;
 use codex_hepta_wire::MAX_WIRE_FRAME_BYTES;
 use codex_hepta_wire::ManagedAuthenticatedWireSession;
+use codex_hepta_wire::ManagedRecordStream;
 use codex_hepta_wire::NegotiationOffer;
 use codex_hepta_wire::NegotiationTranscript;
 use codex_hepta_wire::RecordStreamError;
@@ -191,7 +192,10 @@ fn slow_partial_peers_cannot_reserve_declared_bodies_in_aggregate() -> TestResul
         assert!(feed.batch().terminal_error().is_none());
         streams.push(stream);
     }
-    let retained: usize = streams.iter().map(|s| s.buffer_capacity_bytes()).sum();
+    let retained: usize = streams
+        .iter()
+        .map(ManagedRecordStream::buffer_capacity_bytes)
+        .sum();
     assert!(retained <= 32 * 2 * bytes.len());
     for stream in &mut streams {
         stream.retire();
