@@ -30,7 +30,7 @@ jobs:
   converge:
     name: Apply and seal cognitive.read convergence
     if: github.event_name != 'pull_request' || github.event.pull_request.head.ref == 'work/cognitive-read-production-convergence-20260927'
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
       - name: Check out exact branch head
