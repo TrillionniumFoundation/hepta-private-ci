@@ -11,9 +11,11 @@ on:
 permissions:
   contents: write
 
+# Only the newest carrier on the active line may publish. A SHA-keyed group
+# leaves obsolete candidates queued indefinitely and can publish stale source.
 concurrency:
-  group: runtime-agentd-publish-${{ github.sha }}
-  cancel-in-progress: false
+  group: runtime-agentd-publish-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   format:
