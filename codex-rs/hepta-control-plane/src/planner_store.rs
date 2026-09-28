@@ -5,9 +5,9 @@
 //! file lock across open, backup and restore; rejects complete frame headers
 //! with missing declared bodies; preserves semantic evidence during
 //! compaction; and turns every mutation with an uncertain durability boundary
-//! into a permanently poisoned handle. Once poisoned, no further
-//! write/checkpoint/compaction/backup operation is accepted; the caller must
-//! drop and reopen from the verified log.
+//! into a permanently poisoned handle. Once poisoned, no further authoritative
+//! observation, write, checkpoint, compaction or backup operation is accepted;
+//! the caller must drop and reopen from the verified log.
 
 use std::fs;
 use std::fs::File;
@@ -67,6 +67,12 @@ impl PlannerStoreV1 {
         })
     }
 
+    /// Return the in-memory diagnostic projection.
+    ///
+    /// Callers that use records to authorize, dispatch or reconcile must first
+    /// call `ensure_healthy`. A poisoned owner deliberately retains its last
+    /// published projection for diagnosis, but that projection is not an
+    /// authoritative statement about the durable tail.
     #[must_use]
     pub fn records(&self) -> &[PlannerStoreRecordV1] {
         self.inner.records()
@@ -127,6 +133,7 @@ impl PlannerStoreV1 {
         &self,
         expected_anchor_digest: Digest32,
     ) -> Result<PlannerStoreCheckpointV1, PlannerStoreError> {
+        self.ensure_healthy()?;
         self.inner.verify_checkpoint(expected_anchor_digest)
     }
 
@@ -186,7 +193,7 @@ impl PlannerStoreV1 {
         core::PlannerStoreV1::validate_migration(from, to)
     }
 
-    fn ensure_healthy(&self) -> Result<(), PlannerStoreError> {
+    pub(crate) fn ensure_healthy(&self) -> Result<(), PlannerStoreError> {
         if self.recovery_required {
             return Err(PlannerStoreError::Io(RECOVERY_REQUIRED.to_string()));
         }
@@ -440,6 +447,37 @@ mod hardening_tests {
             b"two",
         );
         assert!(matches!(second, Err(PlannerStoreError::Io(message)) if message.contains("recovery required")));
+    }
+
+    #[test]
+    fn poisoned_handle_cannot_verify_a_stale_checkpoint_projection() {
+        let directory = tempdir().unwrap();
+        let mut store =
+            PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default()).unwrap();
+        store
+            .append(
+                PlannerStoreRecordKindV1::Snapshot,
+                digest("snapshot-operation"),
+                digest("snapshot-payload"),
+                b"snapshot",
+            )
+            .unwrap();
+        let anchor = digest("external-anchor");
+        store.checkpoint(anchor).unwrap();
+
+        store.set_failpoint(Some(PlannerStoreFailpointV1::AfterLogSyncBeforePublish));
+        let failure = store.append(
+            PlannerStoreRecordKindV1::Decision,
+            digest("decision-operation"),
+            digest("decision-payload"),
+            b"decision",
+        );
+        assert!(matches!(failure, Err(PlannerStoreError::Failpoint(_))));
+        assert!(store.recovery_required());
+        assert!(matches!(
+            store.verify_checkpoint(anchor),
+            Err(PlannerStoreError::Io(message)) if message.contains("recovery required")
+        ));
     }
 
     #[test]

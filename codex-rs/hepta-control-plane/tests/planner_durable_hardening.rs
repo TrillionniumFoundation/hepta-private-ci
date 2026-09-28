@@ -14,6 +14,7 @@ use codex_hepta_control_plane::PlannerStoreError;
 use codex_hepta_control_plane::PlannerStoreFailpointV1;
 use codex_hepta_control_plane::PlannerStoreRecordKindV1;
 use codex_hepta_control_plane::PlannerStoreV1;
+use codex_hepta_control_plane::PlannerTerminalReceiptSinkV1;
 use codex_hepta_control_plane::execute_planner_request_v1;
 use codex_hepta_control_plane::reconcile_planner_request_v1;
 use codex_hepta_types::Digest32;
@@ -110,6 +111,21 @@ impl PlannerEffectExecutorV1 for Executor {
             observed_at_micros: 1_500,
         })
     }
+}
+
+fn execute_once(
+    store: &mut PlannerStoreV1,
+    disposition: PlannerEffectDispositionV1,
+) -> codex_hepta_control_plane::PlannerTerminalReceiptV1 {
+    let mut authority = Authority;
+    let mut executor = Executor { next: disposition };
+    must(execute_planner_request_v1(
+        &request(),
+        1_000,
+        &mut authority,
+        &mut executor,
+        store,
+    ))
 }
 
 #[test]
@@ -223,4 +239,109 @@ fn indeterminate_dispatch_can_converge_to_a_durable_reconciliation() {
         store.records()[2].kind,
         PlannerStoreRecordKindV1::Reconciliation
     );
+}
+
+#[test]
+fn valid_terminal_receipt_without_a_durable_claim_is_rejected() {
+    let source_directory = must(tempdir());
+    let mut source = must(PlannerStoreV1::open(
+        source_directory.path(),
+        PlannerStoreConfigV1::default(),
+    ));
+    let receipt = execute_once(&mut source, PlannerEffectDispositionV1::Succeeded);
+
+    let destination_directory = must(tempdir());
+    let mut destination = must(PlannerStoreV1::open(
+        destination_directory.path(),
+        PlannerStoreConfigV1::default(),
+    ));
+    let error = must_err(destination.append_terminal_receipt(&receipt));
+    assert!(matches!(
+        error,
+        PlannerExecutionError::Store(message)
+            if message.contains("requires a durable dispatch claim")
+    ));
+    assert!(destination.records().is_empty());
+}
+
+#[test]
+fn forged_terminal_receipt_digest_is_rejected_before_store_mutation() {
+    let source_directory = must(tempdir());
+    let mut source = must(PlannerStoreV1::open(
+        source_directory.path(),
+        PlannerStoreConfigV1::default(),
+    ));
+    let mut receipt = execute_once(&mut source, PlannerEffectDispositionV1::Succeeded);
+    receipt.receipt_digest = digest("forged-receipt");
+
+    let destination_directory = must(tempdir());
+    let mut destination = must(PlannerStoreV1::open(
+        destination_directory.path(),
+        PlannerStoreConfigV1::default(),
+    ));
+    let error = must_err(destination.append_terminal_receipt(&receipt));
+    assert_eq!(error, PlannerExecutionError::InvalidObservation);
+    assert!(destination.records().is_empty());
+}
+
+#[test]
+fn conclusive_terminal_receipt_cannot_be_replaced() {
+    let first_directory = must(tempdir());
+    let mut first_store = must(PlannerStoreV1::open(
+        first_directory.path(),
+        PlannerStoreConfigV1::default(),
+    ));
+    let committed = execute_once(&mut first_store, PlannerEffectDispositionV1::Succeeded);
+
+    let conflicting_directory = must(tempdir());
+    let mut conflicting_store = must(PlannerStoreV1::open(
+        conflicting_directory.path(),
+        PlannerStoreConfigV1::default(),
+    ));
+    let conflicting = execute_once(&mut conflicting_store, PlannerEffectDispositionV1::Failed);
+    assert_ne!(committed.receipt_digest, conflicting.receipt_digest);
+
+    let error = must_err(first_store.append_reconciliation_receipt(&conflicting));
+    assert!(matches!(
+        error,
+        PlannerExecutionError::Store(message)
+            if message.contains("conclusive terminal receipt is immutable")
+    ));
+    assert_eq!(first_store.records().len(), 2);
+}
+
+#[test]
+fn poisoned_store_cannot_return_a_stale_conclusive_dispatch() {
+    let directory = must(tempdir());
+    let mut store = must(PlannerStoreV1::open(
+        directory.path(),
+        PlannerStoreConfigV1::default(),
+    ));
+    execute_once(&mut store, PlannerEffectDispositionV1::Succeeded);
+
+    store.set_failpoint(Some(PlannerStoreFailpointV1::AfterLogSyncBeforePublish));
+    let failure = store.append(
+        PlannerStoreRecordKindV1::Decision,
+        digest("later-operation"),
+        digest("later-payload"),
+        b"later decision",
+    );
+    assert!(matches!(failure, Err(PlannerStoreError::Failpoint(_))));
+    assert!(store.recovery_required());
+
+    let mut authority = Authority;
+    let mut executor = Executor {
+        next: PlannerEffectDispositionV1::Succeeded,
+    };
+    let error = must_err(execute_planner_request_v1(
+        &request(),
+        1_100,
+        &mut authority,
+        &mut executor,
+        &mut store,
+    ));
+    assert!(matches!(
+        error,
+        PlannerExecutionError::Store(message) if message.contains("recovery required")
+    ));
 }

@@ -307,6 +307,7 @@ impl PlannerDispatchClaimSinkV1 for PlannerStoreV1 {
         request_digest: Digest32,
         final_payload_digest: Digest32,
     ) -> Result<Option<PlannerDispatchClaimOutcomeV1>, PlannerExecutionError> {
+        self.ensure_healthy()?;
         require_digest(operation_identity_digest, "dispatch operation")?;
         require_digest(request_digest, "dispatch request")?;
         require_digest(final_payload_digest, "dispatch payload")?;

@@ -13,6 +13,8 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
 use crate::GrantRequestV1;
+use crate::PlannerDispatchClaimOutcomeV1;
+use crate::PlannerDispatchClaimSinkV1;
 use crate::PlannerStoreError;
 use crate::PlannerStoreRecordKindV1;
 use crate::PlannerStoreV1;
@@ -214,6 +216,9 @@ impl PlannerTerminalReceiptSinkV1 for PlannerStoreV1 {
         &mut self,
         receipt: &PlannerTerminalReceiptV1,
     ) -> Result<(), PlannerExecutionError> {
+        if admit_store_receipt(self, receipt)? {
+            return Ok(());
+        }
         append_store_receipt(
             self,
             PlannerStoreRecordKindV1::TerminalReceipt,
@@ -226,6 +231,9 @@ impl PlannerTerminalReceiptSinkV1 for PlannerStoreV1 {
         &mut self,
         receipt: &PlannerTerminalReceiptV1,
     ) -> Result<(), PlannerExecutionError> {
+        if admit_store_receipt(self, receipt)? {
+            return Ok(());
+        }
         let mut bytes = b"hepta.control.reconciliation-identity.v1".to_vec();
         bytes.extend_from_slice(receipt.operation_identity_digest.as_array());
         bytes.extend_from_slice(receipt.receipt_digest.as_array());
@@ -236,6 +244,79 @@ impl PlannerTerminalReceiptSinkV1 for PlannerStoreV1 {
             receipt,
         )
     }
+}
+
+/// Validate both receipt integrity and the durable operation state before the
+/// generic envelope store is allowed to accept an execution observation.
+///
+/// Returning `true` means the exact conclusive receipt is already committed and
+/// the retry is idempotently complete. A different receipt may advance only an
+/// unresolved claim; it can never replace a conclusive terminal observation.
+fn admit_store_receipt(
+    store: &PlannerStoreV1,
+    receipt: &PlannerTerminalReceiptV1,
+) -> Result<bool, PlannerExecutionError> {
+    validate_terminal_receipt_integrity(receipt)?;
+    let state = <PlannerStoreV1 as PlannerDispatchClaimSinkV1>::inspect_dispatch(
+        store,
+        receipt.operation_identity_digest,
+        receipt.request_digest,
+        receipt.final_payload_digest,
+    )?;
+    match state {
+        None => Err(PlannerExecutionError::Store(
+            "terminal receipt requires a durable dispatch claim".to_string(),
+        )),
+        Some(PlannerDispatchClaimOutcomeV1::Acquired) => Err(PlannerExecutionError::Store(
+            "invalid acquired state while appending terminal receipt".to_string(),
+        )),
+        Some(PlannerDispatchClaimOutcomeV1::ExistingClaim {
+            original_grant_digest,
+        }) => {
+            if original_grant_digest != receipt.grant_digest {
+                return Err(PlannerExecutionError::Store(
+                    "terminal receipt grant does not match durable dispatch claim".to_string(),
+                ));
+            }
+            Ok(false)
+        }
+        Some(PlannerDispatchClaimOutcomeV1::ExistingTerminal { receipt: existing }) => {
+            if existing.as_ref() == receipt {
+                Ok(true)
+            } else {
+                Err(PlannerExecutionError::Store(
+                    "conclusive terminal receipt is immutable".to_string(),
+                ))
+            }
+        }
+    }
+}
+
+fn validate_terminal_receipt_integrity(
+    receipt: &PlannerTerminalReceiptV1,
+) -> Result<(), PlannerExecutionError> {
+    require_digest(receipt.operation_identity_digest, "terminal operation")?;
+    require_digest(receipt.request_digest, "terminal request")?;
+    require_digest(receipt.grant_digest, "terminal grant")?;
+    require_digest(receipt.final_payload_digest, "terminal final payload")?;
+    require_digest(receipt.outcome_digest, "terminal outcome")?;
+    require_digest(receipt.receipt_digest, "terminal receipt")?;
+    if receipt.authority.grants_any() {
+        return Err(PlannerExecutionError::InvalidObservation);
+    }
+    let expected = digest_terminal_receipt(
+        receipt.operation_identity_digest,
+        receipt.request_digest,
+        receipt.grant_digest,
+        receipt.final_payload_digest,
+        receipt.disposition,
+        receipt.outcome_digest,
+        receipt.observed_at_micros,
+    );
+    if receipt.receipt_digest != expected {
+        return Err(PlannerExecutionError::InvalidObservation);
+    }
+    Ok(())
 }
 
 fn append_store_receipt(
