@@ -26,9 +26,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base64 -d .github/runtime_codex_closure.py.gz.b64 | gzip -d > /tmp/runtime_codex_closure.py
-          chmod +x /tmp/runtime_codex_closure.py
-          python3 /tmp/runtime_codex_closure.py
+          base64 -d .github/runtime_codex_closure.py.gz.b64 | gzip -d > .github/runtime_codex_closure.py
+          chmod +x .github/runtime_codex_closure.py
+          python3 .github/runtime_codex_closure.py
           python3 scripts/runtime-codex-qualification.py verify
           cargo fmt --all
           git diff --check
@@ -38,6 +38,7 @@ jobs:
           set -euo pipefail
           rm -f .github/workflows/runtime-codex-bootstrap.yml
           rm -f .github/runtime_codex_closure.py.gz.b64
+          rm -f .github/runtime_codex_closure.py
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add -A
