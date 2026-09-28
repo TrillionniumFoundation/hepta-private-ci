@@ -1,0 +1,81 @@
+name: Prompt registry source documentation finalization
+on:
+  push:
+    branches: [ops/prompt-registry-candidate-authoring-20260928]
+    paths: [scripts/prompt-registry-finish-source.py, .github/workflows/prompt-registry-finish-source.yml]
+permissions:
+  contents: write
+concurrency:
+  group: prompt-registry-source-documentation-authoring
+  cancel-in-progress: false
+jobs:
+  author:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    env:
+      SOURCE_SHA: be3046379a980f6a56555c2feb56f20aad422b91
+      TARGET_BRANCH: codex/prompt-registry-delivery-consistency-20260928
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: tooling
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Author implementation-aligned documentation
+        run: python3 tooling/scripts/prompt-registry-finish-source.py source
+      - name: Commit documentation and then observe the committed source
+        working-directory: source
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "+refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
+          test "$(git rev-parse refs/remotes/origin/$TARGET_BRANCH)" = "$SOURCE_SHA"
+          git diff --check
+          python3 - <<'PY'
+          import subprocess
+          allowed = {'docs/modules/prompt.registry/TECHNICAL.md','docs/modules/prompt.registry/PERFORMANCE.md','scripts/hepta-prompt-registry-map.py','scripts/hepta-prompt-registry-qualify.py','qualification/module-execution-dossiers/detail/prompt.registry.md'}
+          changed = set(subprocess.check_output(['git','diff','--name-only'],text=True).splitlines())
+          if changed - allowed:
+              raise SystemExit('unreviewed path: '+repr(sorted(changed-allowed)))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/modules/prompt.registry/TECHNICAL.md docs/modules/prompt.registry/PERFORMANCE.md scripts/hepta-prompt-registry-map.py scripts/hepta-prompt-registry-qualify.py qualification/module-execution-dossiers/detail/prompt.registry.md
+          git commit -m 'docs(prompt.registry): align V4 recovery, current-use and measurement contracts'
+          python3 scripts/hepta-prompt-registry-map.py --write
+          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
+          git commit -m 'docs(prompt.registry): bind operation map to exact committed caller and test blobs'
+          python3 scripts/hepta-prompt-registry-map.py --check
+          PYTHONPATH=scripts python3 - <<'PY'
+          import importlib.util, json, pathlib
+          spec=importlib.util.spec_from_file_location('maps','scripts/hepta-implementation-maps.py')
+          module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+          row=json.loads(pathlib.Path('docs/modules/prompt.registry/IMPLEMENTATION_MAP.json').read_text())
+          candidate=module.current_source_base()
+          module.validate_claim_types(row)
+          module.verify_source_identity(row,row['resolvedRoots'],candidate)
+          failures=[];module.validate_path_blob_manifest(row,'prompt.registry',failures)
+          if failures or row['sourceObjects'] != module.current_source_objects(row):
+              raise SystemExit('framework rejected map: '+repr(failures))
+          print('prompt.registry exact map accepted by shared identity framework')
+          PY
+          git diff --exit-code HEAD
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          mkdir -p "$RUNNER_TEMP/prompt-final-source"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/prompt-final-source/identity.txt"
+          git diff --binary "$SOURCE_SHA" HEAD > "$RUNNER_TEMP/prompt-final-source/source.patch"
+          git archive --format=tar.gz -o "$RUNNER_TEMP/prompt-final-source/source.tar.gz" HEAD
+      - name: Preserve committed source and verified map provenance
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-final-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/prompt-final-source/
+          if-no-files-found: warn
+          retention-days: 14
