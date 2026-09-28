@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       source_sha:
-        description: Exact qualified source commit to check out
+        description: Exact repository-qualified source commit to check out
         required: true
         type: string
       agentd_socket:
@@ -50,7 +50,7 @@ jobs:
   target-host:
     name: runtime.codex target-host real-provider
     runs-on: [self-hosted, linux, runtime-codex-target-host]
-    timeout-minutes: 120
+    timeout-minutes: 180
     env:
       SOURCE_SHA: ${{ inputs.source_sha }}
       AGENTD_SOCKET: ${{ inputs.agentd_socket }}
@@ -77,12 +77,16 @@ jobs:
         with:
           toolchain: 1.95.0
 
+      - name: Validate evidence tooling
+        run: python3 -m unittest -v scripts.tests.test_runtime_codex_target_host_evidence
+
       - name: Fail closed unless the runner is independently provisioned
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
           test -z "$(git status --porcelain --untracked-files=normal)"
+          [[ "${SOURCE_SHA}" =~ ^[0-9a-f]{40}$ ]]
           [[ "${AGENTD_SOCKET}" = /* ]]
           [[ "${AUTHORITY_CONFIG}" = /* ]]
           [[ "${JOURNAL_ROOT}" = /* ]]
@@ -96,8 +100,10 @@ jobs:
           test -f "${HEPTA_RUNTIME_CODEX_ISSUER_CUSTODY_EVIDENCE:?}"
           test -f "${HEPTA_RUNTIME_CODEX_ANTI_ROLLBACK_EVIDENCE:?}"
           test -x "${HEPTA_RUNTIME_CODEX_PROVIDER_AUDIT_EXPORTER:?}"
+          test -x "${HEPTA_RUNTIME_CODEX_FAULT_RUNNER:?}"
           test -x /usr/bin/time
-          mkdir -p "${RUNNER_TEMP}/runtime-codex-target-host/runs"
+          EVIDENCE="${RUNNER_TEMP}/runtime-codex-target-host"
+          mkdir -p "${EVIDENCE}/runs" "${EVIDENCE}/faults"
 
       - name: Build the named native caller
         working-directory: codex-rs
@@ -112,9 +118,9 @@ jobs:
           test -x "${BINARY}"
           printf '%s  %s\n' "$(sha256sum "${BINARY}" | cut -d' ' -f1)" "${BINARY}" \
             > "${EVIDENCE}/binary.sha256"
+          journal="${JOURNAL_ROOT}/runtime-codex-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.journal"
           for iteration in $(seq 1 "${ITERATIONS}"); do
             request_id="target-host:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}:${iteration}"
-            journal="${JOURNAL_ROOT}/runtime-codex-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.journal"
             log="${EVIDENCE}/runs/${iteration}.log"
             resource="${EVIDENCE}/runs/${iteration}.time"
             output="${EVIDENCE}/runs/${iteration}.json"
@@ -146,73 +152,53 @@ jobs:
           PY
           done
           "${HEPTA_RUNTIME_CODEX_PROVIDER_AUDIT_EXPORTER}" \
+            --source-sha "${SOURCE_SHA}" \
             --run-id "${GITHUB_RUN_ID}" \
             --attempt "${GITHUB_RUN_ATTEMPT}" \
             --expected-requests "${ITERATIONS}" \
             --output "${EVIDENCE}/provider-audit.json"
 
-      - name: Build target-host evidence manifest
+      - name: Execute real-provider failure matrix
         shell: bash
         run: |
           set -euo pipefail
           EVIDENCE="${RUNNER_TEMP}/runtime-codex-target-host"
-          cp "${HEPTA_RUNTIME_CODEX_HOST_IDENTITY_EVIDENCE}" "${EVIDENCE}/host-identity.evidence"
-          cp "${HEPTA_RUNTIME_CODEX_ISSUER_CUSTODY_EVIDENCE}" "${EVIDENCE}/issuer-custody.evidence"
-          cp "${HEPTA_RUNTIME_CODEX_ANTI_ROLLBACK_EVIDENCE}" "${EVIDENCE}/anti-rollback.evidence"
-          python3 - "${EVIDENCE}" <<'PY'
-          import hashlib, json, math, os, platform, re, statistics, sys
-          from datetime import datetime, timezone
-          from pathlib import Path
+          BINARY="${CARGO_TARGET_DIR:-$(pwd)/codex-rs/target}/debug/hepta-infer-worker"
+          for scenario in provider-ack-loss event-lag process-death agentd-restart; do
+            operation_id="target-host-fault:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}:${scenario}"
+            "${HEPTA_RUNTIME_CODEX_FAULT_RUNNER}" \
+              --scenario "${scenario}" \
+              --source-sha "${SOURCE_SHA}" \
+              --binary "${BINARY}" \
+              --agentd-socket "${AGENTD_SOCKET}" \
+              --agent-id "${AGENT_ID}" \
+              --generation "${AGENT_GENERATION}" \
+              --model "${MODEL}" \
+              --authority-config "${AUTHORITY_CONFIG}" \
+              --journal-root "${JOURNAL_ROOT}" \
+              --operation-id "${operation_id}" \
+              --output "${EVIDENCE}/faults/${scenario}.json"
+            test -s "${EVIDENCE}/faults/${scenario}.json"
+          done
 
-          root = Path(sys.argv[1])
-          def digest(path):
-              return hashlib.sha256(path.read_bytes()).hexdigest()
-          def percentile(values, q):
-              values = sorted(values)
-              p = (len(values) - 1) * q
-              lo, hi = math.floor(p), math.ceil(p)
-              return values[lo] if lo == hi else values[lo] + (values[hi] - values[lo]) * (p - lo)
-          elapsed, rss, runs = [], [], []
-          for output in sorted((root / 'runs').glob('*.json'), key=lambda p: int(p.stem)):
-              index = output.stem
-              fields = {}
-              for line in (root / 'runs' / f'{index}.time').read_text(errors='replace').splitlines():
-                  if ': ' in line:
-                      key, value = line.strip().split(': ', 1)
-                      fields[key] = value
-              seconds = float(fields['Elapsed (wall clock) time (h:mm:ss or m:ss)'].split(':')[-1])
-              maximum_rss = int(fields.get('Maximum resident set size (kbytes)', '0'))
-              elapsed.append(seconds); rss.append(maximum_rss)
-              runs.append({'index': int(index), 'outputSha256': digest(output), 'logSha256': digest(root/'runs'/f'{index}.log'), 'resourceSha256': digest(root/'runs'/f'{index}.time')})
-          audit = json.loads((root/'provider-audit.json').read_text())
-          expected = int(os.environ['ITERATIONS'])
-          if audit.get('physicalRequestCount') != expected or audit.get('duplicateRequestCount') not in (0, None):
-              raise SystemExit('provider audit did not prove exactly one physical request per canary')
-          manifest = {
-              'schema': 'hepta.runtime-codex-target-host-qualification.v1',
-              'schemaVersion': 1,
-              'module': 'runtime.codex',
-              'generatedAt': datetime.now(timezone.utc).isoformat(),
-              'sourceSha': os.environ['SOURCE_SHA'],
-              'sourceTree': os.popen('git rev-parse HEAD^{tree}').read().strip(),
-              'host': {'node': platform.node(), 'platform': platform.platform(), 'machine': platform.machine()},
-              'agentId': os.environ['AGENT_ID'],
-              'agentGeneration': int(os.environ['AGENT_GENERATION']),
-              'model': os.environ['MODEL'],
-              'iterations': expected,
-              'runs': runs,
-              'latencySeconds': {'p50': percentile(elapsed,.50), 'p95': percentile(elapsed,.95), 'p99': percentile(elapsed,.99), 'maximum': max(elapsed)},
-              'maximumResidentSetKiB': {'p50': percentile(rss,.50), 'p95': percentile(rss,.95), 'p99': percentile(rss,.99), 'maximum': max(rss)},
-              'providerAuditSha256': digest(root/'provider-audit.json'),
-              'hostIdentityEvidenceSha256': digest(root/'host-identity.evidence'),
-              'issuerCustodyEvidenceSha256': digest(root/'issuer-custody.evidence'),
-              'antiRollbackEvidenceSha256': digest(root/'anti-rollback.evidence'),
-              'claimBoundary': {'realProviderCanariesExecuted': True, 'independentAcceptance': False, 'activation': False, 'promotion': False, 'release': False}
-          }
-          encoded = (json.dumps(manifest, sort_keys=True, separators=(',', ':')) + '\n').encode()
-          (root/'manifest.json').write_bytes(encoded)
-          (root/'manifest.json.sha256').write_text(f"{hashlib.sha256(encoded).hexdigest()}  manifest.json\n")
-          PY
+      - name: Build canonical target-host v2 evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          EVIDENCE="${RUNNER_TEMP}/runtime-codex-target-host"
+          cp "${HEPTA_RUNTIME_CODEX_HOST_IDENTITY_EVIDENCE}" "${EVIDENCE}/host-identity.json"
+          cp "${HEPTA_RUNTIME_CODEX_ISSUER_CUSTODY_EVIDENCE}" "${EVIDENCE}/issuer-custody.json"
+          cp "${HEPTA_RUNTIME_CODEX_ANTI_ROLLBACK_EVIDENCE}" "${EVIDENCE}/anti-rollback.json"
+          python3 scripts/runtime_codex_target_host_evidence.py build \
+            --evidence-root "${EVIDENCE}" \
+            --source-sha "${SOURCE_SHA}" \
+            --source-tree "$(git rev-parse HEAD^{tree})" \
+            --agent-id "${AGENT_ID}" \
+            --generation "${AGENT_GENERATION}" \
+            --model "${MODEL}" \
+            --iterations "${ITERATIONS}" \
+            --output "${EVIDENCE}/manifest.json"
+          python3 scripts/runtime_codex_target_host_evidence.py verify "${EVIDENCE}/manifest.json"
           mkdir -p .hepta-evidence/runtime-codex/target-host
           cp -R "${EVIDENCE}/." .hepta-evidence/runtime-codex/target-host/
 
@@ -224,7 +210,7 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
-      - name: Attest target-host manifest provenance
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+      - name: Attest target-host v2 manifest provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
         with:
           subject-path: .hepta-evidence/runtime-codex/target-host/manifest.json
