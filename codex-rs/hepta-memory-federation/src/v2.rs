@@ -508,7 +508,10 @@ impl FederatedResultV2 {
             }
         } else {
             if self.coverage.partial_peers
-                != u32::from(matches!(self.completeness, FederatedCompletenessV2::Partial))
+                != u32::from(matches!(
+                    self.completeness,
+                    FederatedCompletenessV2::Partial
+                ))
             {
                 return Err(FederationV2Error::InvalidCompleteness);
             }
