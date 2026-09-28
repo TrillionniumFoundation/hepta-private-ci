@@ -39,30 +39,6 @@ on:
         description: Exact source commit to qualify
         required: true
         type: string
-  pull_request:
-    branches:
-      - main
-    paths:
-      - codex-rs/hepta-memory-federation/**
-      - codex-rs/hepta-memory-federation-wire/**
-      - codex-rs/hepta-memory/**
-      - codex-rs/hepta-agentd/**
-      - codex-rs/ext/hepta-memory/**
-      - codex-rs/app-server/**
-      - docs/modules/memory.federation/**
-      - qualification/memory-federation/**
-      - qualification/module-execution-dossiers/detail/memory.federation.md
-      - scripts/hepta-implementation-maps.py
-      - scripts/memory_federation_attestation.py
-      - scripts/memory_federation_execution_guard.py
-      - scripts/memory_federation_full_attestation.py
-      - scripts/memory_federation_execution_receipt.py
-      - scripts/test_memory_federation_execution_receipt.py
-      - scripts/run_memory_federation_qualification.sh
-      - scripts/verify_memory_federation_implementation.py
-      - scripts/verify_memory_federation_status.py
-      - .github/actions/hepta-synthetic-merge/**
-      - .github/workflows/memory-federation-v2-final-verify.yml
 
 permissions:
   contents: read
