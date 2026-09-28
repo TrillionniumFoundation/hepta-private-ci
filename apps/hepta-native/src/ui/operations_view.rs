@@ -1,7 +1,33 @@
+use super::task_supervisor::FileInputTarget;
 use super::*;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum OperationPresentation {
+    TerminalObserved,
+    PreparedNotDispatched,
+    AwaitingObservation,
+    ObservationClosedUnknown,
+}
+
+fn project_operation_presentation(
+    terminal_observed: bool,
+    may_have_executed: bool,
+    observation_closed: bool,
+) -> OperationPresentation {
+    if terminal_observed {
+        OperationPresentation::TerminalObserved
+    } else if observation_closed {
+        OperationPresentation::ObservationClosedUnknown
+    } else if may_have_executed {
+        OperationPresentation::AwaitingObservation
+    } else {
+        OperationPresentation::PreparedNotDispatched
+    }
+}
 
 impl HeptaNativeApp {
     pub(super) fn operations_view(&mut self, ui: &mut egui::Ui) {
+        let focus_target = self.handle_file_input_intent(ui);
         ui.heading(self.locale.text("Native operations", "原生操作"));
         if let Ok(runtime) = self.runtime.try_lock() {
             let capacity = runtime.journal_capacity();
@@ -66,7 +92,26 @@ impl HeptaNativeApp {
         }
 
         ui.label(self.locale.text("Signed grant path", "签名 grant 路径"));
-        ui.text_edit_singleline(&mut self.operation_grant_path);
+        let grant_response = ui
+            .horizontal(|ui| {
+                let response = ui.text_edit_singleline(&mut self.operation_grant_path);
+                if ui
+                    .button(
+                        self.locale
+                            .text("Use next dropped file", "使用下一个拖放文件"),
+                    )
+                    .clicked()
+                {
+                    self.arm_file_input_target(ui.ctx(), FileInputTarget::OperationGrant);
+                }
+                response
+            })
+            .inner;
+        if focus_target == Some(FileInputTarget::OperationGrant) {
+            grant_response.request_focus();
+        }
+        self.render_file_input_intent_status(ui);
+
         let busy = self.is_busy();
         ui.horizontal(|ui| {
             if ui
@@ -129,7 +174,9 @@ impl HeptaNativeApp {
             let runtime = Arc::clone(&self.runtime);
             self.start_task(UiTaskKind::Reconcile, move |admission| {
                 let mut runtime = lock_runtime(&runtime)?;
-                admission.begin().map_err(|message| ShellError::State(message.to_owned()))?;
+                admission
+                    .begin()
+                    .map_err(|message| ShellError::State(message.to_owned()))?;
                 runtime.compact_closed_history(256)?;
                 Ok(UiTaskOutput::Reconcile {
                     operations: runtime.operation_history(),
@@ -144,7 +191,10 @@ impl HeptaNativeApp {
         egui::ScrollArea::vertical().show(ui, |ui| {
             for receipt in self.operations.iter().rev() {
                 ui.group(|ui| {
-                    ui.label(format!("{} · {}", receipt.key.operation_id, receipt.action));
+                    ui.label(format!(
+                        "{} · {}",
+                        receipt.key.operation_id, receipt.action
+                    ));
                     ui.label(format!(
                         "session={} generation={}",
                         receipt.key.session_id, receipt.key.session_generation
@@ -154,18 +204,38 @@ impl HeptaNativeApp {
                         receipt.terminal_observed, receipt.terminal_status
                     ));
                     ui.label(format!("payload={}", receipt.payload_digest));
-                    if !receipt.terminal_observed && !receipt.may_have_executed {
-                        ui.label(
-                            self.locale
-                                .text("Prepared; not dispatched.", "已准备；尚未派发。"),
-                        );
+                    match project_operation_presentation(
+                        receipt.terminal_observed,
+                        receipt.may_have_executed,
+                        receipt.observation_closed,
+                    ) {
+                        OperationPresentation::TerminalObserved => {
+                            ui.label(self.locale.text(
+                                "Terminal platform observation recorded.",
+                                "已记录平台终态观察。",
+                            ));
+                        }
+                        OperationPresentation::PreparedNotDispatched => {
+                            ui.label(
+                                self.locale
+                                    .text("Prepared; not dispatched.", "已准备；尚未派发。"),
+                            );
+                        }
+                        OperationPresentation::AwaitingObservation => {
+                            ui.label(self.locale.text(
+                                "May have executed; awaiting a trustworthy terminal observation.",
+                                "可能已经执行；正在等待可信终态观察。",
+                            ));
+                        }
+                        OperationPresentation::ObservationClosedUnknown => {
+                            ui.label(self.locale.text(
+                                "Observation closed; outcome UNKNOWN; replay forbidden.",
+                                "已结束观察；执行结果仍未知；禁止重放。",
+                            ));
+                        }
                     }
-                    if receipt.observation_closed {
-                        ui.label(self.locale.text(
-                            "Observation closed; outcome UNKNOWN; replay forbidden.",
-                            "已结束观察；执行结果仍未知；禁止重放。",
-                        ));
-                    } else if receipt.can_close_observation
+                    if !receipt.observation_closed
+                        && receipt.can_close_observation
                         && ui
                             .add_enabled(
                                 !busy,
@@ -185,7 +255,9 @@ impl HeptaNativeApp {
             let runtime = Arc::clone(&self.runtime);
             self.start_task(UiTaskKind::Reconcile, move |admission| {
                 let mut runtime = lock_runtime(&runtime)?;
-                admission.begin().map_err(|message| ShellError::State(message.to_owned()))?;
+                admission
+                    .begin()
+                    .map_err(|message| ShellError::State(message.to_owned()))?;
                 runtime.close_operation_observation(&key)?;
                 // Retirement preserves the full closed record, not a fabricated outcome.
                 runtime.compact_closed_history(256)?;
@@ -261,7 +333,11 @@ impl HeptaNativeApp {
             let displayed_revision = self.view_revision.ok_or_else(|| {
                 ShellError::State("native runtime view is unavailable".to_owned())
             })?;
-            Ok((grant_path, displayed_revision, self.operation_payload()?))
+            Ok((
+                grant_path,
+                displayed_revision,
+                self.operation_payload()?,
+            ))
         })();
         match outcome {
             Ok((grant_path, displayed_revision, payload)) => {
@@ -280,7 +356,9 @@ impl HeptaNativeApp {
                         grant,
                     };
                     let mut runtime = lock_runtime(&runtime)?;
-                    admission.begin().map_err(|message| ShellError::State(message.to_owned()))?;
+                    admission
+                        .begin()
+                        .map_err(|message| ShellError::State(message.to_owned()))?;
                     let receipt = runtime.request_platform_capability(request)?;
                     let message = format!(
                         "{}: terminal={} status={:?}",
@@ -300,5 +378,30 @@ impl HeptaNativeApp {
             }
         }
     }
+}
 
+#[cfg(test)]
+mod projection_tests {
+    use super::OperationPresentation;
+    use super::project_operation_presentation;
+
+    #[test]
+    fn operation_projection_has_one_unambiguous_state() {
+        assert_eq!(
+            project_operation_presentation(true, true, true),
+            OperationPresentation::TerminalObserved
+        );
+        assert_eq!(
+            project_operation_presentation(false, false, false),
+            OperationPresentation::PreparedNotDispatched
+        );
+        assert_eq!(
+            project_operation_presentation(false, true, false),
+            OperationPresentation::AwaitingObservation
+        );
+        assert_eq!(
+            project_operation_presentation(false, true, true),
+            OperationPresentation::ObservationClosedUnknown
+        );
+    }
 }
