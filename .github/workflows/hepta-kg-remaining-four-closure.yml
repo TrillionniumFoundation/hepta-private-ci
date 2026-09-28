@@ -5,8 +5,8 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: kg-remaining-four-slim-${{ github.sha }}
-  cancel-in-progress: false
+  group: kg-remaining-four-slim-executor
+  cancel-in-progress: true
 jobs:
   close:
     if: "${{ startsWith(github.event.head_commit.message, 'kg remaining-four closure') }}"
@@ -24,6 +24,13 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 64
           persist-credentials: true
+      - name: Reject stale executor revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote_head="$(git ls-remote origin "refs/heads/$GITHUB_REF_NAME" | awk '{print $1}')"
+          test -n "$remote_head"
+          test "$(git rev-parse HEAD)" = "$remote_head"
       - name: Install pinned toolchain and native prerequisites
         shell: bash
         run: |
@@ -96,5 +103,5 @@ jobs:
           git add -A
           git commit -m 'fix(knowledge.graph): close bounded product-query contracts' -m 'Route all real consumers through typed budgets, distinguish exhaustion from corruption, bind charged work in receipts, and extend exact evidence mapping.' -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
           git fetch --deepen=64 origin "$BRANCH"
-          git rebase "origin/$BRANCH"
+          git rebase FETCH_HEAD
           git push origin "HEAD:refs/heads/$BRANCH"
