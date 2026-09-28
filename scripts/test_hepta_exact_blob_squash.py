@@ -66,13 +66,18 @@ class ExactManifestSquashTests(unittest.TestCase):
         }
 
     def row(self) -> dict:
-        paths = ["docs/modules/alpha/TECHNICAL.md", "src/alpha"]
+        paths = [
+            "docs/modules/alpha/TECHNICAL.md",
+            "src/alpha",
+            "src/alpha/lib.py",
+        ]
         return {
             "sourceBase": self.anchor,
             "module": "alpha",
             "technicalGuide": "docs/modules/alpha/TECHNICAL.md",
             "declaredRoots": ["src/alpha"],
             "resolvedRoots": ["src/alpha"],
+            "sourceRootPresent": True,
             "operations": [
                 {
                     "operation": "value",
