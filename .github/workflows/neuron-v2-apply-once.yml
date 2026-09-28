@@ -30,20 +30,25 @@ jobs:
           EXPECTED_TRIGGER: ${{ github.sha }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = c8c6e9d64de35b24210906ef72487011a1e0dafd
+          test "$(git rev-parse HEAD^)" = 1cd3c2906ce988a1ca51ee057eb310e46f0a6c17
           test "$(git ls-remote origin refs/heads/codex/neuron-runtime-durable-closure-v1 | cut -f1)" = "$EXPECTED_TRIGGER"
           python3 - <<'PY'
-          import base64, hashlib, lzma, pathlib, subprocess
+          import base64, hashlib, json, lzma, pathlib, subprocess
           b64 = ''.join(pathlib.Path(f'.github/neuron-v2-closure.patch.xz.b64.{i}').read_text() for i in (1, 2))
           compressed = base64.b64decode(b64, validate=True)
           assert hashlib.sha256(compressed).hexdigest() == 'bdf93871ad1cf492cd5004953eae4aeef9ba1ff11392774daf7a88d255ceff0d'
           patch = lzma.decompress(compressed)
-          subprocess.run(['git', 'apply', '--check'], input=patch, check=True)
-          subprocess.run(['git', 'apply', '--index'], input=patch, check=True)
+          assert len(patch) == 137660
+          assert hashlib.sha256(patch).hexdigest() == 'fb3b2c7c192b47cfc53be21e43a9518cc18d0739f3f8c0dac35f905e99a8cad7'
+          patch_path = pathlib.Path('/tmp/neuron-v2-authorized.patch')
+          patch_path.write_bytes(patch)
+          subprocess.run(['git', 'apply', '--recount', '--check', str(patch_path)], check=True)
+          subprocess.run(['git', 'apply', '--recount', '--index', str(patch_path)], check=True)
           names = subprocess.check_output(['git', 'diff', '--cached', '--name-only'], text=True).splitlines()
-          prefixes = ('codex-rs/hepta-neuron/', 'docs/modules/neuron.runtime/', 'scripts/neuron/')
-          exact = {'codex-rs/Cargo.lock', 'codex-rs/hepta-infer-worker-host/src/durable_neuron_feature.rs', 'codex-rs/hepta-infer-worker-host/src/durable_neuron_feature_tests.rs', 'qualification/module-execution-dossiers/detail/neuron.runtime.md', '.github/workflows/neuron-v2-qualification.yml'}
-          assert names and all(p.startswith(prefixes) or p in exact for p in names), names
+          blobs = {name: subprocess.check_output(['git', 'rev-parse', ':' + name], text=True).strip() for name in names}
+          digest = hashlib.sha256(json.dumps(blobs, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+          assert len(names) == 30 and digest == 'fb6dcb0b7348f9063bc4bd644024ac96ca48e5ce5bb8419915c3880050b4c6e1', (len(names), digest)
+          print('Verified 30 exact source blobs:', digest)
           PY
           git config user.name 'neuron-runtime-maintenance'
           git config user.email 'qualification@invalid.local'
