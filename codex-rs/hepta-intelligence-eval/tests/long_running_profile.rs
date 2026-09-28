@@ -44,6 +44,7 @@ fn persistent_attempt_journal_sustains_restart_batches() {
         let plan = digest("plan", index);
         let holdout = digest("holdout", index);
         let execution = digest("execution", index);
+        let artifacts = digest("qualification-artifacts", index);
         let request = digest("request", index);
         let publication = digest("publication", index);
 
@@ -70,6 +71,15 @@ fn persistent_attempt_journal_sustains_restart_batches() {
                 execution,
             ))
             .expect("comparison");
+        journal
+            .append(ProductEvaluationAttemptTransitionV1 {
+                attempt_id: attempt_id.clone(),
+                plan_digest: plan,
+                phase: ProductEvaluationAttemptPhaseV1::QualificationArtifactsPersisted,
+                holdout_record_digest: holdout,
+                terminal_digest: artifacts,
+            })
+            .expect("qualification artifacts");
         for phase in [
             ProductEvaluationAttemptPhaseV1::QualificationDecided,
             ProductEvaluationAttemptPhaseV1::PublicationPending,
@@ -96,7 +106,7 @@ fn persistent_attempt_journal_sustains_restart_batches() {
 
         if (index + 1) % 128 == 0 || index + 1 == attempts {
             let anchor = journal.anchor().expect("anchor");
-            assert_eq!(anchor.event_count, ((index + 1) * 6) as u64);
+            assert_eq!(anchor.event_count, ((index + 1) * 7) as u64);
             drop(journal);
             let file = OpenOptions::new()
                 .read(true)
@@ -107,7 +117,7 @@ fn persistent_attempt_journal_sustains_restart_batches() {
                 file, binding, anchor,
             )
             .expect("anchored restart recovery");
-            assert_eq!(journal.event_count(), (index + 1) * 6);
+            assert_eq!(journal.event_count(), (index + 1) * 7);
         }
     }
 
