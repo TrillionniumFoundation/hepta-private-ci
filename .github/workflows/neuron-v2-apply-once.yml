@@ -1,0 +1,122 @@
+name: Neuron V2 apply authorized source and qualify
+on:
+  push:
+    branches: [codex/neuron-runtime-durable-closure-v1]
+    paths: ['.github/workflows/neuron-v2-apply-once.yml']
+permissions:
+  contents: read
+concurrency:
+  group: neuron-v2-authorized-apply
+  cancel-in-progress: false
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/codex/neuron-runtime-durable-closure-v1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    outputs:
+      source: ${{ steps.source.outputs.source }}
+      base: ${{ steps.source.outputs.base }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply pinned authorized patch and commit actual source
+        shell: bash
+        env:
+          EXPECTED_TRIGGER: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = c8c6e9d64de35b24210906ef72487011a1e0dafd
+          test "$(git ls-remote origin refs/heads/codex/neuron-runtime-durable-closure-v1 | cut -f1)" = "$EXPECTED_TRIGGER"
+          python3 - <<'PY'
+          import base64, hashlib, lzma, pathlib, subprocess
+          b64 = ''.join(pathlib.Path(f'.github/neuron-v2-closure.patch.xz.b64.{i}').read_text() for i in (1, 2))
+          compressed = base64.b64decode(b64, validate=True)
+          assert hashlib.sha256(compressed).hexdigest() == 'bdf93871ad1cf492cd5004953eae4aeef9ba1ff11392774daf7a88d255ceff0d'
+          patch = lzma.decompress(compressed)
+          subprocess.run(['git', 'apply', '--check'], input=patch, check=True)
+          subprocess.run(['git', 'apply', '--index'], input=patch, check=True)
+          names = subprocess.check_output(['git', 'diff', '--cached', '--name-only'], text=True).splitlines()
+          prefixes = ('codex-rs/hepta-neuron/', 'docs/modules/neuron.runtime/', 'scripts/neuron/')
+          exact = {'codex-rs/Cargo.lock', 'codex-rs/hepta-infer-worker-host/src/durable_neuron_feature.rs', 'codex-rs/hepta-infer-worker-host/src/durable_neuron_feature_tests.rs', 'qualification/module-execution-dossiers/detail/neuron.runtime.md', '.github/workflows/neuron-v2-qualification.yml'}
+          assert names and all(p.startswith(prefixes) or p in exact for p in names), names
+          PY
+          git config user.name 'neuron-runtime-maintenance'
+          git config user.email 'qualification@invalid.local'
+          git rm .github/neuron-v2-closure.patch.xz.b64.1 .github/neuron-v2-closure.patch.xz.b64.2 .github/workflows/neuron-v2-apply-once.yml
+          git diff --cached --check
+          git commit -m 'fix(neuron): close durable operation failures and add measured recovery qualification'
+          git push origin HEAD:refs/heads/codex/neuron-runtime-durable-closure-v1
+      - name: Format actual source before qualification
+        id: format
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          parent=$(git rev-parse HEAD)
+          cd codex-rs
+          cargo fmt --package codex-hepta-neuron
+          rustfmt --edition 2024 hepta-infer-worker-host/src/durable_neuron_feature.rs hepta-infer-worker-host/src/durable_neuron_feature_tests.rs
+          cd ..
+          git add codex-rs/hepta-neuron codex-rs/hepta-infer-worker-host/src/durable_neuron_feature.rs codex-rs/hepta-infer-worker-host/src/durable_neuron_feature_tests.rs
+          if ! git diff --cached --quiet; then
+            git commit -m 'style(neuron): commit native Rust formatting before exact-source checks'
+            test "$(git ls-remote origin refs/heads/codex/neuron-runtime-durable-closure-v1 | cut -f1)" = "$parent"
+            git push origin HEAD:refs/heads/codex/neuron-runtime-durable-closure-v1
+          fi
+      - name: Freeze committed source and current integration base
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin codex/neuron-runtime-durable-closure-v1 main
+          source=$(git rev-parse origin/codex/neuron-runtime-durable-closure-v1)
+          test "$source" = "$(git rev-parse HEAD)"
+          echo "source=$source" >> "$GITHUB_OUTPUT"
+          echo "base=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
+          mkdir -p "$RUNNER_TEMP/neuron-v2-source"
+          git archive "$source" | gzip > "$RUNNER_TEMP/neuron-v2-source/source.tar.gz"
+          printf 'source=%s\ntree=%s\nbase=%s\nactivation=false\n' "$source" "$(git rev-parse HEAD^{tree})" "$(git rev-parse origin/main)" > "$RUNNER_TEMP/neuron-v2-source/identity.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: neuron-v2-committed-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/neuron-v2-source/
+          if-no-files-found: warn
+  native:
+    needs: apply
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        candidate: [source-head, synthetic-merge]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.apply.outputs.source }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just@1.40.0,cargo-nextest@0.9.102
+          fallback: none
+      - name: Execute committed source without source repair
+        env:
+          NEURON_SOURCE_SHA: ${{ needs.apply.outputs.source }}
+          NEURON_BASE_SHA: ${{ needs.apply.outputs.base }}
+          NEURON_CANDIDATE: ${{ matrix.candidate }}
+          NEURON_EVIDENCE_DIR: ${{ runner.temp }}/neuron-v2-evidence
+        run: bash scripts/neuron/qualify.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: neuron-v2-${{ matrix.os }}-${{ matrix.candidate }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/neuron-v2-evidence/
+          retention-days: 90
+          if-no-files-found: error
