@@ -1,176 +1,43 @@
-name: platform.types one-shot lock convergence
+name: Platform Types Lock Verification
 
 on:
+  workflow_dispatch:
   pull_request:
-    branches: [main]
     paths:
-      - ".github/workflows/platform-types-lock-refresh.yml"
-      - ".github/workflows/platform-types-convergence-repair.yml"
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'codex-rs/network-proxy/Cargo.toml'
+      - 'codex-rs/hepta-types/**'
+      - '.github/workflows/platform-types-lock-refresh.yml'
 
 permissions:
-  contents: write
-
-concurrency:
-  group: platform-types-one-shot-lock-convergence-${{ github.event.pull_request.number }}
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  converge:
-    name: Repair candidate, regenerate lock, and restore read-only gate
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: ubuntu-22.04
-    timeout-minutes: 90
-    env:
-      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
-      BRANCH: ${{ github.event.pull_request.head.ref }}
+  verify:
+    name: Verify platform.types lock with Rust 1.96
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@1.96.0
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 2
-          persist-credentials: true
+          components: rustfmt, clippy
 
-      - name: Apply guarded source repairs
-        shell: bash
+      - name: Inspect the locked graph
         run: |
-          set -euo pipefail
-          test "$(git branch --show-current)" = "$BRANCH"
-          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          test -f .github/workflows/platform-types-convergence-repair.yml
-          python3 - <<'PY'
-          from pathlib import Path
+          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps > /dev/null
+          cargo tree --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types > /dev/null
+          cargo tree --manifest-path codex-rs/Cargo.toml --locked -p codex-network-proxy > /dev/null
 
-          def replace_once(path: str, old: str, new: str) -> None:
-              file = Path(path)
-              text = file.read_text(encoding="utf-8")
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f"{path}: expected one replacement anchor, found {count}")
-              file.write_text(text.replace(old, new), encoding="utf-8")
-
-          replace_once(
-              "codex-rs/hepta-wire/src/platform_manifest_json.rs",
-              ".ok_or_else(|| PlatformManifestJsonError::InvalidTimestamp(field))?;",
-              ".ok_or(PlatformManifestJsonError::InvalidTimestamp(field))?;",
-          )
-          replace_once(
-              "scripts/platform_types_rustdoc_api.py",
-              'ID_LIST_KEYS = frozenset({"fields", "variants"})',
-              'ID_LIST_KEYS = frozenset({"fields", "variants", "tuple"})',
-          )
-
-          test_path = Path("scripts/test_platform_types_rustdoc_api.py")
-          test_text = test_path.read_text(encoding="utf-8")
-          marker = "\n\nif __name__ == \"__main__\":\n"
-          if test_text.count(marker) != 1:
-              raise SystemExit("rustdoc API test insertion anchor drifted")
-          regression = r'''
-
-    def test_tuple_variant_item_ids_normalize_to_owned_signatures(self):
-        def with_tuple_variant(value: dict, offset: int) -> dict:
-            result = copy.deepcopy(value)
-            root = offset
-            enum_id = offset + 6
-            variant_id = offset + 7
-            field_id = offset + 8
-            result["index"][str(root)]["inner"]["module"]["items"].append(enum_id)
-            result["index"][str(enum_id)] = {
-                "id": enum_id,
-                "crate_id": 0,
-                "name": "TupleError",
-                "visibility": "public",
-                "inner": {
-                    "enum": {
-                        "generics": {"params": [], "where_predicates": []},
-                        "has_stripped_variants": False,
-                        "variants": [variant_id],
-                        "impls": [],
-                    }
-                },
-            }
-            result["index"][str(variant_id)] = {
-                "id": variant_id,
-                "crate_id": 0,
-                "name": "Wrapped",
-                "visibility": "public",
-                "inner": {
-                    "variant": {
-                        "kind": {"tuple": [field_id]},
-                        "discriminant": None,
-                    }
-                },
-            }
-            result["index"][str(field_id)] = {
-                "id": field_id,
-                "crate_id": 0,
-                "name": None,
-                "visibility": "public",
-                "inner": {"struct_field": {"primitive": "u64"}},
-            }
-            result["paths"][str(enum_id)] = {
-                "crate_id": 0,
-                "path": ["codex_hepta_types", "TupleError"],
-                "kind": "enum",
-            }
-            return result
-
-        first = _Normalizer(with_tuple_variant(document(0), 0)).snapshot()
-        shifted = _Normalizer(with_tuple_variant(document(100), 100)).snapshot()
-        self.assertEqual(first["items"], shifted["items"])
-        self.assertEqual(first["snapshotSha256"], shifted["snapshotSha256"])
-'''
-          test_path.write_text(test_text.replace(marker, regression + marker), encoding="utf-8")
-
-          replace_once(
-              "codex-rs/network-proxy/Cargo.toml",
-              '''rama = "0.3.0-alpha.4"
-rama-http = { version = "0.3.0-alpha.4", features = ["compression"] }
-rama-net = { version = "0.3.0-alpha.4", features = ["http-full"] }''',
-              '''# Rama pre-release crates share private APIs and must remain on one exact
-# generation. Cargo's ordinary pre-release range can otherwise select the
-# incompatible 0.3.0 stable sibling crates.
-rama = "=0.3.0-alpha.4"
-rama-error = "=0.3.0-alpha.4"
-rama-http = { version = "=0.3.0-alpha.4", features = ["compression"] }
-rama-macros = "=0.3.0-alpha.4"
-rama-net = { version = "=0.3.0-alpha.4", features = ["http-full"] }
-rama-utils = "=0.3.0-alpha.4"''',
-          )
-          PY
-
-      - name: Regenerate authoritative Cargo lock
-        shell: bash
+      - name: Run focused native truth gates
         run: |
-          set -euo pipefail
-          cargo update --manifest-path codex-rs/Cargo.toml \
-            -p rama-error@0.3.0 --precise 0.3.0-alpha.4
-          cargo update --manifest-path codex-rs/Cargo.toml \
-            -p rama-macros@0.3.0 --precise 0.3.0-alpha.4
-          cargo update --manifest-path codex-rs/Cargo.toml \
-            -p rama-utils@0.3.0 --precise 0.3.0-alpha.4
-          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps >/dev/null
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types -p codex-network-proxy
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types --all-targets
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types -p codex-network-proxy --all-targets -- -D warnings
 
-      - name: Verify focused convergence
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -m unittest scripts/test_platform_types_rustdoc_api.py
-          cargo check --locked --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-wire --all-targets
-          cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-wire --all-targets -- -D warnings
-          git diff --check
-
-      - name: Restore permanent read-only workflow and push canonical repair
-        shell: bash
-        run: |
-          set -euo pipefail
-          git show "$EXPECTED_SHA^:.github/workflows/platform-types-lock-refresh.yml" \
-            > .github/workflows/platform-types-lock-refresh.yml
-          rm .github/workflows/platform-types-convergence-repair.yml
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          test -n "$(git status --porcelain)"
-          git commit -m "fix(platform.types): close qualification regressions"
-          git push origin "HEAD:$BRANCH"
+      - name: Prove the lockfile is immutable
+        run: git diff --exit-code -- codex-rs/Cargo.lock
