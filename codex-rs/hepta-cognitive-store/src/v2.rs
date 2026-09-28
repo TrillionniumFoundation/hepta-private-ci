@@ -822,10 +822,6 @@ impl AdmittedCognitiveStoreV2 {
                     has_more = true;
                     break 'records;
                 }
-                if records.len() >= maximum_records {
-                    has_more = true;
-                    break 'records;
-                }
                 records.push(record.clone());
             }
         }

@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import platform
 import re
+import signal
 import subprocess
 import sys
 import time
@@ -77,9 +78,20 @@ def run_check(name: str, argv: list[str], cwd: Path, output: Path, timeout: int 
     code = None
     with log.open("wb") as stream:
         try:
-            process = subprocess.run(argv, cwd=cwd, stdout=stream, stderr=subprocess.STDOUT,
-                                     timeout=timeout, check=False)
-            code = process.returncode
+            process = subprocess.Popen(argv, cwd=cwd, stdout=stream, stderr=subprocess.STDOUT,
+                                       start_new_session=os.name == "posix")
+            try:
+                code = process.wait(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                if os.name == "posix":
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                else:
+                    process.kill()
+                process.wait()
+                raise
             status = "passed" if code == 0 else "failed"
         except (OSError, subprocess.TimeoutExpired) as exc:
             error = f"{type(exc).__name__}: {exc}"
@@ -94,7 +106,7 @@ def run_check(name: str, argv: list[str], cwd: Path, output: Path, timeout: int 
             "log": log.name, "log_sha256": digest, "error": error}
 
 
-def command_plan(root: Path, group: str) -> list[tuple[str, list[str], Path]]:
+def command_plan(root: Path, group: str, output: Path) -> list[tuple[str, list[str], Path]]:
     rust = root / "codex-rs"
     packages = [arg for package in GROUPS[group] for arg in ("-p", package)]
     plan = [("rust-toolchain", ["rustc", "--version", "--verbose"], rust),
@@ -106,14 +118,23 @@ def command_plan(root: Path, group: str) -> list[tuple[str, list[str], Path]]:
             ("strict-clippy", ["cargo", "clippy", "--locked", "--all-targets", *packages,
                                "--", "-D", "warnings"], rust)]
     if group == "native":
+        target = output.parent / "cognitive-probe-target"
+        probe = target / "debug/examples/canonical_probe"
         plan += [("python-regressions", [sys.executable, "-m", "unittest", "discover", "-s",
                                         "qualification/cognitive-types-v1", "-p", "test_*.py"], root),
+                 ("traceability", [sys.executable, "qualification/cognitive-types-v1/render_traceability.py", "--check"], root),
                  ("registry-self-test", [sys.executable, "scripts/hepta-hnmf.py", "self-test"], root),
                  ("registry", [sys.executable, "scripts/hepta-hnmf.py", "verify"], root),
                  ("v1-vectors", [sys.executable, "qualification/cognitive-types-v1/verify_vectors.py"], root),
                  ("v2-vectors", [sys.executable, "qualification/cognitive-types-v2/verify_vectors.py"], root),
                  ("bound-python", [sys.executable, "qualification/cognitive-types-v1/verify_bound_vector.py"], root),
                  ("bound-node", ["node", "qualification/cognitive-types-v1/verify_bound_vector.mjs"], root),
+                 ("probe-build", ["cargo", "build", "--locked", "-p", "codex-hepta-cognitive-types",
+                                   "--example", "canonical_probe", "--target-dir", str(target)], rust),
+                 ("differential-quality", [sys.executable, "qualification/cognitive-types-v1/quality_checks.py",
+                                          "--probe", str(probe), "--output", str(output / "quality-receipt.json")], root),
+                 ("targeted-source-mutations", [sys.executable, "qualification/cognitive-types-v1/run_mutations.py",
+                                               "--probe", str(probe), "--output", str(output / "mutations")], root),
                  ("fuzz-build", ["cargo", "check", "--manifest-path",
                                   "hepta-cognitive-types/fuzz/Cargo.toml", "--all-targets"], rust)]
     return plan
@@ -155,7 +176,7 @@ def main() -> int:
                                 "platform": platform.platform()}, "checks": []}
     try:
         receipt.update(prepare_candidate(root, args.source, args.base, args.kind))
-        for name, argv, cwd in command_plan(root, args.group):
+        for name, argv, cwd in command_plan(root, args.group, output):
             receipt["checks"].append(run_check(name, argv, cwd, output))
         status = git(root, "status", "--porcelain", "--untracked-files=all")
         unchanged = (not status and git(root, "rev-parse", "HEAD") == receipt["candidate_commit"]

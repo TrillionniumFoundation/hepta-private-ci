@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 
 spec = importlib.util.spec_from_file_location("readonly_qualification", Path(__file__).with_name("run_qualification.py"))
@@ -23,6 +24,17 @@ class QualificationTests(unittest.TestCase):
             self.assertEqual(len(failed["log_sha256"]), 64)
             self.assertFalse(qualification.finish_receipt({"identity_valid": True, "checks": [failed]}, root))
             self.assertFalse(json.loads((root / "receipt.json").read_text())["qualification_passed"])
+
+    def test_timeout_cannot_leave_a_descendant_writing_after_the_check(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            marker = root / "late-write"
+            child = f"import time; from pathlib import Path; time.sleep(0.7); Path({str(marker)!r}).write_text('bad')"
+            parent = f"import subprocess,sys,time; subprocess.Popen([sys.executable,'-c',{child!r}]); time.sleep(5)"
+            result = qualification.run_check("timeout", [sys.executable, "-c", parent], root, root, timeout=0.2)
+            self.assertEqual(result["status"], "infrastructure_invalid")
+            time.sleep(0.8)
+            self.assertFalse(marker.exists())
 
     def test_empty_skipped_and_invalid_identity_cannot_qualify(self):
         with tempfile.TemporaryDirectory() as directory:
