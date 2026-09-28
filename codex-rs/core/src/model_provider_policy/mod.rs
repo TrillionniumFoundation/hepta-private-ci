@@ -9,12 +9,6 @@ mod memory;
 
 mod ephemeral_input;
 
-// Compiled in ordinary source before the caller-composition slice consumes the
-// digest-only final-use proof. Keeping it in the module tree prevents dormant
-// V3 source from being mistaken for a compiled product path.
-#[allow(dead_code)]
-mod context_input;
-
 // Registered before the HTTP/WS callsites so cancellation ownership can be
 // reviewed and tested independently.
 #[allow(dead_code)]
