@@ -137,9 +137,8 @@ fn perform_maintenance(
     })?;
     // A reboot within the same maintenance slot must not replay the previous
     // incarnation's capacity receipt. Hash the complete identity, not its order.
-    let identity_digest = Sha256::digest(
-        format!("{}:{}", identity.host_id, identity.host_generation).as_bytes(),
-    );
+    let identity_digest =
+        Sha256::digest(format!("{}:{}", identity.host_id, identity.host_generation).as_bytes());
     let capacity_operation_id = format!(
         "supervisor-capacity-{}-slot-{maintenance_slot}",
         hex_prefix(&identity_digest, 64)
@@ -268,11 +267,9 @@ impl LocalFleetIdentityV1 {
         boot_identity: &str,
         requested_generation: Option<u64>,
     ) -> Result<Self, SupervisorError> {
-        let mut owner = DurableFleetOwner::open_supervisor_state_root(
-            state_root,
-            Arc::new(SystemFleetClock),
-        )
-        .map_err(map_owner_error)?;
+        let mut owner =
+            DurableFleetOwner::open_supervisor_state_root(state_root, Arc::new(SystemFleetClock))
+                .map_err(map_owner_error)?;
         let incarnation = owner
             .resolve_host_incarnation(
                 &host_id,
