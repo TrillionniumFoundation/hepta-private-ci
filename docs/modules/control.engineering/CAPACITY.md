@@ -16,13 +16,15 @@ The source default in `capacity_policy.py` is:
 | active capacity reservations | 4,096 |
 | migration signal | 75% of the largest dimension |
 
-`evaluate_database_capacity` records every measured dimension, a policy digest and a measurement digest. `enforce_database_capacity` rejects new product admission after a hard ceiling is crossed. The check does not delete rows, checkpoint the WAL, resize the filesystem or grant a migration authority.
+`EngineeringControlProduct` always owns a `DatabaseCapacityPolicy`; the bounded default is active even when a caller does not provide an override. `evaluate_database_capacity` records every measured dimension, a policy digest and a measurement digest. `enforce_database_capacity` rejects new durable-resource admission after a hard ceiling is crossed. The named product applies that gate before admitting envelopes, leases, plans, worker registrations or renewals, claims, and integration queue generations.
+
+Heartbeat, result, independent completion, terminal reconciliation and startup recovery remain available so an overloaded owner can release reservations, finish indeterminate work and drain state. Capacity enforcement therefore does not turn a full database into an unrecoverable product deadlock. The check does not delete rows, checkpoint the WAL, resize the filesystem or grant migration authority.
 
 ## Operational policy
 
 A deployment must replace the defaults with values derived from its retained target-host profile. Alerting should begin before the migration signal and should cover database bytes, WAL bytes, audit growth, lock wait, backup duration, restore verification and claim latency.
 
-A hard limit requires admission to stop. Operators may still perform bounded diagnosis, verified backup and externally authorized recovery. Raising a limit is a reviewed configuration revision and must not be used to hide unbounded growth.
+A hard limit requires new admission to stop. Operators may still perform bounded diagnosis, verified backup, lifecycle drainage and externally authorized recovery. Raising a limit is a reviewed configuration revision and must not be used to hide unbounded growth.
 
 ## Migration trigger
 
@@ -38,4 +40,4 @@ The SQLite owner remains authoritative until an externally reviewed migration bi
 
 ## Recovery objectives
 
-RPO and RTO are deployment facts. The repository supplies online-backup, restore verification, stress and checkpoint mechanisms but deliberately records no universal RPO/RTO. The production evidence bundle must state the selected objectives and include a target-specific backup/restore and rollback rehearsal that meets them.
+RPO and RTO are deployment facts. The repository supplies online-backup, restore verification, stress and checkpoint mechanisms but deliberately records no universal RPO/RTO. The production evidence bundle must state the selected objectives and include target-specific, separately signed backup/restore and rollback rehearsals that meet them.

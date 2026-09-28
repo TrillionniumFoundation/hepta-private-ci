@@ -71,13 +71,11 @@ class EngineeringControlProduct:
         expected_repository: str,
         trust_store: SignatureTrustStore,
         clock_policy: ClockPolicy = ClockPolicy(),
-        capacity_policy: DatabaseCapacityPolicy | None = None,
+        capacity_policy: DatabaseCapacityPolicy = DatabaseCapacityPolicy(),
     ):
         if not isinstance(clock_policy, ClockPolicy):
             raise EngineeringError("invalid_clock_policy")
-        if capacity_policy is not None and not isinstance(
-            capacity_policy, DatabaseCapacityPolicy
-        ):
+        if not isinstance(capacity_policy, DatabaseCapacityPolicy):
             raise EngineeringError("invalid_capacity_policy")
         self.repository = Path(repository).resolve()
         self.expected_repository = expected_repository
@@ -100,12 +98,17 @@ class EngineeringControlProduct:
     def close(self) -> None:
         self.store.close()
 
+    def _enforce_admission_capacity(self) -> DatabaseCapacityDecision:
+        """Block new durable resources while leaving drain/recovery paths usable."""
+        return enforce_database_capacity(self.store, self.capacity_policy)
+
     def admit_repository_envelope(
         self,
         envelope: WorkEnvelope,
         *,
         now_ns: int | None = None,
     ) -> WorkEnvelope:
+        self._enforce_admission_capacity()
         return issue_repository_work_envelope(
             self.repository,
             self.store,
@@ -125,6 +128,7 @@ class EngineeringControlProduct:
         expires_unix_ns: int,
         now_ns: int | None = None,
     ):
+        self._enforce_admission_capacity()
         return self.store.acquire_path_lease(
             lease_id,
             envelope_id,
@@ -146,6 +150,7 @@ class EngineeringControlProduct:
         generation_id: str,
         now_ns: int | None = None,
     ) -> EngineeringPlan:
+        self._enforce_admission_capacity()
         return plan_engineering_work(
             self.store,
             envelope,
@@ -164,16 +169,12 @@ class EngineeringControlProduct:
         now_ns: int | None = None,
     ) -> WorkerRecoveryReport:
         report = recover_worker_lifecycle(self.store, now_ns=now_ns)
-        if self.capacity_policy is not None:
-            enforce_database_capacity(self.store, self.capacity_policy)
+        self._enforce_admission_capacity()
         self._startup_reconciled = True
         return report
 
     def database_capacity(self) -> DatabaseCapacityDecision:
-        return evaluate_database_capacity(
-            self.store,
-            self.capacity_policy or DatabaseCapacityPolicy(),
-        )
+        return evaluate_database_capacity(self.store, self.capacity_policy)
 
     def worker_capacity(self, worker_id: str):
         return worker_capacity_usage(self.store, worker_id)
@@ -184,6 +185,7 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> str:
+        self._enforce_admission_capacity()
         return register_worker(
             self.store,
             receipt,
@@ -197,6 +199,7 @@ class EngineeringControlProduct:
         *,
         now_ns: int,
     ) -> WorkerRegistrationRenewalDecision:
+        self._enforce_admission_capacity()
         return renew_worker_registration(
             self.store,
             receipt,
@@ -217,8 +220,7 @@ class EngineeringControlProduct:
     ) -> WorkerClaim:
         if not self._startup_reconciled:
             raise EngineeringError("product_startup_reconciliation_required")
-        if self.capacity_policy is not None:
-            enforce_database_capacity(self.store, self.capacity_policy)
+        self._enforce_admission_capacity()
         return claim_assignment(
             self.store,
             generation_id,
@@ -289,6 +291,7 @@ class EngineeringControlProduct:
         base_tree: str,
         now_ns: int | None = None,
     ) -> IntegrationQueueGeneration:
+        self._enforce_admission_capacity()
         return publish_integration_queue(
             self.store,
             plan,
