@@ -17,6 +17,7 @@ use super::PlannerTerminalReceiptV1;
 use super::execute_planner_request_v1;
 use super::reconcile_planner_request_v1;
 use crate::GrantRequestV1;
+use crate::PlannerDispatchClaimSinkV1;
 use crate::PlannerStoreConfigV1;
 use crate::PlannerStoreRecordKindV1;
 use crate::PlannerStoreV1;
@@ -88,7 +89,7 @@ impl PlannerAuthorityConsumerV1 for Authority {
 }
 
 struct Executor {
-    executed: bool,
+    executions: usize,
     disposition: PlannerEffectDispositionV1,
 }
 
@@ -98,7 +99,7 @@ impl PlannerEffectExecutorV1 for Executor {
         _request: &GrantRequestV1,
         _grant: &PlannerExecutionGrantV1,
     ) -> Result<PlannerEffectObservationV1, PlannerExecutionError> {
-        self.executed = true;
+        self.executions += 1;
         Ok(PlannerEffectObservationV1 {
             disposition: self.disposition,
             outcome_digest: digest("outcome"),
@@ -120,6 +121,7 @@ impl PlannerEffectExecutorV1 for Executor {
 
 #[derive(Default)]
 struct CollectSink {
+    claimed_operations: Vec<Digest32>,
     receipts: Vec<PlannerTerminalReceiptV1>,
 }
 
@@ -133,8 +135,25 @@ impl PlannerTerminalReceiptSinkV1 for CollectSink {
     }
 }
 
+impl PlannerDispatchClaimSinkV1 for CollectSink {
+    fn claim_dispatch(
+        &mut self,
+        operation_identity_digest: Digest32,
+        _request_digest: Digest32,
+        _grant_digest: Digest32,
+        _final_payload_digest: Digest32,
+        _claimed_at_micros: u64,
+    ) -> Result<bool, PlannerExecutionError> {
+        if self.claimed_operations.contains(&operation_identity_digest) {
+            return Ok(false);
+        }
+        self.claimed_operations.push(operation_identity_digest);
+        Ok(true)
+    }
+}
+
 #[test]
-fn current_authority_executes_and_durably_records_terminal_receipt() {
+fn current_authority_claims_before_execution_and_records_terminal_receipt() {
     let directory = must(tempdir());
     let mut store = must(PlannerStoreV1::open(
         directory.path(),
@@ -146,7 +165,7 @@ fn current_authority_executes_and_durably_records_terminal_receipt() {
         revalidation: PlannerAuthorityRevalidationV1::Current,
     };
     let mut executor = Executor {
-        executed: false,
+        executions: 0,
         disposition: PlannerEffectDispositionV1::Succeeded,
     };
     let receipt = must(execute_planner_request_v1(
@@ -157,24 +176,59 @@ fn current_authority_executes_and_durably_records_terminal_receipt() {
         &mut store,
     ));
 
-    assert!(executor.executed);
+    assert_eq!(executor.executions, 1);
     assert!(!receipt.authority.grants_any());
-    assert_eq!(store.records().len(), 1);
+    assert_eq!(store.records().len(), 2);
+    assert_eq!(store.records()[0].kind, PlannerStoreRecordKindV1::Selection);
     assert_eq!(
-        store.records()[0].kind,
+        store.records()[1].kind,
         PlannerStoreRecordKindV1::TerminalReceipt
     );
 }
 
 #[test]
-fn revocation_after_authorization_stops_before_executor() {
+fn repeated_request_never_replays_after_a_durable_claim() {
+    let request = request();
+    let mut authority = Authority {
+        payload_digest: request.final_payload_digest,
+        revalidation: PlannerAuthorityRevalidationV1::Current,
+    };
+    let mut executor = Executor {
+        executions: 0,
+        disposition: PlannerEffectDispositionV1::Succeeded,
+    };
+    let mut sink = CollectSink::default();
+    must(execute_planner_request_v1(
+        &request,
+        1_000,
+        &mut authority,
+        &mut executor,
+        &mut sink,
+    ));
+    let error = must_err(execute_planner_request_v1(
+        &request,
+        1_000,
+        &mut authority,
+        &mut executor,
+        &mut sink,
+    ));
+
+    assert!(matches!(
+        error,
+        PlannerExecutionError::Store(message) if message.contains("reconcile without replay")
+    ));
+    assert_eq!(executor.executions, 1);
+}
+
+#[test]
+fn revocation_after_claim_stops_before_executor() {
     let request = request();
     let mut authority = Authority {
         payload_digest: request.final_payload_digest,
         revalidation: PlannerAuthorityRevalidationV1::Revoked,
     };
     let mut executor = Executor {
-        executed: false,
+        executions: 0,
         disposition: PlannerEffectDispositionV1::Succeeded,
     };
     let mut sink = CollectSink::default();
@@ -187,19 +241,20 @@ fn revocation_after_authorization_stops_before_executor() {
     ));
 
     assert_eq!(error, PlannerExecutionError::AuthorityRevoked);
-    assert!(!executor.executed);
+    assert_eq!(executor.executions, 0);
+    assert_eq!(sink.claimed_operations.len(), 1);
     assert!(sink.receipts.is_empty());
 }
 
 #[test]
-fn final_payload_drift_is_rejected_before_revalidation_and_dispatch() {
+fn final_payload_drift_is_rejected_before_claim_and_dispatch() {
     let request = request();
     let mut authority = Authority {
         payload_digest: digest("changed-payload"),
         revalidation: PlannerAuthorityRevalidationV1::Current,
     };
     let mut executor = Executor {
-        executed: false,
+        executions: 0,
         disposition: PlannerEffectDispositionV1::Succeeded,
     };
     let mut sink = CollectSink::default();
@@ -212,7 +267,8 @@ fn final_payload_drift_is_rejected_before_revalidation_and_dispatch() {
     ));
 
     assert_eq!(error, PlannerExecutionError::GrantMismatch);
-    assert!(!executor.executed);
+    assert_eq!(executor.executions, 0);
+    assert!(sink.claimed_operations.is_empty());
     assert!(sink.receipts.is_empty());
 }
 
@@ -220,7 +276,7 @@ fn final_payload_drift_is_rejected_before_revalidation_and_dispatch() {
 fn indeterminate_effect_is_reconciled_without_replaying_dispatch() {
     let request = request();
     let mut executor = Executor {
-        executed: false,
+        executions: 0,
         disposition: PlannerEffectDispositionV1::Indeterminate,
     };
     let mut sink = CollectSink::default();
@@ -235,6 +291,6 @@ fn indeterminate_effect_is_reconciled_without_replaying_dispatch() {
         receipt.disposition,
         PlannerEffectDispositionV1::Indeterminate
     );
-    assert!(!executor.executed);
+    assert_eq!(executor.executions, 0);
     assert_eq!(sink.receipts, vec![receipt]);
 }

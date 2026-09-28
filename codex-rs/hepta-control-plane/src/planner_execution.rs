@@ -1,145 +1,35 @@
-//! Authority-separated execution and reconciliation for planner requests.
+//! Durable dispatch admission around the authority-separated execution core.
 //!
-//! The planner remains advisory. A named authority adapter must issue and then
-//! revalidate a final-payload-bound grant immediately before dispatch. A named
-//! executor reports an observed terminal or indeterminate outcome, and a
-//! durable sink records the receipt. These traits are composition boundaries;
-//! their existence does not activate a production authority or executor.
+//! `planner_execution_core.rs` retains grant validation, final authority
+//! revalidation, effect observation and terminal receipt construction. This
+//! wrapper persists an exact operation/request/grant claim before that core can
+//! call the executor. A retry that sees an existing claim fails closed into
+//! reconciliation instead of replaying the side effect.
 
-use std::error::Error as StdError;
-use std::fmt;
+#[path = "planner_execution_core.rs"]
+mod core;
 
-use codex_hepta_types::AuthorityPosture;
+pub use core::PlannerAuthorizationDecisionV1;
+pub use core::PlannerAuthorityConsumerV1;
+pub use core::PlannerAuthorityRevalidationV1;
+pub use core::PlannerEffectDispositionV1;
+pub use core::PlannerEffectExecutorV1;
+pub use core::PlannerEffectObservationV1;
+pub use core::PlannerExecutionError;
+pub use core::PlannerExecutionGrantV1;
+pub use core::PlannerTerminalReceiptSinkV1;
+pub use core::PlannerTerminalReceiptV1;
+pub use core::reconcile_planner_request_v1;
+
 use codex_hepta_types::Digest32;
 
 use crate::GrantRequestV1;
-use crate::PlannerStoreError;
+use crate::PlannerDispatchClaimSinkV1;
 use crate::PlannerStoreRecordKindV1;
 use crate::PlannerStoreV1;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct PlannerExecutionGrantV1 {
-    pub grant_digest: Digest32,
-    pub final_payload_digest: Digest32,
-    pub revocation_frontier_digest: Digest32,
-    pub expires_at_micros: u64,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum PlannerAuthorizationDecisionV1 {
-    Granted(PlannerExecutionGrantV1),
-    Denied { reason_digest: Digest32 },
-    Indeterminate { reason_digest: Digest32 },
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum PlannerAuthorityRevalidationV1 {
-    Current,
-    Revoked,
-    Indeterminate,
-}
-
-pub trait PlannerAuthorityConsumerV1 {
-    fn authorize(
-        &mut self,
-        request: &GrantRequestV1,
-        now_micros: u64,
-    ) -> Result<PlannerAuthorizationDecisionV1, PlannerExecutionError>;
-
-    fn revalidate(
-        &mut self,
-        request: &GrantRequestV1,
-        grant: &PlannerExecutionGrantV1,
-        now_micros: u64,
-    ) -> Result<PlannerAuthorityRevalidationV1, PlannerExecutionError>;
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum PlannerEffectDispositionV1 {
-    Succeeded,
-    Failed,
-    Indeterminate,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct PlannerEffectObservationV1 {
-    pub disposition: PlannerEffectDispositionV1,
-    pub outcome_digest: Digest32,
-    pub observed_at_micros: u64,
-}
-
-pub trait PlannerEffectExecutorV1 {
-    fn execute(
-        &mut self,
-        request: &GrantRequestV1,
-        grant: &PlannerExecutionGrantV1,
-    ) -> Result<PlannerEffectObservationV1, PlannerExecutionError>;
-
-    fn reconcile(
-        &mut self,
-        operation_identity_digest: Digest32,
-    ) -> Result<PlannerEffectObservationV1, PlannerExecutionError>;
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct PlannerTerminalReceiptV1 {
-    pub operation_identity_digest: Digest32,
-    pub request_digest: Digest32,
-    pub grant_digest: Digest32,
-    pub final_payload_digest: Digest32,
-    pub disposition: PlannerEffectDispositionV1,
-    pub outcome_digest: Digest32,
-    pub observed_at_micros: u64,
-    pub receipt_digest: Digest32,
-    pub authority: AuthorityPosture,
-}
-
-/// A first dispatch and a later reconciliation have different durable record
-/// identities. This permits an indeterminate first observation to converge to
-/// a later terminal observation without reusing or overwriting the dispatch
-/// receipt identity.
-pub trait PlannerTerminalReceiptSinkV1 {
-    fn append_terminal_receipt(
-        &mut self,
-        receipt: &PlannerTerminalReceiptV1,
-    ) -> Result<(), PlannerExecutionError>;
-
-    fn append_reconciliation_receipt(
-        &mut self,
-        receipt: &PlannerTerminalReceiptV1,
-    ) -> Result<(), PlannerExecutionError> {
-        self.append_terminal_receipt(receipt)
-    }
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum PlannerExecutionError {
-    EmptyDigest(&'static str),
-    ExpiredRequest,
-    AuthorizationDenied(Digest32),
-    AuthorizationIndeterminate(Digest32),
-    GrantMismatch,
-    GrantExpired,
-    AuthorityRevoked,
-    AuthorityIndeterminate,
-    InvalidObservation,
-    Store(String),
-}
-
-impl fmt::Display for PlannerExecutionError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
-    }
-}
-
-impl StdError for PlannerExecutionError {}
-
-impl From<PlannerStoreError> for PlannerExecutionError {
-    fn from(error: PlannerStoreError) -> Self {
-        Self::Store(error.to_string())
-    }
-}
-
+/// Authorize once, persist the exact dispatch claim, then revalidate through
+/// the canonical core immediately before executor invocation.
 pub fn execute_planner_request_v1<A, E, S>(
     request: &GrantRequestV1,
     now_micros: u64,
@@ -150,7 +40,7 @@ pub fn execute_planner_request_v1<A, E, S>(
 where
     A: PlannerAuthorityConsumerV1 + ?Sized,
     E: PlannerEffectExecutorV1 + ?Sized,
-    S: PlannerTerminalReceiptSinkV1 + ?Sized,
+    S: PlannerDispatchClaimSinkV1 + ?Sized,
 {
     validate_request(request, now_micros)?;
     let grant = match authority.authorize(request, now_micros)? {
@@ -161,92 +51,125 @@ where
         }
         PlannerAuthorizationDecisionV1::Indeterminate { reason_digest } => {
             require_digest(reason_digest, "authorization indeterminate")?;
-            return Err(PlannerExecutionError::AuthorizationIndeterminate(
-                reason_digest,
-            ));
+            return Err(PlannerExecutionError::AuthorizationIndeterminate(reason_digest));
         }
     };
     validate_grant(request, &grant, now_micros)?;
-    match authority.revalidate(request, &grant, now_micros)? {
-        PlannerAuthorityRevalidationV1::Current => {}
-        PlannerAuthorityRevalidationV1::Revoked => {
-            return Err(PlannerExecutionError::AuthorityRevoked);
-        }
-        PlannerAuthorityRevalidationV1::Indeterminate => {
-            return Err(PlannerExecutionError::AuthorityIndeterminate);
-        }
-    }
-    let observation = executor.execute(request, &grant)?;
-    let receipt = terminal_receipt(request, &grant, observation)?;
-    sink.append_terminal_receipt(&receipt)?;
-    Ok(receipt)
-}
 
-/// Reconcile a previously indeterminate operation without replaying dispatch.
-/// The sink receives a reconciliation record, not a second initial terminal
-/// record with the same operation identity.
-pub fn reconcile_planner_request_v1<E, S>(
-    request: &GrantRequestV1,
-    grant_digest: Digest32,
-    executor: &mut E,
-    sink: &mut S,
-) -> Result<PlannerTerminalReceiptV1, PlannerExecutionError>
-where
-    E: PlannerEffectExecutorV1 + ?Sized,
-    S: PlannerTerminalReceiptSinkV1 + ?Sized,
-{
-    require_digest(grant_digest, "reconciliation grant")?;
     let operation_identity_digest = operation_identity_digest(request);
-    let observation = executor.reconcile(operation_identity_digest)?;
-    let grant = PlannerExecutionGrantV1 {
-        grant_digest,
-        final_payload_digest: request.final_payload_digest,
-        revocation_frontier_digest: request.revocation_frontier_digest,
-        expires_at_micros: request.expires_at_micros,
+    let request_digest = request_digest(request);
+    if !sink.claim_dispatch(
+        operation_identity_digest,
+        request_digest,
+        grant.grant_digest,
+        request.final_payload_digest,
+        now_micros,
+    )? {
+        return Err(PlannerExecutionError::Store(
+            "dispatch already claimed; reconcile without replay".to_string(),
+        ));
+    }
+
+    let mut preauthorized = PreauthorizedAuthority {
+        inner: authority,
+        grant,
     };
-    let receipt = terminal_receipt(request, &grant, observation)?;
-    sink.append_reconciliation_receipt(&receipt)?;
-    Ok(receipt)
+    core::execute_planner_request_v1(
+        request,
+        now_micros,
+        &mut preauthorized,
+        executor,
+        sink,
+    )
 }
 
-impl PlannerTerminalReceiptSinkV1 for PlannerStoreV1 {
-    fn append_terminal_receipt(
+struct PreauthorizedAuthority<'a, A: ?Sized> {
+    inner: &'a mut A,
+    grant: PlannerExecutionGrantV1,
+}
+
+impl<A> PlannerAuthorityConsumerV1 for PreauthorizedAuthority<'_, A>
+where
+    A: PlannerAuthorityConsumerV1 + ?Sized,
+{
+    fn authorize(
         &mut self,
-        receipt: &PlannerTerminalReceiptV1,
-    ) -> Result<(), PlannerExecutionError> {
-        append_store_receipt(
-            self,
-            PlannerStoreRecordKindV1::TerminalReceipt,
-            receipt.operation_identity_digest,
-            receipt,
-        )
+        _request: &GrantRequestV1,
+        _now_micros: u64,
+    ) -> Result<PlannerAuthorizationDecisionV1, PlannerExecutionError> {
+        Ok(PlannerAuthorizationDecisionV1::Granted(self.grant.clone()))
     }
 
-    fn append_reconciliation_receipt(
+    fn revalidate(
         &mut self,
-        receipt: &PlannerTerminalReceiptV1,
-    ) -> Result<(), PlannerExecutionError> {
-        let mut bytes = b"hepta.control.reconciliation-identity.v1".to_vec();
-        bytes.extend_from_slice(receipt.operation_identity_digest.as_array());
-        bytes.extend_from_slice(receipt.receipt_digest.as_array());
-        append_store_receipt(
-            self,
-            PlannerStoreRecordKindV1::Reconciliation,
-            Digest32::of_bytes(&bytes),
-            receipt,
-        )
+        request: &GrantRequestV1,
+        grant: &PlannerExecutionGrantV1,
+        now_micros: u64,
+    ) -> Result<PlannerAuthorityRevalidationV1, PlannerExecutionError> {
+        self.inner.revalidate(request, grant, now_micros)
     }
 }
 
-fn append_store_receipt(
-    store: &mut PlannerStoreV1,
-    kind: PlannerStoreRecordKindV1,
-    identity_digest: Digest32,
-    receipt: &PlannerTerminalReceiptV1,
-) -> Result<(), PlannerExecutionError> {
-    let envelope = encode_terminal_receipt(receipt);
-    store.append(kind, identity_digest, receipt.receipt_digest, &envelope)?;
-    Ok(())
+impl PlannerDispatchClaimSinkV1 for PlannerStoreV1 {
+    fn claim_dispatch(
+        &mut self,
+        operation_identity_digest: Digest32,
+        request_digest: Digest32,
+        grant_digest: Digest32,
+        final_payload_digest: Digest32,
+        claimed_at_micros: u64,
+    ) -> Result<bool, PlannerExecutionError> {
+        require_digest(operation_identity_digest, "dispatch operation")?;
+        require_digest(request_digest, "dispatch request")?;
+        require_digest(grant_digest, "dispatch grant")?;
+        require_digest(final_payload_digest, "dispatch payload")?;
+
+        if self.records().iter().any(|record| {
+            record.kind == PlannerStoreRecordKindV1::TerminalReceipt
+                && record.operation_identity_digest == operation_identity_digest
+        }) {
+            return Ok(false);
+        }
+
+        let claim_identity_digest = dispatch_claim_identity(operation_identity_digest);
+        let claim_digest = dispatch_claim_digest(
+            operation_identity_digest,
+            request_digest,
+            grant_digest,
+            final_payload_digest,
+            claimed_at_micros,
+        );
+        if let Some(existing) = self
+            .records()
+            .iter()
+            .find(|record| record.operation_identity_digest == claim_identity_digest)
+        {
+            if existing.kind == PlannerStoreRecordKindV1::Selection
+                && existing.payload_digest == claim_digest
+            {
+                return Ok(false);
+            }
+            return Err(PlannerExecutionError::Store(
+                "dispatch claim identity conflict".to_string(),
+            ));
+        }
+
+        let envelope = encode_dispatch_claim(
+            operation_identity_digest,
+            request_digest,
+            grant_digest,
+            final_payload_digest,
+            claimed_at_micros,
+            claim_digest,
+        );
+        self.append(
+            PlannerStoreRecordKindV1::Selection,
+            claim_identity_digest,
+            claim_digest,
+            &envelope,
+        )?;
+        Ok(true)
+    }
 }
 
 fn validate_request(
@@ -283,36 +206,6 @@ fn validate_grant(
     Ok(())
 }
 
-fn terminal_receipt(
-    request: &GrantRequestV1,
-    grant: &PlannerExecutionGrantV1,
-    observation: PlannerEffectObservationV1,
-) -> Result<PlannerTerminalReceiptV1, PlannerExecutionError> {
-    require_digest(observation.outcome_digest, "effect outcome")?;
-    let operation_identity_digest = operation_identity_digest(request);
-    let request_digest = request_digest(request);
-    let receipt_digest = digest_terminal_receipt(
-        operation_identity_digest,
-        request_digest,
-        grant.grant_digest,
-        request.final_payload_digest,
-        observation.disposition,
-        observation.outcome_digest,
-        observation.observed_at_micros,
-    );
-    Ok(PlannerTerminalReceiptV1 {
-        operation_identity_digest,
-        request_digest,
-        grant_digest: grant.grant_digest,
-        final_payload_digest: request.final_payload_digest,
-        disposition: observation.disposition,
-        outcome_digest: observation.outcome_digest,
-        observed_at_micros: observation.observed_at_micros,
-        receipt_digest,
-        authority: AuthorityPosture::DENY_ALL,
-    })
-}
-
 fn operation_identity_digest(request: &GrantRequestV1) -> Digest32 {
     let mut bytes = b"hepta.control.execution-operation.v1".to_vec();
     push_id(&mut bytes, request.operation_id.as_str());
@@ -335,44 +228,43 @@ fn request_digest(request: &GrantRequestV1) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn digest_terminal_receipt(
+fn dispatch_claim_identity(operation_identity_digest: Digest32) -> Digest32 {
+    let mut bytes = b"hepta.control.execution-dispatch-claim-identity.v1".to_vec();
+    bytes.extend_from_slice(operation_identity_digest.as_array());
+    Digest32::of_bytes(&bytes)
+}
+
+fn dispatch_claim_digest(
     operation_identity_digest: Digest32,
     request_digest: Digest32,
     grant_digest: Digest32,
     final_payload_digest: Digest32,
-    disposition: PlannerEffectDispositionV1,
-    outcome_digest: Digest32,
-    observed_at_micros: u64,
+    claimed_at_micros: u64,
 ) -> Digest32 {
-    let mut bytes = b"hepta.control.execution-terminal.v1".to_vec();
+    let mut bytes = b"hepta.control.execution-dispatch-claim.v1".to_vec();
     bytes.extend_from_slice(operation_identity_digest.as_array());
     bytes.extend_from_slice(request_digest.as_array());
     bytes.extend_from_slice(grant_digest.as_array());
     bytes.extend_from_slice(final_payload_digest.as_array());
-    bytes.push(match disposition {
-        PlannerEffectDispositionV1::Succeeded => 0,
-        PlannerEffectDispositionV1::Failed => 1,
-        PlannerEffectDispositionV1::Indeterminate => 2,
-    });
-    bytes.extend_from_slice(outcome_digest.as_array());
-    bytes.extend_from_slice(&observed_at_micros.to_be_bytes());
+    bytes.extend_from_slice(&claimed_at_micros.to_be_bytes());
     Digest32::of_bytes(&bytes)
 }
 
-fn encode_terminal_receipt(receipt: &PlannerTerminalReceiptV1) -> Vec<u8> {
-    let mut bytes = b"hepta.control.execution-terminal-envelope.v1".to_vec();
-    bytes.extend_from_slice(receipt.operation_identity_digest.as_array());
-    bytes.extend_from_slice(receipt.request_digest.as_array());
-    bytes.extend_from_slice(receipt.grant_digest.as_array());
-    bytes.extend_from_slice(receipt.final_payload_digest.as_array());
-    bytes.push(match receipt.disposition {
-        PlannerEffectDispositionV1::Succeeded => 0,
-        PlannerEffectDispositionV1::Failed => 1,
-        PlannerEffectDispositionV1::Indeterminate => 2,
-    });
-    bytes.extend_from_slice(receipt.outcome_digest.as_array());
-    bytes.extend_from_slice(&receipt.observed_at_micros.to_be_bytes());
-    bytes.extend_from_slice(receipt.receipt_digest.as_array());
+fn encode_dispatch_claim(
+    operation_identity_digest: Digest32,
+    request_digest: Digest32,
+    grant_digest: Digest32,
+    final_payload_digest: Digest32,
+    claimed_at_micros: u64,
+    claim_digest: Digest32,
+) -> Vec<u8> {
+    let mut bytes = b"hepta.control.execution-dispatch-claim-envelope.v1".to_vec();
+    bytes.extend_from_slice(operation_identity_digest.as_array());
+    bytes.extend_from_slice(request_digest.as_array());
+    bytes.extend_from_slice(grant_digest.as_array());
+    bytes.extend_from_slice(final_payload_digest.as_array());
+    bytes.extend_from_slice(&claimed_at_micros.to_be_bytes());
+    bytes.extend_from_slice(claim_digest.as_array());
     bytes
 }
 
