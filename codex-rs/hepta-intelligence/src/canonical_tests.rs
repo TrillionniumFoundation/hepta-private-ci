@@ -159,10 +159,9 @@ impl CanonicalFreshnessOracleV1 for Oracle {
     ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
         let calls = self.calls.entry(owner_id.clone()).or_default();
         *calls += 1;
-        let mut current =
-            self.states.get(owner_id).cloned().ok_or_else(|| {
-                CanonicalIntelligenceError::FreshnessUnavailable(owner_id.clone())
-            })?;
+        let mut current = self.states.get(owner_id).cloned().ok_or_else(|| {
+            CanonicalIntelligenceError::FreshnessUnavailable(owner_id.clone())
+        })?;
         if self.drift_after_first.as_ref() == Some(owner_id) && *calls > 1 {
             current.generation = generation(current.generation.get() + 1);
         }
@@ -331,15 +330,29 @@ fn canonical_recall_is_bound_before_the_product_intelligence_run() {
 }
 
 #[test]
+fn pending_recall_consumer_cannot_omit_compatibility_digest() {
+    let error = bind_canonical_recall_for_intelligence_v1(
+        id("run:pending-recall"),
+        canonical_recall_packet(),
+        None,
+    )
+    .expect_err("pending consumer must not self-promote to native");
+    assert!(matches!(error, CanonicalIntelligenceError::CanonicalRecall(_)));
+}
+
+#[test]
 fn canonical_recall_cannot_be_replayed_for_another_run() {
     let request = request();
-    let recall =
-        bind_canonical_recall_for_intelligence_v1(id("run:other"), canonical_recall_packet(), None)
-            .expect("canonical recall binding");
+    let recall = bind_canonical_recall_for_intelligence_v1(
+        id("run:other"),
+        canonical_recall_packet(),
+        Some(digest("legacy-recall-packet")),
+    )
+    .expect("canonical recall binding");
     let mut oracle = Oracle::new(&request.snapshot);
     let mut ports = Ports::new();
     assert_eq!(
-        prepare_intelligence_run_with_canonical_recall(request, recall, &mut ports, &mut oracle,)
+        prepare_intelligence_run_with_canonical_recall(request, recall, &mut ports, &mut oracle)
             .expect_err("cross-run recall must reject"),
         CanonicalIntelligenceError::CanonicalRecallRunMismatch
     );
@@ -431,9 +444,12 @@ fn canonical_recall_reaches_context_and_changes_product_handoff() {
         ContractDigestV1::from_digest(digest("other event revision")).expect("digest");
     let execute = |packet: RecallPacketV1| {
         let request = request();
-        let recall =
-            bind_canonical_recall_for_intelligence_v1(request.run_id.clone(), packet.clone(), None)
-                .expect("bind");
+        let recall = bind_canonical_recall_for_intelligence_v1(
+            request.run_id.clone(),
+            packet.clone(),
+            Some(digest("legacy-recall-packet")),
+        )
+        .expect("bind");
         let mut oracle = Oracle::new(&request.snapshot);
         let mut ports = Ports::new();
         let result = prepare_intelligence_run_with_canonical_recall(
@@ -478,7 +494,7 @@ fn legacy_owner_cannot_silently_ignore_canonical_recall() {
     let recall = bind_canonical_recall_for_intelligence_v1(
         request.run_id.clone(),
         canonical_recall_packet(),
-        None,
+        Some(digest("legacy-recall-packet")),
     )
     .expect("bind");
     let mut oracle = Oracle::new(&request.snapshot);

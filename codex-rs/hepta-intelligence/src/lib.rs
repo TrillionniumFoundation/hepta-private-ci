@@ -7,6 +7,7 @@
 #![forbid(unsafe_code)]
 
 mod canonical;
+mod canonical_recall_policy;
 
 pub use canonical::AdvisoryDecisionReceiptV1;
 pub use canonical::AdvisoryDecisionV1;
@@ -41,6 +42,9 @@ pub use canonical::decide_boundary;
 pub use canonical::prepare_intelligence_run;
 pub use canonical::prepare_intelligence_run_with_canonical_recall;
 pub use canonical::validate_current_snapshot;
+pub use canonical_recall_policy::bind_recall_policy_outcome_v1;
+pub use canonical_recall_policy::canonical_recall_absence_policy_digest_v1;
+pub use canonical_recall_policy::canonical_recall_binding_policy_digest_v1;
 
 mod evaluated_shadow;
 mod ndu_stochastic_admission;

@@ -71,6 +71,9 @@ impl AgentdIntelligenceProductRunnerV1 {
 
     /// Run the seven-owner preparation against one frozen Agentd composition
     /// without retaining the run-coordinator mutex across owner execution.
+    /// `canonical_recall == None` is not an unbound legacy fallback: the normal
+    /// product runner binds an explicit no-recall policy digest into the final
+    /// trace and host envelope.
     pub async fn prepare_for_composition(
         &self,
         composition: &crate::RuntimeComposition,
@@ -109,6 +112,21 @@ impl AgentdIntelligenceProductRunnerV1 {
         mut inputs: AgentdIntelligenceOwnerInputsV1,
         recall: Option<CanonicalRecallIntelligenceInputV1>,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        let recall_policy_digest = match recall.as_ref() {
+            Some(recall) => codex_hepta_intelligence::canonical_recall_binding_policy_digest_v1(
+                recall,
+            )
+            .map_err(AgentdIntelligenceProductError::Canonical)?,
+            None => {
+                let reason_digest = Digest32::of_parts(&[
+                    b"hepta.agentd.canonical-recall-explicit-absence.v1\0",
+                    request.run_id.as_str().as_bytes(),
+                    request.snapshot.digest().as_array(),
+                ]);
+                codex_hepta_intelligence::canonical_recall_absence_policy_digest_v1(reason_digest)
+                    .map_err(AgentdIntelligenceProductError::Canonical)?
+            }
+        };
         let candidate_ids = request
             .legal_candidates
             .candidates
@@ -188,6 +206,11 @@ impl AgentdIntelligenceProductRunnerV1 {
             })?
             .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?
             .map_err(AgentdIntelligenceProductError::Canonical)?;
+        let outcome = codex_hepta_intelligence::bind_recall_policy_outcome_v1(
+            outcome,
+            recall_policy_digest,
+        )
+        .map_err(AgentdIntelligenceProductError::Canonical)?;
 
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {

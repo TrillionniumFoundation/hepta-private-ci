@@ -54,8 +54,12 @@ fn canonical_context() -> (
         budget_micros: 10_000_000,
         stage: CanonicalStageV1::ContextCompiled,
     };
-    let recall = bind_canonical_recall_for_intelligence_v1(fixture.request.run_id, packet, None)
-        .expect("recall");
+    let recall = bind_canonical_recall_for_intelligence_v1(
+        fixture.request.run_id,
+        packet,
+        Some(digest("legacy recall packet")),
+    )
+    .expect("recall");
     (AgentdOwnerPortsV1::new(fixture.inputs, None), input, recall)
 }
 
