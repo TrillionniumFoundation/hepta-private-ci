@@ -1,0 +1,74 @@
+name: AuthBus compiler-fix source authoring only
+on:
+  push:
+    branches: [work/authbus-source-authoring-20260928]
+permissions:
+  contents: write
+jobs:
+  author:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: a3cca36738a2af77b453559a37c7f853ee4669f3
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@1.95.0
+        with:
+          components: rustfmt
+      - name: Apply reviewed compiler fixes to formal source (no tests)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          root = Path('codex-rs/hepta-authbus/src')
+          changed = set()
+          def replace(file, old, new, count=1):
+              p = root / file
+              text = p.read_text()
+              assert text.count(old) == count, (file, old, text.count(old))
+              p.write_text(text.replace(old, new))
+              changed.add(p)
+          replace('ownership_tests.rs', '''        let sql = format!(
+                      "CREATE TRIGGER inject_state_failure BEFORE UPDATE ON authbus_issuer_registry
+                      WHEN NEW.state = '{target}' BEGIN SELECT RAISE(ABORT, 'injected state failure'); END"
+                  );
+                  sqlx::query(&sql)'''.replace('                      ', '            ').replace('                  ', '        '), '''        let sql = if target == "revoked" {
+                      "CREATE TRIGGER inject_state_failure BEFORE UPDATE ON authbus_issuer_registry
+                      WHEN NEW.state = 'revoked' BEGIN SELECT RAISE(ABORT, 'injected state failure'); END"
+                  } else {
+                      "CREATE TRIGGER inject_state_failure BEFORE UPDATE ON authbus_issuer_registry
+                      WHEN NEW.state = 'retired' BEGIN SELECT RAISE(ABORT, 'injected state failure'); END"
+                  };
+                  sqlx::query(sql)'''.replace('                      ', '            ').replace('                  ', '        '))
+          replace('operations.rs', 'use sqlx::Acquire;\n', '')
+          replace('recovery.rs', '    pub(crate) async fn recovery_required(', '    #[cfg(test)]\n    pub(crate) async fn recovery_required(')
+          for file in ['authority_store.rs', 'quota_store.rs', 'trust_store.rs']:
+              replace(file, '.is_some_and(|database| database.is_unique_violation())', '.is_some_and(sqlx::error::DatabaseError::is_unique_violation)')
+          replace('diagnostics.rs', '.unwrap_or_else(|poison| poison.into_inner())', '.unwrap_or_else(std::sync::PoisonError::into_inner)')
+          attribute = '    #[expect(clippy::await_holding_invalid_type, reason = "this dedicated owner gate must span local commit and external checkpoint publication; releasing it at await would admit an inconsistent frontier")]\n'
+          replace('host.rs', '    pub async fn sync_checkpoint(', attribute + '    pub async fn sync_checkpoint(')
+          replace('host.rs', '    pub(crate) async fn mutate<T>(', attribute + '    pub(crate) async fn mutate<T>(')
+          replace('authority_store.rs', '        let pool = SqlitePoolOptions::new()', '        #[expect(clippy::disallowed_methods, reason = "AuthBus owns its independent private authority database: this sole production constructor enforces FULL sync, schema attestation and pool-lifetime fencing instead of the Codex runtime-state schema")]\n        let pool = SqlitePoolOptions::new()')
+          replace('authority_schema.rs', '    let reference = SqlitePoolOptions::new()', '    #[expect(clippy::disallowed_methods, reason = "this transient in-memory migration reference contains no authority or Codex runtime state and is closed before returning")]\n    let reference = SqlitePoolOptions::new()')
+          for p in sorted(changed):
+              subprocess.run(['rustfmt','+1.95.0','--edition','2024','--config','skip_children=true',str(p)], check=True)
+          PY
+          git diff --check
+          git diff --stat
+          test -z "$(git diff --name-only -- .github/workflows codex-rs/Cargo.lock)"
+      - name: Publish source without claiming validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=a3cca36738a2af77b453559a37c7f853ee4669f3
+          branch=work/authbus-ownership-transactions-20260928
+          test "$(git ls-remote origin "refs/heads/$branch" | cut -f1)" = "$expected"
+          git config user.name 'hepta-authbus-source-author'
+          git config user.email 'hepta-authbus-source-author@users.noreply.github.com'
+          git add codex-rs/hepta-authbus/src
+          git commit -m 'fix(authbus): use static fault SQL and audit narrow owner-boundary lint exceptions'
+          git push origin "HEAD:refs/heads/$branch"
+          git rev-parse HEAD
