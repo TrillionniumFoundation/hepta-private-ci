@@ -42,6 +42,12 @@ run_step() {
   if [ "$code" -ne 0 ]; then failed=1; fi
 }
 run_step measurement-parser python3 -m unittest discover -s scripts/neuron -p 'test_*.py'
+run_step decision-cell-metrics python3 -m unittest discover \
+  -s codex-rs/hepta-neuron/qualification -p 'test_decision_cell_metrics.py' -v
+run_step decision-cell-snapshot python3 -m unittest discover \
+  -s codex-rs/hepta-neuron/qualification -p 'test_snapshot_identity.py' -v
+run_step decision-cell-loader python3 -m unittest discover \
+  -s codex-rs/hepta-neuron/qualification -p 'test_laya_loader_view.py' -v
 cd codex-rs
 rustc -Vv | tee "$NEURON_EVIDENCE_DIR/toolchain.txt"
 pkgs=(-p codex-hepta-neuron -p codex-hepta-infer-worker-host -p codex-hepta-agentd -p codex-hepta-intelligence)
