@@ -105,7 +105,8 @@ jobs:
           record lane-truth 0 python3 scripts/verify_lane_a_foundation.py verify
           record status-tests 0 python3 scripts/platform_wire_status.py self-test
           record status-drift 0 python3 scripts/platform_wire_status.py check-doc
-          record wire 97 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --all-targets
+          record wire 102 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --all-targets
+          record consumer-contracts 5 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --test managed_consumer_contracts
           record wire-doc 0 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --doc
           record ports 12 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-context-compiler -p codex-hepta-codex-adapter --lib wire::tests
           record cross-runtime 2 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-shadow-qualification --test cross_runtime_wire_session
@@ -138,7 +139,7 @@ jobs:
           parents = (git('show', '-s', '--format=%P', 'HEAD') or '').split()
           root = Path(os.environ['RUNNER_TEMP']) / ('wire-'+os.environ['WIRE_LANE']+'-'+os.environ['GITHUB_RUN_ID'])
           root.mkdir(parents=True, exist_ok=True)
-          expected = ['path-tests','path-drift','lane-truth','status-tests','status-drift','wire','wire-doc','ports','cross-runtime','gateway','strict-clippy','clean-diff']
+          expected = ['path-tests','path-drift','lane-truth','status-tests','status-drift','wire','consumer-contracts','wire-doc','ports','cross-runtime','gateway','strict-clippy','clean-diff']
           errors = []
           if os.environ.get('EXECUTION_OUTCOME') != 'success':
               errors.append('execution step did not pass')
