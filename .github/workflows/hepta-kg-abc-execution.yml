@@ -23,7 +23,7 @@ env:
 jobs:
   bind:
     runs-on: macos-14
-    timeout-minutes: 30
+    timeout-minutes: 20
     permissions:
       contents: write
     outputs:
@@ -34,7 +34,7 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: true
-      - name: Prepare committed source and validate its complete observation
+      - name: Bind immutable source observation or accept map-only successor
         id: bind
         shell: bash
         env:
@@ -46,6 +46,9 @@ jobs:
           test "$GITHUB_REPOSITORY" = 'TrillionniumFoundation/hepta-private-ci'
           test "$GITHUB_SERVER_URL" = 'https://github.com'
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+
           ORIGIN_URL="https://github.com/$GITHUB_REPOSITORY.git"
           authoritative_git() {
             env GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1 \
@@ -58,56 +61,51 @@ jobs:
               | awk '{print $1}'
           }
           test "$(remote_head)" = "$SOURCE_SHA"
-          git diff --exit-code
-          git diff --cached --exit-code
+
+          candidate="$(git rev-parse HEAD)"
+          tree="$(git rev-parse HEAD^{tree})"
+          if python3 scripts/hepta_knowledge_graph_map_verify.py \
+              --expected-sha "$candidate" --expected-tree "$tree"; then
+            echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           git config user.name 'Hepta KG candidate preparation'
           git config user.email 'hepta-kg-ci@users.noreply.github.com'
-          channel="$(sed -n 's/^channel *= *"\([^"]*\)".*/\1/p' codex-rs/rust-toolchain.toml)"
-          test -n "$channel"
-          rustup toolchain install "$channel" --profile minimal --component rustfmt
-          (
-            cd codex-rs
-            cargo fmt --package codex-hepta-kg --package codex-hepta-memory \
-              --package codex-hepta-agentd --package codex-hepta-prompt-registry \
-              --package codex-hepta-prompt-optimizer
-          )
-          python3 scripts/hepta_kg_documentation_sync.py --check
-          git diff --check
-          git add -u -- codex-rs/hepta-kg codex-rs/hepta-memory \
-            codex-rs/hepta-agentd codex-rs/hepta-prompt-registry \
-            codex-rs/hepta-prompt-optimizer
-          if ! git diff --cached --quiet; then
-            git commit \
-              -m 'fix(knowledge.graph): format scoped delivery-closure candidate' \
-              -m 'Preparation only; native execution remains required.' \
-              -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
-          fi
           python3 - <<'PY'
           import importlib.util
           import json
           import sys
           from pathlib import Path
+
           sys.path.insert(0, str(Path('scripts').resolve()))
           spec = importlib.util.spec_from_file_location(
               'kg_maps', 'scripts/hepta-implementation-maps.py'
           )
+          if spec is None or spec.loader is None:
+              raise SystemExit('cannot load implementation-map tooling')
           maps = importlib.util.module_from_spec(spec)
           spec.loader.exec_module(maps)
+
           path = Path('docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json')
           row = json.loads(path.read_text(), object_pairs_hook=maps.unique_keys)
-          assert row['module'] == 'knowledge.graph'
-          assert row['declaredRoots'] == ['codex-rs/hepta-kg']
+          if row.get('module') != 'knowledge.graph':
+              raise SystemExit('unexpected implementation map')
+          if row.get('declaredRoots') != ['codex-rs/hepta-kg']:
+              raise SystemExit('unexpected knowledge.graph root')
           anchor = maps.current_source_base()
           row['sourceBase'] = anchor
           row['observedAtHead'] = anchor
           row['observedSourcePaths'] = sorted(
-              set(row['observedSourcePaths'])
-              | set(row['declaredRoots'])
-              | set(row['resolvedRoots'])
-              | set(row['compositionRoots'])
+              set(row.get('observedSourcePaths', []))
+              | set(row.get('declaredRoots', []))
+              | set(row.get('resolvedRoots', []))
+              | set(row.get('compositionRoots', []))
               | {
                   row['technicalGuide'],
+                  '.github/workflows/hepta-kg-abc-execution.yml',
                   'codex-rs/hepta-kg/tests/operation_measurement.rs',
+                  'codex-rs/hepta-kg/tests/query_acceptance.rs',
                   'codex-rs/hepta-kg/tests/query_resource_contract.rs',
                   'codex-rs/hepta-memory/tests/kg_delivery_consistency.rs',
                   'docs/modules/knowledge.graph/ACCEPTANCE_EXTENSION_20260928.md',
@@ -115,6 +113,7 @@ jobs:
                   'scripts/hepta_kg_contract_evidence.py',
                   'scripts/hepta_kg_current_candidate_runner.py',
                   'scripts/hepta_kg_execution_audit.py',
+                  'scripts/hepta_knowledge_graph_map_verify.py',
                   'scripts/test_hepta_kg_contract_evidence.py',
                   'scripts/test_hepta_kg_execution_audit.py',
               }
@@ -124,44 +123,37 @@ jobs:
               set(row['observedSourcePaths'])
               | {item['path'] for item in row['sourceObjects']}
           )
-          assert row['productionImplementation'] is False
+          if row.get('productionImplementation') is not False:
+              raise SystemExit('map must not advance production implementation')
+          boundary = row.get('claimBoundary', {})
           for key in (
               'productionImplementation', 'productExecutionProved',
               'independentAcceptance', 'activation', 'release',
           ):
-              assert row['claimBoundary'][key] is False
-          print('KG source observation:', json.dumps(anchor, sort_keys=True))
+              if boundary.get(key) is not False:
+                  raise SystemExit(f'map must not advance {key}')
           path.write_text(json.dumps(row, indent=2) + '\n')
           PY
+
           git diff --check
           git add docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
-          if ! git diff --cached --quiet; then
-            test "$(git diff --cached --name-only)" = \
-              'docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json'
-            git commit \
-              -m 'docs(knowledge.graph): bind delivery-closure source observation' \
-              -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
-          fi
+          test "$(git diff --cached --name-only)" = \
+            'docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json'
+          git commit \
+            -m 'docs(knowledge.graph): bind delivery-closure source observation' \
+            -m 'Map-only successor; no execution or release claim is advanced.' \
+            -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
           candidate="$(git rev-parse HEAD)"
           tree="$(git rev-parse HEAD^{tree})"
           git diff --exit-code
           git diff --cached --exit-code
-          for attempt in 1 2 3; do
-            observed="$(remote_head)"
-            if [ "$observed" = "$candidate" ]; then
-              break
-            fi
-            test "$observed" = "$SOURCE_SHA"
-            if authoritative_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=60 \
-              push origin "HEAD:refs/heads/$OWN_BRANCH"; then
-              break
-            fi
-            echo "Candidate push attempt $attempt failed; rechecking the authoritative ref."
-          done
-          test "$(remote_head)" = "$candidate"
-          echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
           python3 scripts/hepta_knowledge_graph_map_verify.py \
             --expected-sha "$candidate" --expected-tree "$tree"
+
+          test "$(remote_head)" = "$SOURCE_SHA"
+          authoritative_git push origin "HEAD:refs/heads/$OWN_BRANCH"
+          test "$(remote_head)" = "$candidate"
+          echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
 
   execution:
     needs: bind
