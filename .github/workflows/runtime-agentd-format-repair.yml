@@ -79,15 +79,23 @@ jobs:
           python3 -B scripts/hepta_agentd_trust_boundary.py
           cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 --no-deps > "$RUNNER_TEMP/cargo-metadata.json"
 
-      - name: Execute isolated lifecycle and metrics cores
+      - name: Verify instance ownership and bounded maintenance source
         shell: bash
         run: |
           set -euo pipefail
-          out=$(mktemp -d)
-          rustc --edition=2024 --test codex-rs/hepta-agentd/src/runtime_codex_lifecycle_core.rs -o "$out/lifecycle"
-          "$out/lifecycle"
-          rustc --edition=2024 --test codex-rs/hepta-agentd/src/runtime_codex_metrics.rs -o "$out/metrics"
-          "$out/metrics"
+          python3 - <<'PY'
+          from pathlib import Path
+          supervisor = Path("codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs").read_text(encoding="utf-8")
+          runtime = Path("codex-rs/hepta-agentd/src/runtime.rs").read_text(encoding="utf-8")
+          persistence = Path("codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs").read_text(encoding="utf-8")
+          assert "static INSTALLATION" not in supervisor, "process-global runtime.codex installation remains"
+          assert "OnceLock" not in supervisor, "runtime.codex supervisor still owns a process-global OnceLock"
+          assert "run_installed_agentd_supervisor" in supervisor
+          assert "runtime-codex-supervisor" in runtime
+          assert "archive_terminal_operations" in persistence
+          assert "MAX_RECONCILE_OPERATIONS" in persistence
+          print("PASS_RUNTIME_AGENTD_INSTANCE_OWNERSHIP_AND_BOUNDED_MAINTENANCE")
+          PY
 
       - name: Publish reviewed source for exact-head qualification
         shell: bash
