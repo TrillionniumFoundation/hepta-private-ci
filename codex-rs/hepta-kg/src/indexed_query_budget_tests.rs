@@ -11,8 +11,7 @@ fn digest(value: &str) -> Digest32 {
 fn support(label: &str, from: i64, to: i64) -> KnowledgeSupportV2 {
     KnowledgeSupportV2 {
         source_id: id(label),
-        source_revision: Revision::new(1)
-            .unwrap_or_else(|error| panic!("valid revision: {error}")),
+        source_revision: Revision::new(1).unwrap_or_else(|error| panic!("valid revision: {error}")),
         source_fact_digest: digest(label),
         validity_digest: digest(&format!("{label}:{from}:{to}")),
         valid_from_unix_seconds: Some(from),
@@ -78,7 +77,16 @@ fn bounded_index_matches_scan_oracle_across_time_and_truncation() {
     let generation = fixture("scope:one");
     let verified = VerifiedKnowledgeGenerationV2::new(generation.clone())
         .unwrap_or_else(|error| panic!("valid view: {error}"));
-    for at in [None, Some(-1), Some(0), Some(9), Some(10), Some(19), Some(20), Some(30)] {
+    for at in [
+        None,
+        Some(-1),
+        Some(0),
+        Some(9),
+        Some(10),
+        Some(19),
+        Some(20),
+        Some(30),
+    ] {
         for maximum in [1, 2, 4] {
             for seeds in [vec![id("node:a")], vec![id("node:c"), id("node:a")]] {
                 let mut query = request(&generation, at);
@@ -163,7 +171,9 @@ fn verified_view_rechecks_time_and_rejects_other_source_cut() {
         .unwrap_or_else(|error| panic!("valid view: {error}"));
     assert_eq!(
         verified.query_relations(request(&other, Some(9))),
-        Err(KnowledgeGenerationErrorV2::DigestMismatch("query_generation"))
+        Err(KnowledgeGenerationErrorV2::DigestMismatch(
+            "query_generation"
+        ))
     );
     let early = verified
         .query_relations(request(&generation, Some(9)))
@@ -229,7 +239,9 @@ fn tampered_generation_and_revoked_edge_cannot_be_reused_as_current() {
         }
     }
     let next = build_complete_generation(
-        generation.generation.next()
+        generation
+            .generation
+            .next()
             .unwrap_or_else(|error| panic!("next generation: {error}")),
         KnowledgeProjectionInputV2 {
             source_snapshot_digest: digest("scope:one:revoked"),
@@ -243,13 +255,16 @@ fn tampered_generation_and_revoked_edge_cannot_be_reused_as_current() {
     .unwrap_or_else(|error| panic!("revoked generation: {error}"));
     let view = VerifiedKnowledgeGenerationV2::new(next.clone())
         .unwrap_or_else(|error| panic!("revoked view: {error}"));
-    assert!(view
-        .query_relations(request(&next, Some(5)))
-        .unwrap_or_else(|error| panic!("revoked query: {error}"))
-        .edges
-        .is_empty());
+    assert!(
+        view.query_relations(request(&next, Some(5)))
+            .unwrap_or_else(|error| panic!("revoked query: {error}"))
+            .edges
+            .is_empty()
+    );
     assert_eq!(
         view.query_relations(request(&generation, Some(5))),
-        Err(KnowledgeGenerationErrorV2::DigestMismatch("query_generation"))
+        Err(KnowledgeGenerationErrorV2::DigestMismatch(
+            "query_generation"
+        ))
     );
 }

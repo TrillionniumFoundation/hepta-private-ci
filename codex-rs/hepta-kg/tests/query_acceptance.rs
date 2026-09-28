@@ -18,7 +18,7 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("fixture identity")
+    StableId::new(value).unwrap_or_else(|error| panic!("fixture identity: {error}"))
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -28,7 +28,8 @@ fn digest(value: &str) -> Digest32 {
 fn support(value: &str, from: i64, to: i64) -> KnowledgeSupportV2 {
     KnowledgeSupportV2 {
         source_id: id(value),
-        source_revision: Revision::new(1).expect("fixture revision"),
+        source_revision: Revision::new(1)
+            .unwrap_or_else(|error| panic!("fixture revision: {error}")),
         source_fact_digest: digest(value),
         validity_digest: digest(&format!("validity:{value}:{from}:{to}")),
         valid_from_unix_seconds: Some(from),
@@ -62,7 +63,8 @@ fn fixture() -> KnowledgeProjectionInputV2 {
                     },
                     target_node_id: id(&format!("node:{target:02}")),
                 },
-                confidence: ProbabilityQ32::from_raw(1_u64 << 31).expect("fixture confidence"),
+                confidence: ProbabilityQ32::from_raw(1_u64 << 31)
+                    .unwrap_or_else(|error| panic!("fixture confidence: {error}")),
                 validity_digest: digest(&format!("edge:{index}:{target}")),
                 supports: vec![
                     support(&format!("source:edge:{index}:{target}:a"), 1, 7),
@@ -82,8 +84,11 @@ fn fixture() -> KnowledgeProjectionInputV2 {
 }
 
 fn build(input: KnowledgeProjectionInputV2) -> KnowledgeGenerationV2 {
-    build_complete_generation(Generation::new(1).expect("fixture generation"), input)
-        .expect("valid fixture")
+    build_complete_generation(
+        Generation::new(1).unwrap_or_else(|error| panic!("fixture generation: {error}")),
+        input,
+    )
+    .unwrap_or_else(|error| panic!("valid fixture: {error}"))
 }
 
 fn request(generation: &KnowledgeGenerationV2) -> KnowledgeRelationQueryV2 {
@@ -100,7 +105,8 @@ fn request(generation: &KnowledgeGenerationV2) -> KnowledgeRelationQueryV2 {
 #[test]
 fn indexed_receipts_equal_reference_across_time_filters_seeds_and_bounds() {
     let generation = build(fixture());
-    let verified = VerifiedKnowledgeGenerationV2::new(generation.clone()).expect("verified view");
+    let verified = VerifiedKnowledgeGenerationV2::new(generation.clone())
+        .unwrap_or_else(|error| panic!("verified view: {error}"));
     let mut permuted = fixture();
     permuted.nodes.reverse();
     permuted.edges.reverse();
@@ -112,7 +118,16 @@ fn indexed_receipts_equal_reference_across_time_filters_seeds_and_bounds() {
     }
     assert_eq!(build(permuted), generation);
     for mask in 0..8 {
-        for at in [None, Some(0), Some(1), Some(7), Some(10), Some(12), Some(25), Some(30)] {
+        for at in [
+            None,
+            Some(0),
+            Some(1),
+            Some(7),
+            Some(10),
+            Some(12),
+            Some(25),
+            Some(30),
+        ] {
             for kinds in [
                 Vec::new(),
                 vec![KnowledgeRelationKindV2::Supports],
@@ -128,11 +143,15 @@ fn indexed_receipts_equal_reference_across_time_filters_seeds_and_bounds() {
                     query.valid_at_unix_seconds = at;
                     query.relation_kinds = kinds.clone();
                     query.maximum_edges = maximum;
-                    let reference = query_relations(&generation, query.clone()).expect("reference");
+                    let reference = query_relations(&generation, query.clone())
+                        .unwrap_or_else(|error| panic!("reference: {error}"));
                     let (indexed, work) = verified
                         .query_relations_with_work(query)
-                        .expect("indexed result");
-                    assert_eq!(indexed, reference, "mask={mask}, at={at:?}, maximum={maximum}");
+                        .unwrap_or_else(|error| panic!("indexed result: {error}"));
+                    assert_eq!(
+                        indexed, reference,
+                        "mask={mask}, at={at:?}, maximum={maximum}"
+                    );
                     assert_eq!(work.validated_nodes, 0);
                     assert_eq!(work.validated_edges, 0);
                     assert_eq!(work.selected_edges_cloned, indexed.edges.len() as u64);
@@ -146,11 +165,14 @@ fn indexed_receipts_equal_reference_across_time_filters_seeds_and_bounds() {
 #[test]
 fn work_budget_boundary_is_exact_and_no_partial_success_is_returned() {
     let generation = build(fixture());
-    let verified = VerifiedKnowledgeGenerationV2::new(generation.clone()).expect("verified view");
+    let verified = VerifiedKnowledgeGenerationV2::new(generation.clone())
+        .unwrap_or_else(|error| panic!("verified view: {error}"));
     for at in [None, Some(2), Some(12)] {
         let mut query = request(&generation);
         query.valid_at_unix_seconds = at;
-        let (expected, work) = verified.query_relations_with_work(query.clone()).expect("query");
+        let (expected, work) = verified
+            .query_relations_with_work(query.clone())
+            .unwrap_or_else(|error| panic!("query: {error}"));
         let required = work.visibility_supports_inspected
             + work.relation_supports_inspected
             + work.selected_supports_cloned;
@@ -158,7 +180,7 @@ fn work_budget_boundary_is_exact_and_no_partial_success_is_returned() {
         assert_eq!(
             verified
                 .query_relations_with_work_budget(query.clone(), required)
-                .expect("exact budget")
+                .unwrap_or_else(|error| panic!("exact budget: {error}"))
                 .0,
             expected
         );
@@ -167,7 +189,9 @@ fn work_budget_boundary_is_exact_and_no_partial_success_is_returned() {
             Err(KnowledgeGenerationErrorV2::InvalidQueryLimit)
         ));
     }
-    let (_, work) = verified.query_relations_with_work(request(&generation)).expect("query");
+    let (_, work) = verified
+        .query_relations_with_work(request(&generation))
+        .unwrap_or_else(|error| panic!("query: {error}"));
     assert!(work.relation_edges_scanned < generation.edges.len() as u64);
     assert_eq!(work.selected_edges_cloned, 1);
     assert!(work.omitted_edges > 0);
@@ -180,7 +204,10 @@ fn public_validation_rejects_duplicate_identity_before_digest_check() {
     duplicate.source_fact_digest = digest("different fact under reused source identity");
     generation.nodes[0].supports.push(duplicate);
     generation.nodes[0].supports.sort();
-    assert!(matches!(generation.validate(), Err(KnowledgeGenerationErrorV2::DuplicateSupport)));
+    assert!(matches!(
+        generation.validate(),
+        Err(KnowledgeGenerationErrorV2::DuplicateSupport)
+    ));
     assert!(matches!(
         VerifiedKnowledgeGenerationV2::new(generation),
         Err(KnowledgeGenerationErrorV2::DuplicateSupport)
@@ -190,7 +217,10 @@ fn public_validation_rejects_duplicate_identity_before_digest_check() {
     duplicate.source_fact_digest = digest("different fact under reused source identity");
     input.nodes[0].supports.push(duplicate);
     assert!(matches!(
-        build_complete_generation(Generation::new(1).expect("generation"), input),
+        build_complete_generation(
+            Generation::new(1).unwrap_or_else(|error| panic!("generation: {error}")),
+            input
+        ),
         Err(KnowledgeGenerationErrorV2::DuplicateSupport)
     ));
 }
@@ -204,7 +234,10 @@ fn withdrawn_nodes_and_edges_drop_together_but_live_dangling_edges_fail() {
         }
     }
     assert!(matches!(
-        build_complete_generation(Generation::new(1).expect("generation"), input.clone()),
+        build_complete_generation(
+            Generation::new(1).unwrap_or_else(|error| panic!("generation: {error}")),
+            input.clone()
+        ),
         Err(KnowledgeGenerationErrorV2::UnknownEdgeNode)
     ));
     for edge in &mut input.edges {
@@ -220,13 +253,16 @@ fn withdrawn_nodes_and_edges_drop_together_but_live_dangling_edges_fail() {
 #[test]
 fn view_cannot_satisfy_another_source_cut_or_a_changed_generation_digest() {
     let generation = build(fixture());
-    let verified = VerifiedKnowledgeGenerationV2::new(generation.clone()).expect("verified view");
+    let verified = VerifiedKnowledgeGenerationV2::new(generation.clone())
+        .unwrap_or_else(|error| panic!("verified view: {error}"));
     let mut other = fixture();
     other.source_snapshot_digest = digest("owner:another-owner:source-cut");
     let different = build(other);
     assert!(matches!(
         verified.query_relations(request(&different)),
-        Err(KnowledgeGenerationErrorV2::DigestMismatch("query_generation"))
+        Err(KnowledgeGenerationErrorV2::DigestMismatch(
+            "query_generation"
+        ))
     ));
     let mut mutated = generation;
     mutated.nodes[0].payload_digest = digest("mutated payload");

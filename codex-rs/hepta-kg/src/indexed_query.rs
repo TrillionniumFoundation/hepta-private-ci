@@ -136,8 +136,7 @@ impl VerifiedKnowledgeGenerationV2 {
         (KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2),
         KnowledgeQueryAdmissionErrorV2,
     > {
-        let maximum_support_work =
-            maximum_support_work.unwrap_or(DEFAULT_QUERY_SUPPORT_WORK_V2);
+        let maximum_support_work = maximum_support_work.unwrap_or(DEFAULT_QUERY_SUPPORT_WORK_V2);
         if maximum_support_work == 0 || maximum_support_work > MAX_QUERY_SUPPORT_WORK_V2 {
             return Err(KnowledgeQueryAdmissionErrorV2::InvalidBudget {
                 requested_support_work: maximum_support_work,
@@ -205,11 +204,7 @@ impl VerifiedKnowledgeGenerationV2 {
                             work.visibility_nodes_scanned += 1;
                             let mut visible = false;
                             for support in &self.generation.nodes[self.nodes[node_id]].supports {
-                                charge_support_work(
-                                    &mut support_work,
-                                    maximum_support_work,
-                                    1,
-                                )?;
+                                charge_support_work(&mut support_work, maximum_support_work, 1)?;
                                 work.visibility_supports_inspected += 1;
                                 if support.visible_at(at) {
                                     visible = true;

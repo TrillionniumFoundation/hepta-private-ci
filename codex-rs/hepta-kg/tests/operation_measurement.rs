@@ -25,7 +25,7 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("fixture identity")
+    StableId::new(value).unwrap_or_else(|error| panic!("fixture identity: {error}"))
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -35,7 +35,8 @@ fn digest(value: &str) -> Digest32 {
 fn support(value: &str) -> KnowledgeSupportV2 {
     KnowledgeSupportV2 {
         source_id: id(value),
-        source_revision: Revision::new(1).expect("revision"),
+        source_revision: Revision::new(1)
+            .unwrap_or_else(|error| panic!("revision: {error}")),
         source_fact_digest: digest(value),
         validity_digest: digest(&format!("validity:{value}")),
         valid_from_unix_seconds: Some(0),
@@ -60,7 +61,8 @@ fn input() -> KnowledgeProjectionInputV2 {
                 relation: KnowledgeRelationKindV2::Supports,
                 target_node_id: id(&format!("node:{:03}", index + 1)),
             },
-            confidence: ProbabilityQ32::from_raw(1_u64 << 31).expect("confidence"),
+            confidence: ProbabilityQ32::from_raw(1_u64 << 31)
+                .unwrap_or_else(|error| panic!("confidence: {error}")),
             validity_digest: digest(&format!("edge:{index}")),
             supports: vec![support(&format!("source:edge:{index}"))],
         })
@@ -85,16 +87,16 @@ fn public_operation_boundaries_emit_nonzero_regression_metrics() {
 
     let started = Instant::now();
     let predecessor = build_complete_generation(
-        Generation::new(1).expect("generation"),
+        Generation::new(1).unwrap_or_else(|error| panic!("generation: {error}")),
         cloned,
     )
-    .expect("build, validate and seal");
+    .unwrap_or_else(|error| panic!("build, validate and seal: {error}"));
     let build_validate_seal_ns = started.elapsed().as_nanos();
 
     let started = Instant::now();
     let generation = apply_incremental_delta(
         &predecessor,
-        Generation::new(2).expect("next generation"),
+        Generation::new(2).unwrap_or_else(|error| panic!("next generation: {error}")),
         KnowledgeProjectionDeltaV2 {
             expected_predecessor_digest: predecessor.generation_digest,
             source_snapshot_digest: digest("source-cut:2"),
@@ -106,12 +108,12 @@ fn public_operation_boundaries_emit_nonzero_regression_metrics() {
             upsert_edges: Vec::new(),
         },
     )
-    .expect("bounded generation update");
+    .unwrap_or_else(|error| panic!("bounded generation update: {error}"));
     let generation_update_ns = started.elapsed().as_nanos();
 
     let started = Instant::now();
-    let verified =
-        VerifiedKnowledgeGenerationV2::new(generation.clone()).expect("verified query view");
+    let verified = VerifiedKnowledgeGenerationV2::new(generation.clone())
+        .unwrap_or_else(|error| panic!("verified query view: {error}"));
     let verified_view_build_ns = started.elapsed().as_nanos();
 
     let query = KnowledgeRelationQueryV2 {
@@ -126,7 +128,7 @@ fn public_operation_boundaries_emit_nonzero_regression_metrics() {
     let started = Instant::now();
     let cold = verified
         .query_relations_external(query.clone(), None)
-        .expect("cold bounded query")
+        .unwrap_or_else(|error| panic!("cold bounded query: {error}"))
         .0;
     let cold_bounded_query_ns = started.elapsed().as_nanos();
     assert_eq!(cold.edges.len(), 1);
@@ -136,7 +138,7 @@ fn public_operation_boundaries_emit_nonzero_regression_metrics() {
     for _ in 0..iterations {
         let result = verified
             .query_relations_external(query.clone(), None)
-            .expect("hot bounded query")
+            .unwrap_or_else(|error| panic!("hot bounded query: {error}"))
             .0;
         assert_eq!(result, cold);
     }
@@ -144,14 +146,16 @@ fn public_operation_boundaries_emit_nonzero_regression_metrics() {
 
     let started = Instant::now();
     let reference = query_relations_reference_unbounded(&generation, query)
-        .expect("explicit unbounded reference query");
+        .unwrap_or_else(|error| panic!("explicit unbounded reference query: {error}"));
     let unbounded_reference_query_ns = started.elapsed().as_nanos();
     assert_eq!(reference, cold);
 
     let started = Instant::now();
     let receipt = publish_generation(Some(&predecessor), &generation)
-        .expect("publication receipt");
-    receipt.validate().expect("valid publication receipt");
+        .unwrap_or_else(|error| panic!("publication receipt: {error}"));
+    receipt
+        .validate()
+        .unwrap_or_else(|error| panic!("valid publication receipt: {error}"));
     let publication_receipt_ns = started.elapsed().as_nanos();
 
     for value in [
