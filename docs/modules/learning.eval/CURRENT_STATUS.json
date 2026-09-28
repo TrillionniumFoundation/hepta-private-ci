@@ -23,10 +23,9 @@
   },
   "repositoryControlledGaps": [
     "Execute formatting, compilation, tests, strict lint and coverage on the final exact source and ordered-parent merge tree.",
-    "Persist and recover complete sealed evidence objects, not only their digests, across computation and publication crashes.",
-    "Complete signed outcome/recovery end-to-end tests and a downstream consumer of the sealed multi-outcome qualification receipt.",
-    "Compose a real selected-host controller with authenticated independent anchor authority, provider, publication store and persistent recovery cursors.",
-    "Qualify near-capacity startup, backlog, checkpoint/rotation and sustained recovery on the selected storage topology."
+    "Extend complete host-sealed artifact persistence and restart recovery to ProductOutcomeEvaluationReceiptV1, then exercise the signed multi-outcome resume path.",
+    "Bind the selected-host source facade to an authenticated independent anchor authority, real provider, publication store and persistent recovery controller on the declared target topology.",
+    "Execute near-capacity startup, backlog, checkpoint or rotation and sustained recovery qualification on the selected storage topology."
   ],
   "schema": "hepta.learning-eval.current-status.v1",
   "sourceFacts": {
@@ -48,8 +47,21 @@
         "kind": "sealed_product_qualification_consumer",
         "nativeSymbol": "run_evaluated_shadow_v1",
         "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs"
+      },
+      {
+        "authority": "deny_all",
+        "kind": "sealed_multi_outcome_qualification_consumer",
+        "nativeSymbol": "AgentdEvaluationBindingV1::consume_outcome_qualification_v1",
+        "sourcePath": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs"
       }
     ],
+    "capacitySource": {
+      "anchoredRestartInterval": 128,
+      "configuredAttempts": 4096,
+      "executionStatus": "not_established_by_source_scan",
+      "expectedLifecycleEvents": 24576,
+      "sustainedProfileSourcePresent": true
+    },
     "consumerBoundAdmission": true,
     "durableEvaluationAttemptJournal": true,
     "externalLowLevelDecisionCallers": [],
@@ -60,17 +72,20 @@
     "lowLevelDecisionPrimitivesCratePrivate": true,
     "outcomeSource": {
       "completePayloadDigestBinding": true,
-      "downstreamConsumer": "requires_composition_and_execution_evidence",
+      "downstreamConsumer": "agentd_request_bound_source_consumer_present",
       "executionStatus": "not_established_by_source_scan",
+      "hostSealedArtifactRecovery": "single_outcome_only_multi_outcome_pending",
       "maximumBatchRows": 100000,
       "maximumChannels": 32,
       "measurementAuthentication": "requires_selected_host_evidence",
       "separateNativeChannelEstimates": true,
+      "signedMultiOutcomeBindingE2EFixture": true,
       "singleConsumptionRecordedComposition": true,
       "typedFrozenChannelContracts": true
     },
     "recoverySource": {
       "boundedPendingDiscovery": true,
+      "completeQualificationArtifactsPersisted": true,
       "cursorAdvancesPastUnresolvedAttempts": true,
       "decidedOnlyResumeReverifiesSignatures": true,
       "defaultRawRunnerFeatureGated": true,
@@ -80,8 +95,11 @@
       "fullHistoryValidation": true,
       "incrementalAppendAndStreamingReplay": true,
       "independentAttemptAnchorProtocol": true,
+      "persistentSelectedHostPublicationStore": true,
       "preConsumptionIntent": true,
       "processKillFixtureCutCount": 7,
+      "selectedHostArtifactResumeE2EFixture": true,
+      "selectedHostBindingSwapRejected": true,
       "unverifiedResumeHelperCratePrivate": true,
       "writeAheadPublicationPhases": true
     },

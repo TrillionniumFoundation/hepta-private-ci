@@ -269,6 +269,24 @@ fn selected_host_complete_signed_artifacts_resume_after_anchor_ack_loss() {
         1
     );
 
+    let reconciled = RecordedProductEvaluationRunnerV1::<
+        LockedFileFinalHoldoutCasStoreV1,
+    >::reconcile_selected_host_publication(
+        &mut recovered,
+        &attempt_id,
+        &publication_root,
+        selected_host_binding,
+    )
+    .expect("read-only reconciliation returns the existing publication");
+    assert_eq!(reconciled, published);
+    assert_eq!(
+        fs::read_dir(&publication_root)
+            .expect("publication root after read-only reconciliation")
+            .count(),
+        1,
+        "read-only reconciliation must not create a second publication"
+    );
+
     drop(recovered);
     let mut reopened = AnchoredProductEvaluationAttemptJournalV1::recover(
         reopen(&attempt_path),

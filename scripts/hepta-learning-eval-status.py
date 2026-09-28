@@ -25,7 +25,9 @@ CALLERS = [
     {"kind": "consumer_bound_admission", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs", "nativeSymbol": "AgentdEvaluationSessionV1::evaluate", "authority": "deny_all"},
     {"kind": "consumer_bound_admission", "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs", "nativeSymbol": "propose_authenticated_parameter_plasticity_v1", "authority": "deny_all"},
     {"kind": "sealed_product_qualification_consumer", "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs", "nativeSymbol": "run_evaluated_shadow_v1", "authority": "deny_all"},
+    {"kind": "sealed_multi_outcome_qualification_consumer", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs", "nativeSymbol": "AgentdEvaluationBindingV1::consume_outcome_qualification_v1", "authority": "deny_all"},
 ]
+SELECTED_HOST_E2E = "codex-rs/hepta-intelligence-eval/tests/selected_host_recovery_e2e.rs"
 RECOVERY_OPERATIONS = [
     ("AnchoredProductEvaluationAttemptJournalV1", "attempt_journal_anchor.rs", SRC + "attempt_journal_tests.rs"),
     ("reconcile_product_attempt_holdout_v1", "attempt_recovery.rs", SRC + "recorded_runner_process_tests.rs"),
@@ -36,6 +38,11 @@ RECOVERY_OPERATIONS = [
     ("RecordedProductEvaluationRunnerV1::resume_decided_qualification", "attempt_publication_resume.rs", "scripts/hepta-learning-eval-api-surface.sh"),
     ("RecordedProductEvaluationRunnerV1::resume_decided_outcome_qualification", "attempt_publication_resume.rs", "scripts/hepta-learning-eval-api-surface.sh"),
     ("RecordedProductEvaluationRunnerV1::resume_decided_publication", "attempt_publication_resume.rs", SRC + "recorded_runner_process_tests.rs"),
+    ("RecordedProductEvaluationRunnerV1::qualify_and_persist_with_artifacts", "qualification_artifacts.rs", SELECTED_HOST_E2E),
+    ("RecordedProductEvaluationRunnerV1::recover_persisted_qualification", "qualification_artifacts.rs", SELECTED_HOST_E2E),
+    ("RecordedProductEvaluationRunnerV1::qualify_and_persist_on_selected_host", "selected_host_publication.rs", SELECTED_HOST_E2E),
+    ("RecordedProductEvaluationRunnerV1::recover_selected_host_qualification", "selected_host_publication.rs", SELECTED_HOST_E2E),
+    ("RecordedProductEvaluationRunnerV1::reconcile_selected_host_publication", "selected_host_publication.rs", SELECTED_HOST_E2E),
     ("freeze_product_outcome_plan_v1", "outcome_channels.rs", SRC + "outcome_tests.rs"),
     ("product_outcome_inputs_digest_v1", "outcome_payload.rs", SRC + "outcome_tests.rs"),
     ("RecordedProductEvaluationRunnerV1::evaluate_outcome_comparison", "outcome_runner.rs", SRC + "outcome_tests.rs"),
@@ -43,10 +50,9 @@ RECOVERY_OPERATIONS = [
 ]
 REPOSITORY_GAPS = [
     "Execute formatting, compilation, tests, strict lint and coverage on the final exact source and ordered-parent merge tree.",
-    "Persist and recover complete sealed evidence objects, not only their digests, across computation and publication crashes.",
-    "Complete signed outcome/recovery end-to-end tests and a downstream consumer of the sealed multi-outcome qualification receipt.",
-    "Compose a real selected-host controller with authenticated independent anchor authority, provider, publication store and persistent recovery cursors.",
-    "Qualify near-capacity startup, backlog, checkpoint/rotation and sustained recovery on the selected storage topology.",
+    "Extend complete host-sealed artifact persistence and restart recovery to ProductOutcomeEvaluationReceiptV1, then exercise the signed multi-outcome resume path.",
+    "Bind the selected-host source facade to an authenticated independent anchor authority, real provider, publication store and persistent recovery controller on the declared target topology.",
+    "Execute near-capacity startup, backlog, checkpoint or rotation and sustained recovery qualification on the selected storage topology.",
 ]
 
 
@@ -136,6 +142,10 @@ def expected_source_facts() -> dict:
             "decidedOnlyResumeReverifiesSignatures": True,
             "unverifiedResumeHelperCratePrivate": True,
             "incrementalAppendAndStreamingReplay": True,
+            "completeQualificationArtifactsPersisted": True,
+            "persistentSelectedHostPublicationStore": True,
+            "selectedHostArtifactResumeE2EFixture": True,
+            "selectedHostBindingSwapRejected": True,
             "processKillFixtureCutCount": 7,
             "executionStatus": "not_established_by_source_scan",
         },
@@ -146,8 +156,17 @@ def expected_source_facts() -> dict:
             "singleConsumptionRecordedComposition": True,
             "maximumChannels": 32,
             "maximumBatchRows": 100000,
-            "downstreamConsumer": "requires_composition_and_execution_evidence",
+            "signedMultiOutcomeBindingE2EFixture": True,
+            "downstreamConsumer": "agentd_request_bound_source_consumer_present",
+            "hostSealedArtifactRecovery": "single_outcome_only_multi_outcome_pending",
             "measurementAuthentication": "requires_selected_host_evidence",
+            "executionStatus": "not_established_by_source_scan",
+        },
+        "capacitySource": {
+            "sustainedProfileSourcePresent": True,
+            "configuredAttempts": 4096,
+            "expectedLifecycleEvents": 24576,
+            "anchoredRestartInterval": 128,
             "executionStatus": "not_established_by_source_scan",
         },
     }
@@ -178,15 +197,23 @@ def source_facts() -> dict:
         ("recorded_runner.rs", "J: DurableProductEvaluationAttemptJournalV1"),
         ("recorded_runner.rs", '#[path = "outcome_runner.rs"]'),
         ("recorded_publication.rs", '#[path = "attempt_publication_resume.rs"]'),
+        ("recorded_publication.rs", '#[path = "qualification_artifacts.rs"]'),
+        ("recorded_publication.rs", '#[path = "selected_host_publication.rs"]'),
         ("attempt_recovery.rs", "validated_history"),
         ("attempt_recovery_tests.rs", "pending_cursor_advances_past_unresolved_attempts"),
         ("attempt_recovery_tests.rs", "individually_valid_frames_cannot_be_spliced_across_attempts"),
         ("attempt_publication_resume.rs", "pub(crate) fn resume_decided_publication"),
         ("attempt_publication_resume.rs", "verify_decision"),
+        ("qualification_artifacts.rs", "qualify_and_persist_with_artifacts"),
+        ("qualification_artifacts.rs", "recover_persisted_qualification"),
+        ("selected_host_publication.rs", "qualify_and_persist_on_selected_host"),
+        ("selected_host_publication.rs", "recover_selected_host_qualification"),
+        ("selected_host_publication.rs", "reconcile_selected_host_publication"),
         ("outcome_channels.rs", "const MAX_CHANNELS: usize = 32;"),
         ("outcome_channels.rs", "const MAX_BATCH_ROWS: usize = 100_000;"),
         ("outcome_tests.rs", "measured_channels_with_same_estimator_have_distinct_intervals_and_one_consumption"),
         ("outcome_tests.rs", "swapping_payloads_without_changing_frozen_contracts_fails_after_consumption"),
+        ("signed_qualification_e2e_tests.rs", "signed_qualification_e2e_binds_multi_outcome_privacy_retention_and_unlearning"),
         ("fenced_holdout_file.rs", "compact_into"),
     ]
     for path, token in required:
@@ -195,14 +222,25 @@ def source_facts() -> dict:
         require_token(SRC + "recorded_runner_process_tests.rs", stage)
     require_token("scripts/hepta-learning-eval-api-surface.sh", "E0624")
     require_token("codex-rs/hepta-intelligence-eval/tests/holdout_compaction.rs", "compaction_replays_nonempty_holdout_journal_without_semantic_drift")
+    require_token(SELECTED_HOST_E2E, "selected_host_complete_signed_artifacts_resume_after_anchor_ack_loss")
+    require_token("codex-rs/hepta-intelligence-eval/tests/long_running_profile.rs", "HEPTA_LEARNING_EVAL_SOAK_ATTEMPTS")
+    require_token(".github/workflows/hepta-learning-eval-soak.yml", 'HEPTA_LEARNING_EVAL_SOAK_ATTEMPTS: "4096"')
+    if '#[path = "qualification_artifacts.rs"]' in read(SRC + "attempt_durability.rs") or '#[path = "selected_host_publication.rs"]' in read(SRC + "attempt_durability.rs"):
+        raise SystemExit("selected-host modules must have one canonical parent")
     for symbol, module in ((LOW_LEVEL_V2, "signed_evaluation"), (LOW_LEVEL_V3, "longitudinal_time")):
         if f"pub use {module}::{symbol};" in lib or direct_external_callers(symbol):
             raise SystemExit(f"external low-level ingress remains: {symbol}")
     raw_callers = external_production_callers(RAW_PRODUCT_RUNNER)
     if raw_callers:
         raise SystemExit(f"external raw product runner references: {raw_callers}")
+    caller_tokens = {
+        "consumer_bound_admission": "admit_signed_eligibility_v2",
+        "sealed_product_qualification_consumer": "ProductQualificationReceiptV1",
+        "sealed_multi_outcome_qualification_consumer": "ProductOutcomeQualificationReceiptV1",
+    }
     for caller in CALLERS:
-        require_token(caller["sourcePath"], "ProductQualificationReceiptV1" if caller["kind"] == "sealed_product_qualification_consumer" else "admit_signed_eligibility_v2")
+        require_token(caller["sourcePath"], caller_tokens[caller["kind"]])
+        require_token(caller["sourcePath"], caller["nativeSymbol"].rsplit("::", 1)[-1])
     verify_implementation_map(CALLERS)
     return expected_source_facts()
 

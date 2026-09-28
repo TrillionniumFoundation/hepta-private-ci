@@ -49,6 +49,9 @@ retains its fixed-analysis assumptions and multiplicity requirements.
 | reconcile existing consumption/publication | `reconcile_product_attempt_holdout_v1` / `reconcile_product_attempt_publication_v1` | `src/attempt_recovery.rs` | validates full attempt history and exact owner records |
 | verified prewrite publication resume | `resume_decided_qualification` / `resume_decided_outcome_qualification` | `src/attempt_publication_resume.rs` | rechecks sealed result and current V2/V3 signatures |
 | raw prewrite publication helper | `resume_decided_publication` | `src/attempt_publication_resume.rs` | crate-private; not an external signed-decision ingress |
+| complete single-outcome qualification artifact persistence | `qualify_and_persist_with_artifacts` / `recover_persisted_qualification` | `src/qualification_artifacts.rs` | create-only host-bound artifacts and current-trust recovery |
+| persistent selected-host qualification facade | `qualify_and_persist_on_selected_host` / `recover_selected_host_qualification` | `src/selected_host_publication.rs` | local source facade; target topology qualification external |
+| selected-host read-only publication reconciliation | `reconcile_selected_host_publication` | `src/selected_host_publication.rs` | reads an exact durable publication without repeating a write |
 | frozen measured outcome contracts | `freeze_product_outcome_plan_v1` / `ProductOutcomeChannelContractV1` | `src/outcome_channels.rs` | bounded typed channels and preregistered measurement semantics |
 | canonical measured input binding | `product_outcome_inputs_digest_v1` | `src/outcome_payload.rs` | full payload and lineage commitment |
 | one-consumption multi-outcome estimation | `RecordedProductEvaluationRunnerV1::evaluate_outcome_comparison` | `src/outcome_runner.rs` | private path-attributed submodule of recorded runner |
@@ -59,6 +62,7 @@ retains its fixed-analysis assumptions and multiplicity requirements.
 | trusted direct compatibility | `trusted_inprocess::decide_independently{,_v2}` | `src/lib.rs` | feature-gated; never production ingress |
 | legacy threshold comparator | `trusted_inprocess::evaluate_legacy_inprocess_v1` | `src/lib.rs` | deprecated trusted-only compatibility |
 | storage recovery/capacity profile | `learning_eval_storage_profile` | `src/bin/learning_eval_storage_profile.rs` | qualification executable; no authority |
+| sustained selected-host source profile | `long_running_profile` | `tests/long_running_profile.rs` | 4,096 attempts / 24,576 lifecycle events / restart every 128 attempts |
 
 The raw `ProductEvaluationRunnerV1` is crate-private in default builds. Only the
 explicit `trusted-inprocess-eval` feature makes it public. Default recorded
@@ -157,8 +161,18 @@ coordinate recovery with live owners. No provider is accepted by the sweep API.
 signature-reverified methods when the original sealed result and evidence are
 recoverable. The reconstructed request must equal the durable preregistration.
 Pending/Published attempts are rejected by that write path; an absent pending
-publication is not permission to retry. Complete evidence-object persistence and
-ambiguity-resolving submission recovery remain distinct repository obligations.
+publication is not permission to retry.
+
+For the single-outcome product receipt, `LockedQualificationArtifactStoreV1`
+create-only persists the complete sealed temporal receipt, qualification context,
+signed evidence and timing evidence before `QualificationDecided`. The selected-
+host facade binds those artifacts and the publication namespace to the same host
+identity. Restart recovery rejects a different host binding, reloads exact bytes,
+re-verifies current trust/expiry/revocation, and invokes the writer only from the
+prewrite decided phase. `reconcile_selected_host_publication` closes an existing
+matching durable publication without invoking a writer. Equivalent host-sealed
+artifact recovery for `ProductOutcomeEvaluationReceiptV1` remains an explicit
+repository-controlled gap.
 
 ## Signed admission and product qualification
 
@@ -197,8 +211,11 @@ Even the first state retains `DENY_ALL`. The repository product consumer
 `codex-rs/hepta-intelligence/src/evaluated_shadow.rs::run_evaluated_shadow_v1`
 accepts only a sealed `ProductQualificationReceiptV1`; it rechecks current trust,
 dataset, candidate and evaluator bindings and does not rerun a low-level decision.
-That existing caller does not establish a consumer of the additive
-`ProductOutcomeQualificationReceiptV1` or a deployed selected-host runtime.
+Agentd additionally exposes the request-bound
+`AgentdEvaluationBindingV1::consume_outcome_qualification_v1` consumer for a sealed
+`ProductOutcomeQualificationReceiptV1`. Both are source compositions only: they
+do not establish deployed execution, selected-host qualification, activation or
+release authority.
 
 ## Identity, causal and statistical obligations
 
@@ -223,6 +240,7 @@ The generated source inventory recognizes these repository consumers:
 | agentd evaluation session | `codex-rs/hepta-agentd/src/intelligence_evaluation.rs` | `admit_signed_eligibility_v2` with request binding |
 | governed plasticity proposal | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | `admit_signed_eligibility_v2` with proposal binding |
 | evaluated shadow | `codex-rs/hepta-intelligence/src/evaluated_shadow.rs` | sealed `ProductQualificationReceiptV1` |
+| agentd multi-outcome binding | `codex-rs/hepta-agentd/src/intelligence_evaluation.rs` | sealed request-bound `ProductOutcomeQualificationReceiptV1` |
 
 `scripts/hepta-learning-eval-status.py` checks complete Rust identifiers rather
 than confusing the raw runner with the longer recorded-runner identifier. It
@@ -245,27 +263,35 @@ Core tests remain in:
 
 Additional source regressions are in `src/outcome_tests.rs`,
 `src/attempt_recovery_tests.rs`, `src/recorded_publication_tests.rs`,
-`src/recorded_runner_process_tests.rs` and
-`tests/attempt_anchor_acknowledgement.rs`. The process fixture actually terminates
-an isolated child at seven boundaries, including decided-before-pending. It
-checks retained anchors, no final-holdout re-release and no duplicate publication.
-Its publication half uses fixture decisions to isolate persistence; public
-signature-recovery and full signed outcome E2E coverage remain separate tasks.
+`src/recorded_runner_process_tests.rs`,
+`tests/attempt_anchor_acknowledgement.rs`, and
+`tests/selected_host_recovery_e2e.rs`. The process fixture actually terminates an
+isolated child at seven boundaries, including decided-before-pending. It checks
+retained anchors, no final-holdout re-release and no duplicate publication. The
+selected-host E2E additionally persists complete signed artifacts, injects loss
+of the independent-anchor acknowledgement at `QualificationDecided`, restarts,
+rejects a swapped host identity, re-verifies signatures, publishes once, performs
+read-only reconciliation and restarts again to verify the six-phase history.
+Fixture existence is not a passing execution result.
 
 `scripts/hepta-learning-eval-api-surface.sh` supplies compiler-positive and
 compiler-negative API fixtures, including E0624 for the private resume helper.
 `scripts/hepta-learning-eval-faults.sh` runs the established fault matrix.
 `learning_eval_storage_profile` records attempt write/recovery and holdout
-compaction measurements. The 1,024-attempt/512-fence source profile is not
-near-capacity or sustained selected-host qualification.
+compaction measurements. `tests/long_running_profile.rs` configures a sustained
+source profile of 4,096 attempts and 24,576 lifecycle events with anchored close-
+and-reopen recovery every 128 attempts. Neither profile is a qualification result
+until the exact-source workflow completes and retains its logs, exit code and
+SHA-256 manifest.
 
 Cross-crate composition remains exercised by
 `hepta-shadow-qualification/src/lane_e_closure_tests.rs`. The focused
 `Hepta learning.eval convergence` workflow requires `>=85%` measured line
 coverage. The `Hepta learning.eval exact trees` workflow separately addresses the
 exact head and ordered-parent synthetic merge, records command/log/output digests,
-preserves failures and performs no source/status repair. The Lane E workflow is
-an additional closure gate, not interchangeable evidence from another SHA.
+preserves failures and performs no source/status repair. The sustained selected-
+host profile has its own read-only workflow. The Lane E workflow is an additional
+closure gate, not interchangeable evidence from another SHA.
 
 The status generator explicitly writes canonical status and marked guide/native
 projections only in authoring mode. Its `verify` mode checks the inventory,
@@ -292,18 +318,24 @@ acceptance authority are required.
 ### Current candidate source inventory
 
 Canonical inventory: `docs/modules/learning.eval/CURRENT_STATUS.json`.
-Inventory SHA-256: `293088082dd4adf7ea208af37cd17a7e36a4f199416308262ac0cb65bd6165e7`.
+Inventory SHA-256: `6dda3b25574e8c8e754c5a59e47799adc72bffbd4b42494b5dc6b8461b0f8f7a`.
 
 This block is generated from lexical source facts, not test results.
 Default ingress: recorded runner with independently anchored journal capability.
 Raw runner: explicit `trusted-inprocess-eval` compatibility feature only.
-Recovery: durable intent, full-history validation, bounded cursor reconciliation,
-and signature-reverified decided-only publication resume.
+Recovery: durable intent, independently anchored full-history validation, bounded
+cursor reconciliation, complete single-outcome qualification artifacts and
+signature-reverified selected-host publication resume.
 Process-kill fixture cuts: `7`; their execution is separately qualified.
 Outcome source: at most `32` preregistered channels and
 `100000` batch rows, with separate measured estimates.
-A deployed outcome-receipt consumer and authenticated measurement provenance
-are not established by the source inventory.
+A request-bound Agentd multi-outcome receipt consumer is present in source;
+deployed execution, selected-host multi-outcome artifact recovery and authenticated
+measurement provenance are not established by this source inventory.
+Sustained profile source: `4096` attempts,
+`24576` lifecycle events and anchored
+restart every `128` attempts; a passing
+exact-source artifact is still required.
 
 Exact-head, ordered-parent merge, coverage and strict lint require immutable
 execution artifacts. Real target-host, future-window and independent acceptance

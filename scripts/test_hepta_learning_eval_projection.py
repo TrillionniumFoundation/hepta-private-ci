@@ -6,7 +6,10 @@ from hepta_learning_eval_projection import BEGIN, END, canonical, projection, re
 def status():
     return {"module": "learning.eval", "claims": {"productionImplementation": False},
             "sourceFacts": {"recoverySource": {"processKillFixtureCutCount": 7},
-                            "outcomeSource": {"maximumChannels": 32, "maximumBatchRows": 100000}}}
+                            "outcomeSource": {"maximumChannels": 32, "maximumBatchRows": 100000},
+                            "capacitySource": {"configuredAttempts": 4096,
+                                               "expectedLifecycleEvents": 24576,
+                                               "anchoredRestartInterval": 128}}}
 
 
 class ProjectionTests(unittest.TestCase):
@@ -35,6 +38,12 @@ class ProjectionTests(unittest.TestCase):
         value = status()
         before = projection(value)
         value["sourceFacts"]["recoverySource"]["processKillFixtureCutCount"] = 8
+        self.assertNotEqual(before, projection(value))
+
+    def test_capacity_inventory_changes_projection(self):
+        value = status()
+        before = projection(value)
+        value["sourceFacts"]["capacitySource"]["configuredAttempts"] = 8192
         self.assertNotEqual(before, projection(value))
 
     def test_source_cannot_issue_acceptance(self):
