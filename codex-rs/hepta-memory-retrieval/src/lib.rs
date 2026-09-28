@@ -2,6 +2,7 @@
 
 #![forbid(unsafe_code)]
 
+mod canonical_owner;
 mod decision;
 mod engram;
 mod generation_bound;
@@ -19,6 +20,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+pub use canonical_owner::RetrievalOwnedCanonicalRecallV1;
+pub use canonical_owner::adapt_generation_bound_recall_to_owned_canonical_v1;
 pub use decision::AssignmentErrorV1;
 pub use decision::RetrievalAssignmentCompletenessV1;
 pub use decision::RetrievalAssignmentObservationV1;
