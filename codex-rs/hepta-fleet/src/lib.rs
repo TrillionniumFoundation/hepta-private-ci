@@ -20,6 +20,7 @@ mod durable_command_port;
 mod durable_owner;
 mod error;
 mod final_use;
+mod manifest_readonly;
 mod model;
 mod module_catalog;
 mod registry;
