@@ -30,7 +30,11 @@ use tempfile::TempDir;
 async fn main() -> Result<(), Box<dyn Error>> {
     let heads = bounded_env("HEPTA_COGNITIVE_HISTORY_HEADS", 64, 1, 256)?;
     let revisions = bounded_env("HEPTA_COGNITIVE_HISTORY_REVISIONS", 16, 1, 64)?;
-    if heads.checked_mul(revisions).ok_or("history size overflow")? > 8192 {
+    if heads
+        .checked_mul(revisions)
+        .ok_or("history size overflow")?
+        > 8192
+    {
         return Err("historical profile is bounded to 8192 pre-tombstone revisions".into());
     }
     let temp = TempDir::new()?;

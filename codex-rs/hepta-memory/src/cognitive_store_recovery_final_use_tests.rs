@@ -41,7 +41,8 @@ fn authority(owner: &AgentId) -> Result<ProductionAuthorityLease, Box<dyn Error>
 }
 
 #[tokio::test]
-async fn revoked_at_final_use_leaves_pointer_and_predecessor_unchanged() -> Result<(), Box<dyn Error>> {
+async fn revoked_at_final_use_leaves_pointer_and_predecessor_unchanged()
+-> Result<(), Box<dyn Error>> {
     let temp = TempDir::new()?;
     let root = temp.path().canonicalize()?.join("fleet");
     std::fs::create_dir(&root)?;
@@ -67,8 +68,10 @@ async fn revoked_at_final_use_leaves_pointer_and_predecessor_unchanged() -> Resu
         &denied,
     )
     .await;
-    assert!(matches!(result, Err(CognitiveRecoveryError::AccessDenied(ref message))
-        if message.contains("revoked after recovery preflight")));
+    assert!(
+        matches!(result, Err(CognitiveRecoveryError::AccessDenied(ref message))
+        if message.contains("revoked after recovery preflight"))
+    );
     assert_eq!(denied.calls.load(Ordering::SeqCst), 2);
     assert_eq!(std::fs::read(&pointer).ok(), pointer_before);
     assert_eq!(std::fs::read(&database)?, before);

@@ -399,7 +399,9 @@ impl AgentdProductionWriterHost {
     pub fn read_capability(
         &self,
     ) -> Option<codex_hepta_cognitive_store::DurableCognitiveReadStore> {
-        codex_hepta_cognitive_store::DurableCognitiveReadStore::from_runtime(&self.cognitive_runtime)
+        codex_hepta_cognitive_store::DurableCognitiveReadStore::from_runtime(
+            &self.cognitive_runtime,
+        )
     }
 
     pub(crate) fn owner_agent_id(&self) -> &codex_hepta_contracts::AgentId {

@@ -38,8 +38,8 @@ use serde_json::json;
 use tempfile::TempDir;
 
 #[tokio::test]
-async fn signed_bootstrap_rotates_restarts_canaries_and_revokes_live()
--> Result<(), Box<dyn Error>> {
+async fn signed_bootstrap_rotates_restarts_canaries_and_revokes_live() -> Result<(), Box<dyn Error>>
+{
     let temp = TempDir::new()?;
     let root = temp.path().canonicalize()?;
     let fleet_path = root.join("fleet");
@@ -159,11 +159,12 @@ async fn signed_bootstrap_rotates_restarts_canaries_and_revokes_live()
             expected_source: CognitiveProductionSourceIdentityV1::new(commit, tree)?,
             ..files.clone()
         };
-        let error =
-            match open_cognitive_production_host_from_signed_bootstrap(&config, &mismatched).await {
-                Ok(_) => panic!("a valid signature for another source must not admit recovery"),
-                Err(error) => error,
-            };
+        let error = match open_cognitive_production_host_from_signed_bootstrap(&config, &mismatched)
+            .await
+        {
+            Ok(_) => panic!("a valid signature for another source must not admit recovery"),
+            Err(error) => error,
+        };
         assert!(error.to_string().contains("source identity"), "{error}");
         assert_eq!(fs::read(&pointer).ok(), pointer_before);
     }

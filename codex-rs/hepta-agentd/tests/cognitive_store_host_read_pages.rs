@@ -101,10 +101,7 @@ async fn ordinary_host_reader_tracks_correction_tombstone_and_revoked_writer()
     }
     let first = reader
         .lane_c_snapshot_page(
-            &access,
-            &scope,
-            /*now_unix_seconds*/ 10,
-            /*maximum_heads*/ 1,
+            &access, &scope, /*now_unix_seconds*/ 10, /*maximum_heads*/ 1,
             /*after*/ None,
         )
         .await?;
@@ -113,11 +110,7 @@ async fn ordinary_host_reader_tracks_correction_tombstone_and_revoked_writer()
     assert_eq!(
         reader
             .revalidate_lane_c_snapshot_page(
-                &access,
-                &scope,
-                /*now_unix_seconds*/ 10,
-                /*maximum_heads*/ 1,
-                &first,
+                &access, &scope, /*now_unix_seconds*/ 10, /*maximum_heads*/ 1, &first,
             )
             .await?,
         first
@@ -161,10 +154,7 @@ async fn ordinary_host_reader_tracks_correction_tombstone_and_revoked_writer()
     .validate()?;
     let final_page = reader
         .lane_c_snapshot_page(
-            &access,
-            &scope,
-            /*now_unix_seconds*/ 10,
-            /*maximum_heads*/ 2,
+            &access, &scope, /*now_unix_seconds*/ 10, /*maximum_heads*/ 2,
             /*after*/ None,
         )
         .await?;

@@ -135,7 +135,9 @@ impl CognitiveProductionSourceIdentityV1 {
         validate_git_oid(&self.commit, "deployed source commit")?;
         validate_git_oid(&self.tree, "deployed source tree")?;
         if self.commit.len() != self.tree.len() {
-            return Err(invalid("deployed source commit/tree use different object formats"));
+            return Err(invalid(
+                "deployed source commit/tree use different object formats",
+            ));
         }
         Ok(())
     }
@@ -349,7 +351,9 @@ impl CognitiveBootstrapCanaryReceiptV1 {
             || self.completed_at_unix_ms == 0
             || self.receipt_sha256 != self.compute_receipt_sha256()
         {
-            return Err(invalid("stale or malformed cognitive bootstrap canary receipt"));
+            return Err(invalid(
+                "stale or malformed cognitive bootstrap canary receipt",
+            ));
         }
         Ok(())
     }
@@ -381,14 +385,11 @@ impl LiveSignedCognitiveAuthorityVerifier {
         let now = current_time_millis()?;
         let trust = load_trust(&self.identity, &self.signer_trust_file)?;
         if trust.revoked || trust.public_key_hex != self.expected_public_key_hex {
-            return Err(fenced("cognitive authority signer trust is revoked or changed"));
+            return Err(fenced(
+                "cognitive authority signer trust is revoked or changed",
+            ));
         }
-        let state = load_authority_state(
-            &self.identity,
-            &self.authority_state_file,
-            &trust,
-            now,
-        )?;
+        let state = load_authority_state(&self.identity, &self.authority_state_file, &trust, now)?;
         let state_agent = parse_agent_id(&state.agent_id)?;
         if &state_agent != expected_agent
             || state_agent != authority.agent_id
@@ -398,10 +399,11 @@ impl LiveSignedCognitiveAuthorityVerifier {
             || digest32_to_sha256(state.grant_digest)? != authority.grant_digest
             || state.authority_epoch != authority.authority_epoch
             || state.owner_epoch != authority.owner_epoch
-            || state.lease_expires_at_unix_seconds
-                != authority.lease_expires_at_unix_seconds
+            || state.lease_expires_at_unix_seconds != authority.lease_expires_at_unix_seconds
         {
-            return Err(fenced("live cognitive authority state no longer matches the opened writer"));
+            return Err(fenced(
+                "live cognitive authority state no longer matches the opened writer",
+            ));
         }
 
         let digest = cognitive_authority_state_sha256(&state).map_err(contract_error)?;
@@ -478,12 +480,8 @@ pub async fn open_cognitive_production_host_from_signed_bootstrap(
         ));
     }
 
-    let token_bytes = read_external_file(
-        &files.authority_token_file,
-        identity,
-        MAX_TOKEN_BYTES,
-        true,
-    )?;
+    let token_bytes =
+        read_external_file(&files.authority_token_file, identity, MAX_TOKEN_BYTES, true)?;
     if Digest32::of_bytes(&token_bytes) != state.token_sha256 {
         return Err(fenced("opaque cognitive authority token digest mismatch"));
     }

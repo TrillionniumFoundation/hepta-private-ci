@@ -22,7 +22,8 @@ use tempfile::TempDir;
 const CHILD_MODE: &str = "HEPTA_COGNITIVE_FSYNC_FAULT_CHILD_MODE";
 const TEST_ROOT: &str = "HEPTA_COGNITIVE_FSYNC_FAULT_TEST_ROOT";
 const FAULT_ROOT: &str = "HEPTA_COGNITIVE_FSYNC_FAULT_ROOT";
-const TEST_NAME: &str = "post_rename_directory_fsync_failure_is_indeterminate_and_retains_candidate";
+const TEST_NAME: &str =
+    "post_rename_directory_fsync_failure_is_indeterminate_and_retains_candidate";
 const ACTIVE_POINTER: &str = ".cognitive-active-v1";
 const ANCHOR_FILE: &str = "retained-current-cut.json";
 
@@ -202,10 +203,8 @@ fn recovery_authority(owner: &AgentId) -> ProductionAuthorityLease {
         7,
         11,
         u64::MAX,
-        ProductionAuthorityToken::from_verified_bytes(
-            b"post-rename-fsync-fault-token".to_vec(),
-        )
-        .expect("valid recovery token"),
+        ProductionAuthorityToken::from_verified_bytes(b"post-rename-fsync-fault-token".to_vec())
+            .expect("valid recovery token"),
     )
     .expect("valid recovery authority")
 }

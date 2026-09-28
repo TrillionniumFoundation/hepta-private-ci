@@ -108,7 +108,11 @@ impl CognitiveStore {
     pub async fn recovery_anchor_measured(
         &self,
     ) -> Result<
-        (CognitiveRecoveryAnchor, std::time::Duration, std::time::Duration),
+        (
+            CognitiveRecoveryAnchor,
+            std::time::Duration,
+            std::time::Duration,
+        ),
         CognitiveStoreError,
     > {
         let acquisition = std::time::Instant::now();
@@ -690,7 +694,10 @@ mod reconciliation_tests {
                 if message.contains("pointer resolution error")
         ));
         assert!(candidate.exists(), "ambiguous candidate must be retained");
-        assert!(pointer.is_dir(), "the ambiguous pointer must remain untouched");
+        assert!(
+            pointer.is_dir(),
+            "the ambiguous pointer must remain untouched"
+        );
     }
 }
 

@@ -136,3 +136,21 @@ ADR-0001. The measurement and receipt reconciler do not implement those operatio
 Real backup deletion, derived-artifact erasure, parameter unlearning, independent
 signer governance, operator acceptance and release also remain outstanding. No
 current or historical data is physically deleted by this change.
+
+## Follow-on: executable encrypted cold archive
+
+The follow-on implementation adds `archive.py`, the native
+`cognitive-store-archive-check` adapter and `RecoveredCognitiveReadOnly::open_archive_image`.
+It preserves full source/history/tombstone/provenance bytes and verifies the existing
+owner cut before encrypted publication and after cold restore. Detailed framing,
+independent trust/key/binary bindings and recovery behavior are in `ARCHIVE_RUNBOOK.md`.
+It does not prune hot history or physically erase retained generations.
+
+The qualification plan now has 36 independent commands. The 45 archive protocol and
+filesystem tests were executed locally using actual Ed25519/OpenSSL, HKDF and AES-GCM;
+most protocol tests substitute native owner admission, which is explicitly not counted
+as native validation. A separately required Rust cross-process test uses the real owner,
+correction/tombstone history and the native cold-image oracle. No local Rust toolchain
+was available, so that integration and the final exact-candidate CI remain unproved until
+their terminal results exist. Existing checked-in Rust formatting is normalized using
+the fixed-source authoring artifact, not by weakening qualification or skipping checks.

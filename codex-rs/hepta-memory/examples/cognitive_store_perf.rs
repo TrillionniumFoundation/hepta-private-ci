@@ -163,10 +163,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn profile_scopes(
-    owner: &AgentId,
-    requested: usize,
-) -> Vec<(CognitiveAccess, CognitiveScope)> {
+fn profile_scopes(owner: &AgentId, requested: usize) -> Vec<(CognitiveAccess, CognitiveScope)> {
     let count = requested.div_ceil(MAX_RECORDS_PER_SCOPE);
     if count == 1 {
         return vec![(

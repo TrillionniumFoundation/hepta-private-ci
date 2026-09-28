@@ -18,6 +18,9 @@ and recomputes the merge tree. Every command has an exclusive record and bounded
 | `host-bootstrap.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_bootstrap.py` | 1 |
 | `expired-bootstrap-cli.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_expired_cli.py` | 1 |
 | `lifecycle-owner-receipts.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_lifecycle.py -v` | 32 |
+| `archive-dependencies.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/prepare_archive_env.py` | 0 |
+| `archive-protocol-tests.json` | `.` | `$RUNNER_TEMP/cognitive-archive-venv/bin/python tools/cognitive-store-host-bootstrap/test_archive.py -v` | 45 |
+| `archive-owner-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-memory --test cognitive_archive_owner signed_archive_restores_real_correction_and_tombstone_history -- --ignored --exact` | 1 |
 | `format.json` | `codex-rs` | `cargo fmt --package codex-hepta-cognitive-store --package codex-hepta-memory --package codex-hepta-agentd -- --check` | 0 |
 | `default-feature-check.json` | `codex-rs` | `cargo check --locked -p codex-hepta-cognitive-store --no-default-features --lib` | 0 |
 | `agentd-normal-profile-check.json` | `codex-rs` | `cargo check --locked -p codex-hepta-agentd --lib` | 0 |

@@ -262,11 +262,7 @@ impl DurableCognitiveReadStore {
         revoked_at_unix_seconds: i64,
     ) -> Result<FederationRevocation, DurableCognitiveStoreError> {
         self.backend
-            .revoke_federated_recall_by_id(
-                owner_access,
-                capability_id,
-                revoked_at_unix_seconds,
-            )
+            .revoke_federated_recall_by_id(owner_access, capability_id, revoked_at_unix_seconds)
             .await
     }
 }

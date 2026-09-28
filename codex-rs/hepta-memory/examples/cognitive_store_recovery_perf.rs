@@ -215,10 +215,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 let started = Instant::now();
                 let page = recovered
                     .lane_c_snapshot_page(
-                        access,
-                        scope,
-                        /*now_unix_seconds*/ 10,
-                        /*maximum_heads*/ 512,
+                        access, scope, /*now_unix_seconds*/ 10, /*maximum_heads*/ 512,
                         after,
                     )
                     .await?;

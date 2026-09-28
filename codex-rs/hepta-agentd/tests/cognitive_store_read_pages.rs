@@ -128,7 +128,8 @@ async fn product_read_page_matches_owner_and_revalidates() -> Result<(), Box<dyn
 }
 
 #[tokio::test]
-async fn product_read_page_rejects_invalid_bounds_and_foreign_scope() -> Result<(), Box<dyn Error>> {
+async fn product_read_page_rejects_invalid_bounds_and_foreign_scope() -> Result<(), Box<dyn Error>>
+{
     let f = fixture().await?;
     for limit in [0, 513] {
         assert!(matches!(
@@ -138,7 +139,8 @@ async fn product_read_page_rejects_invalid_bounds_and_foreign_scope() -> Result<
             Err(DurableCognitiveStoreError::Invalid(_))
         ));
     }
-    let other = CognitiveAccess::agent_private(AgentId::parse("00000000-0000-4000-8000-00000000cf72")?);
+    let other =
+        CognitiveAccess::agent_private(AgentId::parse("00000000-0000-4000-8000-00000000cf72")?);
     assert!(matches!(
         f.reader
             .lane_c_snapshot_page(&other, &f.scope, 10, 1, None)
