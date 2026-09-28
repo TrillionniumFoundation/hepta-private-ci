@@ -91,6 +91,13 @@ jobs:
         run: |
           set -euo pipefail
           just test --locked --lib -p codex-hepta-agentd --retries 0 --test-threads=1 browser_servo 2>&1 | tee "$RUNNER_TEMP/browser-owner/native-tests.log"
+      - name: Exercise bounded plasticity owner admission and recovery
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked --lib -p codex-hepta-agentd --retries 0 --test-threads=1 plasticity_runtime 2>&1 | tee "$RUNNER_TEMP/browser-owner/plasticity-runtime-tests.log"
       - name: Compile named Agentd Browser product caller
         if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
         working-directory: codex-rs
