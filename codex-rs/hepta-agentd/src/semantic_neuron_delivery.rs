@@ -18,9 +18,10 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::str::FromStr;
 
+use codex_hepta_infer_core::SemanticRetrievalRequestV1;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
-use codex_hepta_infer_core::durable_control::semantic::SemanticRecordV1;
 use codex_hepta_infer_core::durable_control::Error as SemanticOwnerError;
+use codex_hepta_infer_core::durable_control::semantic::SemanticRecordV1;
 use codex_hepta_intelligence::CanonicalIntelligenceRunRequestV1;
 use codex_hepta_neuron::NeuronRuntimeError;
 use codex_hepta_neuron::SemanticNeuronFinalUseGuard;
@@ -93,7 +94,7 @@ pub struct AgentdSemanticNeuronHistoricalDeliveryV1 {
 /// Preparation outcome. `AlreadyDelivered` never reconstructs a model
 /// invocation and therefore cannot replay the semantic result.
 pub enum AgentdSemanticNeuronDeliveryAdmissionV1 {
-    Ready(PreparedAgentdSemanticNeuronDeliveryV1),
+    Ready(Box<PreparedAgentdSemanticNeuronDeliveryV1>),
     AlreadyDelivered(AgentdSemanticNeuronHistoricalDeliveryV1),
 }
 
@@ -141,6 +142,14 @@ pub fn prepare_semantic_neuron_delivery_v1<G: SemanticNeuronFinalUseGuard>(
     if use_context.operation_id != operation_id {
         return Err(AgentdSemanticNeuronDeliveryError::BindingMismatch);
     }
+    let semantic_request = SemanticRetrievalRequestV1::decode(&record.admission.request_wire)
+        .map_err(|_| AgentdSemanticNeuronDeliveryError::BindingMismatch)?;
+    if semantic_request.operation_id != operation_id
+        || semantic_request.workspace_id != use_context.workspace_id
+        || semantic_request.generation != use_context.semantic_generation
+    {
+        return Err(AgentdSemanticNeuronDeliveryError::BindingMismatch);
+    }
     if let Some(acknowledgement) = record.delivery_ack_digest.as_deref() {
         return Ok(AgentdSemanticNeuronDeliveryAdmissionV1::AlreadyDelivered(
             AgentdSemanticNeuronHistoricalDeliveryV1 {
@@ -150,11 +159,8 @@ pub fn prepare_semantic_neuron_delivery_v1<G: SemanticNeuronFinalUseGuard>(
         ));
     }
 
-    let projection = project_semantic_retrieval_to_neuron_v1(
-        record,
-        use_context.clone(),
-        current_use_guard,
-    )?;
+    let projection =
+        project_semantic_retrieval_to_neuron_v1(record, use_context.clone(), current_use_guard)?;
     validate_product_binding(&projection, product_request)?;
     let request_binding_digest = product_request_binding_digest(product_request)?;
     let invocation = neuron.prepare(
@@ -163,7 +169,7 @@ pub fn prepare_semantic_neuron_delivery_v1<G: SemanticNeuronFinalUseGuard>(
         projection.input.clone(),
     )?;
 
-    Ok(AgentdSemanticNeuronDeliveryAdmissionV1::Ready(
+    Ok(AgentdSemanticNeuronDeliveryAdmissionV1::Ready(Box::new(
         PreparedAgentdSemanticNeuronDeliveryV1 {
             operation_id: operation_id.to_owned(),
             use_context,
@@ -171,7 +177,7 @@ pub fn prepare_semantic_neuron_delivery_v1<G: SemanticNeuronFinalUseGuard>(
             request_binding_digest,
             invocation,
         },
-    ))
+    )))
 }
 
 impl PreparedAgentdSemanticNeuronDeliveryV1 {
@@ -196,8 +202,7 @@ impl PreparedAgentdSemanticNeuronDeliveryV1 {
                 self.invocation,
             )
             .await?;
-        let product_outcome_digest =
-            product_outcome_digest(&outcome, self.request_binding_digest);
+        let product_outcome_digest = product_outcome_digest(&outcome, self.request_binding_digest);
         Ok(ConsumedAgentdSemanticNeuronDeliveryV1 {
             operation_id: self.operation_id,
             use_context: self.use_context,
@@ -248,10 +253,8 @@ impl ConsumedAgentdSemanticNeuronDeliveryV1 {
         }
 
         let acknowledgement_text = acknowledgement.to_string();
-        let acknowledged = control.acknowledge_semantic_delivery(
-            &self.operation_id,
-            acknowledgement_text.clone(),
-        )?;
+        let acknowledged = control
+            .acknowledge_semantic_delivery(&self.operation_id, acknowledgement_text.clone())?;
         if acknowledged.delivery_pending()
             || acknowledged.delivery_ack_digest.as_deref() != Some(acknowledgement_text.as_str())
         {
@@ -294,7 +297,10 @@ fn product_request_binding_digest(
     bytes.extend_from_slice(request.snapshot.digest().as_array());
     bytes.extend_from_slice(request.snapshot.objective_digest().as_array());
     bytes.extend_from_slice(&request.snapshot.body_generation().get().to_be_bytes());
-    push_text(&mut bytes, request.legal_candidates.candidate_set_id.as_str())?;
+    push_text(
+        &mut bytes,
+        request.legal_candidates.candidate_set_id.as_str(),
+    )?;
     bytes.extend_from_slice(request.legal_candidates.state_digest.as_array());
     push_text(&mut bytes, request.legal_candidates.generator_id.as_str())?;
     bytes.extend_from_slice(request.legal_candidates.grammar_digest.as_array());
@@ -364,19 +370,13 @@ fn parse_digest(value: &str) -> Result<Digest32, AgentdSemanticNeuronDeliveryErr
     Ok(digest)
 }
 
-fn push_text(
-    bytes: &mut Vec<u8>,
-    value: &str,
-) -> Result<(), AgentdSemanticNeuronDeliveryError> {
+fn push_text(bytes: &mut Vec<u8>, value: &str) -> Result<(), AgentdSemanticNeuronDeliveryError> {
     push_len(bytes, value.len())?;
     bytes.extend_from_slice(value.as_bytes());
     Ok(())
 }
 
-fn push_len(
-    bytes: &mut Vec<u8>,
-    length: usize,
-) -> Result<(), AgentdSemanticNeuronDeliveryError> {
+fn push_len(bytes: &mut Vec<u8>, length: usize) -> Result<(), AgentdSemanticNeuronDeliveryError> {
     let length =
         u64::try_from(length).map_err(|_| AgentdSemanticNeuronDeliveryError::BindingMismatch)?;
     bytes.extend_from_slice(&length.to_be_bytes());
