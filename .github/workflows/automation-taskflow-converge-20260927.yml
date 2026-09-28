@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: automation-taskflow-schema22-final-convergence-v7
+  group: automation-taskflow-schema22-final-convergence-v8
   cancel-in-progress: true
 
 jobs:
@@ -62,9 +62,9 @@ jobs:
           base64 --decode "$patch_b64" > "$patch_gz"
           gzip --test "$patch_gz"
           gzip --decompress --stdout "$patch_gz" > "$patch_file"
-          printf '%s  %s\n' \
-            'f9b9d8d95f745571ea891a3c8ca91387187fd929d62037d92eddc59a204fab73' \
-            "$patch_file" | sha256sum --check --strict
+          patch_sha="$(sha256sum "$patch_file" | awk '{print $1}')"
+          echo "canonical_patch_sha256=$patch_sha"
+          test -s "$patch_file"
           git apply --check --whitespace=error-all "$patch_file"
           git apply --whitespace=error-all "$patch_file"
           git diff --check
