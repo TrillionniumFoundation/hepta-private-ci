@@ -14,7 +14,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: runtime-agentd-instance-patch
+  group: runtime-agentd-instance-patch-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
