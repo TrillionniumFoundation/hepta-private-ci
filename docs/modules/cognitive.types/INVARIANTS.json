@@ -123,9 +123,10 @@
       "checks": [
         "all-targets",
         "package-tests",
-        "strict-clippy"
+        "strict-clippy",
+        "targeted-source-mutations"
       ],
-      "qualificationGroup": "consumers"
+      "qualificationGroup": "consumers-and-native"
     },
     {
       "id": "CTYPE-RECALL-POLICY",
