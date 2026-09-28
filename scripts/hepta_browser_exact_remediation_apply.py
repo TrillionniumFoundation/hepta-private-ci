@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_BASE = "d1a5c47965be4a1a01ef7753e346b99184d6982b"
 ALLOWED_BOOTSTRAP_PATHS = {
     ".github/workflows/hepta-browser-exact-remediation-apply.yml",
+    ".github/workflows/hepta-browser-exact-remediation-hosted.yml",
     "scripts/hepta_browser_exact_remediation_apply.py",
 }
 
