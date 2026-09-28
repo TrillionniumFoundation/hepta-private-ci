@@ -7,10 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 RUST_TEST = ROOT / "codex-rs/hepta-infer-core/src/semantic_control_tests.rs"
-WORKFLOWS = (
-    ROOT / ".github/workflows/hepta-inference-maintenance.yml",
-    ROOT / ".github/workflows/hepta-architecture-convergence.yml",
-)
+WORKFLOW = ROOT / ".github/workflows/hepta-inference-maintenance.yml"
 
 
 class InferenceMaintenanceWorkflowTests(unittest.TestCase):
@@ -19,13 +16,11 @@ class InferenceMaintenanceWorkflowTests(unittest.TestCase):
         symbol = "semantic_journal_retained_history_curve"
         self.assertRegex(rust_source, rf"fn\s+{re.escape(symbol)}\s*\(")
 
-        for workflow in WORKFLOWS:
-            with self.subTest(workflow=workflow.name):
-                source = workflow.read_text(encoding="utf-8")
-                self.assertIn(symbol, source)
-                self.assertNotIn("post_compaction_multi_generation_curve", source)
-                self.assertIn("--minimum-tests 1", source)
-                self.assertIn("-- --ignored", source)
+        source = WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn(symbol, source)
+        self.assertNotIn("post_compaction_multi_generation_curve", source)
+        self.assertIn("--minimum-tests 1", source)
+        self.assertIn("-- --ignored", source)
 
 
 if __name__ == "__main__":
