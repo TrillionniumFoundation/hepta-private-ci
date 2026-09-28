@@ -72,16 +72,22 @@ jobs:
           git apply --check --whitespace=error-all "$evidence/remediation.patch"
           git apply --index --whitespace=error-all "$evidence/remediation.patch"
 
-          # The first exact native run exposed a real compile defect in the
-          # reviewed patch: output_deletion_confirmed is already a bool. Keep
-          # the repair exact and fail closed if the expected source drifts.
+          # The first exact native qualification reached compilation and exposed
+          # one concrete test type mismatch. Repair only that exact assertion and
+          # fail closed if the reviewed source has drifted.
           python3 - <<'PY'
           from pathlib import Path
 
           path = Path("codex-rs/hepta-infer-core/tests/output_retention.rs")
           source = path.read_text(encoding="utf-8")
-          old = "assert!(*tombstone.output_deletion_confirmed);"
-          new = "assert!(tombstone.output_deletion_confirmed);"
+          old = 'assert_eq!(retained.ciphertext_digest.as_deref(), Some(&"c".repeat(64)));'
+          new = (
+              'let expected_ciphertext_digest = "c".repeat(64);\n'
+              '    assert_eq!(\n'
+              '        retained.ciphertext_digest.as_deref(),\n'
+              '        Some(expected_ciphertext_digest.as_str())\n'
+              '    );'
+          )
           if source.count(old) != 1:
               raise SystemExit("expected exact output-retention assertion was not found once")
           path.write_text(source.replace(old, new), encoding="utf-8")
