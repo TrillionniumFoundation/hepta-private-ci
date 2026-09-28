@@ -87,7 +87,7 @@ Startup executes one bounded restart-reconciliation batch and one bounded expira
 
 ## Actionable diagnostics
 
-`AuthBusOperationalSnapshot` includes durable state plus process-lifetime cumulative runtime diagnostics:
+`AuthBusOperationalSnapshot` includes durable authority state plus process-lifetime cumulative runtime diagnostics:
 
 - owner acquisition failures grouped into active-owner, unsafe-path and storage classes;
 - checkpoint synchronization failures split into rollback conflicts and storage failures;
@@ -99,7 +99,9 @@ Startup executes one bounded restart-reconciliation batch and one bounded expira
 
 Mutation latency is measured from request entry across gate wait, checkpoint preflight, SQLite work and checkpoint publication. `blocking_reasons()` reports whether the owner is blocked on checkpoint reconciliation, restart recovery, expired reservation reconciliation, indeterminate settlement, reservation capacity, quota capacity or oldest-active age. Exporters compute rates/deltas from cumulative counters and use bounded non-secret labels.
 
-Evidence outbox claim retries and Evidence/Agentd/Bao acknowledgement latency remain owned by those downstream components. AuthBus does not fabricate observations it cannot make; the qualification workflow executes the downstream owner tests alongside this crate.
+The Evidence SQLite owner now exposes `HeptaEvidenceStore::authbus_outbox_operational_snapshot()`. Its bounded, read-only projection reports queued, leased and terminal counts; active depth; oldest unsettled age; retained claim attempts and retries; active rows that exhausted the claim limit; and retained enqueue-to-ack latency percentiles. These are retained-window values because terminal history may be pruned; they are not represented as process-lifetime counters. The query neither claims nor renews a lease, acknowledges an effect, nor advances replay state.
+
+Bao/provider request latency remains owned by the Bao adapter and HTTP client, which are the only components that can observe it faithfully. AuthBus does not fabricate downstream observations; the qualification workflow executes Evidence, Agentd and Bao owner tests alongside the AuthBus crate.
 
 ## Product composition
 
@@ -115,7 +117,7 @@ Agentd is the named signed-ingress/outbox caller. Evidence outbox quarantine, cl
 - policy/quota/reservation/settlement: `codex-rs/hepta-authbus/src/{authority_store,quota_store,settlement_store}.rs`;
 - recovery/checkpoint/schema: `codex-rs/hepta-authbus/src/{recovery,authority_schema}.rs`;
 - diagnostics and worker: `codex-rs/hepta-authbus/src/{operations,worker}.rs`;
-- Evidence replay/outbox: `codex-rs/hepta-evidence/src/authbus_{store,outbox,outbox_worker,recovery}.rs`;
+- Evidence replay/outbox and delivery diagnostics: `codex-rs/hepta-evidence/src/authbus_{store,outbox,outbox_worker,recovery,operations}.rs`;
 - Agentd composition: `codex-rs/hepta-agentd/src/{authbus_ingress,authbus_dispatch,authbus_trust,evidence_trust}.rs`;
 - Bao composition: `codex-rs/hepta-bao-adapter/src/https_consumer.rs`.
 
@@ -130,7 +132,7 @@ The host test suite proves, rather than merely asserts in documentation, that:
 - enrollment, rotation, revocation and retirement share the same checkpoint-failure contract;
 - deterministic revision rejection is classified as not committed.
 
-Evidence restart replay, outbox identity/lease behavior and Bao dispatch/settlement ambiguity remain tested in their owning crates.
+Evidence tests cover restart replay, outbox identity/lease behavior, retained claim/retry projection, oldest active delivery age, enqueue-to-ack latency and snapshot side-effect freedom. Bao tests retain ownership of dispatch/settlement ambiguity and provider-boundary behavior.
 
 ## Exact-candidate qualification
 
