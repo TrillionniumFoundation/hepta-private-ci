@@ -4,9 +4,9 @@
 The retained generator owns the document schema and source assertions. This
 entrypoint points those assertions at the active split implementation files and
 normalizes their test paths back to the stable public module paths. New
-closure-specific supervisor tests remain governed by the explicit,
-human-reviewed REQUIREMENT_TEST_MAP instead of being inferred into the broad
-name-based inventory.
+closure-specific supervisor and fault-boundary tests remain governed by the
+explicit, human-reviewed REQUIREMENT_TEST_MAP instead of being inferred into the
+broad name-based inventory.
 """
 
 from __future__ import annotations
@@ -61,13 +61,24 @@ CLOSURE_ONLY_FILES = {
     "codex-rs/hepta-agentd/src/intelligence_invocation_supervisor.rs",
     "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_owner_supervisor.rs",
 }
+CLOSURE_ONLY_TESTS = {
+    (
+        "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_product_loop_base.rs",
+        "terminal_control_loss_never_discards_a_provider_terminal_into_replay",
+    ),
+    (
+        "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_product_loop_base.rs",
+        "unknown_dispatch_and_post_terminal_reconciliation_are_distinct",
+    ),
+}
 
 
 def discover_tests():
     tests = []
     for test in original_discover_tests():
         source = test["sourcePath"]
-        if source in CLOSURE_ONLY_FILES:
+        key = (source, test["name"])
+        if source in CLOSURE_ONLY_FILES or key in CLOSURE_ONLY_TESTS:
             continue
         normalized = dict(test)
         normalized["sourcePath"] = ALIASES.get(source, source)
