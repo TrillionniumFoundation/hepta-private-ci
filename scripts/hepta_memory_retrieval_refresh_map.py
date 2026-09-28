@@ -15,22 +15,26 @@ import shutil
 import subprocess
 import sys
 
-MAP = "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json"
-ROOT = "codex-rs/hepta-memory-retrieval"
-INPUTS = (
-    ROOT, "codex-rs/hepta-types", "codex-rs/hepta-cognitive-types",
-    "codex-rs/hepta-cognitive-read", "codex-rs/hepta-cognitive-store",
-    "codex-rs/hepta-memory", "codex-rs/hepta-agentd", "codex-rs/hepta-learning-ledger",
-    "codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "codex-rs/rust-toolchain.toml",
-    "codex-rs/.cargo", ".cargo", "justfile",
-    ".github/workflows/blocking-ci.yml",
-    ".github/workflows/hepta-memory-retrieval-convergence.yml",
-    ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
-    "scripts/hepta_memory_retrieval_qualification.py", "scripts/hepta_memory_retrieval_slo.py",
-    # Conservative whole-workspace closure: transitive contract changes invalidate qualification.
-    "codex-rs", "scripts", ".github/workflows", "MODULE.bazel", "MODULE.bazel.lock",
-    "docs/modules/memory.retrieval", "qualification/memory-retrieval",
-)
+try:
+    from scripts.hepta_memory_retrieval_policy import (
+        INPUTS,
+        MAP,
+        OBJECT_INPUTS,
+        PolicyError,
+        ROOT,
+        load_policy,
+        safe_path,
+    )
+except ModuleNotFoundError:  # direct script execution from scripts/
+    from hepta_memory_retrieval_policy import (  # type: ignore
+        INPUTS,
+        MAP,
+        OBJECT_INPUTS,
+        PolicyError,
+        ROOT,
+        load_policy,
+        safe_path,
+    )
 
 
 class RefreshError(ValueError):
@@ -46,15 +50,7 @@ def git(root, *args):
 
 
 def remove_generated_python_caches(root: Path) -> None:
-    """Remove import-only cache artifacts before enforcing a clean source tree.
-
-    Qualification workflows dynamically import this module. Some Python builds can
-    materialize ``__pycache__`` between the workflow's clean-tree check and this
-    function call even when bytecode suppression is requested. Those cache files
-    are neither source inputs nor evidence. Remove only untracked Python cache
-    directories under the repository scripts tree; every tracked or non-cache
-    change remains a hard failure below.
-    """
+    """Remove import-only cache artifacts before enforcing a clean source tree."""
     scripts = root / "scripts"
     if not scripts.is_dir():
         return
@@ -81,6 +77,22 @@ def unique_object(pairs):
     return result
 
 
+def _git_object(root: Path, head: str, path: str) -> str | None:
+    result = subprocess.run(
+        ["git", "-C", str(root), "rev-parse", "--verify", f"{head}:{path}"],
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=False,
+    )
+    if result.returncode:
+        return None
+    identity = result.stdout.strip()
+    if not re.fullmatch(r"[0-9a-f]{40}", identity):
+        raise RefreshError("unexpected Git object identity")
+    return identity
+
+
 def refresh(root, head):
     root = Path(root)
     if not isinstance(head, str) or not re.fullmatch(r"[0-9a-f]{40}", head):
@@ -90,35 +102,54 @@ def refresh(root, head):
     remove_generated_python_caches(root)
     if git(root, "status", "--porcelain", "--untracked-files=normal"):
         raise RefreshError("commit all source changes before refreshing the map")
+
+    try:
+        policy = load_policy(root)
+    except (OSError, ValueError, TypeError, KeyError, PolicyError) as error:
+        raise RefreshError(f"qualification policy refused: {error}") from error
+    canonical_inputs = tuple(policy["sourceInputs"])
+    object_inputs = tuple(policy["sourceObjectInputs"])
+    if canonical_inputs != INPUTS or object_inputs != OBJECT_INPUTS:
+        raise RefreshError("loaded policy differs from the policy used by this process")
+
     mapping = json.loads((root / MAP).read_text(), object_pairs_hook=unique_object)
     if mapping.get("module") != "memory.retrieval":
         raise RefreshError("wrong module map")
-    paths = sorted(set(INPUTS) | set(mapping.get("observedSourcePaths", [])))
-    for path in paths:
-        parts = Path(path).parts
-        if not path or path.startswith(("/", ":")) or ".." in parts or "\\" in path or "\x00" in path:
-            raise RefreshError("unsafe source input path")
+
+    inherited = mapping.get("observedSourcePaths", [])
+    if not isinstance(inherited, list):
+        raise RefreshError("observedSourcePaths must be a list")
+    # Validate old values before discarding them so a poisoned inherited path can
+    # never be normalized into an apparently clean map.
+    for path in inherited:
+        try:
+            safe_path(path)
+        except PolicyError as error:
+            raise RefreshError(str(error)) from error
+
+    paths = list(canonical_inputs)
     objects, missing = [], []
     for path in paths:
-        # Do not bind the map or a tree containing the map to itself.
-        if path == MAP or MAP.startswith(path.rstrip("/") + "/"):
-            continue
-        result = subprocess.run(["git", "-C", str(root), "rev-parse", "--verify", f"{head}:{path}"],
-                                capture_output=True, text=True, timeout=60, check=False)
-        if result.returncode:
+        identity = _git_object(root, head, path)
+        if identity is None:
             missing.append(path)
-            continue
-        identity = result.stdout.strip()
-        if not re.fullmatch(r"[0-9a-f]{40}", identity):
-            raise RefreshError("unexpected Git object identity")
+
+    for path in object_inputs:
+        identity = _git_object(root, head, path)
+        if identity is None:
+            raise RefreshError(f"required source object is missing: {path}")
         objects.append({"path": path, "object": identity})
+
     if ROOT not in {row["path"] for row in objects}:
         raise RefreshError("retrieval source root is missing")
-    mapping["observedAtHead"] = {"commit": head, "tree": git(root, "rev-parse", f"{head}^{{tree}}")}
+    mapping["observedAtHead"] = {
+        "commit": head,
+        "tree": git(root, "rev-parse", f"{head}^{{tree}}"),
+    }
     mapping["observedSourcePaths"] = paths
     mapping["sourceObjects"] = objects
     mapping["observedMissingPaths"] = missing
-    # All ownership, operation mappings, sourceBase and claim fields are preserved.
+    # Ownership, operations, provenance and all false claim fields are preserved.
     return mapping
 
 
@@ -132,7 +163,8 @@ def main():
         path = args.root / MAP
         path.write_text(json.dumps(mapping, indent=2) + "\n")
         print(f"refreshed {MAP}; commit this file separately; no execution claim promoted")
-    except (RefreshError, OSError, ValueError, KeyError, TypeError, subprocess.TimeoutExpired) as error:
+    except (RefreshError, OSError, ValueError, KeyError, TypeError,
+            subprocess.TimeoutExpired) as error:
         print(f"memory.retrieval map refresh refused: {error}", file=sys.stderr)
         return 1
     return 0

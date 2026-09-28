@@ -29,9 +29,17 @@ class SourceBindingTests(unittest.TestCase):
         self.mapping = {
             "module": "memory.retrieval",
             "sourceBase": {"commit": observed},
-            "observedAtHead": {"commit": observed, "tree": execute(self.root, "rev-parse", "HEAD^{tree}")},
+            "observedAtHead": {
+                "commit": observed,
+                "tree": execute(self.root, "rev-parse", "HEAD^{tree}"),
+            },
             "observedSourcePaths": list(q.INPUTS),
-            "sourceObjects": [{"path": q.ROOT, "object": execute(self.root, "rev-parse", f"HEAD:{q.ROOT}")}],
+            "sourceObjects": [
+                {
+                    "path": q.ROOT,
+                    "object": execute(self.root, "rev-parse", f"HEAD:{q.ROOT}"),
+                }
+            ],
             "productionImplementation": False,
             "claimBoundary": {claim: False for claim in q.CLAIMS},
         }
@@ -84,7 +92,13 @@ class SourceBindingTests(unittest.TestCase):
             q.source_observation(self.root, self.head)
 
     def test_missing_dependency_input_fails(self):
-        self.mapping["observedSourcePaths"].remove("codex-rs/Cargo.lock")
+        self.mapping["observedSourcePaths"].remove("codex-rs")
+        self.save_map()
+        with self.assertRaises(q.QualificationError):
+            q.source_observation(self.root, self.head)
+
+    def test_extra_dependency_input_fails(self):
+        self.mapping["observedSourcePaths"].append("legacy/safe/path")
         self.save_map()
         with self.assertRaises(q.QualificationError):
             q.source_observation(self.root, self.head)
@@ -111,16 +125,54 @@ class SourceBindingTests(unittest.TestCase):
 class ApprovalTests(unittest.TestCase):
     def setUp(self):
         self.head, self.qualified = "a" * 40, "b" * 40
-        self.pr = {"draft": False, "head": {"sha": self.head}, "user": {"login": "author"}}
-        self.reviews = [{"id": 1, "user": {"login": "reviewer", "type": "User"},
-                         "author_association": "MEMBER", "state": "APPROVED", "commit_id": self.head}]
-        self.checks = [{"id": index, "name": name, "head_sha": self.qualified,
-                        "status": "completed", "conclusion": "success", "app": {"slug": "github-actions"},
-                        "verified_workflow_path": workflow, "verified_run_head": self.qualified}
-                       for index, (name, workflow) in enumerate(q.REQUIRED_CHECKS.items())]
+        self.pr = {
+            "draft": False,
+            "head": {"sha": self.head},
+            "user": {"login": "author"},
+        }
+        self.reviews = [
+            {
+                "id": 1,
+                "user": {"login": "reviewer", "type": "User"},
+                "author_association": "MEMBER",
+                "state": "APPROVED",
+                "commit_id": self.head,
+            }
+        ]
+        self.checks = [
+            {
+                "id": index,
+                "name": name,
+                "head_sha": self.qualified,
+                "status": "completed",
+                "conclusion": "success",
+                "app": {"slug": "github-actions"},
+                "verified_workflow_path": workflow,
+                "verified_run_head": self.qualified,
+            }
+            for index, (name, workflow) in enumerate(q.REQUIRED_CHECKS.items(), start=1)
+        ]
+        self.checks.extend(
+            {
+                "id": 100 + index,
+                "name": name,
+                "head_sha": self.qualified,
+                "status": "completed",
+                "conclusion": conclusion,
+                "app": {"slug": "github-advanced-security"},
+            }
+            for index, (name, conclusion) in enumerate(q.SECURITY_CHECKS.items())
+        )
 
     def approve(self):
-        return q.independent_approval(self.pr, self.reviews, self.checks, self.head, self.qualified, {"author"})
+        return q.independent_approval(
+            self.pr,
+            self.reviews,
+            self.checks,
+            self.head,
+            self.qualified,
+            {"author"},
+        )
 
     def test_independent_approval_is_only_a_necessary_source_gate(self):
         self.assertEqual(self.approve(), "reviewer")
@@ -155,13 +207,19 @@ class ApprovalTests(unittest.TestCase):
         with self.assertRaises(q.QualificationError):
             self.approve()
 
+    def test_failed_security_check_blocks_promotion(self):
+        codeql = next(row for row in self.checks if row["name"] == "CodeQL")
+        codeql["conclusion"] = "failure"
+        with self.assertRaises(q.QualificationError):
+            self.approve()
+
     def test_same_name_from_wrong_workflow_fails(self):
         self.checks[0]["verified_workflow_path"] = ".github/workflows/fake.yml"
         with self.assertRaises(q.QualificationError):
             self.approve()
 
     def test_latest_failed_rerun_invalidates_old_success(self):
-        self.checks.append({**self.checks[0], "id": 100, "conclusion": "failure"})
+        self.checks.append({**self.checks[0], "id": 1000, "conclusion": "failure"})
         with self.assertRaises(q.QualificationError):
             self.approve()
 
@@ -171,7 +229,10 @@ class ApprovalTests(unittest.TestCase):
 
     def test_duplicate_json_key_fails(self):
         with self.assertRaises(q.QualificationError):
-            json.loads('{"activation":true,"activation":false}', object_pairs_hook=q.unique_object)
+            json.loads(
+                '{"activation":true,"activation":false}',
+                object_pairs_hook=q.unique_object,
+            )
 
 
 if __name__ == "__main__":

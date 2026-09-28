@@ -19,40 +19,28 @@ import sys
 from typing import Any
 from urllib.request import Request, urlopen
 
-MAP = "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json"
-ROOT = "codex-rs/hepta-memory-retrieval"
+try:
+    from scripts.hepta_memory_retrieval_policy import (
+        CLAIMS,
+        INPUTS,
+        MAP,
+        OBJECT_INPUTS,
+        REQUIRED_CHECKS,
+        ROOT,
+        SECURITY_CHECKS,
+    )
+except ModuleNotFoundError:  # direct script execution from scripts/
+    from hepta_memory_retrieval_policy import (  # type: ignore
+        CLAIMS,
+        INPUTS,
+        MAP,
+        OBJECT_INPUTS,
+        REQUIRED_CHECKS,
+        ROOT,
+        SECURITY_CHECKS,
+    )
+
 SHA = re.compile(r"[0-9a-f]{40}\Z")
-INPUTS = (
-    ROOT,
-    "codex-rs/hepta-types",
-    "codex-rs/hepta-cognitive-types",
-    "codex-rs/hepta-cognitive-read",
-    "codex-rs/hepta-cognitive-store",
-    "codex-rs/hepta-memory",
-    "codex-rs/hepta-agentd",
-    "codex-rs/hepta-learning-ledger",
-    "codex-rs/Cargo.toml",
-    "codex-rs/Cargo.lock",
-    "codex-rs/rust-toolchain.toml",
-    "codex-rs/.cargo",
-    ".cargo",
-    "justfile",
-    ".github/workflows/blocking-ci.yml",
-    ".github/workflows/hepta-memory-retrieval-convergence.yml",
-    ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
-    "scripts/hepta_memory_retrieval_qualification.py",
-    "scripts/hepta_memory_retrieval_slo.py",
-)
-CLAIMS = (
-    "productionImplementation", "productExecutionProved", "independentAcceptance",
-    "activation", "release",
-)
-REQUIRED_CHECKS = {
-    "Memory retrieval exact source": ".github/workflows/hepta-memory-retrieval-convergence.yml",
-    "Memory retrieval source-head": ".github/workflows/hepta-memory-retrieval-convergence.yml",
-    "Memory retrieval base-merge": ".github/workflows/hepta-memory-retrieval-convergence.yml",
-    "Memory retrieval target-host": ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
-}
 
 
 class QualificationError(ValueError):
@@ -117,12 +105,14 @@ def source_observation(root: Path, head: str) -> dict[str, Any]:
         raise QualificationError("observed commit/tree mismatch")
     git(root, "merge-base", "--is-ancestor", observed, head)
     declared = [safe_path(path) for path in mapping.get("observedSourcePaths", [])]
-    if not set(INPUTS).issubset(declared):
-        raise QualificationError("implementation map omits a required dependency input")
+    if declared != list(INPUTS):
+        raise QualificationError("implementation map source inputs differ from canonical policy")
     changed = git(root, "diff", "--name-only", observed, head, "--", *declared)
     if any(path != MAP for path in changed.splitlines()):
         raise QualificationError(f"source closure changed after map observation: {changed}")
     rows = mapping.get("sourceObjects", [])
+    if not isinstance(rows, list):
+        raise QualificationError("sourceObjects must be a list")
     objects: dict[str, str] = {}
     for row in rows:
         path = safe_path(row["path"])
@@ -133,6 +123,8 @@ def source_observation(root: Path, head: str) -> dict[str, Any]:
         if actual != expected:
             raise QualificationError(f"stale source object: {path}")
         objects[path] = actual
+    if tuple(objects) != OBJECT_INPUTS:
+        raise QualificationError("source object inventory differs from canonical policy")
     if ROOT not in objects:
         raise QualificationError("full retrieval source tree must be bound")
     inventory = git(root, "ls-tree", "-r", "--full-tree", head, "--", *declared)
@@ -206,6 +198,10 @@ def independent_approval(
             raise QualificationError(f"unexpected workflow for check: {name}")
         if check.get("verified_run_head") != qualified_head:
             raise QualificationError(f"workflow/source mismatch: {name}")
+    for name, conclusion in SECURITY_CHECKS.items():
+        check = newest.get(name, {})
+        if check.get("status") != "completed" or check.get("conclusion") != conclusion:
+            raise QualificationError(f"missing successful exact-source security check: {name}")
     return sorted(approved)[0]
 
 
@@ -305,10 +301,12 @@ def main() -> int:
                   else promotion_guard(args.root, exact_sha(args.head)))
         encoded = json.dumps(result, indent=2, sort_keys=True) + "\n"
         if args.output:
+            args.output.parent.mkdir(parents=True, exist_ok=True)
             args.output.write_text(encoded)
         else:
             print(encoded, end="")
-    except (QualificationError, OSError, ValueError, KeyError, TypeError, subprocess.TimeoutExpired) as error:
+    except (QualificationError, OSError, ValueError, KeyError, TypeError,
+            subprocess.TimeoutExpired) as error:
         print(f"memory.retrieval qualification refused: {error}", file=sys.stderr)
         return 1
     return 0
