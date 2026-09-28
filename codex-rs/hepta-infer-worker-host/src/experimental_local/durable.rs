@@ -109,7 +109,7 @@ where
         manifest: &VerifiedModelManifest,
     ) -> Result<AttestedModelHandle, LocalWorkerError> {
         self.validate_generation(grant)?;
-        let reservation = self
+        let mut reservation = self
             .resources
             .reserve_model(manifest.expected_resident_memory_bytes())?;
         let load = match self.driver.load(manifest, grant).await {
@@ -124,7 +124,7 @@ where
             Ok(observed) => observed,
             Err(error) => {
                 if !self.cleanup_failed_load(&load, grant).await {
-                    self.resources.fence_generation(
+                    reservation.retain_for_repair(
                         "trusted resource observation failed after physical model load and cleanup was not independently confirmed",
                     )?;
                 }
@@ -135,7 +135,7 @@ where
             Ok(handle) => handle,
             Err(error) => {
                 if !self.cleanup_failed_load(&load, grant).await {
-                    self.resources.fence_generation(
+                    reservation.retain_for_repair(
                         "loaded model failed trusted attestation and cleanup was not independently confirmed",
                     )?;
                 }
@@ -148,7 +148,7 @@ where
             let cleanup_confirmed = matches!(cleanup, Ok(value) if value.terminal_observed)
                 && matches!(release, Ok(value) if release_matches(&value, &handle));
             if !cleanup_confirmed {
-                self.resources.fence_generation(
+                reservation.retain_for_repair(
                     "model exceeded aggregate capacity and cleanup was not independently confirmed",
                 )?;
             }
