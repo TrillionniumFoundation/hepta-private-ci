@@ -38,6 +38,11 @@ jobs:
           printf '%s  %s\n' "$EXPECTED_PATCH_SHA256" /tmp/ui-native-remediation.patch | sha256sum --check --strict
           git apply --check --whitespace=error-all /tmp/ui-native-remediation.patch
           git apply --index --whitespace=error-all /tmp/ui-native-remediation.patch
+          if ! command -v rustup >/dev/null 2>&1; then
+            command -v curl >/dev/null
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.95.0
+            source "$HOME/.cargo/env"
+          fi
           rustup toolchain install 1.95.0 --profile minimal --component rustfmt
           cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
           PYTHONDONTWRITEBYTECODE=1 python3 -m unittest scripts.test_hepta_ui_native_source -v
