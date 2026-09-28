@@ -5,6 +5,8 @@
 //! material. A composition owner derives those inputs from the already-durable
 //! RunStart record and the current owner generation.
 
+use std::future::Future;
+use std::pin::Pin;
 use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
@@ -21,6 +23,8 @@ use codex_hepta_types::StableId;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdIntelligenceOwnerInputsV1;
+use crate::PreparedAgentdIntelligenceRunV1;
+use crate::RunReceipt;
 
 const DEFAULT_INVOCATION_FACTORY_BUDGET: Duration = Duration::from_millis(250);
 const MAX_INVOCATION_FACTORY_BUDGET: Duration = Duration::from_secs(30);
@@ -240,6 +244,41 @@ impl AgentdIntelligenceInvocationV1 {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AgentdIntelligenceProductLoopDispositionV1 {
+    Completed,
+    Indeterminate,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AgentdIntelligenceProductLoopReceiptV1 {
+    pub run_id: StableId,
+    pub decision_operation_id: StableId,
+    pub outcome_operation_id: Option<StableId>,
+    pub physical_terminal_digest: Option<Digest32>,
+    pub disposition: AgentdIntelligenceProductLoopDispositionV1,
+}
+
+pub type AgentdIntelligenceProductContinuationFuture<'a> = Pin<
+    Box<
+        dyn Future<Output = Result<AgentdIntelligenceProductLoopReceiptV1, AgentdError>>
+            + Send
+            + 'a,
+    >,
+>;
+
+/// Product embedding continuation invoked only after Agentd has frozen the
+/// exact prepared intelligence envelope into `ContextAttached`. Implementations
+/// must reuse the existing runtime.codex/App Server spine and the canonical
+/// learning outbox; they may not invent a second physical executor or writer.
+pub trait AgentdIntelligenceProductContinuationV1: Send + Sync {
+    fn continue_ready<'a>(
+        &'a self,
+        prepared: PreparedAgentdIntelligenceRunV1,
+        run_receipt: RunReceipt,
+    ) -> AgentdIntelligenceProductContinuationFuture<'a>;
+}
+
 /// Concrete host-owned provider backed by one typed factory.
 ///
 /// The factory supplies the seven owner values. The provider overwrites the run
@@ -251,6 +290,7 @@ pub struct HostOwnedAgentdIntelligenceInvocationProviderV1<F> {
     budget: Duration,
     active_workers: Arc<AtomicUsize>,
     max_workers: usize,
+    continuation: Option<Arc<dyn AgentdIntelligenceProductContinuationV1>>,
 }
 
 impl<F> HostOwnedAgentdIntelligenceInvocationProviderV1<F> {
@@ -261,6 +301,7 @@ impl<F> HostOwnedAgentdIntelligenceInvocationProviderV1<F> {
             budget: DEFAULT_INVOCATION_FACTORY_BUDGET,
             active_workers: Arc::new(AtomicUsize::new(0)),
             max_workers: DEFAULT_INVOCATION_FACTORY_WORKERS,
+            continuation: None,
         }
     }
 
@@ -280,6 +321,19 @@ impl<F> HostOwnedAgentdIntelligenceInvocationProviderV1<F> {
         }
         self.budget = budget;
         self.max_workers = max_workers;
+        Ok(self)
+    }
+
+    pub fn with_product_continuation(
+        mut self,
+        continuation: Arc<dyn AgentdIntelligenceProductContinuationV1>,
+    ) -> Result<Self, AgentdError> {
+        if self.continuation.is_some() {
+            return Err(AgentdError::Invalid(
+                "intelligence product continuation already configured".to_string(),
+            ));
+        }
+        self.continuation = Some(continuation);
         Ok(self)
     }
 
@@ -358,6 +412,12 @@ where
         invocation.validate(&identity, &record)?;
         Ok(invocation)
     }
+
+    fn product_continuation(
+        &self,
+    ) -> Option<Arc<dyn AgentdIntelligenceProductContinuationV1>> {
+        self.continuation.clone()
+    }
 }
 
 fn duration_millis(value: Duration) -> u64 {
@@ -376,6 +436,12 @@ pub trait AgentdIntelligenceInvocationProviderV1: Send + Sync {
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
     ) -> Result<AgentdIntelligenceInvocationV1, AgentdError>;
+
+    fn product_continuation(
+        &self,
+    ) -> Option<Arc<dyn AgentdIntelligenceProductContinuationV1>> {
+        None
+    }
 }
 
 #[cfg(test)]
