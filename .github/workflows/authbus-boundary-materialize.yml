@@ -1,0 +1,71 @@
+name: AuthBus boundary materialization
+
+on:
+  push:
+    branches: [auth-authbus-boundary-convergence-20260928]
+    paths: [.github/workflows/authbus-boundary-materialize.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: authbus-boundary-materialize-20260928
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Materialize the sealed authority boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          python3 scripts/finalize-authbus-hardening.py
+          cargo fmt --all --manifest-path codex-rs/Cargo.toml
+          python3 scripts/check-authbus-closed-world.py --check
+          git diff --check
+
+      - name: Remove one-shot migration machinery
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f \
+            .github/workflows/authbus-boundary-materialize.yml \
+            .github/workflows/authbus-convergence-materialize.yml \
+            .github/workflows/authbus-final-hardening-apply.yml \
+            .github/workflows/authbus-hardening-migrate.yml \
+            .github/workflows/authbus-trust-boundary-migrate.yml \
+            scripts/finalize-authbus-hardening.py \
+            scripts/migrate-authbus-sealed-callers.py
+          git diff --check
+
+      - name: Commit the materialized source candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-authbus-convergence-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "materialization produced no changes" >&2
+            exit 1
+          fi
+          git commit -m "fix(authbus): materialize sealed authority callers"
+          git fetch origin auth-authbus-boundary-convergence-20260928
+          git rebase origin/auth-authbus-boundary-convergence-20260928
+          git push origin HEAD:auth-authbus-boundary-convergence-20260928
