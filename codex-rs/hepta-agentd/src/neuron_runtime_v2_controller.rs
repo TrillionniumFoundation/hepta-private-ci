@@ -1,11 +1,33 @@
 impl AgentdNeuronGenerationControllerV2 {
     pub fn new(active: AgentdNeuronHandleV2) -> Result<Self, AgentdNeuronControlErrorV2> {
-        active.generation()?;
+        Self::from_recovered_generations(active, std::iter::empty())
+    }
+
+    /// Rebuild the daemon controller from one active generation and sealed
+    /// historical generations opened from durable storage.
+    ///
+    /// Historical generations must be unique and strictly older than the
+    /// active generation. They remain queryable but can never receive new work
+    /// through this controller.
+    pub fn from_recovered_generations(
+        active: AgentdNeuronHandleV2,
+        retained: impl IntoIterator<Item = AgentdNeuronHandleV2>,
+    ) -> Result<Self, AgentdNeuronControlErrorV2> {
+        let active_generation = active.generation()?;
+        let mut retained_by_generation = BTreeMap::new();
+        for handle in retained {
+            let generation = handle.generation()?;
+            if generation >= active_generation
+                || retained_by_generation.insert(generation, handle).is_some()
+            {
+                return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+            }
+        }
         Ok(Self {
             state: Mutex::new(AgentdNeuronGenerationControllerStateV2 {
                 lifecycle: AgentdNeuronLifecycleStateV2::Starting,
                 active,
-                retained: BTreeMap::new(),
+                retained: retained_by_generation,
             }),
         })
     }
@@ -28,15 +50,34 @@ impl AgentdNeuronGenerationControllerV2 {
         self.lock_state()?.active.generation()
     }
 
+    pub fn retained_generations(&self) -> Result<Vec<u64>, AgentdNeuronControlErrorV2> {
+        Ok(self.lock_state()?.retained.keys().copied().collect())
+    }
+
     pub fn start(&self) -> Result<(), AgentdNeuronControlErrorV2> {
-        let active = {
+        let (active, retained) = {
             let state = self.lock_state()?;
             if state.lifecycle != AgentdNeuronLifecycleStateV2::Starting {
                 return Err(AgentdNeuronControlErrorV2::InvalidTransition);
             }
-            state.active.clone()
+            (
+                state.active.clone(),
+                state.retained.values().cloned().collect::<Vec<_>>(),
+            )
         };
+
+        // A recovered historical generation was sealed before handoff. Refuse
+        // service if replay discovers unfinished work instead of silently
+        // dropping that history or making it writable again.
+        for handle in retained {
+            handle.reconcile_control()?;
+            let snapshot = handle.operational_snapshot()?;
+            if snapshot.pending_operation_code.is_some() || snapshot.pending_witness_count != 0 {
+                return Err(AgentdNeuronControlErrorV2::PendingRecovery);
+            }
+        }
         active.reconcile_control()?;
+
         let mut state = self.lock_state()?;
         if state.lifecycle != AgentdNeuronLifecycleStateV2::Starting {
             return Err(AgentdNeuronControlErrorV2::InvalidTransition);
@@ -172,6 +213,26 @@ impl AgentdNeuronGenerationControllerV2 {
     ) -> Result<AgentdNeuronOperationalSnapshotV2, AgentdNeuronControlErrorV2> {
         let active = self.lock_state()?.active.clone();
         active.operational_snapshot()
+    }
+
+    pub fn controller_snapshot(
+        &self,
+    ) -> Result<AgentdNeuronGenerationControllerSnapshotV2, AgentdNeuronControlErrorV2> {
+        let (lifecycle, active, active_generation, retained_generations) = {
+            let state = self.lock_state()?;
+            (
+                state.lifecycle,
+                state.active.clone(),
+                state.active.generation()?,
+                state.retained.keys().copied().collect(),
+            )
+        };
+        Ok(AgentdNeuronGenerationControllerSnapshotV2 {
+            lifecycle,
+            active_generation,
+            retained_generations,
+            active: active.operational_snapshot()?,
+        })
     }
 
     pub fn query_operation(

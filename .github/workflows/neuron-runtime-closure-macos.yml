@@ -89,7 +89,13 @@ jobs:
           cd codex-rs
           cargo metadata --locked --format-version=1 >/dev/null
           cargo check --locked -p codex-hepta-neuron -p codex-hepta-agentd --all-targets
-          just test --locked -p codex-hepta-neuron -p codex-hepta-agentd
+
+          # Keep the architecture lane owned by Neuron. Agentd is still fully
+          # compiled/linted; only Neuron V2 tests execute here.
+          just test --locked --retries 0 -p codex-hepta-neuron
+          just test --locked --retries 0 -p codex-hepta-agentd \
+            -E 'test(/neuron_runtime_v2/)'
+
           cargo clippy --locked -p codex-hepta-neuron -p codex-hepta-agentd --all-targets -- -D warnings
           cargo fmt --package codex-hepta-neuron --package codex-hepta-agentd -- --check
           cd ..

@@ -88,6 +88,14 @@ pub struct AgentdNeuronOperationalSnapshotV2 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct AgentdNeuronGenerationControllerSnapshotV2 {
+    pub lifecycle: AgentdNeuronLifecycleStateV2,
+    pub active_generation: u64,
+    pub retained_generations: Vec<u64>,
+    pub active: AgentdNeuronOperationalSnapshotV2,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct AgentdNeuronRecoveryReportV2 {
     pub status_code: String,
     pub terminal: bool,

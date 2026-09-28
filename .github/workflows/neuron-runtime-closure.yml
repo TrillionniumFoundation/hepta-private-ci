@@ -119,7 +119,17 @@ jobs:
           cargo build --locked -p codex-cli --bin codex
           export CARGO_BIN_EXE_codex="$(cargo metadata --locked --format-version=1 --no-deps | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"] + "/debug/codex")')"
           test -x "$CARGO_BIN_EXE_codex"
-          just test --locked --retries 0 -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-core -p codex-hepta-infer-worker-host
+
+          # Agentd is a shared package. Compile and lint all of it, but execute
+          # only tests owned by the Neuron V2 module in this qualification lane.
+          # Repository-wide CI remains responsible for unrelated Agentd owners.
+          just test --locked --retries 0 \
+            -p codex-hepta-neuron \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host
+          just test --locked --retries 0 -p codex-hepta-agentd \
+            -E 'test(/neuron_runtime_v2/)'
+
           cargo clippy --locked -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets -- -D warnings
           cargo fmt --package codex-hepta-neuron --package codex-hepta-agentd --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
 

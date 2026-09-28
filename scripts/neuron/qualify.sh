@@ -52,7 +52,15 @@ cd codex-rs
 rustc -Vv | tee "$NEURON_EVIDENCE_DIR/toolchain.txt"
 pkgs=(-p codex-hepta-neuron -p codex-hepta-infer-worker-host -p codex-hepta-agentd -p codex-hepta-intelligence)
 run_step compile cargo check --locked "${pkgs[@]}" --all-targets
-run_step tests just test --locked "${pkgs[@]}"
+
+# Agentd is a shared package. Compile and lint all targets, but keep this
+# qualification lane scoped to Neuron-owned Agentd tests. Repository-wide CI
+# continues to execute unrelated Agentd owners.
+run_step neuron-owned-tests just test --locked --retries 0 \
+  -p codex-hepta-neuron -p codex-hepta-infer-worker-host -p codex-hepta-intelligence
+run_step agentd-neuron-tests just test --locked --retries 0 \
+  -p codex-hepta-agentd -E 'test(/neuron_runtime_v2/)'
+
 run_step clippy cargo clippy --locked "${pkgs[@]}" --all-targets --no-deps -- -D warnings
 run_step format cargo fmt "${pkgs[@]}" -- --check
 export HEPTA_NEURON_DIAGNOSTIC_SOURCE_SHA="$NEURON_ACTUAL_SHA"

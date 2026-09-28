@@ -4,19 +4,21 @@ Use these documents in order. This page is the canonical navigation entry; it
 prevents design notes, execution dossiers and historical qualification records
 from being mistaken for the current implementation contract.
 
-1. [`V2_DEVELOPMENT.md`](V2_DEVELOPMENT.md) — current V2 operation lifecycle,
-   durable recovery semantics, filesystem boundary, diagnostics and exact-source
-   qualification requirements.
-2. [`V2_CONTROL_PLANE.md`](V2_CONTROL_PLANE.md) — the four permission boundaries,
-   recovery-only API, Agentd lifecycle, generation handoff and actionable signals.
+1. [`V2_CONTROL_PLANE.md`](V2_CONTROL_PLANE.md) — current product contract for
+   the four permission boundaries, recovery-only API, Agentd lifecycle, daemon
+   restart reconstruction, generation handoff and actionable signals.
+2. [`V2_DEVELOPMENT.md`](V2_DEVELOPMENT.md) — durable operation lifecycle,
+   filesystem boundary, measurement model and backend qualification details.
 3. [`V2_RUNBOOK.md`](V2_RUNBOOK.md) — operation-state handling, capacity actions,
    incident recovery and safe generation handoff without history deletion.
 4. [`TECHNICAL.md`](TECHNICAL.md) — Sparse Q24 mechanism, core data structures,
    model/body binding and the broader technical reference.
-5. [`GAP_ANALYSIS.md`](GAP_ANALYSIS.md) — historical gap ledger. A checked item is
-   not current execution evidence; verify it against source and workflow results.
-6. [`../../../qualification/module-execution-dossiers/detail/neuron.runtime.md`](../../../qualification/module-execution-dossiers/detail/neuron.runtime.md)
+5. [`../../../qualification/module-execution-dossiers/detail/neuron.runtime.md`](../../../qualification/module-execution-dossiers/detail/neuron.runtime.md)
    — qualification scope and claim boundary.
+
+`GAP_ANALYSIS.md` was a historical working ledger and is not present on the
+current convergence head. Do not treat links or checkboxes from an earlier head
+as current implementation or execution evidence.
 
 ## Current authority boundary
 
@@ -48,8 +50,21 @@ remain separate evidence and decision gates.
   final-use phase diagnostics, including measured sync/non-sync separation;
 - `AgentdNeuronGenerationControllerV2`: `Starting -> Serving -> Quiescing ->
   Sealed -> Reloading -> Serving`, with old generations retained for queries;
+- `AgentdNeuronGenerationControllerV2::from_recovered_generations`: rebuilds the
+  active and sealed historical topology after daemon restart and rejects
+  duplicate, active or future retained generations;
+- `AgentdNeuronGenerationControllerSnapshotV2`: lifecycle, active generation,
+  retained-generation topology and the active operational snapshot;
 - `AgentdNeuronOperationalSnapshotV2`: pending-state age lower bounds, witness
   backlog age, owner rejection counters and capacity trends.
+
+## Qualification ownership
+
+The Neuron qualification lanes compile and lint all Agentd targets, but execute
+only Agentd tests owned by `neuron_runtime_v2`. This prevents an unrelated shared
+Agentd owner from falsifying the Neuron module result. Repository-wide CI still
+owns the complete Agentd test suite. Every pass claim remains bound to the exact
+source SHA, integration base, candidate tree and retained logs.
 
 For any ambiguous result, start with the exact operation key and follow the
 runbook. Never recover capacity by deleting or reinterpreting V2 history.

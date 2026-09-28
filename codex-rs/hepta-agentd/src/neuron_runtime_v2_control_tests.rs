@@ -173,6 +173,66 @@ fn controller_rejects_generation_regression_and_exposes_stable_control_codes() {
     );
 }
 
+#[test]
+fn controller_rehydrates_retained_generations_and_reports_topology() {
+    let (active, active_owner) = handle(3);
+    let (retained_one, retained_one_owner) = handle(1);
+    let (retained_two, retained_two_owner) = handle(2);
+    let controller = checked(
+        AgentdNeuronGenerationControllerV2::from_recovered_generations(
+            active,
+            [retained_two, retained_one],
+        ),
+    );
+
+    assert_eq!(checked(controller.retained_generations()), vec![1, 2]);
+    checked(controller.start());
+    assert_eq!(active_owner.reconciles.load(Ordering::SeqCst), 1);
+    assert_eq!(retained_one_owner.reconciles.load(Ordering::SeqCst), 1);
+    assert_eq!(retained_two_owner.reconciles.load(Ordering::SeqCst), 1);
+
+    assert_eq!(
+        checked(controller.query_operation(
+            1,
+            &id("recovered.historical.tick"),
+            Digest32::of_bytes(b"recovered.historical.input")
+        )),
+        NeuronOperationStatusV2::NotRecorded
+    );
+
+    let snapshot = checked(controller.controller_snapshot());
+    assert_eq!(snapshot.lifecycle, AgentdNeuronLifecycleStateV2::Serving);
+    assert_eq!(snapshot.active_generation, 3);
+    assert_eq!(snapshot.retained_generations, vec![1, 2]);
+    assert_eq!(snapshot.active.generation, Some(3));
+}
+
+#[test]
+fn controller_rejects_invalid_recovered_generation_sets() {
+    let (active, _) = handle(3);
+    let (duplicate_one, _) = handle(1);
+    let (duplicate_two, _) = handle(1);
+    let error = match AgentdNeuronGenerationControllerV2::from_recovered_generations(
+        active,
+        [duplicate_one, duplicate_two],
+    ) {
+        Ok(_) => panic!("duplicate retained generation was accepted"),
+        Err(error) => error,
+    };
+    assert_eq!(error.stable_code(), "generation_conflict");
+
+    let (active, _) = handle(2);
+    let (not_historical, _) = handle(2);
+    let error = match AgentdNeuronGenerationControllerV2::from_recovered_generations(
+        active,
+        [not_historical],
+    ) {
+        Ok(_) => panic!("non-historical retained generation was accepted"),
+        Err(error) => error,
+    };
+    assert_eq!(error.stable_code(), "generation_conflict");
+}
+
 fn test_input() -> NeuronTickInputV1 {
     let features = vec![1, 2, 3];
     NeuronTickInputV1 {
