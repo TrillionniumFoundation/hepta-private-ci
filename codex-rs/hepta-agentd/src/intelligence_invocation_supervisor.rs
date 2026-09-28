@@ -1,7 +1,6 @@
 //! Panic-safe bounded host invocation provider for canonical intelligence.
 //!
-//! This is the product composer selected provider. The historical V1 provider
-//! remains source compatible, while this implementation owns a physical worker
+//! This is the product composer selected provider. It owns a physical worker
 //! reservation whose `Drop` runs on normal return, panic, channel loss, or
 //! thread-spawn failure. A timed-out factory keeps that reservation until its
 //! synchronous work really exits.
@@ -134,15 +133,22 @@ where
     ) -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
         let reservation = self.acquire_worker()?;
         let factory = Arc::clone(&self.factory);
-        let identity = identity.clone();
-        let record = record.clone();
+
+        // Keep one caller-owned immutable copy for final durable-identity
+        // validation. The worker receives distinct clones; moving them into the
+        // thread can never make the final check depend on worker-local values.
+        let host_identity = identity.clone();
+        let durable_record = record.clone();
+        let worker_identity = host_identity.clone();
+        let worker_record = durable_record.clone();
+
         let (sender, receiver) = sync_channel(1);
         std::thread::Builder::new()
             .name("agentd-intelligence-invocation".to_string())
             .spawn(move || {
                 let _reservation = reservation;
                 let result = std::panic::catch_unwind(AssertUnwindSafe(|| {
-                    (factory)(&identity, &record)
+                    (factory)(&worker_identity, &worker_record)
                 }))
                 .unwrap_or_else(|_| {
                     Err(AgentdError::Protocol(
@@ -168,9 +174,10 @@ where
             }
         };
         invocation.inputs.run_identity = Some(AgentdIntelligenceRunIdentityV1::from_run_start(
-            &identity, &record,
+            &host_identity,
+            &durable_record,
         )?);
-        invocation.validate(&identity, &record)?;
+        invocation.validate(&host_identity, &durable_record)?;
         Ok(invocation)
     }
 
@@ -206,6 +213,43 @@ mod tests {
         )
         .with_worker_policy(Duration::from_millis(10), 1)
         .expect("bounded policy")
+    }
+
+    #[test]
+    fn invocation_factory_policy_rejects_unbounded_values() {
+        assert!(
+            SupervisedHostOwnedAgentdIntelligenceInvocationProviderV1::new(
+                |_: &AgentdIdentity,
+                 _: &RunStartRecordV1|
+                 -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
+                    unreachable!("policy test")
+                },
+            )
+            .with_worker_policy(Duration::ZERO, 1)
+            .is_err()
+        );
+        assert!(
+            SupervisedHostOwnedAgentdIntelligenceInvocationProviderV1::new(
+                |_: &AgentdIdentity,
+                 _: &RunStartRecordV1|
+                 -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
+                    unreachable!("policy test")
+                },
+            )
+            .with_worker_policy(Duration::from_secs(31), 1)
+            .is_err()
+        );
+        assert!(
+            SupervisedHostOwnedAgentdIntelligenceInvocationProviderV1::new(
+                |_: &AgentdIdentity,
+                 _: &RunStartRecordV1|
+                 -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
+                    unreachable!("policy test")
+                },
+            )
+            .with_worker_policy(Duration::from_millis(1), 0)
+            .is_err()
+        );
     }
 
     #[test]

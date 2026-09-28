@@ -10,13 +10,17 @@ const WORKFLOW: &str = include_str!(
 const REQUIREMENT_MAP: &str = include_str!(
     "../../../../docs/modules/intelligence.control/REQUIREMENT_TEST_MAP.json"
 );
+const STATUS_ENTRYPOINT: &str =
+    include_str!("../../../../scripts/hepta-intelligence-control-status.py");
 const PRODUCT_ROUTE: &str = include_str!("../state_intelligence_product_loop.rs");
 const LEARNING_PRODUCT_API: &str = include_str!("../intelligence_learning_product_api.rs");
 const RUNTIME_PROFILE_GATE: &str = include_str!("../runtime.rs");
 const PRODUCT_PROFILE: &str = include_str!("../intelligence_product_profile.rs");
 const OWNER_PORTS: &str = include_str!("../intelligence_product_ports.rs");
+const STAGE_BOUND_PORTS: &str = include_str!("../intelligence_stage_bound_ports.rs");
 const PROMPT_BINDING: &str = include_str!("../intelligence_prompt_binding.rs");
 const PRODUCT_BASE: &str = include_str!("../intelligence_product_base.rs");
+const RUNNER_WRAPPER: &str = include_str!("../intelligence_product_runner.rs");
 const RUNNER_BASE: &str = include_str!("../intelligence_product_runner_base.rs");
 
 #[test]
@@ -25,6 +29,7 @@ fn current_candidate_workflow_requires_source_and_merge_native_execution() {
         "[\"source-head\",\"base-merge\"]",
         "cargo test --locked -p codex-hepta-agentd",
         "cargo test --locked -p codex-hepta-infer-worker-host",
+        "cargo test --locked -p codex-hepta-operations",
         "cargo test --locked -p codex-hepta-ndu",
         "-p codex-hepta-ndu --all-targets",
         "cargo check --locked",
@@ -103,6 +108,23 @@ fn canonical_stage_semantics_bind_real_owner_results() {
             "owner-bound product path omitted semantic guard: {required}"
         );
     }
+    for required in [
+        "context_stage_digest_v1",
+        "context intuition predecessor substitution",
+        "candidate_set_digest",
+        "selected_candidate",
+    ] {
+        assert!(
+            STAGE_BOUND_PORTS.contains(required),
+            "final stage binding omitted: {required}"
+        );
+    }
+    assert!(
+        RUNNER_WRAPPER.contains(
+            "StageBoundAgentdOwnerPortsV1 as AgentdOwnerPortsV1"
+        ),
+        "the semantic wrapper must be the active runner port type"
+    );
 }
 
 #[test]
@@ -178,4 +200,20 @@ fn exact_operation_settlement_never_dispatches_an_arbitrary_queue_head() {
             && settlement.contains("reconcile_operation_current(scope_id, operation_id)"),
         "settlement must stay bound to the requested operation"
     );
+}
+
+#[test]
+fn generated_truth_reads_active_split_implementation_files() {
+    for required in [
+        "ACTIVE_SOURCE_FILES",
+        "intelligence_product_runner_base.rs",
+        "intelligence_product_base.rs",
+        "intelligence_learning_base.rs",
+        "intelligence_invocation_supervisor.rs",
+    ] {
+        assert!(
+            STATUS_ENTRYPOINT.contains(required),
+            "generated truth entrypoint omitted active split source: {required}"
+        );
+    }
 }

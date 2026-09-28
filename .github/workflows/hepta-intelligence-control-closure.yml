@@ -166,6 +166,15 @@ jobs:
           -- cargo test --locked -p codex-hepta-intelligence
           -p codex-hepta-agentd --lib
 
+      - name: Test exact operation claim and durable recovery owner
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-closure-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-closure-records/operations-tests.json"
+          -- cargo test --locked -p codex-hepta-operations
+
       - name: Test NDU policy and deprecated compatibility boundary
         working-directory: codex-rs
         env:
@@ -193,7 +202,7 @@ jobs:
           --output "$RUNNER_TEMP/intelligence-closure-records/check.json"
           -- cargo check --locked -p codex-hepta-intelligence
           -p codex-hepta-agentd -p codex-hepta-infer-worker-host
-          -p codex-hepta-ndu --all-targets
+          -p codex-hepta-operations -p codex-hepta-ndu --all-targets
 
       - name: Strict lint closure packages
         working-directory: codex-rs
@@ -204,7 +213,8 @@ jobs:
           --output "$RUNNER_TEMP/intelligence-closure-records/clippy.json"
           -- cargo clippy --locked -p codex-hepta-intelligence
           -p codex-hepta-agentd -p codex-hepta-infer-worker-host
-          -p codex-hepta-ndu --all-targets -- -D warnings
+          -p codex-hepta-operations -p codex-hepta-ndu
+          --all-targets -- -D warnings
 
       - name: Measure supervision and process-loss fault cuts
         working-directory: codex-rs
@@ -226,6 +236,9 @@ jobs:
           /usr/bin/time -v -o "$RUNNER_TEMP/intelligence-closure-metrics/restart-reconcile.txt" \
             cargo test --locked -p codex-hepta-agentd \
               newer_generation_reopen_reconciles_applied_destination_without_redispatch -- --nocapture
+          /usr/bin/time -v -o "$RUNNER_TEMP/intelligence-closure-metrics/exact-operation-claim.txt" \
+            cargo test --locked -p codex-hepta-operations \
+              exact_claim_never_consumes_an_older_queued_operation -- --nocapture
 
       - name: Generate exact executed truth and closure receipt
         shell: bash

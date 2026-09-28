@@ -49,11 +49,19 @@
     {
       "id": "INT-A-STAGE-DATAFLOW",
       "phase": "A",
-      "statement": "Actual neural, prompt and intuition outputs bind the successor prompt, intuition and context requests rather than merely appearing in a receipt chain.",
+      "statement": "Actual utility, neural, prompt and intuition outputs bind their successor inputs and the final context-stage identity rather than merely appearing in a receipt chain.",
       "source": [
         {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_ports.rs",
+          "symbol": "bind_stage_digest"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_prompt_binding.rs",
+          "symbol": "prompt_conditioned_state_digest_v1"
+        },
+        {
           "path": "codex-rs/hepta-agentd/src/intelligence_stage_bound_ports.rs",
-          "symbol": "StageBoundAgentdOwnerPortsV1"
+          "symbol": "context_stage_digest_v1"
         },
         {
           "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
@@ -62,16 +70,20 @@
       ],
       "tests": [
         {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_ports.rs",
+          "name": "actual_stage_outputs_fill_templates_but_reject_substitution"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_prompt_binding.rs",
+          "name": "prompt_conditioned_state_rejects_either_stage_substitution"
+        },
+        {
           "path": "codex-rs/hepta-agentd/src/intelligence_stage_bound_ports.rs",
           "name": "successor_request_bindings_change_with_real_predecessor"
         },
         {
           "path": "codex-rs/hepta-agentd/src/intelligence_stage_bound_ports.rs",
           "name": "context_binding_is_idempotent_and_substitution_fails"
-        },
-        {
-          "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
-          "name": "signed_input_cannot_install_host_trust_or_change_actual_context"
         }
       ]
     },
@@ -213,6 +225,10 @@
         {
           "path": "codex-rs/hepta-agentd/src/intelligence_invocation_supervisor.rs",
           "name": "panicking_worker_releases_its_reservation"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_invocation_supervisor.rs",
+          "name": "invocation_factory_policy_rejects_unbounded_values"
         }
       ]
     },
@@ -273,32 +289,36 @@
     {
       "id": "INT-C-CURRENTNESS-FILE-BOUNDARY",
       "phase": "C",
-      "statement": "The signed currentness manifest is read through a bounded same-file handle and an owner-local anti-rollback floor rejects older or same-epoch substituted signed manifests.",
+      "statement": "The signed currentness manifest is read through a bounded no-follow handle and an independently retained monotonic witness rejects older or same-epoch substituted signed manifests.",
       "source": [
         {
-          "path": "codex-rs/hepta-agentd/src/intelligence_authority_current.rs",
-          "symbol": "read_bounded_regular_file"
+          "path": "codex-rs/hepta-agentd/src/intelligence_files.rs",
+          "symbol": "read_bounded"
         },
         {
-          "path": "codex-rs/hepta-agentd/src/intelligence_authority_current.rs",
-          "symbol": "check_and_update_anchor"
+          "path": "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
+          "symbol": "IntelligenceAuthorityRollbackGuardV1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_base.rs",
+          "symbol": "with_rollback"
         }
       ],
       "tests": [
         {
-          "path": "codex-rs/hepta-agentd/src/intelligence_authority_current.rs",
-          "name": "anti_rollback_anchor_rejects_older_epoch_and_same_epoch_substitution"
+          "path": "codex-rs/hepta-agentd/src/intelligence_files.rs",
+          "name": "authority_read_rejects_parent_leaf_links_and_oversize"
         },
         {
-          "path": "codex-rs/hepta-agentd/src/intelligence_authority_current.rs",
-          "name": "bounded_reader_rejects_symlink_target"
+          "path": "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
+          "name": "guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen"
         }
       ]
     },
     {
       "id": "INT-D-EXACT-CANDIDATE-NATIVE-GATES",
       "phase": "D",
-      "statement": "The tracked source requires source-head and deterministic base-merge native tests, all-target compilation, strict lint, process-loss cuts and retained resource evidence without self-promoting external claims.",
+      "statement": "The tracked source requires source-head and deterministic base-merge native tests, all-target compilation, strict lint, active-source traceability, process-loss cuts and retained resource evidence without self-promoting external claims.",
       "source": [
         {
           "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
@@ -307,6 +327,10 @@
         {
           "path": "scripts/hepta-intelligence-control-closure.py",
           "symbol": "Execution status remains owned by the current GitHub Actions"
+        },
+        {
+          "path": "scripts/hepta-intelligence-control-status.py",
+          "symbol": "ACTIVE_SOURCE_FILES"
         }
       ],
       "tests": [
@@ -317,6 +341,10 @@
         {
           "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
           "name": "tracked_claim_boundary_remains_fail_closed"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
+          "name": "generated_truth_reads_active_split_implementation_files"
         }
       ]
     }

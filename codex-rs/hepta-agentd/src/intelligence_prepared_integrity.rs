@@ -43,6 +43,7 @@ impl PreparedAgentdIntelligenceRunV1 {
                 "selected canonical decision",
             ));
         }
+
         let mut bytes = b"hepta.intelligence.advisory-decision.v1\0".to_vec();
         push_id(&mut bytes, envelope.run_id.as_str())?;
         bytes.extend_from_slice(envelope.candidate_set_digest.as_array());
@@ -55,6 +56,7 @@ impl PreparedAgentdIntelligenceRunV1 {
                 "decision digest",
             ));
         }
+
         let mut bytes = b"hepta.intelligence.context-boundary.v1\0".to_vec();
         push_id(&mut bytes, envelope.run_id.as_str())?;
         bytes.extend_from_slice(decision.decision_digest.as_array());
@@ -62,6 +64,7 @@ impl PreparedAgentdIntelligenceRunV1 {
         if Digest32::of_bytes(&bytes) != envelope.context_binding_digest {
             return Err(CanonicalIntelligenceError::PredecessorMismatch);
         }
+
         let digests = [
             envelope.snapshot_digest,
             envelope.objective_digest,
@@ -82,6 +85,7 @@ impl PreparedAgentdIntelligenceRunV1 {
                 "prepared dependency",
             ));
         }
+
         let mut bytes = b"hepta.intelligence.host-envelope.v1\0".to_vec();
         push_id(&mut bytes, envelope.run_id.as_str())?;
         for digest in digests {
@@ -92,6 +96,7 @@ impl PreparedAgentdIntelligenceRunV1 {
                 "envelope digest",
             ));
         }
+
         let request_digest: Digest32 = run
             .request_digest
             .parse()
@@ -105,13 +110,20 @@ impl PreparedAgentdIntelligenceRunV1 {
                 "dispatch proposal digest",
             ));
         }
+
         if let Some(delivery) = self.prompt_delivery() {
             let binding = super::super::prompt_binding::validate_prompt_delivery_v1(delivery)?;
+            let expected_context = super::stage_bound_ports::context_stage_digest_v1(
+                binding.context_attachment_digest,
+                decision.intuition_receipt_digest,
+                envelope.candidate_set_digest,
+                candidate_id,
+            )?;
             if envelope.prompt_receipt_digest != binding.prompt_stage_digest
-                || envelope.context_receipt_digest != binding.context_attachment_digest
+                || envelope.context_receipt_digest != expected_context
             {
                 return Err(CanonicalIntelligenceError::InvalidSnapshot(
-                    "prompt delivery binding",
+                    "prompt delivery or intuition-bound context identity",
                 ));
             }
         }
