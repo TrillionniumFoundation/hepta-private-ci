@@ -6,6 +6,8 @@
 //! an advisory result alone never grants production admission.
 
 use std::sync::OnceLock;
+use std::time::Duration;
+use std::time::Instant;
 
 use codex_hepta_intelligence::AdvisoryDecisionV1;
 use codex_hepta_intelligence::IntuitionQualificationEvidenceV2;
@@ -19,6 +21,12 @@ use crate::intelligence_ingress::AgentdIntuitionProductInvocationV1;
 use crate::intelligence_product::AgentdIntelligenceProductOutcomeV1;
 use crate::intuition_policy::AgentdIntuitionDecisionReceiptV2;
 use crate::state::AgentdState;
+
+const REQUEST_METRIC: &str = "codex.hepta.intuition.policy.request";
+const OUTCOME_METRIC: &str = "codex.hepta.intuition.policy.outcome";
+const FAILURE_METRIC: &str = "codex.hepta.intuition.policy.failure";
+const DURATION_METRIC: &str = "codex.hepta.intuition.policy.duration";
+const LEDGER_APPEND_METRIC: &str = "codex.hepta.intuition.policy.ledger_append";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum ServingProfile {
@@ -45,6 +53,14 @@ impl ServingProfile {
             Ok(())
         }
     }
+
+    const fn as_str(self) -> &'static str {
+        match self {
+            Self::Development => "development",
+            Self::Test => "test",
+            Self::Production => "production",
+        }
+    }
 }
 
 fn serving_profile() -> Result<ServingProfile, AgentdError> {
@@ -69,93 +85,248 @@ pub(crate) fn authenticate_canonical_intuition(
     canonical: &AgentdIntelligenceProductOutcomeV1,
     now: u64,
 ) -> Result<Option<AgentdIntuitionDecisionReceiptV2>, AgentdError> {
-    let host = state.intuition_policy.get();
-    serving_profile()?
-        .require_host(host.is_some_and(|host| host.is_product_ready()))
-        .map_err(|code| AgentdError::Invalid(code.to_string()))?;
-    let product = match (host.is_some(), product) {
-        (false, None) => return Ok(None),
-        (true, Some(product)) => product,
-        (true, None) => {
-            return Err(AgentdError::Invalid(
-                "agentd.intuition.service.authenticated_invocation_required".to_string(),
-            ));
-        }
-        (false, Some(_)) => {
-            return Err(AgentdError::Invalid(
-                "agentd.intuition.service.product_host_required".to_string(),
-            ));
+    let started = Instant::now();
+    let profile = match serving_profile() {
+        Ok(profile) => profile,
+        Err(error) => {
+            record_request("invalid");
+            record_failure("invalid", started.elapsed(), &error);
+            return Err(error);
         }
     };
+    record_request(profile.as_str());
+    let span = tracing::info_span!(
+        "hepta.intuition_policy.authenticate",
+        profile = profile.as_str()
+    );
+    let _entered = span.enter();
 
-    let AgentdIntuitionProductInvocationV1 {
-        profile,
-        scoring,
-        assignment,
-        completeness_evidence,
-        profile_qualification_evidence,
-        runtime_evidence,
-        expected_ledger_head,
-        decision_evidence,
-    } = product;
-    let policy_prepared = {
-        let qualification = IntuitionQualificationEvidenceV2 {
-            completeness: &completeness_evidence,
-            profile_qualification: &profile_qualification_evidence,
-            runtime: &runtime_evidence,
+    let result: Result<Option<AgentdIntuitionDecisionReceiptV2>, AgentdError> = (|| {
+        let host = state.intuition_policy.get();
+        profile
+            .require_host(host.is_some_and(|host| host.is_product_ready()))
+            .map_err(|code| AgentdError::Invalid(code.to_string()))?;
+        let product = match (host.is_some(), product) {
+            (false, None) => return Ok(None),
+            (true, Some(product)) => product,
+            (true, None) => {
+                return Err(AgentdError::Invalid(
+                    "agentd.intuition.service.authenticated_invocation_required".to_string(),
+                ));
+            }
+            (false, Some(_)) => {
+                return Err(AgentdError::Invalid(
+                    "agentd.intuition.service.product_host_required".to_string(),
+                ));
+            }
         };
-        state
-            .prepare_intuition_policy_v3(
-                request,
-                profile,
-                scoring,
-                assignment,
-                qualification,
-                episode_id,
-                run_snapshot_digest,
-                now,
-            )
-            .map_err(AgentdError::from)?
-    };
-    require_outcome_parity(
-        canonical,
-        &policy_prepared.decision().decision.disposition,
-        &policy_prepared.decision().decision.propensities,
-    )?;
 
-    // Signature verification and advisory preparation consume time. A lease
-    // validated at prepare cannot be extended by replaying its old timestamp.
-    let commit_now = crate::authbus_ingress::now_ms()?;
-    let committed = state
-        .commit_intuition_policy_v3(
-            policy_prepared,
+        let AgentdIntuitionProductInvocationV1 {
+            profile,
+            scoring,
+            assignment,
+            completeness_evidence,
+            profile_qualification_evidence,
+            runtime_evidence,
             expected_ledger_head,
             decision_evidence,
-            commit_now,
-        )
-        .map_err(AgentdError::from)?;
-    require_outcome_parity(
-        canonical,
-        &committed.decision.decision.disposition,
-        &committed.decision.decision.propensities,
-    )?;
+        } = product;
+        let policy_prepared = {
+            let qualification = IntuitionQualificationEvidenceV2 {
+                completeness: &completeness_evidence,
+                profile_qualification: &profile_qualification_evidence,
+                runtime: &runtime_evidence,
+            };
+            state
+                .prepare_intuition_policy_v3(
+                    request,
+                    profile,
+                    scoring,
+                    assignment,
+                    qualification,
+                    episode_id,
+                    run_snapshot_digest,
+                    now,
+                )
+                .map_err(AgentdError::from)?
+        };
+        require_outcome_parity(
+            canonical,
+            &policy_prepared.decision().decision.disposition,
+            &policy_prepared.decision().decision.propensities,
+        )?;
 
-    match &committed.decision.decision.disposition {
-        ProductionDispositionV1::Selected(_) if committed.learning.is_none() => {
-            return Err(AgentdError::Protocol(
-                "agentd.intuition.service.selected_without_durable_decision".to_string(),
-            ));
+        // Signature verification and advisory preparation consume time. A lease
+        // validated at prepare cannot be extended by replaying its old timestamp.
+        let commit_now = crate::authbus_ingress::now_ms()?;
+        let committed = state
+            .commit_intuition_policy_v3(
+                policy_prepared,
+                expected_ledger_head,
+                decision_evidence,
+                commit_now,
+            )
+            .map_err(AgentdError::from)?;
+        require_outcome_parity(
+            canonical,
+            &committed.decision.decision.disposition,
+            &committed.decision.decision.propensities,
+        )?;
+
+        match &committed.decision.decision.disposition {
+            ProductionDispositionV1::Selected(_) if committed.learning.is_none() => {
+                return Err(AgentdError::Protocol(
+                    "agentd.intuition.service.selected_without_durable_decision".to_string(),
+                ));
+            }
+            ProductionDispositionV1::Abstained(_) | ProductionDispositionV1::SlowPath(_)
+                if committed.learning.is_some() =>
+            {
+                return Err(AgentdError::Protocol(
+                    "agentd.intuition.service.nonselected_with_decision".to_string(),
+                ));
+            }
+            _ => {}
         }
-        ProductionDispositionV1::Abstained(_) | ProductionDispositionV1::SlowPath(_)
-            if committed.learning.is_some() =>
-        {
-            return Err(AgentdError::Protocol(
-                "agentd.intuition.service.nonselected_with_decision".to_string(),
-            ));
+        Ok(Some(committed))
+    })();
+
+    record_result(profile, started.elapsed(), &result);
+    result
+}
+
+fn record_request(profile: &'static str) {
+    emit_counter(REQUEST_METRIC, &[("profile", profile)]);
+}
+
+fn record_result(
+    profile: ServingProfile,
+    elapsed: Duration,
+    result: &Result<Option<AgentdIntuitionDecisionReceiptV2>, AgentdError>,
+) {
+    match result {
+        Ok(Some(receipt)) => {
+            let disposition = disposition_tag(&receipt.decision.decision.disposition);
+            let durable_append = if receipt.learning.is_some() {
+                "true"
+            } else {
+                "false"
+            };
+            emit_counter(
+                OUTCOME_METRIC,
+                &[
+                    ("profile", profile.as_str()),
+                    ("status", "succeeded"),
+                    ("disposition", disposition),
+                    ("durable_append", durable_append),
+                ],
+            );
+            if receipt.learning.is_some() {
+                emit_counter(
+                    LEDGER_APPEND_METRIC,
+                    &[("profile", profile.as_str()), ("status", "committed")],
+                );
+            }
+            emit_duration(
+                DURATION_METRIC,
+                elapsed,
+                &[("profile", profile.as_str()), ("status", "succeeded")],
+            );
+            tracing::info!(
+                profile = profile.as_str(),
+                disposition,
+                durable_append,
+                elapsed_ms = elapsed.as_millis(),
+                "intuition policy request completed"
+            );
         }
-        _ => {}
+        Ok(None) => {
+            emit_counter(
+                OUTCOME_METRIC,
+                &[
+                    ("profile", profile.as_str()),
+                    ("status", "bypassed"),
+                    ("disposition", "none"),
+                    ("durable_append", "false"),
+                ],
+            );
+            emit_duration(
+                DURATION_METRIC,
+                elapsed,
+                &[("profile", profile.as_str()), ("status", "bypassed")],
+            );
+            tracing::info!(
+                profile = profile.as_str(),
+                elapsed_ms = elapsed.as_millis(),
+                "intuition policy compatibility bypass completed"
+            );
+        }
+        Err(error) => record_failure(profile.as_str(), elapsed, error),
     }
-    Ok(Some(committed))
+}
+
+fn record_failure(profile: &'static str, elapsed: Duration, error: &AgentdError) {
+    let error_class = agentd_error_class(error);
+    emit_counter(
+        FAILURE_METRIC,
+        &[("profile", profile), ("error_class", error_class)],
+    );
+    emit_duration(
+        DURATION_METRIC,
+        elapsed,
+        &[("profile", profile), ("status", "failed")],
+    );
+    tracing::warn!(
+        profile,
+        error_class,
+        error = %error,
+        elapsed_ms = elapsed.as_millis(),
+        "intuition policy request rejected"
+    );
+}
+
+fn emit_counter(name: &'static str, tags: &[(&str, &str)]) {
+    let Some(metrics) = codex_otel::global() else {
+        return;
+    };
+    if let Err(error) = metrics.counter(name, 1, tags) {
+        tracing::debug!(metric = name, error = %error, "intuition policy counter emission failed");
+    }
+}
+
+fn emit_duration(name: &'static str, duration: Duration, tags: &[(&str, &str)]) {
+    let Some(metrics) = codex_otel::global() else {
+        return;
+    };
+    if let Err(error) = metrics.record_duration(name, duration, tags) {
+        tracing::debug!(metric = name, error = %error, "intuition policy duration emission failed");
+    }
+}
+
+const fn disposition_tag(disposition: &ProductionDispositionV1) -> &'static str {
+    match disposition {
+        ProductionDispositionV1::Selected(_) => "selected",
+        ProductionDispositionV1::Abstained(_) => "abstained",
+        ProductionDispositionV1::SlowPath(_) => "slow_path",
+    }
+}
+
+const fn agentd_error_class(error: &AgentdError) -> &'static str {
+    match error {
+        AgentdError::Invalid(_) => "invalid",
+        AgentdError::GenerationFenced(_) => "generation_fenced",
+        AgentdError::CognitiveWriteRuntimeUnavailable => "runtime_unavailable",
+        AgentdError::Protocol(_) => "protocol",
+        AgentdError::IntuitionPolicy(_) => "intuition_policy",
+        AgentdError::Overloaded { .. } => "overloaded",
+        AgentdError::Fleet(_) => "fleet",
+        AgentdError::Automation(_) => "automation",
+        AgentdError::Io(_) => "io",
+        AgentdError::Json(_) => "json",
+        AgentdError::ProductionWriter(_) => "production_writer",
+        AgentdError::ProductionCognitiveMutation(_) => "production_cognitive_mutation",
+        AgentdError::CognitiveStore(_) => "cognitive_store",
+    }
 }
 
 fn require_outcome_parity(
@@ -269,6 +440,25 @@ mod tests {
         ] {
             assert!(ServingProfile::parse(Some(value), true).is_err());
         }
+    }
+
+    #[test]
+    fn telemetry_dimensions_are_stable_and_low_cardinality() {
+        assert_eq!(ServingProfile::Development.as_str(), "development");
+        assert_eq!(ServingProfile::Test.as_str(), "test");
+        assert_eq!(ServingProfile::Production.as_str(), "production");
+        assert_eq!(
+            agentd_error_class(&AgentdError::Invalid("request-specific detail".to_string())),
+            "invalid"
+        );
+        assert_eq!(
+            agentd_error_class(&AgentdError::Protocol("request-specific detail".to_string())),
+            "protocol"
+        );
+        assert_eq!(
+            agentd_error_class(&AgentdError::Overloaded { retry_after_ms: 10 }),
+            "overloaded"
+        );
     }
 
     #[test]
