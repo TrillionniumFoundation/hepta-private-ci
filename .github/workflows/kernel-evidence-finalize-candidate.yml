@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 20
     env:
       EVENT_SHA: ${{ github.event.pull_request.head.sha }}
-      EXPECTED_PARENT: c538493fdb6fc77816973ecb9791300358e92bd9
+      EXPECTED_PARENT: fa01f7981d755038798011fd8cfdbb25d5f3a0fc
       SOURCE_ANCHOR: 4dd844af8af04372d75001be10fcabbf97f6e679
       SOURCE_TREE: 598697096a10d1015609168ab7064298c0dc8ace
       TARGET_BRANCH: fix/kernel-evidence-production-closure
