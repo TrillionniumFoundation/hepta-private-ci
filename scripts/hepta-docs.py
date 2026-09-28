@@ -1139,7 +1139,8 @@ def verify() -> int:
         )
         need(
             has_deny_all_authority(v.get("authorityFlags")),
-            k + " authority must contain exactly false booleans",
+            k
+            + " positive authority or invalid authority metadata; exact false booleans required",
         )
     cur = d["current"]
     r = cur["repository"]

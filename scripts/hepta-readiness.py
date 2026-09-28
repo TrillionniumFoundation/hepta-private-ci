@@ -154,7 +154,8 @@ def load(rel: str) -> dict[str, Any]:
 def false_authority(value: object, label: str) -> None:
     need(
         has_deny_all_authority(value),
-        label + " authority must contain exactly false booleans",
+        label
+        + " positive authority or invalid authority metadata; exact false booleans required",
     )
 
 
