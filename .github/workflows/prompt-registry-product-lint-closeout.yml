@@ -1,0 +1,123 @@
+name: Prompt registry strict product lint closeout
+on:
+  push:
+    branches: [ops/prompt-registry-author-closeout-20260928]
+    paths: ['.github/workflows/prompt-registry-product-lint-closeout.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+jobs:
+  closeout:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      EXPECTED_SOURCE: b6cdf7d069a84592c610d57f2685096bb1cf0859
+      TARGET_BRANCH: codex/prompt-registry-verified-closeout-20260928
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: b6cdf7d069a84592c610d57f2685096bb1cf0859
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Prepare product native dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+      - name: Resolve existing checksum-verified V8 inputs
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Apply narrow checked-in compatibility expectation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          test -z "$(git status --porcelain)"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('codex-rs/hepta-intelligence/src/canonical.rs')
+          text = path.read_text(encoding='utf-8')
+          old = '''#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum CanonicalRunOutcomeV1 {
+'''
+          new = '''#[derive(Clone, Debug, Eq, PartialEq)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "V1 is a public compatibility contract; boxing Ready would break existing Rust callers. Revisit indirection in a separately versioned outcome after measurement."
+)]
+pub enum CanonicalRunOutcomeV1 {
+'''
+          if text.count(old) != 1:
+              raise SystemExit('expected exactly one CanonicalRunOutcomeV1 declaration anchor')
+          path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+          git diff --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence -- --check
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-intelligence --all-targets --no-deps -- -D warnings
+      - name: Commit exact source and implementation map
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add codex-rs/hepta-intelligence/src/canonical.rs
+          git diff --cached --check
+          git commit -m 'fix(prompt.registry): close strict product lint without changing V1 outcome API'
+          python3 scripts/hepta-prompt-registry-map.py --write
+          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
+          git diff --cached --check
+          git commit -m 'docs(prompt.registry): bind implementation map to strict-lint source'
+          python3 scripts/hepta-prompt-registry-map.py --check
+          git fetch --no-tags origin "+refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
+          test "$(git rev-parse "refs/remotes/origin/$TARGET_BRANCH")" = "$EXPECTED_SOURCE"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          mkdir -p "$RUNNER_TEMP/prompt-lint-closeout"
+          git rev-parse HEAD > "$RUNNER_TEMP/prompt-lint-closeout/source-sha.txt"
+          git rev-parse 'HEAD^{tree}' > "$RUNNER_TEMP/prompt-lint-closeout/source-tree.txt"
+          git archive HEAD | gzip -n > "$RUNNER_TEMP/prompt-lint-closeout/source.tar.gz"
+      - name: Dispatch full four-lane qualification
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          url = (
+              'https://api.github.com/repos/'
+              + os.environ['GITHUB_REPOSITORY']
+              + '/actions/workflows/hepta-prompt-registry-qualification.yml/dispatches'
+          )
+          request = urllib.request.Request(
+              url,
+              data=json.dumps({'ref': os.environ['TARGET_BRANCH']}).encode(),
+              headers={
+                  'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                  'Accept': 'application/vnd.github+json',
+              },
+              method='POST',
+          )
+          with urllib.request.urlopen(request, timeout=30) as response:
+              assert response.status == 204
+          PY
+      - name: Retain authored exact source
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-product-lint-closeout-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/prompt-lint-closeout/
+          if-no-files-found: warn
+          retention-days: 14
