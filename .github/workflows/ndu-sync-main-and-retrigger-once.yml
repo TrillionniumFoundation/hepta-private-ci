@@ -48,6 +48,7 @@ jobs:
           lines.insert(1, f'# baseline-sync-main: {os.environ["BASE"]}\n')
           workflow.write_text(''.join(lines), encoding='utf-8')
           PY
+          git add .github/workflows/hepta-ndu-codeql-fixture-hardening.yml
           python3 scripts/hepta_ndu_map_integrity.py \
             --rebind-index \
             --candidate-branch "$GITHUB_REF_NAME" \
