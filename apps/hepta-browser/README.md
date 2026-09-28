@@ -88,6 +88,47 @@ not power-loss, hostile multiwriter or real Servo acceptance evidence.
 
 `SubprocessBrowserDriver` launches only an exact SHA-256-bound worker artifact through a launcher that declares and enforces the required isolation posture. The supplied Linux launcher uses Bubblewrap with `--unshare-all`, no `--share-net`, a cleared environment, hidden ambient home/run/tmp state, a private profile bind, an inherited pipe control channel and parent-death cleanup. This is a concrete Linux isolation path, but it is not evidence that the pinned Servo worker artifact has been built or independently qualified.
 
+## Agentd channel lifecycle and capacity
+
+The selected `BrowserProfileHost` is an implementation object with prototype
+methods, not a JSON record. `BrowserAgentdService` validates its required methods
+without rejecting that actual class. Incoming frames, payloads and final-use
+requests still require plain, canonical records; the owner contract does not
+relax the wire contract.
+
+Each request has one final-use exchange and an identity-bound lifetime. Closing
+the request removes an outstanding receive waiter. If its exchange or consumer
+still runs, the channel becomes unusable: a late `authority_enter`, even with a
+reused request ID, cannot enter a new scope or publish a dispatch boundary.
+Stream errors discard queued input and reject outstanding reads/writes. A whole
+decoded batch passes sequence and capacity validation before any waiter receives
+it; a valid authority prefix followed by a replay cannot release the consumer.
+No invalidated channel is automatically reset, and no uncertain effect is retried.
+
+Transport bounds are explicit: at most 64 queued frames and 4 MiB of encoded
+queued input; 8 receive waiters; 8 pending writes and 4 MiB of encoded pending
+output. Output-capacity rejection happens before a write or sequence advance.
+Draining returns capacity without resetting sequence identity. The decoder keeps
+one bounded frame body, copies fragmented input once, and rejects malformed UTF-8
+instead of replacing bytes. It admits at most 64 frames per call and an input
+chunk of at most `4 * (1 MiB + 4 bytes)`. Invalid or incomplete final input
+permanently closes that decoder; it is not repaired by appending another frame.
+
+These are channel-level bounds, not process containment or total system memory
+limits. Channel invalidation does not attest physical stop, device-memory release
+or remote task success. The existing durable operation owner must reconcile any
+possibly entered effect before resources or replay rights can be settled.
+
+`test/agentd-real-host.test.js` composes the actual service, selected host,
+private-channel authority and file journal. A fresh host reopens the fsynced
+operation and reconciles without redispatch; driver outcomes are controlled test
+observations, not real Servo effects. A separate real Node child executes the
+shipped service entry point and rejects an unopened profile without launching a
+worker. It catches startup composition defects that a plain-object host double
+cannot. Channel/decoder regressions cover late scope completion, malformed
+batches, bounded queues, write errors and fragmented input. These tests do not
+supply native Agentd admission, cryptographic authority or actual GUI acceptance.
+
 ## Verification
 
 Run from the repository root:
