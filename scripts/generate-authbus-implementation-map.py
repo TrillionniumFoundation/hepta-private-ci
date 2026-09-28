@@ -1,288 +1,114 @@
 #!/usr/bin/env python3
-"""Generate and verify the auth.authbus implementation map.
+"""Generate reproducible source mapping, without self-referential commit claims.
 
-The map is anchored to the newest commit that touched any declared AuthBus
-source root. A later documentation-only map commit therefore does not make the
-anchor self-referential, while any source change makes `--check` fail until the
-map is regenerated.
+The committed map binds source FILE CONTENTS. Exact commit/tree/run identities
+belong to the external qualification receipt, produced after this map is committed.
+A named test is a source declaration, never evidence that it executed or passed.
 """
-
 from __future__ import annotations
 
 import argparse
+import hashlib
+import importlib.util
 import json
-import subprocess
 from pathlib import Path
-from typing import Any
+import re
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-MAP_PATH = ROOT / "docs/modules/auth.authbus/IMPLEMENTATION_MAP.json"
-
-SOURCE_ROOTS = [
-    "codex-rs/hepta-authbus",
-    "codex-rs/hepta-authbus-p1-3-qualification",
-    "codex-rs/hepta-evidence/src/authbus_outbox.rs",
-    "codex-rs/hepta-evidence/src/authbus_store.rs",
-    "codex-rs/hepta-evidence/src/authbus_outbox_worker.rs",
-    "codex-rs/hepta-agentd/src/authbus_ingress.rs",
-    "codex-rs/hepta-agentd/src/authbus_dispatch.rs",
-    "codex-rs/hepta-agentd/src/authbus_trust.rs",
-    "codex-rs/hepta-agentd/src/evidence_trust.rs",
-    "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
-]
-
-OPERATIONS: list[dict[str, Any]] = [
-    {
-        "operation": "authenticate_signed_message",
-        "nativeSymbol": "SignedMessage::authenticate",
-        "sourcePath": "codex-rs/hepta-authbus/src/signed.rs",
-        "state": "source_implemented_sealed_registration",
-        "authority": "deny_all",
-        "tests": [
-            ["codex-rs/hepta-authbus/src/signed_tests.rs", "signed_admission_rejects_payload_and_replay_identity_substitution"],
-            ["codex-rs/hepta-authbus-p1-3-qualification/src/lib_tests.rs", "persisted_registration_rejects_forged_revoked_and_epoch_substitution"],
-        ],
-    },
-    {
-        "operation": "admit_and_enqueue_signed_message",
-        "nativeSymbol": "HeptaEvidenceStore::enqueue_authbus_message",
-        "sourcePath": "codex-rs/hepta-evidence/src/authbus_outbox.rs",
-        "state": "source_implemented_product_composed_agentd",
-        "authority": "none",
-        "tests": [
-            ["codex-rs/hepta-evidence/src/authbus_outbox_tests.rs", "enqueue_commit_response_loss_is_idempotent_across_reopen"],
-            ["codex-rs/hepta-agentd/tests/kernel_evidence_product.rs", "signed evidence product ingress"],
-        ],
-    },
-    {
-        "operation": "resolve_message_issuer",
-        "nativeSymbol": "AuthBusAuthorityHost::message_issuer",
-        "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
-        "state": "source_implemented_durable_registry",
-        "authority": "none",
-        "tests": [["codex-rs/hepta-authbus-p1-3-qualification/src/lib_tests.rs", "authority_host_executes_modern_owner_purpose_sweep_and_settlement_matrix"]],
-    },
-    {
-        "operation": "resolve_settlement_issuer",
-        "nativeSymbol": "AuthBusAuthorityHost::settlement_issuer",
-        "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
-        "state": "source_implemented_durable_purpose_bound_registry",
-        "authority": "none",
-        "tests": [["codex-rs/hepta-authbus/src/settlement_store_tests.rs", "message_purpose_cannot_be_substituted_for_settlement_purpose"]],
-    },
-    {
-        "operation": "authorize",
-        "nativeSymbol": "AuthBusAuthorityHost::authorize",
-        "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
-        "state": "source_implemented_revision_and_trusted_time_bound",
-        "authority": "deny_all",
-        "tests": [["codex-rs/hepta-authbus/src/authority_store_tests.rs", "policy authorization tests"]],
-    },
-    {
-        "operation": "reserve_quota",
-        "nativeSymbol": "AuthBusAuthorityHost::reserve",
-        "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
-        "state": "source_implemented_durable_quota_conservation",
-        "authority": "none",
-        "tests": [["codex-rs/hepta-authbus/src/quota_store_tests.rs", "quota reservation tests"]],
-    },
-    {
-        "operation": "mark_dispatch_attempted",
-        "nativeSymbol": "AuthBusAuthorityHost::mark_dispatch_attempted",
-        "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
-        "state": "source_implemented_external_effect_fence",
-        "authority": "none",
-        "tests": [["codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs", "real product AuthBus dispatch tests"]],
-    },
-    {
-        "operation": "settle",
-        "nativeSymbol": "AuthBusAuthorityHost::settle",
-        "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
-        "state": "source_implemented_transactional_current_issuer_reload",
-        "authority": "none",
-        "tests": [
-            ["codex-rs/hepta-authbus/src/settlement_store_tests.rs", "settlement_reloads_registry_and_rejects_forged_or_revoked_keys"],
-            ["codex-rs/hepta-authbus-p1-3-qualification/src/lib_tests.rs", "authority_host_executes_modern_owner_purpose_sweep_and_settlement_matrix"],
-        ],
-    },
-    {
-        "operation": "sweep_expired_reservations",
-        "nativeSymbol": "AuthBusAuthorityHost::sweep_expired_reservations",
-        "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
-        "state": "source_implemented_bounded_maintenance",
-        "authority": "none",
-        "tests": [["codex-rs/hepta-authbus/src/settlement_store_tests.rs", "bounded_expired_reservation_sweep_refunds_only_undispatched_holds"]],
-    },
-    {
-        "operation": "authority_maintenance_tick",
-        "nativeSymbol": "AuthBusAuthorityHost::maintenance_tick",
-        "sourcePath": "codex-rs/hepta-authbus/src/operations.rs",
-        "state": "source_implemented_bounded_recovery_sweep_checkpoint_alerts",
-        "authority": "none",
-        "tests": [["codex-rs/hepta-authbus/src/host_tests.rs", "checkpoint_stage_failures_remain_recoverable"]],
-    },
-    {
-        "operation": "hold_single_owner_fence",
-        "nativeSymbol": "OwnerFence::acquire",
-        "sourcePath": "codex-rs/hepta-authbus/src/owner_fence.rs",
-        "state": "source_implemented_process_lifetime_cross_process_fence",
-        "authority": "none",
-        "tests": [
-            ["codex-rs/hepta-authbus/src/host_tests.rs", "second_owner_is_rejected_and_release_allows_reopen"],
-            ["codex-rs/hepta-authbus/src/host_tests.rs", "kill_nine_releases_the_process_owner_fence"],
-        ],
-    },
-    {
-        "operation": "consume_bao_kv_v2_with_authbus",
-        "nativeSymbol": "BaoClient::consume_kv_v2_with_authbus",
-        "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
-        "state": "source_composed_product_path_not_activated",
-        "authority": "final_use_required",
-        "tests": [["codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs", "real TLS product execution tests"]],
-    },
-]
+DESTINATION = ROOT / "docs/modules/auth.authbus/IMPLEMENTATION_MAP.json"
+SPEC = importlib.util.spec_from_file_location("authbus_inventory", ROOT / "scripts/check-authbus-closed-world.py")
+API = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(API)
+OWNER_ROOTS = ("codex-rs/hepta-authbus/", "codex-rs/hepta-authbus-p1-3-qualification/")
+CALLER_PREFIXES = ("codex-rs/hepta-evidence/src/authbus_", "codex-rs/hepta-agentd/src/authbus_", "codex-rs/hepta-bao-adapter/src/https_consumer")
+EXACT = {
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+    "codex-rs/hepta-evidence/src/qualification_tests.rs",
+    "codex-rs/hepta-evidence/src/lib.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-bao-adapter/src/lib.rs",
+    "codex-rs/hepta-evidence/Cargo.toml",
+    "codex-rs/hepta-agentd/Cargo.toml",
+    "codex-rs/hepta-bao-adapter/Cargo.toml",
+    "codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "codex-rs/rust-toolchain.toml",
+    "docs/modules/auth.authbus/PUBLIC_API_INVENTORY.json",
+}
 
 
-def run(*args: str) -> str:
-    return subprocess.check_output(args, cwd=ROOT, text=True).strip()
+def digest(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def latest_source_commit() -> str:
-    return run("git", "log", "-1", "--format=%H", "--", *SOURCE_ROOTS)
-
-
-def source_blob(commit: str, path: str) -> str:
-    return run("git", "rev-parse", f"{commit}:{path}")
-
-
-def validate_sources() -> None:
-    errors: list[str] = []
-    for root in SOURCE_ROOTS:
-        if not (ROOT / root).exists():
-            errors.append(f"missing declared source root: {root}")
-    for operation in OPERATIONS:
-        path = ROOT / operation["sourcePath"]
-        if not path.is_file():
-            errors.append(f"missing operation source: {operation['sourcePath']}")
-        for test_path, _ in operation["tests"]:
-            if not (ROOT / test_path).is_file():
-                errors.append(f"missing mapped test source: {test_path}")
-    if errors:
-        raise SystemExit("AuthBus implementation-map source validation failed:\n" + "\n".join(errors))
-
-
-def document(source_commit: str) -> dict[str, Any]:
-    source_tree = run("git", "rev-parse", f"{source_commit}^{{tree}}")
-    operations: list[dict[str, Any]] = []
-    for operation in OPERATIONS:
-        mapped = dict(operation)
-        mapped["tests"] = [{"path": path, "symbol": symbol} for path, symbol in operation["tests"]]
-        mapped.update(
-            {
-                "designOperation": operation["operation"],
-                "mappingClass": "owner_native",
-                "delegatedCallees": [],
-                "sourcePathExists": True,
-                "sourceBlob": source_blob(source_commit, operation["sourcePath"]),
-            }
-        )
-        operations.append(mapped)
+def generated() -> dict:
+    tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT).decode().split("\0")
+    paths = sorted(name for name in tracked if name and (
+        (name.startswith(OWNER_ROOTS + CALLER_PREFIXES) and name.endswith((".rs", ".sql", ".toml", ".md"))) or name in EXACT))
+    manifest = [{"path": name, "sha256": digest(ROOT / name)} for name in paths]
+    native = {}
+    tests = []
+    calls = []
+    for name in paths:
+        if not name.endswith(".rs"):
+            continue
+        code = API.code_only((ROOT / name).read_text())
+        if name in ("codex-rs/hepta-authbus/src/host.rs", "codex-rs/hepta-authbus/src/operations.rs"):
+            for symbol in re.findall(r"\bpub\s+async\s+fn\s+(\w+)\s*\(", code):
+                native[symbol] = name
+        test_file = name.endswith("_tests.rs") or "/tests/" in name
+        for match in re.finditer(r"#\[(?:tokio::)?test(?:\([^]]*\))?\]\s*(?:#\[[^]]*\]\s*)*(?:pub\s+)?(?:async\s+)?fn\s+(\w+)", code):
+            tests.append({"path": name, "name": match.group(1), "line": code.count("\n", 0, match.start()) + 1})
+        if not name.startswith(OWNER_ROOTS) and not test_file:
+            for match in re.finditer(r"\b(?:AuthBusAuthorityHost|PrivateIssuerRegistryDocument)\b|\.(?:" + "|".join(sorted(API.HOST_OPERATIONS)) + r")\s*\(", code):
+                calls.append({"path": name, "line": code.count("\n", 0, match.start()) + 1,
+                              "sourceExpression": " ".join(match.group(0).split()),
+                              "classification": "lexical_candidate_requires_typed_native_validation"})
+    if set(native) != API.HOST_OPERATIONS:
+        raise ValueError("host operation set differs from reviewed API inventory")
+    closure = hashlib.sha256(json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     return {
-        "schema": "hepta.module-implementation-map.v3",
-        "schemaVersion": 3,
-        "sourceBase": {"commit": source_commit, "tree": source_tree},
-        "sourceBaseRole": "newest_commit_touching_declared_authbus_source_roots",
-        "laneId": "LANE-A-FOUNDATION",
-        "module": "auth.authbus",
-        "owner": "identity-access",
-        "deputy": "security-authority",
+        "schema": "hepta.module-implementation-map.v3", "schemaVersion": 3,
+        "module": "auth.authbus", "laneId": "LANE-A-FOUNDATION", "owner": "identity-access", "deputy": "security-authority",
         "technicalGuide": "docs/modules/auth.authbus/TECHNICAL.md",
-        "currentImplementation": "docs/lane-a-foundation/auth.authbus/CURRENT_IMPLEMENTATION.md",
-        "generatedBy": "scripts/generate-authbus-implementation-map.py",
-        "declaredRoots": SOURCE_ROOTS,
-        "resolvedRoots": SOURCE_ROOTS,
-        "sourceRoot": SOURCE_ROOTS,
-        "sourceRootPresent": True,
-        "productionImplementation": False,
-        "productCallerState": "source_composed_agentd_and_bao_not_activated",
-        "productionWriterState": "source_implemented_single_owner_not_activated",
-        "operations": operations,
-        "operationalDocuments": [
-            "docs/modules/auth.authbus/THREAT_MODEL.md",
-            "docs/modules/auth.authbus/OPERATIONS.md",
-            "docs/modules/auth.authbus/SLO.md",
-            "docs/modules/auth.authbus/RECOVERY.md",
-            "docs/modules/auth.authbus/KEY_ROTATION.md",
-            "docs/modules/auth.authbus/SCHEMA_COMPATIBILITY.md",
-            "docs/modules/auth.authbus/PROVIDER_AND_DEPLOYMENT.md",
-            "docs/modules/auth.authbus/DASHBOARD.json",
-            "docs/modules/auth.authbus/ALERTS.json",
-            "docs/modules/auth.authbus/PUBLIC_API_INVENTORY.json",
-        ],
-        "repositoryControlledGaps": [
-            "Obtain terminal-success exact-head and deterministic synthetic-merge receipts for one unchanged candidate.",
-            "Complete target-host ENOSPC, power-loss, KMS/HSM and operator acceptance evidence.",
-        ],
-        "externalEvidenceGates": [
-            "independent semantic and security review",
-            "target-host qualification",
-            "operator acceptance, canary, promotion and release",
-        ],
-        "claimBoundary": {
-            "nativeSourceMappingComplete": True,
-            "sourceRootPresent": True,
-            "productionImplementation": False,
-            "productSourceComposition": True,
-            "productExecutionProved": False,
-            "independentAcceptance": False,
-            "activation": False,
-            "release": False,
-            "implementedOperationMappingComplete": True,
-        },
-        "exactHeadQualificationPolicy": {
-            "state": "external_exact_candidate_receipt_required",
-            "verifier": "scripts/authbus-exact-head-evidence.py",
-            "sourceInventoryVerifier": "scripts/check-authbus-closed-world.py --check",
-            "implementationMapVerifier": "scripts/generate-authbus-implementation-map.py --check",
-            "workflows": [
-                ".github/workflows/authbus-authority-qualification.yml",
-                ".github/workflows/hepta-consolidated-source.yml",
-            ],
-            "successRule": "source-head and synthetic-merge jobs must both reach terminal success; queued, skipped or cancelled is not success",
-        },
+        "sourceBase": {"commit": "a6b33095672a48abc9a2b3c4b2c238026523c0dd", "tree": "863b19d9ed3248eff43d8e848be96922c1b61481", "role": "inherited_remediation_base_NOT_current_candidate"},
+        "sourceBinding": {"strategy": "sha256-source-file-manifest", "digest": closure,
+                          "manifest": manifest, "exactCandidateAuthority": "external exact-head qualification receipt",
+                          "selfReferentialCommitClaim": False},
+        "declaredRoots": [root.rstrip('/') for root in OWNER_ROOTS],
+        "resolvedRoots": [root.rstrip('/') for root in OWNER_ROOTS],
+        "sourceRoot": [root.rstrip('/') for root in OWNER_ROOTS],
+        "sourceRootPresent": True, "productionImplementation": False,
+        "productCallerState": "source_composed_native_evidence_required",
+        "productionWriterState": "host_only_crate_private_store",
+        "operations": [{"operation": operation, "nativeSymbol": operation,
+                        "sourcePath": native[operation], "sourcePathExists": True,
+                        "state": "source_present_execution_not_asserted", "mappingClass": "owner_native",
+                        "designOperation": operation, "delegatedCallees": [], "tests": []}
+                       for operation in sorted(native)],
+        "testDeclarations": tests,
+        "testDeclarationCaveat": "Declarations may be cfg-gated and are NOT executed coverage or per-operation proof.",
+        "productCallsiteCandidates": calls,
+        "callsiteCaveat": "Lexical candidates are navigation aids; generic method names are not typed call-graph proof.",
+        "repositoryControlledGaps": ["Require successful native source-head and fixed-base synthetic-merge receipts.", "Validate typed product execution and fault-injection outcomes for this candidate."],
+        "externalEvidenceGates": ["independent security review", "named provider/key custody and target-host qualification", "operator canary and explicit activation decision"],
+        "claimBoundary": {"nativeSourceMappingComplete": False, "sourceRootPresent": True,
+                          "productionImplementation": False, "productExecutionProved": False,
+                          "independentAcceptance": False, "activation": False, "release": False,
+                          "implementedOperationMappingComplete": False},
     }
 
 
-def encoded(value: dict[str, Any]) -> str:
-    return json.dumps(value, indent=2, sort_keys=True) + "\n"
-
-
-def main() -> None:
+def main():
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--write", action="store_true")
     group.add_argument("--check", action="store_true")
     args = parser.parse_args()
-    validate_sources()
-
-    newest = latest_source_commit()
+    expected = json.dumps(generated(), indent=2, sort_keys=True) + "\n"
     if args.write:
-        MAP_PATH.write_text(encoded(document(newest)), encoding="utf-8")
-        return
-
-    if not MAP_PATH.is_file():
-        raise SystemExit("missing AuthBus implementation map")
-    current = json.loads(MAP_PATH.read_text(encoding="utf-8"))
-    anchored = current.get("sourceBase", {}).get("commit")
-    if anchored != newest:
-        raise SystemExit(
-            f"AuthBus implementation map is stale: sourceBase={anchored}, newestSourceCommit={newest}"
-        )
-    expected = encoded(document(newest))
-    if MAP_PATH.read_text(encoding="utf-8") != expected:
-        raise SystemExit(
-            "AuthBus implementation map content is stale; run scripts/generate-authbus-implementation-map.py --write"
-        )
+        DESTINATION.write_text(expected)
+    elif not DESTINATION.exists() or DESTINATION.read_text() != expected:
+        raise SystemExit("AuthBus implementation map is stale; regenerate from the actual candidate sources")
 
 
 if __name__ == "__main__":
