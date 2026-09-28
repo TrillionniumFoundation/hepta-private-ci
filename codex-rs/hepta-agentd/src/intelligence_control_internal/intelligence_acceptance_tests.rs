@@ -68,10 +68,6 @@ fn canonical_product_route_requires_continuation_before_admission() {
         PRODUCT_ROUTE[..admission].contains("None => return Ok(None)"),
         "missing continuation must fall back to compatibility before admission"
     );
-}
-
-#[test]
-fn runtime_rejects_partial_or_source_only_canonical_profiles() {
     for required in [
         "validate_intelligence_product_profile(&config)?",
         "provider.product_continuation().is_some()",
