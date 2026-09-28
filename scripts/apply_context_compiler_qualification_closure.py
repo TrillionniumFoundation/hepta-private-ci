@@ -120,18 +120,28 @@ replace(
 execution = "scripts/context_compiler_execution.py"
 replace(
     execution,
-    '''        {"name": "exact-body-regressions", "cwd": legacy.CODEX_RS,
-         "argv": ["just", "test", "--locked", "-p", "codex-hepta-prompt-extension", "--lib", "exact_body"],
-         "minimumTests": 8},
+    '''        {
+            "name": "v3-default-product-profile",
 ''',
-    '''        {"name": "exact-body-regressions", "cwd": legacy.CODEX_RS,
-         "argv": ["just", "test", "--locked", "-p", "codex-hepta-prompt-extension", "--lib", "exact_body"],
-         "minimumTests": 8},
-        {"name": "v3-product-regressions", "cwd": legacy.CODEX_RS,
-         "argv": ["just", "test", "--locked", "-p", "codex-hepta-intelligence", "prompt_product_v3"],
-         "minimumTests": 4},
-        {"name": "crash-recovery-regressions", "cwd": legacy.CODEX_RS,
-         "argv": ["just", "test", "--locked", "-p", "codex-hepta-agentd", "registry_race_tests"],
-         "minimumTests": 5},
+    '''        {
+            "name": "v3-product-regressions",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just", "test", "--locked", "-p", "codex-hepta-intelligence",
+                "prompt_product_v3",
+            ],
+            "minimumTests": 4,
+        },
+        {
+            "name": "crash-recovery-regressions",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just", "test", "--locked", "-p", "codex-hepta-agentd",
+                "registry_race_tests",
+            ],
+            "minimumTests": 5,
+        },
+        {
+            "name": "v3-default-product-profile",
 ''',
 )
