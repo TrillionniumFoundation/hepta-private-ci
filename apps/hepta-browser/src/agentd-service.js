@@ -45,6 +45,8 @@ function positiveInteger(value, name) {
   return value;
 }
 
+class AgentdBrowserChannelClosed extends Error {}
+
 export class AgentdBrowserChannel {
   #input;
   #output;
@@ -68,10 +70,15 @@ export class AgentdBrowserChannel {
     input.on("data", (chunk) => this.#onBytes(chunk));
     input.on("end", () => this.#onEnd());
     input.on("error", (error) => this.#fail(error));
+    input.on("close", () => this.#streamClosed("input"));
     output.on?.("error", (error) => this.#fail(error));
+    output.on?.("close", () => this.#streamClosed("output"));
+    output.on?.("finish", () => this.#streamClosed("output"));
+    this.#checkStreams();
   }
 
   async nextFrame({ signal } = {}) {
+    this.#checkStreams();
     if (this.#failed) throw this.#failed;
     if (signal?.aborted) throw new Error("Agentd browser receive was cancelled");
     if (this.#queue.length) {
@@ -104,6 +111,7 @@ export class AgentdBrowserChannel {
   }
 
   assertUsable() {
+    this.#checkStreams();
     if (this.#failed) throw this.#failed;
     if (this.#ended) throw new Error("Agentd browser channel is closed");
   }
@@ -185,7 +193,32 @@ export class AgentdBrowserChannel {
       return;
     }
     this.#ended = true;
+    // A queued request cannot cross authority after its parent has left. EOF
+    // also cannot acknowledge an output write whose callback never arrived.
+    this.#queue = [];
+    this.#queuedBytes = 0;
+    if (this.#writes.size) {
+      this.#fail(new AgentdBrowserChannelClosed("Agentd browser input ended before output acknowledgement"));
+      return;
+    }
     for (const waiter of this.#waiters.splice(0)) waiter.resolve(null);
+  }
+
+  #checkStreams() {
+    // destroy() changes these flags before the asynchronous close event. Check
+    // them at actual use as well as construction, not just in event callbacks.
+    if (this.#failed || this.#ended) return;
+    if (this.#input.destroyed || this.#input.closed || this.#input.readableEnded) {
+      this.#streamClosed("input");
+    } else if (this.#output.destroyed || this.#output.closed || this.#output.writableEnded) {
+      this.#streamClosed("output");
+    }
+  }
+
+  #streamClosed(side) {
+    // Normal retirement after an already observed idle EOF remains a clean end.
+    if (this.#ended && this.#writes.size === 0) return;
+    this.#fail(new AgentdBrowserChannelClosed(`Agentd browser ${side} stream closed`));
   }
 
   #fail(error) {
@@ -322,7 +355,15 @@ export class BrowserAgentdService {
 
   async run() {
     while (true) {
-      const frame = await this.#channel.nextFrame();
+      let frame;
+      try {
+        frame = await this.#channel.nextFrame();
+      } catch (error) {
+        // Idle transport retirement stops the service. It emits no response and
+        // does not settle an effect; closure during #serve still rejects there.
+        if (error instanceof AgentdBrowserChannelClosed) return;
+        throw error;
+      }
       if (frame === null) return;
       this.#channel.assertUsable();
       if (frame.kind !== "request") {
