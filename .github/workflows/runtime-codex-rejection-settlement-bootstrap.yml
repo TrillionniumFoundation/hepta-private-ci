@@ -1,0 +1,85 @@
+name: runtime.codex rejection settlement bootstrap
+
+on:
+  push:
+    branches: [runtime-codex/closure-20260927]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-rejection-settlement-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-reviewed-transform:
+    if: ${{ !contains(github.event.head_commit.message, '[runtime-codex-rejection-settlement]') }}
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact canonical candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned formatter
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+
+      - name: Apply exact two-owner rejection settlement transform
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/runtime_codex_rejection_settlement_bootstrap.py')
+          source = path.read_text()
+          old = 'return text[:first] + replacement + text[stop:]'
+          new = 'return text[:first] + replacement + text[stop + len(end):]'
+          if source.count(old) != 1:
+              raise SystemExit('unexpected transformer helper')
+          path.write_text(source.replace(old, new, 1))
+          PY
+          python3 scripts/runtime_codex_rejection_settlement_bootstrap.py
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('codex-rs/hepta-infer-worker-host/src/native_execution.rs')
+          source = path.read_text()
+          old = 'let mut owner_abort_required = intelligence.is_some();'
+          new = 'let owner_abort_required = intelligence.is_some();'
+          if source.count(old) != 1:
+              raise SystemExit('unexpected owner abort binding')
+          path.write_text(source.replace(old, new, 1))
+          PY
+
+      - name: Format and validate the transformed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-agentd \
+            --package codex-hepta-infer-worker-host
+          git diff --check
+          test ! -e scripts/runtime_codex_rejection_settlement_bootstrap.py
+
+      - name: Publish one immutable reviewed candidate
+        shell: bash
+        env:
+          HEAD_REF: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          test "$HEAD_REF" = runtime-codex/closure-20260927
+          rm .github/workflows/runtime-codex-rejection-settlement-bootstrap.yml
+          git add -A
+          git diff --cached --check
+          git config user.name 'OpenAI Codex'
+          git config user.email 'noreply@openai.com'
+          git commit \
+            -m 'runtime.codex: settle typed rejection across both owners [runtime-codex-rejection-settlement]' \
+            -m 'Prepare exact non-admission evidence locally, terminally acknowledge the exact Agentd dispatch, and only then release local capacity. Reopen pending settlement after a crash and keep unknown acknowledgement reconcile-only.'
+          git push origin "HEAD:refs/heads/${HEAD_REF}"
