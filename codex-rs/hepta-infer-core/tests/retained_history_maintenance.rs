@@ -12,15 +12,19 @@ use codex_hepta_types::Digest32;
 
 static NONCE: AtomicU64 = AtomicU64::new(0);
 
+fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("fixture failed: {error:?}"),
+    }
+}
+
 struct JournalPath(PathBuf);
 
 impl JournalPath {
     fn new() -> Self {
         let nonce = NONCE.fetch_add(1, Ordering::Relaxed);
-        let stamp = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("time")
-            .as_nanos();
+        let stamp = checked(SystemTime::now().duration_since(UNIX_EPOCH)).as_nanos();
         Self(std::env::temp_dir().join(format!(
             "hepta-semantic-maintenance-{}-{stamp}-{nonce}.journal",
             std::process::id()
@@ -55,7 +59,7 @@ fn request(id: &str) -> SemanticRetrievalRequestV1 {
 
 fn admission(id: &str) -> SemanticAdmissionV1 {
     SemanticAdmissionV1 {
-        request_wire: request(id).encode().expect("request"),
+        request_wire: checked(request(id).encode()),
         principal_id: "principal.maintenance".to_string(),
         reservation_id: format!("reservation.{id}"),
         worker_id: "worker.maintenance".to_string(),
@@ -69,7 +73,7 @@ fn admission(id: &str) -> SemanticAdmissionV1 {
 fn completion(id: &str) -> SemanticCompletionV1 {
     let input = request(id);
     let mut reply = b"HPTARS\x01\x00".to_vec();
-    reply.extend_from_slice(Digest32::of_bytes(&input.encode().expect("wire")).as_array());
+    reply.extend_from_slice(Digest32::of_bytes(&checked(input.encode())).as_array());
     reply.extend_from_slice(&[0x33; 32]);
     reply.extend_from_slice(&2_u32.to_be_bytes());
     reply.extend_from_slice(&100_000_u32.to_be_bytes());
@@ -77,7 +81,7 @@ fn completion(id: &str) -> SemanticCompletionV1 {
     reply.extend_from_slice(&12_u64.to_be_bytes());
     reply.extend_from_slice(&0_u64.to_be_bytes());
     reply.extend_from_slice(&7_u64.to_be_bytes());
-    input.decode_reply(&reply).expect("valid reply");
+    checked(input.decode_reply(&reply));
     SemanticCompletionV1 {
         reply_wire: reply,
         observed_memory_bytes: Some(64),
@@ -85,18 +89,10 @@ fn completion(id: &str) -> SemanticCompletionV1 {
 }
 
 fn append_terminal(control: &mut DurableInferenceControl, id: &str) {
-    let reserved = control
-        .reserve_semantic(100, admission(id), 1)
-        .expect("reserve");
-    control
-        .fence_semantic_dispatch(id, reserved.revision, 101)
-        .expect("fence");
-    control
-        .complete_semantic(id, completion(id))
-        .expect("complete");
-    control
-        .acknowledge_semantic_delivery(id, "5".repeat(64))
-        .expect("acknowledge");
+    let reserved = checked(control.reserve_semantic(100, admission(id), 1));
+    checked(control.fence_semantic_dispatch(id, reserved.revision, 101));
+    checked(control.complete_semantic(id, completion(id)));
+    checked(control.acknowledge_semantic_delivery(id, "5".repeat(64)));
 }
 
 /// Compatibility selector for the historical architecture-workflow filter.
