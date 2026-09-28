@@ -24,6 +24,13 @@ use super::AgentdNeuronHandleV2;
 use super::AgentdNeuronOwnerV2;
 use super::ProductNeuronOwnerV2;
 
+fn checked<T, E: std::fmt::Debug>(value: Result<T, E>) -> T {
+    match value {
+        Ok(value) => value,
+        Err(error) => panic!("fixture: {error:?}"),
+    }
+}
+
 struct StubWitness;
 
 impl AnchorWitnessStore for StubWitness {
@@ -125,11 +132,9 @@ fn shared_handle_exposes_serialized_recovery_and_capacity_inspection() {
     assert_eq!(handle.configuration_digest(), config_digest);
     assert!(handle.reconcile().is_ok());
     assert_eq!(owner.reconciles.load(Ordering::SeqCst), 1);
-    let tick_id = StableId::new("agentd-neuron-operation").expect("stable id");
-    let status = handle
-        .query_operation(&tick_id, Digest32::of_bytes(b"input"))
-        .expect("status");
+    let tick_id = checked(StableId::new("agentd-neuron-operation"));
+    let status = checked(handle.query_operation(&tick_id, Digest32::of_bytes(b"input")));
     assert_eq!(status.stable_code(), "reserved_not_executed");
-    let capacity = handle.capacity_snapshot().expect("capacity");
+    let capacity = checked(handle.capacity_snapshot());
     assert_eq!(capacity.action_code(), "schedule_generation_handoff");
 }
