@@ -295,17 +295,41 @@ pub(super) async fn tick(state: Arc<DaemonState<UnixProcessDriver>>, scheduled: 
             .observed_faults
             .fetch_add(faults.len() as u64, Ordering::Relaxed);
         refresh(state, &supervisor);
-        drop(supervisor);
+
         let second = execution.started.elapsed().as_secs();
         let previous = execution.last_log_second.load(Ordering::Relaxed);
-        if second.saturating_sub(previous) >= 5
+        let log_now = second.saturating_sub(previous) >= 5
             && execution
                 .last_log_second
                 .compare_exchange(previous, second, Ordering::Relaxed, Ordering::Relaxed)
-                .is_ok()
-        {
+                .is_ok();
+        let operational = log_now.then(|| supervisor.operational_summary()).transpose();
+        drop(supervisor);
+
+        if log_now {
             state.supervisor.log_snapshot();
             execution.log_snapshot();
+            match operational {
+                Ok(Some(summary)) => eprintln!(
+                    "hepta_supervisord_progress registered_agents={} blocked_agents={} target_identity_changed={} awaiting_process_exit={} restart_backoff={} restart_budget_exhausted={} release_transition_in_progress={} persistence_uncertain={} recovery_quarantined={} control_state_unavailable={} resource_enforcement_gaps={}",
+                    summary.registered_agents,
+                    summary.blocked_agents,
+                    summary.target_identity_changed,
+                    summary.awaiting_process_exit,
+                    summary.restart_backoff,
+                    summary.restart_budget_exhausted,
+                    summary.release_transition_in_progress,
+                    summary.persistence_uncertain,
+                    summary.recovery_quarantined,
+                    summary.control_state_unavailable,
+                    summary.resource_enforcement_gaps,
+                ),
+                Ok(None) => {}
+                Err(_) => {
+                    state.observed_faults.fetch_add(1, Ordering::Relaxed);
+                    eprintln!("hepta_supervisord_progress unavailable=1");
+                }
+            }
             eprintln!(
                 "hepta_supervisord_scheduler completed={} rejected_busy={} tick_delay_max_us={}",
                 execution.completed.load(Ordering::Relaxed),
