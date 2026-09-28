@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 90
     env:
       SOURCE_SHA: ${{ github.sha }}
-      MATERIALIZE_PARENT: 7de24f99478923ca0af894c104aac3f9f5d82afc
+      MATERIALIZE_PARENT: 140d5f46ab1e8b05a5e110b4c62497463a6ab487
       TRANSPORT_PARENT: 2e2a847a04d7e450b3b627601680984ff48d1ca0
       TARGET_BRANCH: fix/compact-engine-current-main-convergence-20260925
       PATCH_SHA256: 3610e3e56f865c1047d99b0c2a891751571ded7e7d0eeb0ab95387415314107d
@@ -65,6 +65,27 @@ jobs:
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           components: rustfmt,clippy
+
+      - name: Archive pinned Rust toolchain for local diagnosis
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain="$(dirname "$(dirname "$(rustup which rustc)")")"
+          mkdir -p "$RUNNER_TEMP/compact-engine-toolchain"
+          rustc --version --verbose > "$RUNNER_TEMP/compact-engine-toolchain/versions.txt"
+          cargo --version >> "$RUNNER_TEMP/compact-engine-toolchain/versions.txt"
+          rustfmt --version >> "$RUNNER_TEMP/compact-engine-toolchain/versions.txt"
+          cargo clippy --version >> "$RUNNER_TEMP/compact-engine-toolchain/versions.txt"
+          tar --exclude='lib/rustlib/src' -czf "$RUNNER_TEMP/compact-engine-toolchain/toolchain.tar.gz" -C "$toolchain" bin lib
+          (cd "$RUNNER_TEMP/compact-engine-toolchain" && sha256sum toolchain.tar.gz > SHA256SUMS)
+
+      - name: Upload pinned Rust toolchain
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: compact-engine-toolchain-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/compact-engine-toolchain/
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Format compact.engine and run locked build
         working-directory: codex-rs
