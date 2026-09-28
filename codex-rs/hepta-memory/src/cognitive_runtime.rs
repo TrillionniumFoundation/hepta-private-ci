@@ -113,8 +113,7 @@ impl MemoryFederationHostProfile {
                 "memory federation admitted peers must be 1..={MAX_FEDERATION_SOURCES_PER_AGENT}"
             )));
         }
-        if !(1..=MAX_PRODUCT_FEDERATION_DISCOVERY_CONCURRENCY)
-            .contains(&discovery_concurrency)
+        if !(1..=MAX_PRODUCT_FEDERATION_DISCOVERY_CONCURRENCY).contains(&discovery_concurrency)
             || discovery_concurrency > max_owner_candidates
         {
             return Err(CognitiveStoreError::Invalid(format!(
@@ -649,9 +648,7 @@ async fn retrieve_federated_product(
     let logical_start_ms = seconds_to_ms(request.now_unix_seconds())?;
     let started_at = Instant::now();
     let global_deadline_ms = logical_start_ms
-        .checked_add(
-            u64::try_from(host_profile.total_budget().as_millis()).unwrap_or(u64::MAX),
-        )
+        .checked_add(u64::try_from(host_profile.total_budget().as_millis()).unwrap_or(u64::MAX))
         .ok_or_else(|| CognitiveStoreError::Invalid("federation deadline overflow".to_string()))?;
 
     let (outcomes, timed_out_discoveries) = {
@@ -697,8 +694,7 @@ async fn retrieve_federated_product(
     });
     readers.dedup_by(|(_, left), (_, right)| left.capability().id() == right.capability().id());
     let observable_peer_slots = readers.len().saturating_add(discovery_failures);
-    let truncated_peers =
-        observable_peer_slots.saturating_sub(host_profile.max_admitted_peers());
+    let truncated_peers = observable_peer_slots.saturating_sub(host_profile.max_admitted_peers());
     readers.truncate(host_profile.max_admitted_peers());
 
     let discovery_failure_slots = discovery_failures.min(
@@ -1480,15 +1476,9 @@ mod product_nonce_tests {
 
     #[test]
     fn host_profile_accepts_narrow_limits_and_rejects_widening() {
-        let profile = MemoryFederationHostProfile::try_new(
-            Duration::from_millis(250),
-            8,
-            4,
-            2,
-            2,
-            2,
-        )
-        .expect("narrow host profile");
+        let profile =
+            MemoryFederationHostProfile::try_new(Duration::from_millis(250), 8, 4, 2, 2, 2)
+                .expect("narrow host profile");
         assert_eq!(profile.total_budget(), Duration::from_millis(250));
         assert_eq!(profile.discovery_budget(), Duration::from_millis(125));
         assert_eq!(profile.attempt_budget_floor(), Duration::from_millis(125));
@@ -1536,15 +1526,9 @@ mod product_nonce_tests {
     async fn pending_owner_discovery_cannot_consume_attempt_budget() {
         use futures::future::BoxFuture;
 
-        let profile = MemoryFederationHostProfile::try_new(
-            Duration::from_millis(200),
-            2,
-            2,
-            2,
-            2,
-            2,
-        )
-        .expect("profile");
+        let profile =
+            MemoryFederationHostProfile::try_new(Duration::from_millis(200), 2, 2, 2, 2, 2)
+                .expect("profile");
         let discoveries: Vec<BoxFuture<'static, u8>> = vec![
             Box::pin(async { 7 }),
             Box::pin(std::future::pending::<u8>()),
