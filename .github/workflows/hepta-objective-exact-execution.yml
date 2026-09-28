@@ -1,0 +1,95 @@
+name: Hepta objective exact execution
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-production-convergence-20260927
+    paths:
+      - codex-rs/hepta-objective/**
+      - codex-rs/hepta-intelligence/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-learning-ledger/**
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - docs/modules/objective.compiler/**
+      - scripts/hepta-objective-qualify-exact.py
+      - scripts/test_hepta_objective_qualify_exact.py
+      - .github/workflows/hepta-objective-exact-execution.yml
+  workflow_dispatch:
+    inputs:
+      source_commit:
+        description: Full immutable source commit; checkout uses this value
+        required: true
+        type: string
+      merge_base:
+        description: Full immutable main commit used for the synthetic merge
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_SHA: ${{ inputs.source_commit || github.sha }}
+  QUALIFICATION_WORKFLOW_SHA: ${{ github.workflow_sha }}
+
+concurrency:
+  group: objective-exact-${{ inputs.source_commit || github.sha }}-${{ inputs.merge_base || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind immutable source and merge base
+        env:
+          REQUESTED_MERGE_BASE: ${{ inputs.merge_base }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if [[ -n "$REQUESTED_MERGE_BASE" ]]; then
+            BASE="$REQUESTED_MERGE_BASE"
+          else
+            BASE="$(git rev-parse origin/main)"
+          fi
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BASE" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse "$BASE^{commit}")" = "$BASE"
+          printf 'MERGE_BASE_SHA=%s\n' "$BASE" >> "$GITHUB_ENV"
+          printf 'Source: %s\nMerge base: %s\n' "$SOURCE_SHA" "$BASE" >> "$GITHUB_STEP_SUMMARY"
+      - name: Test recorder failure semantics
+        shell: bash
+        run: python3 -m unittest -v scripts.test_hepta_objective_qualify_exact
+      - name: Qualify source and deterministic merge without source writes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-objective-qualify-exact.py \
+            --source-commit "$SOURCE_SHA" \
+            --merge-base "$MERGE_BASE_SHA" \
+            --out "$RUNNER_TEMP/objective-exact-evidence" \
+            --command-timeout 1800
+      - name: Preserve observed failures and partial execution as evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: objective-exact-execution-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-exact-evidence
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Verify the source checkout was not mutated
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

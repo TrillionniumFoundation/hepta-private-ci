@@ -34,27 +34,55 @@ those operators can be admitted losslessly.
 
 ## Public API boundary
 
-Normal product code uses:
+The existing Agentd product route calls the intelligence facade
+`compile_and_publish_objective_run_v1`. Its compiler/publication sequence is:
 
 ```text
-ObjectiveSourceEnvelopeV1
--> admit_objective_v1(...)
--> AdmittedObjectiveV1
--> compile_admitted_objective_v1(...)
+ObjectiveSourceEnvelopeV1 + current authenticated ObjectiveAdmissionContextV1
++ ValidatedAdmissionProfileV1
+-> compile_authoritative_objective_v1(...)
+-> ProofBearingObjectiveCompileV1
+-> encode_proof_bearing_objective_function_v1(&outcome, &source, &profile)
+-> destination-owner RunStartJournal
 ```
+
+The proof-bearing value has no public constructor or mutable outcome access. Encoding
+checks the complete source-envelope proof identity and the exact frozen profile, then
+retains the existing native/source/admission/protocol validation and strict canonical
+wire decoder. It does not repeat authenticated admission or native feasibility solving.
+A hard conflict follows the existing conflict-journal path and cannot be projected into
+a compiled run. `ExplicitAbstain` remains a valid immutable publication with no effect authority.
+
+The lower-level `admit_objective_v1 -> AdmittedObjectiveV1 -> compile_admitted_objective_v1`
+API remains available; it is not the recommended product publication composition.
+`encode_authenticated_objective_function_v1` remains the compatibility/revalidation
+entrypoint for callers holding separate receipts and the original authenticated context.
+It independently repeats admission and compilation. `encode_objective_function_v1` is
+crate-private, not a public product bypass.
 
 `AdmittedObjectiveV1` has no public raw-source constructor. The legacy
 `ObjectiveSourceEnvelope -> compile` surface is no longer exported by default. It exists only
 as `compile_prevalidated_legacy_objective_v1` under the explicit
 `qualification-legacy-compile` Cargo feature for historical qualification fixtures.
 
+### Static reuse is not authorization reuse
+
+The current facade still constructs a validated profile from the raw profile on each
+request, and the strict projection still validates its raw profile. Full process-generation
+profile caching is not claimed by this change. A future reuse key must bind profile digest,
+revision and compiler-contract identity. Current issuer trust, source identity, time,
+revocation, generation, fence and final-use authority must continue to be checked by the
+existing owners for every applicable request/use; none are cacheable grants.
+
 ## Canonical ObjectiveFunctionV1 publication
 
-After authenticated admission and deterministic compilation, product publication calls
-`encode_objective_function_v1`. It projects the admitted source, frozen profile,
-admission receipt and native compiled objective into the registered canonical JSON
-`ObjectiveFunctionV1`, validates that projection, re-decodes the exact bytes and
-computes a protocol-wire digest.
+After authoritative compilation, product publication uses
+`encode_proof_bearing_objective_function_v1` in `hepta-objective/src/proof_projection.rs`.
+The artifact retains the registered canonical JSON representation, strict projection
+checks, re-decoding of exact bytes, and a protocol-wire digest. The parity regression
+compares this artifact with the compatibility encoder's independent recompilation;
+metadata, supplied-intent and profile substitutions have dedicated rejection tests.
+Test source presence is not an execution pass receipt.
 
 The protocol-wire digest is intentionally **not** the native
 `ObjectiveFunction::semantic_digest`. The native digest identifies the compact compiler
@@ -62,7 +90,9 @@ semantics used by `RunStartSnapshotV1.objectiveDigest`; the protocol digest iden
 registered JSON transport including explicit evidence requirements, legal/forbidden actions,
 resource endowment and deadline. The durable run-start v2 record binds both identities.
 Legacy v1 records may be decoded for migration/recovery inspection but cannot be admitted
-to Agentd runtime final use without the canonical protocol identity.
+to Agentd runtime final use without the canonical protocol identity. The facade's returned
+admission-proof digest is distinct from durable proof persistence; the latter requires its
+own versioned storage/recovery closure and is not established by an in-memory proof alone.
 
 ## Feasibility determinism
 
@@ -71,3 +101,10 @@ oracle-call budget. The explicit availability API additionally accepts a wall-cl
 records elapsed host time; exhaustion near that deadline is host-sensitive and is not semantic
 identity. The owner-internal compiler compatibility adapter uses `Duration::MAX` so host
 scheduling does not alter objective semantics.
+
+## Exact-candidate evidence
+
+See [DELIVERY_EVIDENCE.md](DELIVERY_EVIDENCE.md) for the read-only source/merge execution
+recorder, interpretation of missing or failed commands, and the remaining independent
+and selected-target-host gates. No source declaration in this matrix grants acceptance,
+activation, promotion or release.
