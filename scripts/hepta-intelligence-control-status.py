@@ -54,6 +54,9 @@ REQUIRED_TESTS = {
     "explicit_hard_timeout_terminates_a_real_child_process",
     "actual_stage_outputs_fill_templates_but_reject_substitution",
     "utility_universe_rejects_foreign_and_missing_candidates",
+    "objective_owner_rejects_forbidden_and_undeclared_candidates_before_utility",
+    "signed_evaluation_completes_existing_owner_preparation_and_run_admission",
+    "signed_input_cannot_install_host_trust_or_change_actual_context",
     "guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen",
 }
 REQUIRED_OPERATIONS = {
@@ -65,6 +68,7 @@ REQUIRED_OPERATIONS = {
 }
 COMMANDS = {
     "fmt.json": ["cargo", "fmt", "--all", "--", "--check"],
+    "ndu-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-ndu"],
     "intelligence-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-intelligence"],
     "ledger-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-learning-ledger"],
     "native-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-infer-worker-host", "--lib"],
@@ -72,7 +76,7 @@ COMMANDS = {
     "agentd-default-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "--lib"],
     "agentd-qualification-tests.json": ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "--lib", "--features", "qualification-legacy-learning-write"],
     "agentd-all-targets.json": ["cargo", "check", "--locked", "-p", "codex-hepta-agentd", "--all-targets"],
-    "clippy.json": ["cargo", "clippy", "--locked", "-p", "codex-hepta-intelligence", "-p", "codex-hepta-agentd", "-p", "codex-hepta-operations", "--all-targets", "--", "-D", "warnings"],
+    "clippy.json": ["cargo", "clippy", "--locked", "-p", "codex-hepta-intelligence", "-p", "codex-hepta-agentd", "-p", "codex-hepta-operations", "-p", "codex-hepta-ndu", "--all-targets", "--", "-D", "warnings"],
 }
 PACKAGE_RECORDS = {
     "codex-hepta-intelligence": "intelligence-tests.json",
