@@ -1,0 +1,44 @@
+name: Kernel authority deterministic finalizer
+
+on:
+  push:
+    branches:
+      - work/kernel-authority-convergence-20260925
+    paths:
+      - '.github/workflows/kernel-authority-finalize.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: kernel-authority-deterministic-finalizer
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    name: Materialize reviewed source and projections
+    runs-on: macos-15
+    timeout-minutes: 180
+    steps:
+      - name: Checkout exact repair branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: work/kernel-authority-convergence-20260925
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+
+      - name: Commit reviewed source repair and regenerate candidate truth
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/kernel-authority-finalize.yml
+          bash scripts/kernel_authority_direct_repair_v3.sh
