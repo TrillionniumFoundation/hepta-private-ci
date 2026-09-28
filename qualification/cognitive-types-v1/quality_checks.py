@@ -3,6 +3,8 @@
 
 Fixtures are qualification inputs, never authenticated producer evidence. This
 runner does not rewrite source and does not claim a source-mutation score.
+Performance observations use a maximum-collection MemoryEvent profile and are
+reported without an uncalibrated pass/fail latency threshold.
 """
 from __future__ import annotations
 
@@ -12,10 +14,17 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
+import statistics
 import subprocess
-import sys
 
 ALGORITHM = b"canonical-json-utf8-sorted-keys-integer-only-preserve-unicode-v1"
+MAX_EVENT_SPANS = 32
+MAX_EVENT_BINDINGS = 32
+MAX_EVENT_SEMANTIC_KEYS = 64
+MAX_EVENT_PROVENANCE = 64
+MAX_EVENT_REFERENCES = 64
+PERFORMANCE_REPEATS = 256
+PERFORMANCE_SAMPLES = 3
 
 
 def canonical(value):
@@ -109,6 +118,67 @@ def cases(vectors):
     return positive, negative
 
 
+def digest_hex(value):
+    """Return a non-zero, exact lowercase SHA-256-shaped value."""
+    return f"{value:064x}"
+
+
+def maximal_memory_event(golden):
+    """Build one valid event with every declared collection at its count ceiling."""
+    maximal = copy.deepcopy(golden)
+    payload = maximal["payload"]
+    spans = []
+    for index in range(MAX_EVENT_SPANS):
+        text = index % 2 == 0
+        spans.append({
+            "spanId": f"span:capacity:{index:02}",
+            "modality": "text" if text else "image",
+            "assetSha256": digest_hex(1_000 + index),
+            "range": (
+                {"kind": "byte_range", "start": index, "end": index + 1}
+                if text else
+                {"kind": "pixel_rect", "x": 0, "y": 0, "width": 1, "height": 1}
+            ),
+            "preprocessorManifestSha256": digest_hex(2_000 + index),
+            "featureBlobSha256": None,
+            "symbolicProjectionSha256": None,
+            "uncertaintyPpm": index,
+            "privacyClass": "agent_private",
+            "redactionMaskSha256": None,
+        })
+    payload["modalitySpans"] = spans
+    payload["crossModalBindings"] = [
+        {
+            "bindingId": f"binding:capacity:{index:02}",
+            "eventId": payload["eventId"],
+            "spanRefs": ["span:capacity:00", "span:capacity:01"],
+            "alignmentKind": "same_observation",
+            "confidencePpm": 1_000_000 - index,
+            "producerManifestSha256": digest_hex(3_000 + index),
+        }
+        for index in range(MAX_EVENT_BINDINGS)
+    ]
+    payload["semanticKeys"] = [
+        f"key-{index:02}-" + "x" * 120 for index in range(MAX_EVENT_SEMANTIC_KEYS)
+    ]
+    payload["provenance"] = [
+        {
+            "sourceId": f"source:capacity:{index:02}",
+            "sourceRevision": 1,
+            "sourceSha256": digest_hex(4_000 + index),
+            "observedAtUnixMs": index + 1,
+        }
+        for index in range(MAX_EVENT_PROVENANCE)
+    ]
+    payload["causalParents"] = [
+        f"event:causal:{index:02}" for index in range(MAX_EVENT_REFERENCES)
+    ]
+    payload["temporalNeighbors"] = [
+        f"event:temporal:{index:02}" for index in range(MAX_EVENT_REFERENCES)
+    ]
+    return maximal
+
+
 def invoke(argv, wire, expected=None):
     try:
         process = subprocess.run(argv, input=wire, capture_output=True, timeout=60, check=False)
@@ -122,6 +192,52 @@ def invoke(argv, wire, expected=None):
             "stdout_sha256": hashlib.sha256(process.stdout).hexdigest(),
             "stderr_sha256": hashlib.sha256(process.stderr).hexdigest(),
             "stderr": process.stderr.decode(errors="replace")[-4000:]}
+
+
+def performance_summary(samples):
+    elapsed = []
+    encoded_bytes = None
+    for sample in samples:
+        report = sample.get("report", {})
+        try:
+            duration = int(report["elapsed_ns"])
+            repeat = int(report["repeat"])
+            size = int(report["encoded_bytes"])
+        except (KeyError, TypeError, ValueError):
+            return {
+                "measurementValid": False,
+                "error": "probe omitted a numeric performance field",
+            }
+        if duration <= 0 or repeat != PERFORMANCE_REPEATS or size <= 0:
+            return {
+                "measurementValid": False,
+                "error": "probe returned an invalid duration, repeat count or encoded size",
+            }
+        if encoded_bytes is not None and size != encoded_bytes:
+            return {
+                "measurementValid": False,
+                "error": "encoded size drifted across identical samples",
+            }
+        encoded_bytes = size
+        elapsed.append(duration)
+    per_round_trip = [duration / PERFORMANCE_REPEATS for duration in elapsed]
+    return {
+        "measurementValid": True,
+        "profile": "memory-event-v1-all-declared-collections-at-count-ceilings",
+        "samples": len(samples),
+        "roundTripsPerSample": PERFORMANCE_REPEATS,
+        "encodedBytes": encoded_bytes,
+        "elapsedNs": elapsed,
+        "nsPerDecodeValidateEncode": {
+            "minimum": min(per_round_trip),
+            "median": statistics.median(per_round_trip),
+            "maximum": max(per_round_trip),
+        },
+        "allocationMeasurement": None,
+        "allocationMeasurementReason": "qualification probe does not install a global allocator instrumentor",
+        "latencyThresholdEnforced": False,
+        "thresholdReason": "observation-only until runner and toolchain baselines are independently calibrated",
+    }
 
 
 def main():
@@ -142,19 +258,52 @@ def main():
     for name, wire in negative:
         results.append({"case": name, "implementation": "rust", "wire_sha256": hashlib.sha256(wire).hexdigest(),
                         **invoke([str(args.probe.resolve())], wire)})
-    # Bound every modality span and semantic-key count at their declared maxima.
-    maximal = copy.deepcopy(next(envelope for name, envelope in positive if name == "MemoryEventV1:golden"))
-    template = maximal["payload"]["modalitySpans"][0]
-    maximal["payload"]["modalitySpans"] = [dict(copy.deepcopy(template), spanId=f"span:capacity:{index:02}") for index in range(32)]
-    maximal["payload"]["semanticKeys"] = [f"key-{index:02}-" + "x" * 120 for index in range(64)]
-    capacity = invoke([str(args.probe.resolve()), "--repeat", "128"], canonical(maximal), digests(maximal))
-    results.append({"case": "event:maximum-span-and-key-counts", "implementation": "rust", **capacity})
-    passed = bool(results) and all(item["passed"] for item in results)
-    receipt = {"schema": "hepta.cognitive-types.differential-quality.v1", "passed": passed,
-               "golden_contracts": 16, "positive_cases": len(positive), "negative_cases": len(negative),
-               "source_mutation_score": None, "allocation_measurement": None,
-               "capacity_profile": "maximum-span-and-semantic-key-counts-not-all-maximum-bytes",
-               "results": results}
+
+    golden_event = next(envelope for name, envelope in positive if name == "MemoryEventV1:golden")
+    maximal = maximal_memory_event(golden_event)
+    maximal_wire = canonical(maximal)
+    maximal_expected = digests(maximal)
+    performance_samples = []
+    for sample_index in range(PERFORMANCE_SAMPLES):
+        sample = invoke(
+            [str(args.probe.resolve()), "--repeat", str(PERFORMANCE_REPEATS)],
+            maximal_wire,
+            maximal_expected,
+        )
+        sample.update({
+            "case": "event:maximum-declared-collection-counts",
+            "implementation": "rust",
+            "sample": sample_index + 1,
+            "wire_sha256": hashlib.sha256(maximal_wire).hexdigest(),
+        })
+        performance_samples.append(sample)
+        results.append(sample)
+    performance = performance_summary(performance_samples)
+
+    passed = (
+        bool(results)
+        and all(item["passed"] for item in results)
+        and performance.get("measurementValid") is True
+    )
+    receipt = {
+        "schema": "hepta.cognitive-types.differential-quality.v1",
+        "passed": passed,
+        "golden_contracts": 16,
+        "positive_cases": len(positive),
+        "negative_cases": len(negative),
+        "source_mutation_score": None,
+        "capacity_profile": "memory-event-v1-all-declared-collections-at-count-ceilings",
+        "capacity_counts": {
+            "modalitySpans": MAX_EVENT_SPANS,
+            "crossModalBindings": MAX_EVENT_BINDINGS,
+            "semanticKeys": MAX_EVENT_SEMANTIC_KEYS,
+            "provenance": MAX_EVENT_PROVENANCE,
+            "causalParents": MAX_EVENT_REFERENCES,
+            "temporalNeighbors": MAX_EVENT_REFERENCES,
+        },
+        "performance": performance,
+        "results": results,
+    }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n")
     print(json.dumps({key: value for key, value in receipt.items() if key != "results"}))
