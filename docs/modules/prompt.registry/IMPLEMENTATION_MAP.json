@@ -1,5 +1,8 @@
 {
-  "activePersistentSchema": 4,
+  "activePersistentSchemas": [
+    4,
+    5
+  ],
   "claimBoundary": {
     "activation": false,
     "implementedOperationMappingComplete": true,
@@ -46,7 +49,7 @@
         "path": "codex-rs/hepta-agentd/Cargo.toml"
       },
       {
-        "blobSha": "4bc32510eb33f3707e8a9a5e3c0f24baf4c01bc3",
+        "blobSha": "aef7269d7b31d3b1041f63b8e72d81d1bd1b078b",
         "path": "codex-rs/hepta-agentd/src/prompt_final_use.rs"
       },
       {
@@ -54,11 +57,11 @@
         "path": "codex-rs/hepta-agentd/src/prompt_final_use_store.rs"
       },
       {
-        "blobSha": "78fa801b613a6e1ddf7d2c12e9a76efa37017b9d",
+        "blobSha": "e692bba2363fdd43b7a4a5a954c8722393a61f58",
         "path": "codex-rs/hepta-agentd/src/prompt_final_use_tests.rs"
       },
       {
-        "blobSha": "358d364df77e572955314b183cc150cb752862fb",
+        "blobSha": "1f046bd54d9a6feeec63b5873f02933cc159adeb",
         "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs"
       },
       {
@@ -98,7 +101,7 @@
         "path": "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs"
       },
       {
-        "blobSha": "b62625d64b790fed68a80f1a0d3a73ad51534cfd",
+        "blobSha": "43adc75e428f10fe2d8041b88adec8f192818f7a",
         "path": "codex-rs/hepta-prompt-optimizer/src/consumer.rs"
       },
       {
@@ -154,11 +157,11 @@
         "path": "codex-rs/hepta-prompt-optimizer/src/policy_exercise_helpers.rs"
       },
       {
-        "blobSha": "dceb1c25325b9c75e4eeb0ffe76ccd950471c32e",
+        "blobSha": "3a0d4b5703a7545e803299b3bcca2c256c494b97",
         "path": "codex-rs/hepta-prompt-optimizer/src/policy_portfolio.rs"
       },
       {
-        "blobSha": "3b940be370731ce411145f4781c676a55e20647a",
+        "blobSha": "792f8dd73c4c326c94dd70168b2d6e7b15db6840",
         "path": "codex-rs/hepta-prompt-optimizer/src/policy_portfolio_helpers.rs"
       },
       {
@@ -178,19 +181,31 @@
         "path": "codex-rs/hepta-prompt-registry/src/delivery.rs"
       },
       {
-        "blobSha": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+        "blobSha": "ca5c548f3f82c517914558106b2f58dce3405ac3",
         "path": "codex-rs/hepta-prompt-registry/src/durable.rs"
       },
       {
-        "blobSha": "e9cfde69eaf0c8d2302b00bb9193075c18fadafa",
+        "blobSha": "429445d1dd02fabf68857becacd5e3ea9f11ee4b",
+        "path": "codex-rs/hepta-prompt-registry/src/durable_gc.rs"
+      },
+      {
+        "blobSha": "35f5cd0a51d20d33c5405099151423b378ca26c1",
+        "path": "codex-rs/hepta-prompt-registry/src/durable_gc_tests.rs"
+      },
+      {
+        "blobSha": "3a8126177f43ecb1b09f1da826d7071af79d0da0",
+        "path": "codex-rs/hepta-prompt-registry/src/durable_io.rs"
+      },
+      {
+        "blobSha": "a3e2f46d86a75d4d33b36b39a4a504aa4b1932db",
         "path": "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs"
       },
       {
-        "blobSha": "9db63a18fc2f116af72f867bfda02bcfd2964b6e",
+        "blobSha": "946afbe30fff5235d913452b79cc0af1a0c428a3",
         "path": "codex-rs/hepta-prompt-registry/src/durable_maintenance_tests.rs"
       },
       {
-        "blobSha": "21b5b069110b9c36c5f682a3efd984ea64dd113e",
+        "blobSha": "34731ae37c6ece2eabf7e1a04d813e35064bfe59",
         "path": "codex-rs/hepta-prompt-registry/src/durable_payloads.rs"
       },
       {
@@ -198,7 +213,11 @@
         "path": "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs"
       },
       {
-        "blobSha": "ab3d0844db07c029e5d7613c975089825f6bc712",
+        "blobSha": "54260cc3116178ce66c155280e7ffc56d8e1480c",
+        "path": "codex-rs/hepta-prompt-registry/src/failure.rs"
+      },
+      {
+        "blobSha": "a1ffb052751ccfaa50bae2f9edb7c28a202dba76",
         "path": "codex-rs/hepta-prompt-registry/src/lib.rs"
       },
       {
@@ -226,19 +245,19 @@
         "path": "codex-rs/rust-toolchain.toml"
       },
       {
-        "blobSha": "08ad6588fb64da33884768093c514f6498605b6c",
+        "blobSha": "70521fbd5d295bb78ed56b29383c10162fea6ee2",
         "path": "docs/modules/prompt.registry/API_CONTRACT.md"
       },
       {
-        "blobSha": "a6eed7c6e57da10fc7bd943211c1bb76f457ca41",
+        "blobSha": "4d7035f74131d1209bd5bf5ca5c9229ec653869f",
         "path": "docs/modules/prompt.registry/OPERATIONS.md"
       },
       {
-        "blobSha": "29c9d136fe66273ee6680edb9b03285211ee5c3d",
+        "blobSha": "a4e27c39e75b99524a7f2dd5a5ac51a8504f3264",
         "path": "docs/modules/prompt.registry/PERFORMANCE.md"
       },
       {
-        "blobSha": "ad782d93e1345ec57a7bb3969b2b326458234f99",
+        "blobSha": "4931e3de2b652fa8c21a8c2a163237e672c783a9",
         "path": "docs/modules/prompt.registry/TECHNICAL.md"
       },
       {
@@ -246,11 +265,19 @@
         "path": "scripts/hepta-implementation-maps.py"
       },
       {
-        "blobSha": "0c3713fa234d8087e62b21f6dc7fc64a3bce0b6f",
+        "blobSha": "60a1de75f9007dc7c4f02c155e4162f3da9b8219",
+        "path": "scripts/hepta-prompt-registry-aggregate.py"
+      },
+      {
+        "blobSha": "49237d07300051dbf8b63312ed1cd9c1a5e63d45",
+        "path": "scripts/hepta-prompt-registry-harness-tests.py"
+      },
+      {
+        "blobSha": "2241f3167290602d9314b3cce2a2b598d4e1d565",
         "path": "scripts/hepta-prompt-registry-map.py"
       },
       {
-        "blobSha": "1dedae50bb874fead519713605d45272afa7f809",
+        "blobSha": "9147a02c8cfdef73a343fadd82401749805d89f9",
         "path": "scripts/hepta-prompt-registry-qualify.py"
       },
       {
@@ -277,8 +304,8 @@
   "mappingSourceIdentityMode": "exact_blob",
   "module": "prompt.registry",
   "observedAtHead": {
-    "commit": "bfe907f8b1aa99543eba20f8d77d17fc48e56e3c",
-    "tree": "90df5ab5cd2bd8380c00a4f194560f8161ef1b4d"
+    "commit": "438f37c7f4fe12a6cfc2dea08d511d68c499b420",
+    "tree": "96473134c9c72c9ac87f8ea6fab7b2540ae1b13b"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -302,6 +329,8 @@
     "docs/modules/prompt.registry/PERFORMANCE.md",
     "docs/modules/prompt.registry/TECHNICAL.md",
     "scripts/hepta-implementation-maps.py",
+    "scripts/hepta-prompt-registry-aggregate.py",
+    "scripts/hepta-prompt-registry-harness-tests.py",
     "scripts/hepta-prompt-registry-map.py",
     "scripts/hepta-prompt-registry-qualify.py",
     "scripts/hepta_module_source_roots.py"
@@ -314,7 +343,7 @@
       "mappingClass": "owner_native",
       "nativeSymbol": "DurablePromptRegistry::open_state_dir",
       "operation": "open_state_dir",
-      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourceBlob": "ca5c548f3f82c517914558106b2f58dce3405ac3",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -329,7 +358,7 @@
       "mappingClass": "owner_native",
       "nativeSymbol": "DurablePromptRegistry::register_factor_final_use",
       "operation": "register_factor_final_use",
-      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourceBlob": "ca5c548f3f82c517914558106b2f58dce3405ac3",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -344,7 +373,7 @@
       "mappingClass": "owner_native",
       "nativeSymbol": "DurablePromptRegistry::admit_factor_final_use",
       "operation": "admit_factor_final_use",
-      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourceBlob": "ca5c548f3f82c517914558106b2f58dce3405ac3",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -359,7 +388,7 @@
       "mappingClass": "owner_native",
       "nativeSymbol": "DurablePromptRegistry::register_factor_relation_final_use",
       "operation": "register_factor_relation_final_use",
-      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourceBlob": "ca5c548f3f82c517914558106b2f58dce3405ac3",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -374,7 +403,7 @@
       "mappingClass": "owner_native",
       "nativeSymbol": "DurablePromptRegistry::register_realization_payload_final_use_v2",
       "operation": "register_realization_payload_final_use_v2",
-      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourceBlob": "ca5c548f3f82c517914558106b2f58dce3405ac3",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -389,7 +418,7 @@
       "mappingClass": "owner_native",
       "nativeSymbol": "DurablePromptRegistry::retire_factor_final_use",
       "operation": "retire_factor_final_use",
-      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourceBlob": "ca5c548f3f82c517914558106b2f58dce3405ac3",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -404,7 +433,7 @@
       "mappingClass": "owner_native",
       "nativeSymbol": "DurablePromptRegistry::revoke_factor_final_use",
       "operation": "revoke_factor_final_use",
-      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourceBlob": "ca5c548f3f82c517914558106b2f58dce3405ac3",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -419,7 +448,7 @@
       "mappingClass": "owner_native",
       "nativeSymbol": "DurablePromptRegistry::snapshot_v2",
       "operation": "snapshot_v2",
-      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourceBlob": "ca5c548f3f82c517914558106b2f58dce3405ac3",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -434,7 +463,7 @@
       "mappingClass": "owner_native",
       "nativeSymbol": "DurablePromptRegistry::read_compatible_v2",
       "operation": "read_compatible_v2",
-      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourceBlob": "ca5c548f3f82c517914558106b2f58dce3405ac3",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -449,7 +478,7 @@
       "mappingClass": "owner_native",
       "nativeSymbol": "DurablePromptRegistry::dereference_realization_v2",
       "operation": "dereference_realization_v2",
-      "sourceBlob": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "sourceBlob": "ca5c548f3f82c517914558106b2f58dce3405ac3",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -464,7 +493,7 @@
       "mappingClass": "owner_native",
       "nativeSymbol": "DurablePromptRegistry::operational_metrics",
       "operation": "operational_metrics",
-      "sourceBlob": "e9cfde69eaf0c8d2302b00bb9193075c18fadafa",
+      "sourceBlob": "a3e2f46d86a75d4d33b36b39a4a504aa4b1932db",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -479,7 +508,7 @@
       "mappingClass": "owner_native",
       "nativeSymbol": "DurablePromptRegistry::export_consistent_checkpoint",
       "operation": "export_consistent_checkpoint",
-      "sourceBlob": "e9cfde69eaf0c8d2302b00bb9193075c18fadafa",
+      "sourceBlob": "a3e2f46d86a75d4d33b36b39a4a504aa4b1932db",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -494,7 +523,7 @@
       "mappingClass": "owner_native",
       "nativeSymbol": "DurablePromptRegistry::checkpoint_compacted",
       "operation": "checkpoint_compacted",
-      "sourceBlob": "e9cfde69eaf0c8d2302b00bb9193075c18fadafa",
+      "sourceBlob": "a3e2f46d86a75d4d33b36b39a4a504aa4b1932db",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -509,7 +538,7 @@
       "mappingClass": "owner_native",
       "nativeSymbol": "DurablePromptRegistry::verify_restore_checkpoint",
       "operation": "verify_restore_checkpoint",
-      "sourceBlob": "e9cfde69eaf0c8d2302b00bb9193075c18fadafa",
+      "sourceBlob": "a3e2f46d86a75d4d33b36b39a4a504aa4b1932db",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -524,12 +553,42 @@
       "mappingClass": "owner_native",
       "nativeSymbol": "DurablePromptRegistry::probe_fsync",
       "operation": "probe_fsync",
-      "sourceBlob": "e9cfde69eaf0c8d2302b00bb9193075c18fadafa",
+      "sourceBlob": "a3e2f46d86a75d4d33b36b39a4a504aa4b1932db",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
       "tests": [
         "codex-rs/hepta-prompt-registry/src/durable_maintenance_tests.rs::operational_fsync_probe_is_bounded_and_cleans_up"
+      ]
+    },
+    {
+      "authority": "exclusive_owner_inactive_payloads_only_audit_retained",
+      "delegatedCallees": [],
+      "designOperation": "collect_payload_garbage",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurablePromptRegistry::collect_payload_garbage",
+      "operation": "collect_payload_garbage",
+      "sourceBlob": "429445d1dd02fabf68857becacd5e3ea9f11ee4b",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable_gc.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable_gc_tests.rs::gc_reclaims_inactive_raw_bytes_but_preserves_audit_and_revocation_after_restart"
+      ]
+    },
+    {
+      "authority": "redacted_diagnostics_no_retry_authority",
+      "delegatedCallees": [],
+      "designOperation": "failure_recovery",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "DurableRegistryError::failure",
+      "operation": "failure_recovery",
+      "sourceBlob": "54260cc3116178ce66c155280e7ffc56d8e1480c",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/failure.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_qualification_pending",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/failure.rs::read_integrity_failures_never_become_recompile_or_availability_retries"
       ]
     },
     {
@@ -539,7 +598,7 @@
       "mappingClass": "composed_boundary",
       "nativeSymbol": "PromptFinalUseLeaseV1::validate_at_boundary",
       "operation": "current_use_gate",
-      "sourceBlob": "4bc32510eb33f3707e8a9a5e3c0f24baf4c01bc3",
+      "sourceBlob": "aef7269d7b31d3b1041f63b8e72d81d1bd1b078b",
       "sourcePath": "codex-rs/hepta-agentd/src/prompt_final_use.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -554,7 +613,7 @@
       "mappingClass": "composed_boundary",
       "nativeSymbol": "AgentdPromptPipelineOwner::prepare_final_use",
       "operation": "prepare_current_attachment",
-      "sourceBlob": "358d364df77e572955314b183cc150cb752862fb",
+      "sourceBlob": "1f046bd54d9a6feeec63b5873f02933cc159adeb",
       "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -569,7 +628,7 @@
       "mappingClass": "composed_boundary",
       "nativeSymbol": "AgentdPromptPipelineOwner::record_dispatch_final_use",
       "operation": "record_current_dispatch",
-      "sourceBlob": "358d364df77e572955314b183cc150cb752862fb",
+      "sourceBlob": "1f046bd54d9a6feeec63b5873f02933cc159adeb",
       "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
       "sourcePathExists": true,
       "state": "source_implemented_qualification_pending",
@@ -594,16 +653,17 @@
     }
   ],
   "owner": "intelligence-platform",
+  "payloadGenerationSchema": 5,
   "productCallerState": "source_composed",
   "productCallers": [
     {
-      "blobSha": "358d364df77e572955314b183cc150cb752862fb",
+      "blobSha": "1f046bd54d9a6feeec63b5873f02933cc159adeb",
       "nativeSymbol": "AgentdPromptPipelineOwner",
       "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
       "state": "source_composed_activation_not_proved"
     },
     {
-      "blobSha": "4bc32510eb33f3707e8a9a5e3c0f24baf4c01bc3",
+      "blobSha": "aef7269d7b31d3b1041f63b8e72d81d1bd1b078b",
       "nativeSymbol": "PromptFinalUseValidator",
       "sourcePath": "codex-rs/hepta-agentd/src/prompt_final_use.rs",
       "state": "source_composed_activation_not_proved"
@@ -626,7 +686,7 @@
   "repositoryControlledGaps": [
     "Require passing exact-head and bound-base synthetic-merge execution receipts for this candidate.",
     "Prove actual transport/stream/final-output revocation behavior beyond the durable dispatch-claim boundary.",
-    "Checkpoint handoff and old-source/backup disposal require externally fenced retention decisions.",
+    "In-place inactive payload collection is implemented; external checkpoint handoff and backup disposal still require fenced retention decisions.",
     "Oldest-reclaimable age requires a durable timestamp/schema policy; current value is unknown, not zero."
   ],
   "resolvedRoots": [
@@ -634,6 +694,7 @@
   ],
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
+  "semanticSchema": 4,
   "sourceBase": {
     "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "tree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30"
@@ -669,7 +730,7 @@
       "path": "codex-rs/hepta-agentd/Cargo.toml"
     },
     {
-      "object": "4bc32510eb33f3707e8a9a5e3c0f24baf4c01bc3",
+      "object": "aef7269d7b31d3b1041f63b8e72d81d1bd1b078b",
       "path": "codex-rs/hepta-agentd/src/prompt_final_use.rs"
     },
     {
@@ -677,11 +738,11 @@
       "path": "codex-rs/hepta-agentd/src/prompt_final_use_store.rs"
     },
     {
-      "object": "78fa801b613a6e1ddf7d2c12e9a76efa37017b9d",
+      "object": "e692bba2363fdd43b7a4a5a954c8722393a61f58",
       "path": "codex-rs/hepta-agentd/src/prompt_final_use_tests.rs"
     },
     {
-      "object": "358d364df77e572955314b183cc150cb752862fb",
+      "object": "1f046bd54d9a6feeec63b5873f02933cc159adeb",
       "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs"
     },
     {
@@ -721,7 +782,7 @@
       "path": "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs"
     },
     {
-      "object": "b62625d64b790fed68a80f1a0d3a73ad51534cfd",
+      "object": "43adc75e428f10fe2d8041b88adec8f192818f7a",
       "path": "codex-rs/hepta-prompt-optimizer/src/consumer.rs"
     },
     {
@@ -777,15 +838,15 @@
       "path": "codex-rs/hepta-prompt-optimizer/src/policy_exercise_helpers.rs"
     },
     {
-      "object": "dceb1c25325b9c75e4eeb0ffe76ccd950471c32e",
+      "object": "3a0d4b5703a7545e803299b3bcca2c256c494b97",
       "path": "codex-rs/hepta-prompt-optimizer/src/policy_portfolio.rs"
     },
     {
-      "object": "3b940be370731ce411145f4781c676a55e20647a",
+      "object": "792f8dd73c4c326c94dd70168b2d6e7b15db6840",
       "path": "codex-rs/hepta-prompt-optimizer/src/policy_portfolio_helpers.rs"
     },
     {
-      "object": "03b59ca3a4af9619caa4046c90213b7ba3d57195",
+      "object": "87509f7c201d8a3638fc13925486133f300cd4a9",
       "path": "codex-rs/hepta-prompt-registry"
     },
     {
@@ -805,19 +866,31 @@
       "path": "codex-rs/hepta-prompt-registry/src/delivery.rs"
     },
     {
-      "object": "aaa417161a056d3aa1dcfe38cfdbe6a4d415d240",
+      "object": "ca5c548f3f82c517914558106b2f58dce3405ac3",
       "path": "codex-rs/hepta-prompt-registry/src/durable.rs"
     },
     {
-      "object": "e9cfde69eaf0c8d2302b00bb9193075c18fadafa",
+      "object": "429445d1dd02fabf68857becacd5e3ea9f11ee4b",
+      "path": "codex-rs/hepta-prompt-registry/src/durable_gc.rs"
+    },
+    {
+      "object": "35f5cd0a51d20d33c5405099151423b378ca26c1",
+      "path": "codex-rs/hepta-prompt-registry/src/durable_gc_tests.rs"
+    },
+    {
+      "object": "3a8126177f43ecb1b09f1da826d7071af79d0da0",
+      "path": "codex-rs/hepta-prompt-registry/src/durable_io.rs"
+    },
+    {
+      "object": "a3e2f46d86a75d4d33b36b39a4a504aa4b1932db",
       "path": "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs"
     },
     {
-      "object": "9db63a18fc2f116af72f867bfda02bcfd2964b6e",
+      "object": "946afbe30fff5235d913452b79cc0af1a0c428a3",
       "path": "codex-rs/hepta-prompt-registry/src/durable_maintenance_tests.rs"
     },
     {
-      "object": "21b5b069110b9c36c5f682a3efd984ea64dd113e",
+      "object": "34731ae37c6ece2eabf7e1a04d813e35064bfe59",
       "path": "codex-rs/hepta-prompt-registry/src/durable_payloads.rs"
     },
     {
@@ -825,7 +898,11 @@
       "path": "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs"
     },
     {
-      "object": "ab3d0844db07c029e5d7613c975089825f6bc712",
+      "object": "54260cc3116178ce66c155280e7ffc56d8e1480c",
+      "path": "codex-rs/hepta-prompt-registry/src/failure.rs"
+    },
+    {
+      "object": "a1ffb052751ccfaa50bae2f9edb7c28a202dba76",
       "path": "codex-rs/hepta-prompt-registry/src/lib.rs"
     },
     {
@@ -853,19 +930,19 @@
       "path": "codex-rs/rust-toolchain.toml"
     },
     {
-      "object": "08ad6588fb64da33884768093c514f6498605b6c",
+      "object": "70521fbd5d295bb78ed56b29383c10162fea6ee2",
       "path": "docs/modules/prompt.registry/API_CONTRACT.md"
     },
     {
-      "object": "a6eed7c6e57da10fc7bd943211c1bb76f457ca41",
+      "object": "4d7035f74131d1209bd5bf5ca5c9229ec653869f",
       "path": "docs/modules/prompt.registry/OPERATIONS.md"
     },
     {
-      "object": "29c9d136fe66273ee6680edb9b03285211ee5c3d",
+      "object": "a4e27c39e75b99524a7f2dd5a5ac51a8504f3264",
       "path": "docs/modules/prompt.registry/PERFORMANCE.md"
     },
     {
-      "object": "ad782d93e1345ec57a7bb3969b2b326458234f99",
+      "object": "4931e3de2b652fa8c21a8c2a163237e672c783a9",
       "path": "docs/modules/prompt.registry/TECHNICAL.md"
     },
     {
@@ -873,11 +950,19 @@
       "path": "scripts/hepta-implementation-maps.py"
     },
     {
-      "object": "0c3713fa234d8087e62b21f6dc7fc64a3bce0b6f",
+      "object": "60a1de75f9007dc7c4f02c155e4162f3da9b8219",
+      "path": "scripts/hepta-prompt-registry-aggregate.py"
+    },
+    {
+      "object": "49237d07300051dbf8b63312ed1cd9c1a5e63d45",
+      "path": "scripts/hepta-prompt-registry-harness-tests.py"
+    },
+    {
+      "object": "2241f3167290602d9314b3cce2a2b598d4e1d565",
       "path": "scripts/hepta-prompt-registry-map.py"
     },
     {
-      "object": "1dedae50bb874fead519713605d45272afa7f809",
+      "object": "9147a02c8cfdef73a343fadd82401749805d89f9",
       "path": "scripts/hepta-prompt-registry-qualify.py"
     },
     {
