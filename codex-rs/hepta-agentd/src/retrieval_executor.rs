@@ -44,9 +44,21 @@ impl RetrievalExecutor {
         }
     }
 
+    /// Shadow shares the request's absolute upper bound, not its cancellation
+    /// state. An optional experiment must never cancel compatibility delivery.
+    pub(crate) fn begin_shadow(&self, parent: &RetrievalRequestWork) -> RetrievalRequestWork {
+        let mut shadow = self.begin(RetrievalWorkClass::Shadow);
+        shadow.deadline = shadow.deadline.min(parent.deadline);
+        shadow.control = RecallWorkControlV1::bounded(shadow.deadline, 250_000);
+        if parent.checkpoint().is_err() {
+            shadow.control.cancel();
+        }
+        shadow
+    }
+
     pub(crate) fn profile_digest(&self) -> Digest32 {
         Digest32::of_bytes(
-            b"hepta.retrieval.executor.v2:delivery=2,800ms;shadow=1,40ms;work=250000;queue=0;async=absolute-deadline",
+            b"hepta.retrieval.executor.v3:delivery=2,800ms;shadow=1,40ms,parent-bounded;work=250000;queue=0;async=owned-supervised;shadow-cancellation=independent",
         )
     }
 
@@ -56,18 +68,49 @@ impl RetrievalExecutor {
         operation: F,
     ) -> Result<T, String>
     where
-        F: Future<Output = T>,
+        T: Send + 'static,
+        F: Future<Output = T> + Send + 'static,
     {
         request.checkpoint()?;
-        let value =
-            tokio::time::timeout_at(tokio::time::Instant::from_std(request.deadline), operation)
-                .await
-                .map_err(|_| {
-                    request.control.cancel();
-                    "retrieval request deadline exceeded".to_string()
-                })?;
-        request.checkpoint()?;
-        Ok(value)
+        let slots = match request.class {
+            RetrievalWorkClass::Delivery => &self.delivery,
+            RetrievalWorkClass::Shadow => &self.shadow,
+        };
+        let permit = Arc::clone(slots)
+            .try_acquire_owned()
+            .map_err(|_| "retrieval execution capacity exhausted".to_string())?;
+        let control = request.control.clone();
+        let mut cancel_on_drop = CancelOnDrop {
+            control: control.clone(),
+            armed: true,
+        };
+        // The owner operation, not its waiter, retains the capacity charge.
+        // In particular, dropping a SQLx future need not stop a queued SQLite
+        // command. Keep the owned operation alive until it really returns.
+        let mut worker = tokio::spawn(async move {
+            let _permit = permit;
+            control.checkpoint().map_err(|error| error.to_string())?;
+            let value = operation.await;
+            control.checkpoint().map_err(|error| error.to_string())?;
+            Ok(value)
+        });
+        match tokio::time::timeout_at(
+            tokio::time::Instant::from_std(request.deadline),
+            &mut worker,
+        )
+        .await
+        {
+            Ok(result) => {
+                cancel_on_drop.armed = false;
+                result.map_err(|_| "retrieval async owner failed".to_string())?
+            }
+            Err(_) => {
+                request.control.cancel();
+                // Do not abort: capacity remains owned until the underlying
+                // operation exits, and its final checkpoint rejects late success.
+                Err("retrieval request deadline exceeded".to_string())
+            }
+        }
     }
 
     pub(crate) async fn run<T, F>(

@@ -157,15 +157,16 @@ pub(crate) async fn read_with_retrieval_executor(
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
     let delivers_hnmf = current_retrieval.is_some_and(|current| current.delivers_hnmf(owner));
-    let work_class = if delivers_hnmf {
-        RetrievalWorkClass::Delivery
+    let request_work = executor.begin(RetrievalWorkClass::Delivery);
+    let shadow_work = executor.begin_shadow(&request_work);
+    let retrieval_work = if delivers_hnmf {
+        &request_work
     } else {
-        RetrievalWorkClass::Shadow
+        &shadow_work
     };
-    let request_work = executor.begin(work_class);
     let retrieval_context = match current_retrieval {
         Some(current) => {
-            match load_retrieval_context(current, owner, body_generation, executor, &request_work)
+            match load_retrieval_context(current, owner, body_generation, executor, retrieval_work)
                 .await
             {
                 Ok(context) => Some(context),
@@ -185,14 +186,25 @@ pub(crate) async fn read_with_retrieval_executor(
     let mut pending_assignment = None;
 
     let cut = executor
-        .run_async(&request_work, store.lane_c_snapshot(&access, &scope, now))
+        .run_async(&request_work, {
+            let store = store.clone();
+            let access = access.clone();
+            let scope = scope.clone();
+            async move { store.lane_c_snapshot(&access, &scope, now).await }
+        })
         .await
         .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
     let observation = executor
-        .run_async(
-            &request_work,
-            store.observe_memory_retrieval(&access, &RetrievalRequest::new(query, now)),
-        )
+        .run_async(&request_work, {
+            let store = store.clone();
+            let access = access.clone();
+            let query = query.to_string();
+            async move {
+                store
+                    .observe_memory_retrieval(&access, &RetrievalRequest::new(&query, now))
+                    .await
+            }
+        })
         .await
         .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
     let mut record_ids = observation
@@ -247,7 +259,7 @@ pub(crate) async fn read_with_retrieval_executor(
             let context = context.context.clone();
             let query_digest = Digest32::of_bytes(query.as_bytes());
             executor
-                .run(&request_work, move |work| {
+                .run(retrieval_work, move |work| {
                     execute_owner_observation_controlled(
                         &observation,
                         &cut,
@@ -409,10 +421,16 @@ pub(crate) async fn read_with_retrieval_executor(
         .collect::<Result<Vec<_>, _>>()?;
     let revalidation_now = now_seconds()?;
     let statuses = executor
-        .run_async(
-            &request_work,
-            store.revalidate_memory_candidates(&access, &ordered_bindings, revalidation_now),
-        )
+        .run_async(&request_work, {
+            let store = store.clone();
+            let access = access.clone();
+            let ordered_bindings = ordered_bindings.clone();
+            async move {
+                store
+                    .revalidate_memory_candidates(&access, &ordered_bindings, revalidation_now)
+                    .await
+            }
+        })
         .await
         .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
 
@@ -506,10 +524,17 @@ pub(crate) async fn read_with_retrieval_executor(
     // older database must not leak a stale projection into the response.
     let final_fence_now = now_seconds()?;
     executor
-        .run_async(
-            &request_work,
-            store.revalidate_lane_c_snapshot(&access, &scope, &cut, final_fence_now),
-        )
+        .run_async(&request_work, {
+            let store = store.clone();
+            let access = access.clone();
+            let scope = scope.clone();
+            let cut = cut.clone();
+            async move {
+                store
+                    .revalidate_lane_c_snapshot(&access, &scope, &cut, final_fence_now)
+                    .await
+            }
+        })
         .await
         .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
     if let Some(ranker) = ranker {
@@ -583,7 +608,7 @@ pub(crate) async fn read_with_retrieval_executor(
         let sink = std::sync::Arc::clone(sink);
         let owner = owner.clone();
         let appended = executor
-            .run(&request_work, move |work| {
+            .run(retrieval_work, move |work| {
                 work.checkpoint().map_err(|error| error.to_string())?;
                 let receipt = sink.append_with_delivery_policy(
                     &owner,
@@ -725,10 +750,16 @@ pub(crate) async fn revalidate_with_retrieval_executor(
     let scope = CognitiveScope::AgentPrivate;
     let revalidation_snapshot_now = now_seconds()?;
     let cut = executor
-        .run_async(
-            &request_work,
-            store.lane_c_snapshot(&access, &scope, revalidation_snapshot_now),
-        )
+        .run_async(&request_work, {
+            let store = store.clone();
+            let access = access.clone();
+            let scope = scope.clone();
+            async move {
+                store
+                    .lane_c_snapshot(&access, &scope, revalidation_snapshot_now)
+                    .await
+            }
+        })
         .await
         .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
     if cut.snapshot().snapshot_digest != expected_snapshot {
@@ -810,10 +841,17 @@ pub(crate) async fn revalidate_with_retrieval_executor(
     // The optional ranker above may await. Recheck both owners after that gap.
     let final_fence_now = now_seconds()?;
     executor
-        .run_async(
-            &request_work,
-            store.revalidate_lane_c_snapshot(&access, &scope, &cut, final_fence_now),
-        )
+        .run_async(&request_work, {
+            let store = store.clone();
+            let access = access.clone();
+            let scope = scope.clone();
+            let cut = cut.clone();
+            async move {
+                store
+                    .revalidate_lane_c_snapshot(&access, &scope, &cut, final_fence_now)
+                    .await
+            }
+        })
         .await
         .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
     if let (Some(current), Some(expected)) = (current_retrieval, retrieval_context_digest) {
