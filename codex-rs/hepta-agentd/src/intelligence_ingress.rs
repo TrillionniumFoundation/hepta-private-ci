@@ -237,7 +237,14 @@ impl AgentdIntelligenceInvocationV1 {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum AgentdIntelligenceProductLoopDispositionV1 {
     Completed,
+    /// The physical effect may or may not have crossed the App Server boundary.
+    /// Only exact provider/Agentd reconciliation may close it; automatic
+    /// redispatch is forbidden.
     Indeterminate,
+    /// A physical terminal observation exists, but the same-run Agentd terminal
+    /// witness or authenticated Outcome closure is incomplete. The physical
+    /// terminal digest is retained and the logical turn must not be replayed.
+    ReconciliationRequired,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
