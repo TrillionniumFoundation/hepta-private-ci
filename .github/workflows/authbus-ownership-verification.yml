@@ -1,0 +1,88 @@
+name: AuthBus immutable ownership verification
+
+on:
+  push:
+    branches: [work/authbus-ownership-transactions-20260928]
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-authbus/**'
+      - 'codex-rs/hepta-evidence/**'
+      - 'codex-rs/hepta-bao-adapter/**'
+      - '.github/workflows/authbus-ownership-verification.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: authbus-ownership-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: never
+  RUST_BACKTRACE: 1
+
+jobs:
+  exact-source:
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Retain exact input identity and sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/authbus-evidence"
+          git rev-parse HEAD > "$RUNNER_TEMP/authbus-evidence/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/authbus-evidence/source-tree.txt"
+          git archive --format=tar.gz -o "$RUNNER_TEMP/authbus-evidence/authbus-inputs.tar.gz" HEAD codex-rs/hepta-authbus codex-rs/hepta-evidence codex-rs/hepta-bao-adapter codex-rs/hepta-agentd codex-rs/hepta-authbus-p1-3-qualification codex-rs/Cargo.toml codex-rs/Cargo.lock codex-rs/rust-toolchain.toml docs/modules/auth.authbus docs/lane-a-foundation/auth.authbus scripts .github/workflows
+      - uses: actions/upload-artifact@v4
+        with:
+          name: authbus-inputs-${{ github.sha }}
+          path: ${{ runner.temp }}/authbus-evidence/
+          retention-days: 14
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: codex-rs
+      - name: AuthBus and qualification tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus -p codex-hepta-authbus-p1-3-qualification --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/authbus-tests.log"
+      - name: Evidence regression tests
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/evidence-tests.log"
+      - name: Bao integration tests
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-bao-adapter --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/bao-tests.log"
+      - name: Strict AuthBus lint
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus --all-targets --all-features -- -D warnings 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/authbus-clippy.log"
+      - name: Check unchanged tracked source
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Retain execution evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: authbus-execution-${{ github.sha }}
+          path: ${{ runner.temp }}/authbus-evidence/
+          retention-days: 14
