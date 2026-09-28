@@ -1,0 +1,89 @@
+name: Kernel evidence dependency lint repair
+
+on:
+  push:
+    branches:
+      - work/kernel-evidence-ad-integration-20260928
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kernel-evidence-dependency-lint-repair-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    if: >-
+      ${{ contains(github.event.head_commit.message, '[kernel-evidence-dependency-lint-repair]') &&
+          !contains(github.event.head_commit.message, '[kernel-evidence-dependency-lint-applied]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact integration branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: work/kernel-evidence-ad-integration-20260928
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: clippy,rustfmt
+
+      - name: Apply the reviewed dependency-boundary repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/kernel_evidence_dependency_lint_repair_20260929.py
+          git diff --check
+
+      - name: Format and compile the affected owners
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --all
+          cargo check -p codex-state -p codex-hepta-authbus -p codex-hepta-operations
+          cargo metadata --locked --no-deps --format-version 1 >/dev/null
+
+      - name: Run affected native tests and strict lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test --locked -p codex-hepta-authbus -p codex-hepta-operations
+          cargo clippy --locked --all-features --tests \
+            -p codex-state \
+            -p codex-hepta-authbus \
+            -p codex-hepta-operations \
+            -- -D warnings
+
+      - name: Commit the exact tested source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git add \
+            codex-rs/Cargo.lock \
+            codex-rs/state/src/lib.rs \
+            codex-rs/state/src/sqlite.rs \
+            codex-rs/hepta-authbus/Cargo.toml \
+            codex-rs/hepta-authbus/src/authority_schema.rs \
+            codex-rs/hepta-authbus/src/authority_store.rs \
+            codex-rs/hepta-authbus/src/quota_store.rs \
+            codex-rs/hepta-authbus/src/trust_store.rs \
+            codex-rs/hepta-operations/Cargo.toml \
+            codex-rs/hepta-operations/src/destination_dedupe.rs \
+            codex-rs/hepta-operations/src/durable_store.rs \
+            scripts/kernel_evidence_integration_sync.py
+          if git diff --cached --quiet; then
+            echo "Dependency lint repair already applied"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(kernel.evidence): centralize transitive SQLite openings [kernel-evidence-dependency-lint-applied] [kernel-evidence-closure]"
+          git push origin HEAD:work/kernel-evidence-ad-integration-20260928
