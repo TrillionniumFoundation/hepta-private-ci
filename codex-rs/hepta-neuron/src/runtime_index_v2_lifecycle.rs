@@ -15,6 +15,21 @@ pub enum NeuronOperationFailureV2 {
     ResultOverBudget,
 }
 
+impl NeuronOperationFailureV2 {
+    /// Stable low-cardinality terminal reason for host metrics and runbooks.
+    /// The serialized snake-case representation remains unchanged.
+    #[must_use]
+    pub const fn stable_code(self) -> &'static str {
+        match self {
+            Self::ModelRejected => "model_rejected",
+            Self::InvalidModelOutput => "invalid_model_output",
+            Self::InvalidTransition => "invalid_transition",
+            Self::AdmissionDenied => "admission_denied",
+            Self::ResultOverBudget => "result_over_budget",
+        }
+    }
+}
+
 impl FileNeuronRuntimeIndexV2 {
     pub(crate) fn failure(
         &self,
@@ -85,5 +100,34 @@ impl FileNeuronRuntimeIndexV2 {
         self.pending = None;
         self.dispatched = false;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn terminal_failure_codes_are_stable() {
+        assert_eq!(
+            NeuronOperationFailureV2::ModelRejected.stable_code(),
+            "model_rejected"
+        );
+        assert_eq!(
+            NeuronOperationFailureV2::InvalidModelOutput.stable_code(),
+            "invalid_model_output"
+        );
+        assert_eq!(
+            NeuronOperationFailureV2::InvalidTransition.stable_code(),
+            "invalid_transition"
+        );
+        assert_eq!(
+            NeuronOperationFailureV2::AdmissionDenied.stable_code(),
+            "admission_denied"
+        );
+        assert_eq!(
+            NeuronOperationFailureV2::ResultOverBudget.stable_code(),
+            "result_over_budget"
+        );
     }
 }
