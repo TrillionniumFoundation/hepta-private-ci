@@ -92,6 +92,25 @@ impl DurableFleetOwner {
         {
             return Err(DurableFleetError::ExecutionContextMismatch);
         }
+        // A new effect ID cannot turn one execution identity into a second
+        // process or independently spend the allocation's full budget again.
+        let mut demand = context.resources;
+        for existing in self.state.fleet_execution_holds.values() {
+            if existing.grant.allocation_id != *allocation_id {
+                continue;
+            }
+            if existing.context.execution_sha256 == context.execution_sha256 {
+                return Err(DurableFleetError::ExecutionAlreadyPrepared);
+            }
+            demand = demand
+                .checked_add(existing.context.resources)
+                .map_err(|_| DurableFleetError::ArithmeticOverflow)?;
+        }
+        if !demand.fits(grant.resources) {
+            return Err(DurableFleetError::Ledger(
+                crate::LeaseLedgerError::CapacityExceeded,
+            ));
+        }
         let hold = FleetExecutionHoldV1 {
             effect_id: effect_id.to_string(),
             context,
@@ -174,6 +193,8 @@ pub(super) fn reserved_totals(
         .iter()
         .map(|(id, grant)| (id.as_str(), grant))
         .collect();
+    let mut execution_identities = BTreeSet::new();
+    let mut execution_demands: BTreeMap<&str, ResourceVectorV1> = BTreeMap::new();
     for (effect_id, hold) in &state.fleet_execution_holds {
         let grant = &hold.grant;
         if effect_id != &hold.effect_id
@@ -189,9 +210,25 @@ pub(super) fn reserved_totals(
             || grant.host_generation == 0
             || grant.lease_generation == 0
             || !hold.context.resources.fits(grant.resources)
+            || !execution_identities.insert((
+                grant.allocation_id.as_str(),
+                hold.context.execution_sha256.as_str(),
+            ))
         {
             return Err(DurableFleetError::CorruptState);
         }
+        let demand = execution_demands
+            .get(grant.allocation_id.as_str())
+            .copied()
+            .unwrap_or_default()
+            .checked_add(hold.context.resources)
+            .map_err(|_| DurableFleetError::ArithmeticOverflow)?;
+        if !demand.fits(grant.resources) {
+            return Err(DurableFleetError::Ledger(
+                crate::LeaseLedgerError::CapacityExceeded,
+            ));
+        }
+        execution_demands.insert(grant.allocation_id.as_str(), demand);
         if let Some(existing) = allocations.get(grant.allocation_id.as_str()) {
             if existing.host_id != grant.host_id
                 || existing.host_generation != grant.host_generation
