@@ -44,4 +44,20 @@ jobs:
           git show 2cec44fa700334099c2f17e1f15746a36d2dffee:.github/workflows/kernel-authority-status.yml > .github/workflows/kernel-authority-status.yml
           git show 4ab6e0ddafc209503432f07f5d485b0d72ff7f96:.github/workflows/kernel-authority-convergence.yml > .github/workflows/kernel-authority-convergence.yml
           rm -f .github/workflows/kernel-authority-finalize.yml
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("codex-rs/hepta-browser-servo/src/lib.rs")
+          text = path.read_text(encoding="utf-8")
+          old = ".and_then(|scope| scope_sha256_from_browser_scope(scope))"
+          count = text.count(old)
+          if count != 2:
+              raise SystemExit(
+                  f"expected exactly two Browser Servo redundant closures, observed {count}"
+              )
+          path.write_text(
+              text.replace(old, ".and_then(scope_sha256_from_browser_scope)"),
+              encoding="utf-8",
+          )
+          PY
           bash scripts/kernel_authority_direct_repair_v3.sh
