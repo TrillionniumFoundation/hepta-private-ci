@@ -65,6 +65,12 @@ jobs:
           patch_sha="$(sha256sum "$patch_file" | awk '{print $1}')"
           echo "canonical_patch_sha256=$patch_sha"
           test -s "$patch_file"
+          # The canonical patch was authored against the last disposable
+          # delivery-workflow baseline. Restore only that file in the worktree;
+          # this run keeps executing the checked-in current workflow definition,
+          # and the file is deleted before the source commit is published.
+          git show f0170332115434b1b950dfd4f9c747e05f68d146:.github/workflows/automation-taskflow-converge-20260927.yml \
+            > .github/workflows/automation-taskflow-converge-20260927.yml
           git apply --check --whitespace=error-all "$patch_file"
           git apply --whitespace=error-all "$patch_file"
           git diff --check
