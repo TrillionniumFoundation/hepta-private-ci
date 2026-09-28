@@ -9,39 +9,53 @@ permissions:
   actions: write
 concurrency:
   group: prompt-registry-product-lint-closeout-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
+env:
+  EXPECTED_SOURCE: b6cdf7d069a84592c610d57f2685096bb1cf0859
+  TARGET_BRANCH: codex/prompt-registry-verified-closeout-20260928
+  PYTHONDONTWRITEBYTECODE: '1'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_INCREMENTAL: '0'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
 jobs:
-  closeout:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 45
-    env:
-      EXPECTED_SOURCE: b6cdf7d069a84592c610d57f2685096bb1cf0859
-      TARGET_BRANCH: codex/prompt-registry-verified-closeout-20260928
-      PYTHONDONTWRITEBYTECODE: '1'
-      CARGO_BUILD_JOBS: '2'
-      CARGO_INCREMENTAL: '0'
-      CARGO_PROFILE_TEST_DEBUG: '0'
-      CARGO_PROFILE_DEV_DEBUG: '0'
+  strict-lint:
+    name: strict-lint (${{ matrix.id }})
+    runs-on: ubuntu-slim
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: intelligence
+            args: '-p codex-hepta-intelligence --all-targets'
+          - id: optimizer
+            args: '-p codex-hepta-prompt-optimizer --all-targets'
+          - id: extension
+            args: '-p codex-hepta-prompt-extension --all-targets'
+          - id: agentd-runtime
+            args: '-p codex-hepta-agentd --lib --bins --examples'
+          - id: agentd-tests
+            args: '-p codex-hepta-agentd --tests --benches'
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: b6cdf7d069a84592c610d57f2685096bb1cf0859
           fetch-depth: 1
-          persist-credentials: true
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
           components: rustfmt, clippy
-      - name: Prepare product native dependencies
+      - name: Prepare native dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
-      - name: Resolve existing checksum-verified V8 inputs
+      - name: Resolve checksum-verified V8 inputs
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-      - name: Apply narrow checked-in lint expectations
+      - name: Apply exact checked-in source patch
         shell: bash
         run: |
           set -euo pipefail
@@ -91,13 +105,70 @@ jobs:
             -p codex-hepta-agentd \
             -p codex-hepta-intelligence \
             -p codex-hepta-prompt-extension -- --check
+      - name: Strict lint bounded target set
+        shell: bash
+        run: |
+          set -euo pipefail
           cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-prompt-optimizer \
-            -p codex-hepta-agentd \
-            -p codex-hepta-intelligence \
-            -p codex-hepta-prompt-extension \
-            --all-targets --no-deps -- -D warnings
-      - name: Commit exact source and implementation map
+            ${{ matrix.args }} --no-deps -- -D warnings
+
+  publish:
+    name: publish exact linted source
+    needs: strict-lint
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: b6cdf7d069a84592c610d57f2685096bb1cf0859
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Materialize exact checked-in source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          test -z "$(git status --porcelain)"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          canonical = Path('codex-rs/hepta-intelligence/src/canonical.rs')
+          text = canonical.read_text(encoding='utf-8')
+          old = "#[derive(Clone, Debug, Eq, PartialEq)]\npub enum CanonicalRunOutcomeV1 {\n"
+          new = (
+              "#[derive(Clone, Debug, Eq, PartialEq)]\n"
+              "#[expect(\n"
+              "    clippy::large_enum_variant,\n"
+              "    reason = \"V1 is a public compatibility contract; boxing Ready would break existing Rust callers. Revisit indirection in a separately versioned outcome after measurement.\"\n"
+              ")]\n"
+              "pub enum CanonicalRunOutcomeV1 {\n"
+          )
+          if text.count(old) != 1:
+              raise SystemExit('expected exactly one CanonicalRunOutcomeV1 declaration anchor')
+          canonical.write_text(text.replace(old, new), encoding='utf-8')
+
+          scoped_allows = {
+              Path('codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs'): (
+                  "#![allow(\n"
+                  "    clippy::expect_used,\n"
+                  "    reason = \"This qualification example uses fixed repository-owned fixtures; invalid fixtures must abort instead of emitting partial benchmark evidence.\"\n"
+                  ")]\n\n"
+              ),
+              Path('codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs'): (
+                  "#![allow(\n"
+                  "    clippy::expect_used,\n"
+                  "    reason = \"These tests intentionally fail immediately when fixed repository-owned fixtures violate their declared invariants.\"\n"
+                  ")]\n\n"
+              ),
+          }
+          for path, attribute in scoped_allows.items():
+              source = path.read_text(encoding='utf-8')
+              if source.startswith('#!['):
+                  raise SystemExit(f'unexpected existing inner attribute in {path}')
+              path.write_text(attribute + source, encoding='utf-8')
+          PY
+          git diff --check
+      - name: Commit source, regenerate map and fast-forward target
         shell: bash
         run: |
           set -euo pipefail
