@@ -9,6 +9,7 @@
 
 mod bootstrap;
 mod capability_validation;
+mod operational_host;
 mod publication_coordination;
 mod recovery;
 mod reconciliation;
@@ -24,6 +25,7 @@ pub use capability_validation::ArtifactOwnerCapabilityError;
 pub use capability_validation::ArtifactOwnerClientGrantV1;
 pub use capability_validation::ArtifactOwnerKeyringV1;
 pub use capability_validation::SignedArtifactOwnerRequestV1;
+pub use operational_host::ObservedLearningArtifactReferenceHostV1;
 pub use publication_coordination::ArtifactOwnerCommandError;
 pub use publication_coordination::ArtifactOwnerCommandResultV1;
 pub use publication_coordination::ArtifactOwnerMetricsV1;
