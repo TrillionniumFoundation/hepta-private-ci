@@ -128,10 +128,10 @@ impl HeptaEvidenceStore {
                         )));
                     }
                 };
-                let current = generation == current_registry_generation
-                    && digest == *current_registry_sha256;
-                let accepted_prior = generation < current_registry_generation
-                    && accepted_trust_seq.is_some();
+                let current =
+                    generation == current_registry_generation && digest == *current_registry_sha256;
+                let accepted_prior =
+                    generation < current_registry_generation && accepted_trust_seq.is_some();
                 if !current && !accepted_prior {
                     return Err(EvidenceError::InvalidRecord(format!(
                         "qualification evidence {evidence_id} references an unaccepted trust generation or conflicts with the current registry for store {store_id}"

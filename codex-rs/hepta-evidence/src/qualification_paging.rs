@@ -7,8 +7,8 @@ use crate::EvidenceError;
 use crate::EvidenceReferenceV1;
 use crate::HeptaEvidenceStore;
 use crate::QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS;
-use crate::qualification::QUALIFICATION_COLUMNS;
 use crate::qualification::checked_qualification_reference;
+use crate::qualification::qualification_select;
 use crate::schema_validation::classify_sqlx_error;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -92,9 +92,8 @@ impl HeptaEvidenceStore {
                 "qualification page contains an oversized envelope".to_string(),
             ));
         }
-        let rows = sqlx::query(&format!(
-            "SELECT {QUALIFICATION_COLUMNS} FROM qualification_evidence
-             WHERE candidate_id = ? AND source_commit = ? AND source_tree = ?
+        let rows = sqlx::query(qualification_select!(
+            "WHERE candidate_id = ? AND source_commit = ? AND source_tree = ?
                AND claim_class = ? AND seq > ? ORDER BY seq ASC LIMIT ?"
         ))
         .bind(&candidate.candidate_id)

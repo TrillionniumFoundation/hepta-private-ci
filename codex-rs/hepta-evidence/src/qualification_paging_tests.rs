@@ -205,12 +205,7 @@ async fn cursor_page_rejects_well_formed_but_substituted_payload_digest() {
     insert_rows(&store, 1).await;
 
     let original = store
-        .query_qualification_claim_page(
-            &candidate(),
-            EvidenceClaimClassV1::MandatoryTests,
-            None,
-            1,
-        )
+        .query_qualification_claim_page(&candidate(), EvidenceClaimClassV1::MandatoryTests, None, 1)
         .await
         .expect("untampered page must be readable");
     assert_eq!(original.evidence.len(), 1);
@@ -224,18 +219,24 @@ async fn cursor_page_rejects_well_formed_but_substituted_payload_digest() {
     // pass the page decoder merely because its hexadecimal encoding is valid.
     let forged_digest = Sha256Digest::for_bytes(b"substituted page payload");
     let row = sqlx::query(
-        "SELECT seq, evidence_id, candidate_id, source_commit, source_tree,
-                claim_class, receipt_kind, issuer_role, issuer_principal_id,
-                ? AS payload_sha256, envelope_sha256, predecessor_evidence_id,
-                target_evidence_id, observed_at_ms, expires_at_ms, envelope_json
-         FROM qualification_evidence WHERE evidence_id = ?",
+        "SELECT seq, evidence_id, schema_version, candidate_id, source_commit, source_tree,
+     claim_class, receipt_kind, issuer_role, issuer_principal_id, issuer_key_epoch,
+     issuer_signing_identity_sha256, auth_message_id, auth_sequence,
+     auth_expires_at_ms, auth_signature, trust_registry_generation,
+     trust_registry_sha256, ? AS payload_sha256, envelope_sha256,
+     predecessor_evidence_id, target_evidence_id, observed_at_ms, expires_at_ms,
+     asset_count, envelope_json, recorded_at_ms FROM qualification_evidence WHERE evidence_id = ?",
     )
     .bind(forged_digest.as_str())
     .bind("evidence:paging:0001")
     .fetch_one(&store.pool)
     .await
     .expect("construct corrupt page projection");
-    let result = super::decode_reference(&row, &candidate(), EvidenceClaimClassV1::MandatoryTests);
+    let result = super::checked_qualification_reference(
+        &row,
+        &candidate(),
+        EvidenceClaimClassV1::MandatoryTests,
+    );
     assert!(matches!(result, Err(EvidenceError::Corrupt(_))));
     store.close().await;
 }

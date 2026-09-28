@@ -116,7 +116,9 @@ def replace_block(path: Path, body: str) -> None:
         if count != 1:
             raise ValueError(f"ambiguous integration block in {path}")
     elif status_tools.STATUS_BEGIN in text:
-        text = text.replace(status_tools.STATUS_BEGIN, block + "\n\n" + status_tools.STATUS_BEGIN, 1)
+        text = text.replace(
+            status_tools.STATUS_BEGIN, block + "\n\n" + status_tools.STATUS_BEGIN, 1
+        )
     else:
         text = text.rstrip() + "\n\n" + block + "\n"
     path.write_text(text, encoding="utf-8")
@@ -126,12 +128,16 @@ def source_inventory(anchor: str) -> list[str]:
     paths = git("ls-tree", "-r", "--name-only", anchor).splitlines()
     exact = {
         ".github/workflows/blocking-ci.yml",
-        "codex-rs/Cargo.toml", "codex-rs/Cargo.lock",
-        "codex-rs/hepta-agentd/Cargo.toml", "codex-rs/hepta-agentd/src/lib.rs",
-        "codex-rs/hepta-agentd/src/main.rs", "codex-rs/hepta-agentd/build.rs",
+        "codex-rs/Cargo.toml",
+        "codex-rs/Cargo.lock",
+        "codex-rs/hepta-agentd/Cargo.toml",
+        "codex-rs/hepta-agentd/src/lib.rs",
+        "codex-rs/hepta-agentd/src/main.rs",
+        "codex-rs/hepta-agentd/build.rs",
         "codex-rs/hepta-agent-protocol/Cargo.toml",
         "codex-rs/hepta-agent-protocol/src/evidence.rs",
-        "codex-rs/state/src/lib.rs", "codex-rs/state/src/sqlite.rs",
+        "codex-rs/state/src/lib.rs",
+        "codex-rs/state/src/sqlite.rs",
         "codex-rs/state/src/sqlite_evidence_runtime.rs",
     }
     selected = []
@@ -160,11 +166,17 @@ def sync_metadata(anchor: str) -> None:
     # This tool cannot authenticate execution or external acceptance receipts.
     if any(status[gate] for gate, _ in status_tools.GATES):
         raise ValueError("qualified status requires a separate reviewed transition")
-    if status["evidenceReceipts"] or status["workflowRunId"] or status["artifactDigest"]:
+    if (
+        status["evidenceReceipts"]
+        or status["workflowRunId"]
+        or status["artifactDigest"]
+    ):
         raise ValueError("do not overwrite existing authority receipts")
     dump(status_tools.STATUS_PATH, status)
     replace_block(GUIDE, INTEGRATION_GUIDE)
-    replace_block(ROOT / "docs/lane-a-foundation/kernel.evidence/STORE_V1.md", STORE_NOTE)
+    replace_block(
+        ROOT / "docs/lane-a-foundation/kernel.evidence/STORE_V1.md", STORE_NOTE
+    )
     store_path = ROOT / "docs/lane-a-foundation/kernel.evidence/STORE_V1.md"
     store_text = store_path.read_text(encoding="utf-8")
     store_text = store_text.replace(
@@ -175,16 +187,20 @@ def sync_metadata(anchor: str) -> None:
     status_tools.validate_status(status)
     status_tools.sync(status)
     index = json.loads(INDEX.read_text(encoding="utf-8"))
-    entries = [entry for entry in index["modules"] if entry["module"] == "kernel.evidence"]
+    entries = [
+        entry for entry in index["modules"] if entry["module"] == "kernel.evidence"
+    ]
     if len(entries) != 1:
         raise ValueError("ambiguous kernel.evidence document registry")
     data = GUIDE.read_bytes()
-    entries[0].update({
-        "sha256": hashlib.sha256(data).hexdigest(),
-        "bytes": len(data),
-        "words": len(re.findall(r"\b[\w.-]+\b", data.decode("utf-8"))),
-        "production_implementation": False,
-    })
+    entries[0].update(
+        {
+            "sha256": hashlib.sha256(data).hexdigest(),
+            "bytes": len(data),
+            "words": len(re.findall(r"\b[\w.-]+\b", data.decode("utf-8"))),
+            "production_implementation": False,
+        }
+    )
     dump(INDEX, index)
     status_tools.verify(status)
 
@@ -194,7 +210,13 @@ def bind_map(anchor: str) -> None:
     mapping = json.loads(MAP.read_text(encoding="utf-8"))
     mapping["sourceBase"] = identity
     mapping["productionImplementation"] = False
-    for key in ("productionImplementation", "productExecutionProved", "independentAcceptance", "activation", "release"):
+    for key in (
+        "productionImplementation",
+        "productExecutionProved",
+        "independentAcceptance",
+        "activation",
+        "release",
+    ):
         mapping["claimBoundary"][key] = False
     dump(MAP, mapping)
 

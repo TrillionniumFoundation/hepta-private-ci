@@ -538,11 +538,13 @@ impl HeptaEvidenceStore {
             && &latest.frontier_sha256 == digest
             && &latest.backend_identity_sha256 == backend
         {
-            return Ok(if batch.state == EvidencePublicationBatchStateV1::Acknowledged {
-                EvidencePublicationLatestDisposition::AlreadyAcknowledged
-            } else {
-                EvidencePublicationLatestDisposition::RecoverDurableAcknowledgement
-            });
+            return Ok(
+                if batch.state == EvidencePublicationBatchStateV1::Acknowledged {
+                    EvidencePublicationLatestDisposition::AlreadyAcknowledged
+                } else {
+                    EvidencePublicationLatestDisposition::RecoverDurableAcknowledgement
+                },
+            );
         }
         if batch.state == EvidencePublicationBatchStateV1::Acknowledged {
             // Historical success cannot authorize a rollback, missing latest,

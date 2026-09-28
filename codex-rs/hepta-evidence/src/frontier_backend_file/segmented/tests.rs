@@ -47,11 +47,12 @@ mod tests {
             std::fs::write(&identity_path, &identity_bytes).unwrap();
             std::fs::set_permissions(&identity_path, std::fs::Permissions::from_mode(0o600))
                 .unwrap();
+            let local_root = local.path().canonicalize().unwrap();
             Self {
                 _external: external,
                 _local: local,
                 backend_root: backend_root.canonicalize().unwrap(),
-                local_root: local.path().canonicalize().unwrap(),
+                local_root,
                 identity_sha256: Sha256Digest::for_bytes(&identity_bytes),
             }
         }
@@ -105,7 +106,7 @@ mod tests {
     fn automatic_rollover_preserves_latest_history_and_capacity() {
         let fixture = Fixture::new();
         let mut backend = fixture.open();
-        for generation in 1..=6 {
+        for generation in 1_u64..=6 {
             backend
                 .compare_and_swap(
                     "store:segmented-test",
@@ -149,7 +150,7 @@ mod tests {
                 .unwrap();
         {
             let mut backend = fixture.open();
-            for generation in 1..=5 {
+            for generation in 1_u64..=5 {
                 backend
                     .compare_and_swap(
                         "store:segmented-test",
@@ -172,7 +173,7 @@ mod tests {
     fn duplicate_active_prefix_after_archive_crash_is_deduplicated() {
         let fixture = Fixture::new();
         let mut backend = fixture.open();
-        for generation in 1..=6 {
+        for generation in 1_u64..=6 {
             backend
                 .compare_and_swap(
                     "store:segmented-test",

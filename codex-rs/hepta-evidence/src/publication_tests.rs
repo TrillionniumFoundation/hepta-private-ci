@@ -203,7 +203,9 @@ async fn owner_fencing_and_indeterminate_cas_reuse_one_durable_batch() {
         EvidencePublicationLatestDisposition::AlreadyAcknowledged
     );
     assert_eq!(
-        store.classify_publication_latest(&prepared.batch_id, None).await
+        store
+            .classify_publication_latest(&prepared.batch_id, None)
+            .await
             .expect("classify missing latest"),
         EvidencePublicationLatestDisposition::Conflict
     );
@@ -222,12 +224,13 @@ async fn owner_fencing_and_indeterminate_cas_reuse_one_durable_batch() {
         },
     ] {
         assert_eq!(
-            store.classify_publication_latest(&prepared.batch_id, Some(&replacement))
-                .await.expect("classify changed latest"),
+            store
+                .classify_publication_latest(&prepared.batch_id, Some(&replacement))
+                .await
+                .expect("classify changed latest"),
             EvidencePublicationLatestDisposition::Conflict
         );
     }
-
 }
 
 #[tokio::test]
@@ -264,23 +267,40 @@ async fn enrolled_store_backfills_and_new_appends_enqueue_once() {
 #[tokio::test]
 async fn acknowledgement_member_mismatch_rolls_back_frontier_and_batch() {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("store");
-    store.bind_recovery_store_id("store:publication").await.expect("enroll");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("store");
+    store
+        .bind_recovery_store_id("store:publication")
+        .await
+        .expect("enroll");
     insert_evidence(&store, "one", 10).await;
     insert_evidence(&store, "two", 20).await;
-    let lease = store.claim_publication_owner("publisher:a", 100, 1000).await.expect("owner");
-    let batch = store.prepare_publication_batch(&lease, 110, 32).await
-        .expect("prepare").expect("batch");
+    let lease = store
+        .claim_publication_owner("publisher:a", 100, 1000)
+        .await
+        .expect("owner");
+    let batch = store
+        .prepare_publication_batch(&lease, 110, 32)
+        .await
+        .expect("prepare")
+        .expect("batch");
     let digest = Sha256Digest::for_bytes(b"frontier:ack-members");
     let backend = Sha256Digest::for_bytes(b"backend:ack-members");
-    store.mark_publication_dispatched(&lease, &batch.batch_id, &digest, &backend, 120)
-        .await.expect("dispatch");
+    store
+        .mark_publication_dispatched(&lease, &batch.batch_id, &digest, &backend, 120)
+        .await
+        .expect("dispatch");
     // Test-only corruption of the membership, without changing the batch count.
     sqlx::query("DROP TRIGGER evidence_publication_intents_transition")
-        .execute(&store.pool).await.expect("test-only corruption seam");
+        .execute(&store.pool)
+        .await
+        .expect("test-only corruption seam");
     sqlx::query("UPDATE evidence_publication_intents SET state = 'acknowledged' WHERE seq = ?")
         .bind(i64::try_from(batch.first_intent_seq).expect("sequence"))
-        .execute(&store.pool).await.expect("corrupt membership");
+        .execute(&store.pool)
+        .await
+        .expect("corrupt membership");
     let ack = EvidenceFrontierDurableAckV1 {
         backend_id: "backend:ack-members".to_string(),
         backend_identity_sha256: backend,
@@ -289,10 +309,26 @@ async fn acknowledgement_member_mismatch_rolls_back_frontier_and_batch() {
         frontier_sha256: digest,
         audit_sequence: 1,
     };
-    assert!(store.acknowledge_publication(&lease, &batch.batch_id, &ack, 130).await.is_err());
-    assert!(store.latest_accepted_frontier("store:publication").await.expect("frontier").is_none());
+    assert!(
+        store
+            .acknowledge_publication(&lease, &batch.batch_id, &ack, 130)
+            .await
+            .is_err()
+    );
+    assert!(
+        store
+            .latest_accepted_frontier("store:publication")
+            .await
+            .expect("frontier")
+            .is_none()
+    );
     assert_eq!(
-        store.publication_batch(&batch.batch_id).await.expect("batch lookup").expect("batch").state,
+        store
+            .publication_batch(&batch.batch_id)
+            .await
+            .expect("batch lookup")
+            .expect("batch")
+            .state,
         EvidencePublicationBatchStateV1::Dispatching
     );
     store.close().await;

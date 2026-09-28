@@ -6,8 +6,8 @@ use codex_hepta_contracts::Sha256Digest;
 use crate::EvidenceError;
 use crate::EvidenceId;
 use crate::HeptaEvidenceStore;
-use crate::qualification::QUALIFICATION_COLUMNS;
 use crate::qualification::authenticated_row_sha256;
+use crate::qualification::qualification_select;
 use crate::schema_validation::classify_sqlx_error;
 
 impl HeptaEvidenceStore {
@@ -15,10 +15,8 @@ impl HeptaEvidenceStore {
         &self,
         evidence_id: &EvidenceId,
     ) -> Result<Option<Sha256Digest>, EvidenceError> {
-        let statement = format!(
-            "SELECT {QUALIFICATION_COLUMNS} FROM qualification_evidence WHERE evidence_id = ?"
-        );
-        let row = sqlx::query(&statement)
+        let statement = qualification_select!("WHERE evidence_id = ?");
+        let row = sqlx::query(statement)
             .bind(evidence_id.as_str())
             .fetch_optional(&self.pool)
             .await

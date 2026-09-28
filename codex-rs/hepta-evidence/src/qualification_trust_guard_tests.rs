@@ -11,7 +11,9 @@ async fn open(temp: &TempDir) -> HeptaEvidenceStore {
     let config = SqliteConfig::new_for_testing(
         AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("absolute temp path"),
     );
-    HeptaEvidenceStore::open(&config).await.expect("migrated store")
+    HeptaEvidenceStore::open(&config)
+        .await
+        .expect("migrated store")
 }
 
 async fn accept(
@@ -38,7 +40,10 @@ async fn accept(
         backend_identity_sha256: frontier.backend_identity_sha256.clone(),
         accepted_at_unix_ms: frontier.accepted_at_unix_ms,
     };
-    let snapshot = store.authenticated_recovery_snapshot().await.expect("snapshot");
+    let snapshot = store
+        .authenticated_recovery_snapshot()
+        .await
+        .expect("snapshot");
     store
         .accept_production_generation_at_snapshot(&frontier, &snapshot, &trust)
         .await
@@ -61,7 +66,10 @@ async fn accepted_trust_cannot_downgrade_to_legacy_or_unaccepted_generation() {
     let temp = TempDir::new().expect("temp");
     let store = open(&temp).await;
     assert!(allowed(&store, None, None).await);
-    store.bind_recovery_store_id("store:guard").await.expect("enroll");
+    store
+        .bind_recovery_store_id("store:guard")
+        .await
+        .expect("enroll");
     let first = Sha256Digest::for_bytes(b"trust:one");
     accept(&store, 1, &first, None).await;
     assert!(allowed(&store, Some(1), Some(&first)).await);
@@ -77,7 +85,10 @@ async fn accepted_trust_cannot_downgrade_to_legacy_or_unaccepted_generation() {
 async fn restored_old_file_cannot_undo_durable_trust_rotation_after_reopen() {
     let temp = TempDir::new().expect("temp");
     let store = open(&temp).await;
-    store.bind_recovery_store_id("store:guard").await.expect("enroll");
+    store
+        .bind_recovery_store_id("store:guard")
+        .await
+        .expect("enroll");
     let first = Sha256Digest::for_bytes(b"trust:one");
     let second = Sha256Digest::for_bytes(b"trust:two");
     accept(&store, 1, &first, None).await;

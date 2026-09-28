@@ -38,14 +38,23 @@ const MAX_INDEPENDENT_CONDITIONS: usize = 64;
 const MAX_INDEPENDENT_CONDITIONS_BYTES: usize = 32 * 1024;
 const MAX_DECISION_EVIDENCE_REFERENCES: usize = QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS * 16;
 
-pub(crate) const QUALIFICATION_COLUMNS: &str =
-    "seq, evidence_id, schema_version, candidate_id, source_commit, source_tree,
+// A literal-only suffix keeps every production statement statically SQL-safe.
+// Caller-controlled values are supplied exclusively through bind parameters.
+macro_rules! qualification_select {
+    ($suffix:literal) => {
+        concat!(
+            "SELECT seq, evidence_id, schema_version, candidate_id, source_commit, source_tree,
      claim_class, receipt_kind, issuer_role, issuer_principal_id, issuer_key_epoch,
      issuer_signing_identity_sha256, auth_message_id, auth_sequence,
      auth_expires_at_ms, auth_signature, trust_registry_generation,
      trust_registry_sha256, payload_sha256, envelope_sha256,
      predecessor_evidence_id, target_evidence_id, observed_at_ms, expires_at_ms,
-     asset_count, envelope_json, recorded_at_ms";
+     asset_count, envelope_json, recorded_at_ms FROM qualification_evidence ",
+            $suffix
+        )
+    };
+}
+pub(crate) use qualification_select;
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(transparent)]
@@ -884,12 +893,10 @@ pub fn evidence_set_digest(
 pub(crate) async fn verify_qualification_evidence_rows(
     pool: &SqlitePool,
 ) -> Result<(), EvidenceError> {
-    let rows = sqlx::query(&format!(
-        "SELECT {QUALIFICATION_COLUMNS} FROM qualification_evidence ORDER BY seq ASC LIMIT 1000001"
-    ))
-    .fetch_all(pool)
-    .await
-    .map_err(classify_sqlx_error)?;
+    let rows = sqlx::query(qualification_select!("ORDER BY seq ASC LIMIT 1000001"))
+        .fetch_all(pool)
+        .await
+        .map_err(classify_sqlx_error)?;
     if rows.len() > 1_000_000 {
         return Err(EvidenceError::Corrupt(
             "qualification evidence exceeds startup integrity scan bound".to_string(),
@@ -1001,9 +1008,8 @@ async fn candidate_evidence_set_digest_in_transaction(
     transaction: &mut Transaction<'_, Sqlite>,
     candidate: &EvidenceCandidateV1,
 ) -> Result<Sha256Digest, EvidenceError> {
-    let rows = sqlx::query(&format!(
-        "SELECT {QUALIFICATION_COLUMNS} FROM qualification_evidence
-         WHERE candidate_id = ? AND source_commit = ? AND source_tree = ?
+    let rows = sqlx::query(qualification_select!(
+        "WHERE candidate_id = ? AND source_commit = ? AND source_tree = ?
            AND claim_class != 'independent_decision' ORDER BY seq ASC LIMIT ?"
     ))
     .bind(&candidate.candidate_id)
@@ -1037,9 +1043,8 @@ async fn load_claim_rows(
     candidate: &EvidenceCandidateV1,
     claim_class: EvidenceClaimClassV1,
 ) -> Result<Vec<StoredQualificationEvidence>, EvidenceError> {
-    let rows = sqlx::query(&format!(
-        "SELECT {QUALIFICATION_COLUMNS} FROM qualification_evidence
-         WHERE candidate_id = ? AND source_commit = ? AND source_tree = ? AND claim_class = ?
+    let rows = sqlx::query(qualification_select!(
+        "WHERE candidate_id = ? AND source_commit = ? AND source_tree = ? AND claim_class = ?
          ORDER BY seq ASC LIMIT ?"
     ))
     .bind(&candidate.candidate_id)
@@ -1065,13 +1070,11 @@ async fn load_evidence_by_id(
     transaction: &mut Transaction<'_, Sqlite>,
     evidence_id: &str,
 ) -> Result<Option<StoredQualificationEvidence>, EvidenceError> {
-    let row = sqlx::query(&format!(
-        "SELECT {QUALIFICATION_COLUMNS} FROM qualification_evidence WHERE evidence_id = ?"
-    ))
-    .bind(evidence_id)
-    .fetch_optional(&mut **transaction)
-    .await
-    .map_err(classify_sqlx_error)?;
+    let row = sqlx::query(qualification_select!("WHERE evidence_id = ?"))
+        .bind(evidence_id)
+        .fetch_optional(&mut **transaction)
+        .await
+        .map_err(classify_sqlx_error)?;
     row.as_ref().map(decode_row).transpose()
 }
 

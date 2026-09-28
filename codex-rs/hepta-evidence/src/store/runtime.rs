@@ -43,7 +43,7 @@ mod tests {
         )
     }
 
-    async fn assert_rejected(store: &HeptaEvidenceStore, statement: &str) {
+    async fn assert_rejected(store: &HeptaEvidenceStore, statement: &'static str) {
         let result = sqlx::query(statement).execute(&store.pool).await;
         assert!(
             result.is_err(),
@@ -123,11 +123,15 @@ mod tests {
             .await
             .expect("read current page count");
         let requested_limit = page_count.checked_add(1).expect("page-count headroom");
-        let configured_limit: i64 =
-            sqlx::query_scalar(&format!("PRAGMA max_page_count = {requested_limit}"))
-                .fetch_one(&store.pool)
-                .await
-                .expect("install disk-full injection ceiling");
+        // SQLite does not bind PRAGMA assignment values. This test-only fragment
+        // is constructed solely from a checked positive i64, never caller text.
+        let mut pragma = sqlx::QueryBuilder::<sqlx::Sqlite>::new("PRAGMA max_page_count = ");
+        pragma.push(requested_limit);
+        let configured_limit: i64 = pragma
+            .build_query_scalar()
+            .fetch_one(&store.pool)
+            .await
+            .expect("install disk-full injection ceiling");
         assert_eq!(configured_limit, requested_limit);
 
         let mut transaction = store.pool.begin().await.expect("begin injected write");

@@ -415,9 +415,7 @@ mod response_budget_tests {
             predecessor_evidence_id: Some(
                 EvidenceId::parse("r".repeat(128)).expect("maximum predecessor"),
             ),
-            target_evidence_id: Some(
-                EvidenceId::parse("t".repeat(128)).expect("maximum target"),
-            ),
+            target_evidence_id: Some(EvidenceId::parse("t".repeat(128)).expect("maximum target")),
             observed_unix_ms: u64::MAX,
             expires_unix_ms: Some(u64::MAX),
         };

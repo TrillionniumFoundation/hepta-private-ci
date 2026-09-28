@@ -19,12 +19,11 @@ pub(super) async fn require_admitted_trust(
             "qualification trust identity is incomplete".to_string(),
         ));
     }
-    let bound: Option<String> = sqlx::query_scalar(
-        "SELECT store_id FROM evidence_recovery_identity WHERE singleton = 1",
-    )
-    .fetch_optional(&mut **transaction)
-    .await
-    .map_err(classify_sqlx_error)?;
+    let bound: Option<String> =
+        sqlx::query_scalar("SELECT store_id FROM evidence_recovery_identity WHERE singleton = 1")
+            .fetch_optional(&mut **transaction)
+            .await
+            .map_err(classify_sqlx_error)?;
     let Some(store_id) = bound else {
         let retained: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM evidence_trust_acceptance")
             .fetch_one(&mut **transaction)
@@ -50,12 +49,16 @@ pub(super) async fn require_admitted_trust(
         // generation remains supported. Once accepted, it cannot downgrade.
         return Ok(());
     };
-    let bytes: Vec<u8> = row.try_get("registry_generation").map_err(classify_sqlx_error)?;
+    let bytes: Vec<u8> = row
+        .try_get("registry_generation")
+        .map_err(classify_sqlx_error)?;
     let bytes: [u8; 8] = bytes.try_into().map_err(|_| {
         EvidenceError::Corrupt("accepted trust generation has invalid width".to_string())
     })?;
     let accepted_generation = u64::from_be_bytes(bytes);
-    let accepted_digest: String = row.try_get("registry_sha256").map_err(classify_sqlx_error)?;
+    let accepted_digest: String = row
+        .try_get("registry_sha256")
+        .map_err(classify_sqlx_error)?;
     let accepted_digest = Sha256Digest::parse(accepted_digest).map_err(EvidenceError::Corrupt)?;
     if accepted_generation == 0 {
         return Err(EvidenceError::Corrupt(

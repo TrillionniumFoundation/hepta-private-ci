@@ -226,7 +226,9 @@ async fn production_provenance_rejects_unaccepted_noncurrent_trust() {
 #[tokio::test]
 async fn production_provenance_compatibility_requires_enrollment_even_for_current_rows() {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open store");
     let current = Sha256Digest::for_bytes(b"trust:current");
 
     // Neither an empty database nor a current-registry match substitutes for
@@ -249,7 +251,9 @@ async fn production_provenance_compatibility_requires_enrollment_even_for_curren
 #[tokio::test]
 async fn production_provenance_both_entry_points_reject_zero_current_generation() {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open store");
     store
         .bind_recovery_store_id("store:provenance")
         .await
@@ -262,7 +266,9 @@ async fn production_provenance_both_entry_points_reject_zero_current_generation(
 #[tokio::test]
 async fn accepted_history_cannot_override_a_different_current_registry_digest() {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open store");
     store
         .bind_recovery_store_id("store:provenance")
         .await
@@ -283,7 +289,9 @@ async fn accepted_history_cannot_override_a_different_current_registry_digest() 
 #[tokio::test]
 async fn accepted_history_cannot_make_a_future_generation_current() {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open store");
     store
         .bind_recovery_store_id("store:provenance")
         .await

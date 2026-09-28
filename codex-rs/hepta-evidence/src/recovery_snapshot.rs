@@ -11,9 +11,9 @@ use sqlx::Transaction;
 use super::EVIDENCE_DATABASE_LINEAGE;
 use super::EvidenceRecoverySnapshotV1;
 use crate::EvidenceError;
-use crate::qualification::QUALIFICATION_COLUMNS;
 use crate::qualification::QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES;
 use crate::qualification::authenticated_row_sha256;
+use crate::qualification::qualification_select;
 use crate::schema_validation::classify_sqlx_error;
 
 const MAX_ROWS: i64 = 1_000_000;
@@ -111,17 +111,18 @@ pub(super) async fn collect_in_transaction(
             &[b"store-identity", store_id.as_bytes()],
         );
     }
-    let columns = match domain {
-        Domain::LegacyEnvelope => "seq, evidence_id, envelope_sha256",
-        Domain::AuthenticatedAdmission => QUALIFICATION_COLUMNS,
+    let statement = match domain {
+        Domain::LegacyEnvelope => {
+            "SELECT seq, evidence_id, envelope_sha256 FROM qualification_evidence WHERE seq > ? ORDER BY seq ASC LIMIT ?"
+        }
+        Domain::AuthenticatedAdmission => {
+            qualification_select!("WHERE seq > ? ORDER BY seq ASC LIMIT ?")
+        }
     };
-    let statement = format!(
-        "SELECT {columns} FROM qualification_evidence WHERE seq > ? ORDER BY seq ASC LIMIT ?"
-    );
     let mut last_seq = 0_i64;
     let mut observed_rows = 0_i64;
     loop {
-        let page = sqlx::query(&statement)
+        let page = sqlx::query(statement)
             .bind(last_seq)
             .bind(PAGE_ROWS)
             .fetch_all(&mut **transaction)

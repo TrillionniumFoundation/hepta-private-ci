@@ -86,16 +86,29 @@ fn candidate() -> EvidenceCandidateV1 {
 #[tokio::test]
 async fn page_rejects_payload_digest_drift_using_the_full_row_decoder() {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("store");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("store");
     insert_evidence(&store, "one", 10).await;
     sqlx::query("DROP TRIGGER qualification_evidence_no_update")
-        .execute(&store.pool).await.expect("test-only corruption seam");
+        .execute(&store.pool)
+        .await
+        .expect("test-only corruption seam");
     sqlx::query("UPDATE qualification_evidence SET payload_sha256 = ?")
         .bind(Sha256Digest::for_bytes(b"not the payload").as_str())
-        .execute(&store.pool).await.expect("corrupt digest");
+        .execute(&store.pool)
+        .await
+        .expect("corrupt digest");
     assert!(
-        store.query_qualification_claim_page(&candidate(), EvidenceClaimClassV1::ExactSource, None, 1)
-            .await.is_err()
+        store
+            .query_qualification_claim_page(
+                &candidate(),
+                EvidenceClaimClassV1::ExactSource,
+                None,
+                1
+            )
+            .await
+            .is_err()
     );
     store.close().await;
 }
@@ -103,30 +116,60 @@ async fn page_rejects_payload_digest_drift_using_the_full_row_decoder() {
 #[tokio::test]
 async fn page_cursor_is_scoped_to_the_exact_candidate_and_claim() {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("store");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("store");
     insert_evidence(&store, "one", 10).await;
     insert_evidence(&store, "two", 20).await;
     let first = store
         .query_qualification_claim_page(&candidate(), EvidenceClaimClassV1::ExactSource, None, 1)
-        .await.expect("first page");
+        .await
+        .expect("first page");
     let cursor = first.next_after_seq.expect("continuation");
     let mut wrong = candidate();
     wrong.source_tree = "c".repeat(40);
     assert!(
-        store.query_qualification_claim_page(&wrong, EvidenceClaimClassV1::ExactSource, Some(cursor), 1)
-            .await.is_err()
+        store
+            .query_qualification_claim_page(
+                &wrong,
+                EvidenceClaimClassV1::ExactSource,
+                Some(cursor),
+                1
+            )
+            .await
+            .is_err()
     );
     assert!(
-        store.query_qualification_claim_page(&candidate(), EvidenceClaimClassV1::MandatoryTests, Some(cursor), 1)
-            .await.is_err()
+        store
+            .query_qualification_claim_page(
+                &candidate(),
+                EvidenceClaimClassV1::MandatoryTests,
+                Some(cursor),
+                1
+            )
+            .await
+            .is_err()
     );
     assert!(
-        store.query_qualification_claim_page(&candidate(), EvidenceClaimClassV1::ExactSource, Some(999), 1)
-            .await.is_err()
+        store
+            .query_qualification_claim_page(
+                &candidate(),
+                EvidenceClaimClassV1::ExactSource,
+                Some(999),
+                1
+            )
+            .await
+            .is_err()
     );
     let second = store
-        .query_qualification_claim_page(&candidate(), EvidenceClaimClassV1::ExactSource, Some(cursor), 1)
-        .await.expect("valid continuation");
+        .query_qualification_claim_page(
+            &candidate(),
+            EvidenceClaimClassV1::ExactSource,
+            Some(cursor),
+            1,
+        )
+        .await
+        .expect("valid continuation");
     assert_eq!(second.evidence.len(), 1);
     assert_eq!(second.evidence[0].evidence_id.as_str(), "evidence:two");
     store.close().await;
