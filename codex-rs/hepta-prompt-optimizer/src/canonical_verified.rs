@@ -21,6 +21,9 @@ use codex_hepta_types::StableId;
 use super::digest;
 use super::raw;
 
+#[path = "canonical_pricing_math.rs"]
+mod pricing_math;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CanonicalPromptError {
     EmptyDigest(&'static str),
@@ -408,6 +411,9 @@ impl PricedPromptCandidatesV1 {
                 || row.pricing.state_digest != self.inner.candidates.receipt.state_digest
                 || row.pricing.authority.grants_any()
                 || row.net_utility_q32 != row.pricing.expected_utility_q32
+                || row.pricing.token_cost != row.binding.realization.token_cost
+                || row.pricing.confidence_interval.lower_q32 > row.net_utility_q32
+                || row.net_utility_q32 > row.pricing.confidence_interval.upper_q32
                 || row.pricing.receipt_digest
                     != digest::digest_pricing_receipt(
                         &row.pricing.factor_id,
@@ -543,30 +549,31 @@ pub fn price_factors_v1(
             .downside_weight_q32
             .checked_mul(evidence.downside_q32)
             .map_err(|_| CanonicalPromptError::Arithmetic)?;
-        let mut net = evidence.expected_incremental_utility_q32;
-        for cost in [
-            downside_penalty,
-            scale_rate(policy.token_cost_per_token_q32, u64::from(token_cost))?,
-            scale_rate(
-                policy.latency_cost_per_micro_q32,
-                evidence.latency_cost_micros,
-            )?,
-            scale_rate(
-                policy.interference_cost_per_ppm_q32,
-                u64::from(evidence.interference_ppm),
-            )?,
-            evidence.context_crowding_cost_q32,
-            evidence.privacy_cost_q32,
-            evidence.instability_cost_q32,
-            evidence.future_context_option_cost_q32,
-        ] {
-            net = net
-                .checked_sub(cost)
-                .map_err(|_| CanonicalPromptError::Arithmetic)?;
-        }
+        let net_interval = pricing_math::net_interval(
+            evidence.expected_incremental_utility_q32,
+            evidence.confidence_lower_q32,
+            evidence.confidence_upper_q32,
+            [
+                downside_penalty,
+                scale_rate(policy.token_cost_per_token_q32, u64::from(token_cost))?,
+                scale_rate(
+                    policy.latency_cost_per_micro_q32,
+                    evidence.latency_cost_micros,
+                )?,
+                scale_rate(
+                    policy.interference_cost_per_ppm_q32,
+                    u64::from(evidence.interference_ppm),
+                )?,
+                evidence.context_crowding_cost_q32,
+                evidence.privacy_cost_q32,
+                evidence.instability_cost_q32,
+                evidence.future_context_option_cost_q32,
+            ],
+        )?;
+        let net = net_interval.mean;
         let confidence_interval = raw::PromptConfidenceIntervalV1 {
-            lower_q32: evidence.confidence_lower_q32,
-            upper_q32: evidence.confidence_upper_q32,
+            lower_q32: net_interval.lower,
+            upper_q32: net_interval.upper,
             support_count: evidence.support_count,
             support_audit_digest: evidence.support_audit_digest,
         };
