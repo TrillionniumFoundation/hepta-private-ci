@@ -43,13 +43,19 @@ pub enum CompactionCoordinatorErrorV2 {
     Corrupt(&'static str),
 }
 
+/// Per-operation measurements for a successful publication.
+///
+/// Estimated work fields are deliberately named as estimates. The end-to-end
+/// clock starts when the public coordinator entrypoint is invoked; the durable
+/// clock covers only the store publication call.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct CompactionPublicationMetricsV2 {
     pub payload_bytes: u64,
     pub durable_archive_bytes: u64,
-    pub observed_clone_bytes: u64,
-    pub observed_content_hashes: u32,
-    pub publish_latency_micros: u64,
+    pub estimated_clone_bytes: u64,
+    pub estimated_content_hashes: u32,
+    pub durable_publish_latency_micros: u64,
+    pub end_to_end_latency_micros: u64,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -68,12 +74,18 @@ pub struct CompactionPublicationReceiptV2 {
     pub metrics: CompactionPublicationMetricsV2,
 }
 
+/// Per-operation measurements for a successful cryptographic reopen.
+///
+/// Normal reopen verifies the selected immutable objects and current trust. A
+/// database-wide integrity scan and stale-claim reconciliation are explicit
+/// startup/operator operations and are intentionally excluded from this path.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct CompactionReopenMetricsV2 {
     pub payload_bytes: u64,
     pub durable_archive_bytes: u64,
-    pub observed_content_hashes: u32,
-    pub reopen_latency_micros: u64,
+    pub estimated_content_hashes: u32,
+    pub reconstruction_latency_micros: u64,
+    pub end_to_end_latency_micros: u64,
 }
 
 #[derive(Clone, Debug)]
@@ -248,6 +260,7 @@ impl MemoryCheckpointCoordinatorV2 {
         retain_source_until_unix_seconds: u64,
         now_unix_seconds: u64,
     ) -> Result<CompactionPublicationReceiptV2, CompactionCoordinatorErrorV2> {
+        let request_started = Instant::now();
         let registry = self.active_registry()?;
         registry.validate_current_at(now_unix_seconds)?;
         if publication.owner_id() != registry.owner_id()
@@ -321,9 +334,10 @@ impl MemoryCheckpointCoordinatorV2 {
             retain_source_until_unix_seconds,
         )?;
 
-        let started = Instant::now();
-        let receipt = self.store.publish(&bundle).await?;
-        let publish_latency_micros = saturating_micros(started.elapsed().as_micros());
+        let durable_started = Instant::now();
+        let receipt = self.store.publish(&bundle, now_unix_seconds).await?;
+        let durable_publish_latency_micros =
+            saturating_micros(durable_started.elapsed().as_micros());
         let payload_bytes = u64::try_from(
             publication.candidate().semantic_payload().payload.len(),
         )
@@ -334,9 +348,12 @@ impl MemoryCheckpointCoordinatorV2 {
             CompactionPublicationMetricsV2 {
                 payload_bytes,
                 durable_archive_bytes: archive_bytes,
-                observed_clone_bytes: payload_bytes.saturating_add(archive_bytes),
-                observed_content_hashes: 5,
-                publish_latency_micros,
+                estimated_clone_bytes: payload_bytes.saturating_add(archive_bytes),
+                estimated_content_hashes: 5,
+                durable_publish_latency_micros,
+                end_to_end_latency_micros: saturating_micros(
+                    request_started.elapsed().as_micros(),
+                ),
             },
         ))
     }
@@ -347,14 +364,14 @@ impl MemoryCheckpointCoordinatorV2 {
         purpose_id: &str,
         now_unix_seconds: u64,
     ) -> Result<Option<VerifiedCompactionSelectionV2>, CompactionCoordinatorErrorV2> {
-        self.store.verify_integrity().await?;
-        self.store.reconcile_claims(now_unix_seconds).await?;
+        let request_started = Instant::now();
         let Some(selection) = self.store.select_current(scope_id, purpose_id).await? else {
             return Ok(None);
         };
-        let started = Instant::now();
+        let reconstruction_started = Instant::now();
         let archive = expand_archive(&selection.proof_image, &selection.payload)?;
-        let archive_registry_digest = registry_digest_from_compact_archive(&selection.proof_image)?;
+        let archive_registry_digest =
+            registry_digest_from_compact_archive(&selection.proof_image)?;
         let historical_registry = self
             .registries
             .get(&archive_registry_digest.to_string())
@@ -391,8 +408,13 @@ impl MemoryCheckpointCoordinatorV2 {
             payload_bytes: u64::try_from(selection.payload.len()).unwrap_or(u64::MAX),
             durable_archive_bytes: u64::try_from(selection.proof_image.len())
                 .unwrap_or(u64::MAX),
-            observed_content_hashes: 4,
-            reopen_latency_micros: saturating_micros(started.elapsed().as_micros()),
+            estimated_content_hashes: 4,
+            reconstruction_latency_micros: saturating_micros(
+                reconstruction_started.elapsed().as_micros(),
+            ),
+            end_to_end_latency_micros: saturating_micros(
+                request_started.elapsed().as_micros(),
+            ),
         };
         Ok(Some(VerifiedCompactionSelectionV2 {
             owner_id: selection.owner_id,
@@ -625,7 +647,10 @@ fn encode_archive(
         .checkpoint_digest
         .write(&mut output)
         .map_err(encoding_error)?;
-    parts.proof_digest.write(&mut output).map_err(encoding_error)?;
+    parts
+        .proof_digest
+        .write(&mut output)
+        .map_err(encoding_error)?;
     Ok(output.finish())
 }
 
