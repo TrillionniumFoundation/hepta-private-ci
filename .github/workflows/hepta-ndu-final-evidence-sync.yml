@@ -6,6 +6,7 @@ on:
       - work/utility-ndu-abcd-convergence-20260928
     paths:
       - .github/workflows/hepta-ndu-final-evidence-sync.yml
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -28,7 +29,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Replace branch-mutating qualification with a read-only chain
+      - name: Bind exact request and current main
         shell: bash
         env:
           REQUEST_SHA: ${{ github.sha }}
@@ -43,18 +44,24 @@ jobs:
           test "$(git rev-parse origin/$EXPECTED_BRANCH)" = "$REQUEST_SHA"
           BASE_SHA=$(git rev-parse origin/main)
           git merge-base --is-ancestor "$BASE_SHA" HEAD
+          echo "BASE_SHA=$BASE_SHA" >> "$GITHUB_ENV"
 
+      - name: Materialize read-only qualification governance
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
           import json
+          import re
 
           root = Path.cwd()
           status_path = root / "docs/modules/utility.ndu/STATUS.md"
           status = status_path.read_text(encoding="utf-8")
-          start_marker = "## Exact A–D engineering qualification binding (2026-09-28)\n"
-          end_marker = "# utility.ndu status and claim boundary\n"
-          start = status.index(start_marker)
-          end = status.index(end_marker, start)
+          heading = re.compile(
+              r"## Exact A–D engineering qualification (?:binding \(2026-09-28\)|protocol \(2026-09-29\))\n.*?(?=# utility\.ndu status and claim boundary\n)",
+              re.DOTALL,
+          )
           replacement = "\n".join([
               "## Exact A–D engineering qualification protocol (2026-09-29)",
               "",
@@ -81,12 +88,23 @@ jobs:
               "",
               "",
           ])
-          status = status[:start] + replacement + status[end:]
-          old = "`exactHeadSourceQualification` for this revision is bound to workflow run `36393371823` and is established only when that run finishes with a successful aggregate for its emitted exact source SHA. An older source result, an unchanged code subtree, or a workflow definition is never substituted for that receipt.\n"
-          new = "`exactHeadSourceQualification` is derived only from the successful required check and sealed aggregate for the current PR head. The source tree does not pre-claim its own result. An older run, an unchanged code subtree, a materializer output, or a workflow definition is never substituted for the current receipt.\n"
-          if old not in status:
-              raise SystemExit("STATUS exact-head paragraph drifted")
-          status_path.write_text(status.replace(old, new), encoding="utf-8")
+          status, count = heading.subn(replacement, status, count=1)
+          if count != 1:
+              raise SystemExit("STATUS qualification block drifted")
+          paragraph = re.compile(
+              r"`exactHeadSourceQualification` for this revision is bound to workflow run `\d+` and is established only when that run finishes with a successful aggregate for its emitted exact source SHA\. An older source result, an unchanged code subtree, or a workflow definition is never substituted for that receipt\.\n"
+          )
+          exact = (
+              "`exactHeadSourceQualification` is derived only from the successful required check "
+              "and sealed aggregate for the current PR head. The source tree does not pre-claim "
+              "its own result. An older run, an unchanged code subtree, a materializer output, or "
+              "a workflow definition is never substituted for the current receipt.\n"
+          )
+          if exact not in status:
+              status, count = paragraph.subn(exact, status, count=1)
+              if count != 1:
+                  raise SystemExit("STATUS exact-head paragraph drifted")
+          status_path.write_text(status, encoding="utf-8")
 
           map_path = root / "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"
           mapping = json.loads(map_path.read_text(encoding="utf-8"))
@@ -108,19 +126,23 @@ jobs:
 
           workflow_path = root / ".github/workflows/hepta-ndu-recursion.yml"
           workflow = workflow_path.read_text(encoding="utf-8")
-          needle = "          tool: just@1.51.0,nextest@0.9.103\n      - name: Execute independent suite"
-          replacement = "          tool: just@1.51.0,nextest@0.9.103\n          checksum: true\n      - name: Execute independent suite"
-          if workflow.count(needle) != 1:
-              raise SystemExit("read-only qualification tool installation drifted")
-          workflow_path.write_text(workflow.replace(needle, replacement), encoding="utf-8")
+          tool = "          tool: just@1.51.0,nextest@0.9.103\n"
+          checksum = tool + "          checksum: true\n"
+          if checksum not in workflow:
+              if workflow.count(tool) != 1:
+                  raise SystemExit("read-only qualification tool installation drifted")
+              workflow = workflow.replace(tool, checksum, 1)
+          workflow_path.write_text(workflow, encoding="utf-8")
 
           publication_path = root / ".github/workflows/hepta-ndu-evidence-publication.yml"
           publication = publication_path.read_text(encoding="utf-8")
           old_allowlist = "assert run['path'] in ['.github/workflows/hepta-ndu-recursion.yml', '.github/workflows/hepta-ndu-abcd-materialize.yml', '.github/workflows/hepta-ndu-runtime-acceptance.yml']"
           new_allowlist = "assert run['path'] == '.github/workflows/hepta-ndu-recursion.yml'"
-          if publication.count(old_allowlist) != 1:
-              raise SystemExit("evidence publication provenance allowlist drifted")
-          publication_path.write_text(publication.replace(old_allowlist, new_allowlist), encoding="utf-8")
+          if new_allowlist not in publication:
+              if publication.count(old_allowlist) != 1:
+                  raise SystemExit("evidence publication provenance allowlist drifted")
+              publication = publication.replace(old_allowlist, new_allowlist, 1)
+          publication_path.write_text(publication, encoding="utf-8")
           PY
 
           rm -f \
@@ -129,13 +151,19 @@ jobs:
             .github/workflows/hepta-ndu-runtime-acceptance.yml \
             .github/workflows/ndu-sync-main-and-retrigger-once.yml \
             .github/workflows/hepta-ndu-final-evidence-sync.yml
-
           git add -A
+          git diff --cached --check
+
+      - name: Rebind typed implementation map
+        shell: bash
+        env:
+          EXPECTED_BRANCH: work/utility-ndu-abcd-convergence-20260928
+        run: |
+          set -euo pipefail
           python3 scripts/hepta_ndu_map_integrity.py \
             --rebind-index \
             --candidate-branch "$EXPECTED_BRANCH" \
             --baseline-main "$BASE_SHA"
-
           python3 - <<'PY'
           from pathlib import Path
           import json
@@ -152,14 +180,25 @@ jobs:
           })
           path.write_text(json.dumps(mapping, indent=2) + "\n", encoding="utf-8")
           PY
-
           git add docs/modules/utility.ndu/IMPLEMENTATION_MAP.json
           git diff --cached --check
-          python3 scripts/test_hepta_ndu_source_policy.py
-          python3 scripts/test_hepta_ndu_map_integrity.py
-          python3 scripts/test_hepta_ndu_qualification.py
-          python3 scripts/test_hepta_ndu_evidence.py
 
+      - name: Verify source-policy governance
+        run: python3 scripts/test_hepta_ndu_source_policy.py
+
+      - name: Verify implementation-map integrity
+        run: python3 scripts/test_hepta_ndu_map_integrity.py
+
+      - name: Verify qualification harness
+        run: python3 scripts/test_hepta_ndu_qualification.py
+
+      - name: Verify evidence harness
+        run: python3 scripts/test_hepta_ndu_evidence.py
+
+      - name: Commit and verify exact final source
+        shell: bash
+        run: |
+          set -euo pipefail
           git config user.name hepta-ndu-convergence
           git config user.email qualification@invalid
           git commit -s -m "ci(ndu): make exact-head qualification read-only"
@@ -173,7 +212,15 @@ jobs:
             --suite source \
             --lane source-head \
             --output "$RUNNER_TEMP/ndu-final-source"
+          echo "FINAL_SHA=$FINAL_SHA" >> "$GITHUB_ENV"
 
+      - name: Push the exact verified final source
+        shell: bash
+        env:
+          REQUEST_SHA: ${{ github.sha }}
+          EXPECTED_BRANCH: work/utility-ndu-abcd-convergence-20260928
+        run: |
+          set -euo pipefail
           git fetch --no-tags origin \
             "+refs/heads/$EXPECTED_BRANCH:refs/remotes/origin/$EXPECTED_BRANCH"
           test "$(git rev-parse origin/$EXPECTED_BRANCH)" = "$REQUEST_SHA"
