@@ -152,4 +152,4 @@ jobs:
           git commit -m "fix(platform.types): close exact-candidate qualification gaps"
           git push origin "HEAD:$BRANCH"
 
-# API retrigger v4: retry lock convergence from an exact clean input.
+# API retrigger v5: execute guarded repair after fixing the benchmark lint.
