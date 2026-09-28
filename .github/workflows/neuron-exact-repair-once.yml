@@ -19,7 +19,7 @@ jobs:
   repair:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,183 +27,90 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Repair the exact local dependency lock entry
+      - name: Apply the bounded source and documentation closure
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          manifest = Path('codex-rs/hepta-infer-worker-host/Cargo.toml').read_text()
-          required = 'codex-hepta-neuron = { path = "../hepta-neuron" }'
-          if required not in manifest:
-              raise SystemExit('worker-host manifest no longer declares codex-hepta-neuron')
-
-          path = Path('codex-rs/Cargo.lock')
-          text = path.read_text()
-          marker = '[[package]]\nname = "codex-hepta-infer-worker-host"\n'
-          start = text.find(marker)
-          if start < 0:
-              raise SystemExit('worker-host lock package is missing')
-          end = text.find('\n[[package]]', start + len(marker))
-          if end < 0:
-              end = len(text)
-          block = text[start:end]
-          dependency = ' "codex-hepta-neuron",\n'
-          if dependency not in block:
-              needle = ' "codex-hepta-infer-core",\n'
-              if block.count(needle) != 1:
-                  raise SystemExit('worker-host infer-core dependency is not unique')
-              block = block.replace(needle, needle + dependency, 1)
-              text = text[:start] + block + text[end:]
-              path.write_text(text)
-
-          updated = path.read_text()
-          start = updated.find(marker)
-          end = updated.find('\n[[package]]', start + len(marker))
-          if end < 0:
-              end = len(updated)
-          final_block = updated[start:end]
-          if final_block.count(dependency) != 1:
-              raise SystemExit('worker-host neuron lock dependency is not exact')
-          PY
-
-      - name: Store canonical checkpoint bytes separately from the full receipt
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          sparse = Path('codex-rs/hepta-neuron/src/sparse.rs')
-          text = sparse.read_text()
-          constant = 'const SPARSE_CHECKPOINT_V2_DOMAIN: &[u8] = b"hepta.neuron.sparse-checkpoint-bytes.v2";\n'
-          if constant not in text:
-              needle = 'const ELIGIBILITY_L1: i64 = 4 * Q;\n'
-              if text.count(needle) != 1:
-                  raise SystemExit('sparse constant insertion point drifted')
-              text = text.replace(needle, needle + constant, 1)
-
-          old = '''    /// Upper bound for a canonical checkpoint encoding of the current state.\n    pub fn bounded_encoded_bytes(&self) -> usize {\n        let fixed = 6 * std::mem::size_of::<Digest32>() + 2 * std::mem::size_of::<u64>();\n        let vector_headers = 5 * std::mem::size_of::<u64>();\n        let vector_values = [\n            self.temporal.len(),\n            self.activation.len(),\n            self.activity.len(),\n            self.threshold.len(),\n            self.eligibility.len(),\n        ]\n        .into_iter()\n        .sum::<usize>()\n            * std::mem::size_of::<i64>();\n        fixed + vector_headers + vector_values\n    }\n'''
-          new = '''    /// Upper bound for the legacy V1 checkpoint accounting profile.\n    ///\n    /// This value is retained for V1 receipt compatibility. New V2 persistence\n    /// uses [`Self::canonical_v2_bytes`] and its exact encoded length instead of\n    /// aliasing the full operation receipt as checkpoint bytes.\n    pub fn bounded_encoded_bytes(&self) -> usize {\n        let fixed = 6 * std::mem::size_of::<Digest32>() + 2 * std::mem::size_of::<u64>();\n        let vector_headers = 5 * std::mem::size_of::<u64>();\n        let vector_values = [\n            self.temporal.len(),\n            self.activation.len(),\n            self.activity.len(),\n            self.threshold.len(),\n            self.eligibility.len(),\n        ]\n        .into_iter()\n        .sum::<usize>()\n            * std::mem::size_of::<i64>();\n        fixed + vector_headers + vector_values\n    }\n\n    /// Canonical V2 checkpoint payload stored independently from the complete\n    /// operation receipt. The payload binds replay context, state vectors and\n    /// the already validated V1 checkpoint digest. Recovery recomputes the\n    /// checkpoint from the full receipt and requires byte-for-byte equality.\n    pub(crate) fn canonical_v2_bytes(&self) -> Result<Vec<u8>, SparseError> {\n        if self.calculate_digest() != self.digest {\n            return Err(SparseError::InvalidCheckpoint);\n        }\n        let mut bytes = Vec::with_capacity(self.canonical_v2_encoded_bytes()?);\n        bytes.extend_from_slice(SPARSE_CHECKPOINT_V2_DOMAIN);\n        for value in [\n            self.config,\n            self.scope,\n            self.objective,\n            self.body,\n            self.predecessor,\n            self.input,\n            self.digest,\n        ] {\n            bytes.extend_from_slice(value.as_array());\n        }\n        bytes.extend_from_slice(&self.sequence.to_be_bytes());\n        bytes.extend_from_slice(&self.monotonic_micros.to_be_bytes());\n        for values in [\n            &self.temporal,\n            &self.activation,\n            &self.activity,\n            &self.threshold,\n            &self.eligibility,\n        ] {\n            bytes.extend_from_slice(&(values.len() as u64).to_be_bytes());\n            for value in values {\n                bytes.extend_from_slice(&value.to_be_bytes());\n            }\n        }\n        Ok(bytes)\n    }\n\n    pub(crate) fn canonical_v2_encoded_bytes(&self) -> Result<usize, SparseError> {\n        canonical_v2_checkpoint_bytes_for_width(self.temporal.len())\n            .ok_or(SparseError::InvalidCheckpoint)\n    }\n'''
-          if 'pub(crate) fn canonical_v2_bytes' not in text:
-              if text.count(old) != 1:
-                  raise SystemExit('legacy checkpoint accounting block drifted')
-              text = text.replace(old, new, 1)
-
-          helper = '''pub(crate) fn canonical_v2_checkpoint_bytes_for_width(width: usize) -> Option<usize> {\n    SPARSE_CHECKPOINT_V2_DOMAIN\n        .len()\n        .checked_add(7 * std::mem::size_of::<Digest32>())\n        .and_then(|value| value.checked_add(2 * std::mem::size_of::<u64>()))\n        .and_then(|value| value.checked_add(5 * std::mem::size_of::<u64>()))\n        .and_then(|value| {\n            width\n                .checked_mul(5)\n                .and_then(|items| items.checked_mul(std::mem::size_of::<i64>()))\n                .and_then(|vectors| value.checked_add(vectors))\n        })\n}\n\n'''
-          marker = '/// Same byte binding used by both native replay and owner-result verification.\n'
-          if helper not in text:
-              if text.count(marker) != 1:
-                  raise SystemExit('checkpoint helper insertion point drifted')
-              text = text.replace(marker, helper + marker, 1)
-          sparse.write_text(text)
-
-          runtime = Path('codex-rs/hepta-neuron/src/runtime_v2.rs')
-          text = runtime.read_text()
-          import_line = 'use crate::sparse::canonical_v2_checkpoint_bytes_for_width;\n'
-          if import_line not in text:
-              needle = 'use crate::runtime_types::validate_model_output;\n'
-              if text.count(needle) != 1:
-                  raise SystemExit('runtime import insertion point drifted')
-              text = text.replace(needle, needle + import_line, 1)
-
-          replacements = [
-              (
-                  '        let checkpoint_bytes = full_receipt_bytes.clone();\n',
-                  '        let checkpoint_bytes = checkpoint.canonical_v2_bytes()?;\n',
-              ),
-              (
-                  '        let checkpoint_bytes = checkpoint.bounded_encoded_bytes() as u64;\n',
-                  '        let checkpoint_bytes = u64::try_from(checkpoint.canonical_v2_encoded_bytes()?)\n            .map_err(|_| NeuronRuntimeV2Error::Arithmetic)?;\n',
-              ),
-              (
-                  '''        if record.checkpoint_bytes != record.full_receipt_bytes\n            || prepared.sparse_tick.body_digest != self.body_bundle_digest\n        {\n            return Err(NeuronRuntimeV2Error::RecoveryMismatch);\n        }\n        let (checkpoint, sparse_receipt) =\n            sparse_tick(&self.native, &prepared.sparse_tick, previous)?;\n        if checkpoint.digest() != record.next_anchor.checkpoint_digest\n''',
-                  '''        if prepared.sparse_tick.body_digest != self.body_bundle_digest {\n            return Err(NeuronRuntimeV2Error::RecoveryMismatch);\n        }\n        let (checkpoint, sparse_receipt) =\n            sparse_tick(&self.native, &prepared.sparse_tick, previous)?;\n        if record.checkpoint_bytes != checkpoint.canonical_v2_bytes()?\n            || checkpoint.digest() != record.next_anchor.checkpoint_digest\n''',
-              ),
-              (
-                  '''fn estimated_checkpoint_bytes(width: usize) -> Result<u64, NeuronRuntimeV2Error> {\n    let fixed = 6_usize\n        .checked_mul(std::mem::size_of::<Digest32>())\n        .and_then(|value| value.checked_add(7 * std::mem::size_of::<u64>()))\n        .ok_or(NeuronRuntimeV2Error::Arithmetic)?;\n    let vectors = width\n        .checked_mul(5)\n        .and_then(|value| value.checked_mul(std::mem::size_of::<i64>()))\n        .ok_or(NeuronRuntimeV2Error::Arithmetic)?;\n    u64::try_from(\n        fixed\n            .checked_add(vectors)\n            .ok_or(NeuronRuntimeV2Error::Arithmetic)?,\n    )\n    .map_err(|_| NeuronRuntimeV2Error::Arithmetic)\n}\n''',
-                  '''fn estimated_checkpoint_bytes(width: usize) -> Result<u64, NeuronRuntimeV2Error> {\n    u64::try_from(\n        canonical_v2_checkpoint_bytes_for_width(width)\n            .ok_or(NeuronRuntimeV2Error::Arithmetic)?,\n    )\n    .map_err(|_| NeuronRuntimeV2Error::Arithmetic)\n}\n''',
-              ),
-          ]
-          for old, new in replacements:
-              if new in text:
-                  continue
-              if text.count(old) != 1:
-                  raise SystemExit('runtime checkpoint replacement drifted')
-              text = text.replace(old, new, 1)
-          if 'checkpoint_bytes = full_receipt_bytes.clone()' in text:
-              raise SystemExit('checkpoint still aliases full receipt')
-          runtime.write_text(text)
-
-          tests = Path('codex-rs/hepta-neuron/src/runtime_v2_tests.rs')
-          text = tests.read_text()
-          regression = '''    let stored = checked(runtime.store.find_operation(&first.key)).expect("stored result");\n    assert_ne!(stored.checkpoint_bytes, stored.full_receipt_bytes);\n    assert_eq!(\n        stored.checkpoint_bytes,\n        checked(\n            runtime\n                .checkpoint\n                .as_ref()\n                .expect("checkpoint")\n                .canonical_v2_bytes()\n        )\n    );\n'''
-          if regression not in text:
-              needle = '''    assert!(matches!(\n        first.disposition,\n        NeuronCommitDispositionV1::CommittedReady\n    ));\n'''
-              if text.count(needle) != 1:
-                  raise SystemExit('runtime V2 regression insertion point drifted')
-              text = text.replace(needle, needle + regression, 1)
-          tests.write_text(text)
-          PY
+          payload=.github/neuron-runtime-closure.patch.gz.b64
+          test "$(wc -c < "$payload")" -eq 10460
+          base64 -d "$payload" | gzip -d > "$RUNNER_TEMP/neuron-runtime-closure.patch"
+          echo 'cdb08028134c553c07abd8404e0d05046657c2233c847f23235abcab23fb2d55  '"$RUNNER_TEMP/neuron-runtime-closure.patch" | sha256sum -c -
+          git apply --check "$RUNNER_TEMP/neuron-runtime-closure.patch"
+          git apply "$RUNNER_TEMP/neuron-runtime-closure.patch"
+          grep -F 'codex-hepta-neuron = { path = "../hepta-neuron" }' \
+            codex-rs/hepta-infer-worker-host/Cargo.toml
+          test -f docs/modules/neuron.runtime/GAP_ANALYSIS.md
 
       - name: Format and validate the exact candidate
-        working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
+          cd codex-rs
           cargo fmt --package codex-hepta-neuron
           cargo metadata --locked --format-version 1 --no-deps >/dev/null
-          cargo check --locked \
-            -p codex-hepta-neuron \
-            -p codex-hepta-infer-core \
-            -p codex-hepta-infer-worker-host \
-            -p codex-hepta-agentd \
-            -p codex-hepta-intelligence \
-            --all-targets
-          cargo test --locked -p codex-hepta-neuron \
-            exact_retry_and_restart_return_the_original_full_receipt_once
-          cargo clippy --locked -p codex-hepta-neuron --all-targets -- -D warnings
+          packages=(
+            -p codex-hepta-neuron
+            -p codex-hepta-infer-core
+            -p codex-hepta-infer-worker-host
+            -p codex-hepta-agentd
+            -p codex-hepta-intelligence
+          )
+          cargo check --locked "${packages[@]}" --all-targets
+          cargo test --locked "${packages[@]}"
+          cargo clippy --locked "${packages[@]}" --all-targets --no-deps -- -D warnings
+          cargo fmt --package codex-hepta-neuron -- --check
+          cd ..
+          PYTHONPATH=scripts/neuron python3 -m unittest discover \
+            -s scripts/neuron -p 'test_*.py'
+          python3 -m json.tool docs/modules/neuron.runtime/IMPLEMENTATION_MAP.json >/dev/null
+          git diff --check
 
-      - name: Publish only the validated bounded repair
+      - name: Publish only the validated closure
         env:
           BRANCH: codex/neuron-runtime-durable-closure-v1
           EXPECTED_HEAD: ${{ github.sha }}
         shell: bash
         run: |
           set -euo pipefail
-          git diff --check
           python3 - <<'PY'
           import subprocess
 
-          allowed_exact = {'codex-rs/Cargo.lock'}
-          changed = subprocess.check_output(
+          changed = set(subprocess.check_output(
               ['git', 'diff', '--name-only'], text=True
-          ).splitlines()
-          unexpected = [
-              path for path in changed
-              if path not in allowed_exact
-              and not (path.startswith('codex-rs/hepta-neuron/') and path.endswith('.rs'))
-          ]
+          ).splitlines())
+          allowed = {
+              'codex-rs/hepta-neuron/src/sparse.rs',
+              'codex-rs/hepta-neuron/src/runtime_v2.rs',
+              'codex-rs/hepta-neuron/src/runtime_v2_lifecycle.rs',
+              'codex-rs/hepta-neuron/src/runtime_v2_tests.rs',
+              'docs/modules/neuron.runtime/README.md',
+              'docs/modules/neuron.runtime/TECHNICAL.md',
+              'docs/modules/neuron.runtime/V2_DEVELOPMENT.md',
+              'docs/modules/neuron.runtime/V2_RUNBOOK.md',
+              'docs/modules/neuron.runtime/GAP_ANALYSIS.md',
+              'qualification/module-execution-dossiers/detail/neuron.runtime.md',
+          }
+          unexpected = sorted(changed.difference(allowed))
           if unexpected:
               raise SystemExit('unexpected repair paths: ' + ', '.join(unexpected))
           required = {
-              'codex-rs/Cargo.lock',
               'codex-rs/hepta-neuron/src/sparse.rs',
               'codex-rs/hepta-neuron/src/runtime_v2.rs',
+              'codex-rs/hepta-neuron/src/runtime_v2_lifecycle.rs',
               'codex-rs/hepta-neuron/src/runtime_v2_tests.rs',
+              'docs/modules/neuron.runtime/V2_DEVELOPMENT.md',
+              'docs/modules/neuron.runtime/GAP_ANALYSIS.md',
           }
           missing = sorted(required.difference(changed))
           if missing:
-              raise SystemExit('repair did not change required paths: ' + ', '.join(missing))
+              raise SystemExit('required paths unchanged: ' + ', '.join(missing))
           PY
-
-          git rm .github/workflows/neuron-exact-repair-once.yml
+          git rm .github/workflows/neuron-exact-repair-once.yml \
+            .github/neuron-runtime-closure.patch.gz.b64
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add codex-rs/Cargo.lock codex-rs/hepta-neuron
-          git commit -m 'fix(neuron): bind canonical checkpoint bytes atomically'
-
+          git add -A
+          git commit -m 'fix(neuron): close canonical checkpoint and docs gaps'
           git fetch origin "refs/heads/$BRANCH:refs/remotes/origin/$BRANCH"
           test "$(git rev-parse "refs/remotes/origin/$BRANCH")" = "$EXPECTED_HEAD"
           git push origin "HEAD:refs/heads/$BRANCH"
