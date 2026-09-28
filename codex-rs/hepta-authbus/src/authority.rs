@@ -152,8 +152,9 @@ impl PolicyDecision {
 /// they must query by the request's stable identity and reconcile first.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum AuthBusMutationDisposition {
-    /// Validation, conflict, capacity, or fail-closed admission rejection
-    /// occurred before the requested mutation was polled.
+    /// The requested domain mutation did not commit. Validation or conflict may
+    /// follow an independently persisted trusted-time observation; this
+    /// disposition makes no rollback claim about that separate frontier.
     NotCommitted,
     /// The authoritative SQLite transaction committed, but publication of the
     /// independent checkpoint did not complete.
