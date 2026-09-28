@@ -1,4 +1,5 @@
 use super::*;
+use std::io;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
@@ -74,6 +75,44 @@ fn raced_in_fifo_is_rejected_without_a_blocking_open() {
         );
     });
     assert!(result.is_err());
+}
+
+#[cfg(unix)]
+#[test]
+fn path_replacement_after_open_invalidates_future_syncs() {
+    let fixture = Fixture::new();
+    checked(std::fs::write(fixture.file(), b"source"));
+    let file = checked(MeasuredFileV2::new(
+        checked(open_regular(&fixture.file())),
+        &fixture.file(),
+    ));
+    checked(std::fs::rename(
+        fixture.file(),
+        fixture.0.join("detached-source"),
+    ));
+    checked(std::fs::write(fixture.file(), b"replacement"));
+    let error = file.sync_data().expect_err("replacement must invalidate owner");
+    assert_eq!(error.kind(), io::ErrorKind::PermissionDenied);
+    assert_eq!(checked(std::fs::read(fixture.file())), b"replacement");
+}
+
+#[cfg(unix)]
+#[test]
+fn adding_a_hard_link_after_open_invalidates_future_syncs() {
+    let fixture = Fixture::new();
+    checked(std::fs::write(fixture.file(), b"source"));
+    let file = checked(MeasuredFileV2::new(
+        checked(open_regular(&fixture.file())),
+        &fixture.file(),
+    ));
+    checked(std::fs::hard_link(
+        fixture.file(),
+        fixture.0.join("unexpected-alias"),
+    ));
+    let error = file
+        .sync_all()
+        .expect_err("new hard link must invalidate owner");
+    assert_eq!(error.kind(), io::ErrorKind::PermissionDenied);
 }
 
 #[test]
