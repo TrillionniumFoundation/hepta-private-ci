@@ -131,6 +131,16 @@ Produced contracts: `IntelligenceHostEnvelopeV1`, `LegalActionCandidateSetV1`.
 Consumed ports, protocols and read domains are enumerated in the unchanged
 registry projection below. No wire meaning is silently redefined.
 
+In the current native Agentd V1 product profile, each admitted candidate ID
+must name an action in the actual compiled Objective's `legal_actions`. The
+Objective adapter checks this before NDU runs. A bounded subset is permitted;
+matching Intuition/NDU sets, a nonzero support digest or a reserved-looking ID
+cannot introduce a forbidden or undeclared action. Refined per-action candidate
+instances need an explicit owner-backed action mapping in a separately registered
+profile; the facade must not infer that mapping from names. This is a native
+product admission restriction, not a redefinition of a wire contract or an
+execution grant.
+
 Canonical candidate IDs are sorted and duplicate-free. Selection must belong
 to the admitted set and have positive propensity. A mutable retained outcome
 is revalidated against the original request: nested run identity, decision
