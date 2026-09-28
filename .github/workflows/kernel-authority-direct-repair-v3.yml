@@ -13,11 +13,11 @@ permissions:
 
 concurrency:
   group: kernel-authority-direct-repair-v3
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   repair:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
       - name: Checkout exact repair branch
@@ -44,4 +44,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: bash scripts/kernel_authority_direct_repair_v3.sh
 
-# Manual deterministic trigger: 2026-09-28
+# Manual deterministic trigger: 2026-09-28, x64 runner fallback
