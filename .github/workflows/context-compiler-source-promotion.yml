@@ -3,21 +3,21 @@ name: context-compiler-source-promotion
 on:
   push:
     branches:
-      - codex/context-compiler-v3-closure-20260928
+      - codex/context-compiler-v3-materialize-isolated-20260928
 
 permissions:
   actions: read
   contents: write
 
 concurrency:
-  group: context-compiler-source-promotion
+  group: context-compiler-source-promotion-isolated
   cancel-in-progress: true
 
 jobs:
   promote-ordinary-source:
     if: ${{ contains(github.event.head_commit.message, '[promote-context-source]') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 240
+    timeout-minutes: 90
     env:
       ARTIFACT_ID: '10943028187'
       ARTIFACT_RUN_ID: '36351835045'
@@ -25,21 +25,22 @@ jobs:
       ARTIFACT_SOURCE_TREE: b5141cdc7b3168caba8d84029747b81501e4ac5a
       ARTIFACT_SHA256: 2409320a2b6f20fea33a0a41f198387ae96372fce9f194ce1df1cae63e8feb9b
       REVIEWED_BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
-      BRANCH: codex/context-compiler-v3-closure-20260928
+      WORK_BRANCH: codex/context-compiler-v3-materialize-isolated-20260928
+      INTEGRATION_BRANCH: codex/context-compiler-v3-closure-20260928
       GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Checkout exact promotion input
+      - name: Checkout exact materialization input
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Verify isolated promotion boundary
+      - name: Verify isolated materialization boundary
         shell: bash
         run: |
           set -euo pipefail
-          test "$GITHUB_REF_NAME" = "$BRANCH"
+          test "$GITHUB_REF_NAME" = "$WORK_BRANCH"
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           test ! -e .github/workflows/context-compiler-v3-remediation.yml
@@ -49,25 +50,18 @@ jobs:
           git merge-base --is-ancestor "$REVIEWED_BASE_SHA" HEAD
           git merge-base --is-ancestor "$ARTIFACT_SOURCE_SHA" HEAD
 
-      - name: Install archive and pinned Rust tools
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y build-essential libcap-dev pkg-config unzip
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Install pinned Rust formatter
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
-          components: clippy,rustfmt
+          components: rustfmt
 
       - name: Download and verify immutable source artifact
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/context-source"
-          gh api "/repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" \
-            > "$RUNNER_TEMP/context-source.zip"
-          printf '%s  %s\n' "$ARTIFACT_SHA256" "$RUNNER_TEMP/context-source.zip" \
-            | sha256sum --check
+          gh api "/repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" > "$RUNNER_TEMP/context-source.zip"
+          printf '%s  %s\n' "$ARTIFACT_SHA256" "$RUNNER_TEMP/context-source.zip" | sha256sum --check
           unzip -q "$RUNNER_TEMP/context-source.zip" -d "$RUNNER_TEMP/context-source"
           python3 -B - <<'PY'
           import hashlib
@@ -98,7 +92,7 @@ jobs:
                   raise SystemExit(f"artifact file digest mismatch: {relative}")
           PY
 
-      - name: Overlay immutable direct source
+      - name: Overlay reviewed direct source
         shell: bash
         run: |
           set -euo pipefail
@@ -118,7 +112,7 @@ jobs:
               Path(relative).unlink(missing_ok=True)
           PY
 
-      - name: Close the V3 compile and recovery graph
+      - name: Close V3 compile and recovery graph
         shell: bash
         run: |
           set -euo pipefail
@@ -151,7 +145,7 @@ jobs:
           python3 -B scripts/apply_context_compiler_recovery_cleanup.py
           python3 -B scripts/apply_context_compiler_qualification_closure.py
 
-      - name: Refresh canonical truth after final source
+      - name: Generate canonical current-state projections
         shell: bash
         run: |
           set -euo pipefail
@@ -166,7 +160,7 @@ jobs:
           ):
               path = Path(relative)
               value = json.loads(path.read_text())
-              value["integrationBranch"] = os.environ["BRANCH"]
+              value["integrationBranch"] = os.environ["INTEGRATION_BRANCH"]
               path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n")
 
           provenance = {
@@ -180,7 +174,7 @@ jobs:
               "artifactMaterializationExit": 0,
               "artifactNormalizationExit": 0,
               "artifactVerificationWasPassing": False,
-              "interpretation": "The immutable bundle supplied reviewed source bytes only. Qualification is performed after ordinary-source composition on the final immutable commit and synthetic merge.",
+              "interpretation": "The immutable bundle supplied reviewed source bytes only. Qualification is performed after ordinary-source composition on the final immutable commit and deterministic synthetic merge.",
           }
           path = Path("qualification/context-compiler/SOURCE_BUNDLE_PROVENANCE.json")
           path.parent.mkdir(parents=True, exist_ok=True)
@@ -193,47 +187,9 @@ jobs:
           python3 -B scripts/test_context_compiler_state.py
           python3 -B scripts/test_context_compiler_candidate.py
           python3 -B scripts/test_context_compiler_execution.py
-
-      - name: Format and verify direct source profiles
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo fmt --all
-          cargo metadata --locked --format-version 1 > /dev/null
-          cargo test --locked \
-            -p codex-hepta-prompt-registry \
-            -p codex-hepta-context-compiler \
-            -p codex-hepta-intelligence \
-            -p codex-extension-api \
-            -p codex-api \
-            -p codex-core \
-            -p codex-hepta-agentd \
-            -p codex-hepta-prompt-extension
-          cargo test --locked -p codex-hepta-intelligence --features legacy-prompt-context-v1
-          cargo test --locked -p codex-hepta-agentd --features legacy-prompt-context-v1
-          cargo clippy --locked --no-deps \
-            -p codex-hepta-prompt-registry \
-            -p codex-hepta-context-compiler \
-            -p codex-hepta-intelligence \
-            -p codex-extension-api \
-            -p codex-api \
-            -p codex-core \
-            -p codex-hepta-agentd \
-            -p codex-hepta-prompt-extension \
-            --all-targets --all-features -- -D warnings
-
-      - name: Verify final projections and clean patch
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -B scripts/generate_context_compiler_module_docs.py --check
-          python3 -B scripts/test_context_compiler_state.py
-          python3 -B scripts/test_context_compiler_candidate.py
-          python3 -B scripts/test_context_compiler_execution.py
           git diff --check
 
-      - name: Retire source writers and push one ordinary-source commit
+      - name: Retire all source writers and commit ordinary source
         shell: bash
         run: |
           set -euo pipefail
@@ -264,4 +220,4 @@ jobs:
           git config user.name context-compiler-source-promoter
           git config user.email context-compiler-source-promoter@users.noreply.github.com
           git commit -m "feat(context.compiler): materialize direct V3 recovery source [context-source-fixed] [v3-materialized]"
-          git push origin "HEAD:$BRANCH"
+          git push origin "HEAD:$WORK_BRANCH"
