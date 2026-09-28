@@ -3,8 +3,9 @@ name: Prompt registry operational closure bootstrap
 # Apply the reviewed source patch quickly; exact-head and synthetic-merge
 # qualification remain separate hard gates and retain all Rust validation.
 on:
+  workflow_dispatch:
   push:
-    branches: [codex/prompt-registry-remediation-20260927]
+    branches: [codex/prompt-registry-full-remediation-20260928]
     paths:
       - "scripts/apply-prompt-registry-operations.py"
       - ".github/workflows/prompt-registry-operations-bootstrap.yml"
@@ -13,7 +14,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: prompt-registry-operations-bootstrap-current
+  group: prompt-registry-operations-bootstrap-final
   cancel-in-progress: true
 
 jobs:
@@ -59,6 +60,7 @@ jobs:
               '"codex-rs/hepta-prompt-registry/src/v2_tests.rs::delivery"': '"codex-rs/hepta-prompt-registry/src/v2_tests.rs"',
               '"codex-rs/hepta-prompt-registry/src/v2_tests.rs::compatible"': '"codex-rs/hepta-prompt-registry/src/v2_tests.rs"',
               '"codex-rs/hepta-prompt-registry/src/v2_tests.rs::dereference"': '"codex-rs/hepta-prompt-registry/src/v2_tests.rs"',
+              "codex/prompt-registry-remediation-20260927": "codex/prompt-registry-full-remediation-20260928",
           }
           for old, new in replacements.items():
               if old not in text:
@@ -86,6 +88,16 @@ jobs:
           row = next(item for item in profile["modules"] if item.get("module") == "prompt.registry")
           if row.get("productTestsExecuted") is not False or row.get("deploymentQualified") is not False:
               raise SystemExit("operational bootstrap must not assert product qualification")
+
+          qualification = Path(".github/workflows/hepta-prompt-registry-qualification.yml")
+          text = qualification.read_text(encoding="utf-8")
+          branch = "      - codex/prompt-registry-full-remediation-20260928\n"
+          if branch not in text:
+              anchor = "      - codex/prompt-registry-remediation-20260927\n"
+              if anchor not in text:
+                  raise SystemExit("missing qualification branch anchor")
+              text = text.replace(anchor, anchor + branch, 1)
+              qualification.write_text(text, encoding="utf-8")
           PY
           git diff --check
 
