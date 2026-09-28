@@ -77,6 +77,28 @@ class InferenceWorkerCurrentStatusTest(unittest.TestCase):
                 status["profiles"]["LocalModelWorker"],
                 "experimental-non-production",
             )
+            self.assertEqual(
+                status["local_model_source"]["signed_resource_grant"],
+                "implemented",
+            )
+            self.assertEqual(
+                status["local_model_source"]["real_weights_device_driver"],
+                "not_implemented_external_and_product_gate",
+            )
+            self.assertIn(
+                "trusted_terminal_receipt_port_implemented",
+                status["provider_reconciliation"]["missing_history_resolution"],
+            )
+            self.assertIn(
+                "deployed_provider_verifier_not_established",
+                status["provider_reconciliation"][
+                    "trusted_token_usage_reconciliation"
+                ],
+            )
+            self.assertEqual(
+                status["operating_runbook"],
+                "docs/modules/inference.worker/RECOVERY_AND_OPERATIONS.md",
+            )
 
     def test_mismatched_checkout_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
