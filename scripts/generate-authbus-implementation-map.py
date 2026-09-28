@@ -23,6 +23,7 @@ SPEC.loader.exec_module(API)
 OWNER_ROOTS = ("codex-rs/hepta-authbus/", "codex-rs/hepta-authbus-p1-3-qualification/")
 CALLER_PREFIXES = ("codex-rs/hepta-evidence/src/authbus_", "codex-rs/hepta-agentd/src/authbus_", "codex-rs/hepta-bao-adapter/src/https_consumer")
 EXACT = {
+    "codex-rs/hepta-agentd/src/evidence_trust.rs",
     "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
     "codex-rs/hepta-evidence/src/qualification_tests.rs",
     "codex-rs/hepta-evidence/src/lib.rs",

@@ -372,6 +372,36 @@
     },
     {
       "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 7,
+      "path": "codex-rs/hepta-agentd/src/evidence_trust.rs",
+      "sourceExpression": "PrivateIssuerRegistryDocument"
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 42,
+      "path": "codex-rs/hepta-agentd/src/evidence_trust.rs",
+      "sourceExpression": "PrivateIssuerRegistryDocument"
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 47,
+      "path": "codex-rs/hepta-agentd/src/evidence_trust.rs",
+      "sourceExpression": "PrivateIssuerRegistryDocument"
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 79,
+      "path": "codex-rs/hepta-agentd/src/evidence_trust.rs",
+      "sourceExpression": ".message_issuer("
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
+      "line": 143,
+      "path": "codex-rs/hepta-agentd/src/evidence_trust.rs",
+      "sourceExpression": ".message_issuer("
+    },
+    {
+      "classification": "lexical_candidate_requires_typed_native_validation",
       "line": 9,
       "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
       "sourceExpression": "AuthBusAuthorityHost"
@@ -485,12 +515,12 @@
     "tree": "863b19d9ed3248eff43d8e848be96922c1b61481"
   },
   "sourceBinding": {
-    "digest": "80664a072c917b060f41e6dfbfbcf5fef4b73e81342ee599a86a90129c7727e7",
+    "digest": "2f52847b4df9013a715b18b4e2d79f6c244ea174ffa86a1b0f3cc37c2e93a5b7",
     "exactCandidateAuthority": "external exact-head qualification receipt",
     "manifest": [
       {
         "path": "codex-rs/Cargo.lock",
-        "sha256": "091f53f0378a2704026c43384b1658bceea94e3e6b6bf1ccc92ccacac3cff7d8"
+        "sha256": "52a0f671d1e23049fd1ec87f6acd5b7af0860083e760f5dc5bf0c5fe1dbac57e"
       },
       {
         "path": "codex-rs/Cargo.toml",
@@ -521,12 +551,16 @@
         "sha256": "bd30c6a0c29352b97be3e229a58e5ca615471272acf7a999c137e176d1615641"
       },
       {
+        "path": "codex-rs/hepta-agentd/src/evidence_trust.rs",
+        "sha256": "1a759d4df982758cd9b116b94e5bef9ef105fe97e5d357f055de32574072f5c8"
+      },
+      {
         "path": "codex-rs/hepta-agentd/src/lib.rs",
         "sha256": "f386181fd1d37fff906a96f9511f246feddded4c557bd160ec1e03bd5c98542d"
       },
       {
         "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
-        "sha256": "67c467d7a23a42fe835b34164a0f67c40e5c5658d5ea06feb7fd4d6d39e18268"
+        "sha256": "ddb292993df7544dc8e9cf82b4053f236ae7000e38d721d9674cbe415e227a8b"
       },
       {
         "path": "codex-rs/hepta-authbus-p1-3-qualification/Cargo.toml",

@@ -795,7 +795,7 @@ async fn append_direct_evidence(
     )?;
     let registry =
         PrivateIssuerRegistryDocument::load(&registry_path, registry_root.path(), 16 * 1024)?;
-    let issuer = registry.message_issuer(&claims.issuer_id, claims.key_epoch)?;
+    let issuer = registry.message_issuer(&message.claims.issuer_id, message.claims.key_epoch)?;
     store
         .qualification()
         .append_receipt(&issuer, &message, envelope)
