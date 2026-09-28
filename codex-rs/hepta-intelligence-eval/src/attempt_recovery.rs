@@ -45,9 +45,9 @@ impl From<ProductEvaluationAttemptJournalErrorV1> for ProductAttemptRecoveryErro
 }
 
 /// Validate the entire phase/identity/digest chain, not merely its last frame.
-/// The in-memory reducer is used as a validator, never as the durable owner.
-/// Eight is the number of distinct phases in this version; repeated transition
-/// acknowledgements must not have been persisted as additional events.
+/// The in-memory reducer is a validator, never the durable owner. The bounded
+/// history admits the current artifact phase without admitting repeated durable
+/// acknowledgements or skipping the reducer's legal transitions.
 pub(crate) fn validated_history<J: ProductEvaluationAttemptJournalV1>(
     journal: &mut J,
     attempt_id: &StableId,
@@ -95,10 +95,10 @@ where
     let latest = history
         .last()
         .ok_or(ProductAttemptRecoveryErrorV1::MissingIntent)?;
-    if latest.transition.phase != ProductEvaluationAttemptPhaseV1::IntentPersisted {
+    let intent = &latest.transition;
+    if intent.phase != ProductEvaluationAttemptPhaseV1::IntentPersisted {
         return Err(ProductAttemptRecoveryErrorV1::WrongPhase);
     }
-    let intent = &latest.transition;
     let namespace = intent.holdout_record_digest;
     let current = store
         .load(namespace)
@@ -122,9 +122,9 @@ where
 }
 
 /// Read-verify the exact preregistered publication; never repeat a store write.
-/// A committed record can also close a recovered QualificationDecided phase.
-/// Missing records leave that phase intact, so the separately guarded decided-
-/// only resume operation remains distinguishable from an unknown publication.
+/// Even a Published history must still match the actual durable publication.
+/// Missing records preserve the historical phase and remain unresolved: the
+/// journal is not a substitute for the publication owner's current observation.
 pub fn reconcile_product_attempt_publication_v1<J, S>(
     journal: &mut J,
     store: &mut S,
@@ -134,53 +134,56 @@ where
     J: DurableProductEvaluationAttemptJournalV1,
     S: ProductQualificationPublicationStoreV1,
 {
+    use ProductEvaluationAttemptPhaseV1 as Phase;
     let history = validated_history(journal, attempt_id)?;
     let latest = history
         .last()
         .ok_or(ProductAttemptRecoveryErrorV1::MissingIntent)?;
     latest.validate_integrity()?;
-    if latest.transition.phase == ProductEvaluationAttemptPhaseV1::Published {
-        return Ok(latest.clone());
-    }
-    if !matches!(
-        latest.transition.phase,
-        ProductEvaluationAttemptPhaseV1::QualificationDecided
-            | ProductEvaluationAttemptPhaseV1::PublicationPending
-    ) {
+    if !matches!(latest.transition.phase,
+        Phase::QualificationDecided | Phase::PublicationPending | Phase::Published)
+    {
         return Err(ProductAttemptRecoveryErrorV1::WrongPhase);
     }
-    let sealed = history
-        .iter()
-        .find(|receipt| {
-            receipt.transition.phase == ProductEvaluationAttemptPhaseV1::ComparisonSealed
-        })
+    let sealed = history.iter()
+        .find(|receipt| receipt.transition.phase == Phase::ComparisonSealed)
+        .ok_or(ProductAttemptRecoveryErrorV1::EvidenceMismatch)?;
+    let decided = history.iter()
+        .find(|receipt| receipt.transition.phase == Phase::QualificationDecided)
         .ok_or(ProductAttemptRecoveryErrorV1::EvidenceMismatch)?;
     let execution = sealed.transition.terminal_digest;
-    let record = store
-        .load(execution)
+    let request_digest = decided.transition.terminal_digest;
+    let record = store.load(execution)
         .map_err(|_| ProductAttemptRecoveryErrorV1::Unresolved)?
         .ok_or(ProductAttemptRecoveryErrorV1::Unresolved)?;
-    record
-        .validate()
-        .map_err(|_| ProductAttemptRecoveryErrorV1::EvidenceMismatch)?;
+    record.validate().map_err(|_| ProductAttemptRecoveryErrorV1::EvidenceMismatch)?;
     if record.request.execution_digest != execution
-        || record.request.request_digest != latest.transition.terminal_digest
+        || record.request.request_digest != request_digest
     {
         return Err(ProductAttemptRecoveryErrorV1::EvidenceMismatch);
     }
-    if latest.transition.phase == ProductEvaluationAttemptPhaseV1::QualificationDecided {
+    if latest.transition.phase == Phase::Published {
+        if latest.transition.terminal_digest != record.publication_digest {
+            return Err(ProductAttemptRecoveryErrorV1::EvidenceMismatch);
+        }
+        return Ok(latest.clone());
+    }
+    if latest.transition.terminal_digest != request_digest {
+        return Err(ProductAttemptRecoveryErrorV1::EvidenceMismatch);
+    }
+    if latest.transition.phase == Phase::QualificationDecided {
         journal.append(ProductEvaluationAttemptTransitionV1 {
             attempt_id: attempt_id.clone(),
             plan_digest: latest.transition.plan_digest,
-            phase: ProductEvaluationAttemptPhaseV1::PublicationPending,
+            phase: Phase::PublicationPending,
             holdout_record_digest: latest.transition.holdout_record_digest,
-            terminal_digest: latest.transition.terminal_digest,
+            terminal_digest: request_digest,
         })?;
     }
     Ok(journal.append(ProductEvaluationAttemptTransitionV1 {
         attempt_id: attempt_id.clone(),
         plan_digest: latest.transition.plan_digest,
-        phase: ProductEvaluationAttemptPhaseV1::Published,
+        phase: Phase::Published,
         holdout_record_digest: latest.transition.holdout_record_digest,
         terminal_digest: record.publication_digest,
     })?)
@@ -266,3 +269,6 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
 #[cfg(test)]
 #[path = "attempt_recovery_tests.rs"]
 mod tests;
+#[cfg(test)]
+#[path = "attempt_publication_integrity_tests.rs"]
+mod publication_integrity_tests;
