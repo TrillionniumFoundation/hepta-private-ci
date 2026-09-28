@@ -44,6 +44,7 @@ No second database, dual writer or shadow authority is permitted.
 
 - [TECHNICAL.md](TECHNICAL.md): module architecture and implementation guide.
 - [IMPLEMENTATION_UPDATE_20260928.md](IMPLEMENTATION_UPDATE_20260928.md): normal read API, deployed source binding, release recovery profile, lifecycle receipt schemas and exact execution boundaries.
+- [QUALIFICATION_AND_OBSERVATION_BINDING.md](QUALIFICATION_AND_OBSERVATION_BINDING.md): committed command/workload binding, independent log counters and descriptor-retained publication observation.
 - [PUBLICATION_HARDENING.md](PUBLICATION_HARDENING.md): descriptor-bound archive publication, current lifecycle trust, release-report validation and scoped regression evidence.
 - [PRODUCTION_CLOSURE.md](PRODUCTION_CLOSURE.md): canonical product boundary and claim vocabulary.
 - [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json): machine-readable source mapping and open gates.
@@ -61,9 +62,9 @@ No second database, dual writer or shadow authority is permitted.
 
 ## Source qualification
 
-The dedicated workflow is `.github/workflows/cognitive-store-qualification.yml`. It freezes source/base once for both `source-head` and deterministic `base-merge` lanes. The committed plan retains package, bootstrap, crash/reopen, 256/16,384-record and strict-Clippy checks. Its 42 commands also cover typed product recovery, real child exit between semantic commit and witness publication, normal Agentd feature compilation, normal-host read pages, external-consumer API probes, map/evidence regressions, generated-state drift, correction/tombstone history, release descriptor recovery, storage-owner signatures, encrypted archive/restore, and read-only publication observation. Five added records exercise descriptor publication, final lifecycle trust and exact-candidate recovery-report validation without accepting an SLO or weakening an existing gate.
+The dedicated workflow is `.github/workflows/cognitive-store-qualification.yml`. It freezes source/base once for both `source-head` and deterministic `base-merge` lanes. The committed plan retains package, bootstrap, crash/reopen, 256/16,384-record and strict-Clippy checks. Its 47 commands also cover typed product recovery, real child exit between semantic commit and witness publication, normal Agentd feature compilation, normal-host read pages, external-consumer API probes, map/evidence regressions, generated-state drift, correction/tombstone history, release descriptor recovery, storage-owner signatures, encrypted archive/restore, and read-only publication observation. Five added records exercise descriptor publication, final lifecycle trust and exact-candidate recovery-report validation without accepting an SLO or weakening an existing gate.
 
-Each command records its own result rather than inheriting the status of an earlier step. Native preparation failure produces explicit `infrastructure_invalid` non-execution records. A v2 qualification manifest is emitted even when checks fail or are missing; only a complete terminal-success manifest bound to the exact tested commit/tree establishes execution. Artifact upload is not a qualification pass.
+Each command records its own result rather than inheriting the status of an earlier step. The runner validates the entire committed plan before dispatch. The manifest independently checks the resolved command, working directory, workload and limits, and recounts tests from the retained log. Five further records cover these bindings, the three shared-runner regression suites and final-use observation staging. Native preparation failure produces explicit `infrastructure_invalid` non-execution records. A v2 qualification manifest is emitted even when checks fail or are missing; only a complete terminal-success manifest bound to the exact tested commit/tree establishes execution. Artifact upload is not a qualification pass.
 
 ## Updating source bindings
 

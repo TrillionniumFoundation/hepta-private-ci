@@ -12,6 +12,10 @@ and recomputes the merge tree. Every command has an exclusive record and bounded
 | `implementation-map.json` | `.` | `python3 scripts/cognitive_store_map_verify.py --expected-sha $TESTED_SHA --expected-tree $TESTED_TREE` | 0 |
 | `map-regressions.json` | `.` | `python3 scripts/test_cognitive_store_map.py -v` | 12 |
 | `manifest-regressions.json` | `.` | `python3 scripts/test_cognitive_qualification_manifest.py -v` | 11 |
+| `plan-binding-regressions.json` | `.` | `python3 scripts/test_cognitive_plan_binding.py -v` | 39 |
+| `shared-exec-regressions.json` | `.` | `python3 scripts/test_hepta_ci_exec.py -v` | 15 |
+| `shared-exec-deadline-regressions.json` | `.` | `python3 scripts/test_hepta_ci_exec_deadline.py -v` | 9 |
+| `shared-exec-output-regressions.json` | `.` | `python3 scripts/test_hepta_ci_exec_output.py -v` | 21 |
 | `api-probe-regressions.json` | `.` | `python3 scripts/test_cognitive_store_api_probe.py -v` | 12 |
 | `status-drift.json` | `.` | `python3 scripts/cognitive_store_status.py --check` | 0 |
 | `module-inventory.json` | `.` | `python3 scripts/check-rust-module-inventory.py codex-rs/hepta-cognitive-store/src` | 0 |
@@ -24,6 +28,7 @@ and recomputes the merge tree. Every command has an exclusive record and bounded
 | `recovery-report-regressions.json` | `.` | `python3 scripts/test_cognitive_store_recovery_report.py -v` | 21 |
 | `archive-protocol-tests.json` | `.` | `$RUNNER_TEMP/cognitive-archive-venv/bin/python tools/cognitive-store-host-bootstrap/test_archive.py -v` | 45 |
 | `publication-observation-tests.json` | `.` | `$RUNNER_TEMP/cognitive-archive-venv/bin/python tools/cognitive-store-host-bootstrap/test_publication_observation.py -v` | 35 |
+| `observation-boundary-tests.json` | `.` | `$RUNNER_TEMP/cognitive-archive-venv/bin/python tools/cognitive-store-host-bootstrap/test_observation_boundary.py -v` | 17 |
 | `archive-owner-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-memory --test cognitive_archive_owner signed_archive_restores_real_correction_and_tombstone_history -- --ignored --exact` | 1 |
 | `format.json` | `codex-rs` | `cargo fmt --package codex-hepta-cognitive-store --package codex-hepta-memory --package codex-hepta-agentd -- --check` | 0 |
 | `default-feature-check.json` | `codex-rs` | `cargo check --locked -p codex-hepta-cognitive-store --no-default-features --lib` | 0 |

@@ -277,6 +277,48 @@
         "publication-observation-tests.json"
       ],
       "scope": "Real POSIX FIFO, replacement, link, mode and byte-limit regressions; not a deployment isolation claim"
+    },
+    {
+      "id": "CS-PLAN-001",
+      "invariant": "Only the committed command, workload and test threshold can satisfy qualification",
+      "sources": [
+        "scripts/cognitive_store_plan.py",
+        "scripts/cognitive_store_qualify.py",
+        "scripts/cognitive_qualification_manifest.py",
+        "scripts/hepta_ci_exec.py"
+      ],
+      "tests": [
+        "scripts/test_cognitive_plan_binding.py",
+        "scripts/test_cognitive_qualification_manifest.py",
+        "scripts/test_hepta_ci_exec.py",
+        "scripts/test_hepta_ci_exec_deadline.py",
+        "scripts/test_hepta_ci_exec_output.py"
+      ],
+      "records": [
+        "plan-binding-regressions.json",
+        "manifest-regressions.json",
+        "shared-exec-regressions.json",
+        "shared-exec-deadline-regressions.json",
+        "shared-exec-output-regressions.json"
+      ],
+      "scope": "Real command runner in disposable Git repositories; exact production candidate and native matrix remain separately required"
+    },
+    {
+      "id": "CS-OBS-002",
+      "invariant": "Publication observation pins scratch identity and rechecks the created image at final use",
+      "sources": [
+        "tools/cognitive-store-host-bootstrap/archive_observation.py",
+        "tools/cognitive-store-host-bootstrap/archive_publication.py"
+      ],
+      "tests": [
+        "tools/cognitive-store-host-bootstrap/test_observation_boundary.py",
+        "tools/cognitive-store-host-bootstrap/test_publication_observation.py"
+      ],
+      "records": [
+        "observation-boundary-tests.json",
+        "publication-observation-tests.json"
+      ],
+      "scope": "Real encrypted codec and filesystem; native checker mocked in protocol tests; no replay, hot pruning or erasure authority"
     }
   ],
   "externalEvidence": [

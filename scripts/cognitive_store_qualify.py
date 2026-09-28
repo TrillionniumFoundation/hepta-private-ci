@@ -10,7 +10,8 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from string import Template
+
+from cognitive_store_plan import SPEC_ENV, load_plan, spec_sha256
 
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,23 +24,28 @@ def main() -> int:
     args = parser.parse_args()
     if not args.records.is_absolute() or args.records.resolve().is_relative_to(ROOT):
         raise SystemExit("records must be outside the checkout")
+    # Validate the entire committed plan before reserving records or executing
+    # its first command. A malformed late entry cannot leave partial execution.
+    canonical_plan = ROOT / "docs/modules/cognitive.store/QUALIFICATION_PLAN.json"
+    if args.plan.resolve(strict=True) != canonical_plan:
+        raise SystemExit("qualification must execute the canonical committed plan")
+    plan_object = subprocess.check_output(
+        ["git", "--no-replace-objects", "rev-parse", "HEAD:docs/modules/cognitive.store/QUALIFICATION_PLAN.json"],
+        cwd=ROOT, text=True).strip()
+    actual_object = subprocess.check_output(
+        ["git", "hash-object", str(canonical_plan)], cwd=ROOT, text=True).strip()
+    if plan_object != actual_object:
+        raise SystemExit("qualification plan differs from the tested Git object")
+    commands, _ = load_plan(canonical_plan, ROOT, dict(os.environ))
     args.records.mkdir(parents=True, exist_ok=False)
-    plan = json.loads(args.plan.read_text(encoding="utf-8"))
-    if plan.get("schema") != "hepta.cognitive-store-qualification-plan.v1":
-        raise SystemExit("unknown qualification plan")
     failed = False
-    seen = set()
-    for item in plan["commands"]:
+    for item in commands:
         name = item["record"]
-        if Path(name).name != name or name in seen:
-            raise SystemExit("duplicate or unsafe record name")
-        seen.add(name)
-        cwd = (ROOT / item["cwd"]).resolve()
-        if not cwd.is_relative_to(ROOT):
-            raise SystemExit("working directory escapes checkout")
+        cwd = Path(item["working_directory"])
         env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
-        env.update({key: Template(value).substitute(env) for key, value in item.get("env", {}).items()})
-        command = [Template(value).substitute(env) for value in item["command"]]
+        env.update(item["environment"])
+        env[SPEC_ENV] = spec_sha256(item)
+        command = item["command"]
         output = args.records / name
         if item.get("native") and env.get("COGNITIVE_NATIVE_READY") != "true":
             def observed_git(*argv):
@@ -56,14 +62,16 @@ def main() -> int:
                 "base_sha": env.get("BASE_SHA"), "lane": env.get("HEPTA_CI_LANE"),
                 "run_id": env.get("GITHUB_RUN_ID"), "run_attempt": env.get("GITHUB_RUN_ATTEMPT"),
                 "before": identity, "after": identity,
+                "working_directory": str(cwd), "minimum_tests": item["minimum_tests"],
+                "timeout_seconds": item["timeout_seconds"], "command_spec_sha256": env[SPEC_ENV],
             }, indent=2) + "\n", encoding="utf-8")
             failed = True
             continue
         print("::group::" + name, flush=True)
         result = subprocess.run([
             sys.executable, str(ROOT / "scripts/hepta_ci_exec.py"),
-            "--output", str(output), "--minimum-tests", str(item.get("minimumTests", 0)),
-            "--timeout-seconds", str(item.get("timeoutSeconds", 1800)), "--", *command,
+            "--output", str(output), "--minimum-tests", str(item["minimum_tests"]),
+            "--timeout-seconds", str(item["timeout_seconds"]), "--", *command,
         ], cwd=cwd, env=env, check=False)
         print("::endgroup::", flush=True)
         failed = failed or result.returncode != 0

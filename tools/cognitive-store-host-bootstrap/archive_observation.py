@@ -11,10 +11,10 @@ from __future__ import annotations
 import os
 from pathlib import Path
 import stat
-import tempfile
 import time
 
 import archive
+from archive_publication import PinnedDirectory, inode
 from lifecycle import digest, exact, identifier, integer, require, sha256
 
 SCHEMA = "hepta.cognitive.archive-observation-plan.v1"
@@ -60,38 +60,71 @@ def observe_publication(operation: dict, observation: dict, key: bytes,
     now = int(time.time())
     scratch = validate_observation(observation, operation, now)
     archive.validate_plan(operation, now, require_live=False)
-    require(sha256(reauthorize()) == sha256(operation), "operation changed before observation")
+    def final_authorization() -> int:
+        require(sha256(reauthorize()) == sha256(operation), "operation changed during observation")
+        completed = int(time.time())
+        require(completed >= now, "observation clock regressed")
+        validate_observation(observation, operation, completed)
+        return completed
+
     destination = archive.path_value(operation["output_path"])
     result = "missing_or_incomplete"
     artifact_digest = None
     segments = None
-    try:
-        destination.stat(follow_symlinks=False)
-        if operation["action"] == "archive":
-            (destination / "manifest.json").stat(follow_symlinks=False)
-        available = True
-    except FileNotFoundError:
-        available = False
-    if available:
-        # No source-side or destination-side checkpoint, chmod, rename, fsync,
-        # unlink or mkdir occurs here. Native admission sees a scratch copy.
-        # Missing verifier/dependencies or disappearance after preflight must
-        # propagate, not be misclassified as an absent original output.
-        with tempfile.TemporaryDirectory(prefix=".cognitive-observe-", dir=scratch) as temporary:
-            staged = Path(temporary) / "cognitive_1.sqlite3"
+    # Pin the authenticated scratch root BEFORE calling external verification.
+    # Replacing a path during that call must not move later writes or cleanup.
+    with PinnedDirectory.open(scratch) as parent:
+        require(sha256(reauthorize()) == sha256(operation), "operation changed before observation")
+        parent.check_current()
+        try:
+            destination.stat(follow_symlinks=False)
             if operation["action"] == "archive":
-                manifest = archive.decode_archive_image(destination, staged, operation, key, verifier)
-                artifact_digest = sha256(manifest)
-                segments = len(manifest["segments"])
-                result = "valid_archive_observed"
-            else:
-                archive.copy_cold_image(destination, staged, operation)
-                archive.native_check(staged, operation["anchor"], verifier, operation["verifier_sha256"])
-                artifact_digest = operation["image_sha256"]
-                result = "valid_restore_observed"
-    require(sha256(reauthorize()) == sha256(operation), "operation changed during observation")
-    completed_at = int(time.time())
-    validate_observation(observation, operation, completed_at)
+                (destination / "manifest.json").stat(follow_symlinks=False)
+            available = True
+        except FileNotFoundError:
+            available = False
+        if available:
+            # Use the same descriptor-relative staging owner as publication.
+            # Cleanup removes only its created image inode, not replacements,
+            # unknown children or recursively discovered historical content.
+            with parent.scratch() as stage:
+                staged = stage.path / "cognitive_1.sqlite3"
+                if operation["action"] == "archive":
+                    manifest = archive.decode_archive_image(
+                        destination, staged, operation, key, verifier, publication_stage=stage)
+                    artifact_digest = sha256(manifest)
+                    segments = len(manifest["segments"])
+                    result = "valid_archive_observed"
+                else:
+                    archive.copy_cold_image(destination, staged, operation, publication_stage=stage)
+                    archive.native_check(staged, operation["anchor"], verifier, operation["verifier_sha256"])
+                    artifact_digest = operation["image_sha256"]
+                    result = "valid_restore_observed"
+                with stage.reader(staged.name, operation["image_bytes"]) as image:
+                    def verify_image() -> None:
+                        parent.check_current()
+                        stage.check_current()
+                        retained = os.fstat(image.fileno())
+                        named = os.stat(staged.name, dir_fd=stage.fd, follow_symlinks=False)
+                        require(stage.created_files.get(staged.name) == inode(retained) == inode(named) and
+                                stat.S_ISREG(retained.st_mode) and retained.st_nlink == 1 and
+                                retained.st_uid == os.geteuid() and retained.st_mode & 0o077 == 0,
+                                "observed scratch image is not the private created inode")
+                        archive.verify_staged_stream(image, operation)
+                        after = os.fstat(image.fileno())
+                        current = os.stat(staged.name, dir_fd=stage.fd, follow_symlinks=False)
+                        require(archive.identity(retained) == archive.identity(after) ==
+                                archive.identity(current), "observed image changed during final read")
+                    verify_image()
+                    completed_at = final_authorization()
+                    verify_image()
+        else:
+            completed_at = final_authorization()
+        parent.check_current()
+        completed_at = int(time.time())
+        require(completed_at >= now, "observation clock regressed")
+        validate_observation(observation, operation, completed_at)
+        parent.check_current()
     report = {"schema": REPORT_SCHEMA, "operation_plan_sha256": sha256(operation),
               "observation_plan_sha256": sha256(observation), "observed_at": completed_at,
               "owner_agent_id": operation["owner_agent_id"], "writer_generation": operation["writer_generation"],
