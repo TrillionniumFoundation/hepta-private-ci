@@ -42,12 +42,13 @@
     },
     {
       "id": "CS-PUB-001",
-      "invariant": "A possibly published candidate is retained as indeterminate",
+      "invariant": "A possibly published or unresolvable candidate is retained as indeterminate",
       "sources": [
         "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
       ],
       "tests": [
-        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs::post_rename_publication_failure_is_indeterminate_and_retains_candidate"
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs::post_rename_publication_failure_is_indeterminate_and_retains_candidate",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs::unreadable_active_pointer_retains_candidate_as_indeterminate"
       ],
       "records": [
         "memory-tests.json"
