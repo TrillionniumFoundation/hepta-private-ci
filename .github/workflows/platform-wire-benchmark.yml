@@ -5,6 +5,7 @@ on:
     paths:
       - "codex-rs/hepta-wire/**"
       - "scripts/platform_wire_managed_fleet_profile.py"
+      - "docs/modules/platform.wire/IMPLEMENTATION_MAP.json"
       - ".github/workflows/platform-wire-benchmark.yml"
   push:
     branches:
@@ -12,6 +13,7 @@ on:
     paths:
       - "codex-rs/hepta-wire/**"
       - "scripts/platform_wire_managed_fleet_profile.py"
+      - "docs/modules/platform.wire/IMPLEMENTATION_MAP.json"
       - ".github/workflows/platform-wire-benchmark.yml"
   schedule:
     - cron: "47 3 * * *"
