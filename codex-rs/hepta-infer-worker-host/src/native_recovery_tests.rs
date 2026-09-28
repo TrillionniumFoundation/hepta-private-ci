@@ -87,6 +87,21 @@ fn policy_rejects_unbounded_reconcile_windows() {
     );
 }
 
+#[test]
+fn operational_counters_preserve_denial_and_interrupt_latency() {
+    let counters = NativeRecoveryCounters::default();
+    counters.record_authority_denial();
+    counters.record_authority_denial();
+    counters.record_cancellation_to_interrupt_latency(Duration::from_micros(17));
+    counters.record_cancellation_to_interrupt_latency(Duration::from_micros(29));
+
+    let snapshot = counters.snapshot();
+    assert_eq!(snapshot.authority_denials, 2);
+    assert_eq!(snapshot.interrupt_latency_samples, 2);
+    assert_eq!(snapshot.interrupt_latency_micros, 46);
+    assert_eq!(snapshot.maximum_interrupt_latency_micros, 29);
+}
+
 #[tokio::test]
 async fn missing_history_stays_quarantined_until_trusted_terminal_receipt() {
     let (_directory, mut control) = open_dispatched_control();
