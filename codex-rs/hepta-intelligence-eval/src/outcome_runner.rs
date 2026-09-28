@@ -23,6 +23,8 @@ use crate::outcome_receipt::compose;
 mod artifact_temporal;
 #[path = "outcome_qualification_artifacts.rs"]
 mod artifact_outcome;
+#[path = "selected_host_recovery_controller.rs"]
+mod recovery_controller;
 
 struct OutcomeProvider<'a, P> {
     plan: &'a ProductFrozenOutcomePlanV1,

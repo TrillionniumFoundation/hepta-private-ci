@@ -22,6 +22,8 @@ mod storage;
 #[allow(dead_code)]
 #[path = "selected_host_recovery_support/cold_trust.rs"]
 mod host;
+#[path = "selected_host_recovery_support/controller_tests.rs"]
+mod controller_tests;
 
 static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
 
@@ -101,7 +103,12 @@ fn recover(root: &Path, family: &str, mode: &str) {
     ).expect("recover anchored history");
     let attempt = host::id("cold-process-attempt");
     let before = journal.latest(&attempt).expect("before").expect("attempt");
-    let result = if mode == "reconcile" {
+    let result = if matches!(mode, "page-first" | "page-next") {
+        match controller_tests::recover_page(&runner, &mut journal, root, mode, &before) {
+            Some(published) => published,
+            None => return,
+        }
+    } else if mode == "reconcile" {
         RecordedProductEvaluationRunnerV1::<LockedFileFinalHoldoutCasStoreV1>::reconcile_selected_host_publication(
             &mut journal, &attempt, root.join("publications"), host_binding(),
         ).expect("read existing publication")
