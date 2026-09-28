@@ -17,6 +17,11 @@ static PROCESS_OWNERS: OnceLock<Mutex<HashSet<PathBuf>>> = OnceLock::new();
 /// lock held through the first descriptor. Rejecting duplicate same-process
 /// owners before `open(2)` prevents a failed duplicate initialization from
 /// weakening the live owner's cross-process fence.
+///
+/// Existing authority databases must also be canonical, regular, single-link
+/// files owned by the private database directory owner. This prevents a second
+/// pathname from selecting the same SQLite inode while deriving a different
+/// owner-lock pathname.
 pub(crate) struct OwnerFence {
     file: File,
     _process_claim: ProcessOwnerClaim,
@@ -34,6 +39,7 @@ impl OwnerFence {
         }
         let path = lock_path(database_path)?;
         validate_parent(&path)?;
+        validate_existing_database_path(database_path)?;
 
         // This claim must precede opening the lock inode. See the type-level
         // comment above for the POSIX close/release hazard it prevents.
@@ -130,6 +136,35 @@ fn validate_parent(path: &Path) -> Result<(), AuthBusAuthorityError> {
 
 #[cfg(not(unix))]
 fn validate_parent(_path: &Path) -> Result<(), AuthBusAuthorityError> {
+    Err(AuthBusAuthorityError::UnsafeCheckpoint)
+}
+
+#[cfg(unix)]
+fn validate_existing_database_path(path: &Path) -> Result<(), AuthBusAuthorityError> {
+    use std::io::ErrorKind;
+    use std::os::unix::fs::MetadataExt;
+
+    let parent = path
+        .parent()
+        .ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
+    let metadata = match std::fs::symlink_metadata(path) {
+        Ok(metadata) => metadata,
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
+        Err(error) => return Err(storage_io(error)),
+    };
+    let parent_metadata = std::fs::metadata(parent).map_err(storage_io)?;
+    if !metadata.file_type().is_file()
+        || metadata.nlink() != 1
+        || metadata.uid() != parent_metadata.uid()
+        || path.canonicalize().map_err(storage_io)? != path
+    {
+        return Err(AuthBusAuthorityError::UnsafeCheckpoint);
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn validate_existing_database_path(_path: &Path) -> Result<(), AuthBusAuthorityError> {
     Err(AuthBusAuthorityError::UnsafeCheckpoint)
 }
 
@@ -250,6 +285,49 @@ mod tests {
         OwnerFence::acquire(&database, "owner:replacement")
             .await
             .expect("replacement owner after release");
+    }
+
+    #[tokio::test]
+    async fn rejects_database_symlink_alias_before_creating_a_lock() {
+        let root = private_root();
+        let target = root.path().join("authority-target.sqlite");
+        let database = root.path().join("authority.sqlite");
+        std::fs::write(&target, b"database").expect("database target");
+        std::fs::set_permissions(&target, std::fs::Permissions::from_mode(0o600))
+            .expect("database target mode");
+        symlink(&target, &database).expect("database symlink");
+
+        assert!(matches!(
+            OwnerFence::acquire(&database, "owner").await,
+            Err(AuthBusAuthorityError::UnsafeCheckpoint)
+        ));
+        assert!(!lock_path(&database).expect("lock path").exists());
+        assert_eq!(
+            std::fs::read(&target).expect("database target contents"),
+            b"database"
+        );
+    }
+
+    #[tokio::test]
+    async fn rejects_database_hard_link_alias_before_creating_a_lock() {
+        let root = private_root();
+        let target = root.path().join("authority-target.sqlite");
+        let database = root.path().join("authority.sqlite");
+        std::fs::write(&target, b"database").expect("database target");
+        std::fs::set_permissions(&target, std::fs::Permissions::from_mode(0o600))
+            .expect("database target mode");
+        std::fs::hard_link(&target, &database).expect("database hard link");
+
+        assert!(matches!(
+            OwnerFence::acquire(&database, "owner").await,
+            Err(AuthBusAuthorityError::UnsafeCheckpoint)
+        ));
+        assert!(!lock_path(&database).expect("lock path").exists());
+        assert_eq!(std::fs::metadata(&target).expect("metadata").nlink(), 2);
+        assert_eq!(
+            std::fs::read(&target).expect("database target contents"),
+            b"database"
+        );
     }
 
     #[tokio::test]
