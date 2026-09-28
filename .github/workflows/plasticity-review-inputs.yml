@@ -17,14 +17,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/review-inputs"
-          cd "$RUNNER_TEMP/review-inputs"
+          mkdir -p "$RUNNER_TEMP/review-inputs/tools" "$RUNNER_TEMP/review-inputs/deps"
+          cd "$RUNNER_TEMP/review-inputs/tools"
           for component in rustc cargo rust-std rustfmt clippy; do
             archive="$component-1.95.0-x86_64-unknown-linux-gnu.tar.xz"
             curl --fail --silent --show-error --location "https://static.rust-lang.org/dist/$archive" -o "$archive"
             curl --fail --silent --show-error --location "https://static.rust-lang.org/dist/$archive.sha256" -o "$archive.sha256"
             shasum -a 256 -c "$archive.sha256"
           done
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: plasticity-tools-1.95.0
+          path: ${{ runner.temp }}/review-inputs/tools/
+          compression-level: 0
+          retention-days: 1
+          if-no-files-found: error
       - name: Resolve locked public dependency inputs without building
         working-directory: codex-rs
         shell: bash
@@ -42,13 +49,34 @@ jobs:
             if [ -d "$HOME/.cargo/$p" ]; then paths+=("$p"); fi
           done
           if [ "${#paths[@]}" -gt 0 ]; then
-            tar -czf "$RUNNER_TEMP/review-inputs/dependencies.tar.gz" -C "$HOME/.cargo" "${paths[@]}"
+            tar -czf "$RUNNER_TEMP/dependencies.tar.gz" -C "$HOME/.cargo" "${paths[@]}"
+            split -b 200m "$RUNNER_TEMP/dependencies.tar.gz" "$RUNNER_TEMP/review-inputs/deps/part-"
           fi
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: plasticity-offline-inputs-1.95.0
-          path: ${{ runner.temp }}/review-inputs/
+          name: plasticity-deps-aa
+          path: ${{ runner.temp }}/review-inputs/deps/part-aa
           compression-level: 0
           retention-days: 1
-          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: plasticity-deps-ab
+          path: ${{ runner.temp }}/review-inputs/deps/part-ab
+          compression-level: 0
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: plasticity-deps-ac
+          path: ${{ runner.temp }}/review-inputs/deps/part-ac
+          compression-level: 0
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: plasticity-deps-ad
+          path: ${{ runner.temp }}/review-inputs/deps/part-ad
+          compression-level: 0
+          retention-days: 1
