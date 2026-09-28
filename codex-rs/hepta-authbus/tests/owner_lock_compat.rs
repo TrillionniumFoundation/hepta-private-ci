@@ -259,6 +259,7 @@ fn legacy_posix_holder_process() {
         .read(true)
         .write(true)
         .create(true)
+        .truncate(false)
         .mode(0o600)
         .open(lock_path)
         .expect("open owner lock");

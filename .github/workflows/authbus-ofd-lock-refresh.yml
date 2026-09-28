@@ -6,6 +6,7 @@ on:
       - auth-authbus-boundary-convergence-20260928
     paths:
       - codex-rs/hepta-authbus/Cargo.toml
+      - codex-rs/hepta-authbus/tests/owner_lock_compat.rs
       - .github/workflows/authbus-ofd-lock-refresh.yml
 
 permissions:
