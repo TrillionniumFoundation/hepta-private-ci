@@ -30,7 +30,7 @@ test("availability cannot bypass the host's final-use authorizer", async () => {
   const platform = new X11ClipboardPlatform(profile());
   assert.equal(platform.permission(request()).allowed, true);
   await assert.rejects(platform.invoke(request()), /authority denied/);
-  assert.deepEqual(await platform.close(), { stopped: true, unresolvedWriters: 0 });
+  assert.deepEqual(await platform.close(), { stopped: true, unresolvedWriters: 0, unresolvedObservers: 0 });
 });
 
 test("changed resource, payload, deadline and unsupported actions reject before authority", async () => {

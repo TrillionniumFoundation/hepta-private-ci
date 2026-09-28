@@ -18,6 +18,27 @@ const DIGEST = /^(?!0{64}$)[0-9a-f]{64}$/;
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// A stop request is not evidence of process exit. Keep the owner's child entry
+// until close and bound graceful/forced termination even after the action expires.
+function stopChild(child) {
+  if (child.exitCode !== null || child.signalCode !== null) return Promise.resolve(true);
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = (stopped) => {
+      if (done) return;
+      done = true;
+      clearTimeout(killTimer); clearTimeout(deadlineTimer);
+      child.removeListener("close", closed);
+      resolve(stopped);
+    };
+    const closed = () => finish(true);
+    const killTimer = setTimeout(() => child.kill("SIGKILL"), 500);
+    const deadlineTimer = setTimeout(() => finish(false), 1000);
+    child.once("close", closed);
+    child.kill("SIGTERM");
+  });
+}
+
 export function clipboardTextReference(text) {
   if (typeof text !== "string" || text.includes("\0") ||
       Buffer.byteLength(text, "utf8") > MAX_TEXT || text.length === 0 ||
@@ -44,6 +65,7 @@ export class X11ClipboardPlatform {
   #resources = new Map();
   #executable; #executableDigest; #display; #clock; #finalUse;
   #writers = new Set();
+  #observers = new Set();
   #closed = false;
 
   constructor({ executablePath, executableSha256, display, resources, monotonicMicros, finalUse }) {
@@ -112,16 +134,18 @@ export class X11ClipboardPlatform {
   #observe(deadline) {
     return new Promise((resolve) => {
       const remaining = deadline - this.#now();
-      if (remaining <= 0) return resolve(null);
+      if (remaining <= 0 || this.#closed || this.#observers.size >= MAX_WRITERS) return resolve(null);
       const child = this.#start(["-selection", "clipboard", "-out"]);
+      this.#observers.add(child);
+      child.once("close", () => this.#observers.delete(child));
       const chunks = [];
       let size = 0, errorBytes = 0, done = false;
-      const finish = (value) => {
+      const finish = async (value) => {
         if (done) return;
         done = true;
         clearTimeout(timer);
-        child.kill("SIGTERM");
-        resolve(value);
+        const stopped = await stopChild(child);
+        resolve(stopped ? value : null);
       };
       const timer = setTimeout(() => finish(null), Math.max(1, Math.min(500, Math.ceil(remaining / 1000))));
       child.stdout.on("data", (chunk) => {
@@ -189,14 +213,12 @@ export class X11ClipboardPlatform {
 
   async close() {
     this.#closed = true;
-    const writers = [...this.#writers];
-    const stopped = await Promise.all(writers.map((writer) => new Promise((resolve) => {
-      if (writer.exitCode !== null || writer.signalCode !== null) return resolve(true);
-      const killTimer = setTimeout(() => writer.kill("SIGKILL"), 500);
-      const deadlineTimer = setTimeout(() => resolve(false), 1000);
-      writer.once("close", () => { clearTimeout(killTimer); clearTimeout(deadlineTimer); resolve(true); });
-      writer.kill("SIGTERM");
-    })));
-    return Object.freeze({ stopped: stopped.every(Boolean), unresolvedWriters: stopped.filter((value) => !value).length });
+    const writers = [...this.#writers], observers = [...this.#observers];
+    const [writerStops, observerStops] = await Promise.all([
+      Promise.all(writers.map(stopChild)), Promise.all(observers.map(stopChild)),
+    ]);
+    return Object.freeze({ stopped: writerStops.every(Boolean) && observerStops.every(Boolean),
+      unresolvedWriters: writerStops.filter((value) => !value).length,
+      unresolvedObservers: observerStops.filter((value) => !value).length });
   }
 }

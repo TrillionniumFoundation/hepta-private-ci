@@ -17,6 +17,7 @@ const hash = (value) => sha256(Buffer.from(value));
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 const git = (...args) => execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
 const source = { commit: git("rev-parse", "HEAD"), tree: git("rev-parse", "HEAD^{tree}"), dirty: git("status", "--porcelain") !== "" };
+assert.equal(source.dirty, false, "real-OS qualification requires a committed clean source");
 const server = spawn("/usr/bin/Xvfb", ["-displayfd", "3", "-screen", "0", "640x480x24", "-nolisten", "tcp", "-ac"],
   { stdio: ["ignore", "ignore", "pipe", "pipe"], env: { LANG: "C.UTF-8" }, shell: false });
 server.stderr.resume();
@@ -75,6 +76,10 @@ try {
   assert.deepEqual(readback, Buffer.from(text));
   const retry = await runtime.requestPlatformCapabilityBinary({ frameBytes: bytes, grantPayloadDigest: frame.finalPayloadDigest });
   assert.deepEqual(retry, result);
+  const differentPrincipal = { ...frame, subjectId: "principal.other" };
+  await assert.rejects(runtime.requestPlatformCapabilityBinary({
+    frameBytes: encodeComputerActionFrameV1(differentPrincipal), grantPayloadDigest: frame.finalPayloadDigest }), /subject mismatch/);
+  assert.equal(finalUseCalls, 1);
   const changed = { ...frame, expectedPostconditionDigest: hash("different-postcondition") };
   await assert.rejects(runtime.requestPlatformCapabilityBinary({ frameBytes: encodeComputerActionFrameV1(changed),
     grantPayloadDigest: changed.finalPayloadDigest }), /changed semantics/);
@@ -82,13 +87,17 @@ try {
   const observation = runtime.observePlatformOperationBinary({ operationId: frame.operationId, sourceActionDigest: expected });
   assert.deepEqual(observation.receipt, result);
   const cleanup = await platform.close();
-  assert.deepEqual(cleanup, { stopped: true, unresolvedWriters: 0 });
+  assert.deepEqual(cleanup, { stopped: true, unresolvedWriters: 0, unresolvedObservers: 0 });
   assert.equal(finalUseCalls, 1);
+  assert.equal(git("status", "--porcelain"), "", "source changed during qualification");
+  assert.equal(git("rev-parse", "HEAD"), source.commit);
+  assert.equal(git("rev-parse", "HEAD^{tree}"), source.tree);
   const receipt = { schema: "hepta.native-x11-clipboard-qualification.v1", source,
     executableSha256, xvfbSha256: sha256(readFileSync("/usr/bin/Xvfb")), frameSha256: sha256(bytes),
     sourceActionDigest: expected, outcomeDigest: result.outcomeDigest, readbackSha256: sha256(readback),
     elapsedMicros, finalUseCalls, exactRetryReused: true, changedIntentRejected: true,
-    observationAfterClose: true, writerCleanupObserved: true, realOsClipboard: true,
+    observationAfterClose: true, writerCleanupObserved: true, observerCleanupObserved: true,
+    changedPrincipalRejected: true, realOsClipboard: true,
     isolatedDisplay: true, tcpListenerEnabled: false, backendAndAuthorityAreFixtures: true,
     independentPrincipalObservation: false, durableCrossProcessRecovery: false,
     productionActivation: false, operatorAcceptance: false };

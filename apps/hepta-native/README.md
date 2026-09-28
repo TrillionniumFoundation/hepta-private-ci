@@ -59,9 +59,12 @@ The complete HAC1 source-action digest, session/operation identity, content-boun
 payload and deadline reach the final-use callback. One foreground writer is started;
 bounded separate read-only processes check the clipboard contents. Observation
 retries never create another writer. Receipts expose digests rather than clipboard
-text. At most four live writer handles are retained. Close requests termination,
-escalates after a bounded interval, and reports unresolved cleanup rather than
-claiming an unobserved process exit.
+text. At most four live writer handles and four observer handles are retained.
+Timed-out read-only observers are also terminated, escalated and reaped; a readback
+is usable only after its observer exits. Close covers both sets and reports
+`unresolvedWriters` and `unresolvedObservers` rather than claiming an unobserved
+process exit. The process regression uses owned SIGTERM-resistant fixture children
+and verifies physical cleanup without opening a display.
 
 This adapter has no persistent effect ledger. Same-process deduplication remains in
 `NativeShellRuntime`; crash/restart can still leave an unknown effect requiring the
@@ -78,3 +81,14 @@ user clipboard or secrets and starts no TCP listener. Its presence and unit-test
 results are not a passed OS probe. A successful probe must retain the actual source,
 executable, action, readback and cleanup receipt. Run it only in the authorized
 qualification host; normal test discovery does not start an X server.
+
+Run the explicit probe from a clean committed checkout:
+
+```sh
+node apps/hepta-native/qualification/x11-clipboard.mjs /qualified/new-receipt.json
+```
+
+The probe rejects dirty or changed source, verifies an actual clipboard readback in
+a separate process, and exercises duplicate, changed-principal and changed-intent
+rejection. Its test-only authorizer does not replace the production kernel owner;
+real OS execution and independently provisioned production authority are distinct.
