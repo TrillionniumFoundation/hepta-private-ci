@@ -27,4 +27,23 @@ mod tests {
         ));
         assert!(state.require_publish(&id("attempt"), true).is_ok());
     }
+
+    #[test]
+    fn cancelled_identity_persist_does_not_poison_reads_or_future_publication() {
+        let mut state = OwnerOperationalState::new(false, None, 20);
+        let operation_id = id("capacity-rejected-attempt");
+        state.begin_request_identity_persist(operation_id.clone(), 21);
+        assert!(matches!(
+            state.require_current_view(),
+            Err(
+                LearningArtifactOwnerServiceError::RequestIdentityDurabilityUnknown(blocked)
+            ) if blocked == operation_id
+        ));
+
+        state.cancel_request_identity_persist();
+
+        assert!(state.require_current_view().is_ok());
+        assert!(state.require_publish(&operation_id, false).is_ok());
+        assert!(state.require_operation(&id("other-attempt")).is_ok());
+    }
 }
