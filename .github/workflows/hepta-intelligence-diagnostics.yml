@@ -5,6 +5,7 @@ on:
     paths:
       - 'codex-rs/hepta-intelligence/**'
       - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-infer-worker-host/**'
       - 'codex-rs/hepta-operations/**'
       - 'codex-rs/hepta-learning-ledger/**'
       - 'scripts/hepta-intelligence-*.py'
@@ -38,6 +39,29 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
+      - name: Retain reproducible committed source before native diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+          out="$RUNNER_TEMP/intelligence-diagnostic-source"
+          mkdir -p "$out"
+          git archive --format=tar.gz --output="$out/source.tar.gz" HEAD
+          git cat-file commit HEAD > "$out/commit.txt"
+          git rev-parse HEAD > "$out/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$out/source-tree.txt"
+          printf '%s\n' "$BASE_SHA" > "$out/base-sha.txt"
+          (cd "$out" && shasum -a 256 source.tar.gz commit.txt source-sha.txt source-tree.txt base-sha.txt > SHA256SUMS)
+      - name: Retain credential-free source identity with the diagnostic run
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-diagnostic-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intelligence-diagnostic-source/*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
       - name: Bind exact diagnostic source and install pinned compiler
         shell: bash
         run: |
