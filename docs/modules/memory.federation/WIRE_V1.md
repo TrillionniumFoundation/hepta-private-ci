@@ -115,6 +115,14 @@ The durable host state maintains an independent restart-surviving replay key,
 per-peer partition and time high-water mark. A frame is not exposed to a handler
 until authenticated replay admission has been stored successfully.
 
+The durable client uses the same staged-commit rule for inbound responses and
+cancellation acknowledgements. Frame verification runs against a cloned live
+replay cache, semantic correlation runs against cloned attempt/frontier state,
+and the client installs those clones only after the recovery store atomically
+accepts the new snapshot. A store failure therefore leaves the same authenticated
+frame retryable in the same process as well as after restart; failed persistence
+cannot poison the live replay cache.
+
 ## 5. Authenticated owner-cut witness
 
 A response carries:
@@ -136,7 +144,7 @@ manufacture source truth from a row count. The selected owner store must define
 how generation, state digest and parent relation derive from a durable committed
 cut.
 
-## 6. Two-stage read-only host admission
+## 6. Two-stage read-only host and correlated client admission
 
 `FederationWireHostV1` separates admission from completion:
 
@@ -151,8 +159,22 @@ cut.
 9. validate the handler's result digests and owner-cut witness;
 10. persist terminal state before response bytes are sealed and returned.
 
-Failure to store replay or pending intent blocks the handler. The host owns no
-memory writer, remote grant, retry queue, socket or provider invocation.
+`FederationWireClientV1` provides the corresponding outbound and inbound half:
+
+1. persist the exact outbound query attempt before returning query bytes;
+2. persist cancellation intent before returning cancellation bytes;
+3. bind the secure-channel peer identity to the authenticated response sender;
+4. verify the response or acknowledgement against staged replay state;
+5. correlate it with the exact durable peer/query/query-binding attempt;
+6. validate owner-cut continuity or cancellation identity;
+7. atomically persist recovery, attempt and frontier state;
+8. install staged replay state only after persistence succeeds;
+9. return an immutable verified frame to the read-only product adapter.
+
+Failure to store replay or pending intent blocks the handler. Failure to persist
+client correlation exposes neither a terminal result nor an acknowledgement and
+leaves live state retryable. Neither host nor client owns a memory writer,
+remote grant, blind retry queue, socket or provider invocation.
 
 ## 7. Cancellation and late-terminal fencing
 
@@ -167,14 +189,14 @@ Both request and acknowledgement are authenticated and replay-protected.
 Cancellation is persisted before the acknowledgement is emitted. If
 cancellation wins, later query completion returns `Cancelled` and no success
 response can be produced. The durable snapshot preserves that fence across host
-restart.
+and client restart.
 
 Repeated identical cancellation is idempotent and returns the first observation
 time. A conflicting cancellation or conflicting terminal result fails closed.
 Observation time cannot predate attempt start or regress behind the host
 high-water mark.
 
-## 8. Durable recovery snapshot
+## 8. Durable host and client recovery snapshots
 
 `DurableFederationStateV1` serializes a canonical integrity-bound snapshot of:
 
@@ -183,6 +205,10 @@ high-water mark.
 - host time high-water mark;
 - live replay keys, peer partitions and expiries;
 - live pending, cancelled and terminal attempts.
+
+The client snapshot wraps that durable state together with outbound attempt
+metadata and the last accepted authenticated frontier for each peer. Correlated
+inbound state is replaced atomically through the same recovery-store seam.
 
 Restore rejects:
 
@@ -238,7 +264,9 @@ Repository tests cover:
 - terminal-before-cancel and unknown attempt;
 - recovery snapshot digest, identity, capacity and clock semantics;
 - a complete logical two-host query/response path with a handler-supplied owner
-  cut.
+  cut;
+- client inbound recovery-store failure followed by successful retry both in the
+  same process and after restart.
 
 The exact-head and deterministic-current-base-merge lanes run the same format,
 library test, doctest and strict Clippy commands. The execution guard pins source

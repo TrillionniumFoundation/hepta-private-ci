@@ -40,6 +40,16 @@
       "state": "source_candidate_backend_not_selected"
     },
     {
+      "name": "persist_outbound_query_cancel_and_correlate_verified_response",
+      "source": "codex-rs/hepta-memory-federation-wire/src/client",
+      "state": "source_candidate_backend_not_selected"
+    },
+    {
+      "name": "commit_client_inbound_replay_with_recovery_atomically",
+      "source": "codex-rs/hepta-memory-federation-wire/src/client/admission.rs",
+      "state": "source_candidate_same_process_and_restart_retry_covered"
+    },
+    {
       "name": "admit_transport_bound_query_and_cancel",
       "source": "codex-rs/hepta-memory-federation-wire/src/host.rs",
       "state": "source_candidate_not_agentd_composed"
