@@ -17,7 +17,7 @@ permissions:
 
 concurrency:
   group: runtime-supervisor-final-hardening-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   RUST_TOOLCHAIN: 1.95.0
@@ -109,6 +109,7 @@ jobs:
           git push origin "HEAD:${GITHUB_REF_NAME}"
 
   exact-head-linux:
+    needs: materialize
     name: Exact head Linux
     runs-on: ubuntu-24.04
     timeout-minutes: 90
@@ -149,6 +150,7 @@ jobs:
           test -z "$(git status --porcelain)"
 
   exact-head-macos:
+    needs: materialize
     name: Exact head macOS Intel
     runs-on: macos-15-intel
     timeout-minutes: 90
