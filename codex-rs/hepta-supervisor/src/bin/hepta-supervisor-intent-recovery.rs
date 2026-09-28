@@ -158,7 +158,8 @@ fn read_production_method(path: &Path) -> Result<SupervisordMethod> {
         );
     }
     let mut bytes = Vec::new();
-    file.take(MAX_SUBMISSION_BYTES + 1).read_to_end(&mut bytes)?;
+    file.take(MAX_SUBMISSION_BYTES + 1)
+        .read_to_end(&mut bytes)?;
     ensure!(
         bytes.len() as u64 <= MAX_SUBMISSION_BYTES,
         "submission exceeds frame budget"
@@ -190,7 +191,10 @@ fn accepted(response: SupervisordMutationAccepted) -> Result<serde_json::Value> 
     serde_json::to_value(payload).context("serialize canonical mutation acceptance")
 }
 
-async fn submit(client: &SupervisordClient, method: SupervisordMethod) -> Result<serde_json::Value> {
+async fn submit(
+    client: &SupervisordClient,
+    method: SupervisordMethod,
+) -> Result<serde_json::Value> {
     match method {
         SupervisordMethod::SignedUpgrade {
             fence,
