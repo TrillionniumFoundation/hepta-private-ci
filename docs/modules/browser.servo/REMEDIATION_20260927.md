@@ -285,3 +285,39 @@ local observer or JavaScript success must not be labelled native or target
 qualification. All changed package files are included by the tracked-package
 source inventory, including the new helper and tests. Production activation,
 independent acceptance, promotion and release remain false.
+
+
+## 2026-09-28 exact-head native follow-up
+
+The exact candidate `d1a5c47965be4a1a01ef7753e346b99184d6982b`
+produced two actionable native diagnostics. They are retained as failures and
+are not relabelled as passes.
+
+The Agentd Browser service tests showed that revocation updates could commit
+before the worker emitted its dispatch or proven-rejection boundary. The
+persistent port was still calling `FinalUseAuthority::with_verified_use`, whose
+contract releases the owner mutex before executing the callback. The port now
+uses `FinalUseAuthority::with_dispatch_boundary`, so the bounded callback that
+sends `authority_enter` and waits for exactly one worker admission/rejection
+receipt runs under the live revocation linearization fence. Remote execution
+and terminal reconciliation remain outside that fence. The implementation map
+and human technical documents bind the same API.
+
+The standalone Linux sandbox diagnostic passed after explicitly enabling the
+Ubuntu runner's unprivileged user namespace and disabling the AppArmor
+restriction when that sysctl exists. The primary worker workflow previously
+installed Bubblewrap without applying those host prerequisites. It now applies
+the same fail-closed prerequisite ceremony and retains bounded sandbox-probe
+stderr in the worker evidence directory on failure. No failed probe is inferred
+to have passed.
+
+The temporary branch-only diagnostic workflow used to isolate these failures
+is removed from the candidate after transferring its proven prerequisites and
+diagnostics into the canonical Agentd and worker workflows. It is not retained
+as a parallel qualification or release path.
+
+A fresh exact-head and deterministic-merge execution remains mandatory. The
+repository-controlled source boundary, production implementation, product
+execution, deployment qualification, operator acceptance, activation,
+promotion and release booleans remain false until their designated terminal
+evidence exists.

@@ -66,7 +66,7 @@ New effect transaction:
 2. validate current page generation, document digest, page revision and actionable surface;
 3. normalize the typed action and bind proposal provenance, destination, payload digest, effect grant, authority epoch and deadline;
 4. Browser issues a request-digest/epoch-only authority challenge;
-5. Agentd verifies the independently signed grant and enters live `FinalUseAuthority::with_verified_use`;
+5. Agentd verifies the independently signed grant and enters live `FinalUseAuthority::with_dispatch_boundary`;
 6. Browser binds the witness and fsyncs an indeterminate journal record;
 7. Browser writes exactly one private worker command;
 8. Servo dequeues and revalidates page/document/navigation/actionable state;

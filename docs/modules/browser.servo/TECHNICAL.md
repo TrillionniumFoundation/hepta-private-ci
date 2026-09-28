@@ -139,7 +139,7 @@ A successful private-pipe write is not effect admission. The exact sequence is:
 1. Browser validates profile/page/action/grant/epoch/deadline and computes the request digest.
 2. Browser emits a secret-minimized `authority_challenge` containing only request digest and authority epoch.
 3. Agentd verifies the independently signed grant and exact `FinalUseBinding`.
-4. Agentd enters `FinalUseAuthority::with_verified_use`; revocation updates use the same live fence.
+4. Agentd enters `FinalUseAuthority::with_dispatch_boundary`; revocation updates use the same live fence.
 5. Browser binds the witness and fsyncs an indeterminate dispatch record.
 6. Browser writes exactly one command to the private Servo pipe.
 7. Servo dequeues and revalidates page generation, document digest, navigation epoch, exact destination and actionable-surface digest.

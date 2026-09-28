@@ -2,7 +2,7 @@
 //!
 //! The Browser process never receives or serializes `VerifiedUseToken`. For an
 //! effect request it challenges Agentd, Agentd claims the independently signed
-//! grant, and `FinalUseAuthority::with_verified_use` holds the live revocation
+//! grant, and `FinalUseAuthority::with_dispatch_boundary` holds the live revocation
 //! fence only through Browser's durable-intent + local-worker-dispatch boundary.
 //! Remote page/effect terminality is observed later through reconciliation.
 
@@ -285,7 +285,7 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
         let witness_text = hex_lower(&witness_digest);
 
         self.authority
-            .with_verified_use(token, &invocation.binding, || {
+            .with_dispatch_boundary(token, &invocation.binding, || {
                 send_frame(
                     state,
                     "authority_enter",
