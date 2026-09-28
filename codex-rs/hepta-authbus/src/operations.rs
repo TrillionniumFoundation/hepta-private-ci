@@ -1,3 +1,8 @@
+use std::array;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
+use std::time::Duration;
+
 use codex_hepta_types::StableId;
 use serde::Serialize;
 use sqlx::Acquire;
@@ -10,6 +15,256 @@ use crate::ExpiredReservationSweep;
 use crate::TrustedTimeSample;
 use crate::authority_store::storage;
 use crate::authority_store::u64_bytes;
+
+const LATENCY_BUCKETS_US: [u64; 19] = [
+    100,
+    250,
+    500,
+    1_000,
+    2_500,
+    5_000,
+    10_000,
+    25_000,
+    50_000,
+    100_000,
+    250_000,
+    500_000,
+    1_000_000,
+    2_500_000,
+    5_000_000,
+    10_000_000,
+    30_000_000,
+    60_000_000,
+    u64::MAX,
+];
+
+static OWNER_ALREADY_ACTIVE_FAILURES: AtomicU64 = AtomicU64::new(0);
+static OWNER_UNSAFE_PATH_FAILURES: AtomicU64 = AtomicU64::new(0);
+static OWNER_STORAGE_FAILURES: AtomicU64 = AtomicU64::new(0);
+static REPLAY_REJECTIONS: AtomicU64 = AtomicU64::new(0);
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Serialize)]
+pub struct AuthBusLatencySummary {
+    pub count: u64,
+    pub p50_us: u64,
+    pub p95_us: u64,
+    pub p99_us: u64,
+    pub max_us: u64,
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Serialize)]
+pub struct AuthBusRuntimeSnapshot {
+    pub owner_already_active_failures: u64,
+    pub owner_unsafe_path_failures: u64,
+    pub owner_storage_failures: u64,
+    pub checkpoint_sync_failures: u64,
+    pub checkpoint_rollback_conflicts: u64,
+    pub checkpoint_storage_failures: u64,
+    pub authority_use_blocks: u64,
+    pub mutation_attempts: u64,
+    pub mutation_rejections: u64,
+    pub mutation_outcome_unknown: u64,
+    pub mutation_committed_reconciliation_required: u64,
+    pub replay_rejections: u64,
+    pub maintenance_ticks: u64,
+    pub maintenance_failures: u64,
+    pub recovery_incomplete_ticks: u64,
+    pub mutation_latency: AuthBusLatencySummary,
+    pub maintenance_latency: AuthBusLatencySummary,
+}
+
+struct LatencyHistogram {
+    buckets: [AtomicU64; LATENCY_BUCKETS_US.len()],
+    max_us: AtomicU64,
+}
+
+impl Default for LatencyHistogram {
+    fn default() -> Self {
+        Self {
+            buckets: array::from_fn(|_| AtomicU64::new(0)),
+            max_us: AtomicU64::new(0),
+        }
+    }
+}
+
+impl LatencyHistogram {
+    fn record(&self, duration: Duration) {
+        let micros = u64::try_from(duration.as_micros()).unwrap_or(u64::MAX);
+        let index = LATENCY_BUCKETS_US
+            .iter()
+            .position(|bound| micros <= *bound)
+            .unwrap_or(LATENCY_BUCKETS_US.len() - 1);
+        self.buckets[index].fetch_add(1, Ordering::Relaxed);
+        self.max_us.fetch_max(micros, Ordering::Relaxed);
+    }
+
+    fn snapshot(&self) -> AuthBusLatencySummary {
+        let counts: [u64; LATENCY_BUCKETS_US.len()] =
+            array::from_fn(|index| self.buckets[index].load(Ordering::Relaxed));
+        let count = counts.iter().copied().sum();
+        let max_us = self.max_us.load(Ordering::Relaxed);
+        AuthBusLatencySummary {
+            count,
+            p50_us: percentile(&counts, count, 50, max_us),
+            p95_us: percentile(&counts, count, 95, max_us),
+            p99_us: percentile(&counts, count, 99, max_us),
+            max_us,
+        }
+    }
+}
+
+fn percentile(
+    counts: &[u64; LATENCY_BUCKETS_US.len()],
+    total: u64,
+    percentile: u64,
+    max_us: u64,
+) -> u64 {
+    if total == 0 {
+        return 0;
+    }
+    let target = u64::try_from(
+        (u128::from(total) * u128::from(percentile)).div_ceil(100),
+    )
+    .unwrap_or(u64::MAX);
+    let mut cumulative = 0_u64;
+    for (index, count) in counts.iter().copied().enumerate() {
+        cumulative = cumulative.saturating_add(count);
+        if cumulative >= target {
+            let bound = LATENCY_BUCKETS_US[index];
+            return if bound == u64::MAX { max_us } else { bound };
+        }
+    }
+    max_us
+}
+
+#[derive(Default)]
+pub(crate) struct AuthBusRuntimeMetrics {
+    checkpoint_sync_failures: AtomicU64,
+    checkpoint_rollback_conflicts: AtomicU64,
+    checkpoint_storage_failures: AtomicU64,
+    authority_use_blocks: AtomicU64,
+    mutation_attempts: AtomicU64,
+    mutation_rejections: AtomicU64,
+    mutation_outcome_unknown: AtomicU64,
+    mutation_committed_reconciliation_required: AtomicU64,
+    maintenance_ticks: AtomicU64,
+    maintenance_failures: AtomicU64,
+    recovery_incomplete_ticks: AtomicU64,
+    mutation_latency: LatencyHistogram,
+    maintenance_latency: LatencyHistogram,
+}
+
+impl AuthBusRuntimeMetrics {
+    pub(crate) fn record_checkpoint_sync_failure(&self, error: &AuthBusAuthorityError) {
+        self.checkpoint_sync_failures
+            .fetch_add(1, Ordering::Relaxed);
+        match error {
+            AuthBusAuthorityError::RollbackDetected => {
+                self.checkpoint_rollback_conflicts
+                    .fetch_add(1, Ordering::Relaxed);
+            }
+            AuthBusAuthorityError::Storage(_) | AuthBusAuthorityError::UnsafeCheckpoint => {
+                self.checkpoint_storage_failures
+                    .fetch_add(1, Ordering::Relaxed);
+            }
+            _ => {}
+        }
+    }
+
+    pub(crate) fn record_mutation<T>(
+        &self,
+        duration: Duration,
+        result: &Result<T, AuthBusAuthorityError>,
+    ) {
+        self.mutation_attempts.fetch_add(1, Ordering::Relaxed);
+        self.mutation_latency.record(duration);
+        let Err(error) = result else {
+            return;
+        };
+        match error {
+            AuthBusAuthorityError::AuthorityUseBlocked(_) => {
+                self.authority_use_blocks.fetch_add(1, Ordering::Relaxed);
+            }
+            AuthBusAuthorityError::CheckpointReconciliationRequired(_) => {
+                self.mutation_committed_reconciliation_required
+                    .fetch_add(1, Ordering::Relaxed);
+            }
+            AuthBusAuthorityError::MutationOutcomeUnknown(_)
+            | AuthBusAuthorityError::Storage(_) => {
+                self.mutation_outcome_unknown
+                    .fetch_add(1, Ordering::Relaxed);
+            }
+            _ => {
+                self.mutation_rejections.fetch_add(1, Ordering::Relaxed);
+            }
+        }
+    }
+
+    pub(crate) fn record_maintenance(
+        &self,
+        duration: Duration,
+        result: &Result<(bool, ExpiredReservationSweep), AuthBusAuthorityError>,
+    ) {
+        self.maintenance_ticks.fetch_add(1, Ordering::Relaxed);
+        self.maintenance_latency.record(duration);
+        match result {
+            Ok((false, _)) => {
+                self.recovery_incomplete_ticks
+                    .fetch_add(1, Ordering::Relaxed);
+            }
+            Err(_) => {
+                self.maintenance_failures.fetch_add(1, Ordering::Relaxed);
+            }
+            Ok((true, _)) => {}
+        }
+    }
+
+    pub(crate) fn snapshot(&self) -> AuthBusRuntimeSnapshot {
+        AuthBusRuntimeSnapshot {
+            owner_already_active_failures: OWNER_ALREADY_ACTIVE_FAILURES.load(Ordering::Relaxed),
+            owner_unsafe_path_failures: OWNER_UNSAFE_PATH_FAILURES.load(Ordering::Relaxed),
+            owner_storage_failures: OWNER_STORAGE_FAILURES.load(Ordering::Relaxed),
+            checkpoint_sync_failures: self.checkpoint_sync_failures.load(Ordering::Relaxed),
+            checkpoint_rollback_conflicts: self
+                .checkpoint_rollback_conflicts
+                .load(Ordering::Relaxed),
+            checkpoint_storage_failures: self
+                .checkpoint_storage_failures
+                .load(Ordering::Relaxed),
+            authority_use_blocks: self.authority_use_blocks.load(Ordering::Relaxed),
+            mutation_attempts: self.mutation_attempts.load(Ordering::Relaxed),
+            mutation_rejections: self.mutation_rejections.load(Ordering::Relaxed),
+            mutation_outcome_unknown: self.mutation_outcome_unknown.load(Ordering::Relaxed),
+            mutation_committed_reconciliation_required: self
+                .mutation_committed_reconciliation_required
+                .load(Ordering::Relaxed),
+            replay_rejections: REPLAY_REJECTIONS.load(Ordering::Relaxed),
+            maintenance_ticks: self.maintenance_ticks.load(Ordering::Relaxed),
+            maintenance_failures: self.maintenance_failures.load(Ordering::Relaxed),
+            recovery_incomplete_ticks: self.recovery_incomplete_ticks.load(Ordering::Relaxed),
+            mutation_latency: self.mutation_latency.snapshot(),
+            maintenance_latency: self.maintenance_latency.snapshot(),
+        }
+    }
+}
+
+pub(crate) fn record_owner_acquisition_failure(error: &AuthBusAuthorityError) {
+    match error {
+        AuthBusAuthorityError::OwnerAlreadyActive => {
+            OWNER_ALREADY_ACTIVE_FAILURES.fetch_add(1, Ordering::Relaxed);
+        }
+        AuthBusAuthorityError::UnsafeCheckpoint | AuthBusAuthorityError::InvalidInput(_) => {
+            OWNER_UNSAFE_PATH_FAILURES.fetch_add(1, Ordering::Relaxed);
+        }
+        _ => {
+            OWNER_STORAGE_FAILURES.fetch_add(1, Ordering::Relaxed);
+        }
+    }
+}
+
+pub(crate) fn record_replay_rejection() {
+    REPLAY_REJECTIONS.fetch_add(1, Ordering::Relaxed);
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -27,6 +282,18 @@ pub enum AuthBusAlertKind {
     IndeterminateReservation,
     ActiveReservationCapacity,
     QuotaUtilization,
+    OldestActiveReservation,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AuthBusBlockingReason {
+    CheckpointReconciliation,
+    RestartRecovery,
+    ExpiredReservationReconciliation,
+    IndeterminateSettlement,
+    ActiveReservationCapacity,
+    QuotaCapacity,
     OldestActiveReservation,
 }
 
@@ -92,9 +359,42 @@ pub struct AuthBusOperationalSnapshot {
     pub active_issuer_epochs: u64,
     pub revoked_issuer_epochs: u64,
     pub retired_issuer_epochs: u64,
+    pub runtime: AuthBusRuntimeSnapshot,
 }
 
 impl AuthBusOperationalSnapshot {
+    pub fn blocking_reasons(
+        &self,
+        policy: AuthBusSloPolicy,
+    ) -> Result<Vec<AuthBusBlockingReason>, AuthBusAuthorityError> {
+        let policy = policy.validate()?;
+        let mut reasons = Vec::new();
+        if self.checkpoint_dirty {
+            reasons.push(AuthBusBlockingReason::CheckpointReconciliation);
+        }
+        if self.recovery_required {
+            reasons.push(AuthBusBlockingReason::RestartRecovery);
+        }
+        if self.expired_active_reservations > 0 {
+            reasons.push(AuthBusBlockingReason::ExpiredReservationReconciliation);
+        }
+        if self.indeterminate_reservations > policy.max_indeterminate_reservations {
+            reasons.push(AuthBusBlockingReason::IndeterminateSettlement);
+        }
+        if self.active_reservations >= policy.max_active_reservations {
+            reasons.push(AuthBusBlockingReason::ActiveReservationCapacity);
+        }
+        if self.quota_utilization_basis_points >= policy.max_quota_utilization_basis_points {
+            reasons.push(AuthBusBlockingReason::QuotaCapacity);
+        }
+        if self.oldest_active_reservation_age_ms
+            >= policy.max_oldest_active_reservation_age_ms
+        {
+            reasons.push(AuthBusBlockingReason::OldestActiveReservation);
+        }
+        Ok(reasons)
+    }
+
     pub fn evaluate(
         &self,
         policy: AuthBusSloPolicy,
@@ -176,11 +476,13 @@ impl AuthBusAuthorityHost {
         &self,
         time: &TrustedTimeSample,
     ) -> Result<AuthBusOperationalSnapshot, AuthBusAuthorityError> {
-        self.store.operational_snapshot(time).await
+        let mut snapshot = self.store.operational_snapshot(time).await?;
+        snapshot.runtime = self.metrics.snapshot();
+        Ok(snapshot)
     }
 
-    /// Execute one bounded owner-maintenance iteration. Any committed mutation
-    /// is externally checkpointed before the report is returned.
+    /// Execute one bounded owner-maintenance iteration through the same owner
+    /// gate and checkpoint boundary used by normal mutations.
     pub async fn maintenance_tick(
         &self,
         time: TrustedTimeSample,
@@ -192,13 +494,9 @@ impl AuthBusAuthorityHost {
                 "authority worker batch must be in 1..=1024",
             ));
         }
-        let recovery_complete = self.store.reconcile_after_restart(limit).await?;
-        let expired_reservation_sweep = self
-            .store
-            .sweep_expired_reservations(time.clone(), limit)
-            .await?;
-        self.sync_checkpoint().await?;
-        let snapshot = self.store.operational_snapshot(&time).await?;
+        let (recovery_complete, expired_reservation_sweep) =
+            self.run_maintenance_mutations(time.clone(), limit).await?;
+        let snapshot = self.operational_snapshot(&time).await?;
         let alerts = snapshot.evaluate(policy)?;
         Ok(AuthBusMaintenanceReport {
             recovery_complete,
@@ -308,7 +606,8 @@ impl AuthBusAuthorityStore {
                 )?,
             )?;
         }
-        let quota_endowment = checked_sum(checked_sum(quota_available, quota_reserved)?, quota_consumed)?;
+        let quota_endowment =
+            checked_sum(checked_sum(quota_available, quota_reserved)?, quota_consumed)?;
         let quota_used = checked_sum(quota_reserved, quota_consumed)?;
         let quota_utilization_basis_points = if quota_endowment == 0 {
             0
@@ -357,6 +656,7 @@ impl AuthBusAuthorityStore {
             active_issuer_epochs,
             revoked_issuer_epochs,
             retired_issuer_epochs,
+            runtime: AuthBusRuntimeSnapshot::default(),
         })
     }
 }
