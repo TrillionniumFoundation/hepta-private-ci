@@ -1,4 +1,3 @@
-# Registered in the preceding commit; this push activates the fail-closed repair.
 name: Apply runtime supervisor Stage A+B repair
 
 on:
@@ -6,22 +5,19 @@ on:
     branches:
       - fix/runtime-supervisor-remediation-20260927
     paths:
-      - ".github/runtime-supervisor-stage-a.py.bz2.b64"
-      - ".github/runtime-supervisor-stage-b.py.bz2.b64.00"
-      - ".github/runtime-supervisor-stage-b.py.bz2.b64.01"
       - ".github/workflows/hepta-supervisor-stage-ab-apply.yml"
 
 permissions:
   contents: write
 
 concurrency:
-  group: runtime-supervisor-stage-ab-apply-${{ github.sha }}
+  group: runtime-supervisor-stage-b-hosted-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
   apply:
-    if: contains(github.event.head_commit.message, 'stage A+B remediation trigger')
-    runs-on: [self-hosted, linux, x64, rog]
+    if: contains(github.event.head_commit.message, 'hosted Stage B remediation trigger')
+    runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
       - name: Check out exact trigger
@@ -31,7 +27,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Reconstruct and apply fail-closed transformations
+      - name: Reconstruct and apply the registered Stage B transformation
         shell: bash
         run: |
           set -euo pipefail
@@ -42,43 +38,51 @@ jobs:
           import hashlib
           from pathlib import Path
 
-          stage_a_encoded = Path(
-              ".github/runtime-supervisor-stage-a.py.bz2.b64"
-          ).read_bytes()
-          stage_b_encoded = b"".join(
+          encoded = b"".join(
               Path(path).read_bytes()
               for path in (
                   ".github/runtime-supervisor-stage-b.py.bz2.b64.00",
                   ".github/runtime-supervisor-stage-b.py.bz2.b64.01",
               )
           )
-          stage_a = bz2.decompress(base64.b64decode(stage_a_encoded))
-          stage_b = bz2.decompress(base64.b64decode(stage_b_encoded))
-          expected = {
-              "stage_a": "a925f113ed31468bb5d848ab0b01370dd9d6d87b301f3b7fbf4e2792ab8a1b05",
-              "stage_b": "a870d15e6629c9f417baaa902380eb893b9edb97ef438a2e6a333e4c935a2feb",
-          }
-          actual = {
-              "stage_a": hashlib.sha256(stage_a).hexdigest(),
-              "stage_b": hashlib.sha256(stage_b).hexdigest(),
-          }
+          payload = bz2.decompress(base64.b64decode(encoded))
+          expected = "a870d15e6629c9f417baaa902380eb893b9edb97ef438a2e6a333e4c935a2feb"
+          actual = hashlib.sha256(payload).hexdigest()
           if actual != expected:
-              raise SystemExit(f"repair payload digest mismatch: {actual}")
-          Path(".github/runtime-supervisor-stage-a.py").write_bytes(stage_a)
-          Path(".github/runtime-supervisor-stage-b.py").write_bytes(stage_b)
+              raise SystemExit(f"Stage B payload digest mismatch: {actual}")
+          Path(".github/runtime-supervisor-stage-b.py").write_bytes(payload)
           PY
-          python3 .github/runtime-supervisor-stage-a.py
           python3 .github/runtime-supervisor-stage-b.py
-          rm .github/runtime-supervisor-stage-a.py
           rm .github/runtime-supervisor-stage-b.py
-          rm .github/runtime-supervisor-stage-a.py.bz2.b64
-          rm .github/runtime-supervisor-stage-b.py.bz2.b64.00
-          rm .github/runtime-supervisor-stage-b.py.bz2.b64.01
-          rm .github/workflows/hepta-supervisor-stage-a-apply.yml
-          rm .github/workflows/hepta-supervisor-stage-ab-apply.yml
           git diff --check
 
-      - name: Install exact Rust toolchain
+      - name: Reject transformed paths outside runtime.supervisor
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import subprocess
+
+          changed = []
+          for line in subprocess.check_output(
+              ["git", "status", "--porcelain=v1"], text=True
+          ).splitlines():
+              path = line[3:]
+              if " -> " in path:
+                  path = path.split(" -> ", 1)[1]
+              changed.append(path)
+          unexpected = [
+              path for path in changed
+              if path != ".github/runtime-supervisor-stage-b.py"
+              and not path.startswith("codex-rs/hepta-supervisor/")
+          ]
+          if unexpected:
+              raise SystemExit(f"unexpected transformed paths: {unexpected}")
+          if not any(path.startswith("codex-rs/hepta-supervisor/") for path in changed):
+              raise SystemExit("Stage B transformation changed no supervisor source")
+          PY
+
+      - name: Install the repository Rust toolchain
         shell: bash
         run: |
           set -euo pipefail
@@ -86,60 +90,16 @@ jobs:
           rustup toolchain install "$channel" --profile minimal --component rustfmt,clippy
           echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
 
-      - name: Format only the supervisor package
+      - name: Format and execute focused lineage tests
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
           cargo fmt --package codex-hepta-supervisor
           cargo fmt --package codex-hepta-supervisor -- --check
-
-      - name: Reject unexpected transformed paths
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import subprocess
-
-          allowed_exact = {
-              ".github/runtime-supervisor-stage-a.py",
-              ".github/runtime-supervisor-stage-a.py.bz2.b64",
-              ".github/runtime-supervisor-stage-b.py.bz2.b64.00",
-              ".github/runtime-supervisor-stage-b.py.bz2.b64.01",
-              ".github/workflows/hepta-supervisor-stage-a-apply.yml",
-              ".github/workflows/hepta-supervisor-stage-ab-apply.yml",
-          }
-          paths = subprocess.check_output(
-              ["git", "status", "--porcelain=v1"], text=True
-          ).splitlines()
-          changed = []
-          for line in paths:
-              path = line[3:]
-              if " -> " in path:
-                  path = path.split(" -> ", 1)[1]
-              changed.append(path)
-          unexpected = [
-              path
-              for path in changed
-              if path not in allowed_exact
-              and not path.startswith("codex-rs/hepta-supervisor/")
-          ]
-          if unexpected:
-              raise SystemExit(f"unexpected transformed paths: {unexpected}")
-          if not any(path.startswith("codex-rs/hepta-supervisor/") for path in changed):
-              raise SystemExit("repair did not change supervisor source")
-          PY
-          git diff --check
-
-      - name: Execute focused lineage and containment tests
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
+          cargo test --locked -p codex-hepta-supervisor --lib restart_lineage::tests
           cargo test --locked -p codex-hepta-supervisor --lib \
             main_recovery_fault_contains_owned_companion_before_returning
-          cargo test --locked -p codex-hepta-supervisor --lib \
-            restart_lineage::tests
 
       - name: Execute complete default and production libraries
         working-directory: codex-rs
@@ -159,7 +119,7 @@ jobs:
           cargo clippy --locked -p codex-hepta-supervisor --all-targets \
             --features production-authority -- -D warnings
 
-      - name: Commit only the verified repair
+      - name: Commit only the verified Stage B source
         shell: bash
         env:
           BRANCH: fix/runtime-supervisor-remediation-20260927
@@ -168,16 +128,9 @@ jobs:
           remote="$(git ls-remote origin "refs/heads/${BRANCH}" | awk '{print $1}')"
           test "$remote" = "$GITHUB_SHA"
           git diff --check
-          test -n "$(git status --porcelain)"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A \
-            codex-rs/hepta-supervisor \
-            .github/runtime-supervisor-stage-a.py \
-            .github/runtime-supervisor-stage-a.py.bz2.b64 \
-            .github/runtime-supervisor-stage-b.py.bz2.b64.00 \
-            .github/runtime-supervisor-stage-b.py.bz2.b64.01 \
-            .github/workflows/hepta-supervisor-stage-a-apply.yml \
-            .github/workflows/hepta-supervisor-stage-ab-apply.yml
-          git commit -m "runtime.supervisor: bind restart lineage and companion containment"
+          git add codex-rs/hepta-supervisor
+          git diff --cached --quiet && { echo "no verified source changes"; exit 1; }
+          git commit -m "runtime.supervisor: bind durable restart lineage"
           git push origin "HEAD:${BRANCH}"
