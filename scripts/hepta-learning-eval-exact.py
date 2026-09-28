@@ -105,6 +105,8 @@ def commands(output: Path) -> list[tuple[str, list[str], str]]:
         ("shadow-consumer", ["just", "test", "--locked", "-p", "codex-hepta-intelligence", "evaluated_shadow", "--test-threads=1"], "codex-rs"),
         ("plasticity-consumer", ["just", "test", "--locked", "-p", "codex-hepta-intelligence", "plasticity_product", "--test-threads=1"], "codex-rs"),
         ("agentd-consumer", ["just", "test", "--locked", "-p", "codex-hepta-agentd", "signed_candidate_passes_only_on_bound_current_owner_and_context", "--test-threads=1"], "codex-rs"),
+        ("agentd-outcome-consumer", ["just", "test", "--locked", "-p", "codex-hepta-agentd", "multi_outcome_consumer_rejects_context_owner_and_signature_substitution", "--test-threads=1"], "codex-rs"),
+        ("cold-recovery-e2e", ["just", "test", "--locked", "-p", "codex-hepta-intelligence-eval", "--test", "cold_recovery_e2e", "--test-threads=1"], "codex-rs"),
         ("fault-matrix", ["bash", "scripts/hepta-learning-eval-faults.sh", "--json", str(output / "faults.json"), "--log", str(output / "faults.log")], "."),
         ("storage-profile", ["cargo", "run", "--locked", "-p", "codex-hepta-intelligence-eval", "--bin", "learning_eval_storage_profile", "--", "--attempts", "1024", "--fences", "512", "--output", str(output / "storage-profile.json")], "codex-rs"),
         ("library-coverage", ["cargo", "llvm-cov", "--locked", "-p", "codex-hepta-intelligence-eval", "--lib", "--all-features", "--fail-under-lines", "85", "--json", "--output-path", str(output / "coverage.json")], "codex-rs"),
@@ -123,7 +125,7 @@ def validate_outputs(output: Path) -> dict[str, Any]:
     profile = json.loads((output / "storage-profile.json").read_text())
     if (profile["schema"] != "hepta.learning-eval.storage-profile.v1"
             or profile["attempts"]["attemptCount"] != 1024
-            or profile["attempts"]["eventCount"] != 2048
+            or profile["attempts"]["eventCount"] != 7168
             or profile["holdout"]["fenceTransitions"] != 512
             or profile["holdout"]["anchorPreserved"] is not True
             or profile["holdout"]["afterBytes"] >= profile["holdout"]["beforeBytes"]):

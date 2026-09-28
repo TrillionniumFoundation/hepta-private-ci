@@ -35,11 +35,18 @@ fn admitted_work_keeps_capacity_when_new_work_is_rejected() {
     let rejected = capacity.project(None, &second).expect("project second");
     assert!(rejected.check(72 + 2 * 136, 2, 72 + 7 * 136, 7).is_err());
     // Rejected admission did not mutate the reservation. Every existing step
-    // still fits, including the terminal publication.
+    // still fits, including archive persistence and terminal publication.
     let mut previous = Phase::IntentPersisted;
-    for (index, phase) in [Phase::HoldoutConsumed, Phase::ComparisonSealed,
-        Phase::QualificationDecided, Phase::PublicationPending, Phase::Published]
-        .into_iter().enumerate()
+    for (index, phase) in [
+        Phase::HoldoutConsumed,
+        Phase::ComparisonSealed,
+        Phase::QualificationArtifactsPersisted,
+        Phase::QualificationDecided,
+        Phase::PublicationPending,
+        Phase::Published,
+    ]
+    .into_iter()
+    .enumerate()
     {
         let next = transition("a", phase);
         let reserved = capacity.project(Some(previous), &next).expect("advance");

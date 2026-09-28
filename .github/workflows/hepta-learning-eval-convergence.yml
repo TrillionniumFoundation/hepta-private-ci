@@ -82,9 +82,11 @@ jobs:
           set -euo pipefail
           just test --locked -p codex-hepta-intelligence-eval --test-threads=1
           just test --locked -p codex-hepta-intelligence-eval signed_qualification_e2e --test-threads=1
+          just test --locked -p codex-hepta-intelligence-eval --test cold_recovery_e2e --test-threads=1
           just test --locked -p codex-hepta-intelligence evaluated_shadow --test-threads=1
           just test --locked -p codex-hepta-intelligence plasticity_product --test-threads=1
           just test --locked -p codex-hepta-agentd signed_candidate_passes_only_on_bound_current_owner_and_context --test-threads=1
+          just test --locked -p codex-hepta-agentd multi_outcome_consumer_rejects_context_owner_and_signature_substitution --test-threads=1
 
       - name: Deterministic fault-injection matrix
         shell: bash
@@ -112,7 +114,7 @@ jobs:
           value = json.loads(path.read_text(encoding='utf-8'))
           assert value['schema'] == 'hepta.learning-eval.storage-profile.v1'
           assert value['attempts']['attemptCount'] == 1024
-          assert value['attempts']['eventCount'] == 2048
+          assert value['attempts']['eventCount'] == 7168
           assert value['holdout']['fenceTransitions'] == 512
           assert value['holdout']['anchorPreserved'] is True
           assert value['holdout']['afterBytes'] < value['holdout']['beforeBytes']

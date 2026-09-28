@@ -13,6 +13,7 @@ use codex_hepta_intelligence_eval::HoldoutWriterFenceV1;
 use codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1;
 use codex_hepta_intelligence_eval::LockedFileProductEvaluationAttemptJournalV1;
 use codex_hepta_intelligence_eval::ProductEvaluationAttemptJournalV1;
+use codex_hepta_intelligence_eval::ProductEvaluationAttemptPhaseV1;
 use codex_hepta_intelligence_eval::ProductEvaluationAttemptTransitionV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -61,30 +62,71 @@ fn run_profile(root: &std::path::Path, args: &Args) -> Result<String, Box<dyn Er
         let attempt_id = id(&format!("profile-attempt:{index}"))?;
         let plan = digest(&format!("profile-plan:{index}"));
         let holdout = digest(&format!("profile-holdout:{index}"));
+        let execution = digest(&format!("profile-execution:{index}"));
+        let artifacts = digest(&format!("profile-qualification-artifacts:{index}"));
+        let request = digest(&format!("profile-publication-request:{index}"));
+        let publication = digest(&format!("profile-publication:{index}"));
+
+        attempt.append(ProductEvaluationAttemptTransitionV1::intent(
+            attempt_id.clone(),
+            plan,
+            attempt_binding,
+            digest(&format!("profile-owner-state:{index}")),
+        ))?;
         attempt.append(ProductEvaluationAttemptTransitionV1::holdout_consumed(
             attempt_id.clone(),
             plan,
             holdout,
         ))?;
         attempt.append(ProductEvaluationAttemptTransitionV1::comparison_sealed(
-            attempt_id,
+            attempt_id.clone(),
             plan,
             holdout,
-            digest(&format!("profile-execution:{index}")),
+            execution,
         ))?;
+        attempt.append(ProductEvaluationAttemptTransitionV1 {
+            attempt_id: attempt_id.clone(),
+            plan_digest: plan,
+            phase: ProductEvaluationAttemptPhaseV1::QualificationArtifactsPersisted,
+            holdout_record_digest: holdout,
+            terminal_digest: artifacts,
+        })?;
+        for phase in [
+            ProductEvaluationAttemptPhaseV1::QualificationDecided,
+            ProductEvaluationAttemptPhaseV1::PublicationPending,
+        ] {
+            attempt.append(ProductEvaluationAttemptTransitionV1 {
+                attempt_id: attempt_id.clone(),
+                plan_digest: plan,
+                phase,
+                holdout_record_digest: holdout,
+                terminal_digest: request,
+            })?;
+        }
+        attempt.append(ProductEvaluationAttemptTransitionV1 {
+            attempt_id,
+            plan_digest: plan,
+            phase: ProductEvaluationAttemptPhaseV1::Published,
+            holdout_record_digest: holdout,
+            terminal_digest: publication,
+        })?;
+    }
+    if !attempt.pending(None, 1)?.is_empty() {
+        return Err("completed profile retained unresolved attempts".into());
     }
     let attempt_write_micros = attempt_write_start.elapsed().as_micros();
     let attempt_bytes = attempt.byte_len();
     let attempt_events = attempt.event_count();
     drop(attempt);
     let attempt_recovery_start = Instant::now();
-    let recovered_attempt = LockedFileProductEvaluationAttemptJournalV1::recover(
+    let mut recovered_attempt = LockedFileProductEvaluationAttemptJournalV1::recover(
         OpenOptions::new().read(true).write(true).open(&attempt_path)?,
         attempt_binding,
     )?;
     let attempt_recovery_micros = attempt_recovery_start.elapsed().as_micros();
     if recovered_attempt.event_count() != attempt_events
         || recovered_attempt.byte_len() != attempt_bytes
+        || !recovered_attempt.pending(None, 1)?.is_empty()
     {
         return Err("attempt journal recovery profile mismatch".into());
     }
