@@ -1,6 +1,9 @@
+import tempfile
 import unittest
+from pathlib import Path
 
 from scripts.hepta_repository_surface import POLICY_PATH
+from scripts.hepta_repository_surface import ROOT
 from scripts.hepta_repository_surface import forbidden_additions
 from scripts.hepta_repository_surface import load_policy
 
@@ -18,6 +21,23 @@ class RepositorySurfaceTests(unittest.TestCase):
             policy["allowedModuleLocalMachineFiles"], {"module.toml"}
         )
         self.assertIn(POLICY_PATH, policy["allowedRootModuleFiles"])
+
+    def test_policy_cannot_allow_an_extra_root_registry(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            target = root / POLICY_PATH
+            target.parent.mkdir(parents=True)
+            text = (ROOT / POLICY_PATH).read_text(encoding="utf-8")
+            target.write_text(
+                text.replace(
+                    '  "docs/modules/registry.toml",\n',
+                    '  "docs/modules/registry.toml",\n'
+                    '  "docs/modules/PARALLEL_REGISTRY.json",\n',
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "widened or drifted"):
+                load_policy(root)
 
     def test_shared_manifest_and_generated_roots_are_allowed(self):
         self.assertEqual(
