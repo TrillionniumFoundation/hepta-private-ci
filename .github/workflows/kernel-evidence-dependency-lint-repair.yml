@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   group: kernel-evidence-dependency-lint-repair-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   repair:
@@ -61,11 +61,13 @@ jobs:
             -p codex-hepta-operations \
             -- -D warnings
 
-      - name: Commit the exact tested source
+      - name: Commit the exact tested source anchor
         shell: bash
         run: |
           set -euo pipefail
           git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
             codex-rs/Cargo.lock \
             codex-rs/state/src/lib.rs \
@@ -79,11 +81,54 @@ jobs:
             codex-rs/hepta-operations/src/destination_dedupe.rs \
             codex-rs/hepta-operations/src/durable_store.rs \
             scripts/kernel_evidence_integration_sync.py
-          if git diff --cached --quiet; then
-            echo "Dependency lint repair already applied"
-            exit 0
+          if ! git diff --cached --quiet; then
+            git commit -m "fix(kernel.evidence): centralize transitive SQLite openings [kernel-evidence-dependency-lint-applied] [kernel-evidence-closure]"
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "fix(kernel.evidence): centralize transitive SQLite openings [kernel-evidence-dependency-lint-applied] [kernel-evidence-closure]"
+          test -z "$(git status --porcelain)"
+          printf '%s\n' "$(git rev-parse HEAD)" > "$RUNNER_TEMP/kernel-evidence-source-anchor"
+
+      - name: Bind canonical status and technical documentation to the source anchor
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_anchor="$(cat "$RUNNER_TEMP/kernel-evidence-source-anchor")"
+          test "$(git rev-parse "$source_anchor^{commit}")" = "$source_anchor"
+          python3 scripts/kernel_evidence_integration_sync.py metadata "$source_anchor"
+          python3 scripts/kernel_evidence_status.py verify
+          python3 scripts/hepta-docs.py verify
+          git diff --check
+          git add \
+            docs/modules/MODULE_DOCS.json \
+            docs/modules/kernel.evidence/TECHNICAL.md \
+            docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md \
+            docs/lane-a-foundation/kernel.evidence/STORE_V1.md \
+            qualification/kernel-evidence/STATUS_SOURCE.json \
+            qualification/kernel-evidence/TRACEABILITY.md \
+            qualification/kernel-evidence/RELEASE_DASHBOARD.md \
+            qualification/module-execution-dossiers/detail/kernel.evidence.md
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(kernel.evidence): bind canonical status to tested dependency closure [kernel-evidence-closure]"
+          fi
+          test -z "$(git status --porcelain)"
+          printf '%s\n' "$(git rev-parse HEAD)" > "$RUNNER_TEMP/kernel-evidence-document-anchor"
+
+      - name: Bind implementation map to the synchronized documentation object
+        shell: bash
+        run: |
+          set -euo pipefail
+          document_anchor="$(cat "$RUNNER_TEMP/kernel-evidence-document-anchor")"
+          test "$(git rev-parse "$document_anchor^{commit}")" = "$document_anchor"
+          python3 scripts/kernel_evidence_integration_sync.py map "$document_anchor"
+          python3 scripts/hepta-implementation-maps.py verify
+          git diff --check
+          git add docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(kernel.evidence): bind implementation map to synchronized candidate [kernel-evidence-closure]"
+          fi
+          test -z "$(git status --porcelain)"
+
+      - name: Push the complete three-object candidate chain
+        shell: bash
+        run: |
+          set -euo pipefail
           git push origin HEAD:work/kernel-evidence-ad-integration-20260928
