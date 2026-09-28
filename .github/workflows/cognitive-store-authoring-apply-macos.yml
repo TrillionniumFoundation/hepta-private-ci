@@ -1,0 +1,103 @@
+name: Cognitive store isolated authoring apply macOS
+
+on:
+  push:
+    branches:
+      - automation/cognitive-store-authoring-apply-20260928
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-store-isolated-authoring-apply-macos
+  cancel-in-progress: false
+
+env:
+  TARGET_BRANCH: codex/cognitive-store-full-closure-20260927
+  EXPECTED_SHA: d755c0308c1419c00edac4e3122549c74cb9c338
+
+jobs:
+  apply:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact target
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git fetch --no-tags origin "+refs/heads/${TARGET_BRANCH}:refs/remotes/origin/${TARGET_BRANCH}"
+          test "$(git rev-parse refs/remotes/origin/${TARGET_BRANCH})" = "$EXPECTED_SHA"
+
+      - name: Apply deterministic authoring projection
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd codex-rs
+            cargo fmt \
+              --package codex-hepta-cognitive-store \
+              --package codex-hepta-memory \
+              --package codex-hepta-agentd
+          )
+          python3 scripts/cognitive_store_status.py --write
+          (
+            cd codex-rs
+            cargo fmt \
+              --package codex-hepta-cognitive-store \
+              --package codex-hepta-memory \
+              --package codex-hepta-agentd \
+              -- --check
+          )
+          python3 scripts/cognitive_store_status.py --check
+          git diff --check
+
+      - name: Verify bounded change set
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import subprocess
+          expected = {
+              "codex-rs/hepta-agentd/src/cognitive_bootstrap.rs",
+              "codex-rs/hepta-agentd/tests/cognitive_bootstrap.rs",
+              "codex-rs/hepta-cognitive-store/src/durable.rs",
+              "codex-rs/hepta-memory/examples/cognitive_store_history_perf.rs",
+              "codex-rs/hepta-memory/examples/cognitive_store_perf.rs",
+              "docs/modules/cognitive.store/EXECUTION_DOSSIER.md",
+          }
+          observed = set(
+              subprocess.check_output(["git", "diff", "--name-only", "HEAD"], text=True)
+              .splitlines()
+          )
+          if observed != expected:
+              raise SystemExit(
+                  "unexpected authoring change set: "
+                  f"missing={sorted(expected - observed)} extra={sorted(observed - expected)}"
+              )
+          PY
+
+      - name: Publish source projection commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- \
+            codex-rs/hepta-agentd/src/cognitive_bootstrap.rs \
+            codex-rs/hepta-agentd/tests/cognitive_bootstrap.rs \
+            codex-rs/hepta-cognitive-store/src/durable.rs \
+            codex-rs/hepta-memory/examples/cognitive_store_history_perf.rs \
+            codex-rs/hepta-memory/examples/cognitive_store_perf.rs \
+            docs/modules/cognitive.store/EXECUTION_DOSSIER.md
+          git commit -m "style(cognitive.store): align qualification formatting and dossier"
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_SHA"
+          git push origin "HEAD:refs/heads/${TARGET_BRANCH}"
+          printf 'Published %s to %s\n' "$(git rev-parse HEAD)" "$TARGET_BRANCH" >> "$GITHUB_STEP_SUMMARY"
