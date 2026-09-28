@@ -31,7 +31,9 @@ struct FakeDriverState {
     loads: AtomicUsize,
     runs: AtomicUsize,
     inspections: AtomicUsize,
+    failed_load_cleanups: AtomicUsize,
     fail_unload: AtomicBool,
+    corrupt_load_identity: AtomicBool,
     run_observation: Mutex<DriverRunObservation>,
     reconciliation: Mutex<DriverReconciliation>,
 }
@@ -43,7 +45,9 @@ impl FakeDriver {
                 loads: AtomicUsize::new(0),
                 runs: AtomicUsize::new(0),
                 inspections: AtomicUsize::new(0),
+                failed_load_cleanups: AtomicUsize::new(0),
                 fail_unload: AtomicBool::new(false),
+                corrupt_load_identity: AtomicBool::new(false),
                 run_observation: Mutex::new(success_observation()),
                 reconciliation: Mutex::new(DriverReconciliation::MissingHistory),
             }),
@@ -58,15 +62,35 @@ impl LocalModelDriver for FakeDriver {
         _grant: &'a VerifiedResourceGrant,
     ) -> LocalFuture<'a, DriverLoadObservation> {
         let sequence = self.state.loads.fetch_add(1, Ordering::SeqCst) + 1;
+        let corrupt = self.state.corrupt_load_identity.load(Ordering::SeqCst);
         let raw = manifest.as_manifest().clone();
         Box::pin(async move {
             Ok(DriverLoadObservation {
                 handle_id: format!("local.handle.{sequence}"),
-                model_digest: raw.model_digest,
+                model_digest: if corrupt {
+                    digest(b"wrong-model")
+                } else {
+                    raw.model_digest
+                },
                 weights_digest: raw.weights_digest,
                 runtime_digest: raw.runtime_digest,
                 device_uuid: raw.device_uuid,
                 driver_reported_memory_bytes: 1,
+            })
+        })
+    }
+
+    fn cleanup_failed_load<'a>(
+        &'a self,
+        _load: &'a DriverLoadObservation,
+    ) -> LocalFuture<'a, DriverUnloadObservation> {
+        self.state
+            .failed_load_cleanups
+            .fetch_add(1, Ordering::SeqCst);
+        Box::pin(async move {
+            Ok(DriverUnloadObservation {
+                terminal_observed: true,
+                released_memory_bytes: Some(100),
             })
         })
     }
@@ -145,6 +169,27 @@ impl TrustedResourceObserver for FakeObserver {
                 resident_memory_bytes: 100,
                 transient_memory_bytes: 0,
                 attestation_digest: digest(b"resident-attestation"),
+            })
+        })
+    }
+
+    fn observe_unattested_release<'a>(
+        &'a self,
+        handle_id: &'a str,
+        device_uuid: &'a str,
+        worker_generation: u64,
+    ) -> LocalFuture<'a, TrustedReleaseObservation> {
+        let handle_id = handle_id.to_string();
+        let device_uuid = device_uuid.to_string();
+        Box::pin(async move {
+            Ok(TrustedReleaseObservation {
+                observer_id: "trusted.os.observer".to_string(),
+                handle_id,
+                worker_generation,
+                device_uuid,
+                device_epoch: 3,
+                resident_memory_bytes: 0,
+                attestation_digest: digest(b"failed-load-release-attestation"),
             })
         })
     }
@@ -340,6 +385,41 @@ fn signed_grant_rejects_post_signature_semantic_drift() {
 }
 
 #[tokio::test]
+async fn failed_attestation_is_cleaned_and_does_not_leak_pending_capacity() {
+    let (grant, _) = signed_grant(512);
+    let manifest = manifest(&grant);
+    let driver = FakeDriver::new();
+    driver
+        .state
+        .corrupt_load_identity
+        .store(true, Ordering::SeqCst);
+    let worker = DurableLocalModelWorker::new(
+        driver.clone(),
+        FakeObserver,
+        FixedClock(1_000),
+        &grant,
+    )
+    .expect("worker");
+
+    assert!(matches!(
+        worker.load_model(&grant, &manifest).await,
+        Err(LocalWorkerError::InvalidObservation(_))
+    ));
+    assert_eq!(
+        driver
+            .state
+            .failed_load_cleanups
+            .load(Ordering::SeqCst),
+        1
+    );
+    let snapshot = worker.resources().snapshot().expect("snapshot");
+    assert_eq!(snapshot.pending_model_bytes, 0);
+    assert_eq!(snapshot.committed_model_bytes, 0);
+    assert_eq!(snapshot.loaded_models, 0);
+    assert_eq!(snapshot.fenced_reason, None);
+}
+
+#[tokio::test]
 async fn aggregate_memory_and_failed_unload_preserve_resource_truth() {
     let (grant, _) = signed_grant(150);
     let manifest = manifest(&grant);
@@ -360,10 +440,12 @@ async fn aggregate_memory_and_failed_unload_preserve_resource_truth() {
         Err(LocalWorkerError::CapacityExceeded)
     );
     driver.state.fail_unload.store(true, Ordering::SeqCst);
-    assert!(worker
-        .unload_model(&grant, &manifest, &handle)
-        .await
-        .is_err());
+    assert!(
+        worker
+            .unload_model(&grant, &manifest, &handle)
+            .await
+            .is_err()
+    );
     assert_eq!(
         worker
             .resources()
@@ -379,6 +461,150 @@ async fn aggregate_memory_and_failed_unload_preserve_resource_truth() {
             .committed_model_bytes,
         100
     );
+}
+
+#[tokio::test]
+async fn same_process_terminal_reconciliation_releases_quarantined_resources() {
+    let (grant, _) = signed_grant(512);
+    let manifest = manifest(&grant);
+    let driver = FakeDriver::new();
+    let worker = DurableLocalModelWorker::new(
+        driver.clone(),
+        FakeObserver,
+        FixedClock(1_000),
+        &grant,
+    )
+    .expect("worker");
+    let handle = worker
+        .load_model(&grant, &manifest)
+        .await
+        .expect("model");
+    let directory = tempdir().expect("tempdir");
+    let journal = directory.path().join("local-same-process.journal");
+    let mut control = DurableInferenceControl::open(&journal, 64).expect("control");
+
+    *driver
+        .state
+        .run_observation
+        .lock()
+        .expect("run observation") = DriverRunObservation {
+        terminal_observed: false,
+        status: DriverTerminalStatus::Indeterminate,
+        output: Vec::new(),
+        observed_tokens: None,
+        usage_units: None,
+        stop_reason: Some("lost driver channel".to_string()),
+    };
+    let unknown = worker
+        .run(
+            &mut control,
+            &grant,
+            &manifest,
+            &handle,
+            admission("request.local.same-process"),
+            &input(),
+            &CancellationToken::new(),
+        )
+        .await
+        .expect("unknown run");
+    assert_eq!(unknown.status, LocalRunStatus::Indeterminate);
+    let held = worker.resources().snapshot().expect("held snapshot");
+    assert_eq!(held.active_or_quarantined_requests, 1);
+    assert_eq!(held.request_bytes, 20);
+
+    *driver
+        .state
+        .reconciliation
+        .lock()
+        .expect("reconciliation") = DriverReconciliation::Terminal(success_observation());
+    let terminal = worker
+        .run(
+            &mut control,
+            &grant,
+            &manifest,
+            &handle,
+            admission("request.local.same-process"),
+            &input(),
+            &CancellationToken::new(),
+        )
+        .await
+        .expect("terminal reconciliation");
+    assert_eq!(terminal.status, LocalRunStatus::Succeeded);
+    assert_eq!(driver.state.runs.load(Ordering::SeqCst), 1);
+    assert_eq!(driver.state.inspections.load(Ordering::SeqCst), 1);
+    let released = worker.resources().snapshot().expect("released snapshot");
+    assert_eq!(released.active_or_quarantined_requests, 0);
+    assert_eq!(released.request_bytes, 0);
+}
+
+#[tokio::test]
+async fn reconciliation_is_checked_against_original_request_bounds() {
+    let (grant, _) = signed_grant(512);
+    let manifest = manifest(&grant);
+    let driver = FakeDriver::new();
+    let worker = DurableLocalModelWorker::new(
+        driver.clone(),
+        FakeObserver,
+        FixedClock(1_000),
+        &grant,
+    )
+    .expect("worker");
+    let handle = worker
+        .load_model(&grant, &manifest)
+        .await
+        .expect("model");
+    let directory = tempdir().expect("tempdir");
+    let journal = directory.path().join("local-original-bounds.journal");
+    let mut control = DurableInferenceControl::open(&journal, 64).expect("control");
+
+    *driver
+        .state
+        .run_observation
+        .lock()
+        .expect("run observation") = DriverRunObservation {
+        terminal_observed: false,
+        status: DriverTerminalStatus::Indeterminate,
+        output: Vec::new(),
+        observed_tokens: None,
+        usage_units: None,
+        stop_reason: Some("lost driver channel".to_string()),
+    };
+    worker
+        .run(
+            &mut control,
+            &grant,
+            &manifest,
+            &handle,
+            admission("request.local.bounds"),
+            &input(),
+            &CancellationToken::new(),
+        )
+        .await
+        .expect("unknown run");
+    let mut over_limit = success_observation();
+    over_limit.observed_tokens = Some(65);
+    *driver
+        .state
+        .reconciliation
+        .lock()
+        .expect("reconciliation") = DriverReconciliation::Terminal(over_limit);
+
+    assert!(matches!(
+        worker
+            .run(
+                &mut control,
+                &grant,
+                &manifest,
+                &handle,
+                admission("request.local.bounds"),
+                &input(),
+                &CancellationToken::new(),
+            )
+            .await,
+        Err(LocalWorkerError::InvalidObservation(_))
+    ));
+    assert_eq!(driver.state.runs.load(Ordering::SeqCst), 1);
+    assert_eq!(driver.state.inspections.load(Ordering::SeqCst), 1);
 }
 
 #[tokio::test]
