@@ -21,6 +21,7 @@ mod release;
 mod release_transaction;
 mod restart_budget;
 mod restart_journal;
+mod restart_lineage;
 mod restart_policy;
 mod restart_state;
 mod result_fence;
