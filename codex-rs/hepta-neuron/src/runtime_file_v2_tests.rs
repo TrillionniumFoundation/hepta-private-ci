@@ -10,6 +10,12 @@ fn checked<T, E: std::fmt::Debug>(value: Result<T, E>) -> T {
         Err(error) => panic!("fixture: {error:?}"),
     }
 }
+fn failed<T, E>(value: Result<T, E>) -> E {
+    match value {
+        Ok(_) => panic!("expected fixture failure"),
+        Err(error) => error,
+    }
+}
 struct Fixture(PathBuf);
 impl Fixture {
     fn new() -> Self {
@@ -91,7 +97,7 @@ fn path_replacement_after_open_invalidates_future_syncs() {
         fixture.0.join("detached-source"),
     ));
     checked(std::fs::write(fixture.file(), b"replacement"));
-    let error = file.sync_data().expect_err("replacement must invalidate owner");
+    let error = failed(file.sync_data());
     assert_eq!(error.kind(), io::ErrorKind::PermissionDenied);
     assert_eq!(checked(std::fs::read(fixture.file())), b"replacement");
 }
@@ -109,9 +115,7 @@ fn adding_a_hard_link_after_open_invalidates_future_syncs() {
         fixture.file(),
         fixture.0.join("unexpected-alias"),
     ));
-    let error = file
-        .sync_all()
-        .expect_err("new hard link must invalidate owner");
+    let error = failed(file.sync_all());
     assert_eq!(error.kind(), io::ErrorKind::PermissionDenied);
 }
 
