@@ -125,12 +125,19 @@ The inherited feature-provenance, actor coverage, integer-oracle, veto and signe
 learning lifecycle tests remain mandatory. No threshold is weakened and no
 historical fixture is substituted for an actual current candidate run.
 
-V1 retains its 4,096-record envelope and reserved revocation capacity. This change
-does **not** truncate history, rotate away tombstones, or claim that compressed
-archives implement online compaction. Long-lived history rotation requires a
-reviewed epoch transition preserving operation replay, revocations, selected state
-and an external monotonic frontier. Until that implementation is qualified, use
-capacity monitoring and explicit backpressure; do not clear a live journal.
+The selected V1 store retains its 4,096-record envelope and reserved revocation
+capacity; it is not silently migrated or prefix-truncated. The additive
+`NduProjectionEpochJournalV1` source candidate now supplies the reviewed semantic
+transition that was previously missing: bounded active epochs, compact identity
+replay, explicit recorded/revoked/selected state, lossless archive chaining and
+acknowledgement-bound local retention planning. Retention binds the transition
+identity, complete archive checksum, external object version, restore-drill receipt
+and exact current monotonic checkpoint frontier.
+
+The planner performs no deletion, and this source candidate is not an activated
+durable epoch store. Until target-filesystem crash qualification and real off-host
+retention execution exist, keep V1 capacity monitoring and explicit backpressure;
+do not clear a live journal.
 
 Production enrollment of the protected clock and independent CAS frontier,
 target-filesystem power-loss/backup-restore drills, live encrypted publication,

@@ -63,7 +63,8 @@ The following remain separate gates and must stay false/not-established until ev
 - governed selection and activation of the `NduProjectionStoreV1` writer candidate on the target host;
 - target-host filesystem/fsync/directory-durability and recovery qualification;
 - explicit future-schema migration policy (V1 is the initial on-disk schema and rejects unknown/corrupt images rather than silently migrating them);
-- production retention/deletion, encrypted off-host backup transport, restore drills, monitoring and independent anti-rollback/non-resurrection evidence;
+- crash-bounded durable activation of the additive epoch/archive candidate on the named production filesystem;
+- executed production retention/deletion, encrypted off-host backup transport, restore drills, monitoring and independent anti-rollback/non-resurrection evidence;
 - independent semantic/convergence acceptance;
 - named production-target capacity and recovery measurements (hosted CI receipts establish only their named CI host);
 - activation/canary/promotion/release authority;
@@ -100,9 +101,10 @@ limitations above must not be read as absence of those V2 interfaces. Having tho
 interfaces is not proof that an independent deployment provider was enrolled.
 
 Do not classify a local filesystem fixture as production enrollment, an unrun
-AWS/OIDC workflow as successful external publication, lossless archive compression
-as V1 online compaction, or a governed-learning contract as a live learned policy.
-Unknown backup age and target-host acceptance remain explicit until observed.
+AWS/OIDC workflow as successful external publication, the additive epoch/archive
+semantic candidate as an activated durable V1 migration, or a governed-learning
+contract as a live learned policy. Unknown backup age, executed retention/deletion
+and target-host epoch-store acceptance remain explicit until observed.
 
 The A–D remediation and per-stage acceptance boundaries are recorded in
 `REMEDIATION_2026-09-28.md`. Aggregation independently revalidates the raw native

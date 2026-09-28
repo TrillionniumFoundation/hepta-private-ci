@@ -361,11 +361,23 @@ filesystem qualification. This is not protection against a malicious process
 with the authenticated owner's UID replacing ancestors between syscalls.
 
 Exact journal replay and identical backup restore no longer rewrite the snapshot.
-All real persistence attempts record latency/failure observations. The live binary
-V1 journal remains bounded at 4096 records; it is never prefix-truncated for space.
-Revocations and operation identities must survive future V2 online compaction.
-Lossless archive compression and immutable off-host evidence versions are separate
-from live-journal compaction and from a verified production backup/restore drill.
+All real persistence attempts record latency/failure observations. The selected
+binary V1 journal remains bounded at 4096 records and is never prefix-truncated.
+
+`NduProjectionEpochJournalV1` is an additive V1 semantic candidate for bounded
+active epochs. Rotation preserves every operation identity as a compact replay
+record, retains recorded/revoked/selected state, and emits a lossless transition
+archive whose chain can be reconstructed from the canonical empty checkpoint.
+The transition and complete archive checksum are distinct: retention acknowledgement
+must bind both, an immutable external object version, a restore-drill receipt and
+the exact current monotonic checkpoint frontier. `plan_projection_archive_retention_v1`
+only returns oldest-first local archive digests eligible for removal; it performs
+no deletion and grants no external-object deletion authority.
+
+This candidate does not silently replace `NduProjectionStoreV1`, mutate its on-disk
+format, or activate production rotation. Durable epoch-manifest integration, target-
+filesystem crash qualification, real off-host copies and executed deletion remain
+separate activation evidence. Clearing a full V1 journal is never compaction.
 
 `MetricsV2` is additive and preserves `MetricsV1` JSON. Histograms are disjoint
 inclusive-upper-bound bins (not Prometheus cumulative buckets): evaluation and

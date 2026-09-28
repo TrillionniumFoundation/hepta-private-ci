@@ -125,10 +125,21 @@ maximum envelope or end-to-end authorization path.
 
 Sealed qualification evidence supports create-only lossless compression and
 versioned external publication. It does **not** truncate live journal history.
-The 4096-record V1 bound and reserved revocation capacity remain enforced.
-Automatic production history rotation, tombstone-preserving online compaction,
-backup retention/deletion and restore drills remain separate implementation or
-deployment acceptance work; clearing a full journal is not an accepted remedy.
+The selected 4096-record V1 store and reserved revocation capacity remain enforced.
+
+The additive `projection_epoch` candidate implements bounded active-epoch rotation,
+compact operation replay, explicit recorded/revoked/selected checkpoints, lossless
+archive chaining from epoch zero and acknowledgement-bound local retention planning.
+Archive pruning requires the exact transition digest and full archive checksum,
+minimum external copies, immutable object-version identity, restore-drill receipt,
+and the exact current monotonic checkpoint frontier. The planner returns digests;
+it never deletes files or external objects. The existing V1 store is not migrated
+or truncated by this source change.
+
+Production activation still requires a crash-bounded durable epoch manifest/archive
+store on the named target filesystem, real off-host copies, executed restore drills
+and operator-controlled retention/deletion. Clearing a full journal is not an
+accepted remedy.
 
 ## Remaining acceptance gates
 

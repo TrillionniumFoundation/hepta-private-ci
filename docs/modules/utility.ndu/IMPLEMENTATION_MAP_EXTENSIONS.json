@@ -283,6 +283,55 @@
           "symbol": "evidence_v2_composes_into_planner_and_blocks_policy_downgrade"
         }
       ]
+    },
+    {
+      "operation": "NduProjectionEpochJournalV1",
+      "nativeSymbol": "codex_hepta_ndu::NduProjectionEpochJournalV1",
+      "sourcePath": "codex-rs/hepta-ndu/src/projection_epoch.rs",
+      "sourcePathExists": true,
+      "state": "source_candidate_bounded_epoch_compaction_v1",
+      "authority": "none",
+      "nonClaim": "The semantic epoch candidate is not selected as the production store and does not silently migrate or truncate NduProjectionStoreV1 history.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_epoch.rs",
+          "symbol": "rotation_preserves_replay_selection_revocation_and_sequence"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_epoch.rs",
+          "symbol": "checkpoint_round_trip_and_archive_checksum_are_canonical"
+        }
+      ]
+    },
+    {
+      "operation": "verify_projection_archive_chain_v1",
+      "nativeSymbol": "codex_hepta_ndu::verify_projection_archive_chain_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/projection_epoch.rs",
+      "sourcePathExists": true,
+      "state": "source_candidate_lossless_genesis_anchored_archive_chain_v1",
+      "authority": "none",
+      "nonClaim": "A valid local archive chain is integrity evidence, not an independently witnessed anti-rollback frontier or an off-host durability acknowledgement.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_epoch.rs",
+          "symbol": "archive_chain_reconstructs_checkpoint_and_tampering_fails_closed"
+        }
+      ]
+    },
+    {
+      "operation": "plan_projection_archive_retention_v1",
+      "nativeSymbol": "codex_hepta_ndu::plan_projection_archive_retention_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/projection_epoch.rs",
+      "sourcePathExists": true,
+      "state": "source_candidate_acknowledgement_bound_local_retention_plan_v1",
+      "authority": "none",
+      "nonClaim": "The planner returns eligible local archive digests only; it performs no deletion and grants no external-object deletion authority.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_epoch.rs",
+          "symbol": "retention_requires_external_versions_restore_drills_and_frontier"
+        }
+      ]
     }
   ],
   "supportingSources": [
@@ -315,6 +364,7 @@
     "codex-rs/hepta-ndu/src/model.rs",
     "codex-rs/hepta-ndu/src/operational_metrics.rs",
     "codex-rs/hepta-ndu/src/preference_receipts.rs",
+    "codex-rs/hepta-ndu/src/projection_epoch.rs",
     "codex-rs/hepta-ndu/src/projection_store_recovery_tests.rs",
     "codex-rs/hepta-ndu/src/recursive.rs",
     "codex-rs/hepta-ndu/src/recursive_tests.rs",

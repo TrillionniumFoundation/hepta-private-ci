@@ -72,6 +72,32 @@ A backup is acceptable only when all of the following are true:
 
 Backup transport is an external operation. Repository tests validate the receipt and store semantics but do not prove that a production object store, KMS or network transfer occurred.
 
+### Epoch archive and local retention candidate
+
+`NduProjectionEpochJournalV1` is an additive semantic candidate; the selected V1
+store does not invoke it automatically. A reviewed rotation must:
+
+1. close a non-empty bounded active epoch;
+2. preserve every operation identity, global sequence and predecessor digest;
+3. preserve recorded projections, revocations and current selections;
+4. emit a lossless archive transition chained to the preceding checkpoint;
+5. reconstruct the new checkpoint from epoch zero before admission;
+6. record both the transition digest and complete archive checksum.
+
+Before removing any local archive, call
+`plan_projection_archive_retention_v1` with the exact current checkpoint and an
+acknowledgement binding minimum external copies, immutable object-version identity,
+restore-drill receipt and the exact current monotonic frontier. The returned digest
+list is a plan only. The operator-owned deletion path must durably remove references
+before bytes, preserve at least one local recovery anchor, and sync the parent
+directory. A mismatched checksum/frontier, missing restore receipt or insufficient
+copy count is a hard stop.
+
+Do not deploy rotation until a durable epoch manifest/archive store has passed the
+same write, sync, rename, directory-sync, ENOSPC, EROFS, process-kill and reopen
+matrix on the named target filesystem. Never clear or rename the selected V1
+journal to manufacture capacity.
+
 ## 6. Restore drill
 
 Run the drill on an isolated target host or namespace with no production writer lock.
