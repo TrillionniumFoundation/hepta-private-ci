@@ -1,0 +1,56 @@
+name: Runtime supervisor production closure fixup
+
+on:
+  push:
+    branches:
+      - codex/runtime-supervisor-production-closure-20260928
+    paths:
+      - .github/runtime-supervisor-production-closure-fixup.py
+      - .github/workflows/runtime-supervisor-production-closure-fixup.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-supervisor-production-closure-fixup-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fixup:
+    runs-on: macos-15-intel
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          brew list protobuf >/dev/null 2>&1 || brew install protobuf
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+          printf 'RUSTUP_TOOLCHAIN=1.95.0\n' >> "$GITHUB_ENV"
+      - name: Apply and verify native fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/runtime-supervisor-production-closure-fixup.py
+          rm .github/runtime-supervisor-production-closure-fixup.py
+          rm .github/workflows/runtime-supervisor-production-closure-fixup.yml
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor wire_preserves_control_failure_disposition_codes -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor wire_errors_are_closed_and_never_expose_driver_or_filesystem_detail -- --nocapture
+          git diff --check
+      - name: Commit exact fixup
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "runtime-supervisor-fixup"
+          git config user.email "runtime-supervisor-fixup@users.noreply.github.com"
+          git add --all
+          test -n "$(git status --short)"
+          git commit -m "test(runtime.supervisor): preserve typed wire failure semantics"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
