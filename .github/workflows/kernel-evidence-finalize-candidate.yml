@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: kernel-evidence-candidate-metadata-finalization
+  group: kernel-evidence-candidate-metadata-finalization-v4
   cancel-in-progress: false
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 25
     env:
       EVENT_SHA: ${{ github.event.pull_request.head.sha }}
-      EXPECTED_PARENT: 4116a1119accdd45ef8317d2fb95045e012e43e0
+      EXPECTED_PARENT: 3391c7c3c41ebb74615eef6028007e5e768d4946
       SOURCE_ANCHOR: 4dd844af8af04372d75001be10fcabbf97f6e679
       SOURCE_TREE: 598697096a10d1015609168ab7064298c0dc8ace
       TARGET_BRANCH: fix/kernel-evidence-production-closure
