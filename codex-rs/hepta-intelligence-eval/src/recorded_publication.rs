@@ -14,6 +14,8 @@ use crate::SignedEvaluationDecisionV1;
 mod resume;
 #[path = "qualification_artifacts.rs"]
 mod qualification_artifacts;
+#[path = "outcome_qualification_artifacts.rs"]
+mod outcome_qualification_artifacts;
 #[path = "selected_host_publication.rs"]
 mod selected_host_publication;
 
