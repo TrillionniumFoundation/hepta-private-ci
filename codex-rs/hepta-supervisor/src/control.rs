@@ -96,7 +96,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             record.lifecycle.generation,
             self.config.stop_grace,
         )
-        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        .map_err(SupervisorError::from)?;
         // Cancel durably after the overriding Stop itself is durable, but before
         // companion deferral, lifecycle CAS or signaling.
         self.cancel_pending_restart(agent_id, slot)?;
@@ -110,7 +110,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             })
         {
             control_intent::mark_stop_requested(record.layout.run_root())
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                .map_err(SupervisorError::from)?;
         }
         result
     }
@@ -172,7 +172,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     &runtime.identity,
                     record.lifecycle.generation,
                 )
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))
+                .map_err(SupervisorError::from)
             });
         // Failure to persist the overriding Kill or restart cancellation must
         // be reported, but cannot suppress emergency termination of an already
@@ -237,7 +237,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         let acknowledgement = if intent.is_ok() && main.is_ok() {
             control_intent::mark_kill_requested(record.layout.run_root())
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))
+                .map_err(SupervisorError::from)
         } else {
             Ok(())
         };
