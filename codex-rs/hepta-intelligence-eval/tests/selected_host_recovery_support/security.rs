@@ -15,11 +15,19 @@ use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
-use super::model::digest;
-use super::model::id;
+// Both single-outcome and multi-outcome test crates use this fixture. Do not
+// depend on the name under which either crate registers its model module.
+fn digest(value: &str) -> Digest32 {
+    Digest32::of_bytes(value.as_bytes())
+}
+
+fn id(value: &str) -> StableId {
+    StableId::new(value).expect("fixture identity")
+}
 
 pub fn principal(
     name: &str,
