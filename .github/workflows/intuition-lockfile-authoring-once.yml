@@ -1,0 +1,53 @@
+name: Intuition lockfile authoring once
+
+on:
+  push:
+    branches:
+      - codex/intuition-policy-production-closure-20260927
+    paths:
+      - ".github/workflows/intuition-lockfile-authoring-once.yml"
+
+permissions:
+  contents: write
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_BUILD_JOBS: "2"
+
+jobs:
+  author-lockfile:
+    name: Generate reviewed Cargo.lock source commit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out immutable authoring source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Generate and verify workspace lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          cd codex-rs
+          cargo metadata --offline --format-version 1 >/dev/null
+          cargo check --locked -p codex-hepta-agentd --lib
+          cd ..
+          git diff --check
+          git diff -- codex-rs/Cargo.lock
+          test -n "$(git status --porcelain -- codex-rs/Cargo.lock)"
+          test -z "$(git status --porcelain | grep -v '^ M codex-rs/Cargo.lock$' || true)"
+      - name: Commit generated lockfile as ordinary source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Intuition Authoring"
+          git config user.email "hepta-intuition-authoring@users.noreply.github.com"
+          git add codex-rs/Cargo.lock
+          git commit -m "fix(intuition): synchronize workspace lockfile"
+          git push origin HEAD:codex/intuition-policy-production-closure-20260927
