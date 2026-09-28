@@ -18,7 +18,7 @@ impl HeptaEvidenceStore {
         let statement = format!(
             "SELECT {QUALIFICATION_COLUMNS} FROM qualification_evidence WHERE evidence_id = ?"
         );
-        let row = sqlx::query(&statement)
+        let row = sqlx::query(sqlx::AssertSqlSafe(statement))
             .bind(evidence_id.as_str())
             .fetch_optional(&self.pool)
             .await
