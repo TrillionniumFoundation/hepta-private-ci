@@ -91,15 +91,16 @@ def _engineering_result(path: Path | None, sha: str, run_id: str, attempt: int) 
             "reason": f"engineering_result_invalid:{type(error).__name__}",
             "sha256": _sha256(path),
         }
-    observed_sha = value.get("sha", value.get("expected_sha"))
+    observed_sha = value.get("source_sha")
     observed_run = str(value.get("run_id", ""))
-    observed_attempt = value.get("attempt")
-    all_success = value.get("success") is True or value.get("result") == "success"
+    observed_attempt = str(value.get("attempt", ""))
+    all_success = value.get("engineering_result") == "success"
     passed = (
         all_success
         and observed_sha == sha
         and observed_run == run_id
-        and observed_attempt == attempt
+        and observed_attempt == str(attempt)
+        and value.get("production_activation") is False
     )
     return {
         "available": True,
