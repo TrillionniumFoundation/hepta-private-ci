@@ -60,6 +60,18 @@
       "state": "source_candidate_not_agentd_composed"
     },
     {
+      "name": "revalidate_directional_request_credential_and_issuing_host_at_completion",
+      "source": "codex-rs/hepta-memory-federation-wire/src/host.rs",
+      "tests": "codex-rs/hepta-memory-federation-wire/src/host_terminal_tests.rs",
+      "state": "source_candidate_pending_exact_head_product_qualification"
+    },
+    {
+      "name": "atomic_single_writer_unix_file_recovery",
+      "source": "codex-rs/hepta-memory-federation-wire/src/file_store.rs",
+      "tests": "codex-rs/hepta-memory-federation-wire/src/file_store_tests.rs",
+      "state": "source_candidate_process_tests_not_selected_host_acceptance"
+    },
+    {
       "name": "measure_logical_host_capacity_and_recovery",
       "source": "codex-rs/hepta-memory-federation-wire/src/bin/memory_federation_capacity_probe.rs",
       "state": "retained_diagnostics_candidate_not_slo"
@@ -71,11 +83,15 @@
     "attestation": "scripts/memory_federation_full_attestation.py",
     "statusVerifier": "scripts/verify_memory_federation_status.py",
     "executionGuard": "scripts/memory_federation_execution_guard.py",
+    "executionRecorder": "scripts/memory_federation_execution_receipt.py",
+    "executionRecorderTests": "scripts/test_memory_federation_execution_receipt.py",
     "exactHeadRequired": true,
     "deterministicCurrentBaseMergeRequired": true,
     "wireLibraryTestsRequired": true,
     "wireCompileFailDoctestsRequired": true,
     "capacityMetricsRequiredForSuccess": true,
+    "actualCommandExecutionRequiredForSuccess": true,
+    "trackedLockedInputsRequired": true,
     "strictClippyRequired": true
   },
   "claimBoundary": {
