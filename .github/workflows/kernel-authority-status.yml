@@ -12,13 +12,13 @@ permissions:
   actions: write
 
 concurrency:
-  group: kernel-authority-deterministic-finalizer
-  cancel-in-progress: false
+  group: kernel-authority-deterministic-finalizer-arm
+  cancel-in-progress: true
 
 jobs:
   finalize:
     name: Materialize reviewed source and projections
-    runs-on: macos-15
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 180
     steps:
       - name: Checkout exact repair branch
@@ -40,7 +40,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          git show HEAD^:.github/workflows/kernel-authority-status.yml > .github/workflows/kernel-authority-status.yml
+          git show 2cec44fa700334099c2f17e1f15746a36d2dffee:.github/workflows/kernel-authority-status.yml > .github/workflows/kernel-authority-status.yml
           git show 4ab6e0ddafc209503432f07f5d485b0d72ff7f96:.github/workflows/kernel-authority-convergence.yml > .github/workflows/kernel-authority-convergence.yml
           rm -f .github/workflows/kernel-authority-finalize.yml
           bash scripts/kernel_authority_direct_repair_v3.sh
