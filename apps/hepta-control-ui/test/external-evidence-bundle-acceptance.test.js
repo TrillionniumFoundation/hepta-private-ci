@@ -12,6 +12,11 @@ import {
   sha256,
 } from "../../../qualification/ui-control/external-evidence-lib.mjs";
 import { UI_CONTROL_CSRF_SUBSTITUTION_KIND } from "../../../qualification/ui-control/deployment-asset-invariants.mjs";
+import {
+  UI_CONTROL_DEPLOYMENT_SECURITY_PROFILE,
+  UI_CONTROL_MINIMUM_CERTIFICATE_LIFETIME_SECONDS,
+  UI_CONTROL_MINIMUM_HSTS_MAX_AGE_SECONDS,
+} from "../../../qualification/ui-control/deployment-security-invariants.mjs";
 
 const fingerprint = Array.from({ length: 32 }, () => "AA").join(":");
 
@@ -93,7 +98,13 @@ test("bundle validation accepts one exact, mutually bound evidence set on main",
       backendDeploymentDigest: selected.digest,
       source: { sha: candidateCommit, tree: candidateTree, browserBuildManifestSha256: manifestDigest },
       deployment: { ...selected.subject, observedAt },
+      policy: {
+        profile: UI_CONTROL_DEPLOYMENT_SECURITY_PROFILE,
+        minimumHstsMaxAgeSeconds: UI_CONTROL_MINIMUM_HSTS_MAX_AGE_SECONDS,
+        minimumCertificateLifetimeSeconds: UI_CONTROL_MINIMUM_CERTIFICATE_LIFETIME_SECONDS,
+      },
       tls: {
+        profile: UI_CONTROL_DEPLOYMENT_SECURITY_PROFILE,
         protocol: "TLSv1.3",
         cipher: "TLS_AES_256_GCM_SHA384",
         certificateValidTo: certificateExpiry,

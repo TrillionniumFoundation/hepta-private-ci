@@ -8,6 +8,12 @@ import {
   parseTimestamp,
 } from "./external-evidence-primitives.mjs";
 import { UI_CONTROL_CSRF_SUBSTITUTION_KIND } from "./deployment-asset-invariants.mjs";
+import {
+  UI_CONTROL_DEPLOYMENT_SECURITY_PROFILE,
+  UI_CONTROL_MINIMUM_CERTIFICATE_LIFETIME_SECONDS,
+  UI_CONTROL_MINIMUM_HSTS_MAX_AGE_SECONDS,
+  assertTlsPolicy,
+} from "./deployment-security-invariants.mjs";
 
 export const REQUIRED_DEPLOYMENT_SECURITY_CHECKS = Object.freeze([
   "tls-1.2-or-newer-and-valid-certificate",
@@ -107,6 +113,30 @@ export function validateDeploymentSecurityReceipt(receipt, expected, options = {
   assertEvidence(receipt.candidateTree === expected.candidateTree, "UI_CONTROL_DEPLOYMENT_TREE", "deployment receipt is bound to another candidate tree");
   assertEvidence(receipt.backendDeploymentDigest === expected.backendDeploymentDigest, "UI_CONTROL_DEPLOYMENT_DIGEST", "deployment receipt is bound to another deployment");
   parseTimestamp(receipt.deployment?.observedAt, "deployment observedAt", now, options.maxAgeMs ?? 30 * 24 * 60 * 60_000);
+  assertEvidence(
+    receipt.policy?.profile === UI_CONTROL_DEPLOYMENT_SECURITY_PROFILE,
+    "UI_CONTROL_DEPLOYMENT_POLICY_PROFILE",
+    "deployment receipt is not bound to the required security-policy profile",
+  );
+  assertEvidence(
+    receipt.policy?.minimumHstsMaxAgeSeconds === UI_CONTROL_MINIMUM_HSTS_MAX_AGE_SECONDS,
+    "UI_CONTROL_DEPLOYMENT_POLICY_HSTS",
+    "deployment receipt uses another minimum HSTS age",
+  );
+  assertEvidence(
+    receipt.policy?.minimumCertificateLifetimeSeconds === UI_CONTROL_MINIMUM_CERTIFICATE_LIFETIME_SECONDS,
+    "UI_CONTROL_DEPLOYMENT_POLICY_CERTIFICATE",
+    "deployment receipt uses another minimum certificate lifetime",
+  );
+  assertEvidence(
+    receipt.tls?.profile === UI_CONTROL_DEPLOYMENT_SECURITY_PROFILE,
+    "UI_CONTROL_DEPLOYMENT_TLS_PROFILE",
+    "deployment TLS observation is not bound to the required security-policy profile",
+  );
+  const tls = assertTlsPolicy(receipt.tls, {
+    now,
+    minimumCertificateLifetimeSeconds: UI_CONTROL_MINIMUM_CERTIFICATE_LIFETIME_SECONDS,
+  });
   exactSha(receipt.source?.browserBuildManifestSha256, "source.browserBuildManifestSha256", SHA256);
   assertEvidence(receipt.claims?.deployedSecurityObserved === true, "UI_CONTROL_DEPLOYMENT_CLAIM", "deployed security was not accepted");
   assertEvidence(receipt.claims?.exactCandidateAssetsObserved === true, "UI_CONTROL_DEPLOYMENT_ASSET_CLAIM", "exact candidate assets were not observed");
@@ -120,12 +150,11 @@ export function validateDeploymentSecurityReceipt(receipt, expected, options = {
     "deployment receipt does not bind the sole allowed CSRF bootstrap substitution",
   );
   assertExactStringSet(receipt.checks, REQUIRED_DEPLOYMENT_SECURITY_CHECKS, "UI_CONTROL_DEPLOYMENT_CHECKS", "deployment checks");
-  assertEvidence(["TLSv1.2", "TLSv1.3"].includes(receipt.tls?.protocol), "UI_CONTROL_DEPLOYMENT_TLS", "deployment receipt has an unsupported TLS protocol");
-  boundedText(receipt.tls?.cipher, "tls.cipher", 128);
-  const certificateValidTo = Date.parse(receipt.tls?.certificateValidTo);
-  assertEvidence(Number.isFinite(certificateValidTo) && certificateValidTo > now, "UI_CONTROL_DEPLOYMENT_TLS_CERTIFICATE", "deployment TLS certificate is expired or invalid");
-  assertEvidence(/^(?:[0-9A-F]{2}:){31}[0-9A-F]{2}$/u.test(receipt.tls?.certificateFingerprint256 ?? ""), "UI_CONTROL_DEPLOYMENT_TLS_FINGERPRINT", "deployment TLS certificate fingerprint is missing or invalid");
-  return Object.freeze({ browserBuildManifestSha256: receipt.source.browserBuildManifestSha256 });
+  return Object.freeze({
+    browserBuildManifestSha256: receipt.source.browserBuildManifestSha256,
+    policyProfile: receipt.policy.profile,
+    tls,
+  });
 }
 
 export function validateRealBackendReceipt(receipt, expected, options = {}) {

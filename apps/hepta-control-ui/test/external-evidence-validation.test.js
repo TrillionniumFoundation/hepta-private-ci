@@ -20,6 +20,11 @@ import {
   validateRepositoryQualificationReceipt,
 } from "../../../qualification/ui-control/external-evidence-lib.mjs";
 import { UI_CONTROL_CSRF_SUBSTITUTION_KIND } from "../../../qualification/ui-control/deployment-asset-invariants.mjs";
+import {
+  UI_CONTROL_DEPLOYMENT_SECURITY_PROFILE,
+  UI_CONTROL_MINIMUM_CERTIFICATE_LIFETIME_SECONDS,
+  UI_CONTROL_MINIMUM_HSTS_MAX_AGE_SECONDS,
+} from "../../../qualification/ui-control/deployment-security-invariants.mjs";
 
 const commit = "a".repeat(40);
 const tree = "b".repeat(40);
@@ -57,7 +62,13 @@ function deploymentReceipt() {
     backendDeploymentDigest: digest,
     deployment: { observedAt: executedAt },
     source: { browserBuildManifestSha256: "2".repeat(64) },
+    policy: {
+      profile: UI_CONTROL_DEPLOYMENT_SECURITY_PROFILE,
+      minimumHstsMaxAgeSeconds: UI_CONTROL_MINIMUM_HSTS_MAX_AGE_SECONDS,
+      minimumCertificateLifetimeSeconds: UI_CONTROL_MINIMUM_CERTIFICATE_LIFETIME_SECONDS,
+    },
     tls: {
+      profile: UI_CONTROL_DEPLOYMENT_SECURITY_PROFILE,
       protocol: "TLSv1.3",
       cipher: "TLS_AES_256_GCM_SHA384",
       certificateValidTo: "2027-09-27T00:00:00Z",
@@ -277,7 +288,20 @@ test("repository, deployment, and real-backend receipts remain exact-subject gat
   assert.doesNotThrow(() => validateRepositoryQualificationReceipt(merge, "synthetic-merge", expected));
 
   const deployment = deploymentReceipt();
-  assert.doesNotThrow(() => validateDeploymentSecurityReceipt(deployment, expected, { now }));
+  assert.equal(
+    validateDeploymentSecurityReceipt(deployment, expected, { now }).policyProfile,
+    UI_CONTROL_DEPLOYMENT_SECURITY_PROFILE,
+  );
+  const legacyPolicy = deploymentReceipt();
+  delete legacyPolicy.policy;
+  assert.throws(
+    () => validateDeploymentSecurityReceipt(legacyPolicy, expected, { now }),
+    /security-policy profile/u,
+  );
+  const weakTls = deploymentReceipt();
+  weakTls.tls.protocol = "TLSv1.2";
+  weakTls.tls.cipher = "ECDHE-RSA-AES256-SHA";
+  assert.throws(() => validateDeploymentSecurityReceipt(weakTls, expected, { now }), /AEAD encryption/u);
   deployment.checks = deployment.checks.slice(1);
   assert.throws(() => validateDeploymentSecurityReceipt(deployment, expected, { now }), /deployment checks/u);
 
