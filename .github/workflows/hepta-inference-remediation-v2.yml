@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: hepta-inference-remediation-v2-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   PATCH_PATH: .github/remediation/inference-control-remediation.patch.gz
@@ -29,7 +29,7 @@ env:
 jobs:
   qualify-and-publish:
     name: Qualify and publish inference remediation
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
