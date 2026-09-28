@@ -42,14 +42,17 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          python3 - <<'PYCODE'
+          (
+            cd scripts
+            python3 - <<'PYCODE'
           import base64
           import bz2
           from pathlib import Path
-          payload = b"".join(path.read_bytes() for path in sorted(Path("scripts").glob("intuition_closure_author_once.b85.part*")))
+          payload = b"".join(path.read_bytes() for path in sorted(Path(".").glob("intuition_closure_author_once.b85.part*")))
           source = bz2.decompress(base64.b85decode(payload))
           exec(compile(source, "intuition_closure_author_once.py", "exec"))
           PYCODE
+          )
           cd codex-rs
           cargo fmt --all
       - name: Compile owner and protocol boundaries
