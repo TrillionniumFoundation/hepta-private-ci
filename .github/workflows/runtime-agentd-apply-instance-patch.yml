@@ -21,13 +21,20 @@ concurrency:
 jobs:
   apply-test-push:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-24.04
+    name: Apply, qualify and publish (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [ubuntu-24.04, ubuntu-22.04, ubuntu-24.04-arm]
     env:
       BASE_SHA: 35a87891852355e75a350973c33871d2b0889fd5
       PATCH_SHA256: fd4fe4668e1029d7b1ed0429b50ef6cd58a75d737c7b75866b3a0ef5a7b54201
       PATCH_PATH: .github/runtime-agentd-instance.patch.gz
       CARGO_INCREMENTAL: '0'
+      TARGET_BRANCH: work/runtime-agentd-production-closure-20260928
     steps:
       - name: Checkout immutable carrier
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -105,4 +112,10 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
           git commit -m 'runtime.agentd: own supervisor instances and bound maintenance'
-          git push origin HEAD:work/runtime-agentd-production-closure-20260928
+          local_tree=$(git rev-parse HEAD^{tree})
+          if git push origin HEAD:"$TARGET_BRANCH"; then
+            exit 0
+          fi
+          git fetch --no-tags origin "$TARGET_BRANCH"
+          remote_tree=$(git rev-parse FETCH_HEAD^{tree})
+          test "$local_tree" = "$remote_tree"
