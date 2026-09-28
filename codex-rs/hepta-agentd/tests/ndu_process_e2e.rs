@@ -97,12 +97,16 @@ fn sign(
     grant_id: &str,
 ) -> Result<SignedFinalUseGrant> {
     let now = now_ms()?;
+    let nonce_material = format!(
+        "ndu-process-e2e:{grant_id}:{nonce}:{now}:{}",
+        std::process::id(),
+    );
     let grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "ndu-issuer".into(),
         authority_epoch: 1,
         grant_id: grant_id.into(),
-        nonce: [nonce; 32],
+        nonce: digest(&nonce_material),
         binding,
         not_before_unix_ms: now.saturating_sub(1_000),
         expires_at_unix_ms: now + 60_000,
@@ -168,8 +172,14 @@ async fn normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery() -
         std::fs::create_dir(path)?;
         std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;
     }
-    let issuer = SigningKey::from_bytes(&[93; 32]);
-    let distributor = SigningKey::from_bytes(&[94; 32]);
+    let fixture_seed = format!(
+        "ndu-process-e2e:{}:{}:{}",
+        root.display(),
+        now_ms()?,
+        std::process::id(),
+    );
+    let issuer = SigningKey::from_bytes(&digest(&format!("{fixture_seed}:issuer")));
+    let distributor = SigningKey::from_bytes(&digest(&format!("{fixture_seed}:distributor")));
     let feed_path = root.join("revocations.json");
     feed(&feed_path, &distributor, 1, BTreeSet::new())?;
     let descriptor = root.join("ndu.json");
