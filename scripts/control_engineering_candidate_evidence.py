@@ -121,7 +121,9 @@ def command_plan(root: Path, output: Path) -> list[tuple[str, list[str]]]:
         ("public-api", [python, "scripts/control_engineering_api.py", "--check"]),
         ("runtime-regressions", [python, "-m", "unittest", "-v",
             "test_bounded_owner_regressions", "test_control_engineering_extensions",
-            "test_deployment_evidence"]),
+            "test_deployment_evidence", "test_owner_snapshot_regressions"]),
+        ("collector-regressions", [python, "-m", "unittest", "-v",
+            "test_candidate_evidence_collector", "test_candidate_evidence_integrity"]),
         ("all-owner-tests", [python, "-m", "coverage", "run", "--branch",
             "--source=control_engineering_v2", "scripts/control_engineering_candidate_evidence.py",
             "--unittest-report", str(output / "unittest.json")]),
@@ -138,6 +140,64 @@ def command_plan(root: Path, output: Path) -> list[tuple[str, list[str]]]:
         ("diff-check", ["git", "diff", "--check"]),
         ("tracked-clean", ["git", "diff", "--exit-code", "HEAD"]),
     ]
+
+
+
+def checkout_identity(root: Path) -> dict[str, object]:
+    """Observe identity as well as dirtiness; a clean newly committed tree is drift."""
+    try:
+        return {
+            "commit": git(root, "rev-parse", "HEAD"),
+            "tree": git(root, "rev-parse", "HEAD^{tree}"),
+            "status": git(root, "status", "--porcelain", "--untracked-files=normal"),
+            "error": None,
+        }
+    except (subprocess.SubprocessError, OSError) as error:
+        return {"commit": None, "tree": None, "status": None,
+                "error": type(error).__name__}
+
+
+def unittest_report_state(path: Path) -> tuple[bool, bool, str | None]:
+    """Fail closed on absent, malformed, oversized or contradictory test evidence."""
+    try:
+        with path.open("rb") as stream:
+            data = stream.read(8 * 1024 * 1024 + 1)
+        if len(data) > 8 * 1024 * 1024:
+            return False, False, "unittest_report_budget_exceeded"
+        result = json.loads(data)
+    except (OSError, ValueError, RecursionError) as error:
+        return False, False, "unittest_report_" + type(error).__name__
+    if (
+        not isinstance(result, dict)
+        or type(result.get("testsRun")) is not int
+        or result["testsRun"] < 1
+        or type(result.get("successful")) is not bool
+        or any(not isinstance(result.get(key), list) for key in (
+            "failures", "errors", "skipped", "expectedFailures", "unexpectedSuccesses"
+        ))
+    ):
+        return False, False, "unittest_report_invalid_shape"
+    successful = result["successful"] and not any(result[key] for key in (
+        "failures", "errors", "unexpectedSuccesses"
+    ))
+    no_skips = not result["skipped"] and not result["expectedFailures"]
+    return bool(successful), no_skips, None
+
+
+def command_logs_intact(output: Path, records: list[dict[str, object]]) -> bool:
+    """A later command must not silently replace an earlier command's evidence."""
+    intact = True
+    for record in records:
+        try:
+            path = output / str(record["logFile"])
+            matches = (path.is_file() and not path.is_symlink()
+                       and path.stat().st_size == record["logBytes"]
+                       and digest_file(path) == record["logSha256"])
+        except OSError:
+            matches = False
+        record["logIntegrityVerified"] = bool(matches)
+        intact = intact and bool(matches)
+    return intact
 
 
 def qualify_lane(root: Path, output: Path, source: str, base: str, lane: str) -> dict[str, object]:
@@ -168,21 +228,36 @@ def qualify_lane(root: Path, output: Path, source: str, base: str, lane: str) ->
         "productionAccepted": False, "releaseAuthority": False,
     }
     write_json(output / "receipt.json", receipt)
-    records = []
+    records: list[dict[str, object]] = []
+    expected = {"commit": receipt["testedCommit"], "tree": receipt["testedTree"],
+                "status": "", "error": None}
+    identity_preserved = lane != "source-head" or receipt["testedCommit"] == source
     for label, arguments in command_plan(root, output):
+        before = checkout_identity(root)
         record = run_command(root, output, label, arguments, environment)
+        after = checkout_identity(root)
+        record["checkoutBefore"] = before
+        record["checkoutAfter"] = after
+        identity_preserved = identity_preserved and before == expected and after == expected
+        record["sourceIdentityPreserved"] = before == expected and after == expected
         records.append(record)
         receipt["commandRecords"] = records
         write_json(output / "receipt.json", receipt)
         print(lane, label, record["status"], record["exitCode"], flush=True)
     report = output / "unittest.json"
-    result = json.loads(report.read_text()) if report.is_file() else None
-    receipt["allChecksPassed"] = all(record["exitCode"] == 0 for record in records)
-    receipt["noSkippedTests"] = bool(result and result["testsRun"] > 0 and not result["skipped"]
-        and not result.get("expectedFailures", []))
-    receipt["checkoutStatusAfter"] = git(root, "status", "--porcelain", "--untracked-files=normal")
+    successful, no_skips, report_error = unittest_report_state(report)
+    final_identity = checkout_identity(root)
+    receipt["allChecksPassed"] = bool(records) and all(record["exitCode"] == 0 for record in records)
+    receipt["testsSuccessful"] = successful
+    receipt["noSkippedTests"] = no_skips
+    receipt["unittestReportError"] = report_error
+    receipt["checkoutIdentityAfter"] = final_identity
+    receipt["checkoutStatusAfter"] = final_identity["status"]
+    receipt["sourceIdentityPreserved"] = identity_preserved and final_identity == expected
+    receipt["commandLogsIntact"] = command_logs_intact(output, records)
     receipt["qualificationPassed"] = bool(
-        receipt["allChecksPassed"] and receipt["noSkippedTests"] and not receipt["checkoutStatusAfter"]
+        receipt["allChecksPassed"] and receipt["testsSuccessful"] and receipt["noSkippedTests"]
+        and receipt["sourceIdentityPreserved"] and receipt["commandLogsIntact"]
     )
     artifacts = {}
     for path in sorted(output.iterdir()):

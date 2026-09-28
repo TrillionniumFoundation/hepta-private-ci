@@ -104,9 +104,12 @@ def _require_anchor(connection: sqlite3.Connection, sequence: int, digest: str) 
     _validate_anchor(sequence, digest)
     if sequence:
         row = connection.execute(
-            "SELECT event_digest FROM audit_events WHERE sequence=?", (sequence,)
+            "SELECT 1 FROM audit_events WHERE sequence=? "
+            "AND typeof(event_digest)='text' "
+            "AND length(CAST(event_digest AS BLOB))=64 AND event_digest=?",
+            (sequence, digest),
         ).fetchone()
-        if row is None or row[0] != digest:
+        if row is None:
             raise EngineeringError("audit_checkpoint_not_in_history")
 
 
@@ -117,7 +120,7 @@ def create_audit_checkpoint(
     if not isinstance(store, EngineeringStore):
         raise EngineeringError("audit_checkpoint_store_required")
     now = time.time_ns() if now_ns is None else now_ns
-    if type(now) is not int or now < 0:
+    if type(now) is not int or not 0 <= now <= 2**63 - 1:
         raise EngineeringError("invalid_time")
     with _read_snapshot(store):
         store.verify_audit_chain()
@@ -144,7 +147,7 @@ def _verify_page(
     _validate_anchor(checkpoint.sequence, checkpoint.event_digest)
     if (
         type(checkpoint.created_unix_ns) is not int
-        or checkpoint.created_unix_ns < 0
+        or not 0 <= checkpoint.created_unix_ns <= 2**63 - 1
         or type(checkpoint.schema_version) is not int
         or checkpoint.schema_version != 1
     ):
@@ -156,7 +159,9 @@ def _verify_page(
         _require_anchor(connection, checkpoint.sequence, checkpoint.event_digest)
         if through is None:
             last = connection.execute(
-                "SELECT sequence,event_digest FROM audit_events ORDER BY sequence DESC LIMIT 1"
+                "SELECT sequence,CASE WHEN typeof(event_digest)='text' "
+                "AND length(CAST(event_digest AS BLOB))=64 THEN event_digest END "
+                "FROM audit_events ORDER BY sequence DESC LIMIT 1"
             ).fetchone()
             through = AuditReadCut(0, ZERO_DIGEST) if last is None else AuditReadCut(last[0], last[1])
         _require_anchor(connection, through.sequence, through.event_digest)
@@ -167,8 +172,13 @@ def _verify_page(
         # until their cumulative budget and each row's metadata bounds pass.
         metadata = connection.execute(
             "SELECT sequence,length(CAST(payload_json AS BLOB)),"
-            "length(CAST(event_type AS BLOB)),length(event_id),"
-            "length(previous_digest),length(event_digest) FROM audit_events "
+            "length(CAST(event_type AS BLOB)),length(CAST(event_id AS BLOB)),"
+            "length(CAST(previous_digest AS BLOB)),length(CAST(event_digest AS BLOB)),"
+            "(typeof(payload_json)='blob' AND typeof(event_type)='text' "
+            "AND typeof(event_id)='text' AND typeof(previous_digest)='text' "
+            "AND typeof(event_digest)='text' AND instr(event_type,char(0))=0 "
+            "AND typeof(created_unix_ns)='integer' AND created_unix_ns>=0) "
+            "FROM audit_events "
             "WHERE sequence>? AND sequence<=? ORDER BY sequence LIMIT ?",
             (checkpoint.sequence, through.sequence, budget.maximum_events + 1),
         ).fetchall()
@@ -177,11 +187,11 @@ def _verify_page(
         admitted: list[int] = []
         payload_bytes = 0
         for row in metadata[:budget.maximum_events]:
-            sequence, size, type_size, id_size, previous_size, digest_size = row
+            sequence, size, type_size, id_size, previous_size, digest_size, shape_ok = row
             if sequence != checkpoint.sequence + len(admitted) + 1:
                 raise EngineeringError("audit_chain_sequence_gap")
             if (
-                type(size) is not int or size < 0
+                shape_ok != 1 or type(size) is not int or size < 0
                 or type(type_size) is not int or not 1 <= type_size <= 128
                 or (id_size, previous_size, digest_size) != (32, 64, 64)
             ):
@@ -194,11 +204,17 @@ def _verify_page(
             admitted.append(sequence)
         previous = checkpoint.event_digest
         latest = checkpoint.sequence
-        for sequence in admitted:
-            event = connection.execute(
-                "SELECT * FROM audit_events WHERE sequence=?", (sequence,)
-            ).fetchone()
-            if event is None:
+        # Fetch only the admitted interval, after both budgets pass. Stream a
+        # single indexed query instead of issuing one query per event. Byte
+        # lengths above include embedded NULs; SQLite length(TEXT) would not.
+        events = connection.execute(
+            "SELECT * FROM audit_events WHERE sequence>? AND sequence<=? "
+            "ORDER BY sequence LIMIT ?",
+            (checkpoint.sequence, admitted[-1], len(admitted)),
+        ) if admitted else ()
+        for event in events:
+            sequence = event["sequence"]
+            if sequence != latest + 1:
                 raise EngineeringError("audit_chain_sequence_gap")
             try:
                 raw = event["payload_json"]
@@ -216,7 +232,9 @@ def _verify_page(
                     "payload": payload,
                     "createdUnixNs": created,
                 })
-            except (TypeError, UnicodeError, json.JSONDecodeError, RecursionError):
+            except EngineeringError:
+                raise
+            except (TypeError, UnicodeError, ValueError, RecursionError):
                 raise EngineeringError("audit_chain_payload_invalid") from None
             if (
                 event["previous_digest"] != previous
@@ -225,6 +243,8 @@ def _verify_page(
             ):
                 raise EngineeringError("audit_chain_invalid")
             previous, latest = digest, sequence
+        if admitted and latest != admitted[-1]:
+            raise EngineeringError("audit_chain_sequence_gap")
         complete = latest == through.sequence
         if complete and previous != through.event_digest:
             raise EngineeringError("audit_chain_invalid")

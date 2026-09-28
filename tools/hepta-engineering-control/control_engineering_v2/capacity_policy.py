@@ -57,7 +57,9 @@ class StoreCapacityMonitor:
     data_version invalidation prevents them from being returned as observations.
     """
 
-    def __init__(self, store: EngineeringStore, *, calibration_interval_ns: int = 60_000_000_000):
+    def __init__(
+        self, store: EngineeringStore, *, calibration_interval_ns: int = 60_000_000_000
+    ) -> None:
         if not isinstance(store, EngineeringStore):
             raise EngineeringError("store_capacity_input")
         if type(calibration_interval_ns) is not int or calibration_interval_ns < 1:
@@ -122,8 +124,14 @@ class StoreCapacityMonitor:
             "SELECT audit_events,active_claims FROM _ce_capacity_counts WHERE singleton=1"
         ).fetchone()
         if row is None:
+            self._quarantined = True
             raise EngineeringError("capacity_projection_missing")
-        return StoreCapacityCounts(int(row[0]), int(row[1]))
+        # SQLite INTEGER affinity is not a strict type constraint. Do not
+        # silently truncate a corrupt REAL counter or coerce a TEXT value.
+        if any(type(value) is not int for value in row):
+            self._quarantined = True
+            raise EngineeringError("capacity_projection_invalid")
+        return StoreCapacityCounts(row[0], row[1])
 
     def _observe(self, *, calibrate: bool) -> StoreCapacityCounts:
         if self._store.connection is not self._connection:
@@ -143,8 +151,16 @@ class StoreCapacityMonitor:
             refreshed = False
             try:
                 connection.execute("SELECT sequence FROM main.audit_events LIMIT 1").fetchone()
+                pinned_version = self._data_version()
+                if before != pinned_version:
+                    # A foreign commit may have landed AFTER `before` but
+                    # BEFORE the main snapshot was pinned. It explains a
+                    # count difference; do not quarantine legitimate progress.
+                    connection.rollback()
+                    self._version = None
+                    continue
                 cached = self._cached_counts()
-                if self._version != before:
+                if self._version != pinned_version:
                     counts = _actual_counts(connection)
                     connection.execute(
                         "UPDATE _ce_capacity_counts SET audit_events=?,active_claims=? WHERE singleton=1",
@@ -168,9 +184,9 @@ class StoreCapacityMonitor:
                 self._version = None
                 raise
             after = self._data_version()
-            if before != after:
-                # Also catches a commit between the initial version read and
-                # snapshot acquisition. Never tag old counts with a new version.
+            if pinned_version != after:
+                # A commit after snapshot acquisition invalidates this sample.
+                # Never tag old counts with the newly observed version.
                 self._version = None
                 continue
             self._version = after
