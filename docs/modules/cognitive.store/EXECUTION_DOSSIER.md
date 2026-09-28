@@ -19,6 +19,9 @@ and recomputes the merge tree. Every command has an exclusive record and bounded
 | `expired-bootstrap-cli.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_expired_cli.py` | 1 |
 | `lifecycle-owner-receipts.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_lifecycle.py -v` | 32 |
 | `archive-dependencies.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/prepare_archive_env.py` | 0 |
+| `archive-publication-boundary-tests.json` | `.` | `$RUNNER_TEMP/cognitive-archive-venv/bin/python tools/cognitive-store-host-bootstrap/test_archive_publication.py -v` | 21 |
+| `lifecycle-final-use-tests.json` | `.` | `$RUNNER_TEMP/cognitive-archive-venv/bin/python tools/cognitive-store-host-bootstrap/test_lifecycle_final_use.py -v` | 12 |
+| `recovery-report-regressions.json` | `.` | `python3 scripts/test_cognitive_store_recovery_report.py -v` | 21 |
 | `archive-protocol-tests.json` | `.` | `$RUNNER_TEMP/cognitive-archive-venv/bin/python tools/cognitive-store-host-bootstrap/test_archive.py -v` | 45 |
 | `publication-observation-tests.json` | `.` | `$RUNNER_TEMP/cognitive-archive-venv/bin/python tools/cognitive-store-host-bootstrap/test_publication_observation.py -v` | 35 |
 | `archive-owner-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-memory --test cognitive_archive_owner signed_archive_restores_real_correction_and_tombstone_history -- --ignored --exact` | 1 |
@@ -41,7 +44,9 @@ and recomputes the merge tree. Every command has an exclusive record and bounded
 | `history-64-16.json` | `codex-rs` | `cargo run --locked -p codex-hepta-memory --example cognitive_store_history_perf` | 0 |
 | `history-128-64.json` | `codex-rs` | `cargo run --locked -p codex-hepta-memory --example cognitive_store_history_perf` | 0 |
 | `recovery-release-256.json` | `codex-rs` | `cargo run --locked --release -p codex-hepta-memory --example cognitive_store_recovery_perf` | 0 |
+| `recovery-release-256-report.json` | `.` | `python3 scripts/cognitive_store_recovery_report.py --report $RUNNER_TEMP/cognitive-recovery-perf-256.json --source-commit $SOURCE_SHA --tested-commit $TESTED_SHA --tested-tree $TESTED_TREE --records 256 --minimum-repetitions 3 --require-rss` | 0 |
 | `recovery-release-16384.json` | `codex-rs` | `cargo run --locked --release -p codex-hepta-memory --example cognitive_store_recovery_perf` | 0 |
+| `recovery-release-16384-report.json` | `.` | `python3 scripts/cognitive_store_recovery_report.py --report $RUNNER_TEMP/cognitive-recovery-perf-16384.json --source-commit $SOURCE_SHA --tested-commit $TESTED_SHA --tested-tree $TESTED_TREE --records 16384 --minimum-repetitions 3 --require-rss` | 0 |
 | `clippy.json` | `codex-rs` | `cargo clippy --locked -p codex-hepta-cognitive-store -p codex-hepta-memory -p codex-hepta-agentd --all-targets --all-features --no-deps -- -D warnings` | 0 |
 | `clean-source.json` | `.` | `git diff --exit-code HEAD --` | 0 |
 

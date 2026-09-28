@@ -229,6 +229,40 @@ def load_bounded(path: Path) -> object:
     return json.loads(content, object_pairs_hook=no_duplicates, parse_float=no_float, parse_constant=no_float)
 
 
+def reconcile_files(plan_path: Path, receipts_path: Path, trust_path: Path,
+                    expected_plan_sha256: str, expected_trust_sha256: str) -> dict:
+    """Verify historical facts, then reobserve current trust before reporting.
+
+    Signature work may take long enough for trust to expire or be revoked. The
+    final read binds the same input set; it never caches an authority decision,
+    edits owner receipts, or converts an attestation into independent erasure.
+    This is a last-observed report, not a multi-file transaction or effect grant.
+    """
+    digest(expected_trust_sha256)
+    digest(expected_plan_sha256)
+    trust = load_bounded(trust_path)
+    require(sha256(trust) == expected_trust_sha256,
+            "trust differs from independently installed host identity")
+    plan_envelope = load_bounded(plan_path)
+    receipts = load_bounded(receipts_path)
+    started = int(time.time())
+    report = reconcile(plan_envelope, receipts, trust, started, expected_plan_sha256)
+    require(sha256(load_bounded(plan_path)) == sha256(plan_envelope),
+            "signed lifecycle plan changed during verification")
+    require(sha256(load_bounded(receipts_path)) == sha256(receipts),
+            "lifecycle receipt set changed during verification")
+    # Trust is read last, after the potentially expensive crypto and input work.
+    # A signature over yesterday's key/epoch is not current trust at final use.
+    current_trust = load_bounded(trust_path)
+    finished = int(time.time())
+    require(finished >= started, "clock regressed during lifecycle verification")
+    require(sha256(current_trust) == expected_trust_sha256,
+            "lifecycle signer trust changed during verification")
+    validate_trust(current_trust, finished)
+    report["observed_at"] = finished
+    return report
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--plan", required=True, type=Path)
@@ -237,10 +271,8 @@ def main() -> None:
     parser.add_argument("--expected-trust-sha256", required=True)
     parser.add_argument("--expected-plan-sha256", required=True)
     args = parser.parse_args()
-    trust = load_bounded(args.trusted_owners)
-    digest(args.expected_trust_sha256)
-    require(sha256(trust) == args.expected_trust_sha256, "trust differs from independently installed host identity")
-    report = reconcile(load_bounded(args.plan), load_bounded(args.receipts), trust, int(time.time()), args.expected_plan_sha256)
+    report = reconcile_files(args.plan, args.receipts, args.trusted_owners,
+                             args.expected_plan_sha256, args.expected_trust_sha256)
     print(json.dumps(report, sort_keys=True, indent=2))
     if not report["all_required_owner_receipts_verified"]:
         raise SystemExit(2)

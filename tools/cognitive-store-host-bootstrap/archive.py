@@ -28,6 +28,7 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
 from lifecycle import canonical, digest, exact, identifier, integer, load_bounded
 from lifecycle import no_duplicates, no_float, require, sha256, validate_trust, verify_signature
+from archive_publication import PinnedDirectory, inode
 
 SCHEMA = "hepta.cognitive.cold-archive.v1"
 PLAN_SCHEMA = "hepta.cognitive.archive-plan.v1"
@@ -147,16 +148,20 @@ def private_parent(path: Path) -> Path:
     return parent
 
 
-def sync_directory(path: Path) -> None:
-    descriptor = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+def sync_directory(path: Path, *, directory_fd: int | None = None) -> None:
+    descriptor = (os.dup(directory_fd) if directory_fd is not None else
+                  os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC))
     try:
         os.fsync(descriptor)
     finally:
         os.close(descriptor)
 
 
-def write_new(path: Path, content: bytes) -> None:
-    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
+def write_new(path: Path, content: bytes, *, directory_fd: int | None = None) -> None:
+    if directory_fd is not None:
+        require(path.name == str(path), "publication must use a directory-relative leaf")
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+                         0o600, dir_fd=directory_fd)
     with os.fdopen(descriptor, "wb") as stream:
         stream.write(content)
         stream.flush()
@@ -261,14 +266,17 @@ def load_key(path: Path, plan: dict) -> bytes:
     return key
 
 
-def copy_cold_image(source: Path, target: Path, plan: dict) -> None:
+def copy_cold_image(source: Path, target: Path, plan: dict,
+                    *, publication_stage: PinnedDirectory | None = None) -> None:
     # Even an empty sidecar is rejected: the owner must first produce a cold,
     # checkpointed image. This tool never checkpoints or repairs a live store.
     for suffix in ("-wal", "-shm", "-journal"):
         require(not os.path.lexists(Path(str(source) + suffix)), "source has SQLite sidecars")
     hasher = hashlib.sha256()
     length = 0
-    with read_file(source, plan["image_bytes"]) as original, target.open("xb") as staged:
+    with read_file(source, plan["image_bytes"]) as original, (
+            publication_stage.writer(target.name) if publication_stage is not None else target.open("xb")
+    ) as staged:
         os.fchmod(staged.fileno(), 0o600)
         for chunk in iter(lambda: original.read(CHUNK_BYTES), b""):
             length += len(chunk)
@@ -283,41 +291,57 @@ def copy_cold_image(source: Path, target: Path, plan: dict) -> None:
         require(not os.path.lexists(Path(str(source) + suffix)), "source became live during staging")
 
 
+def verify_staged_stream(stream, plan: dict) -> None:
+    stream.seek(0)
+    observed_digest, length = hash_stream(stream)
+    require(length == plan["image_bytes"] and observed_digest == plan["image_sha256"],
+            "staged image changed after owner verification")
+    stream.seek(0)
+
+
 def make_archive(plan: dict, key: bytes, verifier: Path, reauthorize) -> dict:
     source, destination = path_value(plan["input_path"]), path_value(plan["output_path"])
-    parent = private_parent(destination)
-    with tempfile.TemporaryDirectory(prefix=".cognitive-archive-stage-", dir=parent) as temporary:
-        staged = Path(temporary) / "cognitive_1.sqlite3"
-        copy_cold_image(source, staged, plan)
+    private_parent(destination)
+    with PinnedDirectory.open(destination.parent) as parent, parent.scratch() as stage:
+        parent.absent(destination.name)
+        staged = stage.path / "cognitive_1.sqlite3"
+        copy_cold_image(source, staged, plan, publication_stage=stage)
         native_check(staged, plan["anchor"], verifier, plan["verifier_sha256"])
         reauthorize()
-        # Reserve the output name without overwriting an older operation. A
-        # partial directory remains evidence, but has no committed manifest.
-        destination.mkdir(mode=0o700)
-        header = source_header(plan)
-        cipher = derived_cipher(key, header)
-        segments = []
-        encrypted_source_digest = hashlib.sha256()
-        with staged.open("rb") as stream:
-            for index in range((plan["image_bytes"] + CHUNK_BYTES - 1) // CHUNK_BYTES):
-                chunk = stream.read(CHUNK_BYTES)
-                encrypted_source_digest.update(chunk)
-                encrypted = cipher.encrypt(index.to_bytes(12, "big"), chunk,
-                                           associated_data(header, index, len(chunk)))
-                encrypted_digest = hashlib.sha256(encrypted).hexdigest()
-                write_new(destination / encrypted_digest, encrypted)
-                segments.append({"index": index, "plaintext_bytes": len(chunk),
-                                 "ciphertext_sha256": encrypted_digest})
-        require(encrypted_source_digest.hexdigest() == plan["image_sha256"], "staged image changed during encryption")
-        manifest = {"header": header, "segments": segments}
-        validate_manifest(manifest, plan)
-        reauthorize()
-        try:
-            write_new(destination / "manifest.json", canonical(manifest))
-            sync_directory(destination)
-            sync_directory(parent)
-        except OSError as error:
-            raise PublicationIndeterminate("archive commit durability unknown; preserve destination") from error
+        parent.check_current()
+        # Reserve the name without replacement. Keep partial output as evidence;
+        # the manifest is the commit marker, never the directory's existence.
+        with parent.create_child(destination.name) as output:
+            header = source_header(plan)
+            cipher = derived_cipher(key, header)
+            segments = []
+            encrypted_source_digest = hashlib.sha256()
+            with stage.reader(staged.name, plan["image_bytes"]) as stream:
+                for index in range((plan["image_bytes"] + CHUNK_BYTES - 1) // CHUNK_BYTES):
+                    chunk = stream.read(CHUNK_BYTES)
+                    encrypted_source_digest.update(chunk)
+                    encrypted = cipher.encrypt(index.to_bytes(12, "big"), chunk,
+                                               associated_data(header, index, len(chunk)))
+                    encrypted_digest = hashlib.sha256(encrypted).hexdigest()
+                    output.check_current()
+                    write_new(Path(encrypted_digest), encrypted, directory_fd=output.fd)
+                    segments.append({"index": index, "plaintext_bytes": len(chunk),
+                                     "ciphertext_sha256": encrypted_digest})
+                require(not stream.read(1) and encrypted_source_digest.hexdigest() == plan["image_sha256"],
+                        "staged image changed during encryption")
+            manifest = {"header": header, "segments": segments}
+            validate_manifest(manifest, plan)
+            reauthorize()
+            parent.check_current()
+            output.check_current()
+            try:
+                write_new(Path("manifest.json"), canonical(manifest), directory_fd=output.fd)
+                sync_directory(output.path, directory_fd=output.fd)
+                sync_directory(parent.path, directory_fd=parent.fd)
+                parent.check_current()
+                output.check_current()
+            except (OSError, ValueError) as error:
+                raise PublicationIndeterminate("archive commit durability or identity unknown; preserve destination") from error
     return {"archive_sha256": sha256(manifest), "segments": len(segments), "result": "archived"}
 
 
@@ -340,7 +364,7 @@ def archive_directory(source: Path):
 
 
 def decode_archive_image(source: Path, staged: Path, plan: dict, key: bytes,
-                         verifier: Path) -> dict:
+                         verifier: Path, *, publication_stage: PinnedDirectory | None = None) -> dict:
     """Shared cold-image oracle for restore AND acknowledgement-loss observation.
 
     Writes only a fresh private scratch image. Never publishes a destination,
@@ -367,7 +391,8 @@ def decode_archive_image(source: Path, staged: Path, plan: dict, key: bytes,
         require(observed_names == expected_names, "archive inventory is incomplete")
         cipher = derived_cipher(key, header)
         hasher = hashlib.sha256()
-        with staged.open("xb") as stream:
+        with (publication_stage.writer(staged.name) if publication_stage is not None else
+              staged.open("xb")) as stream:
             os.fchmod(stream.fileno(), 0o600)
             for segment in manifest["segments"]:
                 content = read_bytes(source / segment["ciphertext_sha256"], CHUNK_BYTES + 16)
@@ -383,27 +408,52 @@ def decode_archive_image(source: Path, staged: Path, plan: dict, key: bytes,
             os.fsync(stream.fileno())
         require(staged.stat().st_size == plan["image_bytes"] and
                 hasher.hexdigest() == plan["image_sha256"], "restored bytes differ from checkpoint")
+        if publication_stage is not None:
+            publication_stage.check_current()
         native_check(staged, plan["anchor"], verifier, plan["verifier_sha256"])
     return manifest
 
 
 def restore_archive(plan: dict, key: bytes, verifier: Path, reauthorize) -> dict:
     source, destination = path_value(plan["input_path"]), path_value(plan["output_path"])
-    parent = private_parent(destination)
-    with tempfile.TemporaryDirectory(prefix=".cognitive-restore-stage-", dir=parent) as temporary:
-        staged = Path(temporary) / "cognitive_1.sqlite3"
-        manifest = decode_archive_image(source, staged, plan, key, verifier)
-        reauthorize()
-        try:
-            # link is an atomic no-replace publication on the same filesystem.
-            # Remove only our private staging link, NEVER an existing output.
-            os.link(staged, destination, follow_symlinks=False)
-            staged.unlink()
-            sync_directory(parent)
-        except FileExistsError:
-            raise
-        except OSError as error:
-            raise PublicationIndeterminate("restore publication durability unknown; preserve destination") from error
+    private_parent(destination)
+    with PinnedDirectory.open(destination.parent) as parent, parent.scratch() as stage:
+        parent.absent(destination.name)
+        staged = stage.path / "cognitive_1.sqlite3"
+        manifest = decode_archive_image(source, staged, plan, key, verifier, publication_stage=stage)
+        # Retain and rehash the actual image AFTER the owner checker and before
+        # final use. A successful check of earlier bytes cannot bless a replacement.
+        with stage.reader(staged.name, plan["image_bytes"]) as image:
+            verify_staged_stream(image, plan)
+            reauthorize()
+            stage.check_current()
+            parent.check_current()
+            verify_staged_stream(image, plan)
+            retained = os.fstat(image.fileno())
+            require(inode(retained) == inode(os.stat(staged.name, dir_fd=stage.fd, follow_symlinks=False)),
+                    "staged image pathname changed before publication")
+            try:
+                # Both leaf names are resolved relative to retained descriptors.
+                # Link is atomic/no-replace and never follows a swapped parent.
+                os.link(Path(staged.name), Path(destination.name), src_dir_fd=stage.fd,
+                        dst_dir_fd=parent.fd, follow_symlinks=False)
+            except FileExistsError:
+                raise
+            except OSError as error:
+                raise PublicationIndeterminate("restore publication durability unknown; preserve destination") from error
+            try:
+                published = os.stat(destination.name, dir_fd=parent.fd, follow_symlinks=False)
+                require(inode(published) == inode(retained), "published image is not the checked inode")
+                stage.unlink_created(staged.name)
+                sync_directory(parent.path, directory_fd=parent.fd)
+                parent.check_current()
+                verify_staged_stream(image, plan)
+                final = os.stat(destination.name, dir_fd=parent.fd, follow_symlinks=False)
+                require(inode(final) == inode(retained) and stat.S_ISREG(final.st_mode) and
+                        final.st_nlink == 1 and final.st_mode & 0o077 == 0,
+                        "published image identity changed")
+            except (OSError, ValueError) as error:
+                raise PublicationIndeterminate("restore publication durability or identity unknown; preserve destination") from error
     return {"archive_sha256": plan["archive_sha256"], "segments": len(manifest["segments"]),
             "result": "restored_cold_image"}
 

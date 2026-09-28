@@ -388,7 +388,10 @@ class ArchiveProtocolTests(unittest.TestCase):
         receipt = self.create()
         real_link = os.link
         def raced(source, destination, **kwargs):
-            destination.write_bytes(b"concurrent owner")
+            descriptor = os.open(destination, os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                                 0o600, dir_fd=kwargs["dst_dir_fd"])
+            with os.fdopen(descriptor, "wb") as stream:
+                stream.write(b"concurrent owner")
             return real_link(source, destination, **kwargs)
         with mock.patch.object(archive.os, "link", side_effect=raced):
             with self.assertRaises(FileExistsError):
