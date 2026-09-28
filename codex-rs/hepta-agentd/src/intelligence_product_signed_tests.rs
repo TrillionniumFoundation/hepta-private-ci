@@ -45,7 +45,10 @@ fn signed_authority_profile(
 ) -> (PathBuf, Arc<crate::IntelligenceAuthorityRollbackGuardV1>) {
     // Resolve the OS temporary-directory alias while provisioning the fixture.
     // The production reader must still reject every symlink at final use.
-    let root = directory.path().canonicalize().expect("canonical test root");
+    let root = directory
+        .path()
+        .canonicalize()
+        .expect("canonical test root");
     let path = root.join("authority.json");
     write_authority_file(
         &path,
@@ -53,8 +56,7 @@ fn signed_authority_profile(
         value.request.snapshot.revocation_frontier_digest(),
     );
     let manifest: IntelligenceAuthorityFileV1 =
-        serde_json::from_slice(&std::fs::read(&path).expect("manifest bytes"))
-            .expect("manifest");
+        serde_json::from_slice(&std::fs::read(&path).expect("manifest bytes")).expect("manifest");
     let guard = crate::IntelligenceAuthorityRollbackGuardV1::open(
         &root.join("authority-floor.json"),
         manifest.authority_epoch,
@@ -131,4 +133,43 @@ async fn signed_input_cannot_install_host_trust_or_change_actual_context() {
             }
         ))
     ));
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn objective_owner_rejects_forbidden_and_undeclared_candidates_before_utility() {
+    // Agreement between the supplied legal set, policy and NDU candidates does
+    // not extend the compiled Objective's allowed action classes.
+    for candidate in ["action.network", "action.not-declared"] {
+        let mut value = fixture();
+        value.request.legal_candidates.candidates[0].candidate_id = id(candidate);
+        value.inputs.intuition_request.candidates[0].candidate_id = id(candidate);
+        for contribution in &mut value.inputs.utility_contributions.contributions {
+            if contribution.candidate_id == id("action.read") {
+                contribution.candidate_id = id(candidate);
+            }
+        }
+        let directory = tempfile::tempdir().expect("directory");
+        let (path, guard) = signed_authority_profile(&directory, &value);
+        let runner = AgentdIntelligenceProductRunnerV1::new(path, authority_verifier())
+            .expect("runner")
+            .with_authority_rollback_guard(guard)
+            .expect("host rollback witness");
+        assert!(runner.canonical_profile_ready());
+        let outcome = runner
+            .prepare(&product_test_coordinator(), value.request, value.inputs)
+            .await;
+        assert!(
+            matches!(
+                &outcome,
+                Err(AgentdIntelligenceProductError::Canonical(
+                    CanonicalIntelligenceError::PortFailure {
+                        stage: CanonicalStageV1::ObjectiveValidated,
+                        class: CanonicalPortFailureClassV1::Rejected,
+                        ..
+                    }
+                ))
+            ),
+            "candidate {candidate} must fail at its actual Objective owner: {outcome:?}"
+        );
+    }
 }
