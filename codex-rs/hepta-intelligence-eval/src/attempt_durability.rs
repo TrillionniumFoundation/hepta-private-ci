@@ -5,11 +5,6 @@
 //! authority: that remains a selected-host trust and durability obligation.
 use crate::ProductEvaluationAttemptJournalV1;
 
-#[path = "qualification_artifacts.rs"]
-mod qualification_artifacts;
-#[path = "selected_host_publication.rs"]
-mod selected_host_publication;
-
 mod private {
     pub trait Sealed {}
 }

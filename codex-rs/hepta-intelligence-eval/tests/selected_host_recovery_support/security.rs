@@ -1,0 +1,171 @@
+use std::sync::Arc;
+use std::sync::Mutex;
+
+use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
+use codex_hepta_intelligence_eval::MetricRoleContractV2;
+use codex_hepta_intelligence_eval::ProductEvaluationAttemptAnchorStoreV1;
+use codex_hepta_intelligence_eval::ProductEvaluationAttemptAnchorV1;
+use codex_hepta_intelligence_eval::ProductEvaluationAttemptJournalErrorV1;
+use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
+use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
+use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+use codex_hepta_types::Digest32;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
+
+use super::model::digest;
+use super::model::id;
+
+pub fn principal(
+    name: &str,
+    key: &SigningKey,
+    scope: Digest32,
+) -> AuthenticatedPrincipalV1 {
+    AuthenticatedPrincipalV1 {
+        principal_id: id(name),
+        credential_chain_digest: digest(&format!("{name}-credential")),
+        signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+        scope_digest: scope,
+        authority_epoch: 9,
+        authenticated_at: 10,
+        expires_at: 100,
+    }
+}
+
+fn sign(
+    verifier: &LearningEvidenceVerifierV1,
+    principal: &AuthenticatedPrincipalV1,
+    key: &SigningKey,
+    role: LearningEvidenceRoleV1,
+    objective_digest: Digest32,
+    payload: &[u8],
+) -> SignedLearningEvidenceV1 {
+    let mut evidence = SignedLearningEvidenceV1 {
+        evidence_id: id(&format!("{}-evidence", principal.principal_id)),
+        principal_id: principal.principal_id.clone(),
+        role,
+        trust_digest: verifier.trust_digest(),
+        scope_digest: principal.scope_digest,
+        objective_digest,
+        authority_epoch: 9,
+        issued_at: 20,
+        expires_at: 90,
+        payload_digest: Digest32::of_bytes(payload),
+        signature: [0; 64],
+    };
+    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+    evidence
+}
+
+pub fn verifier_and_evidence(
+    bundle: &IndependentEvaluationBundleV1,
+    roles: &[MetricRoleContractV2],
+    generator_key: &SigningKey,
+    evaluator_key: &SigningKey,
+) -> (LearningEvidenceVerifierV1, SignedEvaluationEvidenceV1) {
+    let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        scope_digest: bundle.generator.scope_digest,
+        objective_digest: bundle.objective_digest,
+        authority_epoch: 9,
+        signers: vec![
+            TrustedLearningSignerV1 {
+                principal: bundle.generator.clone(),
+                controller_id: bundle.generator.principal_id.clone(),
+                verifying_key: generator_key.verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Generator],
+                revoked_at: None,
+            },
+            TrustedLearningSignerV1 {
+                principal: bundle.evaluator.clone(),
+                controller_id: bundle.evaluator.principal_id.clone(),
+                verifying_key: evaluator_key.verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Evaluator],
+                revoked_at: None,
+            },
+        ],
+    })
+    .expect("verifier");
+    let payload = evaluation_signing_payload_v2(bundle, roles).expect("evaluation payload");
+    let evidence = SignedEvaluationEvidenceV1 {
+        generator_plan: sign(
+            &verifier,
+            &bundle.generator,
+            generator_key,
+            LearningEvidenceRoleV1::Generator,
+            bundle.objective_digest,
+            bundle.frozen_plan.plan_digest.as_array(),
+        ),
+        evaluator_bundle: sign(
+            &verifier,
+            &bundle.evaluator,
+            evaluator_key,
+            LearningEvidenceRoleV1::Evaluator,
+            bundle.objective_digest,
+            &payload,
+        ),
+    };
+    (verifier, evidence)
+}
+
+#[derive(Clone)]
+pub struct FaultingAnchorStore {
+    state: Arc<Mutex<AnchorState>>,
+}
+
+struct AnchorState {
+    retained: Option<ProductEvaluationAttemptAnchorV1>,
+    fail_once_at_event_count: Option<u64>,
+}
+
+impl FaultingAnchorStore {
+    pub fn new(fail_once_at_event_count: u64) -> Self {
+        Self {
+            state: Arc::new(Mutex::new(AnchorState {
+                retained: None,
+                fail_once_at_event_count: Some(fail_once_at_event_count),
+            })),
+        }
+    }
+}
+
+impl ProductEvaluationAttemptAnchorStoreV1 for FaultingAnchorStore {
+    fn load(
+        &mut self,
+        binding: Digest32,
+    ) -> Result<Option<ProductEvaluationAttemptAnchorV1>, ProductEvaluationAttemptJournalErrorV1>
+    {
+        let state = self.state.lock().expect("anchor state");
+        if state.retained.is_some_and(|value| value.binding != binding) {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Binding);
+        }
+        Ok(state.retained)
+    }
+
+    fn compare_and_swap(
+        &mut self,
+        binding: Digest32,
+        expected: Option<ProductEvaluationAttemptAnchorV1>,
+        next: ProductEvaluationAttemptAnchorV1,
+    ) -> Result<(), ProductEvaluationAttemptJournalErrorV1> {
+        let mut state = self.state.lock().expect("anchor state");
+        if next.binding != binding || state.retained != expected {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Conflict);
+        }
+        if state.fail_once_at_event_count == Some(next.event_count) {
+            state.fail_once_at_event_count = None;
+            return Err(ProductEvaluationAttemptJournalErrorV1::Indeterminate);
+        }
+        if expected.is_some_and(|value| {
+            next.event_count < value.event_count || next.state_digest == value.state_digest
+        }) {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Conflict);
+        }
+        state.retained = Some(next);
+        Ok(())
+    }
+}
