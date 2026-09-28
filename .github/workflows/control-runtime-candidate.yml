@@ -36,7 +36,7 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 1
           persist-credentials: false
-      - name: Archive the exact tracked source, not a modified build tree
+      - name: Archive exact tracked source
         shell: bash
         run: |
           set -euo pipefail
@@ -61,7 +61,6 @@ jobs:
       matrix:
         lane: [source-head, base-merge]
     env:
-      CARGO_TARGET_DIR: ${{ runner.temp }}/control-runtime-target
       HEPTA_CI_LANE: ${{ matrix.lane }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -85,6 +84,7 @@ jobs:
           git diff --exit-code
           git diff --cached --exit-code
           echo "TESTED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/control-runtime-target" >> "$GITHUB_ENV"
           mkdir -p "$RUNNER_TEMP/control-runtime-records"
           python3 - <<'PY'
           import json, os, subprocess
