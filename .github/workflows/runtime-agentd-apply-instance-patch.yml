@@ -33,6 +33,8 @@ jobs:
       BASE_SHA: 35a87891852355e75a350973c33871d2b0889fd5
       PATCH_SHA256: fd4fe4668e1029d7b1ed0429b50ef6cd58a75d737c7b75866b3a0ef5a7b54201
       PATCH_PATH: .github/runtime-agentd-instance.patch.gz
+      EXPECTED_REJECT: codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs.rej
+      EXPECTED_REJECT_SHA256: 55ed4c43209b6bf61961bd47c8256495feea6232bfc8a56b90da87823044552c
       CARGO_INCREMENTAL: '0'
       TARGET_BRANCH: work/runtime-agentd-production-closure-20260928
     steps:
@@ -43,7 +45,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Verify carrier scope and patch identity
+      - name: Verify carrier scope and apply reviewed patch
         shell: bash
         run: |
           set -euo pipefail
@@ -52,11 +54,24 @@ jobs:
           test -z "$unexpected"
           printf '%s  %s\n' "$PATCH_SHA256" "$PATCH_PATH" | sha256sum -c -
           gzip -dc "$PATCH_PATH" > "$RUNNER_TEMP/runtime-agentd-instance.patch"
-          # One hunk is already present in the exact source (`_error`); use the
-          # index blobs for a deterministic three-way application and reject
-          # every unresolved hunk.
-          git apply --3way "$RUNNER_TEMP/runtime-agentd-instance.patch"
+
+          # The exact source already contains one formatting-only `_error`
+          # overlap. Apply every other hunk and require that the sole rejected
+          # hunk is the pre-reviewed, content-addressed overlap below.
+          set +e
+          git apply --reject --whitespace=nowarn "$RUNNER_TEMP/runtime-agentd-instance.patch"
+          apply_status=$?
+          set -e
+          test "$apply_status" -eq 1
+          mapfile -t rejects < <(find codex-rs/hepta-agentd -name '*.rej' -print | sort)
+          test "${#rejects[@]}" -eq 1
+          test "${rejects[0]}" = "$EXPECTED_REJECT"
+          printf '%s  %s\n' "$EXPECTED_REJECT_SHA256" "$EXPECTED_REJECT" | sha256sum -c -
+          grep -F 'fn remember_terminal_failure(installed: &Installation, _error: &AgentdError)' \
+            codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs
+          rm "$EXPECTED_REJECT"
           test -z "$(find codex-rs/hepta-agentd -name '*.rej' -print -quit)"
+          git diff --check
 
       - name: Remove one-shot carrier
         shell: bash
