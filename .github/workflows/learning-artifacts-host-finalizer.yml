@@ -1,0 +1,57 @@
+name: learning.artifacts host source finalizer
+
+on:
+  push:
+    branches:
+      - chatgpt/learning-artifacts-lifecycle-closure-20260929
+
+permissions:
+  contents: write
+
+concurrency:
+  group: learning-artifacts-host-finalizer-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    name: Materialize reviewed host transitions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply exact-source finalizer
+        run: python3 scripts/materialize_learning_artifacts_host.py
+
+      - name: Format targeted crate
+        run: cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-learning-artifacts
+
+      - name: Check targeted crate
+        run: cargo check --manifest-path codex-rs/Cargo.toml --locked --package codex-hepta-learning-artifacts --all-targets
+
+      - name: Strict lint targeted crate
+        run: cargo clippy --manifest-path codex-rs/Cargo.toml --locked --package codex-hepta-learning-artifacts --all-targets -- -D warnings
+
+      - name: Test targeted crate without retries
+        run: cargo test --manifest-path codex-rs/Cargo.toml --locked --package codex-hepta-learning-artifacts --all-targets
+
+      - name: Commit only materialized source
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          rm scripts/materialize_learning_artifacts_host.py
+          rm .github/workflows/learning-artifacts-host-finalizer.yml
+          git add codex-rs/hepta-learning-artifacts/src/owner/publication_coordination.rs
+          git add codex-rs/hepta-learning-artifacts/src/observability.rs
+          git add scripts/materialize_learning_artifacts_host.py
+          git add .github/workflows/learning-artifacts-host-finalizer.yml
+          git diff --cached --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "learning.artifacts: wire durable host transitions"
+          git push origin "HEAD:${BRANCH}"
