@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "5da45e84ae21323b48944591e3f9dc3e1272d117",
-    "tree": "f250a3b05306c86d03238ba506cbe74856be2225"
+    "commit": "2724d126c2a8634e5e601a8448b970929739be98",
+    "tree": "464d11eaaeb6efafb8b68921a509675fe302668d"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.evidence",
@@ -53,7 +53,7 @@
       "mustContain": "compare_and_swap"
     },
     {
-      "sourcePath": "codex-rs/hepta-agentd/src/evidence_production.rs",
+      "sourcePath": "codex-rs/hepta-agentd/src/evidence_production_checks.rs",
       "mustContain": "kernel.evidence recovery_required"
     }
   ],
@@ -378,6 +378,39 @@
       ],
       "sourcePathExists": true,
       "delegatedCallees": []
+    },
+    {
+      "operation": "guard_publication_dispatch",
+      "nativeSymbol": "HeptaEvidenceStore::with_publication_dispatch_guard",
+      "sourcePath": "codex-rs/hepta-evidence/src/publication_dispatch.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "current_trust_and_owner_fenced_publication_dispatch",
+      "tests": [
+        "codex-rs/hepta-evidence/src/publication_dispatch_tests.rs"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "acknowledge_publication_with_trust",
+      "nativeSymbol": "HeptaEvidenceStore::acknowledge_publication_with_trust",
+      "sourcePath": "codex-rs/hepta-evidence/src/publication_dispatch.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "atomic_current_trust_frontier_and_batch_acknowledgement",
+      "tests": [
+        "codex-rs/hepta-evidence/src/publication_dispatch_tests.rs"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "frontier_try_compare_and_swap",
+      "nativeSymbol": "LockedFileEvidenceFrontierBackend::try_compare_and_swap",
+      "sourcePath": "codex-rs/hepta-evidence/src/frontier_backend_file/segmented/trait.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "nonblocking_lock_admission_for_existing_durable_cas",
+      "tests": [
+        "codex-rs/hepta-evidence/src/frontier_backend_file/segmented/trait.rs"
+      ],
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
