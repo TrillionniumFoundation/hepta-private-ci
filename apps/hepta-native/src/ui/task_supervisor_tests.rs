@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Barrier;
+use std::sync::Mutex;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::sync::mpsc;
@@ -50,6 +51,62 @@ fn cancelled_waiting_task_never_enters_the_runtime() {
         Ok(Err("native task cancelled before runtime admission"))
     );
     assert!(task.poll().is_none());
+}
+
+#[test]
+fn cancelled_runtime_lock_waiter_exits_without_owner_entry() {
+    let owner = Arc::new(Mutex::new(()));
+    let owner_guard = owner.lock().unwrap();
+    let worker_owner = Arc::clone(&owner);
+    let (waiting_tx, waiting_rx) = mpsc::channel();
+    let mut task = SupervisedTask::spawn("cancel-lock-wait", || {}, move |admission| {
+        waiting_tx.send(()).unwrap();
+        admission
+            .wait_lock(&worker_owner, Duration::from_secs(5))
+            .map(|_| ())
+    })
+    .unwrap();
+    waiting_rx.recv_timeout(Duration::from_secs(5)).unwrap();
+    assert!(task.cancel_before_admission());
+    assert_eq!(
+        finish(&mut task),
+        Ok(Err("native task cancelled before runtime admission"))
+    );
+    drop(owner_guard);
+}
+
+#[test]
+fn runtime_lock_wait_has_a_bounded_pre_admission_deadline() {
+    let owner = Arc::new(Mutex::new(()));
+    let owner_guard = owner.lock().unwrap();
+    let worker_owner = Arc::clone(&owner);
+    let mut task = SupervisedTask::spawn("bounded-lock-wait", || {}, move |admission| {
+        admission
+            .wait_lock(&worker_owner, Duration::from_millis(30))
+            .map(|_| ())
+    })
+    .unwrap();
+    assert_eq!(
+        finish(&mut task),
+        Ok(Err("native runtime lock deadline exceeded before admission"))
+    );
+    drop(owner_guard);
+}
+
+#[test]
+fn acquiring_the_runtime_lock_does_not_consume_admission() {
+    let owner = Arc::new(Mutex::new(()));
+    let worker_owner = Arc::clone(&owner);
+    let mut task = SupervisedTask::spawn("lock-then-admit", || {}, move |admission| {
+        let owner_guard = admission
+            .wait_lock(&worker_owner, Duration::from_secs(1))
+            .unwrap();
+        let admitted = admission.begin();
+        drop(owner_guard);
+        admitted
+    })
+    .unwrap();
+    assert_eq!(finish(&mut task), Ok(Ok(())));
 }
 
 #[test]

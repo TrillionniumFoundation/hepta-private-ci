@@ -173,7 +173,7 @@ impl HeptaNativeApp {
         {
             let runtime = Arc::clone(&self.runtime);
             self.start_task(UiTaskKind::Reconcile, move |admission| {
-                let mut runtime = lock_runtime(&runtime)?;
+                let mut runtime = lock_runtime_for_task(&admission, &runtime)?;
                 admission
                     .begin()
                     .map_err(|message| ShellError::State(message.to_owned()))?;
@@ -254,7 +254,7 @@ impl HeptaNativeApp {
         if let Some(key) = close_observation {
             let runtime = Arc::clone(&self.runtime);
             self.start_task(UiTaskKind::Reconcile, move |admission| {
-                let mut runtime = lock_runtime(&runtime)?;
+                let mut runtime = lock_runtime_for_task(&admission, &runtime)?;
                 admission
                     .begin()
                     .map_err(|message| ShellError::State(message.to_owned()))?;
@@ -355,7 +355,7 @@ impl HeptaNativeApp {
                         payload,
                         grant,
                     };
-                    let mut runtime = lock_runtime(&runtime)?;
+                    let mut runtime = lock_runtime_for_task(&admission, &runtime)?;
                     admission
                         .begin()
                         .map_err(|message| ShellError::State(message.to_owned()))?;

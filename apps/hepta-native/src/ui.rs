@@ -31,6 +31,8 @@ use crate::updater::PendingUpdateV1;
 use crate::updater::SignedUpdateManifestV1;
 use crate::updater::UpdateManager;
 
+const RUNTIME_LOCK_WAIT: Duration = Duration::from_secs(30);
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Screen {
     Runtime,
@@ -135,6 +137,20 @@ fn lock_runtime(
         .map_err(|_| ShellError::State("native runtime worker lock is poisoned".to_owned()))
 }
 
+fn lock_runtime_for_task<'a>(
+    admission: &TaskAdmission,
+    runtime: &'a Arc<Mutex<NativeShellRuntime>>,
+) -> Result<std::sync::MutexGuard<'a, NativeShellRuntime>, ShellError> {
+    admission
+        .wait_lock(runtime.as_ref(), RUNTIME_LOCK_WAIT)
+        .map_err(|message| ShellError::State(message.to_owned()))
+}
+
+fn render_runtime_status(status: &serde_json::Value) -> String {
+    serde_json::to_string_pretty(status)
+        .unwrap_or_else(|error| format!("status serialization failed: {error}"))
+}
+
 fn spawn_ui_task<F>(
     kind: UiTaskKind,
     repaint: Arc<Mutex<Option<egui::Context>>>,
@@ -163,7 +179,7 @@ pub struct HeptaNativeApp {
     screen: Screen,
     locale: Locale,
     connected: bool,
-    status: Option<serde_json::Value>,
+    status_rendered: Option<String>,
     view_revision: Option<u64>,
     operations: Vec<PlatformReceipt>,
     pending_task: Option<PendingUiTask>,
@@ -209,7 +225,7 @@ impl HeptaNativeApp {
             screen: Screen::Runtime,
             locale: Locale::detect(),
             connected: true,
-            status: None,
+            status_rendered: None,
             view_revision: None,
             operations,
             pending_task: None,
@@ -249,7 +265,11 @@ impl HeptaNativeApp {
     }
 
     fn confirm_rendered_update(&mut self, ui: &egui::Ui) {
-        if self.is_busy() || self.status.is_none() || self.view_revision.is_none() || self.last_error.is_some() {
+        if self.is_busy()
+            || self.status_rendered.is_none()
+            || self.view_revision.is_none()
+            || self.last_error.is_some()
+        {
             return;
         }
         if let Some(recorder) = self.startup_recorder.take()
@@ -327,7 +347,7 @@ impl HeptaNativeApp {
                 view_revision,
                 operations,
             }) => {
-                self.status = Some(status);
+                self.status_rendered = Some(render_runtime_status(&status));
                 self.view_revision = Some(view_revision);
                 self.operations = operations;
                 self.operation_binding = None;
@@ -356,6 +376,7 @@ impl HeptaNativeApp {
                     self.shutdown.update_requested = false;
                 }
                 if kind == UiTaskKind::Refresh {
+                    self.status_rendered = None;
                     self.view_revision = None;
                     self.operation_binding = None;
                 }
@@ -377,12 +398,15 @@ impl HeptaNativeApp {
         if self.is_busy() {
             return;
         }
+        self.status_rendered = None;
         self.view_revision = None;
         self.operation_binding = None;
         let runtime = Arc::clone(&self.runtime);
         self.start_task(UiTaskKind::Refresh, move |admission| {
-            let mut runtime = lock_runtime(&runtime)?;
-            admission.begin().map_err(|message| ShellError::State(message.to_owned()))?;
+            let mut runtime = lock_runtime_for_task(&admission, &runtime)?;
+            admission
+                .begin()
+                .map_err(|message| ShellError::State(message.to_owned()))?;
             let (presentation, status) = runtime.refresh_runtime_view()?;
             let operations = runtime.operation_history();
             Ok(UiTaskOutput::Refresh {
@@ -396,8 +420,10 @@ impl HeptaNativeApp {
     fn reconcile(&mut self) {
         let runtime = Arc::clone(&self.runtime);
         self.start_task(UiTaskKind::Reconcile, move |admission| {
-            let mut runtime = lock_runtime(&runtime)?;
-            admission.begin().map_err(|message| ShellError::State(message.to_owned()))?;
+            let mut runtime = lock_runtime_for_task(&admission, &runtime)?;
+            admission
+                .begin()
+                .map_err(|message| ShellError::State(message.to_owned()))?;
             let _ = runtime.reconcile_pending()?;
             Ok(UiTaskOutput::Reconcile {
                 operations: runtime.operation_history(),
@@ -473,14 +499,12 @@ impl HeptaNativeApp {
         ));
     }
 
-    fn runtime_view(&self, ui: &mut egui::Ui) {
+    fn runtime_view(&mut self, ui: &mut egui::Ui) {
         ui.heading(self.locale.text("Runtime status", "运行时状态"));
-        match &self.status {
-            Some(value) => {
-                let mut pretty = serde_json::to_string_pretty(value)
-                    .unwrap_or_else(|error| format!("status serialization failed: {error}"));
+        match self.status_rendered.as_mut() {
+            Some(pretty) => {
                 ui.add(
-                    egui::TextEdit::multiline(&mut pretty)
+                    egui::TextEdit::multiline(pretty)
                         .font(egui::TextStyle::Monospace)
                         .desired_rows(24)
                         .interactive(false),
@@ -491,8 +515,6 @@ impl HeptaNativeApp {
             }
         }
     }
-
-
 }
 
 impl eframe::App for HeptaNativeApp {

@@ -26,7 +26,9 @@ impl Shutdown {
     pub(super) fn check_deadline(&mut self, now: Instant) {
         if !self.runtime_closed
             && self.failure.is_none()
-            && self.requested_at.is_some_and(|start| now.saturating_duration_since(start) >= SHUTDOWN_GRACE)
+            && self
+                .requested_at
+                .is_some_and(|start| now.saturating_duration_since(start) >= SHUTDOWN_GRACE)
         {
             self.failure = Some("Shutdown deadline exceeded. The worker is still owned; no update will activate. Do not replay unknown operations.".to_owned());
             self.update_requested = false;
@@ -43,10 +45,13 @@ impl HeptaNativeApp {
     pub(super) fn request_shutdown(&mut self, ctx: &egui::Context) {
         let first_request = !self.shutdown.requested();
         self.shutdown.request(Instant::now());
-        self.activate_update_on_exit.store(false, Ordering::Release);
+        self.activate_update_on_exit
+            .store(false, Ordering::Release);
         self.view_revision = None;
         self.operation_binding = None;
-        if first_request && let Some(task) = &self.pending_task {
+        if first_request
+            && let Some(task) = &self.pending_task
+        {
             task.worker.cancel_before_admission();
         }
         ctx.request_repaint();
@@ -69,12 +74,18 @@ impl HeptaNativeApp {
         if self.pending_task.is_none() && !self.shutdown.close_started {
             let runtime = Arc::clone(&self.runtime);
             // Shutdown is the only task admitted after closing is requested.
-            match spawn_ui_task(UiTaskKind::Shutdown, Arc::clone(&self.repaint), move |admission| {
-                let mut runtime = lock_runtime(&runtime)?;
-                admission.begin().map_err(|message| ShellError::State(message.to_owned()))?;
-                runtime.close()?;
-                Ok(UiTaskOutput::Shutdown)
-            }) {
+            match spawn_ui_task(
+                UiTaskKind::Shutdown,
+                Arc::clone(&self.repaint),
+                move |admission| {
+                    let mut runtime = lock_runtime_for_task(&admission, &runtime)?;
+                    admission
+                        .begin()
+                        .map_err(|message| ShellError::State(message.to_owned()))?;
+                    runtime.close()?;
+                    Ok(UiTaskOutput::Shutdown)
+                },
+            ) {
                 Ok(task) => {
                     self.pending_task = Some(task);
                     self.shutdown.close_started = true;
@@ -97,7 +108,13 @@ impl HeptaNativeApp {
             }
             if self.pending_task.is_some() {
                 ui.spinner();
-            } else if ui.button(self.locale.text("Retry runtime close (no update)", "重试关闭运行时（不激活更新）")).clicked() {
+            } else if ui
+                .button(
+                    self.locale
+                        .text("Retry runtime close (no update)", "重试关闭运行时（不激活更新）"),
+                )
+                .clicked()
+            {
                 // Do not reset the deadline or manufacture success after failure.
                 self.shutdown.close_started = false;
                 self.shutdown.update_requested = false;
