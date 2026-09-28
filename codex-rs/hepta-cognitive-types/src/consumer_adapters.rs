@@ -11,6 +11,14 @@ use crate::contract::ContractViolationV1;
 
 const SHADOW_COMPARISON_DOMAIN: &[u8] = b"hepta.cognitive.consumer-shadow.v1";
 
+/// Frozen interpretation of `CanonicalShadowComparisonV1`.
+///
+/// This profile compares only the two digest byte strings supplied by the
+/// caller. It does not project legacy and canonical values into a shared
+/// semantic domain and therefore cannot establish migration parity or cutover.
+pub const RAW_SHADOW_DIGEST_COMPARISON_PROFILE_V1: &str =
+    "raw_digest_equality_diagnostic_v1";
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ConsumerConvergenceStateV1 {
     CanonicalAuthoritative,
@@ -106,7 +114,14 @@ pub fn registered_consumer_v1(name: &str) -> Option<&'static CanonicalConsumerRe
         .find(|registration| registration.consumer == name)
 }
 
-/// Digest-bound result of running legacy and canonical adapters side by side.
+/// Digest-bound diagnostic from running legacy and canonical adapters side by side.
+///
+/// `matched()` means only that the two caller-supplied digest byte strings are
+/// identical under [`RAW_SHADOW_DIGEST_COMPARISON_PROFILE_V1`]. It does not
+/// prove that the underlying values have equal semantics, came from the same
+/// current source cut, were authorized, or may be used to retire compatibility.
+/// Use `crate::handoff::CanonicalHandoffV1` for typed common-semantic parity and
+/// revalidate the real owner binding immediately before physical use.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CanonicalShadowComparisonV1 {
     consumer: &'static str,
@@ -175,6 +190,18 @@ impl CanonicalShadowComparisonV1 {
     #[must_use]
     pub const fn comparison_digest(&self) -> Digest32 {
         self.comparison_digest
+    }
+
+    /// Returns the exact diagnostic interpretation of `matched()`.
+    #[must_use]
+    pub const fn comparison_profile(&self) -> &'static str {
+        RAW_SHADOW_DIGEST_COMPARISON_PROFILE_V1
+    }
+
+    /// Raw digest equality is never sufficient migration-cutover evidence.
+    #[must_use]
+    pub const fn is_cutover_evidence(&self) -> bool {
+        false
     }
 
     pub fn validate(&self) -> Result<(), ContractViolationV1> {

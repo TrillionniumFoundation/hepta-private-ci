@@ -4,4 +4,6 @@ The complete architecture and ownership guide is [TECHNICAL.md](TECHNICAL.md). I
 
 The existing [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json) is the status authority. [INVARIANTS.json](INVARIANTS.json) maps reviewed obligations to source, tests and required checks, and [INVARIANTS.md](INVARIANTS.md) is its generated human-readable projection. The invariant table is not a second completion ledger or a claim of exhaustive API inventory.
 
+`CanonicalShadowComparisonV1` is a raw digest-equality diagnostic only, even when its inputs match. Typed migration parity and compatibility-cutover evidence must use `CanonicalHandoffV1` over one explicit common semantic projection, followed by current owner revalidation at the physical-use boundary.
+
 The [execution dossier](../../../qualification/module-execution-dossiers/detail/cognitive.types.md) and [HNMF specification](../../hnmf/TECHNICAL.md) retain their separate design and ownership scopes. A path, token, test declaration, or green historical run cannot establish current-candidate execution, authenticated consumer cutover, acceptance, activation, or release.

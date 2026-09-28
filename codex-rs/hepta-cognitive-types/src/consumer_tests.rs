@@ -207,6 +207,25 @@ fn compatibility_posture_cannot_omit_or_hide_legacy_digest() {
 }
 
 #[test]
+fn raw_shadow_digest_equality_is_diagnostic_not_cutover_evidence() {
+    let same = digest('8').digest();
+    let comparison = CanonicalShadowComparisonV1::new(
+        &COGNITIVE_STORE_CONSUMER_V1,
+        same,
+        same,
+    )
+    .expect("shadow diagnostic");
+
+    comparison.validate().expect("valid shadow diagnostic");
+    assert!(comparison.matched());
+    assert_eq!(
+        comparison.comparison_profile(),
+        RAW_SHADOW_DIGEST_COMPARISON_PROFILE_V1
+    );
+    assert!(!comparison.is_cutover_evidence());
+}
+
+#[test]
 fn consumer_registration_schemas_match_runtime_adapters() {
     assert_eq!(
         COGNITIVE_READ_CONSUMER_V1.canonical_schema,

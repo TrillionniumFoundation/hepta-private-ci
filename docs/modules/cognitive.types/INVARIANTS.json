@@ -56,12 +56,14 @@
     },
     {
       "id": "CTYPE-DIGEST-PROFILE",
-      "obligation": "Frozen and schema-bound profiles remain distinct and are compared only over an explicit common typed projection.",
+      "obligation": "Frozen and schema-bound profiles remain distinct; raw shadow digest equality is diagnostic-only, and cutover parity is compared only over an explicit common typed projection.",
       "source": [
         "codex-rs/hepta-cognitive-types/src/wire.rs",
+        "codex-rs/hepta-cognitive-types/src/consumer_adapters.rs",
         "codex-rs/hepta-cognitive-types/src/handoff.rs"
       ],
       "tests": [
+        "codex-rs/hepta-cognitive-types/src/consumer_tests.rs",
         "codex-rs/hepta-cognitive-types/src/handoff_tests.rs",
         "qualification/cognitive-types-v1/test_quality_checks.py"
       ],
