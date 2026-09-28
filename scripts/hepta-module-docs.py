@@ -2,11 +2,17 @@
 """Closed-world validator for Hepta module source bindings and technical guides."""
 
 try:
-    from scripts.hepta_metadata import AUTHORITY_KEYS
+    from scripts.hepta_metadata import (
+        AUTHORITY_KEYS,
+        has_deny_all_authority,
+    )
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
-    from hepta_metadata import AUTHORITY_KEYS
+    from hepta_metadata import (
+        AUTHORITY_KEYS,
+        has_deny_all_authority,
+    )
 
 import argparse
 import hashlib
@@ -80,14 +86,10 @@ def sha(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def false_authority(value, label):
+def false_authority(value: object, label: str) -> None:
     need(
-        isinstance(value, dict) and set(value) == set(AUTHORITY_KEYS),
-        label + " authority key closure",
-    )
-    need(
-        all(type(flag) is bool and flag is False for flag in value.values()),
-        label + " positive authority or invalid authority type",
+        has_deny_all_authority(value),
+        label + " authority must contain exactly false booleans",
     )
 
 
@@ -173,14 +175,20 @@ def refresh_derived(check):
     # Preflight the entire input before writing either derived file. Missing
     # guides remain real work; a generated row must not fabricate documentation.
     for module_id, module in module_map.items():
-        need(re.fullmatch(r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*", module_id),
-             "invalid canonical module ID")
+        need(
+            re.fullmatch(r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*", module_id),
+            "invalid canonical module ID",
+        )
         expected = f"docs/modules/{module_id}/TECHNICAL.md"
         guide = (ROOT / expected).resolve()
         need(module["technicalDocument"] == expected, module_id + " stable doc path")
-        need(guide.is_relative_to(ROOT.resolve()) and guide.is_file(),
-             module_id + " guide missing or outside repository")
-        need(bool(guide.read_text(encoding="utf-8").strip()), module_id + " empty guide")
+        need(
+            guide.is_relative_to(ROOT.resolve()) and guide.is_file(),
+            module_id + " guide missing or outside repository",
+        )
+        need(
+            bool(guide.read_text(encoding="utf-8").strip()), module_id + " empty guide"
+        )
 
     # Membership comes only from MODULES.json: additions and removals do not
     # require hand-edited projection rows. Preserve module-local navigation
@@ -188,11 +196,16 @@ def refresh_derived(check):
     bindings["bindings"] = []
     docs["modules"] = []
     for module_id, module in module_map.items():
-        row = dict(old_bindings.get(module_id, {
-            "module": module_id,
-            "sourceEvidenceRoots": [],
-            "interpretation": "generated_navigation_only_not_execution_evidence",
-        }))
+        row = dict(
+            old_bindings.get(
+                module_id,
+                {
+                    "module": module_id,
+                    "sourceEvidenceRoots": [],
+                    "interpretation": "generated_navigation_only_not_execution_evidence",
+                },
+            )
+        )
         declared = [binding["path"] for binding in module["rootBindings"]]
         existing = [item for item in declared if (ROOT / item).exists()]
         row.update(
@@ -220,9 +233,15 @@ def refresh_derived(check):
             requiredSections=HEADINGS,
             producedContracts=produced,
             consumedContracts=consumed,
-            protocols=sorted(p["id"] for p in protocols if p.get("contractId") in touched),
-            ownedDomains=sorted(d["id"] for d in domains if d["authoritativeWriter"] == module_id),
-            readDomains=sorted(d["id"] for d in domains if module_id in d.get("readers", [])),
+            protocols=sorted(
+                p["id"] for p in protocols if p.get("contractId") in touched
+            ),
+            ownedDomains=sorted(
+                d["id"] for d in domains if d["authoritativeWriter"] == module_id
+            ),
+            readDomains=sorted(
+                d["id"] for d in domains if module_id in d.get("readers", [])
+            ),
             workPackages=sorted(
                 p["id"]
                 for p in packages
@@ -233,12 +252,22 @@ def refresh_derived(check):
         docs["modules"].append(row)
 
     rendered = {
-        "docs/modules/SOURCE_BINDINGS.json": json.dumps(bindings, indent=2, ensure_ascii=False) + "\n",
-        "docs/modules/MODULE_DOCS.json": json.dumps(docs, indent=2, ensure_ascii=False) + "\n",
+        "docs/modules/SOURCE_BINDINGS.json": json.dumps(
+            bindings, indent=2, ensure_ascii=False
+        )
+        + "\n",
+        "docs/modules/MODULE_DOCS.json": json.dumps(docs, indent=2, ensure_ascii=False)
+        + "\n",
     }
-    changed = [path for path, text in rendered.items()
-               if (ROOT / path).read_text(encoding="utf-8") != text]
-    need(not check or not changed, "generated module projection drift: " + ", ".join(changed))
+    changed = [
+        path
+        for path, text in rendered.items()
+        if (ROOT / path).read_text(encoding="utf-8") != text
+    ]
+    need(
+        not check or not changed,
+        "generated module projection drift: " + ", ".join(changed),
+    )
     if not check:
         for path in changed:
             (ROOT / path).write_text(rendered[path], encoding="utf-8")
@@ -432,7 +461,9 @@ def self_test():
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("command", choices=["verify", "self-test", "refresh-indexes", "refresh-derived"])
+    p.add_argument(
+        "command", choices=["verify", "self-test", "refresh-indexes", "refresh-derived"]
+    )
     p.add_argument("--check", action="store_true")
     args = p.parse_args()
     if args.command == "refresh-indexes":

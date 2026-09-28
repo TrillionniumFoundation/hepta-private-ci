@@ -28,6 +28,22 @@ AUTHORITY_KEYS = [
 ]
 
 
+_AUTHORITY_KEY_SET = frozenset(AUTHORITY_KEYS)
+
+
+def has_deny_all_authority(value: object) -> bool:
+    """Require exact authority keys and explicit JSON false, independent of key order.
+
+    Numeric zero, null and empty containers are not boolean denial. This checks
+    document metadata only; a successful check never grants runtime authority.
+    """
+    return (
+        isinstance(value, dict)
+        and value.keys() == _AUTHORITY_KEY_SET
+        and all(flag is False for flag in value.values())
+    )
+
+
 def authority_fixture() -> dict[str, bool]:
     """Return the canonical deny-all metadata object for generated fixtures."""
 
@@ -37,4 +53,9 @@ def authority_fixture() -> dict[str, bool]:
 def has_schema_version(value: object, expected: int) -> bool:
     """Check a versioned registry envelope without repeating shape plumbing."""
 
-    return isinstance(value, dict) and value.get("schemaVersion") == expected
+    return (
+        isinstance(value, dict)
+        and type(expected) is int
+        and type(value.get("schemaVersion")) is int
+        and value["schemaVersion"] == expected
+    )

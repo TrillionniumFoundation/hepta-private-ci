@@ -10,11 +10,19 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.hepta_metadata import AUTHORITY_KEYS, has_schema_version
+    from scripts.hepta_metadata import (
+        AUTHORITY_KEYS,
+        has_schema_version,
+        has_deny_all_authority,
+    )
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
-    from hepta_metadata import AUTHORITY_KEYS, has_schema_version
+    from hepta_metadata import (
+        AUTHORITY_KEYS,
+        has_schema_version,
+        has_deny_all_authority,
+    )
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -267,12 +275,10 @@ def load_json(path: str) -> dict[str, Any]:
     return value
 
 
-def false_authority(value: Any, label: str) -> None:
-    need(isinstance(value, dict), f"{label}: authority object required")
-    need(set(value) == set(AUTHORITY_KEYS), f"{label}: authority key closure")
+def false_authority(value: object, label: str) -> None:
     need(
-        all(item is False for item in value.values()),
-        f"{label}: authority must be explicit false booleans",
+        has_deny_all_authority(value),
+        label + " authority must contain exactly false booleans",
     )
 
 

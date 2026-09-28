@@ -14,12 +14,20 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.hepta_metadata import AUTHORITY_KEYS, has_schema_version
+    from scripts.hepta_metadata import (
+        AUTHORITY_KEYS,
+        has_schema_version,
+        has_deny_all_authority,
+    )
     from scripts.hepta_workflow_commands import workflow_commands
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
-    from hepta_metadata import AUTHORITY_KEYS, has_schema_version
+    from hepta_metadata import (
+        AUTHORITY_KEYS,
+        has_schema_version,
+        has_deny_all_authority,
+    )
     from hepta_workflow_commands import workflow_commands
 
 try:
@@ -425,12 +433,10 @@ def verify_protocol_authority_bindings(closure: dict[str, Any]) -> None:
         need(closure.get(key) == expected, "canonical authority binding " + key)
 
 
-def false_authority(value: Any, label: str) -> None:
-    need(isinstance(value, dict), label + " authority object")
-    need(set(value) == set(AUTHORITY_KEYS), label + " authority key closure")
+def false_authority(value: object, label: str) -> None:
     need(
-        all(item is False for item in value.values()),
-        label + " positive or invalid authority",
+        has_deny_all_authority(value),
+        label + " authority must contain exactly false booleans",
     )
 
 

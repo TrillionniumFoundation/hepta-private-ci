@@ -17,11 +17,17 @@ try:
         AUTHORITY_KEYS,
         authority_fixture,
         has_schema_version,
+        has_deny_all_authority,
     )
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
-    from hepta_metadata import AUTHORITY_KEYS, authority_fixture, has_schema_version
+    from hepta_metadata import (
+        AUTHORITY_KEYS,
+        authority_fixture,
+        has_schema_version,
+        has_deny_all_authority,
+    )
 from collections import Counter, defaultdict, deque
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -1131,12 +1137,10 @@ def verify() -> int:
             v.get("planId") == PLAN_ID and v.get("planVersion") == VERSION,
             "plan binding " + k,
         )
-        f = v.get("authorityFlags")
         need(
-            isinstance(f, dict) and list(f) == AUTHORITY_KEYS,
-            k + " authority key closure",
+            has_deny_all_authority(v.get("authorityFlags")),
+            k + " authority must contain exactly false booleans",
         )
-        need(not any(f.values()), k + " positive authority")
     cur = d["current"]
     r = cur["repository"]
     need(

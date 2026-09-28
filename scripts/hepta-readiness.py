@@ -11,11 +11,19 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.hepta_metadata import AUTHORITY_KEYS, has_schema_version
+    from scripts.hepta_metadata import (
+        AUTHORITY_KEYS,
+        has_schema_version,
+        has_deny_all_authority,
+    )
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
-    from hepta_metadata import AUTHORITY_KEYS, has_schema_version
+    from hepta_metadata import (
+        AUTHORITY_KEYS,
+        has_schema_version,
+        has_deny_all_authority,
+    )
 
 try:
     from scripts.hepta_module_catalog import (
@@ -143,14 +151,10 @@ def load(rel: str) -> dict[str, Any]:
         die(f"{rel}: {exc}")
 
 
-def false_authority(value: Any, label: str) -> None:
+def false_authority(value: object, label: str) -> None:
     need(
-        isinstance(value, dict) and set(value) == set(AUTHORITY_KEYS),
-        label + " authority key closure",
-    )
-    need(
-        all(type(flag) is bool and flag is False for flag in value.values()),
-        label + " positive authority or invalid authority type",
+        has_deny_all_authority(value),
+        label + " authority must contain exactly false booleans",
     )
 
 

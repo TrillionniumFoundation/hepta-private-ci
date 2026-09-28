@@ -107,7 +107,7 @@ class ReadinessSemanticsTests(unittest.TestCase):
         flags = dict.fromkeys(reversed(VERIFIER.AUTHORITY_KEYS), False)
         VERIFIER.false_authority(flags, "fixture")
         flags["unknown"] = flags.pop("merge")
-        with self.assertRaisesRegex(SystemExit, "key closure"):
+        with self.assertRaisesRegex(SystemExit, "authority"):
             VERIFIER.false_authority(flags, "fixture")
 
     def test_falsey_non_boolean_and_positive_authority_still_reject(self):
