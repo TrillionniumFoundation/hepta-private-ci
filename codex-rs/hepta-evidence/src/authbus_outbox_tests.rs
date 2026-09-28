@@ -286,13 +286,18 @@ async fn expiry_and_current_revocation_are_terminal_and_never_acknowledged() {
     let store = HeptaEvidenceStore::open(&config(temp.path()))
         .await
         .unwrap();
-    let (mut issuer, message) = fixture(1, u64::MAX);
+    let (issuer, message) = fixture(1, u64::MAX);
     let id = enqueue(&store, 1).await.delivery_id;
     let delivery = claim(&store, id, 60_000).await.unwrap();
-    issuer.revoked = true;
+    let revoked = issuer_registration(
+        "issuer:queue",
+        1,
+        &SigningKey::from_bytes(&[37; 32]),
+        true,
+    );
     assert!(
         store
-            .ack_authbus_delivery(&issuer, &delivery.lease, Digest32::of_bytes(b"ack"))
+            .ack_authbus_delivery(&revoked, &delivery.lease, Digest32::of_bytes(b"ack"))
             .await
             .is_err()
     );
@@ -301,7 +306,7 @@ async fn expiry_and_current_revocation_are_terminal_and_never_acknowledged() {
         AuthBusDeliveryState::Quarantined
     );
     let next = enqueue(&store, 2).await.delivery_id;
-    assert_eq!(store.quarantine_authbus_issuer(&issuer).await.unwrap(), 1);
+    assert_eq!(store.quarantine_authbus_issuer(&revoked).await.unwrap(), 1);
     assert_eq!(
         store.authbus_delivery_status(next).await.unwrap().state,
         AuthBusDeliveryState::Quarantined
@@ -457,7 +462,12 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
     ));
     // Retire the fixture epoch, release only terminal capacity, and still reject
     // the consumed old sequence after all terminal rows are old enough to prune.
-    let revoked = issuer_registration("issuer:queue", 1, &SigningKey::from_bytes(&[37; 32]), true);
+    let revoked = issuer_registration(
+        "issuer:queue",
+        1,
+        &SigningKey::from_bytes(&[37; 32]),
+        true,
+    );
     store.quarantine_authbus_issuer(&revoked).await.unwrap();
     let mut tx = store.pool.begin_with("BEGIN IMMEDIATE").await.unwrap();
     maintain(&mut tx, now_millis().unwrap() + 86_400_001)

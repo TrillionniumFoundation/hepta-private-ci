@@ -92,6 +92,11 @@ STORE_FILES = [
     "operations.rs",
 ]
 
+TRUSTED_FIELD_ASSIGNMENT = re.compile(
+    r"\b(?:issuer|registration|message_issuer|settlement_issuer|trusted_issuer)\s*\.\s*"
+    r"(?:issuer_id|key_epoch|verifying_key|revoked)\s*="
+)
+
 
 def source(path: Path) -> str:
     return path.read_text(encoding="utf-8")
@@ -122,6 +127,12 @@ def verify_boundaries() -> list[str]:
         ):
             errors.append(
                 f"constructible settlement registration: {path.relative_to(ROOT)}"
+            )
+        if AUTHBUS not in path.parents and (
+            "IssuerRegistration" in text or "SettlementIssuerRegistration" in text
+        ) and TRUSTED_FIELD_ASSIGNMENT.search(text):
+            errors.append(
+                f"mutable trusted registration fields: {path.relative_to(ROOT)}"
             )
         if "use codex_hepta_authbus::AuthBusAuthorityStore" in text:
             errors.append(f"external raw authority writer: {path.relative_to(ROOT)}")
