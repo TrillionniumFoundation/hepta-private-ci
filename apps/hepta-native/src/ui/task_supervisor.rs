@@ -304,6 +304,17 @@ pub(crate) fn cancel_file_input(context: &egui::Context) -> Option<FileInputTick
     mutate_file_input_intent(context, FileInputIntent::cancel)
 }
 
+/// Accept a result from an asynchronous native picker or another callback source.
+/// The adapter must retain and return the exact ticket it received when opened.
+pub(crate) fn accept_file_input_result(
+    context: &egui::Context,
+    ticket: FileInputTicket,
+    target: FileInputTarget,
+    paths: &[Option<PathBuf>],
+) -> Result<PathBuf, FileInputError> {
+    mutate_file_input_intent(context, |intent| intent.accept(ticket, target, paths))
+}
+
 pub(crate) fn accept_active_dropped_file(
     context: &egui::Context,
     files: &[egui::DroppedFile],
@@ -312,11 +323,10 @@ pub(crate) fn accept_active_dropped_file(
         .iter()
         .map(|file| file.path.clone())
         .collect::<Vec<_>>();
-    mutate_file_input_intent(context, |intent| {
-        let ticket = intent.active().ok_or(FileInputError::NoActiveIntent)?;
-        let path = intent.accept(ticket, ticket.target(), &paths)?;
-        Ok((ticket.target(), path))
-    })
+    let ticket = active_file_input(context).ok_or(FileInputError::NoActiveIntent)?;
+    let target = ticket.target();
+    let path = accept_file_input_result(context, ticket, target, &paths)?;
+    Ok((target, path))
 }
 
 #[cfg(test)]

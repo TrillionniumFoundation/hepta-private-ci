@@ -12,6 +12,10 @@ use super::FileInputError;
 use super::FileInputIntent;
 use super::FileInputTarget;
 use super::SupervisedTask;
+use super::accept_file_input_result;
+use super::active_file_input;
+use super::arm_file_input;
+use super::cancel_file_input;
 
 fn finish<T: Send + 'static>(task: &mut SupervisedTask<T>) -> Result<T, &'static str> {
     let deadline = Instant::now() + Duration::from_secs(5);
@@ -242,6 +246,48 @@ fn cancelled_or_replaced_file_input_rejects_stale_results() {
         ),
         Ok(absolute_path("package.zip"))
     );
+}
+
+#[test]
+fn callback_results_are_bound_to_the_exact_context_ticket() {
+    let context = eframe::egui::Context::default();
+    let cancelled = arm_file_input(&context, FileInputTarget::OperationGrant).unwrap();
+    assert_eq!(cancel_file_input(&context), Some(cancelled));
+    let current = arm_file_input(&context, FileInputTarget::UpdateManifest).unwrap();
+
+    assert_eq!(
+        accept_file_input_result(
+            &context,
+            cancelled,
+            FileInputTarget::OperationGrant,
+            &[Some(absolute_path("stale-grant.json"))]
+        ),
+        Err(FileInputError::StaleIntent)
+    );
+    assert_eq!(active_file_input(&context), Some(current));
+    assert_eq!(
+        accept_file_input_result(
+            &context,
+            current,
+            FileInputTarget::UpdatePackage,
+            &[Some(absolute_path("wrong-package.zip"))]
+        ),
+        Err(FileInputError::WrongTarget {
+            expected: FileInputTarget::UpdateManifest,
+            actual: FileInputTarget::UpdatePackage,
+        })
+    );
+    assert_eq!(active_file_input(&context), Some(current));
+    assert_eq!(
+        accept_file_input_result(
+            &context,
+            current,
+            FileInputTarget::UpdateManifest,
+            &[Some(absolute_path("manifest.json"))]
+        ),
+        Ok(absolute_path("manifest.json"))
+    );
+    assert_eq!(active_file_input(&context), None);
 }
 
 #[test]

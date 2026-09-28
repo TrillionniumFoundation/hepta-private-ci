@@ -40,9 +40,18 @@ authenticated status value.
 
 File-input intent remains explicit and single-use. Cancellation, replacement,
 wrong-target delivery, multiple files, missing filesystem paths and relative
-paths do not silently retarget a later operation. Selected files are reopened
-through the bounded regular-file reader before admission; drag/drop is not a
-verified-handle handoff.
+paths do not silently retarget a later operation. An asynchronous native picker
+adapter must retain the exact `FileInputTicket` supplied when it opens and return
+that same ticket with its callback; stale, cancelled or replaced callbacks are
+rejected without consuming the current valid intent. Selected files are reopened
+through the bounded regular-file reader before admission; drag/drop or a picker
+path is not a verified-handle handoff.
+
+Clipboard success is projected only after the platform clipboard returns the
+exact text written by this operation. A mismatch or read failure remains an
+indeterminate observation and cannot manufacture terminal success. Notification
+launcher exit remains indeterminate without an operation-bound platform receipt,
+and mutable path-string launch remains disabled.
 
 Legacy identity-only tombstones cannot acquire receipts, including in mixed
 old/new retirement batches. Only receipts actually committed in the retirement
@@ -79,6 +88,10 @@ chain. An authenticated disk index and million-record native measurements remain
 open. Path effects remain disabled until an OS adapter consumes a stable verified
 handle; repeated canonicalization, picker strings and test-only snapshots are not
 such a handoff.
+
+A concrete operating-system picker implementation is still open. The ticketed
+callback contract prevents stale delivery from changing another field, but it is
+not evidence that a Windows, macOS or Linux portal picker was exercised.
 
 Signed installers, notarization, production signing and key
 custody/rotation/revocation, installed update and rollback fault cuts on release

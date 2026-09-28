@@ -140,6 +140,22 @@ impl SystemPlatformAdapter {
     }
 }
 
+fn clipboard_readback_observation<E>(
+    expected: &str,
+    observed: Result<String, E>,
+) -> PlatformObservation {
+    match observed {
+        Ok(value) if value == expected => PlatformObservation {
+            terminal_status: Some(TerminalStatus::Succeeded),
+            outcome_digest: Some(sha256_hex(format!(
+                "hepta.clipboard-observation.v1:{}",
+                sha256_hex(expected.as_bytes())
+            ))),
+        },
+        Ok(_) | Err(_) => PlatformObservation::indeterminate(),
+    }
+}
+
 impl PlatformAdapter for SystemPlatformAdapter {
     fn confirmation_resource(
         &self,
@@ -208,16 +224,7 @@ impl PlatformAdapter for SystemPlatformAdapter {
                 clipboard
                     .set_text(text.clone())
                     .map_err(|error| ShellError::Platform(format!("write clipboard: {error}")))?;
-                match clipboard.get_text() {
-                    Ok(observed) if observed == *text => Ok(PlatformObservation {
-                        terminal_status: Some(TerminalStatus::Succeeded),
-                        outcome_digest: Some(sha256_hex(format!(
-                            "hepta.clipboard-observation.v1:{}",
-                            sha256_hex(text.as_bytes())
-                        ))),
-                    }),
-                    Ok(_) | Err(_) => Ok(PlatformObservation::indeterminate()),
-                }
+                Ok(clipboard_readback_observation(text, clipboard.get_text()))
             }
             PlatformPayload::OpenPath { .. } | PlatformPayload::RevealPath { .. } => {
                 Err(unsupported_resource_handoff(payload.action()))
@@ -380,6 +387,33 @@ mod tests {
             assert_eq!(active.load(Ordering::Acquire), 1);
         }
         assert_eq!(active.load(Ordering::Acquire), 0);
+    }
+
+    #[test]
+    fn clipboard_exact_readback_is_the_only_terminal_success() {
+        let expected = "read-back equality";
+        let observation =
+            clipboard_readback_observation(expected, Ok::<String, &str>(expected.to_owned()));
+        assert_eq!(observation.terminal_status, Some(TerminalStatus::Succeeded));
+        assert_eq!(
+            observation.outcome_digest,
+            Some(sha256_hex(format!(
+                "hepta.clipboard-observation.v1:{}",
+                sha256_hex(expected.as_bytes())
+            )))
+        );
+    }
+
+    #[test]
+    fn clipboard_mismatch_or_read_failure_stays_indeterminate() {
+        assert_eq!(
+            clipboard_readback_observation("expected", Ok::<String, &str>("different".to_owned())),
+            PlatformObservation::indeterminate()
+        );
+        assert_eq!(
+            clipboard_readback_observation("expected", Err::<String, &str>("read failed")),
+            PlatformObservation::indeterminate()
+        );
     }
 
     #[test]
