@@ -82,7 +82,9 @@ impl EvidenceVerificationSummaryV1 {
                     reference.receipt_kind == crate::EvidenceReceiptKindV1::Revocation
                 })
                 || profile.required_roles().iter().any(|role| {
-                    !evidence.iter().any(|reference| reference.issuer_role == *role)
+                    !evidence
+                        .iter()
+                        .any(|reference| reference.issuer_role == *role)
                 }))
         {
             return Err(EvidenceError::InvalidRecord(
@@ -265,5 +267,4 @@ mod tests {
             );
         }
     }
-
 }
