@@ -1,23 +1,87 @@
 import copy
 import unittest
+
 from summarize_measurements import summarize
+
 
 class MeasurementsTests(unittest.TestCase):
     def samples(self):
-        before = {"file_bytes": 200, "io": {"sync_calls": 0, "sync_errors": 0, "sync_micros": 0}}
-        return [{"schema": "hepta.neuron.diagnostic.v2", "source_sha": "a" * 40,
-                 "test_binary_digest": "b" * 64, "sample": i,
-                 "model_kind": "deterministic_fixture_not_production", "qualification": False,
-                 "recovery_micros": 10, "process_peak_rss_kib": None,
-                 "measurement": {"returned_success": True, "total_micros": 20 + i,
-                     "store_before": copy.deepcopy(before), "index_before": copy.deepcopy(before),
-                     "store_after": {"file_bytes": 500, "io": {"sync_calls": 2, "sync_errors": 0, "sync_micros": 5}},
-                     "index_after": {"file_bytes": 400, "io": {"sync_calls": 3, "sync_errors": 0, "sync_micros": 6}},
-                     "witness_sync": {"sync_calls": 1, "sync_errors": 0, "sync_micros": 3}}} for i in range(64)]
+        before = {
+            "file_bytes": 200,
+            "io": {"sync_calls": 0, "sync_errors": 0, "sync_micros": 0},
+        }
+        return [
+            {
+                "schema": "hepta.neuron.diagnostic.v2",
+                "source_sha": "a" * 40,
+                "test_binary_digest": "b" * 64,
+                "sample": index,
+                "model_kind": "deterministic_fixture_not_production",
+                "qualification": False,
+                "recovery_micros": 10,
+                "process_peak_rss_kib": None,
+                "measurement": {
+                    "returned_success": True,
+                    "total_micros": 20 + index,
+                    "store_before": copy.deepcopy(before),
+                    "index_before": copy.deepcopy(before),
+                    "store_after": {
+                        "file_bytes": 500,
+                        "io": {
+                            "sync_calls": 2,
+                            "sync_errors": 0,
+                            "sync_micros": 5,
+                        },
+                    },
+                    "index_after": {
+                        "file_bytes": 400,
+                        "io": {
+                            "sync_calls": 3,
+                            "sync_errors": 0,
+                            "sync_micros": 6,
+                        },
+                    },
+                    "witness_sync": {
+                        "sync_calls": 1,
+                        "sync_errors": 0,
+                        "sync_micros": 3,
+                    },
+                },
+            }
+            for index in range(64)
+        ]
 
-    def test_executed_sample_summary_does_not_invent_rss_or_qualification(self):
+    def test_executed_sample_summary_keeps_phase_boundaries(self):
         result = summarize(self.samples(), "a" * 40)
         self.assertEqual(result["request_micros"], {"p50": 51, "p95": 80, "p99": 83})
+        self.assertEqual(
+            result["request_minus_measured_sync_micros"],
+            {"p50": 37, "p95": 66, "p99": 69},
+        )
+        self.assertEqual(
+            result["store_sync_micros_per_request"],
+            {"p50": 5, "p95": 5, "p99": 5},
+        )
+        self.assertEqual(
+            result["index_sync_micros_per_request"],
+            {"p50": 6, "p95": 6, "p99": 6},
+        )
+        self.assertEqual(
+            result["witness_sync_micros_per_request"],
+            {"p50": 3, "p95": 3, "p99": 3},
+        )
+        self.assertEqual(
+            result["summed_sync_micros_per_request"],
+            {"p50": 14, "p95": 14, "p99": 14},
+        )
+        self.assertEqual(
+            result["generation_store_growth_bytes"],
+            {"p50": 300, "p95": 300, "p99": 300},
+        )
+        self.assertEqual(
+            result["runtime_index_growth_bytes"],
+            {"p50": 200, "p95": 200, "p99": 200},
+        )
         self.assertIsNone(result["process_high_water_rss_kib"])
         self.assertFalse(result["qualification"])
 
@@ -26,19 +90,29 @@ class MeasurementsTests(unittest.TestCase):
             summarize(self.samples(), "c" * 40)
 
     def test_duplicate_observations_are_rejected(self):
-        samples = self.samples(); samples[-1] = samples[0]
+        samples = self.samples()
+        samples[-1] = samples[0]
         with self.assertRaises(ValueError):
             summarize(samples, "a" * 40)
 
     def test_unmeasured_witness_is_rejected(self):
-        samples = self.samples(); samples[0]["measurement"]["witness_sync"] = None
+        samples = self.samples()
+        samples[0]["measurement"]["witness_sync"] = None
         with self.assertRaises(ValueError):
             summarize(samples, "a" * 40)
 
     def test_wrong_executed_sync_count_is_rejected(self):
-        samples = self.samples(); samples[0]["measurement"]["index_after"]["io"]["sync_calls"] = 2
+        samples = self.samples()
+        samples[0]["measurement"]["index_after"]["io"]["sync_calls"] = 2
         with self.assertRaises(ValueError):
             summarize(samples, "a" * 40)
+
+    def test_measured_sync_cannot_exceed_total_request_time(self):
+        samples = self.samples()
+        samples[0]["measurement"]["total_micros"] = 13
+        with self.assertRaises(ValueError):
+            summarize(samples, "a" * 40)
+
 
 if __name__ == "__main__":
     unittest.main()
