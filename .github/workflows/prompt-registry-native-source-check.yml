@@ -1,0 +1,113 @@
+name: Prompt registry reviewed source and native diagnostics
+on:
+  push:
+    branches: [ops/prompt-registry-candidate-authoring-20260928]
+    paths:
+      - scripts/prompt-registry-second-author.py
+      - .github/workflows/prompt-registry-native-source-check.yml
+permissions:
+  contents: write
+concurrency:
+  group: prompt-registry-reviewed-source-authoring
+  cancel-in-progress: false
+jobs:
+  author:
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    env:
+      SOURCE_SHA: 1ea9d0fd8a913661d407c7f4ebb9a865a907539e
+      TARGET_BRANCH: codex/prompt-registry-delivery-consistency-20260928
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '1'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: tooling
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: source
+          persist-credentials: true
+          fetch-depth: 1
+      - name: Apply source-only follow-up before qualification
+        run: python3 tooling/scripts/prompt-registry-second-author.py source
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Format, verify scope, and commit conventional source
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustfmt --edition 2024 --config-path codex-rs/rustfmt.toml codex-rs/hepta-agentd/src/prompt_runtime.rs codex-rs/hepta-agentd/src/prompt_final_use.rs codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs
+          python3 - <<'PY'
+          import subprocess
+          allowed = {'codex-rs/hepta-agentd/src/prompt_runtime.rs', 'codex-rs/hepta-agentd/src/prompt_runtime_tests.rs', 'codex-rs/hepta-agentd/src/prompt_final_use.rs', 'codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs'}
+          changed = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
+          if changed - allowed:
+              raise SystemExit('unexpected writes: ' + repr(sorted(changed - allowed)))
+          PY
+          git diff --check
+          git fetch --no-tags origin "+refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
+          test "$(git rev-parse refs/remotes/origin/$TARGET_BRANCH)" = "$SOURCE_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add codex-rs/hepta-agentd/src/prompt_runtime.rs codex-rs/hepta-agentd/src/prompt_runtime_tests.rs codex-rs/hepta-agentd/src/prompt_final_use.rs codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs
+          git commit -m 'fix(prompt.registry): align strict V4 fixtures and governed lifecycle ingress'
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          mkdir -p "$RUNNER_TEMP/prompt-native"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/prompt-native/identity.txt"
+          git diff --binary "$SOURCE_SHA" HEAD > "$RUNNER_TEMP/prompt-native/source.patch"
+          git archive --format=tar.gz -o "$RUNNER_TEMP/prompt-native/source.tar.gz" HEAD
+          cp "$(rustup which rustfmt)" "$RUNNER_TEMP/prompt-native/rustfmt"
+      - name: Retain committed source before any test
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-native-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/prompt-native/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Run native checks without losing subsequent failure evidence
+        working-directory: source/codex-rs
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess, time
+          out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'prompt-native'
+          checks = [
+              ('registry', ['cargo','test','--locked','-p','codex-hepta-prompt-registry','--','--test-threads=1'], 180),
+              ('registry-lint', ['cargo','clippy','--locked','-p','codex-hepta-prompt-registry','--all-targets','--no-deps','--','-D','warnings'], 120),
+              ('operational-profiles', ['cargo','test','--locked','-p','codex-hepta-prompt-registry','operational_','--','--ignored','--nocapture','--test-threads=1'], 180),
+              ('optimizer', ['cargo','test','--locked','-p','codex-hepta-prompt-optimizer','--','--test-threads=1'], 120),
+              ('extension', ['cargo','test','--locked','-p','codex-hepta-prompt-extension','--','--test-threads=1'], 180),
+              ('agentd', ['cargo','test','--locked','-p','codex-hepta-agentd','prompt_','--','--test-threads=1'], 180),
+          ]
+          result = {'schema':'hepta.prompt-registry.development-execution.v1', 'source':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(), 'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip(), 'runId':os.environ['GITHUB_RUN_ID'], 'attempt':os.environ['GITHUB_RUN_ATTEMPT'], 'checks':[], 'qualified':False}
+          for name, command, limit in checks:
+              path = out / (name + '.log')
+              start = time.monotonic()
+              with path.open('w') as stream:
+                  try:
+                      code = subprocess.run(command, stdout=stream, stderr=subprocess.STDOUT, timeout=limit).returncode
+                  except subprocess.TimeoutExpired:
+                      code = 124
+                  except OSError as error:
+                      stream.write(type(error).__name__ + ': command unavailable\n')
+                      code = 127
+              result['checks'].append({'name':name,'command':command,'exitCode':code,'durationSeconds':time.monotonic()-start,'logSha256':hashlib.sha256(path.read_bytes()).hexdigest()})
+              (out/'execution.json').write_text(json.dumps(result,indent=2)+'\n')
+              print(name, code, '\n', path.read_text(errors='replace')[-6000:], flush=True)
+          raise SystemExit(int(any(row['exitCode'] for row in result['checks'])))
+          PY
+      - name: Always retain executed, failed, and timed-out check results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-native-results-${{ github.run_id }}
+          path: ${{ runner.temp }}/prompt-native/
+          if-no-files-found: warn
+          retention-days: 30
