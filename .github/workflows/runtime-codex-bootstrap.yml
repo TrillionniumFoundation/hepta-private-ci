@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - runtime-codex/closure-20260928
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
