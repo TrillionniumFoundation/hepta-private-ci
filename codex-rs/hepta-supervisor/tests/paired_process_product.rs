@@ -134,8 +134,9 @@ fn five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash() -> Resu
     let _pair_product_test_guard = PAIR_PRODUCT_TEST_LOCK
         .lock()
         .unwrap_or_else(std::sync::PoisonError::into_inner);
-    let mut fixture = PairFleet::new(5)?;
     let started = Instant::now();
+    let mut fixture = PairFleet::new(5)?;
+    eprintln!("paired-stage fixture_ready elapsed={:?}", started.elapsed());
     fixture.warm_first_pair()?;
     eprintln!(
         "paired-stage warm_pair_complete elapsed={:?}",
