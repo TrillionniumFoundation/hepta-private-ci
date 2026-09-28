@@ -145,11 +145,15 @@ jobs:
         with:
           toolchain: 1.95.0
           components: rustfmt, clippy
-      - name: Run qualification parser regressions
+      - name: Validate parser and exact Rust target
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest qualification/kernel-authority/test_product_process_recovery.py
+          python3 qualification/kernel-authority/test_product_process_recovery.py
+          cd codex-rs
+          cargo fmt --check -p codex-hepta-agentd
+          cargo clippy --locked -p codex-hepta-agentd \
+            --test authority_effect_process_restart -- -D warnings
       - name: Execute exact two-process product recovery
         shell: bash
         run: |
