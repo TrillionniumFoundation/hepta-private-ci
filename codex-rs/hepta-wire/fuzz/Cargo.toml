@@ -9,11 +9,26 @@ cargo-fuzz = true
 
 [dependencies]
 codex-hepta-wire = { path = ".." }
+codex-hepta-types = { path = "../../hepta-types" }
 libfuzzer-sys = "0.4"
 
 [[bin]]
 name = "decode_frames"
 path = "fuzz_targets/decode_frames.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "managed_records"
+path = "fuzz_targets/managed_records.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "policy_admission"
+path = "fuzz_targets/policy_admission.rs"
 test = false
 doc = false
 bench = false
