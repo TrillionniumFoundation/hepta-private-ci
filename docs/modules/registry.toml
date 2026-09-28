@@ -26,6 +26,29 @@ technicalDocumentRequired = true
 missingDeclaredRootsMustBeExplicit = true
 documentationDoesNotImplyImplementation = true
 
+[convergence]
+maximumActiveConvergencePrsPerCapability = 1
+supersededDispositionRequired = true
+allowedDispositions = ["absorb", "supersede", "reference", "reject"]
+ordinaryExactSourceMapRequired = false
+ordinaryProseMetricsRequired = false
+ordinaryMergeCandidateRequired = false
+highRiskMergeCandidateRequired = true
+selfIterationDraftOnly = true
+selfIterationMergeAllowed = false
+selfIterationActivationAllowed = false
+selfIterationPromotionAllowed = false
+selfIterationReleaseAllowed = false
+
+[repositorySurface]
+newPullRequestWorkflowFilesAllowed = false
+allowedRootModuleFiles = [
+  "docs/modules/CI_MATRIX.json",
+  "docs/modules/COMPILE_GRAPH.json",
+  "docs/modules/registry.toml",
+]
+allowedModuleLocalMachineFiles = ["module.toml"]
+
 [authorityFlags]
 runtimeAuthority = false
 productionCaller = false
