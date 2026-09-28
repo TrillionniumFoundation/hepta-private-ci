@@ -1,44 +1,46 @@
 name: Hepta inference one-shot source remediation
 
 on:
-  push:
+  pull_request:
+    types: [opened, reopened, synchronize]
     branches:
-      - codex/inference-control-v2-closure-20260927
+      - main
     paths:
       - '.github/workflows/hepta-inference-source-export.yml'
       - '.github/remediation/inference-control-remediation.patch.gz'
 
-permissions:
-  contents: write
-
 concurrency:
-  group: hepta-inference-one-shot-remediation
+  group: hepta-inference-one-shot-remediation-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 env:
-  EXPECTED_PARENT: bef13772fd638a87fb2bc49aaa142c063325bc67
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+  EXPECTED_PARENT: 6e631312771f5492402f2f955592b68217f4ef5b
   RESTORE_COMMIT: a80f50a552d2608f238a9e934bf6fade66876912
   PATCH_SHA256: c2599a124d0e1574aaebaadf3ce0313d4f906a9e9f9f1472c10491fa83100f57
   PATCH_PATH: .github/remediation/inference-control-remediation.patch.gz
   WORKFLOW_PATH: .github/workflows/hepta-inference-source-export.yml
 
 jobs:
-  apply-test-and-commit:
-    name: Apply, test, and commit inference remediation
+  verify:
+    name: Verify bounded inference remediation
+    if: github.event.pull_request.head.ref == 'codex/inference-control-v2-closure-20260927'
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 2
-          persist-credentials: true
+          persist-credentials: false
 
       - name: Bind transport commit and patch identity
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
           test -z "$(git status --porcelain --untracked-files=normal)"
           test "$(sha256sum "$PATCH_PATH" | awk '{print $1}')" = "$PATCH_SHA256"
@@ -48,7 +50,7 @@ jobs:
           toolchain: '1.95.0'
           components: rustfmt, clippy
 
-      - name: Apply bounded source patch and restore read-only transport surface
+      - name: Apply bounded patch in read-only qualification job
         shell: bash
         run: |
           set -euo pipefail
@@ -62,7 +64,7 @@ jobs:
           test ! -e "$PATCH_PATH"
           test "$(git hash-object "$WORKFLOW_PATH")" = "$(git rev-parse "$RESTORE_COMMIT:$WORKFLOW_PATH")"
 
-      - name: Execute focused native verification before source commit
+      - name: Execute focused native verification
         shell: bash
         run: |
           set -euo pipefail
@@ -75,6 +77,37 @@ jobs:
           cargo fmt --manifest-path codex-rs/Cargo.toml \
             --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
           git diff --cached --check
+
+  publish:
+    name: Publish verified inference remediation
+    needs: verify
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: true
+
+      - name: Reproduce reviewed source tree without executing candidate code
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          test "$(sha256sum "$PATCH_PATH" | awk '{print $1}')" = "$PATCH_SHA256"
+          gzip -dc "$PATCH_PATH" | git apply --index --whitespace=error-all
+          rm -f "$PATCH_PATH"
+          rmdir .github/remediation 2>/dev/null || true
+          git show "$RESTORE_COMMIT:$WORKFLOW_PATH" > "$WORKFLOW_PATH"
+          git add -A
+          git diff --cached --check
+          test ! -e "$PATCH_PATH"
+          test "$(git hash-object "$WORKFLOW_PATH")" = "$(git rev-parse "$RESTORE_COMMIT:$WORKFLOW_PATH")"
 
       - name: Publish ordinary source commit
         shell: bash
