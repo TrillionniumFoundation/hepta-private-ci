@@ -1,0 +1,63 @@
+name: Hepta inference source snapshot
+
+on:
+  push:
+    branches:
+      - codex/inference-control-v2-closure-20260927
+    paths:
+      - '.github/workflows/hepta-inference-source-snapshot.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-inference-source-snapshot-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  snapshot:
+    name: Package exact inference source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Package exact source tree
+        run: |
+          set -euo pipefail
+          tar --exclude='.git' -czf /tmp/hepta-inference-source.tar.gz \
+            .github/workflows \
+            Makefile \
+            codex-rs/Cargo.toml \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-infer-core \
+            codex-rs/hepta-infer-worker-host \
+            codex-rs/hepta-inferd \
+            codex-rs/hepta-types \
+            docs/modules/inference.control \
+            docs/readiness/LANE_B_NATIVE_HOST.md \
+            qualification/lane-b \
+            qualification/module-execution-dossiers/detail/inference.control.current-state.md \
+            scripts/hepta-inference-control-actor-migrate.py \
+            scripts/hepta-inference-control-current-state.py \
+            scripts/hepta-inference-control-ownership.py \
+            scripts/hepta-lane-b-path-guard.py \
+            scripts/hepta-implementation-maps.py \
+            scripts/hepta_ci_exec.py \
+            scripts/test_hepta_ci_exec_inference_classification.py \
+            scripts/test_hepta_ci_exec_native_host.py \
+            scripts/test_hepta_implementation_source_identity.py
+          sha256sum /tmp/hepta-inference-source.tar.gz > /tmp/hepta-inference-source.tar.gz.sha256
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-inference-source-${{ github.sha }}
+          path: |
+            /tmp/hepta-inference-source.tar.gz
+            /tmp/hepta-inference-source.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 1
