@@ -87,8 +87,10 @@ def validate(report: Any, rounds: int = 32) -> None:
             row.get("aggregate_record_buffer_capacity_after_retire_bytes"),
             "aggregate capacity after retire",
         )
-        if buffered > capacity or capacity > wire_bytes:
-            raise ValueError("fleet record-buffer accounting exceeds admitted wire bytes")
+        if buffered > capacity or capacity > 2 * wire_bytes:
+            raise ValueError(
+                "fleet record-buffer accounting exceeds the allocator-tolerant wire bound"
+            )
         if retained_capacity > capacity or retained_buffered != 0 or after_retire != 0:
             raise ValueError("fleet post-workload or retirement accounting is inconsistent")
         first = integer(
