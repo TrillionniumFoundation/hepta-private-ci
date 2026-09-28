@@ -1,0 +1,193 @@
+diff --git a/codex-rs/hepta-agentd/src/intelligence_product_canonical_recall_tests.rs b/codex-rs/hepta-agentd/src/intelligence_product_canonical_recall_tests.rs
+index 1f6bb806ed..e294988e29 100644
+--- a/codex-rs/hepta-agentd/src/intelligence_product_canonical_recall_tests.rs
++++ b/codex-rs/hepta-agentd/src/intelligence_product_canonical_recall_tests.rs
+@@ -28,10 +28,7 @@ pub(super) fn retrieval_owner_binding() -> OwnerBindingV1 {
+     }
+ }
+ 
+-fn owned_recall(
+-    run_id: StableId,
+-    packet: RecallPacketV1,
+-) -> AgentdCanonicalRecallInputV1 {
++fn owned_recall(run_id: StableId, packet: RecallPacketV1) -> AgentdCanonicalRecallInputV1 {
+     let legacy_cue_digest = digest("legacy canonical recall cue");
+     let legacy_candidate_union_digest = digest("legacy canonical recall union");
+     let legacy_generation_vector_digest = digest("legacy canonical recall generation");
+@@ -67,9 +64,9 @@ fn owned_recall(
+         Some(RecallAbstainReasonV1::NoCandidate) => {
+             LegacyRecallDispositionV1::Abstained(LegacyRecallAbstentionReasonV1::NoCandidate)
+         }
+-        Some(RecallAbstainReasonV1::OutOfDistribution) => LegacyRecallDispositionV1::Abstained(
+-            LegacyRecallAbstentionReasonV1::OutOfDistribution,
+-        ),
++        Some(RecallAbstainReasonV1::OutOfDistribution) => {
++            LegacyRecallDispositionV1::Abstained(LegacyRecallAbstentionReasonV1::OutOfDistribution)
++        }
+         Some(RecallAbstainReasonV1::LowConfidence) => {
+             LegacyRecallDispositionV1::Abstained(LegacyRecallAbstentionReasonV1::ScoreBelowFloor)
+         }
+@@ -78,11 +75,9 @@ fn owned_recall(
+                 LegacyRecallAbstentionReasonV1::ContradictoryEvidence,
+             )
+         }
+-        Some(RecallAbstainReasonV1::InsufficientCoverage) => {
+-            LegacyRecallDispositionV1::Abstained(
+-                LegacyRecallAbstentionReasonV1::InsufficientChannelCoverage,
+-            )
+-        }
++        Some(RecallAbstainReasonV1::InsufficientCoverage) => LegacyRecallDispositionV1::Abstained(
++            LegacyRecallAbstentionReasonV1::InsufficientChannelCoverage,
++        ),
+     };
+     let mut legacy = LegacyRecallPacketV1 {
+         cue_digest: legacy_cue_digest,
+@@ -121,22 +116,16 @@ fn owned_recall(
+         },
+     )
+     .expect("retrieval-owned canonical recall");
+-    bind_retrieval_owned_canonical_recall_for_agentd_v1(
+-        run_id,
+-        owned,
+-        retrieval_owner_binding(),
+-    )
+-    .expect("Agentd retrieval binding")
++    bind_retrieval_owned_canonical_recall_for_agentd_v1(run_id, owned, retrieval_owner_binding())
++        .expect("Agentd retrieval binding")
+ }
+ 
+ pub(super) fn explicit_absence_recall(run_id: StableId) -> AgentdCanonicalRecallInputV1 {
+     let packet = RecallPacketV1 {
+         cue_digest: ContractDigestV1::from_digest(digest("explicit absence cue"))
+             .expect("cue digest"),
+-        event_snapshot_digest: ContractDigestV1::from_digest(digest(
+-            "explicit absence memory cut",
+-        ))
+-        .expect("event snapshot digest"),
++        event_snapshot_digest: ContractDigestV1::from_digest(digest("explicit absence memory cut"))
++            .expect("event snapshot digest"),
+         engram_snapshot_digest: ContractDigestV1::from_digest(digest(
+             "explicit absence engram cut",
+         ))
+diff --git a/codex-rs/hepta-agentd/src/intelligence_product_runner.rs b/codex-rs/hepta-agentd/src/intelligence_product_runner.rs
+index 0807f47c1d..39798ec5aa 100644
+--- a/codex-rs/hepta-agentd/src/intelligence_product_runner.rs
++++ b/codex-rs/hepta-agentd/src/intelligence_product_runner.rs
+@@ -81,12 +81,10 @@ impl AgentdIntelligenceProductRunnerV1 {
+         mut inputs: AgentdIntelligenceOwnerInputsV1,
+     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+         let recall = inputs.canonical_recall.take().ok_or_else(|| {
+-            AgentdIntelligenceProductError::Canonical(
+-                CanonicalIntelligenceError::CanonicalRecall(
+-                    "normal product entry requires an explicit retrieval-owned canonical recall result"
+-                        .into(),
+-                ),
+-            )
++            AgentdIntelligenceProductError::Canonical(CanonicalIntelligenceError::CanonicalRecall(
++                "normal product entry requires an explicit retrieval-owned canonical recall result"
++                    .into(),
++            ))
+         })?;
+         self.prepare_composition_inner(composition, request, inputs, recall)
+             .await
+@@ -139,11 +137,7 @@ impl AgentdIntelligenceProductRunnerV1 {
+         let (selected_recall, recall_policy_digest) = if recall.packet.abstain.is_some() {
+             let reason_digest = Digest32::of_parts(&[
+                 b"hepta.agentd.canonical-recall-explicit-abstention.v1\0",
+-                recall
+-                    .consumer_binding
+-                    .binding_sha256
+-                    .digest()
+-                    .as_array(),
++                recall.consumer_binding.binding_sha256.digest().as_array(),
+             ]);
+             let policy_digest =
+                 codex_hepta_intelligence::canonical_recall_absence_policy_digest_v1(reason_digest)
+@@ -241,11 +235,9 @@ impl AgentdIntelligenceProductRunnerV1 {
+         validate_retrieval_owner_current(&snapshot, &recall_fence, &mut retrieval_oracle)
+             .map_err(AgentdIntelligenceProductError::Canonical)?;
+ 
+-        let outcome = codex_hepta_intelligence::bind_recall_policy_outcome_v1(
+-            outcome,
+-            recall_policy_digest,
+-        )
+-        .map_err(AgentdIntelligenceProductError::Canonical)?;
++        let outcome =
++            codex_hepta_intelligence::bind_recall_policy_outcome_v1(outcome, recall_policy_digest)
++                .map_err(AgentdIntelligenceProductError::Canonical)?;
+ 
+         match outcome {
+             CanonicalRunOutcomeV1::Ready(envelope) => {
+diff --git a/codex-rs/hepta-agentd/src/intelligence_product_tests.rs b/codex-rs/hepta-agentd/src/intelligence_product_tests.rs
+index 9dcb70980d..61a1486104 100644
+--- a/codex-rs/hepta-agentd/src/intelligence_product_tests.rs
++++ b/codex-rs/hepta-agentd/src/intelligence_product_tests.rs
+@@ -975,14 +975,17 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
+         workers.push(worker);
+     }
+     assert_eq!(runner.worker_slots.available_permits(), 0);
+-    let fixture = fixture();
+-    let result = runner
+-        .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
+-        .await;
+-    assert!(matches!(result, Err(AgentdIntelligenceProductError::Busy)));
++    let saturated = matches!(
++        runner.spawn_owner_work(|| ()),
++        Err(AgentdIntelligenceProductError::Busy)
++    );
+     for release in releases {
+         release.send(()).expect("release real worker");
+     }
++    assert!(
++        saturated,
++        "a fifth owner worker must fail closed while aborted work still runs"
++    );
+     for worker in workers {
+         timeout(Duration::from_secs(5), worker)
+             .await
+diff --git a/codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs b/codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs
+index a0903f5316..3aee2b1e3b 100644
+--- a/codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs
++++ b/codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs
+@@ -143,7 +143,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
+ 
+     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
+     let expected = store.recovery_anchor().await?;
+-    drop(store);
++    store.close().await;
+ 
+     let authority = ProductionAuthorityLease::from_verified_parts(
+         owner.clone(),
+diff --git a/codex-rs/hepta-authbus/src/authority_schema.rs b/codex-rs/hepta-authbus/src/authority_schema.rs
+index 1bfe5634c1..a17672e79c 100644
+--- a/codex-rs/hepta-authbus/src/authority_schema.rs
++++ b/codex-rs/hepta-authbus/src/authority_schema.rs
+@@ -6,7 +6,6 @@
+ 
+ use sqlx::SqlitePool;
+ use sqlx::migrate::Migrator;
+-use sqlx::sqlite::SqlitePoolOptions;
+ 
+ use crate::AuthBusAuthorityError;
+ use crate::authority_store::storage;
+@@ -15,9 +14,7 @@ pub(crate) async fn verify_schema(
+     pool: &SqlitePool,
+     migrator: &Migrator,
+ ) -> Result<(), AuthBusAuthorityError> {
+-    let reference = SqlitePoolOptions::new()
+-        .max_connections(1)
+-        .connect("sqlite::memory:")
++    let reference = crate::sqlite_owner::open_in_memory_pool()
+         .await
+         .map_err(storage)?;
+     let result = async {
+diff --git a/codex-rs/hepta-authbus/src/authority_store.rs b/codex-rs/hepta-authbus/src/authority_store.rs
+index 7aeb448868..06f434dd84 100644
+--- a/codex-rs/hepta-authbus/src/authority_store.rs
++++ b/codex-rs/hepta-authbus/src/authority_store.rs
+@@ -1,5 +1,4 @@
+ use std::path::Path;
+-use std::time::Duration;
+ 
+ use codex_hepta_types::Digest32;
+ use codex_hepta_types::StableId;
