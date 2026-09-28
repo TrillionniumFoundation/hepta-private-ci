@@ -18,7 +18,7 @@ import tempfile
 MUTANTS = (
     (
         "clock-future-skew",
-        "control_engineering_v2/governance.py",
+        "control_engineering_v2/clock_policy.py",
         "if future_skew > policy.maximum_future_skew_ns:",
         "if future_skew < policy.maximum_future_skew_ns:",
     ),
@@ -99,7 +99,7 @@ def _run_tests(root: Path) -> subprocess.CompletedProcess[str]:
             "-s",
             str(root),
             "-p",
-            "test_production_convergence.py",
+            "test_*_convergence.py",
         ],
         cwd=root,
         env=environment,
