@@ -196,6 +196,7 @@ jobs:
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+          checksum: true
       - name: Execute independent suite and retain every exit status
         shell: bash
         run: |

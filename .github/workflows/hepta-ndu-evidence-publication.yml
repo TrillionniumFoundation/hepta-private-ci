@@ -62,7 +62,7 @@ jobs:
           assert run['repository']['full_name'] == os.environ['GITHUB_REPOSITORY']
           assert run['head_repository']['full_name'] == os.environ['GITHUB_REPOSITORY']
           assert run['status'] == 'completed' and run['conclusion'] == 'success'
-          assert run['path'] in ['.github/workflows/hepta-ndu-recursion.yml', '.github/workflows/hepta-ndu-abcd-materialize.yml', '.github/workflows/hepta-ndu-runtime-acceptance.yml']
+          assert run['path'] == '.github/workflows/hepta-ndu-recursion.yml'
           PYRUN
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:

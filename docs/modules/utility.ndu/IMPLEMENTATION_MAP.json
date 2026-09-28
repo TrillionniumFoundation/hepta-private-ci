@@ -672,13 +672,13 @@
     "independentWellPosednessDecision": "implemented_in_learning.eval_source_pending_real_independent_evidence",
     "canonicalExternalV2Admission": "not_established_as_external_wire_protocol",
     "productionWriter": "not_established",
-    "exactHeadQualification": "qualified_exact_candidate_dual_lane_receipts_retained",
-    "namedHostQualification": "qualified_named_ci_host_receipts_retained_production_target_pending",
+    "exactHeadQualification": "derived_only_from_current_read_only_dual_lane_required_check_and_sealed_aggregate",
+    "namedHostQualification": "ci_host_receipts_are_exact_head_scoped; named_production_target_pending",
     "requestLocalReadOnlyCaller": "established",
     "authenticatedProductionCaller": "not_established",
     "activationState": "not_established",
     "releaseState": "not_established",
-    "localDeterministicProcess": "qualified_exact_candidate_ci_host_production_trust_pending",
+    "localDeterministicProcess": "implemented_and_exact_head_qualified_only_when_current_aggregate_passes; production_trust_pending",
     "numericProjectionIntegrity": "producer_consumer_canonical_validation_source_implemented"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
@@ -712,7 +712,8 @@
   },
   "sourceBase": {
     "commit": "e2508be90cbb13c0a1828b9af2e2438b5db500ad",
-    "tree": "5102bbad33709af64e17d5d4d451274cecd9ce4b"
+    "tree": "5102bbad33709af64e17d5d4d451274cecd9ce4b",
+    "role": "historical_materialized_source_baseline_not_current_head_identity"
   },
   "repositoryControlledGaps": [
     "Enroll and qualify the selected production host/filesystem/shared-volume profile; retained exact CI-host receipts do not establish production-target acceptance.",
@@ -771,7 +772,12 @@
     "branch": "work/utility-ndu-abcd-convergence-20260928",
     "sourceBinding": "exact_typed_path_object_manifest_v1",
     "qualificationBinding": "suite receipts contain actual source and synthetic commit/tree identities",
-    "productionActivation": false
+    "productionActivation": false,
+    "qualificationWorkflow": ".github/workflows/hepta-ndu-recursion.yml",
+    "qualificationMode": "read_only_exact_pr_head_dual_lane",
+    "concreteIdentityLocation": "sealed aggregate artifact and pull-request metadata",
+    "sourceSelfReferenceProhibited": true,
+    "invalidatedByAnyNewCommit": true
   },
   "productCallers": [
     {
@@ -847,11 +853,7 @@
   "sourceObjects": [
     {
       "path": ".github/workflows/hepta-ndu-recursion.yml",
-      "object": "77cee8bece4bd75fbfb146f56ab67c9c65719597"
-    },
-    {
-      "path": ".github/workflows/hepta-ndu-runtime-acceptance.yml",
-      "object": "6f1c93953b385457d25576425f1ec1ad070ff019"
+      "object": "7cc339555bc39d9b4aef841327fcd66bb056b2b8"
     },
     {
       "path": "BUILD.bazel",
@@ -1159,7 +1161,7 @@
     },
     {
       "path": "docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json",
-      "object": "7f5804b13db99de57aa7b1777d6a26d194ebd2da"
+      "object": "43d288518c39e545c5340d4a8a8b708a980fba46"
     },
     {
       "path": "docs/modules/utility.ndu/OPERATOR_RUNBOOK.md",
@@ -1237,5 +1239,14 @@
       "path": "scripts/test_hepta_ndu_source_policy.py",
       "object": "bfaea8577f4f5daa18cf2e90d68368ab61df3045"
     }
-  ]
+  ],
+  "qualificationGovernance": {
+    "workflow": ".github/workflows/hepta-ndu-recursion.yml",
+    "mode": "read_only_exact_pr_head_dual_lane",
+    "branchMutationByQualification": false,
+    "sourceSelfReferenceProhibited": true,
+    "concreteIdentityLocation": "sealed aggregate artifact and pull-request metadata",
+    "invalidatedByAnyNewCommit": true,
+    "productionActivation": false
+  }
 }

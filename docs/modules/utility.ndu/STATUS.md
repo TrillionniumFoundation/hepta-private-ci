@@ -9,20 +9,27 @@ The inherited twelve-suite success in run `36338190108` is not a pass for change
 source. Current source and merge identities/results are in the new run receipts.
 No online history truncation, live alert installation or cloud success is claimed.
 
-## Exact A–D engineering qualification binding (2026-09-28)
+## Exact A–D engineering qualification protocol (2026-09-29)
 
-The current convergence branch is `work/utility-ndu-abcd-convergence-20260928`.
-This document and the implementation map are bound to qualification workflow run
-`36393371823`. Its materialize job emits one exact descendant source SHA; the same run
-executes source-head and deterministic synthetic-merge lanes for source, core,
-callers, product, strict lint and host suites, then independently reopens and
-verifies every retained command receipt and checksum. The successful predecessor
-qualification is run `36383272993`; it is historical evidence, not a substitute
-for this changed exact head.
+The convergence branch is `work/utility-ndu-abcd-convergence-20260928`. Its
+qualification path is the read-only workflow
+`.github/workflows/hepta-ndu-recursion.yml`. The workflow resolves the exact PR
+head at run start, executes source-head and deterministic synthetic-merge lanes
+for source, core, callers, product, strict lint and host suites, and independently
+reopens every retained receipt and checksum before publishing one aggregate.
+
+Qualification jobs have `contents: read` and never normalize source, merge a base,
+rewrite evidence prose, or push a descendant commit. A new commit therefore
+invalidates the previous required check instead of inheriting its result. The
+concrete source SHA, source tree, baseline SHA and synthetic-merge identity live in
+the immutable aggregate artifact and PR metadata. They are intentionally not
+embedded into the commit that contains this document because that would create an
+unstable self-reference. Historical runs remain evidence for their own exact
+commits only.
 
 A successful `ndu-qualified-evidence-<exact-source-sha>` aggregate establishes the
-engineering qualification fields below for that exact source only. It does not
-select or activate a production writer, enroll a production clock/frontier, prove
+engineering qualification fields for that exact source only. It does not select
+or activate a production writer, enroll a production clock/frontier, prove
 physical power-loss durability, or grant release authority.
 
 # utility.ndu status and claim boundary
@@ -92,7 +99,7 @@ The following remain separate gates and must stay false/not-established until ev
 
 The dedicated NDU workflow independently executes source checks, core tests, Control callers, normal Agentd product tests, strict lint and host qualification for both source-head and deterministic synthetic-merge candidates. It runs on relevant pushes to `main` and manual dispatch. One red suite cannot suppress execution of the others; both aggregate NDU gates require every suite to pass. A workflow definition is not itself a qualification receipt. The runner retains command lines, exit codes, log hashes, SHA/tree/parents, host/kernel and source-cleanliness checks.
 
-`exactHeadSourceQualification` for this revision is bound to workflow run `36393371823` and is established only when that run finishes with a successful aggregate for its emitted exact source SHA. An older source result, an unchanged code subtree, or a workflow definition is never substituted for that receipt.
+`exactHeadSourceQualification` is derived only from the successful required check and sealed aggregate for the current PR head. The source tree does not pre-claim its own result. An older run, an unchanged code subtree, a materializer output, or a workflow definition is never substituted for the current receipt.
 
 ## Safe claim language
 
