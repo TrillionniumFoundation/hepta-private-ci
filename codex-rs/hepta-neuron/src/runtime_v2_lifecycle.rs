@@ -18,6 +18,93 @@ pub enum NeuronOperationStatusV2 {
     },
 }
 
+impl NeuronOperationStatusV2 {
+    /// Stable low-cardinality code for logs, metrics and host runbooks. It is
+    /// deliberately independent from `Debug` formatting and grants no authority.
+    #[must_use]
+    pub fn stable_code(&self) -> &'static str {
+        match self {
+            Self::NotRecorded => "not_recorded",
+            Self::NotExecuted => "reserved_not_executed",
+            Self::OutcomeUnknown => "outcome_unknown",
+            Self::Failed(_) => "failed",
+            Self::Committed {
+                witness_acknowledged: true,
+                ..
+            } => "committed_witnessed",
+            Self::Committed {
+                witness_acknowledged: false,
+                ..
+            } => "committed_witness_pending",
+        }
+    }
+
+    #[must_use]
+    pub fn is_terminal(&self) -> bool {
+        matches!(self, Self::Failed(_) | Self::Committed { .. })
+    }
+
+    /// True when the same exact operation still needs runtime/provider or
+    /// witness reconciliation. This never authorizes a changed-input retry.
+    #[must_use]
+    pub fn requires_reconciliation(&self) -> bool {
+        matches!(
+            self,
+            Self::NotExecuted
+                | Self::OutcomeUnknown
+                | Self::Committed {
+                    witness_acknowledged: false,
+                    ..
+                }
+        )
+    }
+}
+
+impl NeuronRuntimeV2Error {
+    /// Stable low-cardinality error family. Callers that need execution truth
+    /// must still query the exact operation key; an error string is not state.
+    #[must_use]
+    pub fn stable_code(&self) -> &'static str {
+        match self {
+            Self::Admission(_) => "admission",
+            Self::Configuration(_) => "configuration",
+            Self::Store(GenerationStoreError::Backpressure) => "store_backpressure",
+            Self::Store(GenerationStoreError::Capacity) => "store_capacity",
+            Self::Store(GenerationStoreError::Indeterminate | GenerationStoreError::Poisoned) => {
+                "store_outcome_unknown"
+            }
+            Self::Store(_) => "store",
+            Self::Index(NeuronRuntimeIndexError::Pending) => "index_pending",
+            Self::Index(NeuronRuntimeIndexError::Capacity) => "index_capacity",
+            Self::Index(
+                NeuronRuntimeIndexError::Indeterminate | NeuronRuntimeIndexError::Poisoned,
+            ) => "index_outcome_unknown",
+            Self::Index(NeuronRuntimeIndexError::TerminalFailure(_)) => "terminal_failure",
+            Self::Index(_) => "index",
+            Self::Witness(WitnessStoreError::Unavailable | WitnessStoreError::Busy) => {
+                "witness_unavailable"
+            }
+            Self::Witness(WitnessStoreError::Indeterminate | WitnessStoreError::Poisoned) => {
+                "witness_outcome_unknown"
+            }
+            Self::Witness(_) => "witness",
+            Self::Model(NeuronModelError::Unavailable) => "model_unavailable",
+            Self::Model(NeuronModelError::Indeterminate) => "model_outcome_unknown",
+            Self::Model(NeuronModelError::Rejected) => "model_rejected",
+            Self::Semantic(_) => "semantic",
+            Self::Codec(_) => "codec",
+            Self::Mechanism(_) => "mechanism",
+            Self::ContextMismatch => "context_mismatch",
+            Self::CheckpointMismatch => "checkpoint_mismatch",
+            Self::OperationConflict => "operation_conflict",
+            Self::RecoveryMismatch => "recovery_mismatch",
+            Self::PendingOperation => "pending_operation",
+            Self::Arithmetic => "arithmetic",
+            Self::TerminalFailure(_) => "terminal_failure",
+        }
+    }
+}
+
 impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
     pub fn query_operation(
         &mut self,
@@ -57,6 +144,15 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             });
         }
         Ok(NeuronOperationStatusV2::NotRecorded)
+    }
+
+    /// Convenience entry point that derives the exact semantic operation key
+    /// from the same immutable input accepted by `tick_guarded`.
+    pub fn query_input_operation(
+        &mut self,
+        input: &NeuronTickInputV1,
+    ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
+        self.query_operation(&input.tick_id, input.semantic_digest()?)
     }
 
     pub fn query_result(
@@ -333,3 +429,48 @@ fn crash_cut(phase: &str) {
 
 #[cfg(not(test))]
 fn crash_cut(_phase: &str) {}
+
+#[cfg(test)]
+mod status_code_tests {
+    use super::*;
+
+    #[test]
+    fn operation_codes_are_stable_and_distinguish_reconciliation() {
+        let absent = NeuronOperationStatusV2::NotRecorded;
+        assert_eq!(absent.stable_code(), "not_recorded");
+        assert!(!absent.is_terminal());
+        assert!(!absent.requires_reconciliation());
+
+        let reserved = NeuronOperationStatusV2::NotExecuted;
+        assert_eq!(reserved.stable_code(), "reserved_not_executed");
+        assert!(!reserved.is_terminal());
+        assert!(reserved.requires_reconciliation());
+
+        let unknown = NeuronOperationStatusV2::OutcomeUnknown;
+        assert_eq!(unknown.stable_code(), "outcome_unknown");
+        assert!(!unknown.is_terminal());
+        assert!(unknown.requires_reconciliation());
+
+        let failed = NeuronOperationStatusV2::Failed(NeuronOperationFailureV2::ModelRejected);
+        assert_eq!(failed.stable_code(), "failed");
+        assert!(failed.is_terminal());
+        assert!(!failed.requires_reconciliation());
+    }
+
+    #[test]
+    fn error_codes_do_not_collapse_unknown_outcomes_into_failures() {
+        assert_eq!(
+            NeuronRuntimeV2Error::Store(GenerationStoreError::Indeterminate).stable_code(),
+            "store_outcome_unknown"
+        );
+        assert_eq!(
+            NeuronRuntimeV2Error::Model(NeuronModelError::Indeterminate).stable_code(),
+            "model_outcome_unknown"
+        );
+        assert_eq!(
+            NeuronRuntimeV2Error::TerminalFailure(NeuronOperationFailureV2::ModelRejected)
+                .stable_code(),
+            "terminal_failure"
+        );
+    }
+}
