@@ -209,7 +209,8 @@ impl AutomationTurnQueue for AgentdAutomationQueue {
     }
 }
 
-pub(crate) async fn run_automation_scheduler(
+pub(crate) async fn run_automation_scheduler<Q: AutomationTurnQueue>(
+    queue: Arc<Q>,
     store: AutomationStore,
     state: Arc<AgentdState>,
     identity: AgentdIdentity,
@@ -225,10 +226,6 @@ pub(crate) async fn run_automation_scheduler(
     {
         return stop_after_automation_error(error, &state, &cancellation).await;
     }
-    let queue = Arc::new(AgentdAutomationQueue::new(
-        Arc::clone(&state),
-        identity.clone(),
-    ));
     let scheduler = match AutomationScheduler::new(
         store,
         queue,
@@ -474,6 +471,12 @@ mod tests {
         );
     }
 }
+
+#[path = "automation_factory.rs"]
+mod factory;
+pub(crate) use factory::AutomationService;
+#[cfg(test)]
+pub(crate) use factory::open_automation_store_after_generation_fence;
 
 #[path = "automation_service.rs"]
 mod service;

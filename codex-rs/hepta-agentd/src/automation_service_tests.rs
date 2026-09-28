@@ -30,6 +30,8 @@ use tokio::sync::Notify;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
+use super::AgentdAutomationQueue;
+use super::AutomationService;
 use super::run_scheduler_loop;
 use super::spawn_automation_service;
 use crate::AgentdIdentity;
@@ -104,6 +106,10 @@ async fn install(fixture: &Fixture, tasks: &mut RuntimeTasks, stop: &Cancellatio
         Some(fixture.store.clone()),
         Arc::clone(&fixture.state),
         fixture.identity.clone(),
+        Arc::new(AgentdAutomationQueue::new(
+            Arc::clone(&fixture.state),
+            fixture.identity.clone(),
+        )),
         stop.clone(),
     )
     .await
@@ -132,6 +138,10 @@ async fn production_constructor_rejects_mismatched_identity_before_spawn() {
             Some(fixture.store.clone()),
             Arc::clone(&fixture.state),
             wrong,
+            Arc::new(AgentdAutomationQueue::new(
+                Arc::clone(&fixture.state),
+                fixture.identity.clone(),
+            )),
             stop.clone(),
         )
         .await
@@ -371,20 +381,15 @@ async fn production_constructor_keeps_retired_timer_absent_after_reopen() {
         AgentdState::new(fixture.identity.clone(), fixture.registry.clone(), 128)
             .expect("restarted host"),
     );
-    state
-        .attach_automation_store(reopened.clone())
-        .expect("readable owner attachment");
+    let service = AutomationService::open(Arc::clone(&state))
+        .await
+        .expect("readable owner factory");
     let (mut tasks, stop) = host();
     tasks.spawn_required("core", pending()).expect("sibling");
-    spawn_automation_service(
-        &mut tasks,
-        Some(reopened.clone()),
-        Arc::clone(&state),
-        fixture.identity.clone(),
-        stop.clone(),
-    )
-    .await
-    .expect("retired module must not prevent core startup");
+    service
+        .spawn(&mut tasks, stop.clone())
+        .await
+        .expect("retired module must not prevent core startup");
 
     assert_eq!(tasks.active_count(), 1);
     assert!(!stop.is_cancelled());
@@ -422,3 +427,6 @@ async fn production_constructor_never_resumes_a_draining_owner() {
     assert!(!fixture.state.is_fenced().expect("host fence"));
     fixture.store.close().await;
 }
+
+#[path = "automation_factory_tests.rs"]
+mod factory_tests;

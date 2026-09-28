@@ -6,8 +6,6 @@ use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
 use codex_app_server_client::RemoteAppServerEndpoint;
 use codex_arg0::Arg0DispatchPaths;
-use codex_hepta_agent_components::automation::AutomationError;
-use codex_hepta_agent_components::automation::AutomationStore;
 use codex_hepta_agent_components::cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_agent_components::memory::CognitiveRuntime;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -24,7 +22,7 @@ use crate::AgentdState;
 use crate::CognitiveRetrievalMode;
 use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
-use crate::automation::spawn_automation_service;
+use crate::automation::AutomationService;
 
 const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
@@ -222,14 +220,7 @@ pub async fn run(
         federation_owner_layouts,
     )
     .await?;
-    let automation_layout = identity.layout.clone();
-    let automation_store = open_automation_store_after_generation_fence(&state, || async move {
-        AutomationStore::open(&automation_layout).await
-    })
-    .await?;
-    if let Some(store) = automation_store.as_ref() {
-        state.attach_automation_store(store.clone())?;
-    }
+    let automation_service = AutomationService::open(Arc::clone(&state)).await?;
     if let Some(path) = automation_effect_host_file {
         state.refresh_generation()?;
         let host =
@@ -292,14 +283,9 @@ pub async fn run(
                 owner.run(Arc::clone(&state), cancellation.clone()),
             )?;
         }
-        spawn_automation_service(
-            &mut tasks,
-            automation_store,
-            Arc::clone(&state),
-            identity,
-            cancellation.clone(),
-        )
-        .await?;
+        automation_service
+            .spawn(&mut tasks, cancellation.clone())
+            .await?;
         Ok(())
     }
     .await;
@@ -350,26 +336,6 @@ fn require_cognitive_runtime_for_profile(
     runtime: CognitiveRuntime,
 ) -> Result<CognitiveRuntime, AgentdError> {
     Ok(runtime)
-}
-
-async fn open_automation_store_after_generation_fence<Open, OpenFuture>(
-    state: &AgentdState,
-    open: Open,
-) -> Result<Option<AutomationStore>, AgentdError>
-where
-    Open: FnOnce() -> OpenFuture,
-    OpenFuture: Future<
-        Output = Result<AutomationStore, codex_hepta_agent_components::automation::AutomationError>,
-    >,
-{
-    state.refresh_generation()?;
-    let opened = open().await;
-    state.refresh_generation()?;
-    match opened {
-        Ok(store) => Ok(Some(store)),
-        Err(AutomationError::Unavailable | AutomationError::Corrupt) => Ok(None),
-        Err(error) => Err(error.into()),
-    }
 }
 
 async fn attach_federation_after_generation_fence(

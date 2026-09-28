@@ -51,7 +51,6 @@ use super::AgentdState;
 use super::EVENT_CAPACITY;
 use super::drain_runtime;
 use super::monitor_runtime;
-use super::open_automation_store_after_generation_fence;
 use super::open_cognitive_runtime_after_generation_fence;
 use super::require_cognitive_retrieval_context_for_mode;
 use super::require_cognitive_runtime_for_profile;
@@ -60,8 +59,10 @@ use crate::AgentdPayload;
 use crate::CognitiveRetrievalMode;
 #[cfg(feature = "qualification-cognitive-write")]
 use crate::app_runtime::app_server_runtime_options_for_agent;
+use crate::automation::AgentdAutomationQueue;
 use crate::automation::DispatchRetryBudget;
 use crate::automation::handle_automation_tick;
+use crate::automation::open_automation_store_after_generation_fence;
 use crate::automation::run_automation_scheduler;
 #[cfg(feature = "qualification-cognitive-write")]
 use crate::qualification_writer::prepare_qualification_turn_writer_input;
@@ -858,6 +859,10 @@ async fn runtime_automation_store_failure_stops_only_the_scheduler_plane() {
         .expect("attach automation store");
     let cancellation = CancellationToken::new();
     let scheduler_task = tokio::spawn(run_automation_scheduler(
+        Arc::new(AgentdAutomationQueue::new(
+            Arc::clone(&fixture.state),
+            fixture.identity.clone(),
+        )),
         store.clone(),
         Arc::clone(&fixture.state),
         fixture.identity.clone(),

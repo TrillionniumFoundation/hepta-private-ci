@@ -10,6 +10,7 @@ use std::sync::atomic::Ordering;
 
 use codex_hepta_agent_components::automation::AutomationError;
 use codex_hepta_agent_components::automation::AutomationStore;
+use codex_hepta_agent_components::automation::AutomationTurnQueue;
 use codex_hepta_agent_components::automation::TimerPhase;
 use codex_hepta_agent_components::types::Generation;
 use tokio_util::sync::CancellationToken;
@@ -22,11 +23,12 @@ use crate::RuntimeTasks;
 /// Construct one real scheduler through the same versioned lifecycle used by
 /// other admitted optional services. Validation never starts a task. Callers
 /// retain the Agent writer lock; no additional authority is issued here.
-pub(crate) async fn spawn_automation_service(
+pub(crate) async fn spawn_automation_service<Q: AutomationTurnQueue + 'static>(
     tasks: &mut RuntimeTasks,
     store: Option<AutomationStore>,
     state: Arc<AgentdState>,
     identity: AgentdIdentity,
+    queue: Arc<Q>,
     host_cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
     if state.identity() != &identity
@@ -90,6 +92,7 @@ pub(crate) async fn spawn_automation_service(
             match store {
                 Some(store) => {
                     super::run_automation_scheduler(
+                        queue,
                         store,
                         Arc::clone(&state),
                         identity,

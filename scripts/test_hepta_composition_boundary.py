@@ -56,6 +56,22 @@ class HeptaCompositionBoundaryTests(unittest.TestCase):
                     concrete.append(f"{path.relative_to(ROOT)}:{crate}")
         self.assertEqual(concrete, [])
 
+    def test_generic_runtime_does_not_construct_automation_storage_or_adapter(
+        self,
+    ) -> None:
+        runtime = (ROOT / "codex-rs/hepta-agentd/src/runtime.rs").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("AutomationStore", runtime)
+        self.assertNotIn("AgentdAutomationQueue", runtime)
+        self.assertIn("AutomationService::open", runtime)
+        factory = (ROOT / "codex-rs/hepta-agentd/src/automation_factory.rs").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("AutomationStore::open", factory)
+        self.assertIn("spawn_with_queue", factory)
+        # Behavioral replacement is covered by the native factory/owner tests.
+
     def test_app_server_source_uses_only_bridge_namespace(self) -> None:
         concrete: list[str] = []
         source = ROOT / "codex-rs/app-server/src"
