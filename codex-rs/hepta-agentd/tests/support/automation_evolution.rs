@@ -309,3 +309,93 @@ async fn normal_product_migrates_restarts_hands_off_and_keeps_retired_automation
     );
     Ok(())
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn normal_due_automation_reaches_app_server_terminal_and_does_not_replay_after_restart()
+-> Result<()> {
+    let mut fleet = FleetHarness::new()?;
+    let agent = fleet.register(AGENT_A, "automation-due-product")?;
+    let model = responses::start_mock_server().await;
+    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+    fleet.start(&agent)?;
+    let (control, _) = fleet.wait_ready(&agent, 1).await?;
+    let mut product = ProductClient::connect(&agent, &control).await?;
+    let thread = product
+        .start_thread_with_ephemeral(&agent.workspace, false)
+        .await?;
+    let model_call =
+        responses::mount_sse_sequence(&model, vec![final_sse("normal-due-automation-terminal")])
+            .await;
+    let marker = "Execute the ordinary due automation capability exactly once.";
+    let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
+    let started = Instant::now();
+    let task = control
+        .automation_create(AutomationTaskDraft::new(
+            thread.clone(),
+            marker,
+            AutomationSchedule::Once,
+            now,
+            now,
+        ))
+        .await?;
+    let deadline = Instant::now() + Duration::from_secs(20);
+    let terminal = loop {
+        let tasks = control.automation_list(4).await?;
+        let snapshot = product.read_thread(&thread).await?;
+        // The task's Completed state records queue admission. Require an
+        // independently observed App Server terminal, not an ACK-as-success.
+        if tasks.iter().any(|value| {
+            value.task_id == task.task_id && value.state == AutomationTaskState::Completed
+        }) && snapshot.thread.turns.len() == 1
+            && snapshot.thread.turns[0].status == codex_app_server_protocol::TurnStatus::Completed
+        {
+            break snapshot;
+        }
+        ensure!(
+            Instant::now() < deadline,
+            "due task never reached actual App Server completion"
+        );
+        tokio::time::sleep(Duration::from_millis(25)).await;
+    };
+    let terminal_us = started.elapsed().as_micros();
+    ensure!(
+        model_call.requests().len() == 1,
+        "normal queue did not dispatch exactly once"
+    );
+    ensure!(
+        serde_json::to_string(&terminal.thread)?.contains(marker),
+        "wrong input reached the owning thread"
+    );
+    let turn_id = terminal.thread.turns[0].id.clone();
+    product.shutdown().await?;
+    let generation = agent_generation(&fleet, &agent.agent_id)?;
+    fleet.supervisor.restart(&agent.agent_id, Instant::now())?;
+    let (recovered_control, _) = fleet.wait_new_spawn(&agent, generation).await?;
+    let mut recovered_product = ProductClient::connect(&agent, &recovered_control).await?;
+    let recovered = recovered_product.read_thread(&thread).await?;
+    ensure!(recovered.thread.turns.len() == 1 && recovered.thread.turns[0].id == turn_id);
+    ensure!(recovered.thread.turns[0].status == codex_app_server_protocol::TurnStatus::Completed);
+    let tasks = recovered_control.automation_list(4).await?;
+    ensure!(
+        tasks.len() == 1
+            && tasks[0].task_id == task.task_id
+            && tasks[0].state == AutomationTaskState::Completed
+            && tasks[0].next_run_at_ms.is_none()
+    );
+    ensure!(
+        model_call.requests().len() == 1,
+        "restart replayed a completed occurrence"
+    );
+    recovered_product.shutdown().await?;
+    println!(
+        "{}",
+        json!({
+            "fixture": "normal_due_automation_to_app_server_terminal",
+            "terminal_us": terminal_us, "provider_request_count": 1,
+            "retained_task_count": 1, "retained_turn_count": 1,
+            "same_terminal_after_process_restart": true,
+            "provider": "local_fixture", "external_effect_completion_claim": false,
+        })
+    );
+    Ok(())
+}
