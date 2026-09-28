@@ -81,6 +81,10 @@ jobs:
             bubblewrap build-essential cmake curl git libdbus-1-dev \
             libfontconfig1-dev libfreetype6-dev libgl1-mesa-dev libglib2.0-dev \
             libssl-dev libx11-dev libxcb1-dev libxkbcommon-dev llvm pkg-config python3 util-linux
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
           command -v llvm-objdump
           llvm-objdump --version | head -n 1
           command -v bwrap
@@ -131,7 +135,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node apps/hepta-browser/scripts/linux-sandbox-probe.js | tee worker-evidence/linux-sandbox-probe.json
+          node apps/hepta-browser/scripts/linux-sandbox-probe.js \
+            2> >(tee worker-evidence/linux-sandbox-probe.stderr.log >&2) \
+            | tee worker-evidence/linux-sandbox-probe.json
           python3 - <<'PY'
           import json, pathlib
           probe = json.loads(pathlib.Path("worker-evidence/linux-sandbox-probe.json").read_text())
