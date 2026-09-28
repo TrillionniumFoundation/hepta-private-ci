@@ -43,6 +43,36 @@ license decision. Unreviewed remote-code candidates cannot become internal-shado
 recommendations merely by producing a good score. No candidate in this synthetic
 panel is eligible for runtime selection.
 
+## Immutable Laya loader inputs
+
+The pinned Laya source calls `_fix_tokenizer_config` inside `Agent.__init__` and
+rewrites a list-valued `extra_special_tokens` field in place. Feeding the original
+upstream directory to that constructor therefore changes the bytes previously
+admitted by the snapshot verifier and prevents later exact-revision replay.
+
+`laya_loader_view.py` now copies the admitted snapshot to private regular files,
+checks the copy against the previously admitted inventory digest, and performs
+only `laya-tokenizer-compatibility-v1` there. Its receipt binds both the original
+snapshot and effective loader-input digests, the exact before/after tokenizer
+bytes, changed paths and this adapter's code digest. The original snapshot is
+never repaired or relabelled in place. A previously changed cache must be retained
+as diagnostic evidence and replaced by a separately materialized exact upstream
+snapshot before another qualified run.
+
+The caller verifies the view after loading and again after model use; artifact
+replay requires the identical effective loader identity. Undeclared writes, source
+drift, symlinks, invalid configuration and silent device fallback reject. The
+private view is removed on close. This is an integrity/compatibility adapter, not
+an OS sandbox, code-review approval or evidence that a model is selected. The
+trusted-parent-filesystem assumption still applies during loader use.
+
+```sh
+python3 -m unittest -v test_laya_loader_view
+python3 -m unittest -v test_tensor_bundle
+python3 artifact_replay.py --receipt /qualified/output/receipts/MODEL-DIGEST.json \
+  --model-root /qualified/models --device cpu --output /qualified/replay.json
+```
+
 ## Commands
 
 From this directory, use an isolated environment with the pinned direct dependencies

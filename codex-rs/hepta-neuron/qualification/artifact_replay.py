@@ -41,11 +41,17 @@ def replay(receipt_path: Path, model_root: Path, device: str) -> dict:
     with np.load(receipt["embedding_artifact"]["path"], allow_pickle=False) as old:
         expected_state = old["embeddings"][indices].copy()
         expected_targets = old["target_embeddings"][indices].copy()
-    encoder = bakeoff.EncoderAdapter(name, snapshot_path, spec, device)
+    encoder = bakeoff.EncoderAdapter(name, snapshot_path, spec, device,
+                                    expected_snapshot_digest=base["snapshot_digest"])
     try:
+        expected_loader = receipt["model_load_validation"].get("loader_input_identity")
+        actual_loader = encoder.loading_report.get("loader_input_identity")
+        if actual_loader != expected_loader:
+            raise ValueError("effective loader identity changed between training and replay")
         state, _ = encoder.encode([row.text for row in selected], batch_size=8)
         flat, _ = encoder.encode([row.text + "\nCandidate under evaluation: " + candidate
                                  for row in selected for candidate in row.candidates], batch_size=8)
+        encoder.verify_loader_inputs()
     finally:
         encoder.close()
     targets = flat.reshape(len(selected), 4, state.shape[1])

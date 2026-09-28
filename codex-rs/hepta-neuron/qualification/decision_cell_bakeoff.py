@@ -625,6 +625,8 @@ class EncoderAdapter:
         model_path: Path,
         spec: dict[str, Any],
         device: str,
+        *,
+        expected_snapshot_digest: str,
     ) -> None:
         self.model_name = model_name
         self.model_path = model_path
@@ -632,18 +634,30 @@ class EncoderAdapter:
         self.device = torch.device(device)
         self.native_laya = None
         self.container_model = None
+        self.loader_view = None
         self.loading_report: dict[str, Any]
         if spec["kind"] == "laya":
             from laya import Agent
 
-            self.native_laya = Agent(
-                model_id_or_path=str(model_path),
-                device=str(self.device),
-            )
+            from laya_loader_view import LayaLoaderView
+
+            self.loader_view = LayaLoaderView(model_path, expected_snapshot_digest=expected_snapshot_digest)
+            try:
+                self.native_laya = Agent(
+                    model_id_or_path=str(self.loader_view.path),
+                    device=str(self.device),
+                )
+                self.loader_view.verify()
+                if self.native_laya.device != self.device:
+                    raise RuntimeError("Laya silently changed the requested device")
+            except BaseException:
+                self.loader_view.close()
+                raise
             self.tokenizer = self.native_laya.tok
             self.model = self.native_laya.model.encoder
             self.loading_report = {
-                "loader": "laya.Agent strict checkpoint compatibility",
+                "loader": "laya.Agent on verified private compatibility view",
+                "loader_input_identity": self.loader_view.identity,
                 "missing_keys": [],
                 "unexpected_keys": [],
                 "mismatched_keys": [],
@@ -723,7 +737,14 @@ class EncoderAdapter:
             rows.append(pooled.float().cpu().numpy())
         return np.concatenate(rows, axis=0), latencies
 
+    def verify_loader_inputs(self) -> None:
+        if self.loader_view is not None:
+            self.loader_view.verify()
+
     def close(self) -> None:
+        if self.loader_view is not None:
+            self.loader_view.close()
+            self.loader_view = None
         self.native_laya = None
         self.container_model = None
         self.model = None
@@ -1286,7 +1307,9 @@ def run_model(
     started = time.time()
     snapshot_path, model_metadata = model_snapshot(spec, model_root)
     download_finished = time.time()
-    encoder = EncoderAdapter(model_name, snapshot_path, spec, device)
+    encoder = EncoderAdapter(model_name, snapshot_path, spec, device,
+                             expected_snapshot_digest=model_metadata["snapshot_digest"])
+    load_finished = time.time()
     try:
         texts = [row.text for row in examples]
         target_pair_texts = [
@@ -1338,6 +1361,7 @@ def run_model(
         ood_metrics = evaluate(heads, ood_batch, calibration)
         latency = benchmark_encoder(encoder, [row.text for row in test_rows])
         native_reference = laya_native_reference(encoder, test_rows)
+        encoder.verify_loader_inputs()
         artifact_metadata = {
             "dataset_sha256": dataset_digest,
             "source": source,
@@ -1384,6 +1408,7 @@ def run_model(
             },
             "timing_seconds": {
                 "snapshot_download": download_finished - started,
+                "backend_load_and_immutable_view": load_finished - download_finished,
                 "feature_extraction": encode_finished - encode_started,
                 "head_training": training_finished - training_started,
                 "total": time.time() - started,
