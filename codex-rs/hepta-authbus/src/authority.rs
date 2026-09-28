@@ -145,6 +145,24 @@ impl PolicyDecision {
     }
 }
 
+/// What a caller may safely infer about a failed mutating AuthBus request.
+///
+/// A successful `Result` means the SQLite mutation and external checkpoint are
+/// both durable. Callers must not blindly retry either reconciliation variant:
+/// they must query by the request's stable identity and reconcile first.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AuthBusMutationDisposition {
+    /// Validation, conflict, capacity or other deterministic rejection occurred
+    /// before the requested mutation committed.
+    NotCommitted,
+    /// The authoritative SQLite transaction committed, but publication of the
+    /// independent checkpoint did not complete.
+    CommittedNeedsReconciliation,
+    /// A storage failure occurred at a point where commit status cannot be
+    /// inferred safely. Reconcile by stable operation identity before retrying.
+    OutcomeUnknown,
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum AuthBusAuthorityError {
     #[error("invalid AuthBus authority input: {0}")]
@@ -153,6 +171,10 @@ pub enum AuthBusAuthorityError {
     CorruptState(&'static str),
     #[error("AuthBus authority storage is unavailable: {0}")]
     Storage(String),
+    #[error("AuthBus mutation committed but its external checkpoint requires reconciliation: {0}")]
+    CheckpointReconciliationRequired(String),
+    #[error("AuthBus mutation outcome is unknown and must be reconciled: {0}")]
+    MutationOutcomeUnknown(String),
     #[error("another AuthBus authority owner is already active")]
     OwnerAlreadyActive,
     #[error("AuthBus authority record was not found")]
@@ -211,4 +233,19 @@ pub enum AuthBusAuthorityError {
     UnsafeCheckpoint,
     #[error("AuthBus policy cannot be retired while reservations still reference it")]
     PolicyInUse,
+}
+
+impl AuthBusAuthorityError {
+    #[must_use]
+    pub fn mutation_disposition(&self) -> AuthBusMutationDisposition {
+        match self {
+            Self::CheckpointReconciliationRequired(_) => {
+                AuthBusMutationDisposition::CommittedNeedsReconciliation
+            }
+            Self::MutationOutcomeUnknown(_) | Self::Storage(_) => {
+                AuthBusMutationDisposition::OutcomeUnknown
+            }
+            _ => AuthBusMutationDisposition::NotCommitted,
+        }
+    }
 }
