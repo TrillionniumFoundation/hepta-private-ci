@@ -28,7 +28,7 @@
     "cancellationFence": "restart_surviving_cancel_fences_late_terminal",
     "crossHostProductTransport": "transport_neutral_host_boundary_source_candidate_not_agentd_composed",
     "crossHostProductBridge": "canonical_v2_transport_adapter_source_candidate_pending_execution",
-    "authenticatedTransportContext": "peer_profile_channel_binding_and_lifetime_required",
+    "authenticatedTransportContext": "issuer_attested_local_owner_peer_profile_channel_lifetime_key_generation_source_candidate",
     "productBodyAtomicity": "bounded_body_preflight_before_durable_replay_or_terminal_commit",
     "durableAttemptReplayRecovery": "host_store_snapshot_source_candidate_pending_selected_backend",
     "clientInboundAtomicity": "staged_replay_and_recovery_commit_retryable_without_restart",
@@ -65,8 +65,8 @@
     "twoRealHostQualification": false
   },
   "externalGates": [
-    "selected mutually authenticated transport and transport-peer identity binding",
-    "secure host credential enrollment, storage, rotation, revocation and recovery",
+    "selected mutually authenticated transport and local/remote channel identity binding",
+    "secure frame and per-host transport-context credential enrollment, storage, rotation, revocation and recovery",
     "deployment-specific durable attempt and replay recovery policy",
     "two independently provisioned real-host fault qualification",
     "target-host latency, capacity, backpressure and cancellation-tail evidence",
