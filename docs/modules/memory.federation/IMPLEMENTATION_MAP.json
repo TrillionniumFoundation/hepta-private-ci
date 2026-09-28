@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "87fdef7adfcea82a27605235d2e3a3aa0f71ccb5",
-    "tree": "eb8becba9acfc7a4964ad949be080c3c5c9bf343"
+    "commit": "113a53328e378cef6bd7d232a9d1ff13e254866f",
+    "tree": "e967903b501ba62211ae36bd1cb2f153fc3abb05"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -63,8 +63,8 @@
     "Produce target-host latency, capacity, backpressure, replay-pressure, cancellation-tail and restart-recovery evidence."
   ],
   "externalEvidenceGates": [
-    "selected mutually authenticated transport and transport-peer identity binding",
-    "secure frame and transport-context credential enrollment, storage, rotation, revocation and recovery",
+    "selected mutually authenticated transport and local/remote channel identity binding",
+    "secure frame and per-host transport-context credential enrollment, storage, rotation, revocation and recovery",
     "deployment-specific durable attempt and replay recovery policy",
     "two independently provisioned real-host fault qualification",
     "target-host latency, capacity, backpressure and cancellation-tail evidence",
@@ -87,9 +87,9 @@
   "headAttestation": {
     "candidateBranch": "feat/memory-federation-full-closure-20260927",
     "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "candidateHead": "87fdef7adfcea82a27605235d2e3a3aa0f71ccb5",
-    "candidateTree": "eb8becba9acfc7a4964ad949be080c3c5c9bf343",
-    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit v4_combined_attachment_partial_peer_evidence single_pr_qualification_owner_required_fanin issuer_attested_transport_context_before_packet_replay",
+    "candidateHead": "113a53328e378cef6bd7d232a9d1ff13e254866f",
+    "candidateTree": "e967903b501ba62211ae36bd1cb2f153fc3abb05",
+    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit v4_combined_attachment_partial_peer_evidence single_pr_qualification_owner_required_fanin issuer_attested_transport_context_before_packet_replay local_owner_bound_transport_context stale_public_constructor_regression_removed",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -141,8 +141,10 @@
       "v4_combined_attachment_partial_peer_evidence",
       "single_pr_qualification_owner_required_fanin",
       "transport_context_private_construction_contract",
-      "transport_context_hmac_peer_profile_channel_lifetime_key_generation_binding",
-      "untrusted_transport_context_rejected_before_replay_or_attempt_commit"
+      "transport_context_hmac_local_owner_peer_profile_channel_lifetime_key_generation_binding",
+      "untrusted_transport_context_rejected_before_replay_or_attempt_commit",
+      "wrong_local_host_transport_context_rejected_without_consuming_replay",
+      "product_atomicity_tests_use_current_issuer_verifier_contract"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
@@ -192,15 +194,15 @@
       "scripts/verify_memory_federation_implementation.py",
       "scripts/verify_memory_federation_status.py"
     ],
-    "note": "sourceBase and observedAtHead bind the immediately preceding source, test, document and qualification-topology candidate. This implementation-map-only rebind records actual Git objects, not execution success. The normal combined local-plus-federated model-input path admits the current V4 attachment schema, carries partial_peers into compact evidence and retains revoke-before-physical-send fencing. Pull requests have one required qualification owner through blocking-ci while direct branch pushes, workflow_call and workflow_dispatch retain exact-head execution. The authenticated cross-host bridge now accepts transport identity only through an issuer/verifier capability: HMAC evidence binds peer, profile, channel binding, lifetime, context-key identity and generation; an untrusted issuer is rejected before packet parsing can consume replay or attempt state, and the same query remains admissible through the trusted issuer. The selected network transport, context-key operations, production recovery backend, Agentd serving composition, two-real-host faults/SLOs, independent acceptance and activation/release remain separately gated. The existing V2 product path, authority ownership, no-blind-retry rule and half-budget read reservation are unchanged.",
+    "note": "sourceBase and observedAtHead bind the immediately preceding source, test, document and qualification-topology candidate. This implementation-map-only rebind records actual Git objects, not execution success. The normal combined local-plus-federated model-input path admits the current V4 attachment schema, carries partial_peers into compact evidence and retains revoke-before-physical-send fencing. Pull requests have one required qualification owner through blocking-ci while direct branch pushes, workflow_call and workflow_dispatch retain exact-head execution. The authenticated cross-host bridge accepts transport identity only through an issuer/verifier capability bound to the actual local wire owner. HMAC evidence binds local owner, remote peer, profile, channel binding, lifetime, context-key identity and generation; wrong key, wrong profile and wrong-local-host contexts are rejected before replay or attempt state is consumed, and regression tests prove the same request remains admissible through the correct issuer. The stale product atomicity test was migrated off the removed public constructor. The selected network transport, per-host context-key operations, production recovery backend, Agentd serving composition, two-real-host faults/SLOs, independent acceptance and activation/release remain separately gated. The existing V2 product path, authority ownership, no-blind-retry rule and half-budget read reservation are unchanged.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
     ]
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "87fdef7adfcea82a27605235d2e3a3aa0f71ccb5",
-    "tree": "eb8becba9acfc7a4964ad949be080c3c5c9bf343"
+    "commit": "113a53328e378cef6bd7d232a9d1ff13e254866f",
+    "tree": "e967903b501ba62211ae36bd1cb2f153fc3abb05"
   },
   "observedSourcePaths": [
     ".github/workflows/blocking-ci.yml",
@@ -286,7 +288,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire",
-      "object": "668921ee55206dd34fad642a56e09012535ef23f"
+      "object": "578ae83889d5112c762d2dde2638f01218444eee"
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire/Cargo.toml",
@@ -358,11 +360,11 @@
     },
     {
       "path": "docs/modules/memory.federation/DEPLOYMENT_PROFILE.json",
-      "object": "2ce3268f0d87b44eb0d12d74586817129769d644"
+      "object": "a5ed56a595a5804e62c3c9b877d4788a3f60565d"
     },
     {
       "path": "docs/modules/memory.federation/PRODUCT_BRIDGE_V1.md",
-      "object": "94ea2af0c6770b3f0992556ee72c302ef318a89d"
+      "object": "35781882311c7028291d55191f200014bf603d10"
     },
     {
       "path": "docs/modules/memory.federation/TECHNICAL.md",
@@ -374,7 +376,7 @@
     },
     {
       "path": "docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json",
-      "object": "598b4da43dc9c7d850366a4f9ea01f0fbac424b9"
+      "object": "a023ce813a6185f68a1805d9b9e58576d803ea16"
     },
     {
       "path": "docs/modules/memory.federation/WIRE_V1.md",
