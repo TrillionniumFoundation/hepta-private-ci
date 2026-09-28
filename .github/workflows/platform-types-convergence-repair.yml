@@ -23,6 +23,11 @@ jobs:
       BRANCH: codex/platform-types-production-convergence-20260925
       RUSTUP_TOOLCHAIN: "1.96.0"
       PYTHONPATH: scripts
+      CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+      CARGO_NET_RETRY: "20"
+      CARGO_HTTP_TIMEOUT: "600"
+      CARGO_HTTP_MULTIPLEXING: "false"
+      CARGO_HTTP_LOW_SPEED_LIMIT: "1"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -73,17 +78,42 @@ jobs:
       - name: Regenerate the authoritative Cargo lock
         run: |
           set -euo pipefail
-          # The alpha.4 Rama graph requires the current Tokio line. Unlock the
-          # shared runtime first; updating Rama helper crates one-by-one while
-          # Tokio remains fixed at 1.43.4 creates an intentionally unsatisfiable
-          # intermediate graph.
-          cargo update --manifest-path codex-rs/Cargo.toml \
-            --package tokio@1.43.4 --precise 1.48.0
-          for package in rama-error rama-macros rama-utils; do
-            cargo update --manifest-path codex-rs/Cargo.toml \
-              --package "$package" --precise 0.3.0-alpha.4
+          original_lock="$(mktemp)"
+          cp codex-rs/Cargo.lock "$original_lock"
+          converged=false
+
+          # The alpha.4 Rama graph requires the current Tokio line. Restore the
+          # exact input lock before every attempt so a transient registry/index
+          # failure can never leave a half-migrated dependency graph behind.
+          for attempt in 1 2 3 4 5; do
+            echo "Cargo lock convergence attempt ${attempt}/5"
+            cp "$original_lock" codex-rs/Cargo.lock
+
+            if cargo update --manifest-path codex-rs/Cargo.toml \
+                 --package tokio@1.43.4 --precise 1.48.0 \
+              && cargo update --manifest-path codex-rs/Cargo.toml \
+                 --package rama-error --precise 0.3.0-alpha.4 \
+              && cargo update --manifest-path codex-rs/Cargo.toml \
+                 --package rama-macros --precise 0.3.0-alpha.4 \
+              && cargo update --manifest-path codex-rs/Cargo.toml \
+                 --package rama-utils --precise 0.3.0-alpha.4 \
+              && cargo metadata --manifest-path codex-rs/Cargo.toml \
+                 --locked --no-deps >/dev/null; then
+              converged=true
+              break
+            fi
+
+            echo "Lock convergence attempt ${attempt} failed; restoring the canonical input lock." >&2
+            cp "$original_lock" codex-rs/Cargo.lock
+            if [ "$attempt" -lt 5 ]; then
+              sleep "$((attempt * 15))"
+            fi
           done
-          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps >/dev/null
+
+          if [ "$converged" != true ]; then
+            echo "Cargo lock convergence failed after five clean attempts." >&2
+            exit 1
+          fi
 
       - name: Verify focused repairs before publishing
         run: |
@@ -122,4 +152,4 @@ jobs:
           git commit -m "fix(platform.types): close exact-candidate qualification gaps"
           git push origin "HEAD:$BRANCH"
 
-# API retrigger v3: normalize the complete workspace with pinned rustfmt.
+# API retrigger v4: retry lock convergence from an exact clean input.
