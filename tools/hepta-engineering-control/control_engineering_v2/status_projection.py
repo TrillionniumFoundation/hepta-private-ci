@@ -14,6 +14,13 @@ from .git_security import run_git
 
 STATUS_SCHEMA = "hepta.control-engineering-status.v1"
 API_SCHEMA = "hepta.control-engineering-api-compatibility.v1"
+_CRITICAL_REPOSITORY_PATHS = (
+    ".github/workflows/blocking-ci.yml",
+    ".github/workflows/control-engineering-production-acceptance.yml",
+    ".github/workflows/control-engineering-projection.yml",
+    ".github/workflows/control-engineering-required.yml",
+    ".github/workflows/hepta-consolidated-source.yml",
+)
 
 
 def _load(path: Path) -> object:
@@ -22,7 +29,10 @@ def _load(path: Path) -> object:
 
 def _write(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(value, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
 
 
 def _git(root: Path, *args: str) -> str:
@@ -41,11 +51,16 @@ def _public_exports(root: Path) -> list[str]:
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
     for node in tree.body:
         if isinstance(node, ast.Assign) and any(
-            isinstance(target, ast.Name) and target.id == "__all__" for target in node.targets
+            isinstance(target, ast.Name) and target.id == "__all__"
+            for target in node.targets
         ):
             value = ast.literal_eval(node.value)
-            if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
-                raise ValueError("control.engineering __all__ must be a literal string list")
+            if not isinstance(value, list) or any(
+                not isinstance(item, str) for item in value
+            ):
+                raise ValueError(
+                    "control.engineering __all__ must be a literal string list"
+                )
             if len(value) != len(set(value)):
                 raise ValueError("control.engineering __all__ contains duplicates")
             return sorted(value)
@@ -105,7 +120,11 @@ def status_projection(map_value: dict[str, object]) -> dict[str, object]:
         ],
         "sourceObservation": map_value.get("observedAtHead"),
         "sourceObjectsDigest": hashlib.sha256(
-            json.dumps(source_objects, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            json.dumps(
+                source_objects,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
         ).hexdigest(),
         "sourceRootPresent": bool(map_value.get("sourceRootPresent")),
         "productionImplementation": False,
@@ -202,7 +221,9 @@ def prepare_projection(repository: str | Path) -> dict[str, object]:
         "tree": _git(root, "rev-parse", "HEAD^{tree}"),
     }
     map_value["statusFile"] = "docs/modules/control.engineering/STATUS.json"
-    map_value["implementationExtensions"] = "docs/modules/control.engineering/EXTENSIONS.json"
+    map_value["implementationExtensions"] = (
+        "docs/modules/control.engineering/EXTENSIONS.json"
+    )
     map_value["productCallerState"] = (
         "repository_product_caller_dual_lane_and_post_merge_defined_execution_pending"
     )
@@ -234,15 +255,23 @@ def prepare_projection(repository: str | Path) -> dict[str, object]:
         if isinstance(entry, dict) and isinstance(entry.get("path"), str)
     }
     paths.update(evidence_paths)
+    paths.update(_CRITICAL_REPOSITORY_PATHS)
     paths.add("docs/modules/control.engineering/EXTENSIONS.json")
     paths.add("docs/modules/control.engineering/README.md")
     paths.add("docs/modules/control.engineering/CAPACITY.md")
     paths.add("docs/modules/control.engineering/PRODUCTION_INTEGRATION.md")
+    for path in paths:
+        if not (root / path).exists():
+            raise ValueError(f"missing control.engineering source object {path}")
     map_value["sourceObjects"] = [
-        {"path": path, "object": _source_object(root, path)} for path in sorted(paths)
+        {"path": path, "object": _source_object(root, path)}
+        for path in sorted(paths)
     ]
     _write(map_path, map_value)
-    _write(module_dir / "API_COMPATIBILITY.json", api_compatibility_projection(root))
+    _write(
+        module_dir / "API_COMPATIBILITY.json",
+        api_compatibility_projection(root),
+    )
     _write(module_dir / "STATUS.json", status_projection(map_value))
     return {
         "map": str(map_path.relative_to(root)),
@@ -268,7 +297,9 @@ def verify_projection(repository: str | Path) -> dict[str, object]:
         raise ValueError("control.engineering API compatibility drift")
     extensions = _load(module_dir / "EXTENSIONS.json")
     expected_operations = {
-        row["operation"] for row in extensions.get("operations", []) if isinstance(row, dict)
+        row["operation"]
+        for row in extensions.get("operations", [])
+        if isinstance(row, dict)
     }
     operations = {
         row.get("operation"): row
@@ -277,12 +308,27 @@ def verify_projection(repository: str | Path) -> dict[str, object]:
     }
     missing = sorted(expected_operations - set(operations))
     if missing:
-        raise ValueError("control.engineering map extensions missing: " + ", ".join(missing))
+        raise ValueError(
+            "control.engineering map extensions missing: " + ", ".join(missing)
+        )
     for name in expected_operations:
         row = operations[name]
         source = row.get("sourcePath")
         if row.get("sourceBlob") != _source_object(root, source):
             raise ValueError(f"control.engineering source blob drift: {name}")
+    object_rows = map_value.get("sourceObjects")
+    if not isinstance(object_rows, list):
+        raise ValueError("control.engineering source objects missing")
+    objects = {
+        row.get("path"): row.get("object")
+        for row in object_rows
+        if isinstance(row, dict)
+    }
+    for path in _CRITICAL_REPOSITORY_PATHS:
+        if objects.get(path) != _source_object(root, path):
+            raise ValueError(
+                f"control.engineering critical workflow blob drift: {path}"
+            )
     return {
         "schema": STATUS_SCHEMA,
         "status": "verified",
@@ -304,8 +350,17 @@ def main(argv: list[str] | None = None) -> int:
             if args.command == "prepare"
             else verify_projection(args.repository)
         )
-    except (OSError, ValueError, subprocess.CalledProcessError, json.JSONDecodeError) as error:
-        print(json.dumps({"schema": STATUS_SCHEMA, "status": "rejected", "error": str(error)}))
+    except (
+        OSError,
+        ValueError,
+        subprocess.CalledProcessError,
+        json.JSONDecodeError,
+    ) as error:
+        print(
+            json.dumps(
+                {"schema": STATUS_SCHEMA, "status": "rejected", "error": str(error)}
+            )
+        )
         return 1
     rendered = json.dumps(result, indent=2, sort_keys=True) + "\n"
     if args.output is None:
