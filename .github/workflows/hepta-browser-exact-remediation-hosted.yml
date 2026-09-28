@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 12
+          fetch-depth: 16
           persist-credentials: true
           clean: true
 
@@ -53,7 +53,7 @@ jobs:
           rm -rf apps/hepta-browser/scripts/__pycache__
           git diff --check
 
-      - name: Publish one bounded remediation commit
+      - name: Publish non-workflow remediation commit
         shell: bash
         env:
           TARGET_BRANCH: codex/browser-servo-full-convergence-20260927
@@ -63,7 +63,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add \
-            .github/workflows/hepta-browser-servo-worker-dev.yml \
             codex-rs/hepta-agentd/src/browser_servo_persistent.rs \
             docs/modules/browser.servo/GENERATED_SOURCE_REGISTRY.json \
             docs/modules/browser.servo/IMPLEMENTATION_MAP.json \
