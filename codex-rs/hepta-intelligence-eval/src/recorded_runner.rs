@@ -41,8 +41,8 @@ use crate::recorded_publication::RecordedPublicationSinkV1;
 mod outcomes;
 
 pub struct RecordedProductEvaluationRunnerV1<S> {
-    inner: ProductEvaluationRunnerV1<S>,
-    namespace: Digest32,
+    pub(crate) inner: ProductEvaluationRunnerV1<S>,
+    pub(crate) namespace: Digest32,
 }
 
 impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
