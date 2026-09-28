@@ -47,7 +47,7 @@ fn benchmark_case(
 ) -> Result<BenchmarkResult, Box<dyn Error>> {
     let mut entries = Vec::with_capacity(entry_count);
     for index in 0..entry_count {
-        let id = StableId::new(&format!("schema:benchmark-{index}"))?;
+        let id = StableId::new(format!("schema:benchmark-{index}"))?;
         entries.push(RegistryDefinitionV1::new(
             RegistryKindV1::Schema,
             id,
