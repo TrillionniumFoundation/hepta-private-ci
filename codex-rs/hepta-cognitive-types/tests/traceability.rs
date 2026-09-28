@@ -152,10 +152,10 @@ fn qualification_and_export_workflows_are_read_only() {
 }
 
 #[test]
-fn source_exports_are_bound_to_each_immutable_candidate() {
+fn source_exports_keep_only_the_latest_immutable_candidate() {
     for token in [
-        "group: cognitive-types-source-export-${{ github.sha }}",
-        "cancel-in-progress: false",
+        "group: cognitive-types-source-export-${{ github.ref }}",
+        "cancel-in-progress: true",
         "test \"$(git rev-parse HEAD)\" = \"$GITHUB_SHA\"",
         "git rev-parse HEAD^{tree}",
         "git archive --format=tar HEAD",
