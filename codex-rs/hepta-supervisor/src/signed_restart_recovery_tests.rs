@@ -55,6 +55,21 @@ fn unresolved_signed_recovery_blocks_pending_and_direct_process_start()
         &fleet.first,
         &ReleaseId::parse("signed-restart-quarantine")?,
     )?)?;
+    let before_lifecycle = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .expect("agent")
+        .lifecycle
+        .clone();
+    assert!(matches!(
+        recovered.start(&fleet.first, release.command().clone(), now),
+        Err(SupervisorError::SignedIntentRecoveryRequired(agent)) if agent == fleet.first
+    ));
+    assert!(matches!(
+        recovered.restart(&fleet.first, now),
+        Err(SupervisorError::SignedIntentRecoveryRequired(agent)) if agent == fleet.first
+    ));
     assert!(
         matches!(recovered.start_release(&fleet.first, release, now),
         Err(SupervisorError::SignedIntentRecoveryRequired(agent)) if agent == fleet.first)
@@ -67,5 +82,42 @@ fn unresolved_signed_recovery_blocks_pending_and_direct_process_start()
             .active
     );
     assert!(recovered.snapshot(&fleet.second).expect("peer").active);
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("agent")
+            .lifecycle,
+        before_lifecycle
+    );
+    assert_eq!(
+        crate::restart_journal::read_main_restart_budget(record.layout.run_root())?,
+        before
+    );
+    drop(recovered);
+    let (mut reopened, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        control.driver(),
+        config(),
+        now + Duration::from_secs(2),
+    )?;
+    assert_eq!(report, TickReport::default());
+    assert_eq!(
+        reopened.tick(now + Duration::from_secs(4)),
+        TickReport::default()
+    );
+    assert!(reopened.production_recovery_required(&fleet.first)?);
+    assert!(
+        reopened
+            .snapshot(&fleet.first)
+            .expect("pending retained")
+            .restart_pending
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert_eq!(
+        crate::restart_journal::read_main_restart_budget(record.layout.run_root())?,
+        before
+    );
     Ok(())
 }

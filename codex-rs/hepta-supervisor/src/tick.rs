@@ -51,8 +51,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 }
             }
         }
+        // Quarantine suspends admission, not exit observation or emergency
+        // cleanup. Preserve the pending durable attempt for explicit recovery.
         if slot.runtime.is_none()
             && slot.release_change.is_none()
+            && !slot.signed_recovery_required()
             && slot.restart_pending
             && slot
                 .restart_not_before

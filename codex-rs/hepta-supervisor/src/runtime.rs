@@ -187,6 +187,14 @@ impl<P> AgentSlot<P> {
         }
     }
 
+    /// A restart claim is not permission to resume an unresolved signed mutation.
+    /// Keep this derived from the recovered intent, never a second mutable flag.
+    pub fn signed_recovery_required(&self) -> bool {
+        self.signed_intent.as_ref().is_some_and(|intent| {
+            intent.status == crate::signed_intent::SignedIntentStatus::RecoveryRequired
+        })
+    }
+
     pub fn event(&mut self, generation: u64, kind: SupervisorEventKind) {
         self.events.push(SupervisorEvent { generation, kind });
     }

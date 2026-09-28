@@ -820,18 +820,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        Ok(slot
-            .signed_intent
-            .as_ref()
-            .is_some_and(|intent| intent.status == SignedIntentStatus::RecoveryRequired))
+        Ok(slot.signed_recovery_required())
     }
 
     pub fn any_production_recovery_required(&self) -> bool {
-        self.slots.values().any(|slot| {
-            slot.signed_intent
-                .as_ref()
-                .is_some_and(|intent| intent.status == SignedIntentStatus::RecoveryRequired)
-        })
+        self.slots.values().any(AgentSlot::signed_recovery_required)
     }
 
     pub fn release_selection_snapshot(

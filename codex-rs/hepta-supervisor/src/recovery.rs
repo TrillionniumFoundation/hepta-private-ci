@@ -105,6 +105,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        // Enforce the same fence at the actual spawn entry, including direct
+        // in-process callers that do not pass through the daemon RPC preflight.
+        if slot.signed_recovery_required() {
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
+            ));
+        }
         let health_deadline = deadline(now, self.config.health_timeout)?;
         if slot.runtime.is_some() {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));

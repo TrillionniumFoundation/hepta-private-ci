@@ -143,6 +143,8 @@ class WorkflowDependencyTests(unittest.TestCase):
     def test_existing_behavior_suites_remain(self):
         process = self.jobs["process-qualification"]
         for target in (
+            "--cargo-profile dev-small -p codex-hepta-supervisor",
+            "--test paired_process_product --retries 0 --test-threads=1",
             "optional_module_restart",
             "runtime_shutdown_outcomes",
             "retirement_recovery",
