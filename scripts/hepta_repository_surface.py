@@ -14,6 +14,12 @@ from typing import Iterable
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = "docs/modules/registry.toml"
 _REQUIRED_DISPOSITIONS = {"absorb", "supersede", "reference", "reject"}
+_REQUIRED_ROOT_MODULE_FILES = {
+    "docs/modules/CI_MATRIX.json",
+    "docs/modules/COMPILE_GRAPH.json",
+    "docs/modules/registry.toml",
+}
+_REQUIRED_LOCAL_MACHINE_FILES = {"module.toml"}
 
 
 def load_policy(root: Path = ROOT) -> dict[str, Any]:
@@ -56,18 +62,17 @@ def load_policy(root: Path = ROOT) -> dict[str, Any]:
     allowed_local = surface.get("allowedModuleLocalMachineFiles")
     if (
         not isinstance(allowed_root, list)
-        or not allowed_root
         or any(not isinstance(value, str) or not value for value in allowed_root)
-        or len(set(allowed_root)) != len(allowed_root)
+        or set(allowed_root) != _REQUIRED_ROOT_MODULE_FILES
+        or len(allowed_root) != len(_REQUIRED_ROOT_MODULE_FILES)
     ):
-        raise ValueError("invalid allowedRootModuleFiles")
+        raise ValueError("allowedRootModuleFiles widened or drifted")
     if (
         not isinstance(allowed_local, list)
-        or allowed_local != ["module.toml"]
+        or set(allowed_local) != _REQUIRED_LOCAL_MACHINE_FILES
+        or len(allowed_local) != len(_REQUIRED_LOCAL_MACHINE_FILES)
     ):
         raise ValueError("module.toml must remain the only module-local machine manifest")
-    if POLICY_PATH not in allowed_root:
-        raise ValueError("the canonical policy must allow its own existing path")
 
     return {
         "maximumActiveConvergencePrsPerCapability": 1,
