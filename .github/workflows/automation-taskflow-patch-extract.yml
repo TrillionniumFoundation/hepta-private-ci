@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   extract:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     timeout-minutes: 15
     steps:
       - name: Check out exact source
@@ -44,25 +44,21 @@ jobs:
           parts = sorted(Path("scripts/automation_taskflow_patch_parts").glob("part-*.b64"))
           raw_parts = [b"".join(path.read_bytes().split()) for path in parts]
           damaged = b"".join(raw_parts)
+          expected_base64 = "a04af6a109f356e64eabd6833d1bf63f100878b366caabbce524e000df00a461"
           expected_gzip = "a3d15ffcff878254ddc7a01fdef4e28a26ef3ae6e1cbfba9d91fda031e68e510"
           expected_patch = "f9b9d8d95f745571ea891a3c8ca91387187fd929d62037d92eddc59a204fab73"
           alphabet = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
           start = sum(len(part) for part in raw_parts[:4])
           stop = start + len(raw_parts[4])
+          positions = [stop, *range(start, stop)]
           repaired = None
-          compressed = None
-          for position in range(start, stop + 1):
+          for position in positions:
               prefix = damaged[:position]
               suffix = damaged[position:]
               for value in alphabet:
                   candidate = prefix + bytes((value,)) + suffix
-                  try:
-                      decoded = base64.b64decode(candidate, validate=True)
-                  except ValueError:
-                      continue
-                  if hashlib.sha256(decoded).hexdigest() == expected_gzip:
+                  if hashlib.sha256(candidate).hexdigest() == expected_base64:
                       repaired = candidate
-                      compressed = decoded
                       (output / "REPAIR.txt").write_text(
                           f"inserted_offset={position}\ninserted_ascii={chr(value)}\n",
                           encoding="utf-8",
@@ -70,8 +66,11 @@ jobs:
                       break
               if repaired is not None:
                   break
-          if repaired is None or compressed is None:
+          if repaired is None:
               raise SystemExit("unable to reconstruct the retained patch from its fixed digest")
+          compressed = base64.b64decode(repaired, validate=True)
+          if hashlib.sha256(compressed).hexdigest() != expected_gzip:
+              raise SystemExit("reconstructed gzip digest mismatch")
           patch = gzip.decompress(compressed)
           if hashlib.sha256(patch).hexdigest() != expected_patch:
               raise SystemExit("reconstructed patch digest mismatch")
