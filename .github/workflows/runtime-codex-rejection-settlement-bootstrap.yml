@@ -9,12 +9,12 @@ permissions:
 
 concurrency:
   group: runtime-codex-rejection-settlement-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply-reviewed-transform:
     if: ${{ !contains(github.event.head_commit.message, '[runtime-codex-rejection-settlement]') }}
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Check out exact canonical candidate
