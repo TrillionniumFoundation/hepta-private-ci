@@ -1,0 +1,135 @@
+name: runtime.codex closure bootstrap
+
+on:
+  push:
+    branches:
+      - runtime-codex-closure-20260928
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-bootstrap-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Checkout exact closure branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: runtime-codex-closure-20260928
+
+      - name: Set up repository CI prerequisites
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Install Linux build prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev
+
+      - name: Resolve verified sandboxed V8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+
+      - name: Apply runtime.codex closure transformation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "fcb6201123b34ea3306d2628295592785eeb2700" || true
+          for patch in scripts/runtime_codex_patch_{1..4}.py; do python3 "$patch"; done
+          python3 -m py_compile scripts/runtime_codex_patch_{1..4}.py scripts/runtime-codex-qualification.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          git diff --check
+
+      - name: Compile changed runtime.codex owner crates
+        working-directory: codex-rs
+        run: >-
+          cargo check --locked
+          -p codex-hepta-agent-protocol
+          -p codex-hepta-agentd
+          -p codex-hepta-infer-core
+          -p codex-hepta-infer-worker-host
+          --all-targets
+
+      - name: Run focused state, protocol, recovery and product tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd codex-rs
+            just test --locked -p codex-hepta-agent-protocol --test-threads=1
+            just test --locked -p codex-hepta-agentd lane_b_runtime --test-threads=1
+            just test --locked -p codex-hepta-infer-core native --test-threads=1
+            just test --locked -p codex-hepta-infer-worker-host --test-threads=1
+            just test --locked -p codex-hepta-agentd \
+              runtime_codex_product_caller_commits_one_authorized_terminal_turn \
+              --test-threads=1
+          )
+
+      - name: Strict focused lint
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked
+          -p codex-hepta-agent-protocol
+          -p codex-hepta-agentd
+          -p codex-hepta-infer-core
+          -p codex-hepta-infer-worker-host
+          --all-targets -- -D warnings
+
+      - name: Validate qualification workflow and schemas
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          json.loads(Path("qualification/runtime-codex/quarantine-release.schema.json").read_text())
+          workflow = Path(".github/workflows/runtime-codex-qualification.yml").read_text()
+          for required in (
+              "runtime.codex exact-head",
+              "runtime.codex synthetic-merge",
+              "runtime.codex required",
+              "actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8",
+          ):
+              assert required in workflow, required
+          PY
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          git diff --check
+
+      - name: Remove one-shot bootstrap machinery
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/runtime-codex-bootstrap.yml
+          rm scripts/runtime_codex_patch_{1..4}.py
+
+      - name: Commit verified closure candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git config user.name "runtime-codex-closure-bot"
+          git config user.email "runtime-codex-closure-bot@users.noreply.github.com"
+          git commit -m "runtime.codex: close pre-effect ownership and qualification gaps"
+          git push origin HEAD:runtime-codex-closure-20260928
