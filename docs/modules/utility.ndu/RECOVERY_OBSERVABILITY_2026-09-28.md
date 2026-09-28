@@ -136,3 +136,12 @@ Production enrollment of the protected clock and independent CAS frontier,
 target-filesystem power-loss/backup-restore drills, live encrypted publication,
 installed alerts, and accepted-learning/policy rollout remain externally evidenced
 acceptance gates. A green candidate is not production activation.
+
+## Current requalification request
+
+The recovery branch has been advanced only to request a fresh exact-source and
+ordered-parent synthetic-merge execution after the recovery-acknowledgement and
+observer additions. The branch-scoped workflow must materialize any generated
+map changes, publish the resulting descendant SHA, execute all twelve suites, and
+seal the aggregate before this source can replace the previously qualified head.
+This request is not itself evidence of success and grants no activation authority.
