@@ -5,11 +5,11 @@ on:
     paths:
       - codex-rs/hepta-authbus/**
       - codex-rs/hepta-authbus-p1-3-qualification/**
-      - codex-rs/hepta-evidence/src/authbus_**
-      - codex-rs/hepta-agentd/src/authbus_**
-      - codex-rs/hepta-agentd/tests/kernel_evidence_product.rs
-      - codex-rs/hepta-bao-adapter/src/https_consumer**
+      - codex-rs/hepta-evidence/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-bao-adapter/**
       - docs/modules/auth.authbus/**
+      - docs/lane-a-foundation/auth.authbus/**
       - scripts/check-authbus-closed-world.py
       - scripts/authbus-exact-head-evidence.py
       - .github/workflows/authbus-authority-qualification.yml
@@ -18,10 +18,11 @@ on:
     paths:
       - codex-rs/hepta-authbus/**
       - codex-rs/hepta-authbus-p1-3-qualification/**
-      - codex-rs/hepta-evidence/src/authbus_**
-      - codex-rs/hepta-agentd/src/authbus_**
-      - codex-rs/hepta-bao-adapter/src/https_consumer**
+      - codex-rs/hepta-evidence/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-bao-adapter/**
       - docs/modules/auth.authbus/**
+      - docs/lane-a-foundation/auth.authbus/**
       - scripts/check-authbus-closed-world.py
       - scripts/authbus-exact-head-evidence.py
       - .github/workflows/authbus-authority-qualification.yml
@@ -48,6 +49,15 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact-head identity
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git rev-parse HEAD^{tree})" = "$(git rev-parse "$EXPECTED_HEAD^{tree}")"
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -125,6 +135,19 @@ jobs:
           fetch-depth: 0
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
 
+      - name: Verify synthetic-merge identity
+        shell: bash
+        env:
+          EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^1)" = "$EXPECTED_BASE"
+          test "$(git rev-parse HEAD^2)" = "$EXPECTED_HEAD"
+          generated_tree="$(git merge-tree --write-tree "$EXPECTED_BASE" "$EXPECTED_HEAD" | sed -n '1p')"
+          test -n "$generated_tree"
+          test "$(git rev-parse HEAD^{tree})" = "$generated_tree"
+
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
@@ -135,6 +158,9 @@ jobs:
 
       - name: Closed-world API inventory
         run: python3 scripts/check-authbus-closed-world.py --check
+
+      - name: Formatting
+        run: cargo fmt --all --manifest-path codex-rs/Cargo.toml -- --check
 
       - name: Merge-candidate focused execution
         shell: bash
