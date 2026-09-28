@@ -85,6 +85,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 // hide a recovery-required signed intent or restart/release
                 // fence and incorrectly make the daemon appear ready.
                 supervisor.restore_release_state(&agent_id, slot, &record)?;
+                supervisor.restore_matrix_restart_budget(&agent_id, slot, &record, now)?;
                 let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
                 supervisor.recover_restart_budget(&agent_id, slot, now)?;
                 supervisor.recover_release_transaction(&agent_id, slot, now)?;
@@ -577,12 +578,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
             supervisor.preflight_upgrade(agent_id, &target)?;
-            if slot.signed_intent.as_ref().is_some_and(|intent| {
-                !matches!(
-                    intent.status,
-                    SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
-                )
-            }) {
+            if slot
+                .signed_intent
+                .as_ref()
+                .is_some_and(|intent| !intent.status.terminal())
+            {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
                     agent_id.clone(),
                 ));
@@ -698,10 +698,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             ));
         }
         slot.signed_intent = Some(intent.clone());
-        if matches!(
-            intent.status,
-            SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
-        ) {
+        if intent.status.terminal() {
             return Ok(());
         }
 

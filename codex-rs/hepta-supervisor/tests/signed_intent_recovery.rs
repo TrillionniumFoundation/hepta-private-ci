@@ -6,6 +6,7 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
+use codex_hepta_fleet::AgentRecord;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
@@ -121,8 +122,9 @@ fn write_intent_raw(
     Ok(())
 }
 
-#[test]
-fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorError> {
+fn persisted_intent(
+    status: SignedIntentStatus,
+) -> Result<(TestFleet, AgentRecord, SignedSupervisorIntent), SupervisorError> {
     let fleet = fleet()?;
     let starting =
         fleet
@@ -138,7 +140,7 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
         .load()?
         .agent(&fleet.agent_id)
         .cloned()
-        .expect("registered agent");
+        .ok_or_else(|| SupervisorError::Invalid("registered test agent is missing".to_string()))?;
     let intent = SignedSupervisorIntent::new(
         Sha256Digest::for_bytes(b"grant"),
         fleet.agent_id.to_string(),
@@ -148,35 +150,104 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
         4,
         failed.generation,
         9,
-        SignedIntentStatus::RecoveryRequired,
+        status,
     )
     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_intent_raw(record.layout.run_root(), &intent)?;
 
-    let first = Supervisor::recover(
+    Ok((fleet, record, intent))
+}
+
+#[test]
+fn exact_digest_legacy_abort_cannot_terminalize_ambiguous_signed_intent()
+-> Result<(), SupervisorError> {
+    let (fleet, record, intent) = persisted_intent(SignedIntentStatus::RecoveryRequired)?;
+    let (first, report) = Supervisor::recover(
         fleet.registry.clone(),
         NoProcessDriver,
         config(),
         Instant::now(),
+    )?;
+    assert!(report.faults.is_empty());
+    assert!(first.production_recovery_required(&fleet.agent_id)?);
+    assert!(first.any_production_recovery_required());
+    assert!(
+        !first
+            .snapshot(&fleet.agent_id)
+            .expect("quarantined agent")
+            .active
     );
-    assert!(matches!(
-        first,
-        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))
-            if agent_id == fleet.agent_id
-    ));
+    drop(first);
 
-    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
+    // A digest identifies a record; it is not an independent recovery decision.
+    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-
-    let (_recovered, report) =
+    let (recovered, report) =
         Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
     assert!(report.faults.is_empty());
-    let terminal = read_signed_intent(record.layout.run_root())
-        .map_err(|error| SupervisorError::Invalid(error.to_string()))?
-        .expect("terminal intent");
-    assert_eq!(terminal.status, SignedIntentStatus::Aborted);
-    assert_eq!(terminal.target_release, "target-release");
+    assert!(recovered.production_recovery_required(&fleet.agent_id)?);
+    assert_eq!(
+        read_signed_intent(record.layout.run_root()).expect("read intent"),
+        Some(intent)
+    );
+    assert!(
+        !recovered
+            .snapshot(&fleet.agent_id)
+            .expect("still quarantined")
+            .active
+    );
+    Ok(())
+}
+
+#[test]
+fn aborted_signed_intent_remains_terminal_across_recovery() -> Result<(), SupervisorError> {
+    let (fleet, record, intent) = persisted_intent(SignedIntentStatus::Aborted)?;
+    for _ in 0..3 {
+        let (recovered, report) = Supervisor::recover(
+            fleet.registry.clone(),
+            NoProcessDriver,
+            config(),
+            Instant::now(),
+        )?;
+        assert!(report.faults.is_empty());
+        assert!(!recovered.production_recovery_required(&fleet.agent_id)?);
+        assert!(!recovered.any_production_recovery_required());
+        assert!(
+            !recovered
+                .snapshot(&fleet.agent_id)
+                .expect("terminal agent")
+                .active
+        );
+        assert_eq!(
+            read_signed_intent(record.layout.run_root()).expect("unchanged terminal intent"),
+            Some(intent.clone())
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn legacy_abort_cli_fails_without_writing_a_recovery_directive() -> Result<(), SupervisorError> {
+    let (_fleet, record, intent) = persisted_intent(SignedIntentStatus::RecoveryRequired)?;
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_hepta-supervisor-intent-recovery"))
+        .arg("abort")
+        .arg(record.layout.run_root())
+        .arg(intent.intent_sha256.as_str())
+        .output()?;
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("independently signed recovery"));
+    assert!(
+        !record
+            .layout
+            .run_root()
+            .join(codex_hepta_supervisor::SIGNED_INTENT_RECOVERY_FILE)
+            .exists()
+    );
+    assert_eq!(
+        read_signed_intent(record.layout.run_root()).expect("unchanged intent"),
+        Some(intent)
+    );
     Ok(())
 }

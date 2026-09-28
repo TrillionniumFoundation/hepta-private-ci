@@ -136,13 +136,6 @@ fn command() -> Result<AgentCommand, SupervisorError> {
     AgentCommand::new(fake_program("hepta-agentd"), Vec::new())
 }
 
-fn release(identity: &str, program: &str) -> Result<AgentRelease, SupervisorError> {
-    AgentRelease::new(
-        identity,
-        AgentCommand::new(fake_program(program), Vec::new())?,
-    )
-}
-
 fn config() -> SupervisorConfig {
     SupervisorConfig {
         health_timeout: Duration::from_millis(10),
@@ -2311,3 +2304,9 @@ fn finish_release_drain(
     control.set_exit(agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
 }
+
+#[path = "matrix_restart_recovery_tests.rs"]
+mod matrix_restart_recovery_tests;
+
+#[path = "signed_restart_recovery_tests.rs"]
+mod signed_restart_recovery_tests;

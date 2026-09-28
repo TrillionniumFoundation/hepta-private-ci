@@ -44,6 +44,13 @@ pub enum SignedIntentStatus {
     Aborted,
 }
 
+impl SignedIntentStatus {
+    /// Terminal intent outcomes survive recovery and cannot resume the old grant.
+    pub fn terminal(self) -> bool {
+        matches!(self, Self::Committed | Self::RolledBack | Self::Aborted)
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct SignedSupervisorIntent {
