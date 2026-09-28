@@ -311,7 +311,31 @@ impl PlannerDispatchClaimSinkV1 for PlannerStoreV1 {
         require_digest(request_digest, "dispatch request")?;
         require_digest(final_payload_digest, "dispatch payload")?;
 
-        let mut latest_receipt = None;
+        let claim_identity_digest = dispatch_claim_identity(operation_identity_digest);
+        let claim_record = self
+            .records()
+            .iter()
+            .find(|record| record.operation_identity_digest == claim_identity_digest);
+        let claim = match claim_record {
+            Some(record) => {
+                if record.kind != PlannerStoreRecordKindV1::Selection {
+                    return Err(store_error("dispatch claim record kind conflict"));
+                }
+                let claim = decode_dispatch_claim(record)?;
+                validate_existing_operation(
+                    claim.operation_identity_digest,
+                    claim.request_digest,
+                    claim.final_payload_digest,
+                    operation_identity_digest,
+                    request_digest,
+                    final_payload_digest,
+                )?;
+                Some(claim)
+            }
+            None => None,
+        };
+
+        let mut latest_receipt: Option<PlannerTerminalReceiptV1> = None;
         for record in self.records().iter().filter(|record| {
             matches!(
                 record.kind,
@@ -331,46 +355,64 @@ impl PlannerDispatchClaimSinkV1 for PlannerStoreV1 {
                 request_digest,
                 final_payload_digest,
             )?;
-            latest_receipt = Some(receipt);
-        }
-        if let Some(receipt) = latest_receipt {
-            return match receipt.disposition {
-                PlannerEffectDispositionV1::Succeeded | PlannerEffectDispositionV1::Failed => {
-                    Ok(Some(PlannerDispatchClaimOutcomeV1::ExistingTerminal {
-                        receipt: Box::new(receipt),
-                    }))
-                }
-                PlannerEffectDispositionV1::Indeterminate => {
-                    Ok(Some(PlannerDispatchClaimOutcomeV1::ExistingClaim {
-                        original_grant_digest: receipt.grant_digest,
-                    }))
-                }
+            let Some(claim) = claim else {
+                return Err(store_error(
+                    "execution receipt exists without a durable dispatch claim",
+                ));
             };
+            let claim_sequence = claim_record
+                .map(|record| record.sequence)
+                .ok_or_else(|| store_error("missing dispatch claim sequence"))?;
+            if record.sequence <= claim_sequence {
+                return Err(store_error("execution receipt precedes dispatch claim"));
+            }
+            if receipt.grant_digest != claim.grant_digest {
+                return Err(store_error(
+                    "execution receipt grant does not match durable dispatch claim",
+                ));
+            }
+
+            match record.kind {
+                PlannerStoreRecordKindV1::TerminalReceipt => {
+                    if latest_receipt.is_some() {
+                        return Err(store_error(
+                            "duplicate initial terminal receipt for durable dispatch",
+                        ));
+                    }
+                    latest_receipt = Some(receipt);
+                }
+                PlannerStoreRecordKindV1::Reconciliation => {
+                    let Some(previous) = latest_receipt.as_ref() else {
+                        return Err(store_error(
+                            "reconciliation receipt exists without an initial observation",
+                        ));
+                    };
+                    if previous.disposition != PlannerEffectDispositionV1::Indeterminate {
+                        return Err(store_error(
+                            "reconciliation cannot replace a conclusive terminal receipt",
+                        ));
+                    }
+                    latest_receipt = Some(receipt);
+                }
+                _ => unreachable!("receipt filter restricts record kinds"),
+            }
         }
 
-        let claim_identity_digest = dispatch_claim_identity(operation_identity_digest);
-        if let Some(existing) = self
-            .records()
-            .iter()
-            .find(|record| record.operation_identity_digest == claim_identity_digest)
-        {
-            if existing.kind != PlannerStoreRecordKindV1::Selection {
-                return Err(store_error("dispatch claim record kind conflict"));
-            }
-            let claim = decode_dispatch_claim(existing)?;
-            validate_existing_operation(
-                claim.operation_identity_digest,
-                claim.request_digest,
-                claim.final_payload_digest,
-                operation_identity_digest,
-                request_digest,
-                final_payload_digest,
-            )?;
-            return Ok(Some(PlannerDispatchClaimOutcomeV1::ExistingClaim {
+        let Some(claim) = claim else {
+            return Ok(None);
+        };
+        match latest_receipt {
+            Some(receipt)
+                if matches!(
+                    receipt.disposition,
+                    PlannerEffectDispositionV1::Succeeded | PlannerEffectDispositionV1::Failed
+                ) => Ok(Some(PlannerDispatchClaimOutcomeV1::ExistingTerminal {
+                receipt: Box::new(receipt),
+            })),
+            Some(_) | None => Ok(Some(PlannerDispatchClaimOutcomeV1::ExistingClaim {
                 original_grant_digest: claim.grant_digest,
-            }));
+            })),
         }
-        Ok(None)
     }
 
     fn claim_dispatch(

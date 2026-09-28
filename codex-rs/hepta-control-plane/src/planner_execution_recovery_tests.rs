@@ -416,3 +416,128 @@ fn reconciliation_without_a_durable_claim_is_rejected() {
     assert_eq!(executor.reconciliations, 0);
     assert!(sink.receipts.is_empty());
 }
+
+#[test]
+fn reopened_terminal_without_claim_is_rejected_before_authority_or_effect() {
+    let directory = must(tempdir());
+    let request = request();
+    let grant = PlannerExecutionGrantV1 {
+        grant_digest: digest("orphan-grant"),
+        final_payload_digest: request.final_payload_digest,
+        revocation_frontier_digest: request.revocation_frontier_digest,
+        expires_at_micros: request.expires_at_micros,
+    };
+    let receipt = must(super::super::terminal_receipt(
+        &request,
+        &grant,
+        PlannerEffectObservationV1 {
+            disposition: PlannerEffectDispositionV1::Succeeded,
+            outcome_digest: digest("orphan-outcome"),
+            observed_at_micros: 1_100,
+        },
+    ));
+    let envelope = super::super::encode_terminal_receipt(&receipt);
+
+    let mut store = must(PlannerStoreV1::open(
+        directory.path(),
+        PlannerStoreConfigV1::default(),
+    ));
+    must(store.append_execution_record(
+        PlannerStoreRecordKindV1::TerminalReceipt,
+        receipt.operation_identity_digest,
+        receipt.receipt_digest,
+        &envelope,
+    ));
+    drop(store);
+
+    let mut reopened = must(PlannerStoreV1::open(
+        directory.path(),
+        PlannerStoreConfigV1::default(),
+    ));
+    let mut authority = authority(&request);
+    let mut executor = executor(PlannerEffectDispositionV1::Succeeded);
+    let error = must_err(execute_planner_request_v1(
+        &request,
+        1_200,
+        &mut authority,
+        &mut executor,
+        &mut reopened,
+    ));
+    assert!(matches!(
+        error,
+        PlannerExecutionError::Store(message)
+            if message.contains("without a durable dispatch claim")
+    ));
+    assert_eq!(authority.authorizations, 0);
+    assert_eq!(authority.revalidations, 0);
+    assert_eq!(executor.executions, 0);
+    assert_eq!(executor.reconciliations, 0);
+}
+
+#[test]
+fn reopened_terminal_must_match_the_original_claim_grant() {
+    let directory = must(tempdir());
+    let request = request();
+    let operation_identity_digest =
+        super::super::super::codec::operation_identity_digest(&request);
+    let request_digest = super::super::super::codec::request_digest(&request);
+
+    let mut store = must(PlannerStoreV1::open(
+        directory.path(),
+        PlannerStoreConfigV1::default(),
+    ));
+    must(store.claim_dispatch(
+        operation_identity_digest,
+        request_digest,
+        digest("claim-grant"),
+        request.final_payload_digest,
+        1_000,
+    ));
+
+    let conflicting_grant = PlannerExecutionGrantV1 {
+        grant_digest: digest("different-grant"),
+        final_payload_digest: request.final_payload_digest,
+        revocation_frontier_digest: request.revocation_frontier_digest,
+        expires_at_micros: request.expires_at_micros,
+    };
+    let receipt = must(super::super::terminal_receipt(
+        &request,
+        &conflicting_grant,
+        PlannerEffectObservationV1 {
+            disposition: PlannerEffectDispositionV1::Succeeded,
+            outcome_digest: digest("conflicting-outcome"),
+            observed_at_micros: 1_100,
+        },
+    ));
+    let envelope = super::super::encode_terminal_receipt(&receipt);
+    must(store.append_execution_record(
+        PlannerStoreRecordKindV1::TerminalReceipt,
+        receipt.operation_identity_digest,
+        receipt.receipt_digest,
+        &envelope,
+    ));
+    drop(store);
+
+    let mut reopened = must(PlannerStoreV1::open(
+        directory.path(),
+        PlannerStoreConfigV1::default(),
+    ));
+    let mut authority = authority(&request);
+    let mut executor = executor(PlannerEffectDispositionV1::Succeeded);
+    let error = must_err(execute_planner_request_v1(
+        &request,
+        1_200,
+        &mut authority,
+        &mut executor,
+        &mut reopened,
+    ));
+    assert!(matches!(
+        error,
+        PlannerExecutionError::Store(message)
+            if message.contains("does not match durable dispatch claim")
+    ));
+    assert_eq!(authority.authorizations, 0);
+    assert_eq!(authority.revalidations, 0);
+    assert_eq!(executor.executions, 0);
+    assert_eq!(executor.reconciliations, 0);
+}
