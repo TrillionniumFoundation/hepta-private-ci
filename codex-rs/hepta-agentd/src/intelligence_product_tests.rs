@@ -336,11 +336,19 @@ fn authority_verifier() -> IntelligenceAuthorityVerifierV1 {
 }
 
 fn write_authority_file(path: &std::path::Path, owners: &[OwnerBindingV1], frontier: Digest32) {
+    let mut authority_owners = owners.to_vec();
+    let retrieval_owner = canonical_recall_tests::retrieval_owner_binding();
+    if !authority_owners
+        .iter()
+        .any(|owner| owner.owner_id == retrieval_owner.owner_id)
+    {
+        authority_owners.push(retrieval_owner);
+    }
     let file = IntelligenceAuthorityFileV1 {
         schema_version: 1,
         authority_epoch: 11,
         revocation_frontier_digest: frontier.to_string(),
-        owners: owners
+        owners: authority_owners
             .iter()
             .map(|owner| IntelligenceAuthorityOwnerFileV1 {
                 owner_id: owner.owner_id.to_string(),
