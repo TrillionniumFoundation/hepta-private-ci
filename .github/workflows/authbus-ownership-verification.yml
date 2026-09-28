@@ -10,9 +10,12 @@ on:
       - 'codex-rs/hepta-evidence/**'
       - 'codex-rs/hepta-bao-adapter/**'
       - 'codex-rs/hepta-agentd/tests/kernel_evidence_product.rs'
+      - 'codex-rs/hepta-agentd/src/objective_runtime.rs'
       - 'codex-rs/Cargo.lock'
       - 'docs/modules/auth.authbus/**'
       - 'scripts/check-authbus-closed-world.py'
+      - 'scripts/authbus_verification_evidence.py'
+      - 'scripts/test_authbus_verification_evidence.py'
       - '.github/workflows/authbus-ownership-verification.yml'
 
 permissions:
@@ -25,6 +28,7 @@ concurrency:
 env:
   CARGO_TERM_COLOR: never
   RUST_BACKTRACE: 1
+  PYTHONDONTWRITEBYTECODE: '1'
 
 jobs:
   exact-source:
@@ -56,28 +60,44 @@ jobs:
           workspaces: codex-rs
           save-if: true
       - name: Exact-source format and public-boundary inventory
+        id: format
         shell: bash
         run: |
           set -euo pipefail
           rustc +1.95.0 --version --verbose > "$RUNNER_TEMP/authbus-evidence/toolchain.txt"
-          python3 scripts/check-authbus-closed-world.py --check
-          git diff --name-only f998dc1bc952f09ca38cfce13448eca36043c429 HEAD -- '*.rs' | while IFS= read -r path; do
-            [ -f "$path" ] || continue
-            rustfmt +1.95.0 --edition 2024 --config skip_children=true --check "$path"
-          done
+          {
+            result=0
+            if ! python3 scripts/check-authbus-closed-world.py --check; then result=1; fi
+            while IFS= read -r path; do
+              [ -f "$path" ] || continue
+              if ! rustfmt +1.95.0 --edition 2024 --config skip_children=true --check "$path"; then result=1; fi
+            done < <(git diff --name-only f998dc1bc952f09ca38cfce13448eca36043c429 HEAD -- '*.rs')
+            echo "format and public-boundary check exit status: $result"
+            exit "$result"
+          } 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/format.log"
+      - name: Verification receipt regression tests
+        id: receipt_tests
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B scripts/test_authbus_verification_evidence.py -v 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/receipt-tests.log"
       - name: AuthBus and qualification tests
+        id: authbus
         if: ${{ !cancelled() }}
         shell: bash
         run: |
           set -euo pipefail
           cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus -p codex-hepta-authbus-p1-3-qualification --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/authbus-tests.log"
       - name: Strict AuthBus lint
+        id: clippy
         if: ${{ !cancelled() }}
         shell: bash
         run: |
           set -euo pipefail
           cargo +1.95.0 clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus --all-targets --all-features -- -D warnings 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/authbus-clippy.log"
       - name: Full-owner-operation diagnostic workload
+        id: latency
         if: ${{ !cancelled() }}
         shell: bash
         env:
@@ -94,6 +114,7 @@ jobs:
           path: ${{ runner.temp }}/authbus-evidence/
           retention-days: 14
       - name: Evidence regression tests
+        id: evidence
         if: ${{ !cancelled() }}
         shell: bash
         run: |
@@ -107,6 +128,7 @@ jobs:
           path: ${{ runner.temp }}/authbus-evidence/
           retention-days: 14
       - name: Bao integration tests
+        id: bao
         if: ${{ !cancelled() }}
         shell: bash
         run: |
@@ -120,6 +142,7 @@ jobs:
           path: ${{ runner.temp }}/authbus-evidence/
           retention-days: 14
       - name: Agentd signed-ingress integration
+        id: agentd
         if: ${{ !cancelled() }}
         timeout-minutes: 20
         shell: bash
@@ -127,14 +150,24 @@ jobs:
           set -euo pipefail
           cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test kernel_evidence_product 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/agentd-tests.log"
       - name: Check unchanged tracked source
+        id: clean
         if: ${{ !cancelled() }}
         shell: bash
         run: |
           set -euo pipefail
-          git diff --check
-          git diff --exit-code
-          git diff --cached --exit-code
-          test -z "$(git status --porcelain --untracked-files=all)"
+          {
+            git diff --check
+            git diff --exit-code
+            git diff --cached --exit-code
+            test -z "$(git status --porcelain --untracked-files=all)"
+            echo 'Working tree and index unchanged; no untracked files.'
+          } 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/unchanged-source.log"
+      - name: Bind observed results to exact-source receipt
+        if: always()
+        shell: bash
+        env:
+          AUTHBUS_STEPS_JSON: ${{ toJSON(steps) }}
+        run: python3 -B scripts/authbus_verification_evidence.py --directory "$RUNNER_TEMP/authbus-evidence"
       - name: Retain execution evidence
         if: always()
         uses: actions/upload-artifact@v4
