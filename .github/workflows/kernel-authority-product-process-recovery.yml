@@ -1,0 +1,194 @@
+name: Kernel authority product-process recovery
+
+on:
+  push:
+    branches:
+      - work/kernel-authority-convergence-20260925
+    paths:
+      - 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
+      - 'codex-rs/hepta-agentd/src/authority_effect_tasks.rs'
+      - 'codex-rs/hepta-agentd/src/authority_feed_clock.rs'
+      - 'codex-rs/hepta-agentd/src/authority_trust_host.rs'
+      - 'codex-rs/hepta-agentd/src/client.rs'
+      - 'codex-rs/hepta-agentd/src/control.rs'
+      - 'codex-rs/hepta-agentd/src/runtime.rs'
+      - 'codex-rs/hepta-agentd/src/state_control.rs'
+      - 'codex-rs/hepta-agentd/tests/authority_effect_process_restart.rs'
+      - 'codex-rs/hepta-agent-protocol/**'
+      - 'codex-rs/hepta-automation/src/authorized_effect.rs'
+      - 'codex-rs/hepta-automation/src/effect_dispatch_ledger.rs'
+      - 'codex-rs/hepta-automation/migrations/**'
+      - 'codex-rs/hepta-contracts/src/final_use.rs'
+      - 'codex-rs/hepta-contracts/src/final_use_store.rs'
+      - 'codex-rs/hepta-contracts/src/authority_trust.rs'
+      - 'qualification/kernel-authority/prepare_candidate.py'
+      - 'qualification/kernel-authority/product_process_recovery.py'
+      - 'qualification/kernel-authority/test_product_process_recovery.py'
+      - 'docs/modules/kernel.authority/PRODUCT_PROCESS_RECOVERY.md'
+      - '.github/workflows/kernel-authority-product-process-recovery.yml'
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
+      - 'codex-rs/hepta-agentd/src/authority_effect_tasks.rs'
+      - 'codex-rs/hepta-agentd/src/authority_feed_clock.rs'
+      - 'codex-rs/hepta-agentd/src/authority_trust_host.rs'
+      - 'codex-rs/hepta-agentd/src/client.rs'
+      - 'codex-rs/hepta-agentd/src/control.rs'
+      - 'codex-rs/hepta-agentd/src/runtime.rs'
+      - 'codex-rs/hepta-agentd/src/state_control.rs'
+      - 'codex-rs/hepta-agentd/tests/authority_effect_process_restart.rs'
+      - 'codex-rs/hepta-agent-protocol/**'
+      - 'codex-rs/hepta-automation/src/authorized_effect.rs'
+      - 'codex-rs/hepta-automation/src/effect_dispatch_ledger.rs'
+      - 'codex-rs/hepta-automation/migrations/**'
+      - 'codex-rs/hepta-contracts/src/final_use.rs'
+      - 'codex-rs/hepta-contracts/src/final_use_store.rs'
+      - 'codex-rs/hepta-contracts/src/authority_trust.rs'
+      - 'qualification/kernel-authority/prepare_candidate.py'
+      - 'qualification/kernel-authority/product_process_recovery.py'
+      - 'qualification/kernel-authority/test_product_process_recovery.py'
+      - 'docs/modules/kernel.authority/PRODUCT_PROCESS_RECOVERY.md'
+      - '.github/workflows/kernel-authority-product-process-recovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-authority-product-process-recovery-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  identity:
+    name: Pin immutable source and base
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      source: ${{ steps.pin.outputs.source }}
+      source_tree: ${{ steps.pin.outputs.source_tree }}
+      base: ${{ steps.pin.outputs.base }}
+    steps:
+      - name: Checkout exact event source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - id: pin
+        name: Verify immutable identities
+        shell: bash
+        env:
+          EVENT_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVENT_BASE: ${{ github.event.pull_request.base.sha || '' }}
+        run: |
+          set -euo pipefail
+          source="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse 'HEAD^{tree}')"
+          test "$source" = "$EVENT_SOURCE"
+          if [ -n "$EVENT_BASE" ]; then
+            git fetch --no-tags origin "$EVENT_BASE"
+            base="$(git rev-parse "$EVENT_BASE^{commit}")"
+          else
+            git fetch --no-tags origin refs/heads/main:refs/remotes/origin/main
+            base="$(git rev-parse refs/remotes/origin/main)"
+          fi
+          test -n "$source_tree"
+          test -n "$base"
+          test -z "$(git status --porcelain)"
+          printf 'source=%s\n' "$source" >> "$GITHUB_OUTPUT"
+          printf 'source_tree=%s\n' "$source_tree" >> "$GITHUB_OUTPUT"
+          printf 'base=%s\n' "$base" >> "$GITHUB_OUTPUT"
+
+  qualify:
+    name: Two-process recovery (${{ matrix.mode }})
+    needs: identity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [exact-head, synthetic-merge]
+    env:
+      CARGO_BUILD_JOBS: 2
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+      RUST_BACKTRACE: 1
+    steps:
+      - name: Checkout pinned source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.identity.outputs.source }}
+          persist-credentials: false
+      - name: Verify checkout before candidate preparation
+        shell: bash
+        env:
+          EXPECTED_SOURCE: ${{ needs.identity.outputs.source }}
+          EXPECTED_TREE: ${{ needs.identity.outputs.source_tree }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$EXPECTED_TREE"
+          test -z "$(git status --porcelain)"
+      - name: Prepare immutable candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/kernel-authority-product-process"
+          python3 qualification/kernel-authority/prepare_candidate.py \
+            --mode '${{ matrix.mode }}' \
+            --base-sha '${{ needs.identity.outputs.base }}' \
+            --output "$RUNNER_TEMP/kernel-authority-product-process/identity.json"
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Run qualification parser regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest qualification/kernel-authority/test_product_process_recovery.py
+      - name: Execute exact two-process product recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/kernel-authority/product_process_recovery.py \
+            --identity "$RUNNER_TEMP/kernel-authority-product-process/identity.json" \
+            --output-dir "$RUNNER_TEMP/kernel-authority-product-process/recovery"
+          git diff --check
+          test -z "$(git status --porcelain)"
+      - name: Retain candidate-bound product-process evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: kernel-authority-product-process-${{ github.run_id }}-${{ github.run_attempt }}-${{ needs.identity.outputs.source }}-${{ matrix.mode }}
+          path: ${{ runner.temp }}/kernel-authority-product-process
+          if-no-files-found: error
+          retention-days: 14
+
+  gate:
+    name: Product-process recovery gate
+    if: always()
+    needs: [identity, qualify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require exact-head and synthetic-merge recovery
+        shell: bash
+        env:
+          IDENTITY_RESULT: ${{ needs.identity.result }}
+          QUALIFY_RESULT: ${{ needs.qualify.result }}
+          SOURCE: ${{ needs.identity.outputs.source }}
+          SOURCE_TREE: ${{ needs.identity.outputs.source_tree }}
+          BASE: ${{ needs.identity.outputs.base }}
+        run: |
+          set -euo pipefail
+          test "$IDENTITY_RESULT" = success
+          test "$QUALIFY_RESULT" = success
+          test "${#SOURCE}" -eq 40
+          test "${#SOURCE_TREE}" -eq 40
+          test "${#BASE}" -eq 40
+          printf 'two-process recovery qualified source=%s tree=%s base=%s\n' \
+            "$SOURCE" "$SOURCE_TREE" "$BASE"
