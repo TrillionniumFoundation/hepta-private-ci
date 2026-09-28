@@ -26,11 +26,12 @@ test("external qualification performs a secretless main-bound repository preflig
   const preflight = section(
     external,
     "  repository-preflight:\n",
-    "  protected-external-qualification:\n",
+    "  candidate-build:\n",
   );
   assert.doesNotMatch(preflight, /\$\{\{\s*secrets\./u);
+  assert.doesNotMatch(preflight, /\bnpm\s/u);
   assert.match(preflight, /test "\$WORKFLOW_REF" = refs\/heads\/main/u);
-  assert.match(preflight, /ref: \$\{\{ github\.sha \}\}/u);
+  assert.match(preflight, /ref: \$\{\{ github\.workflow_sha \}\}/u);
   assert.match(preflight, /path: \.ui-control-trusted/u);
   assert.match(preflight, /path: \.ui-control-candidate/u);
   assert.match(preflight, /test "\$\(git -C \.\.\/\.ui-control-trusted rev-parse HEAD\)" = "\$TRUSTED_WORKFLOW_SHA"/u);
@@ -45,23 +46,49 @@ test("external qualification performs a secretless main-bound repository preflig
   assert.ok(metadata >= 0 && sourceDownload > metadata && semantic > sourceDownload);
 });
 
-test("the protected job executes only immutable trusted verifiers after mapping secrets", () => {
+test("candidate-controlled build execution is isolated in a separate secretless job", () => {
+  const build = section(
+    external,
+    "  candidate-build:\n",
+    "  protected-external-qualification:\n",
+  );
+  assert.match(build, /needs:\s*repository-preflight/u);
+  assert.match(build, /needs\.repository-preflight\.result == 'success'/u);
+  assert.doesNotMatch(build, /environment:/u);
+  assert.doesNotMatch(build, /\$\{\{\s*secrets\./u);
+  assert.doesNotMatch(build, /\.ui-control-trusted/u);
+  assert.match(build, /npm ci --ignore-scripts --no-audit --no-fund/u);
+  assert.match(build, /npm run build/u);
+  assert.match(build, /git diff --exit-code/u);
+  assert.match(build, /git diff --cached --exit-code/u);
+  assert.match(build, /name: ui-control-candidate-build-\$\{\{ inputs\.candidate_sha \}\}/u);
+});
+
+test("the protected job uses a fresh runner and executes only immutable trusted verifiers", () => {
   const job = section(external, "  protected-external-qualification:\n");
-  assert.match(job, /needs:\s*repository-preflight/u);
-  assert.match(job, /needs\.repository-preflight\.result == 'success'/u);
+  assert.match(job, /needs: \[repository-preflight, candidate-build\]/u);
+  assert.match(job, /needs\.repository-preflight\.result == 'success' && needs\.candidate-build\.result == 'success'/u);
   assert.match(job, /environment:\s*ui-control-production-qualification/u);
-  assert.match(job, /ref: \$\{\{ github\.sha \}\}/u);
+  assert.match(job, /ref: \$\{\{ github\.workflow_sha \}\}/u);
   assert.match(job, /path: \.ui-control-trusted/u);
   assert.match(job, /path: \.ui-control-candidate/u);
+  assert.match(job, /non-executable subject data/u);
   assert.match(job, /test "\$\(git -C \.\.\/\.ui-control-trusted rev-parse HEAD\)" = "\$TRUSTED_WORKFLOW_SHA"/u);
   assert.match(job, /git merge-base --is-ancestor "\$CANDIDATE_SHA" refs\/remotes\/origin\/main/u);
-  assert.match(job, /working-directory: \.ui-control-candidate\/apps\/hepta-control-ui/u);
+  assert.doesNotMatch(job, /\bnpm\s/u);
 
-  const tests = job.indexOf("Build and test the exact locked candidate before mapping deployment credentials");
+  const artifactDownload = job.indexOf("Download isolated candidate build as untrusted data");
+  const artifactValidation = job.indexOf("Validate the complete candidate build artifact with the trusted verifier");
   const firstSecret = job.indexOf("${{ secrets.");
-  assert.ok(tests >= 0 && firstSecret > tests);
+  assert.ok(artifactDownload >= 0 && artifactValidation > artifactDownload && firstSecret > artifactValidation);
+
+  const preSecret = job.slice(0, firstSecret);
+  assert.match(preSecret, /candidate-build-artifact\.mjs/u);
+  assert.match(preSecret, /UI_CONTROL_PROTECTED_SOURCE_HEAD_RECEIPT/u);
+  assert.match(preSecret, /candidate-build-observation\.json/u);
 
   const protectedTail = job.slice(firstSecret);
+  assert.match(protectedTail, /HEPTA_UI_CONTROL_BUILD_MANIFEST: \.\.\/ui-control-candidate-build\/build-manifest\.json/u);
   assert.match(protectedTail, /node \.\.\/\.ui-control-trusted\/qualification\/ui-control\/deployment-security\.mjs/u);
   assert.match(protectedTail, /node \.\.\/\.ui-control-trusted\/qualification\/ui-control\/real-backend-contract\.mjs/u);
   assert.match(protectedTail, /node \.\.\/\.ui-control-trusted\/qualification\/ui-control\/validate-external-evidence\.mjs/u);

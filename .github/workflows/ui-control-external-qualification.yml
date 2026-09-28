@@ -67,7 +67,7 @@ jobs:
       - name: Check out the trusted preflight implementation from the immutable workflow SHA
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.workflow_sha }}
           path: .ui-control-trusted
           persist-credentials: false
           fetch-depth: 1
@@ -84,7 +84,7 @@ jobs:
         name: Require exact candidate ancestry and record the immutable trusted verifier
         env:
           CANDIDATE_SHA: ${{ inputs.candidate_sha }}
-          TRUSTED_WORKFLOW_SHA: ${{ github.sha }}
+          TRUSTED_WORKFLOW_SHA: ${{ github.workflow_sha }}
         shell: bash
         working-directory: .ui-control-candidate
         run: |
@@ -213,10 +213,67 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
-  protected-external-qualification:
-    name: protected deployment / optional real backend / optional production evidence
+  candidate-build:
+    name: secretless exact-candidate browser build artifact
     needs: repository-preflight
     if: ${{ needs.repository-preflight.result == 'success' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out only the exact candidate on a secretless runner
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          path: .ui-control-candidate
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Require the exact candidate identity before build
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+        working-directory: .ui-control-candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          printf 'sha=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > ../candidate-build-source.txt
+
+      - name: Setup Node.js 22 for the isolated candidate build
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+
+      - name: Build the exact locked candidate without protected values
+        working-directory: .ui-control-candidate/apps/hepta-control-ui
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+
+      - name: Require candidate identity and tracked tree to remain unchanged
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+        working-directory: .ui-control-candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+
+      - name: Upload the untrusted candidate build as data only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-control-candidate-build-${{ inputs.candidate_sha }}
+          path: .ui-control-candidate/apps/hepta-control-ui/dist/
+          if-no-files-found: error
+          retention-days: 14
+
+  protected-external-qualification:
+    name: protected deployment / optional real backend / optional production evidence
+    needs: [repository-preflight, candidate-build]
+    if: ${{ needs.repository-preflight.result == 'success' && needs.candidate-build.result == 'success' }}
     environment: ui-control-production-qualification
     runs-on: ubuntu-24.04
     timeout-minutes: 55
@@ -224,12 +281,12 @@ jobs:
       - name: Check out the trusted protected verifier from the immutable workflow SHA
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.workflow_sha }}
           path: .ui-control-trusted
           persist-credentials: false
           fetch-depth: 1
 
-      - name: Check out exact main-reachable candidate without persisted credentials
+      - name: Check out exact main-reachable candidate as non-executable subject data
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ inputs.candidate_sha }}
@@ -240,7 +297,7 @@ jobs:
       - name: Revalidate candidate identity, main ancestry, and immutable verifier before protected values
         env:
           CANDIDATE_SHA: ${{ inputs.candidate_sha }}
-          TRUSTED_WORKFLOW_SHA: ${{ github.sha }}
+          TRUSTED_WORKFLOW_SHA: ${{ github.workflow_sha }}
         shell: bash
         working-directory: .ui-control-candidate
         run: |
@@ -258,27 +315,40 @@ jobs:
             "$(git -C ../.ui-control-trusted rev-parse HEAD^{tree})" \
             > ../ui-control-external-evidence/source.txt
 
-      - name: Setup Node.js 22
+      - name: Setup Node.js 22 for trusted validation only
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: 22
-
-      - name: Build and test the exact locked candidate before mapping deployment credentials
-        working-directory: .ui-control-candidate/apps/hepta-control-ui
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm ci --ignore-scripts --no-audit --no-fund
-          npm run lint
-          npm test
-          npm run test:contract
-          npm run build
 
       - name: Download accepted repository-preflight evidence
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: ui-control-repository-preflight-${{ inputs.candidate_sha }}
           path: ui-control-external-evidence/repository-preflight
+
+      - name: Download isolated candidate build as untrusted data
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ui-control-candidate-build-${{ inputs.candidate_sha }}
+          path: ui-control-candidate-build
+
+      - name: Resolve the accepted exact-head receipt without executing candidate code
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t matches < <(find ui-control-external-evidence/repository-preflight/source-head -type f -name receipt.json -print | sort)
+          test "${#matches[@]}" -eq 1
+          printf 'UI_CONTROL_PROTECTED_SOURCE_HEAD_RECEIPT=%s\n' "${matches[0]}" >> "$GITHUB_ENV"
+
+      - name: Validate the complete candidate build artifact with the trusted verifier
+        working-directory: .ui-control-candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          node ../.ui-control-trusted/qualification/ui-control/candidate-build-artifact.mjs \
+            ../ui-control-candidate-build/build-manifest.json \
+            "../$UI_CONTROL_PROTECTED_SOURCE_HEAD_RECEIPT" \
+            ../ui-control-external-evidence/candidate-build-observation.json
 
       - name: Probe selected HTTPS deployment with the trusted verifier
         working-directory: .ui-control-candidate
@@ -288,6 +358,7 @@ jobs:
           HEPTA_UI_CONTROL_COOKIE: ${{ secrets.HEPTA_UI_CONTROL_COOKIE }}
           HEPTA_UI_CONTROL_CSRF_TOKEN: ${{ secrets.HEPTA_UI_CONTROL_CSRF_TOKEN }}
           HEPTA_UI_CONTROL_COOKIE_PATH: ${{ secrets.HEPTA_UI_CONTROL_COOKIE_PATH }}
+          HEPTA_UI_CONTROL_BUILD_MANIFEST: ../ui-control-candidate-build/build-manifest.json
         run: node ../.ui-control-trusted/qualification/ui-control/deployment-security.mjs ../ui-control-external-evidence/deployment-security-receipt.json
 
       - name: Materialize independently retained Agentd and authority evidence
@@ -378,9 +449,9 @@ jobs:
             echo
             echo "- Candidate: \`${{ inputs.candidate_sha }}\`"
             echo "- Repository qualification run: \`${{ inputs.repository_qualification_run_id }}\`"
-            echo "- Trusted verifier: \`${{ github.sha }}\`"
+            echo "- Trusted verifier: \`${{ github.workflow_sha }}\`"
             echo "- Protected environment: \`${{ env.UI_CONTROL_PROTECTED_ENVIRONMENT }}\`"
-            for file in deployment-security-receipt.json real-backend-receipt.json external-evidence-bundle.json; do
+            for file in candidate-build-observation.json deployment-security-receipt.json real-backend-receipt.json external-evidence-bundle.json; do
               if test -f "ui-control-external-evidence/$file"; then
                 FILE="ui-control-external-evidence/$file" node -e 'const r=require(`./${process.env.FILE}`); console.log(`- ${process.env.FILE}: ${r.status}; failure=${r.failure?.code ?? "none"}`)'
               fi
