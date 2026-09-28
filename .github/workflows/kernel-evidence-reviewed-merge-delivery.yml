@@ -29,9 +29,11 @@ jobs:
           branch=work/kernel-evidence-ad-integration-20260928
           test "$(git rev-parse HEAD)" = "$EXPECTED_PARENT"
           test -z "$(git status --porcelain)"
-          test "$(git rev-parse HEAD^)" = "$base"
+          git merge-base --is-ancestor "$base" HEAD
+          test "$(git diff --name-only "$base" HEAD)" = .github/workflows/kernel-evidence-reviewed-merge-delivery.yml
+          git checkout --detach "$base"
           set +e
-          git merge-tree --write-tree "$base" "$followup" > "$RUNNER_TEMP/reviewed-merge.txt"
+          git merge-tree --write-tree HEAD "$followup" > "$RUNNER_TEMP/reviewed-merge.txt"
           rc=$?
           set -e
           test "$rc" -eq 1
