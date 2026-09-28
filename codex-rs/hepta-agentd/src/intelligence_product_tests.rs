@@ -671,6 +671,7 @@ fn fixture() -> Fixture {
             neural_config,
             neural_tick,
             neural_previous: None,
+            neuron_seal: None,
             prompt_request,
             intuition: intuition.input,
             context_request,
