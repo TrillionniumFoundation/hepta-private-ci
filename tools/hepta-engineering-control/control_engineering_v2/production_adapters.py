@@ -1,9 +1,9 @@
 """Fail-closed adapters for externally governed production evidence.
 
 The repository cannot manufacture distributed consensus, immutable audit storage,
-HSM/KMS custody, deployment observation or operator acceptance.  It can define a
-bounded HTTPS transport, verify role-separated externally signed receipts and emit
-one evidence decision whose authority fields remain false.
+HSM/KMS custody, deployment observation or operator acceptance. It can provide a
+bounded HTTPS transport, verify role-separated externally signed observations, and
+compose them only with the existing typed production-control verifier.
 """
 
 from __future__ import annotations
@@ -21,24 +21,38 @@ from urllib.parse import urlparse
 from urllib.request import HTTPSHandler, HTTPRedirectHandler, Request, build_opener
 
 from .clock_policy import ClockPolicy, validate_signed_window
-from .control_plane import EngineeringError, canonical_json, checked_sha256, semantic_digest
+from .control_plane import (
+    EngineeringError,
+    canonical_json,
+    checked_sha256,
+    semantic_digest,
+)
 from .evidence import HmacTrustStore, SignatureTrustStore
+from .external_controls import ProductionControlDecision
 
-EXTERNAL_RECEIPT_SCHEMA = "hepta.control-engineering-external-receipt.v1"
+EXTERNAL_RECEIPT_SCHEMA = "hepta.control-engineering-external-receipt.v2"
 MAX_EXTERNAL_RECEIPT_BYTES = 1_048_576
+
+# Distributed fencing, the owner-state audit anchor and role-separated HSM/KMS
+# custody are deliberately absent here. They must be proven by
+# external_controls.verify_production_controls against the current local owner
+# state. These remaining roles are externally observed terminal/operational facts.
 REQUIRED_EXTERNAL_ROLES = (
-    "distributed_lease_fence",
-    "immutable_audit_anchor",
-    "key_custody:source_authority",
-    "key_custody:ci_executor",
-    "key_custody:independent_evaluator",
-    "key_custody:integration_terminal_observer",
     "independent_ci_completion",
     "integration_terminal_observer",
     "target_deployment_observer",
+    "backup_restore_rehearsal_observer",
     "rollback_rehearsal_observer",
     "operator_acceptance",
 )
+_ROLE_EVIDENCE_CLASS = {
+    "independent_ci_completion": "independent_ci_completion",
+    "integration_terminal_observer": "integration_terminal_observation",
+    "target_deployment_observer": "target_deployment_observation",
+    "backup_restore_rehearsal_observer": "backup_restore_rehearsal",
+    "rollback_rehearsal_observer": "rollback_rehearsal",
+    "operator_acceptance": "operator_acceptance",
+}
 
 
 @dataclass(frozen=True)
@@ -71,12 +85,17 @@ class ProductionEvidenceDecision:
     source_commit: str
     source_tree: str
     target_digest: str
+    production_control_digest: str
     verified_roles: tuple[str, ...]
     evidence_digest: str
-    production_evidence_complete: bool
+    production_controls_verified: bool
+    independent_ci_completion_observed: bool
+    terminal_observation_observed: bool
     deployment_observed: bool
+    backup_restore_rehearsed: bool
     rollback_rehearsed: bool
     operator_accepted: bool
+    production_evidence_complete: bool
     runtime_authority: bool = False
     merge_authority: bool = False
     activation_authority: bool = False
@@ -102,7 +121,12 @@ class HttpsJsonReceiptProvider:
         maximum_response_bytes: int = MAX_EXTERNAL_RECEIPT_BYTES,
     ):
         parsed = urlparse(endpoint)
-        if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
+        if (
+            parsed.scheme != "https"
+            or not parsed.hostname
+            or parsed.username
+            or parsed.password
+        ):
             raise EngineeringError("external_provider_endpoint")
         if parsed.hostname not in allowed_hosts:
             raise EngineeringError("external_provider_host")
@@ -140,7 +164,7 @@ class HttpsJsonReceiptProvider:
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "User-Agent": "hepta-control-engineering/1",
+            "User-Agent": "hepta-control-engineering/2",
         }
         if self.authorization_env is not None:
             token = os.environ.get(self.authorization_env)
@@ -159,7 +183,9 @@ class HttpsJsonReceiptProvider:
         if content_type != "application/json" or len(raw) > self.maximum_response_bytes:
             raise EngineeringError("external_provider_response")
         try:
-            value = json.loads(raw.decode("utf-8"), object_pairs_hook=self._unique_pairs)
+            value = json.loads(
+                raw.decode("utf-8"), object_pairs_hook=self._unique_pairs
+            )
             return ExternalProductionReceipt(**value)
         except (UnicodeDecodeError, json.JSONDecodeError, TypeError):
             raise EngineeringError("external_provider_response") from None
@@ -203,7 +229,9 @@ class OpenSslPublicKeyTrustStore:
         if not signature_bytes or len(signature_bytes) > 16_384:
             return False
         payload = HmacTrustStore.payload(value)
-        with tempfile.TemporaryDirectory(prefix="hepta-external-signature-") as temp:
+        with tempfile.TemporaryDirectory(
+            prefix="hepta-external-signature-"
+        ) as temp:
             root = Path(temp)
             payload_path = root / "payload"
             signature_path = root / "signature"
@@ -268,20 +296,46 @@ def _sha1(value: str, label: str) -> str:
     return value
 
 
+def _verify_typed_controls(
+    decision: ProductionControlDecision,
+) -> None:
+    if not isinstance(decision, ProductionControlDecision):
+        raise EngineeringError("typed_production_controls_required")
+    if (
+        decision.distributed_fence_verified is not True
+        or decision.external_audit_anchor_verified is not True
+        or decision.external_key_custody_verified is not True
+    ):
+        raise EngineeringError("typed_production_controls_incomplete")
+    checked_sha256(decision.evidence_digest, "production_control_digest")
+    if any(
+        (
+            decision.runtime_authority,
+            decision.merge_authority,
+            decision.release_authority,
+        )
+    ):
+        raise EngineeringError("typed_production_controls_authority_delta")
+
+
 def verify_external_production_bundle(
     receipts: Mapping[str, ExternalProductionReceipt],
     trust_store: SignatureTrustStore,
     *,
+    production_controls: ProductionControlDecision,
     expected_source_commit: str,
     expected_source_tree: str,
     expected_target_digest: str,
     now_ns: int,
     clock_policy: ClockPolicy = ClockPolicy(),
 ) -> ProductionEvidenceDecision:
+    _verify_typed_controls(production_controls)
     _sha1(expected_source_commit, "external_source_commit")
     _sha1(expected_source_tree, "external_source_tree")
     checked_sha256(expected_target_digest, "external_target_digest")
-    if not isinstance(receipts, Mapping) or set(receipts) != set(REQUIRED_EXTERNAL_ROLES):
+    if not isinstance(receipts, Mapping) or set(receipts) != set(
+        REQUIRED_EXTERNAL_ROLES
+    ):
         raise EngineeringError("external_evidence_role_set")
     seen_identities: set[tuple[str, str]] = set()
     verified: list[dict[str, object]] = []
@@ -295,7 +349,7 @@ def verify_external_production_bundle(
             or receipt.source_commit != expected_source_commit
             or receipt.source_tree != expected_source_tree
             or receipt.target_digest != expected_target_digest
-            or receipt.evidence_class != "external_observation"
+            or receipt.evidence_class != _ROLE_EVIDENCE_CLASS[role]
         ):
             raise EngineeringError("external_evidence_binding")
         for value, label in (
@@ -305,12 +359,19 @@ def verify_external_production_bundle(
             (receipt.signing_identity, "external_signing_identity"),
             (receipt.nonce, "external_nonce"),
         ):
-            if not isinstance(value, str) or not value or len(value.encode("utf-8")) > 256:
+            if (
+                not isinstance(value, str)
+                or not value
+                or len(value.encode("utf-8")) > 256
+            ):
                 raise EngineeringError(label)
         folded = " ".join(
             (receipt.provider, receipt.provider_instance, receipt.evidence_class)
         ).casefold()
-        if any(marker in folded for marker in ("fixture", "reference", "test-only", "mock")):
+        if any(
+            marker in folded
+            for marker in ("fixture", "reference", "test-only", "mock")
+        ):
             raise EngineeringError("external_evidence_fixture")
         checked_sha256(receipt.evidence_digest, "external_evidence_digest")
         validate_signed_window(
@@ -345,6 +406,7 @@ def verify_external_production_bundle(
             "sourceCommit": expected_source_commit,
             "sourceTree": expected_source_tree,
             "targetDigest": expected_target_digest,
+            "productionControls": asdict(production_controls),
             "verified": verified,
         }
     )
@@ -352,8 +414,13 @@ def verify_external_production_bundle(
         expected_source_commit,
         expected_source_tree,
         expected_target_digest,
+        production_controls.evidence_digest,
         tuple(REQUIRED_EXTERNAL_ROLES),
         evidence_digest,
+        True,
+        True,
+        True,
+        True,
         True,
         True,
         True,
@@ -361,7 +428,9 @@ def verify_external_production_bundle(
     )
 
 
-def load_external_receipts(path: str | Path) -> dict[str, ExternalProductionReceipt]:
+def load_external_receipts(
+    path: str | Path,
+) -> dict[str, ExternalProductionReceipt]:
     try:
         raw = Path(path).read_bytes()
     except OSError as error:
