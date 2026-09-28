@@ -186,17 +186,29 @@ def verify() -> int:
     _verify_implementation_map(state)
     _verify_wire_map(state)
 
+    # The thin shell invokes a recorder. Validate the actual command contract,
+    # not inert shell comments or a second, potentially divergent command list.
+    import memory_federation_full_attestation as full
+
     qualification = (ROOT / state["qualificationScript"]).read_text(encoding="utf-8")
-    for marker in (
-        "verify_memory_federation_status.py verify",
-        "memory_federation_execution_guard.py capture",
-        "memory_federation_execution_guard.py verify",
-        "cargo test -p codex-hepta-memory --lib product_nonce_tests",
-        "memory_federation_capacity_probe",
-        "memory-federation-capacity.json",
-    ):
-        if marker not in qualification:
-            raise StatusError(f"qualification script is missing {marker}")
+    if "exec python3 scripts/memory_federation_execution_receipt.py run" not in qualification:
+        raise StatusError("qualification does not invoke the execution recorder")
+    commands = list(full.base.COMMANDS)
+    required = (
+        "python3 scripts/verify_memory_federation_status.py verify",
+        "python3 scripts/memory_federation_execution_guard.py capture "
+        "--state <guard-state> --expected-sha <tested-sha> --expected-tree <tested-tree>",
+        "python3 scripts/memory_federation_execution_guard.py verify "
+        "--state <guard-state> --expected-sha <tested-sha> --expected-tree <tested-tree>",
+        "cargo test --locked -p codex-hepta-memory --lib product_nonce_tests",
+        "cargo run --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml "
+        "--bin memory_federation_capacity_probe -- <capacity-metrics.json>",
+    )
+    if len(commands) != len(set(commands)) or any(commands.count(command) != 1 for command in required):
+        raise StatusError("qualification command contract is missing or duplicates a required gate")
+    for key in ("successfulReceiptsRequireCommandExecution", "successfulReceiptsRequireTrackedLock"):
+        if state["execution"].get(key) is not True:
+            raise StatusError(f"execution evidence requirement drift: {key}")
     attestation = (ROOT / state["attestationScript"]).read_text(encoding="utf-8")
     for marker in (
         "capability-state.json",
