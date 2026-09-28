@@ -100,8 +100,8 @@ pub fn plan_authenticated_observed_context(
     bound_read.extend_from_slice(observed.request_binding_digest.as_array());
     bound_read.extend_from_slice(record_set_digest.as_array());
     let bound_read_digest = Digest32::of_bytes(&bound_read);
-    let verified_item_count = u32::try_from(normalized.len())
-        .map_err(|_| E::Planner(PlannerError::Arithmetic))?;
+    let verified_item_count =
+        u32::try_from(normalized.len()).map_err(|_| E::Planner(PlannerError::Arithmetic))?;
 
     plan_observed_context(ObservedContextV1 {
         owner_id: observed.owner_id,

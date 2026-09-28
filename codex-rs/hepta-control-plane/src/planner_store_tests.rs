@@ -64,7 +64,10 @@ fn complete_envelopes_reopen_under_one_writer_and_anchor() {
         PlannerStoreConfigV1::default(),
     ));
     assert_eq!(reopened.records().len(), 1);
-    assert_eq!(reopened.records()[0].envelope, b"canonical decision envelope one");
+    assert_eq!(
+        reopened.records()[0].envelope,
+        b"canonical decision envelope one"
+    );
     assert_eq!(must(reopened.verify_checkpoint(anchor)), checkpoint);
 }
 
@@ -112,9 +115,7 @@ fn crash_after_frame_write_reopens_idempotently() {
         directory.path(),
         PlannerStoreConfigV1::default(),
     ));
-    store.set_failpoint(Some(
-        PlannerStoreFailpointV1::AfterFrameWriteBeforeSync,
-    ));
+    store.set_failpoint(Some(PlannerStoreFailpointV1::AfterFrameWriteBeforeSync));
     let error = must_err(store.append(
         PlannerStoreRecordKindV1::Decision,
         digest("operation:one"),
@@ -123,9 +124,7 @@ fn crash_after_frame_write_reopens_idempotently() {
     ));
     assert!(matches!(
         error,
-        PlannerStoreError::Failpoint(
-            PlannerStoreFailpointV1::AfterFrameWriteBeforeSync
-        )
+        PlannerStoreError::Failpoint(PlannerStoreFailpointV1::AfterFrameWriteBeforeSync)
     ));
     drop(store);
 

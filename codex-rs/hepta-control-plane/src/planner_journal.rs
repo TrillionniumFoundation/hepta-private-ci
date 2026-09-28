@@ -124,11 +124,8 @@ impl PlannerJournalV1 {
         let decoded = core::PlannerJournalV1::reopen(bytes)?;
         let mut validated = Self::new();
         for entry in decoded.entries() {
-            let replayed = validated.append(
-                entry.kind,
-                entry.identity_digest,
-                entry.payload_digest,
-            )?;
+            let replayed =
+                validated.append(entry.kind, entry.identity_digest, entry.payload_digest)?;
             if replayed != *entry {
                 return Err(PlannerJournalError::CorruptEntryDigest);
             }
@@ -146,15 +143,13 @@ fn validate_transition(
         return Ok(());
     }
     let decision_exists = entries.iter().any(|entry| {
-        entry.kind == PlannerJournalKindV1::Decision
-            && entry.payload_digest == payload_digest
+        entry.kind == PlannerJournalKindV1::Decision && entry.payload_digest == payload_digest
     });
     if !decision_exists {
         return Err(PlannerJournalError::DecisionNotRecorded);
     }
     let revoked = entries.iter().any(|entry| {
-        entry.kind == PlannerJournalKindV1::Revocation
-            && entry.payload_digest == payload_digest
+        entry.kind == PlannerJournalKindV1::Revocation && entry.payload_digest == payload_digest
     });
     if revoked {
         return Err(PlannerJournalError::RevokedPlan);

@@ -51,8 +51,7 @@ struct ContextPlanLeaseV1 {
     expires_at: Instant,
 }
 
-static CONTEXT_PLAN_LEASES: OnceLock<Mutex<BTreeMap<String, ContextPlanLeaseV1>>> =
-    OnceLock::new();
+static CONTEXT_PLAN_LEASES: OnceLock<Mutex<BTreeMap<String, ContextPlanLeaseV1>>> = OnceLock::new();
 static MONOTONIC_ORIGIN: OnceLock<Instant> = OnceLock::new();
 
 #[cfg(test)]
@@ -353,7 +352,9 @@ fn register_plan_lease(
     lease: ContextPlanLeaseV1,
 ) -> Result<(), CognitiveContextError> {
     if lease.authenticated_receipt_digest.is_zero() || lease.request_binding_digest.is_zero() {
-        return Err(conflict("authenticated context plan lease contains an empty digest"));
+        return Err(conflict(
+            "authenticated context plan lease contains an empty digest",
+        ));
     }
     let plan = response.plan.as_ref().ok_or_else(|| {
         conflict("canonical cognitive context response is missing its control plan")
@@ -422,13 +423,17 @@ fn validate_plan_lease(
         return Err(conflict("context plan receipt changed before final use"));
     }
     if lease.retrieval_context_digest != retrieval_context_digest {
-        return Err(conflict("context retrieval profile changed before final use"));
+        return Err(conflict(
+            "context retrieval profile changed before final use",
+        ));
     }
     if lease.ranker_policy_digest != ranker_policy_digest {
         return Err(conflict("context ranker policy changed before final use"));
     }
     if lease.authenticated_receipt_digest.is_zero() || lease.request_binding_digest.is_zero() {
-        return Err(conflict("context plan lease lost its authenticated binding"));
+        return Err(conflict(
+            "context plan lease lost its authenticated binding",
+        ));
     }
     Ok(())
 }
@@ -488,11 +493,7 @@ fn monotonic_now_micros() -> Result<u64, CognitiveContextError> {
 }
 
 fn push_bytes(bytes: &mut Vec<u8>, value: &[u8]) {
-    bytes.extend_from_slice(
-        &u64::try_from(value.len())
-            .unwrap_or(u64::MAX)
-            .to_be_bytes(),
-    );
+    bytes.extend_from_slice(&u64::try_from(value.len()).unwrap_or(u64::MAX).to_be_bytes());
     bytes.extend_from_slice(value);
 }
 
