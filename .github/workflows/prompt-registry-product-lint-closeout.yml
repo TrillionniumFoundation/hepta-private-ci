@@ -38,7 +38,7 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-      - name: Apply narrow checked-in compatibility expectation
+      - name: Apply narrow checked-in lint expectations
         shell: bash
         run: |
           set -euo pipefail
@@ -47,8 +47,8 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          path = Path('codex-rs/hepta-intelligence/src/canonical.rs')
-          text = path.read_text(encoding='utf-8')
+          canonical = Path('codex-rs/hepta-intelligence/src/canonical.rs')
+          text = canonical.read_text(encoding='utf-8')
           old = "#[derive(Clone, Debug, Eq, PartialEq)]\npub enum CanonicalRunOutcomeV1 {\n"
           new = (
               "#[derive(Clone, Debug, Eq, PartialEq)]\n"
@@ -60,20 +60,52 @@ jobs:
           )
           if text.count(old) != 1:
               raise SystemExit('expected exactly one CanonicalRunOutcomeV1 declaration anchor')
-          path.write_text(text.replace(old, new), encoding='utf-8')
+          canonical.write_text(text.replace(old, new), encoding='utf-8')
+
+          scoped_allows = {
+              Path('codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs'): (
+                  "#![allow(\n"
+                  "    clippy::expect_used,\n"
+                  "    reason = \"This qualification example uses fixed repository-owned fixtures; invalid fixtures must abort instead of emitting partial benchmark evidence.\"\n"
+                  ")]\n\n"
+              ),
+              Path('codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs'): (
+                  "#![allow(\n"
+                  "    clippy::expect_used,\n"
+                  "    reason = \"These tests intentionally fail immediately when fixed repository-owned fixtures violate their declared invariants.\"\n"
+                  ")]\n\n"
+              ),
+          }
+          for path, attribute in scoped_allows.items():
+              source = path.read_text(encoding='utf-8')
+              if source.startswith('#!['):
+                  raise SystemExit(f'unexpected existing inner attribute in {path}')
+              path.write_text(attribute + source, encoding='utf-8')
           PY
           git diff --check
-          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence -- --check
-          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-intelligence --all-targets --no-deps -- -D warnings
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-agentd \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-prompt-extension -- --check
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-agentd \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-prompt-extension \
+            --all-targets --no-deps -- -D warnings
       - name: Commit exact source and implementation map
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add codex-rs/hepta-intelligence/src/canonical.rs
+          git add \
+            codex-rs/hepta-intelligence/src/canonical.rs \
+            codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs \
+            codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs
           git diff --cached --check
-          git commit -m 'fix(prompt.registry): close strict product lint without changing V1 outcome API'
+          git commit -m 'fix(prompt.registry): close strict product lint without changing public APIs'
           python3 scripts/hepta-prompt-registry-map.py --write
           git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
           git diff --cached --check
