@@ -1,14 +1,23 @@
-"""Externally retained audit checkpoints with bounded suffix verification."""
+"""Externally trusted audit anchors and bounded, snapshot-consistent verification.
+
+A checkpoint supplied by a caller must come from its trusted retention boundary.
+Neither this module nor an unsigned continuation authenticates an external caller.
+Suffix verification proves audit history, not current owner-state equivalence.
+"""
 from __future__ import annotations
 
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass
 import json
+import sqlite3
 import time
+from typing import Iterator
 
 from .control_plane import (
     EngineeringError,
     EngineeringStore,
     ZERO_DIGEST,
+    canonical_json,
     checked_sha256,
     semantic_digest,
 )
@@ -24,92 +33,244 @@ class AuditCheckpoint:
     schema_version: int = 1
 
 
+@dataclass(frozen=True)
+class AuditVerificationBudget:
+    maximum_events: int = 4096
+    maximum_payload_bytes: int = 8 * 1024 * 1024
+
+    def __post_init__(self) -> None:
+        if (
+            type(self.maximum_events) is not int
+            or not 1 <= self.maximum_events <= 65536
+            or type(self.maximum_payload_bytes) is not int
+            or not 1 <= self.maximum_payload_bytes <= 64 * 1024 * 1024
+        ):
+            raise EngineeringError("invalid_audit_verification_budget")
+
+
+@dataclass(frozen=True)
+class AuditReadCut:
+    sequence: int
+    event_digest: str
+
+    def __post_init__(self) -> None:
+        _validate_anchor(self.sequence, self.event_digest)
+
+
+@dataclass(frozen=True)
+class AuditSuffixPage:
+    """One verified segment; complete means this segment reached through.
+
+    A trusted caller may retain next_checkpoint and through to continue. It must
+    preserve the chain of page receipts. Accepting an arbitrary caller-supplied
+    continuation is NOT proof that the omitted prefix was verified.
+    """
+
+    checkpoint_digest: str
+    verified_from_sequence: int
+    next_checkpoint: AuditCheckpoint
+    through: AuditReadCut
+    verified_events: int
+    verified_payload_bytes: int
+    complete: bool
+    runtime_authority: bool = False
+    merge_authority: bool = False
+
+
+def _validate_anchor(sequence: int, digest: str) -> None:
+    if type(sequence) is not int or not 0 <= sequence <= 2**63 - 1:
+        raise EngineeringError("audit_checkpoint_invalid")
+    checked_sha256(digest, "audit_checkpoint_event_digest")
+    if sequence == 0 and digest != ZERO_DIGEST:
+        raise EngineeringError("audit_checkpoint_invalid")
+
+
+@contextmanager
+def _read_snapshot(store: EngineeringStore) -> Iterator[sqlite3.Connection]:
+    connection = store.connection
+    owned = not connection.in_transaction
+    if owned:
+        connection.execute("BEGIN")
+    try:
+        yield connection
+    finally:
+        # A read must not commit, roll back, or otherwise finish its caller's
+        # transaction. BEGIN/ROLLBACK here only delimit our own read snapshot.
+        if owned:
+            connection.rollback()
+
+
+def _require_anchor(connection: sqlite3.Connection, sequence: int, digest: str) -> None:
+    _validate_anchor(sequence, digest)
+    if sequence:
+        row = connection.execute(
+            "SELECT event_digest FROM audit_events WHERE sequence=?", (sequence,)
+        ).fetchone()
+        if row is None or row[0] != digest:
+            raise EngineeringError("audit_checkpoint_not_in_history")
+
+
 def create_audit_checkpoint(
     store: EngineeringStore, *, now_ns: int | None = None
 ) -> AuditCheckpoint:
+    """Perform an explicit full checkpoint; this is not a bounded hot-path call."""
     if not isinstance(store, EngineeringStore):
         raise EngineeringError("audit_checkpoint_store_required")
     now = time.time_ns() if now_ns is None else now_ns
     if type(now) is not int or now < 0:
         raise EngineeringError("invalid_time")
-    store.verify_audit_chain()
-    anchor = store.audit_anchor()
-    return AuditCheckpoint(
-        int(anchor["sequence"]),
-        str(anchor["eventDigest"]),
-        store_snapshot_digest(store),
-        now,
-    )
+    with _read_snapshot(store):
+        store.verify_audit_chain()
+        anchor = store.audit_anchor()
+        return AuditCheckpoint(
+            int(anchor["sequence"]), str(anchor["eventDigest"]),
+            store_snapshot_digest(store), now,
+        )
 
 
-def verify_audit_suffix(
-    store: EngineeringStore, checkpoint: AuditCheckpoint
-) -> dict[str, object]:
-    """Verify only events after an externally trusted full checkpoint.
-
-    The checkpoint's owner snapshot must be retained outside this SQLite file.
-    This function does not pretend an in-file checkpoint protects against an
-    administrator rewriting both owner state and history.
-    """
-    if not isinstance(store, EngineeringStore) or not isinstance(
-        checkpoint, AuditCheckpoint
-    ):
+def _verify_page(
+    store: EngineeringStore,
+    checkpoint: AuditCheckpoint,
+    budget: AuditVerificationBudget,
+    through: AuditReadCut | None,
+    *,
+    require_complete: bool,
+) -> AuditSuffixPage:
+    if not isinstance(store, EngineeringStore) or not isinstance(checkpoint, AuditCheckpoint):
         raise EngineeringError("audit_checkpoint_required")
+    if not isinstance(budget, AuditVerificationBudget):
+        raise EngineeringError("invalid_audit_verification_budget")
+    budget.__post_init__()
+    _validate_anchor(checkpoint.sequence, checkpoint.event_digest)
     if (
-        type(checkpoint.sequence) is not int
-        or checkpoint.sequence < 0
-        or type(checkpoint.created_unix_ns) is not int
+        type(checkpoint.created_unix_ns) is not int
         or checkpoint.created_unix_ns < 0
+        or type(checkpoint.schema_version) is not int
         or checkpoint.schema_version != 1
     ):
         raise EngineeringError("audit_checkpoint_invalid")
     checked_sha256(checkpoint.owner_snapshot_digest, "owner_snapshot_digest")
-    previous = checkpoint.event_digest
-    if checkpoint.sequence == 0:
-        if previous != ZERO_DIGEST:
-            raise EngineeringError("audit_checkpoint_invalid")
-    else:
-        checked_sha256(previous, "audit_checkpoint_event_digest")
-        row = store.connection.execute(
-            "SELECT event_digest FROM audit_events WHERE sequence=?",
-            (checkpoint.sequence,),
-        ).fetchone()
-        if row is None or str(row[0]) != previous:
-            raise EngineeringError("audit_checkpoint_not_in_history")
-    rows = store.connection.execute(
-        "SELECT * FROM audit_events WHERE sequence>? ORDER BY sequence",
-        (checkpoint.sequence,),
-    ).fetchall()
-    expected_sequence = checkpoint.sequence + 1
-    for row in rows:
-        if int(row["sequence"]) != expected_sequence:
-            raise EngineeringError("audit_chain_sequence_gap")
-        try:
-            payload = json.loads(bytes(row["payload_json"]).decode("utf-8"))
-        except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
-            raise EngineeringError("audit_chain_payload_invalid") from None
-        body = {
-            "previousDigest": previous,
-            "eventType": str(row["event_type"]),
-            "payload": payload,
-            "createdUnixNs": int(row["created_unix_ns"]),
-        }
-        digest = semantic_digest(body)
-        if (
-            str(row["previous_digest"]) != previous
-            or str(row["event_digest"]) != digest
-            or str(row["event_id"]) != digest[:32]
-        ):
+    if through is not None and not isinstance(through, AuditReadCut):
+        raise EngineeringError("audit_read_cut_required")
+    with _read_snapshot(store) as connection:
+        _require_anchor(connection, checkpoint.sequence, checkpoint.event_digest)
+        if through is None:
+            last = connection.execute(
+                "SELECT sequence,event_digest FROM audit_events ORDER BY sequence DESC LIMIT 1"
+            ).fetchone()
+            through = AuditReadCut(0, ZERO_DIGEST) if last is None else AuditReadCut(last[0], last[1])
+        _require_anchor(connection, through.sequence, through.event_digest)
+        if through.sequence < checkpoint.sequence:
+            raise EngineeringError("audit_read_cut_before_checkpoint")
+        # Only fixed-size metadata crosses the SQL boundary before admission.
+        # LIMIT+1 bounds even the oversize probe. Payload bytes are not fetched
+        # until their cumulative budget and each row's metadata bounds pass.
+        metadata = connection.execute(
+            "SELECT sequence,length(CAST(payload_json AS BLOB)),"
+            "length(CAST(event_type AS BLOB)),length(event_id),"
+            "length(previous_digest),length(event_digest) FROM audit_events "
+            "WHERE sequence>? AND sequence<=? ORDER BY sequence LIMIT ?",
+            (checkpoint.sequence, through.sequence, budget.maximum_events + 1),
+        ).fetchall()
+        if require_complete and len(metadata) > budget.maximum_events:
+            raise EngineeringError("audit_suffix_event_budget_exceeded")
+        admitted: list[int] = []
+        payload_bytes = 0
+        for row in metadata[:budget.maximum_events]:
+            sequence, size, type_size, id_size, previous_size, digest_size = row
+            if sequence != checkpoint.sequence + len(admitted) + 1:
+                raise EngineeringError("audit_chain_sequence_gap")
+            if (
+                type(size) is not int or size < 0
+                or type(type_size) is not int or not 1 <= type_size <= 128
+                or (id_size, previous_size, digest_size) != (32, 64, 64)
+            ):
+                raise EngineeringError("audit_chain_metadata_invalid")
+            if payload_bytes + size > budget.maximum_payload_bytes:
+                if require_complete or not admitted:
+                    raise EngineeringError("audit_suffix_payload_budget_exceeded")
+                break
+            payload_bytes += size
+            admitted.append(sequence)
+        previous = checkpoint.event_digest
+        latest = checkpoint.sequence
+        for sequence in admitted:
+            event = connection.execute(
+                "SELECT * FROM audit_events WHERE sequence=?", (sequence,)
+            ).fetchone()
+            if event is None:
+                raise EngineeringError("audit_chain_sequence_gap")
+            try:
+                raw = event["payload_json"]
+                if not isinstance(raw, bytes):
+                    raise EngineeringError("audit_chain_payload_invalid")
+                payload = json.loads(raw.decode("utf-8"))
+                if not isinstance(payload, dict) or canonical_json(payload) != raw:
+                    raise EngineeringError("audit_chain_payload_invalid")
+                created = event["created_unix_ns"]
+                if type(created) is not int or created < 0:
+                    raise EngineeringError("audit_chain_metadata_invalid")
+                digest = semantic_digest({
+                    "previousDigest": previous,
+                    "eventType": event["event_type"],
+                    "payload": payload,
+                    "createdUnixNs": created,
+                })
+            except (TypeError, UnicodeError, json.JSONDecodeError, RecursionError):
+                raise EngineeringError("audit_chain_payload_invalid") from None
+            if (
+                event["previous_digest"] != previous
+                or event["event_digest"] != digest
+                or event["event_id"] != digest[:32]
+            ):
+                raise EngineeringError("audit_chain_invalid")
+            previous, latest = digest, sequence
+        complete = latest == through.sequence
+        if complete and previous != through.event_digest:
             raise EngineeringError("audit_chain_invalid")
-        previous = digest
-        expected_sequence += 1
-    latest = checkpoint.sequence if not rows else int(rows[-1]["sequence"])
+        if not complete and len(metadata) == len(admitted):
+            raise EngineeringError("audit_chain_sequence_gap")
+        if require_complete and not complete:
+            raise EngineeringError("audit_suffix_event_budget_exceeded")
+        return AuditSuffixPage(
+            semantic_digest(asdict(checkpoint)), checkpoint.sequence,
+            AuditCheckpoint(latest, previous, checkpoint.owner_snapshot_digest,
+                            checkpoint.created_unix_ns),
+            through, len(admitted), payload_bytes, complete,
+        )
+
+
+def verify_audit_suffix_page(
+    store: EngineeringStore,
+    checkpoint: AuditCheckpoint,
+    *,
+    budget: AuditVerificationBudget = AuditVerificationBudget(),
+    through: AuditReadCut | None = None,
+) -> AuditSuffixPage:
+    """Verify a bounded contiguous segment against a fixed, append-safe cut."""
+    return _verify_page(store, checkpoint, budget, through, require_complete=False)
+
+
+def verify_audit_suffix(
+    store: EngineeringStore,
+    checkpoint: AuditCheckpoint,
+    *,
+    budget: AuditVerificationBudget = AuditVerificationBudget(),
+    through: AuditReadCut | None = None,
+) -> dict[str, object]:
+    """Verify a complete bounded suffix or reject; never silently truncate."""
+    page = _verify_page(store, checkpoint, budget, through, require_complete=True)
     return {
-        "checkpointDigest": semantic_digest(asdict(checkpoint)),
-        "verifiedFromSequence": checkpoint.sequence,
-        "latestSequence": latest,
-        "latestEventDigest": previous,
-        "verifiedSuffixEvents": len(rows),
+        "checkpointDigest": page.checkpoint_digest,
+        "verifiedFromSequence": page.verified_from_sequence,
+        "latestSequence": page.next_checkpoint.sequence,
+        "latestEventDigest": page.next_checkpoint.event_digest,
+        "verifiedSuffixEvents": page.verified_events,
+        "verifiedPayloadBytes": page.verified_payload_bytes,
+        "complete": page.complete,
+        "throughSequence": page.through.sequence,
+        "throughEventDigest": page.through.event_digest,
+        "ownerSnapshotVerified": False,
         "runtimeAuthority": False,
         "mergeAuthority": False,
     }
