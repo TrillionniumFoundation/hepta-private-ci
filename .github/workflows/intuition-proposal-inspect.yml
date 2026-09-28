@@ -1,44 +1,90 @@
-name: Intuition source proposal inspection
+name: Intuition tested source recovery
 on:
   push:
     branches: [codex/intuition-devhost-20260928]
     paths: [.github/workflows/intuition-proposal-inspect.yml]
 permissions:
-  contents: read
+  contents: write
   actions: read
 jobs:
-  inspect:
+  recover:
     runs-on: windows-2025
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
-      - name: Read completed authoring outcome without credentials on storage redirect
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 301cc06cbc80fe339f8f3055db5315d53acfc177
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          run-id: 36399308967
+          name: intuition-source-proposal-301cc06cbc80fe339f8f3055db5315d53acfc177-1
+          path: ${{ runner.temp }}/tested-patch
+      - name: Recover exact tested source and publish blobs for separate review
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          PATCH_DIR: ${{ runner.temp }}/tested-patch
         run: |
-          python - <<'PY'
-          import os, re, urllib.request, urllib.error
-          class NoRedirect(urllib.request.HTTPRedirectHandler):
-              def redirect_request(self, req, fp, code, msg, headers, newurl):
-                  return None
-          request = urllib.request.Request(
-              'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/108853118867/logs',
-              headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
-          try:
-              response = urllib.request.build_opener(NoRedirect).open(request, timeout=60)
-          except urllib.error.HTTPError as error:
-              if error.code != 302:
+          python -u - <<'PY'
+          import base64, hashlib, json, os, pathlib, subprocess, urllib.request, urllib.error
+          source = '301cc06cbc80fe339f8f3055db5315d53acfc177'
+          def git(*args): return subprocess.check_output(['git', *args])
+          assert git('rev-parse', 'HEAD').decode().strip() == source
+          assert not git('status', '--porcelain')
+          patches = list(pathlib.Path(os.environ['PATCH_DIR']).rglob('source.diff'))
+          assert len(patches) == 1
+          patch = patches[0]
+          assert patch.stat().st_size < 1000000
+          print('TESTED_PATCH_SHA256=' + hashlib.sha256(patch.read_bytes()).hexdigest())
+          subprocess.run(['git', 'apply', '--check', str(patch)], check=True)
+          subprocess.run(['git', 'apply', '--index', str(patch)], check=True)
+          subprocess.run(['python', '-B', 'scripts/intuition_state.py', '--check'], check=True)
+          assert not git('diff', '--name-only')
+          paths = [p.decode() for p in git('diff', '--cached', '--name-only', '-z').split(b'\0') if p]
+          allowed = {
+            '.github/workflows/intuition-source-regressions.yml',
+            'codex-rs/hepta-intuition/src/calibrated.rs',
+            'codex-rs/hepta-intuition/src/calibrated_binding.rs',
+            'codex-rs/hepta-intuition/src/qualified.rs',
+            'codex-rs/hepta-intuition/src/production.rs',
+            'codex-rs/hepta-intuition/src/production_native.rs',
+            'codex-rs/hepta-intuition/src/production_tests.rs',
+            'codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs',
+            'codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs',
+            'docs/modules/intuition.policy/CURRENT_STATE.json',
+            'docs/modules/intuition.policy/CONTRACTS.md',
+            'docs/modules/intuition.policy/TECHNICAL.md',
+            'docs/modules/intuition.policy/OPERATIONS.md',
+            'docs/modules/intuition.policy/CI_EVIDENCE.md',
+            'docs/modules/intuition.policy/IMPLEMENTATION_MAP.json',
+            'qualification/module-execution-dossiers/detail/intuition.policy.md',
+            'scripts/intuition_state.py',
+            'scripts/tests/test_intuition_state.py',
+          }
+          assert set(paths) == allowed, paths
+          entries = []
+          for path in paths:
+              # Read the Git index to avoid platform newline conversion.
+              data = git('show', ':' + path)
+              expected = hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+              request = urllib.request.Request(
+                  'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs',
+                  data=json.dumps({'encoding':'base64','content':base64.b64encode(data).decode()}).encode(),
+                  method='POST', headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],
+                    'Accept':'application/vnd.github+json','Content-Type':'application/json'})
+              try:
+                  with urllib.request.urlopen(request, timeout=60) as response: result=json.load(response)
+              except urllib.error.HTTPError as error:
+                  print('BLOB_FAILURE', path, error.code, error.read(2000).decode(errors='replace'))
                   raise
-              url = error.headers['Location']
-              assert url.startswith('https://')
-              response = urllib.request.urlopen(url, timeout=60)
-          with response:
-              log = response.read(8000000).decode('utf-8', errors='replace')
-          lines = log.splitlines()
-          for line in lines:
-              if re.search(r'test result:|Ran [0-9]+ tests|INTUITION_SOURCE_PROPOSAL=[0-9a-f]{40}', line):
-                  print(line)
-          for line in lines[-85:]:
-              print(line)
-          print('Read-only inspection of source authoring; not immutable candidate qualification.')
+              assert result['sha'] == expected
+              entry={'path':path,'mode':'100644','type':'blob','sha':expected}
+              entries.append(entry)
+              print('RECOVERED_BLOB=' + json.dumps(entry), flush=True)
+          print('RECOVERED_BASE=' + source)
+          print('RECOVERED_TREE=' + git('write-tree').decode().strip())
+          print('No refs, checks, acceptance or release state were modified.')
           PY
