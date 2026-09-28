@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   apply:
-    if: github.event.head_commit.message == 'chore(browser.servo): stage exact remediation apply'
+    if: "${{ github.event.head_commit.message == 'stage-browser-remediation-apply-v2' }}"
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 2
+          fetch-depth: 3
           persist-credentials: true
 
       - name: Install exact Node runtime
@@ -33,11 +33,12 @@ jobs:
       - name: Apply exact reviewed remediation
         shell: bash
         env:
-          EXPECTED_PARENT: d1a5c47965be4a1a01ef7753e346b99184d6982b
+          EXPECTED_BASE: d1a5c47965be4a1a01ef7753e346b99184d6982b
           TARGET_BRANCH: codex/browser-servo-full-convergence-20260927
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          test "$(git merge-base "$EXPECTED_BASE" HEAD)" = "$EXPECTED_BASE"
+          test -z "$(git diff --name-only "$EXPECTED_BASE"...HEAD | grep -v '^.github/workflows/hepta-browser-exact-remediation-apply.yml$' || true)"
           python3 - <<'PY'
           from pathlib import Path
 
@@ -182,6 +183,6 @@ evidence exists.
             docs/modules/browser.servo/REMEDIATION_20260927.md \
             docs/modules/browser.servo/TECHNICAL.md \
             qualification/module-execution-dossiers/detail/browser.servo.md
-          test -z "$(git status --porcelain --untracked-files=no | grep -v '^??' | grep -v 'hepta-browser-exact-remediation-apply.yml' || true)" || git status --short
+          git diff --cached --check
           git commit -m 'fix(browser.servo): hold final-use fence through worker admission'
           git push origin "HEAD:refs/heads/$TARGET_BRANCH"
