@@ -29,6 +29,11 @@ impl AgentdLearningPlasticityProducerV1 {
         Self { handle }
     }
 
+    pub(crate) fn is_connected(&self) -> bool {
+        !self.handle.is_closed()
+    }
+
+    #[cfg(test)]
     pub(crate) async fn submit_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
@@ -37,6 +42,7 @@ impl AgentdLearningPlasticityProducerV1 {
         self.handle.propose_parameter(request, now).await
     }
 
+    #[cfg(test)]
     pub(crate) async fn submit_topology(
         &self,
         request: TopologyPlasticityProductRequestV1,

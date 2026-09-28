@@ -141,11 +141,13 @@ fn local_encoding_rejection_does_not_spend_output_sequence() {
     // The payload fits, but the full envelope does not. This exercises the
     // old sequence-before-envelope-validation bug, not payload prevalidation.
     let oversized = json!({"query": "x".repeat(MAX_FRAME_BYTES - 128)});
-    assert!(canonical_json(&json!({
-        "method": "observe_page",
-        "input": oversized.clone(),
-    }))
-    .is_ok());
+    assert!(
+        canonical_json(&json!({
+            "method": "observe_page",
+            "input": oversized.clone(),
+        }))
+        .is_ok()
+    );
     assert!(fixture.port.call(read_call(oversized)).is_err());
     assert!(fixture.script.lock().expect("script").writes.is_empty());
     fixture
@@ -226,7 +228,12 @@ fn invalid_reply_keeps_the_channel_fenced() {
 #[test]
 fn output_sequence_exhaustion_does_not_touch_transport() {
     let fixture = fixture();
-    fixture.port.state.lock().expect("state").next_outgoing_sequence = JS_SAFE_INTEGER + 1;
+    fixture
+        .port
+        .state
+        .lock()
+        .expect("state")
+        .next_outgoing_sequence = JS_SAFE_INTEGER + 1;
     assert!(fixture.port.call(read_call(json!({}))).is_err());
     assert!(fixture.script.lock().expect("script").writes.is_empty());
 }
