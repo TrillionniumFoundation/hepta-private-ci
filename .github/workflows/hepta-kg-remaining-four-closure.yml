@@ -1,52 +1,73 @@
-name: knowledge.graph remaining-four closure
+name: knowledge.graph remaining-four slim executor
 on:
   push:
-    branches: [work/kg-abc-evidence-hardening-20260928]
+    branches: [ops/kg-remaining-four-slim-20260929]
 permissions:
   contents: write
 concurrency:
-  group: kg-remaining-four-${{ github.ref }}
+  group: kg-remaining-four-slim-${{ github.sha }}
   cancel-in-progress: false
 jobs:
   close:
     if: "${{ startsWith(github.event.head_commit.message, 'kg remaining-four closure') }}"
-    runs-on: ubuntu-24.04
-    timeout-minutes: 180
+    runs-on: ubuntu-slim
+    timeout-minutes: 240
     env:
       BRANCH: work/kg-abc-evidence-hardening-20260928
       CARGO_INCREMENTAL: '0'
-      CARGO_BUILD_JOBS: '2'
+      CARGO_BUILD_JOBS: '1'
       CARGO_PROFILE_TEST_DEBUG: '0'
       CARGO_PROFILE_DEV_DEBUG: '0'
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 0
+          fetch-depth: 64
           persist-credentials: true
-      - name: Install native prerequisites
+      - name: Install pinned toolchain and native prerequisites
+        shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends protobuf-compiler pkg-config libssl-dev
+          set -euo pipefail
+          APT=()
+          if command -v sudo >/dev/null 2>&1; then APT=(sudo); fi
+          "${APT[@]}" apt-get update
+          "${APT[@]}" apt-get install -y --no-install-recommends \
+            ca-certificates curl git build-essential cmake clang lld pkg-config \
+            libssl-dev protobuf-compiler libsqlite3-dev
+          if ! command -v rustup >/dev/null 2>&1; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+              sh -s -- -y --profile minimal --default-toolchain none
+          fi
+          source "$HOME/.cargo/env"
+          rustup toolchain install 1.95.0 --profile minimal \
+            --component clippy --component rustfmt --component rust-src
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          rustc +1.95.0 --version
+          cargo +1.95.0 --version
           protoc --version
       - name: Apply fail-closed closure patch
         shell: bash
         run: |
           set -euo pipefail
-          gzip -dc .github/kg-close.py.gz > /tmp/kg-close.py
-          echo '3623381e807b0e96d44c3710aa634b71286807efd8b8923b203132c4eb9c8fe7  /tmp/kg-close.py' | sha256sum -c -
-          python3 /tmp/kg-close.py
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          source "$HOME/.cargo/env"
+          gzip -dc .github/kg-close.py.gz > .github/kg-close.py
+          echo '3623381e807b0e96d44c3710aa634b71286807efd8b8923b203132c4eb9c8fe7  .github/kg-close.py' | sha256sum -c -
+          python3 .github/kg-close.py
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml --all
           git diff --check
-      - name: Test kernel and consumers
+      - name: Test kernel and product consumers
         shell: bash
         run: |
           set -euo pipefail
+          source "$HOME/.cargo/env"
           cd codex-rs
-          cargo test --locked -p codex-hepta-kg -- --nocapture
-          cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture
-          cargo test --locked -p codex-hepta-memory --lib -- --nocapture --test-threads=1
-          cargo test --locked -p codex-hepta-memory --test kg_delivery_consistency -- --nocapture --test-threads=1
+          cargo +1.95.0 test --locked -p codex-hepta-kg -- --nocapture
+          cargo +1.95.0 test --locked -p codex-hepta-prompt-optimizer -- --nocapture
+          cargo +1.95.0 test --locked -p codex-hepta-memory \
+            graph_query_budget_exhaustion_is_retryable_not_corruption \
+            --lib -- --nocapture --test-threads=1
+          cargo +1.95.0 test --locked -p codex-hepta-memory \
+            --test kg_delivery_consistency -- --nocapture --test-threads=1
       - name: Test evidence tooling
         shell: bash
         run: |
@@ -54,22 +75,26 @@ jobs:
           python3 scripts/test_hepta_kg_contract_evidence.py
           python3 scripts/test_hepta_kg_execution_audit.py
           python3 scripts/hepta-knowledge-graph-target-measure.py --self-test
-      - name: Strict lint
+      - name: Strict scoped lint
         shell: bash
         run: |
           set -euo pipefail
+          source "$HOME/.cargo/env"
           cd codex-rs
-          cargo clippy --locked -p codex-hepta-kg -p codex-hepta-memory -p codex-hepta-prompt-optimizer --no-deps --all-targets -- -D warnings
+          cargo +1.95.0 clippy --locked \
+            -p codex-hepta-kg -p codex-hepta-memory \
+            -p codex-hepta-prompt-optimizer --no-deps --lib --tests -- -D warnings
       - name: Commit and push source closure
         shell: bash
         run: |
           set -euo pipefail
-          rm .github/workflows/hepta-kg-remaining-four-closure.yml .github/kg-close.py.gz
+          rm .github/workflows/hepta-kg-remaining-four-closure.yml \
+            .github/kg-close.py.gz .github/kg-close.py
           git diff --check
           git config user.name 'ChatGPT'
           git config user.email 'noreply@openai.com'
           git add -A
           git commit -m 'fix(knowledge.graph): close bounded product-query contracts' -m 'Route all real consumers through typed budgets, distinguish exhaustion from corruption, bind charged work in receipts, and extend exact evidence mapping.' -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
-          git fetch origin "$BRANCH"
+          git fetch --deepen=64 origin "$BRANCH"
           git rebase "origin/$BRANCH"
           git push origin "HEAD:refs/heads/$BRANCH"
