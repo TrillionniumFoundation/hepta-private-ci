@@ -12,11 +12,11 @@ permissions:
 
 concurrency:
   group: cognitive-types-apply-final-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply-verify-commit:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15-xlarge
     timeout-minutes: 120
     steps:
       - name: Check out exact staged candidate
@@ -44,7 +44,14 @@ jobs:
         run: |
           set -euo pipefail
           cat .github/cognitive-types-repair/part-*.patch > "$RUNNER_TEMP/cognitive-types-final.patch"
-          echo '6b75ab829e85a28e316f948abf2ca613a24b954fa519195bea5b3a846439559a  '"$RUNNER_TEMP/cognitive-types-final.patch" | sha256sum --check
+          actual_digest="$(python3 - "$RUNNER_TEMP/cognitive-types-final.patch" <<'PY'
+          import hashlib
+          import pathlib
+          import sys
+          print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest())
+          PY
+          )"
+          test "$actual_digest" = '6b75ab829e85a28e316f948abf2ca613a24b954fa519195bea5b3a846439559a'
           git apply --check "$RUNNER_TEMP/cognitive-types-final.patch"
           git apply --index "$RUNNER_TEMP/cognitive-types-final.patch"
 
