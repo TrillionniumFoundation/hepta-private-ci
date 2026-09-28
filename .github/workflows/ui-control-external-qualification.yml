@@ -64,10 +64,10 @@ jobs:
             "$WORKFLOW_REF" "$CANDIDATE_SHA" "$QUALIFICATION_RUN_ID" \
             > ui-control-preflight-evidence/requested-subject.txt
 
-      - name: Check out the trusted preflight implementation from main
+      - name: Check out the trusted preflight implementation from the immutable workflow SHA
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: main
+          ref: ${{ github.sha }}
           path: .ui-control-trusted
           persist-credentials: false
           fetch-depth: 1
@@ -81,20 +81,24 @@ jobs:
           fetch-depth: 0
 
       - id: ancestry
-        name: Require exact candidate ancestry from main before protected-environment eligibility
+        name: Require exact candidate ancestry and record the immutable trusted verifier
         env:
           CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          TRUSTED_WORKFLOW_SHA: ${{ github.sha }}
         shell: bash
         working-directory: .ui-control-candidate
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test "$(git -C ../.ui-control-trusted rev-parse HEAD)" = "$TRUSTED_WORKFLOW_SHA"
           git fetch --no-tags --force origin main:refs/remotes/origin/main
           git merge-base --is-ancestor "$CANDIDATE_SHA" refs/remotes/origin/main
-          printf 'sha=%s\ntree=%s\nmain=%s\n' \
+          printf 'sha=%s\ntree=%s\nmain=%s\ntrusted_verifier_sha=%s\ntrusted_verifier_tree=%s\n' \
             "$(git rev-parse HEAD)" \
             "$(git rev-parse HEAD^{tree})" \
             "$(git rev-parse refs/remotes/origin/main)" \
+            "$(git -C ../.ui-control-trusted rev-parse HEAD)" \
+            "$(git -C ../.ui-control-trusted rev-parse HEAD^{tree})" \
             > ../ui-control-preflight-evidence/source.txt
 
       - name: Fetch official workflow-run metadata with the read-only repository token
@@ -112,7 +116,7 @@ jobs:
             "$GITHUB_API_URL/repos/$EXPECTED_REPOSITORY/actions/runs/$QUALIFICATION_RUN_ID" \
             --output ui-control-preflight-evidence/qualification-run.json
 
-      - name: Setup Node.js 22 for candidate-owned semantic receipt validation
+      - name: Setup Node.js 22 for trusted semantic receipt validation
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: 22
@@ -217,28 +221,42 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 55
     steps:
-      - name: Check out exact main-reachable candidate
+      - name: Check out the trusted protected verifier from the immutable workflow SHA
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: .ui-control-trusted
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Check out exact main-reachable candidate without persisted credentials
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ inputs.candidate_sha }}
+          path: .ui-control-candidate
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Revalidate exact identity and main ancestry before mapping any protected value
+      - name: Revalidate candidate identity, main ancestry, and immutable verifier before protected values
         env:
           CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          TRUSTED_WORKFLOW_SHA: ${{ github.sha }}
         shell: bash
+        working-directory: .ui-control-candidate
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test "$(git -C ../.ui-control-trusted rev-parse HEAD)" = "$TRUSTED_WORKFLOW_SHA"
           git fetch --no-tags --force origin main:refs/remotes/origin/main
           git merge-base --is-ancestor "$CANDIDATE_SHA" refs/remotes/origin/main
-          mkdir -p ui-control-external-evidence
-          printf 'sha=%s\ntree=%s\nmain=%s\n' \
+          mkdir -p ../ui-control-external-evidence
+          printf 'sha=%s\ntree=%s\nmain=%s\ntrusted_verifier_sha=%s\ntrusted_verifier_tree=%s\n' \
             "$(git rev-parse HEAD)" \
             "$(git rev-parse HEAD^{tree})" \
             "$(git rev-parse refs/remotes/origin/main)" \
-            > ui-control-external-evidence/source.txt
+            "$(git -C ../.ui-control-trusted rev-parse HEAD)" \
+            "$(git -C ../.ui-control-trusted rev-parse HEAD^{tree})" \
+            > ../ui-control-external-evidence/source.txt
 
       - name: Setup Node.js 22
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
@@ -246,7 +264,7 @@ jobs:
           node-version: 22
 
       - name: Build and test the exact locked candidate before mapping deployment credentials
-        working-directory: ${{ env.UI_CONTROL_APP }}
+        working-directory: .ui-control-candidate/apps/hepta-control-ui
         shell: bash
         run: |
           set -euo pipefail
@@ -262,14 +280,15 @@ jobs:
           name: ui-control-repository-preflight-${{ inputs.candidate_sha }}
           path: ui-control-external-evidence/repository-preflight
 
-      - name: Probe selected HTTPS deployment
+      - name: Probe selected HTTPS deployment with the trusted verifier
+        working-directory: .ui-control-candidate
         env:
           HEPTA_UI_CONTROL_BASE_URL: ${{ secrets.HEPTA_UI_CONTROL_BASE_URL }}
           HEPTA_UI_CONTROL_DEPLOYMENT_ID: ${{ secrets.HEPTA_UI_CONTROL_DEPLOYMENT_ID }}
           HEPTA_UI_CONTROL_COOKIE: ${{ secrets.HEPTA_UI_CONTROL_COOKIE }}
           HEPTA_UI_CONTROL_CSRF_TOKEN: ${{ secrets.HEPTA_UI_CONTROL_CSRF_TOKEN }}
           HEPTA_UI_CONTROL_COOKIE_PATH: ${{ secrets.HEPTA_UI_CONTROL_COOKIE_PATH }}
-        run: node qualification/ui-control/deployment-security.mjs ui-control-external-evidence/deployment-security-receipt.json
+        run: node ../.ui-control-trusted/qualification/ui-control/deployment-security.mjs ../ui-control-external-evidence/deployment-security-receipt.json
 
       - name: Materialize independently retained Agentd and authority evidence
         if: ${{ inputs.run_real_backend }}
@@ -285,8 +304,9 @@ jobs:
           printf '%s' "$CHAOS_EVIDENCE_JSON" > "$RUNNER_TEMP/ui-control-agentd-chaos-evidence.json"
           printf '%s' "$AUTHORITY_EVIDENCE_JSON" > "$RUNNER_TEMP/ui-control-authority-evidence.json"
 
-      - name: Exercise real Agentd/backend semantics
+      - name: Exercise real Agentd/backend semantics with the trusted verifier
         if: ${{ inputs.run_real_backend }}
+        working-directory: .ui-control-candidate
         env:
           HEPTA_UI_CONTROL_BASE_URL: ${{ secrets.HEPTA_UI_CONTROL_BASE_URL }}
           HEPTA_UI_CONTROL_DEPLOYMENT_ID: ${{ secrets.HEPTA_UI_CONTROL_DEPLOYMENT_ID }}
@@ -298,7 +318,7 @@ jobs:
           HEPTA_UI_CONTROL_CHAOS_EVIDENCE: ${{ runner.temp }}/ui-control-agentd-chaos-evidence.json
           HEPTA_UI_CONTROL_AUTHORITY_EVIDENCE: ${{ runner.temp }}/ui-control-authority-evidence.json
           HEPTA_UI_CONTROL_ALLOW_MUTATION: I_UNDERSTAND_THIS_USES_A_DISPOSABLE_QUALIFICATION_TARGET
-        run: node qualification/ui-control/real-backend-contract.mjs ui-control-external-evidence/real-backend-receipt.json
+        run: node ../.ui-control-trusted/qualification/ui-control/real-backend-contract.mjs ../ui-control-external-evidence/real-backend-receipt.json
 
       - name: Resolve repository receipts retained by the accepted preflight
         if: ${{ inputs.run_production_evidence }}
@@ -341,12 +361,13 @@ jobs:
             echo "UI_CONTROL_PRODUCTION_APPROVAL_RECEIPT=$PWD/ui-control-external-evidence/manual/production-approval.json"
           } >> "$GITHUB_ENV"
 
-      - name: Validate exact external evidence bundle
+      - name: Validate exact external evidence bundle with the trusted verifier
         if: ${{ inputs.run_production_evidence }}
+        working-directory: .ui-control-candidate
         env:
           HEPTA_UI_CONTROL_BASE_URL: ${{ secrets.HEPTA_UI_CONTROL_BASE_URL }}
           HEPTA_UI_CONTROL_DEPLOYMENT_ID: ${{ secrets.HEPTA_UI_CONTROL_DEPLOYMENT_ID }}
-        run: node qualification/ui-control/validate-external-evidence.mjs ui-control-external-evidence/external-evidence-bundle.json
+        run: node ../.ui-control-trusted/qualification/ui-control/validate-external-evidence.mjs ../ui-control-external-evidence/external-evidence-bundle.json
 
       - name: Publish protected external qualification summary
         if: always()
@@ -357,6 +378,7 @@ jobs:
             echo
             echo "- Candidate: \`${{ inputs.candidate_sha }}\`"
             echo "- Repository qualification run: \`${{ inputs.repository_qualification_run_id }}\`"
+            echo "- Trusted verifier: \`${{ github.sha }}\`"
             echo "- Protected environment: \`${{ env.UI_CONTROL_PROTECTED_ENVIRONMENT }}\`"
             for file in deployment-security-receipt.json real-backend-receipt.json external-evidence-bundle.json; do
               if test -f "ui-control-external-evidence/$file"; then

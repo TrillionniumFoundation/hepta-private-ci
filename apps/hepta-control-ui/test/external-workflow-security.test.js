@@ -30,8 +30,10 @@ test("external qualification performs a secretless main-bound repository preflig
   );
   assert.doesNotMatch(preflight, /\$\{\{\s*secrets\./u);
   assert.match(preflight, /test "\$WORKFLOW_REF" = refs\/heads\/main/u);
-  assert.match(preflight, /ref: main/u);
+  assert.match(preflight, /ref: \$\{\{ github\.sha \}\}/u);
   assert.match(preflight, /path: \.ui-control-trusted/u);
+  assert.match(preflight, /path: \.ui-control-candidate/u);
+  assert.match(preflight, /test "\$\(git -C \.\.\/\.ui-control-trusted rev-parse HEAD\)" = "\$TRUSTED_WORKFLOW_SHA"/u);
   assert.match(preflight, /git merge-base --is-ancestor "\$CANDIDATE_SHA" refs\/remotes\/origin\/main/u);
   assert.match(preflight, /actions\/runs\/\$QUALIFICATION_RUN_ID/u);
   assert.match(preflight, /node \.\.\/\.ui-control-trusted\/qualification\/ui-control\/validate-repository-preflight\.mjs/u);
@@ -43,15 +45,27 @@ test("external qualification performs a secretless main-bound repository preflig
   assert.ok(metadata >= 0 && sourceDownload > metadata && semantic > sourceDownload);
 });
 
-test("the protected job cannot run before preflight and maps secrets only after candidate tests", () => {
+test("the protected job executes only immutable trusted verifiers after mapping secrets", () => {
   const job = section(external, "  protected-external-qualification:\n");
   assert.match(job, /needs:\s*repository-preflight/u);
   assert.match(job, /needs\.repository-preflight\.result == 'success'/u);
   assert.match(job, /environment:\s*ui-control-production-qualification/u);
+  assert.match(job, /ref: \$\{\{ github\.sha \}\}/u);
+  assert.match(job, /path: \.ui-control-trusted/u);
+  assert.match(job, /path: \.ui-control-candidate/u);
+  assert.match(job, /test "\$\(git -C \.\.\/\.ui-control-trusted rev-parse HEAD\)" = "\$TRUSTED_WORKFLOW_SHA"/u);
   assert.match(job, /git merge-base --is-ancestor "\$CANDIDATE_SHA" refs\/remotes\/origin\/main/u);
+  assert.match(job, /working-directory: \.ui-control-candidate\/apps\/hepta-control-ui/u);
+
   const tests = job.indexOf("Build and test the exact locked candidate before mapping deployment credentials");
   const firstSecret = job.indexOf("${{ secrets.");
   assert.ok(tests >= 0 && firstSecret > tests);
+
+  const protectedTail = job.slice(firstSecret);
+  assert.match(protectedTail, /node \.\.\/\.ui-control-trusted\/qualification\/ui-control\/deployment-security\.mjs/u);
+  assert.match(protectedTail, /node \.\.\/\.ui-control-trusted\/qualification\/ui-control\/real-backend-contract\.mjs/u);
+  assert.match(protectedTail, /node \.\.\/\.ui-control-trusted\/qualification\/ui-control\/validate-external-evidence\.mjs/u);
+  assert.doesNotMatch(protectedTail, /run:\s*node qualification\/ui-control\//u);
   assert.match(job, /HEPTA_UI_CONTROL_ALLOW_MUTATION: I_UNDERSTAND_THIS_USES_A_DISPOSABLE_QUALIFICATION_TARGET/u);
   assert.match(job, /if: \$\{\{ inputs\.run_production_evidence \}\}/u);
 });
