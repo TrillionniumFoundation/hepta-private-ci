@@ -49,6 +49,10 @@ test("CSP validation is exact rather than substring based", () => {
     () => assertContentSecurityPolicy(csp.replace("script-src 'self'", "script-src 'self' 'unsafe-inline'")),
     error => error.code === "UI_CONTROL_CSP_UNSAFE_SOURCE",
   );
+  assert.throws(
+    () => assertContentSecurityPolicy(`${csp}; script-src-elem 'self'`),
+    error => error.code === "UI_CONTROL_CSP_DIRECTIVE",
+  );
 });
 
 test("HSTS and cache policy reject superficially matching weak values", () => {
@@ -57,6 +61,7 @@ test("HSTS and cache policy reject superficially matching weak values", () => {
   assert.doesNotThrow(() => assertNoStoreCachePolicy("private, no-store, max-age=0"));
   assert.throws(() => assertNoStoreCachePolicy("public, no-store"), error => error.code === "UI_CONTROL_CACHE_CONTROL");
   assert.throws(() => assertNoStoreCachePolicy("no-store, max-age=60"), error => error.code === "UI_CONTROL_CACHE_CONTROL");
+  assert.throws(() => assertNoStoreCachePolicy("no-store=yes"), error => error.code === "UI_CONTROL_CACHE_CONTROL");
 });
 
 test("Permissions-Policy disables every sensitive feature exactly", () => {

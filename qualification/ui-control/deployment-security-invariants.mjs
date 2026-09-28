@@ -15,6 +15,11 @@ const REQUIRED_CSP = Object.freeze({
   "form-action": Object.freeze(["'self'"]),
   "frame-ancestors": Object.freeze(["'none'"]),
 });
+const ALLOWED_CSP_DIRECTIVES = new Set([
+  ...Object.keys(REQUIRED_CSP),
+  "upgrade-insecure-requests",
+  "block-all-mixed-content",
+]);
 const FORBIDDEN_CSP_SOURCES = new Set([
   "*",
   "'unsafe-inline'",
@@ -45,8 +50,12 @@ export function assertContentSecurityPolicy(value) {
     const [rawName, ...rawSources] = directive.split(/\s+/u);
     const name = rawName.toLowerCase();
     assertEvidence(/^[a-z][a-z0-9-]*$/u.test(name), "UI_CONTROL_CSP_SYNTAX", `invalid CSP directive: ${rawName}`);
+    assertEvidence(ALLOWED_CSP_DIRECTIVES.has(name), "UI_CONTROL_CSP_DIRECTIVE", `CSP directive is not allowed: ${name}`);
     assertEvidence(!directives.has(name), "UI_CONTROL_CSP_DUPLICATE", `duplicate CSP directive: ${name}`);
     const sources = rawSources.map(source => source.toLowerCase());
+    if (!Object.hasOwn(REQUIRED_CSP, name)) {
+      assertEvidence(sources.length === 0, "UI_CONTROL_CSP_DIRECTIVE", `${name} must not carry source values`);
+    }
     for (const source of sources) {
       assertEvidence(!FORBIDDEN_CSP_SOURCES.has(source), "UI_CONTROL_CSP_UNSAFE_SOURCE", `${name} contains forbidden source ${source}`);
       assertEvidence(!source.includes("*"), "UI_CONTROL_CSP_UNSAFE_SOURCE", `${name} contains a wildcard source`);
@@ -97,7 +106,7 @@ export function assertNoStoreCachePolicy(value) {
     assertEvidence(!directives.has(name), "UI_CONTROL_CACHE_DUPLICATE", `duplicate Cache-Control directive: ${name}`);
     directives.set(name, directiveValue);
   }
-  assertEvidence(directives.has("no-store"), "UI_CONTROL_CACHE_CONTROL", "Cache-Control must include no-store");
+  assertEvidence(directives.get("no-store") === true, "UI_CONTROL_CACHE_CONTROL", "Cache-Control must include no-store as a flag directive");
   for (const forbidden of ["public", "immutable"]) {
     assertEvidence(!directives.has(forbidden), "UI_CONTROL_CACHE_CONTROL", `Cache-Control must not include ${forbidden}`);
   }
