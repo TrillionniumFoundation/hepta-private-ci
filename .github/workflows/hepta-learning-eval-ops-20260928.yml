@@ -1,0 +1,198 @@
+name: Hepta learning.eval one-shot convergence apply
+
+on:
+  push:
+    branches:
+      - ops/learning-eval-convergence-20260928-a
+
+permissions:
+  contents: write
+
+concurrency:
+  group: learning-eval-one-shot-convergence
+  cancel-in-progress: false
+
+jobs:
+  apply-verified-patch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      TARGET_BRANCH: fix/learning-eval-full-convergence-20260926
+      EXPECTED_HEAD: 0d5d3dc54b6724041e7644978876015806158a40
+      PATCH_SHA256: 9179e050b0f8f8d5533eb7ba265bda94fc1a3bde45b303317f58f7683538a476
+      PATCH_GZIP_SHA256: 2e6e5838227845d262efae31d06355799aee37d8b620c25006ded92d283a94a0
+    steps:
+      - name: Checkout immutable helper payload
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Install pinned qualification tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+
+      - name: Reconstruct and authenticate exact patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/learning-eval-convergence" .hepta-evidence/learning-eval-ops
+          cat .hepta-ops/learning-eval-convergence/part-* \
+            | base64 --decode > "$RUNNER_TEMP/learning-eval-convergence/patch.gz"
+          echo "${PATCH_GZIP_SHA256}  $RUNNER_TEMP/learning-eval-convergence/patch.gz" | sha256sum -c -
+          gzip -dc "$RUNNER_TEMP/learning-eval-convergence/patch.gz" \
+            > "$RUNNER_TEMP/learning-eval-convergence/patch"
+          echo "${PATCH_SHA256}  $RUNNER_TEMP/learning-eval-convergence/patch" | sha256sum -c -
+          sha256sum "$RUNNER_TEMP/learning-eval-convergence/patch" \
+            "$RUNNER_TEMP/learning-eval-convergence/patch.gz" \
+            | tee .hepta-evidence/learning-eval-ops/patch-sha256.txt
+
+      - name: Apply only to the exact canonical candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin \
+            "refs/heads/${TARGET_BRANCH}:refs/remotes/origin/${TARGET_BRANCH}"
+          observed="$(git rev-parse "refs/remotes/origin/${TARGET_BRANCH}")"
+          test "$observed" = "$EXPECTED_HEAD"
+          git checkout -B "$TARGET_BRANCH" "refs/remotes/origin/${TARGET_BRANCH}"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test -z "$(git status --porcelain)"
+          git apply --index --whitespace=error-all \
+            "$RUNNER_TEMP/learning-eval-convergence/patch"
+          git diff --cached --check
+          git config user.name "OpenAI learning.eval convergence"
+          git config user.email "noreply@openai.com"
+
+      - name: Verify generated source truth and static regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-learning-eval-status.py write
+          git add docs/modules/learning.eval/CURRENT_STATUS.json \
+            docs/modules/learning.eval/TECHNICAL.md \
+            codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md
+          python3 scripts/hepta-learning-eval-status.py verify
+          python3 scripts/test_hepta_learning_eval_projection.py -v
+          python3 scripts/test_hepta_rust_identifiers.py -v
+          python3 scripts/test_hepta_learning_eval_exact.py -v
+          python3 scripts/hepta-learning-eval-target-host.py self-test
+          bash -n scripts/hepta-learning-eval-api-surface.sh
+          git diff --cached --check
+
+      - name: Verify compiler-enforced default and compatibility API surfaces
+        shell: bash
+        run: |
+          set -o pipefail
+          bash scripts/hepta-learning-eval-api-surface.sh 2>&1 \
+            | tee .hepta-evidence/learning-eval-ops/api-surface.log
+
+      - name: Verify formatting
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          cargo fmt --package codex-hepta-intelligence-eval \
+            --package codex-hepta-agentd \
+            --package codex-hepta-intelligence -- --check 2>&1 \
+            | tee ../.hepta-evidence/learning-eval-ops/format.log
+
+      - name: Compile owner and consumers
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          cargo check --locked \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-agentd \
+            -p codex-hepta-intelligence \
+            --all-targets 2>&1 \
+            | tee ../.hepta-evidence/learning-eval-ops/check.log
+
+      - name: Run owner tests including fresh-process recovery
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          just test --locked -p codex-hepta-intelligence-eval --test-threads=1 2>&1 \
+            | tee ../.hepta-evidence/learning-eval-ops/owner-tests.log
+
+      - name: Run exact-use consumers
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          just test --locked -p codex-hepta-agentd intelligence_outcome_evaluation --test-threads=1 2>&1 \
+            | tee ../.hepta-evidence/learning-eval-ops/agentd-consumer.log
+          just test --locked -p codex-hepta-intelligence evaluated_shadow --test-threads=1 2>&1 \
+            | tee ../.hepta-evidence/learning-eval-ops/shadow-consumer.log
+          just test --locked -p codex-hepta-intelligence plasticity_product --test-threads=1 2>&1 \
+            | tee ../.hepta-evidence/learning-eval-ops/plasticity-consumer.log
+
+      - name: Run strict lint
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          cargo clippy --locked \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-agentd \
+            -p codex-hepta-intelligence \
+            --all-targets -- -D warnings 2>&1 \
+            | tee ../.hepta-evidence/learning-eval-ops/clippy.log
+
+      - name: Commit source and map-only observation, then fast-forward canonical branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test -n "$(git diff --cached --name-only)"
+          git commit -m "fix(learning.eval): converge typed recovery and exact-use qualification"
+          source_commit="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse HEAD^{tree})"
+          python3 - "$source_commit" "$source_tree" <<'PY'
+          import json
+          import pathlib
+          import sys
+          path = pathlib.Path('docs/modules/learning.eval/IMPLEMENTATION_MAP.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          commit, tree = sys.argv[1:]
+          observation = {'commit': commit, 'tree': tree}
+          data['sourceBase'] = observation
+          data['observedAtHead'] = observation
+          data['sourceBaseStatus'] = 'immutable_executable_source_observation_preceding_final_map_rebind'
+          data['sourceBaseSemantics'] = (
+              'Exact executable-source observation preceding this map-only rebind. '
+              'Qualification must prove all mapped source, tests, consumers and observed build '
+              'inputs unchanged at the tested final candidate. This is not a passing execution '
+              'receipt and does not self-issue production or acceptance state.'
+          )
+          path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+          PY
+          python3 scripts/hepta-learning-eval-status.py verify
+          git add docs/modules/learning.eval/IMPLEMENTATION_MAP.json
+          git diff --cached --check
+          git commit -m "docs(learning.eval): bind converged executable source observation"
+          final_head="$(git rev-parse HEAD)"
+          final_tree="$(git rev-parse HEAD^{tree})"
+          printf 'source_commit=%s\nsource_tree=%s\nfinal_head=%s\nfinal_tree=%s\n' \
+            "$source_commit" "$source_tree" "$final_head" "$final_tree" \
+            | tee .hepta-evidence/learning-eval-ops/pushed-candidate.txt
+          test -z "$(git status --porcelain --untracked-files=no)"
+          git push origin "HEAD:refs/heads/${TARGET_BRANCH}"
+
+      - name: Retain one-shot execution evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-one-shot-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-eval-ops/
+          if-no-files-found: warn
+          retention-days: 7
