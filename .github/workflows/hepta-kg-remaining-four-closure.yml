@@ -5,7 +5,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: kg-remaining-four-arm-executor
+  group: kg-remaining-four-arm-${{ github.sha }}
   cancel-in-progress: false
 jobs:
   close:
