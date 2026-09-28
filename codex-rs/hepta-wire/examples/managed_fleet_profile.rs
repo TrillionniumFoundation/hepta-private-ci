@@ -175,7 +175,9 @@ fn measure(rounds: usize, peer_count: usize, base_payload_bytes: usize) -> Profi
                     return Err("managed fleet observed a terminal record error".into());
                 }
                 feed_calls += 1;
-                budget_yields += usize::from(feed.batch().yielded());
+                if feed.batch().yielded() {
+                    budget_yields += 1;
+                }
                 peer.offset += consumed;
                 peer.delivered += feed.batch().frames().len();
                 if peer.delivered > 1 {
