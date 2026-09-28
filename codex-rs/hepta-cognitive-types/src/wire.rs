@@ -166,18 +166,11 @@ struct CognitiveWireEnvelopeV1<T> {
     payload: T,
 }
 
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct CognitiveWireEnvelopeRefV1<'a, T> {
-    schema: &'static str,
-    schema_version: u32,
-    contract: &'static str,
-    payload: &'a T,
-}
-
 pub fn encode_payload_canonical_v1<T: CognitiveContractV1>(
     value: &T,
 ) -> Result<Vec<u8>, CognitiveWireError> {
+    crate::bounded::serialized_size(value, T::MAX_ENCODED_BYTES, "payload")
+        .map_err(CognitiveWireError::Contract)?;
     value
         .validate_contract()
         .map_err(CognitiveWireError::Contract)?;
@@ -192,26 +185,56 @@ pub fn encode_payload_canonical_v1<T: CognitiveContractV1>(
 }
 
 pub fn encode_wire_v1<T: CognitiveContractV1>(value: &T) -> Result<Vec<u8>, CognitiveWireError> {
-    encode_payload_canonical_v1(value)?;
-    let envelope = CognitiveWireEnvelopeRefV1 {
-        schema: T::SCHEMA_ID,
-        schema_version: COGNITIVE_WIRE_VERSION_V1,
-        contract: T::CONTRACT_ID,
-        payload: value,
-    };
-    let encoded = canonical_json_bytes(&envelope)?;
-    let maximum = T::MAX_ENCODED_BYTES + MAX_ENVELOPE_OVERHEAD_BYTES;
-    if encoded.len() > maximum {
+    let payload = encode_payload_canonical_v1(value)?;
+    encode_envelope_from_payload::<T>(&payload)
+}
+
+fn envelope_maximum<T: CognitiveContractV1>() -> Result<usize, CognitiveWireError> {
+    T::MAX_ENCODED_BYTES
+        .checked_add(MAX_ENVELOPE_OVERHEAD_BYTES)
+        .ok_or(CognitiveWireError::EnvelopeLength {
+            actual: usize::MAX,
+            maximum: T::MAX_ENCODED_BYTES,
+        })
+}
+
+/// The envelope has a frozen, four-key lexicographic order. Reuse the checked
+/// canonical payload instead of materializing and serializing it a second time.
+fn encode_envelope_from_payload<T: CognitiveContractV1>(
+    payload: &[u8],
+) -> Result<Vec<u8>, CognitiveWireError> {
+    let maximum = envelope_maximum::<T>()?;
+    if T::CONTRACT_ID.len() > MAX_ENVELOPE_OVERHEAD_BYTES
+        || T::SCHEMA_ID.len() > MAX_ENVELOPE_OVERHEAD_BYTES
+    {
         return Err(CognitiveWireError::EnvelopeLength {
-            actual: encoded.len(),
+            actual: maximum.saturating_add(1),
             maximum,
         });
     }
+    let contract = serde_json::to_string(T::CONTRACT_ID).map_err(CognitiveWireError::Json)?;
+    let schema = serde_json::to_string(T::SCHEMA_ID).map_err(CognitiveWireError::Json)?;
+    let prefix = format!("{{\"contract\":{contract},\"payload\":");
+    let suffix = format!(",\"schema\":{schema},\"schemaVersion\":{COGNITIVE_WIRE_VERSION_V1}}}");
+    let length = payload
+        .len()
+        .saturating_add(prefix.len())
+        .saturating_add(suffix.len());
+    if length > maximum {
+        return Err(CognitiveWireError::EnvelopeLength {
+            actual: length,
+            maximum,
+        });
+    }
+    let mut encoded = Vec::with_capacity(length);
+    encoded.extend_from_slice(prefix.as_bytes());
+    encoded.extend_from_slice(payload);
+    encoded.extend_from_slice(suffix.as_bytes());
     Ok(encoded)
 }
 
 pub fn decode_wire_v1<T: CognitiveContractV1>(bytes: &[u8]) -> Result<T, CognitiveWireError> {
-    let maximum = T::MAX_ENCODED_BYTES + MAX_ENVELOPE_OVERHEAD_BYTES;
+    let maximum = envelope_maximum::<T>()?;
     if bytes.is_empty() || bytes.len() > maximum {
         return Err(CognitiveWireError::EnvelopeLength {
             actual: bytes.len(),
@@ -240,7 +263,7 @@ pub fn decode_wire_v1<T: CognitiveContractV1>(bytes: &[u8]) -> Result<T, Cogniti
             maximum: T::MAX_ENCODED_BYTES,
         });
     }
-    let canonical = canonical_json_bytes(&envelope)?;
+    let canonical = encode_envelope_from_payload::<T>(&payload)?;
     if canonical.as_slice() != bytes {
         return Err(CognitiveWireError::NonCanonicalInput);
     }
@@ -443,6 +466,32 @@ impl StdError for CognitiveWireError {
             Self::Contract(error) => Some(error),
             Self::Json(error) => Some(error),
             _ => None,
+        }
+    }
+}
+
+/// Version of typed common-semantic equality, not a wire or schema revision.
+pub const CANONICAL_PROJECTION_COMPARISON_V1: &str = "typed-canonical-projection-equality-v1";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ContractDigestProfileV1 {
+    FrozenCanonicalJsonV1,
+    SchemaBoundV1,
+}
+
+impl ContractDigestProfileV1 {
+    #[must_use]
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::FrozenCanonicalJsonV1 => "frozen-canonical-json-v1",
+            Self::SchemaBoundV1 => "schema-bound-canonical-json-v1",
+        }
+    }
+
+    pub fn digest<T: CognitiveContractV1>(self, value: &T) -> Result<Digest32, CognitiveWireError> {
+        match self {
+            Self::FrozenCanonicalJsonV1 => canonical_contract_digest_v1(value),
+            Self::SchemaBoundV1 => canonical_contract_digest_bound_v1(value),
         }
     }
 }

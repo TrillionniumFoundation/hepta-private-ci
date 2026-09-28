@@ -67,3 +67,6 @@ fn checked_in_cross_language_negative_vectors_are_rejected() {
 }
 
 include!("identity_tests.rs");
+
+include!("handoff_tests.rs");
+include!("codec_tests.rs");

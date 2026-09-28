@@ -5,9 +5,12 @@
 
 #![forbid(unsafe_code)]
 
+mod bounded;
 pub mod consumer;
 pub mod consumer_adapters;
+pub mod context;
 pub mod contract;
+pub mod handoff;
 pub mod hnmf;
 pub mod hnmf_learning;
 pub mod lane_c;
