@@ -34,24 +34,24 @@ pub struct NeuronStorageCapacityV2 {
 
 impl NeuronStorageCapacityV2 {
     #[must_use]
-    pub fn effective_bytes(&self) -> u64 {
+    pub fn effective_bytes(self) -> u64 {
         self.file_bytes.saturating_add(self.reserved_bytes)
     }
 
     #[must_use]
-    pub fn remaining_records(&self) -> usize {
+    pub fn remaining_records(self) -> usize {
         self.record_limit.saturating_sub(self.records)
     }
 
     #[must_use]
-    pub fn remaining_bytes(&self) -> u64 {
+    pub fn remaining_bytes(self) -> u64 {
         self.byte_limit.saturating_sub(self.effective_bytes())
     }
 
     /// Maximum of record and byte utilization, in parts per million. Invalid
     /// zero limits fail closed as fully utilized; valid stores never expose them.
     #[must_use]
-    pub fn utilization_ppm(&self) -> u32 {
+    pub fn utilization_ppm(self) -> u32 {
         fn ratio(used: u128, limit: u128) -> u32 {
             if limit == 0 {
                 return PPM as u32;
@@ -68,14 +68,14 @@ impl NeuronStorageCapacityV2 {
     /// Advisory 80% warning; actual key/payload-dependent admission remains the
     /// authority and may reject before this watermark. Never delete to recover.
     #[must_use]
-    pub fn near_limit(&self) -> bool {
+    pub fn near_limit(self) -> bool {
         self.utilization_ppm() >= WARNING_PPM
     }
 
     /// A zero remaining record or byte budget requires explicit backpressure.
     /// Admission can still reject earlier for payload-specific reservations.
     #[must_use]
-    pub fn exhausted(&self) -> bool {
+    pub fn exhausted(self) -> bool {
         self.remaining_records() == 0 || self.remaining_bytes() == 0
     }
 }
@@ -89,12 +89,12 @@ pub struct NeuronRuntimeCapacityV2 {
 
 impl NeuronRuntimeCapacityV2 {
     #[must_use]
-    pub fn near_limit(&self) -> bool {
+    pub fn near_limit(self) -> bool {
         self.generation.near_limit() || self.index.near_limit()
     }
 
     #[must_use]
-    pub fn requires_backpressure(&self) -> bool {
+    pub fn requires_backpressure(self) -> bool {
         self.generation.exhausted()
             || self.index.exhausted()
             || self.witness_records_remaining == Some(0)
@@ -103,7 +103,7 @@ impl NeuronRuntimeCapacityV2 {
     /// Stable advisory code for metrics and runbooks. Authoritative admission
     /// remains in the generation store, index and witness implementations.
     #[must_use]
-    pub fn action_code(&self) -> &'static str {
+    pub fn action_code(self) -> &'static str {
         if self.requires_backpressure() {
             "backpressure"
         } else if self.near_limit() {
