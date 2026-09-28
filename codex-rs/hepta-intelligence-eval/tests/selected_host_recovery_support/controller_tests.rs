@@ -12,30 +12,92 @@ pub(super) fn recover_page<S: FinalHoldoutCasStoreV1, J: DurableProductEvaluatio
 ) -> Option<ProductEvaluationAttemptReceiptV1> {
     let blocked = host::id("a:unresolved-attempt");
     if mode == "page-first" {
-        journal.append(ProductEvaluationAttemptTransitionV1::intent(
-            blocked.clone(), host::digest("unresolved-plan"), namespace(),
-            host::digest("unresolved-owner-state"),
-        )).expect("record a prior unresolved attempt");
+        journal
+            .append(ProductEvaluationAttemptTransitionV1::intent(
+                blocked.clone(),
+                host::digest("unresolved-plan"),
+                namespace(),
+                host::digest("unresolved-owner-state"),
+            ))
+            .expect("record a prior unresolved attempt");
     }
     let cursor_path = root.join("recovery.cursor");
-    let cursor = OpenOptions::new().read(true).write(true)
-        .create(true).truncate(false).open(&cursor_path).expect("open cursor file");
-    File::open(root).and_then(|file| file.sync_all()).expect("durable cursor directory");
-    let mut result = runner.recover_selected_host_pending_page(
-        journal, cursor, &root.join("artifacts"), &root.join("publications"),
-        host_binding(), &host::verifier(false), || 85, Duration::from_secs(30), 1,
-    ).expect("bounded persistent recovery page");
-    assert_eq!(result.len(), 1);
-    let (attempt, result) = result.pop().expect("one result");
+    let cursor = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(&cursor_path)
+        .expect("open cursor file");
+    File::open(root)
+        .and_then(|file| file.sync_all())
+        .expect("durable cursor directory");
+
     if mode == "page-first" {
-        assert_eq!(attempt, blocked);
-        assert!(matches!(result, Err(RecordedProductEvaluationErrorV1::AttemptRequiresRecovery { .. })));
-        assert_eq!(journal.latest(&before.transition.attempt_id).expect("actual attempt"), Some(before.clone()));
-        assert_eq!(fs::read_dir(root.join("publications")).expect("publications").count(), 0);
+        // The first identity is durably handled with one active trust snapshot.
+        // A regressed clock on the second identity aborts the page before that
+        // identity can be verified, but the first cursor advancement survives
+        // the process boundary. This proves trust and time are resolved for
+        // every attempt rather than cached once for the whole page.
+        let mut calls = 0_u8;
+        let result = runner.recover_selected_host_pending_page(
+            journal,
+            cursor,
+            &root.join("artifacts"),
+            &root.join("publications"),
+            host_binding(),
+            || {
+                calls += 1;
+                let now = if calls == 1 { 85 } else { 84 };
+                Ok::<_, RecordedProductEvaluationErrorV1>((host::activate(), now))
+            },
+            Duration::from_secs(30),
+            2,
+        );
+        assert!(matches!(
+            result,
+            Err(RecordedProductEvaluationErrorV1::Invariant(
+                "recovery host clock regressed"
+            ))
+        ));
+        assert_eq!(calls, 2, "active trust must be resolved per attempt");
+        assert!(
+            !fs::read(&cursor_path).expect("persisted cursor").is_empty(),
+            "the first handled identity must survive the later page abort"
+        );
+        assert_eq!(
+            journal
+                .latest(&before.transition.attempt_id)
+                .expect("actual attempt"),
+            Some(before.clone())
+        );
+        assert_eq!(
+            fs::read_dir(root.join("publications"))
+                .expect("publications")
+                .count(),
+            0
+        );
         return None;
     }
-    assert_eq!(attempt, before.transition.attempt_id,
-        "fresh process must advance past the unresolved predecessor");
+
+    let mut result = runner
+        .recover_selected_host_pending_page(
+            journal,
+            cursor,
+            &root.join("artifacts"),
+            &root.join("publications"),
+            host_binding(),
+            || Ok((host::activate(), 85)),
+            Duration::from_secs(30),
+            1,
+        )
+        .expect("bounded persistent recovery page");
+    assert_eq!(result.len(), 1);
+    let (attempt, result) = result.pop().expect("one result");
+    assert_eq!(
+        attempt, before.transition.attempt_id,
+        "fresh process must advance past the unresolved predecessor"
+    );
     Some(result.expect("native archive recovery through persistent controller"))
 }
 
@@ -44,7 +106,8 @@ fn persistent_page_controller_advances_past_unresolved_work_across_processes() {
     for family in ["temporal", "outcome", "longitudinal"] {
         let ordinal = NEXT_ROOT.fetch_add(1, Ordering::Relaxed);
         let root = std::env::temp_dir().join(format!(
-            "hepta-cold-page-{}-{ordinal}-{family}", std::process::id()
+            "hepta-cold-page-{}-{ordinal}-{family}",
+            std::process::id()
         ));
         fs::create_dir(&root).expect("root");
         let status = child(&root, family, "produce", 4);
@@ -53,11 +116,20 @@ fn persistent_page_controller_advances_past_unresolved_work_across_processes() {
         assert!(child(&root, family, "page-first", 4).success());
         let cursor_before = fs::read(root.join("recovery.cursor")).expect("cursor");
         assert!(child(&root, family, "page-next", 4).success());
-        assert_ne!(fs::read(root.join("recovery.cursor")).expect("advanced cursor"), cursor_before);
+        assert_ne!(
+            fs::read(root.join("recovery.cursor")).expect("advanced cursor"),
+            cursor_before
+        );
         let published = fs::read(root.join("attempt.journal")).expect("journal");
         assert!(child(&root, family, "reconcile", 4).success());
-        assert_eq!(fs::read(root.join("attempt.journal")).expect("unchanged journal"), published);
-        assert_eq!(fs::read(root.join("holdout.cas")).expect("unchanged holdout"), holdout_before);
+        assert_eq!(
+            fs::read(root.join("attempt.journal")).expect("unchanged journal"),
+            published
+        );
+        assert_eq!(
+            fs::read(root.join("holdout.cas")).expect("unchanged holdout"),
+            holdout_before
+        );
         fs::remove_dir_all(root).expect("remove fixture");
     }
 }

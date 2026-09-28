@@ -14,19 +14,42 @@ use super::ProductEvaluationAttemptPhaseV1;
 use super::ProductEvaluationAttemptReceiptV1;
 use super::ProductEvaluationAttemptTransitionV1;
 
+const HARD_MAXIMUM_BYTES: u64 = 64 * 1024 * 1024;
+const HARD_MAXIMUM_EVENTS: usize = 1_000_000;
+
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub(super) struct Reservation {
     pub(super) events: u64,
     pub(super) bytes: u64,
 }
 
-#[derive(Default)]
 pub(super) struct AttemptCapacity {
     reserved: Reservation,
-    pending: BTreeSet<StableId>,
+    pub(super) pending: BTreeSet<StableId>,
+    maximum_bytes: u64,
+    maximum_events: usize,
+}
+
+impl Default for AttemptCapacity {
+    fn default() -> Self {
+        Self::with_limits(HARD_MAXIMUM_BYTES, HARD_MAXIMUM_EVENTS)
+    }
 }
 
 impl AttemptCapacity {
+    pub(super) fn with_limits(maximum_bytes: u64, maximum_events: usize) -> Self {
+        Self {
+            reserved: Reservation::default(),
+            pending: BTreeSet::new(),
+            maximum_bytes,
+            maximum_events,
+        }
+    }
+
+    pub(super) fn limits(&self) -> (u64, usize) {
+        (self.maximum_bytes, self.maximum_events)
+    }
+
     pub(super) fn reserved(&self) -> Reservation {
         self.reserved
     }
@@ -39,13 +62,21 @@ impl AttemptCapacity {
         let before = previous.map_or(0, remaining);
         let after = remaining(transition.phase);
         let frame = 135_u64
-            .checked_add(u64::try_from(transition.attempt_id.as_str().len())
-                .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Capacity)?)
+            .checked_add(
+                u64::try_from(transition.attempt_id.as_str().len())
+                    .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Capacity)?,
+            )
             .ok_or(ProductEvaluationAttemptJournalErrorV1::Capacity)?;
-        let events = self.reserved.events.checked_sub(before)
+        let events = self
+            .reserved
+            .events
+            .checked_sub(before)
             .and_then(|value| value.checked_add(after))
             .ok_or(ProductEvaluationAttemptJournalErrorV1::Corrupt)?;
-        let bytes = self.reserved.bytes.checked_sub(before * frame)
+        let bytes = self
+            .reserved
+            .bytes
+            .checked_sub(before * frame)
             .and_then(|value| value.checked_add(after * frame))
             .ok_or(ProductEvaluationAttemptJournalErrorV1::Corrupt)?;
         Ok(Reservation { events, bytes })
@@ -74,10 +105,14 @@ impl AttemptCapacity {
             return Err(ProductEvaluationAttemptJournalErrorV1::Capacity);
         }
         let lower = after.map_or(Bound::Unbounded, Bound::Excluded);
-        self.pending.range::<StableId, _>((lower, Bound::Unbounded))
+        self.pending
+            .range::<StableId, _>((lower, Bound::Unbounded))
             .take(limit)
             .map(|id| {
-                attempts.get(id).and_then(|events| events.last()).cloned()
+                attempts
+                    .get(id)
+                    .and_then(|events| events.last())
+                    .cloned()
                     .filter(|receipt| !receipt.transition.phase.is_terminal())
                     .ok_or(ProductEvaluationAttemptJournalErrorV1::Corrupt)
             })
@@ -94,8 +129,11 @@ impl Reservation {
         maximum_events: usize,
     ) -> Result<(), ProductEvaluationAttemptJournalErrorV1> {
         let events = u64::try_from(event_count)
-            .ok().and_then(|count| count.checked_add(self.events));
-        if byte_len.checked_add(self.bytes).is_none_or(|value| value > maximum_bytes)
+            .ok()
+            .and_then(|count| count.checked_add(self.events));
+        if byte_len
+            .checked_add(self.bytes)
+            .is_none_or(|value| value > maximum_bytes)
             || events.is_none_or(|value| value > maximum_events as u64)
         {
             return Err(ProductEvaluationAttemptJournalErrorV1::Capacity);
