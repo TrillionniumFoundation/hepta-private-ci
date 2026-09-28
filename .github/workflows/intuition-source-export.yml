@@ -1,57 +1,114 @@
-name: intuition.policy Exact Source Export
+name: intuition.policy One-shot Source Authoring
 
 on:
   push:
     branches: [codex/intuition-policy-production-closure-20260927]
     paths:
-      - ".github/workflows/intuition-source-export.yml"
-  workflow_dispatch:
+      - ".github/intuition-authoring-patch/READY"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: intuition-source-export-${{ github.ref }}
-  cancel-in-progress: true
+  group: intuition-one-shot-authoring-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  export:
-    name: Export immutable intuition sources
+  apply-verify-push:
+    name: Apply, format, verify, and publish source patch
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 60
     steps:
-      - name: Check out exact source
+      - name: Check out exact authoring head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
-          persist-credentials: false
           fetch-depth: 0
-      - name: Capture exact source subset
+          persist-credentials: true
+      - name: Validate and apply immutable patch
         shell: bash
         run: |
           set -euo pipefail
-          output="$RUNNER_TEMP/intuition-source"
+          base="$(sed -n 's/^base=//p' .github/intuition-authoring-patch/READY)"
+          expected="$(sed -n 's/^sha256=//p' .github/intuition-authoring-patch/READY)"
+          test "$base" = "696447e733e22e425cd05691d98f4fe0ef63f759"
+          git cat-file -e "$base^{commit}"
+          cat .github/intuition-authoring-patch/part-*.b64 | base64 --decode > "$RUNNER_TEMP/intuition-source.patch"
+          actual="$(sha256sum "$RUNNER_TEMP/intuition-source.patch" | awk '{print $1}')"
+          test "$actual" = "$expected"
+          git diff --quiet
+          git apply --check "$RUNNER_TEMP/intuition-source.patch"
+          git apply --index "$RUNNER_TEMP/intuition-source.patch"
+          rm -rf .github/intuition-authoring-patch
+          rm -f .github/workflows/intuition-source-export.yml
+      - name: Set up repository CI dependencies
+        uses: ./.github/actions/setup-ci
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+      - name: Format exact Rust source
+        working-directory: codex-rs
+        run: cargo fmt --all
+      - name: Verify Python boundaries and source inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/intuition_legacy_consumers.py
+          python3 -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
+      - name: Run final-use and existing boundary regressions
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_final_use_v4
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_commit_boundary
+          cargo test --locked -p codex-hepta-agentd --lib intuition_policy
+      - name: Run strict lint on affected product package
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D warnings
+      - name: Verify formatting and source cleanliness
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd codex-rs && cargo fmt --all -- --check)
+          git diff --check
+          test -z "$(find . -type d -name __pycache__ -print -quit)"
+      - name: Publish one clean commit on the reviewed base
+        shell: bash
+        env:
+          TARGET_BRANCH: codex/intuition-policy-production-closure-20260927
+          CLEAN_PARENT: 696447e733e22e425cd05691d98f4fe0ef63f759
+        run: |
+          set -euo pipefail
+          git config user.name "OpenAI source authoring"
+          git config user.email "assistant@openai.invalid"
+          git add -A
+          tree="$(git write-tree)"
+          commit="$(printf '%s\n\n%s\n' \
+            'fix(intuition): revalidate authority at final use' \
+            'Preserve the sole ledger owner while moving fresh time, generation, and three-party qualification checks under its serialization boundary. Add typed boundary domains, stage telemetry, legacy-consumer drift checks, and separate safety/effectiveness/operator acceptance states.' \
+            | git commit-tree "$tree" -p "$CLEAN_PARENT")"
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$GITHUB_SHA" \
+            origin "$commit:refs/heads/$TARGET_BRANCH"
+          printf '%s\n' "$commit" | tee "$RUNNER_TEMP/final-source-sha.txt"
+      - name: Retain authoring diagnostics on failure
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/intuition-authoring-failure"
           mkdir -p "$output"
-          tar -czf "$output/source.tgz" \
-            codex-rs/hepta-agentd/src \
-            codex-rs/hepta-agentd/tests \
-            codex-rs/hepta-agentd/Cargo.toml \
-            codex-rs/hepta-agent-protocol/src \
-            codex-rs/hepta-agent-protocol/Cargo.toml \
-            codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs \
-            codex-rs/hepta-intuition/src \
-            codex-rs/hepta-learning-ledger/src \
-            docs/modules/intuition.policy \
-            qualification/module-execution-dossiers/detail/intuition.policy.md \
-            scripts/intuition_ledger_exact.py
-          git rev-parse HEAD > "$output/source-sha.txt"
-          git rev-parse 'HEAD^{tree}' > "$output/source-tree.txt"
-          git status --porcelain --untracked-files=all > "$output/worktree-status.txt"
-          test ! -s "$output/worktree-status.txt"
-      - name: Retain immutable source subset
+          git status --short > "$output/status.txt"
+          git diff --binary > "$output/worktree.patch"
+          git diff --cached --binary > "$output/index.patch"
+          cp "$RUNNER_TEMP/intuition-source.patch" "$output/source.patch" 2>/dev/null || true
+      - name: Upload failure diagnostics
+        if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: intuition-source-export-${{ github.sha }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/intuition-source/
-          if-no-files-found: error
+          name: intuition-authoring-failure-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intuition-authoring-failure/
+          if-no-files-found: warn
           retention-days: 1
