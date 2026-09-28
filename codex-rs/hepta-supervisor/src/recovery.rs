@@ -71,7 +71,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         // or Matrix lease may represent a process that must be adopted and
         // contained even when catalog, restart-journal, or release-state reads
         // fail. Defer all fallible release/companion hydration until recover_slot
-        // has attempted both independent owner acquisitions.
+        // has attempted independent owner acquisition.
         if read_lease(record.layout.run_root())?.is_some()
             || read_matrix_lease(record.layout.matrixd_process_lease())?.is_some()
         {
@@ -283,7 +283,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             agent_id: agent_id.clone(),
             generation: starting.generation,
             fleet_root: self.registry.layout().fleet_root().as_path().to_path_buf(),
-            workspace: record.manifest.workspace.as_path().to_path_path_buf(),
+            workspace: record.manifest.workspace.as_path().to_path_buf(),
             home_root: record.layout.home_root().to_path_buf(),
             run_root: record.layout.run_root().to_path_buf(),
             control_socket: record.layout.agentd_control_socket().to_path_buf(),
@@ -426,10 +426,12 @@ impl<D: ProcessDriver> Supervisor<D> {
         record: &AgentRecord,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        // Evaluate both owners before semantic release, restart-journal, or
-        // rollback hydration. A main failure cannot skip companion ownership,
-        // and a companion failure cannot discard an already adopted main.
+        // Acquire the main owner first. Then attempt semantic hydration, but do
+        // not propagate its failure before the independent Matrix acquisition.
         let main = self.recover_main_slot(agent_id, slot, record, now);
+        let hydration = self
+            .record(agent_id)
+            .and_then(|fresh| self.hydrate_release_state(agent_id, slot, &fresh));
         let companion = self.recover_matrix_companion(agent_id, slot, record, now);
         if let Err(error) = &companion {
             slot.event(
@@ -437,19 +439,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 SupervisorEventKind::DriverFault(bounded_message(error.to_string())),
             );
         }
-
-        // Main recovery may have closed a Running -> release-state crash cut.
-        // Hydrate from a fresh record after both acquisition attempts so stale
-        // startup bytes cannot overwrite a newly published exact release state.
-        let hydration = self
-            .record(agent_id)
-            .and_then(|fresh| self.hydrate_release_state(agent_id, slot, &fresh));
         if let Err(error) = &hydration {
             self.reject_hydration_after_ownership(agent_id, slot, now, error);
         } else {
             slot.matrix.apply_restart_recovery(now);
         }
-
         main.and(companion).and(hydration)
     }
 
