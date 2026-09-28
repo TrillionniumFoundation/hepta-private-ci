@@ -58,10 +58,20 @@ def validate(report: Any, iterations: int = 256) -> None:
         wire_bytes = integer(row.get("wire_bytes"), "wire_bytes", count)
         capacity = integer(row.get("record_buffer_capacity_peak_bytes"), "capacity", 1)
         buffered = integer(row.get("record_buffer_length_observed_peak_bytes"), "buffered")
+        retained_capacity = integer(
+            row.get("record_buffer_capacity_after_workload_bytes"),
+            "retained capacity",
+        )
+        retained_length = integer(
+            row.get("record_buffer_length_after_workload_bytes"),
+            "retained length",
+        )
         if wire_bytes % count or wire_bytes // count <= payload:
             raise ValueError("wire accounting omits authenticated framing")
         if buffered > capacity or capacity > 2 * (wire_bytes // count):
             raise ValueError("record buffer capacity is inconsistent with measured input")
+        if retained_capacity > capacity or retained_length != 0:
+            raise ValueError("post-workload record buffer accounting is inconsistent")
         if integer(row.get("returned_payload_bytes_per_frame"), "returned payload", 1) != payload:
             raise ValueError("returned payload accounting mismatch")
         integer(row.get("decode_and_delivery_total_ns"), "decode total", 1)
@@ -87,6 +97,8 @@ def fixture() -> dict[str, Any]:
             record_buffer_growth_events=8, wire_bytes=256 * (payload + 160),
             record_buffer_capacity_peak_bytes=payload + 160,
             record_buffer_length_observed_peak_bytes=payload,
+            record_buffer_capacity_after_workload_bytes=payload + 160,
+            record_buffer_length_after_workload_bytes=0,
             returned_payload_bytes_per_frame=payload,
             decode_and_delivery_total_ns=256000,
             seal=dict(p50_ns=100, p95_ns=150, p99_ns=200),
@@ -146,6 +158,17 @@ class ProfileTests(unittest.TestCase):
 
     def test_rejects_missing_stage_and_unbounded_capacity(self) -> None:
         for field, value in (("seal", None), ("record_buffer_capacity_peak_bytes", 1 << 30)):
+            report = fixture()
+            report["scenarios"][0][field] = value
+            with self.assertRaises(ValueError):
+                validate(report)
+
+    def test_rejects_invalid_post_workload_buffer_accounting(self) -> None:
+        for field, value in (
+            ("record_buffer_capacity_after_workload_bytes", 1 << 30),
+            ("record_buffer_length_after_workload_bytes", 1),
+            ("record_buffer_capacity_after_workload_bytes", True),
+        ):
             report = fixture()
             report["scenarios"][0][field] = value
             with self.assertRaises(ValueError):

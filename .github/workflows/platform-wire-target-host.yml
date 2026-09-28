@@ -62,6 +62,7 @@ jobs:
           command -v rustc
           command -v python3
           command -v node
+          test -x /usr/bin/time
           cargo --version
           rustc --version
           python3 --version
@@ -76,10 +77,11 @@ jobs:
           python3 scripts/platform_wire_status.py self-test
           python3 scripts/platform_wire_status.py check-doc
 
-      - name: Run target-host native qualification
+      - name: Run target-host native qualification and managed resource profile
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p .hepta-evidence
           cargo test --locked --offline --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-wire --all-targets
           cargo test --locked --offline --manifest-path codex-rs/Cargo.toml \
@@ -91,6 +93,15 @@ jobs:
           cargo clippy --locked --offline --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-wire -p codex-hepta-codex-adapter \
             --all-targets --no-deps -- -D warnings
+          cargo build --release --locked --offline --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-wire --example managed_record_profile
+          LC_ALL=C /usr/bin/time -v \
+            -o .hepta-evidence/platform-wire-target-host-managed-profile.time \
+            "$CARGO_TARGET_DIR/release/examples/managed_record_profile" 512 \
+            > .hepta-evidence/platform-wire-target-host-managed-profile.json
+          python3 scripts/platform_wire_managed_profile.py \
+            --input .hepta-evidence/platform-wire-target-host-managed-profile.json \
+            --iterations 512
 
       - name: Write source-bound target-host receipt
         env:
@@ -117,8 +128,11 @@ jobs:
             "$GITHUB_EVENT_NAME" \
             "$generated_at" \
             > .hepta-evidence/platform-wire-target-host.json <<'PY'
+          import hashlib
           import json
+          import re
           import sys
+          from pathlib import Path
 
           (
               source_sha,
@@ -133,6 +147,24 @@ jobs:
               event,
               generated_at,
           ) = sys.argv[1:]
+          profile_path = Path(
+              ".hepta-evidence/platform-wire-target-host-managed-profile.json"
+          )
+          time_path = Path(
+              ".hepta-evidence/platform-wire-target-host-managed-profile.time"
+          )
+          measurements = json.loads(profile_path.read_text(encoding="utf-8"))
+          resource_text = time_path.read_text(encoding="utf-8", errors="strict")
+          match = re.search(
+              r"^\s*Maximum resident set size \(kbytes\):\s*([0-9]+)\s*$",
+              resource_text,
+              re.MULTILINE,
+          )
+          if match is None or int(match.group(1)) <= 0:
+              raise SystemExit("target-host maximum RSS observation is missing")
+          scenario_count = len(measurements.get("scenarios", []))
+          if measurements.get("profile") != "release" or scenario_count != 9:
+              raise SystemExit("managed target-host profile was not release-complete")
           print(json.dumps({
               "schema": "hepta.platform-wire.receipt.v2",
               "kind": "platform-wire-target-host",
@@ -150,6 +182,18 @@ jobs:
               "runner_name": runner_name,
               "runner_os": runner_os,
               "runner_arch": runner_arch,
+              "managed_profile": {
+                  "schema": measurements.get("schema"),
+                  "iterations_per_scenario": 512,
+                  "scenario_count": scenario_count,
+                  "report_sha256": hashlib.sha256(profile_path.read_bytes()).hexdigest(),
+                  "resource_report_sha256": hashlib.sha256(time_path.read_bytes()).hexdigest(),
+                  "maximum_resident_set_size_kib": int(match.group(1)),
+                  "scope": "release in-process managed HPTM owner on selected target host",
+                  "authenticated_network_ingress": False,
+                  "allocator_calls_measured": False,
+                  "queue_wait_measured": False,
+              },
           }, sort_keys=True, indent=2))
           PY
           python3 scripts/platform_wire_status.py validate-receipt \
@@ -164,7 +208,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: platform-wire-target-host-${{ github.sha }}-${{ github.run_id }}
-          path: .hepta-evidence/platform-wire-target-host*.json
+          path: |
+            .hepta-evidence/platform-wire-target-host*.json
+            .hepta-evidence/platform-wire-target-host*.time
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 180

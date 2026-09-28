@@ -138,6 +138,8 @@ fn measure(iterations: usize, payload_bytes: usize, chunk_bytes: usize) -> Profi
         return Err("managed profile lost or duplicated frames".into());
     }
     let decode_total_ns: u64 = decode_ns.iter().sum();
+    let retained_capacity = stream.buffer_capacity_bytes();
+    let retained_length = stream.buffered_bytes();
     stream.finish()?;
     sender.retire();
     Ok(json!({
@@ -153,6 +155,8 @@ fn measure(iterations: usize, payload_bytes: usize, chunk_bytes: usize) -> Profi
         "record_buffer_growth_events": growths,
         "record_buffer_capacity_peak_bytes": peak_capacity,
         "record_buffer_length_observed_peak_bytes": peak_buffered,
+        "record_buffer_capacity_after_workload_bytes": retained_capacity,
+        "record_buffer_length_after_workload_bytes": retained_length,
         "returned_payload_bytes_per_frame": payload_bytes,
         "seal": percentiles(&mut seal_ns),
         "decode_and_delivery": percentiles(&mut decode_ns),
