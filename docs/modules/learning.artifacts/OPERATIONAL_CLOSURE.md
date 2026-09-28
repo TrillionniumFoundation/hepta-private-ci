@@ -1,10 +1,12 @@
 # learning.artifacts operational closure
 
-**Exact source commit:** `088202de65c8df92b93db0c9500a0ead021872b9`
+**Converged source implementation commit:** `5a128fc3966218cd65ced02d8c52d9c3a660aa7a`
 
-This addendum records the repository-controlled implementation that closes the
-four operational optimization tracks without inventing a second artifact runtime.
-It is not native execution evidence, target-host acceptance, activation or release.
+This addendum records the repository-controlled implementation of the four
+operational optimization tracks without inventing a second artifact runtime. The
+candidate also absorbs the runtime-convergence fix that revalidates authoritative
+dataset membership at each live publication boundary. It is not native execution
+evidence, target-host acceptance, activation or release.
 
 ## Canonical request identity and transitions
 
@@ -21,6 +23,14 @@ current-view issuance have separate gates. Error codes expose retry classes:
 never retry, same-operation reconciliation, refresh authority, capacity relief or
 host policy.
 
+## Withdrawal and consumption boundary
+
+`validate_artifact_publication_v3` verifies the admission receipt and then asks the
+authoritative current withdrawal registry to admit the manifest again. A
+caller-constructible, digest-consistent DTO cannot bypass a newly installed
+withdrawal frontier. This closes new live publication; already issued pinned views,
+retention and physical erasure remain explicit product/host policies.
+
 ## Actionable metrics and phase measurements
 
 The owner exposes bounded counters and fixed-bucket p50/p95/p99 upper bounds for
@@ -35,9 +45,9 @@ never treated as proof that a pin was released. See `PERFORMANCE_PROTOCOL.md`.
 
 ## Qualification boundary
 
-The source commit restores the `artifact_test_hooks` feature and installs a
-read-only exact-source/PR workflow. Delivery-index execution fields remain false
-until the exact commit and prospective merge have completed native build, format,
+The source restores the `artifact_test_hooks` feature and installs a read-only
+exact-source/PR workflow. Delivery-index execution fields remain false until the
+converged candidate and its ordered-parent merge complete native build, format,
 strict lint, package tests and process-crash fixtures. Main integration, target
 filesystem power-loss evidence, independent acceptance, activation and release
 remain separately governed.
