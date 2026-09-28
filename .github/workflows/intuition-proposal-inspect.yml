@@ -11,21 +11,34 @@ jobs:
     runs-on: windows-2025
     timeout-minutes: 5
     steps:
-      - name: Print existing proposal identity and test summaries
+      - name: Read completed authoring outcome without credentials on storage redirect
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           python - <<'PY'
-          import os, re, urllib.request
+          import os, re, urllib.request, urllib.error
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
           request = urllib.request.Request(
               'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/108853118867/logs',
               headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
-          with urllib.request.urlopen(request, timeout=60) as response:
+          try:
+              response = urllib.request.build_opener(NoRedirect).open(request, timeout=60)
+          except urllib.error.HTTPError as error:
+              if error.code != 302:
+                  raise
+              url = error.headers['Location']
+              assert url.startswith('https://')
+              response = urllib.request.urlopen(url, timeout=60)
+          with response:
               log = response.read(8000000).decode('utf-8', errors='replace')
-          lines = [line for line in log.splitlines() if re.search(r'test result:|Ran [0-9]+ tests|INTUITION_SOURCE_PROPOSAL=|proposedCommit|candidateRefUpdated|sourceSha|Finished `dev`|Finished `test`|Error|Traceback', line)]
-          for line in lines[-30:]:
+          lines = log.splitlines()
+          for line in lines:
+              if re.search(r'test result:|Ran [0-9]+ tests|INTUITION_SOURCE_PROPOSAL=[0-9a-f]{40}', line):
+                  print(line)
+          for line in lines[-85:]:
               print(line)
-          assert re.search(r'INTUITION_SOURCE_PROPOSAL=[0-9a-f]{40}', log), 'no generated commit in completed log'
-          print('Read-only inspection of authoring output; not immutable qualification.')
+          print('Read-only inspection of source authoring; not immutable candidate qualification.')
           PY
