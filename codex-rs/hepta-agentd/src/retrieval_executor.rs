@@ -20,9 +20,18 @@ pub(crate) enum RetrievalWorkClass {
     Shadow,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum RetrievalBlockingKind {
+    Core,
+    Ranker,
+    Ledger,
+}
+
 pub(crate) struct RetrievalExecutor {
     delivery: Arc<Semaphore>,
     shadow: Arc<Semaphore>,
+    ranker: Arc<Semaphore>,
+    ledger: Arc<Semaphore>,
     next_worker_id: AtomicU64,
 }
 
@@ -31,6 +40,8 @@ impl RetrievalExecutor {
         Self {
             delivery: Arc::new(Semaphore::new(2)),
             shadow: Arc::new(Semaphore::new(1)),
+            ranker: Arc::new(Semaphore::new(1)),
+            ledger: Arc::new(Semaphore::new(1)),
             next_worker_id: AtomicU64::new(1),
         }
     }
@@ -63,7 +74,7 @@ impl RetrievalExecutor {
 
     pub(crate) fn profile_digest(&self) -> Digest32 {
         Digest32::of_bytes(
-            b"hepta.retrieval.executor.v4:delivery=2,800ms;shadow=1,40ms,parent-bounded;work=250000;queue=0;async=owned-supervised;shadow-cancellation=independent;provider-deadline=request-absolute;worker-exit=observed",
+            b"hepta.retrieval.executor.v5:delivery=2,800ms;shadow=1,40ms,parent-bounded;work=250000;queue=0;ranker=1;ledger=1;auxiliary-permit=worker-owned;async=owned-supervised;shadow-cancellation=independent;provider-deadline=request-absolute;worker-exit=observed",
         )
     }
 
@@ -136,6 +147,7 @@ impl RetrievalExecutor {
     pub(crate) async fn run<T, F>(
         &self,
         request: &RetrievalRequestWork,
+        kind: RetrievalBlockingKind,
         operation: F,
     ) -> Result<T, String>
     where
@@ -143,6 +155,16 @@ impl RetrievalExecutor {
         F: FnOnce(RecallWorkControlV1) -> Result<T, String> + Send + 'static,
     {
         request.checkpoint()?;
+        // Auxiliary owners cannot consume both delivery slots while blocked.
+        // No wait queue: failure never starts an effect and never renews time.
+        let auxiliary = match kind {
+            RetrievalBlockingKind::Core => None,
+            RetrievalBlockingKind::Ranker => Some(Arc::clone(&self.ranker)),
+            RetrievalBlockingKind::Ledger => Some(Arc::clone(&self.ledger)),
+        }
+        .map(|pool| pool.try_acquire_owned().map_err(|_| "retrieval auxiliary capacity exhausted".to_string()))
+        .transpose()?;
+
         let slots = match request.class {
             RetrievalWorkClass::Delivery => &self.delivery,
             RetrievalWorkClass::Shadow => &self.shadow,
@@ -171,6 +193,7 @@ impl RetrievalExecutor {
         };
         let mut worker = tokio::task::spawn_blocking(move || {
             let _permit = permit;
+            let _auxiliary = auxiliary;
             let _worker_exit = worker_exit;
             control.checkpoint().map_err(|error| error.to_string())?;
             let value = operation(control.clone())?;

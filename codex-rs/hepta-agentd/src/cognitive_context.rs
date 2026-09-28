@@ -5,6 +5,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use crate::retrieval_executor::RetrievalExecutor;
+use crate::retrieval_executor::RetrievalBlockingKind;
 use crate::retrieval_executor::RetrievalRequestWork;
 use crate::retrieval_executor::RetrievalWorkClass;
 use codex_hepta_cognitive_read::MAX_ENCODED_READ_RESULT_BYTES_V2;
@@ -259,7 +260,7 @@ pub(crate) async fn read_with_retrieval_executor(
             let context = context.context.clone();
             let query_digest = Digest32::of_bytes(query.as_bytes());
             executor
-                .run(retrieval_work, move |work| {
+                .run(retrieval_work, RetrievalBlockingKind::Core, move |work| {
                     execute_owner_observation_controlled(
                         &observation,
                         &cut,
@@ -386,7 +387,7 @@ pub(crate) async fn read_with_retrieval_executor(
         let rank_owner = owner.clone();
         let rank_query = query.to_string();
         let (ranked_items, rank_observation) = executor
-            .run(&request_work, move |work| {
+            .run(&request_work, RetrievalBlockingKind::Ranker, move |work| {
                 work.checkpoint().map_err(|error| error.to_string())?;
                 let observation = ranker.rank(
                     &rank_owner,
@@ -540,7 +541,7 @@ pub(crate) async fn read_with_retrieval_executor(
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
         executor
-            .run(&request_work, move |work| {
+            .run(&request_work, RetrievalBlockingKind::Ranker, move |work| {
                 work.checkpoint().map_err(|error| error.to_string())?;
                 ranker.revalidate()?;
                 work.checkpoint().map_err(|error| error.to_string())?;
@@ -607,7 +608,7 @@ pub(crate) async fn read_with_retrieval_executor(
         let sink = std::sync::Arc::clone(sink);
         let owner = owner.clone();
         let appended = executor
-            .run(retrieval_work, move |work| {
+            .run(retrieval_work, RetrievalBlockingKind::Ledger, move |work| {
                 work.checkpoint().map_err(|error| error.to_string())?;
                 let receipt = sink.append_preparation(
                     &owner,
@@ -653,7 +654,7 @@ pub(crate) async fn read_with_retrieval_executor(
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
         executor
-            .run(&request_work, move |work| {
+            .run(&request_work, RetrievalBlockingKind::Ranker, move |work| {
                 work.checkpoint().map_err(|error| error.to_string())?;
                 ranker.revalidate()?;
                 work.checkpoint().map_err(|error| error.to_string())?;
@@ -867,7 +868,7 @@ pub(crate) async fn revalidate_with_retrieval_executor(
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
         executor
-            .run(&request_work, move |work| {
+            .run(&request_work, RetrievalBlockingKind::Ranker, move |work| {
                 work.checkpoint().map_err(|error| error.to_string())?;
                 ranker.revalidate()?;
                 work.checkpoint().map_err(|error| error.to_string())?;
@@ -982,7 +983,7 @@ async fn load_retrieval_context(
     let owner = owner.clone();
     let deadline = request_work.deadline();
     let (context, lifecycle_binding, lease_expires_unix_ms) = executor
-        .run(request_work, move |_| {
+        .run(request_work, RetrievalBlockingKind::Core, move |_| {
             current.acquire_context_before(&owner, body_generation, deadline)
         })
         .await

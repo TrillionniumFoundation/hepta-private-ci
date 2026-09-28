@@ -86,7 +86,11 @@ fn product_preparation_reopens_as_tag_ten_and_replays_without_exposure() {
     assert_eq!(reopened.witness_frontier().unwrap(), witness);
     let mut reordered = preparation;
     reordered.prepared_candidate_indices.reverse();
-    assert!(reopened.append_retrieval_preparation_current(reordered).is_err());
+    assert!(
+        reopened
+            .append_retrieval_preparation_current(reordered)
+            .is_err()
+    );
     assert_eq!(reopened.records().unwrap(), records);
     assert_eq!(reopened.witness_frontier().unwrap(), witness);
 }
@@ -98,7 +102,11 @@ fn product_writer_rejects_forged_exposure_without_advancing_either_owner() {
     let before = writer.witness_frontier().unwrap();
     let mut prepared = preparation();
     prepared.assignment.context_exposed = true;
-    assert!(writer.append_retrieval_preparation_current(prepared).is_err());
+    assert!(
+        writer
+            .append_retrieval_preparation_current(prepared)
+            .is_err()
+    );
     assert!(writer.records().unwrap().is_empty());
     assert_eq!(writer.witness_frontier().unwrap(), before);
 }

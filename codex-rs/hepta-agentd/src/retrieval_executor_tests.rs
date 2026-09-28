@@ -12,7 +12,7 @@ async fn cancelled_wait_keeps_the_actual_shadow_worker_charged() {
     let task = tokio::spawn(async move {
         let request = running.begin(RetrievalWorkClass::Shadow);
         running
-            .run(&request, move |control| {
+            .run(&request, RetrievalBlockingKind::Core, move |control| {
                 entered_tx.send(()).unwrap();
                 release_rx.recv_timeout(Duration::from_secs(5)).unwrap();
                 control.checkpoint().map_err(|error| error.to_string())
@@ -27,10 +27,10 @@ async fn cancelled_wait_keeps_the_actual_shadow_worker_charged() {
     let _ = task.await;
     assert_eq!(executor.shadow.available_permits(), 0);
     let request = executor.begin(RetrievalWorkClass::Shadow);
-    assert!(executor.run(&request, |_| Ok(())).await.is_err());
+    assert!(executor.run(&request, RetrievalBlockingKind::Core, |_| Ok(())).await.is_err());
     // The delivery lane is independent of a blocked shadow worker.
     let delivery = executor.begin(RetrievalWorkClass::Delivery);
-    assert_eq!(executor.run(&delivery, |_| Ok(17)).await.unwrap(), 17);
+    assert_eq!(executor.run(&delivery, RetrievalBlockingKind::Core, |_| Ok(17)).await.unwrap(), 17);
     release_tx.send(()).unwrap();
     tokio::time::timeout(Duration::from_secs(5), async {
         loop {
@@ -49,7 +49,7 @@ async fn timeout_cannot_return_late_success_or_extend_the_request_budget() {
     let executor = RetrievalExecutor::new();
     let request = executor.begin(RetrievalWorkClass::Shadow);
     let result = executor
-        .run(&request, |control| {
+        .run(&request, RetrievalBlockingKind::Core, |control| {
             loop {
                 match control.checkpoint() {
                     Ok(()) => std::thread::sleep(Duration::from_millis(1)),
@@ -59,7 +59,7 @@ async fn timeout_cannot_return_late_success_or_extend_the_request_budget() {
         })
         .await;
     assert!(result.is_err());
-    assert!(executor.run(&request, |_| Ok(())).await.is_err());
+    assert!(executor.run(&request, RetrievalBlockingKind::Core, |_| Ok(())).await.is_err());
 }
 
 #[tokio::test]
@@ -69,7 +69,7 @@ async fn cancelled_shadow_preserves_baseline_delivery() {
     let shadow = executor.begin_shadow(&delivery);
     shadow.control.cancel();
     assert!(executor.run_async(&shadow, async { 1 }).await.is_err());
-    assert_eq!(executor.run(&delivery, |_| Ok(2)).await.unwrap(), 2);
+    assert_eq!(executor.run(&delivery, RetrievalBlockingKind::Core, |_| Ok(2)).await.unwrap(), 2);
     assert_eq!(executor.run_async(&delivery, async { 3 }).await.unwrap(), 3);
 }
 
@@ -171,4 +171,36 @@ fn actual_worker_exit_and_abandonment_are_monotonic_observations() {
         armed: true,
     });
     assert_eq!(activity.state.load(Ordering::Acquire), 2);
+}
+
+#[tokio::test]
+async fn abandoned_auxiliary_worker_retains_its_pool_but_not_all_delivery_slots() {
+    let executor = Arc::new(RetrievalExecutor::new());
+    for kind in [RetrievalBlockingKind::Ranker, RetrievalBlockingKind::Ledger] {
+        let (entered_tx, entered_rx) = tokio::sync::oneshot::channel();
+        let (release_tx, release_rx) = mpsc::channel();
+        let running = Arc::clone(&executor);
+        let waiter = tokio::spawn(async move {
+            let request = running.begin(RetrievalWorkClass::Delivery);
+            running.run(&request, kind, move |_| {
+                let _ = entered_tx.send(());
+                release_rx.recv_timeout(Duration::from_secs(5)).map_err(|error| error.to_string())?;
+                Ok(1)
+            }).await
+        });
+        entered_rx.await.unwrap();
+        waiter.abort();
+        let _ = waiter.await;
+        let other = executor.begin(RetrievalWorkClass::Delivery);
+        assert!(executor.run(&other, kind, |_| Ok(2)).await.is_err());
+        assert_eq!(executor.run(&other, RetrievalBlockingKind::Core, |_| Ok(3)).await.unwrap(), 3);
+        release_tx.send(()).unwrap();
+        tokio::time::timeout(Duration::from_secs(5), async {
+            while executor.delivery.available_permits() != 2 {
+                tokio::task::yield_now().await;
+            }
+        }).await.unwrap();
+        let fresh = executor.begin(RetrievalWorkClass::Delivery);
+        assert_eq!(executor.run(&fresh, kind, |_| Ok(4)).await.unwrap(), 4);
+    }
 }
