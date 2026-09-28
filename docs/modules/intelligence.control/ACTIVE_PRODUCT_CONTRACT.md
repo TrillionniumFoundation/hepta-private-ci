@@ -126,6 +126,23 @@ digest and the same Agentd run's terminal phase. Provider completion alone,
 Agentd state alone, queue acknowledgement or transport acknowledgement is not a
 terminal product result.
 
+The product loop exposes three distinct terminal postures:
+
+- `Completed`: the exact Decision, physical terminal and authenticated Outcome
+  are durably acknowledged;
+- `Indeterminate`: physical dispatch may have happened, but no exact provider
+  terminal digest is available; only physical reconciliation may close it;
+- `ReconciliationRequired`: an exact provider terminal digest exists, but the
+  same-run Agentd terminal witness or authenticated Outcome closure is not yet
+  complete.
+
+`ReconciliationRequired` retains the physical terminal digest and, once known,
+the exact Outcome operation identity. Agentd terminal RPC loss, Outcome-owner
+timeout, Outcome enqueue failure, current-authority unavailability or terminal
+learning rejection after a physical result therefore cannot erase the physical
+observation or turn the logical operation into a fresh request. ObjectiveStart
+surfaces this state as `canonical_reconciliation_required`.
+
 A profile without a product continuation falls back before canonical
 preparation/admission. It cannot leave a `ContextAttached` run that no physical
 owner can finish.
@@ -182,6 +199,12 @@ lanes for pull requests. Each lane verifies formatting, the explicit mapping,
 Agentd and inference-worker native tests, NDU tests, all-target compilation,
 strict Clippy, selected process-loss/no-redispatch cuts and resource
 measurements. Artifacts bind the executed checkout SHA and lane.
+
+A separate macOS portability workflow executes the signed-authority product
+fixtures, anti-rollback persistence, bounded no-follow file tests and strict NDU
+lint. Unix temporary fixtures explicitly set owner-only directory permissions;
+a permissive test-runner umask may not weaken the production file contract or
+turn a platform-specific fixture failure into a skipped check.
 
 Until those exact jobs pass, tracked source keeps current-candidate execution,
 real-process provider E2E, target-host qualification, independent acceptance,
