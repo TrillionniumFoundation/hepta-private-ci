@@ -1,0 +1,125 @@
+{
+  "schema": "hepta.intelligence-control-requirement-test-map.v1",
+  "schemaVersion": 1,
+  "module": "intelligence.control",
+  "generated": false,
+  "claimBoundary": {
+    "sourcePresenceIsExecutionEvidence": false,
+    "ancestorResultsApplyToCurrentHead": false,
+    "queuedOrSkippedCountsAsPassed": false,
+    "realProcessE2EProved": false,
+    "targetHostQualified": false,
+    "activation": false,
+    "release": false
+  },
+  "requirements": [
+    {
+      "id": "INT-A-CANDIDATE-CLOSURE",
+      "phase": "A",
+      "statement": "Canonical candidate order, digest, membership and non-zero propensity are revalidated before context or dispatch publication.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/canonical.rs",
+          "symbol": "decide_boundary"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+          "symbol": "validate_canonical_outcome_v1"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+          "name": "malicious_selection_cannot_reach_context_or_evaluation"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+          "name": "candidate_permutations_produce_identical_public_outcomes"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+          "name": "boundary_rehashes_mutable_candidate_receipts"
+        }
+      ]
+    },
+    {
+      "id": "INT-A-STAGE-DATAFLOW",
+      "phase": "A",
+      "statement": "Actual neural, prompt and intuition outputs bind the successor prompt, intuition and context requests.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_stage_bound_ports.rs",
+          "symbol": "StageBoundAgentdOwnerPortsV1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+          "symbol": "StageBoundAgentdOwnerPortsV1 as AgentdOwnerPortsV1"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_stage_bound_ports.rs",
+          "name": "successor_request_bindings_change_with_real_predecessor"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_stage_bound_ports.rs",
+          "name": "context_binding_is_idempotent_and_substitution_fails"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+          "name": "signed_input_cannot_install_host_trust_or_change_actual_context"
+        }
+      ]
+    },
+    {
+      "id": "INT-C-INVOCATION-FACTORY-BOUND",
+      "phase": "C",
+      "statement": "Host-owned seven-owner input construction has a bounded worker budget and timed-out synchronous work retains capacity until physical completion.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+          "symbol": "with_worker_policy"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+          "name": "invocation_factory_policy_is_bounded"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+          "name": "invocation_factory_worker_slots_are_not_overcommitted"
+        }
+      ]
+    },
+    {
+      "id": "INT-C-RECOVERY-FAIRNESS",
+      "phase": "C",
+      "statement": "Unsettled reconciliation cannot permanently starve newly prepared operations and temporary capacity or availability failures do not fabricate a terminal result or kill the required service.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+          "symbol": "cycle_budget"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+          "symbol": "retryable_learning_error"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+          "name": "single_slot_cycles_alternate_without_starvation"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+          "name": "multi_slot_cycles_reserve_both_classes"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+          "name": "temporary_capacity_and_io_failures_remain_retryable"
+        }
+      ]
+    }
+  ]
+}
