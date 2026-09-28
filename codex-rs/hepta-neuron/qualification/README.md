@@ -164,3 +164,33 @@ inference, current upstream audit, full model bakeoff, independent calibration,
 prospective data collection, artifact selection or production activation. The
 current entry admits only the already declared synthetic corpus. A success here
 cannot supply missing Laya execution or justify distributing vendor-derived models.
+
+## Frozen encoder consumed by the runtime worker
+
+`hepta-infer-worker-host/python/decision_cell_encoder.py` now owns one bounded
+CPU session for the pinned mDeBERTa base and the existing V2 tensor graph. It loads
+actual base weights once and reuses the same organ/cell adapters and typed heads
+used by training. It imports no qualification encoder and downloads no model or
+remote code during a request. Host-supplied manifest hashes still require current
+artifact-owner admission; this library cannot select its own artifact.
+
+Loader inputs are byte-copied into a private read-only snapshot with inventory,
+size and content validation. Requests use immutable bounded text/target batches;
+overlong token sequences reject rather than truncating away target information.
+A monotonic deadline is checked around encoder work and before result publication.
+Hard interruption and concurrent-request serialization remain supervisor/owner
+responsibilities: a deadline check alone does not interrupt a running CPU kernel.
+This explicit profile has four candidate targets and no temporal/parameter-value
+head. It is not a general daemon bootstrap or a new durable execution owner.
+
+```sh
+python3 -m unittest -v test_frozen_encoder test_tensor_bundle
+python3 frozen_encoder_probe.py --receipt /qualified/receipts/mdeberta.json \
+  --model-root /qualified/models --output /qualified/frozen-encoder-probe.json
+```
+
+The probe re-encodes raw held-out observations, consumes actual trained tensors and
+compares complete-decision metrics against the frozen source receipt. Unit tests
+use an explicitly fake backbone for lifecycle faults, not model quality evidence.
+Neither path establishes independent calibration, prospective GUI efficacy,
+production activation, teacher-data rights, operator acceptance or release.

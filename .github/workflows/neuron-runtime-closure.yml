@@ -9,6 +9,7 @@ on:
       - "codex-rs/hepta-neuron/**"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/python/**"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-types/**"
       - "codex-rs/Cargo.toml"
@@ -23,6 +24,7 @@ on:
       - "codex-rs/hepta-neuron/**"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/python/**"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-types/**"
       - "codex-rs/Cargo.toml"
@@ -82,6 +84,18 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
 
+      - name: Execute frozen-encoder and tensor regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/decision-cell-tests"
+          py="$RUNNER_TEMP/decision-cell-tests/bin/python"
+          "$py" -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.0
+          "$py" -m pip install numpy==1.26.4 safetensors==0.8.0
+          "$py" -m pip freeze > "$RUNNER_TEMP/decision-cell-environment.txt"
+          "$py" -m unittest discover -v -s codex-rs/hepta-neuron/qualification -p 'test_*.py' \
+            2>&1 | tee "$RUNNER_TEMP/decision-cell-tests.log"
+
       - name: Read-only validation and diagnostics
         id: validate
         shell: bash
@@ -125,6 +139,8 @@ jobs:
           name: neuron-runtime-closure-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
           path: |
             ${{ runner.temp }}/neuron-runtime-closure.log
+            ${{ runner.temp }}/decision-cell-tests.log
+            ${{ runner.temp }}/decision-cell-environment.txt
             ${{ runner.temp }}/neuron-v2-diagnostic.log
             ${{ runner.temp }}/neuron-v2-diagnostic-summary.json
           if-no-files-found: warn
