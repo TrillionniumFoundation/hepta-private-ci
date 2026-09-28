@@ -10,6 +10,16 @@ const COGNITIVE_QUALIFICATION: &str =
     include_str!("../../../.github/workflows/cognitive-types-qualification.yml");
 const HNMF_QUALIFICATION: &str =
     include_str!("../../../.github/workflows/hnmf-qualification.yml");
+const COGNITIVE_READ: &str =
+    include_str!("../../hepta-cognitive-read/src/authoritative.rs");
+const COGNITIVE_STORE: &str = include_str!("../../hepta-cognitive-store/src/v2.rs");
+const MEMORY_RETRIEVAL: &str =
+    include_str!("../../hepta-memory-retrieval/src/generation_bound.rs");
+const COMPACT_ENGINE: &str = include_str!("../../hepta-compact-engine/src/qualified.rs");
+const INTELLIGENCE_CONTROL: &str =
+    include_str!("../../hepta-intelligence/src/canonical.rs");
+const AGENTD_PRODUCT_RUNNER: &str =
+    include_str!("../../hepta-agentd/src/intelligence_product_runner.rs");
 
 #[test]
 fn traceability_manifest_has_closed_unique_invariant_inventory() {
@@ -77,6 +87,47 @@ fn traceability_manifest_has_closed_unique_invariant_inventory() {
         );
     }
     assert_eq!(actual, expected);
+}
+
+#[test]
+fn all_registered_consumer_and_product_traceability_anchors_exist() {
+    for (name, source, entrypoint) in [
+        (
+            "cognitive.read",
+            COGNITIVE_READ,
+            "adapt_authoritative_read_to_canonical_v1",
+        ),
+        (
+            "cognitive.store",
+            COGNITIVE_STORE,
+            "bind_canonical_event_to_product_receipt_v1",
+        ),
+        (
+            "memory.retrieval",
+            MEMORY_RETRIEVAL,
+            "adapt_generation_bound_recall_to_canonical_v1",
+        ),
+        (
+            "compact.engine",
+            COMPACT_ENGINE,
+            "build_qualified_candidate_with_canonical_events",
+        ),
+        (
+            "intelligence.control",
+            INTELLIGENCE_CONTROL,
+            "prepare_intelligence_run_with_canonical_recall",
+        ),
+        (
+            "runtime.agentd product",
+            AGENTD_PRODUCT_RUNNER,
+            "prepare_with_canonical_recall",
+        ),
+    ] {
+        assert!(
+            source.contains(entrypoint),
+            "{name} lost traceability entrypoint {entrypoint}"
+        );
+    }
 }
 
 #[test]
