@@ -71,12 +71,9 @@ impl HeptaEvidenceStore {
         for row in rows {
             let state: String = row.try_get("state").map_err(classify_sqlx_error)?;
             let attempts: i64 = row.try_get("attempts").map_err(classify_sqlx_error)?;
-            let created_at_ms: i64 = row
-                .try_get("created_at_ms")
-                .map_err(classify_sqlx_error)?;
-            let terminal_at_ms: Option<i64> = row
-                .try_get("terminal_at_ms")
-                .map_err(classify_sqlx_error)?;
+            let created_at_ms: i64 = row.try_get("created_at_ms").map_err(classify_sqlx_error)?;
+            let terminal_at_ms: Option<i64> =
+                row.try_get("terminal_at_ms").map_err(classify_sqlx_error)?;
             if !(0..=AUTHBUS_OUTBOX_MAX_ATTEMPTS).contains(&attempts) || created_at_ms < 0 {
                 return Err(EvidenceError::Corrupt(
                     "invalid AuthBus outbox operational row".into(),

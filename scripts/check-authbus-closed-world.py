@@ -44,9 +44,67 @@ HOST_OPERATIONS = {
     "maintenance_tick",
 }
 
+STORE_OPERATIONS = {
+    "open",
+    "observe_time",
+    "last_trusted_time",
+    "create_policy",
+    "replace_policy",
+    "revoke_policy",
+    "retire_policy",
+    "authorize",
+    "create_quota",
+    "replace_quota",
+    "reserve",
+    "quota_snapshot",
+    "reservation",
+    "compact_terminal_reservations",
+    "authority_frontier_digest",
+    "authority_checkpoint",
+    "initialize_authority_checkpoint",
+    "reconcile_authority_checkpoint",
+    "advance_authority_checkpoint",
+    "recovery_required",
+    "reconcile_after_restart",
+    "mark_dispatch_attempted",
+    "mark_indeterminate",
+    "cancel_reservation",
+    "reconcile_expired_reservation",
+    "sweep_expired_reservations",
+    "settle",
+    "enroll_issuer",
+    "rotate_issuer",
+    "revoke_issuer",
+    "retire_issuer_epoch",
+    "issuer_record",
+    "message_issuer",
+    "settlement_issuer",
+    "observe_trusted_time_attestation",
+    "operational_snapshot",
+}
+
+STORE_FILES = [
+    "authority_store.rs",
+    "quota_store.rs",
+    "recovery.rs",
+    "settlement_store.rs",
+    "trust_store.rs",
+    "operations.rs",
+]
+
 
 def source(path: Path) -> str:
     return path.read_text(encoding="utf-8")
+
+
+def contains_registration_literal(text: str, type_name: str) -> bool:
+    for match in re.finditer(rf"\b{re.escape(type_name)}\s*\{{", text):
+        line_start = text.rfind("\n", 0, match.start()) + 1
+        prefix = text[line_start : match.start()]
+        if re.search(r"(?:->|\bstruct)\s*$", prefix):
+            continue
+        return True
+    return False
 
 
 def verify_boundaries() -> list[str]:
@@ -55,12 +113,12 @@ def verify_boundaries() -> list[str]:
     allowed_settlement_literal = AUTHBUS / "settlement.rs"
     for path in sorted((ROOT / "codex-rs").rglob("*.rs")):
         text = source(path)
-        if path != allowed_message_literal and re.search(
-            r"\bIssuerRegistration\s*\{", text
+        if path != allowed_message_literal and contains_registration_literal(
+            text, "IssuerRegistration"
         ):
             errors.append(f"constructible message registration: {path.relative_to(ROOT)}")
-        if path != allowed_settlement_literal and re.search(
-            r"\bSettlementIssuerRegistration\s*\{", text
+        if path != allowed_settlement_literal and contains_registration_literal(
+            text, "SettlementIssuerRegistration"
         ):
             errors.append(
                 f"constructible settlement registration: {path.relative_to(ROOT)}"
@@ -71,6 +129,27 @@ def verify_boundaries() -> list[str]:
     lib = source(AUTHBUS / "lib.rs")
     if "pub(crate) use authority_store::AuthBusAuthorityStore;" not in lib:
         errors.append("raw authority writer is not crate-private")
+    store_root = source(AUTHBUS / "authority_store.rs")
+    if not re.search(r"(?m)^pub\(crate\) struct AuthBusAuthorityStore\s*\{", store_root):
+        errors.append("raw authority writer type is not crate-private")
+    store_sources = "\n".join(source(AUTHBUS / name) for name in STORE_FILES)
+    crate_private_store = set(
+        re.findall(r"(?m)^\s*pub\(crate\) async fn ([a-z][a-z0-9_]*)\s*\(", store_sources)
+    )
+    missing_store = sorted(STORE_OPERATIONS - crate_private_store)
+    if missing_store:
+        errors.append("store operations are not crate-private: " + ", ".join(missing_store))
+    for name in STORE_FILES[:-1]:
+        source_text = source(AUTHBUS / name)
+        public_store = sorted(
+            STORE_OPERATIONS
+            & set(re.findall(r"(?m)^\s*pub async fn ([a-z][a-z0-9_]*)\s*\(", source_text))
+        )
+        if public_store:
+            errors.append(f"public raw writer methods in {name}: " + ", ".join(public_store))
+    operations_source = source(AUTHBUS / "operations.rs")
+    if "impl AuthBusAuthorityStore {\n    pub(crate) async fn operational_snapshot" not in operations_source:
+        errors.append("operational snapshot raw writer method is not crate-private")
     if re.search(r"(?m)^pub use authority_store::AuthBusAuthorityStore;", lib):
         errors.append("raw authority writer is publicly re-exported")
 

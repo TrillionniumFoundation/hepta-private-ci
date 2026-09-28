@@ -23,12 +23,12 @@ const MAX_POLICIES: i64 = 4096;
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 #[derive(Clone)]
-pub struct AuthBusAuthorityStore {
+pub(crate) struct AuthBusAuthorityStore {
     pub(crate) pool: SqlitePool,
 }
 
 impl AuthBusAuthorityStore {
-    pub async fn open(path: &Path) -> Result<Self, AuthBusAuthorityError> {
+    pub(crate) async fn open(path: &Path) -> Result<Self, AuthBusAuthorityError> {
         let options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(true)
@@ -75,13 +75,16 @@ impl AuthBusAuthorityStore {
         Ok(Self { pool })
     }
 
-    pub async fn observe_time(&self, time: TrustedTimeSample) -> Result<(), AuthBusAuthorityError> {
+    pub(crate) async fn observe_time(
+        &self,
+        time: TrustedTimeSample,
+    ) -> Result<(), AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         tx.commit().await.map_err(storage)
     }
 
-    pub async fn last_trusted_time(
+    pub(crate) async fn last_trusted_time(
         &self,
     ) -> Result<Option<TrustedTimeSample>, AuthBusAuthorityError> {
         let row = sqlx::query(
@@ -94,7 +97,7 @@ impl AuthBusAuthorityStore {
         row.map(|row| trusted_time_from_row(&row)).transpose()
     }
 
-    pub async fn create_policy(
+    pub(crate) async fn create_policy(
         &self,
         spec: PolicySpec,
         time: TrustedTimeSample,
@@ -158,7 +161,7 @@ impl AuthBusAuthorityStore {
         Ok(policy)
     }
 
-    pub async fn replace_policy(
+    pub(crate) async fn replace_policy(
         &self,
         spec: PolicySpec,
         expected_revision: u64,
@@ -200,7 +203,7 @@ impl AuthBusAuthorityStore {
         Ok(current)
     }
 
-    pub async fn revoke_policy(
+    pub(crate) async fn revoke_policy(
         &self,
         policy_id: &StableId,
         expected_revision: u64,
@@ -228,7 +231,7 @@ impl AuthBusAuthorityStore {
         Ok(current)
     }
 
-    pub async fn retire_policy(
+    pub(crate) async fn retire_policy(
         &self,
         policy_id: &StableId,
         expected_revision: u64,
@@ -281,7 +284,7 @@ impl AuthBusAuthorityStore {
         tx.commit().await.map_err(storage)
     }
 
-    pub async fn authorize(
+    pub(crate) async fn authorize(
         &self,
         principal: &StableId,
         action: &StableId,

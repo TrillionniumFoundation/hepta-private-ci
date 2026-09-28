@@ -25,8 +25,7 @@ fn fixture(sequence: u64) -> (IssuerRegistration, SignedMessage) {
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,
-        message_id: StableId::new(format!("message:operations:{sequence}"))
-            .expect("message id"),
+        message_id: StableId::new(format!("message:operations:{sequence}")).expect("message id"),
         subject_id: StableId::new("subject:operations").expect("subject id"),
         scope_digest: Digest32::of_bytes(b"operations-route"),
         payload_digest: Digest32::of_bytes(b"operations-payload"),

@@ -55,10 +55,10 @@ impl TextTrust {
                 "trust registry owner, schema or thread bound is invalid",
             ));
         }
-        let issuer_id = StableId::new(&document.issuer_id)
-            .map_err(|error| invalid(&error.to_string()))?;
-        let key_epoch = Generation::new(document.key_epoch)
-            .map_err(|error| invalid(&error.to_string()))?;
+        let issuer_id =
+            StableId::new(&document.issuer_id).map_err(|error| invalid(&error.to_string()))?;
+        let key_epoch =
+            Generation::new(document.key_epoch).map_err(|error| invalid(&error.to_string()))?;
         let issuer = registry
             .message_issuer(&issuer_id, key_epoch)
             .map_err(|error| invalid(&error.to_string()))?;

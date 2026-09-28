@@ -30,7 +30,7 @@ const MAX_ACTIVE_RESERVATIONS: i64 = 16_384;
 const MAX_ACTIVE_RESERVATIONS_PER_PRINCIPAL: i64 = 1024;
 
 impl AuthBusAuthorityStore {
-    pub async fn create_quota(
+    pub(crate) async fn create_quota(
         &self,
         spec: QuotaSpec,
         time: TrustedTimeSample,
@@ -88,7 +88,7 @@ impl AuthBusAuthorityStore {
         })
     }
 
-    pub async fn replace_quota(
+    pub(crate) async fn replace_quota(
         &self,
         spec: QuotaSpec,
         expected_revision: u64,
@@ -145,7 +145,7 @@ impl AuthBusAuthorityStore {
         Ok(quota)
     }
 
-    pub async fn reserve(
+    pub(crate) async fn reserve(
         &self,
         decision: &PolicyDecision,
         request: ReservationRequest,
@@ -270,7 +270,7 @@ impl AuthBusAuthorityStore {
         Ok(reservation)
     }
 
-    pub async fn quota_snapshot(
+    pub(crate) async fn quota_snapshot(
         &self,
         quota_key: &StableId,
     ) -> Result<QuotaSnapshot, AuthBusAuthorityError> {
@@ -280,7 +280,7 @@ impl AuthBusAuthorityStore {
         Ok(quota)
     }
 
-    pub async fn reservation(
+    pub(crate) async fn reservation(
         &self,
         reservation_id: &StableId,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
@@ -293,7 +293,7 @@ impl AuthBusAuthorityStore {
     /// Move bounded terminal history out of the hot reservation table while
     /// retaining the complete immutable row and operation identity for exact
     /// retry/conflict detection. Live and indeterminate rows are never deleted.
-    pub async fn compact_terminal_reservations(
+    pub(crate) async fn compact_terminal_reservations(
         &self,
         older_than_ms: u64,
         limit: u32,

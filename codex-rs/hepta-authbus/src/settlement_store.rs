@@ -28,7 +28,7 @@ use crate::quota_store::load_reservation;
 use crate::trust_store::load_issuer;
 
 impl AuthBusAuthorityStore {
-    pub async fn mark_dispatch_attempted(
+    pub(crate) async fn mark_dispatch_attempted(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -82,7 +82,7 @@ impl AuthBusAuthorityStore {
         Ok(reservation)
     }
 
-    pub async fn mark_indeterminate(
+    pub(crate) async fn mark_indeterminate(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -110,7 +110,7 @@ impl AuthBusAuthorityStore {
         Ok(reservation)
     }
 
-    pub async fn cancel_reservation(
+    pub(crate) async fn cancel_reservation(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -141,7 +141,7 @@ impl AuthBusAuthorityStore {
         Ok(reservation)
     }
 
-    pub async fn reconcile_expired_reservation(
+    pub(crate) async fn reconcile_expired_reservation(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -164,7 +164,7 @@ impl AuthBusAuthorityStore {
 
     /// Reconcile a bounded batch of expired reservations. Undispatched holds are
     /// refunded; attempted effects become indeterminate and retain their quota.
-    pub async fn sweep_expired_reservations(
+    pub(crate) async fn sweep_expired_reservations(
         &self,
         time: TrustedTimeSample,
         limit: u32,
@@ -222,7 +222,7 @@ impl AuthBusAuthorityStore {
         })
     }
 
-    pub async fn settle(
+    pub(crate) async fn settle(
         &self,
         issuer: &SettlementIssuerRegistration,
         evidence: &SignedSettlementEvidence,

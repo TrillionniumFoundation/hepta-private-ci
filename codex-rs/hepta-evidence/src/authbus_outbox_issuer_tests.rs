@@ -19,13 +19,9 @@ async fn enqueue(
     sequence: u64,
 ) -> (IssuerRegistration, AuthBusDeliveryStatus) {
     let key = SigningKey::from_bytes(&[49; 32]);
-    let issuer = persisted_message_issuer(
-        issuer_name,
-        epoch,
-        key.verifying_key().to_bytes(),
-        false,
-    )
-    .unwrap();
+    let issuer =
+        persisted_message_issuer(issuer_name, epoch, key.verifying_key().to_bytes(), false)
+            .unwrap();
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,
@@ -121,13 +117,8 @@ async fn current_issuer_scan_cannot_be_starved_by_older_epochs_or_other_issuers(
     );
     // Selecting a newly installed epoch does not imply revoking the old one.
     let key = SigningKey::from_bytes(&[49; 32]);
-    let old = persisted_message_issuer(
-        "issuer:rotation",
-        1,
-        key.verifying_key().to_bytes(),
-        false,
-    )
-    .unwrap();
+    let old = persisted_message_issuer("issuer:rotation", 1, key.verifying_key().to_bytes(), false)
+        .unwrap();
     let mut retained = store
         .pending_authbus_deliveries_for_issuer(subject, scope, &old, /*limit*/ 128)
         .await

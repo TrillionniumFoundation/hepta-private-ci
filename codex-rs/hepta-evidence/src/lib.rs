@@ -6,6 +6,8 @@ mod authbus_outbox_record;
 mod authbus_outbox_worker;
 mod authbus_recovery;
 mod authbus_store;
+#[cfg(test)]
+mod authbus_test_support;
 mod canonical;
 mod governance_store;
 mod governance_validation;

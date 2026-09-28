@@ -136,12 +136,7 @@ impl AuthBusAuthorityHost {
                 generation: 1,
                 digest: store.authority_frontier_digest().await?,
             };
-            AuthorityCheckpointFile::create(
-                checkpoint_path,
-                database_path,
-                owner_id,
-                initial,
-            )?
+            AuthorityCheckpointFile::create(checkpoint_path, database_path, owner_id, initial)?
         };
         match store.authority_checkpoint().await? {
             None => store.initialize_authority_checkpoint(external).await?,
@@ -244,11 +239,11 @@ impl AuthBusAuthorityHost {
                 let operation_error = normalize_mutation_error(error);
                 match self.sync_checkpoint_locked().await {
                     Ok(()) => Err(operation_error),
-                    Err(checkpoint_error) => Err(AuthBusAuthorityError::MutationOutcomeUnknown(
-                        format!(
+                    Err(checkpoint_error) => {
+                        Err(AuthBusAuthorityError::MutationOutcomeUnknown(format!(
                             "operation returned {operation_error}; checkpoint reconciliation failed: {checkpoint_error}"
-                        ),
-                    )),
+                        )))
+                    }
                 }
             }
         }
@@ -322,10 +317,12 @@ impl AuthBusAuthorityHost {
         key_epoch: Generation,
         expected_revision: u64,
     ) -> Result<IssuerRetirement, AuthBusAuthorityError> {
-        self.mutate(
-            self.store
-                .retire_issuer_epoch(purpose, issuer_id, key_epoch, expected_revision),
-        )
+        self.mutate(self.store.retire_issuer_epoch(
+            purpose,
+            issuer_id,
+            key_epoch,
+            expected_revision,
+        ))
         .await
     }
 
@@ -369,11 +366,8 @@ impl AuthBusAuthorityHost {
         expected_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<AuthPolicy, AuthBusAuthorityError> {
-        self.mutate(
-            self.store
-                .replace_policy(spec, expected_revision, time),
-        )
-        .await
+        self.mutate(self.store.replace_policy(spec, expected_revision, time))
+            .await
     }
 
     pub async fn revoke_policy(
@@ -382,11 +376,8 @@ impl AuthBusAuthorityHost {
         expected_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<AuthPolicy, AuthBusAuthorityError> {
-        self.mutate(
-            self.store
-                .revoke_policy(policy_id, expected_revision, time),
-        )
-        .await
+        self.mutate(self.store.revoke_policy(policy_id, expected_revision, time))
+            .await
     }
 
     pub async fn retire_policy(
@@ -431,11 +422,8 @@ impl AuthBusAuthorityHost {
         expected_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<QuotaSnapshot, AuthBusAuthorityError> {
-        self.mutate(
-            self.store
-                .replace_quota(spec, expected_revision, time),
-        )
-        .await
+        self.mutate(self.store.replace_quota(spec, expected_revision, time))
+            .await
     }
 
     pub async fn reserve(
@@ -496,10 +484,11 @@ impl AuthBusAuthorityHost {
         expected_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
-        self.mutate(
-            self.store
-                .reconcile_expired_reservation(reservation_id, expected_revision, time),
-        )
+        self.mutate(self.store.reconcile_expired_reservation(
+            reservation_id,
+            expected_revision,
+            time,
+        ))
         .await
     }
 
@@ -518,8 +507,7 @@ impl AuthBusAuthorityHost {
         evidence: &SignedSettlementEvidence,
         time: TrustedTimeSample,
     ) -> Result<Settlement, AuthBusAuthorityError> {
-        self.mutate(self.store.settle(issuer, evidence, time))
-            .await
+        self.mutate(self.store.settle(issuer, evidence, time)).await
     }
 
     pub async fn compact_terminal_reservations(
@@ -693,10 +681,7 @@ fn validate_parent_paths(path: &Path, database_path: &Path) -> Result<(), AuthBu
 }
 
 #[cfg(not(unix))]
-fn validate_parent_paths(
-    _path: &Path,
-    _database_path: &Path,
-) -> Result<(), AuthBusAuthorityError> {
+fn validate_parent_paths(_path: &Path, _database_path: &Path) -> Result<(), AuthBusAuthorityError> {
     Err(AuthBusAuthorityError::UnsafeCheckpoint)
 }
 

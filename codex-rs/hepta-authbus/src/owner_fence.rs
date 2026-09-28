@@ -160,14 +160,9 @@ fn open_lock_file(_path: &Path) -> Result<File, AuthBusAuthorityError> {
 
 #[cfg(unix)]
 fn acquire_process_lock(file: &File) -> Result<(), AuthBusAuthorityError> {
-    match rustix::fs::fcntl_lock(
-        file,
-        rustix::fs::FlockOperation::NonBlockingLockExclusive,
-    ) {
+    match rustix::fs::fcntl_lock(file, rustix::fs::FlockOperation::NonBlockingLockExclusive) {
         Ok(()) => Ok(()),
-        Err(error)
-            if error == rustix::io::Errno::AGAIN || error == rustix::io::Errno::ACCESS =>
-        {
+        Err(error) if error == rustix::io::Errno::AGAIN || error == rustix::io::Errno::ACCESS => {
             Err(AuthBusAuthorityError::OwnerAlreadyActive)
         }
         Err(error) => Err(AuthBusAuthorityError::Storage(error.to_string())),
@@ -272,7 +267,10 @@ mod tests {
         ));
         let metadata = std::fs::metadata(&target).expect("target metadata");
         assert_eq!(metadata.mode() & 0o777, 0o640);
-        assert_eq!(std::fs::read(&target).expect("target contents"), b"unchanged");
+        assert_eq!(
+            std::fs::read(&target).expect("target contents"),
+            b"unchanged"
+        );
     }
 
     #[tokio::test]
@@ -283,13 +281,15 @@ mod tests {
         std::fs::write(&target, b"unchanged").expect("target");
         std::fs::set_permissions(&target, std::fs::Permissions::from_mode(0o600))
             .expect("target mode");
-        std::fs::hard_link(&target, lock_path(&database).expect("lock path"))
-            .expect("hard link");
+        std::fs::hard_link(&target, lock_path(&database).expect("lock path")).expect("hard link");
         assert!(matches!(
             OwnerFence::acquire(&database, "owner").await,
             Err(AuthBusAuthorityError::UnsafeCheckpoint)
         ));
         assert_eq!(std::fs::metadata(&target).expect("metadata").nlink(), 2);
-        assert_eq!(std::fs::read(&target).expect("target contents"), b"unchanged");
+        assert_eq!(
+            std::fs::read(&target).expect("target contents"),
+            b"unchanged"
+        );
     }
 }

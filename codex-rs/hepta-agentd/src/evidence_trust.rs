@@ -72,8 +72,8 @@ impl EvidenceTrust {
             }
             let issuer_id = StableId::new(issuer.issuer_id.clone())
                 .map_err(|error| invalid(&error.to_string()))?;
-            let key_epoch = Generation::new(issuer.key_epoch)
-                .map_err(|error| invalid(&error.to_string()))?;
+            let key_epoch =
+                Generation::new(issuer.key_epoch).map_err(|error| invalid(&error.to_string()))?;
             let _: [u8; 32] = hex_bytes(&issuer.public_key_hex)?;
             let registration = registry
                 .message_issuer(&issuer_id, key_epoch)
@@ -134,10 +134,10 @@ impl EvidenceTrust {
                 "evidence issuer is not registered for the requested role",
             ));
         }
-        let issuer_id = StableId::new(&configured.issuer_id)
-            .map_err(|error| invalid(&error.to_string()))?;
-        let key_epoch = Generation::new(configured.key_epoch)
-            .map_err(|error| invalid(&error.to_string()))?;
+        let issuer_id =
+            StableId::new(&configured.issuer_id).map_err(|error| invalid(&error.to_string()))?;
+        let key_epoch =
+            Generation::new(configured.key_epoch).map_err(|error| invalid(&error.to_string()))?;
         let registration = self
             .registry
             .message_issuer(&issuer_id, key_epoch)

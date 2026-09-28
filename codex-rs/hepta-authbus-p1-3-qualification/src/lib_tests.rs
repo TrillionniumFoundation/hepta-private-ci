@@ -68,11 +68,8 @@ fn private_paths() -> (TempDir, PathBuf, PathBuf) {
     std::fs::create_dir_all(&checkpoint_root).expect("checkpoint root");
     std::fs::set_permissions(&database_root, std::fs::Permissions::from_mode(0o700))
         .expect("database permissions");
-    std::fs::set_permissions(
-        &checkpoint_root,
-        std::fs::Permissions::from_mode(0o700),
-    )
-    .expect("checkpoint permissions");
+    std::fs::set_permissions(&checkpoint_root, std::fs::Permissions::from_mode(0o700))
+        .expect("checkpoint permissions");
     (
         root,
         database_root.join("authority.sqlite"),
@@ -106,14 +103,9 @@ async fn time_sample(
     revision: u64,
     wall_time_ms: u64,
 ) -> codex_hepta_authbus::TrustedTimeSample {
-    host.observe_trusted_time_attestation(&signed_time(
-        key,
-        issuer_id,
-        revision,
-        wall_time_ms,
-    ))
-    .await
-    .expect("observe trusted time")
+    host.observe_trusted_time_attestation(&signed_time(key, issuer_id, revision, wall_time_ms))
+        .await
+        .expect("observe trusted time")
 }
 
 #[test]
@@ -168,12 +160,7 @@ fn persisted_registration_rejects_forged_revoked_and_epoch_substitution() {
         claims: claims.clone(),
     };
     legitimate
-        .authenticate(
-            &trusted,
-            claims.scope_digest,
-            claims.payload_digest,
-            1_000,
-        )
+        .authenticate(&trusted, claims.scope_digest, claims.payload_digest, 1_000)
         .expect("trusted registration authenticates");
 
     let forged = SignedMessage {
@@ -181,12 +168,7 @@ fn persisted_registration_rejects_forged_revoked_and_epoch_substitution() {
         claims: claims.clone(),
     };
     assert!(matches!(
-        forged.authenticate(
-            &trusted,
-            claims.scope_digest,
-            claims.payload_digest,
-            1_000,
-        ),
+        forged.authenticate(&trusted, claims.scope_digest, claims.payload_digest, 1_000,),
         Err(AdmissionError::InvalidSignature)
     ));
 
@@ -198,12 +180,7 @@ fn persisted_registration_rejects_forged_revoked_and_epoch_substitution() {
     )
     .expect("persisted revoked registration");
     assert!(matches!(
-        legitimate.authenticate(
-            &revoked,
-            claims.scope_digest,
-            claims.payload_digest,
-            1_000,
-        ),
+        legitimate.authenticate(&revoked, claims.scope_digest, claims.payload_digest, 1_000,),
         Err(AdmissionError::Revoked)
     ));
 
@@ -229,9 +206,10 @@ fn persisted_registration_rejects_forged_revoked_and_epoch_substitution() {
 #[tokio::test]
 async fn authority_host_executes_modern_owner_purpose_sweep_and_settlement_matrix() {
     let (_root, database, checkpoint) = private_paths();
-    let host = AuthBusAuthorityHost::bootstrap(&database, checkpoint.clone(), "qualification-owner")
-        .await
-        .expect("bootstrap authority host");
+    let host =
+        AuthBusAuthorityHost::bootstrap(&database, checkpoint.clone(), "qualification-owner")
+            .await
+            .expect("bootstrap authority host");
     assert!(matches!(
         AuthBusAuthorityHost::open(&database, checkpoint.clone(), "qualification-owner").await,
         Err(AuthBusAuthorityError::OwnerAlreadyActive)

@@ -55,11 +55,8 @@ fn private_paths() -> Paths {
     std::fs::create_dir_all(&checkpoint_root).expect("checkpoint root");
     std::fs::set_permissions(&database_root, std::fs::Permissions::from_mode(0o700))
         .expect("database permissions");
-    std::fs::set_permissions(
-        &checkpoint_root,
-        std::fs::Permissions::from_mode(0o700),
-    )
-    .expect("checkpoint permissions");
+    std::fs::set_permissions(&checkpoint_root, std::fs::Permissions::from_mode(0o700))
+        .expect("checkpoint permissions");
     Paths {
         database: database_root.join("authority.sqlite"),
         checkpoint: checkpoint_root.join("authority-checkpoint.json"),
@@ -137,49 +134,38 @@ async fn bootstrap_requires_both_state_domains_to_be_new() {
 #[tokio::test]
 async fn second_owner_is_rejected_and_release_allows_reopen() {
     let paths = private_paths();
-    let owner = AuthBusAuthorityHost::bootstrap(
-        &paths.database,
-        paths.checkpoint.clone(),
-        "single-owner",
-    )
-    .await
-    .expect("bootstrap owner");
+    let owner =
+        AuthBusAuthorityHost::bootstrap(&paths.database, paths.checkpoint.clone(), "single-owner")
+            .await
+            .expect("bootstrap owner");
     assert!(matches!(
-        AuthBusAuthorityHost::open(
-            &paths.database,
-            paths.checkpoint.clone(),
-            "single-owner",
-        )
-        .await,
+        AuthBusAuthorityHost::open(&paths.database, paths.checkpoint.clone(), "single-owner",)
+            .await,
         Err(AuthBusAuthorityError::OwnerAlreadyActive)
     ));
     drop(owner);
-    AuthBusAuthorityHost::open(
-        &paths.database,
-        paths.checkpoint.clone(),
-        "single-owner",
-    )
-    .await
-    .expect("reopen after owner release");
+    AuthBusAuthorityHost::open(&paths.database, paths.checkpoint.clone(), "single-owner")
+        .await
+        .expect("reopen after owner release");
 }
 
 #[tokio::test]
 async fn failed_same_process_duplicate_does_not_release_cross_process_fence() {
     let paths = private_paths();
     let owner_id = "duplicate-fence-owner";
-    let owner = AuthBusAuthorityHost::bootstrap(
-        &paths.database,
-        paths.checkpoint.clone(),
-        owner_id,
-    )
-    .await
-    .expect("bootstrap owner");
+    let owner =
+        AuthBusAuthorityHost::bootstrap(&paths.database, paths.checkpoint.clone(), owner_id)
+            .await
+            .expect("bootstrap owner");
 
     assert!(matches!(
         AuthBusAuthorityHost::open(&paths.database, paths.checkpoint.clone(), owner_id).await,
         Err(AuthBusAuthorityError::OwnerAlreadyActive)
     ));
-    assert_eq!(run_owner_probe(&paths, owner_id, "probe-blocked"), "blocked");
+    assert_eq!(
+        run_owner_probe(&paths, owner_id, "probe-blocked"),
+        "blocked"
+    );
 
     drop(owner);
     assert_eq!(
@@ -193,19 +179,13 @@ async fn worker_retains_host_and_owner_fence_until_worker_drop() {
     let paths = private_paths();
     let owner_id = "worker-owner";
     let host = Arc::new(
-        AuthBusAuthorityHost::bootstrap(
-            &paths.database,
-            paths.checkpoint.clone(),
-            owner_id,
-        )
-        .await
-        .expect("bootstrap owner"),
+        AuthBusAuthorityHost::bootstrap(&paths.database, paths.checkpoint.clone(), owner_id)
+            .await
+            .expect("bootstrap owner"),
     );
-    let worker = AuthBusAuthorityWorker::new(
-        Arc::clone(&host),
-        AuthBusAuthorityWorkerConfig::default(),
-    )
-    .expect("worker");
+    let worker =
+        AuthBusAuthorityWorker::new(Arc::clone(&host), AuthBusAuthorityWorkerConfig::default())
+            .expect("worker");
     drop(host);
 
     assert!(matches!(
@@ -266,9 +246,7 @@ async fn checkpoint_stage_failures_are_classified_and_recoverable() {
             .expect("operational snapshot");
         assert!(snapshot.runtime.checkpoint_sync_failures >= 1);
         assert_eq!(
-            snapshot
-                .runtime
-                .mutation_committed_reconciliation_required,
+            snapshot.runtime.mutation_committed_reconciliation_required,
             1
         );
     }
@@ -381,13 +359,10 @@ async fn every_issuer_lifecycle_mutation_has_the_same_checkpoint_failure_contrac
 #[tokio::test]
 async fn kill_nine_releases_the_process_owner_fence() {
     let paths = private_paths();
-    let initial = AuthBusAuthorityHost::bootstrap(
-        &paths.database,
-        paths.checkpoint.clone(),
-        "kill-owner",
-    )
-    .await
-    .expect("bootstrap owner");
+    let initial =
+        AuthBusAuthorityHost::bootstrap(&paths.database, paths.checkpoint.clone(), "kill-owner")
+            .await
+            .expect("bootstrap owner");
     drop(initial);
 
     let marker = paths._root.path().join("owner-ready");
@@ -412,12 +387,7 @@ async fn kill_nine_releases_the_process_owner_fence() {
     }
     assert!(marker.exists(), "child did not acquire owner fence");
     assert!(matches!(
-        AuthBusAuthorityHost::open(
-            &paths.database,
-            paths.checkpoint.clone(),
-            "kill-owner",
-        )
-        .await,
+        AuthBusAuthorityHost::open(&paths.database, paths.checkpoint.clone(), "kill-owner",).await,
         Err(AuthBusAuthorityError::OwnerAlreadyActive)
     ));
 
@@ -428,13 +398,9 @@ async fn kill_nine_releases_the_process_owner_fence() {
         .expect("kill child");
     assert!(status.success());
     let _ = child.wait().expect("wait for killed child");
-    AuthBusAuthorityHost::open(
-        &paths.database,
-        paths.checkpoint.clone(),
-        "kill-owner",
-    )
-    .await
-    .expect("owner fence released by process death");
+    AuthBusAuthorityHost::open(&paths.database, paths.checkpoint.clone(), "kill-owner")
+        .await
+        .expect("owner fence released by process death");
 }
 
 #[tokio::test]
@@ -443,15 +409,12 @@ async fn owner_probe_reports_fence_state() {
         return;
     }
     let owner_id = std::env::var("AUTHBUS_OWNER_ID").expect("child owner id");
-    let database = PathBuf::from(
-        std::env::var_os("AUTHBUS_OWNER_DATABASE").expect("child database path"),
-    );
-    let checkpoint = PathBuf::from(
-        std::env::var_os("AUTHBUS_OWNER_CHECKPOINT").expect("child checkpoint path"),
-    );
-    let marker = PathBuf::from(
-        std::env::var_os("AUTHBUS_OWNER_MARKER").expect("child marker path"),
-    );
+    let database =
+        PathBuf::from(std::env::var_os("AUTHBUS_OWNER_DATABASE").expect("child database path"));
+    let checkpoint =
+        PathBuf::from(std::env::var_os("AUTHBUS_OWNER_CHECKPOINT").expect("child checkpoint path"));
+    let marker =
+        PathBuf::from(std::env::var_os("AUTHBUS_OWNER_MARKER").expect("child marker path"));
     let result = AuthBusAuthorityHost::open(&database, checkpoint, &owner_id).await;
     let state = match result {
         Ok(_host) => "acquired",
@@ -466,15 +429,12 @@ async fn owner_child_process_holds_fence() {
     if std::env::var_os("AUTHBUS_OWNER_CHILD").is_none() {
         return;
     }
-    let database = PathBuf::from(
-        std::env::var_os("AUTHBUS_OWNER_DATABASE").expect("child database path"),
-    );
-    let checkpoint = PathBuf::from(
-        std::env::var_os("AUTHBUS_OWNER_CHECKPOINT").expect("child checkpoint path"),
-    );
-    let marker = PathBuf::from(
-        std::env::var_os("AUTHBUS_OWNER_MARKER").expect("child marker path"),
-    );
+    let database =
+        PathBuf::from(std::env::var_os("AUTHBUS_OWNER_DATABASE").expect("child database path"));
+    let checkpoint =
+        PathBuf::from(std::env::var_os("AUTHBUS_OWNER_CHECKPOINT").expect("child checkpoint path"));
+    let marker =
+        PathBuf::from(std::env::var_os("AUTHBUS_OWNER_MARKER").expect("child marker path"));
     let _host = AuthBusAuthorityHost::open(&database, checkpoint, "kill-owner")
         .await
         .expect("child owner open");

@@ -73,8 +73,7 @@ impl AuthBusAuthorityWorker {
     where
         TimeFn: FnMut() -> TimeFuture,
         TimeFuture: Future<Output = Result<TrustedTimeSample, AuthBusAuthorityError>>,
-        ObserveFn:
-            FnMut(&AuthBusMaintenanceReport) -> Result<(), AuthBusAuthorityError>,
+        ObserveFn: FnMut(&AuthBusMaintenanceReport) -> Result<(), AuthBusAuthorityError>,
     {
         if *shutdown.borrow() {
             return Ok(());

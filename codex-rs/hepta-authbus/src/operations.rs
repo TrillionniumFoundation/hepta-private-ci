@@ -234,9 +234,7 @@ impl AuthBusRuntimeMetrics {
             checkpoint_rollback_conflicts: self
                 .checkpoint_rollback_conflicts
                 .load(Ordering::Relaxed),
-            checkpoint_storage_failures: self
-                .checkpoint_storage_failures
-                .load(Ordering::Relaxed),
+            checkpoint_storage_failures: self.checkpoint_storage_failures.load(Ordering::Relaxed),
             authority_use_blocks: self.authority_use_blocks.load(Ordering::Relaxed),
             mutation_attempts: self.mutation_attempts.load(Ordering::Relaxed),
             mutation_rejections: self.mutation_rejections.load(Ordering::Relaxed),
@@ -393,9 +391,7 @@ impl AuthBusOperationalSnapshot {
         if self.quota_utilization_basis_points >= policy.max_quota_utilization_basis_points {
             reasons.push(AuthBusBlockingReason::QuotaCapacity);
         }
-        if self.oldest_active_reservation_age_ms
-            >= policy.max_oldest_active_reservation_age_ms
-        {
+        if self.oldest_active_reservation_age_ms >= policy.max_oldest_active_reservation_age_ms {
             reasons.push(AuthBusBlockingReason::OldestActiveReservation);
         }
         Ok(reasons)
@@ -455,9 +451,7 @@ impl AuthBusOperationalSnapshot {
                 policy.max_quota_utilization_basis_points,
             ));
         }
-        if self.oldest_active_reservation_age_ms
-            >= policy.max_oldest_active_reservation_age_ms
-        {
+        if self.oldest_active_reservation_age_ms >= policy.max_oldest_active_reservation_age_ms {
             alerts.push(alert(
                 AuthBusAlertKind::OldestActiveReservation,
                 AuthBusAlertSeverity::Warning,
@@ -612,8 +606,10 @@ impl AuthBusAuthorityStore {
                 )?,
             )?;
         }
-        let quota_endowment =
-            checked_sum(checked_sum(quota_available, quota_reserved)?, quota_consumed)?;
+        let quota_endowment = checked_sum(
+            checked_sum(quota_available, quota_reserved)?,
+            quota_consumed,
+        )?;
         let quota_used = checked_sum(quota_reserved, quota_consumed)?;
         let quota_utilization_basis_points = if quota_endowment == 0 {
             0

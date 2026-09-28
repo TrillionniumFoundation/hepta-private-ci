@@ -5,7 +5,6 @@ use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -14,17 +13,13 @@ use ed25519_dalek::SigningKey;
 use tempfile::TempDir;
 
 use crate::authbus_outbox::maintain;
+use crate::authbus_test_support::issuer_registration;
 use crate::store::now_millis;
 use crate::*;
 
 fn fixture(sequence: u64, expiry: u64) -> (IssuerRegistration, SignedMessage) {
     let key = SigningKey::from_bytes(&[37; 32]);
-    let issuer = IssuerRegistration {
-        issuer_id: StableId::new("issuer:queue").unwrap(),
-        key_epoch: Generation::new(1).unwrap(),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    };
+    let issuer = issuer_registration("issuer:queue", 1, &key, false);
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,
@@ -462,10 +457,7 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
     ));
     // Retire the fixture epoch, release only terminal capacity, and still reject
     // the consumed old sequence after all terminal rows are old enough to prune.
-    let revoked = IssuerRegistration {
-        revoked: true,
-        ..issuer
-    };
+    let revoked = issuer_registration("issuer:queue", 1, &SigningKey::from_bytes(&[37; 32]), true);
     store.quarantine_authbus_issuer(&revoked).await.unwrap();
     let mut tx = store.pool.begin_with("BEGIN IMMEDIATE").await.unwrap();
     maintain(&mut tx, now_millis().unwrap() + 86_400_001)
