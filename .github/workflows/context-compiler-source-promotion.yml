@@ -47,19 +47,64 @@ jobs:
         with:
           tool: cargo-deny@0.19.0
 
-      - name: Materialize reviewed direct V3 and recovery source
+      - name: Materialize registry authority and V3 product source
         shell: bash
         run: |
           set -euo pipefail
           python3 -B scripts/apply_context_compiler_v3_source.py
+
+      - name: Materialize current closure source
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 -B scripts/apply_context_compiler_current_closure.py
+
+      - name: Apply V3 interface corrections
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 -B scripts/apply_context_compiler_v3_interface_fix.py
+
+      - name: Apply V3 regression source
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 -B scripts/apply_context_compiler_v3_regressions.py
+
+      - name: Activate recovery source
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 -B scripts/apply_context_compiler_recovery_activation.py
+
+      - name: Normalize recovery source
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 -B scripts/apply_context_compiler_recovery_cleanup.py
+
+      - name: Apply Agentd recovery V2 source
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 -B scripts/apply_context_compiler_agentd_recovery_v2.py
+
+      - name: Add recovery tests
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 -B scripts/apply_context_compiler_recovery_tests.py
+
+      - name: Normalize recovery tests
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 -B scripts/apply_context_compiler_recovery_test_cleanup.py
+
+      - name: Apply dual-lane qualification closure
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 -B scripts/apply_context_compiler_qualification_closure.py
 
       - name: Register deterministic property-test dependency
