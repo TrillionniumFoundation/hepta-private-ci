@@ -103,8 +103,17 @@ fn operation(sequence: u64) -> Result<NeuronGenerationCommitV2, Box<dyn Error>> 
     })
 }
 
+#[derive(Clone, Copy)]
+struct GenerationFrameSizes {
+    header: u64,
+    first_commit: u64,
+    first_ack: u64,
+    second_commit: u64,
+    second_ack: u64,
+}
+
 // Measure actual canonical frames rather than hard-coding a second wire codec.
-fn frame_sizes() -> Result<(u64, u64, u64, u64, u64), Box<dyn Error>> {
+fn frame_sizes() -> Result<GenerationFrameSizes, Box<dyn Error>> {
     let root = Fixture::new()?;
     let path = root.path().join("probe");
     let mut store = FileNeuronGenerationStoreV2::create(&path, context()?)?;
@@ -119,22 +128,22 @@ fn frame_sizes() -> Result<(u64, u64, u64, u64, u64), Box<dyn Error>> {
     let second_end = fs::metadata(&path)?.len();
     store.acknowledge_witness(&second.key, second.next_anchor)?;
     let end = fs::metadata(&path)?.len();
-    Ok((
+    Ok(GenerationFrameSizes {
         header,
-        first_end - header,
-        ack_end - first_end,
-        second_end - ack_end,
-        end - second_end,
-    ))
+        first_commit: first_end - header,
+        first_ack: ack_end - first_end,
+        second_commit: second_end - ack_end,
+        second_ack: end - second_end,
+    })
 }
 
 #[test]
 fn commit_cannot_consume_its_acknowledgement_capacity() -> Result<(), Box<dyn Error>> {
-    let (header, commit_bytes, _, _, _) = frame_sizes()?;
+    let sizes = frame_sizes()?;
     let root = Fixture::new()?;
     let path = root.path().join("generation");
     let mut limits = context()?;
-    limits.max_file_bytes = header + commit_bytes;
+    limits.max_file_bytes = sizes.header + sizes.first_commit;
     let mut store = FileNeuronGenerationStoreV2::create(&path, limits)?;
     assert_eq!(
         store.commit_result(operation(1)?),
@@ -142,17 +151,17 @@ fn commit_cannot_consume_its_acknowledgement_capacity() -> Result<(), Box<dyn Er
     );
     assert_eq!(store.current_anchor()?, None);
     assert_eq!(store.pending_witness_count()?, 0);
-    assert_eq!(fs::metadata(path)?.len(), header);
+    assert_eq!(fs::metadata(path)?.len(), sizes.header);
     Ok(())
 }
 
 #[test]
 fn replay_budget_is_also_a_new_work_admission_budget() -> Result<(), Box<dyn Error>> {
-    let (header, _, _, _, _) = frame_sizes()?;
+    let sizes = frame_sizes()?;
     let root = Fixture::new()?;
     let path = root.path().join("generation");
     let mut limits = context()?;
-    limits.max_startup_replay_bytes = header;
+    limits.max_startup_replay_bytes = sizes.header;
     let mut store = FileNeuronGenerationStoreV2::create(&path, limits.clone())?;
     let first = operation(1)?;
     assert_eq!(
@@ -171,11 +180,16 @@ fn replay_budget_is_also_a_new_work_admission_budget() -> Result<(), Box<dyn Err
 
 #[test]
 fn pending_acknowledgements_remain_reserved_after_reopen() -> Result<(), Box<dyn Error>> {
-    let (header, first_bytes, first_ack, second_bytes, second_ack) = frame_sizes()?;
+    let sizes = frame_sizes()?;
     let root = Fixture::new()?;
     let path = root.path().join("generation");
     let mut limits = context()?;
-    limits.max_file_bytes = header + first_bytes + first_ack + second_bytes + second_ack - 1;
+    limits.max_file_bytes = sizes.header
+        + sizes.first_commit
+        + sizes.first_ack
+        + sizes.second_commit
+        + sizes.second_ack
+        - 1;
     let first = operation(1)?;
     let mut store = FileNeuronGenerationStoreV2::create(&path, limits.clone())?;
     store.commit_result(first.clone())?;
@@ -195,11 +209,11 @@ fn pending_acknowledgements_remain_reserved_after_reopen() -> Result<(), Box<dyn
 
 #[test]
 fn exact_capacity_finishes_and_preserves_full_result_and_conflict() -> Result<(), Box<dyn Error>> {
-    let (header, commit_bytes, ack_bytes, _, _) = frame_sizes()?;
+    let sizes = frame_sizes()?;
     let root = Fixture::new()?;
     let path = root.path().join("generation");
     let mut limits = context()?;
-    limits.max_file_bytes = header + commit_bytes + ack_bytes;
+    limits.max_file_bytes = sizes.header + sizes.first_commit + sizes.first_ack;
     limits.max_startup_replay_bytes = limits.max_file_bytes;
     let first = operation(1)?;
     let mut store = FileNeuronGenerationStoreV2::create(&path, limits.clone())?;
@@ -242,7 +256,7 @@ fn index_context() -> Result<NeuronRuntimeIndexContextV2, Box<dyn Error>> {
     })
 }
 
-fn index_frame_sizes() -> Result<(u64, u64, u64), Box<dyn Error>> {
+fn index_frame_sizes() -> Result<(u64, u64, u64, u64), Box<dyn Error>> {
     let root = Fixture::new()?;
     let path = root.path().join("index-probe");
     let mut index = FileNeuronRuntimeIndexV2::create(&path, index_context()?)?;
@@ -250,21 +264,23 @@ fn index_frame_sizes() -> Result<(u64, u64, u64), Box<dyn Error>> {
     let first = operation(1)?;
     index.prepare(first.key.clone(), /*expected_anchor*/ None)?;
     let prepared_end = fs::metadata(&path)?.len();
+    let remaining_reserved = index.capacity_snapshot()?.reserved_bytes;
     index.complete(&first.key, first.next_anchor, digest("committed-operation"))?;
     Ok((
         header,
         prepared_end - header,
+        remaining_reserved,
         fs::metadata(path)?.len() - prepared_end,
     ))
 }
 
 #[test]
 fn index_rejects_preparation_without_completion_room() -> Result<(), Box<dyn Error>> {
-    let (header, prepared, completed) = index_frame_sizes()?;
+    let (header, prepared, remaining_reserved, _) = index_frame_sizes()?;
     let root = Fixture::new()?;
     let path = root.path().join("index");
     let mut limits = index_context()?;
-    limits.max_file_bytes = header + prepared + completed - 1;
+    limits.max_file_bytes = header + prepared + remaining_reserved - 1;
     let mut index = FileNeuronRuntimeIndexV2::create(&path, limits)?;
     let first = operation(1)?;
     assert_eq!(
@@ -282,11 +298,11 @@ fn index_rejects_preparation_without_completion_room() -> Result<(), Box<dyn Err
 
 #[test]
 fn index_exact_capacity_completes_after_restart() -> Result<(), Box<dyn Error>> {
-    let (header, prepared, completed) = index_frame_sizes()?;
+    let (header, prepared, remaining_reserved, completed) = index_frame_sizes()?;
     let root = Fixture::new()?;
     let path = root.path().join("index");
     let mut limits = index_context()?;
-    limits.max_file_bytes = header + prepared + completed;
+    limits.max_file_bytes = header + prepared + remaining_reserved;
     limits.max_startup_replay_bytes = limits.max_file_bytes;
     let mut index = FileNeuronRuntimeIndexV2::create(&path, limits.clone())?;
     let first = operation(1)?;
@@ -299,12 +315,14 @@ fn index_exact_capacity_completes_after_restart() -> Result<(), Box<dyn Error>> 
         index.admit(&first.key, /*expected_anchor*/ None)?,
         NeuronRuntimeIndexAdmissionV2::Historical(result)
     );
+    assert!(remaining_reserved >= completed);
+    assert_eq!(fs::metadata(path)?.len(), header + prepared + completed);
     Ok(())
 }
 
 #[test]
 fn index_replay_ceiling_prevents_unreopenable_pending_work() -> Result<(), Box<dyn Error>> {
-    let (header, _, _) = index_frame_sizes()?;
+    let (header, _, _, _) = index_frame_sizes()?;
     let root = Fixture::new()?;
     let path = root.path().join("index");
     let mut limits = index_context()?;

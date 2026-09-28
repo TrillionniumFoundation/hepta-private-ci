@@ -153,7 +153,7 @@ fn scope() -> JournalScope {
 
 fn record(native: &SparseConfig, config: &NeuronRuntimeConfigV1) -> NeuronLegacyOperationRecordV1 {
     let input_digest = digest("input");
-    let sparse_tick = SparseTick {
+    let sparse_input = SparseTick {
         scope_digest: scope().scope_digest,
         objective_digest: scope().objective_digest,
         ndu_digest: digest("ndu"),
@@ -164,7 +164,7 @@ fn record(native: &SparseConfig, config: &NeuronRuntimeConfigV1) -> NeuronLegacy
         drive_q24: vec![Q, Q / 2, 0, 0, 0],
         prediction_q24: vec![0; 5],
     };
-    let (checkpoint, receipt) = checked(sparse_tick(native, &sparse_tick, None));
+    let (checkpoint, receipt) = checked(sparse_tick(native, &sparse_input, None));
     let runtime_receipt = LocalModelRuntimeReceiptV1 {
         model_id: config.model_id.clone(),
         model_manifest_digest: config.model_manifest_digest,
@@ -183,12 +183,12 @@ fn record(native: &SparseConfig, config: &NeuronRuntimeConfigV1) -> NeuronLegacy
         encoder_digest: config.encoder_digest,
         head_digest: config.head_digest,
         output_digest: checked(canonical_model_output_digest_v1(
-            &sparse_tick.drive_q24,
-            &sparse_tick.prediction_q24,
+            &sparse_input.drive_q24,
+            &sparse_input.prediction_q24,
             &runtime_receipt,
         )),
-        drive_q24: sparse_tick.drive_q24.clone(),
-        prediction_q24: sparse_tick.prediction_q24.clone(),
+        drive_q24: sparse_input.drive_q24.clone(),
+        prediction_q24: sparse_input.prediction_q24.clone(),
         queue_age_micros: 1,
         transient_allocation_bytes: 128,
         runtime_receipt: runtime_receipt.clone(),
@@ -196,7 +196,7 @@ fn record(native: &SparseConfig, config: &NeuronRuntimeConfigV1) -> NeuronLegacy
     let (confidence_ppm, ood_ppm, calibration_abstain) = checked(calibrate(
         &config.calibration,
         &receipt,
-        sparse_tick.sequence,
+        sparse_input.sequence,
     ));
     let checkpoint_bytes =
         u64::try_from(checkpoint.bounded_encoded_bytes()).expect("bounded checkpoint bytes");
@@ -246,7 +246,7 @@ fn record(native: &SparseConfig, config: &NeuronRuntimeConfigV1) -> NeuronLegacy
             sequence: 1,
             checkpoint_digest: checkpoint.digest(),
         },
-        sparse_tick,
+        sparse_tick: sparse_input,
         output: NeuronRuntimeOutputV1 {
             tick,
             signal,

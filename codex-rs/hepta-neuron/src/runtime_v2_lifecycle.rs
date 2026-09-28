@@ -93,6 +93,7 @@ impl NeuronRuntimeV2Error {
             Self::Model(NeuronModelError::Rejected) => "model_rejected",
             Self::Semantic(_) => "semantic",
             Self::Codec(_) => "codec",
+            Self::ReceiptExtension(_) => "receipt_extension",
             Self::Mechanism(_) => "mechanism",
             Self::ContextMismatch => "context_mismatch",
             Self::CheckpointMismatch => "checkpoint_mismatch",
@@ -337,6 +338,10 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             Ok(result) => result,
             Err(_) => return self.fail_attempt(&key, NeuronOperationFailureV2::InvalidTransition),
         };
+        let receipt_extension = model.receipt_extension(&request, &model_output, &output)?;
+        if let Some(extension) = &receipt_extension {
+            extension.validate()?;
+        }
         let next_anchor = JournalAnchor {
             sequence: input.logical_sequence,
             checkpoint_digest: sparse_receipt.checkpoint_after,
@@ -352,18 +357,17 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             Ok(prepared) => prepared,
             Err(_) => return self.fail_attempt(&key, NeuronOperationFailureV2::InvalidTransition),
         };
-        let full_receipt_bytes = match encode_prepared(&prepared) {
+        let checkpoint_bytes = match encode_prepared(&prepared) {
             Ok(bytes) => bytes,
             Err(_) => return self.fail_attempt(&key, NeuronOperationFailureV2::InvalidTransition),
         };
+        let full_receipt_bytes =
+            encode_full_receipt_v2(&checkpoint_bytes, receipt_extension.as_ref())?;
         if full_receipt_bytes.len() > self.store_context.max_full_receipt_bytes
-            || full_receipt_bytes.len() > self.store_context.max_checkpoint_bytes
+            || checkpoint_bytes.len() > self.store_context.max_checkpoint_bytes
         {
             return self.fail_attempt(&key, NeuronOperationFailureV2::ResultOverBudget);
         }
-        // Preserve the existing HPTNGS02 checkpoint/receipt payload contract.
-        // Removing this copy requires an explicit format migration, not aliasing.
-        let checkpoint_bytes = full_receipt_bytes.clone();
         let (model_semantic_digest, model_observation_digest) = match self
             .model_identities(&prepared.output, prepared.sparse_tick.monotonic_micros)
         {

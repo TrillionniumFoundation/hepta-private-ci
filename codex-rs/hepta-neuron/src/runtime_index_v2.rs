@@ -478,7 +478,9 @@ impl FileNeuronRuntimeIndexV2 {
         }
     }
 
-    pub(crate) fn capacity_snapshot(
+    /// Read-only durable capacity view, including bytes reserved for every
+    /// remaining transition of the current pending operation.
+    pub fn capacity_snapshot(
         &self,
     ) -> Result<crate::NeuronStorageCapacityV2, NeuronRuntimeIndexError> {
         self.ensure_healthy()?;

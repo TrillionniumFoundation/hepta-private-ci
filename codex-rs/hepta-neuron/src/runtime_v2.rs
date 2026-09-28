@@ -42,6 +42,8 @@ use crate::NeuronModelOutputV1;
 use crate::NeuronModelPort;
 use crate::NeuronModelRequestV1;
 use crate::NeuronOperationKeyV2;
+use crate::NeuronReceiptExtensionErrorV2;
+use crate::NeuronReceiptExtensionV2;
 use crate::NeuronResourceReceiptV1;
 use crate::NeuronRuntimeConfigV1;
 use crate::NeuronRuntimeError;
@@ -65,6 +67,8 @@ use crate::operation_codec::DecodedOperationEvent;
 use crate::operation_codec::decode_event;
 use crate::operation_codec::encode_prepared;
 use crate::operation_store::PreparedNeuronOperationV1;
+use crate::receipt_extension_v2::decode_full_receipt_v2;
+use crate::receipt_extension_v2::encode_full_receipt_v2;
 use crate::runtime_types::calibrate;
 use crate::runtime_types::digest_model_binding;
 use crate::runtime_types::subject_scope_digest;
@@ -102,6 +106,18 @@ pub trait DurableNeuronModelPort: NeuronModelPort {
         _request: &NeuronModelRequestV1,
     ) -> Result<NeuronModelResolutionV2, NeuronModelError> {
         Ok(NeuronModelResolutionV2::Unknown)
+    }
+
+    /// Optional typed application receipt produced by the same exact model
+    /// observation. The runtime validates and durably attaches it to the unified
+    /// V2 commit; it grants no effect or model-selection authority.
+    fn receipt_extension(
+        &mut self,
+        _request: &NeuronModelRequestV1,
+        _model_output: &NeuronModelOutputV1,
+        _runtime_output: &NeuronRuntimeOutputV1,
+    ) -> Result<Option<NeuronReceiptExtensionV2>, NeuronModelError> {
+        Ok(None)
     }
 }
 
@@ -169,6 +185,7 @@ pub struct NeuronRuntimeCommitV2 {
     pub model_semantic_digest: Digest32,
     pub model_observation_digest: Digest32,
     pub disposition: NeuronCommitDispositionV1,
+    pub receipt_extension: Option<NeuronReceiptExtensionV2>,
     pub output: NeuronRuntimeOutputV1,
 }
 
@@ -182,6 +199,7 @@ pub enum NeuronRuntimeV2Error {
     Model(NeuronModelError),
     Semantic(NeuronSemanticV2Error),
     Codec(OperationStoreError),
+    ReceiptExtension(NeuronReceiptExtensionErrorV2),
     Mechanism(SparseError),
     ContextMismatch,
     CheckpointMismatch,
@@ -239,6 +257,12 @@ impl From<NeuronSemanticV2Error> for NeuronRuntimeV2Error {
 impl From<OperationStoreError> for NeuronRuntimeV2Error {
     fn from(value: OperationStoreError) -> Self {
         Self::Codec(value)
+    }
+}
+
+impl From<NeuronReceiptExtensionErrorV2> for NeuronRuntimeV2Error {
+    fn from(value: NeuronReceiptExtensionErrorV2) -> Self {
+        Self::ReceiptExtension(value)
     }
 }
 
@@ -379,6 +403,16 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         self.finish_pending_index_commit()?;
         self.reconcile_witnesses()?;
         self.validate_frontiers()
+    }
+
+    pub(crate) fn decision_cell_context(
+        &self,
+    ) -> (
+        &NeuronRuntimeConfigV1,
+        &NeuronBodyBundleIdentityV1,
+        Digest32,
+    ) {
+        (&self.config, &self.body_bundle, self.body_bundle_digest)
     }
 
     fn require_expected_checkpoint(
@@ -628,11 +662,10 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         previous: Option<&SparseCheckpoint>,
         record: &NeuronGenerationRecordV2,
     ) -> Result<SparseCheckpoint, NeuronRuntimeV2Error> {
-        let prepared = decode_prepared(&record.full_receipt_bytes)?;
+        let prepared = decode_prepared(&record.checkpoint_bytes)?;
         validate_prepared_against_record(&prepared, record)?;
-        if record.checkpoint_bytes != record.full_receipt_bytes
-            || prepared.sparse_tick.body_digest != self.body_bundle_digest
-        {
+        decode_full_receipt_v2(&record.checkpoint_bytes, &record.full_receipt_bytes)?;
+        if prepared.sparse_tick.body_digest != self.body_bundle_digest {
             return Err(NeuronRuntimeV2Error::RecoveryMismatch);
         }
         let (checkpoint, sparse_receipt) =
@@ -668,8 +701,10 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         &self,
         record: &NeuronGenerationRecordV2,
     ) -> Result<NeuronRuntimeCommitV2, NeuronRuntimeV2Error> {
-        let prepared = decode_prepared(&record.full_receipt_bytes)?;
+        let prepared = decode_prepared(&record.checkpoint_bytes)?;
         validate_prepared_against_record(&prepared, record)?;
+        let receipt_extension =
+            decode_full_receipt_v2(&record.checkpoint_bytes, &record.full_receipt_bytes)?;
         let (semantic, observation) =
             self.model_identities(&prepared.output, prepared.sparse_tick.monotonic_micros)?;
         if semantic != record.model_semantic_digest
@@ -686,6 +721,7 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             model_semantic_digest: record.model_semantic_digest,
             model_observation_digest: record.model_observation_digest,
             disposition: record.disposition.clone(),
+            receipt_extension,
             output: prepared.output,
         })
     }

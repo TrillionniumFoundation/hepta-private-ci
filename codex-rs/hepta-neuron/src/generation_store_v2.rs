@@ -121,7 +121,7 @@ pub struct NeuronGenerationRecordV2 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum NeuronGenerationAdmissionV2 {
     New,
-    Historical(NeuronGenerationRecordV2),
+    Historical(Box<NeuronGenerationRecordV2>),
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -366,7 +366,9 @@ impl FileNeuronGenerationStoreV2 {
                 .get(index)
                 .ok_or(GenerationStoreError::Corrupt)?;
             return if record.key.input_semantic_digest == key.input_semantic_digest {
-                Ok(NeuronGenerationAdmissionV2::Historical(record.clone()))
+                Ok(NeuronGenerationAdmissionV2::Historical(Box::new(
+                    record.clone(),
+                )))
             } else {
                 Err(GenerationStoreError::Conflict)
             };
@@ -720,7 +722,7 @@ enum DecodedEventV2 {
     Commit {
         previous_event_digest: Digest32,
         event_digest: Digest32,
-        record: NeuronGenerationRecordV2,
+        record: Box<NeuronGenerationRecordV2>,
     },
     WitnessAck {
         previous_event_digest: Digest32,
@@ -764,7 +766,7 @@ fn apply_event(
             let index = records.len();
             tick_index.insert(record.key.tick_id.clone(), index);
             *local_frontier = Some(record.next_anchor);
-            records.push(record);
+            records.push(*record);
             *event_frontier = event_digest;
         }
         DecodedEventV2::WitnessAck {
@@ -919,7 +921,7 @@ fn decode_event(payload: &[u8]) -> Result<DecodedEventV2, GenerationStoreError> 
             Ok(DecodedEventV2::Commit {
                 previous_event_digest,
                 event_digest,
-                record,
+                record: Box::new(record),
             })
         }
         EVENT_WITNESS_ACK => {

@@ -135,12 +135,12 @@ fn exact_duplicate_returns_original_full_receipt_after_restart() {
     ));
     assert_eq!(
         checked(reopened.admit(&request)),
-        NeuronFeatureAdmissionV1::Historical(NeuronFeatureExecutionRecordV1 {
+        NeuronFeatureAdmissionV1::Historical(Box::new(NeuronFeatureExecutionRecordV1 {
             request: request.clone(),
             request_digest: checked(neuron_feature_request_digest_v1(&request)),
             state: NeuronFeatureExecutionStateV1::Succeeded,
             receipt: Some(expected),
-        })
+        }))
     );
 }
 

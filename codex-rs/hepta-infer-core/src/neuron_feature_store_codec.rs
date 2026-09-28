@@ -9,7 +9,7 @@ enum Event {
     Observe {
         request_id: String,
         request_digest: String,
-        receipt: ReceiptDto,
+        receipt: Box<ReceiptDto>,
     },
 }
 
@@ -77,7 +77,7 @@ fn apply_event(
             {
                 return Err(NeuronFeatureStoreError::Corrupt);
             }
-            let receipt = receipt.into_receipt()?;
+            let receipt = (*receipt).into_receipt()?;
             verify_neuron_feature_receipt_v1(&record.request, &receipt)
                 .map_err(|_| NeuronFeatureStoreError::Corrupt)?;
             record.state = state_from_status(receipt.status);

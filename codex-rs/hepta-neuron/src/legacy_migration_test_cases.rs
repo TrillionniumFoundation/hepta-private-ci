@@ -120,7 +120,7 @@ fn exact_prepared_prefix_resumes_without_duplicate_history() {
         scope(),
         8,
         &config,
-        &[record.clone()],
+        std::slice::from_ref(&record),
         trusted_archive_digest(&native, &config, &record),
     ));
     assert_eq!(receipt.imported_operations, 1);
