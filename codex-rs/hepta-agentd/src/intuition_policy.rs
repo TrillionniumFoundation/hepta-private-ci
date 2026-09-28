@@ -632,11 +632,24 @@ fn production_decision_from_authenticated(
         request.policy_digest,
         request.sequence,
     )?;
-    let candidate_ids = request
+    let mut candidate_ids = request
         .candidates
         .iter()
         .map(|candidate| candidate.candidate_id.clone())
         .collect::<Vec<_>>();
+    let abstain_id = StableId::new("abstain")
+        .map_err(|_| AgentdIntuitionPolicyError::InvalidHost("abstain candidate id"))?;
+    if candidate_ids.iter().any(|candidate| candidate == &abstain_id) {
+        return Err(AgentdIntuitionPolicyError::InvalidHost(
+            "reserved abstain candidate in policy request",
+        ));
+    }
+    // The intuition kernel represents abstention as a disposition rather than
+    // an action candidate. The learning ledger deliberately requires an
+    // explicit abstain option in every complete candidate set. Add that
+    // reserved option only at the authenticated policy-to-ledger boundary so
+    // both contracts remain exact and the signed Decision binds the expansion.
+    candidate_ids.push(abstain_id);
     let completeness = CandidateSetCompletenessReceiptV1 {
         set_id: request.decision_id.clone(),
         state_digest: request.state_digest,
