@@ -1,3 +1,9 @@
+"""Module projection and Cargo membership acceptance in miniature workspaces.
+
+The historical filename is retained for CI callers. Sentinel hosts prove only
+projection independence, not real Agentd execution, safe writer handoff or
+product throughput. Those boundaries have separate native integration tests.
+"""
 from __future__ import annotations
 
 import importlib.util
@@ -27,7 +33,7 @@ reachability = load_script("hepta_rust_reachability.py")
 fixtures = load_script("test_hepta_module_manifest.py")
 
 
-class ModuleProductAcceptanceTests(unittest.TestCase):
+class ModuleProjectionAcceptanceTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
@@ -55,7 +61,7 @@ class ModuleProductAcceptanceTests(unittest.TestCase):
         ).replace("compileLayer = 1", "compileLayer = 0")
         (platform / "module.toml").write_text(platform_manifest, encoding="utf-8")
 
-        # Sentinels prove add/remove does not require touching either composition host.
+        # Sentinels detect unexpected projection writes to unrelated fixture files.
         for relative in [
             "codex-rs/hepta-agentd/src/runtime.rs",
             "codex-rs/app-server/src/lib.rs",
@@ -247,7 +253,7 @@ class ModuleProductAcceptanceTests(unittest.TestCase):
             set(self.run_command(["git", "diff", "--cached", "--name-only"]).stdout.splitlines()),
         )
 
-    def test_doubling_module_count_does_not_change_agentd_or_app_server(self) -> None:
+    def test_catalog_growth_keeps_fixture_hosts_and_workspace_membership_stable(self) -> None:
         for index in range(40):
             directory = f"hepta-scale-{index:02d}"
             package = f"codex-hepta-scale-{index:02d}"

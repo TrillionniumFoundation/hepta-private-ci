@@ -106,7 +106,7 @@ Historical cleanup remains bound to the exact head/tree and 143-path deletion in
 
 ## 5. Forty-module architecture and team model
 
-`MODULES.json` is authoritative for 40 modules. The V6 foundation remains and the Intelligence responsibilities are decomposed into bounded teams:
+`docs/modules/*/module.toml` is the handwritten source for the current 40 modules; `MODULES.json` is its generated identity projection. The V6 foundation remains and the Intelligence responsibilities are decomposed into bounded teams:
 
 ```text
 objective.compiler
@@ -637,7 +637,7 @@ Primary metrics are task success, retrieval utility, citation precision, stale r
 
 ## 21. Performance, fault and security contracts
 
-Every affected path records comparable baseline and candidate throughput, p50/p95/p99 latency, CPU, resident memory, allocations, queue depth/age, SQLite busy/WAL, file descriptors/sockets, model/provider usage, token/context cost and confidence bounds.
+Measure resources actually affected by the change: comparable baseline and candidate throughput and p50/p95/p99 latency for hot paths; CPU, resident memory and allocations for compute changes; queue depth/age, SQLite busy/WAL and file descriptors/sockets for stateful services; model/provider usage and token/context cost for model paths. Record workload size, sample count, host/build identity and uncertainty with the run. A pure value or prose change does not need an invented database, hardware target or release dossier. Stateful/effect/migration changes retain their applicable recovery and resource checks.
 
 Stateful modules cover before/after intent, commit, outbox, wakeup, claim, send, acknowledgement, source settlement, stale callback, permission loss, filesystem full, corruption, nonempty WAL, identity drift, backup/restore and process kill/reopen.
 
@@ -696,7 +696,7 @@ All authority flags remain false in this document set.
 
 ## 24. V8 audit closure and executable document integrity
 
-V8 closes the remaining V8.1 review gaps rather than merely adding prose:
+The following inventory records the V8/V8.1 historical audit boundary. Retain its original evidence, but do not refresh historical cleanup receipts or reproduce all of its paperwork for each ordinary feature change. Current ownership and executable invariants remain checked; current CI risk tiers and the module development guide determine applicable source-head and merge-candidate execution.
 
 - every logical module has at least one bounded work package;
 - cross-module contracts, critical protocol fields and durable data domains have explicit machine owners;
