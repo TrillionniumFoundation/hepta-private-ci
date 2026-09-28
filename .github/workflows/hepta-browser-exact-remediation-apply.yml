@@ -3,25 +3,25 @@ name: Hepta Browser exact remediation apply
 on:
   push:
     branches:
-      - codex/browser-servo-full-convergence-20260927
+      - automation/browser-servo-exact-remediation-20260928
 
 permissions:
   contents: write
 
 concurrency:
-  group: hepta-browser-exact-remediation-apply
+  group: hepta-browser-exact-remediation-apply-isolated
   cancel-in-progress: true
 
 jobs:
   apply:
-    runs-on: macos-14
+    runs-on: ubuntu-22.04
     timeout-minutes: 30
     steps:
-      - name: Checkout exact bootstrap commit
+      - name: Checkout exact helper commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 5
+          fetch-depth: 10
           persist-credentials: true
 
       - name: Install exact Node runtime
@@ -56,6 +56,7 @@ jobs:
         shell: bash
         env:
           TARGET_BRANCH: codex/browser-servo-full-convergence-20260927
+          EXPECTED_TARGET_HEAD: e6ad31e7425464868121da778a389908a906f883
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
@@ -70,4 +71,7 @@ jobs:
             qualification/module-execution-dossiers/detail/browser.servo.md
           git diff --cached --check
           git commit -m 'fix(browser.servo): hold final-use fence through worker admission'
-          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          git fetch origin "$TARGET_BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$EXPECTED_TARGET_HEAD"
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$EXPECTED_TARGET_HEAD" \
+            origin "HEAD:refs/heads/$TARGET_BRANCH"
