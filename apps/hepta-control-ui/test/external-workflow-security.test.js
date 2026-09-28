@@ -37,13 +37,18 @@ test("external qualification performs a secretless main-bound repository preflig
   assert.match(preflight, /test "\$\(git -C \.\.\/\.ui-control-trusted rev-parse HEAD\)" = "\$TRUSTED_WORKFLOW_SHA"/u);
   assert.match(preflight, /git merge-base --is-ancestor "\$CANDIDATE_SHA" refs\/remotes\/origin\/main/u);
   assert.match(preflight, /actions\/runs\/\$QUALIFICATION_RUN_ID/u);
+  assert.match(preflight, /canonicalize_one/u);
+  assert.match(preflight, /canonical\/source-head-receipt\.json/u);
+  assert.match(preflight, /canonical\/merge-tree-receipt\.json/u);
+  assert.match(preflight, /test ! -L "\$\{matches\[0\]\}"/u);
   assert.match(preflight, /node \.\.\/\.ui-control-trusted\/qualification\/ui-control\/validate-repository-preflight\.mjs/u);
   assert.match(preflight, /protectedSecretsEligible:\s*false/u);
 
   const metadata = preflight.indexOf("Fetch official workflow-run metadata");
   const sourceDownload = preflight.indexOf("Download exact-head qualification artifact");
+  const canonical = preflight.indexOf("Canonicalize exactly one immutable receipt per repository qualification path");
   const semantic = preflight.indexOf("Validate official run metadata and mutually bound exact source/merge receipts");
-  assert.ok(metadata >= 0 && sourceDownload > metadata && semantic > sourceDownload);
+  assert.ok(metadata >= 0 && sourceDownload > metadata && canonical > sourceDownload && semantic > canonical);
 });
 
 test("candidate-controlled build execution is isolated in a separate secretless job", () => {
@@ -84,7 +89,8 @@ test("the protected job uses a fresh runner and executes only immutable trusted 
 
   const preSecret = job.slice(0, firstSecret);
   assert.match(preSecret, /candidate-build-artifact\.mjs/u);
-  assert.match(preSecret, /UI_CONTROL_PROTECTED_SOURCE_HEAD_RECEIPT/u);
+  assert.match(preSecret, /repository-preflight\/canonical\/source-head-receipt\.json/u);
+  assert.match(preSecret, /test ! -L \.\.\/ui-control-external-evidence\/repository-preflight\/canonical\/source-head-receipt\.json/u);
   assert.match(preSecret, /candidate-build-observation\.json/u);
 
   const protectedTail = job.slice(firstSecret);
@@ -92,7 +98,14 @@ test("the protected job uses a fresh runner and executes only immutable trusted 
   assert.match(protectedTail, /node \.\.\/\.ui-control-trusted\/qualification\/ui-control\/deployment-security\.mjs/u);
   assert.match(protectedTail, /node \.\.\/\.ui-control-trusted\/qualification\/ui-control\/real-backend-contract\.mjs/u);
   assert.match(protectedTail, /node \.\.\/\.ui-control-trusted\/qualification\/ui-control\/validate-external-evidence\.mjs/u);
+  assert.match(protectedTail, /UI_CONTROL_SOURCE_HEAD_RECEIPT: \.\.\/ui-control-external-evidence\/repository-preflight\/canonical\/source-head-receipt\.json/u);
+  assert.match(protectedTail, /UI_CONTROL_PRODUCTION_APPROVAL_RECEIPT: \.\.\/ui-control-external-evidence\/manual\/production-approval\.json/u);
   assert.doesNotMatch(protectedTail, /run:\s*node qualification\/ui-control\//u);
   assert.match(job, /HEPTA_UI_CONTROL_ALLOW_MUTATION: I_UNDERSTAND_THIS_USES_A_DISPOSABLE_QUALIFICATION_TARGET/u);
   assert.match(job, /if: \$\{\{ inputs\.run_production_evidence \}\}/u);
+});
+
+test("artifact-derived paths never enter the workflow environment", () => {
+  assert.doesNotMatch(external, /GITHUB_ENV/u);
+  assert.doesNotMatch(external, /UI_CONTROL_PROTECTED_SOURCE_HEAD_RECEIPT/u);
 });

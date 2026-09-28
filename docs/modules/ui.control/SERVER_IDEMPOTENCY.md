@@ -69,7 +69,7 @@ A database insert followed by a non-atomic best-effort queue publish is insuffic
 - `422`: invalid bounded input;
 - `429`/`503`: no acceptance unless the response includes an existing operation record; client still performs lookup after uncertain transport failure.
 
-Every accepted response returns the same `operationId`, `semanticDigest`, `status`, and server-generated `auditTraceId`.
+Every accepted response returns the same `operationId`, `semanticDigest`, `status`, and server-generated `auditTraceId`. The `auditTraceId` is allocated with the durable ledger row, not per HTTP attempt, worker attempt, lookup, or session. Identical admission, pending lookup, terminal lookup, restart reconciliation, and same-principal post-session-switch lookup must all return that exact trace identity.
 
 ## Lookup and recovery
 
@@ -77,9 +77,11 @@ The backend exposes authenticated lookup by `operation_id` and `semantic_digest`
 
 - `found: false` only when no durable ledger record exists;
 - active state (`accepted`, `pending`, or `indeterminate`);
-- terminal state (`succeeded`, `failed`, `rejected`, or `cancelled`) with audit trace and optional outcome digest.
+- terminal state (`succeeded`, `failed`, `rejected`, or `cancelled`) with the original audit trace and optional outcome digest.
 
 A client seeing timeout, abort after dispatch, connection reset, malformed acknowledgement, or acknowledgement identity mismatch treats the submission as indeterminate and performs lookup. It does not generate a replacement operation ID and does not automatically resend.
+
+Once any accepted response or authenticated lookup has established an `auditTraceId`, every later observation for the same operation and semantic digest must preserve it. A missing or changed trace is an operation-ledger identity contradiction, not a new operation and not a harmless logging change. The client keeps the operation unresolved, emits an acknowledgement-mismatch/durability failure, and does not erase, retry, or replace the admitted identity.
 
 An authenticated `found: false` response is a final **non-admission disposition** for an unacknowledged local attempt. The client records `terminalStatus: not_accepted`, removes the pending identity from recovery storage under the same scoped cross-tab lock, and never reports runtime success or failure from that disposition. A later operator action requires a fresh confirmation and a fresh operation ID; the client must not silently resubmit the predecessor. If the same client already received an accepted acknowledgement and audit trace, `found: false` contradicts the durability contract; the client keeps the operation unresolved, emits an acknowledgement-mismatch failure, and retries lookup under bounded backoff rather than erasing the accepted identity.
 
@@ -95,18 +97,19 @@ Only the runtime owner or its durable terminal observer may transition an **acce
 
 ## Retention and replay
 
-The operation ledger retention horizon must exceed all client retry/recovery windows and incident-response windows. Deletion requires a tombstone or namespace epoch that prevents an old operation ID from being rebound. Backup/restore procedures must preserve uniqueness and terminal facts.
+The operation ledger retention horizon must exceed all client retry/recovery windows and incident-response windows. Deletion requires a tombstone or namespace epoch that prevents an old operation ID from being rebound. Backup/restore procedures must preserve uniqueness, the original audit trace identity, and terminal facts.
 
 ## Qualification evidence
 
 Production evidence must demonstrate:
 
 - concurrent inserts for one operation ID create one row and one side effect;
-- identical replay returns the same record;
+- identical replay returns the same record and audit trace;
 - digest conflict returns 409 with no side effect;
 - crash between admission and dispatch is recovered from the outbox;
 - accepted response loss is recovered by lookup;
+- pending, terminal, restart-reconciled, and same-principal post-session-switch lookups retain the admission audit trace;
 - a client crash after local persistence but before dispatch resolves through authenticated `found: false` without replay;
 - generation rollover fences delayed work;
-- backup/restore does not reopen operation IDs;
+- backup/restore does not reopen operation IDs or replace their audit traces;
 - metrics and audit traces correlate one-to-one with ledger records.

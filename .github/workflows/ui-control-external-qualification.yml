@@ -141,19 +141,26 @@ jobs:
           repository: ${{ github.repository }}
 
       - id: receipts
-        name: Resolve exactly one immutable receipt per repository qualification path
+        name: Canonicalize exactly one immutable receipt per repository qualification path
         shell: bash
         run: |
           set -euo pipefail
-          resolve_one() {
+          mkdir -p ui-control-preflight-evidence/canonical
+          canonicalize_one() {
             local root="$1"
-            local variable="$2"
+            local destination="$2"
             mapfile -t matches < <(find "$root" -type f -name receipt.json -print | sort)
             test "${#matches[@]}" -eq 1
-            printf '%s=%s\n' "$variable" "${matches[0]}" >> "$GITHUB_ENV"
+            test -f "${matches[0]}"
+            test ! -L "${matches[0]}"
+            install -m 0600 "${matches[0]}" "$destination"
           }
-          resolve_one ui-control-preflight-evidence/source-head UI_CONTROL_SOURCE_HEAD_RECEIPT
-          resolve_one ui-control-preflight-evidence/merge-tree UI_CONTROL_MERGE_TREE_RECEIPT
+          canonicalize_one \
+            ui-control-preflight-evidence/source-head \
+            ui-control-preflight-evidence/canonical/source-head-receipt.json
+          canonicalize_one \
+            ui-control-preflight-evidence/merge-tree \
+            ui-control-preflight-evidence/canonical/merge-tree-receipt.json
 
       - id: semantic
         name: Validate official run metadata and mutually bound exact source/merge receipts
@@ -163,8 +170,8 @@ jobs:
           UI_CONTROL_EXPECTED_REPOSITORY: ${{ github.repository }}
           UI_CONTROL_QUALIFICATION_RUN_ID: ${{ inputs.repository_qualification_run_id }}
           UI_CONTROL_QUALIFICATION_RUN_METADATA: ../ui-control-preflight-evidence/qualification-run.json
-          UI_CONTROL_SOURCE_HEAD_RECEIPT: ../${{ env.UI_CONTROL_SOURCE_HEAD_RECEIPT }}
-          UI_CONTROL_MERGE_TREE_RECEIPT: ../${{ env.UI_CONTROL_MERGE_TREE_RECEIPT }}
+          UI_CONTROL_SOURCE_HEAD_RECEIPT: ../ui-control-preflight-evidence/canonical/source-head-receipt.json
+          UI_CONTROL_MERGE_TREE_RECEIPT: ../ui-control-preflight-evidence/canonical/merge-tree-receipt.json
           UI_CONTROL_MAIN_REF: refs/remotes/origin/main
         working-directory: .ui-control-candidate
         run: node ../.ui-control-trusted/qualification/ui-control/validate-repository-preflight.mjs ../ui-control-preflight-evidence/repository-preflight-observation.json
@@ -332,22 +339,16 @@ jobs:
           name: ui-control-candidate-build-${{ inputs.candidate_sha }}
           path: ui-control-candidate-build
 
-      - name: Resolve the accepted exact-head receipt without executing candidate code
-        shell: bash
-        run: |
-          set -euo pipefail
-          mapfile -t matches < <(find ui-control-external-evidence/repository-preflight/source-head -type f -name receipt.json -print | sort)
-          test "${#matches[@]}" -eq 1
-          printf 'UI_CONTROL_PROTECTED_SOURCE_HEAD_RECEIPT=%s\n' "${matches[0]}" >> "$GITHUB_ENV"
-
       - name: Validate the complete candidate build artifact with the trusted verifier
         working-directory: .ui-control-candidate
         shell: bash
         run: |
           set -euo pipefail
+          test -f ../ui-control-external-evidence/repository-preflight/canonical/source-head-receipt.json
+          test ! -L ../ui-control-external-evidence/repository-preflight/canonical/source-head-receipt.json
           node ../.ui-control-trusted/qualification/ui-control/candidate-build-artifact.mjs \
             ../ui-control-candidate-build/build-manifest.json \
-            "../$UI_CONTROL_PROTECTED_SOURCE_HEAD_RECEIPT" \
+            ../ui-control-external-evidence/repository-preflight/canonical/source-head-receipt.json \
             ../ui-control-external-evidence/candidate-build-observation.json
 
       - name: Probe selected HTTPS deployment with the trusted verifier
@@ -391,23 +392,6 @@ jobs:
           HEPTA_UI_CONTROL_ALLOW_MUTATION: I_UNDERSTAND_THIS_USES_A_DISPOSABLE_QUALIFICATION_TARGET
         run: node ../.ui-control-trusted/qualification/ui-control/real-backend-contract.mjs ../ui-control-external-evidence/real-backend-receipt.json
 
-      - name: Resolve repository receipts retained by the accepted preflight
-        if: ${{ inputs.run_production_evidence }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          resolve_one() {
-            local root="$1"
-            local variable="$2"
-            mapfile -t matches < <(find "$root" -type f -name receipt.json -print | sort)
-            test "${#matches[@]}" -eq 1
-            printf '%s=%s\n' "$variable" "${matches[0]}" >> "$GITHUB_ENV"
-          }
-          resolve_one ui-control-external-evidence/repository-preflight/source-head UI_CONTROL_SOURCE_HEAD_RECEIPT
-          resolve_one ui-control-external-evidence/repository-preflight/merge-tree UI_CONTROL_MERGE_TREE_RECEIPT
-          printf 'UI_CONTROL_DEPLOYMENT_SECURITY_RECEIPT=%s\n' "$PWD/ui-control-external-evidence/deployment-security-receipt.json" >> "$GITHUB_ENV"
-          printf 'UI_CONTROL_REAL_BACKEND_RECEIPT=%s\n' "$PWD/ui-control-external-evidence/real-backend-receipt.json" >> "$GITHUB_ENV"
-
       - name: Materialize independent and release-authority evidence
         if: ${{ inputs.run_production_evidence }}
         env:
@@ -425,12 +409,6 @@ jobs:
           printf '%s' "$INDEPENDENT_SECURITY_JSON" > ui-control-external-evidence/manual/independent-security.json
           printf '%s' "$OPERATIONAL_EXERCISE_JSON" > ui-control-external-evidence/manual/operational-exercise.json
           printf '%s' "$PRODUCTION_APPROVAL_JSON" > ui-control-external-evidence/manual/production-approval.json
-          {
-            echo "UI_CONTROL_INDEPENDENT_ACCEPTANCE_RECEIPT=$PWD/ui-control-external-evidence/manual/independent-acceptance.json"
-            echo "UI_CONTROL_INDEPENDENT_SECURITY_RECEIPT=$PWD/ui-control-external-evidence/manual/independent-security.json"
-            echo "UI_CONTROL_OPERATIONAL_EXERCISE_RECEIPT=$PWD/ui-control-external-evidence/manual/operational-exercise.json"
-            echo "UI_CONTROL_PRODUCTION_APPROVAL_RECEIPT=$PWD/ui-control-external-evidence/manual/production-approval.json"
-          } >> "$GITHUB_ENV"
 
       - name: Validate exact external evidence bundle with the trusted verifier
         if: ${{ inputs.run_production_evidence }}
@@ -438,6 +416,14 @@ jobs:
         env:
           HEPTA_UI_CONTROL_BASE_URL: ${{ secrets.HEPTA_UI_CONTROL_BASE_URL }}
           HEPTA_UI_CONTROL_DEPLOYMENT_ID: ${{ secrets.HEPTA_UI_CONTROL_DEPLOYMENT_ID }}
+          UI_CONTROL_SOURCE_HEAD_RECEIPT: ../ui-control-external-evidence/repository-preflight/canonical/source-head-receipt.json
+          UI_CONTROL_MERGE_TREE_RECEIPT: ../ui-control-external-evidence/repository-preflight/canonical/merge-tree-receipt.json
+          UI_CONTROL_DEPLOYMENT_SECURITY_RECEIPT: ../ui-control-external-evidence/deployment-security-receipt.json
+          UI_CONTROL_REAL_BACKEND_RECEIPT: ../ui-control-external-evidence/real-backend-receipt.json
+          UI_CONTROL_INDEPENDENT_ACCEPTANCE_RECEIPT: ../ui-control-external-evidence/manual/independent-acceptance.json
+          UI_CONTROL_INDEPENDENT_SECURITY_RECEIPT: ../ui-control-external-evidence/manual/independent-security.json
+          UI_CONTROL_OPERATIONAL_EXERCISE_RECEIPT: ../ui-control-external-evidence/manual/operational-exercise.json
+          UI_CONTROL_PRODUCTION_APPROVAL_RECEIPT: ../ui-control-external-evidence/manual/production-approval.json
         run: node ../.ui-control-trusted/qualification/ui-control/validate-external-evidence.mjs ../ui-control-external-evidence/external-evidence-bundle.json
 
       - name: Publish protected external qualification summary
