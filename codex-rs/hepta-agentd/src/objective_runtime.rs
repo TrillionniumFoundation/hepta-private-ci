@@ -296,14 +296,25 @@ impl ObjectiveRuntimeHost {
 
         let disposition = match record.disposition {
             RunStartObjectiveDispositionV1::Compiled => {
-                match agentd.start_canonical_intelligence(&record).await? {
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }) => {
-                        "canonical_ready"
+                match agentd
+                    .start_canonical_intelligence_product_loop(&record)
+                    .await?
+                {
+                    Some((crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }, loop_receipt)) => {
+                        match loop_receipt.map(|receipt| receipt.disposition) {
+                            Some(crate::AgentdIntelligenceProductLoopDispositionV1::Completed) => {
+                                "canonical_completed"
+                            }
+                            Some(crate::AgentdIntelligenceProductLoopDispositionV1::Indeterminate) => {
+                                "canonical_indeterminate"
+                            }
+                            None => "canonical_ready",
+                        }
                     }
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained) => {
+                    Some((crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained, _)) => {
                         "canonical_abstained"
                     }
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath) => {
+                    Some((crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath, _)) => {
                         "canonical_slow_path"
                     }
                     None => {
