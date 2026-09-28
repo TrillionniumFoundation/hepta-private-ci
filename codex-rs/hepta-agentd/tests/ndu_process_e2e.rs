@@ -197,7 +197,7 @@ async fn normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery() -
     )?;
     let (client, health) = harness.wait_ready(&agent, 1).await?;
     #[cfg(target_os = "linux")]
-    ndu_observer::verify(&agent.layout.agentd_control_socket(), &agent.agent_id, 1).await?;
+    ndu_observer::verify(agent.layout.agentd_control_socket(), &agent.agent_id, 1).await?;
     ensure!(
         matches!(
             NduProjectionStoreV1::open(&store),
@@ -331,7 +331,7 @@ async fn normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery() -
             bail!("restarted owner did not expose its generation");
         };
         ndu_observer::verify(
-            &agent.layout.agentd_control_socket(),
+            agent.layout.agentd_control_socket(),
             &agent.agent_id,
             host_generation,
         )

@@ -51,9 +51,11 @@ def validate(frame: bytes, agent: str, generation: int, request_id: int, version
     if not isinstance(data, dict) or set(data) != envelope:
         raise ValueError("response envelope schema mismatch")
     expected = {"schema_version": 2, "request_id": request_id, "agent_id": agent,
-                "spawn_generation": generation, "current_generation": generation}
+                "spawn_generation": generation}
     if any(type(data[k]) is not type(v) or data[k] != v for k, v in expected.items()):
         raise ValueError("response identity mismatch")
+    if not integer(data["current_generation"]) or data["current_generation"] == 0:
+        raise ValueError("invalid current lifecycle generation")
     result = data["payload"]
     fields = V1 if version == "metrics_v1" else V2
     if not isinstance(result, dict) or set(result) != fields | {"type", "result"}:
@@ -114,7 +116,10 @@ def request(path: Path, agent: str, generation: int, request_id: int, version: s
             frame.extend(chunk)
             if len(frame) > MAX_FRAME or b"\n" in frame[:-1]:
                 raise ValueError("oversized or multiple response frames")
-        return validate(bytes(frame), agent, generation, request_id, version), identity
+        validated = validate(bytes(frame), agent, generation, request_id, version)
+        envelope = json.loads(bytes(frame), object_pairs_hook=unique_object)
+        identity = (*identity, envelope["current_generation"])
+        return validated, identity
 
 
 def collect(path: Path, agent: str, generation: int, timeout: float) -> tuple[dict, dict, str]:
@@ -218,8 +223,13 @@ def main() -> int:
     sample = None
     try:
         sample = collect(args.socket, args.agent_id, args.generation, args.timeout)
-    except (OSError, ValueError, KeyError, IndexError, TypeError, RecursionError):
-        print("NDU-OBS-001: collection failed; no current owner observation", file=sys.stderr)
+    except (OSError, ValueError, KeyError, IndexError, TypeError, RecursionError) as error:
+        detail = re.sub(r"\s+", " ", str(error)).strip()[:240]
+        print(
+            f"NDU-OBS-001: collection failed; no current owner observation; "
+            f"{type(error).__name__}: {detail}",
+            file=sys.stderr,
+        )
     try:
         publish(args.output, render(args.agent_id, args.generation, int(time.time()), sample))
     except (OSError, ValueError):

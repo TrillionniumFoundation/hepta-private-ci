@@ -47,7 +47,9 @@ class ObserverTests(unittest.TestCase):
         for version in ("metrics_v1", "metrics_v2"):
             good = frame(version, 1)
             self.assertEqual(observer.validate(json.dumps(good).encode() + b"\n", "11111111-1111-4111-8111-111111111111", 7, 1, version), good["payload"])
-            for key, value in (("request_id", True), ("current_generation", 8), ("spawn_generation", 8), ("agent_id", "other"), ("schema_version", 1)):
+            distinct = copy.deepcopy(good); distinct["current_generation"] = 11
+            self.assertEqual(observer.validate(json.dumps(distinct).encode() + b"\n", "11111111-1111-4111-8111-111111111111", 7, 1, version), good["payload"])
+            for key, value in (("request_id", True), ("current_generation", 0), ("spawn_generation", 8), ("agent_id", "other"), ("schema_version", 1)):
                 bad = copy.deepcopy(good); bad[key] = value
                 with self.subTest(version=version, field=key), self.assertRaises(ValueError):
                     observer.validate(json.dumps(bad).encode() + b"\n", "11111111-1111-4111-8111-111111111111", 7, 1, version)
@@ -123,7 +125,9 @@ class ObserverTests(unittest.TestCase):
 
     def test_generation_switch_is_not_combined_into_one_sample(self):
         v1, v2 = payload("metrics_v1"), payload("metrics_v2")
-        with patch.object(observer, "request", side_effect=[(v2, (1, 2, 3, 4)), (v1, (5, 2, 3, 4))]), self.assertRaises(ValueError):
+        with patch.object(observer, "request", side_effect=[(v2, (1, 2, 3, 4, 11)), (v1, (5, 2, 3, 4, 11))]), self.assertRaises(ValueError):
+            observer.collect(self.root / "control.sock", "11111111-1111-4111-8111-111111111111", 7, 1)
+        with patch.object(observer, "request", side_effect=[(v2, (1, 2, 3, 4, 11)), (v1, (1, 2, 3, 4, 12))]), self.assertRaises(ValueError):
             observer.collect(self.root / "control.sock", "11111111-1111-4111-8111-111111111111", 7, 1)
 
     def test_deadline_and_unsafe_endpoint_fail_closed(self):
