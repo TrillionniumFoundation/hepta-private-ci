@@ -167,6 +167,7 @@ def main() -> int:
     output = args.output.resolve()
     if output == root or root in output.parents:
         parser.error("receipts must be outside the source worktree")
+    os.environ["CARGO_TARGET_DIR"] = str(output.parent / "cognitive-cargo-target")
     receipt = {"schema": "hepta.cognitive-types.readonly-execution.v1", "group": args.group,
                "workflow_sha": os.environ.get("GITHUB_WORKFLOW_SHA"),
                "workflow_ref": os.environ.get("GITHUB_WORKFLOW_REF"),

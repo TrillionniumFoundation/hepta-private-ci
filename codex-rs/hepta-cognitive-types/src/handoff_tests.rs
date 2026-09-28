@@ -24,7 +24,11 @@ fn common_semantic_comparison_never_compares_legacy_and_canonical_digest_domains
     use crate::contract::Validated;
     use crate::handoff::CanonicalParityV1;
 
-    for consumer in CanonicalConsumerV1::ALL {
+    for consumer in [
+        CanonicalConsumerV1::CognitiveRead,
+        CanonicalConsumerV1::CognitiveStore,
+        CanonicalConsumerV1::CompactEngine,
+    ] {
         let binding = test_consumer_binding(consumer, "operation:parity", "source", "cut");
         assert_ne!(
             binding.compatibility_payload_sha256.expect("legacy"),

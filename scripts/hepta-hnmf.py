@@ -514,9 +514,13 @@ def verify() -> int:
     fuzz_source = (
         ROOT / "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs"
     ).read_text(encoding="utf-8")
+    need(
+        "decode_validated_wire_v1::<T>" in fuzz_source,
+        "fuzz harness must exercise the checked canonical decoder",
+    )
     for protocol_id in PROTOCOLS:
         need(
-            f"decode_wire_v1::<{protocol_id}>" in fuzz_source,
+            f"check::<{protocol_id}>" in fuzz_source,
             protocol_id + " fuzz decoder coverage",
         )
 

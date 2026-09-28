@@ -81,12 +81,10 @@ impl AgentdIntelligenceProductRunnerV1 {
         mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
         let recall = inputs.canonical_recall.take().ok_or_else(|| {
-            AgentdIntelligenceProductError::Canonical(
-                CanonicalIntelligenceError::CanonicalRecall(
-                    "normal product entry requires an explicit retrieval-owned canonical recall result"
-                        .into(),
-                ),
-            )
+            AgentdIntelligenceProductError::Canonical(CanonicalIntelligenceError::CanonicalRecall(
+                "normal product entry requires an explicit retrieval-owned canonical recall result"
+                    .into(),
+            ))
         })?;
         self.prepare_composition_inner(composition, request, inputs, recall)
             .await
@@ -139,11 +137,7 @@ impl AgentdIntelligenceProductRunnerV1 {
         let (selected_recall, recall_policy_digest) = if recall.packet.abstain.is_some() {
             let reason_digest = Digest32::of_parts(&[
                 b"hepta.agentd.canonical-recall-explicit-abstention.v1\0",
-                recall
-                    .consumer_binding
-                    .binding_sha256
-                    .digest()
-                    .as_array(),
+                recall.consumer_binding.binding_sha256.digest().as_array(),
             ]);
             let policy_digest =
                 codex_hepta_intelligence::canonical_recall_absence_policy_digest_v1(reason_digest)
@@ -241,11 +235,9 @@ impl AgentdIntelligenceProductRunnerV1 {
         validate_retrieval_owner_current(&snapshot, &recall_fence, &mut retrieval_oracle)
             .map_err(AgentdIntelligenceProductError::Canonical)?;
 
-        let outcome = codex_hepta_intelligence::bind_recall_policy_outcome_v1(
-            outcome,
-            recall_policy_digest,
-        )
-        .map_err(AgentdIntelligenceProductError::Canonical)?;
+        let outcome =
+            codex_hepta_intelligence::bind_recall_policy_outcome_v1(outcome, recall_policy_digest)
+                .map_err(AgentdIntelligenceProductError::Canonical)?;
 
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {

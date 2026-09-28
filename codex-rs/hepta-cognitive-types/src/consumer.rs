@@ -220,8 +220,7 @@ pub const fn migration_posture_authorized_for_state_v1(
         }
         ConsumerConvergenceStateV1::CanonicalAuthoritative => matches!(
             posture,
-            CanonicalMigrationPostureV1::Native
-                | CanonicalMigrationPostureV1::CompatibilityBound
+            CanonicalMigrationPostureV1::Native | CanonicalMigrationPostureV1::CompatibilityBound
         ),
         ConsumerConvergenceStateV1::LegacyRetired => matches!(
             posture,
@@ -238,17 +237,18 @@ pub fn authorize_migration_posture_v1(
     consumer: CanonicalConsumerV1,
     posture: CanonicalMigrationPostureV1,
 ) -> Result<(), CanonicalConsumerBindingError> {
-    let registration = registered_consumer_v1(consumer.as_str()).ok_or(
-        CanonicalConsumerBindingError::ConsumerNotRegistered { consumer },
-    )?;
+    let registration = registered_consumer_v1(consumer.as_str())
+        .ok_or(CanonicalConsumerBindingError::ConsumerNotRegistered { consumer })?;
     if migration_posture_authorized_for_state_v1(registration.state, posture) {
         Ok(())
     } else {
-        Err(CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
-            consumer,
-            posture,
-            state: registration.state,
-        })
+        Err(
+            CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
+                consumer,
+                posture,
+                state: registration.state,
+            },
+        )
     }
 }
 

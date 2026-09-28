@@ -106,8 +106,7 @@ fn product_binding_keeps_distinct_digest_profiles_for_one_checked_payload() {
         .validate()
         .expect("different domains are not a semantic mismatch");
     assert_eq!(
-        canonical_contract_digest_v1(binding.canonical_event().as_inner())
-            .expect("frozen digest"),
+        canonical_contract_digest_v1(binding.canonical_event().as_inner()).expect("frozen digest"),
         binding.consumer_binding.canonical_payload_sha256.digest()
     );
 }
@@ -157,7 +156,10 @@ fn product_binding_rejects_resealed_operation_consumer_source_and_snapshot_subst
             .consumer_binding
             .compute_binding_sha256()
             .expect("recomputed structural hash");
-        binding.consumer_binding.validate().expect("valid raw binding");
+        binding
+            .consumer_binding
+            .validate()
+            .expect("valid raw binding");
         assert_eq!(
             binding.validate(),
             Err(CognitiveStoreV2Error::CanonicalProductBindingMismatch),

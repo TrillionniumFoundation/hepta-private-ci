@@ -3,22 +3,17 @@ use std::path::Path;
 
 use serde_json::Value;
 
-const TRACEABILITY: &str =
-    include_str!("../../../docs/modules/cognitive.types/TRACEABILITY.json");
+const TRACEABILITY: &str = include_str!("../../../docs/modules/cognitive.types/TRACEABILITY.json");
 const SOURCE_EXPORT: &str =
     include_str!("../../../.github/workflows/cognitive-types-source-export.yml");
 const COGNITIVE_QUALIFICATION: &str =
     include_str!("../../../.github/workflows/cognitive-types-qualification.yml");
-const HNMF_QUALIFICATION: &str =
-    include_str!("../../../.github/workflows/hnmf-qualification.yml");
-const COGNITIVE_READ: &str =
-    include_str!("../../hepta-cognitive-read/src/authoritative.rs");
+const HNMF_QUALIFICATION: &str = include_str!("../../../.github/workflows/hnmf-qualification.yml");
+const COGNITIVE_READ: &str = include_str!("../../hepta-cognitive-read/src/authoritative.rs");
 const COGNITIVE_STORE: &str = include_str!("../../hepta-cognitive-store/src/v2.rs");
-const MEMORY_RETRIEVAL: &str =
-    include_str!("../../hepta-memory-retrieval/src/generation_bound.rs");
+const MEMORY_RETRIEVAL: &str = include_str!("../../hepta-memory-retrieval/src/generation_bound.rs");
 const COMPACT_ENGINE: &str = include_str!("../../hepta-compact-engine/src/qualified.rs");
-const INTELLIGENCE_CONTROL: &str =
-    include_str!("../../hepta-intelligence/src/canonical.rs");
+const INTELLIGENCE_CONTROL: &str = include_str!("../../hepta-intelligence/src/canonical.rs");
 const AGENTD_PRODUCT_RUNNER: &str =
     include_str!("../../hepta-agentd/src/intelligence_product_runner.rs");
 const MUTATION_RUNNER: &str =
@@ -29,10 +24,7 @@ const QUALITY_CHECKS: &str =
 #[test]
 fn traceability_manifest_has_closed_unique_invariant_inventory() {
     let document: Value = serde_json::from_str(TRACEABILITY).expect("traceability JSON");
-    assert_eq!(
-        document["schema"],
-        "hepta.cognitive-types.traceability.v1"
-    );
+    assert_eq!(document["schema"], "hepta.cognitive-types.traceability.v1");
     assert_eq!(document["schemaVersion"], 1);
     assert_eq!(document["module"], "cognitive.types");
     assert_eq!(
@@ -65,9 +57,7 @@ fn traceability_manifest_has_closed_unique_invariant_inventory() {
         "CTYPE-WIRE-01",
         "CTYPE-WRITE-01",
     ]);
-    let rows = document["invariants"]
-        .as_array()
-        .expect("invariant array");
+    let rows = document["invariants"].as_array().expect("invariant array");
     let mut actual = BTreeSet::new();
     for row in rows {
         let id = row["id"].as_str().expect("invariant id");
@@ -149,7 +139,7 @@ fn all_registered_consumer_and_product_traceability_anchors_exist() {
 #[test]
 fn agentd_normal_product_recall_policy_is_fail_closed() {
     for token in [
-        "normal product entry requires an explicit canonical recall result",
+        "normal product entry requires an explicit retrieval-owned canonical recall result",
         "hepta.agentd.canonical-recall-explicit-abstention.v1",
         "recall.packet.abstain.is_some()",
     ] {
@@ -192,7 +182,10 @@ fn targeted_mutation_inventory_covers_reviewed_identity_keys() {
         "plasticity:logical-threshold-conflict",
         "topology:logical-node-conflict",
     ] {
-        assert!(QUALITY_CHECKS.contains(case), "missing hostile case: {case}");
+        assert!(
+            QUALITY_CHECKS.contains(case),
+            "missing hostile case: {case}"
+        );
     }
 }
 
@@ -203,12 +196,18 @@ fn qualification_and_export_workflows_are_read_only() {
         ("cognitive qualification", COGNITIVE_QUALIFICATION),
         ("HNMF qualification", HNMF_QUALIFICATION),
     ] {
-        assert!(workflow.contains("contents: read"), "{name} lacks read permission");
+        assert!(
+            workflow.contains("contents: read"),
+            "{name} lacks read permission"
+        );
         assert!(
             !workflow.contains("contents: write"),
             "{name} can write repository contents"
         );
-        assert!(!workflow.contains("git push"), "{name} pushes source changes");
+        assert!(
+            !workflow.contains("git push"),
+            "{name} pushes source changes"
+        );
         assert!(
             !workflow.contains("persist-credentials: true"),
             "{name} persists write credentials"
@@ -227,6 +226,9 @@ fn source_exports_keep_only_the_latest_immutable_candidate() {
         "git bundle create \"$export_dir/source.bundle\" HEAD",
         "sha256sum source.tar source.bundle",
     ] {
-        assert!(SOURCE_EXPORT.contains(token), "missing export token: {token}");
+        assert!(
+            SOURCE_EXPORT.contains(token),
+            "missing export token: {token}"
+        );
     }
 }

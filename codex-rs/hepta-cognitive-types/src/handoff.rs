@@ -55,8 +55,8 @@ impl CanonicalConsumerBindingV1 {
         }
         let payload =
             decode_validated_wire_v1::<T>(canonical_wire).map_err(|error| error.violation())?;
-        let frozen_digest = canonical_contract_digest_v1(payload.as_inner())
-            .map_err(|error| error.violation())?;
+        let frozen_digest =
+            canonical_contract_digest_v1(payload.as_inner()).map_err(|error| error.violation())?;
         if frozen_digest != self.canonical_payload_sha256.digest() {
             return Err(violation(
                 ContractErrorCodeV1::DigestMismatch,

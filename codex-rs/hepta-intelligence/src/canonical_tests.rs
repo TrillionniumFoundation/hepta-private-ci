@@ -159,9 +159,10 @@ impl CanonicalFreshnessOracleV1 for Oracle {
     ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
         let calls = self.calls.entry(owner_id.clone()).or_default();
         *calls += 1;
-        let mut current = self.states.get(owner_id).cloned().ok_or_else(|| {
-            CanonicalIntelligenceError::FreshnessUnavailable(owner_id.clone())
-        })?;
+        let mut current =
+            self.states.get(owner_id).cloned().ok_or_else(|| {
+                CanonicalIntelligenceError::FreshnessUnavailable(owner_id.clone())
+            })?;
         if self.drift_after_first.as_ref() == Some(owner_id) && *calls > 1 {
             current.generation = generation(current.generation.get() + 1);
         }
@@ -337,7 +338,10 @@ fn pending_recall_consumer_cannot_omit_compatibility_digest() {
         None,
     )
     .expect_err("pending consumer must not self-promote to native");
-    assert!(matches!(error, CanonicalIntelligenceError::CanonicalRecall(_)));
+    assert!(matches!(
+        error,
+        CanonicalIntelligenceError::CanonicalRecall(_)
+    ));
 }
 
 #[test]

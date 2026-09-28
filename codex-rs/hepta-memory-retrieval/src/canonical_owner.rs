@@ -95,12 +95,7 @@ impl RetrievalOwnedCanonicalRecallV1 {
         bytes.extend_from_slice(self.legacy_candidate_union_digest().as_array());
         bytes.extend_from_slice(self.legacy_generation_vector_digest().as_array());
         bytes.extend_from_slice(packet_digest.as_array());
-        bytes.extend_from_slice(
-            self.consumer_binding()
-                .binding_sha256
-                .digest()
-                .as_array(),
-        );
+        bytes.extend_from_slice(self.consumer_binding().binding_sha256.digest().as_array());
         Ok(Digest32::of_bytes(&bytes))
     }
 }

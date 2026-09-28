@@ -28,10 +28,7 @@ pub(super) fn retrieval_owner_binding() -> OwnerBindingV1 {
     }
 }
 
-fn owned_recall(
-    run_id: StableId,
-    packet: RecallPacketV1,
-) -> AgentdCanonicalRecallInputV1 {
+fn owned_recall(run_id: StableId, packet: RecallPacketV1) -> AgentdCanonicalRecallInputV1 {
     let legacy_cue_digest = digest("legacy canonical recall cue");
     let legacy_candidate_union_digest = digest("legacy canonical recall union");
     let legacy_generation_vector_digest = digest("legacy canonical recall generation");
@@ -67,9 +64,9 @@ fn owned_recall(
         Some(RecallAbstainReasonV1::NoCandidate) => {
             LegacyRecallDispositionV1::Abstained(LegacyRecallAbstentionReasonV1::NoCandidate)
         }
-        Some(RecallAbstainReasonV1::OutOfDistribution) => LegacyRecallDispositionV1::Abstained(
-            LegacyRecallAbstentionReasonV1::OutOfDistribution,
-        ),
+        Some(RecallAbstainReasonV1::OutOfDistribution) => {
+            LegacyRecallDispositionV1::Abstained(LegacyRecallAbstentionReasonV1::OutOfDistribution)
+        }
         Some(RecallAbstainReasonV1::LowConfidence) => {
             LegacyRecallDispositionV1::Abstained(LegacyRecallAbstentionReasonV1::ScoreBelowFloor)
         }
@@ -78,11 +75,9 @@ fn owned_recall(
                 LegacyRecallAbstentionReasonV1::ContradictoryEvidence,
             )
         }
-        Some(RecallAbstainReasonV1::InsufficientCoverage) => {
-            LegacyRecallDispositionV1::Abstained(
-                LegacyRecallAbstentionReasonV1::InsufficientChannelCoverage,
-            )
-        }
+        Some(RecallAbstainReasonV1::InsufficientCoverage) => LegacyRecallDispositionV1::Abstained(
+            LegacyRecallAbstentionReasonV1::InsufficientChannelCoverage,
+        ),
     };
     let mut legacy = LegacyRecallPacketV1 {
         cue_digest: legacy_cue_digest,
@@ -121,22 +116,16 @@ fn owned_recall(
         },
     )
     .expect("retrieval-owned canonical recall");
-    bind_retrieval_owned_canonical_recall_for_agentd_v1(
-        run_id,
-        owned,
-        retrieval_owner_binding(),
-    )
-    .expect("Agentd retrieval binding")
+    bind_retrieval_owned_canonical_recall_for_agentd_v1(run_id, owned, retrieval_owner_binding())
+        .expect("Agentd retrieval binding")
 }
 
 pub(super) fn explicit_absence_recall(run_id: StableId) -> AgentdCanonicalRecallInputV1 {
     let packet = RecallPacketV1 {
         cue_digest: ContractDigestV1::from_digest(digest("explicit absence cue"))
             .expect("cue digest"),
-        event_snapshot_digest: ContractDigestV1::from_digest(digest(
-            "explicit absence memory cut",
-        ))
-        .expect("event snapshot digest"),
+        event_snapshot_digest: ContractDigestV1::from_digest(digest("explicit absence memory cut"))
+            .expect("event snapshot digest"),
         engram_snapshot_digest: ContractDigestV1::from_digest(digest(
             "explicit absence engram cut",
         ))

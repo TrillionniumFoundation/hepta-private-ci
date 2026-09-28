@@ -16,8 +16,7 @@ const SHADOW_COMPARISON_DOMAIN: &[u8] = b"hepta.cognitive.consumer-shadow.v1";
 /// This profile compares only the two digest byte strings supplied by the
 /// caller. It does not project legacy and canonical values into a shared
 /// semantic domain and therefore cannot establish migration parity or cutover.
-pub const RAW_SHADOW_DIGEST_COMPARISON_PROFILE_V1: &str =
-    "raw_digest_equality_diagnostic_v1";
+pub const RAW_SHADOW_DIGEST_COMPARISON_PROFILE_V1: &str = "raw_digest_equality_diagnostic_v1";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ConsumerConvergenceStateV1 {

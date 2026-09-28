@@ -505,7 +505,9 @@ impl MemoryWriteReceiptV1 {
         self.expected_snapshot.validate()?;
         self.snapshot_key.validate()?;
         if self.expected_snapshot.vector_digest != self.intent.expected_snapshot_digest() {
-            return Err(LaneCContractError::DigestMismatch("receipt_expected_snapshot"));
+            return Err(LaneCContractError::DigestMismatch(
+                "receipt_expected_snapshot",
+            ));
         }
         crate::transitions::validate_receipt_transition_v1(
             &self.expected_snapshot,
