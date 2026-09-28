@@ -1,0 +1,67 @@
+name: Neuron recovery lifecycle validation
+on:
+  push:
+    branches: [work/neuron-runtime-recovery-lifecycle-20260928]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: neuron-recovery-lifecycle-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Export only committed repository bytes
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/neuron-source"
+          git archive --format=tar.gz -o "$RUNNER_TEMP/neuron-source/source.tar.gz" HEAD
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/neuron-source/identity.txt"
+          sha256sum "$RUNNER_TEMP/neuron-source/source.tar.gz" > "$RUNNER_TEMP/neuron-source/source.sha256"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-recovery-source-${{ github.sha }}
+          path: ${{ runner.temp }}/neuron-source/
+          if-no-files-found: error
+          retention-days: 7
+  qualification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source-head, synthetic-merge]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.40.0,cargo-nextest@0.9.102
+          fallback: none
+      - name: Validate unchanged committed source against fixed integration base
+        env:
+          NEURON_SOURCE_SHA: ${{ github.sha }}
+          NEURON_BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
+          NEURON_CANDIDATE: ${{ matrix.candidate }}
+          NEURON_EVIDENCE_DIR: ${{ runner.temp }}/neuron-recovery-evidence
+          CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+        run: bash scripts/neuron/qualify.sh
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: neuron-recovery-${{ matrix.candidate }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/neuron-recovery-evidence/
+          retention-days: 30
+          if-no-files-found: error
