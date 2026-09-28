@@ -1,0 +1,114 @@
+name: Kernel evidence A-D integration diagnostics
+
+on:
+  push:
+    branches: [work/kernel-evidence-ad-integration-20260928]
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/kernel-evidence-ad-integration.yml'
+      - 'codex-rs/hepta-evidence/**'
+      - 'codex-rs/hepta-agentd/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-evidence-ad-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.event_name }}
+  cancel-in-progress: false
+
+jobs:
+  source-capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture immutable source and merge diagnostics
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test -z "$(git status --porcelain)"
+          out="$RUNNER_TEMP/kernel-evidence-source"
+          mkdir -p "$out"
+          git rev-parse HEAD HEAD^{tree} > "$out/source-identity.txt"
+          git archive --format=tar.gz HEAD > "$out/source.tar.gz"
+          followup=a4b0d8f1b87390d79b363f3432bef16810884579
+          base=a126987b84737dbc2ee2592442a314117bddb4a2
+          git cat-file -e "$followup^{commit}"
+          git cat-file -e "$base^{commit}"
+          git archive --format=tar.gz "$followup" > "$out/followup.tar.gz"
+          git diff "$base" HEAD -- codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol codex-rs/state > "$out/source.patch"
+          set +e
+          git merge-tree --write-tree HEAD "$followup" > "$out/merge-tree.txt" 2>&1
+          rc=$?
+          set -e
+          printf '%s\n' "$rc" > "$out/merge-exit.txt"
+          tree="$(head -n 1 "$out/merge-tree.txt")"
+          if git cat-file -e "$tree^{tree}" 2>/dev/null; then
+            git archive --format=tar.gz "$tree" > "$out/combined-tree.tar.gz"
+          fi
+          (cd "$out" && sha256sum *.gz *.txt *.patch > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kernel-evidence-source-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kernel-evidence-source
+          if-no-files-found: error
+          retention-days: 14
+  native-evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Native package diagnostics without source repair
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -uo pipefail
+          out="$RUNNER_TEMP/kernel-evidence-native"
+          mkdir -p "$out"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD" || exit 1
+          git status --porcelain > "$out/dirty-before.txt"
+          test ! -s "$out/dirty-before.txt" || exit 1
+          git rev-parse HEAD HEAD^{tree} > "$out/source-identity.txt"
+          rustc --version --verbose > "$out/rustc.txt"
+          cargo --version > "$out/cargo.txt"
+          cd codex-rs
+          failures=0
+          run_check() {
+            local name="$1"; shift
+            printf '%q ' "$@" > "$out/$name.command"
+            printf '\n' >> "$out/$name.command"
+            "$@" 2>&1 | tee "$out/$name.log"
+            local rc=${PIPESTATUS[0]}
+            printf '%s\n' "$rc" > "$out/$name.exit"
+            if [ "$rc" -ne 0 ]; then failures=$((failures + 1)); fi
+          }
+          run_check format cargo fmt --all --check
+          run_check evidence-tests cargo test --locked -p codex-hepta-evidence
+          run_check evidence-clippy cargo clippy --locked -p codex-hepta-evidence --all-targets -- -D warnings
+          cd ..
+          git status --porcelain > "$out/dirty-after.txt"
+          if [ -s "$out/dirty-after.txt" ]; then failures=$((failures + 1)); fi
+          (cd "$out" && sha256sum *.log *.exit *.command *.txt > SHA256SUMS)
+          test "$failures" -eq 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: kernel-evidence-native-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kernel-evidence-native
+          if-no-files-found: error
+          retention-days: 14
