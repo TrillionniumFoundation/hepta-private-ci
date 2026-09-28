@@ -32,33 +32,52 @@
     "independentAcceptance": "absent",
     "releaseAuthorization": "absent"
   },
+  "evidenceSemantics": {
+    "observedOutcome": "A concrete check ran and emitted a pass or failure observation for one exact subject. A later failure does not erase an earlier observation.",
+    "acceptedEvidence": "A receipt was validated against its exact candidate, tree, deployment, and authority rules. Accepted stage evidence is monotone within an evidence bundle.",
+    "overallAcceptance": "The bundle is accepted only when every required stage and the final production approval are accepted. A failed bundle may retain earlier accepted stage evidence without authorizing production or release."
+  },
   "verificationStages": {
     "designDefined": {
       "repositoryState": "defined_by_manifest",
+      "observationAuthority": "tracked manifest and generated projections at the candidate tree",
+      "acceptanceAuthority": "exact candidate tree plus generated-artifact drift check",
       "passAuthority": "tracked manifest and generated status projection"
     },
     "codePresent": {
       "repositoryState": "present_in_authoritative_candidate",
+      "observationAuthority": "source roots observed in the exact candidate tree",
+      "acceptanceAuthority": "exact candidate tree and package-boundary qualification",
       "passAuthority": "exact candidate tree"
     },
     "sourceTestsPassed": {
       "repositoryState": "not_stored_as_source_truth",
+      "observationAuthority": "exact-SHA workflow outcomes for dependency, lint, unit, contract, build, Lane B, and documentation checks",
+      "acceptanceAuthority": "validated hepta.ui-control.qualification-receipt.v2 bound to the exact source commit and tree",
       "passAuthority": "exact-SHA qualification receipt"
     },
     "browserTestsPassed": {
       "repositoryState": "not_stored_as_source_truth",
+      "observationAuthority": "exact-SHA Chromium, Firefox, WebKit, keyboard, focus, and axe outcomes",
+      "acceptanceAuthority": "validated source-head qualification receipt with browserTestsPassed and exact build-manifest digest",
       "passAuthority": "exact-SHA Chromium/Firefox/WebKit and axe receipt"
     },
     "mergeTreePassed": {
       "repositoryState": "not_stored_as_source_truth",
+      "observationAuthority": "deterministic synthetic-merge workflow outcomes",
+      "acceptanceAuthority": "validated synthetic-merge qualification receipt bound to source, base, evaluated merge commit, and tree",
       "passAuthority": "deterministic synthetic-merge receipt"
     },
     "realBackendPassed": {
       "repositoryState": "external_evidence_absent",
+      "observationAuthority": "real Agentd probe plus retained chaos and authority evidence",
+      "acceptanceAuthority": "validated hepta.ui-control.real-backend-receipt.v2 bound to the exact candidate and deployment digest",
       "passAuthority": "real Agentd/backend qualification receipt"
     },
     "productionDeploymentApproved": {
       "repositoryState": "external_authority_absent",
+      "observationAuthority": "deployment-security, independent accessibility, independent security, and operational exercise receipts",
+      "acceptanceAuthority": "non-expired production approval bound to all prerequisite evidence digests and an accepted external-evidence bundle",
       "passAuthority": "deployment and release authority"
     }
   },

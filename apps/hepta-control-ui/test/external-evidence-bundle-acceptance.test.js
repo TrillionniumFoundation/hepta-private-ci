@@ -192,6 +192,8 @@ test("bundle validation accepts one exact, mutually bound evidence set", () => {
     assert.equal(bundle.status, "accepted");
     assert.equal(bundle.claims.productionDeploymentApproved, true);
     assert.equal(bundle.claims.releaseAuthorized, true);
+    assert.equal(bundle.stageResults["production-approval"].observedOutcome, "passed");
+    assert.equal(bundle.stageResults["production-approval"].acceptedEvidence, true);
     assert.deepEqual(bundle.evidenceDigests, { ...approvalEvidenceDigests, productionApproval: approvalReceipt.digest });
   } finally {
     rmSync(directory, { recursive: true, force: true });

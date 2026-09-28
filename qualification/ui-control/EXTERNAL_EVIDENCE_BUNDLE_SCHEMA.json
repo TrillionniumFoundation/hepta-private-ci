@@ -11,6 +11,7 @@
     "candidate",
     "backendDeploymentDigest",
     "evidenceDigests",
+    "stageResults",
     "claims"
   ],
   "properties": {
@@ -27,6 +28,55 @@
     },
     "backendDeploymentDigest": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
     "evidenceDigests": { "type": "object" },
+    "stageResults": {
+      "type": "object",
+      "minProperties": 10,
+      "propertyNames": {
+        "enum": [
+          "deployment-identity",
+          "main-ancestry",
+          "repository-source-head",
+          "repository-synthetic-merge",
+          "deployment-security",
+          "real-backend",
+          "independent-accessibility-and-operator-acceptance",
+          "independent-security-review",
+          "operational-exercise",
+          "production-approval"
+        ]
+      },
+      "additionalProperties": { "$ref": "#/$defs/stageResult" }
+    },
     "claims": { "type": "object" }
+  },
+  "$defs": {
+    "stageResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observedOutcome",
+        "acceptedEvidence",
+        "evidenceDigest"
+      ],
+      "properties": {
+        "observedOutcome": {
+          "enum": ["not-observed", "passed", "failed", "not-required"]
+        },
+        "acceptedEvidence": { "type": "boolean" },
+        "evidenceDigest": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "failureCode": {
+          "type": "string",
+          "pattern": "^[A-Z0-9_]{3,96}$"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    }
   }
 }

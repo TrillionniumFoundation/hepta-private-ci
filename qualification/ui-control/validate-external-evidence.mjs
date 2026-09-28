@@ -16,6 +16,7 @@ import {
   validateRealBackendReceipt,
   validateRepositoryQualificationReceipt,
 } from "./external-evidence-lib.mjs";
+import { createExternalEvidenceStageLedger } from "./external-evidence-stage-ledger.mjs";
 
 const MAX_EVIDENCE_BYTES = 2 * 1024 * 1024;
 const required = name => {
@@ -33,7 +34,8 @@ const candidate = Object.freeze({
   commit: git("rev-parse", "HEAD"),
   tree: git("rev-parse", "HEAD^{tree}"),
 });
-let stage = "initialization";
+const ledger = createExternalEvidenceStageLedger();
+let stage = "deployment-identity";
 let backendDeploymentDigest = null;
 const evidenceDigests = {};
 
@@ -43,7 +45,9 @@ async function readEvidence(environmentName, digestKey) {
   assertEvidence(metadata.isFile(), "UI_CONTROL_EVIDENCE_FILE", `${environmentName} is not a file`);
   assertEvidence(metadata.size > 0 && metadata.size <= MAX_EVIDENCE_BYTES, "UI_CONTROL_EVIDENCE_SIZE", `${environmentName} is empty or too large`);
   const bytes = await readFile(path);
-  evidenceDigests[digestKey] = sha256(bytes);
+  const digest = sha256(bytes);
+  evidenceDigests[digestKey] = digest;
+  ledger.attachEvidence(stage, digest);
   try {
     return JSON.parse(bytes.toString("utf8"));
   } catch {
@@ -62,6 +66,7 @@ async function emit(receipt) {
 
 try {
   stage = "deployment-identity";
+  ledger.begin(stage);
   const deployment = deploymentSubject(
     required("HEPTA_UI_CONTROL_BASE_URL"),
     required("HEPTA_UI_CONTROL_DEPLOYMENT_ID"),
@@ -72,9 +77,11 @@ try {
     candidateTree: candidate.tree,
     backendDeploymentDigest,
   };
+  ledger.accept(stage);
 
   if (process.env.UI_CONTROL_REQUIRE_MAIN_ANCESTRY === "true") {
     stage = "main-ancestry";
+    ledger.begin(stage);
     const mainRef = process.env.UI_CONTROL_MAIN_REF || "refs/remotes/origin/main";
     try {
       execFileSync("git", ["merge-base", "--is-ancestor", candidate.commit, mainRef], { stdio: "pipe" });
@@ -83,17 +90,25 @@ try {
       error.code = "UI_CONTROL_CANDIDATE_NOT_ON_MAIN";
       throw error;
     }
+    ledger.accept(stage);
+  } else {
+    ledger.skip("main-ancestry", "not-required-by-this-invocation");
   }
 
   stage = "repository-source-head";
+  ledger.begin(stage);
   const sourceHead = await readEvidence("UI_CONTROL_SOURCE_HEAD_RECEIPT", "sourceHead");
   const sourceSummary = validateRepositoryQualificationReceipt(sourceHead, "source-head", expected);
+  ledger.accept(stage);
 
   stage = "repository-synthetic-merge";
+  ledger.begin(stage);
   const mergeTree = await readEvidence("UI_CONTROL_MERGE_TREE_RECEIPT", "mergeTree");
   const mergeSummary = validateRepositoryQualificationReceipt(mergeTree, "synthetic-merge", expected);
+  ledger.accept(stage);
 
   stage = "deployment-security";
+  ledger.begin(stage);
   const deploymentSecurity = await readEvidence("UI_CONTROL_DEPLOYMENT_SECURITY_RECEIPT", "deploymentSecurity");
   const deploymentSummary = validateDeploymentSecurityReceipt(deploymentSecurity, expected);
   assertEvidence(
@@ -101,29 +116,40 @@ try {
     "UI_CONTROL_DEPLOYED_BUILD_IDENTITY",
     "deployed asset manifest is not the exact source-head build manifest",
   );
+  ledger.accept(stage);
 
   stage = "real-backend";
+  ledger.begin(stage);
   const realBackend = await readEvidence("UI_CONTROL_REAL_BACKEND_RECEIPT", "realBackend");
   validateRealBackendReceipt(realBackend, expected);
+  ledger.accept(stage);
 
   stage = "independent-accessibility-and-operator-acceptance";
+  ledger.begin(stage);
   const independentAcceptance = await readEvidence("UI_CONTROL_INDEPENDENT_ACCEPTANCE_RECEIPT", "independentAcceptance");
   validateIndependentAcceptance(independentAcceptance, expected);
+  ledger.accept(stage);
 
   stage = "independent-security-review";
+  ledger.begin(stage);
   const independentSecurity = await readEvidence("UI_CONTROL_INDEPENDENT_SECURITY_RECEIPT", "independentSecurity");
   validateIndependentSecurityReview(independentSecurity, expected);
+  ledger.accept(stage);
 
   stage = "operational-exercise";
+  ledger.begin(stage);
   const operationalExercise = await readEvidence("UI_CONTROL_OPERATIONAL_EXERCISE_RECEIPT", "operationalExercise");
   validateOperationalExercise(operationalExercise, expected);
+  ledger.accept(stage);
 
   stage = "production-approval";
+  ledger.begin(stage);
   const productionApproval = await readEvidence("UI_CONTROL_PRODUCTION_APPROVAL_RECEIPT", "productionApproval");
   const approvalBoundDigests = Object.fromEntries(
     Object.entries(evidenceDigests).filter(([key]) => key !== "productionApproval"),
   );
   validateProductionApproval(productionApproval, expected, approvalBoundDigests);
+  ledger.accept(stage);
 
   await emit({
     schema: "hepta.ui-control.external-evidence-bundle.v1",
@@ -134,23 +160,12 @@ try {
     deployment: deployment.subject,
     backendDeploymentDigest,
     evidenceDigests,
-    claims: {
-      repositorySourceQualified: true,
-      repositoryBrowserCompositionQualified: true,
-      deterministicMergeQualified: true,
-      deployedSecurityObserved: true,
-      exactCandidateAssetsObserved: true,
-      realBackendSemanticsQualified: true,
-      durableCrashRestartQualified: true,
-      identityPermissionAndSessionSwitchQualified: true,
-      independentAccessibilityAndOperatorAcceptanceSigned: true,
-      independentSecurityReviewPassed: true,
-      rollbackDisasterRecoveryMonitoringAndRedactionExercised: true,
-      productionDeploymentApproved: true,
-      releaseAuthorized: true,
-    },
+    stageResults: ledger.snapshot(),
+    claims: ledger.claims(),
   });
 } catch (error) {
+  const failure = safeFailure(error, stage);
+  ledger.fail(stage, failure.code);
   await emit({
     schema: "hepta.ui-control.external-evidence-bundle.v1",
     status: "failed",
@@ -158,22 +173,9 @@ try {
     candidate,
     backendDeploymentDigest,
     evidenceDigests,
-    failure: safeFailure(error, stage),
-    claims: {
-      repositorySourceQualified: false,
-      repositoryBrowserCompositionQualified: false,
-      deterministicMergeQualified: false,
-      deployedSecurityObserved: false,
-      exactCandidateAssetsObserved: false,
-      realBackendSemanticsQualified: false,
-      durableCrashRestartQualified: false,
-      identityPermissionAndSessionSwitchQualified: false,
-      independentAccessibilityAndOperatorAcceptanceSigned: false,
-      independentSecurityReviewPassed: false,
-      rollbackDisasterRecoveryMonitoringAndRedactionExercised: false,
-      productionDeploymentApproved: false,
-      releaseAuthorized: false,
-    },
+    stageResults: ledger.snapshot(),
+    failure,
+    claims: ledger.claims(),
   });
   process.exitCode = 1;
 }
