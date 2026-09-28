@@ -1,8 +1,8 @@
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
+use codex_hepta_authbus_p1_3_qualification::persisted_message_issuer;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -15,12 +15,13 @@ use crate::HeptaEvidenceStore;
 
 fn fixture(sequence: u64) -> (IssuerRegistration, SignedMessage) {
     let key = SigningKey::from_bytes(&[73; 32]);
-    let issuer = IssuerRegistration {
-        issuer_id: StableId::new("issuer:operations").expect("issuer id"),
-        key_epoch: Generation::new(1).expect("issuer epoch"),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    };
+    let issuer = persisted_message_issuer(
+        "issuer:operations",
+        1,
+        key.verifying_key().to_bytes(),
+        false,
+    )
+    .expect("persisted issuer");
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,
