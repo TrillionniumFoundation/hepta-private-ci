@@ -290,7 +290,11 @@ mod tests {
             NeuronFeatureObservationV1 {
                 encoder_digest: request.encoder_digest,
                 head_digest: request.head_digest,
-                drive_q24: if has_output { vec![Q / 2; 2] } else { Vec::new() },
+                drive_q24: if has_output {
+                    vec![Q / 2; 2]
+                } else {
+                    Vec::new()
+                },
                 prediction_q24: if has_output { vec![0; 2] } else { Vec::new() },
                 observed_memory_bytes: 8_192,
                 transient_allocation_bytes: 2_048,
