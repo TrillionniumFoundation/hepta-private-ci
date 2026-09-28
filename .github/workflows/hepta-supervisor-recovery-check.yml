@@ -1,0 +1,21 @@
+name: Supervisor recovery native check
+
+on:
+  push:
+    branches: [fix/runtime-supervisor-remediation-20260927]
+    paths:
+      - codex-rs/hepta-supervisor/**
+      - docs/modules/runtime.supervisor/**
+      - .github/workflows/hepta-supervisor-recovery-check.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A supplemental entry point into the existing qualification, not a replacement
+# for CI required, Architecture required, or the prospective-merge qualification.
+# Exact checkout identity, suite isolation, pinned tools and raw failure records
+# remain owned by that reusable workflow. No source mutation or approval occurs.
+jobs:
+  native:
+    uses: ./.github/workflows/hepta-supervisor-qualification.yml
