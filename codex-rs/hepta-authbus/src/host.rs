@@ -1,5 +1,7 @@
+use std::future::Future;
 use std::path::Path;
 use std::path::PathBuf;
+use std::time::Instant;
 
 #[cfg(unix)]
 use std::fs::File;
@@ -19,6 +21,7 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
+use tokio::sync::Mutex;
 
 use crate::AuthBusAuthorityError;
 use crate::AuthBusAuthorityStore;
@@ -41,6 +44,8 @@ use crate::SettlementIssuerRegistration;
 use crate::SignedSettlementEvidence;
 use crate::SignedTrustedTimeAttestation;
 use crate::TrustedTimeSample;
+use crate::operations::AuthBusRuntimeMetrics;
+use crate::operations::record_owner_acquisition_failure;
 use crate::owner_fence::OwnerFence;
 
 const CHECKPOINT_SCHEMA_VERSION: u32 = 1;
@@ -67,9 +72,17 @@ fn checkpoint_failpoint(stage: u8) -> Result<(), AuthBusAuthorityError> {
     Ok(())
 }
 
+/// Sole owner of the durable AuthBus authority state.
+///
+/// All mutating operations, recovery maintenance and safety-relevant reads pass
+/// through `mutation_gate`. The gate is held from checkpoint preflight through
+/// SQLite commit and external checkpoint publication, so no caller can observe
+/// or extend a dirty frontier concurrently.
 pub struct AuthBusAuthorityHost {
     pub(crate) store: AuthBusAuthorityStore,
     checkpoint: AuthorityCheckpointFile,
+    mutation_gate: Mutex<()>,
+    pub(crate) metrics: AuthBusRuntimeMetrics,
     _owner_fence: OwnerFence,
 }
 
@@ -105,7 +118,13 @@ impl AuthBusAuthorityHost {
         {
             return Err(AuthBusAuthorityError::RollbackDetected);
         }
-        let owner_fence = OwnerFence::acquire(database_path, owner_id).await?;
+        let owner_fence = match OwnerFence::acquire(database_path, owner_id).await {
+            Ok(fence) => fence,
+            Err(error) => {
+                record_owner_acquisition_failure(&error);
+                return Err(error);
+            }
+        };
         let store = AuthBusAuthorityStore::open(database_path).await?;
         let (checkpoint, external) = if checkpoint_exists {
             AuthorityCheckpointFile::open(checkpoint_path, database_path, owner_id)?
@@ -147,28 +166,116 @@ impl AuthBusAuthorityHost {
         let host = Self {
             store,
             checkpoint,
+            mutation_gate: Mutex::new(()),
+            metrics: AuthBusRuntimeMetrics::default(),
             _owner_fence: owner_fence,
         };
         host.sync_checkpoint().await?;
         Ok(host)
     }
 
+    /// Reconcile the independently retained checkpoint while excluding every
+    /// mutation and safety-relevant read from the authority frontier.
     pub async fn sync_checkpoint(&self) -> Result<(), AuthBusAuthorityError> {
-        let external = self.checkpoint.read()?;
-        if let Some(next) = self.store.reconcile_authority_checkpoint(external).await? {
-            self.checkpoint.replace(external, next)?;
-            self.store
-                .advance_authority_checkpoint(external.generation, next)
-                .await?;
-        }
-        Ok(())
+        let _guard = self.mutation_gate.lock().await;
+        self.sync_checkpoint_locked().await
     }
 
-    async fn finish<T>(
+    async fn sync_checkpoint_locked(&self) -> Result<(), AuthBusAuthorityError> {
+        let result = async {
+            let external = self.checkpoint.read()?;
+            if let Some(next) = self.store.reconcile_authority_checkpoint(external).await? {
+                self.checkpoint.replace(external, next)?;
+                self.store
+                    .advance_authority_checkpoint(external.generation, next)
+                    .await?;
+            }
+            Ok(())
+        }
+        .await;
+        if let Err(error) = &result {
+            self.metrics.record_checkpoint_sync_failure(error);
+        }
+        result
+    }
+
+    async fn mutate<T, F>(&self, operation: F) -> Result<T, AuthBusAuthorityError>
+    where
+        F: Future<Output = Result<T, AuthBusAuthorityError>>,
+    {
+        let started = Instant::now();
+        let _guard = self.mutation_gate.lock().await;
+        let result = match self.sync_checkpoint_locked().await {
+            Ok(()) => self.finish_locked(operation.await).await,
+            Err(error) => Err(AuthBusAuthorityError::AuthorityUseBlocked(
+                error.to_string(),
+            )),
+        };
+        self.metrics.record_mutation(started.elapsed(), &result);
+        result
+    }
+
+    async fn read_authoritative<T, F>(&self, operation: F) -> Result<T, AuthBusAuthorityError>
+    where
+        F: Future<Output = Result<T, AuthBusAuthorityError>>,
+    {
+        let _guard = self.mutation_gate.lock().await;
+        if let Err(error) = self.sync_checkpoint_locked().await {
+            self.metrics.record_authority_use_block();
+            return Err(AuthBusAuthorityError::AuthorityUseBlocked(
+                error.to_string(),
+            ));
+        }
+        operation.await
+    }
+
+    async fn finish_locked<T>(
         &self,
         result: Result<T, AuthBusAuthorityError>,
     ) -> Result<T, AuthBusAuthorityError> {
-        self.sync_checkpoint().await?;
+        match result {
+            Ok(value) => match self.sync_checkpoint_locked().await {
+                Ok(()) => Ok(value),
+                Err(error) => Err(AuthBusAuthorityError::CheckpointReconciliationRequired(
+                    error.to_string(),
+                )),
+            },
+            Err(error) => {
+                let operation_error = normalize_mutation_error(error);
+                match self.sync_checkpoint_locked().await {
+                    Ok(()) => Err(operation_error),
+                    Err(checkpoint_error) => Err(AuthBusAuthorityError::MutationOutcomeUnknown(
+                        format!(
+                            "operation returned {operation_error}; checkpoint reconciliation failed: {checkpoint_error}"
+                        ),
+                    )),
+                }
+            }
+        }
+    }
+
+    pub(crate) async fn run_maintenance_mutations(
+        &self,
+        time: TrustedTimeSample,
+        limit: u32,
+    ) -> Result<(bool, ExpiredReservationSweep), AuthBusAuthorityError> {
+        let started = Instant::now();
+        let _guard = self.mutation_gate.lock().await;
+        let result = match self.sync_checkpoint_locked().await {
+            Err(error) => Err(AuthBusAuthorityError::AuthorityUseBlocked(
+                error.to_string(),
+            )),
+            Ok(()) => {
+                let operation = async {
+                    let recovery_complete = self.store.reconcile_after_restart(limit).await?;
+                    let sweep = self.store.sweep_expired_reservations(time, limit).await?;
+                    Ok((recovery_complete, sweep))
+                }
+                .await;
+                self.finish_locked(operation).await
+            }
+        };
+        self.metrics.record_maintenance(started.elapsed(), &result);
         result
     }
 
@@ -177,8 +284,7 @@ impl AuthBusAuthorityHost {
         purpose: IssuerPurpose,
         spec: IssuerSpec,
     ) -> Result<IssuerRecord, AuthBusAuthorityError> {
-        let result = self.store.enroll_issuer(purpose, spec).await;
-        self.finish(result).await
+        self.mutate(self.store.enroll_issuer(purpose, spec)).await
     }
 
     pub async fn rotate_issuer(
@@ -188,11 +294,11 @@ impl AuthBusAuthorityHost {
         expected_epoch: Generation,
         expected_revision: u64,
     ) -> Result<IssuerRecord, AuthBusAuthorityError> {
-        let result = self
-            .store
-            .rotate_issuer(purpose, spec, expected_epoch, expected_revision)
-            .await;
-        self.finish(result).await
+        self.mutate(
+            self.store
+                .rotate_issuer(purpose, spec, expected_epoch, expected_revision),
+        )
+        .await
     }
 
     pub async fn revoke_issuer(
@@ -202,11 +308,11 @@ impl AuthBusAuthorityHost {
         key_epoch: Generation,
         expected_revision: u64,
     ) -> Result<IssuerRecord, AuthBusAuthorityError> {
-        let result = self
-            .store
-            .revoke_issuer(purpose, issuer_id, key_epoch, expected_revision)
-            .await;
-        self.finish(result).await
+        self.mutate(
+            self.store
+                .revoke_issuer(purpose, issuer_id, key_epoch, expected_revision),
+        )
+        .await
     }
 
     pub async fn retire_issuer_epoch(
@@ -216,22 +322,19 @@ impl AuthBusAuthorityHost {
         key_epoch: Generation,
         expected_revision: u64,
     ) -> Result<IssuerRetirement, AuthBusAuthorityError> {
-        let result = self
-            .store
-            .retire_issuer_epoch(purpose, issuer_id, key_epoch, expected_revision)
-            .await;
-        self.finish(result).await
+        self.mutate(
+            self.store
+                .retire_issuer_epoch(purpose, issuer_id, key_epoch, expected_revision),
+        )
+        .await
     }
 
     pub async fn observe_trusted_time_attestation(
         &self,
         attestation: &SignedTrustedTimeAttestation,
     ) -> Result<TrustedTimeSample, AuthBusAuthorityError> {
-        let result = self
-            .store
-            .observe_trusted_time_attestation(attestation)
-            .await;
-        self.finish(result).await
+        self.mutate(self.store.observe_trusted_time_attestation(attestation))
+            .await
     }
 
     pub async fn message_issuer(
@@ -239,7 +342,8 @@ impl AuthBusAuthorityHost {
         issuer_id: &StableId,
         key_epoch: Generation,
     ) -> Result<IssuerRegistration, AuthBusAuthorityError> {
-        self.store.message_issuer(issuer_id, key_epoch).await
+        self.read_authoritative(self.store.message_issuer(issuer_id, key_epoch))
+            .await
     }
 
     pub async fn settlement_issuer(
@@ -247,7 +351,8 @@ impl AuthBusAuthorityHost {
         issuer_id: &StableId,
         key_epoch: Generation,
     ) -> Result<SettlementIssuerRegistration, AuthBusAuthorityError> {
-        self.store.settlement_issuer(issuer_id, key_epoch).await
+        self.read_authoritative(self.store.settlement_issuer(issuer_id, key_epoch))
+            .await
     }
 
     pub async fn create_policy(
@@ -255,8 +360,7 @@ impl AuthBusAuthorityHost {
         spec: PolicySpec,
         time: TrustedTimeSample,
     ) -> Result<AuthPolicy, AuthBusAuthorityError> {
-        let result = self.store.create_policy(spec, time).await;
-        self.finish(result).await
+        self.mutate(self.store.create_policy(spec, time)).await
     }
 
     pub async fn replace_policy(
@@ -265,11 +369,11 @@ impl AuthBusAuthorityHost {
         expected_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<AuthPolicy, AuthBusAuthorityError> {
-        let result = self
-            .store
-            .replace_policy(spec, expected_revision, time)
-            .await;
-        self.finish(result).await
+        self.mutate(
+            self.store
+                .replace_policy(spec, expected_revision, time),
+        )
+        .await
     }
 
     pub async fn revoke_policy(
@@ -278,11 +382,11 @@ impl AuthBusAuthorityHost {
         expected_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<AuthPolicy, AuthBusAuthorityError> {
-        let result = self
-            .store
-            .revoke_policy(policy_id, expected_revision, time)
-            .await;
-        self.finish(result).await
+        self.mutate(
+            self.store
+                .revoke_policy(policy_id, expected_revision, time),
+        )
+        .await
     }
 
     pub async fn retire_policy(
@@ -291,11 +395,11 @@ impl AuthBusAuthorityHost {
         expected_revision: u64,
         retired_at_ms: u64,
     ) -> Result<(), AuthBusAuthorityError> {
-        let result = self
-            .store
-            .retire_policy(policy_id, expected_revision, retired_at_ms)
-            .await;
-        self.finish(result).await
+        self.mutate(
+            self.store
+                .retire_policy(policy_id, expected_revision, retired_at_ms),
+        )
+        .await
     }
 
     pub async fn authorize(
@@ -306,11 +410,11 @@ impl AuthBusAuthorityHost {
         policy_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<PolicyDecision, AuthBusAuthorityError> {
-        let result = self
-            .store
-            .authorize(principal, action, scope_digest, policy_revision, time)
-            .await;
-        self.finish(result).await
+        self.mutate(
+            self.store
+                .authorize(principal, action, scope_digest, policy_revision, time),
+        )
+        .await
     }
 
     pub async fn create_quota(
@@ -318,8 +422,7 @@ impl AuthBusAuthorityHost {
         spec: QuotaSpec,
         time: TrustedTimeSample,
     ) -> Result<QuotaSnapshot, AuthBusAuthorityError> {
-        let result = self.store.create_quota(spec, time).await;
-        self.finish(result).await
+        self.mutate(self.store.create_quota(spec, time)).await
     }
 
     pub async fn replace_quota(
@@ -328,11 +431,11 @@ impl AuthBusAuthorityHost {
         expected_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<QuotaSnapshot, AuthBusAuthorityError> {
-        let result = self
-            .store
-            .replace_quota(spec, expected_revision, time)
-            .await;
-        self.finish(result).await
+        self.mutate(
+            self.store
+                .replace_quota(spec, expected_revision, time),
+        )
+        .await
     }
 
     pub async fn reserve(
@@ -341,8 +444,8 @@ impl AuthBusAuthorityHost {
         request: ReservationRequest,
         time: TrustedTimeSample,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
-        let result = self.store.reserve(decision, request, time).await;
-        self.finish(result).await
+        self.mutate(self.store.reserve(decision, request, time))
+            .await
     }
 
     pub async fn mark_dispatch_attempted(
@@ -352,11 +455,13 @@ impl AuthBusAuthorityHost {
         dispatch_digest: Digest32,
         time: TrustedTimeSample,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
-        let result = self
-            .store
-            .mark_dispatch_attempted(reservation_id, expected_revision, dispatch_digest, time)
-            .await;
-        self.finish(result).await
+        self.mutate(self.store.mark_dispatch_attempted(
+            reservation_id,
+            expected_revision,
+            dispatch_digest,
+            time,
+        ))
+        .await
     }
 
     pub async fn mark_indeterminate(
@@ -365,11 +470,11 @@ impl AuthBusAuthorityHost {
         expected_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
-        let result = self
-            .store
-            .mark_indeterminate(reservation_id, expected_revision, time)
-            .await;
-        self.finish(result).await
+        self.mutate(
+            self.store
+                .mark_indeterminate(reservation_id, expected_revision, time),
+        )
+        .await
     }
 
     pub async fn cancel_reservation(
@@ -378,11 +483,11 @@ impl AuthBusAuthorityHost {
         expected_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
-        let result = self
-            .store
-            .cancel_reservation(reservation_id, expected_revision, time)
-            .await;
-        self.finish(result).await
+        self.mutate(
+            self.store
+                .cancel_reservation(reservation_id, expected_revision, time),
+        )
+        .await
     }
 
     pub async fn reconcile_expired_reservation(
@@ -391,11 +496,11 @@ impl AuthBusAuthorityHost {
         expected_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
-        let result = self
-            .store
-            .reconcile_expired_reservation(reservation_id, expected_revision, time)
-            .await;
-        self.finish(result).await
+        self.mutate(
+            self.store
+                .reconcile_expired_reservation(reservation_id, expected_revision, time),
+        )
+        .await
     }
 
     pub async fn sweep_expired_reservations(
@@ -403,8 +508,8 @@ impl AuthBusAuthorityHost {
         time: TrustedTimeSample,
         limit: u32,
     ) -> Result<ExpiredReservationSweep, AuthBusAuthorityError> {
-        let result = self.store.sweep_expired_reservations(time, limit).await;
-        self.finish(result).await
+        self.mutate(self.store.sweep_expired_reservations(time, limit))
+            .await
     }
 
     pub async fn settle(
@@ -413,8 +518,8 @@ impl AuthBusAuthorityHost {
         evidence: &SignedSettlementEvidence,
         time: TrustedTimeSample,
     ) -> Result<Settlement, AuthBusAuthorityError> {
-        let result = self.store.settle(issuer, evidence, time).await;
-        self.finish(result).await
+        self.mutate(self.store.settle(issuer, evidence, time))
+            .await
     }
 
     pub async fn compact_terminal_reservations(
@@ -422,25 +527,36 @@ impl AuthBusAuthorityHost {
         older_than_ms: u64,
         limit: u32,
     ) -> Result<u32, AuthBusAuthorityError> {
-        let result = self
-            .store
-            .compact_terminal_reservations(older_than_ms, limit)
-            .await;
-        self.finish(result).await
+        self.mutate(
+            self.store
+                .compact_terminal_reservations(older_than_ms, limit),
+        )
+        .await
     }
 
     pub async fn quota_snapshot(
         &self,
         quota_key: &StableId,
     ) -> Result<QuotaSnapshot, AuthBusAuthorityError> {
-        self.store.quota_snapshot(quota_key).await
+        self.read_authoritative(self.store.quota_snapshot(quota_key))
+            .await
     }
 
     pub async fn reservation(
         &self,
         reservation_id: &StableId,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
-        self.store.reservation(reservation_id).await
+        self.read_authoritative(self.store.reservation(reservation_id))
+            .await
+    }
+}
+
+fn normalize_mutation_error(error: AuthBusAuthorityError) -> AuthBusAuthorityError {
+    match error {
+        AuthBusAuthorityError::Storage(detail) => {
+            AuthBusAuthorityError::MutationOutcomeUnknown(detail)
+        }
+        other => other,
     }
 }
 
