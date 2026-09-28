@@ -1,0 +1,58 @@
+name: ui.native retained feedback diagnostics
+
+on:
+  push:
+    branches: [work/ui-native-qualified-integration-20260928]
+    paths: [.github/workflows/hepta-ui-native-feedback-diagnostics.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
+jobs:
+  inspect-retained-log:
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    steps:
+      - name: Read immutable failed-run logs and publish bounded diagnostics
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, io, json, os, urllib.request, zipfile
+          repo = 'TrillionniumFoundation/hepta-private-ci'
+          api = 'https://api.github.com/repos/' + repo
+          headers = {'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'}
+          def get(path):
+              with urllib.request.urlopen(urllib.request.Request(api + path, headers=headers), timeout=30) as response:
+                  return response.read(4 * 1024 * 1024)
+          run = json.loads(get('/actions/runs/36450557375'))
+          if run['head_sha'] != '6ff6cd07c25c9af4fd6d6f59348eb79fa1fec8c1':
+              raise SystemExit('unexpected source')
+          artifacts = json.loads(get('/actions/runs/36450557375/artifacts'))['artifacts']
+          selected = [a for a in artifacts if a['name'] == 'ui-native-linux-feedback-' + run['head_sha'] + '-1']
+          if len(selected) != 1:
+              raise SystemExit('missing or ambiguous retained log')
+          archive = get('/actions/artifacts/' + str(selected[0]['id']) + '/zip')
+          digest = hashlib.sha256(archive).hexdigest()
+          if selected[0].get('digest') != 'sha256:' + digest:
+              raise SystemExit('artifact digest mismatch')
+          sections = []
+          with zipfile.ZipFile(io.BytesIO(archive)) as z:
+              for name in ('format.log', 'test-list.log', 'native-tests.log', 'clippy.log'):
+                  matches = [i for i in z.infolist() if i.filename == name]
+                  if not matches:
+                      continue
+                  if len(matches) != 1 or matches[0].file_size > 1024 * 1024:
+                      raise SystemExit('invalid log entry')
+                  text = z.read(matches[0]).decode('utf-8', 'strict')
+                  sections.append('### ' + name + '\n```text\n' + text[-18000:].replace('```', "''' ") + '\n```')
+          body = ('## Retained compiler diagnostics — not qualification\nSource: `' + run['head_sha'] + '`; run `36450557375`; artifact SHA-256 `' + digest + '`.\n\n' + '\n\n'.join(sections))[:60000]
+          request = urllib.request.Request(api + '/issues/1139/comments', data=json.dumps({'body': body}).encode(), headers={**headers, 'Content-Type': 'application/json'}, method='POST')
+          with urllib.request.urlopen(request, timeout=30) as response:
+              print('Published diagnostic comment', json.load(response)['id'])
+          PY
