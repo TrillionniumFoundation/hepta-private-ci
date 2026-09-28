@@ -53,7 +53,7 @@ jobs:
           printf '%s\n' "$REQUESTED_BASE" > "$RUNNER_TEMP/retrieval-source/event-base-provenance.txt"
           git archive --format=tar.gz HEAD > "$RUNNER_TEMP/retrieval-source/source.tar.gz"
           sha256sum "$RUNNER_TEMP/retrieval-source/source.tar.gz" > "$RUNNER_TEMP/retrieval-source/SHA256SUMS"
-      - name: Test candidate, verifier, retention and SLO rejection behavior
+      - name: Test candidate, verifier, status, retention and SLO rejection behavior
         run: >-
           python3 -m unittest -v
           scripts.tests.test_hepta_memory_retrieval_candidate
@@ -61,6 +61,10 @@ jobs:
           scripts.tests.test_hepta_memory_retrieval_slo
           scripts.tests.test_hepta_memory_retrieval_archive
           scripts.tests.test_hepta_memory_retrieval_refresh_map
+          scripts.tests.test_hepta_memory_retrieval_status
+          scripts.tests.test_hepta_memory_retrieval_workflow_policy
+      - name: Enforce read-only retrieval workflows
+        run: python3 scripts/hepta_memory_retrieval_workflow_policy.py
       - name: Require current source-object closure
         env:
           SOURCE_SHA: ${{ steps.identity.outputs.source_sha }}
@@ -180,5 +184,51 @@ jobs:
         with:
           name: memory-retrieval-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/retrieval-${{ matrix.lane }}/
+          retention-days: 90
+          if-no-files-found: error
+
+  manifest:
+    name: Memory retrieval qualification manifest
+    needs: [identity, qualify]
+    if: ${{ always() && needs.identity.result == 'success' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      checks: read
+    env:
+      SOURCE_SHA: ${{ needs.identity.outputs.source_sha }}
+      BASE_SHA: ${{ needs.identity.outputs.base_sha }}
+      MAIN_SHA: ${{ needs.identity.outputs.main_sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.identity.outputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Generate exact-head status manifest
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          directory="$RUNNER_TEMP/retrieval-manifest"
+          mkdir -p "$directory"
+          SYNTHETIC_SHA="$(python3 scripts/hepta_memory_retrieval_candidate.py merge --base "$BASE_SHA" --source "$SOURCE_SHA")"
+          python3 scripts/hepta_memory_retrieval_status.py \
+            --source "$SOURCE_SHA" \
+            --base "$BASE_SHA" \
+            --main "$MAIN_SHA" \
+            --synthetic-merge "$SYNTHETIC_SHA" \
+            --repository "$GITHUB_REPOSITORY" \
+            --output "$directory/qualification-manifest.json"
+          git show -s --format='%H%n%T%n%P' "$SOURCE_SHA" > "$directory/source-object.txt"
+          git show -s --format='%H%n%T%n%P' "$SYNTHETIC_SHA" > "$directory/synthetic-object.txt"
+          (cd "$directory" && sha256sum qualification-manifest.json source-object.txt synthetic-object.txt > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-retrieval-manifest-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/retrieval-manifest/
           retention-days: 90
           if-no-files-found: error

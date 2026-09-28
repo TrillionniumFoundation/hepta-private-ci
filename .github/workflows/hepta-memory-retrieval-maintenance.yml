@@ -26,13 +26,17 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - name: Run qualification, SLO, archive and source-refresh regressions
+      - name: Run qualification, status, SLO, archive and source-refresh regressions
         run: >-
           python3 -m unittest -v
           scripts.tests.test_hepta_memory_retrieval_qualification
+          scripts.tests.test_hepta_memory_retrieval_status
+          scripts.tests.test_hepta_memory_retrieval_workflow_policy
           scripts.tests.test_hepta_memory_retrieval_slo
           scripts.tests.test_hepta_memory_retrieval_archive
           scripts.tests.test_hepta_memory_retrieval_refresh_map
+      - name: Enforce read-only retrieval workflows
+        run: python3 scripts/hepta_memory_retrieval_workflow_policy.py
       - name: Verify retained original historical archive and canonical manifest
         run: >-
           python3 scripts/hepta_memory_retrieval_archive.py verify
