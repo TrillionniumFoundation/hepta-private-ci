@@ -58,6 +58,8 @@ REQUIRED_TESTS = {
     "signed_evaluation_completes_existing_owner_preparation_and_run_admission",
     "signed_input_cannot_install_host_trust_or_change_actual_context",
     "guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen",
+    "decision_disposition_without_append_never_authorizes_physical_progression",
+    "provider_terminal_digest_requires_terminal_observation_and_binds_full_output",
 }
 REQUIRED_OPERATIONS = {
     "build_legal_candidates", "prepare_intelligence_run", "decide_boundary",
