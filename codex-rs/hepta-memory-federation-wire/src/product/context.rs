@@ -88,6 +88,23 @@ impl FederationAuthenticatedTransportV1 {
     pub const fn context_key_generation(&self) -> u64 {
         self.context_key_generation
     }
+
+    fn attestation_payload(&self) -> Result<Vec<u8>, FederationProductErrorV1> {
+        let mut payload = Vec::with_capacity(288);
+        append_transport_component(&mut payload, FEDERATION_TRANSPORT_CONTEXT_DOMAIN)?;
+        append_transport_component(&mut payload, self.local_peer_id.as_str().as_bytes())?;
+        append_transport_component(&mut payload, self.peer_id.as_str().as_bytes())?;
+        append_transport_component(
+            &mut payload,
+            self.transport_profile_id.as_str().as_bytes(),
+        )?;
+        append_transport_component(&mut payload, self.channel_binding_digest.as_array())?;
+        append_transport_component(&mut payload, &self.established_unix_ms.to_be_bytes())?;
+        append_transport_component(&mut payload, &self.expires_unix_ms.to_be_bytes())?;
+        append_transport_component(&mut payload, self.context_key_id.as_str().as_bytes())?;
+        append_transport_component(&mut payload, &self.context_key_generation.to_be_bytes())?;
+        Ok(payload)
+    }
 }
 
 /// Minting capability owned by one selected authenticated transport endpoint.
@@ -153,18 +170,7 @@ impl FederationTransportContextIssuerV1 {
         {
             return Err(FederationProductErrorV1::InvalidTransportContext);
         }
-        let payload = transport_context_payload(
-            &self.local_peer_id,
-            &peer_id,
-            &self.transport_profile_id,
-            channel_binding_digest,
-            established_unix_ms,
-            expires_unix_ms,
-            &self.context_key_id,
-            self.context_key_generation,
-        )?;
-        let attestation = sign_transport_context(&self.secret, &payload)?;
-        Ok(FederationAuthenticatedTransportV1 {
+        let mut context = FederationAuthenticatedTransportV1 {
             local_peer_id: self.local_peer_id.clone(),
             peer_id,
             transport_profile_id: self.transport_profile_id.clone(),
@@ -173,8 +179,11 @@ impl FederationTransportContextIssuerV1 {
             expires_unix_ms,
             context_key_id: self.context_key_id.clone(),
             context_key_generation: self.context_key_generation,
-            attestation,
-        })
+            attestation: Digest32::ZERO,
+        };
+        let payload = context.attestation_payload()?;
+        context.attestation = sign_transport_context(&self.secret, &payload)?;
+        Ok(context)
     }
 }
 
@@ -241,16 +250,7 @@ impl FederationTransportContextVerifierV1 {
         if context.channel_binding_digest.is_zero() {
             return Err(FederationProductErrorV1::InvalidTransportContext);
         }
-        let payload = transport_context_payload(
-            &context.local_peer_id,
-            &context.peer_id,
-            &context.transport_profile_id,
-            context.channel_binding_digest,
-            context.established_unix_ms,
-            context.expires_unix_ms,
-            &context.context_key_id,
-            context.context_key_generation,
-        )?;
+        let payload = context.attestation_payload()?;
         verify_transport_context(&self.secret, &payload, context.attestation)
     }
 }
@@ -272,29 +272,6 @@ impl Drop for FederationTransportContextVerifierV1 {
     fn drop(&mut self) {
         self.secret.zeroize();
     }
-}
-
-fn transport_context_payload(
-    local_peer_id: &StableId,
-    peer_id: &StableId,
-    transport_profile_id: &StableId,
-    channel_binding_digest: Digest32,
-    established_unix_ms: u64,
-    expires_unix_ms: u64,
-    context_key_id: &StableId,
-    context_key_generation: u64,
-) -> Result<Vec<u8>, FederationProductErrorV1> {
-    let mut payload = Vec::with_capacity(288);
-    append_transport_component(&mut payload, FEDERATION_TRANSPORT_CONTEXT_DOMAIN)?;
-    append_transport_component(&mut payload, local_peer_id.as_str().as_bytes())?;
-    append_transport_component(&mut payload, peer_id.as_str().as_bytes())?;
-    append_transport_component(&mut payload, transport_profile_id.as_str().as_bytes())?;
-    append_transport_component(&mut payload, channel_binding_digest.as_array())?;
-    append_transport_component(&mut payload, &established_unix_ms.to_be_bytes())?;
-    append_transport_component(&mut payload, &expires_unix_ms.to_be_bytes())?;
-    append_transport_component(&mut payload, context_key_id.as_str().as_bytes())?;
-    append_transport_component(&mut payload, &context_key_generation.to_be_bytes())?;
-    Ok(payload)
 }
 
 fn append_transport_component(
