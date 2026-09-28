@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "de5b26ff02c1acb07c3dbf539045bf02580a8b07",
-    "tree": "fe5df8a70f933acdbb07cbf4d64329ae49bb4c16"
+    "commit": "9cc3f1562f8b752bc2ebbab2be6445962973deec",
+    "tree": "271744317766d92cbe0db51ba45df61f311d1280"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -87,9 +87,9 @@
   "headAttestation": {
     "candidateBranch": "feat/memory-federation-full-closure-20260927",
     "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "candidateHead": "de5b26ff02c1acb07c3dbf539045bf02580a8b07",
-    "candidateTree": "fe5df8a70f933acdbb07cbf4d64329ae49bb4c16",
-    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents",
+    "candidateHead": "9cc3f1562f8b752bc2ebbab2be6445962973deec",
+    "candidateTree": "271744317766d92cbe0db51ba45df61f311d1280",
+    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -134,7 +134,10 @@
       "workflow_run_attempt_and_job_binding",
       "ordered_base_then_source_merge_parents",
       "exact_capacity_workload_and_execution_binding",
-      "build_outputs_outside_source_and_receipt_artifact"
+      "build_outputs_outside_source_and_receipt_artifact",
+      "canonical_v2_authenticated_product_body_bridge",
+      "product_body_preflight_before_replay_or_terminal_commit",
+      "retry_safe_client_inbound_atomic_recovery"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
@@ -181,15 +184,15 @@
       "scripts/verify_memory_federation_implementation.py",
       "scripts/verify_memory_federation_status.py"
     ],
-    "note": "sourceBase and observedAtHead bind the immediately preceding source-and-document candidate. This implementation-map-only rebind records actual current Git objects, not execution success. The existing V2 product path and half-budget read reservation remain unchanged. Terminal completion rechecks incoming directional credentials and issuing host identity; qualification retains real subprocess outcomes and logs under one locked command contract. Full exact-head/synthetic-merge qualification, selected authenticated transport, selected-host durable recovery, real-host faults/SLOs, independent acceptance and activation/release remain separately gated. Native build outputs are explicitly located outside the qualified source roots and retained receipt directory; source cleanliness is not weakened.",
+    "note": "sourceBase and observedAtHead bind the immediately preceding source-and-document candidate. This implementation-map-only rebind records actual current Git objects, not execution success. The existing V2 product path and half-budget read reservation remain unchanged. Terminal completion rechecks incoming directional credentials and issuing host identity; qualification retains real subprocess outcomes and logs under one locked command contract. The authenticated product-body bridge performs bounded preflight before durable replay or terminal mutation, and client inbound recovery commits staged replay and recovery together. Full exact-head/synthetic-merge qualification, selected authenticated transport, selected-host durable recovery, real-host faults/SLOs, independent acceptance and activation/release remain separately gated. Native build outputs are explicitly located outside the qualified source roots and retained receipt directory; source cleanliness is not weakened.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
     ]
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "de5b26ff02c1acb07c3dbf539045bf02580a8b07",
-    "tree": "fe5df8a70f933acdbb07cbf4d64329ae49bb4c16"
+    "commit": "9cc3f1562f8b752bc2ebbab2be6445962973deec",
+    "tree": "271744317766d92cbe0db51ba45df61f311d1280"
   },
   "observedSourcePaths": [
     ".github/workflows/blocking-ci.yml",
@@ -276,11 +279,11 @@
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire",
-      "object": "961c4a027735571063a32ab605c68c36cd64b391"
+      "object": "84746e9b3aaf02a3a28758bfdcb61c1bfca384d0"
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire/Cargo.toml",
-      "object": "1ea347f34d25d60f0f12064c655d82f7d768cfea"
+      "object": "ded5620b9867612fc5cffc1c95b41c673c598ba3"
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire/src/attempt.rs",
@@ -344,7 +347,7 @@
     },
     {
       "path": "docs/modules/memory.federation/CAPABILITY_STATE.json",
-      "object": "33b5d1953aac9da9ae85458024ba5db373beb2ba"
+      "object": "97cd63c950841c520a1ac0eaf7d3f0164db38c39"
     },
     {
       "path": "docs/modules/memory.federation/TECHNICAL.md",
@@ -356,7 +359,7 @@
     },
     {
       "path": "docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json",
-      "object": "934fe081e4ea7be606c1222511410ea61709d8c2"
+      "object": "2b6bc2e788a01bc8bc627373a5c35e06c72c2015"
     },
     {
       "path": "docs/modules/memory.federation/WIRE_V1.md",
