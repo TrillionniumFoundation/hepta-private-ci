@@ -43,7 +43,7 @@ IntentPersisted
   -> Published
 ```
 
-The sustained source profile therefore configures 4,096 attempts and **28,672**
+The sustained source profile therefore configures 4,096 attempts and **28672**
 lifecycle events. It creates each checkpoint 64 attempts before a 128-attempt
 restart, so checkpoint recovery includes a nonempty append-only tail.
 
