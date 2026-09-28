@@ -1,0 +1,43 @@
+name: Kernel evidence followup source delivery
+on:
+  push:
+    branches: [fix/kernel-evidence-followup-20260928]
+    paths:
+      - .github/workflows/kernel-evidence-followup-delivery.yml
+      - qualification/kernel-evidence/transport-20260928/**
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: kernel-evidence-followup-source-delivery-20260928
+  cancel-in-progress: false
+jobs:
+  deliver:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && contains(github.event.head_commit.message, '[kernel-evidence-followup-delivery]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply exact source bundle and push only the isolated branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_BOOTSTRAP: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch=fix/kernel-evidence-followup-20260928
+          test "$(git rev-parse HEAD)" = "$EXPECTED_BOOTSTRAP"
+          test "$(git ls-remote --heads origin "refs/heads/$branch" | cut -f1)" = "$EXPECTED_BOOTSTRAP"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/10936943985/zip > "$RUNNER_TEMP/kernel-evidence-format.zip"
+          python3 qualification/kernel-evidence/transport-20260928/apply.py "$RUNNER_TEMP/kernel-evidence-format.zip"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix(kernel.evidence): apply verified followup source and two lock edges [kernel-evidence-closure] [kernel-evidence-status-sync]'
+          source=$(git rev-parse HEAD)
+          git push origin "HEAD:refs/heads/$branch"
+          test "$(git ls-remote --heads origin "refs/heads/$branch" | cut -f1)" = "$source"
+          printf 'Remote source commit: %s\nNative tests not executed; qualification remains false.\n' "$source" >> "$GITHUB_STEP_SUMMARY"
