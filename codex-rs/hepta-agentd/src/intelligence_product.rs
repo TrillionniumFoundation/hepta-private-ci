@@ -44,6 +44,7 @@ use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use crate::AgentdNeuronInvocationSealV1;
 use crate::intuition_policy_v2::AgentdAuthenticatedIntuitionInputV1;
 use crate::intuition_policy_v2::AgentdIntuitionCurrentBindingV1;
 use crate::intuition_policy_v2::AgentdIntuitionPolicyHostV2;
@@ -224,6 +225,10 @@ pub struct AgentdIntelligenceOwnerInputsV1 {
     pub neural_config: SparseConfig,
     pub neural_tick: SparseTick,
     pub neural_previous: Option<SparseCheckpoint>,
+    /// Only the canonical typed bootstrap can populate this value. Legacy
+    /// direct runner tests retain the unsealed compatibility path.
+    #[doc(hidden)]
+    pub neuron_seal: Option<AgentdNeuronInvocationSealV1>,
     pub prompt_request: OptimizationRequest,
     pub intuition: AgentdAuthenticatedIntuitionInputV1,
     pub context_request: CompilationRequest,
@@ -242,6 +247,7 @@ struct AgentdOwnerPortsV1 {
     neural_config: Option<SparseConfig>,
     neural_tick: Option<SparseTick>,
     neural_previous: Option<Option<SparseCheckpoint>>,
+    neuron_seal: Option<AgentdNeuronInvocationSealV1>,
     prompt_request: Option<OptimizationRequest>,
     intuition: Option<AgentdAuthenticatedIntuitionInputV1>,
     intuition_host: std::sync::Arc<AgentdIntuitionPolicyHostV2>,
@@ -276,6 +282,7 @@ impl AgentdOwnerPortsV1 {
             neural_config: Some(value.neural_config),
             neural_tick: Some(value.neural_tick),
             neural_previous: Some(value.neural_previous),
+            neuron_seal: value.neuron_seal,
             prompt_request: Some(value.prompt_request),
             intuition: Some(value.intuition),
             intuition_host,
@@ -439,16 +446,30 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
             return Err(Self::reject(input.stage, "neural binding"));
         }
         let started = Instant::now();
-        let (_, receipt) = sparse_tick(&config, &tick, previous.as_ref())
-            .map_err(|_| Self::reject(input.stage, "neural tick"))?;
+        let checkpoint_after = match self.neuron_seal.take() {
+            Some(seal) => seal
+                .consume(
+                    &config,
+                    &tick,
+                    previous.as_ref(),
+                    input.objective_digest,
+                    input.predecessor_digest,
+                )
+                .map_err(|_| Self::reject(input.stage, "sealed neural invocation"))?,
+            None => {
+                let (_, receipt) = sparse_tick(&config, &tick, previous.as_ref())
+                    .map_err(|_| Self::reject(input.stage, "neural tick"))?;
+                if receipt.authority.grants_any() {
+                    return Err(Self::reject(input.stage, "neural authority"));
+                }
+                receipt.checkpoint_after
+            }
+        };
         Self::within_budget(input, started)?;
-        if receipt.authority.grants_any() {
-            return Err(Self::reject(input.stage, "neural authority"));
-        }
         Self::receipt(
             input,
             "neuron.runtime",
-            receipt.checkpoint_after,
+            checkpoint_after,
             CanonicalPortDecisionV1::Continue,
         )
     }
