@@ -1,0 +1,38 @@
+name: Inference worker exact source export
+
+on:
+  push:
+    branches:
+      - codex/inference-worker-v2-source-export-20260928
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/inference-worker-v2-source-export-20260928
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind and archive exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir -p "$RUNNER_TEMP/export"
+          git archive --format=tar.gz --prefix=hepta-private-ci/ \
+            -o "$RUNNER_TEMP/export/hepta-private-ci-source.tar.gz" HEAD
+          sha256sum "$RUNNER_TEMP/export/hepta-private-ci-source.tar.gz" \
+            > "$RUNNER_TEMP/export/SHA256SUMS"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/export/SOURCE_SHA"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-worker-exact-source-${{ github.sha }}
+          path: ${{ runner.temp }}/export
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
