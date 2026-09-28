@@ -21,15 +21,15 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
-          path = Path('codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs')
+          path = Path('codex-rs/hepta-infer-worker-host/src/native_execution.rs')
           text = path.read_text()
-          needle = 'use codex_app_server_protocol::TurnStartedNotification;\n'
+          needle = 'use super::*;\n'
           addition = needle + 'use codex_app_server_protocol::TurnStartParams;\n'
           if 'use codex_app_server_protocol::TurnStartParams;\n' not in text:
               if needle not in text:
-                  raise SystemExit('expected import anchor missing')
+                  raise SystemExit('expected execution import anchor missing')
               path.write_text(text.replace(needle, addition, 1))
-          Path('.github/workflows/runtime-codex-one-shot-import-fix.yml').unlink()
+          Path('.github/workflows/runtime-codex-one-shot-import-fix.yml').unlink(missing_ok=True)
       - name: Commit focused repair
         shell: bash
         run: |
@@ -37,5 +37,5 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add -A
-          git commit -m 'runtime.codex: import turn start params in worker tests'
+          git commit -m 'runtime.codex: import turn start params in execution state machine' || true
           git push origin HEAD:runtime-codex/closure-20260927
