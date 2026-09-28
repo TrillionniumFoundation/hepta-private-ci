@@ -11,34 +11,21 @@ jobs:
     runs-on: windows-2025
     timeout-minutes: 5
     steps:
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        with:
-          repository: ${{ github.repository }}
-          github-token: ${{ github.token }}
-          run-id: 36399308967
-          name: intuition-source-proposal-301cc06cbc80fe339f8f3055db5315d53acfc177-1
-          path: ${{ runner.temp }}/source-proposal
-      - name: Print bounded source identity and actual authoring test summaries
+      - name: Print existing proposal identity and test summaries
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          PROPOSAL: ${{ runner.temp }}/source-proposal/proposal.json
         run: |
           python - <<'PY'
-          import json, os, pathlib, re, urllib.request
-          p = pathlib.Path(os.environ['PROPOSAL'])
-          assert p.stat().st_size < 100000
-          value = json.loads(p.read_text(encoding='utf-8'))
-          assert value['sourceSha'] == '301cc06cbc80fe339f8f3055db5315d53acfc177'
-          assert value['candidateRefUpdated'] is False
-          print(json.dumps(value, indent=2))
+          import os, re, urllib.request
           request = urllib.request.Request(
               'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/108853118867/logs',
               headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
           with urllib.request.urlopen(request, timeout=60) as response:
-              log = response.read(4000000).decode('utf-8', errors='replace')
-          lines = [line for line in log.splitlines() if re.search(r'test result:|Ran [0-9]+ tests|INTUITION_SOURCE_PROPOSAL=|Finished `dev`|Finished `test`', line)]
-          for line in lines[-20:]:
+              log = response.read(8000000).decode('utf-8', errors='replace')
+          lines = [line for line in log.splitlines() if re.search(r'test result:|Ran [0-9]+ tests|INTUITION_SOURCE_PROPOSAL=|proposedCommit|candidateRefUpdated|sourceSha|Finished `dev`|Finished `test`|Error|Traceback', line)]
+          for line in lines[-30:]:
               print(line)
-          print('Inspection only; source authoring results do not replace immutable candidate qualification.')
+          assert re.search(r'INTUITION_SOURCE_PROPOSAL=[0-9a-f]{40}', log), 'no generated commit in completed log'
+          print('Read-only inspection of authoring output; not immutable qualification.')
           PY
