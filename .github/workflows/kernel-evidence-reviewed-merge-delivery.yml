@@ -27,17 +27,19 @@ jobs:
           base=71bdd2dd526007e334b168eff3a6355730f7570f
           followup=a4b0d8f1b87390d79b363f3432bef16810884579
           branch=work/kernel-evidence-ad-integration-20260928
+          out="$RUNNER_TEMP/kernel-evidence-merge-review"
+          mkdir -p "$out"
           test "$(git rev-parse HEAD)" = "$EXPECTED_PARENT"
           test -z "$(git status --porcelain)"
           git merge-base --is-ancestor "$base" HEAD
           test "$(git diff --name-only "$base" HEAD)" = .github/workflows/kernel-evidence-reviewed-merge-delivery.yml
           git checkout --detach "$base"
           set +e
-          git merge-tree --write-tree HEAD "$followup" > "$RUNNER_TEMP/reviewed-merge.txt"
+          git merge-tree --write-tree HEAD "$followup" > "$out/merge-tree.txt"
           rc=$?
           set -e
           test "$rc" -eq 1
-          tree="$(head -n 1 "$RUNNER_TEMP/reviewed-merge.txt")"
+          tree="$(head -n 1 "$out/merge-tree.txt")"
           test "$tree" = 74ae81e5b5c3ffe7f1dcc66466299f462c1e4c34
           git read-tree --reset -u "$tree"
           python3 - <<'PY'
@@ -51,10 +53,7 @@ jobs:
           }
           for name, expected_blob in expected.items():
               path = Path('codex-rs/hepta-evidence/src') / name
-              text, count = re.subn(
-                  r'^<<<<<<< HEAD\n(.*?)^=======\n.*?^>>>>>>> [^\n]+\n',
-                  r'\1', path.read_text(), flags=re.S | re.M,
-              )
+              text, count = re.subn(r'^<<<<<<< HEAD\n(.*?)^=======\n.*?^>>>>>>> [^\n]+\n', r'\1', path.read_text(), flags=re.S | re.M)
               if count != 1:
                   raise SystemExit(f'{name}: unexpected conflict inventory {count}')
               data = text.encode()
@@ -70,6 +69,11 @@ jobs:
           PY
           git add -- codex-rs/hepta-evidence/src/qualification.rs codex-rs/hepta-evidence/src/qualification_provenance.rs codex-rs/hepta-evidence/src/qualification_provenance_tests.rs .github/workflows/kernel-evidence-ad-integration.yml
           result_tree="$(git write-tree)"
+          printf '%s\n' "$result_tree" > "$out/result-tree.txt"
+          git ls-tree -r --full-tree "$result_tree" > "$out/result-inventory.txt"
+          git ls-tree -r --full-tree "$base" > "$out/base-inventory.txt"
+          git diff "$base" "$result_tree" --stat > "$out/changes.txt"
+          git archive --format=tar.gz "$result_tree" > "$out/reviewed-result.tar.gz"
           echo "Reviewed result tree: $result_tree"
           test "$result_tree" = ca8d587a8e0ebda810067e26ca04db740f879afa
           git diff --cached --check -- codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol .github/workflows/kernel-evidence-ad-integration.yml
@@ -77,14 +81,14 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           message='fix(kernel.evidence): integrate reviewed trust, provenance, paging and publication repairs [kernel-evidence-closure] [kernel-evidence-status-sync]'
           commit="$(printf '%s\n\nSource delivery only. Exact reviewed tree; no qualification or external acceptance claim.\n\nSigned-off-by: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>\n' "$message" | git commit-tree "$result_tree" -p "$EXPECTED_PARENT" -p "$followup")"
-          remote="$(git ls-remote origin "refs/heads/$branch" | cut -f1)"
-          test "$remote" = "$EXPECTED_PARENT"
+          test "$(git ls-remote origin "refs/heads/$branch" | cut -f1)" = "$EXPECTED_PARENT"
           git push origin "$commit:refs/heads/$branch"
           test "$(git ls-remote origin "refs/heads/$branch" | cut -f1)" = "$commit"
-          {
-            echo '## Reviewed source delivered (not qualification)'
-            echo "Commit: $commit"
-            echo "Tree: $result_tree"
-            echo 'Both source branches retained; no force push; main unchanged.'
-            echo 'This one-shot transport workflow is absent from the delivered tree.'
-          } >> "$GITHUB_STEP_SUMMARY"
+          printf 'Source commit: %s\nTree: %s\nNo qualification or external authority claimed.\n' "$commit" "$result_tree" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: kernel-evidence-merge-review-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kernel-evidence-merge-review
+          if-no-files-found: error
+          retention-days: 14
