@@ -213,7 +213,8 @@ mod tests {
 
     use super::*;
 
-    fn private_root() -> tempfile::TempDir {
+    #[expect(clippy::expect_used, reason = "private test fixture setup must fail the test")]
+    pub(super) fn private_root() -> tempfile::TempDir {
         let root = tempfile::tempdir().expect("temporary directory");
         std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
             .expect("private temporary directory");
@@ -292,13 +293,14 @@ mod tests {
 }
 
 #[cfg(all(test, unix))]
-mod regression_tests {
+pub(crate) mod regression_tests {
     use super::*;
     use std::process::Command;
     use std::time::Duration;
     use std::time::Instant;
 
-    fn probe(database: &Path, expected_blocked: bool) {
+    #[expect(clippy::expect_used, reason = "subprocess probe failures must fail the calling test")]
+    pub(crate) fn probe(database: &Path, expected_blocked: bool) {
         let mut child = Command::new(std::env::current_exe().expect("test executable"))
             .arg("owner_fence::regression_tests::child_probes_os_lock")
             .arg("--exact")
@@ -327,7 +329,7 @@ mod regression_tests {
 
     #[tokio::test]
     async fn duplicate_open_does_not_release_existing_process_lock() {
-        let root = tempfile::tempdir().expect("root");
+        let root = super::tests::private_root();
         let database = root
             .path()
             .canonicalize()
@@ -350,7 +352,7 @@ mod regression_tests {
     #[tokio::test]
     async fn failed_lock_file_validation_releases_process_reservation() {
         use std::os::unix::fs::PermissionsExt;
-        let root = tempfile::tempdir().expect("root");
+        let root = super::tests::private_root();
         let database = root
             .path()
             .canonicalize()

@@ -1,7 +1,8 @@
 use std::path::PathBuf;
+use std::process::Child;
 use std::process::Command;
-use std::process::Stdio;
 use std::time::Duration;
+use std::time::Instant;
 
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -19,6 +20,7 @@ struct Paths {
     checkpoint: PathBuf,
 }
 
+#[expect(clippy::expect_used, reason = "private test fixture setup must fail the test")]
 fn private_paths() -> Paths {
     use std::os::unix::fs::PermissionsExt;
 
@@ -36,6 +38,32 @@ fn private_paths() -> Paths {
         database: database_root.join("authority.sqlite"),
         checkpoint: checkpoint_root.join("authority-checkpoint.json"),
         _root: root,
+    }
+}
+
+async fn reopen_after_drain(paths: &Paths, owner_id: &str) -> AuthBusAuthorityHost {
+    let deadline = Instant::now() + Duration::from_secs(5);
+    loop {
+        match AuthBusAuthorityHost::open(&paths.database, paths.checkpoint.clone(), owner_id).await
+        {
+            Ok(host) => return host,
+            Err(AuthBusAuthorityError::OwnerAlreadyActive) if Instant::now() < deadline => {
+                // Pool driver shutdown is asynchronous. Yield to it without
+                // treating a still-live capability as permission to unlock.
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+            Err(error) => panic!("reopen after bounded owner drain: {error}"),
+        }
+    }
+}
+
+// A failed assertion must not orphan a subprocess holding the authority fence.
+struct OwnerChild(Child);
+
+impl Drop for OwnerChild {
+    fn drop(&mut self) {
+        let _ = self.0.kill();
+        let _ = self.0.wait();
     }
 }
 
@@ -77,10 +105,12 @@ async fn second_owner_is_rejected_and_release_allows_reopen() {
             .await,
         Err(AuthBusAuthorityError::OwnerAlreadyActive)
     ));
-    drop(owner);
-    AuthBusAuthorityHost::open(&paths.database, paths.checkpoint.clone(), "single-owner")
+    owner.close().await.expect("drain owner");
+    reopen_after_drain(&paths, "single-owner")
         .await
-        .expect("reopen after owner release");
+        .close()
+        .await
+        .expect("close replacement");
 }
 
 #[tokio::test]
@@ -118,6 +148,7 @@ async fn checkpoint_stage_failures_remain_recoverable() {
         host.message_issuer(&issuer_id, Generation::new(1).expect("epoch"))
             .await
             .expect("committed issuer remains available");
+        host.close().await.expect("drain recovered owner");
     }
 }
 
@@ -128,27 +159,28 @@ async fn kill_nine_releases_the_process_owner_fence() {
         AuthBusAuthorityHost::bootstrap(&paths.database, paths.checkpoint.clone(), "kill-owner")
             .await
             .expect("bootstrap owner");
-    drop(initial);
+    initial.close().await.expect("drain bootstrap owner");
 
     let marker = paths._root.path().join("owner-ready");
-    let mut child = Command::new(std::env::current_exe().expect("current test executable"))
-        .arg("host::tests::owner_child_process_holds_fence")
-        .arg("--exact")
-        .arg("--nocapture")
-        .env("AUTHBUS_OWNER_CHILD", "1")
-        .env("AUTHBUS_OWNER_DATABASE", &paths.database)
-        .env("AUTHBUS_OWNER_CHECKPOINT", &paths.checkpoint)
-        .env("AUTHBUS_OWNER_MARKER", &marker)
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .spawn()
-        .expect("spawn owner child");
-
-    for _ in 0..100 {
-        if marker.exists() {
-            break;
-        }
-        std::thread::sleep(Duration::from_millis(50));
+    let mut child = OwnerChild(
+        Command::new(std::env::current_exe().expect("current test executable"))
+            .arg("host::tests::owner_child_process_holds_fence")
+            .arg("--exact")
+            .arg("--nocapture")
+            .env("AUTHBUS_OWNER_CHILD", "1")
+            .env("AUTHBUS_OWNER_DATABASE", &paths.database)
+            .env("AUTHBUS_OWNER_CHECKPOINT", &paths.checkpoint)
+            .env("AUTHBUS_OWNER_MARKER", &marker)
+            .spawn()
+            .expect("spawn owner child"),
+    );
+    let deadline = Instant::now() + Duration::from_secs(10);
+    while !marker.exists() && Instant::now() < deadline {
+        assert!(
+            child.0.try_wait().expect("poll child").is_none(),
+            "child exited before acquiring owner fence"
+        );
+        tokio::time::sleep(Duration::from_millis(10)).await;
     }
     assert!(marker.exists(), "child did not acquire owner fence");
     assert!(matches!(
@@ -156,14 +188,13 @@ async fn kill_nine_releases_the_process_owner_fence() {
         Err(AuthBusAuthorityError::OwnerAlreadyActive)
     ));
 
-    let status = Command::new("kill")
-        .arg("-9")
-        .arg(child.id().to_string())
-        .status()
-        .expect("kill child");
-    assert!(status.success());
-    let _ = child.wait().expect("wait for killed child");
-    AuthBusAuthorityHost::open(&paths.database, paths.checkpoint.clone(), "kill-owner")
+    // Child::kill is SIGKILL on the Unix targets of this test module.
+    child.0.kill().expect("kill child");
+    let status = child.0.wait().expect("wait for killed child");
+    assert!(!status.success());
+    reopen_after_drain(&paths, "kill-owner")
+        .await
+        .close()
         .await
         .expect("owner fence released by process death");
 }
@@ -179,9 +210,16 @@ async fn owner_child_process_holds_fence() {
         PathBuf::from(std::env::var_os("AUTHBUS_OWNER_CHECKPOINT").expect("child checkpoint path"));
     let marker =
         PathBuf::from(std::env::var_os("AUTHBUS_OWNER_MARKER").expect("child marker path"));
-    let _host = AuthBusAuthorityHost::open(&database, checkpoint, "kill-owner")
-        .await
-        .expect("child owner open");
+    let deadline = Instant::now() + Duration::from_secs(5);
+    let _host = loop {
+        match AuthBusAuthorityHost::open(&database, checkpoint.clone(), "kill-owner").await {
+            Ok(host) => break host,
+            Err(AuthBusAuthorityError::OwnerAlreadyActive) if Instant::now() < deadline => {
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+            Err(error) => panic!("child owner open: {error}"),
+        }
+    };
     std::fs::write(marker, b"ready").expect("write child marker");
     tokio::time::sleep(Duration::from_secs(60)).await;
 }

@@ -19,28 +19,41 @@ async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
         for replace in [false, true] {
             let path = root.path().join(format!("{name}-{replace}.sqlite"));
             let store = AuthBusAuthorityStore::open(&path).await.unwrap();
+            // Keep schema edits and their assertions on one connection and
+            // transaction. A pool may otherwise prepare replacement DDL using
+            // another connection's pre-DROP schema cache.
+            let mut tx = store.pool.begin().await.unwrap();
             // These identifiers come from the freshly migrated reference.
             // Quote and escape them before forming identifier-only DDL; no
             // data or untrusted SQL fragments are interpolated.
             let quoted_name = format!("\"{}\"", name.replace('"', "\"\""));
             let quoted_table = format!("\"{}\"", table.replace('"', "\"\""));
             sqlx::query(sqlx::AssertSqlSafe(format!("DROP TRIGGER {quoted_name}")))
-                .execute(&store.pool)
+                .execute(&mut *tx)
                 .await
                 .unwrap();
+            let remaining: i64 = sqlx::query_scalar(
+                "SELECT COUNT(*) FROM sqlite_schema WHERE type = 'trigger' AND name = ?",
+            )
+            .bind(&name)
+            .fetch_one(&mut *tx)
+            .await
+            .unwrap();
+            assert_eq!(remaining, 0, "fault injection must remove the exact trigger");
             if replace {
                 sqlx::query(sqlx::AssertSqlSafe(format!(
                     "CREATE TRIGGER {quoted_name} AFTER UPDATE ON {quoted_table} BEGIN SELECT 1; END"
                 )))
-                .execute(&store.pool)
+                .execute(&mut *tx)
                 .await
                 .unwrap();
             }
             let check: String = sqlx::query_scalar("PRAGMA quick_check")
-                .fetch_one(&store.pool)
+                .fetch_one(&mut *tx)
                 .await
                 .unwrap();
             assert_eq!(check, "ok");
+            tx.commit().await.unwrap();
             store.pool.close().await;
             assert!(
                 matches!(

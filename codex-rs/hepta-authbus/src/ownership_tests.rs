@@ -19,6 +19,7 @@ struct Fixture {
 }
 
 impl Fixture {
+    #[expect(clippy::expect_used, reason = "private test fixture setup must fail the test")]
     fn new() -> Self {
         use std::os::unix::fs::PermissionsExt;
         let root = tempfile::tempdir().expect("root");
@@ -34,6 +35,7 @@ impl Fixture {
             _root: root,
         }
     }
+    #[expect(clippy::expect_used, reason = "private test fixture bootstrap must fail the test")]
     async fn bootstrap(&self) -> AuthBusAuthorityHost {
         AuthBusAuthorityHost::bootstrap(&self.database, self.checkpoint.clone(), "regression")
             .await
@@ -55,9 +57,11 @@ impl Fixture {
     }
 }
 
+#[expect(clippy::expect_used, reason = "fixture epochs are fixed valid test inputs")]
 fn epoch(value: u64) -> Generation {
     Generation::new(value).expect("epoch")
 }
+#[expect(clippy::expect_used, reason = "fixture identities are fixed valid test inputs")]
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("id")
 }
@@ -69,6 +73,8 @@ fn issuer(name: &str, generation: u64) -> IssuerSpec {
     }
 }
 
+// Recovery fixtures deliberately omit final checkpoint publication. This is
+// not the production shutdown API; reopen must repair any durable dirty state.
 async fn close(host: AuthBusAuthorityHost) {
     host.store.pool.close().await;
     drop(host);
@@ -89,6 +95,7 @@ async fn live_worker_retains_owner_after_original_host_handle_is_dropped() {
             .await,
         Err(AuthBusAuthorityError::OwnerAlreadyActive)
     ));
+    crate::owner_fence::regression_tests::probe(&fixture.database, true);
     drop(worker);
     let replacement = fixture.reopen().await;
     close(replacement).await;
@@ -105,6 +112,7 @@ async fn cloned_pool_retains_owner_until_its_final_capability_is_dropped() {
             .await,
         Err(AuthBusAuthorityError::OwnerAlreadyActive)
     ));
+    crate::owner_fence::regression_tests::probe(&fixture.database, true);
     pool.close().await;
     drop(pool);
     close(fixture.reopen().await).await;
