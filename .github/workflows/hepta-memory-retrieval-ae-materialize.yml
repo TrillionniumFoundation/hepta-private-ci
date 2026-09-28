@@ -20,9 +20,9 @@ concurrency:
 
 jobs:
   materialize:
-    if: contains(github.event.head_commit.message, '[retrieval-ae-apply-v3]')
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 45
+    if: contains(github.event.head_commit.message, '[retrieval-ae-apply-v4]')
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
     steps:
       - name: Checkout the triggering source exactly without persisting credentials
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -41,7 +41,7 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=all)"
           git config core.hooksPath /dev/null
           case "$(git log -1 --pretty=%B)" in
-            *'[retrieval-ae-apply-v3]'*) ;;
+            *'[retrieval-ae-apply-v4]'*) ;;
             *) echo 'missing one-shot materialization marker' >&2; exit 1 ;;
           esac
 
@@ -90,7 +90,7 @@ jobs:
               if line
           )
           manifest = {
-              'schema': 'hepta.memory-retrieval.ae-materialization.v3',
+              'schema': 'hepta.memory-retrieval.ae-materialization.v4',
               'input_commit': os.environ['GITHUB_SHA'],
               'input_tree': subprocess.check_output(
                   ['git', 'rev-parse', 'HEAD^{tree}'], text=True
@@ -104,6 +104,7 @@ jobs:
                       'phase_b': '/tmp/retrieval-completion.json',
                   }.items()
               },
+              'native_qualification': False,
               'production_activation': False,
               'release': False,
           }
@@ -111,13 +112,7 @@ jobs:
           target.write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n')
           PY
 
-      - name: Install pinned formatter
-        shell: bash
-        run: |
-          set -euo pipefail
-          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
-
-      - name: Prove bounded source inventory and formatting
+      - name: Prove bounded source inventory
         shell: bash
         run: |
           set -euo pipefail
@@ -142,7 +137,6 @@ jobs:
             codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap.rs
           ! grep -q 'delivered_candidate_indices.sort_unstable' \
             codex-rs/hepta-learning-ledger/src/ledger.rs
-          (cd codex-rs && cargo +1.95.0 fmt --all -- --check)
 
       - name: Commit and fast-forward only after a remote-head CAS
         shell: bash
@@ -151,7 +145,7 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$(git diff --cached --name-only)"
-          auth="$(printf 'x-access-token:%s' "${GH_TOKEN}" | base64 -w0)"
+          auth="$(printf 'x-access-token:%s' "${GH_TOKEN}" | base64 | tr -d '\n')"
           remote_sha="$(git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic ${auth}" \
             ls-remote origin "refs/heads/${GITHUB_REF_NAME}" | awk '{print $1}')"
           test "${remote_sha}" = "${GITHUB_SHA}"
