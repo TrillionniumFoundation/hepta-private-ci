@@ -1,8 +1,8 @@
 """One-shot bootstrap repair for the reviewed cognitive.read convergence helper.
 
 The registered writer reconstructs the helper in RUNNER_TEMP, then invokes
-``python -m py_compile`` before execution.  Python imports this module from the
-writer's explicit ``PYTHONPATH=scripts``.  We patch only that exact temporary
+``python -m py_compile`` before execution. Python imports this module from the
+writer's explicit ``PYTHONPATH=scripts``. We patch only that exact temporary
 helper, preserve strict mismatch failure, and remove this bootstrap file from
 the checkout immediately so it cannot enter the sealed source candidate.
 """
@@ -23,10 +23,10 @@ def _repair_reviewed_helper() -> None:
     if not targets:
         return
 
-    marker = "if actual == 0 and text.count(new) == 1:"
+    marker = "if actual == 0 and text.count(new) == 1: return"
     pattern = re.compile(
-        r"(?m)^(?P<indent>[ \t]*)actual = text\.count\(old\)\n"
-        r"(?P=indent)if actual != 1:\n"
+        r"(?m)^(?P<indent>[ \t]*)actual = text\.count\(old\)\r?\n"
+        r"(?P=indent)if actual != 1:\r?\n"
     )
     for target in targets:
         if not target.is_file():
@@ -43,8 +43,7 @@ def _repair_reviewed_helper() -> None:
             indent = match.group("indent")
             replacement = (
                 f"{indent}actual = text.count(old)\n"
-                f"{indent}if actual == 0 and text.count(new) == 1:\n"
-                f"{indent}    return\n"
+                f"{indent}if actual == 0 and text.count(new) == 1: return\n"
                 f"{indent}if actual != 1:\n"
             )
             source = source[: match.start()] + replacement + source[match.end() :]
