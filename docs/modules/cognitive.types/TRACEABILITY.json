@@ -61,10 +61,12 @@
         "codex-rs/hepta-cognitive-store/src/v2.rs",
         "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
         "codex-rs/hepta-compact-engine/src/qualified.rs",
-        "codex-rs/hepta-intelligence/src/canonical.rs"
+        "codex-rs/hepta-intelligence/src/canonical.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_runner.rs"
       ],
       "tests": [
         "codex-rs/hepta-cognitive-types/src/consumer_tests.rs",
+        "codex-rs/hepta-cognitive-types/tests/traceability.rs",
         "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
         "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
         "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
@@ -109,9 +111,22 @@
       "requiredEvidence": "current_native_cross_language_fuzz_smoke"
     },
     {
+      "id": "CTYPE-PERF-01",
+      "title": "Maximum-count contract round trips emit reproducible observation-only performance evidence",
+      "source": [
+        "codex-rs/hepta-cognitive-types/examples/canonical_probe.rs",
+        "qualification/cognitive-types-v1/quality_checks.py"
+      ],
+      "tests": [
+        ".github/workflows/cognitive-types-qualification.yml"
+      ],
+      "requiredEvidence": "current_maximum_profile_performance_receipt"
+    },
+    {
       "id": "CTYPE-MUTATION-01",
       "title": "High-value invariant removals are rejected by bounded mutation qualification",
       "source": [
+        "qualification/cognitive-types-v1/run_mutations.py",
         "scripts/cognitive_types_mutants.py",
         "qualification/cognitive-types-mutation/MUTANTS.json"
       ],
