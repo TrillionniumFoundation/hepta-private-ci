@@ -10,6 +10,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: intuition-lockfile-authoring-once
+  cancel-in-progress: true
+
 env:
   CARGO_INCREMENTAL: "0"
   CARGO_PROFILE_DEV_DEBUG: "0"
@@ -19,7 +23,7 @@ env:
 jobs:
   author-lockfile:
     name: Generate reviewed Cargo.lock source commit
-    runs-on: ubuntu-24.04
+    runs-on: windows-2025
     timeout-minutes: 30
     steps:
       - name: Check out immutable authoring source
@@ -30,24 +34,44 @@ jobs:
       - uses: ./.github/actions/setup-ci
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
       - name: Generate and verify workspace lockfile
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          cd codex-rs
-          cargo metadata --offline --format-version 1 >/dev/null
-          cargo check --locked -p codex-hepta-agentd --lib
-          cd ..
+          $ErrorActionPreference = "Stop"
+          if ((git rev-parse HEAD).Trim() -ne $env:GITHUB_SHA) {
+            throw "authoring checkout drifted from GITHUB_SHA"
+          }
+
+          Push-Location codex-rs
+          try {
+            cargo metadata --offline --format-version 1 | Out-Null
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            cargo check --locked -p codex-hepta-agentd --lib
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          finally {
+            Pop-Location
+          }
+
           git diff --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git diff -- codex-rs/Cargo.lock
-          test -n "$(git status --porcelain -- codex-rs/Cargo.lock)"
-          test -z "$(git status --porcelain | grep -v '^ M codex-rs/Cargo.lock$' || true)"
+
+          $lockStatus = @(git status --porcelain -- codex-rs/Cargo.lock)
+          if ($lockStatus.Count -eq 0) {
+            throw "Cargo.lock was not updated"
+          }
+          $unexpected = @(git status --porcelain | Where-Object { $_ -ne " M codex-rs/Cargo.lock" })
+          if ($unexpected.Count -ne 0) {
+            throw "authoring changed files other than codex-rs/Cargo.lock: $($unexpected -join ', ')"
+          }
       - name: Commit generated lockfile as ordinary source
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
+          $ErrorActionPreference = "Stop"
           git config user.name "Hepta Intuition Authoring"
           git config user.email "hepta-intuition-authoring@users.noreply.github.com"
           git add codex-rs/Cargo.lock
           git commit -m "fix(intuition): synchronize workspace lockfile"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git push origin HEAD:codex/intuition-policy-production-closure-20260927
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
