@@ -104,7 +104,7 @@ is durable and bound to the exact authenticated snapshot and intended next
 frontier. If CAS outcome is uncertain, the batch remains `indeterminate`.
 Recovery reads authenticated external latest state:
 
-- latest equals the proposed frontier: recover acknowledgement;
+- latest equals the proposed frontier: synchronize the exact stored record and recover its durable acknowledgement;
 - latest equals the expected predecessor: retry the same batch under the
   current fenced owner;
 - latest differs: conflict and operator recovery, never blind replay.
@@ -167,3 +167,20 @@ backend exists. Exact-candidate workflow success, independent storage
 deployment, real target-platform backup/restore and power-loss qualification,
 independent acceptance, canary and release remain separate receipt-bearing
 gates.
+
+<!-- BEGIN KERNEL EVIDENCE INTEGRATION 20260928 -->
+## Publication process ownership
+
+The owner-bound publication CLI also holds a nonblocking OS lock on the private
+canonical Agent home for its entire request. The durable lease is still required;
+the physical lock prevents two processes sharing the same logical owner from
+simultaneously entering external CAS. The lock descriptor is not inherited across
+exec and is released by close or process exit, never by unlinking a lock file.
+Directory replacement or mode drift before dispatch/acknowledgement fails closed.
+
+If another publisher is active, retry the same request after it completes; do not
+remove files, clear a batch, change the owner registry or force a new generation.
+After an uncertain external write, use the same batch reconciliation path, which
+re-synchronizes the exact matching record before recovering an acknowledgement.
+A latest-frontier read alone is not evidence of durable acknowledgement.
+<!-- END KERNEL EVIDENCE INTEGRATION 20260928 -->

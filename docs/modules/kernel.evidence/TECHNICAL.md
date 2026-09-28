@@ -498,6 +498,59 @@ eight Rust profile regressions that still require compiler/CI execution. No
 qualification, external deployment or release gate advances from those local
 results. See `qualification/kernel-evidence/FOLLOWUP_20260927.md`.
 
+<!-- BEGIN KERNEL EVIDENCE INTEGRATION 20260928 -->
+## 20. Integrated candidate and publisher ownership
+
+The integration candidate is `work/kernel-evidence-ad-integration-20260928`
+(PR #1148). It preserves the actual source from #1092 and the separate
+2026-09-28 follow-up. Do not add the capabilities of unmerged branches together
+or count a source-rewriting script as compiled implementation.
+
+Production publication uses two complementary fences. The durable SQLite lease
+binds owner and generation across restart; a nonblocking OS lock on the canonical
+private Agent home serializes publication/reconciliation processes for the
+entire prepare or publish request. A reused logical owner ID does not permit a
+second process to enter. The directory descriptor remains alive through external
+CAS/recovery, policy rechecks, SQLite acknowledgement and store close. Identity
+and private mode are rechecked before external dispatch and acknowledgement.
+The descriptor lifetime releases ownership; no process unlinks a lock file.
+
+`evidence_publication_process_lock_tests.rs` includes separate-open, real
+subprocess contention, successor acquisition, directory replacement and mode
+mutation tests. The subprocess must produce an observed-disposition record;
+a child that executes zero tests cannot satisfy the test. These source tests
+require execution on the exact candidate. File-lock semantics on a different
+storage platform still require independent operational qualification.
+
+Local receipt commit and external anchoring are separate states. Publication
+preparation, immutable batch identity, dispatch, uncertain result and accepted
+frontier are durable. A matching latest record is not by itself a durable ACK:
+reconciliation must recover and synchronize the matching external record before
+acknowledging the batch. Changed policy, expired ownership or uncertain I/O
+leave the same batch unresolved; they never allocate a replacement successful
+history. Normal writes do not silently promise zero-loss external anchoring.
+
+Cursor paging is a bounded live query, not a frozen historical snapshot unless
+the caller binds a separately retained frontier. A verification summary proves
+only its registered profile; consumers must require the profile appropriate to
+the decision they are making, rather than accepting any `supported` value.
+
+The A-D diagnostic workflow tests exact source and a deterministic merge against
+fixed main `a126987b84737dbc2ee2592442a314117bddb4a2`. It never repairs the
+working tree under test. Formatter suggestions are created in a separate
+worktree and become new source only after review/commit. Standalone solver,
+Python, evidence package, Agentd library/product, doctest, strict lint, build,
+Lane-A, documents and implementation-map records remain distinct. A failed,
+missing or skipped command does not qualify either candidate.
+
+Canonical status anchors source and workflow files to an immutable code commit;
+generated projections and the guide may be metadata-only descendants. The
+implementation map is then bound to the actual documentation commit. This
+avoids self-referential Git identities without transferring old test results.
+Independent acceptance, external storage, real backup/restore and power-loss
+drills, canary, promotion and release remain separate external receipts.
+<!-- END KERNEL EVIDENCE INTEGRATION 20260928 -->
+
 <!-- BEGIN GENERATED KERNEL EVIDENCE STATUS -->
 ## Canonical kernel.evidence status
 
@@ -507,9 +560,9 @@ This block is generated from
 override these facts. Workflow receipts may prove the current candidate, but
 cannot self-issue independent acceptance, deployment, canary or release.
 
-- Source anchor commit: `001e557716e884fbd47d5ab2f0ca9f47175f958e`
-- Source anchor tree: `6ecfb41b6e18406ea019fbffa3a972aba5cc4baf`
-- Canonical status SHA-256: `efe917d985790cbb41f3bdc2083e7596abc211d4bfee63ace066e84dadd8f99e`
+- Source anchor commit: `d5a47aa20275682134d3dda799baae8f81424976`
+- Source anchor tree: `c6d583985bea8b789338a2f34627fee200875da3`
+- Canonical status SHA-256: `662b476d893be8914470a1e2c46cbd189b9f0f6ee904c0dc0933c9bf8e1acb6e`
 - Workflow run ID: `none`
 - Retained artifact digest: `none`
 
