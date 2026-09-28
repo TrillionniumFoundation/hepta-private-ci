@@ -90,41 +90,80 @@ fn operational_consistent_export_reopens_exactly() {
     let temporary = tempfile::tempdir().must("tempdir");
     let owner = seeded(&temporary.path().join("source"));
     let destination = temporary.path().join("export");
-    let receipt = owner.export_consistent_checkpoint(&destination).must("export");
-    assert_eq!(receipt.source_registry_digest, receipt.checkpoint_registry_digest);
-    assert_eq!(receipt.source_history_digest, receipt.checkpoint_history_digest);
+    let receipt = owner
+        .export_consistent_checkpoint(&destination)
+        .must("export");
+    assert_eq!(
+        receipt.source_registry_digest,
+        receipt.checkpoint_registry_digest
+    );
+    assert_eq!(
+        receipt.source_history_digest,
+        receipt.checkpoint_history_digest
+    );
     assert!(!receipt.source_erased);
     let metadata_before = std::fs::read(destination.join("registry.json")).must("metadata");
     let payload_before = std::fs::read(destination.join(payloads::FILE_NAME)).must("payload");
     let restored = DurablePromptRegistry::verify_restore_checkpoint(
-        &destination, 64, Some(receipt.checkpoint_revision), Some(receipt.checkpoint_registry_digest),
-    ).must("verify");
+        &destination,
+        64,
+        Some(receipt.checkpoint_revision),
+        Some(receipt.checkpoint_registry_digest),
+    )
+    .must("verify");
     assert!(restored.verified);
-    assert_eq!(metadata_before, std::fs::read(destination.join("registry.json")).must("metadata"));
-    assert_eq!(payload_before, std::fs::read(destination.join(payloads::FILE_NAME)).must("payload"));
+    assert_eq!(
+        metadata_before,
+        std::fs::read(destination.join("registry.json")).must("metadata")
+    );
+    assert_eq!(
+        payload_before,
+        std::fs::read(destination.join(payloads::FILE_NAME)).must("payload")
+    );
 }
 
 #[test]
 fn operational_compacted_checkpoint_reclaims_only_inactive_payloads() {
     let temporary = tempfile::tempdir().must("tempdir");
     let mut owner = seeded(&temporary.path().join("source"));
-    owner.commit(|core| add_payload(core, 1)).must("second payload");
-    owner.retire_factor(&id("factor:0"), &id("operator:test"), digest("retire")).must("retire");
+    owner
+        .commit(|core| add_payload(core, 1))
+        .must("second payload");
+    owner
+        .retire_factor(&id("factor:0"), &id("operator:test"), digest("retire"))
+        .must("retire");
     let before = owner.registry().must("registry").clone();
     let destination = temporary.path().join("compacted");
     let receipt = owner.checkpoint_compacted(&destination).must("compact");
     assert_eq!(receipt.reclaimed_payload_records, 1);
     assert_eq!(receipt.reclaimed_payload_bytes, 16 * 1024);
     assert_eq!(receipt.checkpoint_payload_records, 1);
-    assert_eq!(receipt.source_history_digest, receipt.checkpoint_history_digest);
+    assert_eq!(
+        receipt.source_history_digest,
+        receipt.checkpoint_history_digest
+    );
     assert!(!receipt.source_erased);
     assert_eq!(owner.registry().must("source unchanged"), &before);
     let checkpoint = load_strict_checkpoint(&destination, 64).must("read checkpoint");
     assert_eq!(checkpoint.registry.factors, before.factors);
     assert_eq!(checkpoint.registry.relations, before.relations);
-    assert_eq!(checkpoint.registry.lifecycle_events, before.lifecycle_events);
-    assert!(!checkpoint.registry.realization_payloads.contains_key(&id("realization:0")));
-    assert_eq!(checkpoint.registry.realization_payloads.get(&id("realization:1")), before.realization_payloads.get(&id("realization:1")));
+    assert_eq!(
+        checkpoint.registry.lifecycle_events,
+        before.lifecycle_events
+    );
+    assert!(
+        !checkpoint
+            .registry
+            .realization_payloads
+            .contains_key(&id("realization:0"))
+    );
+    assert_eq!(
+        checkpoint
+            .registry
+            .realization_payloads
+            .get(&id("realization:1")),
+        before.realization_payloads.get(&id("realization:1"))
+    );
 }
 
 #[test]
@@ -136,17 +175,28 @@ fn operational_compaction_retry_is_idempotent_and_conflicting_destination_is_unt
     let second = owner.checkpoint_compacted(&destination).must("retry");
     assert_eq!(first, second);
     let before = std::fs::read(destination.join("registry.json")).must("metadata");
-    owner.retire_factor(&id("factor:0"), &id("operator:test"), digest("retire")).must("retire");
+    owner
+        .retire_factor(&id("factor:0"), &id("operator:test"), digest("retire"))
+        .must("retire");
     assert!(owner.checkpoint_compacted(&destination).is_err());
-    assert_eq!(before, std::fs::read(destination.join("registry.json")).must("unchanged"));
+    assert_eq!(
+        before,
+        std::fs::read(destination.join("registry.json")).must("unchanged")
+    );
 }
 
 #[test]
 fn operational_restore_does_not_create_missing_paths_or_accept_unpinned_identity() {
     let temporary = tempfile::tempdir().must("tempdir");
     let missing = temporary.path().join("missing");
-    assert!(matches!(DurablePromptRegistry::verify_restore_checkpoint(&missing, 64, None, None), Err(PromptRegistryMaintenanceError::RestoreIdentityRequired)));
-    assert!(DurablePromptRegistry::verify_restore_checkpoint(&missing, 64, Some(1), Some([1; 32])).is_err());
+    assert!(matches!(
+        DurablePromptRegistry::verify_restore_checkpoint(&missing, 64, None, None),
+        Err(PromptRegistryMaintenanceError::RestoreIdentityRequired)
+    ));
+    assert!(
+        DurablePromptRegistry::verify_restore_checkpoint(&missing, 64, Some(1), Some([1; 32]))
+            .is_err()
+    );
     assert!(!missing.exists());
 }
 
@@ -158,11 +208,17 @@ fn operational_partial_checkpoint_and_symlink_are_never_overwritten() {
     let temporary = tempfile::tempdir().must("tempdir");
     let owner = seeded(&temporary.path().join("source"));
     let partial = temporary.path().join("partial");
-    std::fs::DirBuilder::new().mode(0o700).create(&partial).must("partial dir");
+    std::fs::DirBuilder::new()
+        .mode(0o700)
+        .create(&partial)
+        .must("partial dir");
     std::fs::write(partial.join("registry.next"), b"incomplete-checkpoint").must("partial bytes");
     assert!(owner.export_consistent_checkpoint(&partial).is_err());
     assert!(!partial.join("registry.lock").exists());
-    assert_eq!(std::fs::read(partial.join("registry.next")).must("partial preserved"), b"incomplete-checkpoint");
+    assert_eq!(
+        std::fs::read(partial.join("registry.next")).must("partial preserved"),
+        b"incomplete-checkpoint"
+    );
     let alias = temporary.path().join("alias");
     symlink(&partial, &alias).must("symlink");
     assert!(owner.export_consistent_checkpoint(&alias).is_err());
@@ -175,21 +231,43 @@ fn operational_stale_restore_is_rejected_after_revocation() {
     let mut owner = seeded(&temporary.path().join("source"));
     let backup = temporary.path().join("old-backup");
     owner.export_consistent_checkpoint(&backup).must("backup");
-    owner.revoke_factor(&id("factor:0"), &id("operator:test"), digest("revoke"), 100).must("revoke");
+    owner
+        .revoke_factor(&id("factor:0"), &id("operator:test"), digest("revoke"), 100)
+        .must("revoke");
     let metrics = owner.operational_metrics().must("current identity");
-    assert!(matches!(DurablePromptRegistry::verify_restore_checkpoint(&backup, 64, Some(metrics.revision), Some(metrics.registry_digest)), Err(PromptRegistryMaintenanceError::CheckpointVerificationMismatch)));
+    assert!(matches!(
+        DurablePromptRegistry::verify_restore_checkpoint(
+            &backup,
+            64,
+            Some(metrics.revision),
+            Some(metrics.registry_digest)
+        ),
+        Err(PromptRegistryMaintenanceError::CheckpointVerificationMismatch)
+    ));
     let current = temporary.path().join("current");
     let receipt = owner.checkpoint_compacted(&current).must("compact revoked");
     let restored = load_strict_checkpoint(&current, 64).must("restore");
-    assert_eq!(restored.registry.factor(&id("factor:0")).must("factor").lifecycle, Lifecycle::Revoked);
-    assert_eq!(receipt.source_history_digest, receipt.checkpoint_history_digest);
+    assert_eq!(
+        restored
+            .registry
+            .factor(&id("factor:0"))
+            .must("factor")
+            .lifecycle,
+        Lifecycle::Revoked
+    );
+    assert_eq!(
+        receipt.source_history_digest,
+        receipt.checkpoint_history_digest
+    );
 }
 
 #[test]
 fn operational_metrics_unify_logical_payload_and_byte_quotas() {
     let temporary = tempfile::tempdir().must("tempdir");
     let mut owner = seeded(&temporary.path().join("source"));
-    owner.retire_factor(&id("factor:0"), &id("operator:test"), digest("retire")).must("retire");
+    owner
+        .retire_factor(&id("factor:0"), &id("operator:test"), digest("retire"))
+        .must("retire");
     let metrics = owner.operational_metrics().must("metrics");
     assert!(metrics.authoritative);
     assert_eq!(metrics.reclaimable_payload_records, 1);
@@ -197,7 +275,10 @@ fn operational_metrics_unify_logical_payload_and_byte_quotas() {
     assert_eq!(metrics.oldest_reclaimable_age_ms, None);
     assert_eq!(metrics.remaining_logical_records, 62);
     assert_eq!(metrics.quota.maximum_full_sized_payload_records, 512);
-    assert_eq!(metrics.remaining_payload_bytes + metrics.physical_payload_file_bytes, metrics.quota.maximum_payload_bytes);
+    assert_eq!(
+        metrics.remaining_payload_bytes + metrics.physical_payload_file_bytes,
+        metrics.quota.maximum_payload_file_bytes
+    );
 }
 
 #[test]
@@ -205,12 +286,19 @@ fn operational_poisoned_owner_exposes_diagnostics_but_not_authority() {
     let temporary = tempfile::tempdir().must("tempdir");
     let mut owner = seeded(&temporary.path().join("source"));
     owner.fail_directory_sync_after_rename_once();
-    assert!(matches!(owner.register_factor(factor(1)), Err(DurableRegistryError::IndeterminateDurability)));
+    assert!(matches!(
+        owner.register_factor(factor(1)),
+        Err(DurableRegistryError::IndeterminateDurability)
+    ));
     let metrics = owner.operational_metrics().must("poisoned diagnostics");
     assert!(metrics.requires_reopen);
     assert!(!metrics.authoritative);
     assert!(owner.registry().is_err());
-    assert!(owner.export_consistent_checkpoint(&temporary.path().join("forbidden")).is_err());
+    assert!(
+        owner
+            .export_consistent_checkpoint(&temporary.path().join("forbidden"))
+            .is_err()
+    );
 }
 
 #[test]
@@ -219,7 +307,12 @@ fn operational_fsync_probe_is_bounded_and_cleans_up() {
     let directory = temporary.path().join("probe");
     let receipt = DurablePromptRegistry::probe_fsync(&directory, 4096).must("probe");
     assert_eq!(receipt.bytes, 4096);
-    assert!(std::fs::read_dir(&directory).must("read dir").next().is_none());
+    assert!(
+        std::fs::read_dir(&directory)
+            .must("read dir")
+            .next()
+            .is_none()
+    );
     assert!(DurablePromptRegistry::probe_fsync(&directory, 0).is_err());
     assert!(DurablePromptRegistry::probe_fsync(&directory, 1024 * 1024 + 1).is_err());
 }
@@ -246,7 +339,8 @@ fn operational_orphan_payload_tail_reconciliation_is_idempotent() {
     let owner = seeded(&source);
     let expected = owner.registry().must("registry").clone();
     let committed = file_bytes(&owner.store, payloads::FILE_NAME).must("length");
-    let mut file = open_private(&owner.store.root, payloads::FILE_NAME, Access::Create).must("payload file");
+    let mut file =
+        open_private(&owner.store.root, payloads::FILE_NAME, Access::Create).must("payload file");
     file.seek(SeekFrom::End(0)).must("seek");
     file.write_all(b"orphan-tail").must("tail");
     file.sync_all().must("sync");
@@ -255,7 +349,10 @@ fn operational_orphan_payload_tail_reconciliation_is_idempotent() {
     for _ in 0..2 {
         let reopened = DurablePromptRegistry::open_state_dir(&source, 64).must("reopen");
         assert_eq!(reopened.registry().must("registry"), &expected);
-        assert_eq!(file_bytes(&reopened.store, payloads::FILE_NAME).must("length"), committed);
+        assert_eq!(
+            file_bytes(&reopened.store, payloads::FILE_NAME).must("length"),
+            committed
+        );
     }
 }
 
@@ -290,7 +387,8 @@ fn large_registry(count: usize) -> PromptRegistry {
 
 fn distribution(mut samples: Vec<u128>) -> serde_json::Value {
     samples.sort_unstable();
-    let quantile = |percent: usize| samples[(samples.len() * percent).div_ceil(100).saturating_sub(1)];
+    let quantile =
+        |percent: usize| samples[(samples.len() * percent).div_ceil(100).saturating_sub(1)];
     serde_json::json!({"samples": samples.len(), "p50Nanos": quantile(50), "p95Nanos": quantile(95), "p99Nanos": quantile(99), "maxNanos": samples.last()})
 }
 
@@ -313,7 +411,9 @@ fn operational_scale_profile_1k_8k_16k() {
         let mut owner = DurablePromptRegistry::open_state_dir(&path, 16_384).must("reopen");
         let reopen_nanos = reopen_started.elapsed().as_nanos();
         let register_started = Instant::now();
-        owner.register_factor(factor(count + 2)).must("measured durable register");
+        owner
+            .register_factor(factor(count + 2))
+            .must("measured durable register");
         let register_nanos = register_started.elapsed().as_nanos();
         let model = model_tuple();
         let generation = digest("profile-generation");
@@ -324,31 +424,58 @@ fn operational_scale_profile_1k_8k_16k() {
             let snapshot = owner.snapshot_v2(generation, &model).must("snapshot");
             snapshots.push(started.elapsed().as_nanos());
             let started = Instant::now();
-            std::hint::black_box(owner.dereference_realization_v2(&id(&format!("realization:{}", count + 1)), &snapshot, generation, &model, 1).must("dereference"));
+            std::hint::black_box(
+                owner
+                    .dereference_realization_v2(
+                        &id(&format!("realization:{}", count + 1)),
+                        &snapshot,
+                        generation,
+                        &model,
+                        1,
+                    )
+                    .must("dereference"),
+            );
             dereferences.push(started.elapsed().as_nanos());
         }
         let update_started = Instant::now();
-        owner.retire_factor(&id(&format!("factor:{}", count + 1)), &id("operator:test"), digest("retire")).must("lifecycle update");
+        owner
+            .retire_factor(
+                &id(&format!("factor:{}", count + 1)),
+                &id("operator:test"),
+                digest("retire"),
+            )
+            .must("lifecycle update");
         let lifecycle_update_nanos = update_started.elapsed().as_nanos();
         let metrics = owner.operational_metrics().must("metrics");
         let compact_started = Instant::now();
-        let receipt = owner.checkpoint_compacted(&temporary.path().join("checkpoint")).must("checkpoint");
+        let receipt = owner
+            .checkpoint_compacted(&temporary.path().join("checkpoint"))
+            .must("checkpoint");
         let compaction_nanos = compact_started.elapsed().as_nanos();
-        let vm_hwm = std::fs::read_to_string("/proc/self/status").ok().and_then(|text| text.lines().find(|line| line.starts_with("VmHWM:")).map(str::to_owned));
-        println!("{}", serde_json::json!({
-            "schema": "hepta.prompt-registry.operational-scale.v2",
-            "logicalRecords": count, "fixtureNanos": fixture_nanos,
-            "initialPersistNanos": initial_persist_nanos, "reopenNanos": reopen_nanos,
-            "durableRegisterNanos": register_nanos, "lifecycleUpdateNanos": lifecycle_update_nanos,
-            "snapshot": distribution(snapshots), "dereference": distribution(dereferences),
-            "compactionNanos": compaction_nanos, "metadataBytes": metrics.metadata_file_bytes,
-            "payloadFileBytes": metrics.physical_payload_file_bytes,
-            "checkpointPayloadBytes": receipt.checkpoint_physical_payload_file_bytes,
-            "processHighWaterMark": vm_hwm,
-            "memoryScope": "process-lifetime; not per-operation allocation",
-            "writeSampleCount": 1, "productionSla": false,
-            "compileRenderFinalUseMeasured": false,
-        }));
+        let vm_hwm = std::fs::read_to_string("/proc/self/status")
+            .ok()
+            .and_then(|text| {
+                text.lines()
+                    .find(|line| line.starts_with("VmHWM:"))
+                    .map(str::to_owned)
+            });
+        println!(
+            "{}",
+            serde_json::json!({
+                "schema": "hepta.prompt-registry.operational-scale.v2",
+                "logicalRecords": count, "fixtureNanos": fixture_nanos,
+                "initialPersistNanos": initial_persist_nanos, "reopenNanos": reopen_nanos,
+                "durableRegisterNanos": register_nanos, "lifecycleUpdateNanos": lifecycle_update_nanos,
+                "snapshot": distribution(snapshots), "dereference": distribution(dereferences),
+                "compactionNanos": compaction_nanos, "metadataBytes": metrics.metadata_file_bytes,
+                "payloadFileBytes": metrics.physical_payload_file_bytes,
+                "checkpointPayloadBytes": receipt.checkpoint_physical_payload_file_bytes,
+                "processHighWaterMark": vm_hwm,
+                "memoryScope": "process-lifetime; not per-operation allocation",
+                "writeSampleCount": 1, "productionSla": false,
+                "compileRenderFinalUseMeasured": false,
+            })
+        );
     }
 }
 
@@ -367,6 +494,39 @@ fn operational_fsync_profile() {
             file_sync.push(receipt.file_sync_nanos);
             directory_sync.push(receipt.directory_sync_nanos);
         }
-        println!("{}", serde_json::json!({"schema": "hepta.prompt-registry.fsync-profile.v2", "bytes": bytes, "total": distribution(total), "fileSync": distribution(file_sync), "directorySync": distribution(directory_sync), "productionSla": false}));
+        println!(
+            "{}",
+            serde_json::json!({"schema": "hepta.prompt-registry.fsync-profile.v2", "bytes": bytes, "total": distribution(total), "fileSync": distribution(file_sync), "directorySync": distribution(directory_sync), "productionSla": false})
+        );
     }
+}
+
+#[test]
+fn operational_restore_rejects_tail_without_repair_or_mutation() {
+    let temporary = tempfile::tempdir().must("tempdir");
+    let owner = seeded(&temporary.path().join("source"));
+    let checkpoint = temporary.path().join("checkpoint");
+    let receipt = owner
+        .export_consistent_checkpoint(&checkpoint)
+        .must("export");
+    let root = open_existing_directory(&checkpoint).must("directory");
+    let mut file = open_private(&root, payloads::FILE_NAME, Access::Create).must("file");
+    file.seek(SeekFrom::End(0)).must("seek");
+    file.write_all(b"must-not-silently-trim").must("tail");
+    file.sync_all().must("sync");
+    drop(file);
+    let before = std::fs::read(checkpoint.join(payloads::FILE_NAME)).must("before");
+    assert!(
+        DurablePromptRegistry::verify_restore_checkpoint(
+            &checkpoint,
+            64,
+            Some(receipt.checkpoint_revision),
+            Some(receipt.checkpoint_registry_digest)
+        )
+        .is_err()
+    );
+    assert_eq!(
+        std::fs::read(checkpoint.join(payloads::FILE_NAME)).must("after"),
+        before
+    );
 }

@@ -29,6 +29,7 @@ use codex_hepta_types::StableId;
 pub(super) const FILE_NAME: &str = "registry.payloads";
 const MAGIC: &[u8] = b"HEPTA-PROMPT-PAYLOADS-V1\0";
 pub(super) const MAX_PAYLOAD_BYTES: u64 = 32 * 1024 * 1024;
+pub(super) const MAX_PHYSICAL_PAYLOAD_FILE_BYTES: u64 = MAX_PAYLOAD_BYTES + MAGIC.len() as u64;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -77,6 +78,10 @@ impl Default for PayloadState {
 }
 
 impl PayloadState {
+    pub fn selected_file_bytes(&self) -> u64 {
+        self.committed_end
+    }
+
     pub fn is_initialized(&self) -> bool {
         self.initialized
     }

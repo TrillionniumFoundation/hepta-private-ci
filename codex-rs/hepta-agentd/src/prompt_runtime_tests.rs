@@ -659,7 +659,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
             .unwrap_or_else(|error| panic!("register realization: {error}"));
     }
 
-    let logical_now = 100_u64;
+    let logical_now = wall_now;
     let candidates = pipeline
         .enumerate_candidates(PromptEnumerationRequestV1 {
             set_id: id("enumeration:agentd-product"),
@@ -707,6 +707,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         policy_digest: digest("exercise-policy"),
     };
 
+    let compile_started = std::time::Instant::now();
     let disposition = pipeline
         .compile_and_stage(
             "thread:product",
@@ -737,10 +738,11 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         )
         .unwrap_or_else(|error| panic!("compile and stage: {error}"));
     assert_eq!(disposition, PromptRuntimeStageDisposition::Inserted);
+    let compile_stage_nanos = compile_started.elapsed().as_nanos();
 
-    let runtime = pipeline.runtime_owner();
-    let staged = runtime
-        .prepare(PromptRuntimePrepareRequest {
+    let prepare_started = std::time::Instant::now();
+    let staged = pipeline
+        .prepare_final_use(PromptRuntimePrepareRequest {
             thread_id: "thread:product".to_owned(),
             turn_id: "turn:product".to_owned(),
             model_context_window: Some(128),
@@ -749,10 +751,135 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         .unwrap_or_else(|| panic!("staged attachment missing"));
     assert_eq!(staged.developer_fragments.len(), 1);
     assert_eq!(staged.developer_fragments[0].text.as_bytes(), payload);
+    let prepare_nanos = prepare_started.elapsed().as_nanos();
+    let factor_id = id("factor:agentd-product");
+    let actor = id("operator:agentd-revoke");
+    let scope = digest("revoke-scope:agentd-product");
+    let reason = digest("revoke-reason:agentd-product");
+    let cutoff = prompt_host_now_unix_ms().unwrap_or_else(|error| panic!("clock: {error}"));
+    {
+        let mut registry = pipeline
+            .registry
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        let factor = registry
+            .registry()
+            .unwrap_or_else(|error| panic!("registry: {error}"))
+            .factor(&factor_id)
+            .cloned()
+            .unwrap_or_else(|| panic!("factor"));
+        let binding = codex_hepta_prompt_registry::final_use_revoke_binding(
+            &factor, &actor, scope, reason, cutoff,
+        )
+        .unwrap_or_else(|error| panic!("revoke binding: {error}"));
+        let grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "review-authority:agentd-prompt".to_owned(),
+            authority_epoch: 1,
+            grant_id: "grant:agentd-prompt-revoke".to_owned(),
+            nonce: [64; 32],
+            binding,
+            not_before_unix_ms: wall_now.saturating_sub(1000),
+            expires_at_unix_ms: wall_now + 30_000,
+        };
+        let signed = SignedFinalUseGrant {
+            signature: signing_key
+                .sign(
+                    &grant
+                        .signing_bytes()
+                        .unwrap_or_else(|error| panic!("sign: {error}")),
+                )
+                .to_bytes()
+                .to_vec(),
+            grant,
+        };
+        registry
+            .revoke_factor_final_use(
+                &authority, &signed, &factor_id, &actor, scope, reason, cutoff,
+            )
+            .unwrap_or_else(|error| panic!("revoke: {error}"));
+    }
+    let request = PromptRuntimePrepareRequest {
+        thread_id: "thread:product".to_owned(),
+        turn_id: "turn:product".to_owned(),
+        model_context_window: Some(128),
+    };
+    let error = pipeline
+        .prepare_final_use(request.clone())
+        .err()
+        .unwrap_or_else(|| panic!("expected rejection"));
+    assert_eq!(error.reason_code(), "prompt_final_use_revoked");
+    let mut attempt = dispatch(
+        &staged,
+        "thread:product",
+        "turn:product",
+        "attempt:revoked",
+        "request:revoked",
+        digest("provider-request:revoked"),
+    );
+    attempt.dispatched_unix_ms = cutoff;
+    let error = pipeline
+        .record_dispatch_final_use(attempt.clone())
+        .err()
+        .unwrap_or_else(|| panic!("expected rejection"));
+    assert_eq!(error.reason_code(), "prompt_final_use_revoked");
+    assert!(
+        pipeline
+            .runtime
+            .dispatch_record("attempt:revoked")
+            .unwrap_or_else(|error| panic!("dispatch: {error}"))
+            .is_none()
+    );
+    let metrics = pipeline.final_use_metrics();
+    assert!(metrics.withdrawn >= 2);
+    println!(
+        "{}",
+        serde_json::json!({
+            "schema": "hepta.prompt-registry.pipeline-profile.v1",
+            "realizations": 1, "compileAndStageNanos": compile_stage_nanos,
+            "prepareCurrentUseNanos": prepare_nanos, "checks": metrics.checked,
+            "currentUseTotalNanos": metrics.total_nanos, "currentUseMaximumNanos": metrics.maximum_nanos,
+            "providerNetworkUsed": false, "productionSla": false,
+        })
+    );
+    drop(pipeline);
+    let reopened = AgentdPromptPipelineOwner::open_state_dirs(&registry_root, &runtime_root, 64)
+        .unwrap_or_else(|error| panic!("reopen: {error}"));
+    assert_eq!(
+        reopened
+            .prepare_final_use(request)
+            .err()
+            .unwrap_or_else(|| panic!("expected rejection"))
+            .reason_code(),
+        "prompt_final_use_revoked"
+    );
+    assert_eq!(
+        reopened
+            .record_dispatch_final_use(attempt)
+            .err()
+            .unwrap_or_else(|| panic!("expected rejection"))
+            .reason_code(),
+        "prompt_final_use_revoked"
+    );
+    assert!(
+        reopened
+            .runtime
+            .dispatch_record("attempt:revoked")
+            .unwrap_or_else(|error| panic!("dispatch: {error}"))
+            .is_none()
+    );
 }
 
 #[test]
 fn owner_remains_send_sync_with_fault_injection() {
     fn assert_send_sync<T: Send + Sync>() {}
     assert_send_sync::<super::AgentdPromptRuntimeOwner>();
+}
+
+#[test]
+#[ignore = "qualification pipeline latency profile; no production provider effect"]
+fn operational_pipeline_compile_stage_final_use_profile() {
+    for _ in 0..31 {
+        named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host();
+    }
 }

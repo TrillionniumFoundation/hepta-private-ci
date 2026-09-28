@@ -57,8 +57,11 @@ use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::prompt_final_use::PromptFinalUseBoundaryV1;
 use crate::prompt_final_use::PromptFinalUseLeaseError;
 use crate::prompt_final_use::PromptFinalUseLeaseV1;
+use crate::prompt_final_use::PromptFinalUseMetrics;
+use crate::prompt_final_use::PromptFinalUseValidator;
 use crate::prompt_final_use_store::PromptFinalUseKeyV1;
 use crate::prompt_final_use_store::PromptFinalUseLeaseStore;
 use crate::prompt_final_use_store::PromptFinalUseStoreError;
@@ -532,6 +535,7 @@ pub struct AgentdPromptPipelineOwner {
     registry: Mutex<DurablePromptRegistry>,
     runtime: Arc<AgentdPromptRuntimeOwner>,
     final_use: Arc<PromptFinalUseLeaseStore>,
+    final_use_validator: PromptFinalUseValidator,
 }
 
 impl fmt::Debug for AgentdPromptPipelineOwner {
@@ -561,7 +565,13 @@ impl AgentdPromptPipelineOwner {
             registry: Mutex::new(registry),
             runtime: Arc::new(runtime),
             final_use: Arc::new(final_use),
+            final_use_validator: PromptFinalUseValidator::default(),
         })
+    }
+
+    #[must_use]
+    pub fn final_use_metrics(&self) -> PromptFinalUseMetrics {
+        self.final_use_validator.metrics()
     }
 
     #[must_use]
@@ -779,16 +789,24 @@ impl AgentdPromptPipelineOwner {
                     "staged prompt context has no durable final-use lease",
                 )
             })?;
-        lease.validate_shape().map_err(final_use_lease_host_error)?;
-        if lease.compilation_id != attachment.compilation_id
-            || lease.context_attachment_digest != attachment.context_attachment_digest
-            || lease.context_payload_digest != attachment.context_payload_digest
-        {
-            return Err(PromptRuntimeHostError::new(
-                "agentd_prompt_final_use_binding_mismatch",
-                "staged prompt context does not match its durable final-use lease",
-            ));
-        }
+        let registry = self.registry.lock().map_err(|_| {
+            PromptRuntimeHostError::new(
+                "agentd_prompt_registry_state_poisoned",
+                "prompt registry owner lock is poisoned",
+            )
+        })?;
+        self.final_use_validator
+            .validate(
+                &lease,
+                &registry,
+                &PromptFinalUseBoundaryV1 {
+                    compilation_id: &attachment.compilation_id,
+                    context_attachment_digest: attachment.context_attachment_digest,
+                    context_payload_digest: attachment.context_payload_digest,
+                    now_unix_ms: prompt_host_now_unix_ms()?,
+                },
+            )
+            .map_err(final_use_lease_host_error)?;
         Ok(Some(attachment))
     }
 
@@ -808,24 +826,34 @@ impl AgentdPromptPipelineOwner {
                     "provider dispatch has no durable prompt final-use lease",
                 )
             })?;
-        if lease.compilation_id != record.compilation_id
-            || lease.context_attachment_digest != record.context_attachment_digest
-            || lease.context_payload_digest != record.context_payload_digest
-        {
-            return Err(PromptRuntimeHostError::new(
-                "agentd_prompt_final_use_binding_mismatch",
-                "provider dispatch does not match its prompt final-use lease",
-            ));
-        }
         let registry = self.registry.lock().map_err(|_| {
             PromptRuntimeHostError::new(
                 "agentd_prompt_registry_state_poisoned",
                 "prompt registry owner lock is poisoned",
             )
         })?;
-        lease
-            .validate_current(&registry, record.dispatched_unix_ms)
+        let now_unix_ms = prompt_host_now_unix_ms()?;
+        if record.dispatched_unix_ms > now_unix_ms
+            || record.dispatched_unix_ms < lease.issued_unix_ms
+        {
+            return Err(final_use_lease_host_error(
+                PromptFinalUseLeaseError::Expired,
+            ));
+        }
+        self.final_use_validator
+            .validate(
+                &lease,
+                &registry,
+                &PromptFinalUseBoundaryV1 {
+                    compilation_id: &record.compilation_id,
+                    context_attachment_digest: record.context_attachment_digest,
+                    context_payload_digest: record.context_payload_digest,
+                    now_unix_ms,
+                },
+            )
             .map_err(final_use_lease_host_error)?;
+        // Keep the owner guard through the durable dispatch claim. The provider
+        // terminal is still a separate observed fact, not a fabricated success.
         self.runtime.record_dispatch(record)
     }
 
@@ -846,12 +874,29 @@ impl AgentdPromptPipelineOwner {
     }
 }
 
+fn prompt_host_now_unix_ms() -> Result<u64, PromptRuntimeHostError> {
+    let elapsed = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|_| {
+            PromptRuntimeHostError::new(
+                "prompt_final_use_clock_unavailable",
+                "trusted host clock is unavailable",
+            )
+        })?;
+    u64::try_from(elapsed.as_millis()).map_err(|_| {
+        PromptRuntimeHostError::new(
+            "prompt_final_use_clock_unavailable",
+            "trusted host clock is out of range",
+        )
+    })
+}
+
 fn final_use_store_host_error(error: PromptFinalUseStoreError) -> PromptRuntimeHostError {
     PromptRuntimeHostError::new("agentd_prompt_final_use_store_error", error.to_string())
 }
 
 fn final_use_lease_host_error(error: PromptFinalUseLeaseError) -> PromptRuntimeHostError {
-    PromptRuntimeHostError::new("agentd_prompt_final_use_lease_error", error.to_string())
+    PromptRuntimeHostError::new(error.code(), error.to_string())
 }
 
 fn terminal_clears_stage(record: &PromptRuntimeTerminalRecordV1) -> bool {

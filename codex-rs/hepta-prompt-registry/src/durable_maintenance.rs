@@ -47,6 +47,7 @@ pub struct PromptRegistryQuota {
     pub maximum_logical_records: usize,
     pub maximum_payload_records: usize,
     pub maximum_payload_bytes: u64,
+    pub maximum_payload_file_bytes: u64,
     pub maximum_single_payload_bytes: usize,
     pub maximum_metadata_bytes: u64,
     pub maximum_full_sized_payload_records: u64,
@@ -58,6 +59,7 @@ impl PromptRegistryQuota {
             maximum_logical_records: registry.maximum_records,
             maximum_payload_records: registry.maximum_records,
             maximum_payload_bytes: payloads::MAX_PAYLOAD_BYTES,
+            maximum_payload_file_bytes: payloads::MAX_PHYSICAL_PAYLOAD_FILE_BYTES,
             maximum_single_payload_bytes: MAX_REALIZATION_PAYLOAD_BYTES,
             maximum_metadata_bytes: MAX_STATE_BYTES,
             maximum_full_sized_payload_records: payloads::MAX_PAYLOAD_BYTES
@@ -301,7 +303,10 @@ fn metrics_for(
             u64::try_from(registry.realization_payloads.len()).unwrap_or(u64::MAX),
             u64::try_from(quota.maximum_payload_records).unwrap_or(u64::MAX),
         ),
-        basis_points(physical_payload_file_bytes, quota.maximum_payload_bytes),
+        basis_points(
+            physical_payload_file_bytes,
+            quota.maximum_payload_file_bytes,
+        ),
         basis_points(metadata_file_bytes, quota.maximum_metadata_bytes),
     ]
     .into_iter()
@@ -319,7 +324,10 @@ fn metrics_for(
             .count(),
         realization_records: registry.realizations.len(),
         active_realization_records,
-        inactive_realization_records: registry.realizations.len().saturating_sub(active_realization_records),
+        inactive_realization_records: registry
+            .realizations
+            .len()
+            .saturating_sub(active_realization_records),
         relation_records: registry.relations.len(),
         lifecycle_event_records: registry.lifecycle_events.len(),
         revocation_frontier: registry.revocation_frontier,
@@ -331,9 +339,15 @@ fn metrics_for(
         oldest_reclaimable_age_ms: None,
         physical_payload_file_bytes,
         metadata_file_bytes,
-        remaining_logical_records: quota.maximum_logical_records.saturating_sub(logical_records),
-        remaining_payload_bytes: quota.maximum_payload_bytes.saturating_sub(physical_payload_file_bytes),
-        remaining_metadata_bytes: quota.maximum_metadata_bytes.saturating_sub(metadata_file_bytes),
+        remaining_logical_records: quota
+            .maximum_logical_records
+            .saturating_sub(logical_records),
+        remaining_payload_bytes: quota
+            .maximum_payload_file_bytes
+            .saturating_sub(physical_payload_file_bytes),
+        remaining_metadata_bytes: quota
+            .maximum_metadata_bytes
+            .saturating_sub(metadata_file_bytes),
         high_water_basis_points,
         requires_reopen: owner.requires_reopen(),
         quota,
@@ -347,9 +361,10 @@ fn history_digest(registry: &PromptRegistry) -> Result<[u8; 32], PromptRegistryM
     metadata.registry_digest = [0; 32];
     metadata.payloads.clear();
     let mut bytes = b"hepta.prompt-registry.retained-history.v1".to_vec();
-    bytes.extend(serde_json::to_vec(&metadata).map_err(|_| {
-        PromptRegistryMaintenanceError::CheckpointVerificationMismatch
-    })?);
+    bytes.extend(
+        serde_json::to_vec(&metadata)
+            .map_err(|_| PromptRegistryMaintenanceError::CheckpointVerificationMismatch)?,
+    );
     Ok(codex_hepta_types::Digest32::of_bytes(&bytes).into_array())
 }
 
@@ -388,7 +403,11 @@ fn write_checkpoint(
     open_private(&reopened.store.root, "registry.json", Access::Read)?
         .sync_all()
         .map_err(|_| PromptRegistryMaintenanceError::CleanupUncertain)?;
-    reopened.store.root.sync_all().map_err(|_| PromptRegistryMaintenanceError::CleanupUncertain)?;
+    reopened
+        .store
+        .root
+        .sync_all()
+        .map_err(|_| PromptRegistryMaintenanceError::CleanupUncertain)?;
     sync_parent(destination)?;
     let metrics = reopened.operational_metrics()?;
     Ok(PromptRegistryCheckpointReceipt {
@@ -418,7 +437,8 @@ fn load_strict_checkpoint(
 ) -> Result<DurablePromptRegistry, PromptRegistryMaintenanceError> {
     let root = open_existing_directory(directory)?;
     let lock = open_private(&root, "registry.lock", Access::Read)?;
-    lock.try_lock().map_err(|_| DurableRegistryError::StateLocked)?;
+    lock.try_lock()
+        .map_err(|_| DurableRegistryError::StateLocked)?;
     let mut bytes = Vec::new();
     open_private(&root, "registry.json", Access::Read)?
         .take(MAX_STATE_BYTES + 1)
@@ -430,6 +450,13 @@ fn load_strict_checkpoint(
     let manifest: payloads::StoredV4 =
         serde_json::from_slice(&bytes).map_err(|_| DurableRegistryError::Corrupt)?;
     let (payloads, stored) = payloads::PayloadState::hydrate_v4(&root, manifest)?;
+    let actual_payload_bytes = open_private(&root, payloads::FILE_NAME, Access::Read)?
+        .metadata()
+        .map_err(|_| DurableRegistryError::Unavailable)?
+        .len();
+    if actual_payload_bytes != payloads.selected_file_bytes() {
+        return Err(PromptRegistryMaintenanceError::CheckpointVerificationMismatch);
+    }
     let registry = restore_v4(stored, maximum_records)?;
     Ok(DurablePromptRegistry {
         registry,
@@ -452,13 +479,17 @@ fn open_existing_directory(directory: &Path) -> Result<File, PromptRegistryMaint
 
     let root: File = rustix::fs::open(
         directory,
-        rustix::fs::OFlags::RDONLY | rustix::fs::OFlags::DIRECTORY
-            | rustix::fs::OFlags::NOFOLLOW | rustix::fs::OFlags::CLOEXEC,
+        rustix::fs::OFlags::RDONLY
+            | rustix::fs::OFlags::DIRECTORY
+            | rustix::fs::OFlags::NOFOLLOW
+            | rustix::fs::OFlags::CLOEXEC,
         rustix::fs::Mode::empty(),
     )
     .map_err(|_| PromptRegistryMaintenanceError::MissingCheckpoint)?
     .into();
-    let metadata = root.metadata().map_err(|_| DurableRegistryError::Unavailable)?;
+    let metadata = root
+        .metadata()
+        .map_err(|_| DurableRegistryError::Unavailable)?;
     if metadata.mode() & 0o077 != 0 || metadata.uid() != rustix::process::geteuid().as_raw() {
         return Err(DurableRegistryError::UnsafeStateDirectory.into());
     }
@@ -478,31 +509,46 @@ fn create_destination(destination: &Path) -> Result<bool, PromptRegistryMaintena
 
 #[cfg(unix)]
 fn sync_parent(destination: &Path) -> Result<(), PromptRegistryMaintenanceError> {
-    let parent = destination.parent().filter(|p| !p.as_os_str().is_empty()).unwrap_or(Path::new("."));
+    let parent = destination
+        .parent()
+        .filter(|p| !p.as_os_str().is_empty())
+        .unwrap_or(Path::new("."));
     let directory: File = rustix::fs::open(
         parent,
-        rustix::fs::OFlags::RDONLY | rustix::fs::OFlags::DIRECTORY
-            | rustix::fs::OFlags::NOFOLLOW | rustix::fs::OFlags::CLOEXEC,
+        rustix::fs::OFlags::RDONLY
+            | rustix::fs::OFlags::DIRECTORY
+            | rustix::fs::OFlags::NOFOLLOW
+            | rustix::fs::OFlags::CLOEXEC,
         rustix::fs::Mode::empty(),
     )
     .map_err(|_| PromptRegistryMaintenanceError::CleanupUncertain)?
     .into();
-    directory.sync_all().map_err(|_| PromptRegistryMaintenanceError::CleanupUncertain)
+    directory
+        .sync_all()
+        .map_err(|_| PromptRegistryMaintenanceError::CleanupUncertain)
 }
 
 #[cfg(unix)]
-fn fsync_probe(directory: &Path, bytes: u64) -> Result<PromptRegistryFsyncProbe, PromptRegistryMaintenanceError> {
+fn fsync_probe(
+    directory: &Path,
+    bytes: u64,
+) -> Result<PromptRegistryFsyncProbe, PromptRegistryMaintenanceError> {
     let root = prepare_directory(directory)?;
     let started = Instant::now();
-    let stamp = SystemTime::now().duration_since(UNIX_EPOCH)
-        .map_err(|_| PromptRegistryMaintenanceError::FilesystemUnavailable)?.as_nanos();
+    let stamp = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| PromptRegistryMaintenanceError::FilesystemUnavailable)?
+        .as_nanos();
     let name = format!(".prompt-fsync-{}-{stamp}", std::process::id());
     let open_started = Instant::now();
     let mut file: File = rustix::fs::openat(
         &root,
         name.as_str(),
-        rustix::fs::OFlags::WRONLY | rustix::fs::OFlags::CREATE | rustix::fs::OFlags::EXCL
-            | rustix::fs::OFlags::NOFOLLOW | rustix::fs::OFlags::CLOEXEC,
+        rustix::fs::OFlags::WRONLY
+            | rustix::fs::OFlags::CREATE
+            | rustix::fs::OFlags::EXCL
+            | rustix::fs::OFlags::NOFOLLOW
+            | rustix::fs::OFlags::CLOEXEC,
         rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
     )
     .map_err(|_| PromptRegistryMaintenanceError::FilesystemUnavailable)?
@@ -510,28 +556,42 @@ fn fsync_probe(directory: &Path, bytes: u64) -> Result<PromptRegistryFsyncProbe,
     let open_nanos = open_started.elapsed().as_nanos();
     // Cleanup starts only after exclusive creation succeeds: never unlink a
     // colliding pre-existing file belonging to another operation.
-    let result = (|| {
+    let result: Result<(u128, u128, u128), PromptRegistryMaintenanceError> = (|| {
         let write_started = Instant::now();
-        let length = usize::try_from(bytes).map_err(|_| PromptRegistryMaintenanceError::FsyncProbeSizeOutOfRange)?;
-        file.write_all(&vec![0_u8; length]).map_err(|_| PromptRegistryMaintenanceError::FilesystemUnavailable)?;
+        let length = usize::try_from(bytes)
+            .map_err(|_| PromptRegistryMaintenanceError::FsyncProbeSizeOutOfRange)?;
+        file.write_all(&vec![0_u8; length])
+            .map_err(|_| PromptRegistryMaintenanceError::FilesystemUnavailable)?;
         let write_nanos = write_started.elapsed().as_nanos();
         let sync_started = Instant::now();
-        file.sync_all().map_err(|_| PromptRegistryMaintenanceError::FilesystemUnavailable)?;
+        file.sync_all()
+            .map_err(|_| PromptRegistryMaintenanceError::FilesystemUnavailable)?;
         let file_sync_nanos = sync_started.elapsed().as_nanos();
         let dir_started = Instant::now();
-        root.sync_all().map_err(|_| PromptRegistryMaintenanceError::FilesystemUnavailable)?;
-        Ok((write_nanos, file_sync_nanos, dir_started.elapsed().as_nanos()))
+        root.sync_all()
+            .map_err(|_| PromptRegistryMaintenanceError::FilesystemUnavailable)?;
+        Ok((
+            write_nanos,
+            file_sync_nanos,
+            dir_started.elapsed().as_nanos(),
+        ))
     })();
     drop(file);
     let cleanup_started = Instant::now();
     rustix::fs::unlinkat(&root, name.as_str(), rustix::fs::AtFlags::empty())
         .map_err(|_| PromptRegistryMaintenanceError::CleanupUncertain)?;
-    root.sync_all().map_err(|_| PromptRegistryMaintenanceError::CleanupUncertain)?;
+    root.sync_all()
+        .map_err(|_| PromptRegistryMaintenanceError::CleanupUncertain)?;
     let cleanup_directory_sync_nanos = cleanup_started.elapsed().as_nanos();
     let (write_nanos, file_sync_nanos, directory_sync_nanos) = result?;
     Ok(PromptRegistryFsyncProbe {
-        bytes, open_nanos, write_nanos, file_sync_nanos, directory_sync_nanos,
-        cleanup_directory_sync_nanos, total_nanos: started.elapsed().as_nanos(),
+        bytes,
+        open_nanos,
+        write_nanos,
+        file_sync_nanos,
+        directory_sync_nanos,
+        cleanup_directory_sync_nanos,
+        total_nanos: started.elapsed().as_nanos(),
     })
 }
 
@@ -551,7 +611,10 @@ fn sync_parent(_destination: &Path) -> Result<(), PromptRegistryMaintenanceError
 }
 
 #[cfg(not(unix))]
-fn fsync_probe(_directory: &Path, _bytes: u64) -> Result<PromptRegistryFsyncProbe, PromptRegistryMaintenanceError> {
+fn fsync_probe(
+    _directory: &Path,
+    _bytes: u64,
+) -> Result<PromptRegistryFsyncProbe, PromptRegistryMaintenanceError> {
     Err(DurableRegistryError::UnsafeStateDirectory.into())
 }
 
@@ -559,11 +622,15 @@ fn file_bytes(store: &Store, name: &str) -> Result<u64, PromptRegistryMaintenanc
     if !entry_exists(&store.root, name)? {
         return Ok(0);
     }
-    open_private(&store.root, name, Access::Read)?.metadata()
-        .map(|metadata| metadata.len()).map_err(|_| PromptRegistryMaintenanceError::FilesystemUnavailable)
+    open_private(&store.root, name, Access::Read)?
+        .metadata()
+        .map(|metadata| metadata.len())
+        .map_err(|_| PromptRegistryMaintenanceError::FilesystemUnavailable)
 }
 
-fn payload_bytes(payloads: &std::collections::BTreeMap<codex_hepta_types::StableId, std::sync::Arc<[u8]>>) -> u64 {
+fn payload_bytes(
+    payloads: &std::collections::BTreeMap<codex_hepta_types::StableId, std::sync::Arc<[u8]>>,
+) -> u64 {
     payloads.values().fold(0_u64, |total, payload| {
         total.saturating_add(u64::try_from(payload.len()).unwrap_or(u64::MAX))
     })
@@ -573,7 +640,14 @@ fn basis_points(current: u64, maximum: u64) -> u16 {
     if maximum == 0 {
         return 10_000;
     }
-    u16::try_from(current.saturating_mul(10_000).checked_div(maximum).unwrap_or(10_000).min(10_000)).unwrap_or(10_000)
+    u16::try_from(
+        current
+            .saturating_mul(10_000)
+            .checked_div(maximum)
+            .unwrap_or(10_000)
+            .min(10_000),
+    )
+    .unwrap_or(10_000)
 }
 
 #[cfg(all(test, unix))]

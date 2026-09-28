@@ -60,7 +60,9 @@ impl PromptFinalUseLeaseV1 {
         issued_unix_ms: u64,
         requested_deadline_ms: u64,
     ) -> Result<Self, PromptFinalUseLeaseError> {
-        compiled.validate().map_err(|error| PromptFinalUseLeaseError::Compiled(error.to_string()))?;
+        compiled
+            .validate()
+            .map_err(|error| PromptFinalUseLeaseError::Compiled(error.to_string()))?;
         if issued_unix_ms == 0
             || requested_deadline_ms <= issued_unix_ms
             || compiled.compatible.snapshot_digest.is_zero()
@@ -113,17 +115,27 @@ impl PromptFinalUseLeaseV1 {
             || self.valid_until_unix_ms <= self.issued_unix_ms
             || self.selections.is_empty()
             || self.selections.len() > MAX_FINAL_USE_SELECTIONS
-            || self.selections.windows(2).any(|window| window[0] >= window[1])
+            || self
+                .selections
+                .windows(2)
+                .any(|window| window[0] >= window[1])
         {
             return Err(PromptFinalUseLeaseError::InvalidShape);
         }
-        self.model_tuple.validate().map_err(|_| PromptFinalUseLeaseError::InvalidShape)?;
+        self.model_tuple
+            .validate()
+            .map_err(|_| PromptFinalUseLeaseError::InvalidShape)?;
         let mut realization_ids = BTreeSet::new();
-        if self.selections.iter().any(|selection| !realization_ids.insert(&selection.realization_id)) {
+        if self
+            .selections
+            .iter()
+            .any(|selection| !realization_ids.insert(&selection.realization_id))
+        {
             return Err(PromptFinalUseLeaseError::InvalidShape);
         }
-        if self.selections.iter().any(|selection| selection.binding_digest.is_zero() || selection.payload_digest.is_zero())
-            || self.lease_digest != self.compute_digest()
+        if self.selections.iter().any(|selection| {
+            selection.binding_digest.is_zero() || selection.payload_digest.is_zero()
+        }) || self.lease_digest != self.compute_digest()
         {
             return Err(PromptFinalUseLeaseError::DigestMismatch);
         }
@@ -154,11 +166,15 @@ impl PromptFinalUseLeaseV1 {
         if now_unix_ms < self.issued_unix_ms || now_unix_ms >= self.valid_until_unix_ms {
             return Err(PromptFinalUseLeaseError::Expired);
         }
-        let current = registry.registry().map_err(PromptFinalUseLeaseError::from_registry)?;
+        let current = registry
+            .registry()
+            .map_err(PromptFinalUseLeaseError::from_registry)?;
         // Diagnose terminal withdrawal before a generic snapshot mismatch. No
         // string parsing and no blind retry of a withdrawn selection.
         for selection in &self.selections {
-            let factor = current.factor(&selection.factor_id).ok_or(PromptFinalUseLeaseError::SelectionChanged)?;
+            let factor = current
+                .factor(&selection.factor_id)
+                .ok_or(PromptFinalUseLeaseError::SelectionChanged)?;
             match factor.lifecycle {
                 Lifecycle::Revoked => return Err(PromptFinalUseLeaseError::Revoked),
                 Lifecycle::Retired => return Err(PromptFinalUseLeaseError::Retired),
@@ -166,16 +182,22 @@ impl PromptFinalUseLeaseV1 {
                 Lifecycle::Admitted => {}
             }
         }
-        let snapshot = registry.snapshot_v2(self.generation_vector_digest, &self.model_tuple)
+        let snapshot = registry
+            .snapshot_v2(self.generation_vector_digest, &self.model_tuple)
             .map_err(PromptFinalUseLeaseError::from_registry)?;
         if snapshot.snapshot_digest != self.registry_snapshot_digest {
             return Err(PromptFinalUseLeaseError::RegistrySnapshotChanged);
         }
         for selection in &self.selections {
-            let delivery = registry.dereference_realization_v2(
-                &selection.realization_id, &snapshot, self.generation_vector_digest,
-                &self.model_tuple, now_unix_ms,
-            ).map_err(PromptFinalUseLeaseError::from_registry)?;
+            let delivery = registry
+                .dereference_realization_v2(
+                    &selection.realization_id,
+                    &snapshot,
+                    self.generation_vector_digest,
+                    &self.model_tuple,
+                    now_unix_ms,
+                )
+                .map_err(PromptFinalUseLeaseError::from_registry)?;
             if delivery.binding.factor_id != selection.factor_id
                 || delivery.binding.digest() != selection.binding_digest
                 || delivery.binding.payload_digest != selection.payload_digest
@@ -192,14 +214,22 @@ impl PromptFinalUseLeaseV1 {
         let mut bytes = LEASE_DOMAIN.to_vec();
         bytes.extend_from_slice(&self.schema_version.to_be_bytes());
         push_id(&mut bytes, &self.compilation_id);
-        for digest in [self.context_attachment_digest, self.context_payload_digest,
-            self.registry_snapshot_digest, self.generation_vector_digest, self.model_tuple.digest()]
-        {
+        for digest in [
+            self.context_attachment_digest,
+            self.context_payload_digest,
+            self.registry_snapshot_digest,
+            self.generation_vector_digest,
+            self.model_tuple.digest(),
+        ] {
             bytes.extend_from_slice(digest.as_array());
         }
         bytes.extend_from_slice(&self.issued_unix_ms.to_be_bytes());
         bytes.extend_from_slice(&self.valid_until_unix_ms.to_be_bytes());
-        bytes.extend_from_slice(&u64::try_from(self.selections.len()).unwrap_or(u64::MAX).to_be_bytes());
+        bytes.extend_from_slice(
+            &u64::try_from(self.selections.len())
+                .unwrap_or(u64::MAX)
+                .to_be_bytes(),
+        );
         for selection in &self.selections {
             push_id(&mut bytes, &selection.factor_id);
             push_id(&mut bytes, &selection.realization_id);
@@ -249,8 +279,12 @@ impl PromptFinalUseLeaseError {
         match error {
             DurableRegistryError::ReopenRequired => Self::ReopenRequired,
             DurableRegistryError::IndeterminateDurability => Self::IndeterminateDurability,
-            DurableRegistryError::CapacityExceeded | DurableRegistryError::StorageFull => Self::CapacityExceeded,
-            DurableRegistryError::Unavailable | DurableRegistryError::StateLocked => Self::StoreUnavailable,
+            DurableRegistryError::CapacityExceeded | DurableRegistryError::StorageFull => {
+                Self::CapacityExceeded
+            }
+            DurableRegistryError::Unavailable | DurableRegistryError::StateLocked => {
+                Self::StoreUnavailable
+            }
             DurableRegistryError::Read(_) => Self::SelectionChanged,
             _ => Self::Registry("registry integrity or configuration rejected".to_owned()),
         }
@@ -280,8 +314,12 @@ impl PromptFinalUseLeaseError {
     #[must_use]
     pub const fn recovery(&self) -> PromptFinalUseRecovery {
         match self {
-            Self::Expired | Self::RegistrySnapshotChanged | Self::SelectionChanged => PromptFinalUseRecovery::Recompile,
-            Self::ReopenRequired | Self::IndeterminateDurability => PromptFinalUseRecovery::ReopenAndReconcile,
+            Self::Expired | Self::RegistrySnapshotChanged | Self::SelectionChanged => {
+                PromptFinalUseRecovery::Recompile
+            }
+            Self::ReopenRequired | Self::IndeterminateDurability => {
+                PromptFinalUseRecovery::ReopenAndReconcile
+            }
             Self::CapacityExceeded => PromptFinalUseRecovery::RelieveCapacity,
             Self::StoreUnavailable => PromptFinalUseRecovery::RetryAfterAvailability,
             _ => PromptFinalUseRecovery::Reject,
@@ -338,9 +376,18 @@ impl PromptFinalUseValidator {
             increment(&self.rejected, 1);
             match error {
                 PromptFinalUseLeaseError::Expired => increment(&self.expired, 1),
-                PromptFinalUseLeaseError::Revoked | PromptFinalUseLeaseError::Retired => increment(&self.withdrawn, 1),
-                PromptFinalUseLeaseError::BoundaryBindingMismatch | PromptFinalUseLeaseError::RegistrySnapshotChanged | PromptFinalUseLeaseError::SelectionChanged => increment(&self.identity_conflicts, 1),
-                PromptFinalUseLeaseError::ReopenRequired | PromptFinalUseLeaseError::IndeterminateDurability => increment(&self.reopen_required, 1),
+                PromptFinalUseLeaseError::Revoked | PromptFinalUseLeaseError::Retired => {
+                    increment(&self.withdrawn, 1)
+                }
+                PromptFinalUseLeaseError::BoundaryBindingMismatch
+                | PromptFinalUseLeaseError::RegistrySnapshotChanged
+                | PromptFinalUseLeaseError::SelectionChanged => {
+                    increment(&self.identity_conflicts, 1)
+                }
+                PromptFinalUseLeaseError::ReopenRequired
+                | PromptFinalUseLeaseError::IndeterminateDurability => {
+                    increment(&self.reopen_required, 1)
+                }
                 _ => {}
             }
         }
@@ -367,7 +414,9 @@ impl PromptFinalUseValidator {
 }
 
 fn increment(counter: &AtomicU64, amount: u64) {
-    let _ = counter.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| Some(value.saturating_add(amount)));
+    let _ = counter.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+        Some(value.saturating_add(amount))
+    });
 }
 
 #[cfg(test)]
