@@ -1,0 +1,73 @@
+name: Kernel authority projection candidate
+
+on:
+  push:
+    branches:
+      - work/kernel-authority-convergence-20260925
+    paths:
+      - '.github/workflows/kernel-authority-projection-candidate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-authority-projection-candidate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    name: Generate reviewed projections
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind immutable source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git rev-parse HEAD 'HEAD^{tree}'
+          test -z "$(git status --porcelain)"
+
+      - name: Generate source-bound maps and document indexes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate
+          python3 scripts/hepta-implementation-maps.py sync-plasticity-status
+          python3 scripts/hepta-module-docs.py refresh-derived
+          python3 scripts/hepta-module-docs.py refresh-indexes
+          python3 scripts/hepta-docs.py generate-status
+          git diff --check
+          git status --short
+
+      - name: Package only generated differences
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/kernel-authority-projections"
+          mkdir -p "$out/files"
+          git diff --binary > "$out/generated.patch"
+          git diff --name-only -z | while IFS= read -r -d '' path; do
+            mkdir -p "$out/files/$(dirname "$path")"
+            cp "$path" "$out/files/$path"
+          done
+          git diff --name-status > "$out/manifest.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$out/source-commit.txt"
+          git rev-parse 'HEAD^{tree}' > "$out/source-tree.txt"
+          test -s "$out/generated.patch"
+
+      - name: Upload generated projection candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: kernel-authority-projections-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: ${{ runner.temp }}/kernel-authority-projections
+          if-no-files-found: error
+          retention-days: 7
