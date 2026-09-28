@@ -97,7 +97,23 @@ jobs:
             scripts/automation_taskflow_finalize_20260928.py \
             scripts/automation_taskflow_patch_parts
           git diff --check
-          git add -A
+          # Stage tracked edits/deletions and ordinary new source without
+          # weakening ignore rules. Only the four canonical generated products
+          # are force-added because this repository intentionally ignores their
+          # directory while the consistency check requires these exact outputs.
+          git add -u
+          while IFS= read -r -d '' path; do
+            git add -- "$path"
+          done < <(git ls-files --others --exclude-standard -z)
+          for generated in \
+            docs/generated/TRANSITION_STATE_GRAPH.json \
+            docs/generated/TRANSITION_STATE_REPORT.md \
+            docs/generated/DOCUMENT_INDEX.md \
+            docs/generated/DOCUMENT_INDEX.json
+          do
+            test -f "$generated"
+            git add -f -- "$generated"
+          done
           # The commit intentionally deletes the temporary delivery workflow and
           # patch payload that the repository hook is designed to reject while
           # they remain tracked. All source/doc checks run below on the committed,
@@ -127,7 +143,19 @@ jobs:
           python3 scripts/hepta-document-index.py
           git diff --check
           if ! git diff --quiet; then
-            git add -A
+            git add -u
+            while IFS= read -r -d '' path; do
+              git add -- "$path"
+            done < <(git ls-files --others --exclude-standard -z)
+            for generated in \
+              docs/generated/TRANSITION_STATE_GRAPH.json \
+              docs/generated/TRANSITION_STATE_REPORT.md \
+              docs/generated/DOCUMENT_INDEX.md \
+              docs/generated/DOCUMENT_INDEX.json
+            do
+              test -f "$generated"
+              git add -f -- "$generated"
+            done
             git commit -m "docs(automation): bind exact schema-22 source objects"
           fi
 
