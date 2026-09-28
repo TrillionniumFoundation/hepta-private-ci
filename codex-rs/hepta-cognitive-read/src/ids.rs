@@ -3,6 +3,7 @@
 //! This is the typed local ModulePort shape used by owner-local consumers. It
 //! deliberately does not become a durable or cross-process wire protocol.
 
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
@@ -20,6 +21,11 @@ use codex_hepta_types::StableId;
 use crate::Error;
 use crate::MAX_ENCODED_READ_RESULT_BYTES_V2;
 use crate::current_records;
+
+#[path = "prepared.rs"]
+mod prepared;
+
+pub use prepared::PreparedReadSnapshotV1;
 
 pub const MAX_READ_IDS_V1: usize = 512;
 const READ_IDS_RECEIPT_DOMAIN: &[u8] = b"hepta.cognitive.read.ids.v1";
@@ -205,6 +211,21 @@ pub fn read_ids_v1(
     snapshot: &CognitiveSnapshot,
     request: ReadIdsRequestV1,
 ) -> Result<ReadIdsResultV1, ReadIdsError> {
+    read_ids_with_current(snapshot, request, CurrentHeads::Build)
+}
+
+// Reuse is private to this module and its prepared-view implementation. A
+// caller cannot inject an unchecked index or pair it with another snapshot.
+enum CurrentHeads<'snapshot, 'index> {
+    Build,
+    Reuse(&'index BTreeMap<StableId, &'snapshot MemoryRecord>),
+}
+
+fn read_ids_with_current<'snapshot>(
+    snapshot: &'snapshot CognitiveSnapshot,
+    request: ReadIdsRequestV1,
+    heads: CurrentHeads<'snapshot, '_>,
+) -> Result<ReadIdsResultV1, ReadIdsError> {
     if request.record_ids.len() > MAX_READ_IDS_V1 {
         return Err(ReadIdsError::TooManyRecordIds {
             requested: request.record_ids.len(),
@@ -233,7 +254,17 @@ pub fn read_ids_v1(
         }
     }
 
-    let current = current_records(snapshot, request.snapshot_digest)?;
+    if request.snapshot_digest != snapshot.snapshot_digest {
+        return Err(Error::SnapshotMismatch.into());
+    }
+    let built;
+    let current = match heads {
+        CurrentHeads::Build => {
+            built = current_records(snapshot, request.snapshot_digest)?;
+            &built
+        }
+        CurrentHeads::Reuse(current) => current,
+    };
     let request_binding_digest = request.binding_digest();
     let included_fields = fields.into_iter().collect::<Vec<_>>();
     let include_content = included_fields.contains(&ReadFieldV1::ContentDigest);

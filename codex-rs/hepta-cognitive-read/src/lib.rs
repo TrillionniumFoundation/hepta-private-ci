@@ -32,6 +32,7 @@ pub use authoritative::SnapshotProviderError;
 pub use authoritative::adapt_authoritative_read_to_canonical_shadow_v1;
 pub use authoritative::read_authoritative;
 pub use ids::MAX_READ_IDS_V1;
+pub use ids::PreparedReadSnapshotV1;
 pub use ids::ReadFieldV1;
 pub use ids::ReadIdsError;
 pub use ids::ReadIdsRequestV1;
