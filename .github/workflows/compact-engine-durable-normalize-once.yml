@@ -1,0 +1,70 @@
+name: compact.engine durable source normalization (one shot)
+
+on:
+  push:
+    branches:
+      - fix/compact-engine-current-main-convergence-20260925
+
+permissions:
+  contents: write
+
+concurrency:
+  group: compact-engine-durable-normalize-once
+  cancel-in-progress: false
+
+jobs:
+  normalize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact repair commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+          persist-credentials: true
+
+      - name: Verify one-shot parent and patch durable source
+        shell: bash
+        env:
+          EXPECTED_PARENT: 3ea80f60b94b8d16ba2b75fbfa3aebbe036e96e5
+          WORKFLOW_PATH: .github/workflows/compact-engine-durable-normalize-once.yml
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          test "$(git diff --name-only HEAD^ HEAD)" = "$WORKFLOW_PATH"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("codex-rs/hepta-compact-engine/src/durable.rs")
+          text = path.read_text(encoding="utf-8")
+          before = """//! Durable, crash-atomic ownership for qualified compaction artifacts.
+//!
+//! The pure kernel remains deterministic and authority-free. This module owns
+//! publication metadata, immutable artifact images, the active checkpoint CAS,
+//! a local outbox, trust-enrollment history and restart verification. It never
+//! rewrites source memory facts.
+"""
+          after = """// Durable, crash-atomic ownership for qualified compaction artifacts.
+//
+// The pure kernel remains deterministic and authority-free. This module owns
+// publication metadata, immutable artifact images, the active checkpoint CAS,
+// a local outbox, trust-enrollment history and restart verification. It never
+// rewrites source memory facts.
+"""
+          if text.count(before) != 1:
+              raise SystemExit("durable source header did not match the reviewed exact prefix")
+          path.write_text(text.replace(before, after, 1), encoding="utf-8")
+          PY
+          rm -- "$WORKFLOW_PATH"
+          git diff --check
+          test "$(git diff --name-only | sort | tr '\n' ' ')" = ".github/workflows/compact-engine-durable-normalize-once.yml codex-rs/hepta-compact-engine/src/durable.rs "
+
+      - name: Commit reviewed source normalization and remove this workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "compact-engine-remediation"
+          git config user.email "compact-engine-remediation@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(compact.engine): make legacy durable source include-safe"
+          git push origin HEAD:fix/compact-engine-current-main-convergence-20260925
