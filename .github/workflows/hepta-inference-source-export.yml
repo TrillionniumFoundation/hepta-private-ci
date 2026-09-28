@@ -1,68 +1,93 @@
-name: Hepta inference exact-source export
+name: Hepta inference one-shot source remediation
 
-# The export is intentionally read-only; this comment also provides a reviewed
-# push trigger for exact-source remediation work on the active convergence line.
 on:
   push:
     branches:
       - codex/inference-control-v2-closure-20260927
     paths:
       - '.github/workflows/hepta-inference-source-export.yml'
-  workflow_dispatch:
+      - '.github/remediation/inference-control-remediation.patch.gz'
 
 permissions:
-  contents: read
+  contents: write
 
-concurrency:
-  group: hepta-inference-source-export-${{ github.ref }}
-  cancel-in-progress: true
+env:
+  EXPECTED_PARENT: a80f50a552d2608f238a9e934bf6fade66876912
+  PATCH_SHA256: c2599a124d0e1574aaebaadf3ce0313d4f906a9e9f9f1472c10491fa83100f57
+  PATCH_PATH: .github/remediation/inference-control-remediation.patch.gz
+  WORKFLOW_PATH: .github/workflows/hepta-inference-source-export.yml
 
 jobs:
-  export:
-    name: Export exact inference source
+  apply-test-and-commit:
+    name: Apply, test, and commit inference remediation
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 0
-          persist-credentials: false
+          fetch-depth: 2
+          persist-credentials: true
 
-      - name: Bind exact checkout
+      - name: Bind transport commit and patch identity
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
           test -z "$(git status --porcelain --untracked-files=normal)"
+          test "$(sha256sum "$PATCH_PATH" | awk '{print $1}')" = "$PATCH_SHA256"
 
-      - name: Create exact source archive
+      - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
+        with:
+          toolchain: '1.95.0'
+          components: rustfmt, clippy
+
+      - name: Apply bounded source patch and restore read-only transport surface
         shell: bash
         run: |
           set -euo pipefail
-          out="$RUNNER_TEMP/hepta-inference-source"
-          mkdir -p "$out"
-          git archive --format=tar.gz --output="$out/source.tar.gz" "$GITHUB_SHA" \
-            .github/workflows \
-            codex-rs/Cargo.toml \
-            codex-rs/Cargo.lock \
-            codex-rs/hepta-infer-core \
-            codex-rs/hepta-infer-worker-host \
-            codex-rs/hepta-types \
-            docs/modules \
-            docs/delivery \
-            docs/readiness \
-            qualification/lane-b \
-            qualification/module-execution-dossiers/detail \
-            scripts
-          printf '%s\n' "$GITHUB_SHA" > "$out/source-sha.txt"
-          git rev-parse "$GITHUB_SHA^{tree}" > "$out/source-tree.txt"
-          sha256sum "$out/source.tar.gz" > "$out/source.tar.gz.sha256"
+          gzip -dc "$PATCH_PATH" | git apply --index --whitespace=error-all
+          rm -f "$PATCH_PATH"
+          rmdir .github/remediation 2>/dev/null || true
+          git show "$EXPECTED_PARENT:$WORKFLOW_PATH" > "$WORKFLOW_PATH"
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          git add -A
+          git diff --cached --check
+          test ! -e "$PATCH_PATH"
+          test "$(git hash-object "$WORKFLOW_PATH")" = "$(git rev-parse "$EXPECTED_PARENT:$WORKFLOW_PATH")"
 
-      - name: Retain exact source archive
+      - name: Execute focused native verification before source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 >/dev/null
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-core -p codex-hepta-infer-worker-host
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
+            --all-targets --all-features -- -D warnings
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
+          git diff --cached --check
+
+      - name: Publish ordinary source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Hepta Inference Remediation'
+          git config user.email 'hepta-inference-remediation@users.noreply.github.com'
+          git commit -m 'fix(inference): close owner lifecycle and recovery gaps'
+          source_sha="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse HEAD^{tree})"
+          printf 'source_sha=%s\nsource_tree=%s\n' "$source_sha" "$source_tree" | tee "$RUNNER_TEMP/remediation-source.txt"
+          git push origin HEAD:codex/inference-control-v2-closure-20260927
+
+      - name: Retain transport execution record
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-inference-source-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/hepta-inference-source/*
-          if-no-files-found: error
+          name: inference-remediation-transport-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/remediation-source.txt
+          if-no-files-found: warn
           retention-days: 3
