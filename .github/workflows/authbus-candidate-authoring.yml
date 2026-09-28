@@ -39,6 +39,16 @@ jobs:
           assert hashlib.sha256(patch).hexdigest() == '1c2cfe184ed74264180a54c5ce14d093affd0d909ee7ae1f0782c2d8e3946f5a'
           subprocess.run(['git','apply','--check','-'], input=patch, cwd='candidate', check=True)
           subprocess.run(['git','apply','-'], input=patch, cwd='candidate', check=True)
+          p = pathlib.Path('candidate/codex-rs/hepta-authbus/src/trust.rs')
+          text = p.read_text()
+          old = '#[derive(Debug, Clone)]\npub struct IssuerRecord'
+          assert text.count(old) == 1
+          p.write_text(text.replace(old, '#[derive(Debug, Clone, Eq, PartialEq)]\npub struct IssuerRecord'))
+          p = pathlib.Path('candidate/codex-rs/hepta-evidence/src/authbus_outbox_tests.rs')
+          text = p.read_text()
+          old = 'UPDATE authbus_outbox SET available_at_ms = 0 WHERE outbox_id = ?'
+          assert text.count(old) == 1
+          p.write_text(text.replace(old, 'UPDATE authbus_outbox SET available_at_ms = 0, fence = fence + 1 WHERE outbox_id = ?'))
           PY
       - name: Format authored files and resolve the committed dependency lock
         working-directory: candidate
@@ -54,10 +64,11 @@ jobs:
                   subprocess.run(['rustfmt','+1.95.0','--edition','2024','--config','skip_children=true',path],check=True)
           PY
           cargo +1.95.0 metadata --manifest-path codex-rs/Cargo.toml --format-version 1 > "$RUNNER_TEMP/authbus-metadata.json"
+          git restore --source=05cce1b90a934413e601eb40cfc5aa85c2d96ab8 --staged --worktree .github/workflows
           git diff --check
           git add -A
           git diff --cached --stat
-      - name: Commit formal source to the delivery branch without running tests
+      - name: Commit formal source and retain its identity before pushing
         working-directory: candidate
         shell: bash
         run: |
@@ -69,13 +80,14 @@ jobs:
           test "$(git rev-parse HEAD)" = "$expected"
           test ! -e .github/authbus-authoring
           test ! -e .github/workflows/authbus-candidate-authoring.yml
+          test -z "$(git diff --cached --name-only -- .github/workflows)"
           git config user.name 'hepta-authbus-source-author'
           git config user.email 'hepta-authbus-source-author@users.noreply.github.com'
           git commit -m 'fix(authbus): unify owner lifetime, checkpoint outcomes and failure diagnostics'
-          git push origin "HEAD:refs/heads/$branch"
           git rev-parse HEAD > "$RUNNER_TEMP/authbus-authored-sha.txt"
           git show --stat --oneline HEAD
           git archive --format=tar.gz -o "$RUNNER_TEMP/authbus-authored-source.tar.gz" HEAD codex-rs/hepta-authbus codex-rs/hepta-evidence codex-rs/hepta-bao-adapter codex-rs/hepta-agentd codex-rs/Cargo.lock docs/modules/auth.authbus scripts/check-authbus-closed-world.py .github/workflows/authbus-ownership-verification.yml
+          git push origin "HEAD:refs/heads/$branch"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
