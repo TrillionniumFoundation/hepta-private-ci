@@ -12,6 +12,10 @@ from typing import Mapping
 _SCHEMA = "hepta.control-engineering-github-approval-gate.v1"
 _SHA1 = re.compile(r"[0-9a-f]{40}\Z")
 _MAX_REVIEWS = 512
+_REVIEW_STATES = frozenset(
+    {"APPROVED", "CHANGES_REQUESTED", "COMMENTED", "DISMISSED", "PENDING"}
+)
+_DECISIVE_STATES = frozenset({"APPROVED", "CHANGES_REQUESTED", "DISMISSED"})
 
 
 def _review_key(row: Mapping[str, object]) -> tuple[str, int]:
@@ -37,7 +41,7 @@ def require_independent_approved_review(
     if not isinstance(reviews, list) or len(reviews) > _MAX_REVIEWS:
         raise ValueError("github_review_shape")
     allowed = {value.casefold() for value in allowed_reviewers}
-    latest: dict[int, Mapping[str, object]] = {}
+    latest_decisive: dict[int, Mapping[str, object]] = {}
     for row in reviews:
         if not isinstance(row, Mapping):
             raise ValueError("github_review_shape")
@@ -53,17 +57,22 @@ def require_independent_approved_review(
             or user_id <= 0
             or not isinstance(login, str)
             or not login
-            or state not in {"APPROVED", "CHANGES_REQUESTED", "COMMENTED", "DISMISSED"}
+            or state not in _REVIEW_STATES
             or not isinstance(commit_id, str)
             or _SHA1.fullmatch(commit_id) is None
         ):
             raise ValueError("github_review_shape")
-        current = latest.get(user_id)
+        # COMMENTED and PENDING are observations, not review decisions. They do
+        # not erase an earlier approval. A later CHANGES_REQUESTED or DISMISSED
+        # review is decisive and therefore does revoke it.
+        if state not in _DECISIVE_STATES:
+            continue
+        current = latest_decisive.get(user_id)
         if current is None or _review_key(row) > _review_key(current):
-            latest[user_id] = row
+            latest_decisive[user_id] = row
 
     approvals: list[dict[str, object]] = []
-    for user_id, row in latest.items():
+    for user_id, row in latest_decisive.items():
         user = row["user"]
         login = str(user["login"])
         if (
@@ -127,7 +136,10 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps({"schema": _SCHEMA, "status": "rejected", "error": str(error)}))
         return 1
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.output.write_text(
+        json.dumps(value, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
     return 0
 
 
