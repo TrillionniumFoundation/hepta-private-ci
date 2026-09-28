@@ -6,16 +6,16 @@
 
 use std::collections::BTreeSet;
 
-use crate::planner::FeasiblePlanReceiptV1;
-use crate::planner::GlobalStateSnapshotV1;
-use crate::planner::GrantRequestSetV1;
-use crate::planner::NduPlanEvaluationInputV1;
-use crate::planner::NduPlanEvaluationV1;
-use crate::planner::OwnerSummaryV1;
-use crate::planner::PlannerError;
-use crate::planner::PlanningRequestV1;
-use crate::planner::PreparedPlanInputV1;
-use crate::planner::SnapshotRequestV1;
+use super::planner::FeasiblePlanReceiptV1;
+use super::planner::GlobalStateSnapshotV1;
+use super::planner::GrantRequestSetV1;
+use super::planner::NduPlanEvaluationInputV1;
+use super::planner::NduPlanEvaluationV1;
+use super::planner::OwnerSummaryV1;
+use super::planner::PlannerError;
+use super::planner::PlanningRequestV1;
+use super::planner::PreparedPlanInputV1;
+use super::planner::SnapshotRequestV1;
 
 const MAX_OWNERS: usize = 32;
 const MAX_CANDIDATES: usize = 128;
@@ -48,7 +48,7 @@ pub fn collect_snapshot(
             summary.owner_id
         )));
     }
-    crate::planner::collect_snapshot(request, owner_summaries)
+    super::planner::collect_snapshot(request, owner_summaries)
 }
 
 /// Prepare a plan only from a fresh snapshot and an unambiguous bounded
@@ -91,14 +91,14 @@ pub fn prepare_plan(
             )));
         }
     }
-    crate::planner::prepare_plan(snapshot, request)
+    super::planner::prepare_plan(snapshot, request)
 }
 
 /// Bind the exact projection returned by the NDU owner.
 pub fn bind_ndu_plan_evaluation_v1(
     input: NduPlanEvaluationInputV1,
 ) -> Result<NduPlanEvaluationV1, PlannerError> {
-    crate::planner::bind_ndu_plan_evaluation_v1(input)
+    super::planner::bind_ndu_plan_evaluation_v1(input)
 }
 
 /// Finalize only while the original snapshot and every owner observation remain
@@ -110,7 +110,7 @@ pub fn finalize_plan(
     now_micros: u64,
 ) -> Result<FeasiblePlanReceiptV1, PlannerError> {
     validate_snapshot_freshness(snapshot, now_micros)?;
-    crate::planner::finalize_plan(snapshot, prepared, evaluation, now_micros)
+    super::planner::finalize_plan(snapshot, prepared, evaluation, now_micros)
 }
 
 /// Construct authority-free requests after revalidating the sealed plan and
@@ -122,7 +122,8 @@ pub fn request_execution_grants(
     now_micros: u64,
 ) -> Result<GrantRequestSetV1, PlannerError> {
     validate_snapshot_freshness(snapshot, now_micros)?;
-    let requests = crate::planner::request_execution_grants(snapshot, prepared, receipt, now_micros)?;
+    let requests =
+        super::planner::request_execution_grants(snapshot, prepared, receipt, now_micros)?;
     if receipt
         .chosen_candidate_id()
         .is_some_and(|candidate| candidate.as_str() == ABSTAIN_ID)
@@ -138,21 +139,23 @@ fn validate_snapshot_freshness(
     now_micros: u64,
 ) -> Result<(), PlannerError> {
     if now_micros < snapshot.collected_at_micros() {
-        return Err(PlannerError::InvalidTime("planning time before snapshot collection"));
+        return Err(PlannerError::InvalidTime(
+            "planning time before snapshot collection",
+        ));
     }
     if now_micros >= snapshot.expires_at_micros() {
         return Err(PlannerError::SnapshotExpired);
     }
     for summary in snapshot.owner_summaries() {
         if summary.observed_at_micros > now_micros {
-            return Err(PlannerError::FutureOwnerSummary(summary.owner_id.to_string()));
+            return Err(PlannerError::FutureOwnerSummary(
+                summary.owner_id.to_string(),
+            ));
         }
         let age = now_micros
             .checked_sub(summary.observed_at_micros)
             .ok_or(PlannerError::Arithmetic)?;
-        if age > snapshot.maximum_owner_age_micros()
-            || now_micros >= summary.expires_at_micros
-        {
+        if age > snapshot.maximum_owner_age_micros() || now_micros >= summary.expires_at_micros {
             return Err(PlannerError::SnapshotExpired);
         }
     }
