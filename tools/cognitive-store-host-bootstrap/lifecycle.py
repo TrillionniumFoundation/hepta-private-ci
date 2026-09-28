@@ -198,18 +198,34 @@ def no_float(value: str) -> None:
     raise ValueError("floating point and nonfinite values are not permitted")
 
 
+def file_identity(metadata: os.stat_result) -> tuple[int, ...]:
+    return (metadata.st_dev, metadata.st_ino, metadata.st_mode, metadata.st_nlink,
+            metadata.st_size, metadata.st_mtime_ns, metadata.st_ctime_ns)
+
+
 def load_bounded(path: Path) -> object:
+    # O_NONBLOCK must precede fstat: opening a substituted FIFO otherwise waits
+    # indefinitely before its type can be rejected. Do not silently omit the
+    # descriptor primitives on unsupported hosts.
+    require(os.name == "posix" and all(hasattr(os, flag) for flag in
+            ("O_NOFOLLOW", "O_NONBLOCK", "O_CLOEXEC")),
+            "signed-file admission requires the POSIX descriptor profile")
     require(path.is_absolute() and path.resolve(strict=True) == path, "input path must be canonical")
-    descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
     with os.fdopen(descriptor, "rb") as stream:
         before = os.fstat(stream.fileno())
         require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1, "input must be a single-link regular file")
+        require(not before.st_mode & 0o022, "signed input is group/world writable")
         require(before.st_size <= MAX_INPUT_BYTES, "input exceeds byte budget")
         content = stream.read(MAX_INPUT_BYTES + 1)
         after = os.fstat(stream.fileno())
-    require(len(content) <= MAX_INPUT_BYTES and
-            (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) ==
-            (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns), "input changed during read")
+        # A valid old signature on a retained descriptor is insufficient when
+        # the live trust pathname was replaced while that descriptor was read.
+        current = path.stat(follow_symlinks=False)
+        require(path.resolve(strict=True) == path and
+                file_identity(before) == file_identity(after) == file_identity(current),
+                "input or its current pathname changed during read")
+    require(len(content) <= MAX_INPUT_BYTES, "input exceeds byte budget")
     return json.loads(content, object_pairs_hook=no_duplicates, parse_float=no_float, parse_constant=no_float)
 
 

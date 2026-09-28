@@ -246,6 +246,37 @@
         "archive-owner-tests.json"
       ],
       "scope": "Bounded encrypted full-history cold-generation transfer; native execution and independently managed archive/restore acceptance remain separate; hot pruning and physical erasure not claimed"
+    },
+    {
+      "id": "CS-ARCH-002",
+      "invariant": "Lost archive or restore responses are observed without replay or adoption",
+      "sources": [
+        "tools/cognitive-store-host-bootstrap/archive.py",
+        "tools/cognitive-store-host-bootstrap/archive_observation.py"
+      ],
+      "tests": [
+        "tools/cognitive-store-host-bootstrap/test_publication_observation.py",
+        "tools/cognitive-store-host-bootstrap/test_archive.py"
+      ],
+      "records": [
+        "publication-observation-tests.json",
+        "archive-owner-tests.json"
+      ],
+      "scope": "Current independently signed observation authority; original operation may be expired; readable bytes do not prove past publication durability"
+    },
+    {
+      "id": "CS-FILE-001",
+      "invariant": "Signed input reads are nonblocking and bound to the current pathname",
+      "sources": [
+        "tools/cognitive-store-host-bootstrap/lifecycle.py"
+      ],
+      "tests": [
+        "tools/cognitive-store-host-bootstrap/test_publication_observation.py"
+      ],
+      "records": [
+        "publication-observation-tests.json"
+      ],
+      "scope": "Real POSIX FIFO, replacement, link, mode and byte-limit regressions; not a deployment isolation claim"
     }
   ],
   "externalEvidence": [

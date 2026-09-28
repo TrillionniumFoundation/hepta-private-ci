@@ -279,8 +279,9 @@ class ArchiveProtocolTests(unittest.TestCase):
         item["ciphertext_sha256"] = hashlib.sha256(content).hexdigest()
         replacement = old.parent / item["ciphertext_sha256"]
         replacement.write_bytes(content)
+        receipt = self.rewrite_manifest(manifest)
         with self.assertRaises(InvalidTag):
-            self.restore(self.rewrite_manifest(manifest))
+            self.restore(receipt)
 
     def test_wrong_decryption_key_is_rejected(self):
         receipt = self.create()
@@ -466,13 +467,26 @@ def owner_integration(image: Path, anchor_path: Path, verifier: Path) -> None:
                 destination.close()
         source, key, key_file, signer, trust, trust_path, plan, plan_path = fixture(
             root, cold.read_bytes(), anchor, verifier)
-        def run(payload, expected_code=0):
+        scratch = root / "observation-scratch"
+        scratch.mkdir(mode=0o700)
+        def run(payload, expected_code=0, *, observe=False):
+            extra = []
+            if observe:
+                permit = {"schema": "hepta.cognitive.archive-observation-plan.v1",
+                          "request_id": "owner-publication-observation",
+                          "operation_plan_sha256": lifecycle.sha256(payload),
+                          "purpose": "reconcile_publication", "created_at": int(time.time()),
+                          "expires_at": int(time.time()) + 600, "scratch_parent": str(scratch)}
+                permit_path = root / "observation.json"
+                permit_path.write_bytes(lifecycle.canonical(signed(permit, signer)))
+                extra = ["--reconcile-plan", str(permit_path),
+                         "--expected-reconcile-plan-sha256", lifecycle.sha256(permit)]
             plan_path.write_bytes(lifecycle.canonical(signed(payload, signer)))
             result = subprocess.run(
                 [sys.executable, str(Path(archive.__file__).resolve()), "--plan", str(plan_path),
                  "--trusted-owners", str(trust_path), "--expected-plan-sha256", lifecycle.sha256(payload),
                  "--expected-trust-sha256", lifecycle.sha256(trust), "--key-file", str(key_file),
-                 "--owner-verifier", str(verifier)], capture_output=True, text=True, timeout=600, check=False)
+                 "--owner-verifier", str(verifier), *extra], capture_output=True, text=True, timeout=600, check=False)
             if result.returncode != expected_code:
                 raise AssertionError(f"real owner archive command failed: {result.stderr}")
             return json.loads(result.stdout)
@@ -482,6 +496,21 @@ def owner_integration(image: Path, anchor_path: Path, verifier: Path) -> None:
         assert Path(restored_plan["output_path"]).read_bytes() == source.read_bytes()
         assert restored["anchor"] == anchor and not restored["physical_erasure_proved"]
         assert not restored["production_activated"] and not restored["hot_history_pruned"]
+        # Exercise the SAME CLI, decoder and actual pinned Rust owner after a
+        # lost response. These observations never republish or adopt a writer.
+        observed_archive = run(plan, observe=True)
+        observed_restore = run(restored_plan, observe=True)
+        assert observed_archive["artifact_sha256"] == receipt["archive_sha256"]
+        assert observed_restore["artifact_sha256"] == plan["image_sha256"]
+        for observed in (observed_archive, observed_restore):
+            assert observed["artifact_verified"]
+            assert not observed["replay_authorized"] and not observed["publication_durability_proved"]
+        stale_observation = copy.deepcopy(restored_plan)
+        stale_observation["anchor"]["state_digest"] = "f" * 64
+        observed_denial = run(stale_observation, expected_code=2, observe=True)
+        assert observed_denial["result"] == "owner_cut_rejected"
+        assert Path(restored_plan["output_path"]).read_bytes() == source.read_bytes()
+        assert not list(scratch.iterdir())
         # A validly signed but stale requested cut must be rejected by the actual
         # native owner, not by a stub or a string-matching expected error.
         stale = copy.deepcopy(plan)

@@ -48,6 +48,8 @@ No second database, dual writer or shadow authority is permitted.
 - [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json): machine-readable source mapping and open gates.
 - [BOOTSTRAP_RUNBOOK.md](BOOTSTRAP_RUNBOOK.md): current-cut, authority, rotation, canary, restart and rollback ceremony.
 - [ADR-0001-RETENTION-PRUNING.md](ADR-0001-RETENTION-PRUNING.md): ancestry-safe retention and pruning decision.
+- [ARCHIVE_RUNBOOK.md](ARCHIVE_RUNBOOK.md): encrypted cold-generation transfer and native restored-cut verification.
+- [ARCHIVE_OBSERVATION.md](ARCHIVE_OBSERVATION.md): signed observation after response loss or publication ambiguity, without replay or adoption.
 - [DATA_LIFECYCLE.md](DATA_LIFECYCLE.md): authoritative, rebuildable, backup and derived-data lifecycle.
 - [PRIVACY_EXPORT_DELETE_RUNBOOK.md](PRIVACY_EXPORT_DELETE_RUNBOOK.md): operator export/delete workflow and evidence.
 - [SCHEMA_COMPATIBILITY.md](SCHEMA_COMPATIBILITY.md): migration, reopen and rollback compatibility matrix.
@@ -58,7 +60,7 @@ No second database, dual writer or shadow authority is permitted.
 
 ## Source qualification
 
-The dedicated workflow is `.github/workflows/cognitive-store-qualification.yml`. It freezes source/base once for both `source-head` and deterministic `base-merge` lanes. The committed plan retains package, bootstrap, crash/reopen, 256/16,384-record and strict-Clippy checks. Its 33 commands also cover typed product recovery, real child exit between semantic commit and witness publication, normal Agentd feature compilation, normal-host read pages, external-consumer API probes, map/evidence regressions, generated-state drift, correction/tombstone history, release descriptor recovery and storage-owner signatures.
+The dedicated workflow is `.github/workflows/cognitive-store-qualification.yml`. It freezes source/base once for both `source-head` and deterministic `base-merge` lanes. The committed plan retains package, bootstrap, crash/reopen, 256/16,384-record and strict-Clippy checks. Its 37 commands also cover typed product recovery, real child exit between semantic commit and witness publication, normal Agentd feature compilation, normal-host read pages, external-consumer API probes, map/evidence regressions, generated-state drift, correction/tombstone history, release descriptor recovery, storage-owner signatures, encrypted archive/restore, and read-only publication observation.
 
 Each command records its own result rather than inheriting the status of an earlier step. Native preparation failure produces explicit `infrastructure_invalid` non-execution records. A v2 qualification manifest is emitted even when checks fail or are missing; only a complete terminal-success manifest bound to the exact tested commit/tree establishes execution. Artifact upload is not a qualification pass.
 

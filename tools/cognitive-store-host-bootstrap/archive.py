@@ -69,7 +69,7 @@ def validate_anchor(value: dict, owner: str) -> None:
     digest(value["state_digest"])
 
 
-def validate_plan(plan: dict, now: int) -> None:
+def validate_plan(plan: dict, now: int, *, require_live: bool = True) -> None:
     exact(plan, PLAN_KEYS)
     require(plan["schema"] == PLAN_SCHEMA and plan["action"] in {"archive", "restore"},
             "unsupported archive operation")
@@ -80,7 +80,10 @@ def validate_plan(plan: dict, now: int) -> None:
     require(plan["image_bytes"] <= MAX_IMAGE_BYTES, "cold image exceeds existing owner profile")
     integer(plan["created_at"])
     integer(plan["expires_at"])
-    require(plan["created_at"] <= now < plan["expires_at"], "archive plan is stale or future")
+    require(plan["created_at"] <= now and plan["created_at"] < plan["expires_at"],
+            "archive plan is future or has an invalid validity interval")
+    if require_live:
+        require(now < plan["expires_at"], "archive plan is stale or future")
     validate_anchor(plan["anchor"], plan["owner_agent_id"])
     identifier(plan["key_id"])
     for key in ("image_sha256", "key_sha256", "policy_sha256", "verifier_sha256"):
@@ -318,26 +321,51 @@ def make_archive(plan: dict, key: bytes, verifier: Path, reauthorize) -> dict:
     return {"archive_sha256": sha256(manifest), "segments": len(segments), "result": "archived"}
 
 
-def restore_archive(plan: dict, key: bytes, verifier: Path, reauthorize) -> dict:
-    source, destination = path_value(plan["input_path"]), path_value(plan["output_path"])
-    parent = private_parent(destination)
-    require(source.resolve(strict=True) == source and source.is_dir(), "archive path is redirected")
-    manifest_bytes = read_bytes(source / "manifest.json", MAX_MANIFEST_BYTES)
-    manifest = parse_json(manifest_bytes)
-    require(canonical(manifest) == manifest_bytes and sha256(manifest) == plan["archive_sha256"],
-            "archive manifest differs from independently retained digest")
-    header = validate_manifest(manifest, plan)
-    expected_names = {"manifest.json", *(item["ciphertext_sha256"] for item in manifest["segments"])}
-    observed_names = set()
-    with os.scandir(source) as entries:
-        for entry in entries:
-            require(len(observed_names) < len(expected_names) and entry.name in expected_names and
-                    entry.is_file(follow_symlinks=False), "archive contains unregistered files")
-            observed_names.add(entry.name)
-    require(observed_names == expected_names, "archive inventory is incomplete")
-    cipher = derived_cipher(key, header)
-    with tempfile.TemporaryDirectory(prefix=".cognitive-restore-stage-", dir=parent) as temporary:
-        staged = Path(temporary) / "cognitive_1.sqlite3"
+@contextmanager
+def archive_directory(source: Path):
+    require(source.is_absolute() and source.resolve(strict=True) == source,
+            "archive path is redirected")
+    descriptor = os.open(source, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    try:
+        before = os.fstat(descriptor)
+        require(stat.S_ISDIR(before.st_mode) and not before.st_mode & 0o022,
+                "archive directory is not a protected directory")
+        yield
+        require(source.resolve(strict=True) == source and
+                identity(before) == identity(os.fstat(descriptor)) ==
+                identity(source.stat(follow_symlinks=False)),
+                "archive directory changed during verification")
+    finally:
+        os.close(descriptor)
+
+
+def decode_archive_image(source: Path, staged: Path, plan: dict, key: bytes,
+                         verifier: Path) -> dict:
+    """Shared cold-image oracle for restore AND acknowledgement-loss observation.
+
+    Writes only a fresh private scratch image. Never publishes a destination,
+    repairs an archive, or interprets missing content as proof of non-execution.
+    """
+    with archive_directory(source):
+        manifest_bytes = read_bytes(source / "manifest.json", MAX_MANIFEST_BYTES)
+        manifest = parse_json(manifest_bytes)
+        require(canonical(manifest) == manifest_bytes, "archive manifest is not canonical")
+        header = validate_manifest(manifest, plan)
+        if plan["action"] == "archive":
+            require(header["archive_plan_sha256"] == sha256(plan),
+                    "archive belongs to another original operation")
+        else:
+            require(sha256(manifest) == plan["archive_sha256"],
+                    "archive manifest differs from independently retained digest")
+        expected_names = {"manifest.json", *(item["ciphertext_sha256"] for item in manifest["segments"])}
+        observed_names = set()
+        with os.scandir(source) as entries:
+            for entry in entries:
+                require(len(observed_names) < len(expected_names) and entry.name in expected_names and
+                        entry.is_file(follow_symlinks=False), "archive contains unregistered files")
+                observed_names.add(entry.name)
+        require(observed_names == expected_names, "archive inventory is incomplete")
+        cipher = derived_cipher(key, header)
         hasher = hashlib.sha256()
         with staged.open("xb") as stream:
             os.fchmod(stream.fileno(), 0o600)
@@ -356,6 +384,15 @@ def restore_archive(plan: dict, key: bytes, verifier: Path, reauthorize) -> dict
         require(staged.stat().st_size == plan["image_bytes"] and
                 hasher.hexdigest() == plan["image_sha256"], "restored bytes differ from checkpoint")
         native_check(staged, plan["anchor"], verifier, plan["verifier_sha256"])
+    return manifest
+
+
+def restore_archive(plan: dict, key: bytes, verifier: Path, reauthorize) -> dict:
+    source, destination = path_value(plan["input_path"]), path_value(plan["output_path"])
+    parent = private_parent(destination)
+    with tempfile.TemporaryDirectory(prefix=".cognitive-restore-stage-", dir=parent) as temporary:
+        staged = Path(temporary) / "cognitive_1.sqlite3"
+        manifest = decode_archive_image(source, staged, plan, key, verifier)
         reauthorize()
         try:
             # link is an atomic no-replace publication on the same filesystem.
@@ -371,7 +408,8 @@ def restore_archive(plan: dict, key: bytes, verifier: Path, reauthorize) -> dict
             "result": "restored_cold_image"}
 
 
-def authorize(plan_path: Path, trust_path: Path, expected_plan: str, expected_trust: str) -> dict:
+def authorize(plan_path: Path, trust_path: Path, expected_plan: str, expected_trust: str,
+              *, observation_path: Path | None = None, expected_observation: str | None = None) -> dict:
     now = int(time.time())
     trust = load_bounded(trust_path)
     digest(expected_plan)
@@ -380,7 +418,18 @@ def authorize(plan_path: Path, trust_path: Path, expected_plan: str, expected_tr
     validate_trust(trust, now)
     plan = verify_signature(load_bounded(plan_path), trust["coordinator"])
     require(sha256(plan) == expected_plan, "signed plan differs from requested archive operation")
-    validate_plan(plan, now)
+    # Historical truth is inspected only under a separately signed, currently
+    # live observation request. Expired operation authority is never renewed by
+    # a flag, by its own signature, or by finding an apparently valid output.
+    require((observation_path is None) == (expected_observation is None),
+            "observation plan and its independently retained digest must be supplied together")
+    if observation_path is not None:
+        from archive_observation import validate_observation
+        digest(expected_observation)
+        observation = verify_signature(load_bounded(observation_path), trust["coordinator"])
+        require(sha256(observation) == expected_observation, "observation differs from requested operation")
+        validate_observation(observation, plan, now)
+    validate_plan(plan, now, require_live=observation_path is None)
     return plan
 
 
@@ -392,13 +441,29 @@ def main() -> None:
     parser.add_argument("--expected-trust-sha256", required=True)
     parser.add_argument("--key-file", type=Path, required=True)
     parser.add_argument("--owner-verifier", type=Path, required=True)
+    parser.add_argument("--reconcile-plan", type=Path)
+    parser.add_argument("--expected-reconcile-plan-sha256")
     args = parser.parse_args()
     require(sys.platform == "linux", "archive operations require the Linux descriptor profile")
     def reauthorize():
         return authorize(args.plan, args.trusted_owners,
-                         args.expected_plan_sha256, args.expected_trust_sha256)
+                         args.expected_plan_sha256, args.expected_trust_sha256,
+                         observation_path=args.reconcile_plan,
+                         expected_observation=args.expected_reconcile_plan_sha256)
     plan = reauthorize()
     key = load_key(args.key_file, plan)
+    if args.reconcile_plan is not None:
+        from archive_observation import observe_publication
+        # authorize already authenticated this exact signed observation. Reread
+        # and compare again; do not use an unbound scratch-path replacement.
+        observation = load_bounded(args.reconcile_plan)["payload"]
+        require(sha256(observation) == args.expected_reconcile_plan_sha256,
+                "observation changed before use")
+        report = observe_publication(plan, observation, key, args.owner_verifier, reauthorize)
+        print(json.dumps(report, sort_keys=True))
+        if not report["artifact_verified"]:
+            raise SystemExit(3)
+        return
     operation = make_archive if plan["action"] == "archive" else restore_archive
     report = operation(plan, key, args.owner_verifier, reauthorize)
     print(json.dumps({"schema": "hepta.cognitive.archive-operation-report.v1",
@@ -409,6 +474,9 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    # The observation helper must share this module's typed owner-denial error,
+    # including when the entrypoint was invoked as a script rather than imported.
+    sys.modules.setdefault("archive", sys.modules[__name__])
     try:
         main()
     except OwnerCutRejected:
