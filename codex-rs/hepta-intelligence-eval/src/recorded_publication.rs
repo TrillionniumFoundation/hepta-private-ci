@@ -12,6 +12,10 @@ use crate::SignedEvaluationDecisionV1;
 
 #[path = "attempt_publication_resume.rs"]
 mod resume;
+#[path = "qualification_artifacts.rs"]
+mod qualification_artifacts;
+#[path = "selected_host_publication.rs"]
+mod selected_host_publication;
 
 pub(crate) struct RecordedPublicationSinkV1<'a, J> {
     pub(crate) attempt_id: StableId,
