@@ -31,6 +31,10 @@ fn digest(text: &str) -> Digest32 {
     Digest32::of_bytes(text.as_bytes())
 }
 
+fn nonce(label: &str) -> [u8; 32] {
+    digest(label).into_array()
+}
+
 fn sign(key: &SigningKey, grant: FinalUseGrant) -> SignedFinalUseGrant {
     SignedFinalUseGrant {
         signature: key
@@ -127,7 +131,7 @@ impl Fixture {
                 signer_id: "review-authority:prompt".into(),
                 authority_epoch: 1,
                 grant_id: "admission:prompt:1".into(),
-                nonce: [23; 32],
+                nonce: nonce("admission:prompt:1"),
                 binding: final_use_admission_binding(&factor, &id("reviewer:1"), scope, evidence)
                     .expect("binding"),
                 not_before_unix_ms: now.saturating_sub(1000),
@@ -179,7 +183,7 @@ impl Fixture {
                 signer_id: "review-authority:prompt".into(),
                 authority_epoch: 1,
                 grant_id: "realization:prompt:1".into(),
-                nonce: [24; 32],
+                nonce: nonce("realization:prompt:1"),
                 binding: final_use_realization_binding(
                     &admitted_factor,
                     &publisher,
@@ -398,7 +402,7 @@ impl Fixture {
                 signer_id: "review-authority:prompt".into(),
                 authority_epoch: 1,
                 grant_id: "revoke:prompt:1".into(),
-                nonce: [25; 32],
+                nonce: nonce("revoke:prompt:1"),
                 binding: final_use_revoke_binding(&factor, &actor, scope, reason, cutoff)
                     .expect("binding"),
                 not_before_unix_ms: self.now.saturating_sub(1000),

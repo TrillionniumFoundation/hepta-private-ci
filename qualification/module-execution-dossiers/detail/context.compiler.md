@@ -1,7 +1,7 @@
 # context.compiler execution dossier
 <!-- GENERATED CURRENT STATE: edit CURRENT_STATE.json; detailed design is retained separately. -->
 
-State SHA-256: `c35e3d311bf6794e0b1cd0a9ba848fc2db18a68bb18f4a0fdc151626f8277c8f`. Source anchor: `c21a781119e9fc241197b61a304698f023c8979b`.
+State SHA-256: `18a848c116591af6e1a067c0cabbd03ff6a472c2b22c4861e293eb21d27fdd15`. Source anchor: `c21a781119e9fc241197b61a304698f023c8979b`.
 The source anchor is provenance, not the final tested head. Only external execution receipts bind a final source/merge object.
 
 ## 1. Current implementation and evidence state
@@ -83,7 +83,7 @@ external reconciliation rather than being upgraded into evidence.
 
 ## 6. Verification
 
-Materialization must execute generated-truth checks, default V3 and explicit legacy profiles, V3 product regressions, typed-slot tests, tokenizer revocation/expiry races, process-reopen recovery tests, strict all-feature Clippy and dependency policy before creating direct source. The successor commit still requires independent source-head and synthetic-merge receipts; acceptance, activation and release remain false.
+The final ordinary-source candidate must pass deterministic generated-truth checks, default V3 and explicit legacy profiles, V3 product regressions, typed-slot and attempt-bound terminal tests, tokenizer revocation/expiry races, process-reopen recovery, strict all-feature Clippy, dependency policy, exact source-head and deterministic synthetic-merge qualification. Read-only CI and source generation cannot self-certify independent acceptance, activation or release.
 
 The canonical workflow uses separate source-head and deterministic synthetic-merge lanes. Both must retain passing receipts with source/base/tested commit/tree, run/attempt, command exit codes, nonempty native test counts and log digests. Candidate identity is revalidated before and after each command. Pending, skipped, cancelled and missing artifacts are not passes.
 
