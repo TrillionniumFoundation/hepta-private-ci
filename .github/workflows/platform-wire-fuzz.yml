@@ -82,7 +82,26 @@ jobs:
           } 2>&1 | tee .hepta-evidence/platform-wire-fuzz/preparation/toolchain.log
 
       - name: Seed protocol, managed-session and policy corpora
-        run: python3 scripts/platform_wire_fuzz_campaign.py seed
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/platform_wire_fuzz_campaign.py seed
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path("codex-rs/hepta-wire/fuzz/corpus/managed_records")
+          expected = {mode: bytes([mode, 13]) + b"wire-seed" for mode in range(7)}
+          observed = {}
+          for mode, payload in expected.items():
+              path = root / f"mode-{mode}"
+              if not path.is_file():
+                  raise SystemExit(f"missing deterministic managed_records seed: {path}")
+              actual = path.read_bytes()
+              if actual != payload:
+                  raise SystemExit(f"managed_records seed drift: {path}")
+              observed[mode] = len(actual)
+          print(f"verified managed_records deterministic modes: {sorted(observed)}")
+          PY
 
       - name: Check and build all actual fuzz targets
         shell: bash

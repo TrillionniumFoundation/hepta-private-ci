@@ -105,9 +105,9 @@ jobs:
           record lane-truth 0 python3 scripts/verify_lane_a_foundation.py verify
           record status-tests 0 python3 scripts/platform_wire_status.py self-test
           record status-drift 0 python3 scripts/platform_wire_status.py check-doc
-          record wire 41 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --all-targets
+          record wire 97 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --all-targets
           record wire-doc 0 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --doc
-          record ports 8 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-context-compiler -p codex-hepta-codex-adapter --lib wire::tests
+          record ports 12 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-context-compiler -p codex-hepta-codex-adapter --lib wire::tests
           record cross-runtime 2 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-shadow-qualification --test cross_runtime_wire_session
           record gateway 1 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-native-gateway --lib http_accept
           record strict-clippy 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire -p codex-hepta-codex-adapter --all-targets --no-deps -- -D warnings

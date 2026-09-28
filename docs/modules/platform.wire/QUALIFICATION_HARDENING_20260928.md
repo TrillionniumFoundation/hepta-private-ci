@@ -28,7 +28,11 @@ claim to have qualified an upstream durable consumer.
 The existing campaign CLI and schema remain `init`, `seed`, `run`, `finalize`,
 `check` and `hepta.platform-wire.fuzz-campaign.v2`. The three actual targets
 remain `decode_frames`, `managed_records`, and `policy_admission`. Corpus,
-crash-artifact, preparation-log and fuzz-lock inventories are retained.
+crash-artifact, preparation-log and fuzz-lock inventories are retained. The
+managed-record corpus now has explicit deterministic seeds for all seven mode
+branches, including maximum-length/EOF admission and valid-prefix plus bad-MAC
+suffix handling. The workflow verifies the exact seed bytes before building the
+harnesses, so a missing branch seed cannot silently inherit a historical corpus.
 
 The cargo-fuzz executable is built using pinned stable `1.95.0`; instrumented
 harness compilation and execution still use pinned `nightly-2026-09-20`.
@@ -157,7 +161,11 @@ must be reported by the read-only workflows on the final published source.
 The core workflow retains its existing source-head/base-merge matrix and all
 prior gates; the public managed integration tests are included by
 `--all-targets`, while the runtime.codex composition is included by the existing
-adapter `wire::tests` command. Do not convert absent, queued, cancelled,
+adapter `wire::tests` command. Minimum-test floors are advanced to the current
+97 all-target wire tests, nine managed-profile validator tests and 12 filtered
+context/runtime adapter tests. A later accidental filter, missing binary or
+stale suite therefore cannot reuse an older, smaller success threshold. Do not
+convert absent, queued, cancelled,
 startup-failed or historical runs into a passed current-source receipt. Existing
 broad Lane A failures must be diagnosed independently rather than attributed to
 cargo-fuzz by assumption.
