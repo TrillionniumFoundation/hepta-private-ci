@@ -18,7 +18,7 @@ concurrency:
 jobs:
   format:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 180
     env:
       BASE_SHA: 3f6b49355947c3cddaaa89198cbf17b66d46c2fa
