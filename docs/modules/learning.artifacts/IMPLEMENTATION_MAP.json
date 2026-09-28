@@ -179,7 +179,7 @@
       "designOperation": "authenticated_current_registry_view",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "618f1b17b61103ebef945ff15e640b3478852c12"
+      "sourceBlob": "282edf6e6529065bdbbbcca287fed91ce757fe94"
     },
     {
       "operation": "owner_writer_fence",
@@ -260,7 +260,7 @@
       "designOperation": "owner_service_open",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "618f1b17b61103ebef945ff15e640b3478852c12"
+      "sourceBlob": "282edf6e6529065bdbbbcca287fed91ce757fe94"
     },
     {
       "operation": "owner_service_publish",
@@ -278,7 +278,7 @@
       "designOperation": "owner_service_publish",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "49453dfa0011b5fc446a203b67f2714aef19ec5a"
+      "sourceBlob": "5462ed8777bb744a9cf65544b2196cf20e282ffd"
     },
     {
       "operation": "recover_current_registry",
@@ -381,7 +381,7 @@
       "designOperation": "owner_service_drain",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "618f1b17b61103ebef945ff15e640b3478852c12"
+      "sourceBlob": "282edf6e6529065bdbbbcca287fed91ce757fe94"
     },
     {
       "operation": "owner_service_drain_status",
@@ -399,7 +399,7 @@
       "designOperation": "owner_service_drain_status",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "618f1b17b61103ebef945ff15e640b3478852c12"
+      "sourceBlob": "282edf6e6529065bdbbbcca287fed91ce757fe94"
     },
     {
       "operation": "owner_service_withdrawal_frontier_install",
@@ -416,7 +416,7 @@
       "designOperation": "owner_service_withdrawal_frontier_install",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "49453dfa0011b5fc446a203b67f2714aef19ec5a"
+      "sourceBlob": "5462ed8777bb744a9cf65544b2196cf20e282ffd"
     },
     {
       "operation": "owner_service_withdrawal_durability_status",
@@ -433,7 +433,7 @@
       "designOperation": "owner_service_withdrawal_durability_status",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "618f1b17b61103ebef945ff15e640b3478852c12"
+      "sourceBlob": "282edf6e6529065bdbbbcca287fed91ce757fe94"
     },
     {
       "operation": "owner_service_diagnostics",
@@ -450,7 +450,7 @@
       "designOperation": "owner_service_diagnostics",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "49453dfa0011b5fc446a203b67f2714aef19ec5a"
+      "sourceBlob": "5462ed8777bb744a9cf65544b2196cf20e282ffd"
     },
     {
       "operation": "owner_service_error_code",
@@ -466,7 +466,7 @@
       "designOperation": "owner_service_error_code",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "49453dfa0011b5fc446a203b67f2714aef19ec5a"
+      "sourceBlob": "5462ed8777bb744a9cf65544b2196cf20e282ffd"
     },
     {
       "operation": "owner_request_diagnostic_identity",
@@ -481,7 +481,7 @@
       "designOperation": "owner_request_diagnostic_identity",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "5091147342475f3d299ce6ab0abd4e3d8a9a122f"
+      "sourceBlob": "d01e0f94375cfbb87000746b31cea113e416e688"
     }
   ],
   "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate; one-way service drain is a source candidate with native execution pending; R4 local withdrawal high-water persistence and receipt consistency guards are source candidates; Rust execution and product revocation propagation remain pending",
@@ -579,7 +579,7 @@
     },
     {
       "path": ".github/workflows/hepta-learning-artifacts-qualification.yml",
-      "object": "70f349479d35ffebafc48b4f1de9db908bcc0cc8"
+      "object": "07dbd1fe61f3791ad32bb085cc645d1bd9bfd443"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
@@ -587,7 +587,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "e207689a2389a252f9ef7b3b0215cd9cfffba1b5"
+      "object": "5e44f54e773f7976c11df7626a548b3705b92786"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/RUNTIME_CONVERGENCE.md",
@@ -623,7 +623,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/drain_tests.rs",
-      "object": "fb0b0ec22304df89d217e4f90aa547c3c9178e9b"
+      "object": "b4bfa3a6463e89a17a0bce6a1639547795579c41"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/durable_control.rs",
@@ -647,15 +647,15 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/request_identity.rs",
-      "object": "5091147342475f3d299ce6ab0abd4e3d8a9a122f"
+      "object": "d01e0f94375cfbb87000746b31cea113e416e688"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/service_crash_tests.rs",
-      "object": "a83056807570f17ec4d00c79c8ac7f84d424cd59"
+      "object": "115c90c68f89cdc9775ca2a74df420fbf539e7a3"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/service_observation.rs",
-      "object": "49453dfa0011b5fc446a203b67f2714aef19ec5a"
+      "object": "5462ed8777bb744a9cf65544b2196cf20e282ffd"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/withdrawal_floor_tests.rs",
@@ -671,11 +671,11 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
-      "object": "618f1b17b61103ebef945ff15e640b3478852c12"
+      "object": "282edf6e6529065bdbbbcca287fed91ce757fe94"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs",
-      "object": "f300579e5ab2c09d5bddf2daff4c34f1ef513c2e"
+      "object": "88849cef6ca68396f67a662a1840cc177c8dec78"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
@@ -723,7 +723,7 @@
     },
     {
       "path": "scripts/hepta_artifact_qualification.py",
-      "object": "a8be1b53ed0983bfc383ea7fc2904869663500f6"
+      "object": "ea4f8e8c0f274fb2062bc17fc1f1710cc69aca8b"
     },
     {
       "path": "scripts/hepta_artifact_receipt_guard.py",

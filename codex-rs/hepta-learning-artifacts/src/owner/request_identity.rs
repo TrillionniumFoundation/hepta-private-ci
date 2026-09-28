@@ -24,14 +24,18 @@ impl RequestIdentityVerifier {
     pub(super) fn new(trust: &ArtifactOwnerTrustV1) -> Self {
         Self {
             registry_id: trust.registry_id.clone(),
-            head_keys: trust.head_signers.iter()
-                .map(|signer| (signer.signer_id.clone(), signer.verifying_key)).collect(),
+            head_keys: trust
+                .head_signers
+                .iter()
+                .map(|signer| (signer.signer_id.clone(), signer.verifying_key))
+                .collect(),
         }
     }
 
-    pub(super) fn verify(&self, request: &LearningArtifactPublishRequestV1)
-        -> Result<Digest32, LearningArtifactOwnerServiceError>
-    {
+    pub(super) fn verify(
+        &self,
+        request: &LearningArtifactPublishRequestV1,
+    ) -> Result<Digest32, LearningArtifactOwnerServiceError> {
         let manifest = &request.admission.validated_manifest.manifest;
         if request.now < request.admission.admitted_at
             || u64::try_from(request.payload.len()).ok() != Some(manifest.encoded_size_bytes)
@@ -40,8 +44,12 @@ impl RequestIdentityVerifier {
         {
             return Err(LearningArtifactOwnerServiceError::RequestMismatch);
         }
-        self.verify_metadata(&request.operation_id, &request.admission,
-            &request.signed_current_head, request.expected_registry_predecessor_head)
+        self.verify_metadata(
+            &request.operation_id,
+            &request.admission,
+            &request.signed_current_head,
+            request.expected_registry_predecessor_head,
+        )
     }
 
     /// Reconstruct integrity from retained metadata without loading payload bytes.
@@ -53,15 +61,21 @@ impl RequestIdentityVerifier {
         signed: &SignedCurrentArtifactHeadV1,
         predecessor: Digest32,
     ) -> Result<Digest32, LearningArtifactOwnerServiceError> {
-        verify_artifact_admission_v3(admission, admission.withdrawal_head_digest, admission.admitted_at)
-            .map_err(|_| LearningArtifactOwnerServiceError::RequestMismatch)?;
+        verify_artifact_admission_v3(
+            admission,
+            admission.withdrawal_head_digest,
+            admission.admitted_at,
+        )
+        .map_err(|_| LearningArtifactOwnerServiceError::RequestMismatch)?;
         if signed.witness.registry_id != self.registry_id
             || signed.withdrawal_scope_digest != admission.withdrawal_scope_digest
             || signed.witness.predecessor_head_digest != predecessor
         {
             return Err(LearningArtifactOwnerServiceError::RequestMismatch);
         }
-        let key_bytes = self.head_keys.get(&signed.witness.signer_id)
+        let key_bytes = self
+            .head_keys
+            .get(&signed.witness.signer_id)
             .ok_or(LearningArtifactOwnerServiceError::RequestMismatch)?;
         if Digest32::of_bytes(key_bytes) != signed.witness.signing_key_digest {
             return Err(LearningArtifactOwnerServiceError::RequestMismatch);

@@ -135,9 +135,13 @@ fn publish_request(
     predecessor: Digest32,
     head: Digest32,
 ) -> LearningArtifactPublishRequestV1 {
-    let admission =
-        admit_manifest_at_withdrawal_head_v3(withdrawals, withdrawals.head_digest(), manifest(), 20)
-            .fixture("admission");
+    let admission = admit_manifest_at_withdrawal_head_v3(
+        withdrawals,
+        withdrawals.head_digest(),
+        manifest(),
+        20,
+    )
+    .fixture("admission");
     let mut signed = SignedCurrentArtifactHeadV1 {
         withdrawal_scope_digest: withdrawals.scope_digest().fixture("scope digest"),
         binding: digest("binding"),
@@ -184,9 +188,13 @@ fn named_owner_service_publishes_retries_and_reopens_from_current_head() {
     .fixture("open service");
 
     let predecessor = service.registry().snapshot().head_digest;
-    let admission =
-        admit_manifest_at_withdrawal_head_v3(&withdrawals, withdrawals.head_digest(), manifest(), 20)
-            .fixture("admission for head calculation");
+    let admission = admit_manifest_at_withdrawal_head_v3(
+        &withdrawals,
+        withdrawals.head_digest(),
+        manifest(),
+        20,
+    )
+    .fixture("admission for head calculation");
     let mut staged = ArtifactRegistry::new();
     let preview = ArtifactPublicationTransactionV1::begin(
         id("operation"),
@@ -201,7 +209,12 @@ fn named_owner_service_publishes_retries_and_reopens_from_current_head() {
         .host
         .stage_compatibility_registration(&preview, &mut staged, 20)
         .fixture("preview registration");
-    let request = publish_request(&key, &withdrawals, predecessor, staged.snapshot().head_digest);
+    let request = publish_request(
+        &key,
+        &withdrawals,
+        predecessor,
+        staged.snapshot().head_digest,
+    );
 
     let receipt = service.publish(request.clone()).fixture("publish");
     let retry = service.publish(request.clone()).fixture("terminal retry");
@@ -375,8 +388,17 @@ mod drain;
 #[path = "owner/request_binding_tests.rs"]
 mod request_bindings;
 
-fn bind_fixture_request(service: &mut LearningArtifactOwnerService, request: &LearningArtifactPublishRequestV1) {
-    let identity = service.request_identity.verify(request).fixture("verify request binding");
+fn bind_fixture_request(
+    service: &mut LearningArtifactOwnerService,
+    request: &LearningArtifactPublishRequestV1,
+) {
+    let identity = service
+        .request_identity
+        .verify(request)
+        .fixture("verify request binding");
     let record = RequestRecord::from_request(request, identity).fixture("canonical request record");
-    service.request_journal.bind(record, &service.request_identity).fixture("durable request binding");
+    service
+        .request_journal
+        .bind(record, &service.request_identity)
+        .fixture("durable request binding");
 }
