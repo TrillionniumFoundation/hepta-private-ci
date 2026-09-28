@@ -110,8 +110,7 @@ pub(crate) fn policy_admitted_union(
     }
     let mut admitted = union.clone();
     admitted.entries.retain(|entry| {
-        entry.weighted_score > FixedQ32::ZERO
-            && entry.weighted_score >= policy.minimum_total_score
+        entry.weighted_score > FixedQ32::ZERO && entry.weighted_score >= policy.minimum_total_score
     });
     let channels = admitted
         .entries

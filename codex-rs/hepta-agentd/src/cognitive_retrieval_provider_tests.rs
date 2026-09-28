@@ -43,9 +43,8 @@ fn publication(sequence: u64) -> SignedMemoryRetrievalContextV1 {
         template_digest: external,
         tool_schema_digest: external,
     };
-    let graph = EngramSnapshotV1::new(
-        vector.digest(), external, Vec::new(), Vec::new(),
-    ).expect("graph");
+    let graph =
+        EngramSnapshotV1::new(vector.digest(), external, Vec::new(), Vec::new()).expect("graph");
     let context = RetrievalExecutionContextV1 {
         generation_vector: vector,
         objective_digest: digest("objective"),
@@ -57,10 +56,13 @@ fn publication(sequence: u64) -> SignedMemoryRetrievalContextV1 {
     };
     let now = now_ms().expect("clock");
     let mut result = SignedMemoryRetrievalContextV1 {
-        owner: owner(), body_generation: 9, sequence,
+        owner: owner(),
+        body_generation: 9,
+        sequence,
         not_before_unix_ms: now.saturating_sub(1),
         expires_unix_ms: now + 20_000,
-        context, signature: [0; 64],
+        context,
+        signature: [0; 64],
     };
     resign(&mut result);
     result
@@ -69,7 +71,8 @@ fn publication(sequence: u64) -> SignedMemoryRetrievalContextV1 {
 fn resign(publication: &mut SignedMemoryRetrievalContextV1) {
     // Reproducible public test seeds are not product authority keys.
     publication.signature = SigningKey::from_bytes(&[2; 32])
-        .sign(&publication.signing_bytes()).to_bytes();
+        .sign(&publication.signing_bytes())
+        .to_bytes();
 }
 
 struct FixtureOwner {
@@ -88,7 +91,9 @@ impl FixtureOwner {
                 authority_epoch: publication.context.generation_vector.authority_epoch,
                 sequence: publication.sequence,
                 publication_digest: Some(publication.publication_digest()),
-                expires_unix_ms: 0, challenge: [0; 32], signature: [0; 64],
+                expires_unix_ms: 0,
+                challenge: [0; 32],
+                signature: [0; 64],
             }),
             unavailable: AtomicBool::new(false),
             wrong_challenge: AtomicBool::new(false),
@@ -111,7 +116,12 @@ impl FixtureOwner {
 }
 
 impl MemoryRetrievalFrontierOwnerV1 for FixtureOwner {
-    fn observe(&self, _: &AgentId, _: u64, challenge: [u8; 32]) -> Result<MemoryRetrievalFrontierV1, String> {
+    fn observe(
+        &self,
+        _: &AgentId,
+        _: u64,
+        challenge: [u8; 32],
+    ) -> Result<MemoryRetrievalFrontierV1, String> {
         if self.unavailable.load(Ordering::SeqCst) {
             return Err("fixture owner unavailable".to_string());
         }
@@ -121,22 +131,35 @@ impl MemoryRetrievalFrontierOwnerV1 for FixtureOwner {
             result.challenge[0] ^= 1;
         }
         result.expires_unix_ms = now_ms()? + 10_000;
-        let seed = if self.wrong_key.load(Ordering::SeqCst) { [4; 32] } else { [3; 32] };
-        result.signature = SigningKey::from_bytes(&seed).sign(&result.signing_bytes()).to_bytes();
+        let seed = if self.wrong_key.load(Ordering::SeqCst) {
+            [4; 32]
+        } else {
+            [3; 32]
+        };
+        result.signature = SigningKey::from_bytes(&seed)
+            .sign(&result.signing_bytes())
+            .to_bytes();
         Ok(result)
     }
 }
 
 fn provider(frontier: Arc<FixtureOwner>) -> LeasedMemoryRetrievalProviderV1 {
     LeasedMemoryRetrievalProviderV1::new(
-        owner(), 9,
+        owner(),
+        9,
         SigningKey::from_bytes(&[2; 32]).verifying_key().to_bytes(),
         SigningKey::from_bytes(&[3; 32]).verifying_key().to_bytes(),
-        frontier, 30_000,
-    ).expect("provider")
+        frontier,
+        30_000,
+    )
+    .expect("provider")
 }
 
-fn fixture() -> (SignedMemoryRetrievalContextV1, Arc<FixtureOwner>, LeasedMemoryRetrievalProviderV1) {
+fn fixture() -> (
+    SignedMemoryRetrievalContextV1,
+    Arc<FixtureOwner>,
+    LeasedMemoryRetrievalProviderV1,
+) {
     let publication = publication(1);
     let frontier = Arc::new(FixtureOwner::new(&publication));
     let provider = provider(Arc::clone(&frontier));
@@ -163,7 +186,8 @@ fn publication_tampering_and_forged_key_are_rejected() {
     publication.context.objective_digest = digest("tampered-objective");
     assert!(provider.install(publication.clone()).is_err());
     publication.signature = SigningKey::from_bytes(&[5; 32])
-        .sign(&publication.signing_bytes()).to_bytes();
+        .sign(&publication.signing_bytes())
+        .to_bytes();
     assert!(provider.install(publication).is_err());
 }
 
@@ -206,7 +230,10 @@ fn rotation_invalidates_inflight_binding_until_new_publication_is_installed() {
     frontier.publish(&second);
     assert!(provider.current(&owner(), 9).is_err());
     provider.install(second.clone()).expect("second");
-    assert_eq!(provider.current(&owner(), 9).expect("current"), second.context);
+    assert_eq!(
+        provider.current(&owner(), 9).expect("current"),
+        second.context
+    );
     assert!(provider.install(first).is_err());
 }
 
@@ -232,19 +259,50 @@ fn revocation_survives_provider_restart_via_fresh_owner_challenge() {
     assert!(restarted.install(first).is_err());
     let third = publication(3);
     frontier.publish(&third);
-    restarted.install(third.clone()).expect("recovery from current owner");
-    assert_eq!(restarted.current(&owner(), 9).expect("current"), third.context);
+    restarted
+        .install(third.clone())
+        .expect("recovery from current owner");
+    assert_eq!(
+        restarted.current(&owner(), 9).expect("current"),
+        third.context
+    );
 }
 
 #[test]
 fn idempotent_install_does_not_extend_monotonic_lease() {
     let (publication, _, provider) = fixture();
     provider.install(publication.clone()).expect("install");
-    let original = provider.state.lock().expect("mutex").pinned.as_ref().expect("pinned").installed_at;
+    let original = provider
+        .state
+        .lock()
+        .expect("mutex")
+        .pinned
+        .as_ref()
+        .expect("pinned")
+        .installed_at;
     provider.install(publication.clone()).expect("idempotence");
-    assert_eq!(provider.state.lock().expect("mutex").pinned.as_ref().expect("pinned").installed_at, original);
-    provider.state.lock().expect("mutex").pinned.as_mut().expect("pinned").remaining = Duration::ZERO;
-    provider.install(publication).expect("idempotence does not renew");
+    assert_eq!(
+        provider
+            .state
+            .lock()
+            .expect("mutex")
+            .pinned
+            .as_ref()
+            .expect("pinned")
+            .installed_at,
+        original
+    );
+    provider
+        .state
+        .lock()
+        .expect("mutex")
+        .pinned
+        .as_mut()
+        .expect("pinned")
+        .remaining = Duration::ZERO;
+    provider
+        .install(publication)
+        .expect("idempotence does not renew");
     assert!(provider.current(&owner(), 9).is_err());
 }
 
@@ -274,10 +332,17 @@ fn concurrent_reads_keep_one_exact_context_identity() {
     let expected = publication.context.binding_digest();
     provider.install(publication).expect("install");
     let provider = Arc::new(provider);
-    let threads = (0..8).map(|_| {
-        let provider = Arc::clone(&provider);
-        std::thread::spawn(move || provider.current(&owner(), 9).expect("current").binding_digest())
-    }).collect::<Vec<_>>();
+    let threads = (0..8)
+        .map(|_| {
+            let provider = Arc::clone(&provider);
+            std::thread::spawn(move || {
+                provider
+                    .current(&owner(), 9)
+                    .expect("current")
+                    .binding_digest()
+            })
+        })
+        .collect::<Vec<_>>();
     for thread in threads {
         assert_eq!(thread.join().expect("join"), expected);
     }

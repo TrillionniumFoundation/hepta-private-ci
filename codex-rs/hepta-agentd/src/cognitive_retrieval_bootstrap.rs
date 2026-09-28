@@ -225,8 +225,7 @@ pub(super) fn load(
         || descriptor.request_timeout_ms > MAX_PROVIDER_REQUEST_TIMEOUT_MS
     {
         return Err(
-            "retrieval frontier timeout must fit the 1..=800ms host delivery budget"
-                .to_string(),
+            "retrieval frontier timeout must fit the 1..=800ms host delivery budget".to_string(),
         );
     }
     if descriptor.owner_id != identity.agent_id.as_str()

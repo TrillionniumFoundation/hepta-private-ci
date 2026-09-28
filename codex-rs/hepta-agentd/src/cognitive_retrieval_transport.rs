@@ -118,7 +118,11 @@ fn remaining(deadline: Instant) -> Result<Duration, String> {
         .ok_or_else(|| "retrieval frontier total deadline exceeded".to_string())
 }
 
-fn read_bounded(stream: &mut TcpStream, output: &mut [u8], deadline: Instant) -> Result<(), String> {
+fn read_bounded(
+    stream: &mut TcpStream,
+    output: &mut [u8],
+    deadline: Instant,
+) -> Result<(), String> {
     let mut offset = 0;
     while offset < output.len() {
         stream
@@ -152,10 +156,12 @@ fn decode(
     {
         return Err("retrieval frontier response identity/challenge mismatch".into());
     }
-    let publication_digest = response.publication_digest
+    let publication_digest = response
+        .publication_digest
         .map(|value| {
             unhex::<32>(&value)?;
-            value.parse::<Digest32>()
+            value
+                .parse::<Digest32>()
                 .map_err(|_| "invalid retrieval publication digest".to_string())
         })
         .transpose()?;

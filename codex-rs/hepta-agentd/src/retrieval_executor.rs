@@ -59,15 +59,13 @@ impl RetrievalExecutor {
         F: Future<Output = T>,
     {
         request.checkpoint()?;
-        let value = tokio::time::timeout_at(
-            tokio::time::Instant::from_std(request.deadline),
-            operation,
-        )
-        .await
-        .map_err(|_| {
-            request.control.cancel();
-            "retrieval request deadline exceeded".to_string()
-        })?;
+        let value =
+            tokio::time::timeout_at(tokio::time::Instant::from_std(request.deadline), operation)
+                .await
+                .map_err(|_| {
+                    request.control.cancel();
+                    "retrieval request deadline exceeded".to_string()
+                })?;
         request.checkpoint()?;
         Ok(value)
     }
@@ -137,9 +135,7 @@ impl RetrievalRequestWork {
             self.control.cancel();
             return Err("retrieval request deadline exceeded".to_string());
         }
-        self.control
-            .checkpoint()
-            .map_err(|error| error.to_string())
+        self.control.checkpoint().map_err(|error| error.to_string())
     }
 }
 

@@ -72,33 +72,50 @@ async fn fixture() -> Fixture {
     let fleet = temp.path().join("fleet");
     std::fs::create_dir_all(&fleet).expect("fleet");
     let owner = AgentId::parse("00000000-0000-4000-8000-000000000831").expect("owner");
-    let layout = HeptaFleetRoot::parse(fleet).expect("root").layout().agent(&owner);
+    let layout = HeptaFleetRoot::parse(fleet)
+        .expect("root")
+        .layout()
+        .agent(&owner);
     let store = CognitiveStore::open(&layout).await.expect("SQLite owner");
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
-    let citation = store.append_source(&access, &SourceDraft {
-        scope: scope.clone(),
-        kind: LedgerSourceKind::ExplicitMemoryDirective,
-        event_key: "signed-lifecycle-fixture".to_string(),
-        content: b"lemon evidence".to_vec(),
-        observed_at_unix_seconds: 100,
-    }).await.expect("source");
-    let memory = store.remember_memory(&access, &MemoryDraft {
-        stable_key: "signed-lifecycle-memory".to_string(),
-        revision: MemoryRevisionDraft {
-            scope: scope.clone(),
-            content: "lemon verified memory".to_string(),
-            verification: MemoryVerification::Verified,
-            lifecycle: MemoryLifecycleState::Active,
-            valid_from_unix_seconds: 100,
-            valid_to_unix_seconds: None,
-            citations: vec![citation],
-        },
-    }).await.expect("memory");
+    let citation = store
+        .append_source(
+            &access,
+            &SourceDraft {
+                scope: scope.clone(),
+                kind: LedgerSourceKind::ExplicitMemoryDirective,
+                event_key: "signed-lifecycle-fixture".to_string(),
+                content: b"lemon evidence".to_vec(),
+                observed_at_unix_seconds: 100,
+            },
+        )
+        .await
+        .expect("source");
+    let memory = store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "signed-lifecycle-memory".to_string(),
+                revision: MemoryRevisionDraft {
+                    scope: scope.clone(),
+                    content: "lemon verified memory".to_string(),
+                    verification: MemoryVerification::Verified,
+                    lifecycle: MemoryLifecycleState::Active,
+                    valid_from_unix_seconds: 100,
+                    valid_to_unix_seconds: None,
+                    citations: vec![citation],
+                },
+            },
+        )
+        .await
+        .expect("memory");
     let now = now_ms().expect("clock");
     let seconds = i64::try_from(now / 1000).expect("epoch seconds");
-    let cut = store.lane_c_snapshot(&access, &scope, seconds)
-        .await.expect("cut");
+    let cut = store
+        .lane_c_snapshot(&access, &scope, seconds)
+        .await
+        .expect("cut");
     let policy = sqlite_owner_retrieval_policy_v1().expect("policy");
     let external = Digest32::of_bytes(b"signed-lifecycle-test-only-profile");
     let vector = LaneCGenerationVectorV1 {
@@ -130,8 +147,8 @@ async fn fixture() -> Fixture {
         confidence: ProbabilityQ32::ONE,
         generation_vector_digest: vector.digest(),
     };
-    let graph = EngramSnapshotV1::new(vector.digest(), external, vec![node], Vec::new())
-        .expect("graph");
+    let graph =
+        EngramSnapshotV1::new(vector.digest(), external, vec![node], Vec::new()).expect("graph");
     let context = RetrievalExecutionContextV1 {
         generation_vector: vector,
         objective_digest: external,
@@ -162,13 +179,25 @@ async fn fixture() -> Fixture {
         signature: [0; 64],
     })));
     let frontier_port: Arc<dyn MemoryRetrievalFrontierOwnerV1> = frontier.clone();
-    let provider = Arc::new(LeasedMemoryRetrievalProviderV1::new(
-        owner.clone(), /*body_generation*/ 1,
-        SigningKey::from_bytes(&[2; 32]).verifying_key().to_bytes(),
-        SigningKey::from_bytes(&[3; 32]).verifying_key().to_bytes(),
-        frontier_port, /*maximum_lease_ms*/ 300_000,
-    ).expect("provider"));
-    Fixture { store, owner, publication, frontier, provider, _temp: temp }
+    let provider = Arc::new(
+        LeasedMemoryRetrievalProviderV1::new(
+            owner.clone(),
+            /*body_generation*/ 1,
+            SigningKey::from_bytes(&[2; 32]).verifying_key().to_bytes(),
+            SigningKey::from_bytes(&[3; 32]).verifying_key().to_bytes(),
+            frontier_port,
+            /*maximum_lease_ms*/ 300_000,
+        )
+        .expect("provider"),
+    );
+    Fixture {
+        store,
+        owner,
+        publication,
+        frontier,
+        provider,
+        _temp: temp,
+    }
 }
 
 #[tokio::test]
@@ -179,15 +208,31 @@ async fn signed_same_payload_renewal_invalidates_real_agentd_final_use() {
     let reader = route(CognitiveRetrievalMode::HnmfRequired, reader);
     let before = reader.acquire_context(&f.owner, 1).expect("acquire");
     let response = read_with_retrieval_context(
-        &f.store, &f.owner, /*body_generation*/ 1, "lemon", /*limit*/ 4,
-        /*ranker*/ None, Some(&reader),
-    ).await.expect("real Agentd read");
+        &f.store,
+        &f.owner,
+        /*body_generation*/ 1,
+        "lemon",
+        /*limit*/ 4,
+        /*ranker*/ None,
+        Some(&reader),
+    )
+    .await
+    .expect("real Agentd read");
     assert!(!response.items.is_empty());
     revalidate_with_retrieval_context(
-        &f.store, &f.owner, &response.snapshot_digest, &response.read_digest,
-        response.omitted_records, &response.items, response.plan.as_ref(),
-        /*ranker*/ None, /*body_generation*/ 1, Some(&reader),
-    ).await.expect("fresh final use");
+        &f.store,
+        &f.owner,
+        &response.snapshot_digest,
+        &response.read_digest,
+        response.omitted_records,
+        &response.items,
+        response.plan.as_ref(),
+        /*ranker*/ None,
+        /*body_generation*/ 1,
+        Some(&reader),
+    )
+    .await
+    .expect("fresh final use");
     f.publication.sequence += 1;
     f.publication.expires_unix_ms += 1;
     sign(&mut f.publication);
@@ -197,15 +242,28 @@ async fn signed_same_payload_renewal_invalidates_real_agentd_final_use() {
         frontier.publication_digest = Some(f.publication.publication_digest());
     }
     f.provider.install(f.publication.clone()).expect("renew");
-    let after = reader.acquire_context(&f.owner, 1).expect("renewed acquire");
+    let after = reader
+        .acquire_context(&f.owner, 1)
+        .expect("renewed acquire");
     assert_eq!(before.0, after.0);
     assert_ne!(before.1, after.1);
     assert_ne!(before.2, after.2);
-    assert!(revalidate_with_retrieval_context(
-        &f.store, &f.owner, &response.snapshot_digest, &response.read_digest,
-        response.omitted_records, &response.items, response.plan.as_ref(),
-        /*ranker*/ None, /*body_generation*/ 1, Some(&reader),
-    ).await.is_err());
+    assert!(
+        revalidate_with_retrieval_context(
+            &f.store,
+            &f.owner,
+            &response.snapshot_digest,
+            &response.read_digest,
+            response.omitted_records,
+            &response.items,
+            response.plan.as_ref(),
+            /*ranker*/ None,
+            /*body_generation*/ 1,
+            Some(&reader),
+        )
+        .await
+        .is_err()
+    );
 }
 
 #[tokio::test]
@@ -215,20 +273,38 @@ async fn signed_revocation_closes_real_agentd_final_use() {
     let reader: Arc<dyn CurrentMemoryRetrievalContext> = f.provider.clone();
     let reader = route(CognitiveRetrievalMode::HnmfRequired, reader);
     let response = read_with_retrieval_context(
-        &f.store, &f.owner, /*body_generation*/ 1, "lemon", /*limit*/ 4,
-        /*ranker*/ None, Some(&reader),
-    ).await.expect("read");
+        &f.store,
+        &f.owner,
+        /*body_generation*/ 1,
+        "lemon",
+        /*limit*/ 4,
+        /*ranker*/ None,
+        Some(&reader),
+    )
+    .await
+    .expect("read");
     assert!(!response.items.is_empty());
     {
         let mut frontier = f.frontier.0.lock().expect("frontier");
         frontier.sequence += 1;
         frontier.publication_digest = None;
     }
-    assert!(revalidate_with_retrieval_context(
-        &f.store, &f.owner, &response.snapshot_digest, &response.read_digest,
-        response.omitted_records, &response.items, response.plan.as_ref(),
-        /*ranker*/ None, /*body_generation*/ 1, Some(&reader),
-    ).await.is_err());
+    assert!(
+        revalidate_with_retrieval_context(
+            &f.store,
+            &f.owner,
+            &response.snapshot_digest,
+            &response.read_digest,
+            response.omitted_records,
+            &response.items,
+            response.plan.as_ref(),
+            /*ranker*/ None,
+            /*body_generation*/ 1,
+            Some(&reader),
+        )
+        .await
+        .is_err()
+    );
 }
 
 #[tokio::test]
@@ -240,18 +316,36 @@ async fn missing_signed_publication_is_shadow_only_not_required_fallback() {
     let baseline = read_with_retrieval_context(
         &f.store, &f.owner, /*body_generation*/ 1, "lemon", /*limit*/ 4,
         /*ranker*/ None, /*current_retrieval*/ None,
-    ).await.expect("compatibility");
+    )
+    .await
+    .expect("compatibility");
     let observed = read_with_retrieval_context(
-        &f.store, &f.owner, /*body_generation*/ 1, "lemon", /*limit*/ 4,
-        /*ranker*/ None, Some(&shadow),
-    ).await.expect("shadow cannot poison delivery");
+        &f.store,
+        &f.owner,
+        /*body_generation*/ 1,
+        "lemon",
+        /*limit*/ 4,
+        /*ranker*/ None,
+        Some(&shadow),
+    )
+    .await
+    .expect("shadow cannot poison delivery");
     assert!(!baseline.items.is_empty());
     assert_eq!(baseline.items, observed.items);
     assert_eq!(baseline.read_digest, observed.read_digest);
-    assert!(read_with_retrieval_context(
-        &f.store, &f.owner, /*body_generation*/ 1, "lemon", /*limit*/ 4,
-        /*ranker*/ None, Some(&required),
-    ).await.is_err());
+    assert!(
+        read_with_retrieval_context(
+            &f.store,
+            &f.owner,
+            /*body_generation*/ 1,
+            "lemon",
+            /*limit*/ 4,
+            /*ranker*/ None,
+            Some(&required),
+        )
+        .await
+        .is_err()
+    );
 }
 
 #[tokio::test]
@@ -259,15 +353,25 @@ async fn mode_binding_preserves_one_atomic_signed_publication() {
     let f = fixture().await;
     f.provider.install(f.publication.clone()).expect("install");
     let reader: Arc<dyn CurrentMemoryRetrievalContext> = f.provider.clone();
-    let expected = f.provider.acquire_context(&f.owner, 1).expect("atomic publication");
+    let expected = f
+        .provider
+        .acquire_context(&f.owner, 1)
+        .expect("atomic publication");
     assert_eq!(expected.1, f.publication.publication_digest());
     assert_eq!(expected.2, Some(f.publication.expires_unix_ms));
     let mut bindings = std::collections::BTreeSet::new();
-    for mode in [CognitiveRetrievalMode::HnmfShadow, CognitiveRetrievalMode::HnmfCanary,
-                 CognitiveRetrievalMode::HnmfRequired] {
+    for mode in [
+        CognitiveRetrievalMode::HnmfShadow,
+        CognitiveRetrievalMode::HnmfCanary,
+        CognitiveRetrievalMode::HnmfRequired,
+    ] {
         let routed = route(mode, reader.clone());
-        let first = routed.acquire_context(&f.owner, 1).expect("mode acquisition");
-        let second = routed.acquire_context(&f.owner, 1).expect("stable mode acquisition");
+        let first = routed
+            .acquire_context(&f.owner, 1)
+            .expect("mode acquisition");
+        let second = routed
+            .acquire_context(&f.owner, 1)
+            .expect("stable mode acquisition");
         assert_eq!(first, second);
         assert_eq!(first.0, expected.0);
         assert_eq!(first.2, expected.2);

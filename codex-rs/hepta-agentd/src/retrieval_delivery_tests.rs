@@ -90,10 +90,7 @@ fn native(context: Option<Digest32>) -> NativeRunRecord {
 fn prepared_published_start_and_outcome_are_distinct_evidence() {
     let assignment = assignment(true);
     let prepared = verify_retrieval_delivery_v1(&assignment, None).expect("prepared");
-    assert_eq!(
-        prepared.stage,
-        RetrievalDeliveryStageV1::AssignmentPrepared
-    );
+    assert_eq!(prepared.stage, RetrievalDeliveryStageV1::AssignmentPrepared);
 
     // A write-ahead dispatch is committed before the external effect boundary
     // and must not be mislabeled as publication.
@@ -146,10 +143,7 @@ fn prepared_published_start_and_outcome_are_distinct_evidence() {
     });
     let outcome = verify_retrieval_delivery_v1(&assignment, Some(&run)).expect("outcome");
     assert_eq!(outcome.stage, RetrievalDeliveryStageV1::OutcomeObserved);
-    assert_eq!(
-        outcome.terminal_status,
-        Some(NativeRunStatus::Completed)
-    );
+    assert_eq!(outcome.terminal_status, Some(NativeRunStatus::Completed));
     outcome.validate().expect("receipt");
 }
 
@@ -159,18 +153,12 @@ fn socket_unknown_and_pre_effect_abort_never_create_false_publication() {
     let mut run = native(assignment.published_context_digest);
     run.state = NativeReservationState::Indeterminate;
     let unknown = verify_retrieval_delivery_v1(&assignment, Some(&run)).expect("unknown");
-    assert_eq!(
-        unknown.stage,
-        RetrievalDeliveryStageV1::AssignmentPrepared
-    );
+    assert_eq!(unknown.stage, RetrievalDeliveryStageV1::AssignmentPrepared);
 
     run.state = NativeReservationState::Released;
     run.pre_dispatch_stop = Some("proved unsent".to_string());
     let aborted = verify_retrieval_delivery_v1(&assignment, Some(&run)).expect("aborted");
-    assert_eq!(
-        aborted.stage,
-        RetrievalDeliveryStageV1::AssignmentPrepared
-    );
+    assert_eq!(aborted.stage, RetrievalDeliveryStageV1::AssignmentPrepared);
 }
 
 #[test]

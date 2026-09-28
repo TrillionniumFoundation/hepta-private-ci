@@ -46,8 +46,7 @@ fn components(first: i64, second: i64) -> Vec<FixedQ32> {
 }
 
 fn embedding(subject: Digest32, values: Vec<FixedQ32>) -> VectorEmbeddingV1 {
-    VectorEmbeddingV1::new(subject, generation(), model(), encoder(), values)
-        .expect("embedding")
+    VectorEmbeddingV1::new(subject, generation(), model(), encoder(), values).expect("embedding")
 }
 
 fn row(number: u64, values: Vec<FixedQ32>, ood: ProbabilityQ32) -> VectorIndexRecordV1 {
@@ -140,8 +139,8 @@ fn candidate_bound_reports_limit_reached_without_hiding_count() {
         row(2, components(0, 0), ProbabilityQ32::ZERO),
         row(3, components(0, 0), ProbabilityQ32::ZERO),
     ]);
-    let batch = generate_vector_batch_v1(&snapshot, &query(components(0, 0), 2))
-        .expect("bounded batch");
+    let batch =
+        generate_vector_batch_v1(&snapshot, &query(components(0, 0), 2)).expect("bounded batch");
     assert_eq!(batch.candidates.len(), 2);
     assert_eq!(batch.receipt.candidate_count, 2);
     assert_eq!(
@@ -170,11 +169,7 @@ fn calibrated_ood_filter_applies_before_capacity_completeness() {
 
 #[test]
 fn query_generation_model_and_encoder_must_match_index() {
-    let snapshot = snapshot(vec![row(
-        1,
-        components(0, 0),
-        ProbabilityQ32::ZERO,
-    )]);
+    let snapshot = snapshot(vec![row(1, components(0, 0), ProbabilityQ32::ZERO)]);
     let base = query(components(0, 0), 1);
 
     let mut stale = base.clone();
@@ -268,9 +263,7 @@ fn tombstones_duplicates_and_invalid_components_fail_closed() {
             2,
             vec![deleted],
         ),
-        Err(VectorOwnerErrorV1::TombstoneRecord(
-            "memory:1".to_string()
-        ))
+        Err(VectorOwnerErrorV1::TombstoneRecord("memory:1".to_string()))
     );
 
     let duplicate = row(2, components(0, 0), ProbabilityQ32::ZERO);
@@ -283,9 +276,7 @@ fn tombstones_duplicates_and_invalid_components_fail_closed() {
             2,
             vec![duplicate.clone(), duplicate],
         ),
-        Err(VectorOwnerErrorV1::DuplicateRecord(
-            "memory:2".to_string()
-        ))
+        Err(VectorOwnerErrorV1::DuplicateRecord("memory:2".to_string()))
     );
 
     assert_eq!(
@@ -309,11 +300,7 @@ fn rehashed_or_structurally_tampered_embeddings_and_indexes_are_rejected() {
         Err(VectorOwnerErrorV1::DigestMismatch("vector embedding"))
     );
 
-    let mut snapshot = snapshot(vec![row(
-        1,
-        components(0, 0),
-        ProbabilityQ32::ZERO,
-    )]);
+    let mut snapshot = snapshot(vec![row(1, components(0, 0), ProbabilityQ32::ZERO)]);
     snapshot.records[0].ood = ProbabilityQ32::ONE;
     assert_eq!(
         snapshot.validate(),

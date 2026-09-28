@@ -26,14 +26,7 @@ impl CognitiveStore {
             .await
             .map_err(unavailable)?;
         let receipt = self
-            .remember_with_assertions_tx(
-                &mut transaction,
-                access,
-                source,
-                draft,
-                affirmed,
-                denied,
-            )
+            .remember_with_assertions_tx(&mut transaction, access, source, draft, affirmed, denied)
             .await?;
         transaction.commit().await.map_err(unavailable)?;
         Ok(receipt)
@@ -67,13 +60,7 @@ impl CognitiveStore {
         self.insert_revision_facts_tx(transaction, &memory, &citation, &canonical)
             .await?;
         let projection = self
-            .refresh_scope_projection_tx(
-                transaction,
-                &memory.scope,
-                &memory,
-                &citation,
-                &canonical,
-            )
+            .refresh_scope_projection_tx(transaction, &memory.scope, &memory, &citation, &canonical)
             .await?;
         Ok(CognitiveWriteReceipt {
             memory,
@@ -143,26 +130,14 @@ impl CognitiveStore {
         let mut bound = draft.clone();
         bind_exact_citation(&mut bound, &citation)?;
         let memory = self
-            .revise_memory_revision_tx(
-                transaction,
-                access,
-                memory_id,
-                expected_revision,
-                &bound,
-            )
+            .revise_memory_revision_tx(transaction, access, memory_id, expected_revision, &bound)
             .await?;
         let canonical =
             self.canonicalize_fact_set(&memory, &citation, &facts, ASSERTION_CONTRACT)?;
         self.insert_revision_facts_tx(transaction, &memory, &citation, &canonical)
             .await?;
         let projection = self
-            .refresh_scope_projection_tx(
-                transaction,
-                &memory.scope,
-                &memory,
-                &citation,
-                &canonical,
-            )
+            .refresh_scope_projection_tx(transaction, &memory.scope, &memory, &citation, &canonical)
             .await?;
         Ok(CognitiveWriteReceipt {
             memory,

@@ -13,8 +13,7 @@ use codex_hepta_memory_retrieval::MAX_GENERATION_BOUND_CANDIDATES;
 use codex_hepta_types::Digest32;
 
 const DEFAULT_CANARY_THRESHOLD_PPM: u32 = 50_000;
-const DEFAULT_CANARY_COHORT_DOMAIN: &[u8] =
-    b"hepta.retrieval.default-canary-cohort.v1";
+const DEFAULT_CANARY_COHORT_DOMAIN: &[u8] = b"hepta.retrieval.default-canary-cohort.v1";
 
 /// Read capability supplied by trusted host composition, not by request data.
 /// Implementations authenticate their current owner independently, bind all

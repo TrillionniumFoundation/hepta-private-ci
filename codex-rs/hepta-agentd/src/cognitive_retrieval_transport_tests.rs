@@ -25,16 +25,19 @@ fn response() -> serde_json::Value {
 fn canonical_frame_preserves_revocation_and_signature_bytes() {
     let body = serde_json::to_vec(&response()).expect("JSON");
     let result = decode(&body, &owner(), 9, [7; 32]).expect("frame");
-    assert_eq!(result, MemoryRetrievalFrontierV1 {
-        owner: owner(),
-        body_generation: 9,
-        authority_epoch: 7,
-        sequence: 1,
-        publication_digest: None,
-        expires_unix_ms: 1000,
-        challenge: [7; 32],
-        signature: [0; 64],
-    });
+    assert_eq!(
+        result,
+        MemoryRetrievalFrontierV1 {
+            owner: owner(),
+            body_generation: 9,
+            authority_epoch: 7,
+            sequence: 1,
+            publication_digest: None,
+            expires_unix_ms: 1000,
+            challenge: [7; 32],
+            signature: [0; 64],
+        }
+    );
 }
 
 #[test]
@@ -56,7 +59,15 @@ fn wrong_protocol_owner_generation_and_challenge_are_rejected() {
 fn unknown_duplicate_and_trailing_fields_are_rejected() {
     let mut unknown = response();
     unknown["trusted"] = json!(true);
-    assert!(decode(&serde_json::to_vec(&unknown).expect("JSON"), &owner(), 9, [7; 32]).is_err());
+    assert!(
+        decode(
+            &serde_json::to_vec(&unknown).expect("JSON"),
+            &owner(),
+            9,
+            [7; 32]
+        )
+        .is_err()
+    );
     let body = serde_json::to_string(&response()).expect("JSON");
     let duplicate = body.replacen('{', "{\"sequence\":1,", 1);
     assert!(decode(duplicate.as_bytes(), &owner(), 9, [7; 32]).is_err());
@@ -69,7 +80,15 @@ fn noncanonical_hex_and_oversized_documents_are_rejected() {
     for value in ["ff".to_string(), "GG".repeat(64), "AA".repeat(64)] {
         let mut fixture = response();
         fixture["signature"] = json!(value);
-        assert!(decode(&serde_json::to_vec(&fixture).expect("JSON"), &owner(), 9, [7; 32]).is_err());
+        assert!(
+            decode(
+                &serde_json::to_vec(&fixture).expect("JSON"),
+                &owner(),
+                9,
+                [7; 32]
+            )
+            .is_err()
+        );
     }
     assert!(decode(&vec![b' '; MAX_FRAME_BYTES + 1], &owner(), 9, [7; 32]).is_err());
 }
@@ -77,10 +96,17 @@ fn noncanonical_hex_and_oversized_documents_are_rejected() {
 #[test]
 fn endpoint_and_total_timeout_are_protected_configuration() {
     for endpoint in ["192.0.2.1:80", "0.0.0.0:80", "127.0.0.1:0"] {
-        assert!(LoopbackFrontierClient::new(endpoint.parse().expect("address"), Duration::from_secs(1)).is_err());
+        assert!(
+            LoopbackFrontierClient::new(endpoint.parse().expect("address"), Duration::from_secs(1))
+                .is_err()
+        );
     }
     let address = "127.0.0.1:12345".parse().expect("address");
-    for timeout in [Duration::ZERO, Duration::from_millis(9), Duration::from_secs(6)] {
+    for timeout in [
+        Duration::ZERO,
+        Duration::from_millis(9),
+        Duration::from_secs(6),
+    ] {
         assert!(LoopbackFrontierClient::new(address, timeout).is_err());
     }
 }
@@ -91,8 +117,12 @@ fn loopback_roundtrip_uses_length_framing_and_fresh_request_identity() {
     let endpoint = listener.local_addr().expect("address");
     let server = std::thread::spawn(move || {
         let (mut socket, _) = listener.accept().expect("accept");
-        socket.set_read_timeout(Some(Duration::from_secs(2))).expect("read timeout");
-        socket.set_write_timeout(Some(Duration::from_secs(2))).expect("write timeout");
+        socket
+            .set_read_timeout(Some(Duration::from_secs(2)))
+            .expect("read timeout");
+        socket
+            .set_write_timeout(Some(Duration::from_secs(2)))
+            .expect("write timeout");
         let mut header = [0; 4];
         socket.read_exact(&mut header).expect("header");
         let size = usize::try_from(u32::from_be_bytes(header)).expect("size");
@@ -100,12 +130,17 @@ fn loopback_roundtrip_uses_length_framing_and_fresh_request_identity() {
         let mut body = vec![0; size];
         socket.read_exact(&mut body).expect("body");
         let request: serde_json::Value = serde_json::from_slice(&body).expect("request");
-        assert_eq!(request, json!({
-            "schema": SCHEMA, "owner": owner().as_str(),
-            "body_generation": 9, "challenge": hex(&[7_u8; 32])
-        }));
+        assert_eq!(
+            request,
+            json!({
+                "schema": SCHEMA, "owner": owner().as_str(),
+                "body_generation": 9, "challenge": hex(&[7_u8; 32])
+            })
+        );
         let reply = serde_json::to_vec(&response()).expect("response");
-        socket.write_all(&u32::try_from(reply.len()).expect("size").to_be_bytes()).expect("header");
+        socket
+            .write_all(&u32::try_from(reply.len()).expect("size").to_be_bytes())
+            .expect("header");
         socket.write_all(&reply).expect("reply");
     });
     let client = LoopbackFrontierClient::new(endpoint, Duration::from_secs(2)).expect("client");

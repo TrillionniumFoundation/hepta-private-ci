@@ -8,8 +8,16 @@ use serde_json::json;
 #[test]
 fn key_and_signature_decoding_is_fixed_width_and_canonical() {
     assert_eq!(hex_array::<32>(&"02".repeat(32)).expect("key"), [2; 32]);
-    assert_eq!(hex_array::<64>(&"03".repeat(64)).expect("signature"), [3; 64]);
-    for invalid in ["A".repeat(64), "0".repeat(63), "0".repeat(65), "é".repeat(32)] {
+    assert_eq!(
+        hex_array::<64>(&"03".repeat(64)).expect("signature"),
+        [3; 64]
+    );
+    for invalid in [
+        "A".repeat(64),
+        "0".repeat(63),
+        "0".repeat(65),
+        "é".repeat(32),
+    ] {
         assert!(hex_array::<32>(&invalid).is_err());
     }
 }
@@ -26,7 +34,10 @@ fn bootstrap_descriptor_rejects_duplicate_unknown_and_boolean_fields() {
     });
     let text = serde_json::to_string(&descriptor).expect("json");
     assert!(serde_json::from_str::<BootstrapDescriptor>(&text).is_ok());
-    let duplicate = text.replace("\"body_generation\":9", "\"body_generation\":9,\"body_generation\":9");
+    let duplicate = text.replace(
+        "\"body_generation\":9",
+        "\"body_generation\":9,\"body_generation\":9",
+    );
     assert!(serde_json::from_str::<BootstrapDescriptor>(&duplicate).is_err());
     let mut invalid = descriptor.clone();
     invalid["body_generation"] = json!(true);

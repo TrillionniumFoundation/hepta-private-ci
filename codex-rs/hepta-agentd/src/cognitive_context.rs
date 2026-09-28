@@ -191,10 +191,7 @@ pub(crate) async fn read_with_retrieval_executor(
     let observation = executor
         .run_async(
             &request_work,
-            store.observe_memory_retrieval(
-                &access,
-                &RetrievalRequest::new(query, now),
-            ),
+            store.observe_memory_retrieval(&access, &RetrievalRequest::new(query, now)),
         )
         .await
         .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
@@ -414,11 +411,7 @@ pub(crate) async fn read_with_retrieval_executor(
     let statuses = executor
         .run_async(
             &request_work,
-            store.revalidate_memory_candidates(
-                &access,
-                &ordered_bindings,
-                revalidation_now,
-            ),
+            store.revalidate_memory_candidates(&access, &ordered_bindings, revalidation_now),
         )
         .await
         .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
@@ -515,12 +508,7 @@ pub(crate) async fn read_with_retrieval_executor(
     executor
         .run_async(
             &request_work,
-            store.revalidate_lane_c_snapshot(
-                &access,
-                &scope,
-                &cut,
-                final_fence_now,
-            ),
+            store.revalidate_lane_c_snapshot(&access, &scope, &cut, final_fence_now),
         )
         .await
         .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
@@ -739,11 +727,7 @@ pub(crate) async fn revalidate_with_retrieval_executor(
     let cut = executor
         .run_async(
             &request_work,
-            store.lane_c_snapshot(
-                &access,
-                &scope,
-                revalidation_snapshot_now,
-            ),
+            store.lane_c_snapshot(&access, &scope, revalidation_snapshot_now),
         )
         .await
         .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
@@ -828,12 +812,7 @@ pub(crate) async fn revalidate_with_retrieval_executor(
     executor
         .run_async(
             &request_work,
-            store.revalidate_lane_c_snapshot(
-                &access,
-                &scope,
-                &cut,
-                final_fence_now,
-            ),
+            store.revalidate_lane_c_snapshot(&access, &scope, &cut, final_fence_now),
         )
         .await
         .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;

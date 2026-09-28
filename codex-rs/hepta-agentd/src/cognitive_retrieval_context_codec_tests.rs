@@ -52,7 +52,10 @@ fn wire() -> Value {
 #[test]
 fn empty_projection_preserves_full_generation_identity() {
     let context = decode(&serde_json::to_vec(&wire()).expect("json")).expect("context");
-    assert_eq!(context.engram_snapshot.generation_vector_digest, context.generation_vector.digest());
+    assert_eq!(
+        context.engram_snapshot.generation_vector_digest,
+        context.generation_vector.digest()
+    );
     context.validate().expect("context validation");
 }
 
@@ -61,24 +64,45 @@ fn context_rejects_duplicate_top_level_and_nested_fields() {
     let text = serde_json::to_string(&wire()).expect("json");
     let top = text.replacen('{', "{\"schema\":\"duplicate\",", 1);
     assert!(decode(top.as_bytes()).is_err());
-    let nested = text.replace("\"authority_epoch\":1", "\"authority_epoch\":1,\"authority_epoch\":1");
+    let nested = text.replace(
+        "\"authority_epoch\":1",
+        "\"authority_epoch\":1,\"authority_epoch\":1",
+    );
     assert_ne!(nested, text);
     assert!(decode(nested.as_bytes()).is_err());
 }
 
 #[test]
 fn every_context_layer_rejects_unknown_fields() {
-    for path in ["", "/generation_vector", "/retrieval_policy", "/dynamics_policy", "/engram"] {
+    for path in [
+        "",
+        "/generation_vector",
+        "/retrieval_policy",
+        "/dynamics_policy",
+        "/engram",
+    ] {
         let mut value = wire();
-        value.pointer_mut(path).expect("path").as_object_mut().expect("object")
+        value
+            .pointer_mut(path)
+            .expect("path")
+            .as_object_mut()
+            .expect("object")
             .insert("authority_override".to_string(), json!(true));
-        assert!(decode(&serde_json::to_vec(&value).expect("json")).is_err(), "{path}");
+        assert!(
+            decode(&serde_json::to_vec(&value).expect("json")).is_err(),
+            "{path}"
+        );
     }
 }
 
 #[test]
 fn integer_fields_reject_booleans_fractions_negative_and_overflow() {
-    for invalid in [json!(true), json!(1.5), json!(-1), json!(18446744073709551616.0_f64)] {
+    for invalid in [
+        json!(true),
+        json!(1.5),
+        json!(-1),
+        json!(18446744073709551616.0_f64),
+    ] {
         let mut value = wire();
         value["generation_vector"]["authority_epoch"] = invalid;
         assert!(decode(&serde_json::to_vec(&value).expect("json")).is_err());
@@ -97,7 +121,10 @@ fn policy_drift_unknown_channels_and_zero_epoch_fail_closed() {
     ] {
         let mut value = wire();
         *value.pointer_mut(path).expect("path") = replacement;
-        assert!(decode(&serde_json::to_vec(&value).expect("json")).is_err(), "{path}");
+        assert!(
+            decode(&serde_json::to_vec(&value).expect("json")).is_err(),
+            "{path}"
+        );
     }
 }
 
@@ -109,7 +136,10 @@ fn nodes_are_bound_to_vector_and_duplicate_support_is_rejected() {
         "threshold_q32":0, "confidence_q32":4294967296_u64});
     value["engram"]["nodes"] = json!([node]);
     let context = decode(&serde_json::to_vec(&value).expect("json")).expect("node");
-    assert_eq!(context.engram_snapshot.nodes[0].generation_vector_digest, context.generation_vector.digest());
+    assert_eq!(
+        context.engram_snapshot.nodes[0].generation_vector_digest,
+        context.generation_vector.digest()
+    );
     let support = value["engram"]["nodes"][0]["support"][0].clone();
     value["engram"]["nodes"][0]["support"] = json!([support, support]);
     assert!(decode(&serde_json::to_vec(&value).expect("json")).is_err());

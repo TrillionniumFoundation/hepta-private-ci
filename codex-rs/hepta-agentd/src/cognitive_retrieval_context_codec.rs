@@ -131,24 +131,28 @@ pub(super) fn decode(bytes: &[u8]) -> Result<RetrievalExecutionContextV1, String
     }
     let policy = RetrievalPolicyV1 {
         policy_id: id(p.policy_id)?,
-        channel_weights: p.channel_weights.into_iter().map(|row| {
-            let channel = match row.channel {
-                0 => RetrievalChannelV1::Lexical,
-                1 => RetrievalChannelV1::Vector,
-                2 => RetrievalChannelV1::Entity,
-                3 => RetrievalChannelV1::Temporal,
-                4 => RetrievalChannelV1::Causal,
-                5 => RetrievalChannelV1::Procedural,
-                6 => RetrievalChannelV1::ContradictionSupport,
-                7 => RetrievalChannelV1::Graph,
-                _ => return Err("unknown retrieval channel wire code".to_string()),
-            };
-            Ok(RetrievalChannelWeightV1 {
-                channel,
-                weight: FixedQ32::from_raw(row.weight_q32),
-                maximum_candidates: row.maximum_candidates,
+        channel_weights: p
+            .channel_weights
+            .into_iter()
+            .map(|row| {
+                let channel = match row.channel {
+                    0 => RetrievalChannelV1::Lexical,
+                    1 => RetrievalChannelV1::Vector,
+                    2 => RetrievalChannelV1::Entity,
+                    3 => RetrievalChannelV1::Temporal,
+                    4 => RetrievalChannelV1::Causal,
+                    5 => RetrievalChannelV1::Procedural,
+                    6 => RetrievalChannelV1::ContradictionSupport,
+                    7 => RetrievalChannelV1::Graph,
+                    _ => return Err("unknown retrieval channel wire code".to_string()),
+                };
+                Ok(RetrievalChannelWeightV1 {
+                    channel,
+                    weight: FixedQ32::from_raw(row.weight_q32),
+                    maximum_candidates: row.maximum_candidates,
+                })
             })
-        }).collect::<Result<Vec<_>, String>>()?,
+            .collect::<Result<Vec<_>, String>>()?,
         maximum_results: p.maximum_results,
         minimum_total_score: FixedQ32::from_raw(p.minimum_total_score_q32),
         maximum_ood: ProbabilityQ32::from_raw(p.maximum_ood_q32)
@@ -179,12 +183,8 @@ pub(super) fn decode(bytes: &[u8]) -> Result<RetrievalExecutionContextV1, String
         approved_context_digest: digest(&wire.approved_context_digest)?,
         cue_profile_digest: digest(&wire.cue_profile_digest)?,
         retrieval_policy: policy,
-        engram_snapshot: EngramSnapshotV1::new(
-            vector_digest,
-            engram_generation,
-            nodes,
-            synapses,
-        ).map_err(|error| error.to_string())?,
+        engram_snapshot: EngramSnapshotV1::new(vector_digest, engram_generation, nodes, synapses)
+            .map_err(|error| error.to_string())?,
         dynamics_policy: dynamics,
     };
     context.validate().map_err(|error| error.to_string())?;
@@ -192,7 +192,11 @@ pub(super) fn decode(bytes: &[u8]) -> Result<RetrievalExecutionContextV1, String
 }
 
 pub(super) fn digest(value: &str) -> Result<Digest32, String> {
-    if value.len() != 64 || !value.bytes().all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)) {
+    if value.len() != 64
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    {
         return Err("retrieval digest must be canonical lowercase SHA-256 hex".to_string());
     }
     value.parse::<Digest32>().map_err(|error| error.to_string())

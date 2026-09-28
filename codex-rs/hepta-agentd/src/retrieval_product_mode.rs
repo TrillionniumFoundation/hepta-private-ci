@@ -19,8 +19,7 @@ use crate::CurrentMemoryRetrievalContext;
 
 const PPM_SCALE: u32 = 1_000_000;
 const DEFAULT_CANARY_THRESHOLD_PPM: u32 = 50_000;
-const DEFAULT_CANARY_COHORT_DOMAIN: &[u8] =
-    b"hepta.retrieval.default-canary-cohort.v1";
+const DEFAULT_CANARY_COHORT_DOMAIN: &[u8] = b"hepta.retrieval.default-canary-cohort.v1";
 const LEGACY_CANARY_DOMAIN: &[u8] = b"hepta.retrieval.canary-owner-cohort.v1";
 const CANARY_DOMAIN: &[u8] = b"hepta.retrieval.canary-owner-cohort.v2";
 const MODE_DOMAIN: &[u8] = b"hepta.retrieval.product-delivery-mode.v2";
@@ -58,10 +57,8 @@ impl DeliveryPolicy {
             canary_policy_version: 1,
             canary_threshold_ppm: DEFAULT_CANARY_THRESHOLD_PPM,
             canary_cohort_salt: Digest32::of_bytes(DEFAULT_CANARY_COHORT_DOMAIN),
-            shadow_maximum_channel_candidates: u32::try_from(
-                MAX_GENERATION_BOUND_CANDIDATES,
-            )
-            .unwrap_or(u32::MAX),
+            shadow_maximum_channel_candidates: u32::try_from(MAX_GENERATION_BOUND_CANDIDATES)
+                .unwrap_or(u32::MAX),
             shadow_maximum_nodes: MAX_ENGRAM_NODES,
             shadow_maximum_synapses: MAX_ENGRAM_SYNAPSES,
             shadow_maximum_settling_steps: MAX_ENGRAM_SETTLING_STEPS,
@@ -83,13 +80,11 @@ impl DeliveryPolicy {
         }
         if self.canary_policy_version == 1
             && (self.canary_threshold_ppm != DEFAULT_CANARY_THRESHOLD_PPM
-                || self.canary_cohort_salt
-                    != Digest32::of_bytes(DEFAULT_CANARY_COHORT_DOMAIN))
+                || self.canary_cohort_salt != Digest32::of_bytes(DEFAULT_CANARY_COHORT_DOMAIN))
         {
             return Err("retrieval canary v1 policy must preserve its fixed cohort".to_string());
         }
-        let maximum_candidates =
-            u32::try_from(MAX_GENERATION_BOUND_CANDIDATES).unwrap_or(u32::MAX);
+        let maximum_candidates = u32::try_from(MAX_GENERATION_BOUND_CANDIDATES).unwrap_or(u32::MAX);
         if self.shadow_maximum_channel_candidates == 0
             || self.shadow_maximum_channel_candidates > maximum_candidates
         {
@@ -98,9 +93,7 @@ impl DeliveryPolicy {
         if self.shadow_maximum_nodes == 0 || self.shadow_maximum_nodes > MAX_ENGRAM_NODES {
             return Err("retrieval shadow node budget is outside product bounds".to_string());
         }
-        if self.shadow_maximum_synapses == 0
-            || self.shadow_maximum_synapses > MAX_ENGRAM_SYNAPSES
-        {
+        if self.shadow_maximum_synapses == 0 || self.shadow_maximum_synapses > MAX_ENGRAM_SYNAPSES {
             return Err("retrieval shadow synapse budget is outside product bounds".to_string());
         }
         if self.shadow_maximum_settling_steps == 0
@@ -190,9 +183,7 @@ fn in_canary_cohort(owner: &AgentId, threshold_ppm: u32, salt: Digest32) -> bool
     let sample = u64::from_be_bytes([
         hash[0], hash[1], hash[2], hash[3], hash[4], hash[5], hash[6], hash[7],
     ]);
-    let cutoff = (1_u128 << 64)
-        .saturating_mul(u128::from(threshold_ppm))
-        / u128::from(PPM_SCALE);
+    let cutoff = (1_u128 << 64).saturating_mul(u128::from(threshold_ppm)) / u128::from(PPM_SCALE);
     u128::from(sample) < cutoff
 }
 
@@ -264,8 +255,7 @@ impl CurrentMemoryRetrievalContext for ModeRoutedContext {
         if let Some(error) = &self.policy.validation_error {
             return Err(error.clone());
         }
-        let (context, state, deadline) =
-            self.reader.acquire_context(owner, body_generation)?;
+        let (context, state, deadline) = self.reader.acquire_context(owner, body_generation)?;
         if state.is_zero() {
             return Err("retrieval mode cannot bind an empty lifecycle identity".to_string());
         }
@@ -348,8 +338,7 @@ mod tests {
         bytes.extend_from_slice(owner.as_str().as_bytes());
         let digest = Digest32::of_bytes(&bytes);
         let hash = digest.as_array();
-        let expected =
-            u32::from_be_bytes([hash[0], hash[1], hash[2], hash[3]]) < u32::MAX / 20;
+        let expected = u32::from_be_bytes([hash[0], hash[1], hash[2], hash[3]]) < u32::MAX / 20;
         assert_eq!(in_legacy_canary_cohort(&owner), expected);
         assert_eq!(
             delivers_hnmf(CognitiveRetrievalMode::HnmfCanary, &owner),
