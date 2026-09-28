@@ -48,13 +48,18 @@ class WorkerRegistrationRenewalDecision:
     receipt_digest: str
 
 
-def _profile(receipt: WorkerRegistrationRenewalReceipt) -> tuple[dict[str, object], tuple[str, ...], tuple[str, ...]]:
+def _profile(
+    receipt: WorkerRegistrationRenewalReceipt,
+) -> tuple[dict[str, object], tuple[str, ...], tuple[str, ...]]:
     checked_id(receipt.worker_id, "worker_id")
     checked_id(receipt.previous_signing_identity, "previous_signing_identity")
     if (
         not isinstance(receipt.previous_profile_digest, str)
         or len(receipt.previous_profile_digest) != 64
-        or any(character not in "0123456789abcdef" for character in receipt.previous_profile_digest)
+        or any(
+            character not in "0123456789abcdef"
+            for character in receipt.previous_profile_digest
+        )
     ):
         raise EngineeringError("invalid_previous_profile_digest")
     checked_id(receipt.worker_signing_identity, "worker_signing_identity")
@@ -68,7 +73,9 @@ def _profile(receipt: WorkerRegistrationRenewalReceipt) -> tuple[dict[str, objec
         or len(set(receipt.skills)) != len(receipt.skills)
     ):
         raise EngineeringError("invalid_worker_renewal")
-    skills = tuple(sorted(checked_id(value, "worker_skill") for value in receipt.skills))
+    skills = tuple(
+        sorted(checked_id(value, "worker_skill") for value in receipt.skills)
+    )
     paths = canonical_paths(receipt.allowed_paths)
     if not paths:
         raise EngineeringError("invalid_worker_renewal")
@@ -88,7 +95,9 @@ def _decode_tuple(value: object, code: str) -> tuple[str, ...]:
         parsed = json.loads(raw)
     except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
         raise EngineeringError(code) from None
-    if not isinstance(parsed, list) or any(not isinstance(item, str) for item in parsed):
+    if not isinstance(parsed, list) or any(
+        not isinstance(item, str) for item in parsed
+    ):
         raise EngineeringError(code)
     return tuple(parsed)
 
@@ -98,9 +107,17 @@ def _renewal_replay_present(
     worker_id: str,
     receipt_digest: str,
 ) -> bool:
+    """Locate immutable replay evidence without a recency-window assumption.
+
+    A renewal may be replayed after arbitrary later owner activity or after a long
+    outage.  Limiting this lookup to a recent audit suffix would eventually turn an
+    acknowledgement-loss replay into a conflict.  The hash-linked audit projection
+    is the durable evidence source, so scan all matching event rows.  Audit
+    checkpoints bound integrity verification separately; they do not erase facts.
+    """
     rows = store.connection.execute(
-        "SELECT payload_json FROM audit_events WHERE event_type='worker_registration_renewed' "
-        "ORDER BY sequence DESC LIMIT 256"
+        "SELECT payload_json FROM audit_events "
+        "WHERE event_type='worker_registration_renewed' ORDER BY sequence DESC"
     ).fetchall()
     for row in rows:
         try:
@@ -158,7 +175,9 @@ def renew_worker_registration(
         current_revision = int(row["revision"])
         current_profile_digest = str(row["profile_digest"])
         current_identity = str(row["worker_signing_identity"])
-        current_skills = _decode_tuple(row["skills_json"], "worker_registration_invalid")
+        current_skills = _decode_tuple(
+            row["skills_json"], "worker_registration_invalid"
+        )
         current_paths = _decode_tuple(
             row["allowed_paths_json"], "worker_registration_invalid"
         )
@@ -174,7 +193,9 @@ def renew_worker_registration(
             and int(row["expires_unix_ns"]) == receipt.expires_unix_ns
         )
         if current_revision == receipt.expected_revision + 1 and target_matches:
-            if not _renewal_replay_present(store, receipt.worker_id, receipt_digest):
+            if not _renewal_replay_present(
+                store, receipt.worker_id, receipt_digest
+            ):
                 raise EngineeringError("worker_renewal_replay_conflict")
             return WorkerRegistrationRenewalDecision(
                 receipt.worker_id,
@@ -198,7 +219,8 @@ def renew_worker_registration(
 
         reserved = int(
             store.connection.execute(
-                "SELECT COALESCE(SUM(capacity_units),0) FROM worker_capacity_reservations "
+                "SELECT COALESCE(SUM(capacity_units),0) "
+                "FROM worker_capacity_reservations "
                 "WHERE worker_id=? AND state='active'",
                 (receipt.worker_id,),
             ).fetchone()[0]
@@ -227,10 +249,12 @@ def renew_worker_registration(
 
         revision = current_revision + 1
         updated = store.connection.execute(
-            "UPDATE worker_registrations SET profile_digest=?,worker_signing_identity=?,"
-            "skills_json=?,allowed_paths_json=?,capacity_units=?,issuer=?,"
+            "UPDATE worker_registrations SET "
+            "profile_digest=?,worker_signing_identity=?,skills_json=?,"
+            "allowed_paths_json=?,capacity_units=?,issuer=?,"
             "authority_signing_identity=?,observed_unix_ns=?,expires_unix_ns=?,"
-            "revision=?,recorded_unix_ns=? WHERE worker_id=? AND revision=? AND state='active'",
+            "revision=?,recorded_unix_ns=? "
+            "WHERE worker_id=? AND revision=? AND state='active'",
             (
                 target_profile_digest,
                 receipt.worker_signing_identity,
