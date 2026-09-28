@@ -1,0 +1,53 @@
+name: Hepta control engineering map migration
+
+on:
+  push:
+    branches:
+      - codex/control-engineering-full-convergence-20260928
+    paths:
+      - '.github/workflows/hepta-control-map-migration.yml'
+      - 'scripts/control_engineering_update_map.py'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: control-engineering-map-migration
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/control-engineering-full-convergence-20260928
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Rebind exact implementation objects
+        shell: bash
+        run: |
+          set -euo pipefail
+          OBSERVED_COMMIT="$(git rev-parse HEAD)"
+          OBSERVED_TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/control_engineering_update_map.py \
+            --repository "$GITHUB_WORKSPACE" \
+            --map docs/modules/control.engineering/IMPLEMENTATION_MAP.json \
+            --observed-commit "$OBSERVED_COMMIT" \
+            --observed-tree "$OBSERVED_TREE"
+          git diff --check
+          git diff -- docs/modules/control.engineering/IMPLEMENTATION_MAP.json
+      - name: Commit migration result
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- docs/modules/control.engineering/IMPLEMENTATION_MAP.json; then
+            echo "implementation map already current"
+            exit 0
+          fi
+          git config user.name "Hepta Source Migration"
+          git config user.email "hepta-source-migration@users.noreply.github.com"
+          git add docs/modules/control.engineering/IMPLEMENTATION_MAP.json
+          git commit -m "docs(control.engineering): bind production convergence objects"
+          git push origin HEAD:codex/control-engineering-full-convergence-20260928
