@@ -61,6 +61,7 @@ type TestResult<T = ()> = Result<T, Box<dyn Error>>;
 enum Interruption {
     None,
     Revoked,
+    RevokedDuringConstruction,
     EpochChanged,
     FeedUnavailable,
     IdentityChanged,
@@ -129,12 +130,17 @@ struct Authorizer {
     key: SigningKey,
     _directory: TempDir,
     polls: Arc<AtomicU64>,
+    constructions: Arc<AtomicU64>,
     changed: AtomicU64,
     interruption: Interruption,
 }
 
 impl Authorizer {
-    fn new(polls: Arc<AtomicU64>, interruption: Interruption) -> TestResult<Self> {
+    fn new(
+        polls: Arc<AtomicU64>,
+        constructions: Arc<AtomicU64>,
+        interruption: Interruption,
+    ) -> TestResult<Self> {
         let directory = TempDir::new()?;
         fs::set_permissions(directory.path(), fs::Permissions::from_mode(0o700))?;
         let key = SigningKey::from_bytes(&next_test_material()?);
@@ -153,6 +159,7 @@ impl Authorizer {
             key,
             _directory: directory,
             polls,
+            constructions,
             changed: AtomicU64::new(0),
             interruption,
         })
@@ -195,11 +202,18 @@ impl MatrixOutboundAuthorizer for Authorizer {
     }
 
     fn refresh_revocations(&self) -> Result<(), MatrixAuthorityError> {
-        if self.polls.load(Ordering::SeqCst) == 0 || self.changed.swap(1, Ordering::SeqCst) != 0 {
+        let boundary_crossed = if self.interruption == Interruption::RevokedDuringConstruction {
+            self.constructions.load(Ordering::SeqCst) != 0
+        } else {
+            self.polls.load(Ordering::SeqCst) != 0
+        };
+        if !boundary_crossed || self.changed.swap(1, Ordering::SeqCst) != 0 {
             return Ok(());
         }
         match self.interruption {
-            Interruption::Revoked | Interruption::EpochChanged => self
+            Interruption::Revoked
+            | Interruption::RevokedDuringConstruction
+            | Interruption::EpochChanged => self
                 .authority
                 .update_revocations(FinalUseRevocations {
                     authority_epoch: if self.interruption == Interruption::EpochChanged {
@@ -234,6 +248,7 @@ impl MatrixOutboundAuthorizer for Authorizer {
 
 struct Transport {
     polls: Arc<AtomicU64>,
+    constructions: Arc<AtomicU64>,
     interruption: Interruption,
 }
 
@@ -254,6 +269,7 @@ impl MatrixOutboundTransport for Transport {
         _record: &'a OutboxRecord,
         _seal: MatrixRawSendSeal,
     ) -> MatrixSendFuture<'a> {
+        self.constructions.fetch_add(1, Ordering::SeqCst);
         Box::pin(poll_fn(move |context| {
             if self.polls.fetch_add(1, Ordering::SeqCst) == 0 {
                 context.waker().wake_by_ref();
@@ -271,9 +287,15 @@ impl MatrixOutboundTransport for Transport {
 async fn check_interruption(interruption: Interruption) -> TestResult {
     let (_temp, layout, store, txn) = fixture().await?;
     let polls = Arc::new(AtomicU64::new(0));
-    let authority = Authorizer::new(Arc::clone(&polls), interruption)?;
+    let constructions = Arc::new(AtomicU64::new(0));
+    let authority = Authorizer::new(
+        Arc::clone(&polls),
+        Arc::clone(&constructions),
+        interruption,
+    )?;
     let transport = Transport {
         polls: Arc::clone(&polls),
+        constructions: Arc::clone(&constructions),
         interruption,
     };
     let config = OutboxDispatchConfig {
@@ -293,14 +315,25 @@ async fn check_interruption(interruption: Interruption) -> TestResult {
     // every transport poll still has a live authority/session/time check.
     assert_eq!(stats.entered_attempts, 1);
     assert_eq!(stats.payload_digest_checks, 1);
-    assert_eq!(stats.claim_to_first_poll_samples, 1);
+    assert_eq!(constructions.load(Ordering::SeqCst), 1);
+    assert_eq!(
+        stats.claim_to_first_poll_samples,
+        u64::from(interruption != Interruption::RevokedDuringConstruction)
+    );
     assert!(stats.dynamic_checks >= stats.transport_polls);
     assert_eq!(stats.transport_polls, polls.load(Ordering::SeqCst));
     let continuing = matches!(
         interruption,
         Interruption::None | Interruption::UnrelatedNonce
     );
-    assert_eq!(polls.load(Ordering::SeqCst), if continuing { 2 } else { 1 });
+    let expected_polls = if interruption == Interruption::RevokedDuringConstruction {
+        0
+    } else if continuing {
+        2
+    } else {
+        1
+    };
+    assert_eq!(polls.load(Ordering::SeqCst), expected_polls);
     assert_eq!(
         (
             stats.sent,
@@ -352,6 +385,11 @@ async fn check_interruption(interruption: Interruption) -> TestResult {
 #[tokio::test]
 async fn revoked_while_pending_stops_polling_and_survives_reopen() -> TestResult {
     check_interruption(Interruption::Revoked).await
+}
+
+#[tokio::test]
+async fn revocation_during_future_construction_blocks_first_transport_poll() -> TestResult {
+    check_interruption(Interruption::RevokedDuringConstruction).await
 }
 
 #[tokio::test]

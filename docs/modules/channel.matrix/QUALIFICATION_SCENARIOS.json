@@ -236,7 +236,13 @@
     {
       "id": "MATRIX-Q19",
       "scenario": "raw SDK bypass",
-      "tests": [],
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-sdk::pending_poll_regressions",
+          "test": "revocation_during_future_construction_blocks_first_transport_poll",
+          "source": "codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs"
+        }
+      ],
       "external_gates": [
         "compile_fail_and_transport_negative"
       ]

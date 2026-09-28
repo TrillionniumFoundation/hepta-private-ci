@@ -33,7 +33,7 @@ use admission::Admission;
 use admission::admit_claim;
 use clock::DispatchClock;
 use gate::FinalSendGate;
-pub use permit::MatrixSendPermit;
+use permit::MatrixSendPermit;
 use retry::*;
 use settlement::settle_entered;
 use telemetry::TelemetryWindow;
@@ -58,34 +58,45 @@ pub struct MatrixRawSendSeal {
 }
 
 /// Lazy Matrix transport driven by the durable sender's final gate.
+///
+/// Implementations expose only the sealed raw seam. Permit validation and
+/// construction of this seal live in a module-private blanket adapter, so an
+/// external transport cannot override or bypass the authorized entry step.
 pub trait MatrixOutboundTransport: Send + Sync {
     /// Return the exact authenticated Matrix transport/session identity.
     fn identity(&self) -> Result<MatrixOutboundIdentity, MatrixTransportError>;
 
     /// Raw implementation seam; safe downstream code cannot construct the seal.
+    /// The durable gate invokes this method only from a live-gated poll.
     #[doc(hidden)]
     fn send<'a>(
         &'a self,
         record: &'a OutboxRecord,
         seal: MatrixRawSendSeal,
     ) -> MatrixSendFuture<'a>;
+}
 
-    /// Consume one non-constructible permit. Construction must not perform I/O
-    /// or spawn detached work: physical work stays inside final-gate polling.
+/// Final, module-private permit adapter. The blanket implementation prevents a
+/// transport implementation from replacing permit validation with its own
+/// behavior. Validation failure after kernel entry is returned to the gate as
+/// an entered error, never as a remote permanent rejection.
+trait MatrixAuthorizedTransport: MatrixOutboundTransport {
     fn send_authorized<'a>(
         &'a self,
         record: &'a OutboxRecord,
         permit: MatrixSendPermit,
-    ) -> MatrixSendFuture<'a> {
-        match self
+    ) -> Result<MatrixSendFuture<'a>, OutboxDispatchError> {
+        let identity = self
             .identity()
-            .and_then(|identity| permit.validate(record, &identity))
-        {
-            Ok(()) => self.send(record, MatrixRawSendSeal { _private: () }),
-            Err(error) => Box::pin(async move { Err(error) }),
+            .map_err(|_| OutboxDispatchError::TransportIdentity)?;
+        if permit.validate(record, &identity).is_err() {
+            return Err(OutboxDispatchError::Authority);
         }
+        Ok(self.send(record, MatrixRawSendSeal { _private: () }))
     }
 }
+
+impl<T: MatrixOutboundTransport + ?Sized> MatrixAuthorizedTransport for T {}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum MatrixTransportError {

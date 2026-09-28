@@ -24,6 +24,12 @@ The sender no longer maintains an independent `entered_effect` Boolean. A
 post-entry error cannot cause a later caller to treat the current claim as
 unentered merely because an await failed before the Boolean was set.
 
+The public transport trait exposes only a raw seam carrying an unforgeable
+`MatrixRawSendSeal`. `MatrixSendPermit` is private to `outbound_v2`, and permit
+validation is implemented by one module-private blanket adapter. A transport
+implementation cannot override that adapter or relabel a post-entry validation
+failure as a remote permanent rejection.
+
 ## 2. Just-in-time claims and measurement
 
 `claim_limit` remains a bound from 1 to 256, but now means maximum work per pass.
@@ -44,9 +50,16 @@ throughput or latency improvement is claimed until measured on the target host.
 
 An `OutboxRecord` owns its content bytes and remains immutably borrowed with its
 binding for the lifetime of a gate. Canonical payload verification is performed
-once by that gate. The existing sealed permit separately validates the content
-at adapter construction. Neither the signed content nor the durable pin is
-changed by this optimization.
+once by that gate. The private sealed permit separately validates the content at
+adapter construction. Neither the signed content nor the durable pin is changed
+by this optimization.
+
+Permit validation and construction of the real SDK future occur inside the
+first live-gated poll. The gate checks the dynamic authority/session/deadline
+window both before and after synchronous adapter construction, then again before
+every continuation poll. Consequently an external transport cannot perform
+constructor-time work before the final gate, and constructor delay cannot
+silently extend the grant or lease window.
 
 On every continuation poll, cancellation, absolute grant expiry, physical lease
 deadline, authenticated revocation epoch/revision and exact transport/session
@@ -107,6 +120,7 @@ approve an older binary that only understands migrations 1-12.
 | Cancellation after entry leaves current unknown and later attempts untouched | same fixture | locked native test |
 | Multiple polls retain one gate digest and fresh dynamic checks | `pending_poll_regressions.rs` | locked native test |
 | Typed entered result preserves post-entry errors | gate/settlement plus existing entry/reopen cases | locked native test |
+| Public transport cannot override permit validation; real future construction remains inside the first gated poll | `test_channel_matrix_transport_boundary.py` plus native compilation | Python boundary regression and locked native compile |
 | Numeric telemetry saturation and identity-free output | `outbound_v2/telemetry_tests.rs` | locked native unit test |
 | Diagnostic read-only, missing measurement, capacity, parameterization and migration rejection | `test_channel_matrix_diagnostics.py` | Python with real SQLite migrations |
 | Receipt scope separation, stale/mutated/Boolean/duplicate rejection | `test_channel_matrix_status.py` | Python evidence fixtures |

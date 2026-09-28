@@ -9,15 +9,11 @@ use crate::content::outbound_payload_digest;
 
 /// Single-use admission to one exact Matrix adapter invocation.
 ///
-/// Only the final-poll gate can construct this value, after consuming a genuine
-/// kernel token. It cannot be cloned, deserialized, or constructed from receipt
-/// strings. Holding it is entry evidence, not permission to retry or to ignore
-/// subsequent cancellation/revocation checks performed by the gate.
-///
-/// ```compile_fail
-/// let forged = codex_hepta_matrix_sdk::MatrixSendPermit {};
-/// ```
-pub struct MatrixSendPermit {
+/// This value is private to `outbound_v2`: only the final-poll gate constructs
+/// it after consuming a genuine kernel token, and only the module-private
+/// authorized adapter validates and consumes it. It cannot be cloned,
+/// deserialized, exported, or replaced by a transport implementation.
+pub(super) struct MatrixSendPermit {
     proof: Arc<EnteredUseToken>,
     binding: FinalUseBinding,
     identity: MatrixOutboundIdentity,
@@ -55,7 +51,7 @@ impl MatrixSendPermit {
         Ok(permit)
     }
 
-    pub(crate) fn validate(
+    pub(super) fn validate(
         &self,
         record: &OutboxRecord,
         identity: &MatrixOutboundIdentity,

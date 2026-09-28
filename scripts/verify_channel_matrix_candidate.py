@@ -26,10 +26,12 @@ SOURCE_MARKERS = {
     "codex-rs/hepta-supervisor/src/matrix.rs": ("fn start_matrix_companion(", "spawn_matrixd(&spec)"),
     "codex-rs/hepta-matrixd/src/runner.rs": ("pub async fn run(", "MatrixFinalUseBroker::open(&config.layout)", "run_outbox_sender("),
     "codex-rs/hepta-matrixd/src/final_use.rs": ("HOST_CONFIG_SCHEMA_VERSION: u32 = 1", "BROKER_WIRE_SCHEMA_VERSION: u32 = MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION", "response.schema_version != BROKER_WIRE_SCHEMA_VERSION"),
-    "codex-rs/hepta-matrix-sdk/src/lib.rs": ("mod outbound_v2;", "pub use outbound_v2::run_outbox_sender;", "pub use outbound_v2::MatrixSendPermit;"),
+    "codex-rs/hepta-matrix-sdk/src/lib.rs": ("mod outbound_v2;", "pub use outbound_v2::run_outbox_sender;", "pub use outbound_v2::MatrixRawSendSeal;"),
     "codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs": (
         "claim_outbox_fenced(", "Admission::Entered(entered)",
-        "settle_entered(store, &entered", "TelemetryWindow::new()"),
+        "settle_entered(store, &entered", "TelemetryWindow::new()",
+        "trait MatrixAuthorizedTransport", "permit.validate(record, &identity)",
+        "Ok(self.send(record, MatrixRawSendSeal { _private: () }))"),
     "codex-rs/hepta-matrix-sdk/src/outbound_v2/admission.rs": (
         "prepare_outbox_dispatch(record, prepared_at_ms)", "pin_outbox_content(",
         "record_outbox_authorized(", "record_outbox_dispatching(",
@@ -41,15 +43,16 @@ SOURCE_MARKERS = {
         "enter_verified_use(token, binding)", "MatrixSendPermit::new(",
         "send_authorized(self.record, permit)", "outbound_payload_digest(self.record)",
         "async fn continue_entered(", ") -> EnteredSend<'claim> {",
+        "let mut permit = Some(permit)", "let mut send: Option<MatrixSendFuture<'_>> = None",
         "self.preflight(grant, stats)", "self.require_live_window(grant.expires_at_ms)"),
     "codex-rs/hepta-matrix-sdk/src/outbound_v2/telemetry.rs": (
         "hepta.channel-matrix-runtime-metrics.v1", "post_entry_failures",
         "payload_digest_checks", "dynamic_checks"),
-    "codex-rs/hepta-matrix-sdk/src/outbound_v2/permit.rs": ("pub struct MatrixSendPermit", "proof.matches(&self.binding)", "outbound_payload_digest(record)"),
+    "codex-rs/hepta-matrix-sdk/src/outbound_v2/permit.rs": ("pub(super) struct MatrixSendPermit", "proof.matches(&self.binding)", "outbound_payload_digest(record)"),
     "codex-rs/hepta-matrix-sdk/src/outbound_v2/retry.rs": ("classified_retry_at(", "stable_jitter_ms(", "MatrixAttemptFailureClass::RateLimited", "MatrixAttemptFailureClass::ResponseLost"),
     "codex-rs/hepta-matrix-sdk/src/authority.rs": ("MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION: u32 = 2", "pub struct MatrixFinalUseRequest", "pub trait MatrixOutboundAuthorizer", "outbound_payload_digest(record)"),
     "codex-rs/hepta-matrix-sdk/src/content.rs": ("hepta.matrix.canonical-outbound-content.v1", "m.new_content", "m.relates_to", "event_id", "sort_unstable_by"),
-    "codex-rs/hepta-matrix-sdk/src/sdk.rs": ("mod implementation", "fn send_authorized", "permit.validate(record", "outbound_message_content(body", "disable_retry()"),
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": ("mod implementation", "fn send<'a>(", "_seal: MatrixRawSendSeal", "outbound_message_content(body", "disable_retry()"),
     "codex-rs/hepta-matrix-sdk/src/sdk_implementation.rs": ("ErrorKind::LimitExceeded", "RetryAfter::Delay", "MatrixTransportError::Dns", "MatrixTransportError::Tls", "MatrixTransportError::ResponseLost"),
     "codex-rs/hepta-matrix-store/src/claim/store.rs": ("claim_outbox_fenced(", "record_outbox_authorized(", "record_outbox_dispatching(", "record_outbox_entered_use(", "finish_outbox_indeterminate(", "matrix_dispatch_authority_witnesses", "matrix_dispatch_attempt_events", "matrix_dispatch_use_entries"),
     "codex-rs/hepta-matrix-store/src/claim/content.rs": ("pin_outbox_content(", "require_live_active_claim_tx", "matrix_dispatch_content_bindings", "matrix_dispatch_legacy_content_holds", "unsafe_prior"),
@@ -223,9 +226,26 @@ def verify(expected_sha: str | None) -> dict[str, object]:
     sdk_lib = local_path("codex-rs/hepta-matrix-sdk/src/lib.rs").read_text()
     if "mod outbound;" in sdk_lib or "pub use outbound::" in sdk_lib:
         raise RuntimeError("legacy unfenced outbound module is exported")
+    if "pub use outbound_v2::MatrixSendPermit;" in sdk_lib:
+        raise RuntimeError("final-use permit escaped the private outbound gate")
+    transport_boundary = local_path(
+        "codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs"
+    ).read_text()
+    trait_start = transport_boundary.find("pub trait MatrixOutboundTransport")
+    trait_end = transport_boundary.find(
+        "\n}\n\n/// Final, module-private permit adapter", trait_start
+    )
+    if trait_start < 0 or trait_end < 0:
+        raise RuntimeError("Matrix transport trait/private adapter boundary is ambiguous")
+    if "send_authorized" in transport_boundary[trait_start:trait_end]:
+        raise RuntimeError("public transport trait can override authorized permit validation")
+    if "pub use permit::MatrixSendPermit" in transport_boundary:
+        raise RuntimeError("outbound module publicly re-exports its final-use permit")
     facade = local_path("codex-rs/hepta-matrix-sdk/src/sdk.rs").read_text()
     if re.search(r"pub\s+(?:async\s+)?fn\s+client\s*\(", facade) or "Deref for MatrixSdkClient" in facade:
         raise RuntimeError("raw SDK client escaped the governed facade")
+    if "fn send_authorized" in facade:
+        raise RuntimeError("SDK transport overrides the final authorized adapter")
     observer_path = "codex-rs/hepta-matrixd/src/send_observer.rs"
     observer = local_path(observer_path).read_text()
     for token in ("BTreeMap", "struct MatrixSendObserver", "fn prepare_send(", "fn observe_send("):

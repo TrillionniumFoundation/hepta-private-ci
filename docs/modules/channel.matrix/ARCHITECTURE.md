@@ -63,7 +63,7 @@ A cursor cannot advance past the only terminal send observation because outbound
 
 ```text
 outbox row with stable Matrix transaction id
-  -> claim bounded batch with lease/attempt fence
+  -> claim one row immediately before work; claim_limit bounds the pass
   -> prepare durable dispatch identity
   -> read authenticated transport identity
   -> derive and durably pin canonical final-use content/scope digests
@@ -73,7 +73,8 @@ outbox row with stable Matrix transaction id
   -> refresh authenticated revocation frontier
   -> exact-frontier enter_verified_use
   -> persist the non-constructible entered-use proof
-  -> construct the opaque SDK permit
+  -> construct the private opaque permit
+  -> first live-gated poll invokes the non-overridable sealed adapter
   -> create and poll the lazy Matrix transport future under deadline < claim lease
   -> append transport observation
   -> wait for trusted /sync event observation
@@ -81,6 +82,8 @@ outbox row with stable Matrix transaction id
 ```
 
 `TransportAccepted` is not terminal success. Timeout, connection loss or an ambiguous response remains `Indeterminate` and retains the same stable transaction identity until homeserver reconciliation.
+
+The public transport trait contains no authorized method that an implementation can override. It exposes only the raw seam whose `MatrixRawSendSeal` cannot be constructed by downstream safe code. Permit validation and seal construction are one module-private blanket adapter, and the real SDK future is constructed inside the first gated poll after live authority, identity, cancellation and deadline checks. Constructor delay is followed by another live check before the future is polled.
 
 ## 5. Concurrency model
 

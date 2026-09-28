@@ -40,7 +40,6 @@ pub use matrix_sdk::authentication::matrix::MatrixSession;
 pub use outbound_v2::MatrixOutboundTransport;
 pub use outbound_v2::MatrixRawSendSeal;
 pub use outbound_v2::MatrixSendFuture;
-pub use outbound_v2::MatrixSendPermit;
 pub use outbound_v2::MatrixTransportError;
 pub use outbound_v2::OutboxDispatchConfig;
 pub use outbound_v2::OutboxDispatchError;

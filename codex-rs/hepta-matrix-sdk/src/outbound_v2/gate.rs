@@ -139,11 +139,35 @@ impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + 
                 )
                 .map_err(|_| OutboxDispatchError::Authority)?;
                 self.preflight(grant, stats)?;
-                let mut send = self.transport.send_authorized(self.record, permit);
+
+                // Keep permit validation and transport-future construction
+                // inside the first live-gated poll. The public transport trait
+                // has no overridable authorized method, and even synchronous
+                // constructor work cannot happen before this preflight.
+                let mut permit = Some(permit);
+                let mut send: Option<MatrixSendFuture<'_>> = None;
                 let mut first_poll = true;
                 let gated = poll_fn(|context| {
                     if let Err(error) = self.preflight(grant, stats) {
                         return Poll::Ready(Err(error));
+                    }
+                    if send.is_none() {
+                        let Some(permit) = permit.take() else {
+                            return Poll::Ready(Err(OutboxDispatchError::Store));
+                        };
+                        let future = match self
+                            .transport
+                            .send_authorized(self.record, permit)
+                        {
+                            Ok(future) => future,
+                            Err(error) => return Poll::Ready(Err(error)),
+                        };
+                        send = Some(future);
+                        // Identity/permit validation and future construction are
+                        // synchronous and may consume the remaining live window.
+                        if let Err(error) = self.preflight(grant, stats) {
+                            return Poll::Ready(Err(error));
+                        }
                     }
                     if first_poll {
                         let now_ms = match self.clock.now_ms() {
@@ -159,6 +183,9 @@ impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + 
                             stats.claim_to_first_poll_max_ms.max(wait_ms);
                         first_poll = false;
                     }
+                    let Some(send) = send.as_mut() else {
+                        return Poll::Ready(Err(OutboxDispatchError::Store));
+                    };
                     stats.transport_polls = stats.transport_polls.saturating_add(1);
                     send.as_mut().poll(context).map(Ok)
                 });

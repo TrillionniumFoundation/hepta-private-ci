@@ -9,9 +9,8 @@ on:
     branches: [main]
   workflow_dispatch: {}
 
-# Candidate validation is deliberately read-only. The separately named manual
-# channel-matrix-materialize workflow is the only recovery lane allowed to
-# write repository contents.
+# Candidate validation is deliberately read-only. Source changes must land as
+# reviewed commits; no qualification or documentation workflow mutates HEAD.
 permissions:
   contents: read
 

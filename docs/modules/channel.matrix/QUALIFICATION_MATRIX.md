@@ -24,7 +24,7 @@ Status labels: `source` means implementation/fixture exists; `executed` requires
 | MATRIX-Q16 | stale claim capability | token/attempt/lease mismatch cannot mutate current attempt | source |
 | MATRIX-Q17 | network failures | DNS/TLS/connect/read/response-loss/5xx classification | source; platform fault receipt required |
 | MATRIX-Q18 | edit target/content drift | same body with another replacement target produces a different signed binding | new Rust source; native execution required |
-| MATRIX-Q19 | raw SDK bypass | no public raw client; real unsealed send performs no I/O; only opaque permit enters SDK | new facade/permit source; compiler and transport-negative qualification required |
+| MATRIX-Q19 | raw SDK bypass | no public raw client or permit export; public transports cannot override authorization; only the private adapter can construct the raw seal, and real future construction occurs inside a live-gated poll | source verifier/boundary regression plus compiler and transport-negative qualification required |
 | MATRIX-Q20 | pre-pin cancellation versus legacy unknown | new proven-pre-entry retry can first-pin; inherited unpinned attempts are durably unresolved and parked for authenticated reconciliation | migration-9/11 isolated tests passed; exact-head native execution required |
 | MATRIX-Q21 | same-name schema weakening | content pin and store-open checks reject altered table/trigger DDL | source-complete exact schema validation; exact-head native execution required |
 | MATRIX-Q22 | delayed echo after a newer retry claim | prior matching entered-use proof qualifies the stable transaction; current claim closes; reopen remains valid | migration-12 and native regression source; exact-head execution required |
@@ -32,7 +32,7 @@ Status labels: `source` means implementation/fixture exists; `executed` requires
 
 ## 2. Qualification sources
 
-`codex-rs/hepta-matrix-sdk/tests/durable_transport.rs`, `final_poll_regressions.rs` and `pending_poll_regressions.rs` retain sender/retry/fencing source cases, including delayed server echo after a newer retry claim but before its adapter entry. `codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs` additionally binds the durable grant's absolute expiry through proof persistence and every transport poll; once kernel entry succeeds, persistence acknowledgement loss, expiry, revocation/frontier change, identity drift, payload drift or permit construction failure is returned only as an entered indeterminate result. New `src/content_tests.rs` and `authority_tests.rs` cover the version-2 message binding. `codex-rs/hepta-matrix-store/tests/content_binding.rs` adds reopen, pre-pin cancel, semantic drift, stale claim, malformed digest and weakened-schema cases. `scripts/tests/test_channel_matrix_legacy_remediation.py` exercises migration-11 ledger materialization, stale-claim closure, queue parking and the anti-reactivation trigger.
+`codex-rs/hepta-matrix-sdk/tests/durable_transport.rs`, `final_poll_regressions.rs` and `pending_poll_regressions.rs` retain sender/retry/fencing source cases, including delayed server echo after a newer retry claim but before its adapter entry. `codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs` additionally binds the durable grant's absolute expiry through proof persistence and every transport poll; once kernel entry succeeds, persistence acknowledgement loss, expiry, revocation/frontier change, identity drift, payload drift, permit validation or adapter construction failure is returned only as an entered indeterminate result. `scripts/tests/test_channel_matrix_transport_boundary.py` rejects a public overridable authorized method, public permit export, real-SDK authorized override or future construction outside the first gated poll. This is a source-boundary guard, not target-host execution. New `src/content_tests.rs` and `authority_tests.rs` cover the version-2 message binding. `codex-rs/hepta-matrix-store/tests/content_binding.rs` adds reopen, pre-pin cancel, semantic drift, stale claim, malformed digest and weakened-schema cases. `scripts/tests/test_channel_matrix_legacy_remediation.py` exercises migration-11 ledger materialization, stale-claim closure, queue parking and the anti-reactivation trigger.
 
 `codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs` and `tests/fixtures/run-hermetic-synapse.sh` retain the pinned unencrypted target profile. It records image/version/source/runner identity; storing it is not a successful run. Supervisor fixtures remain the lifecycle/adoption source. Migration-7 histories, migration-8 pins, migration-9 holds, migration-10 entered-use rows, migration-11 parking, migration-12 stable-transaction terminal guards and migration-13 recovery scheduling/quarantine are durable owner facts, not an independent sender or authorization issuer.
 
@@ -68,7 +68,7 @@ Use this homeserver schema only for a real homeserver execution. Isolated schema
 5. Restore/capacity: protected backup restore, sustained history pressure, rate limits and shutdown.
 6. Independent acceptance: external operator/security review; never generator self-acceptance.
 
-`sourceBase` is immutable provenance, not the current candidate. `observedAtHead` binds inspected Git objects, while `scripts/verify_channel_matrix_candidate.py --expected-sha "$TESTED_SHA"` emits the actual candidate/tree and file hashes. The validator rejects dirty inspected files, stale declared blob identities, path escapes, missing callsite markers and non-boolean/true production claims. These checks are static navigation, not an AST-level closed-world API proof.
+`sourceBase` is immutable provenance, not the current candidate. `observedAtHead` binds inspected Git objects, while `scripts/verify_channel_matrix_candidate.py --expected-sha "$TESTED_SHA"` emits the actual candidate/tree and file hashes. The validator rejects dirty inspected files, stale declared blob identities, path escapes, missing callsite markers, a public authorized transport override, permit export and non-boolean/true production claims. These checks are static navigation and negative source-boundary guards, not an AST-level closed-world API proof.
 
 ## 5. Latest local and historical evidence
 
@@ -89,13 +89,14 @@ No product-execution, deployment, independent-acceptance, activation or release 
 ## 7. Typed sender optimization increment
 
 See [OPTIMIZATION_CONTRACT.md](OPTIMIZATION_CONTRACT.md). Q23 retains its
-post-entry uncertainty requirement. New JIT lease/cancellation and repeated-poll
-measurement regressions are source fixtures, not executed native receipts.
-Current CI separately runs locked all-target compilation, locked focused tests,
-strict lint and owner formatting from `codex-rs`, preserving the pinned toolchain.
-The evidence directory's generated `status.json`/`status.md` separates those
-states from real target qualification and independent acceptance. Historical
-local pass counts above apply only to their stated snapshots and test scopes.
+post-entry uncertainty requirement. JIT lease/cancellation, repeated-poll and
+non-overridable transport-boundary regressions are source fixtures, not executed
+native or target receipts. Current CI separately runs locked all-target
+compilation, locked focused tests, strict lint and owner formatting from
+`codex-rs`, preserving the pinned toolchain. The evidence directory's generated
+`status.json`/`status.md` separates those states from real target qualification
+and independent acceptance. Historical local pass counts above apply only to
+their stated snapshots and test scopes.
 
 ## 8. Machine-checkable scenario ledger and new native regressions
 

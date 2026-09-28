@@ -16,7 +16,6 @@ use crate::MatrixOutboundTransport;
 use crate::MatrixRawSendSeal;
 use crate::MatrixSdkPaths;
 use crate::MatrixSendFuture;
-use crate::MatrixSendPermit;
 use crate::MatrixSession;
 use crate::MatrixSidecarConfig;
 use crate::MatrixTransportError;
@@ -124,21 +123,13 @@ impl MatrixOutboundTransport for MatrixSdkClient {
 
     fn send<'a>(
         &'a self,
-        _record: &'a OutboxRecord,
+        record: &'a OutboxRecord,
         _seal: MatrixRawSendSeal,
     ) -> MatrixSendFuture<'a> {
-        // Legacy deterministic transports retain this trait seam. The real
-        // authenticated SDK never performs I/O through an unsealed entry.
-        Box::pin(async { Err(MatrixTransportError::Permanent) })
-    }
-
-    fn send_authorized<'a>(
-        &'a self,
-        record: &'a OutboxRecord,
-        permit: MatrixSendPermit,
-    ) -> MatrixSendFuture<'a> {
+        // Only the module-private authorized adapter can construct the seal.
+        // This body is lazy: all physical work begins when the final gate polls
+        // the future after another live authority/session/deadline check.
         Box::pin(async move {
-            permit.validate(record, &self.identity()?)?;
             let config = self.config();
             if !config.binding.allowed_rooms.contains(&record.room_id)
                 || record.binding_revision != config.binding.revision

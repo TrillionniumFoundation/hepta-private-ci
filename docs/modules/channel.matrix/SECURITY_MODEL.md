@@ -22,7 +22,7 @@ A physical send requires exact binding of subject, destination, homeserver, Matr
 
 The owner:
 
-1. claims the outbox with a random opaque capability;
+1. claims one outbox row immediately before processing it with a random opaque capability;
 2. obtains and kernel-claims an independently signed grant;
 3. persists witness, absolute expiry and revocation-head digests under the exact claim;
 4. records dispatching;
@@ -30,11 +30,15 @@ The owner:
 6. consumes the exact-frontier token;
 7. persists the resulting non-constructible entered-use proof against the claim, authority and canonical-content tuple;
 8. rechecks expiry, revocation frontier, transport identity and canonical content after proof persistence and again at the end of every final preflight;
-9. constructs the opaque SDK permit and polls the lazy transport future only through that repeated gate, with no intervening unrelated persistence await.
+9. constructs the private opaque permit;
+10. from the first live-gated poll, invokes the module-private non-overridable adapter, validates the permit, constructs the unforgeable raw seal and creates the lazy SDK future;
+11. rechecks the live window after synchronous adapter construction and before polling, then repeats the live checks on every continuation poll.
+
+The public `MatrixOutboundTransport` trait contains no `send_authorized` method. External transports therefore cannot replace permit validation, convert a post-entry validation fault into a remote permanent rejection, or obtain the raw seal. `MatrixSendPermit` is not exported from the crate. The real SDK implements only the sealed raw seam, and its physical body remains inside the lazy future.
 
 The raw 32-byte claim capability is process-private. Only its SHA-256 digest is durable. Every active-claim mutation is fenced by transaction, attempt, lease epoch and capability digest; the ledger additionally enforces monotonic attempt CAS. Qualified success or redaction requires the entered-use row, so caller-filled witness metadata cannot stand in for physical-entry proof.
 
-Kernel final-use entry is monotone. Once the nonce is consumed and the exact token enters, a proof-write timeout may mean the write committed while its acknowledgement was lost. Therefore proof-persistence failure, absolute expiry, revocation/frontier change, identity or payload drift, permit-construction failure, cancellation and lease expiry after kernel entry are all retained under the same transaction as an entered indeterminate result. They can never be downgraded to a pre-entry release.
+Kernel final-use entry is monotone. Once the nonce is consumed and the exact token enters, a proof-write timeout may mean the write committed while its acknowledgement was lost. Therefore proof-persistence failure, absolute expiry, revocation/frontier change, identity or payload drift, permit-construction or adapter-construction failure, cancellation and lease expiry after kernel entry are all retained under the same transaction as an entered indeterminate result. They can never be downgraded to a pre-entry release.
 
 ## 4. Ingress threats
 
@@ -42,9 +46,9 @@ Controls cover malicious message text, event replay, duplicate sync pages, malfo
 
 ## 5. Egress threats
 
-Controls cover payload drift, transaction reuse across semantics, revoked or expired grants, stale device/session, expiry during revocation refresh, ACK loss, proof-write acknowledgement loss, retry duplication, later rejection overwriting prior acceptance, stale lease holders, capability replay, second-writer observer state and forged terminal observations.
+Controls cover payload drift, transaction reuse across semantics, revoked or expired grants, stale device/session, expiry during revocation refresh, ACK loss, proof-write acknowledgement loss, retry duplication, later rejection overwriting prior acceptance, stale lease holders, capability replay, overridable transport authorization, constructor-time effects before the last gate, second-writer observer state and forged terminal observations.
 
-Mitigations are stable transaction IDs, immutable logical identity, random attempt capabilities, append-only events, exact final-use entry, repeated last-moment expiry/frontier/identity/content checks, typed uncertainty and sync-based terminality. `TransportAccepted` is not success; unknown post-entry outcomes are never converted to failure.
+Mitigations are stable transaction IDs, immutable logical identity, random attempt capabilities, append-only events, exact final-use entry, one private permit adapter, first-poll future construction, repeated last-moment expiry/frontier/identity/content checks, typed uncertainty and sync-based terminality. `TransportAccepted` is not success; unknown post-entry outcomes are never converted to failure.
 
 ## 6. Filesystem and process isolation
 
@@ -65,6 +69,8 @@ Logs and receipts retain typed IDs, error classes and digests. They exclude raw 
 - room/device/session/generation drift;
 - cross-Agent store/socket access;
 - unknown fields and oversize frames/payloads;
+- public transport implementations cannot override permit validation or construct the raw seal;
+- transport-future construction occurs only within a live-gated poll and is followed by another live check;
 - pre-entry cancellation/revocation produces zero network calls;
 - post-entry timeout/reset/response loss remains indeterminate;
 - conflicting event/transaction identities fail closed;
