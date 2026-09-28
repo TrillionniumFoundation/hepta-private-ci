@@ -1,0 +1,42 @@
+name: Intuition immutable failure inspection
+on:
+  push:
+    branches: [codex/intuition-devhost-20260928]
+    paths: [.github/workflows/intuition-failure-inspect.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect:
+    runs-on: windows-2025
+    timeout-minutes: 5
+    steps:
+      - name: Inspect failing commands without forwarding credentials to storage
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import os, re, urllib.request, urllib.error
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl): return None
+          req = urllib.request.Request(
+              'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/108858513469/logs',
+              headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'], 'Accept':'application/vnd.github+json'})
+          try:
+              response = urllib.request.build_opener(NoRedirect).open(req, timeout=60)
+          except urllib.error.HTTPError as error:
+              if error.code != 302: raise
+              url = error.headers['Location']
+              assert url.startswith('https://')
+              response = urllib.request.urlopen(url, timeout=60)
+          with response:
+              lines = response.read(10000000).decode('utf-8', errors='replace').splitlines()
+          pattern = r'error:|error\[|FAILED|test result:|Ran [0-9]+ tests|Diff in|##\[error\]'
+          selected = set()
+          for i, line in enumerate(lines):
+              if re.search(pattern, line):
+                  selected.update(range(max(0,i-8), min(len(lines),i+18)))
+          for i in sorted(selected)[-230:]: print(lines[i])
+          print('Inspection only; no source, ref, check or acceptance mutation.')
+          PY
