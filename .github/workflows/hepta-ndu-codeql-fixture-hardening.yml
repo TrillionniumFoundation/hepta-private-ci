@@ -36,19 +36,14 @@ jobs:
           git merge-base --is-ancestor "$BASE" HEAD
           git show "$REQUEST_SHA^:.github/workflows/hepta-ndu-codeql-fixture-hardening.yml" \
             > .github/workflows/hepta-ndu-codeql-fixture-hardening.yml
-          export BASE
-          python3 - <<'PY'
-          from pathlib import Path
-          import os
-
-          workflow = Path('.github/workflows/hepta-ndu-codeql-fixture-hardening.yml')
-          lines = [
-              line for line in workflow.read_text(encoding='utf-8').splitlines(keepends=True)
-              if not line.startswith('# baseline-sync-main: ')
-          ]
-          lines.insert(1, f'# baseline-sync-main: {os.environ["BASE"]}\n')
-          workflow.write_text(''.join(lines), encoding='utf-8')
-          PY
+          sed -i '/^# baseline-sync-main: /d' \
+            .github/workflows/hepta-ndu-codeql-fixture-hardening.yml
+          awk -v base="$BASE" \
+            'NR == 1 { print; print "# baseline-sync-main: " base; next } { print }' \
+            .github/workflows/hepta-ndu-codeql-fixture-hardening.yml \
+            > .github/workflows/hepta-ndu-codeql-fixture-hardening.yml.tmp
+          mv .github/workflows/hepta-ndu-codeql-fixture-hardening.yml.tmp \
+            .github/workflows/hepta-ndu-codeql-fixture-hardening.yml
           rm -f .github/workflows/ndu-sync-main-and-retrigger-once.yml
           git add -A
           git diff --cached --check
