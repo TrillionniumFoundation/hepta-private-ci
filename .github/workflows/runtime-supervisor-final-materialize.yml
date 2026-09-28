@@ -12,11 +12,11 @@ permissions:
 
 concurrency:
   group: runtime-supervisor-final-materializer
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   materialize:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -24,7 +24,7 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: true
-      - name: Apply checked source transformations
+      - name: Apply checked source and documentation transformations
         shell: bash
         run: |
           set -euo pipefail
@@ -32,7 +32,7 @@ jobs:
           rm .github/runtime-supervisor-final-materialize.py
           rm .github/workflows/runtime-supervisor-final-materialize.yml
           git diff --check
-      - name: Commit exact transformed source
+      - name: Commit exact transformed candidate
         shell: bash
         run: |
           set -euo pipefail
@@ -40,5 +40,5 @@ jobs:
           git config user.email "runtime-supervisor-materializer@users.noreply.github.com"
           git add --all
           test -n "$(git status --short)"
-          git commit -m "feat(runtime.supervisor): converge daemon failure semantics"
+          git commit -m "feat(runtime.supervisor): converge control recovery and diagnostics"
           git push origin HEAD:codex/runtime-supervisor-final-convergence-20260928
