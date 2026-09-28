@@ -21,7 +21,7 @@ jobs:
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
       BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
-      EXPECTED_PARENT: 9cd279492b8e328030155e0cd68fa6a81bb3d70b
+      EXPECTED_PARENT: 5b943dec177f384551b853e7aa7a41482a85221e
       TARGET_BRANCH: fix/kernel-evidence-production-closure
       RUSTUP_TOOLCHAIN: 1.95.0
       CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
