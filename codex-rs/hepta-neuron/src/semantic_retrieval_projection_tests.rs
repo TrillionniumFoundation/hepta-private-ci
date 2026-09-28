@@ -64,10 +64,9 @@ fn record() -> SemanticRecordV1 {
         reply_wire: reply_wire(&request),
         observed_memory_bytes: Some(512),
     };
-    let completion_digest = Digest32::of_bytes(
-        &serde_json::to_vec(&completion).expect("completion encoding"),
-    )
-    .to_string();
+    let completion_digest =
+        Digest32::of_bytes(&serde_json::to_vec(&completion).expect("completion encoding"))
+            .to_string();
     SemanticRecordV1 {
         admission: SemanticAdmissionV1 {
             request_wire: request.encode().expect("request"),
@@ -217,22 +216,14 @@ fn cancelled_or_acknowledged_result_is_not_reprojected() {
     let mut cancelled = record();
     cancelled.cancel_requested = true;
     assert_eq!(
-        project_semantic_retrieval_to_neuron_v1(
-            &cancelled,
-            context(),
-            &mut Guard::default()
-        ),
+        project_semantic_retrieval_to_neuron_v1(&cancelled, context(), &mut Guard::default()),
         Err(SemanticNeuronProjectionError::NotDeliverable)
     );
 
     let mut acknowledged = record();
     acknowledged.delivery_ack_digest = Some("7".repeat(64));
     assert_eq!(
-        project_semantic_retrieval_to_neuron_v1(
-            &acknowledged,
-            context(),
-            &mut Guard::default()
-        ),
+        project_semantic_retrieval_to_neuron_v1(&acknowledged, context(), &mut Guard::default()),
         Err(SemanticNeuronProjectionError::NotDeliverable)
     );
 }

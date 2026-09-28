@@ -12,9 +12,9 @@ use std::fmt;
 use std::str::FromStr;
 
 use codex_hepta_infer_core::RetrievalWireError;
-use codex_hepta_infer_core::durable_control::semantic::SemanticRecordV1;
 use codex_hepta_infer_core::SemanticRetrievalReplyV1;
 use codex_hepta_infer_core::SemanticRetrievalRequestV1;
+use codex_hepta_infer_core::durable_control::semantic::SemanticRecordV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -149,8 +149,8 @@ pub fn project_semantic_retrieval_to_neuron_v1<G: SemanticNeuronFinalUseGuard>(
     let feature_vector_q24 = ppm_to_exact_q24(&reply.prediction_ppm)?;
     let input_feature_digest = canonical_feature_vector_digest_v1(&feature_vector_q24);
     let input = NeuronTickInputV1 {
-        tick_id: context.tick_id,
-        subject_id: context.subject_id,
+        tick_id: context.tick_id.clone(),
+        subject_id: context.subject_id.clone(),
         logical_sequence: context.logical_sequence,
         monotonic_time_micros: context.monotonic_time_micros,
         checkpoint_digest: context.checkpoint_digest,
@@ -166,7 +166,11 @@ pub fn project_semantic_retrieval_to_neuron_v1<G: SemanticNeuronFinalUseGuard>(
     let current_sources = canonical_source_bindings(&context.current_sources)?;
     let mut feature_order = Vec::with_capacity(current_sources.len() + 1);
     feature_order.push("abstain".to_string());
-    feature_order.extend(current_sources.iter().map(|source| source.source_id.clone()));
+    feature_order.extend(
+        current_sources
+            .iter()
+            .map(|source| source.source_id.clone()),
+    );
     if feature_order.len() != reply.prediction_ppm.len() {
         return Err(SemanticNeuronProjectionError::BindingMismatch);
     }
@@ -231,8 +235,7 @@ fn validate_current_use(
             content_sha256: source.content_sha256.clone(),
         })
         .collect::<Vec<_>>();
-    if canonical_source_bindings(&expected)?
-        != canonical_source_bindings(&context.current_sources)?
+    if canonical_source_bindings(&expected)? != canonical_source_bindings(&context.current_sources)?
     {
         return Err(SemanticNeuronProjectionError::StaleSource);
     }
@@ -265,9 +268,9 @@ fn ppm_to_exact_q24(values: &[u32]) -> Result<Vec<i64>, SemanticNeuronProjection
     if values.is_empty() || values.len() > 16 {
         return Err(SemanticNeuronProjectionError::BindingMismatch);
     }
-    let total = values.iter().try_fold(0_u64, |sum, value| {
-        sum.checked_add(u64::from(*value))
-    });
+    let total = values
+        .iter()
+        .try_fold(0_u64, |sum, value| sum.checked_add(u64::from(*value)));
     if total != Some(PPM) {
         return Err(SemanticNeuronProjectionError::BindingMismatch);
     }
@@ -289,15 +292,11 @@ fn ppm_to_exact_q24(values: &[u32]) -> Result<Vec<i64>, SemanticNeuronProjection
     let residual = Q24_ONE
         .checked_sub(assigned)
         .ok_or(SemanticNeuronProjectionError::Arithmetic)?;
-    remainders.sort_by(|left, right| {
-        right
-            .0
-            .cmp(&left.0)
-            .then_with(|| left.1.cmp(&right.1))
-    });
-    for (_, index) in remainders.into_iter().take(
-        usize::try_from(residual).map_err(|_| SemanticNeuronProjectionError::Arithmetic)?,
-    ) {
+    remainders.sort_by(|left, right| right.0.cmp(&left.0).then_with(|| left.1.cmp(&right.1)));
+    for (_, index) in remainders
+        .into_iter()
+        .take(usize::try_from(residual).map_err(|_| SemanticNeuronProjectionError::Arithmetic)?)
+    {
         projected[index] = projected[index]
             .checked_add(1)
             .ok_or(SemanticNeuronProjectionError::Arithmetic)?;
@@ -362,26 +361,21 @@ fn parse_digest(value: &str) -> Result<Digest32, SemanticNeuronProjectionError> 
     {
         return Err(SemanticNeuronProjectionError::BindingMismatch);
     }
-    let digest = Digest32::from_str(value)
-        .map_err(|_| SemanticNeuronProjectionError::BindingMismatch)?;
+    let digest =
+        Digest32::from_str(value).map_err(|_| SemanticNeuronProjectionError::BindingMismatch)?;
     if digest.is_zero() {
         return Err(SemanticNeuronProjectionError::BindingMismatch);
     }
     Ok(digest)
 }
 
-fn push_text(
-    bytes: &mut Vec<u8>,
-    value: &str,
-) -> Result<(), SemanticNeuronProjectionError> {
+fn push_text(bytes: &mut Vec<u8>, value: &str) -> Result<(), SemanticNeuronProjectionError> {
     push_bytes(bytes, value.as_bytes())
 }
 
-fn push_bytes(
-    bytes: &mut Vec<u8>,
-    value: &[u8],
-) -> Result<(), SemanticNeuronProjectionError> {
-    let length = u64::try_from(value.len()).map_err(|_| SemanticNeuronProjectionError::Arithmetic)?;
+fn push_bytes(bytes: &mut Vec<u8>, value: &[u8]) -> Result<(), SemanticNeuronProjectionError> {
+    let length =
+        u64::try_from(value.len()).map_err(|_| SemanticNeuronProjectionError::Arithmetic)?;
     bytes.extend_from_slice(&length.to_be_bytes());
     bytes.extend_from_slice(value);
     Ok(())
