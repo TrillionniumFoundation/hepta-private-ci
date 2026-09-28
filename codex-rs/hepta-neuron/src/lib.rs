@@ -17,6 +17,7 @@ use codex_hepta_types::StableId;
 
 mod artifact_binding;
 mod deletion;
+mod durable_inference_control;
 mod generation_store_v2;
 mod inference_control;
 mod journal;
@@ -42,6 +43,7 @@ pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;
 pub use deletion::validate_deletion_rebuild;
+pub use durable_inference_control::DurableNeuronInferenceControlPortV1;
 pub use generation_store_v2::FileNeuronGenerationStoreV2;
 pub use generation_store_v2::GenerationStoreError;
 pub use generation_store_v2::NeuronGenerationAdmissionV2;
