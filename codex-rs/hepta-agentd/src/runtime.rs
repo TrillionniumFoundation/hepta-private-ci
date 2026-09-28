@@ -170,12 +170,9 @@ pub async fn run(
     }
     if let Some(path) = evidence_trust_file {
         state.refresh_generation()?;
-        let host = crate::evidence_host::EvidenceHost::open(
-            &identity,
-            path,
-            evidence_runtime_profile,
-        )
-        .await?;
+        let host =
+            crate::evidence_host::EvidenceHost::open(&identity, path, evidence_runtime_profile)
+                .await?;
         state.refresh_generation()?;
         state.evidence.set(Arc::new(host)).map_err(|_| {
             AgentdError::Protocol("kernel evidence host already attached".to_string())

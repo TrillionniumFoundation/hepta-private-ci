@@ -82,10 +82,7 @@ fn validate_backup_publication(
             &backup.build_provenance.workflow_artifact_sha256,
         ),
         ("build toolchain", &backup.build_provenance.toolchain_sha256),
-        (
-            "build recipe",
-            &backup.build_provenance.build_recipe_sha256,
-        ),
+        ("build recipe", &backup.build_provenance.build_recipe_sha256),
         ("build log", &backup.build_provenance.build_log_sha256),
         (
             "build executable",
@@ -110,17 +107,15 @@ fn validate_backup_publication(
         .map_err(|error| recovery_required(&format!("invalid backup store id: {error}")))?;
     StableId::new(backup.backup_object_id.clone())
         .map_err(|error| recovery_required(&format!("invalid backup object id: {error}")))?;
-    StableId::new(backup.backup_object_version.clone()).map_err(|error| {
-        recovery_required(&format!("invalid backup object version: {error}"))
-    })?;
+    StableId::new(backup.backup_object_version.clone())
+        .map_err(|error| recovery_required(&format!("invalid backup object version: {error}")))?;
     StableId::new(backup.storage_acknowledgement_id.clone()).map_err(|error| {
         recovery_required(&format!(
             "invalid backup storage acknowledgement id: {error}"
         ))
     })?;
-    StableId::new(backup.build_provenance.builder_principal_id.clone()).map_err(|error| {
-        recovery_required(&format!("invalid build principal id: {error}"))
-    })?;
+    StableId::new(backup.build_provenance.builder_principal_id.clone())
+        .map_err(|error| recovery_required(&format!("invalid build principal id: {error}")))?;
     StableId::new(backup.restore_witness.witness_principal_id.clone()).map_err(|error| {
         recovery_required(&format!("invalid restore witness principal id: {error}"))
     })?;
@@ -190,9 +185,9 @@ fn validate_backup_object_name(value: &str) -> Result<(), AgentdError> {
         || value == "identity.json"
         || path.components().count() != 1
         || path.file_name() != Some(path.as_os_str())
-        || !value.bytes().all(|byte| {
-            byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-')
-        })
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-'))
     {
         return Err(recovery_required(
             "backup object file name must be one bounded direct-child token",

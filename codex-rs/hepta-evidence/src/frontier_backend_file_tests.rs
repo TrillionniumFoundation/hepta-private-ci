@@ -85,10 +85,7 @@ impl Fixture {
     }
 }
 
-fn frontier(
-    generation: u64,
-    backend_identity_sha256: Sha256Digest,
-) -> EvidenceRecoveryFrontierV2 {
+fn frontier(generation: u64, backend_identity_sha256: Sha256Digest) -> EvidenceRecoveryFrontierV2 {
     let snapshot = EvidenceRecoverySnapshotV1 {
         schema_version: 1,
         database_lineage: EVIDENCE_DATABASE_LINEAGE.to_string(),
@@ -340,20 +337,12 @@ fn concurrent_first_generation_publish_has_exactly_one_winner() {
         let left = scope.spawn(move || {
             let mut backend = left_backend;
             left_barrier.wait();
-            backend.compare_and_swap(
-                "store:kernel-evidence",
-                None,
-                &frontier(1, left_identity),
-            )
+            backend.compare_and_swap("store:kernel-evidence", None, &frontier(1, left_identity))
         });
         let right = scope.spawn(move || {
             let mut backend = right_backend;
             right_barrier.wait();
-            backend.compare_and_swap(
-                "store:kernel-evidence",
-                None,
-                &frontier(1, right_identity),
-            )
+            backend.compare_and_swap("store:kernel-evidence", None, &frontier(1, right_identity))
         });
         barrier.wait();
         (

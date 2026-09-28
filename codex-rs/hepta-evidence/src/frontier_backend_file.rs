@@ -167,12 +167,7 @@ impl LockedFileEvidenceFrontierBackend {
         expected_identity_sha256: Sha256Digest,
         local_rollback_root: &Path,
     ) -> Result<Self, EvidenceFrontierBackendError> {
-        Self::open(
-            root,
-            expected_identity_sha256,
-            local_rollback_root,
-            false,
-        )
+        Self::open(root, expected_identity_sha256, local_rollback_root, false)
     }
 
     fn ensure_available(&self) -> Result<(), EvidenceFrontierBackendError> {
@@ -202,18 +197,11 @@ impl LockedFileEvidenceFrontierBackend {
         store_id: &str,
     ) -> Result<Vec<EvidenceFrontierAuditRecordV1>, EvidenceFrontierBackendError> {
         let path = self.journal_path(store_id)?;
-        let Some(mut file) =
-            open_existing_journal(&path, &self.journals, self.owner_uid)?
-        else {
+        let Some(mut file) = open_existing_journal(&path, &self.journals, self.owner_uid)? else {
             return Ok(Vec::new());
         };
         file.lock_shared().map_err(unavailable)?;
-        read_records_from_locked(
-            &mut file,
-            store_id,
-            &self.identity,
-            &self.identity_sha256,
-        )
+        read_records_from_locked(&mut file, store_id, &self.identity, &self.identity_sha256)
     }
 }
 
@@ -252,12 +240,8 @@ impl EvidenceFrontierBackend for LockedFileEvidenceFrontierBackend {
         let path = self.journal_path(store_id)?;
         let mut file = open_writable_journal(&path, &self.journals, self.owner_uid)?;
         file.lock().map_err(unavailable)?;
-        let records = read_records_from_locked(
-            &mut file,
-            store_id,
-            &self.identity,
-            &self.identity_sha256,
-        )?;
+        let records =
+            read_records_from_locked(&mut file, store_id, &self.identity, &self.identity_sha256)?;
         let actual_generation = records
             .last()
             .map(|record| record.frontier.frontier_generation);
@@ -267,14 +251,15 @@ impl EvidenceFrontierBackend for LockedFileEvidenceFrontierBackend {
                 actual: actual_generation,
             });
         }
-        let required_generation = actual_generation
-            .unwrap_or(0)
-            .checked_add(1)
-            .ok_or_else(|| {
-                EvidenceFrontierBackendError::Invalid(
-                    "frontier generation exhausted its numeric domain".to_string(),
-                )
-            })?;
+        let required_generation =
+            actual_generation
+                .unwrap_or(0)
+                .checked_add(1)
+                .ok_or_else(|| {
+                    EvidenceFrontierBackendError::Invalid(
+                        "frontier generation exhausted its numeric domain".to_string(),
+                    )
+                })?;
         if new_frontier.frontier_generation != required_generation {
             return Err(EvidenceFrontierBackendError::Invalid(format!(
                 "frontier generation must advance exactly to {required_generation}"
@@ -289,9 +274,12 @@ impl EvidenceFrontierBackend for LockedFileEvidenceFrontierBackend {
                     "frontier audit sequence exhausted its numeric domain".to_string(),
                 )
             })?;
-        let frontier_sha256 = evidence_recovery_frontier_v2_sha256(new_frontier).map_err(|error| {
-            EvidenceFrontierBackendError::Invalid(format!("cannot hash proposed frontier: {error}"))
-        })?;
+        let frontier_sha256 =
+            evidence_recovery_frontier_v2_sha256(new_frontier).map_err(|error| {
+                EvidenceFrontierBackendError::Invalid(format!(
+                    "cannot hash proposed frontier: {error}"
+                ))
+            })?;
         let previous_record_sha256 = records.last().map(|record| record.record_sha256.clone());
         let mut record = EvidenceFrontierAuditRecordV1 {
             schema_version: EVIDENCE_FRONTIER_AUDIT_RECORD_SCHEMA_VERSION,
@@ -319,11 +307,8 @@ impl EvidenceFrontierBackend for LockedFileEvidenceFrontierBackend {
         }
 
         let current_length = file.metadata().map_err(unavailable)?.len();
-        let expected_length = checked_journal_length_after_append(
-            current_length,
-            records.len(),
-            encoded.len(),
-        )?;
+        let expected_length =
+            checked_journal_length_after_append(current_length, records.len(), encoded.len())?;
         let directory = open_pinned_directory(
             &self.journals,
             self.owner_uid,
@@ -393,11 +378,8 @@ impl EvidenceFrontierBackend for LockedFileEvidenceFrontierBackend {
             use std::os::unix::fs::MetadataExt;
 
             let root_metadata = private_directory_metadata(&self.root, None, None)?;
-            let journals_metadata = private_directory_metadata(
-                &self.journals,
-                Some(&self.root),
-                Some(self.owner_uid),
-            )?;
+            let journals_metadata =
+                private_directory_metadata(&self.journals, Some(&self.root), Some(self.owner_uid))?;
             if root_metadata.uid() != self.owner_uid
                 || root_metadata.dev() != self.root_device
                 || root_metadata.ino() != self.root_inode
@@ -420,8 +402,8 @@ impl EvidenceFrontierBackend for LockedFileEvidenceFrontierBackend {
                     "external frontier backend identity changed after bootstrap".to_string(),
                 ));
             }
-            let identity: EvidenceFrontierBackendIdentityV1 =
-                serde_json::from_slice(&bytes).map_err(|error| {
+            let identity: EvidenceFrontierBackendIdentityV1 = serde_json::from_slice(&bytes)
+                .map_err(|error| {
                     EvidenceFrontierBackendError::Corrupt(format!(
                         "cannot decode pinned backend identity: {error}"
                     ))
@@ -517,11 +499,12 @@ fn read_records_from_locked(
                 "frontier audit journal exceeds a bounded record limit".to_string(),
             ));
         }
-        let record: EvidenceFrontierAuditRecordV1 = serde_json::from_slice(line).map_err(|error| {
-            EvidenceFrontierBackendError::Corrupt(format!(
-                "cannot decode frontier audit record: {error}"
-            ))
-        })?;
+        let record: EvidenceFrontierAuditRecordV1 =
+            serde_json::from_slice(line).map_err(|error| {
+                EvidenceFrontierBackendError::Corrupt(format!(
+                    "cannot decode frontier audit record: {error}"
+                ))
+            })?;
         let expected_sequence = u64::try_from(records.len())
             .ok()
             .and_then(|value| value.checked_add(1))
@@ -543,9 +526,7 @@ fn read_records_from_locked(
             ));
         }
         record.frontier.validate_structure().map_err(|error| {
-            EvidenceFrontierBackendError::Corrupt(format!(
-                "stored frontier is invalid: {error}"
-            ))
+            EvidenceFrontierBackendError::Corrupt(format!("stored frontier is invalid: {error}"))
         })?;
         let required_generation = previous_generation
             .unwrap_or(0_u64)
@@ -609,8 +590,7 @@ fn private_directory_metadata(
     use std::os::unix::fs::OpenOptionsExt;
 
     let canonical = path.canonicalize().map_err(unavailable)?;
-    if canonical != path
-        || expected_parent.is_some_and(|parent| canonical.parent() != Some(parent))
+    if canonical != path || expected_parent.is_some_and(|parent| canonical.parent() != Some(parent))
     {
         return Err(EvidenceFrontierBackendError::Invalid(
             "frontier backend directory is not a canonical direct child".to_string(),

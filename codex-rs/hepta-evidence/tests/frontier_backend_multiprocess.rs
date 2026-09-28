@@ -32,10 +32,7 @@ const READY_PATH: &str = "KERNEL_EVIDENCE_MULTIPROCESS_READY";
 const RESULT_PATH: &str = "KERNEL_EVIDENCE_MULTIPROCESS_RESULT";
 const WORKERS: usize = 8;
 
-fn frontier(
-    generation: u64,
-    backend_identity_sha256: Sha256Digest,
-) -> EvidenceRecoveryFrontierV2 {
+fn frontier(generation: u64, backend_identity_sha256: Sha256Digest) -> EvidenceRecoveryFrontierV2 {
     let snapshot = EvidenceRecoverySnapshotV1 {
         schema_version: 1,
         database_lineage: EVIDENCE_DATABASE_LINEAGE.to_string(),
@@ -84,10 +81,8 @@ fn multiprocess_child() {
     let gate = required_path(GATE_PATH);
     let ready = required_path(READY_PATH);
     let result_path = required_path(RESULT_PATH);
-    let identity_bytes = fs::read(
-        backend_root.join(EVIDENCE_FRONTIER_BACKEND_IDENTITY_FILENAME),
-    )
-    .expect("read backend identity");
+    let identity_bytes = fs::read(backend_root.join(EVIDENCE_FRONTIER_BACKEND_IDENTITY_FILENAME))
+        .expect("read backend identity");
     let identity_sha256 = Sha256Digest::for_bytes(&identity_bytes);
     let mut backend = LockedFileEvidenceFrontierBackend::open_external(
         &backend_root,
@@ -99,7 +94,10 @@ fn multiprocess_child() {
 
     let deadline = Instant::now() + Duration::from_secs(15);
     while !gate.is_file() {
-        assert!(Instant::now() < deadline, "timed out waiting for contention gate");
+        assert!(
+            Instant::now() < deadline,
+            "timed out waiting for contention gate"
+        );
         thread::sleep(Duration::from_millis(5));
     }
     let outcome = match backend.compare_and_swap(

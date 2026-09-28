@@ -78,6 +78,7 @@ jobs:
           EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -uo pipefail
+          set +e
           out="$RUNNER_TEMP/kernel-evidence-native"
           mkdir -p "$out"
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD" || exit 1

@@ -69,8 +69,7 @@ pub use frontier_backend::EvidenceFrontierDurableAckV1;
 pub use frontier_backend::EvidenceFrontierHistoryRangeV1;
 pub use frontier_backend_file::EvidenceFrontierCapacityAlertV1;
 pub use frontier_backend_file::EvidenceFrontierCapacityV1;
-pub use frontier_backend_file::SegmentedFileEvidenceFrontierBackend
-    as LockedFileEvidenceFrontierBackend;
+pub use frontier_backend_file::SegmentedFileEvidenceFrontierBackend as LockedFileEvidenceFrontierBackend;
 pub use frontier_v2::EVIDENCE_RECOVERY_FRONTIER_V2_MAX_SIGNATURES;
 pub use frontier_v2::EVIDENCE_RECOVERY_FRONTIER_V2_SCHEMA_VERSION;
 pub use frontier_v2::EvidenceRecoveryFrontierSignatureV2;
@@ -165,11 +164,14 @@ pub enum EvidenceError {
 }
 
 #[cfg(test)]
-#[path = "tests.rs"]
-mod tests;
+#[path = "authbus_outbox_quarantine_tests.rs"]
+mod authbus_outbox_quarantine_tests;
 #[cfg(test)]
-#[path = "provider_tests.rs"]
-mod provider_tests;
+#[path = "authbus_outbox_tests.rs"]
+mod authbus_outbox_tests;
+#[cfg(test)]
+#[path = "historical_tests.rs"]
+mod historical_tests;
 #[cfg(test)]
 #[path = "provider_claim_tests.rs"]
 mod provider_claim_tests;
@@ -177,20 +179,17 @@ mod provider_claim_tests;
 #[path = "provider_effect_tests.rs"]
 mod provider_effect_tests;
 #[cfg(test)]
-#[path = "summary_tests.rs"]
-mod summary_tests;
+#[path = "provider_tests.rs"]
+mod provider_tests;
 #[cfg(test)]
-#[path = "historical_tests.rs"]
-mod historical_tests;
-#[cfg(test)]
-#[path = "authbus_outbox_tests.rs"]
-mod authbus_outbox_tests;
-#[cfg(test)]
-#[path = "authbus_outbox_quarantine_tests.rs"]
-mod authbus_outbox_quarantine_tests;
+#[path = "qualification_provenance_tests.rs"]
+mod qualification_provenance_tests;
 #[cfg(test)]
 #[path = "qualification_tests.rs"]
 mod qualification_tests;
 #[cfg(test)]
-#[path = "qualification_provenance_tests.rs"]
-mod qualification_provenance_tests;
+#[path = "summary_tests.rs"]
+mod summary_tests;
+#[cfg(test)]
+#[path = "tests.rs"]
+mod tests;

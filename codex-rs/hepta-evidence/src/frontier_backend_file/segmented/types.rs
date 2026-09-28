@@ -195,7 +195,9 @@ impl ChainCursor {
         }
     }
 
-    fn after_pointer(pointer: &EvidenceFrontierSegmentPointerV1) -> Result<Self, EvidenceFrontierBackendError> {
+    fn after_pointer(
+        pointer: &EvidenceFrontierSegmentPointerV1,
+    ) -> Result<Self, EvidenceFrontierBackendError> {
         Ok(Self {
             next_audit_sequence: pointer
                 .last_audit_sequence
@@ -206,7 +208,10 @@ impl ChainCursor {
         })
     }
 
-    fn advance(&mut self, record: &EvidenceFrontierAuditRecordV1) -> Result<(), EvidenceFrontierBackendError> {
+    fn advance(
+        &mut self,
+        record: &EvidenceFrontierAuditRecordV1,
+    ) -> Result<(), EvidenceFrontierBackendError> {
         self.next_audit_sequence = self
             .next_audit_sequence
             .checked_add(1)
@@ -223,7 +228,6 @@ struct StorePaths {
     lock: PathBuf,
     index: PathBuf,
 }
-
 
 struct RecoveredPublication {
     frontier_sha256: Sha256Digest,
@@ -274,7 +278,9 @@ impl SegmentedState {
     }
 
     fn archived_records(&self) -> u64 {
-        self.index.as_ref().map_or(0, |index| index.archived_records)
+        self.index
+            .as_ref()
+            .map_or(0, |index| index.archived_records)
     }
 
     fn archived_bytes(&self) -> u64 {
@@ -297,4 +303,3 @@ impl SegmentedState {
 pub struct SegmentedFileEvidenceFrontierBackend {
     legacy: LegacyLockedFileEvidenceFrontierBackend,
 }
-

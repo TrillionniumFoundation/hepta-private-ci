@@ -115,12 +115,11 @@ async fn accept_trust_in_transaction(
     accepted: &EvidenceTrustGenerationAcceptanceV1,
 ) -> Result<EvidenceTrustAcceptanceDisposition, EvidenceError> {
     validate_trust(accepted)?;
-    let bound: Option<String> = sqlx::query_scalar(
-        "SELECT store_id FROM evidence_recovery_identity WHERE singleton = 1",
-    )
-    .fetch_optional(&mut **transaction)
-    .await
-    .map_err(classify_sqlx_error)?;
+    let bound: Option<String> =
+        sqlx::query_scalar("SELECT store_id FROM evidence_recovery_identity WHERE singleton = 1")
+            .fetch_optional(&mut **transaction)
+            .await
+            .map_err(classify_sqlx_error)?;
     if bound.as_deref() != Some(accepted.store_id.as_str()) {
         return Err(invalid(
             "trust acceptance does not match the enrolled recovery store",
@@ -195,7 +194,12 @@ async fn accept_trust_in_transaction(
     .bind(&accepted.agent_id)
     .bind(accepted.registry_generation.to_be_bytes().to_vec())
     .bind(accepted.registry_sha256.as_str())
-    .bind(accepted.predecessor_sha256.as_ref().map(Sha256Digest::as_str))
+    .bind(
+        accepted
+            .predecessor_sha256
+            .as_ref()
+            .map(Sha256Digest::as_str),
+    )
     .bind(accepted.accepted_frontier_generation.to_be_bytes().to_vec())
     .bind(accepted.accepted_frontier_sha256.as_str())
     .bind(accepted.backend_identity_sha256.as_str())

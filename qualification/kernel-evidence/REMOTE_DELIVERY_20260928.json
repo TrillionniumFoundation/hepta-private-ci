@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "kind": "kernel_evidence_source_delivery_only",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "fix/kernel-evidence-followup-20260928",
+  "patchBaseCommit": "8657079da6377f4012d73b18d194f75bd3a115f5",
+  "fixedMainCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+  "appliedSourceCommit": "ed41503dba017802b22d220c04c1866416a176e6",
+  "remotePushConfirmedForAppliedSource": true,
+  "deliveryRunId": 36364795945,
+  "deliveryJobId": 108748949329,
+  "deliveryJobConclusion": "success",
+  "originalPatchSha256": "489832a65e88e4ff1a775feb1a810698425710b7e75ab6615e9cb7fbf8bc289b",
+  "sourceFileCount": 61,
+  "beforeAfterSourceCommitmentSha256": "8cba18c5a451924a48e3108e5b934d6f890cb45a080718976dfee12026c26c99",
+  "sourceCommitmentEncoding": "SHA256 of newline-joined, path-sorted path + NUL + before Git blob SHA (or '-') + NUL + after Git blob SHA; no trailing newline",
+  "formatArtifactId": 10936943985,
+  "formatArtifactZipSha256": "963f5f42ff4f703d6dde5212a6205126ff3b7cfebf6f1f0627ffe5e6f417c9fc",
+  "lockRepair": {
+    "path": "codex-rs/Cargo.lock",
+    "beforeBlob": "cd6650b68a815d69038166b7de50c2857f358641",
+    "onlyAddedDependency": "libc",
+    "packages": ["codex-hepta-agentd", "codex-hepta-evidence"],
+    "versionsSourcesAndChecksumsChanged": false,
+    "fullCargoResolutionProved": false
+  },
+  "deliveryVerification": {
+    "all61BeforeAfterSourceBlobsMatched": true,
+    "gitDiffCheckPassed": true,
+    "remoteSourceRefReadBack": true,
+    "nativeRustTestsExecuted": false
+  },
+  "cleanup": "This receipt accompanies removal of the four one-shot transport files from the candidate tree. Delivered source bytes are unchanged by cleanup.",
+  "historicalNote": "FOLLOWUP_BOUNDARIES_20260928.md describes the original patch-building environment, where no push succeeded. This later receipt records successful remote source delivery, not qualification.",
+  "mainModified": false,
+  "originalIntegrationBranchModified": false,
+  "forcePushUsed": false,
+  "exactSourceQualified": false,
+  "mergeCandidateQualified": false,
+  "independentAcceptance": false,
+  "activation": false,
+  "release": false
+}

@@ -97,11 +97,12 @@ fn parse_records(
         if line.len() > EVIDENCE_FRONTIER_MAX_AUDIT_RECORD_BYTES
             || records.len() >= EVIDENCE_FRONTIER_MAX_AUDIT_RECORDS
         {
-            return Err(corrupt("frontier audit segment exceeds a bounded record limit"));
+            return Err(corrupt(
+                "frontier audit segment exceeds a bounded record limit",
+            ));
         }
-        let record: EvidenceFrontierAuditRecordV1 = serde_json::from_slice(line).map_err(|error| {
-            corrupt(&format!("cannot decode frontier audit record: {error}"))
-        })?;
+        let record: EvidenceFrontierAuditRecordV1 = serde_json::from_slice(line)
+            .map_err(|error| corrupt(&format!("cannot decode frontier audit record: {error}")))?;
         if record.schema_version != EVIDENCE_FRONTIER_AUDIT_RECORD_SCHEMA_VERSION
             || record.audit_sequence != cursor.next_audit_sequence
             || record.backend_id != identity.backend_id
@@ -112,9 +113,10 @@ fn parse_records(
         {
             return Err(corrupt("frontier audit chain metadata is inconsistent"));
         }
-        record.frontier.validate_structure().map_err(|error| {
-            corrupt(&format!("stored frontier is invalid: {error}"))
-        })?;
+        record
+            .frontier
+            .validate_structure()
+            .map_err(|error| corrupt(&format!("stored frontier is invalid: {error}")))?;
         let required_generation = cursor
             .previous_generation
             .unwrap_or(0)
@@ -124,9 +126,8 @@ fn parse_records(
             || &record.frontier.backend_identity_sha256 != identity_sha256
             || record.frontier.frontier_generation != required_generation
             || record.frontier_sha256
-                != evidence_recovery_frontier_v2_sha256(&record.frontier).map_err(|error| {
-                    corrupt(&format!("cannot hash stored frontier: {error}"))
-                })?
+                != evidence_recovery_frontier_v2_sha256(&record.frontier)
+                    .map_err(|error| corrupt(&format!("cannot hash stored frontier: {error}")))?
             || record.record_sha256 != audit_record_sha256(&record)?
         {
             return Err(corrupt(
@@ -142,12 +143,13 @@ fn parse_records(
 fn encode_record(
     record: &EvidenceFrontierAuditRecordV1,
 ) -> Result<Vec<u8>, EvidenceFrontierBackendError> {
-    let mut bytes = serde_json::to_vec(record).map_err(|error| {
-        invalid(&format!("cannot serialize frontier audit record: {error}"))
-    })?;
+    let mut bytes = serde_json::to_vec(record)
+        .map_err(|error| invalid(&format!("cannot serialize frontier audit record: {error}")))?;
     bytes.push(b'\n');
     if bytes.len() > EVIDENCE_FRONTIER_MAX_AUDIT_RECORD_BYTES {
-        return Err(invalid("frontier audit record exceeds the bounded frame size"));
+        return Err(invalid(
+            "frontier audit record exceeds the bounded frame size",
+        ));
     }
     Ok(bytes)
 }

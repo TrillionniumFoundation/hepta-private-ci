@@ -27,9 +27,9 @@ impl EvidenceFrontierBackend for SegmentedFileEvidenceFrontierBackend {
     ) -> Result<EvidenceFrontierDurableAckV1, EvidenceFrontierBackendError> {
         self.ensure_available()?;
         self.verify_backend_identity()?;
-        new_frontier.validate_structure().map_err(|error| {
-            invalid(&format!("invalid proposed frontier: {error}"))
-        })?;
+        new_frontier
+            .validate_structure()
+            .map_err(|error| invalid(&format!("invalid proposed frontier: {error}")))?;
         if new_frontier.store_id != store_id
             || new_frontier.backend_identity_sha256 != self.legacy.identity_sha256
         {
@@ -63,9 +63,8 @@ impl EvidenceFrontierBackend for SegmentedFileEvidenceFrontierBackend {
             .latest_audit_sequence()
             .checked_add(1)
             .ok_or_else(|| invalid("frontier audit sequence exhausted its numeric domain"))?;
-        let frontier_sha256 = evidence_recovery_frontier_v2_sha256(new_frontier).map_err(|error| {
-            invalid(&format!("cannot hash proposed frontier: {error}"))
-        })?;
+        let frontier_sha256 = evidence_recovery_frontier_v2_sha256(new_frontier)
+            .map_err(|error| invalid(&format!("cannot hash proposed frontier: {error}")))?;
         let mut record = EvidenceFrontierAuditRecordV1 {
             schema_version: EVIDENCE_FRONTIER_AUDIT_RECORD_SCHEMA_VERSION,
             audit_sequence,
@@ -101,7 +100,9 @@ impl EvidenceFrontierBackend for SegmentedFileEvidenceFrontierBackend {
             };
         }
         if encoded.len() as u64 > ACTIVE_SEGMENT_MAX_BYTES {
-            return Err(invalid("one frontier audit record exceeds the active segment bound"));
+            return Err(invalid(
+                "one frontier audit record exceeds the active segment bound",
+            ));
         }
         let current_length = active.metadata().map_err(unavailable)?.len();
         if current_length != state.active_bytes {
@@ -109,11 +110,12 @@ impl EvidenceFrontierBackend for SegmentedFileEvidenceFrontierBackend {
                 "active frontier journal length changed under the store lock",
             ));
         }
-        let expected_length = current_length
-            .checked_add(u64::try_from(encoded.len()).map_err(|_| {
-                invalid("frontier audit record length exceeds the numeric domain")
-            })?)
-            .ok_or_else(|| invalid("active frontier journal length overflow"))?;
+        let expected_length =
+            current_length
+                .checked_add(u64::try_from(encoded.len()).map_err(|_| {
+                    invalid("frontier audit record length exceeds the numeric domain")
+                })?)
+                .ok_or_else(|| invalid("active frontier journal length overflow"))?;
         if expected_length > ACTIVE_SEGMENT_MAX_BYTES {
             return Err(invalid("active frontier segment reached its byte bound"));
         }
@@ -140,10 +142,7 @@ impl EvidenceFrontierBackend for SegmentedFileEvidenceFrontierBackend {
             state.archived_bytes(),
             state.latest_segment().cloned(),
             expected_length,
-            Sha256Digest::for_bytes(&read_locked_bytes(
-                &mut active,
-                ACTIVE_SEGMENT_MAX_BYTES,
-            )?),
+            Sha256Digest::for_bytes(&read_locked_bytes(&mut active, ACTIVE_SEGMENT_MAX_BYTES)?),
             audit_sequence,
             new_frontier.clone(),
             frontier_sha256.clone(),

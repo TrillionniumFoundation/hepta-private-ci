@@ -112,10 +112,7 @@ impl EvidenceFrontierSignerTrustV2 {
         Ok(())
     }
 
-    pub(crate) fn verify(
-        &self,
-        frontier: &EvidenceRecoveryFrontierV2,
-    ) -> Result<(), AgentdError> {
+    pub(crate) fn verify(&self, frontier: &EvidenceRecoveryFrontierV2) -> Result<(), AgentdError> {
         self.validate()?;
         if frontier.signer_policy_generation != self.policy_generation {
             return Err(recovery_required(
@@ -125,12 +122,7 @@ impl EvidenceFrontierSignerTrustV2 {
         let registry = self
             .signers
             .iter()
-            .map(|signer| {
-                (
-                    (signer.principal_id.as_str(), signer.key_epoch),
-                    signer,
-                )
-            })
+            .map(|signer| ((signer.principal_id.as_str(), signer.key_epoch), signer))
             .collect::<BTreeMap<_, _>>();
         let signing_bytes = evidence_recovery_frontier_v2_signing_bytes(frontier)
             .map_err(|error| recovery_required(&error.to_string()))?;
@@ -156,7 +148,9 @@ impl EvidenceFrontierSignerTrustV2 {
             let signature = Signature::from_bytes(&hex_bytes(&binding.signature_hex)?);
             verifying_key
                 .verify_strict(&signing_bytes, &signature)
-                .map_err(|_| recovery_required("frontier threshold signature verification failed"))?;
+                .map_err(|_| {
+                    recovery_required("frontier threshold signature verification failed")
+                })?;
             verified_principals.insert(signer.principal_id.as_str());
         }
         if verified_principals.len() < self.threshold {

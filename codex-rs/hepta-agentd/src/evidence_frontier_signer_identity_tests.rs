@@ -20,7 +20,10 @@ fn signer(principal: &str, epoch: u64, seed: u8, revoked: bool) -> Value {
     })
 }
 
-fn parse(threshold: usize, signers: Vec<Value>) -> Result<EvidenceFrontierSignerTrustV2, crate::AgentdError> {
+fn parse(
+    threshold: usize,
+    signers: Vec<Value>,
+) -> Result<EvidenceFrontierSignerTrustV2, crate::AgentdError> {
     let bytes = serde_json::to_vec(&json!({
         "schemaVersion": 2,
         "policyGeneration": 4,

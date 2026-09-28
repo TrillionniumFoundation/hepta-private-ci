@@ -228,16 +228,14 @@ async fn execute_publication_request(
                 identity,
                 MAX_EXTERNAL_CONTROL_FILE_BYTES,
             )?;
-            let proposed: EvidenceRecoveryFrontierV2 =
-                serde_json::from_slice(&proposal_bytes)?;
+            let proposed: EvidenceRecoveryFrontierV2 = serde_json::from_slice(&proposal_bytes)?;
             proposed.validate_structure().map_err(evidence_error)?;
             require_authenticated_snapshot(&proposed)?;
             validate_publication_continuation(&batch, predecessor, &proposed)?;
             signer_trust.verify(&proposed)?;
             let now = current_time_millis()?;
             if proposed.created_at_unix_ms > now.saturating_add(MAX_FUTURE_CLOCK_SKEW_MS)
-                || now.saturating_sub(proposed.created_at_unix_ms)
-                    > config.frontier_max_age_ms
+                || now.saturating_sub(proposed.created_at_unix_ms) > config.frontier_max_age_ms
             {
                 return Err(recovery_required(
                     "publication frontier is outside its freshness window",
@@ -254,8 +252,7 @@ async fn execute_publication_request(
                     "publication backup witness digest differs",
                 ));
             }
-            let backup: EvidenceBackupPublicationReceiptV1 =
-                serde_json::from_slice(&backup_bytes)?;
+            let backup: EvidenceBackupPublicationReceiptV1 = serde_json::from_slice(&backup_bytes)?;
             let executable_sha256 = current_executable_sha256()?;
             validate_backup_publication(
                 &backup,
@@ -276,8 +273,7 @@ async fn execute_publication_request(
                     frontier_file.as_path(),
                 ],
             )?;
-            let digest =
-                evidence_recovery_frontier_v2_sha256(&proposed).map_err(evidence_error)?;
+            let digest = evidence_recovery_frontier_v2_sha256(&proposed).map_err(evidence_error)?;
             // The exact operation identity is durable BEFORE any CAS can run.
             store
                 .mark_publication_dispatched(
@@ -322,11 +318,7 @@ async fn execute_publication_request(
                     // A failed local status update must not erase the durable
                     // Dispatching fence or replace the original backend error.
                     let status_result = store
-                        .mark_publication_indeterminate(
-                            &lease,
-                            &batch_id,
-                            current_time_millis()?,
-                        )
+                        .mark_publication_indeterminate(&lease, &batch_id, current_time_millis()?)
                         .await;
                     return Err(recovery_required(&format!(
                         "publication unresolved: {error}; durable-status update: {status_result:?}"
@@ -392,8 +384,7 @@ fn validate_publication_continuation(
         || proposed.source_commit != predecessor.source_commit
         || proposed.source_tree != predecessor.source_tree
         || proposed.issuer_trust_registry_sha256 != predecessor.issuer_trust_registry_sha256
-        || proposed.frontier_signer_registry_sha256
-            != predecessor.frontier_signer_registry_sha256
+        || proposed.frontier_signer_registry_sha256 != predecessor.frontier_signer_registry_sha256
         || proposed.signer_policy_generation != predecessor.signer_policy_generation
         || proposed.build_artifact_sha256 != predecessor.build_artifact_sha256
         || proposed.qualification_receipt_sha256 != predecessor.qualification_receipt_sha256

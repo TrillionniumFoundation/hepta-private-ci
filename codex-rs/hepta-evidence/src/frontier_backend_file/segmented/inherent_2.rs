@@ -39,7 +39,10 @@ impl SegmentedFileEvidenceFrontierBackend {
         let Some(first) = state.active_records.first() else {
             return Err(invalid("cannot archive an empty frontier journal tail"));
         };
-        let last = state.active_records.last().expect("non-empty active records");
+        let last = state
+            .active_records
+            .last()
+            .expect("non-empty active records");
         let segment_bytes = encode_records(&state.active_records)?;
         if segment_bytes.is_empty()
             || u64::try_from(segment_bytes.len()).unwrap_or(u64::MAX)
@@ -109,7 +112,9 @@ impl SegmentedFileEvidenceFrontierBackend {
             invalid(&format!("cannot encode frontier segment metadata: {error}"))
         })?;
         if metadata_bytes.len() as u64 > MAX_SEGMENT_METADATA_BYTES {
-            return Err(invalid("frontier segment metadata exceeds its bounded size"));
+            return Err(invalid(
+                "frontier segment metadata exceeds its bounded size",
+            ));
         }
         let metadata_path = self.legacy.journals.join(&metadata_file_name);
         if let Err(error) = write_immutable_private_file(
@@ -160,10 +165,11 @@ impl SegmentedFileEvidenceFrontierBackend {
         // the prefix only after validating its boundary digest.
         self.write_index_atomic(paths, &archive_index)?;
         active.set_len(0).map_err(|error| self.poison(error))?;
-        active.seek(SeekFrom::Start(0)).map_err(|error| self.poison(error))?;
+        active
+            .seek(SeekFrom::Start(0))
+            .map_err(|error| self.poison(error))?;
         active.sync_all().map_err(|error| self.poison(error))?;
         directory.sync_all().map_err(|error| self.poison(error))?;
         Ok(archive_index)
     }
-
 }

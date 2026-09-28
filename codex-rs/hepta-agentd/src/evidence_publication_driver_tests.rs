@@ -4,7 +4,11 @@ use codex_hepta_evidence::EvidencePublicationBatchV1;
 use codex_hepta_evidence::EvidenceRecoveryFrontierSignatureV2;
 use codex_hepta_evidence::EvidenceRecoverySnapshotV1;
 
-fn continuation() -> (EvidencePublicationBatchV1, EvidenceRecoveryFrontierV2, EvidenceRecoveryFrontierV2) {
+fn continuation() -> (
+    EvidencePublicationBatchV1,
+    EvidenceRecoveryFrontierV2,
+    EvidenceRecoveryFrontierV2,
+) {
     let snapshot = EvidenceRecoverySnapshotV1 {
         schema_version: 2,
         database_lineage: codex_hepta_evidence::EVIDENCE_DATABASE_LINEAGE.to_string(),

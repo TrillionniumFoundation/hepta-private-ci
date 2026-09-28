@@ -81,11 +81,7 @@ mod tests {
             .expect("bounded runtime integrity reads remain available");
 
         assert_rejected(&runtime, "CREATE TABLE runtime_escape(value INTEGER)").await;
-        assert_rejected(
-            &runtime,
-            "DROP TRIGGER qualification_evidence_no_update",
-        )
-        .await;
+        assert_rejected(&runtime, "DROP TRIGGER qualification_evidence_no_update").await;
         assert_rejected(&runtime, "UPDATE _sqlx_migrations SET success = 0").await;
         assert_rejected(&runtime, "PRAGMA foreign_keys = OFF").await;
         assert_rejected(&runtime, "PRAGMA user_version = 2").await;
@@ -127,12 +123,11 @@ mod tests {
             .await
             .expect("read current page count");
         let requested_limit = page_count.checked_add(1).expect("page-count headroom");
-        let configured_limit: i64 = sqlx::query_scalar(&format!(
-            "PRAGMA max_page_count = {requested_limit}"
-        ))
-        .fetch_one(&store.pool)
-        .await
-        .expect("install disk-full injection ceiling");
+        let configured_limit: i64 =
+            sqlx::query_scalar(&format!("PRAGMA max_page_count = {requested_limit}"))
+                .fetch_one(&store.pool)
+                .await
+                .expect("install disk-full injection ceiling");
         assert_eq!(configured_limit, requested_limit);
 
         let mut transaction = store.pool.begin().await.expect("begin injected write");
@@ -142,19 +137,23 @@ mod tests {
         .bind(8_i64 * 1024 * 1024)
         .execute(&mut *transaction)
         .await;
-        assert!(result.is_err(), "disk-full injection unexpectedly committed");
+        assert!(
+            result.is_err(),
+            "disk-full injection unexpectedly committed"
+        );
         transaction
             .rollback()
             .await
             .expect("rollback failed disk-full transaction");
 
-        let rows: i64 = sqlx::query_scalar(
-            "SELECT COUNT(*) FROM kernel_evidence_disk_full_probe",
-        )
-        .fetch_one(&store.pool)
-        .await
-        .expect("count probe rows after rollback");
-        assert_eq!(rows, 0, "disk-full failure left a partial authoritative row");
+        let rows: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM kernel_evidence_disk_full_probe")
+            .fetch_one(&store.pool)
+            .await
+            .expect("count probe rows after rollback");
+        assert_eq!(
+            rows, 0,
+            "disk-full failure left a partial authoritative row"
+        );
         verify_quick_check(&store.pool)
             .await
             .expect("database remains integrity-checkable after disk-full rollback");

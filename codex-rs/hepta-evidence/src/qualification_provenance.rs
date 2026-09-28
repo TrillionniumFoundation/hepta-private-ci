@@ -32,11 +32,7 @@ impl HeptaEvidenceStore {
             ));
         }
 
-        let mut transaction = self
-            .pool
-            .begin()
-            .await
-            .map_err(classify_sqlx_error)?;
+        let mut transaction = self.pool.begin().await.map_err(classify_sqlx_error)?;
         let store_id: Option<String> = sqlx::query_scalar(
             "SELECT store_id FROM evidence_recovery_identity WHERE singleton = 1",
         )
@@ -90,8 +86,7 @@ impl HeptaEvidenceStore {
                 let seq: i64 = row.try_get("seq").map_err(classify_sqlx_error)?;
                 if seq <= last_seq {
                     return Err(EvidenceError::Corrupt(
-                        "qualification provenance sequence is not strictly increasing"
-                            .to_string(),
+                        "qualification provenance sequence is not strictly increasing".to_string(),
                     ));
                 }
                 let evidence_id: String =

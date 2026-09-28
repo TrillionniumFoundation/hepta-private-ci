@@ -76,9 +76,8 @@ impl SegmentedFileEvidenceFrontierBackend {
         let record_sha256 = state
             .latest_record_sha256()
             .ok_or_else(|| corrupt("latest frontier has no audit record digest"))?;
-        let frontier_sha256 = evidence_recovery_frontier_v2_sha256(&frontier).map_err(|error| {
-            corrupt(&format!("cannot hash latest frontier: {error}"))
-        })?;
+        let frontier_sha256 = evidence_recovery_frontier_v2_sha256(&frontier)
+            .map_err(|error| corrupt(&format!("cannot hash latest frontier: {error}")))?;
         build_index(
             store_id,
             &self.legacy.identity,
@@ -162,5 +161,4 @@ impl SegmentedFileEvidenceFrontierBackend {
             pointer = next;
         }
     }
-
 }
