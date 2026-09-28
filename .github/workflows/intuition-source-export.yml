@@ -1,0 +1,57 @@
+name: intuition.policy Exact Source Export
+
+on:
+  push:
+    branches: [codex/intuition-policy-production-closure-20260927]
+    paths:
+      - ".github/workflows/intuition-source-export.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intuition-source-export-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    name: Export immutable intuition sources
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Capture exact source subset
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/intuition-source"
+          mkdir -p "$output"
+          tar -czf "$output/source.tgz" \
+            codex-rs/hepta-agentd/src \
+            codex-rs/hepta-agentd/tests \
+            codex-rs/hepta-agentd/Cargo.toml \
+            codex-rs/hepta-agent-protocol/src \
+            codex-rs/hepta-agent-protocol/Cargo.toml \
+            codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs \
+            codex-rs/hepta-intuition/src \
+            codex-rs/hepta-learning-ledger/src \
+            docs/modules/intuition.policy \
+            qualification/module-execution-dossiers/detail/intuition.policy.md \
+            scripts/intuition_ledger_exact.py
+          git rev-parse HEAD > "$output/source-sha.txt"
+          git rev-parse 'HEAD^{tree}' > "$output/source-tree.txt"
+          git status --porcelain --untracked-files=all > "$output/worktree-status.txt"
+          test ! -s "$output/worktree-status.txt"
+      - name: Retain immutable source subset
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-source-export-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intuition-source/
+          if-no-files-found: error
+          retention-days: 1
