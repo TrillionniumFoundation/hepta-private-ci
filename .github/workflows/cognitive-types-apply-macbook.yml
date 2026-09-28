@@ -1,8 +1,8 @@
-name: cognitive-types-apply-final
+name: cognitive-types-apply-final-slim
 
 on:
   push:
-    branches: ['codex/cognitive-types-full-closure-20260927']
+    branches: ['chatgpt/cognitive-types-final-slim-20260928']
     paths:
       - '.github/workflows/cognitive-types-apply-macbook.yml'
   workflow_dispatch:
@@ -11,12 +11,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: cognitive-types-apply-final-${{ github.ref }}
+  group: cognitive-types-apply-final-slim-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   apply-verify-commit:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     timeout-minutes: 120
     steps:
       - name: Check out exact staged candidate
