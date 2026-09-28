@@ -1,15 +1,11 @@
-//! Prompt-extension crate root with an explicit V3 compile surface.
+//! Prompt extension for the single Agentd-owned provider spine.
 //!
-//! The historical `lib.rs` remains the sole installed physical provider bridge.
-//! V3 proof and host types compile as a separately named module, while Agentd
-//! retains the unique physical-send owner and no second V3 bridge is installed.
+//! V3 compiler objects are projected by Agentd into the canonical runtime
+//! attachment. The historical alternate bridge is retained in `v3.rs` as
+//! design provenance, not registered or exported as another installer.
 
 #![forbid(unsafe_code)]
 
 #[path = "lib.rs"]
 mod canonical_runtime;
-
 pub use canonical_runtime::*;
-
-#[cfg(feature = "prompt-context-v3")]
-pub mod v3;

@@ -15,6 +15,7 @@ use crate::PromptRuntimeFinalRequestV2;
 use crate::PromptRuntimeHost;
 use crate::PromptRuntimeHostError;
 use crate::PromptRuntimeRequestKindV2;
+use crate::PromptRuntimeTerminalOutcomeV1;
 use crate::PromptRuntimeTransportV2;
 
 /// Complete secret-free binding installed by the provider-policy callback for
@@ -215,26 +216,46 @@ impl PromptRuntimeExactBodyObserver {
         }
     }
 
-    fn record_terminal(&self, terminal: EncodedRequestTerminal) -> Result<(), String> {
+    /// Advance only after the attempt-owning lease has persisted its exact
+    /// terminal and compatibility projection. Transport notifications have no
+    /// attempt identity and must never release or poison a later attempt.
+    pub(crate) fn record_terminal(
+        &self,
+        attempt: &PromptRuntimeExactAttemptV2,
+        outcome: PromptRuntimeTerminalOutcomeV1,
+    ) -> Result<(), String> {
         let mut phase = self.phase.lock().map_err(|_| "context_state_poisoned")?;
-        match terminal {
-            EncodedRequestTerminal::Indeterminate { .. }
-            | EncodedRequestTerminal::Abandoned { .. } => {
+        let existing = match &*phase {
+            ExactBodyPhase::Bound(existing)
+            | ExactBodyPhase::Proving {
+                attempt: existing, ..
+            }
+            | ExactBodyPhase::Proven {
+                attempt: existing, ..
+            } => existing,
+            ExactBodyPhase::Empty | ExactBodyPhase::Blocked => {
+                return Err("context_terminal_requires_reconciliation".to_owned());
+            }
+        };
+        if existing != attempt {
+            return Err("context_terminal_attempt_mismatch".to_owned());
+        }
+        match outcome {
+            PromptRuntimeTerminalOutcomeV1::Indeterminate => {
                 *phase = ExactBodyPhase::Blocked;
                 Ok(())
             }
-            EncodedRequestTerminal::Completed { .. } | EncodedRequestTerminal::Rejected { .. } => {
-                match &*phase {
-                    ExactBodyPhase::Proven { .. } => {
-                        *phase = ExactBodyPhase::Empty;
-                        Ok(())
-                    }
-                    ExactBodyPhase::Empty => Ok(()),
-                    ExactBodyPhase::Bound(_)
-                    | ExactBodyPhase::Proving { .. }
-                    | ExactBodyPhase::Blocked => {
-                        Err("context_terminal_requires_reconciliation".to_owned())
-                    }
+            PromptRuntimeTerminalOutcomeV1::Delivered
+            | PromptRuntimeTerminalOutcomeV1::Rejected
+            | PromptRuntimeTerminalOutcomeV1::NotDispatched => {
+                if matches!(&*phase, ExactBodyPhase::Proven { .. })
+                    || (outcome == PromptRuntimeTerminalOutcomeV1::NotDispatched
+                        && matches!(&*phase, ExactBodyPhase::Bound(_)))
+                {
+                    *phase = ExactBodyPhase::Empty;
+                    Ok(())
+                } else {
+                    Err("context_terminal_requires_reconciliation".to_owned())
                 }
             }
         }
@@ -306,9 +327,12 @@ impl EncodedRequestBodyObserver for PromptRuntimeExactBodyObserver {
 
     fn observe_terminal<'a>(
         &'a self,
-        terminal: EncodedRequestTerminal,
+        _terminal: EncodedRequestTerminal,
     ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'a>> {
-        Box::pin(async move { self.record_terminal(terminal) })
+        // This API intentionally carries no attempt identity. The same
+        // physical provider lease records an identity-bound terminal after
+        // durable host acceptance; callbacks here are notification-only.
+        Box::pin(async { Ok(()) })
     }
 }
 

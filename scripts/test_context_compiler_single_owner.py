@@ -48,7 +48,10 @@ class ContextCompilerSingleOwnerTests(unittest.TestCase):
         agentd_root = read("codex-rs/hepta-agentd/src/lib.rs")
         runtime = read("codex-rs/hepta-agentd/src/prompt_runtime.rs")
 
-        self.assertIn("pub mod v3;", extension_root)
+        self.assertNotIn("pub mod v3;", extension_root)
+        self.assertNotIn("mod v3;", extension_root)
+        self.assertIn("mod canonical_runtime;", extension_root)
+        self.assertIn("pub use canonical_runtime::*;", extension_root)
         self.assertEqual(canonical_extension.count("pub fn install_prompt_runtime<"), 1)
         self.assertNotIn("install_prompt_runtime_v3", canonical_extension)
         self.assertEqual(agentd_root.count("mod exact_context_delivery;"), 1)

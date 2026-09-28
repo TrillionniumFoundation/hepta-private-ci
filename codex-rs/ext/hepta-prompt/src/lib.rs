@@ -925,7 +925,7 @@ impl ModelProviderPolicyContributor for PromptRuntimeExtension {
                     request_binding_id: input.request_binding_id.to_owned(),
                     provider_request_digest,
                     dispatch_unix_ms,
-                    exact_attempt: exact_observer.map(|(_, attempt)| attempt),
+                    exact_observer,
                 }),
             })
         })
@@ -952,7 +952,10 @@ struct PromptRuntimeAttemptLease {
     request_binding_id: String,
     provider_request_digest: Digest32,
     dispatch_unix_ms: u64,
-    exact_attempt: Option<PromptRuntimeExactAttemptV2>,
+    exact_observer: Option<(
+        Arc<PromptRuntimeExactBodyObserver>,
+        PromptRuntimeExactAttemptV2,
+    )>,
 }
 
 impl ModelProviderAttemptLease for PromptRuntimeAttemptLease {
@@ -963,9 +966,9 @@ impl ModelProviderAttemptLease for PromptRuntimeAttemptLease {
         Box::pin(async move {
             let observed_unix_ms = current_unix_ms().map_err(runtime_policy_error)?;
             let exact_terminal = self
-                .exact_attempt
+                .exact_observer
                 .as_ref()
-                .map(|attempt| {
+                .map(|(_, attempt)| {
                     map_exact_terminal(&terminal).map(|terminal| PromptRuntimeFinalTerminalV2 {
                         attachment: self.attachment.clone(),
                         attempt: attempt.clone(),
@@ -1016,7 +1019,18 @@ impl ModelProviderAttemptLease for PromptRuntimeAttemptLease {
                     error.reason_code().to_owned(),
                     error.detail().to_owned(),
                 )
-            })
+            })?;
+            if let Some((observer, attempt)) = &self.exact_observer {
+                observer
+                    .record_terminal(attempt, outcome)
+                    .map_err(|reason| {
+                        ModelProviderPolicyError::new(
+                            reason,
+                            "exact terminal requires reconciliation",
+                        )
+                    })?;
+            }
+            Ok(())
         })
     }
 }
@@ -1207,3 +1221,7 @@ fn push_text(bytes: &mut Vec<u8>, value: &str) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "exact_terminal_lease_tests.rs"]
+mod exact_terminal_lease_tests;
