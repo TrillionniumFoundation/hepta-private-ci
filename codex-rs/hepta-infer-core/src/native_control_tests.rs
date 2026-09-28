@@ -40,6 +40,7 @@ fn dispatch() -> NativeDispatch {
         codex_revocation_revision: Some(3),
         codex_revocation_head_sha256: Some("3".repeat(64)),
         codex_authority_witness_sha256: Some("2".repeat(64)),
+        codex_owner_binding: None,
     }
 }
 
@@ -598,6 +599,104 @@ fn historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_succ
             .is_some_and(|reason| reason.contains("lacks claim-time authority frontier"))
     );
 
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+fn owner_binding() -> NativeOwnerBinding {
+    NativeOwnerBinding {
+        run_id: "run.1".to_string(),
+        generation: 4,
+        expected_revision: 2,
+        request_digest: "c".repeat(64),
+        context_digest: "7".repeat(64),
+        compilation_receipt_digest: "8".repeat(64),
+    }
+}
+
+#[test]
+fn pre_effect_outbox_retains_capacity_until_exact_owner_ack_is_durable() {
+    let path = path("owner-outbox");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let mut physical = dispatch();
+    physical.codex_owner_binding = Some(owner_binding());
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", physical)
+        .unwrap();
+    let pending = control
+        .abort_native_before_effect(token, "cancelled".to_string())
+        .unwrap();
+    assert_eq!(pending.state, NativeReservationState::AbortPendingOwner);
+    assert!(pending.turn_id.is_none());
+    assert!(pending.observation.is_none());
+    assert_eq!(
+        control.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    assert!(control.cancel_native("r1").is_err());
+    assert!(
+        control
+            .settle_native("r1", output(NativeRunStatus::Completed, None))
+            .is_err()
+    );
+    drop(control);
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(control.native_record("r1"), Some(&pending));
+    assert!(
+        control
+            .dispatch_native_with_pre_effect_abort("r1", dispatch())
+            .is_err()
+    );
+    for (reason, revision) in [("changed", 3), ("cancelled", 4)] {
+        assert!(
+            control
+                .acknowledge_native_owner_abort("r1", owner_binding(), reason.to_string(), revision)
+                .is_err()
+        );
+    }
+    let released = control
+        .acknowledge_native_owner_abort("r1", owner_binding(), "cancelled".to_string(), 3)
+        .unwrap();
+    assert_eq!(released.state, NativeReservationState::Released);
+    assert_eq!(
+        control
+            .acknowledge_native_owner_abort("r1", owner_binding(), "cancelled".to_string(), 3)
+            .unwrap(),
+        released
+    );
+    control.reserve_native(request("r2"), 1).unwrap();
+    drop(control);
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(control.native_record("r1"), Some(&released));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn reserved_owner_abort_is_recoverable_without_a_provider_dispatch() {
+    let path = path("reserved-owner");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let pending = control
+        .stop_native_with_owner("r1", owner_binding(), "preflight denied".to_string())
+        .unwrap();
+    assert_eq!(pending.state, NativeReservationState::AbortPendingOwner);
+    assert!(pending.dispatch.is_none());
+    drop(control);
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(control.native_record("r1"), Some(&pending));
+    let mut wrong = owner_binding();
+    wrong.request_digest = "d".repeat(64);
+    assert!(
+        control
+            .acknowledge_native_owner_abort("r1", wrong, "preflight denied".to_string(), 3)
+            .is_err()
+    );
+    control
+        .acknowledge_native_owner_abort("r1", owner_binding(), "preflight denied".to_string(), 3)
+        .unwrap();
+    assert!(control.dispatch_native("r1", dispatch()).is_err());
     drop(control);
     std::fs::remove_file(path).unwrap();
 }

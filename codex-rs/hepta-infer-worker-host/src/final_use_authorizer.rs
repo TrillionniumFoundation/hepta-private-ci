@@ -26,6 +26,10 @@ use tokio::time::timeout;
 use crate::native_app_server::TurnStartAuthorityFuture;
 use crate::native_app_server::TurnStartAuthorizer;
 
+#[cfg(unix)]
+#[path = "issuer_peer_instance.rs"]
+mod peer_instance;
+
 const AUTHORITY_PORT_SCHEMA_VERSION: u32 = 1;
 const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
 const MAX_CONFIG_BYTES: usize = 64 * 1024;
@@ -117,6 +121,7 @@ impl UnixFinalUseAuthorizer {
     #[cfg(unix)]
     async fn request_grant(&self, binding: &FinalUseBinding) -> Result<IssuerResponse> {
         validate_issuer_socket(&self.issuer_socket, self.issuer_uid)?;
+        let socket_identity = std::fs::symlink_metadata(&self.issuer_socket)?;
         let request = IssuerRequest {
             schema_version: AUTHORITY_PORT_SCHEMA_VERSION,
             operation: AUTHORITY_PORT_OPERATION.to_string(),
@@ -131,6 +136,9 @@ impl UnixFinalUseAuthorizer {
             let mut stream = tokio::net::UnixStream::connect(&self.issuer_socket).await?;
             let peer = stream.peer_cred()?;
             validate_issuer_peer_uid(peer.uid(), self.issuer_uid)?;
+            peer_instance::require_same_socket(&socket_identity, &self.issuer_socket)?;
+            #[cfg(target_os = "linux")]
+            let peer_instance = peer_instance::PeerInstance::capture(&stream)?;
             stream.write_all(&request_len.to_be_bytes()).await?;
             stream.write_all(&request_bytes).await?;
             stream.flush().await?;
@@ -145,6 +153,9 @@ impl UnixFinalUseAuthorizer {
             }
             let mut response = vec![0_u8; response_len];
             stream.read_exact(&mut response).await?;
+            peer_instance::require_same_socket(&socket_identity, &self.issuer_socket)?;
+            #[cfg(target_os = "linux")]
+            peer_instance.revalidate(&stream)?;
             Ok(response)
         };
         let response = timeout(self.issuer_timeout, exchange)

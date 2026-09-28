@@ -1,5 +1,8 @@
 use std::collections::BTreeMap;
 
+#[path = "codex_effect_owner.rs"]
+mod codex_effect;
+
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 
@@ -128,6 +131,8 @@ pub enum AgentRunError {
     TerminalObservationRequired,
     ArithmeticOverflow,
     InvalidRunStart(&'static str),
+    EffectFrontierUnavailable,
+    EffectFrontierCorrupt,
 }
 
 #[derive(Clone, Debug)]
@@ -139,6 +144,7 @@ struct RunRecord {
     compilation_receipt_digest: Option<String>,
     cancel_reason: Option<String>,
     cancel_ack_deadline_ms: Option<u64>,
+    pre_effect_aborted: bool,
 }
 
 /// Owner-local Lane B coordinator for Agentd.
@@ -153,6 +159,7 @@ pub struct AgentRunCoordinator {
     runs: BTreeMap<String, RunRecord>,
     accepting_runs: bool,
     max_active_runs: usize,
+    effects: Option<crate::codex_effect_journal::CodexEffectJournal>,
 }
 
 impl AgentRunCoordinator {
@@ -172,6 +179,7 @@ impl AgentRunCoordinator {
             runs: BTreeMap::new(),
             accepting_runs: true,
             max_active_runs,
+            effects: None,
         })
     }
 
@@ -199,6 +207,13 @@ impl AgentRunCoordinator {
             }
             return Err(AgentRunError::Conflict);
         }
+        if self
+            .effects
+            .as_ref()
+            .is_some_and(|effects| effects.contains(&snapshot.run_id))
+        {
+            return Err(AgentRunError::Conflict);
+        }
         if !self.accepting_runs {
             return Err(AgentRunError::AdmissionClosed);
         }
@@ -213,6 +228,7 @@ impl AgentRunCoordinator {
             compilation_receipt_digest: None,
             cancel_reason: None,
             cancel_ack_deadline_ms: None,
+            pre_effect_aborted: false,
         };
         let result = receipt(&record, /*idempotent*/ false);
         self.runs.insert(snapshot.run_id, record);
@@ -325,6 +341,35 @@ impl AgentRunCoordinator {
         }
         if record.phase != RunPhase::ContextAttached {
             return Err(AgentRunError::ContextRequired);
+        }
+        if let Some(effects) = &mut self.effects {
+            let owner_revision = record
+                .revision
+                .checked_add(1)
+                .ok_or(AgentRunError::ArithmeticOverflow)?;
+            effects.commit(
+                &crate::CodexEffectReceipt {
+                    binding: crate::CodexEffectBinding {
+                        run_id: run_id.to_string(),
+                        generation: record.snapshot.generation,
+                        expected_revision: record.revision,
+                        request_digest: record.snapshot.request_digest.clone(),
+                        context_digest: record
+                            .context_digest
+                            .clone()
+                            .ok_or(AgentRunError::ContextRequired)?,
+                        compilation_receipt_digest: record
+                            .compilation_receipt_digest
+                            .clone()
+                            .ok_or(AgentRunError::ContextRequired)?,
+                    },
+                    decision: crate::CodexEffectDecision::Entered,
+                    reason: None,
+                    owner_revision,
+                    idempotent: false,
+                },
+                /*legacy*/ true,
+            )?;
         }
         record.phase = RunPhase::Dispatched;
         advance_revision(record)?;
@@ -457,6 +502,7 @@ impl AgentRunCoordinator {
             compilation_receipt_digest: Some(recovery.compilation_receipt_digest),
             cancel_reason: recovery.cancel_reason,
             cancel_ack_deadline_ms: None,
+            pre_effect_aborted: false,
         };
         let result = receipt(&record, /*idempotent*/ false);
         self.runs.insert(run_id, record);
@@ -735,7 +781,7 @@ fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
         cancel_reason: record.cancel_reason.clone(),
         cancel_ack_deadline_ms: record.cancel_ack_deadline_ms,
         compilation_receipt_digest: record.compilation_receipt_digest.clone(),
-        terminal_observed: record.phase.terminal_observed(),
+        terminal_observed: record.phase.terminal_observed() && !record.pre_effect_aborted,
         idempotent,
     }
 }

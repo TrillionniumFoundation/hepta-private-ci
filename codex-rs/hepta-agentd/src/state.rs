@@ -99,7 +99,7 @@ impl AgentdState {
             identity.app_server_socket.display(),
             crate::AGENTD_CONTROL_SCHEMA_VERSION
         );
-        let run_coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
+        let mut run_coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
             agent_id: identity.agent_id.as_str().to_string(),
             supervisor_generation: identity.spawn_generation,
             agentd_generation: identity.spawn_generation,
@@ -112,6 +112,10 @@ impl AgentdState {
             max_active_runs: usize::from(identity.resources.max_concurrent_turns),
         })
         .map_err(run_error)?;
+
+        run_coordinator
+            .open_effect_frontier(&identity.home_root.join("runtime-codex-effects.jsonl"))
+            .map_err(run_error)?;
 
         let prompt_registry_root = identity.home_root.join("prompt-registry");
         let prompt_runtime_root = identity.run_root.join("prompt-runtime");

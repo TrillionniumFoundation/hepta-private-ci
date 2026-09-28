@@ -397,26 +397,6 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     assert!(!output.succeeded());
 }
 
-#[test]
-fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
-    let source = include_str!("native_app_server.rs");
-    let durable_dispatch = source
-        .find("control.dispatch_native_with_pre_effect_abort(")
-        .expect("durable native dispatch");
-    let revalidation = source
-        .find("owner.revalidate_cognitive_context(snapshot).await")
-        .expect("final-use cognitive revalidation");
-    let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
-    let durable_stop = source
-        .find("control.abort_native_before_effect(")
-        .expect("durable pre-turn stop");
-    assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
-    assert!(durable_stop < turn_start);
-}
-
 #[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone() -> Result<()> {
@@ -763,4 +743,24 @@ fn final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift() {
         )
         .is_err()
     );
+}
+
+#[test]
+fn owner_binding_translation_is_exact_and_denial_reason_is_byte_bounded() {
+    let native = codex_hepta_infer_core::durable_control::native::NativeOwnerBinding {
+        run_id: "run.1".to_string(),
+        generation: 7,
+        expected_revision: 4,
+        request_digest: "1".repeat(64),
+        context_digest: "2".repeat(64),
+        compilation_receipt_digest: "3".repeat(64),
+    };
+    assert_eq!(
+        serde_json::to_value(&native).unwrap(),
+        serde_json::to_value(pre_effect::wire_binding(&native)).unwrap()
+    );
+    let bounded = pre_effect::bounded_reason(&"超时".repeat(400));
+    assert!(bounded.len() <= 512);
+    assert!(std::str::from_utf8(bounded.as_bytes()).is_ok());
+    assert_eq!(pre_effect::bounded_reason("\0"), "pre-effect stop");
 }

@@ -76,6 +76,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
                 codex_revocation_revision: None,
                 codex_revocation_head_sha256: None,
                 codex_authority_witness_sha256: None,
+                codex_owner_binding: None,
             },
         )
         .unwrap();
@@ -230,6 +231,7 @@ async fn reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown(
                 codex_revocation_revision: None,
                 codex_revocation_head_sha256: None,
                 codex_authority_witness_sha256: Some("1".repeat(64)),
+                codex_owner_binding: None,
             },
         )
         .unwrap();

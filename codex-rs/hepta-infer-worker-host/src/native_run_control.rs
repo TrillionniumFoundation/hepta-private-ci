@@ -107,6 +107,15 @@ impl AppServerModelDriver {
             )?,
         };
         let record = control.reserve_native(request, admission.maximum_in_flight)?;
+        if record.state == NativeReservationState::AbortPendingOwner {
+            let owner = codex_hepta_agentd::AgentdClient::new(
+                self.config.agentd_socket.clone(),
+                self.config.agent_id.clone(),
+                self.config.generation,
+            )?;
+            super::pre_effect::reconcile_abort(control, &record.request.request_id, &owner).await?;
+            return Err("request durably aborted before effect and acknowledged by Agentd".into());
+        }
         if let Some(reason) = &record.pre_dispatch_stop {
             return Err(format!("request stopped before dispatch: {reason}").into());
         }
@@ -185,8 +194,35 @@ impl AppServerModelDriver {
                     .is_some_and(|record| record.state == NativeReservationState::Reserved)
                 {
                     // Only Reserved proves turn/start could not have happened.
-                    let reason: String = error.to_string().chars().take(1024).collect();
-                    control.stop_native_before_dispatch(&request_id, reason)?;
+                    let reason = super::pre_effect::bounded_reason(&error.to_string());
+                    if let Some(binding) = intelligence {
+                        let source_digest = control
+                            .native_record(&request_id)
+                            .ok_or("missing native admission")?
+                            .request
+                            .payload_digest
+                            .clone();
+                        control.stop_native_with_owner(
+                            &request_id,
+                            codex_hepta_infer_core::durable_control::native::NativeOwnerBinding {
+                                run_id: binding.run_id.clone(),
+                                generation: self.config.generation,
+                                expected_revision: binding.expected_revision,
+                                request_digest: source_digest,
+                                context_digest: binding.context_digest.clone(),
+                                compilation_receipt_digest: binding.envelope_digest.clone(),
+                            },
+                            reason,
+                        )?;
+                        let owner = codex_hepta_agentd::AgentdClient::new(
+                            self.config.agentd_socket.clone(),
+                            self.config.agent_id.clone(),
+                            self.config.generation,
+                        )?;
+                        super::pre_effect::reconcile_abort(control, &request_id, &owner).await?;
+                    } else {
+                        control.stop_native_before_dispatch(&request_id, reason)?;
+                    }
                 }
                 Err(error)
             }

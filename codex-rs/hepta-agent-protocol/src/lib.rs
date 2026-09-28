@@ -4,6 +4,11 @@
 
 mod authbus;
 mod capabilities;
+mod codex_effect;
+pub use codex_effect::CODEX_EFFECT_BOUNDARY_CAPABILITY;
+pub use codex_effect::CodexEffectBinding;
+pub use codex_effect::CodexEffectDecision;
+pub use codex_effect::CodexEffectReceipt;
 mod evidence;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
@@ -617,6 +622,13 @@ pub enum AgentdMethod {
         expected_revision: u64,
         attachment: AgentContextAttachment,
     },
+    RunEnterEffect {
+        binding: CodexEffectBinding,
+    },
+    RunAbortBeforeEffect {
+        binding: CodexEffectBinding,
+        reason: String,
+    },
     RunMarkDispatched {
         run_id: String,
         expected_revision: u64,
@@ -751,6 +763,7 @@ pub enum AgentdPayload {
     KernelEvidenceResult(KernelEvidenceResult),
     Events(EventBatch),
     RunReceipt(AgentRunReceipt),
+    CodexEffect(CodexEffectReceipt),
     RunCancellation(AgentRunCancellation),
     RunStatus {
         run: Option<AgentRunReceipt>,

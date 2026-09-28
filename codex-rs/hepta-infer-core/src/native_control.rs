@@ -12,6 +12,12 @@ use super::Error;
 use super::validate_digest;
 use super::validate_identity;
 
+#[path = "native_owner_abort.rs"]
+mod owner_abort;
+pub use owner_abort::NativeOwnerAbort;
+pub use owner_abort::NativeOwnerBinding;
+use owner_abort::prepare_owner_abort;
+
 pub(super) const JOURNAL_PREFIX: &str = "native-v1|";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -107,6 +113,7 @@ pub enum NativeReservationState {
     Running,
     Cancelling,
     Indeterminate,
+    AbortPendingOwner,
     Released,
 }
 
@@ -161,6 +168,10 @@ pub struct NativeDispatch {
     /// revocation head witness claimed for this dispatch before physical turn/start.
     #[serde(default)]
     pub codex_authority_witness_sha256: Option<String>,
+    /// Optional only for legacy or non-intelligence runs. This tuple binds the
+    /// existing Agentd owner before any send permit is requested.
+    #[serde(default)]
+    pub codex_owner_binding: Option<NativeOwnerBinding>,
 }
 
 /// In-memory proof that this live process has durably prepared one dispatch but
@@ -213,6 +224,10 @@ pub struct NativeRunRecord {
     #[serde(default)]
     pub dispatch_rejection: Option<NativeDispatchRejection>,
     pub observation: Option<NativeRunOutput>,
+    /// Immutable negative outbox. Capacity is retained until the exact owner
+    /// acknowledgement is itself durable. Never authorizes a physical retry.
+    #[serde(default)]
+    pub owner_abort: Option<NativeOwnerAbort>,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -250,6 +265,17 @@ enum Event {
     AbortBeforeEffect {
         request_id: String,
         reason: String,
+    },
+    PrepareOwnerAbort {
+        request_id: String,
+        binding: NativeOwnerBinding,
+        reason: String,
+    },
+    AcknowledgeOwnerAbort {
+        request_id: String,
+        binding: NativeOwnerBinding,
+        reason: String,
+        owner_revision: u64,
     },
     Observe {
         request_id: String,
@@ -551,6 +577,7 @@ impl NativeJournal {
                     pre_dispatch_stop: None,
                     dispatch_rejection: None,
                     observation: None,
+                    owner_abort: None,
                 },
             );
             return Ok(());
@@ -563,6 +590,8 @@ impl NativeJournal {
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
             | Event::AbortBeforeEffect { request_id, .. }
+            | Event::PrepareOwnerAbort { request_id, .. }
+            | Event::AcknowledgeOwnerAbort { request_id, .. }
             | Event::Observe { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
@@ -661,6 +690,14 @@ impl NativeJournal {
                 if let Some(digest) = &dispatch.codex_authority_witness_sha256 {
                     validate_digest(digest, "native codex authority witness")?;
                 }
+                if let Some(binding) = &dispatch.codex_owner_binding {
+                    binding.validate()?;
+                    if binding.generation != record.request.worker_generation
+                        || dispatch.codex_request_digest.as_ref() != Some(&binding.request_digest)
+                    {
+                        return Err(Error::AssignmentMismatch);
+                    }
+                }
                 record.dispatch = Some(dispatch);
                 record.state = NativeReservationState::Dispatching;
             }
@@ -704,6 +741,7 @@ impl NativeJournal {
             Event::Cancel { .. } => {
                 if record.state == NativeReservationState::Released
                     || record.state == NativeReservationState::Reserved
+                    || record.state == NativeReservationState::AbortPendingOwner
                 {
                     return Err(Error::InvalidTransition);
                 }
@@ -732,10 +770,53 @@ impl NativeJournal {
                 {
                     return Err(Error::InvalidTransition);
                 }
-                record.pre_dispatch_stop = Some(reason);
+                let binding = record
+                    .dispatch
+                    .as_ref()
+                    .and_then(|dispatch| dispatch.codex_owner_binding.clone());
+                match binding {
+                    Some(binding) => prepare_owner_abort(record, binding, reason)?,
+                    None => {
+                        record.pre_dispatch_stop = Some(reason);
+                        record.state = NativeReservationState::Released;
+                    }
+                }
+            }
+            Event::PrepareOwnerAbort {
+                binding, reason, ..
+            } => {
+                if record.state != NativeReservationState::Reserved {
+                    return Err(Error::InvalidTransition);
+                }
+                prepare_owner_abort(record, binding, reason)?;
+            }
+            Event::AcknowledgeOwnerAbort {
+                binding,
+                reason,
+                owner_revision,
+                ..
+            } => {
+                if record.state != NativeReservationState::AbortPendingOwner {
+                    return Err(Error::InvalidTransition);
+                }
+                let notice = record
+                    .owner_abort
+                    .as_mut()
+                    .ok_or(Error::InvalidTransition)?;
+                if notice.binding != binding
+                    || notice.reason != reason
+                    || binding.expected_revision.checked_add(1) != Some(owner_revision)
+                    || notice.acknowledged_revision.is_some()
+                {
+                    return Err(Error::Conflict);
+                }
+                notice.acknowledged_revision = Some(owner_revision);
                 record.state = NativeReservationState::Released;
             }
             Event::Observe { output, .. } => {
+                if record.owner_abort.is_some() {
+                    return Err(Error::InvalidTransition);
+                }
                 if record.dispatch_rejection.is_some() {
                     return Err(Error::InvalidTransition);
                 }

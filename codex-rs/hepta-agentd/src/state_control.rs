@@ -125,6 +125,10 @@ impl AgentdState {
                     )
                     .map_err(AgentdError::Protocol)?,
                 );
+                capabilities.push(
+                    crate::AgentdCapability::new(crate::CODEX_EFFECT_BOUNDARY_CAPABILITY, 1, 0)
+                        .map_err(AgentdError::Protocol)?,
+                );
                 if self.objective_runtime.get().is_some() {
                     capabilities.push(
                         crate::AgentdCapability::new("objective.start", 1, 0)
@@ -469,6 +473,36 @@ impl AgentdState {
                     )
                     .map_err(run_error)?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
+            }
+            crate::AgentdMethod::RunEnterEffect { binding } => {
+                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
+                let receipt = self
+                    .runs
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .decide_codex_effect(
+                        now_ms()?,
+                        binding,
+                        crate::CodexEffectDecision::Entered,
+                        None,
+                    )
+                    .map_err(run_error)?;
+                AgentdPayload::CodexEffect(receipt)
+            }
+            crate::AgentdMethod::RunAbortBeforeEffect { binding, reason } => {
+                require_run_reconciliation_ready(lifecycle, fenced)?;
+                let receipt = self
+                    .runs
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .decide_codex_effect(
+                        now_ms()?,
+                        binding,
+                        crate::CodexEffectDecision::AbortedBeforeEffect,
+                        Some(reason),
+                    )
+                    .map_err(run_error)?;
+                AgentdPayload::CodexEffect(receipt)
             }
             crate::AgentdMethod::RunMarkDispatched {
                 run_id,
