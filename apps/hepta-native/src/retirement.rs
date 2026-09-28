@@ -192,15 +192,17 @@ impl RetirementStore {
         self.append_records(identities, &[])
     }
 
-    /// Records reach stable storage before their references enter the chain.
-    /// Missing records are permitted only for imported legacy tombstones: they
-    /// remain non-replayable and are never presented as reconstructed receipts.
+    /// Validate the complete batch before writing records. An identity-only
+    /// legacy tombstone cannot acquire a receipt absent from its committed chain.
     pub(crate) fn append_records(
         &mut self,
         identities: &[String],
         records: &[OperationRecord],
     ) -> Result<(), ShellError> {
         self.root.verify()?;
+        for identity in identities {
+            validate_digest(identity, "retirement.identity")?;
+        }
         let mut record_digests = BTreeMap::new();
         let identity_set: HashSet<_> = identities.iter().collect();
         for record in records {
@@ -219,6 +221,11 @@ impl RetirementStore {
                     "archive is not in the retirement transaction".to_owned(),
                 ));
             }
+            if self.contains(&identity) && !self.record_digests.contains_key(&identity) {
+                return Err(ShellError::State(
+                    "legacy retirement identity cannot acquire an uncommitted receipt".to_owned(),
+                ));
+            }
             let bytes = serde_json::to_vec(record)?;
             if bytes.len() as u64 > RECORD_BYTES {
                 return Err(ShellError::State(
@@ -233,9 +240,15 @@ impl RetirementStore {
                     ));
                 }
             }
-            if record_digests.insert(identity, digest.clone()).is_some() {
+            if record_digests.insert(identity, digest).is_some() {
                 return Err(ShellError::State("duplicate archived operation".to_owned()));
             }
+        }
+        // No semantic rejection below can partially admit another record in a
+        // mixed batch. These immutable records are published before references.
+        for record in records {
+            let bytes = serde_json::to_vec(record)?;
+            let digest = sha256_hex(&bytes);
             let path = self.root.path().join(format!("record-{digest}.json"));
             match std::fs::symlink_metadata(&path) {
                 Ok(_) => {
@@ -258,9 +271,6 @@ impl RetirementStore {
             .collect();
         added.sort_unstable();
         added.dedup();
-        for digest in &added {
-            validate_digest(digest, "retirement.identity")?;
-        }
         if added.is_empty() {
             return Ok(());
         }
@@ -306,8 +316,6 @@ impl RetirementStore {
             };
             checkpoints.push((digest, checkpoint.count));
         }
-        // A failed publication fences the journal owner. Reopen accepts the
-        // complete old/new head; orphan segments never remove an active record.
         self.publish(&checkpoint)?;
         self.checkpoint = checkpoint;
         self.checkpoints.extend(checkpoints);
@@ -365,3 +373,7 @@ impl RetirementStore {
 #[cfg(test)]
 #[path = "retirement_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "retirement_claim_tests.rs"]
+mod claim_tests;

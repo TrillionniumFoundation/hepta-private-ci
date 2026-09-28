@@ -1,82 +1,13 @@
-name: ui.native exact remediation applicator
+name: ui.native retired remediation applicator
 
 on:
-  push:
-    branches: [work/ui-native-qualified-integration-20260928]
-    paths:
-      - .ci/ui-native-remediation/**
-      - .github/workflows/ui-native-remediation-apply-once.yml
+  workflow_dispatch:
 
 permissions:
-  contents: write
-
-concurrency:
-  group: ui-native-exact-remediation-${{ github.ref }}
-  cancel-in-progress: true
+  contents: read
 
 jobs:
-  apply:
+  retired:
     runs-on: ubuntu-slim
-    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ github.sha }}
-          fetch-depth: 0
-      - name: Apply, verify, and publish the exact scoped remediation
-        env:
-          EXPECTED_PATCH_SHA256: 8ff384a04d304bf702397846304e7c1c74bf50e86de4bd37105734d00425f416
-        run: |
-          set -euo pipefail
-          if [[ ! -f .ci/ui-native-remediation/patch.part-00 ]]; then
-            echo 'one-shot remediation already consumed'
-            exit 0
-          fi
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          test -z "$(git status --porcelain)"
-          cat .ci/ui-native-remediation/patch.part-* > /tmp/ui-native-remediation.patch
-          printf '%s  %s\n' "$EXPECTED_PATCH_SHA256" /tmp/ui-native-remediation.patch | sha256sum --check --strict
-          git apply --check --whitespace=error-all /tmp/ui-native-remediation.patch
-          git apply --index --whitespace=error-all /tmp/ui-native-remediation.patch
-          if ! command -v rustup >/dev/null 2>&1; then
-            command -v curl >/dev/null
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.95.0
-            source "$HOME/.cargo/env"
-          fi
-          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
-          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
-          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest scripts.test_hepta_ui_native_source -v
-          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_hepta_ui_native*.py' -v
-          git diff --cached --check
-          git rm -r .ci/ui-native-remediation
-          python3 - <<'PYTHON'
-          import subprocess
-          expected = {
-              'apps/hepta-native/src/file_input.rs',
-              'apps/hepta-native/src/runtime.rs',
-              'apps/hepta-native/src/ui.rs',
-              'apps/hepta-native/src/ui/operations_view.rs',
-              'apps/hepta-native/src/ui/shutdown.rs',
-              'apps/hepta-native/src/ui/shutdown_tests.rs',
-              'apps/hepta-native/src/ui/task_supervisor.rs',
-              'apps/hepta-native/src/ui/task_supervisor_tests.rs',
-              'apps/hepta-native/src/ui/update_views.rs',
-              'apps/hepta-native/tests/shutdown_recovery.rs',
-              'apps/hepta-native/tools/prepare_current_source.py',
-              'scripts/test_hepta_ui_native_source.py',
-              '.ci/ui-native-remediation/patch.part-00',
-              '.ci/ui-native-remediation/patch.part-01',
-              '.ci/ui-native-remediation/patch.part-02',
-              '.ci/ui-native-remediation/patch.part-03',
-          }
-          observed = set(subprocess.check_output(
-              ['git', 'diff', '--cached', '--name-only'], text=True
-          ).splitlines())
-          if observed != expected:
-              raise SystemExit(f'unexpected staged paths: {sorted(observed ^ expected)}')
-          PYTHON
-          git config user.name 'hepta-native-remediation-bot'
-          git config user.email 'hepta-native-remediation-bot@users.noreply.github.com'
-          git commit -m 'fix(ui.native): normalize exact-source checks across platforms' \
-            -m 'Apply the committed Rust 1.95 formatting and compare worktree identity through Git normalization so clean Windows CRLF checkouts match committed LF blobs while real staged or unstaged changes remain rejected.'
-          git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}"
+      - run: echo 'The invalid historical patch capsule is retired. No patch application, source modification or branch publication is permitted here. This notice is not a qualification result.'
