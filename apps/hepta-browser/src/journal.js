@@ -6,6 +6,7 @@ import { dirname, isAbsolute, resolve } from "node:path";
 const SCHEMA = "hepta.browser.operation-journal.v1";
 const MAX_LINE_BYTES = 262_144;
 const MAX_FILE_BYTES = 64 * 1024 * 1024;
+const MAX_PENDING_OPERATIONS = 64;
 const UTF8 = new TextEncoder();
 
 function requireRecord(value, name) {
@@ -166,10 +167,13 @@ export class MemoryBrowserOperationJournal {
 export class FileBrowserOperationJournal {
   #path;
   #tail = Promise.resolve();
+  #pending = 0;
   #parentReady = false;
   #poisoned = null;
   // Live-handle high-water mark, not an external anti-rollback authority.
   #frontier = null;
+  // Reduction of that exact verified prefix; never a substitute for disk reads.
+  #records = new Map();
 
   constructor(path) {
     if (typeof path !== "string" || !isAbsolute(path)) {
@@ -269,8 +273,8 @@ export class FileBrowserOperationJournal {
   }
 
   #retainFrontier(view) {
-    // Do not retain a second full journal buffer or turn this into a cache of
-    // truth: every read still checks the current complete on-disk records.
+    // Retain no second full journal buffer. The reduction can be reused only
+    // after every current disk byte, file identity and old prefix are checked.
     this.#frontier = { dev: view.dev, ino: view.ino, size: view.size, digest: view.digest };
   }
 
@@ -293,7 +297,7 @@ export class FileBrowserOperationJournal {
     try {
       handle = await open(this.#path, constants.O_RDONLY | noFollow);
     } catch (error) {
-      if (error?.code === "ENOENT" && this.#frontier === null) return new Map();
+      if (error?.code === "ENOENT" && this.#frontier === null) return this.#records;
       throw error;
     }
     let view;
@@ -303,11 +307,16 @@ export class FileBrowserOperationJournal {
     } finally {
       await handle.close();
     }
-    const bytes = new TextDecoder("utf-8", { fatal: true }).decode(view.bytes);
+    // The verified frontier is always a complete UTF-8 line boundary. Parse
+    // only new bytes, but keep the full bounded read/hash above on every use.
+    const suffix = view.bytes.subarray(this.#frontier?.size ?? 0);
+    const bytes = new TextDecoder("utf-8", { fatal: true }).decode(suffix);
     if (bytes.length !== 0 && !bytes.endsWith("\n")) {
       throw new TypeError("browser journal has an incomplete final record; explicit owner recovery is required");
     }
-    const records = new Map();
+    // Do not publish a valid prefix of a malformed or semantically invalid
+    // suffix. Stage only changed keys, not another copy of the whole history.
+    const changes = new Map();
     const lines = bytes.length === 0 ? [] : bytes.split("\n");
     if (lines.at(-1) === "") lines.pop();
     for (const line of lines) {
@@ -334,14 +343,15 @@ export class FileBrowserOperationJournal {
       }
       const record = freezeRecord(requireRecord(envelope.record, "journal record"));
       const key = keyOf(record);
-      const prior = records.get(key);
+      const prior = changes.get(key) ?? this.#records.get(key);
       if (!["dispatch", "observation"].includes(envelope.type)) {
         throw new TypeError("browser journal record type is unsupported");
       }
-      records.set(key, advanceRecord(envelope.type, prior, record));
+      changes.set(key, advanceRecord(envelope.type, prior, record));
     }
+    for (const [key, record] of changes) this.#records.set(key, record);
     this.#retainFrontier(view);
-    return records;
+    return this.#records;
   }
 
   async #append({ type, record }) {
@@ -391,14 +401,21 @@ export class FileBrowserOperationJournal {
         catch (error) { this.#poisoned = error instanceof Error ? error : new Error("journal I/O failure"); throw error; }
       }
     }
+    // Publish only after write, both sync barriers, exact observation and close
+    // succeed. A possible I/O failure poisons the handle before cache exposure.
+    this.#records.set(keyOf(record), record);
     this.#retainFrontier(appended);
   }
 
   #serialize(operation) {
+    if (this.#pending >= MAX_PENDING_OPERATIONS) {
+      return Promise.reject(new TypeError("browser journal operation capacity occupied"));
+    }
+    this.#pending++;
     const run = this.#tail.catch(() => {}).then(() => {
       if (this.#poisoned) throw new Error(`browser journal requires explicit owner recovery: ${this.#poisoned.message}`);
       return operation();
-    });
+    }).finally(() => { this.#pending--; });
     this.#tail = run.catch(() => {});
     return run;
   }
