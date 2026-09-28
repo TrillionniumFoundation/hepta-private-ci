@@ -1,5 +1,26 @@
 {
   "modules": {
+    "control_engineering_v2/audit_checkpoint.py": [
+      "AuditCheckpoint",
+      "build_audit_checkpoint",
+      "verify_audit_checkpoint",
+      "verify_checkpoint_digest"
+    ],
+    "control_engineering_v2/capacity_policy.py": [
+      "EngineeringCapacityDecision",
+      "EngineeringCapacityPolicy",
+      "EngineeringCapacitySnapshot",
+      "evaluate_engineering_capacity",
+      "measure_engineering_capacity"
+    ],
+    "control_engineering_v2/clock_policy.py": [
+      "Clock",
+      "ClockSkewPolicy",
+      "FixedClock",
+      "ReceiptWindow",
+      "SystemClock",
+      "validate_receipt_window"
+    ],
     "control_engineering_v2/durability_soak.py": [
       "DurabilitySoakReport",
       "run_durability_soak"
@@ -12,25 +33,6 @@
       "JsonTransport",
       "ProductionProviderSet",
       "decode_external_receipt"
-    ],
-    "control_engineering_v2/governance.py": [
-      "AuditCheckpoint",
-      "Clock",
-      "ClockSkewPolicy",
-      "EngineeringCapacityDecision",
-      "EngineeringCapacityPolicy",
-      "EngineeringCapacitySnapshot",
-      "FixedClock",
-      "ReceiptWindow",
-      "SystemClock",
-      "WorkerRegistrationRotationReceipt",
-      "build_audit_checkpoint",
-      "evaluate_engineering_capacity",
-      "measure_engineering_capacity",
-      "rotate_worker_registration",
-      "validate_receipt_window",
-      "verify_audit_checkpoint",
-      "verify_checkpoint_digest"
     ],
     "control_engineering_v2/quality_gate.py": [
       "QualityGateDecision",
@@ -57,6 +59,10 @@
       "status_json",
       "verify_status_digest",
       "write_status"
+    ],
+    "control_engineering_v2/worker_registration_governance.py": [
+      "WorkerRegistrationRotationReceipt",
+      "rotate_worker_registration"
     ]
   },
   "schema": "hepta.control-engineering-api.v1"
