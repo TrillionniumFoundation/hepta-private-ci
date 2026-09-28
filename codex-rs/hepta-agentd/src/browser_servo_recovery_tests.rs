@@ -102,10 +102,12 @@ fn response(sequence: u64, request: u64) -> Vec<u8> {
 #[test]
 fn complete_responses_settle_transport_without_claiming_external_terminality() {
     let fixture = fixture();
-    fixture.script.lock().expect("script").reads.extend([
-        Ok(response(1, 1)),
-        Ok(response(2, 2)),
-    ]);
+    fixture
+        .script
+        .lock()
+        .expect("script")
+        .reads
+        .extend([Ok(response(1, 1)), Ok(response(2, 2))]);
     for _ in 0..2 {
         assert_eq!(
             fixture.port.call(read_call(json!({}))).expect("response"),
@@ -119,7 +121,11 @@ fn complete_responses_settle_transport_without_claiming_external_terminality() {
 fn complete_service_rejection_does_not_corrupt_next_exchange() {
     let fixture = fixture();
     fixture.script.lock().expect("script").reads.extend([
-        Ok(frame(1, "browser.agentd.1", json!({"ok": false, "error": "closed profile"}))),
+        Ok(frame(
+            1,
+            "browser.agentd.1",
+            json!({"ok": false, "error": "closed profile"}),
+        )),
         Ok(response(2, 2)),
     ]);
     assert!(matches!(
@@ -132,10 +138,22 @@ fn complete_service_rejection_does_not_corrupt_next_exchange() {
 #[test]
 fn local_encoding_rejection_does_not_spend_output_sequence() {
     let fixture = fixture();
-    let oversized = json!({"query": "x".repeat(MAX_FRAME_BYTES)});
+    // The payload fits, but the full envelope does not. This exercises the
+    // old sequence-before-envelope-validation bug, not payload prevalidation.
+    let oversized = json!({"query": "x".repeat(MAX_FRAME_BYTES - 128)});
+    assert!(canonical_json(&json!({
+        "method": "observe_page",
+        "input": oversized.clone(),
+    }))
+    .is_ok());
     assert!(fixture.port.call(read_call(oversized)).is_err());
     assert!(fixture.script.lock().expect("script").writes.is_empty());
-    fixture.script.lock().expect("script").reads.push_back(Ok(response(1, 2)));
+    fixture
+        .script
+        .lock()
+        .expect("script")
+        .reads
+        .push_back(Ok(response(1, 2)));
     assert!(fixture.port.call(read_call(json!({}))).is_ok());
     let script = fixture.script.lock().expect("script");
     let sent: Value = serde_json::from_slice(&script.writes[0][4..]).expect("sent frame");
@@ -148,7 +166,12 @@ fn partial_write_permanently_fences_following_calls_without_more_io() {
     fixture.script.lock().expect("script").write_fails = true;
     assert!(fixture.port.call(read_call(json!({}))).is_err());
     fixture.script.lock().expect("script").write_fails = false;
-    fixture.script.lock().expect("script").reads.push_back(Ok(response(1, 1)));
+    fixture
+        .script
+        .lock()
+        .expect("script")
+        .reads
+        .push_back(Ok(response(1, 1)));
     assert!(matches!(
         fixture.port.call(read_call(json!({}))),
         Err(BrowserServoError::Indeterminate(_))
@@ -161,7 +184,12 @@ fn partial_write_permanently_fences_following_calls_without_more_io() {
 fn timeout_does_not_assign_a_late_reply_to_a_new_request() {
     let fixture = fixture();
     assert!(fixture.port.call(read_call(json!({}))).is_err());
-    fixture.script.lock().expect("script").reads.push_back(Ok(response(1, 1)));
+    fixture
+        .script
+        .lock()
+        .expect("script")
+        .reads
+        .push_back(Ok(response(1, 1)));
     assert!(matches!(
         fixture.port.call(read_call(json!({}))),
         Err(BrowserServoError::Indeterminate(_))
@@ -180,7 +208,12 @@ fn invalid_reply_keeps_the_channel_fenced() {
         frame(1, "browser.agentd.1", json!({"ok": "yes", "result": {}})),
     ] {
         let fixture = fixture();
-        fixture.script.lock().expect("script").reads.push_back(Ok(bad));
+        fixture
+            .script
+            .lock()
+            .expect("script")
+            .reads
+            .push_back(Ok(bad));
         assert!(fixture.port.call(read_call(json!({}))).is_err());
         assert!(matches!(
             fixture.port.call(read_call(json!({}))),
@@ -216,7 +249,9 @@ fn child_cleanup_disconnects_a_full_reader_queue_before_joining() {
         // This blocks until the receiver is drained or disconnected.
         let _ = sender.send(Ok(vec![2]));
     });
-    ready_rx.recv_timeout(Duration::from_secs(2)).expect("full queue");
+    ready_rx
+        .recv_timeout(Duration::from_secs(2))
+        .expect("full queue");
     let transport = ChildBrowserTransport {
         child,
         stdin,
@@ -228,6 +263,8 @@ fn child_cleanup_disconnects_a_full_reader_queue_before_joining() {
         drop(transport);
         done_tx.send(()).expect("cleanup result");
     });
-    done_rx.recv_timeout(Duration::from_secs(2)).expect("bounded cleanup");
+    done_rx
+        .recv_timeout(Duration::from_secs(2))
+        .expect("bounded cleanup");
     cleanup.join().expect("cleanup thread");
 }
