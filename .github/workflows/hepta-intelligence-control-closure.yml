@@ -9,6 +9,7 @@ on:
       - "codex-rs/hepta-infer-core/**"
       - "codex-rs/hepta-learning-ledger/**"
       - "codex-rs/hepta-operations/**"
+      - "codex-rs/hepta-ndu/**"
       - "codex-rs/Cargo.toml"
       - "codex-rs/Cargo.lock"
       - "docs/modules/intelligence.control/**"
@@ -27,6 +28,7 @@ on:
       - "codex-rs/hepta-infer-core/**"
       - "codex-rs/hepta-learning-ledger/**"
       - "codex-rs/hepta-operations/**"
+      - "codex-rs/hepta-ndu/**"
       - "codex-rs/Cargo.toml"
       - "codex-rs/Cargo.lock"
       - "docs/modules/intelligence.control/**"
@@ -164,6 +166,15 @@ jobs:
           -- cargo test --locked -p codex-hepta-intelligence
           -p codex-hepta-agentd --lib
 
+      - name: Test NDU policy and deprecated compatibility boundary
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-closure-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-closure-records/ndu-tests.json"
+          -- cargo test --locked -p codex-hepta-ndu
+
       - name: Test real runtime.codex product continuation
         working-directory: codex-rs
         env:
@@ -181,7 +192,8 @@ jobs:
           python3 ../scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/intelligence-closure-records/check.json"
           -- cargo check --locked -p codex-hepta-intelligence
-          -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets
+          -p codex-hepta-agentd -p codex-hepta-infer-worker-host
+          -p codex-hepta-ndu --all-targets
 
       - name: Strict lint closure packages
         working-directory: codex-rs
@@ -192,7 +204,7 @@ jobs:
           --output "$RUNNER_TEMP/intelligence-closure-records/clippy.json"
           -- cargo clippy --locked -p codex-hepta-intelligence
           -p codex-hepta-agentd -p codex-hepta-infer-worker-host
-          --all-targets -- -D warnings
+          -p codex-hepta-ndu --all-targets -- -D warnings
 
       - name: Measure supervision and process-loss fault cuts
         working-directory: codex-rs

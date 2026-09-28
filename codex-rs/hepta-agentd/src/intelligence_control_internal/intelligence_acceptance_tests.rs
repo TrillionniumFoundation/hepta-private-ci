@@ -13,6 +13,7 @@ const REQUIREMENT_MAP: &str = include_str!(
 const PRODUCT_ROUTE: &str = include_str!("../state_intelligence_product_loop.rs");
 const LEARNING_PRODUCT_API: &str = include_str!("../intelligence_learning_product_api.rs");
 const RUNTIME_PROFILE_GATE: &str = include_str!("../runtime.rs");
+const STAGE_BOUND_PORTS: &str = include_str!("../intelligence_stage_bound_ports.rs");
 
 #[test]
 fn current_candidate_workflow_requires_source_and_merge_native_execution() {
@@ -20,6 +21,8 @@ fn current_candidate_workflow_requires_source_and_merge_native_execution() {
         "[\"source-head\",\"base-merge\"]",
         "cargo test --locked -p codex-hepta-agentd",
         "cargo test --locked -p codex-hepta-infer-worker-host",
+        "cargo test --locked -p codex-hepta-ndu",
+        "-p codex-hepta-ndu --all-targets",
         "cargo check --locked",
         "cargo clippy --locked",
         "/usr/bin/time -v",
@@ -77,6 +80,22 @@ fn canonical_product_route_requires_continuation_before_admission() {
         assert!(
             RUNTIME_PROFILE_GATE.contains(required),
             "runtime product-profile gate omitted: {required}"
+        );
+    }
+}
+
+#[test]
+fn canonical_stage_semantics_bind_objective_and_ndu_candidate_domains() {
+    for required in [
+        "validate_objective_candidate_universe",
+        "validate_utility_candidate_universe",
+        "objective_action_domain_is_a_hard_candidate_upper_bound",
+        "utility_candidate_universe_rejects_hidden_actions_but_allows_abstain",
+        "intuition bypassed utility infeasibility",
+    ] {
+        assert!(
+            STAGE_BOUND_PORTS.contains(required),
+            "stage-bound product path omitted semantic guard: {required}"
         );
     }
 }
