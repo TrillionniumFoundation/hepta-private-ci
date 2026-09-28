@@ -16,7 +16,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: runtime-codex-qualification-${{ github.event.pull_request.number || github.ref }}
+  # v2 deliberately bypasses pre-remediation runs that were queued with
+  # cancel-in-progress=false. Future v2 candidates cancel one another.
+  group: runtime-codex-qualification-v2-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
