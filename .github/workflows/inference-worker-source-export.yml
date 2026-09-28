@@ -1,0 +1,44 @@
+name: Export inference worker source
+
+on:
+  push:
+    branches:
+      - codex/inference-worker-source-export-20260928
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Package exact remediation sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -czf "$RUNNER_TEMP/inference-worker-source.tar.gz" \
+            codex-rs/hepta-infer-worker-host \
+            docs/modules/inference.worker \
+            qualification/module-execution-dossiers/detail/inference.worker.md \
+            scripts/hepta_inference_worker_qualification.py \
+            scripts/test_hepta_inference_worker_qualification.py \
+            scripts/hepta-implementation-maps.py \
+            .github/workflows/hepta-inference-worker-qualified.yml \
+            .github/workflows/hepta-gap-agentd-process.yml \
+            .github/workflows/hepta-lane-b-truth.yml
+          sha256sum "$RUNNER_TEMP/inference-worker-source.tar.gz" > "$RUNNER_TEMP/inference-worker-source.sha256"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-worker-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/inference-worker-source.tar.gz
+            ${{ runner.temp }}/inference-worker-source.sha256
+          if-no-files-found: error
+          retention-days: 1
