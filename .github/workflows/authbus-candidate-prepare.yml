@@ -1,0 +1,75 @@
+name: AuthBus scoped source preparation
+
+on:
+  push:
+    branches: [codex/authbus-final-hardening-20260928]
+    paths:
+      - .github/workflows/authbus-candidate-prepare.yml
+      - scripts/prepare-authbus-candidate.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: authbus-scoped-preparation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/authbus-final-hardening-20260928'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply audited source changes
+        run: python3 scripts/prepare-authbus-candidate.py
+      - name: Install pinned formatter
+        run: |
+          set -euo pipefail
+          TOOLCHAIN=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$TOOLCHAIN" --profile minimal --component rustfmt
+          echo "RUSTUP_TOOLCHAIN=$TOOLCHAIN" >> "$GITHUB_ENV"
+      - name: Format AuthBus-owned candidate files and regenerate inventory
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib, subprocess
+          roots = ('codex-rs/hepta-authbus/', 'codex-rs/hepta-authbus-p1-3-qualification/')
+          exact = {'codex-rs/hepta-evidence/src/lib.rs', 'codex-rs/hepta-evidence/src/qualification_tests.rs', 'codex-rs/hepta-agentd/tests/kernel_evidence_product.rs', 'codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs'}
+          prefixes = ('codex-rs/hepta-evidence/src/authbus_', 'codex-rs/hepta-agentd/src/authbus_', 'codex-rs/hepta-bao-adapter/src/https_consumer')
+          names = subprocess.check_output(['git', 'ls-files', '-z', '--', 'codex-rs']).decode().split('\0')
+          selected = [p for p in names if p.endswith('.rs') and (p.startswith(roots + prefixes) or p in exact)]
+          for path in selected:
+              subprocess.run(['rustfmt', '--edition', '2024', '--config', 'skip_children=true', str(pathlib.Path(path).resolve())], cwd='codex-rs', check=True)
+          PY
+          python3 scripts/check-authbus-closed-world.py --write
+          python3 scripts/check-authbus-closed-world.py --check
+          python3 scripts/test-authbus-exact-head-evidence.py
+      - name: Push only the prepared source candidate, without rebase or force
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import subprocess
+          allowed = ('codex-rs/hepta-authbus/', 'codex-rs/hepta-authbus-p1-3-qualification/', 'codex-rs/hepta-evidence/src/authbus_', 'codex-rs/hepta-agentd/src/authbus_', 'codex-rs/hepta-bao-adapter/src/https_consumer', 'docs/modules/auth.authbus/')
+          exact = {'codex-rs/hepta-evidence/src/lib.rs', 'codex-rs/hepta-evidence/src/qualification_tests.rs', 'codex-rs/hepta-agentd/tests/kernel_evidence_product.rs', 'scripts/authbus-exact-head-evidence.py', '.github/workflows/authbus-authority-qualification.yml', '.github/workflows/authbus-trust-boundary-migrate.yml'}
+          paths = subprocess.check_output(['git','diff','--name-only','-z']).decode().split('\0')
+          paths = [p for p in paths if p]
+          bad = [p for p in paths if p not in exact and not p.startswith(allowed)]
+          if bad: raise SystemExit('Refusing out-of-scope changes: '+repr(bad))
+          if not paths: raise SystemExit('No source changes were prepared')
+          subprocess.run(['git','add','--',*paths],check=True)
+          PY
+          git config user.name 'hepta-authbus-remediation-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -s -m 'fix(authbus): materialize sealed callers, dual owner fencing, and native privacy qualification'
+          REMOTE=$(git ls-remote origin "$GITHUB_REF" | cut -f1)
+          test "$REMOTE" = "$GITHUB_SHA"
+          git push origin "HEAD:$GITHUB_REF"
+          git rev-parse HEAD
