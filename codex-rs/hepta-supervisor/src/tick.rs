@@ -16,6 +16,8 @@ use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
 use crate::lease::ProcessLeaseRemoval;
 use crate::restart_budget::RestartBudgetError;
+use crate::restart_lineage;
+use crate::restart_lineage::RestartProcessWitness;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
@@ -81,14 +83,10 @@ impl<D: ProcessDriver> Supervisor<D> {
             });
             let release =
                 release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
-            if let Err(error) = self.start_release_slot(agent_id, slot, release, now) {
-                let record = self.record(agent_id)?;
-                crate::restart_budget::complete_restart(record.layout.run_root())
-                    .map_err(|persist| SupervisorError::Invalid(persist.to_string()))?;
-                slot.restart_pending = false;
-                slot.restart_not_before = None;
-                return Err(error);
-            }
+            // A failed replacement start remains the same pending restart. It
+            // is not falsely terminalized as complete, and recovery will use
+            // the durable lineage to decide whether another start is allowed.
+            self.start_release_slot(agent_id, slot, release, now)?;
             slot.restart_pending = false;
         }
         self.tick_matrix_companion(agent_id, slot, now)?;
@@ -102,6 +100,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         &self,
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
+        runtime: &AgentRuntime<D::Process>,
         now: Instant,
     ) -> Option<SupervisorError> {
         let record = match self.record(agent_id) {
@@ -115,6 +114,23 @@ impl<D: ProcessDriver> Supervisor<D> {
             self.config.restart_backoff_base,
         ) {
             Ok(claim) => {
+                let predecessor = match RestartProcessWitness::new(
+                    runtime.spawn_generation,
+                    runtime.identity.clone(),
+                    runtime.release_id.clone(),
+                ) {
+                    Ok(predecessor) => predecessor,
+                    Err(error) => return Some(SupervisorError::Invalid(error.to_string())),
+                };
+                if let Err(error) = restart_lineage::begin(
+                    record.layout.run_root(),
+                    agent_id,
+                    claim.window_started_unix_ms,
+                    claim.attempt,
+                    Some(predecessor),
+                ) {
+                    return Some(SupervisorError::Invalid(error.to_string()));
+                }
                 slot.restart_attempt = claim.attempt;
                 slot.restart_not_before = match deadline(now, claim.backoff) {
                     Ok(value) => Some(value),
@@ -254,7 +270,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 && !slot.restart_pending
                 && !retrying
             {
-                self.queue_automatic_restart_before_exit(agent_id, slot, now)
+                self.queue_automatic_restart_before_exit(agent_id, slot, runtime, now)
             } else {
                 None
             };
@@ -292,8 +308,31 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.event(next.generation, SupervisorEventKind::Healthy);
                 self.release_became_healthy(agent_id, slot, next.generation)?;
                 let record = self.record(agent_id)?;
-                crate::restart_budget::complete_restart(record.layout.run_root())
+                if crate::restart_budget::pending_restart(
+                    record.layout.run_root(),
+                    self.config.restart_max_attempts,
+                )
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+                .is_some()
+                {
+                    let replacement = RestartProcessWitness::new(
+                        runtime.spawn_generation,
+                        runtime.identity.clone(),
+                        runtime.release_id.clone(),
+                    )
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                    // Commit the identity proof first. If the budget write is
+                    // lost, recovery sees Completed and idempotently clears it.
+                    restart_lineage::complete(
+                        record.layout.run_root(),
+                        agent_id,
+                        &replacement,
+                    )
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                    crate::restart_budget::complete_restart(record.layout.run_root())
+                        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                    slot.restart_pending = false;
+                }
                 slot.restart_not_before = None;
             }
             RuntimePhase::AwaitingHealth { deadline: limit } if now >= limit => {
@@ -362,10 +401,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                 self.release_became_healthy(agent_id, slot, runtime.generation)?;
             }
             RuntimePhase::Running if healthy && slot.restart_not_before.is_some() => {
-                let record = self.record(agent_id)?;
-                crate::restart_budget::complete_restart(record.layout.run_root())
-                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                slot.restart_not_before = None;
+                // A recovered predecessor may remain healthy while its durable
+                // Stop/Drain is retried. Health alone never proves replacement.
             }
             RuntimePhase::AwaitingHealth { .. }
             | RuntimePhase::Running
@@ -398,6 +435,32 @@ impl<D: ProcessDriver> Supervisor<D> {
             ProcessLeaseRemoval::new(record.layout.run_root(), &lease)
         });
         removal.finish(record.layout.run_root(), &lease)?;
+
+        // Only an exact observed exit plus same-owner lease cleanup advances
+        // predecessor -> replacement-pending. A signal acknowledgement alone
+        // can never cross this boundary.
+        if slot.restart_pending
+            && crate::restart_budget::pending_restart(
+                record.layout.run_root(),
+                self.config.restart_max_attempts,
+            )
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .is_some()
+        {
+            let predecessor = RestartProcessWitness::new(
+                runtime.spawn_generation,
+                runtime.identity.clone(),
+                runtime.release_id.clone(),
+            )
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            restart_lineage::mark_predecessor_exited(
+                record.layout.run_root(),
+                agent_id,
+                &predecessor,
+            )
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        }
+
         let mut generation = runtime.generation;
         if unpublished_launch
             && record.lifecycle.generation == runtime.generation
