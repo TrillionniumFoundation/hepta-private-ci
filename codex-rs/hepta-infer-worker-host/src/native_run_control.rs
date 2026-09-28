@@ -1,5 +1,7 @@
 //! Local durable admission around the actual App Server driver.
 
+use codex_hepta_agentd::AgentRunPhase;
+use codex_hepta_agentd::AgentdClient;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
@@ -75,6 +77,68 @@ impl AppServerModelDriver {
         .await
     }
 
+    pub(super) async fn reconcile_pending_pre_admission_rejection(
+        &self,
+        control: &mut DurableInferenceControl,
+        record: &codex_hepta_infer_core::durable_control::native::NativeRunRecord,
+    ) -> Result<()> {
+        if !record.pre_admission_rejection_pending || record.dispatch_rejection.is_none() {
+            return Err(
+                "runtime.codex rejection recovery requires durable pending evidence".into(),
+            );
+        }
+        let binding = record
+            .owner_dispatch
+            .as_ref()
+            .ok_or("pending runtime.codex rejection omitted its Agentd owner binding")?;
+        let owner = AgentdClient::new(
+            self.config.agentd_socket.clone(),
+            self.config.agent_id.clone(),
+            self.config.generation,
+        )?;
+        let expected_dispatched_revision = binding
+            .pre_dispatch_revision
+            .checked_add(1)
+            .ok_or("Agentd dispatch revision overflow")?;
+        let mut owner_record = owner
+            .run_status(binding.run_id.clone())
+            .await?
+            .ok_or("Agentd lost the run for a pending pre-admission rejection")?;
+        let exact_binding = owner_record.generation == self.config.generation
+            && owner_record.dispatch_digest.as_deref() == Some(binding.dispatch_digest.as_str());
+        if owner_record.phase == AgentRunPhase::Dispatched
+            && owner_record.revision == expected_dispatched_revision
+            && exact_binding
+        {
+            owner_record = match owner
+                .run_observe_terminal(
+                    binding.run_id.clone(),
+                    owner_record.revision,
+                    AgentRunPhase::Cancelled,
+                    /*terminal_observed*/ true,
+                )
+                .await
+            {
+                Ok(receipt) => receipt,
+                Err(first_error) => owner
+                    .run_status(binding.run_id.clone())
+                    .await?
+                    .ok_or(first_error)?,
+            };
+        }
+        if owner_record.phase != AgentRunPhase::Cancelled
+            || !owner_record.terminal_observed
+            || owner_record.generation != self.config.generation
+            || owner_record.dispatch_digest.as_deref() != Some(binding.dispatch_digest.as_str())
+        {
+            return Err(
+                "Agentd did not terminally acknowledge the exact pre-admission rejection".into(),
+            );
+        }
+        control.complete_native_rejection_before_start(&record.request.request_id)?;
+        Ok(())
+    }
+
     async fn run_bound(
         &self,
         control: &mut DurableInferenceControl,
@@ -118,6 +182,19 @@ impl AppServerModelDriver {
         }
         if let Some(reason) = &record.pre_dispatch_stop {
             return Err(format!("request stopped before dispatch: {reason}").into());
+        }
+        if record.pre_admission_rejection_pending {
+            self.reconcile_pending_pre_admission_rejection(control, &record)
+                .await?;
+            let rejection = record
+                .dispatch_rejection
+                .as_ref()
+                .ok_or("pending pre-admission rejection omitted its durable evidence")?;
+            return Err(format!(
+                "turn/start was explicitly rejected before admission ({:?}): {}",
+                rejection.status, rejection.reason
+            )
+            .into());
         }
         if let Some(rejection) = &record.dispatch_rejection {
             return Err(format!(

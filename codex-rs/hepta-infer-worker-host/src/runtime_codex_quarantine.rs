@@ -120,9 +120,7 @@ impl QuarantinedEffectV1 {
         {
             return Err(QuarantineProtocolError::InvalidQuarantineState);
         }
-        if self.evidence_sha256.is_empty()
-            || self.evidence_sha256.len() > MAX_EVIDENCE_DIGESTS
-        {
+        if self.evidence_sha256.is_empty() || self.evidence_sha256.len() > MAX_EVIDENCE_DIGESTS {
             return Err(QuarantineProtocolError::InvalidEvidenceSet);
         }
         for digest in &self.evidence_sha256 {
@@ -151,9 +149,8 @@ impl QuarantinedEffectV1 {
         self.validate()?;
         let mut digest = Sha256::new();
         digest.update(b"hepta.runtime.codex.quarantined-effect.v1\0");
-        digest.update(
-            serde_json::to_vec(self).map_err(|_| QuarantineProtocolError::EncodingFailed)?,
-        );
+        digest
+            .update(serde_json::to_vec(self).map_err(|_| QuarantineProtocolError::EncodingFailed)?);
         Ok(digest.finalize().into())
     }
 }
@@ -220,9 +217,8 @@ impl QuarantineResolutionV1 {
     pub fn signing_bytes(&self) -> Result<Vec<u8>, QuarantineProtocolError> {
         self.validate_shape()?;
         let mut bytes = b"hepta.runtime.codex.quarantine-resolution.v1\0".to_vec();
-        bytes.extend(
-            serde_json::to_vec(self).map_err(|_| QuarantineProtocolError::EncodingFailed)?,
-        );
+        bytes
+            .extend(serde_json::to_vec(self).map_err(|_| QuarantineProtocolError::EncodingFailed)?);
         Ok(bytes)
     }
 
@@ -251,8 +247,7 @@ impl QuarantineResolutionV1 {
             || self.resolution_sequence == 0
             || self.not_before_unix_ms == 0
             || self.expires_at_unix_ms <= self.not_before_unix_ms
-            || self.expires_at_unix_ms - self.not_before_unix_ms
-                > MAX_RESOLUTION_LIFETIME_MS
+            || self.expires_at_unix_ms - self.not_before_unix_ms > MAX_RESOLUTION_LIFETIME_MS
         {
             return Err(QuarantineProtocolError::InvalidResolution);
         }
@@ -639,7 +634,10 @@ mod tests {
         key: &SigningKey,
         resolution: QuarantineResolutionV1,
     ) -> SignedQuarantineResolutionV1 {
-        let signature = key.sign(&resolution.signing_bytes().unwrap()).to_bytes().to_vec();
+        let signature = key
+            .sign(&resolution.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
         SignedQuarantineResolutionV1 {
             resolution,
             signature,

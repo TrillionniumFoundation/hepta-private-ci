@@ -255,7 +255,7 @@ impl AppServerModelDriver {
             .native_record(request_id)
             .ok_or("native prepared dispatch missing")?
             .revision;
-        let mut owner_abort_required = intelligence.is_some();
+        let owner_abort_required = intelligence.is_some();
         // Once the exact Agentd effect-entry CAS is attempted, neither the
         // owner nor the local journal may be downgraded to definitely-unsent.
         // A lost/mismatched/idempotent acknowledgement is reconcile-only and
@@ -422,7 +422,7 @@ impl AppServerModelDriver {
                         let response_digest = receipt
                             .response_digest
                             .ok_or("server rejection receipt omitted response digest")?;
-                        control.reject_native_before_start(
+                        let prepared_rejection = control.prepare_native_rejection_before_start(
                             request_id,
                             NativeDispatchRejection {
                                 status,
@@ -431,6 +431,24 @@ impl AppServerModelDriver {
                                 retry_safe_before_admission,
                             },
                         )?;
+                        if intelligence.is_some() {
+                            if let Err(error) = self
+                                .reconcile_pending_pre_admission_rejection(
+                                    control,
+                                    &prepared_rejection,
+                                )
+                                .await
+                            {
+                                thread_guard.cleanup().await;
+                                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                                return Err(format!(
+                                    "Agentd pre-admission rejection settlement requires reconciliation; local slot retained: {error}"
+                                )
+                                .into());
+                            }
+                        } else {
+                            control.complete_native_rejection_before_start(request_id)?;
+                        }
                         thread_guard.cleanup().await;
                         let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                         return Err(format!("turn/start rejected by App Server: {reason}").into());

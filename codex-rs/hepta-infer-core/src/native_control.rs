@@ -224,6 +224,10 @@ pub struct NativeRunRecord {
     pub pre_effect_abort_pending: bool,
     #[serde(default)]
     pub pre_effect_abort_local_only: bool,
+    /// A typed App Server non-admission fact has been durably prepared locally,
+    /// but the external Agentd owner has not yet been confirmed terminal.
+    #[serde(default)]
+    pub pre_admission_rejection_pending: bool,
     #[serde(default)]
     pub dispatch_rejection: Option<NativeDispatchRejection>,
     pub observation: Option<NativeRunOutput>,
@@ -252,6 +256,15 @@ enum Event {
         request_id: String,
         turn_id: String,
     },
+    PrepareRejectBeforeStart {
+        request_id: String,
+        rejection: NativeDispatchRejection,
+    },
+    CompleteRejectBeforeStart {
+        request_id: String,
+    },
+    /// Legacy one-event spelling retained for journal replay.
+    #[allow(dead_code)]
     RejectBeforeStart {
         request_id: String,
         rejection: NativeDispatchRejection,
@@ -483,21 +496,77 @@ impl DurableInferenceControl {
         )
     }
 
-    /// A typed JSON-RPC error is evidence that the App Server returned a
-    /// rejection rather than a lost acknowledgement. This transition is legal
-    /// only after Dispatch and before any turn identity was observed.
+    /// Durably retain an exact typed App Server non-admission response while
+    /// keeping local capacity owned. The external owner must be settled before
+    /// `complete_native_rejection_before_start` releases the slot.
+    pub fn prepare_native_rejection_before_start(
+        &mut self,
+        request_id: &str,
+        rejection: NativeDispatchRejection,
+    ) -> Result<NativeRunRecord, Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        let record = self
+            .native
+            .records
+            .get(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        if record.pre_admission_rejection_pending
+            && record.dispatch_rejection.as_ref() == Some(&rejection)
+        {
+            return Ok(record.clone());
+        }
+        if record.dispatch_rejection.is_some() {
+            return Err(Error::Conflict);
+        }
+        self.commit_native(
+            request_id,
+            Event::PrepareRejectBeforeStart {
+                request_id: request_id.to_string(),
+                rejection,
+            },
+        )
+    }
+
+    /// Release local capacity only after Agentd terminally acknowledges the
+    /// exact dispatched run. A crash between prepare and complete reopens in a
+    /// durable pending state and must reconcile the owner first.
+    pub fn complete_native_rejection_before_start(
+        &mut self,
+        request_id: &str,
+    ) -> Result<NativeRunRecord, Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        let record = self
+            .native
+            .records
+            .get(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        if record.state == NativeReservationState::Released
+            && !record.pre_admission_rejection_pending
+            && record.dispatch_rejection.is_some()
+        {
+            return Ok(record.clone());
+        }
+        self.commit_native(
+            request_id,
+            Event::CompleteRejectBeforeStart {
+                request_id: request_id.to_string(),
+            },
+        )
+    }
+
+    /// Compatibility helper for callers without an external owner. Product
+    /// runtime.codex callers use the explicit prepare/owner/complete sequence.
     pub fn reject_native_before_start(
         &mut self,
         request_id: &str,
         rejection: NativeDispatchRejection,
     ) -> Result<NativeRunRecord, Error> {
-        self.commit_native(
-            request_id,
-            Event::RejectBeforeStart {
-                request_id: request_id.to_string(),
-                rejection,
-            },
-        )
+        self.prepare_native_rejection_before_start(request_id, rejection)?;
+        self.complete_native_rejection_before_start(request_id)
     }
 
     /// This records intent only: an interrupt acknowledgement never frees a slot.
@@ -653,6 +722,7 @@ impl NativeJournal {
                     pre_dispatch_stop: None,
                     pre_effect_abort_pending: false,
                     pre_effect_abort_local_only: false,
+                    pre_admission_rejection_pending: false,
                     dispatch_rejection: None,
                     observation: None,
                 },
@@ -663,6 +733,8 @@ impl NativeJournal {
             Event::Reserve { .. } => return Err(Error::InvalidTransition),
             Event::Dispatch { request_id, .. }
             | Event::Started { request_id, .. }
+            | Event::PrepareRejectBeforeStart { request_id, .. }
+            | Event::CompleteRejectBeforeStart { request_id }
             | Event::RejectBeforeStart { request_id, .. }
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
@@ -785,6 +857,7 @@ impl NativeJournal {
             Event::Started { turn_id, .. } => {
                 if record.state != NativeReservationState::Dispatching
                     || record.pre_effect_abort_pending
+                    || record.pre_admission_rejection_pending
                     || record.dispatch_rejection.is_some()
                 {
                     return Err(Error::InvalidTransition);
@@ -793,9 +866,11 @@ impl NativeJournal {
                 record.turn_id = Some(turn_id);
                 record.state = NativeReservationState::Running;
             }
-            Event::RejectBeforeStart { rejection, .. } => {
+            Event::PrepareRejectBeforeStart { rejection, .. } => {
                 if record.state != NativeReservationState::Dispatching
                     || record.pre_effect_abort_pending
+                    || record.pre_admission_rejection_pending
+                    || record.dispatch_rejection.is_some()
                     || record.turn_id.is_some()
                     || record.observation.is_some()
                     || rejection.reason.is_empty()
@@ -803,16 +878,37 @@ impl NativeJournal {
                 {
                     return Err(Error::InvalidTransition);
                 }
-                validate_digest(&rejection.response_digest, "native dispatch rejection")?;
-                if rejection.retry_safe_before_admission
-                    && !matches!(
-                        rejection.status,
-                        NativeDispatchRejectionStatus::Overloaded
-                            | NativeDispatchRejectionStatus::Unavailable
-                    )
+                validate_dispatch_rejection(&rejection)?;
+                record.dispatch_rejection = Some(rejection);
+                record.pre_admission_rejection_pending = true;
+            }
+            Event::CompleteRejectBeforeStart { .. } => {
+                if record.state != NativeReservationState::Dispatching
+                    || !record.pre_admission_rejection_pending
+                    || record.dispatch_rejection.is_none()
+                    || record.turn_id.is_some()
+                    || record.observation.is_some()
+                    || record.cancel_requested
                 {
                     return Err(Error::InvalidTransition);
                 }
+                record.pre_admission_rejection_pending = false;
+                // Both explicit overload and deterministic JSON-RPC request
+                // rejection prove non-admission. `retry_safe_before_admission`
+                // controls retry policy, not ownership/capacity closure.
+                record.state = NativeReservationState::Released;
+            }
+            Event::RejectBeforeStart { rejection, .. } => {
+                // Historical one-event journals retain their old interpretation.
+                if record.state != NativeReservationState::Dispatching
+                    || record.pre_effect_abort_pending
+                    || record.pre_admission_rejection_pending
+                    || record.turn_id.is_some()
+                    || record.observation.is_some()
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                validate_dispatch_rejection(&rejection)?;
                 let safe_before_admission = rejection.retry_safe_before_admission;
                 record.dispatch_rejection = Some(rejection);
                 record.state = if safe_before_admission {
@@ -823,6 +919,7 @@ impl NativeJournal {
             }
             Event::Cancel { .. } => {
                 if record.pre_effect_abort_pending
+                    || record.pre_admission_rejection_pending
                     || record.state == NativeReservationState::Released
                     || record.state == NativeReservationState::Reserved
                 {
@@ -903,11 +1000,27 @@ impl NativeJournal {
     }
 }
 
+fn validate_dispatch_rejection(rejection: &NativeDispatchRejection) -> Result<(), Error> {
+    if rejection.reason.is_empty() || rejection.reason.len() > 4096 {
+        return Err(Error::InvalidTransition);
+    }
+    validate_digest(&rejection.response_digest, "native dispatch rejection")?;
+    if rejection.retry_safe_before_admission
+        && !matches!(
+            rejection.status,
+            NativeDispatchRejectionStatus::Overloaded | NativeDispatchRejectionStatus::Unavailable
+        )
+    {
+        return Err(Error::InvalidTransition);
+    }
+    Ok(())
+}
+
 fn apply_observation(
     record: &mut NativeRunRecord,
     mut output: NativeRunOutput,
 ) -> Result<(), Error> {
-    if record.pre_effect_abort_pending {
+    if record.pre_effect_abort_pending || record.pre_admission_rejection_pending {
         return Err(Error::InvalidTransition);
     }
     let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;

@@ -41,6 +41,15 @@ const MAX_FORWARD_CLOCK_DRIFT: Duration = Duration::from_secs(300);
 
 type Result<T> = std::result::Result<T, Box<dyn StdError + Send + Sync>>;
 
+/// Exact Linux process identity pinned by the protected authority configuration.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct IssuerProcessIdentity {
+    pub executable: PathBuf,
+    pub boot_id: String,
+    pub start_time_ticks: u64,
+}
+
 /// Protected host configuration for the independent final-use authority port.
 ///
 /// `verifying_key` is public. The private signing key is intentionally absent.
@@ -49,6 +58,10 @@ type Result<T> = std::result::Result<T, Box<dyn StdError + Send + Sync>>;
 pub struct FinalUseAuthorizerConfig {
     pub issuer_socket: PathBuf,
     pub issuer_uid: u32,
+    /// Required on Linux. Binds the peer credential to one executable instance
+    /// in one host boot, preventing a same-UID replacement from being accepted.
+    #[serde(default)]
+    pub issuer_process: Option<IssuerProcessIdentity>,
     pub signer_id: String,
     pub verifying_key: [u8; 32],
     pub authority_state_dir: PathBuf,
@@ -64,6 +77,7 @@ pub struct FinalUseAuthorizerConfig {
 pub struct UnixFinalUseAuthorizer {
     issuer_socket: PathBuf,
     issuer_uid: u32,
+    issuer_process: Option<IssuerProcessIdentity>,
     issuer_timeout: Duration,
     authority: FinalUseAuthority,
     clock: MonotonicWallClock,
@@ -134,6 +148,14 @@ impl UnixFinalUseAuthorizer {
         if issuer_timeout.is_zero() || issuer_timeout > MAX_ISSUER_TIMEOUT {
             return Err("final-use issuer timeout must be 1..=30000 ms".into());
         }
+        #[cfg(target_os = "linux")]
+        {
+            let identity = config
+                .issuer_process
+                .as_ref()
+                .ok_or("Linux final-use authority requires a pinned issuer process")?;
+            validate_configured_issuer_process(identity, config.issuer_uid)?;
+        }
         let clock = MonotonicWallClock::capture()?;
         let authority = FinalUseAuthority::open_state_dir(
             &config.authority_state_dir,
@@ -148,6 +170,7 @@ impl UnixFinalUseAuthorizer {
         Ok(Self {
             issuer_socket: config.issuer_socket,
             issuer_uid: config.issuer_uid,
+            issuer_process: config.issuer_process,
             issuer_timeout,
             authority,
             clock,
@@ -192,11 +215,19 @@ impl UnixFinalUseAuthorizer {
             let peer = stream.peer_cred()?;
             validate_issuer_peer_uid(peer.uid(), self.issuer_uid)?;
             #[cfg(target_os = "linux")]
-            validate_issuer_peer_process(
-                peer.pid()
-                    .ok_or("final-use authority peer omitted its process identity")?,
-                self.issuer_uid,
-            )?;
+            {
+                let observed = capture_issuer_process_identity(
+                    peer.pid()
+                        .ok_or("final-use authority peer omitted its process identity")?,
+                    self.issuer_uid,
+                )?;
+                if self.issuer_process.as_ref() != Some(&observed) {
+                    return Err::<Vec<u8>, Box<dyn StdError + Send + Sync>>(
+                        "connected final-use authority process does not match the pinned instance"
+                            .into(),
+                    );
+                }
+            }
             stream.write_all(&request_len.to_be_bytes()).await?;
             stream.write_all(&request_bytes).await?;
             stream.flush().await?;
@@ -309,7 +340,10 @@ fn validate_issuer_peer_uid(actual_uid: u32, expected_uid: u32) -> Result<()> {
 }
 
 #[cfg(target_os = "linux")]
-fn validate_issuer_peer_process(pid: u32, issuer_uid: u32) -> Result<()> {
+pub fn capture_issuer_process_identity(
+    pid: u32,
+    issuer_uid: u32,
+) -> std::result::Result<IssuerProcessIdentity, Box<dyn StdError + Send + Sync>> {
     use std::os::unix::fs::MetadataExt;
 
     if pid == 0 {
@@ -321,33 +355,73 @@ fn validate_issuer_peer_process(pid: u32, issuer_uid: u32) -> Result<()> {
         return Err("final-use authority process owner differs from its peer credential".into());
     }
     let executable = std::fs::read_link(process_root.join("exe"))?;
-    if !executable.is_absolute() {
-        return Err("final-use authority executable identity is not absolute".into());
-    }
-    let executable_metadata = std::fs::metadata(&executable)?;
-    if !executable_metadata.is_file()
-        || executable_metadata.mode() & 0o022 != 0
-        || (executable_metadata.uid() != 0 && executable_metadata.uid() != issuer_uid)
-    {
-        return Err("final-use authority executable identity or permissions are unsafe".into());
-    }
+    validate_issuer_executable(&executable, issuer_uid)?;
     let stat = std::fs::read_to_string(process_root.join("stat"))?;
     let tail = stat
         .rsplit_once(") ")
         .map(|(_, tail)| tail)
         .ok_or("final-use authority process stat is malformed")?;
-    let start_time = tail
+    let start_time_ticks = tail
         .split_whitespace()
         .nth(19)
         .ok_or("final-use authority process start identity is missing")?
         .parse::<u64>()?;
-    if start_time == 0 {
+    if start_time_ticks == 0 {
         return Err("final-use authority process start identity is invalid".into());
     }
-    let boot_id = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?;
-    let boot_id = boot_id.trim();
-    if boot_id.len() != 36
-        || !boot_id
+    let boot_id = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?
+        .trim()
+        .to_string();
+    validate_boot_id(&boot_id)?;
+    Ok(IssuerProcessIdentity {
+        executable,
+        boot_id,
+        start_time_ticks,
+    })
+}
+
+#[cfg(not(target_os = "linux"))]
+pub fn capture_issuer_process_identity(
+    _pid: u32,
+    _issuer_uid: u32,
+) -> std::result::Result<IssuerProcessIdentity, Box<dyn StdError + Send + Sync>> {
+    Err("exact final-use issuer process identity requires Linux".into())
+}
+
+#[cfg(target_os = "linux")]
+fn validate_configured_issuer_process(
+    identity: &IssuerProcessIdentity,
+    issuer_uid: u32,
+) -> Result<()> {
+    validate_issuer_executable(&identity.executable, issuer_uid)?;
+    validate_boot_id(&identity.boot_id)?;
+    if identity.start_time_ticks == 0 {
+        return Err("configured final-use authority process start identity is invalid".into());
+    }
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+fn validate_issuer_executable(path: &Path, issuer_uid: u32) -> Result<()> {
+    use std::os::unix::fs::MetadataExt;
+
+    if !path.is_absolute() {
+        return Err("final-use authority executable identity is not absolute".into());
+    }
+    let metadata = std::fs::metadata(path)?;
+    if !metadata.is_file()
+        || metadata.mode() & 0o022 != 0
+        || (metadata.uid() != 0 && metadata.uid() != issuer_uid)
+    {
+        return Err("final-use authority executable identity or permissions are unsafe".into());
+    }
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+fn validate_boot_id(value: &str) -> Result<()> {
+    if value.len() != 36
+        || !value
             .bytes()
             .all(|byte| byte.is_ascii_hexdigit() || byte == b'-')
     {
@@ -438,7 +512,11 @@ mod hardening_tests {
     #[test]
     fn current_process_has_a_valid_linux_process_identity() {
         let uid = rustix::process::geteuid().as_raw();
-        validate_issuer_peer_process(std::process::id(), uid).unwrap();
+        let identity = capture_issuer_process_identity(std::process::id(), uid).unwrap();
+        validate_configured_issuer_process(&identity, uid).unwrap();
+        let mut replacement = identity.clone();
+        replacement.start_time_ticks += 1;
+        assert_ne!(identity, replacement);
     }
 }
 

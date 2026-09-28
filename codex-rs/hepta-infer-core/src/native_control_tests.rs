@@ -322,54 +322,74 @@ fn lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen() {
 }
 
 #[test]
-fn explicit_dispatch_rejection_releases_without_claiming_provider_terminal() {
-    let path = path("dispatch-rejected");
+fn typed_pre_admission_rejection_is_durable_and_holds_capacity_until_owner_ack() {
+    let path = path("dispatch-rejected-two-stage");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     control.reserve_native(request("r1"), 1).unwrap();
     control.dispatch_native("r1", dispatch()).unwrap();
     let rejection = NativeDispatchRejection {
         status: NativeDispatchRejectionStatus::Overloaded,
-        reason: "Server overloaded; retry later.".to_string(),
+        reason: "Server overloaded before admission.".to_string(),
         response_digest: "e".repeat(64),
         retry_safe_before_admission: true,
     };
-    let rejected = control
-        .reject_native_before_start("r1", rejection.clone())
+    let prepared = control
+        .prepare_native_rejection_before_start("r1", rejection.clone())
         .unwrap();
-    assert_eq!(rejected.state, NativeReservationState::Released);
-    assert_eq!(rejected.dispatch_rejection, Some(rejection));
-    assert_eq!(rejected.observation, None);
-    assert_eq!(rejected.turn_id, None);
-    control.reserve_native(request("r2"), 1).unwrap();
+    assert_eq!(prepared.state, NativeReservationState::Dispatching);
+    assert!(prepared.pre_admission_rejection_pending);
+    assert_eq!(prepared.dispatch_rejection, Some(rejection.clone()));
+    assert_eq!(
+        control.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
     drop(control);
 
-    let control = DurableInferenceControl::open(&path, 8).unwrap();
-    assert_eq!(control.native_record("r1"), Some(&rejected));
-    drop(control);
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&prepared));
+    let released = reopened
+        .complete_native_rejection_before_start("r1")
+        .unwrap();
+    assert_eq!(released.state, NativeReservationState::Released);
+    assert!(!released.pre_admission_rejection_pending);
+    assert_eq!(released.dispatch_rejection, Some(rejection));
+    assert_eq!(
+        reopened
+            .complete_native_rejection_before_start("r1")
+            .unwrap(),
+        released
+    );
+    reopened.reserve_native(request("r2"), 1).unwrap();
+    drop(reopened);
     std::fs::remove_file(path).unwrap();
 }
 
 #[test]
-fn generic_dispatch_rejection_holds_slot_when_pre_admission_is_not_proven() {
-    let path = path("dispatch-rejected-unknown");
+fn deterministic_request_rejection_closes_capacity_but_never_becomes_retry_safe() {
+    let path = path("dispatch-invalid-request-two-stage");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     control.reserve_native(request("r1"), 1).unwrap();
     control.dispatch_native("r1", dispatch()).unwrap();
     let rejection = NativeDispatchRejection {
         status: NativeDispatchRejectionStatus::Rejected,
-        reason: "application error after dispatch".to_string(),
+        reason: "invalid params before handler admission".to_string(),
         response_digest: "f".repeat(64),
         retry_safe_before_admission: false,
     };
-    let rejected = control
-        .reject_native_before_start("r1", rejection.clone())
+    control
+        .prepare_native_rejection_before_start("r1", rejection.clone())
         .unwrap();
-    assert_eq!(rejected.state, NativeReservationState::Indeterminate);
-    assert_eq!(rejected.dispatch_rejection, Some(rejection));
-    assert_eq!(rejected.observation, None);
-    assert_eq!(
-        control.reserve_native(request("r2"), 1),
-        Err(Error::CapacityExceeded)
+    let released = control
+        .complete_native_rejection_before_start("r1")
+        .unwrap();
+    assert_eq!(released.state, NativeReservationState::Released);
+    assert_eq!(released.dispatch_rejection, Some(rejection));
+    assert!(
+        !released
+            .dispatch_rejection
+            .as_ref()
+            .unwrap()
+            .retry_safe_before_admission
     );
     drop(control);
     std::fs::remove_file(path).unwrap();

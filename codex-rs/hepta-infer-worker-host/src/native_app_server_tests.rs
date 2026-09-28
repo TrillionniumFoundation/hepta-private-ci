@@ -4,8 +4,8 @@ use codex_app_server_protocol::AgentMessageDeltaNotification;
 use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
-use codex_app_server_protocol::TurnStartedNotification;
 use codex_app_server_protocol::TurnStartParams;
+use codex_app_server_protocol::TurnStartedNotification;
 
 fn binding() -> CodexTurnBinding {
     let payload_digest = Digest32::of_bytes(b"test-turn-payload");
@@ -777,4 +777,26 @@ fn agentd_effect_entry_cas_is_the_last_fallible_gate_before_physical_send() {
     assert!(proof_destroy < physical_send);
     assert!(source.contains("Agentd effect-entry fence was already committed; reconcile only"));
     assert!(source.contains("effect-entry fence requires same-operation reconciliation"));
+}
+
+#[test]
+fn typed_pre_admission_rejection_is_prepared_before_owner_terminal_and_local_release() {
+    let execution = include_str!("native_execution.rs");
+    let control = include_str!("native_run_control.rs");
+    let prepare = execution
+        .find(".prepare_native_rejection_before_start(")
+        .expect("durable rejection prepare");
+    let reconcile = execution
+        .find(".reconcile_pending_pre_admission_rejection(")
+        .expect("Agentd rejection settlement");
+    let local_complete = control
+        .find("control.complete_native_rejection_before_start(")
+        .expect("local rejection completion");
+    let owner_terminal = control
+        .find(".run_observe_terminal(")
+        .expect("Agentd terminal transition");
+    assert!(prepare < reconcile);
+    assert!(owner_terminal < local_complete);
+    assert!(control.contains("pending pre-admission rejection"));
+    assert!(execution.contains("local slot retained"));
 }
