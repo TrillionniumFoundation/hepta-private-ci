@@ -2,306 +2,187 @@ name: Cognitive read qualification
 
 on:
   pull_request:
-    branches:
-      - main
     paths:
-      - ".github/scripts/cognitive_read_converge.py.xz.b64.*"
+      - "codex-rs/hepta-cognitive-read/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/cognitive.read/**"
+      - "qualification/cognitive-read/**"
+      - "scripts/emit-cognitive-read-qualification.py"
+      - "scripts/run-cognitive-read-qualification.sh"
+      - "scripts/verify-cognitive-read-constants.py"
+      - "scripts/verify-cognitive-read-map.py"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/scripts/verify_cargo_workspace_manifests.py"
       - ".github/workflows/cognitive-read-qualification.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
   push:
     branches:
+      - main
       - work/cognitive-read-production-convergence-20260927
     paths:
+      - "codex-rs/hepta-cognitive-read/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/cognitive.read/**"
+      - "qualification/cognitive-read/**"
+      - "scripts/emit-cognitive-read-qualification.py"
+      - "scripts/run-cognitive-read-qualification.sh"
+      - "scripts/verify-cognitive-read-constants.py"
+      - "scripts/verify-cognitive-read-map.py"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/scripts/verify_cargo_workspace_manifests.py"
       - ".github/workflows/cognitive-read-qualification.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: cognitive-read-bootstrap-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: cognitive-read-qualification-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
   RUST_MIN_STACK: "8388608"
-  TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
-  converge:
-    name: Apply and seal cognitive.read convergence
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.ref == 'work/cognitive-read-production-convergence-20260927'
+  exact-head:
+    name: Exact-head cognitive.read qualification
     runs-on: ubuntu-24.04
-    timeout-minutes: 180
+    timeout-minutes: 120
     steps:
-      - name: Check out exact branch head
+      - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ env.SOURCE_SHA }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
           fetch-depth: 0
-          persist-credentials: true
 
-      - name: Prepare repository CI tools
+      - name: Prepare CI tools
         uses: ./.github/actions/setup-ci
 
-      - name: Restore final workflow and assemble reviewed helper
+      - name: Run exact-head suite and seal evidence
+        id: qualification
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         shell: bash
         run: |
-          set -euo pipefail
-          git config user.name 'Cognitive Read Convergence'
-          git config user.email 'cognitive-read-convergence@users.noreply.github.com'
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          git switch -C "$TARGET_BRANCH"
-          git show a16fa81bfec716037332ed30ab3c4e82d91c8636:.github/workflows/cognitive-read-qualification.yml \
-            > .github/workflows/cognitive-read-qualification.yml
-          cat .github/scripts/cognitive_read_converge.py.xz.b64.* \
-            | base64 --decode \
-            | xz --decompress > "$RUNNER_TEMP/cognitive_read_converge.py"
-          python3 -m py_compile "$RUNNER_TEMP/cognitive_read_converge.py"
+          bash scripts/run-cognitive-read-qualification.sh \
+            source-head \
+            "$EXPECTED_SHA" \
+            .hepta-evidence/cognitive-read-source \
+            exact-head
 
-      - name: Apply source, contract, lock, and workflow closure
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 "$RUNNER_TEMP/cognitive_read_converge.py" patch
-          python3 - <<'PY'
-          from pathlib import Path
-
-          golden = Path("codex-rs/hepta-cognitive-read/src/golden_vectors.rs")
-          body = golden.read_text(encoding="utf-8")
-          body = body.replace(r'            "{\n",', r'            "{{\n",')
-          body = body.replace(
-              '            "}"\n        ),\n        EXPECTED_CANONICAL_HEX',
-              '            "}}"\n        ),\n        EXPECTED_CANONICAL_HEX',
-          )
-          if r'            "{{\n",' not in body or '            "}}"' not in body:
-              raise SystemExit("golden vector format braces were not repaired")
-          golden.write_text(body, encoding="utf-8")
-
-          properties = Path("codex-rs/hepta-cognitive-read/src/property_tests.rs")
-          body = properties.read_text(encoding="utf-8")
-          body = body.replace(
-              "record_ids: candidate_ids,",
-              "record_ids: candidate_ids.clone(),",
-          )
-          if "record_ids: candidate_ids.clone()," not in body:
-              raise SystemExit("property permutation ownership was not repaired")
-          properties.write_text(body, encoding="utf-8")
-          PY
-          python3 -m py_compile \
-            scripts/emit-cognitive-read-qualification.py \
-            scripts/verify-cognitive-read-constants.py \
-            scripts/verify-cognitive-read-map.py
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all
-          cargo metadata --manifest-path codex-rs/Cargo.toml \
-            --format-version=1 --all-features \
-            --filter-platform x86_64-unknown-linux-gnu >/dev/null
-          cargo metadata --manifest-path codex-rs/Cargo.toml \
-            --format-version=1 --all-features \
-            --filter-platform aarch64-unknown-linux-gnu >/dev/null
-          rm -f codex-rs/hepta-cognitive-read/fuzz/Cargo.lock
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
-          git diff --check
-          git add -A
-          git commit -m 'feat(cognitive.read): close bounded product and evidence contracts'
-
-      - name: Atomically rebind affected implementation maps
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 "$RUNNER_TEMP/cognitive_read_converge.py" rebind-maps \
-            | tee "$RUNNER_TEMP/rebound-maps.json"
-          git diff --check
-          git add docs/modules
-          git diff --cached --quiet || \
-            git commit -m 'docs(cognitive.read): atomically rebind affected implementation maps'
-
-      - name: Prepare verification diagnostics
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          diagnostics="$RUNNER_TEMP/cognitive-read-convergence-diagnostics"
-          mkdir -p "$diagnostics"
-          {
-            echo "source_sha=$SOURCE_SHA"
-            echo "candidate_sha=$(git rev-parse HEAD)"
-            echo "candidate_tree=$(git rev-parse HEAD^{tree})"
-            echo "event=$GITHUB_EVENT_NAME"
-            echo "run_id=$GITHUB_RUN_ID"
-            echo "run_attempt=$GITHUB_RUN_ATTEMPT"
-          } > "$diagnostics/candidate.txt"
-          cp "$RUNNER_TEMP/rebound-maps.json" "$diagnostics/rebound-maps.json"
-
-      - name: Verify workspace manifest policy
-        id: verify_manifest
-        if: always()
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          python3 .github/scripts/verify_cargo_workspace_manifests.py \
-            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/workspace-manifest.log"
-
-      - name: Verify compiled contracts and documentation
-        id: verify_contracts
-        if: always()
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          python3 scripts/verify-cognitive-read-constants.py \
-            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/contract-limits.log"
-
-      - name: Verify cognitive.read exact source map
-        id: verify_cognitive_map
-        if: always()
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          python3 scripts/verify-cognitive-read-map.py \
-            --expected-sha "$(git rev-parse HEAD)" \
-            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/cognitive-map.log"
-
-      - name: Verify repository implementation maps
-        id: verify_all_maps
-        if: always()
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          python3 scripts/hepta-implementation-maps.py verify \
-            --expected-sha "$(git rev-parse HEAD)" \
-            --expected-tree "$(git rev-parse HEAD^{tree})" \
-            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/all-maps.log"
-
-      - name: Verify implementation-map regression tests
-        id: verify_map_tests
-        if: always()
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          PYTHONPATH=scripts python3 -m unittest scripts/test_hepta_implementation_maps.py \
-            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/map-tests.log"
-
-      - name: Verify Rust formatting
-        id: verify_fmt
-        if: always()
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check \
-            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/fmt.log"
-
-      - name: Verify locked product build
-        id: verify_build
-        if: always()
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          cargo check --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-cognitive-read \
-            -p codex-hepta-agentd \
-            -p codex-hepta-infer-core \
-            -p codex-hepta-infer-worker-host --all-targets \
-            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/locked-build.log"
-
-      - name: Verify cognitive.read unit and contract tests
-        id: verify_tests
-        if: always()
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-cognitive-read --lib \
-            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/core-tests.log"
-
-      - name: Verify fuzz workspace compilation
-        id: verify_fuzz
-        if: always()
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          cargo check --manifest-path codex-rs/hepta-cognitive-read/fuzz/Cargo.toml \
-            --all-targets \
-            2>&1 | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/fuzz-build.log"
-          status="${PIPESTATUS[0]}"
-          rm -f codex-rs/hepta-cognitive-read/fuzz/Cargo.lock
-          exit "$status"
-
-      - name: Verify clean tracked candidate
-        id: verify_clean
-        if: always()
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          git status --short --untracked-files=all \
-            | tee "$RUNNER_TEMP/cognitive-read-convergence-diagnostics/git-status.log"
-          test -z "$(git status --porcelain --untracked-files=no)"
-
-      - name: Retain convergence diagnostics
+      - name: Retain immutable exact-head evidence
+        id: upload
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: cognitive-read-convergence-diagnostics-${{ env.SOURCE_SHA }}-${{ github.run_id }}
-          path: ${{ runner.temp }}/cognitive-read-convergence-diagnostics
+          name: cognitive-read-source-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: |
+            ${{ steps.qualification.outputs.bundle }}
+            ${{ steps.qualification.outputs.bundle_sha }}
           if-no-files-found: error
           retention-days: 30
 
-      - name: Enforce exact source candidate
+      - name: Publish exact-head artifact digests
         if: always()
         shell: bash
-        env:
-          MANIFEST_OUTCOME: ${{ steps.verify_manifest.outcome }}
-          CONTRACTS_OUTCOME: ${{ steps.verify_contracts.outcome }}
-          COGNITIVE_MAP_OUTCOME: ${{ steps.verify_cognitive_map.outcome }}
-          ALL_MAPS_OUTCOME: ${{ steps.verify_all_maps.outcome }}
-          MAP_TESTS_OUTCOME: ${{ steps.verify_map_tests.outcome }}
-          FMT_OUTCOME: ${{ steps.verify_fmt.outcome }}
-          BUILD_OUTCOME: ${{ steps.verify_build.outcome }}
-          TESTS_OUTCOME: ${{ steps.verify_tests.outcome }}
-          FUZZ_OUTCOME: ${{ steps.verify_fuzz.outcome }}
-          CLEAN_OUTCOME: ${{ steps.verify_clean.outcome }}
         run: |
-          set -euo pipefail
-          failed=0
-          for outcome in \
-            "$MANIFEST_OUTCOME" \
-            "$CONTRACTS_OUTCOME" \
-            "$COGNITIVE_MAP_OUTCOME" \
-            "$ALL_MAPS_OUTCOME" \
-            "$MAP_TESTS_OUTCOME" \
-            "$FMT_OUTCOME" \
-            "$BUILD_OUTCOME" \
-            "$TESTS_OUTCOME" \
-            "$FUZZ_OUTCOME" \
-            "$CLEAN_OUTCOME"
-          do
-            if [[ "$outcome" != success ]]; then
-              failed=1
-            fi
-          done
-          exit "$failed"
+          {
+            echo '## cognitive.read exact-head evidence'
+            echo
+            echo '- commit: `${{ github.event.pull_request.head.sha || github.sha }}`'
+            echo '- GitHub artifact digest: `${{ steps.upload.outputs['artifact-digest'] }}`'
+            echo '- deterministic bundle digest:'
+            echo '```text'
+            cat '${{ steps.qualification.outputs.bundle_sha }}'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Retire bootstrap and push sealed candidate
+      - name: Enforce exact-head qualification result
+        if: always()
+        shell: bash
+        run: test '${{ steps.qualification.outputs.failed }}' = '0'
+
+  merge-candidate:
+    name: Synthetic-merge cognitive.read qualification
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Construct deterministic synthetic merge
+        id: synthetic
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Cognitive Read CI
+          author-email: cognitive-read-ci@users.noreply.github.com
+          message: Cognitive read synthetic merge
+
+      - name: Prepare CI tools
+        uses: ./.github/actions/setup-ci
+
+      - name: Run merge-candidate suite and seal evidence
+        id: qualification
+        env:
+          EXPECTED_SHA: ${{ steps.synthetic.outputs.sha }}
         shell: bash
         run: |
-          set -euo pipefail
-          rm -f \
-            .github/scripts/cognitive_read_converge.py.xz.b64.* \
-            .github/workflows/cognitive-read-one-shot.yml
-          git add -A
-          git commit -m 'ci(cognitive.read): retire convergence bootstrap'
-          python3 scripts/verify-cognitive-read-map.py \
-            --expected-sha "$(git rev-parse HEAD)"
-          python3 scripts/hepta-implementation-maps.py verify \
-            --expected-sha "$(git rev-parse HEAD)" \
-            --expected-tree "$(git rev-parse HEAD^{tree})"
-          test -z "$(git status --porcelain)"
-          git push origin "HEAD:$TARGET_BRANCH"
+          bash scripts/run-cognitive-read-qualification.sh \
+            merge-candidate \
+            "$EXPECTED_SHA" \
+            .hepta-evidence/cognitive-read-merge \
+            merge-candidate
+
+      - name: Retain immutable merge-candidate evidence
+        id: upload
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-read-merge-${{ steps.synthetic.outputs.sha }}-${{ github.run_id }}
+          path: |
+            ${{ steps.qualification.outputs.bundle }}
+            ${{ steps.qualification.outputs.bundle_sha }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish merge-candidate artifact digests
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## cognitive.read synthetic-merge evidence'
+            echo
+            echo '- commit: `${{ steps.synthetic.outputs.sha }}`'
+            echo '- GitHub artifact digest: `${{ steps.upload.outputs['artifact-digest'] }}`'
+            echo '- deterministic bundle digest:'
+            echo '```text'
+            cat '${{ steps.qualification.outputs.bundle_sha }}'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Enforce merge-candidate qualification result
+        if: always()
+        shell: bash
+        run: test '${{ steps.qualification.outputs.failed }}' = '0'
