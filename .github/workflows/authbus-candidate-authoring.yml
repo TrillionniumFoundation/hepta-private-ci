@@ -41,14 +41,14 @@ jobs:
           subprocess.run(['git','apply','-'], input=patch, cwd='candidate', check=True)
           p = pathlib.Path('candidate/codex-rs/hepta-authbus/src/trust.rs')
           text = p.read_text()
-          old = '#[derive(Debug, Clone)]\npub struct IssuerRecord'
+          old = '#[derive(Clone, Debug)]\npub struct IssuerRecord'
           assert text.count(old) == 1
-          p.write_text(text.replace(old, '#[derive(Debug, Clone, Eq, PartialEq)]\npub struct IssuerRecord'))
+          p.write_text(text.replace(old, '#[derive(Clone, Debug, Eq, PartialEq)]\npub struct IssuerRecord'))
           p = pathlib.Path('candidate/codex-rs/hepta-evidence/src/authbus_outbox_tests.rs')
           text = p.read_text()
-          old = 'UPDATE authbus_outbox SET available_at_ms = 0 WHERE outbox_id = ?'
+          old = 'UPDATE authbus_outbox SET available_at_ms = 0 WHERE delivery_id = ?'
           assert text.count(old) == 1
-          p.write_text(text.replace(old, 'UPDATE authbus_outbox SET available_at_ms = 0, fence = fence + 1 WHERE outbox_id = ?'))
+          p.write_text(text.replace(old, 'UPDATE authbus_outbox SET available_at_ms = 0, fence = fence + 1 WHERE delivery_id = ?'))
           PY
       - name: Format authored files and resolve the committed dependency lock
         working-directory: candidate
