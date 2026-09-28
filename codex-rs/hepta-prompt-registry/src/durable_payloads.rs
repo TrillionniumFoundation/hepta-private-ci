@@ -16,18 +16,12 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::Access;
-use super::DurablePromptRegistry;
 use super::DurableRegistryError;
-use super::MAX_STATE_BYTES;
-use super::Store;
 use super::StoredPayload;
 use super::StoredV2;
 use super::StoredV4 as StoredStateV4;
-use super::entry_exists;
 use super::map_precommit_io;
 use super::open_private;
-use super::prepare_directory;
-use super::validate_restored;
 use crate::PromptRegistry;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -35,13 +29,6 @@ use codex_hepta_types::StableId;
 pub(super) const FILE_NAME: &str = "registry.payloads";
 const MAGIC: &[u8] = b"HEPTA-PROMPT-PAYLOADS-V1\0";
 const MAX_PAYLOAD_BYTES: u64 = 32 * 1024 * 1024;
-
-// Compatibility namespace used by the maintenance child. Keeping the extent
-// constants behind this private shim avoids widening the storage internals.
-mod payloads {
-    pub(super) const FILE_NAME: &str = super::FILE_NAME;
-    pub(super) const MAX_PAYLOAD_BYTES: u64 = super::MAX_PAYLOAD_BYTES;
-}
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -302,10 +289,3 @@ fn require_header(file: &mut File) -> Result<(), DurableRegistryError> {
     }
     Ok(())
 }
-
-// The operations layer is intentionally nested under the durable payload owner:
-// it can reuse the private lock, filesystem and recovery invariants without
-// widening those internals or introducing a second persistence authority.
-#[allow(dead_code, private_interfaces)]
-#[path = "durable_maintenance.rs"]
-mod maintenance;
