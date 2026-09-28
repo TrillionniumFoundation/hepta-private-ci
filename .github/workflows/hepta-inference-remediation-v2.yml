@@ -71,6 +71,22 @@ jobs:
           gzip -dc "$PATCH_PATH" > "$evidence/remediation.patch"
           git apply --check --whitespace=error-all "$evidence/remediation.patch"
           git apply --index --whitespace=error-all "$evidence/remediation.patch"
+
+          # The first exact native run exposed a real compile defect in the
+          # reviewed patch: output_deletion_confirmed is already a bool. Keep
+          # the repair exact and fail closed if the expected source drifts.
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("codex-rs/hepta-infer-core/tests/output_retention.rs")
+          source = path.read_text(encoding="utf-8")
+          old = "assert!(*tombstone.output_deletion_confirmed);"
+          new = "assert!(tombstone.output_deletion_confirmed);"
+          if source.count(old) != 1:
+              raise SystemExit("expected exact output-retention assertion was not found once")
+          path.write_text(source.replace(old, new), encoding="utf-8")
+          PY
+
           git rm -f "$PATCH_PATH"
           git show "$RESTORE_COMMIT:$WORKFLOW_PATH" > "$WORKFLOW_PATH"
           test "$(git hash-object "$WORKFLOW_PATH")" = "$RESTORE_BLOB"
