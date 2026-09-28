@@ -13,7 +13,6 @@ use codex_hepta_intelligence::CurrentOwnerStateV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
-use codex_hepta_intelligence_eval::ProductOutcomeQualificationReceiptV1;
 use codex_hepta_intelligence_eval::SignedEligibilityAdmissionError;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
 use codex_hepta_intelligence_eval::admit_signed_eligibility_v2;
@@ -23,6 +22,9 @@ use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+
+#[path = "intelligence_outcome_evaluation.rs"]
+mod outcome_use;
 
 /// Data supplied by the evaluator. Every field is checked again at its use site.
 #[derive(Clone, Debug)]
@@ -41,70 +43,6 @@ pub struct AgentdEvaluationBindingV1 {
     pub context_receipt_digest: Digest32,
     pub candidate_set_digest: Digest32,
     pub selected_candidate_id: StableId,
-}
-
-impl AgentdEvaluationBindingV1 {
-    /// Consume the durable multi-outcome qualification receipt for this exact
-    /// prepared Agentd use. The receipt remains authority-free; this method only
-    /// emits a request-bound digest for the existing downstream ledger path.
-    pub fn consume_outcome_qualification_v1(
-        &self,
-        receipt: &ProductOutcomeQualificationReceiptV1,
-        expected_evaluation_id: &StableId,
-        expected_execution_digest: Digest32,
-        expected_publication_digest: Digest32,
-        trust: &ActivatedLearningTrustV1,
-    ) -> Result<Digest32, AgentdIntelligenceEvaluationError> {
-        let decision = receipt.decision();
-        if self.objective_digest.is_zero()
-            || self.snapshot_digest.is_zero()
-            || self.context_receipt_digest.is_zero()
-            || self.candidate_set_digest.is_zero()
-            || expected_execution_digest.is_zero()
-            || expected_publication_digest.is_zero()
-            || receipt.execution_digest() != expected_execution_digest
-            || receipt.publication_digest() != expected_publication_digest
-            || &decision.decision.evaluation_id != expected_evaluation_id
-            || decision.decision.candidate_id != self.selected_candidate_id
-            || decision.trust_digest != trust.verifier().trust_digest()
-        {
-            return Err(AgentdIntelligenceEvaluationError::Binding);
-        }
-        if receipt.authority().grants_any()
-            || decision.decision.authority.grants_any()
-            || decision.decision.disposition
-                != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
-        {
-            return Err(AgentdIntelligenceEvaluationError::Ineligible);
-        }
-
-        let mut bytes = b"hepta.agentd.outcome-qualification-consumption.v1\0".to_vec();
-        for id in [
-            &self.run_id,
-            &self.selected_candidate_id,
-            expected_evaluation_id,
-        ] {
-            let length = u64::try_from(id.as_str().len())
-                .map_err(|_| AgentdIntelligenceEvaluationError::Binding)?;
-            bytes.extend_from_slice(&length.to_be_bytes());
-            bytes.extend_from_slice(id.as_str().as_bytes());
-        }
-        for digest in [
-            self.objective_digest,
-            self.snapshot_digest,
-            self.context_receipt_digest,
-            self.candidate_set_digest,
-            expected_execution_digest,
-            expected_publication_digest,
-            decision.decision.evidence_digest,
-            decision.trust_digest,
-            decision.authentication_digest,
-            trust.distribution_digest(),
-        ] {
-            bytes.extend_from_slice(digest.as_array());
-        }
-        Ok(Digest32::of_bytes(&bytes))
-    }
 }
 
 /// Canonical bytes the existing evaluator signs for this one actual prepared use.
@@ -171,16 +109,12 @@ impl AgentdEvaluationSessionV1 {
             selected_candidate_id: candidate.clone(),
         };
         let payload = intelligence_evaluation_binding_payload_v1(&binding, &self.signed.evidence)?;
-        let verified = self
-            .trust
-            .verifier()
-            .verify(
-                LearningEvidenceRoleV1::Evaluator,
-                &self.signed.use_attestation,
-                &payload,
-                now,
-            )
-            .map_err(AgentdIntelligenceEvaluationError::Evidence)?;
+        let verified = self.trust.verifier().verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &self.signed.use_attestation,
+            &payload,
+            now,
+        ).map_err(AgentdIntelligenceEvaluationError::Evidence)?;
         if verified.principal() != &self.signed.bundle.evaluator
             || verified.principal().signing_key_digest != self.current_owner.key_digest
         {
@@ -188,14 +122,9 @@ impl AgentdEvaluationSessionV1 {
         }
         let binding_digest = Digest32::of_bytes(&payload);
         let result = admit_signed_eligibility_v2(
-            self.signed.bundle,
-            self.signed.roles,
-            &self.signed.evidence,
-            self.trust.verifier(),
-            binding_digest,
-            now,
-        )
-        .map_err(AgentdIntelligenceEvaluationError::Evaluation)?;
+            self.signed.bundle, self.signed.roles, &self.signed.evidence,
+            self.trust.verifier(), binding_digest, now,
+        ).map_err(AgentdIntelligenceEvaluationError::Evaluation)?;
         if result.authority.grants_any()
             || result.decision.decision.authority.grants_any()
             || result.decision.decision.disposition
