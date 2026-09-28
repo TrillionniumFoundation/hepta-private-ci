@@ -14,7 +14,7 @@ on:
       - 'scripts/hepta-prompt-registry-*'
       - '.github/workflows/hepta-prompt-registry-qualification.yml'
   push:
-    branches: [main, codex/prompt-registry-delivery-consistency-20260928]
+    branches: [main, codex/prompt-registry-delivery-consistency-20260928, codex/prompt-registry-verified-closeout-20260928]
     paths:
       - 'codex-rs/hepta-prompt-registry/**'
       - 'codex-rs/hepta-prompt-optimizer/**'
@@ -64,8 +64,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {profile: core, lane: exact-head, runner: ubuntu-slim, timeout: 15}
-          - {profile: core, lane: base-merge, runner: ubuntu-slim, timeout: 15}
+          - {profile: core, lane: exact-head, runner: ubuntu-24.04, timeout: 45}
+          - {profile: core, lane: base-merge, runner: ubuntu-24.04, timeout: 45}
           - {profile: product, lane: exact-head, runner: ubuntu-24.04, timeout: 75}
           - {profile: product, lane: base-merge, runner: ubuntu-24.04, timeout: 75}
     env:
@@ -128,5 +128,44 @@ jobs:
         with:
           name: prompt-registry-${{ matrix.profile }}-${{ matrix.lane }}-${{ needs.bind.outputs.source }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/prompt-evidence/
+          if-no-files-found: error
+          retention-days: 30
+
+  aggregate:
+    name: prompt.registry exact-run evidence gate
+    if: always()
+    needs: [bind, qualification]
+    runs-on: ubuntu-slim
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Reject failed, skipped or cancelled lanes
+        env:
+          BIND_RESULT: ${{ needs.bind.result }}
+          LANES_RESULT: ${{ needs.qualification.result }}
+        run: test "$BIND_RESULT" = success && test "$LANES_RESULT" = success
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.bind.outputs.source }}
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: prompt-registry-*-${{ needs.bind.outputs.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/prompt-registry-receipts
+      - name: Verify all four identities, source trees and raw logs
+        env:
+          SOURCE_SHA: ${{ needs.bind.outputs.source }}
+          BASE_SHA: ${{ needs.bind.outputs.base }}
+        run: >-
+          python3 scripts/hepta-prompt-registry-aggregate.py
+          --root "$RUNNER_TEMP/prompt-registry-receipts"
+          --source "$SOURCE_SHA" --base "$BASE_SHA"
+          --run "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT"
+          --output "$RUNNER_TEMP/prompt-registry-summary.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-summary-${{ needs.bind.outputs.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/prompt-registry-summary.json
           if-no-files-found: error
           retention-days: 30
