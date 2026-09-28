@@ -9,8 +9,6 @@
 
 mod archive_codec;
 mod coordinator;
-#[allow(unused_imports)]
-#[path = "durable_facade.rs"]
 mod durable;
 #[allow(unused_imports)]
 #[path = "fenced_coordinator_final.rs"]
@@ -40,6 +38,8 @@ pub use fenced_coordinator::MemoryCheckpointCoordinatorV2;
 pub use publication::CompactionNonceBindingV1;
 pub use publication::CompactionPublicationEvidenceV1;
 pub use publication::CompactionPublicationRequestV1;
+pub use publication::MAX_COMPACTION_ARCHIVE_METADATA_BYTES_V1;
+pub use publication::MAX_COMPACTION_FULL_ARCHIVE_BYTES_V1;
 pub use publication::SignedCompactionTokenAccountingV1;
 pub use publication::VerifiedCompactionPublicationV1;
 pub use qualified::CompactionInputRecordV2;
