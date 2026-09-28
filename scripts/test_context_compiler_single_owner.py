@@ -15,15 +15,9 @@ class ContextCompilerSingleOwnerTests(unittest.TestCase):
         registry = read("codex-rs/hepta-prompt-registry/src/lib.rs")
         intelligence = read("codex-rs/hepta-intelligence/src/lib.rs")
         self.assertEqual(registry.count("mod context_authority;"), 1)
-        self.assertIn(
-            "pub use context_authority::PromptContextAuthoritySnapshotV3;",
-            registry,
-        )
+        self.assertIn("pub use context_authority::PromptContextAuthoritySnapshotV3;", registry)
         self.assertEqual(intelligence.count("mod prompt_product_v3;"), 1)
-        self.assertIn(
-            "pub use prompt_product_v3::compile_prompt_registry_v3;",
-            intelligence,
-        )
+        self.assertIn("pub use prompt_product_v3::compile_prompt_registry_v3;", intelligence)
 
     def test_legacy_context_is_explicit_and_default_off(self):
         intelligence = read("codex-rs/hepta-intelligence/Cargo.toml")
@@ -48,20 +42,13 @@ class ContextCompilerSingleOwnerTests(unittest.TestCase):
         self.assertEqual(runtime.count("pub fn compile_and_stage_v3"), 1)
         self.assertIn(".with_final_request_observer", runtime)
         self.assertIn(".with_final_terminal_observer", runtime)
-        self.assertIn(
-            "self.exact\n            .stage(thread_id, turn_id, compiled.clone())",
-            runtime,
-        )
+        self.assertIn("self.exact\n            .stage(thread_id, turn_id, compiled.clone())", runtime)
 
     def test_parallel_historical_files_cannot_become_implicit_owners(self):
         extension_root = read("codex-rs/ext/hepta-prompt/src/lib.rs")
         agentd_root = read("codex-rs/hepta-agentd/src/lib.rs")
         historical = (
-            (
-                ROOT / "codex-rs/ext/hepta-prompt/src/v3.rs",
-                "mod v3;",
-                extension_root,
-            ),
+            (ROOT / "codex-rs/ext/hepta-prompt/src/v3.rs", "mod v3;", extension_root),
             (
                 ROOT / "codex-rs/hepta-agentd/src/prompt_product_v3.rs",
                 "mod prompt_product_v3;",
@@ -81,24 +68,16 @@ class ContextCompilerSingleOwnerTests(unittest.TestCase):
             "apply_context_compiler_",
             "remediate_context_compiler_",
         )
-        workflows = sorted(
-            (ROOT / ".github/workflows").glob("context-compiler*.yml")
-        )
+        workflows = sorted((ROOT / ".github/workflows").glob("context-compiler*.yml"))
         self.assertTrue(workflows)
         for path in workflows:
             text = path.read_text(encoding="utf-8")
             for token in forbidden:
                 self.assertNotIn(token, text, f"{path}: {token}")
-        self.assertFalse(
-            (ROOT / ".github/workflows/context-compiler-source-promotion.yml").exists()
-        )
-        self.assertFalse(
-            (ROOT / ".github/workflows/context-compiler-v3-source-bundle.yml").exists()
-        )
+        self.assertFalse((ROOT / ".github/workflows/context-compiler-source-promotion.yml").exists())
+        self.assertFalse((ROOT / ".github/workflows/context-compiler-v3-source-bundle.yml").exists())
         self.assertFalse(list((ROOT / "scripts").glob("apply_context_compiler_*.py")))
-        self.assertFalse(
-            list((ROOT / "scripts").glob("remediate_context_compiler_*.py"))
-        )
+        self.assertFalse(list((ROOT / "scripts").glob("remediate_context_compiler_*.py")))
 
     def test_profile_matrix_covers_both_git_lanes_and_feature_profiles(self):
         workflow = read(".github/workflows/context-compiler-profile-matrix.yml")
@@ -117,27 +96,32 @@ class ContextCompilerSingleOwnerTests(unittest.TestCase):
             "workflowSha",
             "logSha256",
             "payloadCanonicalSha256",
+            "candidateVerificationExitCode",
+            "candidate-verify.log",
+            "--verify",
+            "Source topology and external-acceptance regressions",
+            "context-profile-build",
+            "! -name 'artifact-files.sha256'",
         ):
             self.assertIn(token, workflow)
         self.assertIn("contents: read", workflow)
+        self.assertNotIn("context-profile/build", workflow)
 
     def test_external_acceptance_is_named_host_protected_and_read_only(self):
         workflow = read(".github/workflows/context-compiler-external-acceptance.yml")
-        self.assertIn(
-            "runs-on: [self-hosted, hepta-context-acceptance]",
-            workflow,
-        )
-        self.assertIn(
-            "environment: context-compiler-independent-acceptance",
-            workflow,
-        )
+        self.assertIn("runs-on: [self-hosted, hepta-context-acceptance]", workflow)
+        self.assertIn("name: context-compiler-${{ inputs.mode }}", workflow)
         self.assertIn("contents: read", workflow)
         self.assertIn("actions: read", workflow)
         self.assertIn("openssl dgst -sha256 -verify", workflow)
-        self.assertIn(
-            "sourceStateMutationAuthorized",
-            read("scripts/context_compiler_external_acceptance.py"),
-        )
+        self.assertIn("artifact entry size rejected", workflow)
+        self.assertIn("non-regular artifact entry", workflow)
+        self.assertIn("must contain exactly receipt and signature", workflow)
+        self.assertIn("! -name 'artifact-files.sha256'", workflow)
+        validator = read("scripts/context_compiler_external_acceptance.py")
+        self.assertIn("sourceStateMutationAuthorized", validator)
+        self.assertIn("approvals must be independent", validator)
+        self.assertIn("approval is future-dated", validator)
 
 
 if __name__ == "__main__":

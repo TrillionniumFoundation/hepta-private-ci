@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 import datetime as dt
+import json
+from pathlib import Path
+import tempfile
 import unittest
 
 import context_compiler_external_acceptance as acceptance
@@ -37,6 +40,9 @@ def approval(identifier):
         "approvalSha256": DIGEST,
         "issuedAt": ISSUED,
         "sourceCommit": OID,
+        "sourceTree": TREE,
+        "baseCommit": BASE,
+        "mergeCommit": MERGE,
         "mergeTree": MERGE_TREE,
     }
 
@@ -57,7 +63,7 @@ def receipt(mode="release"):
             "environmentId": "context-compiler-acceptance:v1",
             "runnerIdentity": "self-hosted:context-acceptance-01",
             "runnerImageDigest": DIGEST,
-            "hostImageDigest": DIGEST,
+            "hostImaeDigest": DIGEST,
             "kernelIdentity": "linux:acceptance-kernel-v1",
             "filesystemIdentity": "ext4:acceptance-volume-v1",
             "providerTenant": "provider:non-production-context-v1",
@@ -75,9 +81,7 @@ def receipt(mode="release"):
         },
         "approvals": {
             "security": approval("security-reviewer:v1"),
-            "operator": approval("operator:v1")
-            if mode in {"activation", "release"}
-            else None,
+            "operator": approval("operator:v1") if mode in {"activation", "release"} else None,
             "release": approval("release-manager:v1") if mode == "release" else None,
         },
         "independentAcceptance": True,
@@ -155,6 +159,49 @@ class ExternalAcceptanceTests(unittest.TestCase):
         value["receiptSha256"] = acceptance.canonical_sha256(value)
         with self.assertRaises(acceptance.AcceptanceError):
             validate(value, "activation")
+
+    def test_future_approval_is_rejected(self):
+        value = receipt()
+        value["approvals"]["security"]["issuedAt"] = "2030-01-02T00:00:00Z"
+        value["receiptSha256"] = acceptance.canonical_sha256(value)
+        with self.assertRaises(acceptance.AcceptanceError):
+            validate(value)
+
+    def test_approval_roles_must_be_independent(self):
+        value = receipt()
+        value["approvals"]["operator"]["approverId"] = value["approvals"]["security"]["approverId"]
+        value["receiptSha256"] = acceptance.canonical_sha256(value)
+        with self.assertRaises(acceptance.AcceptanceError):
+            validate(value)
+
+    def test_unexpected_approval_is_rejected_for_independent_mode(self):
+        value = receipt("independent")
+        value["approvals"]["operator"] = approval("operator:v1")
+        value["receiptSha256"] = acceptance.canonical_sha256(value)
+        with self.assertRaises(acceptance.AcceptanceError):
+            validate(value, "independent")
+
+    def test_failpoint_matrix_is_fail_closed(self):
+        matrix = acceptance.load_matrix()
+        self.assertIn(
+            "may_have_dispatched_unresolved",
+            matrix["provider.ack.after"],
+        )
+        self.assertNotIn("lease_settled", matrix["provider.ack.after"])
+        source = json.loads(acceptance.MATRIX_PATH.read_text())
+        source["rules"]["blindReplayForbidden"] = False
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "matrix.json"
+            path.write_text(json.dumps(source))
+            with self.assertRaises(acceptance.AcceptanceError):
+                acceptance.load_matrix(path)
+
+    def test_nonstandard_json_constants_are_rejected_on_load(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "receipt.json"
+            path.write_text('{"value": NaN}')
+            with self.assertRaises(acceptance.AcceptanceError):
+                acceptance.load_receipt(path)
 
     def test_sensitive_or_unknown_fields_are_rejected(self):
         value = receipt()

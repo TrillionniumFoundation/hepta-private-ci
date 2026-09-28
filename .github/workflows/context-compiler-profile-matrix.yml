@@ -14,7 +14,10 @@ on:
       - codex-rs/hepta-prompt-registry/**
       - codex-rs/Cargo.*
       - codex-rs/rust-toolchain.toml
+      - qualification/context-compiler/FAILPOINT_MATRIX.json
       - scripts/context_compiler_candidate.py
+      - scripts/context_compiler_external_acceptance.py
+      - scripts/test_context_compiler_external_acceptance.py
       - scripts/test_context_compiler_single_owner.py
   push:
     branches:
@@ -74,6 +77,12 @@ jobs:
           test "$(git cat-file -t "$BASE")" = commit
           test "$SOURCE" != "$BASE"
           printf 'source=%s\nbase=%s\n' "$SOURCE" "$BASE" >> "$GITHUB_OUTPUT"
+      - name: Source topology and external-acceptance regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B scripts/test_context_compiler_single_owner.py
+          python3 -B scripts/test_context_compiler_external_acceptance.py
 
   profile:
     needs: identity
@@ -121,7 +130,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          root="$RUNNER_TEMP/context-profile/build"
+          root="$RUNNER_TEMP/context-profile-build"
           mkdir -p "$root/cargo" "$root/target"
           {
             echo "CARGO_HOME=$root/cargo"
@@ -191,13 +200,25 @@ jobs:
           started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           set +e
           "${command[@]}" > "$log" 2>&1
-          exit_code=$?
+          command_exit=$?
+          python3 -B ../scripts/context_compiler_candidate.py \
+            --root .. \
+            --record "$evidence/candidate.json" \
+            --verify > "$evidence/candidate-verify.log" 2>&1
+          candidate_verify_exit=$?
           set -e
           finished_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           cat "$log"
+          cat "$evidence/candidate-verify.log"
+          if [ "$command_exit" -ne 0 ]; then
+            exit_code="$command_exit"
+          else
+            exit_code="$candidate_verify_exit"
+          fi
           printf '%s\n' "$exit_code" > "$evidence/exit-code.txt"
-          STARTED_AT="$started_at" FINISHED_AT="$finished_at" EXIT_CODE="$exit_code" \
-            python3 -B - <<'PY'
+          STARTED_AT="$started_at" FINISHED_AT="$finished_at" \
+          COMMAND_EXIT="$command_exit" CANDIDATE_VERIFY_EXIT="$candidate_verify_exit" \
+          EXIT_CODE="$exit_code" python3 -B - <<'PY'
           import hashlib
           import json
           import os
@@ -209,6 +230,9 @@ jobs:
           candidate = json.loads((evidence / "candidate.json").read_text())
           command = (evidence / "command.txt").read_text().strip()
           log = (evidence / "profile.log").read_bytes()
+          candidate_verify_log = (evidence / "candidate-verify.log").read_bytes()
+          command_exit_code = int(os.environ["COMMAND_EXIT"])
+          candidate_verify_exit_code = int(os.environ["CANDIDATE_VERIFY_EXIT"])
           exit_code = int(os.environ["EXIT_CODE"])
 
           def version(argv):
@@ -219,23 +243,22 @@ jobs:
                   "output": (completed.stdout + completed.stderr).strip()[:4096],
               }
 
-          payload = [
-              {
-                  "path": "candidate.json",
-                  "bytes": (evidence / "candidate.json").stat().st_size,
-                  "sha256": hashlib.sha256((evidence / "candidate.json").read_bytes()).hexdigest(),
-              },
-              {
-                  "path": "profile.log",
-                  "bytes": len(log),
-                  "sha256": hashlib.sha256(log).hexdigest(),
-              },
-              {
-                  "path": "command.txt",
-                  "bytes": (evidence / "command.txt").stat().st_size,
-                  "sha256": hashlib.sha256((evidence / "command.txt").read_bytes()).hexdigest(),
-              },
-          ]
+          payload = []
+          for relative in (
+              "candidate.json",
+              "profile.log",
+              "candidate-verify.log",
+              "command.txt",
+              "exit-code.txt",
+          ):
+              data = (evidence / relative).read_bytes()
+              payload.append(
+                  {
+                      "path": relative,
+                      "bytes": len(data),
+                      "sha256": hashlib.sha256(data).hexdigest(),
+                  }
+              )
           payload_digest = hashlib.sha256(
               json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
           ).hexdigest()
@@ -264,11 +287,15 @@ jobs:
                   "platform": platform.platform(),
               },
               "command": command,
+              "commandExitCode": command_exit_code,
+              "candidateVerificationExitCode": candidate_verify_exit_code,
               "exitCode": exit_code,
               "startedAt": os.environ["STARTED_AT"],
               "finishedAt": os.environ["FINISHED_AT"],
               "logSha256": hashlib.sha256(log).hexdigest(),
               "logBytes": len(log),
+              "candidateVerificationLogSha256": hashlib.sha256(candidate_verify_log).hexdigest(),
+              "candidateVerificationLogBytes": len(candidate_verify_log),
               "toolchain": {
                   "rustc": version(["rustc", "-Vv"]),
                   "cargo": version(["cargo", "--version"]),
@@ -294,8 +321,13 @@ jobs:
         run: |
           set -euo pipefail
           evidence="$RUNNER_TEMP/context-profile"
-          find "$evidence" -type f -print0 | sort -z | xargs -0 sha256sum \
-            > "$evidence/artifact-files.sha256"
+          manifest="$evidence/artifact-files.sha256"
+          temporary="$evidence/artifact-files.sha256.tmp"
+          find "$evidence" -type f \
+            ! -name 'artifact-files.sha256' \
+            ! -name 'artifact-files.sha256.tmp' \
+            -print0 | sort -z | xargs -0 sha256sum > "$temporary"
+          mv "$temporary" "$manifest"
       - name: Retain immutable profile evidence
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f

@@ -46,7 +46,8 @@ concurrency:
 
 jobs:
   validate:
-    environment: context-compiler-independent-acceptance
+    environment:
+      name: context-compiler-${{ inputs.mode }}
     runs-on: [self-hosted, hepta-context-acceptance]
     timeout-minutes: 60
     env:
@@ -91,13 +92,58 @@ jobs:
           root="$RUNNER_TEMP/context-external-acceptance"
           mkdir -p "$root/artifact" "$root/report"
           gh api "/repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" > "$root/artifact.zip"
-          unzip -q "$root/artifact.zip" -d "$root/artifact"
-          mapfile -d '' receipts < <(find "$root/artifact" -type f -name external-acceptance.json -print0)
-          mapfile -d '' signatures < <(find "$root/artifact" -type f -name external-acceptance.sig -print0)
-          test "${#receipts[@]}" -eq 1
-          test "${#signatures[@]}" -eq 1
-          printf '%s\n' "${receipts[0]}" > "$root/receipt-path"
-          printf '%s\n' "${signatures[0]}" > "$root/signature-path"
+          test "$(stat -c '%s' "$root/artifact.zip")" -le 16777216
+          ROOT="$root" python3 -B - <<'PY'
+          import json
+          import os
+          from pathlib import Path, PurePosixPath
+          import stat
+          import zipfile
+
+          root = Path(os.environ["ROOT"])
+          archive = root / "artifact.zip"
+          destination = root / "artifact"
+          wanted = {
+              "external-acceptance.json": 2 * 1024 * 1024,
+              "external-acceptance.sig": 64 * 1024,
+          }
+          observed = {}
+          entries = []
+          total = 0
+          with zipfile.ZipFile(archive) as source:
+              for info in source.infolist():
+                  if info.is_dir():
+                      continue
+                  path = PurePosixPath(info.filename)
+                  if path.is_absolute() or ".." in path.parts:
+                      raise SystemExit("unsafe artifact path")
+                  mode = (info.external_attr >> 16) & 0o170000
+                  if mode and not stat.S_ISREG(mode):
+                      raise SystemExit("non-regular artifact entry")
+                  name = path.name
+                  if name not in wanted or name in observed:
+                      raise SystemExit("unexpected or duplicate artifact entry")
+                  if info.file_size <= 0 or info.file_size > wanted[name]:
+                      raise SystemExit("artifact entry size rejected")
+                  total += info.file_size
+                  if total > 3 * 1024 * 1024:
+                      raise SystemExit("artifact expansion limit exceeded")
+                  data = source.read(info)
+                  if len(data) != info.file_size:
+                      raise SystemExit("artifact entry length mismatch")
+                  target = destination / name
+                  target.write_bytes(data)
+                  observed[name] = str(target)
+                  entries.append({"name": name, "bytes": len(data)})
+          if set(observed) != set(wanted):
+              raise SystemExit("acceptance artifact must contain exactly receipt and signature")
+          (root / "receipt-path").write_text(observed["external-acceptance.json"] + "\n")
+          (root / "signature-path").write_text(observed["external-acceptance.sig"] + "\n")
+          (root / "report/artifact-entries.json").write_text(
+              json.dumps(sorted(entries, key=lambda item: item["name"]), indent=2) + "\n"
+          )
+          PY
+          printf '%s\n' "$ARTIFACT_ID" > "$root/report/artifact-id.txt"
           sha256sum "$root/artifact.zip" > "$root/report/artifact-archive.sha256"
       - name: Verify environment-owned detached signature
         shell: bash
@@ -146,8 +192,13 @@ jobs:
         run: |
           set -euo pipefail
           root="$RUNNER_TEMP/context-external-acceptance"
-          find "$root/report" -type f -print0 | sort -z | xargs -0 sha256sum \
-            > "$root/report/artifact-files.sha256"
+          manifest="$root/report/artifact-files.sha256"
+          temporary="$root/report/artifact-files.sha256.tmp"
+          find "$root/report" -type f \
+            ! -name 'artifact-files.sha256' \
+            ! -name 'artifact-files.sha256.tmp' \
+            -print0 | sort -z | xargs -0 sha256sum > "$temporary"
+          mv "$temporary" "$manifest"
       - name: Retain validation report
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
