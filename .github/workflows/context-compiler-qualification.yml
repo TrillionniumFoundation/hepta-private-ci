@@ -92,6 +92,7 @@ jobs:
           set -euo pipefail
           python3 -B - <<'PY'
           from pathlib import Path
+
           forbidden = (
               'contents: write',
               'persist-credentials: true',
@@ -102,16 +103,30 @@ jobs:
           )
           offenders = []
           for path in sorted(Path('.github/workflows').glob('context-compiler*.yml')):
+              text = path.read_text(encoding='utf-8')
               if path.name == 'context-compiler-v3-source-bundle.yml':
-                  # Ephemeral source generation is read-only and is never a qualification receipt.
-                  text = path.read_text(encoding='utf-8')
+                  # Ephemeral source generation is read-only and never a qualification receipt.
                   if 'permissions:\n  contents: read' not in text:
                       offenders.append(f'{path}: missing contents: read')
                   for token in ('contents: write', 'persist-credentials: true', 'git push'):
                       if token in text:
                           offenders.append(f'{path}: {token}')
                   continue
-              text = path.read_text(encoding='utf-8')
+              if path.name == 'context-compiler-source-promotion.yml':
+                  # This branch-only one-shot exists solely to turn reviewed generators into
+                  # ordinary source. It is not a qualification workflow and deletes itself
+                  # in the promoted source commit.
+                  required = (
+                      'codex/context-compiler-v3-closure-20260928',
+                      "contains(github.event.head_commit.message, '[promote-context-source]')",
+                      'rm -f .github/workflows/context-compiler-source-promotion.yml',
+                  )
+                  for token in required:
+                      if token not in text:
+                          offenders.append(f'{path}: missing restricted promotion invariant {token!r}')
+                  if 'pull_request:' in text or 'workflow_dispatch:' in text:
+                      offenders.append(f'{path}: promotion must remain push-only')
+                  continue
               for token in forbidden:
                   if token in text:
                       offenders.append(f'{path}: {token}')
@@ -138,7 +153,7 @@ jobs:
           WORKFLOW_SHA: ${{ github.workflow_sha }}
           RUN_ID: ${{ github.run_id }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
-          RUNNER_IMAGE: ${{ runner.image }}
+          RUNNER_IMAGE: ${{ runner.os }}-${{ runner.arch }}
           RUNNER_OS: ${{ runner.os }}
           RUNNER_ARCH: ${{ runner.arch }}
         run: |
@@ -183,9 +198,6 @@ jobs:
       QUALIFICATION_WORKFLOW_SHA: ${{ github.workflow_sha }}
       QUALIFICATION_RUN_ID: ${{ github.run_id }}
       QUALIFICATION_RUN_ATTEMPT: ${{ github.run_attempt }}
-      QUALIFICATION_RUNNER_IMAGE: ${{ runner.image }}
-      QUALIFICATION_RUNNER_OS: ${{ runner.os }}
-      QUALIFICATION_RUNNER_ARCH: ${{ runner.arch }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -225,6 +237,10 @@ jobs:
           cache-scope: context-compiler-qualification
       - name: Execute checked source without repair or write-back
         shell: bash
+        env:
+          QUALIFICATION_RUNNER_IMAGE: ${{ runner.os }}-${{ runner.arch }}
+          QUALIFICATION_RUNNER_OS: ${{ runner.os }}
+          QUALIFICATION_RUNNER_ARCH: ${{ runner.arch }}
         run: |
           set -euo pipefail
           python3 -B scripts/context_compiler_execution.py \
