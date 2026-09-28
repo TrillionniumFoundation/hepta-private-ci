@@ -4,6 +4,7 @@
 
 mod authority_signer;
 mod control;
+mod control_diagnostics;
 mod control_intent;
 mod daemon;
 mod daemon_client;
@@ -51,6 +52,12 @@ pub use authority_signer::load_signing_key_from_fd;
 pub use authority_signer::load_signing_key_from_path;
 pub use authority_signer::read_request;
 pub use authority_signer::sign_request;
+pub use control_diagnostics::ControlBlocker;
+pub use control_diagnostics::ControlDiagnosticsSnapshot;
+pub use control_diagnostics::ControlProgress;
+pub use control_diagnostics::EnforcementLevel;
+pub use control_diagnostics::ResourceEnforcementStatus;
+pub use control_diagnostics::SupervisorOperationalSummary;
 pub use daemon::PRODUCTION_AUTHORITY_FEATURE_ENABLED;
 pub use daemon::run_supervisord;
 pub use daemon::run_supervisord_with_grant_verifier;
