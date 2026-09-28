@@ -4,8 +4,8 @@
   "generatedFrom": "qualification/kernel-authority/status_manifest.json",
   "generatedBy": "qualification/kernel-authority/generate_status.py",
   "sourceBase": {
-    "commit": "bc551cb6afd17c3351a66c06aab6512e0453f3c2",
-    "tree": "34852d282804d1c1b73acb0eaabe1d25eb59db17"
+    "commit": "d7866e53a38c63667937ebcbc9022aef7ee35739",
+    "tree": "4ff292b3d74e3b30312c287392cdf38173b0ab62"
   },
   "module": "kernel.authority",
   "status": "source-hardened-native-validation-pending",
@@ -35,13 +35,13 @@
     "clockUncertaintyBoundAtRecovery": true,
     "runtimeCustodyRetainedInProductionConstructors": true,
     "finalUseClockIntervalChecksInSource": true,
-    "genericLeaseClockIntervalComplete": false,
+    "genericLeaseClockIntervalComplete": true,
     "normalAgentdProductionTrustComposed": false,
     "targetDeploymentQualified": false
   },
   "productPilots": {
     "fleet": "Exact named native test with same-process owner reopen; native execution pending, not two-product-process recovery.",
-    "browserAgentd": "Exact named Browser/Agentd source tests; actual test identities required; native execution pending.",
+    "browserAgentd": "Exact Browser/Agentd product cases plus seven bounded owner-task identities are required; native execution pending.",
     "restartRevocationRollbackRotation": "Durable pending and frontier-first recovery source tests retained; no target-host drill substituted.",
     "deploymentActivationProved": false
   },
@@ -53,26 +53,28 @@
     "differentShaReuseRejected": true,
     "selfModifyingQualificationRejected": true,
     "zeroTestPilotRejectedByParser": true,
+    "ownedEffectRuntimeExactTestsRequired": true,
+    "capacityCollectorSelfTestRequired": true,
     "currentCandidateGreen": false
   },
   "performanceAndScale": {
-    "latencyPercentiles": "Existing limited source benchmark only; no real target-host result supplied.",
-    "throughputAndContention": "Source benchmark defined; production profile measurements pending.",
+    "latencyPercentiles": "Limited source benchmark plus strict target collector contract; no real target-host result supplied.",
+    "throughputAndContention": "Source benchmark defined; selected production-profile measurements pending.",
     "snapshotAndRestart": "Same-process source benchmarks are distinct from product cold-start recovery.",
     "walCheckpoint": "executable reference model only",
     "registrySharding": "deterministic reference model only",
     "capacityLifetime": "Agentd bounded in-flight tasks and conservative nonce reserve in source; signed rollover not self-issued.",
+    "productionMatrixCollectorImplemented": true,
+    "historyDiagnosticsCollectorImplemented": true,
     "productionMatrixExecuted": false,
     "productionSloGranted": false
   },
   "repositoryControlledGaps": [
-    "Obtain successful formatting, all-target compilation, package tests, strict Clippy, caller closure and generated-state checks for this exact head and deterministic merge candidate; no native check is self-certified.",
-    "Apply complete clock-uncertainty semantics to ordinary authority_lease validity, not only FinalUse; its current source still evaluates point time.",
+    "Obtain successful formatting, all-target compilation, package tests, strict Clippy, caller closure and generated-state checks for this exact source and deterministic merge candidate; no native check is self-certified.",
     "Wire selected real production trust providers into normal Agentd and Fleet bootstrap without falling back to local compatibility trust.",
-    "Qualify explicit Agentd shutdown/drain ownership and full product cancellation/reconciliation fault cuts; bounded task ownership alone is not graceful shutdown acceptance.",
     "Execute normal two-process cold-start recovery and preserve nonce, pending revocation, attempt identity and provider-owned terminal evidence.",
-    "Implement and execute the complete 55-row production capacity matrix and eight target-host fault cuts; the existing four-operation benchmark is insufficient.",
-    "Measure history-dependent frontier hashing, lease image rewrite, clock-floor fsync and restart costs before adopting any incremental digest/checkpoint design.",
+    "Execute the complete 55-row target-host matrix, eight fault cuts, reserve observation and history-sensitive diagnostics through a selected real driver; the collector self-test is synthetic only.",
+    "Use measured frontier hashing, lease image clone/serialization, clock-floor persistence and restart costs before adopting an incremental digest/checkpoint runtime design.",
     "Complete the remaining target-only generic-authority consumer ports without relabelling independent owner protocols.",
     "Retain exact candidate, commands, logs, artifacts and the complete executed test set; queued, missing, ignored and zero-test runs are not success."
   ],

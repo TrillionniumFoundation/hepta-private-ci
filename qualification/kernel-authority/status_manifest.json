@@ -2,8 +2,8 @@
   "schema": "hepta.kernel-authority-status-manifest.v1",
   "schemaVersion": 1,
   "sourceAnchor": {
-    "commit": "bc551cb6afd17c3351a66c06aab6512e0453f3c2",
-    "tree": "34852d282804d1c1b73acb0eaabe1d25eb59db17"
+    "commit": "d7866e53a38c63667937ebcbc9022aef7ee35739",
+    "tree": "4ff292b3d74e3b30312c287392cdf38173b0ab62"
   },
   "module": "kernel.authority",
   "laneId": "LANE-A-FOUNDATION",
@@ -37,7 +37,7 @@
         "codex-rs/hepta-contracts/src/authority_lease.rs",
         "codex-rs/hepta-fleet/src/authority_port.rs"
       ],
-      "designOperation": "put_verify_revoke_prune_advance_epoch_with_retired_identity_lineage",
+      "designOperation": "put_verify_revoke_prune_advance_epoch_with_interval_time_and_retired_identity_lineage",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -147,9 +147,11 @@
         "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs",
         "codex-rs/hepta-agentd/src/authority_feed_clock.rs",
         "codex-rs/hepta-agentd/src/authority_effect_tasks.rs",
-        "codex-rs/hepta-automation/tests/authorized_effect.rs"
+        "codex-rs/hepta-automation/tests/authorized_effect.rs",
+        "qualification/kernel-authority/owner_runtime_qualification.py",
+        "qualification/kernel-authority/test_owner_runtime_qualification.py"
       ],
-      "designOperation": "bounded_owned_async_tasks_fresh_feed_historical_provider_keys_reserve_and_reconciliation",
+      "designOperation": "bounded_owned_async_tasks_fresh_feed_historical_provider_keys_reserve_shutdown_and_reconciliation",
       "mappingClass": "product_effect_owner",
       "delegatedCallees": [
         "codex-rs/hepta-agentd/src/authority_feed_clock.rs",
@@ -173,24 +175,55 @@
         "qualification/kernel-authority/test_runtime_qualification.py",
         "qualification/kernel-authority/test_pilot_execution.py"
       ],
-      "designOperation": "require_exact_executed_case_identities_not_exit_code_only",
+      "designOperation": "require_exact_executed_product_case_identities_not_exit_code_only",
       "mappingClass": "qualification_harness",
       "delegatedCallees": [
         "qualification/kernel-authority/pilot_execution.py"
       ]
     },
     {
+      "operation": "owned_effect_runtime_qualification",
+      "nativeSymbol": "main",
+      "sourcePath": "qualification/kernel-authority/owner_runtime_qualification.py",
+      "state": "source_implemented_native_execution_pending_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/authority_effect_tasks.rs",
+        "qualification/kernel-authority/test_owner_runtime_qualification.py"
+      ],
+      "designOperation": "require_exact_bounded_owner_cancellation_progress_panic_and_shutdown_test_identities",
+      "mappingClass": "qualification_harness",
+      "delegatedCallees": [
+        "qualification/kernel-authority/pilot_execution.py",
+        "qualification/kernel-authority/runtime_qualification.py"
+      ]
+    },
+    {
       "operation": "performance_qualification",
       "nativeSymbol": "qualification_benchmark_emits_machine_receipt",
       "sourcePath": "codex-rs/hepta-contracts/tests/kernel_authority_benchmark.rs",
-      "state": "limited_repository_benchmark_defined_full_production_matrix_execution_open",
+      "state": "limited_repository_benchmark_defined_full_target_matrix_execution_open",
       "authority": "none",
       "tests": [
         "qualification/kernel-authority/runtime_qualification.py",
         "qualification/kernel-authority/test_runtime_qualification.py"
       ],
-      "designOperation": "measure_existing_four_operation_source_benchmark_not_55_row_production_matrix",
+      "designOperation": "measure_existing_four_operation_source_benchmark_not_target_55_row_matrix",
       "mappingClass": "qualification_benchmark",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "capacity_matrix_collection",
+      "nativeSymbol": "main",
+      "sourcePath": "qualification/kernel-authority/capacity_matrix.py",
+      "state": "strict_target_collector_source_implemented_real_target_execution_pending",
+      "authority": "none",
+      "tests": [
+        "qualification/kernel-authority/test_capacity_matrix.py",
+        "docs/modules/kernel.authority/CAPACITY_QUALIFICATION.md"
+      ],
+      "designOperation": "collect_exact_5x11_fault_reserve_and_history_diagnostics_without_self_grant",
+      "mappingClass": "qualification_collector",
       "delegatedCallees": []
     },
     {
@@ -246,12 +279,13 @@
       "id": "automation.taskflow.agentd",
       "nativeSymbol": "AgentdAutomationEffectHost::execute",
       "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
-      "state": "source_composed_owned_async_effects_live_feed_historical_keys_not_native_validated",
+      "state": "source_composed_owned_async_effects_live_feed_historical_keys_shutdown_not_native_validated",
       "tests": [
         "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs",
         "codex-rs/hepta-agentd/src/authority_feed_clock.rs",
         "codex-rs/hepta-agentd/src/authority_effect_tasks.rs",
-        "codex-rs/hepta-automation/tests/authorized_effect.rs"
+        "codex-rs/hepta-automation/tests/authorized_effect.rs",
+        "qualification/kernel-authority/owner_runtime_qualification.py"
       ]
     },
     {
@@ -388,13 +422,11 @@
     "targetHostCrashDrill": "Not established: target filesystem/boot/backup/provider fault evidence remains required."
   },
   "repositoryControlledGaps": [
-    "Obtain successful formatting, all-target compilation, package tests, strict Clippy, caller closure and generated-state checks for this exact head and deterministic merge candidate; no native check is self-certified.",
-    "Apply complete clock-uncertainty semantics to ordinary authority_lease validity, not only FinalUse; its current source still evaluates point time.",
+    "Obtain successful formatting, all-target compilation, package tests, strict Clippy, caller closure and generated-state checks for this exact source and deterministic merge candidate; no native check is self-certified.",
     "Wire selected real production trust providers into normal Agentd and Fleet bootstrap without falling back to local compatibility trust.",
-    "Qualify explicit Agentd shutdown/drain ownership and full product cancellation/reconciliation fault cuts; bounded task ownership alone is not graceful shutdown acceptance.",
     "Execute normal two-process cold-start recovery and preserve nonce, pending revocation, attempt identity and provider-owned terminal evidence.",
-    "Implement and execute the complete 55-row production capacity matrix and eight target-host fault cuts; the existing four-operation benchmark is insufficient.",
-    "Measure history-dependent frontier hashing, lease image rewrite, clock-floor fsync and restart costs before adopting any incremental digest/checkpoint design.",
+    "Execute the complete 55-row target-host matrix, eight fault cuts, reserve observation and history-sensitive diagnostics through a selected real driver; the collector self-test is synthetic only.",
+    "Use measured frontier hashing, lease image clone/serialization, clock-floor persistence and restart costs before adopting an incremental digest/checkpoint runtime design.",
     "Complete the remaining target-only generic-authority consumer ports without relabelling independent owner protocols.",
     "Retain exact candidate, commands, logs, artifacts and the complete executed test set; queued, missing, ignored and zero-test runs are not success."
   ],
@@ -419,10 +451,14 @@
     "qualification/kernel-authority/prepare_candidate.py",
     "qualification/kernel-authority/runtime_qualification.py",
     "qualification/kernel-authority/pilot_execution.py",
+    "qualification/kernel-authority/owner_runtime_qualification.py",
+    "qualification/kernel-authority/capacity_matrix.py",
     "qualification/kernel-authority/run_native_checks.py",
     "qualification/kernel-authority/storage_model.py",
     "qualification/kernel-authority/test_runtime_qualification.py",
     "qualification/kernel-authority/test_pilot_execution.py",
+    "qualification/kernel-authority/test_owner_runtime_qualification.py",
+    "qualification/kernel-authority/test_capacity_matrix.py",
     "qualification/kernel-authority/test_native_checks.py",
     "qualification/kernel-authority/test_workflow_coverage.py",
     "qualification/kernel-authority/test_status_projection.py",
@@ -456,7 +492,7 @@
         "exact-head",
         "synthetic-merge"
       ],
-      "state": "read_only_native_pilot_performance_and_post_main_exact_head_execution_pending"
+      "state": "read_only_native_product_owner_task_source_benchmark_capacity_self_test_and_post_main_exact_head_execution_pending"
     }
   ],
   "productionTrustBundle": {
@@ -475,13 +511,13 @@
     "clockUncertaintyBoundAtRecovery": true,
     "runtimeCustodyRetainedInProductionConstructors": true,
     "finalUseClockIntervalChecksInSource": true,
-    "genericLeaseClockIntervalComplete": false,
+    "genericLeaseClockIntervalComplete": true,
     "normalAgentdProductionTrustComposed": false,
     "targetDeploymentQualified": false
   },
   "productPilots": {
     "fleet": "Exact named native test with same-process owner reopen; native execution pending, not two-product-process recovery.",
-    "browserAgentd": "Exact named Browser/Agentd source tests; actual test identities required; native execution pending.",
+    "browserAgentd": "Exact Browser/Agentd product cases plus seven bounded owner-task identities are required; native execution pending.",
     "restartRevocationRollbackRotation": "Durable pending and frontier-first recovery source tests retained; no target-host drill substituted.",
     "deploymentActivationProved": false
   },
@@ -493,15 +529,19 @@
     "differentShaReuseRejected": true,
     "selfModifyingQualificationRejected": true,
     "zeroTestPilotRejectedByParser": true,
+    "ownedEffectRuntimeExactTestsRequired": true,
+    "capacityCollectorSelfTestRequired": true,
     "currentCandidateGreen": false
   },
   "performanceAndScale": {
-    "latencyPercentiles": "Existing limited source benchmark only; no real target-host result supplied.",
-    "throughputAndContention": "Source benchmark defined; production profile measurements pending.",
+    "latencyPercentiles": "Limited source benchmark plus strict target collector contract; no real target-host result supplied.",
+    "throughputAndContention": "Source benchmark defined; selected production-profile measurements pending.",
     "snapshotAndRestart": "Same-process source benchmarks are distinct from product cold-start recovery.",
     "walCheckpoint": "executable reference model only",
     "registrySharding": "deterministic reference model only",
     "capacityLifetime": "Agentd bounded in-flight tasks and conservative nonce reserve in source; signed rollover not self-issued.",
+    "productionMatrixCollectorImplemented": true,
+    "historyDiagnosticsCollectorImplemented": true,
     "productionMatrixExecuted": false,
     "productionSloGranted": false
   }
