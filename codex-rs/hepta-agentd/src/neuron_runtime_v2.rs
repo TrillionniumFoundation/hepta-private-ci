@@ -212,6 +212,15 @@ impl AgentdNeuronHandleV2 {
         self.owner.query_operation(tick_id, input_digest)
     }
 
+    /// Derive the canonical input digest and query the exact operation through
+    /// the same serialized owner. This is the preferred host integration path.
+    pub fn query_input_operation(
+        &self,
+        input: &NeuronTickInputV1,
+    ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
+        self.query_operation(&input.tick_id, input.semantic_digest()?)
+    }
+
     /// Advisory capacity through the same serialized product owner. Admission
     /// remains authoritative and may reject payload-specific work sooner.
     pub fn capacity_snapshot(&self) -> Result<NeuronRuntimeCapacityV2, NeuronRuntimeV2Error> {
