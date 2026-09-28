@@ -1,0 +1,93 @@
+name: Runtime supervisor control recovery
+
+on:
+  push:
+    branches: [fix/runtime-supervisor-control-recovery-20260928]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supervisor-control-recovery-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+  RUST_BACKTRACE: '1'
+
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Export exact review source and branch comparison
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/supervisor-source"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/supervisor-source/source.tar.gz"
+          git diff e4f22243d65e1bcd6bb6788e2127afe7fcd4003e f4bb277f70bf922f77e0242031bdb021e2f4acb3 -- codex-rs/hepta-supervisor docs/modules/runtime.supervisor scripts/hepta_supervisor_ci.py > "$RUNNER_TEMP/supervisor-source/other-branch.patch"
+          git log -1 --format='%H%n%T%n%P' > "$RUNNER_TEMP/supervisor-source/identity.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: supervisor-source-${{ github.sha }}
+          path: ${{ runner.temp }}/supervisor-source/
+          retention-days: 7
+          if-no-files-found: error
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prepare exact compiler and host dependencies
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/supervisor-evidence"
+          git log -1 --format='%H%n%T%n%P' > "$RUNNER_TEMP/supervisor-evidence/identity.txt"
+          uname -a > "$RUNNER_TEMP/supervisor-evidence/host.txt"
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          channel="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$channel" --profile minimal --component clippy,rustfmt
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$channel" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/supervisor-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - name: Check native production targets
+        id: check
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-targets --features production-authority 2>&1 | tee "$RUNNER_TEMP/supervisor-evidence/check.log"
+      - name: Preserve exact outcomes
+        if: always()
+        env:
+          CHECK: ${{ steps.check.outcome }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/supervisor-evidence"
+          printf 'sha=%s\ncheck=%s\n' "$GITHUB_SHA" "$CHECK" > "$RUNNER_TEMP/supervisor-evidence/outcomes.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: supervisor-evidence-${{ github.sha }}
+          path: ${{ runner.temp }}/supervisor-evidence/
+          retention-days: 7
+          if-no-files-found: error
+      - name: Require success
+        if: always()
+        env:
+          CHECK: ${{ steps.check.outcome }}
+        run: test "$CHECK" = success
