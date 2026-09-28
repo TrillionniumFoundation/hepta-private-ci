@@ -17,8 +17,8 @@ concurrency:
 
 jobs:
   materialize:
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
+    runs-on: macos-15
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
           rustup override set 1.95.0
       - name: Apply and commit convergence
         shell: bash
@@ -37,11 +37,9 @@ jobs:
           set -euo pipefail
           python3 scripts/learning_operator_remediation.py
 
-          # The one-shot script also prepares improved workflow definitions, but
-          # the Actions installation token cannot update workflow files. Keep
-          # this materialization commit scoped to source, tests, documentation,
-          # status evidence, and implementation maps. Existing workflows will
-          # execute those changes after the push.
+          # Workflow definitions are committed separately through the authorized
+          # contents API. Keep this generated commit scoped to source, tests,
+          # documentation, status evidence, and implementation maps.
           git checkout HEAD -- \
             .github/workflows/learning-operator-diagnostics.yml \
             .github/workflows/learning-operator-remediation.yml \
@@ -59,7 +57,7 @@ jobs:
           git add -A
           git commit \
             -m "feat(learning.operator): unify admission and executable evidence" \
-            -m "Add typed admission stages and recovery dispositions, preserve owner-operation failures, add an end-to-end qualification profile, and make exact-source/merge gates execute independently with explicit status artifacts." \
+            -m "Add typed admission stages and recovery dispositions, preserve owner-operation failures, add an end-to-end qualification profile, and separate exact-source execution evidence from static test identity." \
             -m "Signed-off-by: OpenAI <openai@users.noreply.github.com>"
 
           python3 scripts/hepta-implementation-maps.py migrate \
