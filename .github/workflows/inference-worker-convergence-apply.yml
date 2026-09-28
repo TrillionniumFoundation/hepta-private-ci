@@ -1,0 +1,60 @@
+name: Apply inference worker convergence patch
+
+on:
+  push:
+    branches:
+      - codex/inference-worker-full-convergence-20260928
+
+permissions:
+  contents: write
+
+concurrency:
+  group: inference-worker-convergence-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/inference-worker-full-convergence-20260928
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply exact baseline fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git apply --index .github/inference-worker-convergence.patch
+          (
+            cd codex-rs
+            cargo fmt --package codex-hepta-infer-worker-host --package codex-hepta-agentd
+          )
+          git add codex-rs/hepta-infer-worker-host codex-rs/hepta-agentd/src/test_support.rs
+          git diff --cached --check
+          git config user.name "Hepta inference convergence"
+          git config user.email "hepta-inference-convergence@users.noreply.github.com"
+          git commit -m "inference.worker: repair exact-head tests and strict lint"
+      - name: Rebind exact source observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate
+          python3 scripts/hepta-module-docs.py refresh-derived
+          git add docs qualification
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: rebind implementation maps after worker hardening"
+          fi
+      - name: Remove one-shot machinery and publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/inference-worker-convergence.patch
+          rm .github/workflows/inference-worker-convergence-apply.yml
+          git add -A
+          git commit -m "ci: retire one-shot convergence applicator"
+          git push origin HEAD:codex/inference-worker-full-convergence-20260928

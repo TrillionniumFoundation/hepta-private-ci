@@ -1,0 +1,76 @@
+diff --git a/codex-rs/hepta-infer-worker-host/src/native_app_server.rs b/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+index 3f4c9682e..000000000 100644
+--- a/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
++++ b/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+@@ -913,18 +913,17 @@ impl AppServerModelDriver {
+             output.boundary_status = classify_observation_failure(&reason);
+             output.stop_reason = Some(reason.clone());
+-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
+-                if let Ok(cancelled) = owner
+-                    .run_cancel(
+-                        binding.run_id.clone(),
+-                        revision,
+-                        reason.chars().take(512).collect(),
+-                    )
+-                    .await
+-                {
+-                    intelligence_revision = Some(cancelled.receipt.revision);
+-                }
++            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
++                && let Ok(cancelled) = owner
++                .run_cancel(
++                    binding.run_id.clone(),
++                    revision,
++                    reason.chars().take(512).collect(),
++                )
++                .await
++            {
++                intelligence_revision = Some(cancelled.receipt.revision);
+             }
+@@ -1146,6 +1145,10 @@ async fn send_authorized_turn_start(
+         .await
+ }
+ 
++// Every field is an independently durable part of the exact effect identity.
++// Grouping them into a lossy convenience object would make omission easier at
++// this final pre-effect fence, so this boundary intentionally stays explicit.
++#[allow(clippy::too_many_arguments)]
+ fn verify_persisted_dispatch_binding(
+     control: &DurableInferenceControl,
+     request_id: &str,
+diff --git a/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs b/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs
+index e96da1855..000000000 100644
+--- a/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs
++++ b/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs
+@@ -391,7 +391,7 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
+         .find("owner.revalidate_cognitive_context(snapshot).await")
+         .expect("final-use cognitive revalidation");
+     let turn_start = source
+-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
++        .find("send_authorized_turn_start(")
+         .expect("physical turn start");
+     let durable_stop = source
+         .find("control.abort_native_before_effect(")
+diff --git a/codex-rs/hepta-agentd/src/test_support.rs b/codex-rs/hepta-agentd/src/test_support.rs
+index acd350012..000000000 100644
+--- a/codex-rs/hepta-agentd/src/test_support.rs
++++ b/codex-rs/hepta-agentd/src/test_support.rs
+@@ -129,10 +129,18 @@ impl CognitiveTestHost {
+         )
+         .await?;
+         let control_task = tokio::spawn(control.run());
++        // This in-process qualification host disables model-visible tools. The
++        // harness executable is therefore a stable identity required to start
++        // ExecServerRuntimePaths, but it is never entered as a helper. Product
++        // qualification still supplies the real Codex executable explicitly.
++        let test_harness_executable = std::env::current_exe()?.canonicalize()?;
+         let app_server_task = tokio::spawn(run_app_server(
+             identity.clone(),
+-            Arg0DispatchPaths::default(),
++            Arg0DispatchPaths {
++                codex_self_exe: Some(test_harness_executable),
++                ..Default::default()
++            },
+             CognitiveRuntime::Available(Arc::clone(&store)),
+             Arc::clone(&state),
+             /*production_writer_host*/ None,
