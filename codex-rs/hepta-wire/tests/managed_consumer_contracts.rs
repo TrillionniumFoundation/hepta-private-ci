@@ -113,7 +113,9 @@ fn drive(
             for frame in frames {
                 accept(frame)?;
             }
-            stats.yields += usize::from(yielded);
+            if yielded {
+                stats.yields += 1;
+            }
             stats.terminal = terminal_error.is_some();
             if consumed == 0 && !stats.terminal {
                 return Err("managed consumer made no progress without terminating".into());
