@@ -29,6 +29,11 @@ operation ID is used at most once in a session, even if the new bytes match.
 Historical-result replay belongs to the durable inference owner, not this leaf.
 Source ordering, probability conversion and observed SDK usage are unchanged.
 
+Admission binds the current request deadline and clears the previous reply hash.
+A later failed exchange never inherits the previous successful reply identity;
+previously returned observations remain unchanged. Rejection before admission
+(such as a duplicate operation) does not overwrite that historical observation.
+
 Session limits are 1..64 operations and at most 300 seconds. They bound the
 in-memory operation set and the child's idle read loop as well as active calls.
 Each prediction keeps its original owner deadline across cold loading. The
@@ -42,6 +47,11 @@ an absolute interpreter path; it does not accept commands from model output.
 Use `ResidentLaya` as a context manager or explicitly call `close()`. Concurrent
 use rejects instead of allocating waiting tasks. Pre-dispatch malformed,
 expired, duplicate or wrong-generation requests do not write a new frame.
+The supervisor rechecks cancellation and both original request/session deadlines
+before process creation, after readiness waits, before each actual pipe I/O, and
+at reply delivery. Readiness is not permission to dispatch after cancellation.
+A zero-byte failure still fences this handle conservatively; it is not authority
+to replay an operation or release an inference-owner reservation.
 
 After partial dispatch, malformed/late output, cancellation or a broken pipe,
 the handle fences permanently: no subsequent inference, result substitution or
@@ -70,7 +80,8 @@ python3 -m unittest discover -v \
 The new tests exercise one-load reuse, exact wire binding, generation/operation
 rejection, partial frames/writes, zero progress, explicit overload, deadline and
 cancellation, real child cleanup, retained signal failure, last-check cancellation,
-and idle lifetime expiry. Unit predictors are deliberately synthetic; actual
+idle lifetime expiry, cancellation/expiry after readiness but before the first
+write, pre-spawn cancellation, and per-exchange failure identity. Unit predictors are deliberately synthetic; actual
 child processes do not turn them into real-weight or product-acceptance evidence.
 
 The existing `hepta-laya-smoke.yml` runs the resident smoke after its pinned

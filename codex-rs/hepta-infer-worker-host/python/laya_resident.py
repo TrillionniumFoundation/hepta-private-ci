@@ -237,12 +237,22 @@ class ResidentLaya:
                     or len(self._seen) >= self._maximum):
                 raise Rejected("resident scope, operation identity or capacity mismatch")
             self._observation.update(eligible_reply=False, operation_id=request["operation_id"],
-                                     request_sha256=hashlib.sha256(wire).hexdigest())
+                                     request_sha256=hashlib.sha256(wire).hexdigest(),
+                                     deadline_ms=request["deadline_ms"], reply_sha256=None)
+            def check_active() -> None:
+                deadline.check(request["deadline_ms"])
+                if self._lifetime is not None:
+                    self._lifetime.check(self._lifetime.unix_ms)
+                if cancel is not None and cancel.is_set():
+                    raise Rejected("cancelled resident request")
             try:
+                # Preflight work must not consume the original deadline and then
+                # spawn anyway. This check grants no authority to the child.
+                check_active()
                 if self._child is None:
                     self._start()
                     self._scope = _scope(request)
-                self._lifetime.check(self._lifetime.unix_ms)
+                check_active()
                 # An idle channel must have no unsolicited response, nor EOF.
                 try:
                     unsolicited = os.read(self._child.stdout.fileno(), MAX_FRAME + 5)
@@ -257,11 +267,11 @@ class ResidentLaya:
                 expected = None
                 self._selector.register(self._child.stdin, selectors.EVENT_WRITE, "input")
                 while True:
-                    deadline.check(request["deadline_ms"])
-                    self._lifetime.check(self._lifetime.unix_ms)
-                    if cancel is not None and cancel.is_set():
-                        raise Rejected("cancelled after resident dispatch")
+                    check_active()
                     for key, _ in self._selector.select(0.02):
+                        # Readiness is not permission: cancellation or expiry may
+                        # have occurred while waiting, or during a previous event.
+                        check_active()
                         try:
                             if key.data == "input":
                                 wrote = os.write(key.fd, frame[offset:offset + 8192])
@@ -294,10 +304,7 @@ class ResidentLaya:
                             raise Rejected("resident replied before complete request")
                         reply = bytes(output[4:])
                         decode_reply(reply, wire)
-                        deadline.check(request["deadline_ms"])
-                        self._lifetime.check(self._lifetime.unix_ms)
-                        if cancel is not None and cancel.is_set():
-                            raise Rejected("cancelled before resident delivery")
+                        check_active()
                         self._observation["completed_exchanges"] += 1
                         self._observation["stdout_bytes"] += len(output)
                         self._observation.update(eligible_reply=True,
