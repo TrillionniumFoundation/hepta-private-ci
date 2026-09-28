@@ -4,12 +4,14 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-wire/**"
+      - "scripts/platform_wire_managed_fleet_profile.py"
       - ".github/workflows/platform-wire-benchmark.yml"
   push:
     branches:
       - main
     paths:
       - "codex-rs/hepta-wire/**"
+      - "scripts/platform_wire_managed_fleet_profile.py"
       - ".github/workflows/platform-wire-benchmark.yml"
   schedule:
     - cron: "47 3 * * *"
@@ -24,6 +26,11 @@ on:
         description: Sequential long-connection frames (100..100000)
         required: false
         default: "10000"
+        type: string
+      fleet_rounds:
+        description: Multi-peer managed-owner rounds per scenario (8..256)
+        required: false
+        default: "32"
         type: string
 
 permissions:
@@ -66,15 +73,19 @@ jobs:
           if [[ "$GITHUB_EVENT_NAME" == pull_request ]]; then
             near=4
             long=1000
+            fleet=8
           elif [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
             near='${{ inputs.near_limit_iterations }}'
             long='${{ inputs.long_connection_frames }}'
+            fleet='${{ inputs.fleet_rounds }}'
           else
             near=32
             long=10000
+            fleet=32
           fi
           [[ "$near" =~ ^[0-9]+$ ]]
           [[ "$long" =~ ^[0-9]+$ ]]
+          [[ "$fleet" =~ ^[0-9]+$ ]]
           if (( near < 1 || near > 256 )); then
             echo "near-limit iterations must be within 1..256" >&2
             exit 2
@@ -83,10 +94,15 @@ jobs:
             echo "long-connection frames must be within 100..100000" >&2
             exit 2
           fi
+          if (( fleet < 8 || fleet > 256 )); then
+            echo "managed-fleet rounds must be within 8..256" >&2
+            exit 2
+          fi
           echo "near=$near" >> "$GITHUB_OUTPUT"
           echo "long=$long" >> "$GITHUB_OUTPUT"
+          echo "fleet=$fleet" >> "$GITHUB_OUTPUT"
 
-      - name: Build and run release throughput probe
+      - name: Build and run release throughput and managed-fleet probes
         shell: bash
         run: |
           set -euo pipefail
@@ -102,8 +118,18 @@ jobs:
           python3 -m json.tool \
             .hepta-evidence/platform-wire-throughput-metrics.json \
             >/dev/null
+          python3 scripts/platform_wire_managed_fleet_profile.py --self-test
+          cargo run --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-wire \
+            --release \
+            --example managed_fleet_profile \
+            -- "${{ steps.workload.outputs.fleet }}" \
+            | tee .hepta-evidence/platform-wire-managed-fleet-metrics.json
+          python3 scripts/platform_wire_managed_fleet_profile.py \
+            --input .hepta-evidence/platform-wire-managed-fleet-metrics.json \
+            --rounds "${{ steps.workload.outputs.fleet }}"
 
-      - name: Write exact-source benchmark receipt
+      - name: Write exact-source measurement receipt
         shell: bash
         run: |
           set -euo pipefail
@@ -119,15 +145,17 @@ jobs:
           import subprocess
           from pathlib import Path
 
-          metrics_path = Path(".hepta-evidence/platform-wire-throughput-metrics.json")
-          metrics = json.loads(metrics_path.read_text())
+          throughput_path = Path(".hepta-evidence/platform-wire-throughput-metrics.json")
+          fleet_path = Path(".hepta-evidence/platform-wire-managed-fleet-metrics.json")
+          throughput = json.loads(throughput_path.read_text())
+          fleet = json.loads(fleet_path.read_text())
           tested_sha = subprocess.check_output(
               ["git", "rev-parse", "HEAD"], text=True
           ).strip()
           if tested_sha != os.environ["SOURCE_SHA"]:
-              raise SystemExit("benchmark source mismatch")
+              raise SystemExit("measurement source mismatch")
           receipt = {
-              "schema": "hepta.platform-wire.throughput-receipt.v1",
+              "schema": "hepta.platform-wire.throughput-receipt.v2",
               "source_sha": os.environ["SOURCE_SHA"],
               "tested_sha": tested_sha,
               "status": "passed",
@@ -139,20 +167,35 @@ jobs:
               "runner_machine": platform.machine(),
               "rustc": os.environ["rustc_version"],
               "cargo": os.environ["cargo_version"],
-              "metrics_sha256": hashlib.sha256(metrics_path.read_bytes()).hexdigest(),
-              "metrics": metrics,
+              "throughput_metrics_sha256": hashlib.sha256(
+                  throughput_path.read_bytes()
+              ).hexdigest(),
+              "managed_fleet_metrics_sha256": hashlib.sha256(
+                  fleet_path.read_bytes()
+              ).hexdigest(),
+              "throughput_metrics": throughput,
+              "managed_fleet_metrics": fleet,
               "threshold_policy": "measurement-only-no-cloud-runner-hard-threshold",
+              "scope": "release in-process HPTA decode and public managed HPTM owners",
+              "authenticated_network_ingress": False,
+              "target_host_measured": False,
+              "allocator_calls_measured": False,
+              "transport_queue_wait_measured": False,
+              "multi_process_pressure_measured": False,
+              "independent_acceptance": False,
           }
           Path(".hepta-evidence/platform-wire-throughput-receipt.json").write_text(
               json.dumps(receipt, indent=2, sort_keys=True) + "\n"
           )
           PY
 
-      - name: Retain benchmark evidence
+      - name: Retain measurement evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: platform-wire-throughput-${{ env.SOURCE_SHA }}-${{ github.run_id }}
-          path: .hepta-evidence/platform-wire-throughput-*.json
+          path: |
+            .hepta-evidence/platform-wire-throughput-*.json
+            .hepta-evidence/platform-wire-managed-fleet-metrics.json
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 180
