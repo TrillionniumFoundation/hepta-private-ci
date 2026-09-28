@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Attach operational code and exact-candidate checks BEFORE qualification.
+"""Attach operational code and strict exact-candidate checks BEFORE qualification.
 
-Patch parsed syntax nodes, retaining surrounding source comments. Preparation is
-not qualification and must fail closed on any unreviewed command-plan change.
+Whole-function replacements preserve the receipt's ordered gate contract and
+avoid patching individual comparisons by uncertain source formatting.
 """
 from pathlib import Path
 import ast
@@ -48,8 +48,7 @@ position = values.index("inventory_tests") + 1
 values[position:position] = ["implementation_map", "operations_contract"]
 edit(required[0].value, "(\n    " + ",\n    ".join(repr(value) for value in values) + ",\n)")
 functions = {node.name: node for node in module.body if isinstance(node, ast.FunctionDef)}
-commands = functions["commands"]
-results = [node for node in ast.walk(commands) if isinstance(node, ast.Assign)
+results = [node for node in ast.walk(functions["commands"]) if isinstance(node, ast.Assign)
            and any(isinstance(target, ast.Name) and target.id == "result" for target in node.targets)
            and isinstance(node.value, ast.Dict)]
 if len(results) != 1:
@@ -67,30 +66,56 @@ for key, expression in [
     result.keys.append(ast.Constant(key))
     result.values.append(ast.parse(expression, mode="eval").body)
 edit(results[0].value, ast.unparse(result))
-
-elapsed = []
-for node in ast.walk(functions["gates_pass"]):
-    if (isinstance(node, ast.Compare) and isinstance(node.left, ast.Subscript)
-            and isinstance(node.left.value, ast.Name) and node.left.value.id == "row"
-            and isinstance(node.left.slice, ast.Constant) and node.left.slice.value == "elapsed_seconds"
-            and len(node.ops) == 1 and isinstance(node.ops[0], ast.Lt)):
-        elapsed.append(node)
-if len(elapsed) != 1:
-    raise SystemExit("expected one nonnegative elapsed-time gate")
-edit(elapsed[0], '(not math.isfinite(row["elapsed_seconds"]) or row["elapsed_seconds"] < 0)')
-timeouts = [node for node in ast.walk(functions["main"]) if isinstance(node, ast.Compare)
-            and isinstance(node.left, ast.Attribute) and node.left.attr == "step_timeout"
-            and isinstance(node.left.value, ast.Name) and node.left.value.id == "args"
-            and len(node.ops) == 1 and isinstance(node.ops[0], ast.LtE)]
-if len(timeouts) != 1:
-    raise SystemExit("expected one positive step-timeout gate")
-edit(timeouts[0], '(not math.isfinite(args.step_timeout) or args.step_timeout <= 0)')
+strict_gate = '''def gates_pass(rows: list[dict[str, Any]], candidate: str) -> bool:
+    if not isinstance(candidate, str) or SHA.fullmatch(candidate) is None:
+        return False
+    if (not isinstance(rows, list) or not all(isinstance(row, dict) for row in rows)
+            or [row.get("id") for row in rows] != list(REQUIRED)):
+        return False
+    for row in rows:
+        elapsed = row.get("elapsed_seconds")
+        code = row.get("exit_code")
+        if (row.get("state") != "success" or type(code) is not int or code != 0
+                or row.get("candidate") != candidate
+                or not isinstance(row.get("log_sha256"), str)
+                or re.fullmatch(r"[0-9a-f]{64}", row["log_sha256"]) is None
+                or type(elapsed) not in (float, int)
+                or not math.isfinite(elapsed) or elapsed < 0):
+            return False
+        if row["id"] in TEST_STEPS:
+            passed = row.get("passed_tests")
+            if type(passed) is not int or passed <= 0:
+                return False
+    return True'''
+edit(functions["gates_pass"], strict_gate)
 for start, end, replacement in sorted(edits, reverse=True):
     text = text[:start] + replacement + text[end:]
 if "import math\n" not in text:
-    # Import position is known from the parsed module; preserve the module docstring.
     text = text.replace("import json\n", "import json\nimport math\n", 1)
+text = text.replace("if args.step_timeout <= 0:", "if not math.isfinite(args.step_timeout) or args.step_timeout <= 0:")
 ast.parse(text)
 compile(text, str(path), "exec")
 path.write_text(text)
-print("Prepared native metrics, source-map gates and finite receipt validation.")
+# --doc and --all-targets are distinct Rust execution modes. Require --doc for
+# the native privacy contract; keep --all-targets mandatory for every owner gate.
+replace("scripts/test-authbus-exact-head-evidence.py",
+        '            self.assertIn("--all-targets", receipt.commands()[name])',
+        '            self.assertIn("--doc" if name == "doc_tests" else "--all-targets", receipt.commands()[name])')
+replace("scripts/test-authbus-exact-head-evidence.py",
+        '    def test_zero_test_execution_is_not_qualification(self):',
+        '''    def test_malformed_scalars_and_rows_fail_closed(self):
+        for field, value in (("elapsed_seconds", float("nan")),
+                             ("elapsed_seconds", float("inf")),
+                             ("elapsed_seconds", True), ("exit_code", False)):
+            rows = copy.deepcopy(self.rows)
+            rows[0][field] = value
+            self.assertFalse(receipt.gates_pass(rows, self.candidate))
+        self.assertFalse(receipt.gates_pass(None, self.candidate))
+        self.assertFalse(receipt.gates_pass([None], self.candidate))
+        for value in (True, 1.5, "1", None):
+            rows = copy.deepcopy(self.rows)
+            next(row for row in rows if row["id"] == "authbus")["passed_tests"] = value
+            self.assertFalse(receipt.gates_pass(rows, self.candidate))
+
+    def test_zero_test_execution_is_not_qualification(self):''')
+print("Prepared native metrics, exact-candidate receipt gates and native doctest assertions.")
