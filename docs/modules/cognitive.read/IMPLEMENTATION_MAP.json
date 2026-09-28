@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e46668586f5a0ffb6f49505eff8de3ccd0da0619",
-    "tree": "8ed4cb2607d3f6e62d5c9eb28856ab3ea25bed56"
+    "commit": "b546ca5a8be7f1542bbbe62a1bb2ee9f32b6d5e4",
+    "tree": "aa5fae91071b501be57a00edda10fb07938ec8ff"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -13,8 +13,11 @@
   "technicalSupplements": [
     "docs/modules/cognitive.read/STRUCTURAL_REUSE.md",
     "docs/modules/cognitive.read/CONSUMERS.md",
+    "docs/modules/cognitive.read/CONSUMER_POLICY.json",
+    "docs/modules/cognitive.read/CONSUMER_EXECUTION.json",
     "docs/modules/cognitive.read/CONTRACT_LIMITS.md",
-    "docs/modules/cognitive.read/COMPATIBILITY.md"
+    "docs/modules/cognitive.read/COMPATIBILITY.md",
+    "docs/modules/cognitive.read/QUALIFICATION_CLOSURE.md"
   ],
   "declaredRoots": [
     "codex-rs/hepta-cognitive-read"
@@ -91,7 +94,8 @@
       "state": "source_implemented_product_composed",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
+        "codex-rs/hepta-memory/tests/cognitive_read_capacity.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "acquire_snapshot",
@@ -146,24 +150,47 @@
         }
       ],
       "sourceBlob": "7b84d401b71d24f547a8c2de0e4d5c4117253ecb"
+    },
+    {
+      "operation": "adapt_authoritative_read_to_revision_bound_canonical_shadow_v2",
+      "nativeSymbol": "adapt_authoritative_read_to_revision_bound_canonical_shadow_v2",
+      "sourcePath": "codex-rs/hepta-cognitive-read/src/revisioned_shadow.rs",
+      "state": "source_implemented_shadow_only_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/revisioned_shadow_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revision_bound_canonical_authoritative_read_shadow",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "symbol": "AuthoritativeReadResultV1::validate",
+          "path": "codex-rs/hepta-cognitive-read/src/authoritative.rs"
+        },
+        {
+          "symbol": "MemoryEventV1::validate",
+          "path": "codex-rs/hepta-cognitive-types/src/hnmf.rs"
+        }
+      ],
+      "sourceBlob": "9d538ade62d9bb7776419c239fae9e4942c525e4"
     }
   ],
   "repositoryControlledGaps": [
-    "Obtain exact-head and deterministic synthetic-merge execution receipts for the candidate.",
-    "Obtain exact-candidate execution receipts for the implemented real Agentd/native-worker fresh-context acceptance plus concurrent tombstone/correction rejection, owner-cut validity-expiry/rollback detection, and stale host-generation rejection; source presence is not a pass receipt.",
-    "Keep the current durable SQLite kind capability Fact-only until an explicit owner schema migration qualifies additional memory kinds.",
-    "Add target-host p50/p95/p99 CPU, RSS and SQLite measurements before performance qualification; the prepared in-memory benchmark does not establish these owner/host measurements.",
-    "Qualify adapt_authoritative_read_to_canonical_shadow_v1 on exact source-head and deterministic synthetic merge.",
-    "Supply authoritative source-revision bindings before claiming full canonical provenance equivalence; legacy MemoryRecord citations do not carry source revisions.",
-    "Migrate named downstream callers from legacy ReadResultV2 only after exact record-to-event bridge ownership is established.",
-    "Revalidate the canonical shadow against the current final-use snapshot before physical model-request attachment; a historical read receipt grants no future-use authority.",
-    "Named source and product adapters remain present; current candidate requalification is required because mapped source/build inputs changed after the retained historical observation. Historical production proof is not rebound by navigation migration.",
-    "Run the closed seven-consumer audit and obtain consumer-specific build, final-use, error-mapping and normal-product execution receipts; registry, policy, source, caller and test blobs do not by themselves establish migration completion.",
-    "Qualify the request-local prepared-index optimization with unchanged golden vectors and construction-inclusive measured comparisons on this source and merge candidate."
+    "Obtain successful exact-head and deterministic synthetic-merge qualification receipts for this source candidate; source and test presence are not pass receipts.",
+    "Obtain exact-candidate execution receipts for the real Agentd/native-worker fresh-context acceptance plus concurrent tombstone/correction rejection, owner-cut validity-expiry/rollback detection, and stale host-generation rejection.",
+    "Keep the current durable SQLite kind capability Fact-only until an explicit owner schema migration qualifies additional memory kinds and rollback interpretation.",
+    "Obtain operator-selected target-host qualification; exact GitHub-runner SQLite p50/p95/p99, CPU, RSS, page and row measurements are candidate evidence only.",
+    "Compose the owner-issued source-revision bridge into a named product caller and current final-use snapshot before claiming product provenance equivalence; the V2 shadow is source-only, authority-free and not a wire protocol.",
+    "Migrate named downstream callers from legacy or registered read surfaces only through reviewed normal-product entry points; package success and lexical source references do not prove V2 migration.",
+    "Revalidate every selected read or canonical shadow against the current owner snapshot at the physical use boundary; a historical receipt grants no future-use authority.",
+    "Complete independent semantic review, operator acceptance, canary, promotion and release; repository qualification does not set activation or production implementation true.",
+    "Run the closed seven-consumer exact execution matrix on both source and deterministic merge candidates; retain each consumer's distinct registered, composed and migration state.",
+    "Qualify request-local prepared-index reuse with unchanged V1 golden vectors and construction-inclusive measurements; do not extend it into a cross-request authorization or currentness cache."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
+    "product execution and operator-selected target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
@@ -200,14 +227,16 @@
     {"path":"codex-rs/hepta-agentd/src/state_isolation_tests.rs","object":"4abb3ded6c18ff0deb6bc3a2b8aa417c512be3d0"},
     {"path":"codex-rs/hepta-agentd/src/test_support.rs","object":"acd350012b1af7dd1092d4688d85f5accd779f33"},
     {"path":"codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs","object":"28f1e1c2a6b499ffe56b3b3e1e1af25c5cd30873"},
-    {"path":"codex-rs/hepta-cognitive-read","object":"f9e67c448066ace8e46660f1535178e52b36dd60"},
+    {"path":"codex-rs/hepta-cognitive-read","object":"2cb0c40a663f8dca0e759636481aee082b635674"},
     {"path":"codex-rs/hepta-cognitive-read/src/authoritative.rs","object":"7b84d401b71d24f547a8c2de0e4d5c4117253ecb"},
     {"path":"codex-rs/hepta-cognitive-read/src/authoritative_tests.rs","object":"c0d68c09a48e8862c73cf45555688989cec76dab"},
     {"path":"codex-rs/hepta-cognitive-read/src/ids.rs","object":"31f30f9b097a6bc51206030fae7588617941056f"},
     {"path":"codex-rs/hepta-cognitive-read/src/ids_tests.rs","object":"6d7aca75a1fe1a588e4c6a4d424c639fa90e92bc"},
-    {"path":"codex-rs/hepta-cognitive-read/src/lib.rs","object":"ebff2bbad751deb7b1771fb0a30092b981298925"},
+    {"path":"codex-rs/hepta-cognitive-read/src/lib.rs","object":"311a4534dd6ee0f5c2446381b71323a42cb018e5"},
     {"path":"codex-rs/hepta-cognitive-read/src/prepared.rs","object":"f82dbc31f812752d27d08d6c545fd263d07d5b50"},
     {"path":"codex-rs/hepta-cognitive-read/src/prepared_tests.rs","object":"824e058475612e8c8001e9526cb9fdc8dd820f70"},
+    {"path":"codex-rs/hepta-cognitive-read/src/revisioned_shadow.rs","object":"9d538ade62d9bb7776419c239fae9e4942c525e4"},
+    {"path":"codex-rs/hepta-cognitive-read/src/revisioned_shadow_tests.rs","object":"51bc69440d9533bba1b48ffd027c4bf68c09a3d6"},
     {"path":"codex-rs/hepta-cognitive-read/src/v2.rs","object":"67135f3f56c4779fbd27568ee69c389a38522e5c"},
     {"path":"codex-rs/hepta-cognitive-read/src/v2_tests.rs","object":"ef0e9b6837e591c1047065be5e6e87a180cc92ad"},
     {"path":"codex-rs/hepta-cognitive-read/examples/cognitive_read_prepared_bench.rs","object":"45aa6d384c5a02a8a812b73d9e389726e3ba8619"},
@@ -217,12 +246,15 @@
     {"path":"codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs","object":"e96da1855228f1bb27c3aec7431631e5018e89ac"},
     {"path":"codex-rs/hepta-memory/src/lane_c_snapshot.rs","object":"af66a5195f8a65635abe6c2abaf7b8e265bb6e9d"},
     {"path":"codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs","object":"94422ac7f6ac92064608f178d4a6b7879bd8c9ba"},
+    {"path":"codex-rs/hepta-memory/tests/cognitive_read_capacity.rs","object":"aaf08c774dbeca0d29ab41ed39d72772245b8d16"},
     {"path":"docs/modules/cognitive.read/TECHNICAL.md","object":"20db7fccd7f41e3513f67dbfc8fe6a695689be81"},
     {"path":"docs/modules/cognitive.read/STRUCTURAL_REUSE.md","object":"1851595618a1162277cbdd4945dae401cce5ebf2"},
-    {"path":"docs/modules/cognitive.read/CONSUMERS.md","object":"db274cbe5c61cf81683b51c257fbba6656eadad1"},
+    {"path":"docs/modules/cognitive.read/CONSUMERS.md","object":"9326631e4bd088c9a69b0664219404a15f15bc75"},
     {"path":"docs/modules/cognitive.read/CONSUMER_POLICY.json","object":"250016237cbd4c56871a21a8b22adf01fdded11f"},
+    {"path":"docs/modules/cognitive.read/CONSUMER_EXECUTION.json","object":"0ef269e090fb8a45271d7df2198dbe278ce5942a"},
     {"path":"docs/modules/cognitive.read/CONTRACT_LIMITS.md","object":"2c00606a2f6e236a1bb16e08aeea65cee6771082"},
-    {"path":"docs/modules/cognitive.read/COMPATIBILITY.md","object":"05c5cbec0dbe82da1748561186a9f5e9ee71d684"},
+    {"path":"docs/modules/cognitive.read/COMPATIBILITY.md","object":"9c94e259f98eab73efdee3111bc68c8bf8a2483d"},
+    {"path":"docs/modules/cognitive.read/QUALIFICATION_CLOSURE.md","object":"ec2c49cdb7e45b1436ac330a0c28e09d54f483c7"},
     {"path":"docs/contracts/CONTRACTS.json","object":"a779872578ebce3dc61205b43519854133812ac2"},
     {"path":"scripts/hepta-implementation-maps.py","object":"2b2d3071b82c73b965e3cd66ded398ae69d9d35b"},
     {"path":"scripts/verify-cognitive-read-map.py","object":"fc0505f33abab68fe00fe961ec6ec295425244df"},
@@ -231,9 +263,12 @@
     {"path":"scripts/test_cognitive_read_consumers.py","object":"56a2d924817427f275f0aa2ca378b8a887946d43"},
     {"path":"scripts/cognitive_read_evidence.py","object":"38126ebb3328481214e194f0b8eb694a97664ac0"},
     {"path":"scripts/test_cognitive_read_evidence.py","object":"a90b5397f257baf6742f57999aded6befba861c8"},
+    {"path":"scripts/cognitive_read_full_evidence.py","object":"3d81b3c87cf0a64de0c7ad04bf53af53c374bf71"},
+    {"path":"scripts/test_cognitive_read_full_evidence.py","object":"63d2f93061434fad87138920e0e54ef59dac2dae"},
+    {"path":"scripts/cognitive_read_sqlite_capacity.py","object":"ff68fd1cfcbea340a3e6c3fbd2fad66d34a7b209"},
     {"path":"scripts/test_cognitive_read_native_gate.py","object":"645ba6d730f0ba3771174aff696e49b336fc78ac"},
     {"path":"scripts/emit-cognitive-read-qualification.py","object":"ca844e1a2cf062ef746c6829dcda8d6e4bf767b4"},
-    {"path":"scripts/run-cognitive-read-qualification.sh","object":"2faf4a18bfe16b1638af420454fcdfed1845e6b4"},
+    {"path":"scripts/run-cognitive-read-qualification.sh","object":"d4fee01e2de2853dd439ac4e11723261af5327fa"},
     {"path":".github/workflows/cognitive-read-qualification.yml","object":"50f5128d8b5a1710a01faae07a9cde1c6dfefe5b"},
     {"path":".github/actions/hepta-synthetic-merge/action.yml","object":"905fc5039016ac7aaadbb857c0a7b94bb594f7ce"}
   ],
@@ -252,20 +287,34 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "e46668586f5a0ffb6f49505eff8de3ccd0da0619",
-    "tree": "8ed4cb2607d3f6e62d5c9eb28856ab3ea25bed56"
+    "commit": "b546ca5a8be7f1542bbbe62a1bb2ee9f32b6d5e4",
+    "tree": "aa5fae91071b501be57a00edda10fb07938ec8ff"
   },
   "canonicalMemoryEventReadMigration": {
-    "state": "authoritative_shadow_adapter_source_candidate",
+    "state": "revision_bound_shadow_v2_source_candidate",
     "predecessorSurface": "AuthoritativeReadResultV1 / ReadResultV2",
     "targetSurface": "cognitive.types::hnmf::MemoryEventV1",
     "exactRecordIdentityBridgeRequired": true,
     "bindsSnapshotReceipt": true,
     "bindsGenerationVector": true,
     "bindsReadReceipt": true,
-    "verifiesCitationProvenanceIdDigest": true,
-    "verifiesSourceRevisionEquivalence": false,
-    "verifiesLifecycleAgainstRecordState": true,
+    "legacyV1": {
+      "surface": "adapt_authoritative_read_to_canonical_shadow_v1",
+      "verifiesCitationProvenanceIdDigest": true,
+      "verifiesSourceRevisionEquivalence": false,
+      "productComposed": false
+    },
+    "revisionBoundV2": {
+      "surface": "adapt_authoritative_read_to_revision_bound_canonical_shadow_v2",
+      "domain": "hepta.cognitive.authoritative-read.canonical-shadow.v2",
+      "requiresOwnerIssuedSourceRevisionBindings": true,
+      "verifiesCitationProvenanceIdDigest": true,
+      "verifiesSourceRevisionEquivalence": true,
+      "verifiesLifecycleAgainstRecordState": true,
+      "productComposed": false,
+      "wireProtocol": false,
+      "finalUseAuthority": false
+    },
     "replacesLegacyRead": false,
     "productComposed": false
   },
@@ -280,12 +329,16 @@
     "finalUseReacquiresOwnerCut": true,
     "canonicalReadVersionChanged": false,
     "benchmarkPath": "codex-rs/hepta-cognitive-read/examples/cognitive_read_prepared_bench.rs",
+    "sqliteCapacityPath": "codex-rs/hepta-memory/tests/cognitive_read_capacity.rs",
+    "sqliteCapacityRunner": "scripts/cognitive_read_sqlite_capacity.py",
+    "candidateHostMeasurementRequired": true,
     "targetHostPerformanceProved": false
   },
   "consumerAudit": {
     "schema": "hepta.cognitive.read.consumer-audit.v2",
     "script": "scripts/cognitive_read_consumers.py",
     "policy": "docs/modules/cognitive.read/CONSUMER_POLICY.json",
+    "executionPolicy": "docs/modules/cognitive.read/CONSUMER_EXECUTION.json",
     "registeredConsumers": [
       "compact.engine",
       "context.compiler",
@@ -298,12 +351,14 @@
     "requiresExactProductCallerSymbols": true,
     "requiresMappedOperationAndTestBlobs": true,
     "requiresExplicitFinalUseAndErrorPolicy": true,
+    "requiresExactExecutionGateState": true,
     "claimsExecutedMigration": false,
-    "interpretation": "Audit artifacts bind each consumer registry, policy, map, source, normal-product caller symbol and test reference to the exact candidate; source inspection is not build or product execution evidence."
+    "interpretation": "Audit artifacts bind registry, policy, map, source, normal-product caller and exact execution gates to the candidate while preserving registered/composed/migrated distinctions."
   },
   "qualification": {
     "schema": "hepta.cognitive.read.qualification.v2",
-    "runner": "scripts/cognitive_read_evidence.py",
+    "runner": "scripts/cognitive_read_full_evidence.py",
+    "entrypoint": "scripts/run-cognitive-read-qualification.sh",
     "sourceMutationPermitted": false,
     "requiresCompleteCommandInventory": true,
     "requiresPositiveTestExecution": true,
@@ -312,6 +367,14 @@
     "requiresPinnedNextestVersion": "0.9.103",
     "acceptsPinnedNextestMultilineMetadata": true,
     "requiresExactNativeFinalUseCase": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+    "requiresExactOwnerCurrentnessCases": [
+      "scope_provisional_and_time_filters_do_not_leak_unadmitted_facts",
+      "retained_cut_detects_old_valid_backup_after_ordinary_reopen"
+    ],
+    "requiresExactStaleGenerationCase": "final_use_revalidation_rejects_stale_spawn_generation_before_store_access",
+    "requiresRevisionBoundShadowTests": true,
+    "consumerExecutionPolicy": "docs/modules/cognitive.read/CONSUMER_EXECUTION.json",
+    "sqliteCapacitySchema": "hepta.cognitive.read.sqlite-capacity.v1",
     "exactSourceExecutionProved": false,
     "mergeExecutionProved": false
   },
@@ -319,13 +382,22 @@
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
     "codex-rs/hepta-cognitive-read",
+    "codex-rs/hepta-cognitive-read/src/revisioned_shadow.rs",
+    "codex-rs/hepta-cognitive-read/src/revisioned_shadow_tests.rs",
+    "codex-rs/hepta-memory/tests/cognitive_read_capacity.rs",
     "codex-rs/hepta-agentd/src/cognitive_context.rs",
     "codex-rs/hepta-agentd/src/cognitive_read_view.rs",
     "docs/modules/cognitive.read/CONSUMERS.md",
     "docs/modules/cognitive.read/CONSUMER_POLICY.json",
+    "docs/modules/cognitive.read/CONSUMER_EXECUTION.json",
+    "docs/modules/cognitive.read/COMPATIBILITY.md",
+    "docs/modules/cognitive.read/QUALIFICATION_CLOSURE.md",
     "scripts/cognitive_read_consumers.py",
     "scripts/test_cognitive_read_consumers.py",
     "scripts/cognitive_read_evidence.py",
-    "scripts/test_cognitive_read_evidence.py"
+    "scripts/test_cognitive_read_evidence.py",
+    "scripts/cognitive_read_full_evidence.py",
+    "scripts/test_cognitive_read_full_evidence.py",
+    "scripts/cognitive_read_sqlite_capacity.py"
   ]
 }
