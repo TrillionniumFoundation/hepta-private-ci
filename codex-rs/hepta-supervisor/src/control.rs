@@ -83,6 +83,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        if slot.runtime.is_none() && self.cancel_idle_restart(agent_id, slot)? {
+            return Ok(());
+        }
         let record = self.record(agent_id)?;
         let runtime = slot
             .runtime
@@ -121,22 +124,82 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        if self.defer_agent_action_for_matrix(agent_id, slot, DeferredAgentActionKind::Stop, now)? {
+        let record = self.record(agent_id)?;
+        let runtime = active_runtime(agent_id, slot)?;
+        let spawn_generation = runtime.spawn_generation;
+        let durable = control_intent::recover_pending(
+            record.layout.run_root(),
+            agent_id,
+            spawn_generation,
+            &runtime.identity,
+            now,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let control = match durable {
+            Some(control) => control,
+            None => pending::PendingControl::Stop {
+                spawn_generation,
+                deadline: deadline(now, self.config.stop_grace)?,
+            },
+        };
+        let urgent = match control {
+            pending::PendingControl::Kill { .. } => true,
+            pending::PendingControl::Stop { deadline, .. } => now >= deadline,
+            pending::PendingControl::Drain { .. } => false,
+        };
+        // Matrix deferral must not give an operator Stop a fresh grace period.
+        // Once its original deadline expires, terminate the main first and
+        // independently pressure the companion, collecting both outcomes.
+        if !urgent
+            && self.defer_agent_action_for_matrix(
+                agent_id, slot, DeferredAgentActionKind::Stop, now,
+            )?
+        {
             return Ok(());
         }
         slot.deferred_agent_action = None;
-        let stop_deadline = deadline(now, self.config.stop_grace)?;
         self.prepare_termination(agent_id, slot)?;
-        let spawn_generation = active_runtime(agent_id, slot)?.spawn_generation;
-        pending::stage(
-            agent_id,
-            slot,
-            pending::PendingControl::Stop {
-                spawn_generation,
-                deadline: stop_deadline,
-            },
-        )?;
-        pending::apply_to_slot(agent_id, slot, now, self.config.stop_grace)
+        let main = pending::stage(agent_id, slot, control)
+            .and_then(|()| pending::apply_to_slot(agent_id, slot, now, self.config.stop_grace));
+        if urgent {
+            let companion = self.kill_matrix_now(agent_id, slot);
+            if let Err(error) = &companion {
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::DriverFault(bounded_message(error.to_string())),
+                );
+            }
+            main.and(companion)
+        } else {
+            main
+        }
+    }
+
+    /// A stopped/failed Agent with no owned or leased processes can still have
+    /// an outstanding restart. Stop/Kill cancel that existing durable work,
+    /// without minting a fictitious process identity or erasing attempt history.
+    fn cancel_idle_restart(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+    ) -> Result<bool, SupervisorError> {
+        let record = self.record(agent_id)?;
+        if slot.runtime.is_some()
+            || slot.matrix.runtime.is_some()
+            || slot.release_change.is_some()
+            || slot.release_transaction.as_ref().is_some_and(|transaction| !transaction.phase.terminal())
+            || !matches!(record.lifecycle.lifecycle, AgentLifecycle::Stopped | AgentLifecycle::Failed)
+            || crate::lease::read_lease(record.layout.run_root())?.is_some()
+            || crate::lease::read_matrix_lease(record.layout.matrixd_process_lease())?.is_some()
+        {
+            return Ok(false);
+        }
+        control_intent::reconcile_absent(
+            record.layout.run_root(), agent_id, record.lifecycle.lifecycle,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        self.cancel_pending_restart(agent_id, slot)?;
+        Ok(true)
     }
 
     fn cancel_pending_restart(
@@ -156,6 +219,14 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
+        if slot.runtime.is_none() {
+            // A failed idle check must not suppress a live companion's kill.
+            // The normal emergency path below collects storage errors and
+            // attempts both already-owned handles before returning them.
+            if let Ok(true) = self.cancel_idle_restart(agent_id, slot) {
+                return Ok(());
+            }
+        }
         // Registry/intent faults are collected, never propagated before the
         // already-owned main and companion termination attempts below.
         let intent = self.record(agent_id).and_then(|record| {
@@ -255,6 +326,13 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
         let record = self.record(agent_id)?;
+        if control_intent::has_unresolved(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        {
+            return Err(SupervisorError::Invalid(format!(
+                "agent {agent_id} has an unresolved durable termination intent"
+            )));
+        }
         if slot.active_release.is_none() && slot.last_command.is_none() {
             return Err(SupervisorError::NoPreviousCommand(agent_id.clone()));
         }

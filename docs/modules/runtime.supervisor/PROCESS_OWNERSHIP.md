@@ -160,13 +160,95 @@ blob checks and Git patch roundtrips establish only source-delivery integrity.
 Complete default/production product tests, strict lint and format checks on the
 actual final source and ordered-parent merge remain mandatory.
 
+## Main admission after identity acquisition
+
+`recovery_admission.rs` separates semantic admission from the driver's exact
+process acquisition. Lease/lifecycle relationship checks, control-intent parsing,
+control-target binding and deadline construction are evaluated without granting
+serving or signal authority. A failed result is retained until the driver has
+independently proved whether it owns the process. Only `Adoption::Adopted`
+supplies a signal-capable handle; Missing/Rejected do not acquire one.
+
+An acquired main process is installed before a rejected result is propagated.
+Rejection invalidates health, fences the exact retained process, clears local
+scheduling and attempts termination. A failed kill retains the handle and lease
+for existing tick/finalization. A successful kill is not an exit or permission
+to remove the lease. Corrupt control evidence is not erased because a separate
+process probe returned Missing. The paired recovery path still attempts Matrix
+recovery even when main admission fails.
+
+This closes the post-decode main lease/control/deadline admission boundary.
+Unreadable/undecodable lease identity and the earlier `Supervisor::recover`
+hydration path remain separate: no identity is invented from corrupt bytes.
+
+## Stop/Kill completion and restart cancellation cuts
+
+The existing two owner records retain their formats and authority. Before an
+unresolved Stop/Kill can be marked Completed from the existing absence/lifecycle
+checks, `reconcile_absent` durably cancels the main restart in the canonical
+shared restart record. Attempt count, window origin, eligibility history and
+the companion restart domain remain intact. Cancellation failure leaves the
+control unresolved. A crash after cancellation but before terminal publication
+retries cancellation idempotently; terminal replay does not cancel a later,
+separately authorized restart.
+
+Recovery also cancels restart from an unresolved Agent-bound termination before
+restoring the pending restart claim. A new explicit restart rejects while that
+termination is unresolved. A stopped/failed Agent with neither owned nor leased
+main/Matrix processes and no pending release transition may cancel a queued
+restart without constructing a fictitious process identity. Unowned leases and
+release-transition supersession do not take this idle shortcut.
+
+Live Stop continuation reuses the original durable deadline after Matrix
+deferral instead of allocating another stop_grace. Once the deadline has expired,
+main termination is attempted first and Matrix termination is attempted separately;
+a failing companion cannot prevent the preceding main kill. This does not yet
+persist restart-internal drain deadlines or a durable Matrix quarantine.
+
+## Control-intent file boundary
+
+The unchanged V1 control-intent codec now reads at most 8,193 bytes from an
+opened descriptor and rejects an input exceeding its 8,192-byte bound. Unix
+opens use NOFOLLOW/NONBLOCK/CLOEXEC and validate regular-file type, effective
+owner, single link, non-writable group/world mode and path/descriptor stability.
+FIFO, symlink, multiply linked and replaced final components reject. New intent
+files are created owner-private. Parent-directory substitution, authenticated
+backup rollback and cross-record transaction integrity remain separate concerns.
+
+## Added regression source and execution boundary
+
+Eight `recovery::admission_tests` functions exercise retained ownership after
+corrupt or mismatched control, invalid lifecycle distance, failing deadline
+construction, signal retry and repeated containment. Fifteen
+`control_intent::completion_tests` functions cover cancellation/terminal crash
+cuts, companion/history preservation, failure/retry, later-restart independence,
+lease/Agent rejection, bounded file inputs, idle cancellation, live original Stop
+deadlines, main-before-Matrix escalation and unresolved-control restart denial.
+Two of those fifteen functions are Unix-only file-boundary tests.
+
+```sh
+cd codex-rs
+just test --locked -p codex-hepta-supervisor --lib recovery::admission_tests
+just test --locked -p codex-hepta-supervisor --lib control_intent::completion_tests
+just test --locked -p codex-hepta-supervisor --lib
+just test --locked -p codex-hepta-supervisor --features production-authority --lib
+```
+
+These are 23 written Rust test functions, not 23 passing executions. The editing
+environment did not have Rust/Cargo/rustfmt; source-byte and patch checks are not
+native compilation, formatting, Clippy, product or selected-host evidence. The
+full existing default/production/product/source/merge gates remain mandatory.
+No workflow, receipt requirement or branch protection is relaxed.
+
 ## Still requiring implementation or qualification
 
-Internal driver setup failures after OS spawn, hydration in Supervisor::recover
-before recover_slot, main lease/control validation before main adoption, daemon
-death before a recoverable launch record, directory-inode replacement, durable
-Stop/Kill release-change/no-runtime supersession, restart predecessor/replacement
-identity, cross-daemon deadlines and exit finalization remain separate gaps.
+Post-acquisition driver initialization failures now retain acquired handles in
+`unix_initialization.rs`; their native regressions still require execution.
+Hydration in `Supervisor::recover` before `recover_slot`, undecodable lease
+identity, daemon death before a recoverable launch record, directory-inode
+replacement, durable Stop/Kill release-change supersession and no-runtime paths
+with unresolved owners, restart predecessor/replacement identity, restart-internal
+cross-daemon deadlines and exit finalization remain separate gaps.
 Matrix recovery now owns a successfully proven child before semantic hydration;
 this does not establish a durable main-fault Matrix quarantine across reopen.
 The previously prepared Stage A+B transformation is not source closure or an accepted v2

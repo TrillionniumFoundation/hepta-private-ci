@@ -6,7 +6,6 @@
 //! represented separately from terminal exit observation.
 
 use std::fs::OpenOptions;
-use std::io::ErrorKind;
 use std::io::Write;
 use std::path::Path;
 use std::sync::atomic::AtomicU64;
@@ -32,6 +31,13 @@ pub(crate) const CONTROL_INTENT_FILE: &str = "supervisor-control-intent.json";
 const CONTROL_INTENT_DOMAIN: &[u8] = b"hepta-supervisor:control-intent:v1";
 const CONTROL_RECORD_DOMAIN: &[u8] = b"hepta-supervisor:control-record:v1";
 const MAX_CONTROL_INTENT_BYTES: usize = 8_192;
+
+#[path = "control_intent_io.rs"]
+mod bounded_io;
+
+#[cfg(test)]
+#[path = "control_completion_tests.rs"]
+mod completion_tests;
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -332,10 +338,38 @@ pub(crate) fn reconcile_absent(
     {
         return Err(DurableControlIntentError::Unresolved);
     }
+    // A crash may follow durable Stop/Kill preparation but precede restart
+    // cancellation. Never hide that override behind Completed while the old
+    // restart remains pending. Cancellation preserves attempt/window history
+    // and the independent companion domain in the existing restart owner.
+    crate::restart_budget::cancel_restart(run_root)
+        .map_err(|error| DurableControlIntentError::Invalid(error.to_string()))?;
     write_control_intent(
         run_root,
         &intent.with_phase(DurableControlPhase::Completed, Some(unix_ms_now()?))?,
     )
+}
+
+/// Reconcile the prepare -> cancellation crash cut before restoring a restart.
+/// Completed intents do not suppress a subsequently authorized new restart.
+pub(crate) fn cancel_restart_if_unresolved(
+    run_root: &Path,
+    agent_id: &AgentId,
+) -> Result<bool, DurableControlIntentError> {
+    let Some(intent) = read_control_intent(run_root)? else {
+        return Ok(false);
+    };
+    if intent.phase.terminal() {
+        return Ok(false);
+    }
+    if intent.agent_id != *agent_id {
+        return Err(DurableControlIntentError::Invalid(
+            "termination intent belongs to another Agent".to_string(),
+        ));
+    }
+    crate::restart_budget::cancel_restart(run_root)
+        .map_err(|error| DurableControlIntentError::Invalid(error.to_string()))?;
+    Ok(true)
 }
 
 pub(crate) fn has_unresolved(
@@ -395,16 +429,9 @@ fn read_control_intent(
     run_root: &Path,
 ) -> Result<Option<DurableControlIntent>, DurableControlIntentError> {
     let path = run_root.join(CONTROL_INTENT_FILE);
-    let bytes = match std::fs::read(path) {
-        Ok(bytes) => bytes,
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error.into()),
+    let Some(bytes) = bounded_io::read(&path, MAX_CONTROL_INTENT_BYTES)? else {
+        return Ok(None);
     };
-    if bytes.len() > MAX_CONTROL_INTENT_BYTES {
-        return Err(DurableControlIntentError::Invalid(
-            "control intent exceeds the bounded file size".to_string(),
-        ));
-    }
     let intent: DurableControlIntent = serde_json::from_slice(&bytes)?;
     intent.validate()?;
     Ok(Some(intent))
@@ -429,10 +456,14 @@ fn write_control_intent(
             "control intent exceeds the bounded file size".to_string(),
         ));
     }
-    let mut file = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&temp)?;
+    let mut options = OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    let mut file = options.open(&temp)?;
     file.write_all(&bytes)?;
     file.sync_all()?;
     drop(file);

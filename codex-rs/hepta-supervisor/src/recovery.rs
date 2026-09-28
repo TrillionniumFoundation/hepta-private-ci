@@ -16,7 +16,6 @@ use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEventKind;
 use crate::control::pending;
-use crate::control::pending::PendingControl;
 use crate::control_intent;
 use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
@@ -24,7 +23,6 @@ use crate::lease::ProcessLeaseRemoval;
 use crate::lease::read_lease;
 use crate::lease::read_matrix_lease;
 use crate::lease::remove_lease;
-use crate::lease::validate_lease;
 use crate::lease::write_lease;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
@@ -36,6 +34,13 @@ use crate::runtime::is_live_lifecycle;
 
 #[path = "adopted_release.rs"]
 mod adopted_release;
+
+#[path = "recovery_admission.rs"]
+mod admission;
+
+#[cfg(test)]
+#[path = "recovery_admission_tests.rs"]
+mod admission_tests;
 
 #[cfg(test)]
 #[path = "recovery_control_tests.rs"]
@@ -96,6 +101,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
+        if control_intent::cancel_restart_if_unresolved(record.layout.run_root(), agent_id)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        {
+            slot.restart_pending = false;
+            slot.restart_not_before = None;
+            return Ok(());
+        }
         let pending = crate::restart_budget::pending_restart(
             record.layout.run_root(),
             self.config.restart_max_attempts,
@@ -333,20 +345,10 @@ impl<D: ProcessDriver> Supervisor<D> {
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             return Ok(());
         };
-        validate_lease(
-            &lease,
-            agent_id,
-            record.lifecycle.generation,
-            record.lifecycle.lifecycle,
-        )?;
-        let durable_control = control_intent::recover_pending(
-            record.layout.run_root(),
-            agent_id,
-            lease.spawn_generation,
-            &lease.identity,
-            now,
-        )
-        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        // Assess the existing durable evidence without propagating a semantic
+        // failure before independent process acquisition. No failed admission
+        // can grant a signal: only Adoption::Adopted supplies that authority.
+        let admission = admission::assess(agent_id, record, &lease, &self.config, now);
         let spec = AdoptSpec {
             agent_id: agent_id.clone(),
             registry_generation: record.lifecycle.generation,
@@ -357,38 +359,6 @@ impl<D: ProcessDriver> Supervisor<D> {
             control_socket: record.layout.agentd_control_socket().to_path_buf(),
             identity: lease.identity.clone(),
         };
-        // Compute fallible deadlines before taking ownership of a live child.
-        // Registry lifecycle records desired state, not an acknowledged signal.
-        let (phase, lifecycle_control) = match record.lifecycle.lifecycle {
-            AgentLifecycle::Starting => (
-                RuntimePhase::AwaitingHealth {
-                    deadline: deadline(now, self.config.health_timeout)?,
-                },
-                None,
-            ),
-            AgentLifecycle::Running => (RuntimePhase::Running, None),
-            AgentLifecycle::Draining => (
-                RuntimePhase::Running,
-                Some(PendingControl::Drain {
-                    spawn_generation: lease.spawn_generation,
-                    deadline: deadline(now, self.config.drain_timeout)?,
-                }),
-            ),
-            AgentLifecycle::Failed => (
-                RuntimePhase::AwaitingHealth { deadline: now },
-                Some(PendingControl::Stop {
-                    spawn_generation: lease.spawn_generation,
-                    deadline: deadline(now, self.config.stop_grace)?,
-                }),
-            ),
-            AgentLifecycle::Stopped => (
-                RuntimePhase::Stopping { deadline: now },
-                Some(PendingControl::Kill {
-                    spawn_generation: lease.spawn_generation,
-                }),
-            ),
-        };
-        let recovery_control = durable_control.or(lifecycle_control);
         let mut control_fault = None;
         match self
             .driver
@@ -396,31 +366,36 @@ impl<D: ProcessDriver> Supervisor<D> {
             .map_err(|error| driver_error(agent_id, error))?
         {
             Adoption::Adopted(process) => {
-                // Own the exact child before release lookup or command conversion.
-                // Either can fail, even after a successful process handshake.
+                // Retain first, even when the journal, lifecycle relationship,
+                // deadline or post-acquisition driver setup was rejected.
                 slot.runtime = Some(AgentRuntime {
                     process,
                     identity: lease.identity,
                     spawn_generation: lease.spawn_generation,
                     release_id: lease.release_id.clone(),
                     generation: record.lifecycle.generation,
-                    phase,
+                    phase: RuntimePhase::Stopping { deadline: now },
                     healthy: false,
-                    fenced: false,
+                    fenced: true,
                 });
-                if let Some(error) = slot.runtime.as_ref().and_then(|runtime| {
-                    runtime.process.initialization_failure().map(str::to_owned)
-                }) {
-                    if let Some(runtime) = slot.runtime.as_mut() {
-                        runtime.fenced = true;
-                        runtime.healthy = false;
-                        runtime.phase = RuntimePhase::Stopping { deadline: now };
-                        if runtime.process.kill().is_ok() {
-                            runtime.phase = RuntimePhase::Killing;
-                            slot.event(record.lifecycle.generation, SupervisorEventKind::KillRequested);
-                        }
+                let admitted = admission.and_then(|admitted| {
+                    match slot.runtime.as_ref().and_then(|runtime| {
+                        runtime.process.initialization_failure().map(str::to_owned)
+                    }) {
+                        Some(error) => Err(driver_error(agent_id, crate::ProcessDriverError::new(error))),
+                        None => Ok(admitted),
                     }
-                    return Err(driver_error(agent_id, crate::ProcessDriverError::new(error)));
+                });
+                let admitted = match admitted {
+                    Ok(admitted) => admitted,
+                    Err(error) => {
+                        admission::reject_owned(agent_id, slot, now);
+                        return Err(error);
+                    }
+                };
+                if let Some(runtime) = slot.runtime.as_mut() {
+                    runtime.phase = admitted.phase;
+                    runtime.fenced = false;
                 }
                 if lease.release_id.as_str() != "unversioned" {
                     let needs_resolution = slot
@@ -438,7 +413,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 );
                 // Install the exact adopted handle before any fallible control
                 // call. Failed signals retain both ownership and a bounded retry.
-                slot.pending_control = recovery_control;
+                slot.pending_control = admitted.control;
                 control_fault =
                     pending::apply_to_slot(agent_id, slot, now, self.config.stop_grace).err();
                 if record.lifecycle.lifecycle == AgentLifecycle::Running {
@@ -449,6 +424,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                 }
             }
             Adoption::Missing => {
+                // An absent process does not make malformed control evidence
+                // valid. Retain rejected evidence for explicit reconciliation.
+                admission?;
                 remove_lease(record.layout.run_root(), &lease)?;
                 let terminal_lifecycle = if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(
@@ -470,6 +448,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.event(record.lifecycle.generation, SupervisorEventKind::OrphanMissing);
             }
             Adoption::Rejected => {
+                admission?;
                 // Failed identity proof grants neither signal authority nor
                 // evidence of absence. Keep the exact lease and any unresolved
                 // control intent; Failed is a lifecycle fence, not an exit.
