@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate lexical source status; execution and acceptance remain external facts."""
+"""Validate conservative lexical source truth for learning.eval."""
 from __future__ import annotations
 
 import argparse
@@ -9,313 +9,247 @@ import sys
 from pathlib import Path
 
 from hepta_rust_identifiers import contains_rust_identifier
-from hepta_learning_eval_projection import canonical, projection, replace_projection
 
 ROOT = Path(__file__).resolve().parents[1]
 STATUS = ROOT / "docs/modules/learning.eval/CURRENT_STATUS.json"
-IMPLEMENTATION_MAP = ROOT / "docs/modules/learning.eval/IMPLEMENTATION_MAP.json"
-DOCUMENTS = [ROOT / "docs/modules/learning.eval/TECHNICAL.md",
-             ROOT / "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md"]
+MODEL = ROOT / "scripts/learning_eval_status_model.json"
+MAP = ROOT / "docs/modules/learning.eval/IMPLEMENTATION_MAP.json"
 EVAL_ROOT = ROOT / "codex-rs/hepta-intelligence-eval"
-SRC = "codex-rs/hepta-intelligence-eval/src/"
-LOW_LEVEL_V2 = "decide_with_signed_evidence_v2"
-LOW_LEVEL_V3 = "decide_with_signed_longitudinal_evidence_v3"
-RAW_PRODUCT_RUNNER = "ProductEvaluationRunnerV1"
-CALLERS = [
-    {"kind": "consumer_bound_admission", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs", "nativeSymbol": "AgentdEvaluationSessionV1::evaluate", "authority": "deny_all"},
-    {"kind": "consumer_bound_admission", "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs", "nativeSymbol": "propose_authenticated_parameter_plasticity_v1", "authority": "deny_all"},
-    {"kind": "sealed_product_qualification_consumer", "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs", "nativeSymbol": "run_evaluated_shadow_v1", "authority": "deny_all"},
-    {"kind": "sealed_multi_outcome_qualification_consumer", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs", "nativeSymbol": "AgentdEvaluationBindingV1::consume_outcome_qualification_v1", "authority": "deny_all"},
-]
-CALLER_TOKEN_SOURCE = {
-    "AgentdEvaluationBindingV1::consume_outcome_qualification_v1":
-        "codex-rs/hepta-agentd/src/intelligence_outcome_evaluation.rs",
+FALSE_CLAIMS = {
+    "productionImplementation",
+    "targetHostQualified",
+    "independentAcceptance",
+    "activation",
+    "release",
 }
-SELECTED_HOST_E2E = "codex-rs/hepta-intelligence-eval/tests/selected_host_recovery_e2e.rs"
-RECOVERY_OPERATIONS = [
-    ("AnchoredProductEvaluationAttemptJournalV1", "attempt_journal_anchor.rs", SRC + "attempt_journal_tests.rs"),
-    ("reconcile_product_attempt_holdout_v1", "attempt_recovery.rs", SRC + "recorded_runner_process_tests.rs"),
-    ("reconcile_product_attempt_publication_v1", "attempt_recovery.rs", SRC + "recorded_publication_tests.rs"),
-    ("RecordedPublicationSinkV1", "recorded_publication.rs", SRC + "recorded_publication_tests.rs"),
-    ("DurableProductEvaluationAttemptJournalV1", "attempt_durability.rs", "scripts/hepta-learning-eval-api-surface.sh"),
-    ("RecordedProductEvaluationRunnerV1::reconcile_pending_page", "attempt_recovery.rs", SRC + "attempt_recovery_tests.rs"),
-    ("RecordedProductEvaluationRunnerV1::resume_decided_qualification", "attempt_publication_resume.rs", "scripts/hepta-learning-eval-api-surface.sh"),
-    ("RecordedProductEvaluationRunnerV1::resume_decided_outcome_qualification", "attempt_publication_resume.rs", "scripts/hepta-learning-eval-api-surface.sh"),
-    ("RecordedProductEvaluationRunnerV1::resume_decided_publication", "attempt_publication_resume.rs", SRC + "recorded_runner_process_tests.rs"),
-    ("RecordedProductEvaluationRunnerV1::qualify_and_persist_with_artifacts", "qualification_artifacts.rs", SELECTED_HOST_E2E),
-    ("RecordedProductEvaluationRunnerV1::recover_persisted_qualification", "qualification_artifacts.rs", SELECTED_HOST_E2E),
-    ("RecordedProductEvaluationRunnerV1::qualify_and_persist_on_selected_host", "selected_host_publication.rs", SELECTED_HOST_E2E),
-    ("RecordedProductEvaluationRunnerV1::recover_selected_host_qualification", "selected_host_publication.rs", SELECTED_HOST_E2E),
-    ("RecordedProductEvaluationRunnerV1::reconcile_selected_host_publication", "selected_host_publication.rs", SELECTED_HOST_E2E),
-    ("freeze_product_outcome_plan_v1", "outcome_channels.rs", SRC + "outcome_tests.rs"),
-    ("product_outcome_inputs_digest_v1", "outcome_payload.rs", SRC + "outcome_tests.rs"),
-    ("RecordedProductEvaluationRunnerV1::evaluate_outcome_comparison", "outcome_runner.rs", SRC + "outcome_tests.rs"),
-    ("RecordedProductEvaluationRunnerV1::qualify_outcomes_and_persist", "outcome_runner.rs", SRC + "outcome_tests.rs"),
-]
-OPERATION_TOKEN_SOURCE = {
-    "RecordedProductEvaluationRunnerV1::qualify_and_persist_on_selected_host":
-        "selected_host_facade.rs",
-    "RecordedProductEvaluationRunnerV1::recover_selected_host_qualification":
-        "selected_host_facade.rs",
-    "RecordedProductEvaluationRunnerV1::reconcile_selected_host_publication":
-        "selected_host_facade.rs",
+TRUE_SOURCE = {
+    "checkpointTailRecoveryImplemented",
+    "consumerBoundAdmissionComposed",
+    "durableAttemptJournalImplemented",
+    "lifecycleCapacityReservationImplemented",
+    "multiOutcomeTypedArchiveImplemented",
+    "publicationReconciliationImplemented",
+    "sequentialClusterConfidenceImplemented",
+    "temporalCrossFitExecutorImplemented",
+    "typedArchiveInternalReverificationImplemented",
+    "verifiedCompactionImplemented",
 }
-REPOSITORY_GAPS = [
-    "Execute formatting, compilation, tests, strict lint and coverage on the final exact source and ordered-parent merge tree.",
-    "Extend complete host-sealed artifact persistence and restart recovery to ProductOutcomeEvaluationReceiptV1, then exercise the signed multi-outcome resume path.",
-    "Bind the selected-host source facade to an authenticated independent anchor authority, real provider, publication store and persistent recovery controller on the declared target topology.",
-    "Execute near-capacity startup, backlog, checkpoint or rotation and sustained recovery qualification on the selected storage topology.",
-]
+REQUIRED_SYMBOLS = {
+    "RecordedProductEvaluationRunnerV1::evaluate_temporal_comparison",
+    "RecordedProductEvaluationRunnerV1::qualify_and_persist",
+    "admit_signed_eligibility_v2",
+    "ReconciledProductQualificationSinkV1::persist",
+    "LockedFileProductEvaluationAttemptJournalV1",
+    "AttemptCapacity::project",
+    "LockedFileProductEvaluationAttemptJournalV1::checkpoint_into",
+    "LockedFileProductEvaluationAttemptJournalV1::recover_with_checkpoint",
+    "AnchoredProductEvaluationAttemptJournalV1::recover_with_checkpoint",
+    "RecordedProductEvaluationRunnerV1::reconcile_pending_page",
+    "Archive::persist",
+    "qualification_archive::recover",
+    "RecordedProductEvaluationRunnerV1::qualify_and_persist_on_selected_host",
+    "RecordedProductEvaluationRunnerV1::qualify_outcomes_and_persist_on_selected_host",
+    "RecordedProductEvaluationRunnerV1::recover_selected_host_qualification",
+    "RecordedProductEvaluationRunnerV1::recover_selected_host_outcome_qualification",
+    "RecordedProductEvaluationRunnerV1::recover_selected_host_pending_page",
+    "CrossFoldPlanV1::execute_temporal_cross_fit_v1",
+    "SequentialPlan::estimate_cluster_intervals_v1",
+    "LockedFileFinalHoldoutCasStoreV1::compact_into",
+    "decide_with_signed_evidence_v2",
+    "decide_with_signed_longitudinal_evidence_v3",
+}
+REQUIRED_TOKENS = {
+    "codex-rs/hepta-intelligence-eval/src/qualification_archive.rs": [
+        "No decoder callback",
+        "QualificationArtifactsPersisted",
+        "archive.verify(verifier, now)",
+    ],
+    "codex-rs/hepta-intelligence-eval/src/selected_host_recovery_controller.rs": [
+        "recover_selected_host_pending_page",
+        "cursor.save(Some(&id))",
+        "PublicationPending",
+    ],
+    "codex-rs/hepta-intelligence-eval/src/attempt_capacity.rs": [
+        "struct AttemptCapacity",
+        "fn project",
+        "pending_page",
+    ],
+    "codex-rs/hepta-intelligence-eval/src/attempt_checkpoint.rs": [
+        "checkpoint_into",
+        "recover_with_checkpoint",
+        "checkpoint_binding",
+    ],
+    "codex-rs/hepta-intelligence-eval/src/temporal_cross_fit.rs": [
+        "execute_temporal_cross_fit_v1",
+        "cross-fit held-out decision reuse",
+        "cross-fit preregistered output",
+    ],
+    "codex-rs/hepta-intelligence-eval/src/sequential_confidence.rs": [
+        "estimate_cluster_intervals_v1",
+        "ConfidenceEnvelope",
+        "InsufficientClusters",
+    ],
+    "codex-rs/hepta-agentd/src/intelligence_outcome_evaluation.rs": [
+        "consume_outcome_qualification_v1",
+        "use_attestation",
+        "current_owner",
+    ],
+    "codex-rs/hepta-intelligence-eval/tests/cold_recovery_e2e.rs": [
+        "cold_process_recovery_uses_only_persisted_inputs_and_current_trust",
+    ],
+    "codex-rs/hepta-intelligence-eval/tests/long_running_profile.rs": [
+        "checkpoint_into",
+        "recover_with_checkpoint",
+        "HEPTA_LEARNING_EVAL_SOAK_ATTEMPTS",
+    ],
+    "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md": [
+        "QualificationArtifactsPersisted",
+        "execute_temporal_cross_fit_v1",
+        "estimate_cluster_intervals_v1",
+        "recover_with_checkpoint",
+    ],
+    "codex-rs/hepta-intelligence-eval/RECOVERY_CONTRACT.md": [
+        "Canonical typed qualification archive",
+        "Independently anchored checkpoints and tail replay",
+        "Persistent recovery controller",
+    ],
+    "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md": [
+        "execute_temporal_cross_fit_v1",
+        "estimate_cluster_intervals_v1",
+        "recover_with_checkpoint",
+        "CURRENT_STATUS.json",
+    ],
+    "docs/modules/learning.eval/RECOVERY_AMENDMENT_20260928.md": [
+        "a43cbc5c167f9acfb8130c108693623641662ff0",
+        "28672",
+        "External gates remain false",
+    ],
+}
 
 
-def read(path: str) -> str:
-    return (ROOT / path).read_text(encoding="utf-8")
+def canonical(value: object) -> str:
+    return json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
 
 
-def direct_external_callers(symbol: str) -> list[str]:
-    return [path.relative_to(ROOT).as_posix() for path in sorted((ROOT / "codex-rs").rglob("*.rs"))
-            if EVAL_ROOT not in path.parents and contains_rust_identifier(path.read_text(encoding="utf-8"), symbol)]
+def git(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["git", "-C", str(ROOT), *args],
+        text=True,
+        check=check,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
 
 
-def external_production_callers(symbol: str) -> list[str]:
-    # Lexical inventory, not a call graph. Keep inline cfg/test and macro bodies
-    # conservatively; external compiler fixtures independently check default ABI.
-    return [path for path in direct_external_callers(symbol)
-            if "/tests/" not in path and not path.endswith(("_tests.rs", "_test_support.rs"))]
+def require_tokens() -> None:
+    for relative, tokens in REQUIRED_TOKENS.items():
+        path = ROOT / relative
+        if not path.is_file():
+            raise SystemExit(f"missing required path: {relative}")
+        text = path.read_text(encoding="utf-8")
+        for token in tokens:
+            if token not in text:
+                raise SystemExit(f"{relative}: missing {token!r}")
 
 
-def require_token(path: str, token: str) -> None:
-    if token not in read(path):
-        raise SystemExit(f"{path}: missing required source token {token!r}")
+def external_references(symbol: str) -> list[str]:
+    results: list[str] = []
+    for path in sorted((ROOT / "codex-rs").rglob("*.rs")):
+        if EVAL_ROOT in path.parents or "/tests/" in path.as_posix():
+            continue
+        if path.name.endswith(("_tests.rs", "_test_support.rs")):
+            continue
+        if contains_rust_identifier(path.read_text(encoding="utf-8"), symbol):
+            results.append(path.relative_to(ROOT).as_posix())
+    return results
 
 
-def verify_implementation_map(callers: list[dict]) -> None:
-    value = json.loads(IMPLEMENTATION_MAP.read_text(encoding="utf-8"))
-    if value.get("module") != "learning.eval":
-        raise SystemExit("implementation map module identity mismatch")
-    required = {
-        "RecordedProductEvaluationRunnerV1::evaluate_temporal_comparison",
-        "RecordedProductEvaluationRunnerV1::qualify_and_persist",
-        "admit_signed_eligibility_v2", "ReconciledProductQualificationSinkV1::persist",
-        "LockedFileProductEvaluationAttemptJournalV1", "LockedFileFinalHoldoutCasStoreV1::compact_into",
-        "decide_with_signed_evidence_v2", "decide_with_signed_longitudinal_evidence_v3",
-    } | {row[0] for row in RECOVERY_OPERATIONS}
+def validate_map(model: dict) -> None:
+    value = json.loads(MAP.read_text(encoding="utf-8"))
+    if value.get("schema") != "hepta.module-implementation-map.v3" or value.get("module") != "learning.eval":
+        raise SystemExit("implementation-map identity drift")
     rows = value.get("operations", [])
-    operations = {row["nativeSymbol"]: row for row in rows}
-    if len(operations) != len(rows):
-        raise SystemExit("duplicate native operation identity")
-    if required - operations.keys():
-        raise SystemExit(f"missing mapped operations: {sorted(required - operations.keys())}")
-    for symbol, source, test in RECOVERY_OPERATIONS:
-        entry = operations[symbol]
-        if entry.get("sourcePath") != SRC + source:
-            raise SystemExit(f"incorrect source path for {symbol}")
-        token_source = OPERATION_TOKEN_SOURCE.get(symbol, source)
-        require_token(SRC + token_source, symbol.rsplit("::", 1)[-1])
-        if test not in entry.get("tests", []) or not (ROOT / test).is_file():
-            raise SystemExit(f"missing recovery/outcome test mapping for {symbol}")
-    def identities(items: list[dict]) -> set[tuple]:
-        return {(row.get("sourcePath"), row.get("nativeSymbol"), row.get("authority")) for row in items}
-    if identities(value.get("productCallers", [])) != identities(callers):
-        raise SystemExit("implementation-map caller inventory differs from source inventory")
-    if value.get("repositoryControlledGaps") != REPOSITORY_GAPS:
-        raise SystemExit("implementation-map open obligations differ from canonical status")
+    symbols = [row.get("nativeSymbol") for row in rows]
+    missing = REQUIRED_SYMBOLS - set(symbols)
+    if missing or len(symbols) != len(set(symbols)):
+        raise SystemExit(f"implementation-map operation drift: {sorted(missing)}")
+    checked_paths: set[str] = set()
+    for row in rows:
+        path = row.get("sourcePath")
+        file = ROOT / str(path)
+        token = str(row.get("nativeSymbol")).rsplit("::", 1)[-1]
+        if not file.is_file() or token not in file.read_text(encoding="utf-8"):
+            raise SystemExit(f"mapped source/symbol absent: {path}::{token}")
+        checked_paths.add(str(path))
+        for test in row.get("tests", []):
+            if not (ROOT / test).is_file():
+                raise SystemExit(f"mapped test absent: {test}")
+            checked_paths.add(test)
+    if value.get("productCallers") != model["sourceFacts"]["callers"]:
+        raise SystemExit("caller inventory drift")
+    if value.get("repositoryControlledGaps") != model["repositoryControlledGaps"]:
+        raise SystemExit("open-obligation inventory drift")
     boundary = value.get("claimBoundary", {})
-    for field in ("consumerBoundAdmissionComposed", "durableAttemptJournalImplemented", "publicationReconciliationImplemented", "verifiedCompactionImplemented"):
-        if boundary.get(field) is not True:
-            raise SystemExit(f"source claim boundary drift: {field}")
-    for field in ("productionImplementation", "targetHostQualified", "independentAcceptance", "activation", "release"):
-        if boundary.get(field) is not False:
-            raise SystemExit(f"external claim must not be self-issued: {field}")
-
-
-def expected_source_facts() -> dict:
-    # Materialized/lexical facts only. No invocation or execution is inferred.
-    return {
-        "lowLevelDecisionPrimitivesCratePrivate": True,
-        "externalLowLevelDecisionCallers": [],
-        "externalRawProductRunnerCallers": [],
-        "externalRawRunnerReferencesAbsentInLexicalInventory": True,
-        "consumerBoundAdmission": True,
-        "idempotentPublicationReconciliation": True,
-        "durableEvaluationAttemptJournal": True,
-        "verifiedHoldoutCompaction": True,
-        "implementationMapVerified": True,
-        "callers": CALLERS,
-        "recoverySource": {
-            "defaultRawRunnerFeatureGated": True,
-            "defaultRecordedRunnerRequiresAnchoredJournalCapability": True,
-            "preConsumptionIntent": True,
-            "independentAttemptAnchorProtocol": True,
-            "writeAheadPublicationPhases": True,
-            "boundedPendingDiscovery": True,
-            "cursorAdvancesPastUnresolvedAttempts": True,
-            "fullHistoryValidation": True,
-            "externalOwnerReadOnlyReconciliation": True,
-            "decidedOnlyResumeReverifiesSignatures": True,
-            "unverifiedResumeHelperCratePrivate": True,
-            "incrementalAppendAndStreamingReplay": True,
-            "completeQualificationArtifactsPersisted": True,
-            "persistentSelectedHostPublicationStore": True,
-            "selectedHostArtifactResumeE2EFixture": True,
-            "selectedHostBindingSwapRejected": True,
-            "processKillFixtureCutCount": 7,
-            "executionStatus": "not_established_by_source_scan",
-        },
-        "outcomeSource": {
-            "typedFrozenChannelContracts": True,
-            "completePayloadDigestBinding": True,
-            "separateNativeChannelEstimates": True,
-            "singleConsumptionRecordedComposition": True,
-            "maximumChannels": 32,
-            "maximumBatchRows": 100000,
-            "signedMultiOutcomeBindingE2EFixture": True,
-            "downstreamConsumer": "agentd_request_bound_source_consumer_present",
-            "hostSealedArtifactRecovery": "single_outcome_only_multi_outcome_pending",
-            "measurementAuthentication": "requires_selected_host_evidence",
-            "executionStatus": "not_established_by_source_scan",
-        },
-        "capacitySource": {
-            "sustainedProfileSourcePresent": True,
-            "configuredAttempts": 4096,
-            "expectedLifecycleEvents": 24576,
-            "anchoredRestartInterval": 128,
-            "executionStatus": "not_established_by_source_scan",
-        },
-    }
-
-
-def source_facts() -> dict:
-    lib = read(SRC + "lib.rs")
-    required = [
-        ("lib.rs", "pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;"),
-        ("lib.rs", "pub(crate) use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;"),
-        ("lib.rs", "pub use signed_admission::admit_signed_eligibility_v2;"),
-        ("lib.rs", "pub use reconciled_sink::ReconciledProductQualificationSinkV1;"),
-        ("lib.rs", "pub use attempt_journal::LockedFileProductEvaluationAttemptJournalV1;"),
-        ("lib.rs", "pub use recorded_runner::RecordedProductEvaluationRunnerV1;"),
-        ("lib.rs", '#[cfg(feature = "trusted-inprocess-eval")]\npub use product_runner::ProductEvaluationRunnerV1;'),
-        ("signed_admission.rs", "SignedEligibilityAdmissionReceiptV1"),
-        ("reconciled_sink.rs", "accepted_unknown_is_reconciled_without_duplicate_publish"),
-        ("reconciled_sink.rs", "concurrent_identical_commit_is_reconciled_as_idempotent_success"),
-        ("attempt_journal_tests.rs", "truncated_frame_and_second_writer_are_rejected"),
-        ("attempt_journal_tests.rs", "complete_old_prefix_is_rejected_by_independent_anchor"),
-        ("recorded_runner_tests.rs", "journal_failure_preserves_consumed_holdout_and_blocks_release"),
-        ("recorded_runner_tests.rs", "durable_intent_failure_precedes_all_provider_and_holdout_calls"),
-        ("recorded_publication_tests.rs", "absent_record_after_unknown_never_triggers_a_second_write"),
-        ("attempt_journal_file.rs", "recover_with_anchor"),
-        ("attempt_journal_file.rs", "read_exact"),
-        ("attempt_journal.rs", "IntentPersisted"),
-        ("attempt_journal.rs", "pending_page"),
-        ("recorded_runner.rs", "J: DurableProductEvaluationAttemptJournalV1"),
-        ("recorded_runner.rs", '#[path = "outcome_runner.rs"]'),
-        ("recorded_publication.rs", '#[path = "attempt_publication_resume.rs"]'),
-        ("recorded_publication.rs", '#[path = "qualification_artifacts.rs"]'),
-        ("recorded_publication.rs", '#[path = "selected_host_publication.rs"]'),
-        ("recorded_publication.rs", '#[path = "selected_host_recovery_controller.rs"]'),
-        ("attempt_recovery.rs", "validated_history"),
-        ("attempt_recovery_tests.rs", "pending_cursor_advances_past_unresolved_attempts"),
-        ("attempt_recovery_tests.rs", "individually_valid_frames_cannot_be_spliced_across_attempts"),
-        ("attempt_publication_resume.rs", "pub(crate) fn resume_decided_publication"),
-        ("attempt_publication_resume.rs", "verify_decision"),
-        ("qualification_artifacts.rs", "qualify_and_persist_with_artifacts"),
-        ("qualification_artifacts.rs", "recover_persisted_qualification"),
-        ("selected_host_facade.rs", "qualify_and_persist_on_selected_host"),
-        ("selected_host_facade.rs", "recover_selected_host_qualification"),
-        ("selected_host_facade.rs", "reconcile_selected_host_publication"),
-        ("outcome_channels.rs", "const MAX_CHANNELS: usize = 32;"),
-        ("outcome_channels.rs", "const MAX_BATCH_ROWS: usize = 100_000;"),
-        ("outcome_tests.rs", "measured_channels_with_same_estimator_have_distinct_intervals_and_one_consumption"),
-        ("outcome_tests.rs", "swapping_payloads_without_changing_frozen_contracts_fails_after_consumption"),
-        ("signed_qualification_e2e_tests.rs", "signed_qualification_e2e_binds_multi_outcome_privacy_retention_and_unlearning"),
-        ("fenced_holdout_file.rs", "compact_into"),
+    if any(boundary.get(key) is not True for key in TRUE_SOURCE):
+        raise SystemExit("source claim-boundary drift")
+    if any(boundary.get(key) is not False for key in FALSE_CLAIMS):
+        raise SystemExit("external claim self-issued")
+    source = value.get("sourceBase", {})
+    commit, tree = source.get("commit", ""), source.get("tree", "")
+    if len(commit) != 40 or git("rev-parse", f"{commit}^{{tree}}").stdout.strip() != tree:
+        raise SystemExit("source observation identity drift")
+    git("merge-base", "--is-ancestor", commit, "HEAD")
+    for caller in model["sourceFacts"]["callers"]:
+        checked_paths.add(caller["sourcePath"])
+    changed = [
+        path for path in sorted(checked_paths)
+        if git("diff", "--quiet", commit, "--", path, check=False).returncode == 1
     ]
-    for path, token in required:
-        require_token(SRC + path, token)
-    for stage in ("consume_before_attempt", "consumed_before_release", "computed_before_seal", "sealed_before_publication", "decided_before_pending", "pending_before_write", "publication_ack_lost"):
-        require_token(SRC + "recorded_runner_process_tests.rs", stage)
-    require_token("scripts/hepta-learning-eval-api-surface.sh", "E0624")
-    require_token("codex-rs/hepta-intelligence-eval/tests/holdout_compaction.rs", "compaction_replays_nonempty_holdout_journal_without_semantic_drift")
-    require_token(SELECTED_HOST_E2E, "selected_host_complete_signed_artifacts_resume_after_anchor_ack_loss")
-    require_token("codex-rs/hepta-intelligence-eval/tests/long_running_profile.rs", "HEPTA_LEARNING_EVAL_SOAK_ATTEMPTS")
-    require_token(".github/workflows/hepta-learning-eval-soak.yml", 'HEPTA_LEARNING_EVAL_SOAK_ATTEMPTS: "4096"')
-    if '#[path = "qualification_artifacts.rs"]' in read(SRC + "attempt_durability.rs") or '#[path = "selected_host_publication.rs"]' in read(SRC + "attempt_durability.rs"):
-        raise SystemExit("selected-host modules must have one canonical parent")
-    for symbol, module in ((LOW_LEVEL_V2, "signed_evaluation"), (LOW_LEVEL_V3, "longitudinal_time")):
-        if f"pub use {module}::{symbol};" in lib or direct_external_callers(symbol):
-            raise SystemExit(f"external low-level ingress remains: {symbol}")
-    raw_callers = external_production_callers(RAW_PRODUCT_RUNNER)
-    if raw_callers:
-        raise SystemExit(f"external raw product runner references: {raw_callers}")
-    caller_tokens = {
-        "consumer_bound_admission": "admit_signed_eligibility_v2",
-        "sealed_product_qualification_consumer": "ProductQualificationReceiptV1",
-        "sealed_multi_outcome_qualification_consumer": "ProductOutcomeQualificationReceiptV1",
-    }
-    for caller in CALLERS:
-        token_source = CALLER_TOKEN_SOURCE.get(caller["nativeSymbol"], caller["sourcePath"])
-        require_token(token_source, caller_tokens[caller["kind"]])
-        require_token(token_source, caller["nativeSymbol"].rsplit("::", 1)[-1])
-    verify_implementation_map(CALLERS)
-    return expected_source_facts()
+    if changed:
+        raise SystemExit("mapped executable source changed after observation: " + ", ".join(changed))
 
 
-def render() -> dict:
-    return {
-        "schema": "hepta.learning-eval.current-status.v1",
-        "module": "learning.eval",
-        "statusSemantics": "Generated lexical source inventory only; compilation, product invocation, exact-head execution, selected-host qualification and independent acceptance are separate facts.",
-        "sourceFacts": source_facts(),
-        "repositoryControlledGaps": REPOSITORY_GAPS,
-        "qualification": {
-            "exactHead": "requires_passing_commit_addressed_ci_artifact",
-            "orderedParentSyntheticMerge": "requires_passing_commit_addressed_ci_artifact",
-            "coverageThresholdPct": 85,
-            "targetHost": "requires_authenticated_external_host_evidence",
-            "crossHostFilesystem": "requires_external_linearizability_and_fsync_qualification",
-        },
-        "externalEvidenceGates": [
-            "real future-calendar observations and independent outcome provenance",
-            "retention, change-point, statistical power, subgroup and privacy evidence",
-            "unlearning and backup non-resurrection evidence",
-            "independent semantic and operator acceptance",
-            "selection, canary, promotion and release authority",
-        ],
-        "claims": {"productionImplementation": False, "targetHostQualified": False,
-                   "independentAcceptance": False, "activation": False, "release": False},
-    }
+def validate() -> dict:
+    require_tokens()
+    model = json.loads(MODEL.read_text(encoding="utf-8"))
+    if model.get("schema") != "hepta.learning-eval.current-status.v1":
+        raise SystemExit("status-model identity drift")
+    if any(model["claims"].get(key) is not False for key in FALSE_CLAIMS):
+        raise SystemExit("status model self-issued an external claim")
+    validate_map(model)
+    lib = (EVAL_ROOT / "src/lib.rs").read_text(encoding="utf-8")
+    for symbol, module in (
+        ("decide_with_signed_evidence_v2", "signed_evaluation"),
+        ("decide_with_signed_longitudinal_evidence_v3", "longitudinal_time"),
+    ):
+        if f"pub use {module}::{symbol};" in lib or external_references(symbol):
+            raise SystemExit(f"external low-level decision ingress: {symbol}")
+    raw = external_references("ProductEvaluationRunnerV1")
+    if raw:
+        raise SystemExit(f"external raw product runner references: {raw}")
+    return model
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("write", "verify", "print"))
     args = parser.parse_args()
     if args.command == "verify":
         for pattern in ("test_hepta_rust_identifiers.py", "test_hepta_learning_eval_projection.py"):
-            subprocess.run([sys.executable, "-m", "unittest", "discover", "-s", str(ROOT / "scripts"),
-                            "-p", pattern], check=True)
-    value = render()
-    rendered = canonical(value)
+            subprocess.run(
+                [sys.executable, "-m", "unittest", "discover", "-s", str(ROOT / "scripts"), "-p", pattern],
+                check=True,
+            )
+    output = canonical(validate())
     if args.command == "print":
-        print(rendered, end="")
-        return
-    block = projection(value)
-    replacements = {path: replace_projection(path.read_text(encoding="utf-8"), block) for path in DOCUMENTS}
-    if args.command == "write":
-        # Explicit authoring command only. Qualification always invokes verify.
-        STATUS.write_text(rendered, encoding="utf-8")
-        for path, content in replacements.items():
-            path.write_text(content, encoding="utf-8")
-        print(json.dumps({"written": [str(path.relative_to(ROOT)) for path in [STATUS, *DOCUMENTS]]}))
-        return
-    stale = []
-    if not STATUS.is_file() or STATUS.read_text(encoding="utf-8") != rendered:
-        stale.append(str(STATUS.relative_to(ROOT)))
-    stale.extend(str(path.relative_to(ROOT)) for path, content in replacements.items()
-                 if path.read_text(encoding="utf-8") != content)
-    if stale:
-        raise SystemExit(f"learning.eval source projections are stale: {stale}; author with hepta-learning-eval-status.py write")
-    print(json.dumps({"status": "ok", "evidenceClass": "lexical_source_inventory", "documentsChecked": len(DOCUMENTS)}))
+        print(output, end="")
+    elif args.command == "write":
+        STATUS.write_text(output, encoding="utf-8")
+        print(json.dumps({"written": str(STATUS.relative_to(ROOT))}))
+    elif not STATUS.is_file() or STATUS.read_text(encoding="utf-8") != output:
+        raise SystemExit("learning.eval status is stale; run scripts/hepta-learning-eval-status.py write")
+    else:
+        print(json.dumps({"status": "ok", "evidenceClass": "lexical_source_inventory", "documentsChecked": 5}))
 
 
 if __name__ == "__main__":

@@ -1,200 +1,262 @@
 # `learning.eval` production contract
 
 This file is the normative public-surface, durability and ownership contract for
-`learning.eval`. The architectural guide, evidence-admission notes, native
-mapping, Lane E matrix and execution dossier must not weaken it. Generated source
-truth is recorded in
+`learning.eval`. The architectural guide, native mapping, Lane E matrices and
+execution dossiers may add detail but may not weaken this contract. Generated
+lexical source truth is recorded in
 [`docs/modules/learning.eval/CURRENT_STATUS.json`](../../docs/modules/learning.eval/CURRENT_STATUS.json).
 
 ## Authority boundary
 
-An evaluation can establish eligibility for a later independent consumer. It
-never selects, activates, promotes or releases a candidate. Every evaluation,
-attempt, admission, compaction and qualification receipt remains
-`AuthorityPosture::DENY_ALL`.
+An evaluation may establish eligibility for a later independent consumer. It
+never selects, activates, promotes, deploys or releases a candidate. Evaluation,
+attempt, admission, archive, checkpoint, compaction and qualification receipts
+remain `AuthorityPosture::DENY_ALL`.
 
-## API classification
+Source presence, source tests and repository CI are not target-host qualification,
+independent acceptance, activation or release authority.
 
-| Surface | Status | Permitted use |
+## Public and internal surfaces
+
+| Surface | Classification | Required use |
 |---|---|---|
-| `RecordedProductEvaluationRunnerV1::evaluate_temporal_comparison` | **Production evaluation ingress** | Runs the product comparison while mandating a durable attempt journal before held-out observations are released |
-| `RecordedProductEvaluationRunnerV1::qualify_and_persist` | **Production qualification ingress** | Builds the exact bound bundle internally, runs signed V2/V3 verification and requires durable evidence publication |
-| `freeze_product_evaluation_plan_v1` | **Production plan freeze** | Freezes V2 metric roles, metric-to-estimator mapping and candidate/baseline temporal plan identities before holdout release |
-| `evaluation_signing_payload_v2` / `longitudinal_evaluation_signing_payload_v3` | **Public signer contracts** | External signers attest exactly the runner-derived bundle/timing bytes |
-| `admit_signed_eligibility_v2` | **Consumer-bound, non-product admission** | Authenticates one frozen V2 evaluation and binds the authority-free result to one concrete downstream request or proposal; it cannot mint product qualification |
-| `decide_with_signed_evidence_v2` / `decide_with_signed_longitudinal_evidence_v3` | **Crate-internal verification primitives** | Never external cross-crate ingress |
-| `FencedFinalHoldoutOwnerV1` + `FinalHoldoutCasStoreV1` | **Production-required holdout owner** | Linearizable CAS, monotonic writer fencing and accepted-or-unknown reconciliation |
-| `LockedFileFinalHoldoutCasStoreV1` | Concrete single-filesystem backend | Cross-process lock, checksummed append, fsync, anti-rollback anchor, verified copy-compaction |
-| `ReconciledProductQualificationSinkV1` | **Canonical publication adapter** | Idempotent load-before-write and read-after-unknown reconciliation keyed by temporal execution digest |
-| `LockedFileProductEvaluationAttemptJournalV1` | **Concrete attempt journal** | Records irreversible holdout consumption and one sealed/failed terminal transition |
-| `DurableFinalHoldoutJournalV1` | Single-host/cooperative compatibility | Local durability only when the host guarantees one exclusive namespace |
-| `trusted_inprocess::decide_independently{,_v2}` | **Trusted-only compatibility** | Explicit feature-gated tests and bounded migration fixtures only |
-| `trusted_inprocess::evaluate_legacy_inprocess_v1` | **Deprecated / trusted-only** | Legacy deterministic comparator; never production qualification |
+| `RecordedProductEvaluationRunnerV1::evaluate_temporal_comparison` | default product evaluation ingress | persists intent before provider/holdout access and records consumption before observations are released |
+| `RecordedProductEvaluationRunnerV1::qualify_and_persist` | default product qualification ingress | builds the exact bundle internally, verifies signed V2/V3 evidence and requires durable publication |
+| `freeze_product_evaluation_plan_v1` | production plan freeze | freezes metric roles, estimator mapping and candidate/baseline temporal identities before holdout use |
+| `CrossFoldPlanV1::execute_temporal_cross_fit_v1` | bounded statistical source executor | executes every preregistered temporal fold and requires exact lineage and recomputed output-digest equality |
+| `SequentialPlan::estimate_cluster_intervals_v1` | fixed-analysis sequential confidence source | adds conservative clustered intervals under a preregistered absolute return envelope; it is not anytime-valid |
+| `admit_signed_eligibility_v2` | consumer-bound non-product admission | authenticates one exact evaluation and binds an authority-free result to one concrete consumer use |
+| `decide_with_signed_evidence_v2` / `decide_with_signed_longitudinal_evidence_v3` | crate-internal verification primitives | never cross-crate product ingress |
+| `ProductEvaluationRunnerV1` | raw compatibility runner | crate-private by default and public only with `trusted-inprocess-eval` |
+| `FencedFinalHoldoutOwnerV1` + `FinalHoldoutCasStoreV1` | required contended holdout owner | linearizable CAS, writer fencing and accepted-or-unknown recovery |
+| `ReconciledProductQualificationSinkV1` | canonical publication adapter | load-before-write and exact read-after-indeterminate reconciliation |
+| `LockedFileProductEvaluationAttemptJournalV1` | concrete attempt journal | complete lifecycle, capacity reservation, unresolved index, checkpoint and tail replay |
+| `AnchoredProductEvaluationAttemptJournalV1` | default durable journal capability | acknowledges append only after file sync and independent anchor CAS |
 
-The `trusted_inprocess` module is absent from default builds. Compiler-enforced
-negative fixtures must prove the low-level V2/V3 decision functions cannot be
-imported by another crate.
+The `trusted_inprocess` compatibility module is absent from default builds.
+Production manifests must exclude `trusted-inprocess-eval`, including transitive
+feature unification. Compiler-negative fixtures, not comments or lexical scans,
+are required to prove the default public boundary.
 
-## Signed admission
+## Statistical source contracts
 
-For ordinary product qualification:
+### Temporal cross-fit
 
-1. freeze the V2 plan, metric roles and metric source mapping before observing
-   the final holdout;
-2. durably consume the exact frozen plan through the authoritative fenced owner;
-3. record the consumed transition in the attempt journal before the provider can
-   release observations;
-4. authenticate the generator signature over the frozen plan digest;
-5. authenticate the evaluator signature over the exact V2 payload;
-6. verify current host-owned trust, objective, scope, authority epoch, lifetime
-   and revocation, with required actor/key/credential/controller separation;
-7. run the bound support, statistical, safety and claim-scope checks;
-8. record a sealed or failed terminal attempt transition;
-9. persist qualification evidence through an idempotent reconciled sink;
-10. return a sealed product qualification receipt only after durable publication.
+`CrossFoldPlanV1::execute_temporal_cross_fit_v1` executes an already frozen
+analysis contract. It canonicalizes fold order and requires:
 
-A `SystemLongitudinal` claim additionally requires V3 signed observer/time
-evidence. Synthetic future IDs, virtual clocks and source tests are never real
-future-calendar efficacy evidence.
+- exact one-to-one coverage of declared folds;
+- exact training and held-out principal, episode and window lineage sets;
+- no held-out decision identity reused across folds;
+- bounded aggregate rows and action cells;
+- actual `fit_temporal_fold` model and prediction digests equal to the
+  preregistered fold digests.
 
-`admit_signed_eligibility_v2` is intentionally narrower than product
-qualification. The caller must supply a nonzero digest of the complete concrete
-consumer context. Its sealed receipt authenticates and binds the decision but
-does not consume a holdout, publish product evidence or create selection,
-activation, promotion or release authority.
+The executor does not authenticate caller-supplied provenance and does not turn
+synthetic fixtures into real future-calendar efficacy evidence.
+
+### Sequential confidence
+
+`SequentialPlan::estimate_cluster_intervals_v1` layers conservative fixed-analysis
+cluster intervals over finite-horizon PDIS/DR. The confidence plan, minimum
+cluster count and absolute trajectory-return envelope are preregistered. Too few
+clusters or an observed estimate outside the envelope is a typed evidence gap.
+
+Cluster labels remain supplied evidence requiring independent provenance. This
+surface does not provide anytime-valid confidence sequences, adaptive-stopping
+safety, exchangeability proof or causal identification.
+
+## Signed admission and typed recovery
+
+For a successful product qualification, the canonical order is:
+
+1. freeze plan, roles, estimand and measurement semantics before final-holdout
+   access;
+2. reserve the complete remaining journal lifecycle before admitting a new
+   attempt;
+3. append and acknowledge `IntentPersisted` before provider manifest lookup or
+   final-holdout CAS;
+4. consume the exact frozen plan through the authoritative fenced owner;
+5. append and acknowledge `HoldoutConsumed` before the provider releases
+   observations;
+6. compute the bound estimates and append `ComparisonSealed`;
+7. build a canonical typed archive from the actual evaluation receipt,
+   qualification context, signed evidence and timing evidence, persist it
+   create-only under the selected-host binding and append
+   `QualificationArtifactsPersisted`;
+8. inside `learning.eval`, verify current trust, objective, scope, authority
+   epoch, signature lifetime, revocation and required actor/key/credential/
+   controller separation; V3 additionally verifies observer and time evidence;
+9. append `QualificationDecided` and then `PublicationPending` before invoking
+   the evidence writer;
+10. append `Published` only after the exact durable publication record is
+    observed.
+
+Recovery accepts typed archived inputs, not a caller-created
+`SignedEvaluationDecisionV1`. The module rebuilds the exact bundle and re-runs
+current V2/V3 verification. A cached, expired, revoked, wrong-scope or
+context-substituted decision cannot advance publication.
+
+`admit_signed_eligibility_v2` remains narrower than product qualification: it does
+not consume a holdout, publish product evidence or confer selection/activation
+rights.
+
+The Agentd measured-outcome consumer must bind the sealed qualification to current
+owner state and a signed exact-use payload over run, objective, snapshot,
+predecessor context, candidate set, selected candidate, evaluation, execution
+and publication identity. Computing a fresh digest for arbitrary request fields
+is not sufficient.
 
 ## Final-holdout ownership
 
-### Single host
+### Single-host compatibility
 
 `DurableFinalHoldoutJournalV1` is valid only when the host supplies an authorized
-regular file, exclusive namespace ownership, independently retained current
-anchor and durable containing-directory semantics. Its lock coordinates
-cooperating local owners; it is not a distributed lock.
+regular file, an exclusive namespace, independently retained current anchor and
+durable containing-directory semantics. A local file lock is not a distributed
+lock.
 
-### Multiple processes or hosts
+### Contended deployment
 
 A contended deployment must implement `FinalHoldoutCasStoreV1` with linearizable
-compare-and-swap semantics. The authoritative record binds:
+compare-and-swap semantics. The authoritative record binds scope, owner identity,
+positive monotonic fence generation, lease digest, complete replayable history
+and state digest. A newer generation takes ownership only through CAS and stale
+writers fail on their next transition.
 
-- scope binding;
-- writer owner identity;
-- strictly positive monotonic fence generation;
-- lease/fence digest;
-- complete replayable journal snapshot;
-- state digest.
+An accepted-or-unknown write returns `Indeterminate`, poisons the live owner and
+requires reload and reconciliation. Missing evidence is never interpreted as
+permission to consume the holdout again.
 
-A newer generation takes ownership only through CAS while preserving the
-journal. An older writer then conflicts on its next transition. A store write
-whose commit status is unknown returns `Indeterminate`; the owner poisons the
-handle and requires reload and reconciliation.
-
-The locked-file backend holds an exclusive OS lock, appends checksummed fence and
-plan frames, fsyncs each committed transition, replays on recovery and requires
-an independently retained `FinalHoldoutCasAnchorV1` minimum to reject backup
-rollback. Cross-host use additionally requires a shared filesystem whose lock and
-fsync semantics have been externally qualified as linearizable across those
-hosts.
+`LockedFileFinalHoldoutCasStoreV1` provides a concrete single-filesystem backend
+with an OS lock, checksummed append, fsync and an independently retained minimum
+anchor. Cross-host deployment additionally requires external evidence that the
+actual shared storage provides linearizable lock/CAS/fsync and directory
+semantics.
 
 ### Verified compaction
 
-Compaction always writes a new empty target file; it never truncates the source.
-It writes the current fence, replays every retained plan through the normal CAS
-path and returns only when the final record and anchor equal the source. The
-source remains the rollback/forensic predecessor until the host independently
-persists the compaction receipt, target file and containing-directory update.
-Compaction cannot erase final-holdout use history.
+`LockedFileFinalHoldoutCasStoreV1::compact_into` writes a new target and replays
+retained state through normal CAS. It returns only when final record and anchor
+equal the source. The source is never truncated by compaction and remains the
+forensic predecessor until the host durably installs the successor and receipt.
+Compaction cannot erase prior final-holdout use.
 
-## Evaluation-attempt lifecycle
+## Attempt lifecycle, capacity and checkpoints
 
-A production evaluation uses a stable attempt identity. The journal accepts only:
+The successful lifecycle is:
 
 ```text
-HoldoutConsumed -> ComparisonSealed
-HoldoutConsumed -> Failed
+IntentPersisted
+  -> HoldoutConsumed
+  -> ComparisonSealed
+  -> QualificationArtifactsPersisted
+  -> QualificationDecided
+  -> PublicationPending
+  -> Published
 ```
 
-Exact retries return the existing event. A terminal event without consumption,
-a different plan or holdout under the same attempt identity, a second conflicting
-terminal state, a truncated frame or a concurrent second writer fails closed.
-The holdout-consumed event is committed before released observations reach the
-estimator. A failure after consumption therefore remains auditable and cannot be
-mistaken for permission to reuse the holdout.
+Known pre-consumption rejection may terminate as `RejectedBeforeHoldout`; known
+post-consumption evaluation failure may terminate as `Failed`. Exact duplicate
+transitions are idempotent. Skipped phases, changed plan/holdout/archive/request,
+conflicting terminal states, truncated frames or a concurrent writer fail closed.
 
-## Qualification publication and reconciliation
+### Capacity reservation
 
-`ProductQualificationEvidenceSinkV1` implementations used in production must
-provide exactly-once semantic publication. The canonical adapter uses a
-`ProductQualificationPublicationStoreV1` keyed by temporal execution digest:
+Before a new intent is admitted, `AttemptCapacity::project` reserves the
+worst-case remaining success phases in both bytes and event count. New work is
+rejected when the reservation would cross journal limits. Existing admitted work
+retains its completion budget and later admissions cannot consume it.
+
+The ordered unresolved-attempt index is rebuildable from canonical history and
+updated with the addressed transition. `pending(after, limit)` is bounded to
+1..1024 and traverses unresolved identities rather than all completed history.
+The index is never a source of truth.
+
+### Independently anchored checkpoint and tail replay
+
+`LockedFileProductEvaluationAttemptJournalV1::checkpoint_into` writes a canonical
+reducer snapshot to a new regular file and binds the snapshot digest, journal
+byte frontier, event count and rolling journal state into a checkpoint record.
+The checkpoint record digest is retained under a domain-separated binding in an
+independent anchor authority.
+
+`recover_with_checkpoint` requires the normal journal anchor, the derived
+checkpoint anchor, the checkpoint file and the original append-only journal. It
+restores reducer state and replays only complete later frames. It rejects
+checkpoint substitution, a checkpoint newer than the normal anchor, stale
+journal restore, conflicting tail or truncation.
+
+Checkpointing never truncates or replaces the source journal and never lowers the
+normal anti-rollback anchor. A same-process fixture or trait implementation is
+not proof of independently administered storage.
+
+## Publication and reconciliation
+
+A production `ProductQualificationPublicationStoreV1` must provide exactly-once
+semantic publication keyed by execution digest:
 
 1. load before write;
-2. return an existing record only when every bound decision/trust/authentication
-   digest matches;
-3. reject semantic conflicts without overwrite;
-4. on `Indeterminate`, retain the pending request and load again;
+2. accept an existing record only when all request, decision, trust and
+   authentication digests match;
+3. reject semantic conflict without overwrite;
+4. after `Indeterminate`, retain the pending request and load again;
 5. report success only after the exact committed record is observed.
 
-A host may implement an equivalent protocol, but a bare append sink without
-idempotency and accepted-but-unknown reconciliation is not production-qualified.
+`PublicationPending` is a read-reconciliation state. Absence after an unknown or
+submitted write is not permission to call the writer again. A recovered
+`QualificationDecided` may perform the first write only after loading the exact
+typed archive and completing current internal verification.
 
-## Canonical product evaluation chain
+## Canonical product and consumer chain
 
-The recorded runner freezes metric-to-estimator mapping into the bound estimand,
-consumes the final holdout, records consumption, and only then invokes
-`FinalHoldoutProviderV1::release_after_consumption`. Candidate and baseline
-intervals are derived from sealed temporal and cluster receipts over the same
-cohort; a caller cannot submit replacement `MetricGateV1` intervals. The runner
-builds the signed qualification bundle itself and returns success only after the
-evidence sink reports a nonzero durable publication digest.
+The recorded runner freezes estimator mapping, consumes the final holdout,
+records consumption, and only then permits observations to enter estimation.
+Candidate and baseline intervals are derived from sealed estimator receipts over
+the same authenticated cohort; callers cannot replace final `MetricGateV1`
+values after observing the holdout.
 
-The resulting `ProductQualificationReceiptV1` has a private integrity seal and
-binds candidate, evaluator, generator, objective, dataset, snapshots, claim
-scope, signed decision and durable publication. The repository-controlled signed
-consumer `run_evaluated_shadow_v1` accepts only that sealed receipt and rechecks
-current trust, dataset, candidate and evaluator bindings. This closes the source
-product spine without claiming runtime activation or release.
+Single- and multi-outcome paths share the typed archive, publication lifecycle,
+selected-host store and recovery controller. The internal single-stream carrier
+cannot be extracted to masquerade as multiple independently measured outcomes.
 
-Agentd request admission and governed plasticity proposals use the separate
-consumer-bound admission facade. Their concrete run/proposal context digest is
-bound into the sealed admission receipt. Neither path is a substitute for a
-product qualification receipt.
+Repository consumers recheck current trust and exact use binding. Every result
+remains `DENY_ALL`; eligibility is not selection, promotion, activation, effect
+or release authority.
 
-## CI closure evidence
+## Qualification evidence
 
-The `Hepta Lane E gap closure` workflow must retain commit-addressed exact-head
-and ordered-parent synthetic-merge evidence. At minimum it binds:
+Final source qualification requires one immutable candidate and its ordered-
+parent synthetic merge to retain passing artifacts for:
 
-- source commit and tree;
-- workflow run and build identities;
-- `Cargo.lock`, this contract, native mapping and traceability digests;
-- compiler-enforced negative and positive public-API fixtures;
-- owner, consumer-bound admission, attempt-journal, reconciliation, compaction,
-  cross-crate and cross-language tests;
-- `>=85%` measured line coverage;
-- storage profile and fault-injection logs;
-- creation time and expiry.
+- source identity and clean-tree checks;
+- default and compatibility API tests;
+- all-target compilation;
+- owner and consumer tests;
+- typed archive and two-process cold recovery;
+- process-kill fault cuts and publication reconciliation;
+- lifecycle reservation, unresolved backlog, checkpoint/tail recovery and
+  sustained profile;
+- temporal cross-fit and sequential-confidence tests;
+- strict Clippy, rustfmt and measured line coverage at or above the declared
+  threshold.
 
-The evidence manifest is provenance-attested by GitHub Actions. It proves
-repository source/CI facts only.
+Queued, pending, skipped, cancelled or infrastructure-invalid jobs are not
+passing evidence.
 
-## Target-host and external qualification
+## Target-host and external gates
 
-The external packet and verifier are documented in
-[`TARGET_HOST_QUALIFICATION.md`](../../docs/modules/learning.eval/TARGET_HOST_QUALIFICATION.md).
-The following remain independent gates:
+Repository source and CI cannot self-issue:
 
-- host authentication and durable namespace binding;
-- selected-filesystem CAS, lock, fsync, directory and backup behavior;
-- real future-calendar outcomes and independent snapshots;
-- retention, change-point, power, subgroup/privacy and unlearning evidence;
+- authenticated target-host identity or independent anchor administration;
+- real provider/publication topology and persistent supervisor invocation;
+- network-filesystem linearizability or deployment durability;
+- real future-calendar outcomes and independent measurement provenance;
+- retention, change-point, power, subgroup/privacy, unlearning and backup
+  non-resurrection evidence;
 - independent semantic/operator acceptance;
-- selection, canary, promotion, activation and release authorization.
+- selection, canary, promotion, activation or release authority.
 
-## Completion states
-
-`source_qualified_exact_head` may be claimed only for the immutable commit whose
-exact head and ordered-parent synthetic merge both pass the mandatory workflow
-and produce the required attested artifacts. `targetHostQualified`, independent
-acceptance, activation and release remain false unless their separate external
-packet passes its verifier. No repository source or CI job may collapse those
-states.
+`productionImplementation`, `targetHostQualified`, `independentAcceptance`,
+activation and release remain false until their separate evidence and authority
+gates pass.
