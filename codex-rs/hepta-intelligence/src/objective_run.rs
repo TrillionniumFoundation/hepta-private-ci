@@ -32,7 +32,7 @@ use codex_hepta_objective::ValidatedAdmissionProfileV1;
 use codex_hepta_objective::canonical_native_objective_conflict_bytes_v1;
 use codex_hepta_objective::canonical_native_objective_semantic_bytes_v1;
 use codex_hepta_objective::compile_authoritative_objective_v1;
-use codex_hepta_objective::encode_authenticated_objective_function_v1;
+use codex_hepta_objective::encode_proof_bearing_objective_function_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -116,6 +116,15 @@ pub fn compile_and_publish_objective_run_v1(
     let validated_profile = ValidatedAdmissionProfileV1::from_profile(profile)?;
     let proof_bearing =
         compile_authoritative_objective_v1(envelope, &validated_profile, context)?;
+    let protocol = if proof_bearing.outcome().compile_result.is_ok() {
+        Some(encode_proof_bearing_objective_function_v1(
+            &proof_bearing,
+            envelope,
+            &validated_profile,
+        )?)
+    } else {
+        None
+    };
     let (outcome, admission_proof) = proof_bearing.into_parts();
     let receipt = outcome.receipt;
     let deadline_unix_micros = receipt
@@ -165,9 +174,9 @@ pub fn compile_and_publish_objective_run_v1(
             RunStartStoreError::ObjectiveDigestMismatch,
         ));
     }
-    let objective_function_v1 = encode_authenticated_objective_function_v1(
-        &objective, envelope, profile, context, &receipt,
-    )?;
+    let objective_function_v1 = protocol.ok_or(ObjectiveFunctionV1Error::ProjectionMismatch(
+        "compiled objective requires a proof-bound protocol artifact",
+    ))?;
     if objective_function_v1.native_semantic_digest() != objective.objective.semantic_digest {
         return Err(ObjectiveRunError::Protocol(
             ObjectiveFunctionV1Error::ProjectionMismatch("native semantic identity"),

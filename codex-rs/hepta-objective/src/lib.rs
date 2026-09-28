@@ -16,6 +16,7 @@ mod feasibility_model;
 mod model;
 mod objective_admission;
 mod objective_function_v1;
+mod proof_projection;
 mod scalar_adapter;
 mod source_envelope_json;
 mod source_envelope_json_dto;
@@ -86,6 +87,7 @@ pub use objective_function_v1::decode_objective_function_v1;
 pub use objective_function_v1::encode_authenticated_objective_function_v1;
 #[cfg(test)]
 pub(crate) use objective_function_v1::encode_objective_function_v1;
+pub use proof_projection::encode_proof_bearing_objective_function_v1;
 pub use source_envelope_json::MAX_OBJECTIVE_SOURCE_JSON_INPUT_BYTES;
 pub use source_envelope_json::ObjectiveSourceJsonError;
 pub use source_envelope_json::decode_source_envelope_json_v1;
