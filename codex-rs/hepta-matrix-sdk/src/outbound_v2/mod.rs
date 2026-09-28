@@ -22,14 +22,21 @@ use crate::authority::MatrixOutboundAuthorizer;
 use crate::authority::MatrixOutboundIdentity;
 use crate::authority::build_matrix_final_use_request;
 
+mod admission;
 mod clock;
 mod gate;
 mod permit;
 mod retry;
+mod settlement;
+mod telemetry;
+use admission::Admission;
+use admission::admit_claim;
 use clock::DispatchClock;
 use gate::FinalSendGate;
 pub use permit::MatrixSendPermit;
 use retry::*;
+use settlement::settle_entered;
+use telemetry::TelemetryWindow;
 
 const PARKED_RECONCILIATION_AT_MS: u64 = i64::MAX as u64;
 
@@ -39,9 +46,7 @@ pub type MatrixSendFuture<'a> =
 /// Unforgeable safe-code admission to the raw transport implementation.
 ///
 /// This type is public only because [`MatrixOutboundTransport`] is implementable
-/// by external deterministic fixtures. Its field is private, so downstream
-/// callers cannot invoke the raw `send` method directly. The durable final gate
-/// constructs it only after validating a sealed [`MatrixSendPermit`].
+/// by external deterministic fixtures. Its field is private.
 ///
 /// ```compile_fail
 /// use codex_hepta_matrix_sdk::MatrixRawSendSeal;
@@ -53,14 +58,11 @@ pub struct MatrixRawSendSeal {
 }
 
 /// Lazy Matrix transport driven by the durable sender's final gate.
-/// The concrete SDK rejects unsealed entry. Deterministic fixture transports
-/// may retain the legacy method behind the default sealed adapter.
 pub trait MatrixOutboundTransport: Send + Sync {
     /// Return the exact authenticated Matrix transport/session identity.
     fn identity(&self) -> Result<MatrixOutboundIdentity, MatrixTransportError>;
 
-    /// Raw implementation seam. Safe downstream code cannot construct `seal`;
-    /// only this module's permit-validating adapter can enter it.
+    /// Raw implementation seam; safe downstream code cannot construct the seal.
     #[doc(hidden)]
     fn send<'a>(
         &'a self,
@@ -117,6 +119,7 @@ pub struct OutboxDispatchConfig {
     pub retry_delay_ms: u64,
     pub max_retry_delay_ms: u64,
     pub max_attempts: u64,
+    /// Maximum work per pass, not the number of leases reserved in advance.
     pub claim_limit: usize,
     pub idle_poll: Duration,
 }
@@ -146,7 +149,9 @@ impl OutboxDispatchConfig {
     }
 }
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+/// Per-pass counters. Timings are measurements, never deployment SLOs.
+/// No transaction, room, user, grant, capability or message bytes are retained.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, serde::Serialize)]
 pub struct OutboxDispatchStats {
     pub claimed: u64,
     pub sent: u64,
@@ -156,6 +161,17 @@ pub struct OutboxDispatchStats {
     pub retry_scheduled: u64,
     pub permanent_failure: u64,
     pub cancelled: bool,
+    pub entered_attempts: u64,
+    pub pre_entry_failures: u64,
+    pub post_entry_failures: u64,
+    pub claim_to_first_poll_samples: u64,
+    pub claim_to_first_poll_ms: u64,
+    pub claim_to_first_poll_max_ms: u64,
+    pub transport_polls: u64,
+    pub payload_digest_checks: u64,
+    pub payload_digest_ns: u64,
+    pub dynamic_checks: u64,
+    pub dynamic_check_ns: u64,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
@@ -185,267 +201,69 @@ pub async fn dispatch_outbox_once<
     cancel: &CancellationToken,
     now_ms: u64,
 ) -> Result<OutboxDispatchStats, OutboxDispatchError> {
+    let mut stats = OutboxDispatchStats::default();
+    dispatch_pass(store, transport, authorizer, config, cancel, now_ms, &mut stats).await?;
+    Ok(stats)
+}
+
+async fn dispatch_pass<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>(
+    store: &MatrixDurableStore,
+    transport: &T,
+    authorizer: &A,
+    config: &OutboxDispatchConfig,
+    cancel: &CancellationToken,
+    now_ms: u64,
+    stats: &mut OutboxDispatchStats,
+) -> Result<(), OutboxDispatchError> {
     if !config.is_valid() {
         return Err(OutboxDispatchError::Invalid);
     }
     let clock = DispatchClock::new(now_ms);
-    if cancel.is_cancelled() {
-        return Ok(OutboxDispatchStats {
-            cancelled: true,
-            ..OutboxDispatchStats::default()
-        });
-    }
-    let claims = store
-        .claim_outbox_fenced(now_ms, config.lease_ms, config.claim_limit)
-        .await
-        .map_err(store_error)?;
-    let mut stats = OutboxDispatchStats {
-        claimed: claims.len() as u64,
-        ..OutboxDispatchStats::default()
-    };
-    for index in 0..claims.len() {
-        let claim = &claims[index];
-        let record = claim.record();
-        let mut entered_effect = false;
-        let attempt_result: Result<(), OutboxDispatchError> = async {
-            if cancel.is_cancelled() {
-                return Err(OutboxDispatchError::Canceled);
-            }
-            let deadline = clock.deadline(claim.lease_until_ms())?;
-            let prepared_at_ms = clock.now_ms()?;
-            let prepared = store
-                .prepare_outbox_dispatch(record, prepared_at_ms)
-                .await
-                .map_err(store_error)?;
-            if prepared.state.is_terminal() {
-                close_observed_terminal(store, claim, &prepared, &clock, &mut stats).await?;
-                return Ok(());
-            }
-            store
-                .record_outbox_prepared(claim, clock.now_ms()?)
-                .await
-                .map_err(store_error)?;
-            let identity = transport
-                .identity()
-                .map_err(|_| OutboxDispatchError::TransportIdentity)?;
-            let request = build_matrix_final_use_request(
-                store.owner_agent_id().as_str(),
-                &prepared,
-                record,
-                &identity,
-            )
-            .map_err(authority_error)?;
-            // Pin full content and authenticated transaction scope before any
-            // grant request. A later retry cannot silently change either.
-            store
-                .pin_outbox_content(
-                    claim,
-                    &request.payload_digest,
-                    &request.scope_digest,
-                    clock.now_ms()?,
-                )
-                .await
-                .map_err(store_error)?;
-            let signed = tokio::select! {
-                biased;
-                _ = cancel.cancelled() => return Err(OutboxDispatchError::Canceled),
-                result = tokio::time::timeout_at(deadline, authorizer.signed_grant(&request)) => {
-                    result.map_err(|_| OutboxDispatchError::LeaseExpired)?.map_err(authority_error)?
-                }
-            };
-            // This is an early refresh for nonce admission. The final gate
-            // refreshes again in the very poll which enters the adapter.
-            authorizer.refresh_revocations().map_err(authority_error)?;
-            let token = authorizer
-                .authority()
-                .claim(&signed, &request.binding)
-                .map_err(|_| OutboxDispatchError::Authority)?;
-            let claimed_authority_epoch = token.claimed_authority_epoch();
-            let claimed_revocation_revision = token.claimed_revocation_revision();
-            if claimed_authority_epoch != signed.grant.authority_epoch {
-                return Err(OutboxDispatchError::Authority);
-            }
-            let witness = MatrixOutboxAuthorityWitness {
-                authority_epoch: claimed_authority_epoch,
-                revocation_revision: claimed_revocation_revision,
-                grant_id: signed.grant.grant_id.clone(),
-                verified_use_witness_sha256: hex_digest(token.witness_sha256()),
-                revocation_head_sha256: hex_digest(token.claimed_revocation_head_sha256()),
-            };
-            store
-                .record_outbox_authorized(claim, &witness, clock.now_ms()?)
-                .await
-                .map_err(store_error)?;
-            store
-                .record_dispatch_authority_claim(
-                    &record.stable_txn_id,
-                    &MatrixDispatchAuthorityClaim {
-                        operation_id: request.operation_id.clone(),
-                        subject_id: request.subject_id.clone(),
-                        destination_id: request.destination_id.clone(),
-                        homeserver_id: request.homeserver_id.clone(),
-                        matrix_user_id: request.matrix_user_id.clone(),
-                        device_id: request.device_id.clone(),
-                        session_generation: request.session_generation,
-                        authority_epoch: claimed_authority_epoch,
-                        revocation_revision: claimed_revocation_revision,
-                        grant_id: signed.grant.grant_id.clone(),
-                        request_digest: request.request_digest.clone(),
-                        scope_digest: request.scope_digest.clone(),
-                        // Preserve migration-6 source-body digest semantics.
-                        // Migration 8 separately retains signed canonical content.
-                        payload_digest: prepared.payload_digest.clone(),
-                        attempt: record.attempts,
-                        expires_at_ms: signed.grant.expires_at_unix_ms,
-                        claimed_at_ms: system_time_ms()?,
-                    },
-                )
-                .await
-                .map_err(store_error)?;
-            if cancel.is_cancelled() {
-                return Err(OutboxDispatchError::Canceled);
-            }
-            // Durable intent is NOT a statement that physical entry happened.
-            store
-                .record_outbox_dispatching(claim, clock.now_ms()?)
-                .await
-                .map_err(store_error)?;
-            clock.deadline(claim.lease_until_ms())?;
-            let gate = FinalSendGate {
-                store,
-                claim,
-                clock: &clock,
-                transport,
-                authorizer,
-                expected_identity: &identity,
-                record,
-                cancel,
-                deadline,
-            };
-            let entered = gate.enter_verified_use(token, &request.binding).await?;
-            entered_effect = true;
-            let outcome_at_ms = clock.now_ms()?;
-            match entered.result {
-                Ok(event_id) => {
-                    let observed = store
-                        .record_outbox_transport_accepted(
-                            &record.stable_txn_id,
-                            record.attempts,
-                            &event_id,
-                            outcome_at_ms,
-                        )
-                        .await
-                        .map_err(store_error)?;
-                    stats.transport_accepted += 1;
-                    if observed.state.is_terminal() {
-                        close_observed_terminal(store, claim, &observed, &clock, &mut stats)
-                            .await?;
-                    } else {
-                        let scheduled_at_ms = clock.now_ms()?;
-                        let next = reconciliation_attempt_at(config, record, scheduled_at_ms)?;
-                        store
-                            .finish_outbox_transport_accepted(
-                                claim,
-                                &event_id,
-                                scheduled_at_ms,
-                                next,
-                            )
-                            .await
-                            .map_err(store_error)?;
-                        count_retry(&mut stats, next);
-                    }
-                }
-                Err(MatrixTransportError::Permanent) => {
-                    let observed = store
-                        .record_outbox_transport_rejected(
-                            &record.stable_txn_id,
-                            record.attempts,
-                            outcome_at_ms,
-                        )
-                        .await
-                        .map_err(store_error)?;
-                    if matches!(
-                        observed.state,
-                        MatrixDispatchState::Accepted | MatrixDispatchState::Indeterminate
-                    ) {
-                        store
-                            .finish_outbox_indeterminate(
-                                claim,
-                                MatrixAttemptFailureClass::Permanent,
-                                /*retry_after_ms*/ None,
-                                clock.now_ms()?,
-                                PARKED_RECONCILIATION_AT_MS,
-                            )
-                            .await
-                            .map_err(store_error)?;
-                        stats.indeterminate += 1;
-                    } else if observed.state == MatrixDispatchState::Failed {
-                        store
-                            .finish_outbox_permanently_rejected(claim, clock.now_ms()?)
-                            .await
-                            .map_err(store_error)?;
-                        stats.permanent_failure += 1;
-                    } else if observed.state.is_terminal() {
-                        // A concurrent sync terminal fact wins over this
-                        // attempt's later rejection; do not invent failure.
-                        close_observed_terminal(store, claim, &observed, &clock, &mut stats)
-                            .await?;
-                    } else {
-                        return Err(OutboxDispatchError::Store);
-                    }
-                }
-                Err(error) => {
-                    let observed = store
-                        .record_outbox_transport_indeterminate(
-                            &record.stable_txn_id,
-                            record.attempts,
-                            outcome_at_ms,
-                        )
-                        .await
-                        .map_err(store_error)?;
-                    if observed.state.is_terminal() {
-                        close_observed_terminal(store, claim, &observed, &clock, &mut stats)
-                            .await?;
-                    } else {
-                        let scheduled_at_ms = clock.now_ms()?;
-                        let next = classified_retry_at(config, record, scheduled_at_ms, error)?;
-                        store
-                            .finish_outbox_indeterminate(
-                                claim,
-                                failure_class(error),
-                                retry_after_hint(error),
-                                scheduled_at_ms,
-                                next,
-                            )
-                            .await
-                            .map_err(store_error)?;
-                        count_retry(&mut stats, next);
-                    }
-                }
-            }
-            Ok(())
+    for _ in 0..config.claim_limit {
+        if cancel.is_cancelled() {
+            stats.cancelled = true;
+            break;
         }
-        .await;
-        if let Err(error) = attempt_result {
-            // Never release an entered/unknown effect as a pre-entry cancel.
-            // Every other claimed row is still independently safe to release.
-            let remaining = if entered_effect { index + 1 } else { index };
-            release_pre_entry_claims(
-                store,
-                &claims[remaining..],
-                &clock,
-                !entered_effect && error == OutboxDispatchError::Authority,
-            )
-            .await?;
-            if error == OutboxDispatchError::Canceled {
-                stats.cancelled = true;
-                break;
+        // Acquire immediately before preparation. Later messages keep no lease
+        // while an earlier message waits on SQLite, the broker or transport.
+        let claims = store
+            .claim_outbox_fenced(clock.now_ms()?, config.lease_ms, /*limit*/ 1)
+            .await
+            .map_err(store_error)?;
+        let Some(claim) = claims.first() else {
+            break;
+        };
+        stats.claimed += 1;
+        match admit_claim(store, transport, authorizer, claim, &clock, cancel, stats).await {
+            Ok(Admission::AlreadyTerminal) => {}
+            Ok(Admission::Entered(entered)) => {
+                // No pre-entry cleanup is reachable from this arm. In
+                // particular, a failed timestamp or outcome write leaves the
+                // exact entered claim fenced for recovery, not released.
+                if let Err(error) = settle_entered(store, &entered, config, &clock, stats).await {
+                    stats.post_entry_failures += 1;
+                    return Err(error);
+                }
             }
-            return Err(error);
+            Err(error) => {
+                stats.pre_entry_failures += 1;
+                release_pre_entry_claims(
+                    store,
+                    &claims,
+                    &clock,
+                    error == OutboxDispatchError::Authority,
+                )
+                .await?;
+                if error == OutboxDispatchError::Canceled {
+                    stats.cancelled = true;
+                    break;
+                }
+                return Err(error);
+            }
         }
     }
     stats.cancelled |= cancel.is_cancelled();
-    Ok(stats)
+    Ok(())
 }
 
 async fn close_observed_terminal(
@@ -458,8 +276,6 @@ async fn close_observed_terminal(
     let kind = match observed.state {
         MatrixDispatchState::Succeeded => MatrixDispatchAttemptEventKind::Confirmed,
         MatrixDispatchState::Redacted => MatrixDispatchAttemptEventKind::Redacted,
-        // The remote effect exists, but no qualified authority claim follows
-        // from that fact. Do not misreport it as a permanent transport failure.
         MatrixDispatchState::ObservedUnqualified => {
             if observed.redaction_observation_digest.is_some() {
                 MatrixDispatchAttemptEventKind::Redacted
@@ -498,25 +314,35 @@ pub async fn run_outbox_sender<
     config: &OutboxDispatchConfig,
     cancel: &CancellationToken,
 ) -> Result<(), OutboxDispatchError> {
+    let mut telemetry = TelemetryWindow::new();
     loop {
         if cancel.is_cancelled() {
+            telemetry.flush(/*error*/ None);
             return Ok(());
         }
-        let stats = dispatch_outbox_once(
+        let mut stats = OutboxDispatchStats::default();
+        let result = dispatch_pass(
             store,
             transport,
             authorizer,
             config,
             cancel,
             system_time_ms()?,
+            &mut stats,
         )
-        .await?;
+        .await;
+        // Also retain partial counters when a pass fails after entry.
+        telemetry.observe(&stats, result.as_ref().err().copied());
+        result?;
         if stats.cancelled {
             return Ok(());
         }
         if stats.claimed == 0 {
             tokio::select! {
-                _ = cancel.cancelled() => return Ok(()),
+                _ = cancel.cancelled() => {
+                    telemetry.flush(/*error*/ None);
+                    return Ok(());
+                }
                 _ = tokio::time::sleep(config.idle_poll) => {}
             }
         }

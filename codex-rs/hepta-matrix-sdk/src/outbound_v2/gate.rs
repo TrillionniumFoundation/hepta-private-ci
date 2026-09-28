@@ -10,177 +10,189 @@ use tokio::time::Instant;
 use super::*;
 use crate::content::outbound_payload_digest;
 
-pub(super) struct FinalSendGate<'a, T: ?Sized, A: ?Sized> {
-    pub(super) store: &'a MatrixDurableStore,
-    pub(super) claim: &'a MatrixFencedOutboxClaim,
-    pub(super) clock: &'a DispatchClock,
-    pub(super) transport: &'a T,
-    pub(super) authorizer: &'a A,
-    pub(super) expected_identity: &'a MatrixOutboundIdentity,
-    pub(super) record: &'a OutboxRecord,
-    pub(super) cancel: &'a CancellationToken,
+pub(super) struct FinalSendGate<'gate, 'claim, T: ?Sized, A: ?Sized> {
+    pub(super) store: &'gate MatrixDurableStore,
+    pub(super) claim: &'claim MatrixFencedOutboxClaim,
+    pub(super) clock: &'gate DispatchClock,
+    pub(super) transport: &'gate T,
+    pub(super) authorizer: &'gate A,
+    pub(super) expected_identity: &'gate MatrixOutboundIdentity,
+    pub(super) record: &'gate OutboxRecord,
+    pub(super) cancel: &'gate CancellationToken,
     pub(super) deadline: Instant,
 }
 
-pub(super) struct EnteredSend {
+/// Once constructed, this value cannot be converted into a pre-entry failure.
+/// The exact claim and real kernel proof live through all outcome persistence.
+#[must_use]
+pub(super) struct EnteredSend<'claim> {
     pub(super) result: Result<MatrixEventId, MatrixTransportError>,
-    // A real kernel proof remains alive through outcome processing. The only
-    // additional reference belongs to the single-use, non-cloneable permit.
-    pub(super) _proof: Arc<EnteredUseToken>,
+    claim: &'claim MatrixFencedOutboxClaim,
+    proof: Arc<EnteredUseToken>,
 }
 
-impl EnteredSend {
-    fn indeterminate(proof: Arc<EnteredUseToken>) -> Self {
-        Self {
-            // Once the kernel final-use boundary has been crossed, a later
-            // persistence, freshness or adapter-construction fault must never
-            // be returned as a pre-entry failure. Conservatively preserve the
-            // same transaction as an unknown effect and reconcile it.
-            result: Err(MatrixTransportError::ResponseLost),
-            _proof: proof,
-        }
+impl<'claim> EnteredSend<'claim> {
+    pub(super) fn claim(&self) -> &'claim MatrixFencedOutboxClaim {
+        self.claim
     }
 }
 
-impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
-    FinalSendGate<'_, T, A>
+#[derive(Clone, Copy)]
+struct LiveGrant {
+    epoch: u64,
+    revision: u64,
+    expires_at_ms: u64,
+}
+
+impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
+    FinalSendGate<'_, 'claim, T, A>
 {
     pub(super) async fn enter_verified_use(
         &self,
         token: VerifiedUseToken,
         binding: &FinalUseBinding,
-    ) -> Result<EnteredSend, OutboxDispatchError> {
-        let claimed_epoch = token.claimed_authority_epoch();
-        let claimed_revision = token.claimed_revocation_revision();
-        // The durable authority claim is the only source for the grant's
-        // absolute expiry after the kernel token becomes non-serializable.
-        // Re-read the exact attempt before entry so an expired or mismatched
-        // persisted claim cannot rely only on the outbox lease deadline.
+        stats: &mut OutboxDispatchStats,
+    ) -> Result<EnteredSend<'claim>, OutboxDispatchError> {
         let authority_claim = self
             .store
             .dispatch_authority_claim(&self.record.stable_txn_id, self.record.attempts)
             .await
             .map_err(store_error)?
             .ok_or(OutboxDispatchError::Store)?;
-        if authority_claim.authority_epoch != claimed_epoch
-            || authority_claim.revocation_revision != claimed_revision
+        let grant = LiveGrant {
+            epoch: token.claimed_authority_epoch(),
+            revision: token.claimed_revocation_revision(),
+            expires_at_ms: authority_claim.expires_at_ms,
+        };
+        if authority_claim.authority_epoch != grant.epoch
+            || authority_claim.revocation_revision != grant.revision
             || authority_claim.attempt != self.record.attempts
             || authority_claim.expires_at_ms <= authority_claim.claimed_at_ms
         {
             return Err(OutboxDispatchError::Authority);
         }
-        let grant_expires_at_ms = authority_claim.expires_at_ms;
-        self.preflight(
-            claimed_epoch,
-            claimed_revision,
-            grant_expires_at_ms,
-            binding,
-        )?;
 
-        let entered = self
+        // OutboxRecord owns its bytes, and both it and binding stay immutably
+        // borrowed for this entire gate. Check canonical content once here;
+        // the sealed permit independently validates it at the adapter boundary.
+        // Only this immutable work is cached. No authority/session/time result is.
+        let started = Instant::now();
+        stats.payload_digest_checks = stats.payload_digest_checks.saturating_add(1);
+        let digest = outbound_payload_digest(self.record);
+        stats.payload_digest_ns = stats.payload_digest_ns.saturating_add(elapsed_ns(started));
+        match digest {
+            Ok(digest) if digest.as_str() == hex_digest(binding.payload_sha256) => {}
+            _ => return Err(OutboxDispatchError::Authority),
+        }
+        self.preflight(grant, stats)?;
+        let proof = self
             .authorizer
             .authority()
             .enter_verified_use(token, binding)
             .map_err(|_| OutboxDispatchError::Authority)?;
-        if !entered.matches(binding) {
-            return Err(OutboxDispatchError::Authority);
-        }
-        let proof = Arc::new(entered);
 
-        // Crossing the kernel check is a monotone audit boundary. The network
-        // has not necessarily been entered yet, but any result after this line
-        // must carry the proof back to the caller so the claim cannot be
-        // released as a pre-entry cancel/revoke. A timeout may also mean the
-        // durable entered-use write committed while its acknowledgement was
-        // lost, so that path is necessarily indeterminate.
-        let persisted = tokio::time::timeout_at(
-            self.deadline,
-            self.store.record_outbox_entered_use(
-                self.claim,
-                proof.as_ref(),
-                binding,
-                self.clock.now_ms()?,
-            ),
-        )
-        .await;
-        match persisted {
-            Ok(Ok(())) => {}
-            Ok(Err(_)) | Err(_) => return Ok(EnteredSend::indeterminate(proof)),
-        }
-        if self
-            .preflight(
-                claimed_epoch,
-                claimed_revision,
-                grant_expires_at_ms,
-                binding,
-            )
-            .is_err()
-        {
-            return Ok(EnteredSend::indeterminate(proof));
-        }
-
-        let permit = match MatrixSendPermit::new(
-            Arc::clone(&proof),
-            binding,
-            self.expected_identity,
-            self.record,
-        ) {
-            Ok(permit) => permit,
-            Err(_) => return Ok(EnteredSend::indeterminate(proof)),
+        // No fallible operation between successful kernel entry and building
+        // the typed entered value. Only continue_entered may finish this value,
+        // and its return type cannot represent a pre-entry failure.
+        let entered = EnteredSend {
+            result: Err(MatrixTransportError::ResponseLost),
+            claim: self.claim,
+            proof: Arc::new(proof),
         };
-        if self
-            .preflight(
-                claimed_epoch,
-                claimed_revision,
-                grant_expires_at_ms,
-                binding,
-            )
-            .is_err()
-        {
-            return Ok(EnteredSend::indeterminate(proof));
-        }
-        let mut send = self.transport.send_authorized(self.record, permit);
+        stats.entered_attempts = stats.entered_attempts.saturating_add(1);
+        Ok(self.continue_entered(entered, binding, grant, stats).await)
+    }
 
-        // Recheck every continuation poll: DNS, TLS and encryption may yield
-        // before the transport ever writes its request. Once the future exists,
-        // dropping it cannot prove that no bytes crossed the network boundary,
-        // so every gate stop is returned as an indeterminate transport result.
-        let gated = poll_fn(|context| {
-            if let Err(error) = self.preflight(
-                claimed_epoch,
-                claimed_revision,
-                grant_expires_at_ms,
-                binding,
-            ) {
-                return Poll::Ready(Err(error));
+    async fn continue_entered(
+        &self,
+        mut entered: EnteredSend<'claim>,
+        binding: &FinalUseBinding,
+        grant: LiveGrant,
+        stats: &mut OutboxDispatchStats,
+    ) -> EnteredSend<'claim> {
+        // All uses of ? below are confined to this inner result. In particular,
+        // a clock failure or mismatched kernel proof can NEVER escape as an
+        // ordinary admission error, even before the first network poll.
+        let observed: Result<Result<MatrixEventId, MatrixTransportError>, OutboxDispatchError> =
+            async {
+                if !entered.proof.matches(binding) {
+                    return Err(OutboxDispatchError::Authority);
+                }
+                tokio::time::timeout_at(
+                    self.deadline,
+                    self.store.record_outbox_entered_use(
+                        entered.claim,
+                        entered.proof.as_ref(),
+                        binding,
+                        self.clock.now_ms()?,
+                    ),
+                )
+                .await
+                .map_err(|_| OutboxDispatchError::Store)?
+                .map_err(store_error)?;
+                self.preflight(grant, stats)?;
+                let permit = MatrixSendPermit::new(
+                    Arc::clone(&entered.proof),
+                    binding,
+                    self.expected_identity,
+                    self.record,
+                )
+                .map_err(|_| OutboxDispatchError::Authority)?;
+                self.preflight(grant, stats)?;
+                let mut send = self.transport.send_authorized(self.record, permit);
+                let mut first_poll = true;
+                let gated = poll_fn(|context| {
+                    if let Err(error) = self.preflight(grant, stats) {
+                        return Poll::Ready(Err(error));
+                    }
+                    if first_poll {
+                        let now_ms = match self.clock.now_ms() {
+                            Ok(now_ms) => now_ms,
+                            Err(error) => return Poll::Ready(Err(error)),
+                        };
+                        let wait_ms = now_ms.saturating_sub(self.claim.claimed_at_ms());
+                        stats.claim_to_first_poll_samples =
+                            stats.claim_to_first_poll_samples.saturating_add(1);
+                        stats.claim_to_first_poll_ms =
+                            stats.claim_to_first_poll_ms.saturating_add(wait_ms);
+                        stats.claim_to_first_poll_max_ms =
+                            stats.claim_to_first_poll_max_ms.max(wait_ms);
+                        first_poll = false;
+                    }
+                    stats.transport_polls = stats.transport_polls.saturating_add(1);
+                    send.as_mut().poll(context).map(Ok)
+                });
+                tokio::select! {
+                    biased;
+                    _ = self.cancel.cancelled() => Err(OutboxDispatchError::Canceled),
+                    result = tokio::time::timeout_at(self.deadline, gated) => {
+                        result.unwrap_or(Err(OutboxDispatchError::LeaseExpired))
+                    }
+                }
             }
-            send.as_mut().poll(context).map(Ok)
-        });
-        let observed = tokio::select! {
-            biased;
-            _ = self.cancel.cancelled() => Err(OutboxDispatchError::Canceled),
-            result = tokio::time::timeout_at(self.deadline, gated) => {
-                result.unwrap_or(Err(OutboxDispatchError::LeaseExpired))
-            }
+            .await;
+        entered.result = match observed {
+            Ok(result) => result,
+            Err(OutboxDispatchError::LeaseExpired) => Err(MatrixTransportError::ReadTimeout),
+            Err(_) => Err(MatrixTransportError::ResponseLost),
         };
-        Ok(EnteredSend {
-            result: match observed {
-                Ok(result) => result,
-                Err(OutboxDispatchError::LeaseExpired) => Err(MatrixTransportError::ReadTimeout),
-                Err(_) => Err(MatrixTransportError::ResponseLost),
-            },
-            _proof: proof,
-        })
+        entered
     }
 
     fn preflight(
         &self,
-        claimed_epoch: u64,
-        claimed_revision: u64,
-        grant_expires_at_ms: u64,
-        binding: &FinalUseBinding,
+        grant: LiveGrant,
+        stats: &mut OutboxDispatchStats,
     ) -> Result<(), OutboxDispatchError> {
-        self.require_live_window(grant_expires_at_ms)?;
+        let started = Instant::now();
+        stats.dynamic_checks = stats.dynamic_checks.saturating_add(1);
+        let result = self.check_live_authority(grant);
+        stats.dynamic_check_ns = stats.dynamic_check_ns.saturating_add(elapsed_ns(started));
+        result
+    }
+
+    fn check_live_authority(&self, grant: LiveGrant) -> Result<(), OutboxDispatchError> {
+        self.require_live_window(grant.expires_at_ms)?;
         self.authorizer
             .refresh_revocations()
             .map_err(authority_error)?;
@@ -189,22 +201,15 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
             .authority()
             .revocation_head()
             .map_err(|_| OutboxDispatchError::Authority)?;
-        if head.authority_epoch != claimed_epoch || head.revision != claimed_revision {
+        if head.authority_epoch != grant.epoch || head.revision != grant.revision {
             return Err(OutboxDispatchError::Authority);
         }
         match self.transport.identity() {
             Ok(identity) if &identity == self.expected_identity => {}
             _ => return Err(OutboxDispatchError::TransportIdentity),
         }
-        match outbound_payload_digest(self.record) {
-            Ok(digest) if digest.as_str() == hex_digest(binding.payload_sha256) => {}
-            _ => return Err(OutboxDispatchError::Authority),
-        }
-        // Revocation refresh, identity lookup and canonical serialization are
-        // synchronous but may still consume wall time. Recheck the absolute
-        // grant/lease/cancel window at the last possible point before the
-        // caller constructs or polls the lazy transport future.
-        self.require_live_window(grant_expires_at_ms)
+        // Synchronous revocation refresh and identity lookup may consume time.
+        self.require_live_window(grant.expires_at_ms)
     }
 
     fn require_live_window(&self, grant_expires_at_ms: u64) -> Result<(), OutboxDispatchError> {
@@ -214,16 +219,16 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
         if Instant::now() >= self.deadline {
             return Err(OutboxDispatchError::LeaseExpired);
         }
-        // The dispatch clock gives monotonic progress from the durable claim
-        // sample, while a fresh wall-clock sample prevents a public/test caller
-        // from extending a signed grant by supplying a stale epoch. Taking the
-        // maximum is fail-closed under either caller-time or wall-time rollback.
         let now_ms = effective_grant_now(self.clock.now_ms()?, system_time_ms()?);
         if !grant_is_live(now_ms, grant_expires_at_ms) {
             return Err(OutboxDispatchError::Authority);
         }
         Ok(())
     }
+}
+
+fn elapsed_ns(started: Instant) -> u64 {
+    u64::try_from(started.elapsed().as_nanos()).unwrap_or(u64::MAX)
 }
 
 fn effective_grant_now(monotonic_now_ms: u64, wall_now_ms: u64) -> u64 {
