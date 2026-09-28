@@ -52,6 +52,14 @@ class EvidenceGateTests(unittest.TestCase):
     def test_complete_evidence_is_accepted(self):
         self.assertEqual(validate_evidence(self.evidence, self.required), [])
 
+    def test_pinned_nextest_multiline_version_is_accepted(self):
+        (self.evidence / "test-runner.log").write_text(
+            f"cargo-nextest {NEXTEST_VERSION} (revision)\n"
+            f"release: {NEXTEST_VERSION}\n"
+            "host: x86_64-unknown-linux-gnu\n"
+        )
+        self.assertEqual(validate_evidence(self.evidence, self.required), [])
+
     def test_every_required_gate_must_have_a_command_log_and_exit(self):
         for label in self.required:
             for suffix in ("command.json", "log", "exit-code"):

@@ -138,9 +138,10 @@ def validate_evidence(evidence: Path, expected: dict[str, list[str]]) -> list[st
         except (ValueError, OSError) as error:
             problems.append(f"{label}: invalid command record: {error}")
         if label == "test-runner":
-            runner = log.read_text(errors="replace").strip()
+            runner_lines = log.read_text(errors="replace").splitlines()
+            first_line = runner_lines[0].strip() if runner_lines else ""
             version = re.escape(NEXTEST_VERSION)
-            if re.fullmatch(rf"cargo-nextest {version}(?:[ \t][^\r\n]*)?", runner) is None:
+            if re.fullmatch(rf"cargo-nextest {version}(?:[ \t][^\r\n]*)?", first_line) is None:
                 problems.append("test-runner: missing or unexpected pinned nextest version")
         if label in TEST_GATES:
             body = re.sub(r"\x1b\[[0-9;]*m", "", log.read_text(errors="replace"))

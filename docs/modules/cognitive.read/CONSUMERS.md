@@ -1,59 +1,95 @@
 # cognitive.read consumer migration and evidence matrix
 
-This supplements TECHNICAL.md. Contract registration, source reference, build
-reachability, product execution, independent acceptance and activation are
-separate facts. No row in this matrix grants authority or announces migration
-completion. Existing owners remain responsible for their durable facts.
+This supplement separates contract registration, source composition, normal-product execution,
+independent acceptance and activation. A registered port is not a completed migration, and no
+row below grants authority. Durable facts remain with their existing owners.
 
-## Closed registered set
+The reviewed machine policy is
+[`CONSUMER_POLICY.json`](CONSUMER_POLICY.json). The exact-candidate audit
+`scripts/cognitive_read_consumers.py` verifies the closed seven-consumer registry, each
+consumer implementation-map blob, declared source roots, direct read-interface references,
+mapped operation and test blobs, mapped normal-product callers and their symbols. The audit
+is intentionally source-only: it never changes `productExecutionProved`, acceptance or
+activation.
 
-The authoritative inventory is `docs/contracts/CONTRACTS.json`. The source audit
-requires exactly the following producer ports, then reads each consumer's own
-implementation map and source roots from the same immutable candidate tree.
+## Reviewed consumer states
 
-| Consumer | Source discovery | Final-use and failure responsibility | Current acceptance claim |
-|---|---|---|---|
-| compact.engine | Its declared roots and mapped tests | Compact consumer plus existing operation/effect owner; qualify stale-source and budget failures | Not established by registration |
-| context.compiler | Its declared roots and mapped tests | Compiler admission plus existing model-use owner; qualify changed source and denied context | Not established by registration |
-| memory.federation | Its declared roots and mapped tests | Federation authorization and owner source-currentness; qualify denied/unavailable coverage without existence leaks | Not established by registration |
-| memory.retrieval | Its declared roots and mapped tests | Retrieval owner cut and final use; qualify exact revision/content and missing-record disposition | Not established by registration |
-| neuron.runtime | Its declared roots and mapped tests | Runtime scope/generation and effect boundary; qualify revocation and cancellation | Not established by registration |
-| objective.compiler | Its declared roots and mapped tests | Objective compilation and existing publication owner; qualify stale input and payload binding | Not established by registration |
-| utility.ndu | Its declared roots and mapped tests | Utility evaluation and independent authorization owner; qualify stale state and invalid bounds | Not established by registration |
+| Consumer | Declared product caller state | Current read boundary | Normal product caller(s) recorded by the consumer map | Migration assessment |
+|---|---|---|---|---|
+| `compact.engine` | `not_composed` | Registered contract only; no adopted read entry is claimed | None | Registered, not composed |
+| `context.compiler` | `legacy_v1_read_only_source_composed_verified_v2_not_composed` | Legacy V1 read-only owner adapter | `hepta-agentd/src/intelligence_product.rs::compile_context` | Legacy source composition exists; verified V2 ingress remains pending |
+| `memory.federation` | `composed_candidate_pending_execution` | Registered local-owner composition | `hepta-agentd/src/runtime.rs::attach_federation_after_generation_fence`; `ext/hepta-memory/src/cognitive/federation.rs::CombinedCognitiveEphemeralContributor` | Source composed; exact product execution remains pending |
+| `memory.retrieval` | `source_composed_explicit_profile_not_product_qualified` | Exact owner cut through Agentd cognitive context | `hepta-agentd/src/cognitive_context.rs::read_with_retrieval_context_and_learning` | Normal source path exists; product qualification remains pending |
+| `neuron.runtime` | `agentd_owner_source_compiled_not_daemon_lifecycle_composed` | Registered context input; no direct cognitive.read migration is claimed | `hepta-agentd/src/neuron_runtime.rs::AgentdNeuronOwner`; `hepta-intelligence/src/neuron_runtime.rs::run_neuron_tick_v1` | Owner source compiles; daemon lifecycle composition remains pending |
+| `objective.compiler` | `source_composed_authenticated_agentd_not_activated` | Registered context input through the authenticated objective host | `hepta-agentd/src/objective_runtime.rs::submit` | Authenticated source composition exists; activation and target-host evidence remain pending |
+| `utility.ndu` | `request_local_read_only_established_authenticated_owner_source_candidate_not_product_composed` | Request-local deny-all planning chain | `hepta-agentd/src/intelligence_product.rs::evaluate_utility` | Request-local read-only path is separately recorded; authenticated production owner composition remains pending |
 
-`scripts/cognitive_read_consumers.py --expected-sha <full SHA> --output
-.hepta-evidence/<new-run>/consumers.json` produces the machine-readable matrix.
-Each row includes the contract, implementation-map blob, declared source roots,
-actual read-interface references with file blobs, and mapped test file blobs.
-An empty reference set means this lexical audit did not establish a direct
-read-API reference, not that an indirect integration is impossible. A reference
-in a file is not evidence that the relevant cfg/module path was compiled.
+These strings are not manually normalized status labels. The policy binds the exact
+`productCallerState` currently published by each consumer implementation map. A state change
+therefore requires a reviewed policy update and a fresh exact-candidate audit rather than
+silently changing the interpretation of an old artifact.
 
-The artifact separately identifies the actual Agentd read and revalidation
-entry points, the private owner-cut view, the physical worker consumer, and
-owner acquisition. It does not substitute cfg(test) helper names for normal
-product entry points. Its candidate commit/tree and registry blob must match
-the qualification receipt; copying it to another candidate is invalid.
+## Final-use and error ownership
+
+The per-consumer policy records four separate facts:
+
+1. the adopted read boundary, including whether no direct migration is claimed;
+2. the owner responsible for final-use currentness;
+3. the required error distinctions at that consumer boundary; and
+4. the execution evidence still required before migration can be called complete.
+
+For example, `memory.retrieval` keeps the owner cut in the memory owner, while Agentd and the
+native worker revalidate the selected ID, revision, content and retrieval-context bindings.
+`context.compiler` keeps compiler admission separate from the provider/model-use owner.
+`utility.ndu` keeps request-local evaluation deny-all and leaves effects or durable mutation
+to independent authority owners. These responsibilities are not replaced by a successful
+lexical source scan.
+
+## Machine-readable artifact
+
+Run:
+
+```bash
+python3 scripts/cognitive_read_consumers.py \
+  --expected-sha "$(git rev-parse HEAD)" \
+  --output .hepta-evidence/<new-run>/consumers.json
+```
+
+The V2 artifact includes:
+
+- candidate commit and tree;
+- registry and policy blobs;
+- consumer implementation-map blob;
+- declared source roots;
+- direct read-interface references and exact blobs;
+- mapped operations and test blobs;
+- normal product caller paths, symbols, states and exact blobs;
+- the reviewed migration class, final-use responsibility, error mapping and required
+  execution evidence;
+- the consumer map's narrow claim flags; and
+- the shared owner-acquisition, request-local prepared view, Agentd final-use and physical
+  worker composition symbols.
+
+Missing files, missing caller symbols, policy/map state drift, an unreviewed consumer or an
+active consumer map fail the audit. A passing audit still states
+`product_execution_proved_by_audit=false`.
 
 ## Promotion requirements
 
-A consumer row may advance to product-executed only with a normal product entry,
-its exact caller blob, build configuration, exercised tests, final-use owner,
-error mapping and immutable execution receipt. Source audit output deliberately
-keeps product_execution_proved and independent_acceptance false. Independent
-review and deployment approval are not generated by the audit script.
+A consumer advances only when its normal product entry, exact caller blob, build
+configuration, relevant error mapping, final-use owner and exercised tests are captured in
+an immutable exact-head and deterministic merge receipt. Direct source references do not
+prove that a cfg/module path compiled; mapped tests do not prove that they ran; a historical
+receipt cannot be rebound to a changed caller or policy.
 
-## Data and transport limits
+The current durable SQLite adapter remains `Fact`-only. Supporting `Episode`, `Preference`
+or `Procedure` requires an owner schema migration and rollback interpretation, not a read
+port enum cast.
 
-The current durable SQLite adapter remains Fact-only. Supporting Episode,
-Preference or Procedure requires the existing owner's schema migration and
-rollback interpretation, not a read-port enum cast.
+Legacy citation ID/digest sets still lack authoritative source revisions. Canonical shadow
+equivalence therefore remains partial until an owner-issued revision binding exists; no
+default revision is invented.
 
-Legacy citation ID/digest sets lack authoritative source revisions. Canonical
-shadow equivalence therefore remains partial until an owner-issued revision
-binding is available. No default revision is invented by this matrix.
-
-ReadIdsResultV1 and ReadResultV2 canonical bytes remain local integrity formats.
-They are not admitted cross-process protocols. New transport requires explicit
-versioned protocol admission and consumer migration; an exported byte accessor
-or a successful source audit cannot provide that admission.
+`ReadIdsResultV1` and `ReadResultV2` canonical bytes remain local integrity formats. They are
+not admitted cross-process protocols. New transport requires explicit versioned protocol
+admission and consumer migration.
