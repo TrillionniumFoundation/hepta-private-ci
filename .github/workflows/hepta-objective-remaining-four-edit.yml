@@ -88,6 +88,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          out="$RUNNER_TEMP/objective-remaining-four-development"
+          mkdir -p "$out"
+          exec > >(tee "$out/python.log") 2>&1
+          set -x
           python3 -m py_compile \
             scripts/hepta-objective-evidence-project.py \
             scripts/hepta-objective-target-measure.py \
@@ -100,6 +104,10 @@ jobs:
         working-directory: codex-rs
         run: |
           set -euo pipefail
+          out="$RUNNER_TEMP/objective-remaining-four-development"
+          mkdir -p "$out"
+          exec > >(tee "$out/rust.log") 2>&1
+          set -x
           cargo fmt -p codex-hepta-objective -p codex-hepta-intelligence -p codex-hepta-agentd -- --check
           cargo test --locked -p codex-hepta-objective
           cargo test --locked -p codex-hepta-intelligence --lib objective_run
