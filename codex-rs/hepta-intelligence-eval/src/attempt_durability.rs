@@ -33,9 +33,3 @@ impl<J: ProductEvaluationAttemptJournalV1> private::Sealed for J {}
 
 #[cfg(any(test, feature = "trusted-inprocess-eval"))]
 impl<J: ProductEvaluationAttemptJournalV1> DurableProductEvaluationAttemptJournalV1 for J {}
-
-// Keep the verified publication-resume implementation in the default source
-// graph. The file contains inherent methods on RecordedProductEvaluationRunnerV1;
-// its module itself is intentionally private.
-#[path = "attempt_publication_resume.rs"]
-mod publication_resume;
