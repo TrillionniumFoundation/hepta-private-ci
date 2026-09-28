@@ -1,5 +1,7 @@
 # runtime.fleet technical development guide
 
+Current candidate supplement (2026-09-28, PR #1103): [durable execution](DURABLE_EXECUTION.md), [implemented snapshot operations](OPERATIONS.md), and [current state](CURRENT_STATE.json). These describe the SQLite owner candidate, source fixes and remaining product/qualification gates. Historical mappings below are not substitutes for current exact-source or merge receipts.
+
 Current executable behavior, component owners and implementation gaps: [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md).
 
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
@@ -49,6 +51,8 @@ None.
 ### Native source and scope
 
 The registered primary source is [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs); the concrete generic-authority consumer is [authority_port.rs](../../../codex-rs/hepta-fleet/src/authority_port.rs), and fleet revocation admission/convergence is [revocation_control.rs](../../../codex-rs/hepta-fleet/src/revocation_control.rs). Observed identifiers include `FleetRegistry`, `FleetAuthorityPort`, `FleetRevocationCoordinator`, `FleetSnapshot`, `AgentRecord`, `initialize`, `open_existing`, `register`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md) for the implemented subset and remaining product work.
+
+The current candidate additionally contains [durable_store.rs](../../../codex-rs/hepta-fleet/src/durable_store.rs), [durable_grants.rs](../../../codex-rs/hepta-fleet/src/durable_grants.rs), [durable_execution.rs](../../../codex-rs/hepta-fleet/src/durable_execution.rs), [capacity_refresh.rs](../../../codex-rs/hepta-fleet/src/capacity_refresh.rs) and [durable_metrics.rs](../../../codex-rs/hepta-fleet/src/durable_metrics.rs). Their source presence is not a completed Supervisor call path. Exact current limitations are maintained in [CURRENT_STATE.json](CURRENT_STATE.json).
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -139,6 +143,8 @@ Migrations are deterministic and checksum-bound. Store open verifies required sc
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
+The candidate's concrete SQLite migration guard and remaining quiescence/anti-rollback obligations are documented in [DURABLE_EXECUTION.md](DURABLE_EXECUTION.md#persistence-and-migration). The requirements in this section are not a claim that every target persistence guarantee has been executed or proved.
+
 ## 7. Runtime, concurrency and transaction model
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md).
@@ -169,10 +175,12 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-FleetRegistry is operated by the existing supervisor owner. Open the same registry and preserve generation/fence identity during lifecycle changes. `FleetAuthorityPort::issue` is the concrete `ModulePort::kernel.authority::runtime.fleet` source boundary for the current allocation issue mutation: it computes the exact binding from `AllocationGrant`, verifies/revalidates the live generic authority lease, then invokes `LeaseLedger::issue`. `FleetRevocationCoordinator` separately enforces current signed-head catch-up, quarantine and stale-feed admission semantics. The lease ledger remains an in-memory component; durable resource grants, deployed revocation wire fanout and real capacity observations remain implementation/deployment work. Do not launch a second fleet writer.
+FleetRegistry is operated by the existing supervisor owner. Open the same registry and preserve generation/fence identity during lifecycle changes. `FleetAuthorityPort::issue` is the concrete `ModulePort::kernel.authority::runtime.fleet` source boundary for the legacy allocation issue mutation: it computes the exact binding from `AllocationGrant`, verifies/revalidates the live generic authority lease, then invokes `LeaseLedger::issue`. `FleetRevocationCoordinator` separately enforces current signed-head catch-up, quarantine and stale-feed admission semantics. The reusable lease ledger remains in memory; the candidate now also contains SQLite-backed grants, capacity-refresh and execution-hold APIs. Their complete Supervisor composition, deployed revocation fanout and selected-host qualification remain open. Do not launch a second fleet writer.
 
 Current operating and state-format references:
 
+- [OPERATIONS.md](OPERATIONS.md).
+- [DURABLE_EXECUTION.md](DURABLE_EXECUTION.md).
 - [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
 - [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs).
 - [codex-rs/hepta-fleet/src/authority_port.rs](../../../codex-rs/hepta-fleet/src/authority_port.rs).
@@ -188,8 +196,13 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-fleet/src/lease_ledger_tests.rs](../../../codex-rs/hepta-fleet/src/lease_ledger_tests.rs); named case: `conserves_capacity_and_reuses_identical_grant`.
 - [codex-rs/hepta-fleet/src/authority_port.rs](../../../codex-rs/hepta-fleet/src/authority_port.rs); named case: `allocation_issue_consumes_exact_live_kernel_authority_lease`.
 - [codex-rs/hepta-fleet/src/revocation_control.rs](../../../codex-rs/hepta-fleet/src/revocation_control.rs); named cases cover catch-up, quarantine, stale feeds and exact acknowledgements.
+- [codex-rs/hepta-fleet/src/durable_execution_tests.rs](../../../codex-rs/hepta-fleet/src/durable_execution_tests.rs); candidate incarnation, occupancy, native process-group and nullable-telemetry tests awaiting Rust execution.
+- [scripts/test_runtime_fleet_status.py](../../../scripts/test_runtime_fleet_status.py); actual SQLite snapshot/CLI regressions.
+- [scripts/test_runtime_fleet_qualify.py](../../../scripts/test_runtime_fleet_qualify.py); failure-injected receipt-runner tests, not Cargo pass evidence.
 
 In `codex-rs`, run `just test -p codex-hepta-fleet`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md) separately labels target acceptance designs.
+
+The candidate's read-only workflow is `.github/workflows/runtime-fleet-candidate.yml`, driven by `scripts/runtime_fleet_qualify.py`. Its exact-source and deterministic synthetic-merge lanes bind full commits, trees, commands, exits, toolchain, workflow identity and log digests. The current Cargo lockfile and execution gates remain open; successful Python subsets do not close them.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -275,7 +288,10 @@ This receipt records repository source bindings for the current documentation ca
 | `renew_or_revoke` | `pub fn renew_or_revoke(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
 | kernel-authorized `allocate` | `FleetAuthorityPort::issue` | `codex-rs/hepta-fleet/src/authority_port.rs` | inline exact-binding/revocation tests |
 | revocation fleet admission | `FleetRevocationCoordinator` | `codex-rs/hepta-fleet/src/revocation_control.rs` | inline catch-up/quarantine/stale-feed tests |
+| ordered native boot | `DurableFleetStore::register_local_boot` | `codex-rs/hepta-fleet/src/durable_execution.rs` | `durable_execution_tests.rs` |
+| prepared execution occupancy | `DurableFleetStore::prepare_local_execution` | `codex-rs/hepta-fleet/src/durable_execution.rs` | `durable_execution_tests.rs` |
+| native exit observation | `DurableFleetStore::confirm_local_exit` | `codex-rs/hepta-fleet/src/durable_execution.rs` | product qualification remains open |
 
-- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+- Source identity: `sourceBase` in `IMPLEMENTATION_MAP.json` is the reviewed input baseline, not a pass receipt for the revision built on it. Resolve the candidate itself from its containing immutable Git commit and workflow receipt.
+- Consumer callsites remain an explicit follow-up where not composed; SQLite source presence alone does not close that gap.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.

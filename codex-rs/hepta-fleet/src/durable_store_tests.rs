@@ -11,6 +11,7 @@ use codex_hepta_contracts::authority_lease::AuthorityLeaseFrontier;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
 use pretty_assertions::assert_eq;
 use sha2::Digest;
+use sha2::Sha256;
 
 use super::*;
 use crate::AllocationGrant;

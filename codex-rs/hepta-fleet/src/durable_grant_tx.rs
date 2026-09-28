@@ -23,6 +23,11 @@ use crate::durable_rows::to_i64;
 use crate::durable_rows::to_u64;
 use crate::durable_schema::sqlx_error;
 
+const GRANT_SELECT: &str = "SELECT allocation_id, request_id, principal_id, host_id,
+    failure_domain_id, host_generation, authority_epoch, lease_generation, expires_at_ms,
+    cpu_millis, memory_bytes, accelerator_millis, concurrent_turns, tool_processes,
+    turn_queue_slots, semantic_digest FROM fleet_grants";
+
 impl DurableFleetStore {
     pub(crate) async fn ensure_zero_total_tx(
         &self,
@@ -30,17 +35,14 @@ impl DurableFleetStore {
         host_id: &str,
         now_ms: u64,
     ) -> Result<(), DurableFleetError> {
-        let zero = ResourceVectorV1::default();
         sqlx::query(
-            "INSERT INTO fleet_resource_totals(
-                host_id, cpu_millis, memory_bytes, accelerator_millis,
-                concurrent_turns, tool_processes, turn_queue_slots,
-                resource_digest, updated_at_ms
-             ) VALUES(?, 0, 0, 0, 0, 0, 0, ?, ?)
+            "INSERT INTO fleet_resource_totals(host_id, cpu_millis, memory_bytes,
+             accelerator_millis, concurrent_turns, tool_processes, turn_queue_slots,
+             resource_digest, updated_at_ms) VALUES(?, 0, 0, 0, 0, 0, 0, ?, ?)
              ON CONFLICT(host_id) DO NOTHING",
         )
         .bind(host_id)
-        .bind(resource_digest(zero))
+        .bind(resource_digest(ResourceVectorV1::default()))
         .bind(to_i64(now_ms)?)
         .execute(&mut **tx)
         .await
@@ -55,24 +57,17 @@ impl DurableFleetStore {
         generation: u64,
         now_ms: u64,
     ) -> Result<usize, DurableFleetError> {
-        let rows = sqlx::query(
-            "SELECT allocation_id, request_id, principal_id, host_id,
-                    failure_domain_id, host_generation, authority_epoch,
-                    lease_generation, expires_at_ms, cpu_millis, memory_bytes,
-                    accelerator_millis, concurrent_turns, tool_processes,
-                    turn_queue_slots, semantic_digest
-             FROM fleet_grants
-             WHERE host_id = ? AND host_generation < ?
-             ORDER BY allocation_id",
-        )
-        .bind(host_id)
-        .bind(to_i64(generation)?)
-        .fetch_all(&mut **tx)
-        .await
-        .map_err(sqlx_error)?;
-        let mut retired = 0;
-        for row in rows {
-            let grant = decode_grant(&row)?;
+        let query = format!(
+            "{GRANT_SELECT} WHERE host_id = ? AND host_generation < ? ORDER BY allocation_id"
+        );
+        let rows = sqlx::query(&query)
+            .bind(host_id)
+            .bind(to_i64(generation)?)
+            .fetch_all(&mut **tx)
+            .await
+            .map_err(sqlx_error)?;
+        for row in &rows {
+            let grant = decode_grant(row)?;
             retire_grant_tx(tx, &grant, "host_generation_fenced", now_ms).await?;
             let receipt = FleetOperationReceiptV1 {
                 operation_id: operation_id("fence", &grant.allocation_id, grant.lease_generation),
@@ -85,9 +80,8 @@ impl DurableFleetStore {
             };
             insert_receipt_tx(tx, &receipt).await?;
             increment_counter_tx(tx, "fence", "success").await?;
-            retired += 1;
         }
-        Ok(retired)
+        Ok(rows.len())
     }
 
     pub(crate) async fn collect_expired_tx(
@@ -95,23 +89,17 @@ impl DurableFleetStore {
         tx: &mut Transaction<'_, Sqlite>,
         now_ms: u64,
     ) -> Result<usize, DurableFleetError> {
-        let rows = sqlx::query(
-            "SELECT allocation_id, request_id, principal_id, host_id,
-                    failure_domain_id, host_generation, authority_epoch,
-                    lease_generation, expires_at_ms, cpu_millis, memory_bytes,
-                    accelerator_millis, concurrent_turns, tool_processes,
-                    turn_queue_slots, semantic_digest
-             FROM fleet_grants WHERE expires_at_ms <= ?
-             ORDER BY expires_at_ms, allocation_id LIMIT ?",
-        )
-        .bind(to_i64(now_ms)?)
-        .bind(MAX_DURABLE_EXPIRY_BATCH)
-        .fetch_all(&mut **tx)
-        .await
-        .map_err(sqlx_error)?;
-        let mut retired = 0;
-        for row in rows {
-            let grant = decode_grant(&row)?;
+        let query = format!(
+            "{GRANT_SELECT} WHERE expires_at_ms <= ? ORDER BY expires_at_ms, allocation_id LIMIT ?"
+        );
+        let rows = sqlx::query(&query)
+            .bind(to_i64(now_ms)?)
+            .bind(MAX_DURABLE_EXPIRY_BATCH)
+            .fetch_all(&mut **tx)
+            .await
+            .map_err(sqlx_error)?;
+        for row in &rows {
+            let grant = decode_grant(row)?;
             retire_grant_tx(tx, &grant, "expired", now_ms).await?;
             let receipt = FleetOperationReceiptV1 {
                 operation_id: operation_id("expire", &grant.allocation_id, grant.lease_generation),
@@ -124,9 +112,8 @@ impl DurableFleetStore {
             };
             insert_receipt_tx(tx, &receipt).await?;
             increment_counter_tx(tx, "expire", "success").await?;
-            retired += 1;
         }
-        Ok(retired)
+        Ok(rows.len())
     }
 }
 
@@ -136,9 +123,8 @@ pub(crate) async fn select_host_tx(
 ) -> Result<Option<HostObservation>, DurableFleetError> {
     let row = sqlx::query(
         "SELECT host_id, failure_domain_id, generation, observed_at_ms, valid_until_ms,
-                cpu_millis, memory_bytes, accelerator_millis,
-                concurrent_turns, tool_processes, turn_queue_slots
-         FROM fleet_hosts WHERE host_id = ?",
+         cpu_millis, memory_bytes, accelerator_millis, concurrent_turns, tool_processes,
+         turn_queue_slots FROM fleet_hosts WHERE host_id = ?",
     )
     .bind(host_id)
     .fetch_optional(&mut **tx)
@@ -161,19 +147,14 @@ pub(crate) async fn select_grant_tx(
     tx: &mut Transaction<'_, Sqlite>,
     allocation_id: &str,
 ) -> Result<Option<AllocationGrant>, DurableFleetError> {
-    let row = sqlx::query(
-        "SELECT allocation_id, request_id, principal_id, host_id,
-                failure_domain_id, host_generation, authority_epoch,
-                lease_generation, expires_at_ms, cpu_millis, memory_bytes,
-                accelerator_millis, concurrent_turns, tool_processes,
-                turn_queue_slots, semantic_digest
-         FROM fleet_grants WHERE allocation_id = ?",
-    )
-    .bind(allocation_id)
-    .fetch_optional(&mut **tx)
-    .await
-    .map_err(sqlx_error)?;
-    row.map(|row| decode_grant(&row)).transpose()
+    let query = format!("{GRANT_SELECT} WHERE allocation_id = ?");
+    sqlx::query(&query)
+        .bind(allocation_id)
+        .fetch_optional(&mut **tx)
+        .await
+        .map_err(sqlx_error)?
+        .map(|row| decode_grant(&row))
+        .transpose()
 }
 
 pub(crate) async fn load_total_tx(
@@ -182,16 +163,15 @@ pub(crate) async fn load_total_tx(
 ) -> Result<ResourceVectorV1, DurableFleetError> {
     let row = sqlx::query(
         "SELECT cpu_millis, memory_bytes, accelerator_millis,
-                concurrent_turns, tool_processes, turn_queue_slots
+         concurrent_turns, tool_processes, turn_queue_slots
          FROM fleet_resource_totals WHERE host_id = ?",
     )
     .bind(host_id)
     .fetch_optional(&mut **tx)
     .await
-    .map_err(sqlx_error)?;
-    row.map(|row| decode_vector(&row, ""))
-        .transpose()
-        .map(Option::unwrap_or_default)
+    .map_err(sqlx_error)?
+    .ok_or_else(|| DurableFleetError::Corrupt(format!("missing resource total for {host_id}")))?;
+    decode_vector(&row, "")
 }
 
 pub(crate) async fn write_total_tx(
@@ -201,20 +181,14 @@ pub(crate) async fn write_total_tx(
     now_ms: u64,
 ) -> Result<(), DurableFleetError> {
     sqlx::query(
-        "INSERT INTO fleet_resource_totals(
-            host_id, cpu_millis, memory_bytes, accelerator_millis,
-            concurrent_turns, tool_processes, turn_queue_slots,
-            resource_digest, updated_at_ms
-         ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
-         ON CONFLICT(host_id) DO UPDATE SET
-            cpu_millis = excluded.cpu_millis,
-            memory_bytes = excluded.memory_bytes,
-            accelerator_millis = excluded.accelerator_millis,
-            concurrent_turns = excluded.concurrent_turns,
-            tool_processes = excluded.tool_processes,
-            turn_queue_slots = excluded.turn_queue_slots,
-            resource_digest = excluded.resource_digest,
-            updated_at_ms = excluded.updated_at_ms",
+        "INSERT INTO fleet_resource_totals(host_id, cpu_millis, memory_bytes,
+         accelerator_millis, concurrent_turns, tool_processes, turn_queue_slots,
+         resource_digest, updated_at_ms) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(host_id) DO UPDATE SET cpu_millis = excluded.cpu_millis,
+         memory_bytes = excluded.memory_bytes, accelerator_millis = excluded.accelerator_millis,
+         concurrent_turns = excluded.concurrent_turns, tool_processes = excluded.tool_processes,
+         turn_queue_slots = excluded.turn_queue_slots, resource_digest = excluded.resource_digest,
+         updated_at_ms = excluded.updated_at_ms",
     )
     .bind(host_id)
     .bind(to_i64(total.cpu_millis)?)
@@ -237,28 +211,46 @@ pub(crate) async fn retire_grant_tx(
     terminal_state: &str,
     now_ms: u64,
 ) -> Result<(), DurableFleetError> {
-    let total = load_total_tx(tx, &grant.host_id).await?;
-    let next = total
-        .checked_sub(grant.resources)
-        .map_err(|error| DurableFleetError::Corrupt(error.to_string()))?;
-    write_total_tx(tx, &grant.host_id, next, now_ms).await?;
+    let execution_held: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM fleet_execution_holds
+         WHERE allocation_id = ? AND state != 'stopped')",
+    )
+    .bind(&grant.allocation_id)
+    .fetch_one(&mut **tx)
+    .await
+    .map_err(sqlx_error)?;
+    if execution_held {
+        // Invalidate use immediately, retaining actual occupancy until native
+        // stop confirmation. The stop obligation and retirement commit together.
+        sqlx::query(
+            "UPDATE fleet_execution_holds SET state = 'stop_requested'
+             WHERE allocation_id = ? AND state != 'stopped'",
+        )
+        .bind(&grant.allocation_id)
+        .execute(&mut **tx)
+        .await
+        .map_err(sqlx_error)?;
+    } else {
+        let total = load_total_tx(tx, &grant.host_id).await?;
+        let next = total
+            .checked_sub(grant.resources)
+            .map_err(|error| DurableFleetError::Corrupt(error.to_string()))?;
+        write_total_tx(tx, &grant.host_id, next, now_ms).await?;
+    }
     sqlx::query("DELETE FROM fleet_grants WHERE allocation_id = ?")
         .bind(&grant.allocation_id)
         .execute(&mut **tx)
         .await
         .map_err(sqlx_error)?;
-    let grant_json = encode_json(grant)?;
-    let final_digest = content_digest(grant)?;
     sqlx::query(
-        "INSERT INTO fleet_grant_history(
-            allocation_id, terminal_state, grant_json, final_digest, retired_at_ms, compacted
-         ) VALUES(?, ?, ?, ?, ?, 0)
+        "INSERT INTO fleet_grant_history(allocation_id, terminal_state, grant_json,
+         final_digest, retired_at_ms, compacted) VALUES(?, ?, ?, ?, ?, 0)
          ON CONFLICT(allocation_id) DO NOTHING",
     )
     .bind(&grant.allocation_id)
     .bind(terminal_state)
-    .bind(grant_json)
-    .bind(final_digest)
+    .bind(encode_json(grant)?)
+    .bind(content_digest(grant)?)
     .bind(to_i64(now_ms)?)
     .execute(&mut **tx)
     .await

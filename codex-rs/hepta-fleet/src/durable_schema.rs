@@ -5,234 +5,101 @@ use crate::DURABLE_FLEET_LINEAGE;
 use crate::DURABLE_FLEET_SCHEMA_VERSION;
 use crate::DurableFleetError;
 
-const SCHEMA: &[&str] = &[
-    "CREATE TABLE IF NOT EXISTS fleet_schema (
-        singleton INTEGER PRIMARY KEY CHECK(singleton = 1),
-        schema_version INTEGER NOT NULL,
-        lineage TEXT NOT NULL,
-        created_at_ms INTEGER NOT NULL
-    ) STRICT",
-    "CREATE TABLE IF NOT EXISTS fleet_clock (
-        singleton INTEGER PRIMARY KEY CHECK(singleton = 1),
-        last_now_ms INTEGER NOT NULL
-    ) STRICT",
-    "CREATE TABLE IF NOT EXISTS fleet_hosts (
-        host_id TEXT PRIMARY KEY,
-        failure_domain_id TEXT NOT NULL,
-        generation INTEGER NOT NULL CHECK(generation > 0),
-        observed_at_ms INTEGER NOT NULL,
-        valid_until_ms INTEGER NOT NULL,
-        cpu_millis INTEGER NOT NULL CHECK(cpu_millis >= 0),
-        memory_bytes INTEGER NOT NULL CHECK(memory_bytes >= 0),
-        accelerator_millis INTEGER NOT NULL CHECK(accelerator_millis >= 0),
-        concurrent_turns INTEGER NOT NULL CHECK(concurrent_turns >= 0),
-        tool_processes INTEGER NOT NULL CHECK(tool_processes >= 0),
-        turn_queue_slots INTEGER NOT NULL CHECK(turn_queue_slots >= 0),
-        capacity_digest TEXT NOT NULL,
-        CHECK(observed_at_ms < valid_until_ms)
-    ) STRICT",
-    "CREATE TABLE IF NOT EXISTS fleet_capacity_observations (
-        host_id TEXT NOT NULL,
-        generation INTEGER NOT NULL,
-        observed_at_ms INTEGER NOT NULL,
-        valid_until_ms INTEGER NOT NULL,
-        source_id TEXT NOT NULL,
-        cpu_millis INTEGER NOT NULL,
-        memory_bytes INTEGER NOT NULL,
-        accelerator_millis INTEGER NOT NULL,
-        concurrent_turns INTEGER NOT NULL,
-        tool_processes INTEGER NOT NULL,
-        turn_queue_slots INTEGER NOT NULL,
-        capacity_digest TEXT NOT NULL,
-        PRIMARY KEY(host_id, generation, observed_at_ms)
-    ) STRICT",
-    "CREATE TABLE IF NOT EXISTS fleet_grants (
-        allocation_id TEXT PRIMARY KEY,
-        request_id TEXT NOT NULL,
-        principal_id TEXT NOT NULL,
-        host_id TEXT NOT NULL REFERENCES fleet_hosts(host_id),
-        failure_domain_id TEXT NOT NULL,
-        host_generation INTEGER NOT NULL,
-        authority_epoch INTEGER NOT NULL,
-        lease_generation INTEGER NOT NULL,
-        expires_at_ms INTEGER NOT NULL,
-        cpu_millis INTEGER NOT NULL,
-        memory_bytes INTEGER NOT NULL,
-        accelerator_millis INTEGER NOT NULL,
-        concurrent_turns INTEGER NOT NULL,
-        tool_processes INTEGER NOT NULL,
-        turn_queue_slots INTEGER NOT NULL,
-        resource_digest TEXT NOT NULL,
-        semantic_digest TEXT NOT NULL,
-        authority_witness_json TEXT NOT NULL,
-        created_at_ms INTEGER NOT NULL,
-        updated_at_ms INTEGER NOT NULL
-    ) STRICT",
-    "CREATE INDEX IF NOT EXISTS fleet_grants_expiry_idx
-        ON fleet_grants(expires_at_ms, allocation_id)",
-    "CREATE INDEX IF NOT EXISTS fleet_grants_host_idx
-        ON fleet_grants(host_id, host_generation, allocation_id)",
-    "CREATE TABLE IF NOT EXISTS fleet_grant_history (
-        allocation_id TEXT PRIMARY KEY,
-        terminal_state TEXT NOT NULL,
-        grant_json TEXT,
-        final_digest TEXT NOT NULL,
-        retired_at_ms INTEGER NOT NULL,
-        compacted INTEGER NOT NULL DEFAULT 0 CHECK(compacted IN (0, 1))
-    ) STRICT",
-    "CREATE INDEX IF NOT EXISTS fleet_grant_history_retired_idx
-        ON fleet_grant_history(compacted, retired_at_ms, allocation_id)",
-    "CREATE TABLE IF NOT EXISTS fleet_resource_totals (
-        host_id TEXT PRIMARY KEY REFERENCES fleet_hosts(host_id),
-        cpu_millis INTEGER NOT NULL,
-        memory_bytes INTEGER NOT NULL,
-        accelerator_millis INTEGER NOT NULL,
-        concurrent_turns INTEGER NOT NULL,
-        tool_processes INTEGER NOT NULL,
-        turn_queue_slots INTEGER NOT NULL,
-        resource_digest TEXT NOT NULL,
-        updated_at_ms INTEGER NOT NULL
-    ) STRICT",
-    "CREATE TABLE IF NOT EXISTS fleet_revocation_frontier (
-        singleton INTEGER PRIMARY KEY CHECK(singleton = 1),
-        authority_epoch INTEGER NOT NULL,
-        revision INTEGER NOT NULL,
-        issued_at_ms INTEGER NOT NULL,
-        expires_at_ms INTEGER NOT NULL,
-        convergence_deadline_ms INTEGER NOT NULL,
-        update_digest TEXT NOT NULL,
-        update_json TEXT NOT NULL,
-        updated_at_ms INTEGER NOT NULL
-    ) STRICT",
-    "CREATE TABLE IF NOT EXISTS fleet_revocation_acks (
-        authority_epoch INTEGER NOT NULL,
-        revision INTEGER NOT NULL,
-        node_id TEXT NOT NULL,
-        ack_digest TEXT NOT NULL,
-        ack_json TEXT NOT NULL,
-        applied_at_ms INTEGER NOT NULL,
-        PRIMARY KEY(authority_epoch, revision, node_id)
-    ) STRICT",
-    "CREATE TABLE IF NOT EXISTS workspace_reservations (
-        agent_id TEXT PRIMARY KEY,
-        workspace TEXT NOT NULL UNIQUE,
-        workspace_digest TEXT NOT NULL,
-        created_at_ms INTEGER NOT NULL,
-        updated_at_ms INTEGER NOT NULL
-    ) STRICT",
-    "CREATE TABLE IF NOT EXISTS fleet_operation_receipts (
-        operation_id TEXT PRIMARY KEY,
-        operation_kind TEXT NOT NULL,
-        subject_id TEXT NOT NULL,
-        outcome TEXT NOT NULL,
-        semantic_digest TEXT NOT NULL,
-        authority_witness_json TEXT,
-        payload_json TEXT NOT NULL,
-        committed_at_ms INTEGER NOT NULL
-    ) STRICT",
-    "CREATE INDEX IF NOT EXISTS fleet_operation_subject_idx
-        ON fleet_operation_receipts(subject_id, committed_at_ms, operation_id)",
-    "CREATE TABLE IF NOT EXISTS fleet_metric_counters (
-        operation TEXT NOT NULL,
-        result TEXT NOT NULL,
-        value INTEGER NOT NULL CHECK(value >= 0),
-        PRIMARY KEY(operation, result)
-    ) STRICT",
-];
-
 pub(crate) async fn initialize_schema(
     pool: &SqlitePool,
     now_ms: i64,
 ) -> Result<(), DurableFleetError> {
-    verify_quick_check(pool).await?;
     let mut tx = pool
         .begin_with("BEGIN IMMEDIATE")
         .await
         .map_err(sqlx_error)?;
-    for statement in SCHEMA {
-        sqlx::query(statement)
-            .execute(&mut *tx)
-            .await
-            .map_err(sqlx_error)?;
-    }
-    let existing = sqlx::query("SELECT schema_version, lineage FROM fleet_schema WHERE singleton = 1")
-        .fetch_optional(&mut *tx)
+    let checks: Vec<String> = sqlx::query_scalar("PRAGMA quick_check")
+        .fetch_all(&mut *tx)
         .await
         .map_err(sqlx_error)?;
-    match existing {
-        Some(row) => {
-            let version: i64 = row.try_get("schema_version").map_err(sqlx_error)?;
-            let lineage: String = row.try_get("lineage").map_err(sqlx_error)?;
-            if version != DURABLE_FLEET_SCHEMA_VERSION || lineage != DURABLE_FLEET_LINEAGE {
-                return Err(DurableFleetError::Corrupt(format!(
-                    "unsupported supervisor fleet schema {version}/{lineage}"
-                )));
-            }
-        }
-        None => {
-            sqlx::query(
-                "INSERT INTO fleet_schema(singleton, schema_version, lineage, created_at_ms)
-                 VALUES(1, ?, ?, ?)",
-            )
-            .bind(DURABLE_FLEET_SCHEMA_VERSION)
-            .bind(DURABLE_FLEET_LINEAGE)
-            .bind(now_ms)
-            .execute(&mut *tx)
-            .await
-            .map_err(sqlx_error)?;
-            sqlx::query("INSERT INTO fleet_clock(singleton, last_now_ms) VALUES(1, ?)")
-                .bind(now_ms)
+    if checks != ["ok"] {
+        return Err(DurableFleetError::Corrupt(format!(
+            "SQLite quick_check returned {checks:?}"
+        )));
+    }
+    // Installation, migration and clock publication share one writer transaction.
+    for statement in include_str!("durable_schema.sql").split(';') {
+        if !statement.trim().is_empty() {
+            sqlx::query(statement)
                 .execute(&mut *tx)
                 .await
                 .map_err(sqlx_error)?;
         }
     }
-    tx.commit().await.map_err(sqlx_error)?;
-    verify_schema(pool).await
-}
-
-async fn verify_quick_check(pool: &SqlitePool) -> Result<(), DurableFleetError> {
-    let result: String = sqlx::query_scalar("PRAGMA quick_check")
-        .fetch_one(pool)
+    let existing = sqlx::query("SELECT schema_version, lineage FROM fleet_schema WHERE singleton = 1")
+        .fetch_optional(&mut *tx)
         .await
         .map_err(sqlx_error)?;
-    if result != "ok" {
-        return Err(DurableFleetError::Corrupt(format!(
-            "SQLite quick_check returned {result}"
-        )));
-    }
-    Ok(())
-}
-
-async fn verify_schema(pool: &SqlitePool) -> Result<(), DurableFleetError> {
-    for table in [
-        "fleet_schema",
-        "fleet_clock",
-        "fleet_hosts",
-        "fleet_capacity_observations",
-        "fleet_grants",
-        "fleet_grant_history",
-        "fleet_resource_totals",
-        "fleet_revocation_frontier",
-        "fleet_revocation_acks",
-        "workspace_reservations",
-        "fleet_operation_receipts",
-        "fleet_metric_counters",
-    ] {
-        let exists: bool = sqlx::query_scalar(
-            "SELECT EXISTS(SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?)",
-        )
-        .bind(table)
-        .fetch_one(pool)
-        .await
-        .map_err(sqlx_error)?;
-        if !exists {
+    if let Some(row) = existing {
+        let version: i64 = row.try_get("schema_version").map_err(sqlx_error)?;
+        let lineage: String = row.try_get("lineage").map_err(sqlx_error)?;
+        if lineage != DURABLE_FLEET_LINEAGE || ![1, DURABLE_FLEET_SCHEMA_VERSION].contains(&version) {
             return Err(DurableFleetError::Corrupt(format!(
-                "required fleet table {table} is missing"
+                "unsupported supervisor fleet schema {version}/{lineage}"
             )));
         }
+        if version == 1 {
+            let active: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM fleet_grants")
+                .fetch_one(&mut *tx)
+                .await
+                .map_err(sqlx_error)?;
+            if active != 0 {
+                return Err(DurableFleetError::Conflict(
+                    "v1 migration requires quiescent owners and no active grants; prove stop before migration".into(),
+                ));
+            }
+            // The product owner must establish quiescence before opening for
+            // migration. Zero ledger rows alone are NOT native stop evidence.
+        }
+    } else {
+        sqlx::query(
+            "INSERT INTO fleet_schema(singleton, schema_version, lineage, created_at_ms)
+             VALUES(1, ?, ?, ?)",
+        )
+        .bind(DURABLE_FLEET_SCHEMA_VERSION)
+        .bind(DURABLE_FLEET_LINEAGE)
+        .bind(now_ms)
+        .execute(&mut *tx)
+        .await
+        .map_err(sqlx_error)?;
+        sqlx::query("INSERT INTO fleet_clock(singleton, last_now_ms) VALUES(1, ?)")
+            .bind(now_ms)
+            .execute(&mut *tx)
+            .await
+            .map_err(sqlx_error)?;
     }
-    Ok(())
+    for statement in include_str!("durable_execution_schema.sql").split(';') {
+        if !statement.trim().is_empty() {
+            sqlx::query(statement)
+                .execute(&mut *tx)
+                .await
+                .map_err(sqlx_error)?;
+        }
+    }
+    sqlx::query("UPDATE fleet_schema SET schema_version = ? WHERE singleton = 1")
+        .bind(DURABLE_FLEET_SCHEMA_VERSION)
+        .execute(&mut *tx)
+        .await
+        .map_err(sqlx_error)?;
+    let persisted: i64 =
+        sqlx::query_scalar("SELECT last_now_ms FROM fleet_clock WHERE singleton = 1")
+            .fetch_one(&mut *tx)
+            .await
+            .map_err(sqlx_error)?;
+    if now_ms < persisted {
+        return Err(DurableFleetError::ClockRollback);
+    }
+    sqlx::query("UPDATE fleet_clock SET last_now_ms = ? WHERE singleton = 1")
+        .bind(now_ms)
+        .execute(&mut *tx)
+        .await
+        .map_err(sqlx_error)?;
+    tx.commit().await.map_err(sqlx_error)
 }
 
 pub(crate) fn sqlx_error(error: sqlx::Error) -> DurableFleetError {

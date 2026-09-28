@@ -9,7 +9,7 @@ use crate::AllocationGrant;
 use crate::FleetAuthorityError;
 use crate::ResourceVectorV1;
 
-pub const DURABLE_FLEET_SCHEMA_VERSION: i64 = 1;
+pub const DURABLE_FLEET_SCHEMA_VERSION: i64 = 2;
 pub const DURABLE_FLEET_LINEAGE: &str = "hepta.runtime.fleet.supervisor-owner.v1";
 pub const MAX_DURABLE_ACTIVE_GRANTS: i64 = 16_384;
 pub const MAX_DURABLE_HISTORY_ROWS: i64 = 65_536;
@@ -94,6 +94,7 @@ pub struct DurableGrantReceiptV1 {
     pub operation: FleetOperationReceiptV1,
 }
 
+/// A ledger check result, not independent authority or permission to spawn.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct FleetUsePermitV1 {
@@ -149,6 +150,8 @@ pub struct FleetResultCounterV1 {
     pub value: u64,
 }
 
+/// Unreleased candidate metrics: operational observations are nullable. Consumers
+/// must retain `None`/JSON null as unknown and never coerce it to zero.
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct FleetMetricsSnapshotV1 {
@@ -159,9 +162,10 @@ pub struct FleetMetricsSnapshotV1 {
     pub stale_hosts: u64,
     pub result_counters: Vec<FleetResultCounterV1>,
     pub revocation_lag_ms: Option<u64>,
-    pub registry_conflicts: u64,
-    pub indeterminate_commits: u64,
-    pub staging_debris: u64,
+    pub revocation_update_age_ms: Option<u64>,
+    pub registry_conflicts: Option<u64>,
+    pub indeterminate_commits: Option<u64>,
+    pub staging_debris: Option<u64>,
     pub compaction_backlog: u64,
 }
 
