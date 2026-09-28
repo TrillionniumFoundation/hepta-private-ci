@@ -29,6 +29,8 @@ jobs:
       risk: ${{ steps.scope.outputs.risk }}
       require_exact_source: ${{ steps.scope.outputs.require_exact_source }}
       lanes: ${{ steps.scope.outputs.lanes }}
+      scoped_timeout_minutes: ${{ steps.scope.outputs.scoped_timeout_minutes }}
+      ordinary_feedback_target_minutes: ${{ steps.scope.outputs.ordinary_feedback_target_minutes }}
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -139,7 +141,7 @@ jobs:
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: ${{ fromJSON(needs.scope.outputs.scoped_timeout_minutes) }}
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

@@ -16,6 +16,10 @@ class RepositorySurfaceTests(unittest.TestCase):
             policy["allowedDispositions"],
             ["absorb", "reference", "reject", "supersede"],
         )
+        self.assertEqual(policy["ordinaryFeedbackTargetMinutes"], 10)
+        self.assertEqual(policy["ordinaryWorkflowTimeoutMinutes"], 15)
+        self.assertEqual(policy["statefulWorkflowTimeoutMinutes"], 40)
+        self.assertEqual(policy["architectureDeepTimeoutMinutes"], 60)
         self.assertFalse(policy["newPullRequestWorkflowFilesAllowed"])
         self.assertEqual(
             policy["allowedModuleLocalMachineFiles"], {"module.toml"}
@@ -37,6 +41,22 @@ class RepositorySurfaceTests(unittest.TestCase):
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(ValueError, "widened or drifted"):
+                load_policy(root)
+
+    def test_policy_cannot_widen_ordinary_timeout(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            target = root / POLICY_PATH
+            target.parent.mkdir(parents=True)
+            text = (ROOT / POLICY_PATH).read_text(encoding="utf-8")
+            target.write_text(
+                text.replace(
+                    "ordinaryWorkflowTimeoutMinutes = 15",
+                    "ordinaryWorkflowTimeoutMinutes = 40",
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "timeouts widened or drifted"):
                 load_policy(root)
 
     def test_shared_manifest_and_generated_roots_are_allowed(self):

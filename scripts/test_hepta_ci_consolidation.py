@@ -60,7 +60,8 @@ class HeptaCiConsolidationTests(unittest.TestCase):
         self.assertIn("needs.scope.outputs.require_exact_source == 'true'", blocking)
         self.assertIn('return "ordinary"', risk)
         self.assertIn('return "effect"', risk)
-        self.assertIn("risk != \"ordinary\"", risk)
+        self.assertIn('ordinary = risk == "ordinary"', risk)
+        self.assertIn('"require_exact_source": not ordinary', risk)
         self.assertIn("if: ${{ inputs.require_exact_source }}", contract)
         self.assertNotIn("scripts/hepta-implementation-maps.py", module_docs)
 
@@ -74,7 +75,9 @@ class HeptaCiConsolidationTests(unittest.TestCase):
         self.assertIn('"--diff-filter=A"', freeze)
         self.assertIn('".github/workflows"', freeze)
         self.assertIn('"docs/modules"', freeze)
-        self.assertIn('path.name != "module.toml"', freeze)
+        self.assertIn('_REQUIRED_LOCAL_MACHINE_FILES = {"module.toml"}', freeze)
+        self.assertIn("path.name not in allowed_local", freeze)
+        self.assertIn("allowedRootModuleFiles widened or drifted", freeze)
         self.assertIn("new workflow or registry infrastructure is frozen", freeze)
 
     def test_aggregators_use_stable_required_job_names(self) -> None:

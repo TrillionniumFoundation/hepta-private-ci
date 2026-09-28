@@ -9,12 +9,14 @@ try:
     from scripts.hepta_ci_scope import changed_paths
     from scripts.hepta_ci_scope import include_input_scope
     from scripts.hepta_ci_scope import select
+    from scripts.hepta_repository_surface import load_policy
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
     from hepta_ci_scope import changed_paths
     from hepta_ci_scope import include_input_scope
     from hepta_ci_scope import select
+    from hepta_repository_surface import load_policy
 
 
 def classify(scope: dict[str, bool]) -> str:
@@ -25,6 +27,29 @@ def classify(scope: dict[str, bool]) -> str:
     if scope["lifecycle"] or scope["learning"] or scope["objective"]:
         return "stateful"
     return "ordinary"
+
+
+def project(scope: dict[str, bool]) -> dict[str, object]:
+    risk = classify(scope)
+    policy = load_policy()
+    ordinary = risk == "ordinary"
+    return {
+        "risk": risk,
+        "lanes": ["source-head"] if ordinary else ["source-head", "base-merge"],
+        "require_exact_source": not ordinary,
+        "ordinary_feedback_target_minutes": policy["ordinaryFeedbackTargetMinutes"],
+        "scoped_timeout_minutes": (
+            policy["ordinaryWorkflowTimeoutMinutes"]
+            if ordinary
+            else policy["statefulWorkflowTimeoutMinutes"]
+        ),
+        "architecture_timeout_minutes": (
+            policy["ordinaryWorkflowTimeoutMinutes"]
+            if ordinary
+            else policy["architectureDeepTimeoutMinutes"]
+        ),
+        "scope": scope,
+    }
 
 
 def main() -> None:
@@ -40,23 +65,31 @@ def main() -> None:
     scope = select(paths, force_full=args.full)
     if not args.full:
         scope = include_input_scope(scope, paths, args.base, args.head)
-    risk = classify(scope)
-    lanes = ["source-head"] if risk == "ordinary" else ["source-head", "base-merge"]
-    result = {
-        "risk": risk,
-        "lanes": lanes,
-        "require_exact_source": risk != "ordinary",
-        "scope": scope,
-    }
+    result = project(scope)
     if args.github_output:
         with open(args.github_output, "a", encoding="utf-8") as target:
-            target.write(f"risk={risk}\n")
+            target.write(f"risk={result['risk']}\n")
             target.write(
                 "require_exact_source="
-                + str(risk != "ordinary").lower()
+                + str(result["require_exact_source"]).lower()
                 + "\n"
             )
-            target.write("lanes=" + json.dumps(lanes, separators=(",", ":")) + "\n")
+            target.write(
+                "lanes="
+                + json.dumps(result["lanes"], separators=(",", ":"))
+                + "\n"
+            )
+            target.write(
+                f"scoped_timeout_minutes={result['scoped_timeout_minutes']}\n"
+            )
+            target.write(
+                "architecture_timeout_minutes="
+                f"{result['architecture_timeout_minutes']}\n"
+            )
+            target.write(
+                "ordinary_feedback_target_minutes="
+                f"{result['ordinary_feedback_target_minutes']}\n"
+            )
     print(json.dumps(result, sort_keys=True))
 
 

@@ -23,14 +23,58 @@ env:
   CARGO_PROFILE_DEV_DEBUG: "0"
 
 jobs:
+  plan:
+    name: Select architecture risk lanes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      lanes: ${{ steps.risk.outputs.lanes }}
+      risk: ${{ steps.risk.outputs.risk }}
+      timeout_minutes: ${{ steps.risk.outputs.timeout_minutes }}
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select source-head or high-risk merge qualification
+        id: risk
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_SHA: ${{ env.SOURCE_SHA }}
+          BASE_SHA: ${{ env.BASE_SHA }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v scripts.test_hepta_ci_risk
+          args=(--head "$HEAD_SHA")
+          if [ "$EVENT_NAME" = pull_request ]; then
+            args+=(--base "$BASE_SHA")
+          else
+            args+=(--full)
+          fi
+          result="$(python3 scripts/hepta_ci_risk.py "${args[@]}")"
+          risk="$(jq -er '.risk' <<<"$result")"
+          lanes="$(jq -cer '.lanes' <<<"$result")"
+          if [ "$EVENT_NAME" != pull_request ]; then
+            lanes='["source-head"]'
+          fi
+          timeout_minutes="$(jq -er '.architecture_timeout_minutes' <<<"$result")"
+          printf 'risk=%s\n' "$risk" >> "$GITHUB_OUTPUT"
+          printf 'lanes=%s\n' "$lanes" >> "$GITHUB_OUTPUT"
+          printf 'timeout_minutes=%s\n' "$timeout_minutes" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$result"
+
   qualification:
     name: Architecture convergence (${{ matrix.lane }})
+    needs: plan
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 60
+    timeout-minutes: ${{ fromJSON(needs.plan.outputs.timeout_minutes) }}
     strategy:
       fail-fast: false
       matrix:
-        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+        lane: ${{ fromJSON(needs.plan.outputs.lanes) }}
     steps:
       - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -81,16 +125,23 @@ jobs:
           git diff --check
           printf 'TESTED_SHA=%s\n' "$CANDIDATE" >> "$GITHUB_ENV"
           printf 'HEPTA_CI_LANE=%s\n' "$LANE" >> "$GITHUB_ENV"
-      - name: Select exact-tree native execution
+      - name: Select exact-tree execution tier
         id: execution
         env:
           LANE: ${{ matrix.lane }}
+          RISK: ${{ needs.plan.outputs.risk }}
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/hepta-command-records"
           python3 -m unittest -v scripts.tests.test_hepta_ci_candidate
           python3 scripts/hepta_ci_candidate.py --source "$SOURCE_SHA" --tested "$TESTED_SHA" --base "$BASE_SHA" --lane "$LANE" --github-output "$GITHUB_OUTPUT" | tee "$RUNNER_TEMP/hepta-command-records/candidate-tree.json"
+          if [ "$RISK" = ordinary ]; then
+            # Blocking CI already runs affected owners and reverse consumers.
+            # Architecture CI keeps ordinary feedback structural and bounded;
+            # native/fault/recovery execution starts at stateful/effect/release.
+            printf 'run_native=false\n' >> "$GITHUB_OUTPUT"
+          fi
       - name: Select affected architecture boundaries
         id: scope
         env:
@@ -276,13 +327,17 @@ jobs:
   required:
     name: Architecture required
     if: ${{ always() }}
-    needs: qualification
+    needs: [plan, qualification]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Require both exact-candidate lanes
+      - name: Require all selected risk lanes
         env:
-          RESULT: ${{ needs.qualification.result }}
+          PLAN_RESULT: ${{ needs.plan.result }}
+          QUALIFICATION_RESULT: ${{ needs.qualification.result }}
+          RISK: ${{ needs.plan.outputs.risk }}
+          LANES: ${{ needs.plan.outputs.lanes }}
         run: |
-          test "$RESULT" = success
-          echo "All applicable exact-candidate lanes succeeded; identical-tree reuse includes source-head success."
+          test "$PLAN_RESULT" = success
+          test "$QUALIFICATION_RESULT" = success
+          echo "Architecture risk=$RISK lanes=$LANES succeeded."

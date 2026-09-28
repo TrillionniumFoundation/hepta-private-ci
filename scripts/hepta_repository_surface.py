@@ -53,6 +53,14 @@ def load_policy(root: Path = ROOT) -> dict[str, Any]:
         raise ValueError("ordinary-development or self-iteration authority widened")
     if convergence.get("highRiskMergeCandidateRequired") is not True:
         raise ValueError("high-risk merge-candidate qualification must remain required")
+    expected_minutes = {
+        "ordinaryFeedbackTargetMinutes": 10,
+        "ordinaryWorkflowTimeoutMinutes": 15,
+        "statefulWorkflowTimeoutMinutes": 40,
+        "architectureDeepTimeoutMinutes": 60,
+    }
+    if any(convergence.get(key) != value for key, value in expected_minutes.items()):
+        raise ValueError("CI feedback targets or timeouts widened or drifted")
     if convergence.get("selfIterationDraftOnly") is not True:
         raise ValueError("self-iteration must remain draft-only")
     if surface.get("newPullRequestWorkflowFilesAllowed") is not False:
@@ -77,6 +85,7 @@ def load_policy(root: Path = ROOT) -> dict[str, Any]:
     return {
         "maximumActiveConvergencePrsPerCapability": 1,
         "allowedDispositions": sorted(_REQUIRED_DISPOSITIONS),
+        **expected_minutes,
         "newPullRequestWorkflowFilesAllowed": False,
         "allowedRootModuleFiles": set(allowed_root),
         "allowedModuleLocalMachineFiles": set(allowed_local),
