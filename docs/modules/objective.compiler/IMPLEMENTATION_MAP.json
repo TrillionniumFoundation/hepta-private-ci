@@ -202,7 +202,7 @@
         "ObjectiveFunctionV1 protocol digest",
         "native semantic digest binding"
       ],
-      "state": "source_implemented_authenticated_product_projection",
+      "state": "source_implemented_compatibility_revalidation_projection",
       "authority": "none",
       "tests": [
         {
@@ -256,7 +256,8 @@
           "role": "source_declaration"
         }
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "productRole": "compatibility_revalidation_not_agentd_product_path"
     },
     {
       "operation": "admit_objective_v1",
@@ -270,7 +271,7 @@
       "outputs": [
         "opaque AdmittedObjectiveV1"
       ],
-      "state": "source_implemented_canonical_product_admission",
+      "state": "source_implemented_lower_level_raw_profile_admission_not_agentd_product_path",
       "authority": "deny_all",
       "tests": [
         {
@@ -281,7 +282,8 @@
       "designOperation": "admit_objective_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "productRole": "lower_level_and_compatibility_entrypoint"
     },
     {
       "operation": "compile_admitted_objective_v1",
@@ -293,7 +295,7 @@
       "outputs": [
         "ObjectiveAdmissionOutcomeV1"
       ],
-      "state": "source_implemented_canonical_product_compile",
+      "state": "source_implemented_lower_level_compile_not_agentd_product_path",
       "authority": "deny_all",
       "tests": [
         {
@@ -310,7 +312,8 @@
           "role": "source_declaration"
         }
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "productRole": "lower_level_and_compatibility_entrypoint"
     },
     {
       "operation": "decode_objective_function_v1",
@@ -367,6 +370,125 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true
+    },
+    {
+      "operation": "validate_admission_profile_v1",
+      "nativeSymbol": "ValidatedAdmissionProfileV1::new",
+      "sourcePath": "codex-rs/hepta-objective/src/validated_admission.rs",
+      "inputs": [
+        "ObjectiveAdmissionProfileV1"
+      ],
+      "outputs": [
+        "opaque generation-local ValidatedAdmissionProfileV1",
+        "profile digest/revision/compiler-contract reuse key",
+        "static source indexes and collision proofs"
+      ],
+      "state": "source_implemented_generation_local_static_validation",
+      "authority": "none_static_validation_only",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/validated_admission_tests.rs",
+          "symbol": "validated_profile_builds_indexes_and_rejects_duplicate_targets"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/validated_admission_tests.rs",
+          "symbol": "frozen_profile_reuse_never_caches_authentication_time_or_profile_selection"
+        }
+      ],
+      "designOperation": "validate_admission_profile_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true,
+      "reuseBoundary": "static profile validation and indexes only; no authentication, time, revocation, generation, fence or final-use authority"
+    },
+    {
+      "operation": "compile_authoritative_objective_v1",
+      "nativeSymbol": "codex_hepta_objective::compile_authoritative_objective_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/validated_admission.rs",
+      "inputs": [
+        "ObjectiveSourceEnvelopeV1",
+        "ValidatedAdmissionProfileV1",
+        "fresh ObjectiveAdmissionContextV1"
+      ],
+      "outputs": [
+        "opaque ProofBearingObjectiveCompileV1"
+      ],
+      "state": "source_implemented_canonical_agentd_product_compile",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/validated_admission_tests.rs",
+          "symbol": "proof_binds_source_profile_context_and_compiler_contract"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/validated_admission_tests.rs",
+          "symbol": "frozen_profile_reuse_never_caches_authentication_time_or_profile_selection"
+        }
+      ],
+      "designOperation": "compile_authoritative_objective_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-objective/src/objective_admission.rs",
+          "symbol": "admit_frozen_objective_v1",
+          "role": "request_local_authenticated_admission"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/compiler.rs",
+          "symbol": "crate::compiler::compile",
+          "role": "deterministic_native_compile"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "encode_proof_bearing_objective_function_v1",
+      "nativeSymbol": "codex_hepta_objective::encode_proof_bearing_objective_function_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/proof_projection.rs",
+      "inputs": [
+        "opaque ProofBearingObjectiveCompileV1",
+        "ObjectiveSourceEnvelopeV1",
+        "ValidatedAdmissionProfileV1"
+      ],
+      "outputs": [
+        "canonical ObjectiveFunctionV1 bytes",
+        "protocol digest and native semantic digest binding"
+      ],
+      "state": "source_implemented_canonical_agentd_product_projection",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/proof_projection_tests.rs",
+          "symbol": "proof_projection_matches_independent_authenticated_recompilation"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/proof_projection_tests.rs",
+          "symbol": "proof_projection_rejects_metadata_intent_and_profile_substitution"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/proof_projection_tests.rs",
+          "symbol": "frozen_profile_does_not_cache_authentication_or_freshness"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/proof_projection_tests.rs",
+          "symbol": "proof_projection_rejects_conflict_but_preserves_explicit_abstain"
+        }
+      ],
+      "designOperation": "encode_proof_bearing_objective_function_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+          "symbol": "encode_validated_profile_objective_function_v1",
+          "role": "strict_native_source_receipt_and_protocol_projection"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+          "symbol": "decode_objective_function_v1",
+          "role": "strict_canonical_wire_revalidation"
+        }
+      ],
+      "sourcePathExists": true
     }
   ],
   "canonicalReadinessProtocols": [
@@ -409,35 +531,38 @@
     "tree": "a6adbab03b4c8d3a09e55bdf650bbe9e0da3d147"
   },
   "repositoryControlledGaps": [
-    "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
-    "Run the named target-host objective measurement harness and qualify Agentd crash/restart/backpressure behavior on the selected deployment host."
+    "Obtain successful read-only source-head and deterministic synthetic-merge receipts for one final canonical candidate checkout.",
+    "Record the staged latency/resource harness on the selected deployment host and qualify its real storage, crash/restart and backpressure policy.",
+    "Add a separately versioned durable admission-proof persistence/recovery contract before claiming proof recovery beyond the currently persisted admission/native/protocol identities."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "selected deployment-host measurement, storage and resource-policy acceptance",
+    "independent semantic and security review",
+    "operator acceptance, canary observation, promotion, rollback authority and release approval"
   ],
   "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
   "exactHeadQualificationPolicy": {
-    "state": "external_exact_candidate_receipt_required",
-    "verifier": "python3 scripts/hepta-implementation-maps.py verify",
+    "state": "read_only_exact_candidate_receipt_required",
+    "verifier": "python3 scripts/hepta-objective-qualify-exact.py plus python3 scripts/hepta-implementation-maps.py verify --module objective.compiler",
     "moduleSourceRule": "exactSourceCandidate equals the newest Git commit/tree touching every declared source root",
     "workflows": [
+      ".github/workflows/hepta-lane-d-semantic-conformance.yml",
       ".github/workflows/hepta-objective-admission.yml",
-      ".github/workflows/hepta-lane-d-semantic-conformance.yml"
+      ".github/workflows/hepta-objective-exact-execution.yml",
+      ".github/workflows/hepta-objective-target-measurement.yml"
     ],
     "productCompositionRule": "productCompositionSourceCandidate must equal the newest Git commit/tree touching the registered product-composition paths"
   },
   "productCallerEvidence": [
     {
       "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
-      "symbol": "ObjectiveRuntimeHost::submit",
-      "semantics": "signed AuthBus -> current trust -> exact durable replay or fresh authenticated compile/projection -> current trust/deadline -> generation/fence-bound runtime admission"
+      "symbol": "ObjectiveRuntimeHost::open / ObjectiveRuntimeHost::submit",
+      "semantics": "open freezes one owner-local validated profile for the process generation; submit authenticates every signed request against current trust, builds a fresh admission context and calls the validated intelligence façade before current deadline/trust/generation/fence runtime admission"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/objective_run.rs",
-      "symbol": "compile_and_publish_objective_run_v1",
-      "semantics": "opaque admission -> deterministic compile -> authenticated ObjectiveFunctionV1 projection -> destination-owned run-start append before runtime consumption"
+      "symbol": "compile_and_publish_validated_objective_run_v1",
+      "semantics": "fresh authenticated admission through a generation-local frozen profile -> proof-bearing deterministic compile -> strict proof-bound ObjectiveFunctionV1 projection -> destination-owned run-start append before runtime consumption"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start_store.rs",
@@ -471,12 +596,12 @@
     }
   ],
   "exactSourceCandidate": {
-    "commit": "b3581605844729baac9cb6522e486af9746399f4",
-    "tree": "c7943ebe42481e53edd9841f83b814cc51f92759",
+    "commit": "954a7bded74a1b8ce27703fdf73fdea29e1d437b",
+    "tree": "edaf7993fdf21bb1630b13f04bffdeb43dfb740b",
     "roots": [
       "codex-rs/hepta-objective"
     ],
-    "role": "module_source_identity"
+    "role": "module_source_identity_not_execution_receipt"
   },
   "canonicalProtocolContracts": [
     "ObjectiveFunctionV1",
@@ -485,11 +610,15 @@
     "RunStartCompactionManifestV1"
   ],
   "productCompositionSourceCandidate": {
-    "commit": "f19d87fd1cbb76a23ee7506be9e77ea9614a1903",
-    "tree": "5020d6f45648e44fd430d1a26ffed746cd6b8833",
+    "commit": "ad3eb62a871db3d5603e3a0209883bda1e4f7bb4",
+    "tree": "5b9ea1c981ad661caa2df3f5136ea67603b4ddce",
     "paths": [
       ".github/workflows/hepta-objective-admission.yml",
+      ".github/workflows/hepta-objective-exact-execution.yml",
       ".github/workflows/hepta-objective-product-composition.yml",
+      ".github/workflows/hepta-objective-target-measurement.yml",
+      "codex-rs/hepta-agent-protocol/src/authbus.rs",
+      "codex-rs/hepta-agent-protocol/src/objective_tests.rs",
       "codex-rs/hepta-agentd/src/config.rs",
       "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
       "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
@@ -497,38 +626,48 @@
       "codex-rs/hepta-agentd/src/objective_run_start_checkpoint.rs",
       "codex-rs/hepta-agentd/src/objective_run_start_checkpoint_tests.rs",
       "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "codex-rs/hepta-agentd/src/objective_runtime_replay.rs",
       "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
       "codex-rs/hepta-agentd/src/runtime.rs",
       "codex-rs/hepta-agentd/tests/objective_product_e2e.rs",
+      "codex-rs/hepta-agentd/tests/objective_product_e2e/replay.rs",
       "codex-rs/hepta-agentd/tests/support/fleet.rs",
-      "codex-rs/hepta-intelligence/src/objective_run.rs",
-      "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
-      "codex-rs/hepta-learning-ledger/src/run_start.rs",
-      "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
-      "codex-rs/hepta-learning-ledger/src/run_start_compaction.rs",
-      "codex-rs/hepta-learning-ledger/src/run_start_store.rs",
-      "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs",
-      "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
-      "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
-      "qualification/module-execution-dossiers/detail/objective.compiler.md",
-      "scripts/hepta-objective-target-measure.py",
-      "codex-rs/hepta-agent-protocol/src/authbus.rs",
-      "codex-rs/hepta-agent-protocol/src/objective_tests.rs",
-      "scripts/test_hepta_objective_target_measure.py",
       "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
       "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts.rs",
       "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts_tests.rs",
-      "codex-rs/hepta-agentd/src/objective_runtime_replay.rs",
-      "codex-rs/hepta-agentd/tests/objective_product_e2e/replay.rs"
+      "codex-rs/hepta-intelligence/src/objective_run.rs",
+      "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
+      "codex-rs/hepta-learning-ledger/src/run_start.rs",
+      "codex-rs/hepta-learning-ledger/src/run_start_compaction.rs",
+      "codex-rs/hepta-learning-ledger/src/run_start_store.rs",
+      "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs",
+      "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
+      "codex-rs/hepta-objective/src/objective_admission.rs",
+      "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+      "codex-rs/hepta-objective/src/objective_function_v1.rs",
+      "codex-rs/hepta-objective/src/proof_projection.rs",
+      "codex-rs/hepta-objective/src/proof_projection_tests.rs",
+      "codex-rs/hepta-objective/src/validated_admission.rs",
+      "codex-rs/hepta-objective/src/validated_admission_tests.rs",
+      "docs/modules/objective.compiler/DELIVERY_EVIDENCE.md",
+      "docs/modules/objective.compiler/SEMANTIC_SUPPORT.md",
+      "docs/modules/objective.compiler/TECHNICAL.md",
+      "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+      "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
+      "qualification/module-execution-dossiers/detail/objective.compiler.md",
+      "scripts/hepta-objective-evidence-project.py",
+      "scripts/hepta-objective-qualify-exact.py",
+      "scripts/hepta-objective-target-measure.py",
+      "scripts/test_hepta_objective_target_measure.py"
     ],
-    "role": "product_composition_source_identity"
+    "role": "product_composition_source_identity_not_execution_receipt"
   },
   "canonicalProductOperations": [
     "decode_source_envelope_json_v1",
     "validate_structure",
-    "admit_objective_v1",
-    "compile_admitted_objective_v1",
-    "encode_authenticated_objective_function_v1",
+    "validate_admission_profile_v1",
+    "compile_authoritative_objective_v1",
+    "encode_proof_bearing_objective_function_v1",
     "decode_objective_function_v1"
   ],
   "productCallers": [
